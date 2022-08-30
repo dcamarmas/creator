@@ -39,15 +39,19 @@
 
     methods:    {
                   //Load the available architectures and check if exists backup
-                  load_arch_available() {
+                  load_arch_available()
+                  {
                     //Read architectures availables JSON
                     $.getJSON('architecture/available_arch.json' + "?v=" + new Date().getTime(), function(cfg){
                       architecture_available = cfg;
-                      if (typeof(Storage) !== "undefined"){
-                        if(localStorage.getItem("load_architectures_available") != null){
+                      if (typeof(Storage) !== "undefined")
+                      {
+                        if(localStorage.getItem("load_architectures_available") != null)
+                        {
                           var aux_arch = localStorage.getItem("load_architectures_available");
                           var aux = JSON.parse(aux_arch);
-                          for (var i = 0; i < aux.length; i++){
+                          for (var i = 0; i < aux.length; i++)
+                          {
                             architecture_available.push(aux[i]);
                             load_architectures_available.push(aux[i]);
 
@@ -74,20 +78,22 @@
                     show_loading();
 
                     //Read architecture JSON
-                    for (i = 0; i < load_architectures.length; i++) {
-                         if (e.name == load_architectures[i].id) {
-                             var aux_architecture = JSON.parse(load_architectures[i].architecture);
-                             uielto_preload_architecture.methods.load_arch_select_aux(e.name, aux_architecture, true, e);
+                    for (i = 0; i < load_architectures.length; i++)
+                    {
+                      if (e.name == load_architectures[i].id)
+                      {
+                        var aux_architecture = JSON.parse(load_architectures[i].architecture);
+                        uielto_preload_architecture.methods.load_arch_select_aux(e.name, aux_architecture, true, e);
 
-                             //Refresh UI
-                             hide_loading();
-                             show_notification('The selected architecture has been loaded correctly', 'success');
+                        //Refresh UI
+                        hide_loading();
+                        show_notification('The selected architecture has been loaded correctly', 'success');
 
-                             // Google Analytics
-                             creator_ga('architecture', 'architecture.loading', 'architectures.loading.customized' + e.name);
+                        // Google Analytics
+                        creator_ga('architecture', 'architecture.loading', 'architectures.loading.customized' + e.name);
 
-                             return;
-                         }
+                        return;
+                      }
                     }
 
                     //Synchronous JSON read
@@ -124,7 +130,8 @@
 
                     //Generate architecture hash table
                     architecture_hash = [];
-                    for (i = 0; i < architecture.components.length; i++){
+                    for (i = 0; i < architecture.components.length; i++)
+                    {
                          architecture_hash.push({name: architecture.components[i].name, index: i});
                          app._data.architecture_hash = architecture_hash; 
                     }
@@ -145,11 +152,12 @@
                   },
 
                   //Load the available examples
-                  load_examples_available( set_name ) {
+                  load_examples_available( set_name )
+                  {
                     example_set_available = [];
                     example_available = [];
 
-                    uielto_preload_architecture.data.example_loaded = new Promise(function(resolve, reject) {
+                    uielto_preload_architecture.data.example_loaded = new Promise(function(resolve, reject){
                       //Synchronous json read
                       $.ajaxSetup({
                           async: false
@@ -169,11 +177,10 @@
                         for (var i=0; i<set.length; i++)
                         {
                           //If current_architecture active but not the associated with set, skip
-                          if  ( (current_architecture != '') &&
-                              (set[i].architecture.toUpperCase() != current_architecture))
-                              {
-                                continue ;
-                              }
+                          if  ( (current_architecture != '') && (set[i].architecture.toUpperCase() != current_architecture))
+                          {
+                            continue ;
+                          }
 
                           //Default example set
                           if (typeof set_name !== 'undefined' && set_name == set[i].id) {
@@ -188,7 +195,8 @@
                           }); 
 
                           //If no current_architecture loaded then load the associated
-                          if (current_architecture == '') {
+                          if (current_architecture == '')
+                          {
                             $.getJSON('architecture/'+ set[i].architecture +'.json', function(cfg) {
                               uielto_preload_architecture.methods.load_arch_select_aux(set[i].architecture,cfg, false, null);
                             }) ;
@@ -213,9 +221,12 @@
                   },
 
                   //Change the background of selected achitecture card
-                  change_background(name, type){
-                    if(type == 1){
-                      for (var i = 0; i < this._props.back_card.length; i++){
+                  change_background(name, type)
+                  {
+                    if(type == 1)
+                    {
+                      for (var i = 0; i < this._props.back_card.length; i++)
+                      {
                         if(name == this._props.back_card[i].name){
                           this._props.back_card[i].background = "secondary";
                         }
@@ -224,7 +235,8 @@
                         }
                       }
                     }
-                    if(type == 0){
+                    if(type == 0)
+                    {
                       for (var i = 0; i < back_card.length; i++){
                         this._props.back_card[i].background = "default";
                       }
@@ -232,14 +244,18 @@
                   },
 
                   //Show remove architecture modal
-                  modal_remove_cache_arch(index, elem, button){
+                  modal_remove_cache_arch(index, elem, button)
+                  {
                     app._data.modal_delete_arch_index = index;
+
                     this.$root.$emit('bv::show::modal', 'modalDeletArch', button);
                   },
 
                   //Check if it is a new architecture
-                  default_arch(item){
-                    for (var i = 0; i < load_architectures_available.length; i++) {
+                  default_arch(item)
+                  {
+                    for (var i = 0; i < load_architectures_available.length; i++)
+                    {
                       if(load_architectures_available[i].name == item){
                         return true;
                       }

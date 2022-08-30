@@ -28,7 +28,7 @@
                   title:                          { type: String, required: true },
                   index:                          { type: Number, required: true },
                   instruction:                    { type: Object, required: true },
-                  numfields:                      { type: Number, required: true }
+                  number_fields:                  { type: Number, required: true }
                   
                 },
 
@@ -51,12 +51,12 @@
                                             { text: 'Other',                      value: 'Other' },
                                           ],
 
+                    //Allow instruction with fractioned fields
+                    fragmet_data:["inm-signed", "inm-unsigned", "address", "offset_bytes", "offset_words"],
+
                     //Modal pagination
                     instruction_page: 1,
                     instruction_page_link: ['#Principal', '#Fields', '#Syntax', '#Definition', '#Help'],
-
-                    //Allow instruction with fractioned fields
-                    fragmet_data:["inm-signed", "inm-unsigned", "address", "offset_bytes", "offset_words"],
 
                     //Show Modal
                     show_modal: false,
@@ -65,223 +65,234 @@
 
     methods:    {
                   //Check all fields of modify instruction
-                  edit_instructions_verify(evt, inst, co, cop){
+                  edit_instructions_verify(evt)
+                  {
                     evt.preventDefault();
+                    var empty = 0;
 
-                    for (var i = 0; i < this.instruction.nameField.length; i++){
-                      for (var j = i + 1; j < this.instruction.nameField.length; j++){
-                        if (this.instruction.nameField[i] == this.instruction.nameField[j]){
-                          show_notification('Field name repeated', 'danger') ;
+                    //Verify CO
+                    if (typeof(this._props.instruction.co) !== 'object')
+                    {
+                      for (var i = 0; i < this._props.instruction.co.length; i++)
+                      {
+                        if (this._props.instruction.co.charAt(i) != "0" && this._props.instruction.co.charAt(i) != "1")
+                        {
+                          show_notification('The value of co must be binary', 'danger') ;
+                          return;
+                        }
+                      }
+                    }
+                    else 
+                    {
+                      for (let val in this._props.instruction.co)
+                      {
+                        if (!/^[01]+$/.test(val))
+                        {
+                          show_notification('The value of co must be binary', 'danger') ;
                           return;
                         }
                       }
                     }
 
-                    var empty = 0;
-                    var auxCop = "";
+                    //Verify COP
+                    var aux_cop = "";
 
-                    for (var z = 1; z < this.instruction.numfields; z++){
-                      if (this.instruction.typeField[z] == 'cop'){
-                        if (!this.instruction.valueField[z]){
-                            empty = 1;
+                    for (var i = 1; i < this._props.number_fields; i++)
+                    {
+                      if (this._props.instruction.fields[i].type == 'cop')
+                      {
+                        if (!this._props.instruction.fields[i].valueField){
+                          empty = 1;
                         }
-                        else {
-                          if ((this.instruction.valueField[z]).length != (this.instruction.startBitField[z] - this.instruction.stopBitField[z] + 1)){
-                             show_notification('The length of cop should be ' + (this.instruction.startBitField[z] - this.instruction.stopBitField[z] + 1) + ' binary numbers', 'danger') ;
-                             return;
+                        else 
+                        {
+                          if ((this._props.instruction.fields[i].valueField).length != (this._props.instruction.fields[i].startbit - this._props.instruction.fields[i].stopbit + 1))
+                          {
+                            show_notification('The length of cop should be ' + (this._props.instruction.fields[i].startbit - this._props.instruction.fields[i].stopbit + 1) + ' binary numbers', 'danger') ;
+                            return;
                           }
 
-                          for (var i = 0; i < this.instruction.valueField[z].length; i++){
-                            if (this.instruction.valueField[z].charAt(i) != "0" && this.instruction.valueField[z].charAt(i) != "1"){
-                               show_notification('The value of cop must be binary', 'danger') ;
-                               return;
+                          for (var j = 0; j < (this._props.instruction.fields[i].valueField).length; j++)
+                          {
+                            if (this._props.instruction.fields[i].valueField.charAt(j) != "0" && this._props.instruction.fields[i].valueField.charAt(j) != "1")
+                            {
+                              show_notification('The value of cop must be binary', 'danger') ;
+                              return;
                             }
                           }
                         }
-                        auxCop = auxCop + this.instruction.valueField[z];
+
+                        aux_cop = aux_cop + this._props.instruction.fields[i].valueField;
                       }
                     }
 
-                    this.instruction.cop = auxCop;
+                    this._props.instruction.cop = aux_cop;
 
-                      if (typeof(this.instruction.co) !== 'object')
-                        for (var i = 0; i < this.instruction.co.length; i++){
-                          if (this.instruction.co.charAt(i) != "0" && this.instruction.co.charAt(i) != "1"){
-                              show_notification('The value of co must be binary', 'danger') ;
-                              return;
-                          }
+                    //Verify instruction fields
+                    for (var i = 0; i < this._props.number_fields; i++)
+                    {
+                      for (var j = i + 1; j < this._props.number_fields; j++)
+                      {
+                        if (this._props.instruction.fields[i].name == this._props.instruction.fields[j].name)
+                        {
+                          show_notification('Field name repeated', 'danger') ;
+                          return;
                         }
-                      else {
-                          for (let val in this.instruction.co) {
-                              if (!/^[01]+$/.test(val)) {
-                                  show_notification('The value of co must be binary', 'danger') ;
-                                  return;
-                              }
-                          }
                       }
 
-                    for (var i = 0; i < this.instruction.numfields; i++){
-                      if(!this.instruction.nameField[i] || !this.instruction.typeField[i] || (!this.instruction.startBitField[i] && this.instruction.startBitField[i] != 0) || (!this.instruction.stopBitField[i] && this.instruction.stopBitField[i] != 0)){
+                      if(!this._props.instruction.fields[i].name || !this._props.instruction.fields[i].type || (!this._props.instruction.fields[i].startbit && this._props.instruction.fields[i].startbit != 0) || (!this._props.instruction.fields[i].stopbit && this._props.instruction.fields[i].stopbit != 0)){
                         empty = 1;
                       }
                     }
-                    if (!this.instruction.name || !this.instruction.type || !this.instruction.co || !this.instruction.nwords || !this.instruction.numfields || !this.instruction.signature_definition || !this.instruction.definition || empty == 1) {
+
+                    //Verify empty fields
+                    if (!this._props.instruction.name || !this._props.instruction.type || !this._props.instruction.co || !this._props.instruction.nwords || !this._props.instruction.power_consumption || !this._props.number_fields || !this._props.instruction.signature_definition || !this._props.instruction.definition || empty == 1)
+                    {
                       show_notification('Please complete all fields', 'danger') ;
+                      return;
                     }
-                    if ((typeof(this.instruction.co) != 'object' && isNaN(this.instruction.co)) || (typeof(this.instruction.co) === 'object' && this.instruction.co.some(val => isNaN(val))))
-                             show_notification('The field co must be numbers', 'danger') ;
-                    else if(isNaN(this.instruction.cop)){
+
+                    //Verify fields values
+                    if ((typeof(this._props.instruction.co) != 'object' && isNaN(this._props.instruction.co)) || (typeof(this._props.instruction.co) === 'object' && this._props.instruction.co.some(val => isNaN(val))))
+                    {
+                      show_notification('The field co must be numbers', 'danger') ;
+                      return;
+                    }
+                    else if(isNaN(this._props.instruction.cop))
+                    {
                       show_notification('The field cop must be numbers', 'danger') ;
+                      return;
                     }
-                    else if(typeof(this.instruction.co) != 'object' && (this.instruction.co).length != (this.instruction.startBitField[0] - this.instruction.stopBitField[0] + 1)){
-                             show_notification('The length of co should be ' + (this.instruction.startBitField[0] - this.instruction.stopBitField[0] + 1) + ' binary numbers', 'danger');
-                    } else if (typeof(this.instruction.co) === 'object' && this.instruction.co.some((val, ind) => val.length !== app.instruction.startBitField[0][ind] - app.instruction.stopBitField[0][ind] +1))
-                             show_notification('The length of co don\'t match with the desription', 'danger');
-                    else {
-                      this.edit_instructions(inst, co, cop);
+                    else if(typeof(this._props.instruction.co) != 'object' && (this._props.instruction.co).length != (this._props.instruction.fields[0].startbit - this._props.instruction.fields[0].stopbit + 1))
+                    {
+                      show_notification('The length of co should be ' + (this._props.instruction.fields[0].startbit - this._props.instruction.fields[0].stopbit + 1) + ' binary numbers', 'danger');
+                      return;
+                    } 
+                    else if (typeof(this._props.instruction.co) === 'object' && this._props.instruction.co.some((val, ind) => val.length !== app.instruction.fields[0].startbit[ind] - app.instruction.fields[0].stopbit[ind] +1))
+                    {
+                      show_notification('The length of co don\'t match with the desription', 'danger');
+                      return;
+                    }
+                    else 
+                    {
+                      //Verify repeat instruction
+                      var ex_cop = false;
+                      for (var i = 1; i < this._props.number_fields; i++)
+                      {
+                        if (this._props.instruction.fields[i].type == 'cop'){
+                          ex_cop = true;
+                        }
+                      }
+
+                      for (var i = 0; i < architecture.instructions.length; i++){
+                        if ((this._props.instruction.co == architecture.instructions[i].co) && (i!= this._props.index) && (ex_cop == false))
+                        {
+                          if (((!this._props.instruction.cop) || (ex_cop != true)))
+                          {
+                            show_notification('The instruction already exists', 'danger') ;
+                            return;
+                          }
+                        }
+                      }
+
+                      let aux_cop = (() => this._props.instruction.co instanceof Array ? this.formInstrucion.co.join("") : this._props.instruction.co)() + this._props.instruction.cop;
+
+                      for (var i = 0; i < architecture.instructions.length && ex_cop == true ; i++)
+                      {
+                        if ((aux_cop == architecture.instructions[i].cop) && (!aux_cop == false) && (i != this._props.index))
+                        {
+                          show_notification('The instruction already exists', 'danger') ;
+                          return;
+                        }
+                      }
+
+                      this.edit_instructions(ex_cop);
                     }
                   },
 
                   //Edit the instruction
-                  edit_instructions(comp, co, cop)
+                  edit_instructions(ex_cop)
                   {
-                    var exCop = false;
-
-                    for (var z = 1; z < this.instruction.numfields; z++){
-                      if (this.instruction.typeField[z] == 'cop'){
-                          exCop = true;
-                      }
-                    }
-
-                    for (var i = 0; i < architecture.instructions.length; i++){
-                      if ((this.instruction.co == architecture.instructions[i].co) && (this.instruction.co != co) && (exCop == false)){
-                        if (((!this.instruction.cop) || (exCop != true))){
-                            show_notification('The instruction already exists', 'danger') ;
-                            return;
-                        }
-                      }
-                    }
-
-
-                    let auxcop = (() => this.instruction.co instanceof Array ? this.formInstrucion.co.join("") : this.instruction.co)() + this.instruction.cop;
-
-                    for (var i = 0; i < architecture.instructions.length && exCop == true ; i++){
-                      if ((auxcop == architecture.instructions[i].cop) && (!auxcop == false) && (auxcop != cop)){
-                           show_notification('The instruction already exists', 'danger') ;
-                           return;
-                      }
-                    }
-
                     this.show_modal = false;
 
-                    for (var i = 0; i < architecture.instructions.length; i++){
-                      if (architecture.instructions[i].name == comp && architecture.instructions[i].co == co && architecture.instructions[i].cop == cop) {
-                        architecture.instructions[i].name = this.instruction.name;
-                        architecture.instructions[i].type = this.instruction.type;
-                        architecture.instructions[i].co = this.instruction.co;
-                        architecture.instructions[i].cop = this.instruction.cop;
-                        architecture.instructions[i].nwords = this.instruction.nwords;
-                        architecture.instructions[i].help = this.instruction.help;
-                        architecture.instructions[i].signature_definition = this.instruction.signature_definition;
-                        architecture.instructions[i].definition = this.instruction.definition;
-                        architecture.instructions[i].properties = this.instruction.properties;
-                        if (!architecture.instructions[i].separated)
-                            architecture.instructions[i].separated =Array(this.instruction.numfields).fill(false);
+                    //Generate new signature
+                    this.generate_signature();
 
-                        for (var j = 0; j < this.instruction.numfields; j++) {
-                          if (j < architecture.instructions[i].fields.length) {
-                            architecture.instructions[i].fields[j].name = this.instruction.nameField[j];
-                            architecture.instructions[i].fields[j].type = this.instruction.typeField[j];
-                            architecture.instructions[i].fields[j].startbit = !this.instruction.separated[j] ? parseInt(this.instruction.startBitField[j]) : this.instruction.startBitField[j].map(val => parseInt(val));
-                            architecture.instructions[i].fields[j].stopbit = !this.instruction.separated[j] ? parseInt(this.instruction.stopBitField[j]): this.instruction.stopBitField[j].map(val => parseInt(val));
-                            architecture.instructions[i].fields[j].valueField = this.instruction.valueField[j];
-                            /*add data to store if the field is fragmented or not.*/
-                            architecture.instructions[i].separated[j] = this.instruction.separated[j];
-                          }
-                          else{
-                            var newField = {name: this.instruction.nameField[j], type: this.instruction.typeField[j], startbit: this.instruction.startBitField[j], stopbit: this.instruction.stopBitField[j], valueField: this.instruction.valueField[j]};
-                            architecture.instructions[i].fields.push(newField);
-                          }
-                        }
-
-                        this.generate_signature();
-
-                        var signature = this.instruction.signature;
-                        var signatureRaw = this.instruction.signatureRaw;
-
-                        if(exCop == false){
-                          architecture.instructions[i].cop='';
-                        }
-
-                        architecture.instructions[i].signature = signature;
-                        architecture.instructions[i].signatureRaw = signatureRaw;
-
-                        if(architecture.instructions[i].fields.length > this.instruction.numfields){
-                          architecture.instructions[i].fields.splice(this.instruction.numfields, (architecture.instructions[i].fields.length - this.instruction.numfields));
-                        }
-                        break;
-                      }
-                    }
+                    Object.assign(architecture.instructions[this._props.index], this._props.instruction);
 
                     show_notification('The instruction has been modified, please check the definition of the pseudoinstructions', 'info') ;
                   },
 
+                  //Verify new number of fields
+                  change_number_fields()
+                  {
+                    //Top limit
+                    if(this._props.number_fields > (this._props.instruction.nwords * 32)){
+                      this._props.number_fields = (this._props.instruction.nwords * 32);
+                    }
 
+                    //Lower limit
+                    if(this._props.number_fields < 1){
+                      this._props.number_fields = 1;
+                    }
 
+                    //Add fields
+                    if(this._props.number_fields > this._props.instruction.fields.length)
+                    {
+                      var diff = this._props.number_fields - this._props.instruction.fields.length;
+                      for (var i = 0; i < diff; i++)
+                      {
+                        var new_field = {name: '', type: '', startbit: '', stopbit: '', valueField: ''};
+                        this._props.instruction.fields.push(new_field);
+                      }
+                    }
 
+                    //Delete fields
+                    if(this._props.number_fields < this._props.instruction.fields.length)
+                    {
+                      var diff = this._props.instruction.fields.length - this._props.number_fields;
+                      for (var i = 0; i < diff; i++){
+                        this._props.instruction.fields.splice(-1,1);
+                      }
+                    }
+                  },
 
+                  //Generate the different instruction signature
+                  generate_signature()
+                  {
+                    var signature = this._props.instruction.signature_definition;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                  //Generate the instruction signature
-                  generate_signature(){ //TODO
-                    var signature = this.instruction.signature_definition;
-
+                    //Signature definition cleaning
                     var re = new RegExp("^ +");
-                    this.instruction.signature_definition= this.instruction.signature_definition.replace(re, "");
+                    this._props.instruction.signature_definition= this._props.instruction.signature_definition.replace(re, "");
 
                     re = new RegExp(" +", "g");
-                    this.instruction.signature_definition = this.instruction.signature_definition.replace(re, " ");
+                    this._props.instruction.signature_definition = this._props.instruction.signature_definition.replace(re, " ");
 
+                    //New signature generation
                     re = new RegExp("^ +");
                     signature= signature.replace(re, "");
 
                     re = new RegExp(" +", "g");
                     signature = signature.replace(re, " ");
 
-                    for (var z = 0; z < this.instruction.numfields; z++){
-                      re = new RegExp("[Ff]"+z, "g");
+                    for (var i = 0; i < this._props.number_fields; i++)
+                    {
+                      re = new RegExp("[Ff]"+i, "g");
 
-                      if(z == 0){
-                        signature = signature.replace(re, this.instruction.name);
+                      if(i == 0){
+                        signature = signature.replace(re, this._props.instruction.name);
                       }
                       else{
-                        signature = signature.replace(re, this.instruction.typeField[z]);
+                        signature = signature.replace(re, this._props.instruction.fields[i].type);
                       }
                     }
 
                     re = new RegExp(" ", "g");
                     signature = signature.replace(re , ",");
 
-                    var signatureRaw = this.instruction.signature_definition;
+                    //New raw signature generation
+                    var signatureRaw = this._props.instruction.signature_definition;
 
                     re = new RegExp("^ +");
                     signatureRaw= signatureRaw.replace(re, "");
@@ -289,93 +300,84 @@
                     re = new RegExp(" +", "g");
                     signatureRaw = signatureRaw.replace(re, " ");
 
-                    for (var z = 0; z < this.instruction.numfields; z++){
-                      re = new RegExp("[Ff]"+z, "g");
-                      signatureRaw = signatureRaw.replace(re, this.instruction.nameField[z]);
+                    for (var i = 0; i < this._props.number_fields; i++)
+                    {
+                      re = new RegExp("[Ff]"+i, "g");
+                      signatureRaw = signatureRaw.replace(re, this._props.instruction.fields[i].name);
                     }
 
-                    this.instruction.signature = signature;
-                    this.instruction.signatureRaw = signatureRaw;
+                    this._props.instruction.signature    = signature;
+                    this._props.instruction.signatureRaw = signatureRaw;
                   },
-
-                  /**
-                    * method in charge of create the array corresponent to the
-                    * current position of start bit and end bit
-                   */
-
-                  changeToSeparateValue( val, pos ) {
-                      if (val) {
-                        this.instruction.startBitField[pos] = [0];
-                        this.instruction.stopBitField[pos] =[0];
-                          if (this.instruction.typeField[pos] == 'co')
-                              this.instruction.co = ['0'];
-                      } else {
-                        this.instruction.startBitField[pos] = 0;
-                        this.instruction.stopBitField[pos] =0;
-                          if (this.instruction.typeField[pos] == 'co')
-                              this.instruction.co = '0';
-                      }
-                  },
-
-                  addMoreFieldsToSeparateValues(event, pos) {
-                    this.instruction.startBitField[pos].push(0);
-                    this.instruction.stopBitField[pos].push(0);
-                      if (this.instruction.typeField[pos] == 'co')
-                          this.instruction.co.push('0')
-                    app.$forceUpdate();
-                  },
-
-
-                  lessFieldsToSeparateValues(event, pos) { //TODO
-                      this.instruction.startBitField[pos].pop();
-                      this.instruction.stopBitField[pos].pop();
-                        if (this.instruction.typeField[pos] == 'co')
-                            this.instruction.co.pop()
-                      app.$forceUpdate();
-                  },
-
-                  //Verify new number of fields
-                  changeNumfield(type){
-                    if(type == 0){
-                      if(this.instruction.numfields > (this.instruction.nwords * 32)){
-                        this.instruction.numfieldsAux = (this.instruction.nwords * 32);
-                        this.instruction.numfields = (this.instruction.nwords * 32);
-                      }
-                      else if(this.instruction.numfields < 1){
-                        this.instruction.numfieldsAux = 1;
-                        this.instruction.numfields = 1;
-                      }
-                      else{
-                        this.instruction.numfieldsAux = this.instruction.numfields;
+                  
+                  //Change to separate field
+                  change_to_separate_field(val, pos)
+                  {
+                    if (val)
+                    {
+                      this._props.instruction.fields[pos].startbit = [0];
+                      this._props.instruction.fields[pos].stopbit = [0];
+                      if (this._props.instruction.fields[pos].type == 'co'){
+                        this._props.instruction.co = ['0'];
                       }
                     }
-                    if(type == 1){
-                      if(this.formPseudoinstruction.numfields > (this.formPseudoinstruction.nwords * 32)){
-                        this.formPseudoinstruction.numfieldsAux = (this.formPseudoinstruction.nwords * 32);
-                        this.formPseudoinstruction.numfields = (this.formPseudoinstruction.nwords * 32);
-                      }
-                      else if(this.formPseudoinstruction.numfields < 0){
-                        this.formPseudoinstruction.numfieldsAux = 0;
-                        this.formPseudoinstruction.numfields = 0;
-                      }
-                      else{
-                        this.formPseudoinstruction.numfieldsAux = this.formPseudoinstruction.numfields;
+                    else
+                    {
+                      this._props.instruction.fields[pos].startbit = 0;
+                      this._props.instruction.fields[pos].stopbit = 0;
+                      if (this._props.instruction.fields[pos].type == 'co'){
+                        this._props.instruction.co = '0';
                       }
                     }
                   },
+
+                  //Add new separate value
+                  add_separate_values(pos)
+                  {
+                    this._props.instruction.fields[pos].startbit.push(0);
+                    this._props.instruction.fields[pos].stopbit.push(0);
+                    if (this._props.instruction.fields[pos].type == 'co'){
+                      this._props.instruction.co.push('0');
+                    }
+                  },
+
+                  //Less new separate value
+                  less_separate_values(pos)
+                  {
+                    this._props.instruction.fields[pos].startbit.pop();
+                    this._props.instruction.fields[pos].stopbit.pop();
+                    if (this._props.instruction.fields[pos].type == 'co'){
+                      this._props.instruction.co.pop();
+                    }
+                  },
+
+
+                  /*******************/
+                  /* Modal Functions */
+                  /*******************/
 
                   //Pagination bar names
-                  link_generator (pageNum) {
+                  link_generator (pageNum)
+                  {
                     return this.instruction_page_link[pageNum - 1]
                   },
 
-                  page_generator (pageNum) {
+                  page_generator (pageNum)
+                  {
                     return this.instruction_page_link[pageNum - 1].slice(1)
                   },
 
+                  //Set original values into the form
+                  reset_form()
+                  {
+                    this.instruction_page = 1;
+                  },
+
                   //Form validator
-                  valid(value){
-                    if(parseInt(value) != 0){
+                  valid(value)
+                  {
+                    if(parseInt(value) != 0)
+                    {
                       if(!value){
                         return false;
                       }
@@ -393,15 +395,16 @@
                 '         :id ="id" ' +
                 '         :title="title" ' +
                 '         ok-title="Save" ' +
-                '         @ok="edit_instructions_verify($event, element.element, element.co, element.cop)" ' +
-                '         v-model="show_modal">' +
+                '         @ok="edit_instructions_verify($event)" ' +
+                '         v-model="show_modal"' +
+                '         @hidden="reset_form">' +
                 '  <b-form>' +
                 '' +
                 '    <!-- Page 1 -->' +
                 '    <div id="editInstForm1" v-if="instruction_page == 1">' +
                 '      <b-form-group label="Name:">' +
                 '        <b-form-input type="text" ' +
-                '                      :value="instruction.name" ' +
+                '                      v-model="instruction.name" ' +
                 '                      required ' +
                 '                      placeholder="Enter name" ' +
                 '                      :state="valid(instruction.name)" ' +
@@ -410,7 +413,7 @@
                 '        </b-form-input>' +
                 '      </b-form-group>' +
                 '      <b-form-group label="Type:">' +
-                '        <b-form-select :value="instruction.type" ' +
+                '        <b-form-select v-model="instruction.type" ' +
                 '                       :options="instructions_types" ' +
                 '                       :state="valid(instruction.type)" ' +
                 '                       size="sm"' +
@@ -420,7 +423,7 @@
                 '      <b-form-group label="Number of Words:">' +
                 '        <b-form-input type="number"' +
                 '                      min="1" ' +
-                '                      :value="instruction.nwords" ' +
+                '                      v-model="instruction.nwords" ' +
                 '                      required ' +
                 '                      placeholder="Enter nwords" ' +
                 '                      :state="valid(instruction.nwords)" ' +
@@ -428,16 +431,27 @@
                 '                      title="Instruction size">' +
                 '        </b-form-input>' +
                 '      </b-form-group>' +
+                '      <b-form-group label="Power Consumption:">' +
+                '        <b-form-input type="number" ' +
+                '                      min="1" ' +
+                '                      v-model="instruction.power_consumption" ' +
+                '                      required ' +
+                '                      placeholder="Enter power consumption" ' +
+                '                      :state="valid(instruction.power_consumption)" ' +
+                '                      size="sm" ' +
+                '                      title="Intruction size">' +
+                '        </b-form-input>' +
+                '      </b-form-group>' +
                 '      <b-form-group label="Number of fields: (Including co and cop)">' +
                 '        <b-form-input type="text" ' +
                 '                      min="1" ' +
                 '                      :max="32 * instruction.nwords" ' +
-                '                      :value="numfields" ' +
+                '                      v-model="number_fields" ' +
                 '                      required ' +
                 '                      placeholder="Enter number of fields" ' +
-                '                      :state="valid(numfields)" ' +
+                '                      :state="valid(number_fields)" ' +
                 '                      size="sm" ' +
-                '                      @change="changeNumfield(0)" ' +
+                '                      @change="change_number_fields()" ' +
                 '                      title="Instruction fields">' +
                 '        </b-form-input>' +
                 '      </b-form-group>' +
@@ -449,7 +463,7 @@
                 '      </b-form-group>' +
                 '      <div class="d-none">' +
                 '        <b-form-input type="text" ' +
-                '                      v-model="numfields" ' +
+                '                      v-model="number_fields" ' +
                 '                      title="Instruction fields"></b-form-input>' +
                 '      </div>' +
                 '' +
@@ -482,8 +496,8 @@
                 '      </div>' +
                 '' +
                 '' +
-                '      <div v-if="isNaN(parseInt(numfields)) == false">' +
-                '        <div v-for="i in parseInt(numfields)">' +
+                '      <div v-if="isNaN(parseInt(number_fields)) == false">' +
+                '        <div v-for="i in parseInt(number_fields)">' +
                 '          <div class="col-lg-14 col-sm-14 row">' +
                 '            <div class="col-lg-1 col-1 fields">' +
                 '              <span class="h6">Field {{i-1}}</span>' +
@@ -491,7 +505,7 @@
                 '            <div class="col-lg-2 col-2 fields">' +
                 '              <b-form-group>' +
                 '                <b-form-input type="text" ' +
-                '                              :value="instruction.fields[i-1].name" ' +
+                '                              v-model="instruction.fields[i-1].name" ' +
                 '                              required ' +
                 '                              :state="valid(instruction.fields[i-1].name)" ' +
                 '                              size="sm" ' +
@@ -499,7 +513,7 @@
                 '                              title="Field name">' +
                 '                </b-form-input>' +
                 '                <b-form-input type="text" ' +
-                '                              v-model="instruction.fields[i-1]=instruction.name.name" ' +
+                '                              v-model="instruction.fields[i-1].name=instruction.name" ' +
                 '                              required ' +
                 '                              size="sm" ' +
                 '                              v-if="(i-1) == 0" ' +
@@ -508,7 +522,7 @@
                 '                </b-form-input>' +
                 '              </b-form-group>' +
                 '            </div>' +
-                /*'            <div class="col-lg-2 col-2 fields">' +
+                '            <div class="col-lg-2 col-2 fields">' +
                 '              <b-form-group>' +
                 '                <b-form-select v-model="instruction.fields[i-1].type" ' +
                 '                               required ' +
@@ -525,7 +539,7 @@
                 '                  <option value="address">address</option>' +
                 '                  <option value="offset_bytes">Offset Bytes</option>' +
                 '                  <option value="offset_words">Offset Words</option>' +
-                //'                  <option value="cop" :disabled="instruction.assignedCop!=false">cop</option>' +
+                '                  <option value="cop" :disabled="instruction.cop!=\'\'">cop</option>' +
                 '                </b-form-select>' +
                 '                <b-form-input type="text" ' +
                 '                              v-model="instruction.fields[i-1].type=\'co\'"' +
@@ -538,10 +552,9 @@
                 '            </div>' +
                 '            <div class="col-lg-1 col-1 fields">' +
                 '              <b-form-checkbox :id="\'fragment-\'+ i"' +
-                '                               :value="true"' +
                 '                               v-model="instruction.separated[i-1]"' +
-                '                               @change="changeToSeparateValue($event, i-1)"' +
-                '                               v-if="fragmet_data.indexOf(instruction.fields[i-1].type) !== -1"' +
+                '                               @change="change_to_separate_field($event, i-1)"' +
+                '                               v-if="typeof(instruction.separated) !== \'undefined\' && fragmet_data.indexOf(instruction.fields[i-1].type) !== -1"' +
                 '                               class="ml-3">' +
                 '            </div>' +
                 '            <div class="col-lg-2 col-2 fields">' +
@@ -549,19 +562,21 @@
                 '                <b-form-input type="number" ' +
                 '                              min="0" ' +
                 '                              :max="32 * instruction.nwords - 1" ' +
-                '                              :value="instruction.fields[i-1].startbit" ' +
+                '                              min="0" ' +
+                '                              v-model="instruction.fields[i-1].startbit" ' +
                 '                              required ' +
                 '                              :state="valid(instruction.fields[i-1].startbit)" ' +
                 '                              size="sm" ' +
-                '                              v-if="typeof(instruction.fields[i-1].statbit) !== \'object\'" ' +
+                '                              v-if="typeof(instruction.fields[i-1].startbit) !== \'object\'" ' +
                 '                              title="Field start bit">' +
                 '                </b-form-input>' +
-                '                <b-form-input v-else ' +
+                '                <b-form-input v-if="typeof(instruction.fields[i-1].startbit) === \'object\'"' +
                 '                              v-for="(j, ind) in instruction.fields[i-1].startbit"' +
                 '                              type="number" ' +
                 '                              min="0" ' +
                 '                              :max="32 * instruction.nwords - 1"' +
-                '                              :value="instruction.fields[i-1].startbit[ind]" ' +
+                '                              min="0" ' +
+                '                              v-model="instruction.fields[i-1].startbit[ind]" ' +
                 '                              required' +
                 '                              :state="valid(j)" ' +
                 '                              size="sm"' +
@@ -575,19 +590,21 @@
                 '                <b-form-input type="number" ' +
                 '                              min="0" ' +
                 '                              :max="32 * instruction.nwords - 1" ' +
-                '                              :value="instruction.fields[i-1].stopbit" ' +
+                '                              min="0" ' +
+                '                              v-model="instruction.fields[i-1].stopbit" ' +
                 '                              required ' +
-                '                              :state="valid(instruction.field[i-1].stopbit)" ' +
+                '                              :state="valid(instruction.fields[i-1].stopbit)" ' +
                 '                              size="sm"' +
-                '                              v-if="typeof(instruction.field[i-1].stopbit) !== \'object\'"' +
+                '                              v-if="typeof(instruction.fields[i-1].stopbit) !== \'object\'"' +
                 '                              title="Field end bit">' +
                 '                </b-form-input>' +
-                '                <b-form-input v-else ' +
-                '                              v-for="(j, ind) in instruction.field[i-1].stopbit"' +
+                '                <b-form-input v-if="typeof(instruction.fields[i-1].startbit) === \'object\'"' +
+                '                              v-for="(j, ind) in instruction.fields[i-1].stopbit"' +
                 '                              type="number" ' +
                 '                              min="0" ' +
                 '                              :max="32 * instruction.nwords - 1"' +
-                '                              :value="instruction.field[i-1].stopbit[ind]" ' +
+                '                              min="0" ' +
+                '                              v-model="instruction.fields[i-1].stopbit[ind]" ' +
                 '                              required' +
                 '                              :state="valid(j)" ' +
                 '                              size="sm"' +
@@ -596,27 +613,29 @@
                 '                </b-form-input>' +
                 '              </b-form-group>' +
                 '            </div>' +
-                '            <div class="col-lg-2 col-2 fields" v-if="instruction.field[i-1].type == \'co\'">' +
-                '              <b-form-group v-if="typeof(instruction.field[i-1].stopbit) !== \'object\'">' +
-                '                <b-form-input type="text" ' +
-                '                              :value="instruction.co" ' +
+                '            <div class="col-lg-2 col-2 fields" v-if="instruction.fields[i-1].type == \'co\'">' +
+                '              <b-form-group>' +
+                '                <b-form-input v-if="typeof(instruction.fields[i-1].startbit) !== \'object\'"' + 
+                '                              type="text" ' +
+                '                              v-model="instruction.co" ' +
                 '                              required ' +
                 '                              :state="valid(instruction.co)" ' +
                 '                              size="sm" ' +
                 '                              title="Instruction CO">' +
                 '                </b-form-input>' +
                 '              </b-form-group>' +
-                '              <!--<b-form-group else v-for="(j, ind) in instruction.field[i-1].stopbit">' +
+                '              <b-form-group v-if="typeof(instruction.fields[i-1].startbit) === \'object\'"' + 
+                '                            v-for="(j, ind) in instruction.fields[i-1].stopbit">' +
                 '                <b-form-input type="text" ' +
-                '                              :value="instruction.co[ind]" required ' +
+                '                              v-model="instruction.co[ind]" required ' +
                 '                              :state="valid(instruction.co[ind])" ' +
                 '                              size="sm">' +
-                '                </b-form-input>-->' +
+                '                </b-form-input>' +
                 '            </div>' +
-                '            <div class="col-lg-2 col-2 fields" v-if="instruction.field[i-1].stopbit == \'cop\'">' +
+                '            <div class="col-lg-2 col-2 fields" v-if="instruction.fields[i-1].type == \'cop\'">' +
                 '              <b-form-group>' +
                 '                <b-form-input type="text" ' +
-                '                              :value="instruction.fields[i-1].valueField" ' +
+                '                              v-model="instruction.fields[i-1].valueField" ' +
                 '                              required ' +
                 '                              :state="valid(instruction.fields[i-1].valueField)" ' +
                 '                              size="sm" ' +
@@ -624,19 +643,20 @@
                 '                </b-form-input>' +
                 '              </b-form-group>' +
                 '            </div>' +
-                '            <div class="col-lg-2 col-2 fields" v-if="instruction.separated[i-1]">' +
+                '            <div class="col-lg-2 col-2 fields"' +
+                '                 v-if="typeof(instruction.separated) !== \'undefined\' && instruction.separated[i-1]">' +
                 '                <b-button variant="primary" ' +
-                '                          @click="addMoreFieldsToSeparateValues($event, i-1)" ' +
+                '                          @click="add_separate_values(i-1)" ' +
                 '                          size="sm">' +
                 '                   + ' +
                 '                </b-button>' +
-                '                <b-button v-if="instruction.fields[i-1]startbit.length > 1" ' +
+                '                <b-button v-if="instruction.fields[i-1].startbit.length > 1" ' +
                 '                          variant="danger" ' +
                 '                          size="sm"  ' +
-                '                          @click="lessFieldsToSeparateValues($event, i-1)">' +
+                '                          @click="less_separate_values(i-1)">' +
                 '                  - ' +
                 '                </b-button>' +
-                '            </div>' +*/
+                '            </div>' +
                 '          </div>' +
                 '        </div>' +
                 '      </div>' +
@@ -646,7 +666,7 @@
                 '    <div id="editInstForm3" v-if="instruction_page == 3">' +
                 '      <b-form-group label="Instruction Syntax Definition:">' +
                 '        <b-form-input type="text" ' +
-                '                      :value="instruction.signature_definition" ' +
+                '                      v-model="instruction.signature_definition" ' +
                 '                      placeholder="Example: F0 F2 F1 (F3)" ' +
                 '                      required ' +
                 '                      :state="valid(instruction.signature_definition)" ' +
@@ -657,7 +677,7 @@
                 '      </b-form-group>' +
                 '      <b-form-group label="Detailed Syntax:">' +
                 '        <b-form-input type="text" ' +
-                '                      :value="instruction.signature" ' +
+                '                      v-model="instruction.signature" ' +
                 '                      disabled ' +
                 '                      required ' +
                 '                      size="sm" ' +
@@ -666,7 +686,7 @@
                 '      </b-form-group>' +
                 '      <b-form-group label="Instruction Syntax:">' +
                 '        <b-form-input type="text" ' +
-                '                      :value="instruction.signatureRaw" ' +
+                '                      v-model="instruction.signatureRaw" ' +
                 '                      disabled ' +
                 '                      size="sm" ' +
                 '                      title="Instruction syntax">' +
@@ -677,7 +697,7 @@
                 '    <!-- Page 4 -->' +
                 '    <div id="editInstForm4" v-if="instruction_page == 4">' +
                 '      <b-form-group label="Assembly Definition:">' +
-                '        <b-form-textarea :value="instruction.definition" ' +
+                '        <b-form-textarea v-model="instruction.definition" ' +
                 '                         placeholder="Example: reg1=reg2+reg3" ' +
                 '                         :state="valid(instruction.definition)" ' +
                 '                         :rows="4" ' +
@@ -689,7 +709,7 @@
                 '    <!-- Page 5 -->' +
                 '    <div id="editInstForm5" v-if="instruction_page == 5">' +
                 '      <b-form-group label="Assembly help:">' +
-                '        <b-form-textarea :value="instruction.help" ' +
+                '        <b-form-textarea v-model="instruction.help" ' +
                 '                          placeholder="Example: reg1=reg2+reg3" ' +
                 '                          :rows="4" ' +
                 '                          title="Instruction help">' +

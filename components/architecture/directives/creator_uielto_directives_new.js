@@ -61,19 +61,25 @@
 
     methods:    {
                   //Verify all fields of new directive
-                  verify_new_directive(evt){
+                  verify_new_directive(evt)
+                  {
                     evt.preventDefault();
 
-                    if (!this.directive_fields.name || !this.directive_fields.action) {
+                    if (!this.directive_fields.name || !this.directive_fields.action)
+                    {
                       show_notification('Please complete all fields', 'danger') ;
                     }
-                    else {
+                    else 
+                    {
                       if(isNaN(parseInt(this.directive_fields.size)) && (this.directive_fields.action == 'byte' || this.directive_fields.action == 'half_word' || this.directive_fields.action == 'word' || this.directive_fields.action == 'double_word' || this.directive_fields.action == 'float' || this.directive_fields.action == 'double' || this.directive_fields.action == 'space')){
                         show_notification('Please complete all fields', 'danger') ;
                       }
-                      else{
-                        for (var i = 0; i < architecture.directives.length; i++) {
-                          if(this.directive_fields.name == architecture.directives[i].name){
+                      else
+                      {
+                        for (var i = 0; i < architecture.directives.length; i++)
+                        {
+                          if(this.directive_fields.name == architecture.directives[i].name)
+                          {
                             show_notification('The directive already exists', 'danger') ;
                             return;
                           }
@@ -85,25 +91,33 @@
                   },
 
                   //Create new directive
-                  add_new_directive(){
+                  add_new_directive()
+                  {
                     this.show_modal = false;
 
-                    var new_directive = {name: this.directive_fields.name, action: this.directive_fields.action, size: this.directive_fields.size};
+                    var new_directive = {
+                                          name: this.directive_fields.name, 
+                                          action: this.directive_fields.action, 
+                                          size: this.directive_fields.size
+                                        };
                     architecture.directives.push(new_directive);
 
                     show_notification('Directive correctly created', 'success') ;
                   },
 
                   //Clean directive form
-                  clean_form(){
+                  clean_form()
+                  {
                     this.directive_fields.name = '';
                     this.directive_fields.action = '';
                     this.directive_fields.size = null;
                   },
 
                   //Form validator
-                  valid(value){
-                    if(parseInt(value) != 0){
+                  valid(value)
+                  {
+                    if(parseInt(value) != 0)
+                    {
                       if(!value){
                         return false;
                       }

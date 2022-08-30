@@ -25,7 +25,8 @@
 
         props:      {
                       id:                             { type: String, required: true },
-                      pseudoinstruction:              { type: Number, required: true }
+                      title:                          { type: String, required: true },
+                      index:                          { type: Number, required: true }
                     }, 
 
         data:       function () {
@@ -36,8 +37,10 @@
 
         methods:    {
                       //Delete the pseudoinstruction
-                      delete_pseudoinstruction(index){
-                        architecture.pseudoinstructions.splice(index,1);
+                      delete_pseudoinstruction(index)
+                      {
+                        architecture.pseudoinstructions.splice(this._props.index, 1);
+                        show_notification('Instruction correctly deleted', 'success');
                       },
 
                     },
@@ -46,7 +49,7 @@
                     '         title="Delete Pseudoinstruction" ' +
                     '         ok-variant="danger" ' +
                     '         ok-title="Delete" ' +
-                    '         @ok="delete_pseudoinstruction(pseudoinstruction)">' +
+                    '         @ok="delete_pseudoinstruction">' +
                     '  <span class="h6">Are you sure you want to delete the item?</span>' +
                     '</b-modal >'
 

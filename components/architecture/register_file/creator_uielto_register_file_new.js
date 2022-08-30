@@ -50,15 +50,18 @@
 
     methods:    {
                   //Verify all field of new register file
-                  verify_new_register_file(evt){
+                  verify_new_register_file(evt)
+                  {
                     evt.preventDefault();
 
-                    if (!this.register_file_fields.name || !this.register_file_fields.type) {
+                    if (!this.register_file_fields.name || !this.register_file_fields.type)
+                    {
                       show_notification('Please complete all fields', 'danger') ;
                     }
                     else{
                       for (var i = 0; i < architecture_hash.length; i++) {
-                        if (this.register_file_fields.name == architecture_hash[i].name) {
+                        if (this.register_file_fields.name == architecture_hash[i].name)
+                        {
                           show_notification('The component already exists', 'danger') ;
                           return;
                         }
@@ -69,15 +72,22 @@
                   },
 
                   //Create a new register file
-                  new_register_file(){
+                  new_register_file()
+                  {
                     this.show_modal = false;
 
                     var precision = false;
-                    if (this.register_file_fields.precision == "precision"){
+                    if (this.register_file_fields.precision == "precision")
+                    {
                       precision = true;
                     }
 
-                    var new_register_file = {name: this.register_file_fields.name, type: this.register_file_fields.type, double_precision: precision ,elements:[]};
+                    var new_register_file = {
+                                              name: this.register_file_fields.name, 
+                                              type: this.register_file_fields.type, 
+                                              double_precision: precision ,
+                                              elements:[]
+                                            };
                     architecture.components.push(new_register_file);
                     var new_register_file_hash = {name: this.register_file_fields.name, index: architecture_hash.length};
                     architecture_hash.push(new_register_file_hash);
@@ -86,15 +96,18 @@
                   },
 
                   //Clean register file form
-                  clean_form(){
+                  clean_form()
+                  {
                     this.register_file_fields.name = '';
                     this.register_file_fields.type = '';
                     this.register_file_fields.precision = '';
                   },
 
                   //Form validator
-                  valid(value){
-                    if(parseInt(value) != 0){
+                  valid(value)
+                  {
+                    if(parseInt(value) != 0)
+                    {
                       if(!value){
                         return false;
                       }

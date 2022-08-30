@@ -37,7 +37,8 @@
 
     methods:    {
                   //Delete one register file
-                  delete_register_file(){
+                  delete_register_file()
+                  {
                     architecture.components.splice(this._props.index,1);
                     architecture_hash.splice(this._props.index,1);
 

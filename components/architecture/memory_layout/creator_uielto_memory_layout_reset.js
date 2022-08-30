@@ -36,17 +36,19 @@
 
     methods:    {
                   //Reset the memory layout
-                  reset_memory_layout(arch){
+                  reset_memory_layout(arch)
+                  {
                     show_loading();
 
                     //Read original value from JSON
-                    for (var i = 0; i < load_architectures.length; i++){
+                    for (var i = 0; i < load_architectures.length; i++)
+                    {
                       if(arch == load_architectures[i].id){
                         var aux_arch = JSON.parse(load_architectures[i].architecture);
                         var aux_architecture = register_value_deserialize(aux_arch);
 
                         architecture.memory_layout = aux_architecture.memory_layout;
-                        app._data.architecture = architecture; //TODO: bidirectional
+                        app._data.architecture = architecture;
 
                         hide_loading();
                         show_notification('The memory layout has been reset correctly', 'success') ;

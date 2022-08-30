@@ -36,15 +36,19 @@
 
         methods:    {
                       //Reset pseudoinstructions
-                      reset_pseudoinstruction(arch){
+                      reset_pseudoinstruction()
+                      {
                         show_loading();
 
-                        for (var i = 0; i < load_architectures.length; i++) {
-                          if(arch == load_architectures[i].id){
-                            var auxArch = JSON.parse(load_architectures[i].architecture);
-                            var auxArchitecture = register_value_deserialize(auxArch);
+                        //Read original value from JSON
+                        for (var i = 0; i < load_architectures.length; i++)
+                        {
+                          if(this._props.architecture_name == load_architectures[i].id)
+                          {
+                            var aux_arch = JSON.parse(load_architectures[i].architecture);
+                            var aux_architecture = register_value_deserialize(aux_arch);
 
-                            architecture.pseudoinstructions = auxArchitecture.pseudoinstructions;
+                            architecture.pseudoinstructions = aux_architecture.pseudoinstructions;
                             app._data.architecture = architecture;
 
                             hide_loading();
@@ -54,11 +58,11 @@
                           }
                         }
 
-                        $.getJSON('architecture/'+arch+'.json', function(cfg){
-                          var auxArchitecture = cfg;
+                        $.getJSON('architecture/'+this._props.architecture_name+'.json', function(cfg){
+                          var aux_architecture = cfg;
 
-                          var auxArchitecture2 = register_value_deserialize(auxArchitecture);
-                          architecture.pseudoinstructions = auxArchitecture2.pseudoinstructions;
+                          var aux_architecture_2 = register_value_deserialize(aux_architecture);
+                          architecture.pseudoinstructions = aux_architecture_2.pseudoinstructions;
 
                           app._data.architecture = architecture;
 

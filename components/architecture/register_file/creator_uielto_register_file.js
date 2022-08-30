@@ -35,7 +35,8 @@
 
     methods:    {
                   //Show edit component modal
-                  edit_register_file_modal(name, index, button){
+                  edit_register_file_modal(name, index, button)
+                  {
                     app._data.modal_edit_register_file.title = "Edit " + name;
                     app._data.modal_edit_register_file.name  = name;
                     app._data.modal_edit_register_file.index = index;
@@ -44,7 +45,8 @@
                   },
 
                   //Show delete component modal
-                  delete_register_file_modal(index, button){
+                  delete_register_file_modal(index, button)
+                  {
                     app._data.modal_delete_register_file.title = "Delete " + name;
                     app._data.modal_delete_register_file.index = index;
 
@@ -52,14 +54,16 @@
                   },
 
                   //Show new register modal
-                  new_register_modal(name, index, button){
+                  new_register_modal(name, index, button)
+                  {
                     app._data.modal_new_register.register_file_index = index;
                     app._data.modal_new_register.type                = architecture.components[index].type;
                     app._data.modal_new_register.double_precision    = architecture.components[index].double_precision;
                     
                     //Load all simple precision registers at the moment //TODO: improve the search
                     app._data.modal_new_register.simple_reg = [];
-                    for (var i = 0; i < architecture_hash.length; i++){
+                    for (var i = 0; i < architecture_hash.length; i++)
+                    {
                       for (var j = 0; j < architecture.components[i].elements.length && architecture.components[i].type =="floating point" && architecture.components[i].double_precision == false; j++){
                         app._data.modal_new_register.simple_reg.push({ text: architecture.components[i].elements[j].name, value: architecture.components[i].elements[j].name},);
                       }
@@ -67,11 +71,14 @@
 
                     //Generate new register ID //TODO: improve the search
                     var id = 0;
-                    for(var i = 0; i < architecture.components.length; i++){
-                      for(var j = 0; j < architecture.components[i].elements.length; j++){
-                        if(architecture.components[i].name == name && architecture.components[i].elements.length-1 == j){
+                    for(var i = 0; i < architecture.components.length; i++)
+                    {
+                      for(var j = 0; j < architecture.components[i].elements.length; j++)
+                      {
+                        if(architecture.components[i].name == name && architecture.components[i].elements.length-1 == j)
+                        {
                           id++;
-                          app._data.modal_new_register.id = id;
+                          app._data.modal_new_register.reg_id = id;
                         }
                         if(architecture.components[i].type == architecture.components[index].type && architecture.components[i].double_precision == architecture.components[index].double_precision){
                           id++;

@@ -36,7 +36,8 @@
                 },
 
     methods:    {
-                  delete_directive(){
+                  delete_directive()
+                  {
                     architecture.directives.splice(this._props.index, 1);
                     show_notification('Directive correctly deleted', 'success');
                   }

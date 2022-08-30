@@ -112,7 +112,7 @@ function readRegister ( indexComp, indexElem )
     for (var i = 0; i < instructions.length; i++) {
       draw.space.push(i);
     }
-    draw.danger.push(executionIndex);
+    draw.danger.push(execution_index);
 
     throw packExecute(true, 'The register '+ architecture.components[indexComp].elements[indexElem].name.join(' | ') +' cannot be read', 'danger', null);
   }
@@ -156,7 +156,7 @@ function writeRegister ( value, indexComp, indexElem )
         for (var i = 0; i < instructions.length; i++) {
            draw.space.push(i);
         }
-        draw.danger.push(executionIndex);
+        draw.danger.push(execution_index);
 
         throw packExecute(true, 'The register '+ architecture.components[indexComp].elements[indexElem].name.join(' | ') +' cannot be written', 'danger', null);
       }
@@ -184,7 +184,7 @@ function writeRegister ( value, indexComp, indexElem )
         if ((architecture.components[indexComp].elements[indexElem].properties.includes('ignore_write') != false)){
           return;
         }
-        draw.danger.push(executionIndex);
+        draw.danger.push(execution_index);
 
         throw packExecute(true, 'The register '+ architecture.components[indexComp].elements[indexElem].name.join(' | ') +' cannot be written', 'danger', null);
       }
@@ -212,7 +212,7 @@ function writeRegister ( value, indexComp, indexElem )
         if ((architecture.components[indexComp].elements[indexElem].properties.includes('ignore_write') != false)){
           return;
         }
-        draw.danger.push(executionIndex);
+        draw.danger.push(execution_index);
 
         throw packExecute(true, 'The register '+ architecture.components[indexComp].elements[indexElem].name.join(' | ') +' cannot be written', 'danger', null);
       }

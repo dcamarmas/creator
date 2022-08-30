@@ -24,8 +24,8 @@
         var uielto_register = {
 
         props:      {
-                      register:               { type: Object, required: true },
                       component:              { type: Object, required: true },
+                      register:               { type: Object, required: true },
                       name_representation:    { type: String, required: true },
                       value_representation:   { type: String, required: true }
                     },
@@ -41,7 +41,7 @@
 
                       switch(this.value_representation){
                         case "unsigned":
-                          if (this.component.name == "Control registers" || this.component.name == "Integer registers") {
+                          if (architecture.components[architecture.components[this._props.component.index].type].type == "control" || architecture.components[this._props.component.index].type == "integer") {
                             ret = parseInt(register.value.toString(10)) >>> 0;
                           }
                           else {
@@ -51,7 +51,7 @@
                           break;
 
                         case "signed":
-                          if (this.component.name == "Control registers" || this.component.name == "Integer registers") {
+                          if (architecture.components[this._props.component.index].type == "control" || architecture.components[this._props.component.index].type == "integer") {
                             if ((((register.value).toString(2)).padStart(register.nbits, '0')).charAt(0) == 1)
                               ret = parseInt(register.value.toString(10))-0x100000000;
                             if ((((register.value).toString(2)).padStart(register.nbits, '0')).charAt(0) == 0)
@@ -64,7 +64,7 @@
                           break;
 
                         case "decimal":
-                          if (this.component.name == "Control registers" || this.component.name == "Integer registers") {
+                          if (architecture.components[this._props.component.index].type == "control" || architecture.components[this._props.component.index].type == "integer") {
                             ret = hex2float("0x"+(((register.value).toString(16)).padStart(register.nbits/4, "0")));
                           }
                           else {
@@ -73,11 +73,11 @@
                           break;
 
                         case "hex":
-                          if (this.component.name == "Control registers" || this.component.name == "Integer registers") {
+                          if (architecture.components[this._props.component.index].type == "control" || architecture.components[this._props.component.index].type == "integer") {
                             ret = (((register.value).toString(16)).padStart(register.nbits/4, "0")).toUpperCase();
                           }
                           else {
-                            if (this.component.name == "Simple floating point registers") {
+                            if (architecture.components[this._props.component.index].type == "floating point") {
                               ret = bin2hex(float2bin(register.value));
                             }
                             else {
@@ -125,8 +125,8 @@
                     ' </b-button>' +
                     ' ' +
                     ' <popover-register :target="popover_id(register.name)" ' +
-                    '                       :component="component"' +
-                    '                       :register="register">' +
+                    '                   :component="component"' +
+                    '                   :register="register">' +
                     ' </popover-register>' +
                     '</div>'
       

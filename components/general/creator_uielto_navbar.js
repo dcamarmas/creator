@@ -22,65 +22,68 @@
   /* jshint esversion: 6 */
 
   var uielto_navbar = {
-        props:      {
-                       version:           { type: String, required: true },
-                       architecture_name: { type: String, required: true }
-                    },
+    
+    props:      {
+                   version:           { type: String, required: true },
+                   architecture_name: { type: String, required: true }
+                },
 
-        data:       function () {
-                      return {
-                        
-                      }
-                    },
+    data:       function () {
+                  return {
+                    
+                  }
+                },
 
-        methods:    {
-                      //Load CREATOR version from package JSON
-                      load_num_version(){
-                        $.getJSON('package.json', function(cfg){
-                          creator_information = cfg;
-                          app._data.version = cfg.version;
-                        });
-                      }
-                    },
+    methods:    {
+                  //Load CREATOR version from package JSON
+                  load_num_version(){
+                    $.getJSON('package.json', function(cfg){
+                      creator_information = cfg;
+                      app._data.version = cfg.version;
+                    });
+                  }
+                },
 
-        template:   ' <b-navbar toggleable="sm" class="header my-0 mx-1 py-0 px-2">' +
-                    '   <b-navbar-brand class="p-0 m-0" href=".">' +
-                    '       <b-container fluid align-h="center" class="mx-0 px-0">' +
-                    '         <b-row cols="2" align-h="center">' +
-                    '           <b-col class="headerText col-auto my-0 py-0 pr-1 text-uppercase">' +
-                    '             <h1>Creator <b-badge pill variant="secondary">{{version}}</b-badge></h1>' +
-                    '           </b-col>' +
-                    '           <b-col class="headerText col-auto my-0 p-0 ml-2">' +
-                    '             {{architecture_name}}' +
-                    '           </b-col>' +
-                    '         </b-row>' +
-                    '       </b-container>' +
-                    ' ' +
-                    '       <b-container fluid align-h="center" class="mx-0 px-0">' +
-                    '         <b-row cols="1" align-h="center">' +
-                    '           <b-col class="headerName col-auto my-0 py-0 font-weight-bold mx-1">' +
-                    '             didaCtic and geneRic assEmbly progrAmming simulaTOR' +
-                    '           </b-col>' +
-                    '         </b-row>' +
-                    '       </b-container>' +
-                    '   </b-navbar-brand>' +
-                    ' ' +
-                    '   <b-navbar-toggle target="nav_collapse" aria-label="Open/Close more information"></b-navbar-toggle>' +
-                    '     <b-collapse is-nav id="nav_collapse">' +
-                    '       <b-navbar-nav class="ml-auto">' +
-                    '         <b-nav-item class="mb-0 pb-0 p-0" target="_blank" href=\'https://www.arcos.inf.uc3m.es/\'>' +
-                    '           <img alt="ARCOS" class="p-0 headerLogo" src="./images/arcos.svg">' +
-                    '         </b-nav-item>' +
-                    ' ' +
-                    '         <b-nav-item class="mb-0 pb-0 p-0" target="_blank" href=\'https://www.inf.uc3m.es/\'>' +
-                    '           <img alt="Computer Science and Engineering Departament" ' +
-                    '                class="p-0 headerLogo" ' +
-                    '                src="./images/dptoinf.png">' +
-                    '         </b-nav-item>' +
-                    '       </b-navbar-nav>' +
-                    '     </b-collapse>' +
-                    '   </b-navbar-toggle>' +
-                    ' </b-navbar>'
+    template:   ' <b-navbar toggleable="sm" class="header my-0 mx-1 py-0 px-2">' +
+                '   <b-navbar-brand class="p-0 m-0" href=".">' +
+                '' +
+                '       <b-container fluid align-h="center" class="mx-0 px-0">' +
+                '         <b-row cols="2" align-h="center">' +
+                '           <b-col class="headerText col-auto my-0 py-0 pr-1 text-uppercase">' +
+                '             <h1>Creator <b-badge pill variant="secondary">{{version}}</b-badge></h1>' +
+                '           </b-col>' +
+                '' +
+                '           <b-col class="headerText col-auto my-0 p-0 ml-2">' +
+                '             {{architecture_name}}' +
+                '           </b-col>' +
+                '         </b-row>' +
+                '       </b-container>' +
+                '' +
+                '       <b-container fluid align-h="center" class="mx-0 px-0">' +
+                '         <b-row cols="1" align-h="center">' +
+                '           <b-col class="headerName col-auto my-0 py-0 font-weight-bold mx-1">' +
+                '             didaCtic and geneRic assEmbly progrAmming simulaTOR' +
+                '           </b-col>' +
+                '         </b-row>' +
+                '       </b-container>' +
+                '   </b-navbar-brand>' +
+                ' ' +
+                '   <b-navbar-toggle target="nav_collapse" aria-label="Open/Close more information"></b-navbar-toggle>' +
+                '     <b-collapse is-nav id="nav_collapse">' +
+                '       <b-navbar-nav class="ml-auto">' +
+                '         <b-nav-item class="mb-0 pb-0 p-0" target="_blank" href=\'https://www.arcos.inf.uc3m.es/\'>' +
+                '           <img alt="ARCOS" class="p-0 headerLogo" src="./images/arcos.svg">' +
+                '         </b-nav-item>' +
+                ' ' +
+                '         <b-nav-item class="mb-0 pb-0 p-0" target="_blank" href=\'https://www.inf.uc3m.es/\'>' +
+                '           <img alt="Computer Science and Engineering Departament" ' +
+                '                class="p-0 headerLogo" ' +
+                '                src="./images/dptoinf.png">' +
+                '         </b-nav-item>' +
+                '       </b-navbar-nav>' +
+                '     </b-collapse>' +
+                '   </b-navbar-toggle>' +
+                ' </b-navbar>'
   }
 
   Vue.component('navbar-creator', uielto_navbar) ;

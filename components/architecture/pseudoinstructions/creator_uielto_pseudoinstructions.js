@@ -36,96 +36,34 @@
 
         methods:    {
                       //Show pseudoinstruction fields modal
-                      view_pseudoinstruction_modal(elem, index, button){
-                        app._data.modalViewPseudoFields.title = "Fields of " + elem;
-
-                        app._data.formPseudoinstruction.name = architecture.pseudoinstructions[index].name;
-                        app._data.formPseudoinstruction.nwords = architecture.pseudoinstructions[index].nwords;
-                        app._data.formPseudoinstruction.numfields = architecture.pseudoinstructions[index].fields.length;
-                        app._data.formPseudoinstruction.numfieldsAux = architecture.pseudoinstructions[index].fields.length;
-
-                        for (var j = 0; j < architecture.pseudoinstructions[index].fields.length; j++){
-                          app._data.formPseudoinstruction.nameField[j] = architecture.pseudoinstructions[index].fields[j].name;
-                          app._data.formPseudoinstruction.typeField[j] = architecture.pseudoinstructions[index].fields[j].type;
-                          app._data.formPseudoinstruction.startBitField[j] = architecture.pseudoinstructions[index].fields[j].startbit;
-                          app._data.formPseudoinstruction.stopBitField[j] = architecture.pseudoinstructions[index].fields[j].stopbit;
-                        }
+                      view_pseudoinstruction_modal(name, index, button)
+                      {
+                        app._data.modal_field_pseudoinstruction.title             = "Fields of " + name;
+                        app._data.modal_field_pseudoinstruction.index             = index;
+                        app._data.modal_field_pseudoinstruction.pseudoinstruction = structuredClone(architecture.pseudoinstructions[index]);
 
                         this.$root.$emit('bv::show::modal', 'fields_pseudoinstructions', button);
                       },
 
                       //Show edit pseudoinstruction modal
-                      edit_pseudoinstruction_modal(elem, index, button){
-                        app._data.modalEditPseudoinst.element = elem;
-                        app._data.modalEditPseudoinst.index = index;
+                      edit_pseudoinstruction_modal(name, index, button)
+                      {
+                        app._data.modal_edit_pseudoinstruction.title               = "Edit  " + name;
+                        app._data.modal_edit_pseudoinstruction.index               = index;
+                        app._data.modal_edit_pseudoinstruction.pseudoinstruction = structuredClone(architecture.pseudoinstructions[index]);
 
-                        app._data.formPseudoinstruction.name = architecture.pseudoinstructions[index].name;
-                        app._data.formPseudoinstruction.nwords = architecture.pseudoinstructions[index].nwords;
-                        app._data.formPseudoinstruction.numfields = architecture.pseudoinstructions[index].fields.length;
-                        app._data.formPseudoinstruction.numfieldsAux = architecture.pseudoinstructions[index].fields.length;
-                        app._data.formPseudoinstruction.signature_definition = architecture.pseudoinstructions[index].signature_definition;
-                        app._data.formPseudoinstruction.definition = architecture.pseudoinstructions[index].definition;
-                        app._data.formPseudoinstruction.help = architecture.pseudoinstructions[index].help;
-
-                        for (var j = 0; j < architecture.pseudoinstructions[index].fields.length; j++) {
-                          app._data.formPseudoinstruction.nameField[j] = architecture.pseudoinstructions[index].fields[j].name;
-                          app._data.formPseudoinstruction.typeField[j] = architecture.pseudoinstructions[index].fields[j].type;
-                          app._data.formPseudoinstruction.startBitField[j] = architecture.pseudoinstructions[index].fields[j].startbit;
-                          app._data.formPseudoinstruction.stopBitField[j] = architecture.pseudoinstructions[index].fields[j].stopbit;
-                        }
-
-                        this.generate_signature();
+                        app._data.modal_edit_pseudoinstruction.number_fields       = app._data.modal_edit_pseudoinstruction.pseudoinstruction.fields.length;
 
                         this.$root.$emit('bv::show::modal', 'edit_pseudoinstructions', button);
                       },
 
                       //Show delete pseudoinstruction modal
-                      delete_pseudoinstruction_modal(elem, index, button){
-                        app._data.modalDeletPseudoinst.index = index;
+                      delete_pseudoinstruction_modal(name, index, button)
+                      {
+                        app._data.modal_delete_pseudoinstruction.title = "Delete " + name;
+                        app._data.modal_delete_pseudoinstruction.index = index;
+
                         this.$root.$emit('bv::show::modal', 'delete_pseudoinstructions', button);
-                      },
-
-                      //Generate the pseudoinstruction signature
-                      generate_signature(){
-                        var signature = app._data.formPseudoinstruction.signature_definition;
-
-                        var re = new RegExp("^ +");
-                        app._data.formPseudoinstruction.signature_definition = app._data.formPseudoinstruction.signature_definition.replace(re, "");
-
-                        re = new RegExp(" +", "g");
-                        app._data.formPseudoinstruction.signature_definition = app._data.formPseudoinstruction.signature_definition.replace(re, " ");
-
-                        re = new RegExp("^ +");
-                        signature= signature.replace(re, "");
-
-                        re = new RegExp(" +", "g");
-                        signature = signature.replace(re, " ");
-
-                        for (var z = 0; z < app._data.formPseudoinstruction.numfields; z++) {
-                          re = new RegExp("[Ff]"+z, "g");
-
-                          signature = signature.replace(re, app._data.formPseudoinstruction.typeField[z]);
-                        }
-
-                        re = new RegExp(" ", "g");
-                        signature = signature.replace(re , ",");
-
-                        var signatureRaw = app._data.formPseudoinstruction.signature_definition;
-
-                        re = new RegExp("^ +");
-                        signatureRaw= signatureRaw.replace(re, "");
-
-                        re = new RegExp(" +", "g");
-                        signatureRaw = signatureRaw.replace(re, " ");
-
-                        for (var z = 0; z < app._data.formPseudoinstruction.numfields; z++) {
-                          re = new RegExp("[Ff]"+z, "g");
-
-                          signatureRaw = signatureRaw.replace(re, app._data.formPseudoinstruction.nameField[z]);
-                        }
-
-                        app._data.formPseudoinstruction.signature = signature;
-                        app._data.formPseudoinstruction.signatureRaw = signatureRaw;
                       },
                     },
 

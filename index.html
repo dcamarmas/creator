@@ -329,7 +329,7 @@
                                         :register_file_index="modal_new_register.register_file_index"
                                         :type="modal_new_register.type"
                                         :double_precision="modal_new_register.double_precision"
-                                        :reg_id="modal_new_register.id"
+                                        :reg_id="modal_new_register.reg_id"
                                         :simple_reg="modal_new_register.simple_reg">
                                       
                         </registers-new>
@@ -339,17 +339,11 @@
                                         :title="modal_edit_register.title"
                                         :register_file_index="modal_edit_register.register_file_index"
                                         :register_index="modal_edit_register.register_index"
-                                        :name="modal_edit_register.name"
                                         :type="modal_edit_register.type"
                                         :double_precision="modal_edit_register.double_precision"
                                         :reg_id="modal_edit_register.reg_id"
-                                        :name="modal_edit_register.name"
-                                        :default_value="modal_edit_register.default_value"
-                                        :properties="modal_edit_register.properties"
-                                        :precision="modal_edit_register.precision"
                                         :simple_reg="modal_edit_register.simple_reg"
-                                        :simple_1="modal_edit_register.simple1"
-                                        :simple_2="modal_edit_register.simple2">
+                                        :register="modal_edit_register.register">
                         </registers-edit>
 
                         <!-- Delete register -->
@@ -376,24 +370,6 @@
                                               :instruction="modal_field_instruction.instruction">
                         </instructions-fields>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                         <!-- New Intruction -->
                         <instructions-new id="new_instructions"></instructions-new>
 
@@ -407,7 +383,7 @@
                                             :title="modal_edit_instruction.title"
                                             :index="modal_edit_instruction.index"
                                             :instruction="modal_edit_instruction.instruction"
-                                            :numfields="modal_edit_instruction.numfields">
+                                            :number_fields="modal_edit_instruction.number_fields">
                         </instructions-edit>
 
                         <!-- Delete instruction -->
@@ -426,10 +402,11 @@
 
                         <!-- Pseudoinstructions modals -->
 
-                        <!-- Pseudontruction fields-->
+                        <!-- Pseudontruction fields -->
                         <pseudoinstructions-fields  id="fields_pseudoinstructions"
-                                                    :title="modalViewPseudoFields.title"
-                                                    :pseudoinstruction="formPseudoinstruction">
+                                                    :title="modal_field_pseudoinstruction.title"
+                                                    :index="modal_field_pseudoinstruction.index"
+                                                    :pseudoinstruction="modal_field_pseudoinstruction.pseudoinstruction">
                         </pseudoinstructions-fields>
 
                         <!-- New Pseudontruction -->
@@ -442,13 +419,16 @@
 
                         <!-- Edit Pseudointructions -->
                         <pseudoinstructions-edit  id="edit_pseudoinstructions"
-                                                  :element="modalEditPseudoinst"
-                                                  :pseudoinstruction="formPseudoinstruction">
+                                                  :title="modal_edit_pseudoinstruction.title"
+                                                  :index="modal_edit_pseudoinstruction.index"
+                                                  :pseudoinstruction="modal_edit_pseudoinstruction.pseudoinstruction"
+                                                  :number_fields="modal_edit_pseudoinstruction.number_fields">
                         </pseudoinstructions-edit>
 
                         <!-- Delete Pseudoinstruction -->
                         <pseudoinstructions-delete  id="delete_pseudoinstructions"
-                                                    :pseudoinstruction="modalDeletPseudoinst.index">
+                                                    :title="modal_delete_pseudoinstruction.title"
+                                                    :index="modal_delete_pseudoinstruction.index">
                         </pseudoinstructions-delete>
 
                       </b-tab>

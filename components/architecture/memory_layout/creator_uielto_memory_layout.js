@@ -35,10 +35,10 @@
 
     methods:    {
                   //Show edit memory layout modal
-                  edit_memory_layout_modal(button){
-                    for (var i = 0; i < this._props.memory_layout.length; i++) {
-                      app._data.modal_edit_memory_layout.memory_layout[i] = this._props.memory_layout[i].value;
-                    }
+                  edit_memory_layout_modal(button)
+                  {
+                    app._data.modal_edit_memory_layout.memory_layout = structuredClone(this._props.memory_layout);
+                    
                     this.$root.$emit('bv::show::modal', 'change_memory_layout', button);
                   }
                 },

@@ -25,16 +25,22 @@
 
         props:      {
                       id:                             { type: String, required: true },
-                      element:                        { type: Object, required: true },
-                      pseudoinstruction:              { type: Object, required: true }
+                      title:                          { type: String, required: true },
+                      index:                          { type: Number, required: true },
+                      pseudoinstruction:              { type: Object, required: true },
+                      number_fields:                  { type: Number, required: true }
                       
                     },
 
         data:       function () {
                       return {
+                        //Pseudoinstruction field number
+                        number_fields: "1",
+
                         //Modal pagination
                         pseudoinstruction_page: 1,
                         pseudoinstruction_page_link: ['#Principal', '#Fields', '#Syntax', '#Definition', '#Help'],
+
                         //Show Modal
                         show_modal: false,
                       }
@@ -42,270 +48,276 @@
 
         methods:    {
                       //Check all fields of modify pseudoinstruction
-                      edit_pseudoinstruction_verify(evt, inst, index){
+                      edit_pseudoinstruction_verify(evt)
+                      {
                         evt.preventDefault();
+                        var empty = 0;
 
-                        for (var i = 0; i < this.pseudoinstruction.nameField.length; i++){
-                          for (var j = i + 1; j < this.pseudoinstruction.nameField.length; j++){
-                            if (this.pseudoinstruction.nameField[i] == this.pseudoinstruction.nameField[j]){
+                        //Verify pseudoinstruction fields
+                        for (var i = 0; i < this._props.number_fields; i++)
+                        {
+                          for (var j = i + 1; j < this._props.number_fields; j++)
+                          {
+                            if (this._props.pseudoinstruction.fields[i].name == this._props.pseudoinstruction.fields[j].name)
+                            {
                               show_notification('Field name repeated', 'danger') ;
                               return;
                             }
                           }
-                        }
 
-                        var vacio = 0;
-
-                        for (var i = 0; i < this.pseudoinstruction.numfields; i++) {
-                          if(!this.pseudoinstruction.nameField[i] || !this.pseudoinstruction.typeField[i] || (!this.pseudoinstruction.startBitField[i] && this.pseudoinstruction.startBitField[i] != 0) || (!this.pseudoinstruction.stopBitField[i] && this.pseudoinstruction.stopBitField[i] != 0)){
-                            vacio = 1;
+                          if(!this._props.pseudoinstruction.fields[i].name || !this._props.pseudoinstruction.fields[i].type || (!this._props.pseudoinstruction.fields[i].startbit && this._props.pseudoinstruction.fields[i].startbit != 0) || (!this._props.pseudoinstruction.fields[i].stopbit && this._props.pseudoinstruction.fields[i].stopbit != 0))
+                          {
+                            empty = 1;
                           }
                         }
 
-                        var result = this.pseudoinstruction_definition_validator(inst, this.pseudoinstruction.definition, this.pseudoinstruction.nameField);
+                        //Verify empty fields
+                        if (!this._props.pseudoinstruction.name || !this._props.pseudoinstruction.nwords || !this._props.pseudoinstruction.signature_definition || !this._props.pseudoinstruction.definition || empty == 1) {
+                          show_notification('Please complete all fields', 'danger');
+                          return;
+                        }
 
+                        //Precompile definition code
+                        var result = this.pseudoinstruction_definition_validator(this._props.pseudoinstruction.name, this._props.pseudoinstruction.definition, this._props.pseudoinstruction.fields);
                         if(result == -1){
                           return;
                         }
 
-                        if (!this.pseudoinstruction.name || !this.pseudoinstruction.nwords || !this.pseudoinstruction.numfields || !this.pseudoinstruction.signature_definition || !this.pseudoinstruction.definition || vacio == 1) {
-                          show_notification('Please complete all fields', 'danger') ;
-                        }
-                        else {
-                          this.edit_pseudoinstruction(inst, index);
-                        }
+                        this.edit_pseudoinstruction();
                       },
 
-                      //Edit the pseudoinstruction
-                      edit_pseudoinstruction(comp, index){
+                      
 
+                      //Edit the pseudoinstruction
+                      edit_pseudoinstruction()
+                      {
                         this.show_modal = false;
 
-                        architecture.pseudoinstructions[index].name = this.pseudoinstruction.name;
-                        architecture.pseudoinstructions[index].nwords = this.pseudoinstruction.nwords;
-                        architecture.pseudoinstructions[index].definition = this.pseudoinstruction.definition;
-                        architecture.pseudoinstructions[index].signature_definition = this.pseudoinstruction.signature_definition;
-                        architecture.pseudoinstructions[index].help = this.pseudoinstruction.help;
-
-                        for (var j = 0; j < this.pseudoinstruction.numfields; j++){
-                          if(j < architecture.pseudoinstructions[index].fields.length){
-                            architecture.pseudoinstructions[index].fields[j].name = this.pseudoinstruction.nameField[j];
-                            architecture.pseudoinstructions[index].fields[j].type = this.pseudoinstruction.typeField[j];
-                            architecture.pseudoinstructions[index].fields[j].startbit = this.pseudoinstruction.startBitField[j];
-                            architecture.pseudoinstructions[index].fields[j].stopbit = this.pseudoinstruction.stopBitField[j];
-                          }
-                          else{
-                            var newField = {name: this.pseudoinstruction.nameField[j], type: this.pseudoinstruction.typeField[j], startbit: this.pseudoinstruction.startBitField[j], stopbit: this.pseudoinstruction.stopBitField[j]};
-                            architecture.pseudoinstructions[index].fields.push(newField);
-                          }
-                        }
-
+                        //Generate new signature
                         this.generate_signature();
 
-                        var signature = this.pseudoinstruction.signature;
-                        var signatureRaw = this.pseudoinstruction.signatureRaw;
+                        Object.assign(architecture.pseudoinstructions[this._props.index], this._props.pseudoinstruction);
 
-                        architecture.pseudoinstructions[index].signature = signature;
-                        architecture.pseudoinstructions[index].signatureRaw = signatureRaw;
-
-                        if(architecture.pseudoinstructions[index].fields.length > this.pseudoinstruction.numfields){
-                          architecture.pseudoinstructions[index].fields.splice(this.pseudoinstruction.numfields, (architecture.pseudoinstructions[i].fields.length - this.pseudoinstruction.numfields));
-                        }
+                        show_notification('Pseudoinstruction correctly modified', 'success') ;
                       },
 
                       //Verify the pseudoinstruction definition
-                      pseudoinstruction_definition_validator(name, definition, fields){
+                      pseudoinstruction_definition_validator(name, definition, fields) //TODO: improve like new compiler
+                      {
+
+                        //Clean definition
                         var re = new RegExp("^\n+");
                         definition = definition.replace(re, "");
 
                         re = new RegExp("\n+", "g");
                         definition = definition.replace(re, "");
 
-                        var newDefinition = definition;
-
                         re = /{([^}]*)}/g;
-
                         var code = re.exec(definition);
 
+                        //Verify definition
                         if(code != null)
                         {
                           while(code != null)
                           {
-                            console_log(code)
                             var instructions = code[1].split(";");
-                            if (instructions.length == 1){
-                                show_notification('Enter a ";" at the end of each line of code', 'danger') ;
-                                return -1;
+                            if (instructions.length == 1)
+                            {
+                              show_notification('Enter a ";" at the end of each line of code', 'danger') ;
+                              return -1;
                             }
 
-                            for (var j = 0; j < instructions.length-1; j++){
+                            for (var j = 0; j < instructions.length-1; j++)
+                            {
+                              //Clean instruction
                               var re = new RegExp("^ +");
                               instructions[j] = instructions[j].replace(re, "");
 
                               re = new RegExp(" +", "g");
                               instructions[j] = instructions[j].replace(re, " ");
 
-                              var instructionParts = instructions[j].split(" ");
+                              var instruction_parts = instructions[j].split(" ");
 
                               var found = false;
-                              for (var i = 0; i < architecture.instructions.length; i++){
-                                if(architecture.instructions[i].name == instructionParts[0]){
+                              for (var i = 0; i < architecture.instructions.length; i++)
+                              {
+                                if(architecture.instructions[i].name == instruction_parts[0])
+                                {
                                   found = true;
-                                  var numFields = 0;
-                                  var regId = 0;
+                                  var number_fields = 0;
+                                  var reg_id = 0;
 
-                                  signatureDef = architecture.instructions[i].signature_definition;
-                                  signatureDef = signatureDef.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                                  signature_def = architecture.instructions[i].signature_definition;
+                                  signature_def = signature_def.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
                                   re = new RegExp("[fF][0-9]+", "g");
-                                  signatureDef = signatureDef.replace(re, "(.*?)");
+                                  signature_def = signature_def.replace(re, "(.*?)");
 
                                   console_log(instructions[j])
 
-                                  re = new RegExp(signatureDef+"$");
-                                  if(instructions[j].search(re) == -1){
+                                  re = new RegExp(signature_def+"$");
+                                  if(instructions[j].search(re) == -1)
+                                  {
                                     show_notification('Incorrect signature --> ' + architecture.instructions[i].signatureRaw, 'danger') ;
                                     return -1;
                                   }
 
-                                  re = new RegExp(signatureDef+"$");
+                                  re = new RegExp(signature_def+"$");
                                   var match = re.exec(instructions[j]);
-                                  var instructionParts = [];
+                                  var instruction_parts = [];
                                   for(var z = 1; z < match.length; z++){
-                                    instructionParts.push(match[z]);
+                                    instruction_parts.push(match[z]);
                                   }
 
                                   re = new RegExp(",", "g");
                                   var signature = architecture.instructions[i].signature.replace(re, " ");
 
-                                  re = new RegExp(signatureDef+"$");
+                                  re = new RegExp(signature_def+"$");
                                   var match = re.exec(signature);
-                                  var signatureParts = [];
+                                  var signature_parts = [];
                                   for(var j = 1; j < match.length; j++){
-                                    signatureParts.push(match[j]);
+                                    signature_parts.push(match[j]);
                                   }
 
-                                  console_log(instructionParts)
-                                  console_log(signatureParts)
+                                  console_log(instruction_parts)
+                                  console_log(signature_parts)
 
-                                  for (var z = 1; z < signatureParts.length; z++){
-
-                                    if(signatureParts[z] == "INT-Reg" || signatureParts[z] == "SFP-Reg" || signatureParts[z] == "DFP-Reg" ||signatureParts[z] == "Ctrl-Reg"){
+                                  for (var z = 1; z < signature_parts.length; z++)
+                                  {
+                                    if(signature_parts[z] == "INT-Reg" || signature_parts[z] == "SFP-Reg" || signature_parts[z] == "DFP-Reg" ||signature_parts[z] == "Ctrl-Reg")
+                                    {
                                       console_log("REG")
                                       var found = false;
 
                                       var id = -1;
                                       re = new RegExp("R[0-9]+");
                                       console_log(z)
-                                      if(instructionParts[z].search(re) != -1){
+                                      if(instruction_parts[z].search(re) != -1)
+                                      {
                                         re = new RegExp("R(.*?)$");
-                                        match = re.exec(instructionParts[z]);
+                                        match = re.exec(instruction_parts[z]);
                                         id = match[1];
                                       }
 
-                                      for (var a = 0; a < architecture.components.length; a++){
-                                        for (var b = 0; b < architecture.components[a].elements.length; b++){
-                                          if(architecture.components[a].elements[b].name == instructionParts[z]){
+                                      for (var a = 0; a < architecture.components.length; a++)
+                                      {
+                                        for (var b = 0; b < architecture.components[a].elements.length; b++)
+                                        {
+                                          if(architecture.components[a].elements[b].name.includes(instruction_parts[z]))
+                                          {
                                             found = true;
                                           }
-                                          if(architecture.components[a].type == "integer" && regId == id){
+                                          if(architecture.components[a].type == "integer" && reg_id == id){
                                             found = true;
                                           }
                                           if(architecture.components[a].type == "integer"){
-                                            regId++;
+                                            reg_id++;
                                           }
                                         }
                                       }
 
-                                      for (var b = 0; b < fields.length; b++){
-                                        if(fields[b] == instructionParts[z]){
+                                      for (var b = 0; b < fields.length; b++)
+                                      {
+                                        if(fields[b].name == instruction_parts[z]){
                                           found = true;
                                         }
                                       }
 
-                                      if(!found){
-                                        show_notification('Register ' + instructionParts[z] + ' not found', 'danger') ;
+                                      if(!found)
+                                      {
+                                        show_notification('Register ' + instruction_parts[z] + ' not found', 'danger') ;
                                         return -1;
                                       }
                                     }
 
-                                    if(signatureParts[z] == "inm-signed" || signatureParts[z] == "inm-unsigned" || signatureParts[z] == "offset_bytes" || signatureParts[z] == "offset_words"){
-                                      var fieldsLength = architecture.instructions[i].fields[z].startbit - architecture.instructions[i].fields[z].stopbit + 1;
-                                      if(instructionParts[z].match(/^0x/)){
-                                        var value = instructionParts[z].split("x");
-                                        if (isNaN(parseInt(instructionParts[z], 16)) == true){
-                                            show_notification("Immediate number " + instructionParts[z] + " is not valid", 'danger') ;
-                                            return -1;
+                                    if(signature_parts[z] == "inm-signed" || signature_parts[z] == "inm-unsigned" || signature_parts[z] == "offset_bytes" || signature_parts[z] == "offset_words")
+                                    {
+                                      var field_length = architecture.instructions[i].fields[z].startbit - architecture.instructions[i].fields[z].stopbit + 1;
+                                      if(instruction_parts[z].match(/^0x/))
+                                      {
+                                        var value = instruction_parts[z].split("x");
+                                        if (isNaN(parseInt(instruction_parts[z], 16)) == true)
+                                        {
+                                          show_notification("Immediate number " + instruction_parts[z] + " is not valid", 'danger') ;
+                                          return -1;
                                         }
 
-                                        if(value[1].length*4 > fieldsLength){
-                                          show_notification("Immediate number " + instructionParts[z] + " is too big", 'danger') ;
+                                        if(value[1].length*4 > field_length)
+                                        {
+                                          show_notification("Immediate number " + instruction_parts[z] + " is too big", 'danger') ;
                                           return -1;
                                         }
                                       }
-                                      else if (instructionParts[z].match(/^(\d)+\.(\d)+/)){
-                                        if(isNaN(parseFloat(instructionParts[z])) == true){
-                                          show_notification("Immediate number " + instructionParts[z] + " is not valid", 'danger') ;
+                                      else if (instruction_parts[z].match(/^(\d)+\.(\d)+/))
+                                      {
+                                        if(isNaN(parseFloat(instruction_parts[z])) == true)
+                                        {
+                                          show_notification("Immediate number " + instruction_parts[z] + " is not valid", 'danger') ;
                                           return -1;
                                         }
 
-                                        if(this.float2bin(parseFloat(instructionParts[z])).length > fieldsLength){
-                                          show_notification("Immediate number " + instructionParts[z] + " is too big", 'danger') ;
-                                          return -1;
-                                        }
-                                      }
-                                      else if(isNaN(parseInt(instructionParts[z]))){
-
-                                      }
-                                      else {
-                                        var numAux = parseInt(instructionParts[z], 10);
-                                        if(isNaN(parseInt(instructionParts[z])) == true){
-                                          show_notification("Immediate number " + instructionParts[z] + " is not valid", 'danger') ;
-                                          return -1;
-                                        }
-
-                                        /*if((numAux.toString(2)).length > fieldsLength){
-                                          show_notification("Immediate number " + instructionParts[z] + " is too big", 'danger') ;
-                                          return -1;
-                                        }*/
-
-                                        var comNumPos = Math.pow(2, fieldsLength-1);
-                                        var comNumNeg = comNumPos * (-1);
-                                        comNumPos = comNumPos -1;
-
-                                        console_log(comNumPos);
-                                        console_log(comNumNeg);
-
-                                        if(parseInt(instructionParts[z], 10) > comNumPos || parseInt(instructionParts[z], 10) < comNumNeg){
-                                          show_notification("Immediate number " + instructionParts[z] + " is too big", 'danger') ;
+                                        if(this.float2bin(parseFloat(instruction_parts[z])).length > field_length)
+                                        {
+                                          show_notification("Immediate number " + instruction_parts[z] + " is too big", 'danger') ;
                                           return -1;
                                         }
                                       }
-                                    }
+                                      else if(isNaN(parseInt(instruction_parts[z]))){
 
-                                    if(signatureParts[z] == "address"){
-                                      var fieldsLength = architecture.instructions[i].fields[z].startbit - architecture.instructions[i].fields[z].stopbit + 1;
-                                      if(instructionParts[z].match(/^0x/)){
-                                        var value = instructionParts[z].split("x");
-                                        if(isNaN(parseInt(instructionParts[z], 16)) == true){
-                                          show_notification("Address " + instructionParts[z] + " is not valid", 'danger') ;
+                                      }
+                                      else 
+                                      {
+                                        var aux_num = parseInt(instruction_parts[z], 10);
+                                        if(isNaN(parseInt(instruction_parts[z])) == true)
+                                        {
+                                          show_notification("Immediate number " + instruction_parts[z] + " is not valid", 'danger') ;
                                           return -1;
                                         }
 
-                                        if(value[1].length*4 > fieldsLength){
-                                          show_notification("Address " + instructionParts[z] + " is too big", 'danger') ;
+                                        var num_positive = Math.pow(2, field_length-1);
+                                        var num_negative = num_positive * (-1);
+                                        num_positive = num_positive -1;
+
+                                        console_log(num_positive);
+                                        console_log(num_negative);
+
+                                        if(parseInt(instruction_parts[z], 10) > num_positive || parseInt(instruction_parts[z], 10) < num_negative)
+                                        {
+                                          show_notification("Immediate number " + instruction_parts[z] + " is too big", 'danger') ;
                                           return -1;
                                         }
                                       }
                                     }
 
-                                    if(!found){
-                                      show_notification('Register ' + instructionParts[z] + ' not found', 'danger') ;
+                                    if(signature_parts[z] == "address")
+                                    {
+                                      var field_length = architecture.instructions[i].fields[z].startbit - architecture.instructions[i].fields[z].stopbit + 1;
+                                      if(instruction_parts[z].match(/^0x/))
+                                      {
+                                        var value = instruction_parts[z].split("x");
+                                        if(isNaN(parseInt(instruction_parts[z], 16)) == true)
+                                        {
+                                          show_notification("Address " + instruction_parts[z] + " is not valid", 'danger') ;
+                                          return -1;
+                                        }
+
+                                        if(value[1].length*4 > field_length)
+                                        {
+                                          show_notification("Address " + instruction_parts[z] + " is too big", 'danger') ;
+                                          return -1;
+                                        }
+                                      }
+                                    }
+
+                                    if(!found)
+                                    {
+                                      show_notification('Register ' + instruction_parts[z] + ' not found', 'danger') ;
                                       return -1;
                                     }
                                   }
                                 }
                               }
-                              if(!found){
+                              if(!found)
+                              {
                                 show_notification('Instruction ' + instructions[j] + ' do not exists', 'danger') ;
                                 return -1;
                               }
@@ -317,182 +329,205 @@
                             code = re.exec(definition);
                           }
                         }
-                        else{
+                        else
+                        {
                           var instructions = definition.split(";");
                           console_log(instructions.length)
-                          if(instructions.length == 1){
+                          if(instructions.length == 1)
+                          {
                             show_notification('Enter a ";" at the end of each line of code', 'danger') ;
                             return -1;
                           }
 
-                          for (var j = 0; j < instructions.length-1; j++){
+                          for (var j = 0; j < instructions.length-1; j++)
+                          {
                             var re = new RegExp("^ +");
                             instructions[j] = instructions[j].replace(re, "");
 
                             re = new RegExp(" +", "g");
                             instructions[j] = instructions[j].replace(re, " ");
 
-                            var instructionParts = instructions[j].split(" ");
+                            var instruction_parts = instructions[j].split(" ");
 
                             var found = false;
-                            for (var i = 0; i < architecture.instructions.length; i++){
-                              if(architecture.instructions[i].name == instructionParts[0]){
+                            for (var i = 0; i < architecture.instructions.length; i++)
+                            {
+                              if(architecture.instructions[i].name == instruction_parts[0])
+                              {
                                 found = true;
-                                var numFields = 0;
-                                var regId = 0;
+                                var number_fields = 0;
+                                var reg_id = 0;
 
-                                signatureDef = architecture.instructions[i].signature_definition;
-                                signatureDef = signatureDef.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                                signature_def = architecture.instructions[i].signature_definition;
+                                signature_def = signature_def.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
                                 re = new RegExp("[fF][0-9]+", "g");
-                                signatureDef = signatureDef.replace(re, "(.*?)");
+                                signature_def = signature_def.replace(re, "(.*?)");
 
                                 console_log(instructions[j])
 
-                                re = new RegExp(signatureDef+"$");
-                                if(instructions[j].search(re) == -1){
+                                re = new RegExp(signature_def+"$");
+                                if(instructions[j].search(re) == -1)
+                                {
                                   show_notification('Incorrect signature --> ' + architecture.instructions[i].signatureRaw, 'danger') ;
                                   return -1;
                                 }
 
-                                re = new RegExp(signatureDef+"$");
+                                re = new RegExp(signature_def+"$");
                                 var match = re.exec(instructions[j]);
-                                var instructionParts = [];
-                                for(var z = 1; z < match.length; z++){
-                                  instructionParts.push(match[z]);
+                                var instruction_parts = [];
+                                for(var z = 1; z < match.length; z++)
+                                {
+                                  instruction_parts.push(match[z]);
                                 }
 
                                 re = new RegExp(",", "g");
                                 var signature = architecture.instructions[i].signature.replace(re, " ");
 
-                                re = new RegExp(signatureDef+"$");
+                                re = new RegExp(signature_def+"$");
                                 var match = re.exec(signature);
-                                var signatureParts = [];
+                                var signature_parts = [];
                                 for(var j = 1; j < match.length; j++){
-                                  signatureParts.push(match[j]);
+                                  signature_parts.push(match[j]);
                                 }
 
-                                console_log(instructionParts)
-                                console_log(signatureParts)
+                                console_log(instruction_parts)
+                                console_log(signature_parts)
 
-                                for (var z = 1; z < signatureParts.length; z++){
+                                for (var z = 1; z < signature_parts.length; z++){
 
-                                  if(signatureParts[z] == "INT-Reg" || signatureParts[z] == "SFP-Reg" || signatureParts[z] == "DFP-Reg" ||signatureParts[z] == "Ctrl-Reg"){
+                                  if(signature_parts[z] == "INT-Reg" || signature_parts[z] == "SFP-Reg" || signature_parts[z] == "DFP-Reg" ||signature_parts[z] == "Ctrl-Reg")
+                                  {
                                     console_log("REG")
                                     var found = false;
 
                                     var id = -1;
                                     re = new RegExp("R[0-9]+");
                                     console_log(z)
-                                    if(instructionParts[z].search(re) != -1){
+                                    if(instruction_parts[z].search(re) != -1)
+                                    {
                                       re = new RegExp("R(.*?)$");
-                                      match = re.exec(instructionParts[z]);
+                                      match = re.exec(instruction_parts[z]);
                                       id = match[1];
                                     }
 
-                                    for (var a = 0; a < architecture.components.length; a++){
-                                      for (var b = 0; b < architecture.components[a].elements.length; b++){
-                                        if(architecture.components[a].elements[b].name == instructionParts[z]){
+                                    for (var a = 0; a < architecture.components.length; a++)
+                                    {
+                                      for (var b = 0; b < architecture.components[a].elements.length; b++)
+                                      {
+                                        if(architecture.components[a].elements[b].name.includes(instruction_parts[z]))
+                                        {
                                           found = true;
                                         }
-                                        if(architecture.components[a].type == "integer" && regId == id){
+                                        if(architecture.components[a].type == "integer" && reg_id == id){
                                           found = true;
                                         }
                                         if(architecture.components[a].type == "integer"){
-                                          regId++;
+                                          reg_id++;
                                         }
                                       }
                                     }
 
-                                    for (var b = 0; b < fields.length; b++){
-                                      if(fields[b] == instructionParts[z]){
+                                    for (var b = 0; b < fields.length; b++)
+                                    {
+                                      if(fields[b].name == instruction_parts[z]){
                                         found = true;
                                       }
                                     }
 
                                     if(!found){
-                                      show_notification('Register ' + instructionParts[z] + ' not found', 'danger') ;
+                                      show_notification('Register ' + instruction_parts[z] + ' not found', 'danger') ;
                                       return -1;
                                     }
                                   }
 
-                                  if(signatureParts[z] == "inm-signed" || signatureParts[z] == "inm-unsigned" || signatureParts[z] == "offset_bytes" || signatureParts[z] == "offset_words"){
-                                    var fieldsLength = architecture.instructions[i].fields[z].startbit - architecture.instructions[i].fields[z].stopbit + 1;
-                                    if(instructionParts[z].match(/^0x/)){
-                                      var value = instructionParts[z].split("x");
-                                      if(isNaN(parseInt(instructionParts[z], 16)) == true){
-                                        show_notification("Immediate number " + instructionParts[z] + " is not valid", 'danger') ;
+                                  if(signature_parts[z] == "inm-signed" || signature_parts[z] == "inm-unsigned" || signature_parts[z] == "offset_bytes" || signature_parts[z] == "offset_words")
+                                  {
+                                    var field_length = architecture.instructions[i].fields[z].startbit - architecture.instructions[i].fields[z].stopbit + 1;
+                                    if(instruction_parts[z].match(/^0x/))
+                                    {
+                                      var value = instruction_parts[z].split("x");
+                                      if(isNaN(parseInt(instruction_parts[z], 16)) == true)
+                                      {
+                                        show_notification("Immediate number " + instruction_parts[z] + " is not valid", 'danger') ;
                                         return -1;
                                       }
 
-                                      if(value[1].length*4 > fieldsLength){
-                                        show_notification("Immediate number " + instructionParts[z] + " is too big", 'danger') ;
-                                        return -1;
-                                      }
-                                    }
-                                    else if (instructionParts[z].match(/^(\d)+\.(\d)+/)){
-                                      if(isNaN(parseFloat(instructionParts[z])) == true){
-                                        show_notification("Immediate number " + instructionParts[z] + " is not valid", 'danger') ;
-                                        return -1;
-                                      }
-
-                                      if(this.float2bin(parseFloat(instructionParts[z])).length > fieldsLength){
-                                        show_notification("Immediate number " + instructionParts[z] + " is too big", 'danger') ;
+                                      if(value[1].length*4 > field_length)
+                                      {
+                                        show_notification("Immediate number " + instruction_parts[z] + " is too big", 'danger') ;
                                         return -1;
                                       }
                                     }
-                                    else if(isNaN(parseInt(instructionParts[z]))){
-
-                                    }
-                                    else {
-                                      var numAux = parseInt(instructionParts[z], 10);
-                                      if(isNaN(parseInt(instructionParts[z])) == true){
-                                        show_notification("Immediate number " + instructionParts[z] + " is not valid", 'danger') ;
+                                    else if (instruction_parts[z].match(/^(\d)+\.(\d)+/))
+                                    {
+                                      if(isNaN(parseFloat(instruction_parts[z])) == true)
+                                      {
+                                        show_notification("Immediate number " + instruction_parts[z] + " is not valid", 'danger') ;
                                         return -1;
                                       }
 
-                                      /*if((numAux.toString(2)).length > fieldsLength){
-                                        show_notification("Immediate number " + instructionParts[z] + " is too big", 'danger') ;
-                                        return -1;
-                                      }*/
-
-                                      var comNumPos = Math.pow(2, fieldsLength-1);
-                                      var comNumNeg = comNumPos * (-1);
-                                      comNumPos = comNumPos -1;
-
-                                      console_log(comNumPos);
-                                      console_log(comNumNeg);
-
-                                      if(parseInt(instructionParts[z], 10) > comNumPos || parseInt(instructionParts[z], 10) < comNumNeg){
-                                        show_notification("Immediate number " + instructionParts[z] + " is too big", 'danger') ;
+                                      if(this.float2bin(parseFloat(instruction_parts[z])).length > field_length)
+                                      {
+                                        show_notification("Immediate number " + instruction_parts[z] + " is too big", 'danger') ;
                                         return -1;
                                       }
                                     }
-                                  }
+                                    else if(isNaN(parseInt(instruction_parts[z]))){
 
-                                  if(signatureParts[z] == "address"){
-                                    var fieldsLength = architecture.instructions[i].fields[z].startbit - architecture.instructions[i].fields[z].stopbit + 1;
-                                    if(instructionParts[z].match(/^0x/)){
-                                      var value = instructionParts[z].split("x");
-                                      if(isNaN(parseInt(instructionParts[z], 16)) == true){
-                                        show_notification("Address " + instructionParts[z] + " is not valid", 'danger') ;
+                                    }
+                                    else 
+                                    {
+                                      var aux_num = parseInt(instruction_parts[z], 10);
+                                      if(isNaN(parseInt(instruction_parts[z])) == true)
+                                      {
+                                        show_notification("Immediate number " + instruction_parts[z] + " is not valid", 'danger') ;
                                         return -1;
                                       }
 
-                                      if(value[1].length*4 > fieldsLength){
-                                        show_notification("Address " + instructionParts[z] + " is too big", 'danger') ;
+                                      var num_positive = Math.pow(2, field_length-1);
+                                      var num_negative = num_positive * (-1);
+                                      num_positive = num_positive -1;
+
+                                      console_log(num_positive);
+                                      console_log(num_negative);
+
+                                      if(parseInt(instruction_parts[z], 10) > num_positive || parseInt(instruction_parts[z], 10) < num_negative){
+                                        show_notification("Immediate number " + instruction_parts[z] + " is too big", 'danger') ;
                                         return -1;
                                       }
                                     }
                                   }
 
-                                  if(!found){
-                                    show_notification('Register ' + instructionParts[z] + ' not found', 'danger') ;
+                                  if(signature_parts[z] == "address")
+                                  {
+                                    var field_length = architecture.instructions[i].fields[z].startbit - architecture.instructions[i].fields[z].stopbit + 1;
+                                    if(instruction_parts[z].match(/^0x/))
+                                    {
+                                      var value = instruction_parts[z].split("x");
+                                      if(isNaN(parseInt(instruction_parts[z], 16)) == true)
+                                      {
+                                        show_notification("Address " + instruction_parts[z] + " is not valid", 'danger') ;
+                                        return -1;
+                                      }
+
+                                      if(value[1].length*4 > field_length)
+                                      {
+                                        show_notification("Address " + instruction_parts[z] + " is too big", 'danger') ;
+                                        return -1;
+                                      }
+                                    }
+                                  }
+
+                                  if(!found)
+                                  {
+                                    show_notification('Register ' + instruction_parts[z] + ' not found', 'danger') ;
                                     return -1;
                                   }
                                 }
                               }
                             }
-                            if(!found){
+                            if(!found)
+                            {
                               show_notification('Instruction ' + instructions[j] + ' do not exists', 'danger') ;
                               return -1;
                             }
@@ -501,58 +536,70 @@
 
                         return 0;
                       },
-                      
 
-                      //Clean instruction form
-                      clean_form(){
-                        this.pseudoinstruction.name = '';
-                        this.pseudoinstruction.type = '';
-                        this.pseudoinstruction.co = '';
-                        this.pseudoinstruction.cop = '';
-                        this.pseudoinstruction.nwords = 1;
-                        this.pseudoinstruction.numfields = "1";
-                        this.pseudoinstruction.numfieldsAux = "1";
-                        this.pseudoinstruction.nameField = [];
-                        this.pseudoinstruction.properties = [];
-                        this.pseudoinstruction.typeField = [];
-                        this.pseudoinstruction.startBitField = [];
-                        this.pseudoinstruction.stopBitField = [];
-                        this.pseudoinstruction.valueField = [];
-                        this.pseudoinstruction.separated = [];
-                        this.pseudoinstruction.assignedCop = false;
-                        this.pseudoinstruction.signature ='';
-                        this.pseudoinstruction.signatureRaw = '';
-                        this.pseudoinstruction.signature_definition = '';
-                        this.pseudoinstruction.definition = '';
-                        this.pseudoinstruction_page = 1;
-                        this.pseudoinstruction.help = '';
+                      //Verify new number of fields
+                      change_number_fields()
+                      {
+                        //Top limit
+                        if(this._props.number_fields > (this._props.pseudoinstruction.nwords * 32)){
+                          this._props.number_fields = (this._props.pseudoinstruction.nwords * 32);
+                        }
+
+                        //Lower limit
+                        if(this._props.number_fields < 1){
+                          this._props.number_fields = 1;
+                        }
+
+                        //Add fields
+                        if(this._props.number_fields > this._props.pseudoinstruction.fields.length)
+                        {
+                          var diff = this._props.number_fields - this._props.pseudoinstruction.fields.length;
+                          for (var i = 0; i < diff; i++)
+                          {
+                            var new_field = {name: '', type: '', startbit: '', stopbit: '', valueField: ''};
+                            this._props.pseudoinstruction.fields.push(new_field);
+                          }
+                        }
+
+                        //Delete fields
+                        if(this._props.number_fields < this._props.pseudoinstruction.fields.length)
+                        {
+                          var diff = this._props.pseudoinstruction.fields.length - this._props.number_fields;
+                          for (var i = 0; i < diff; i++) {
+                            this._props.pseudoinstruction.fields.splice(-1,1);
+                          }
+                        }
                       },
 
+                      //Generate the different pseudoinstruction signature
                       generate_signature(){
-                        var signature = this.pseudoinstruction.signature_definition;
+                        var signature = this._props.pseudoinstruction.signature_definition;
 
+                        //Signature definition cleaning
                         var re = new RegExp("^ +");
-                        this.pseudoinstruction.signature_definition = this.pseudoinstruction.signature_definition.replace(re, "");
+                        this._props.pseudoinstruction.signature_definition= this._props.pseudoinstruction.signature_definition.replace(re, "");
 
                         re = new RegExp(" +", "g");
-                        this.pseudoinstruction.signature_definition = this.pseudoinstruction.signature_definition.replace(re, " ");
+                        this._props.pseudoinstruction.signature_definition = this._props.pseudoinstruction.signature_definition.replace(re, " ");
 
+                        //New signature generation
                         re = new RegExp("^ +");
                         signature= signature.replace(re, "");
 
                         re = new RegExp(" +", "g");
                         signature = signature.replace(re, " ");
 
-                        for (var z = 0; z < this.pseudoinstruction.numfields; z++) {
-                          re = new RegExp("[Ff]"+z, "g");
-
-                          signature = signature.replace(re, this.pseudoinstruction.typeField[z]);
+                        for (var i = 0; i < this._props.number_fields; i++)
+                        {
+                          re = new RegExp("[Ff]"+i, "g");
+                          signature = signature.replace(re, this._props.pseudoinstruction.fields[i].type);
                         }
 
                         re = new RegExp(" ", "g");
                         signature = signature.replace(re , ",");
 
-                        var signatureRaw = this.pseudoinstruction.signature_definition;
+                        //New raw signature generation
+                        var signatureRaw = this._props.pseudoinstruction.signature_definition;
 
                         re = new RegExp("^ +");
                         signatureRaw= signatureRaw.replace(re, "");
@@ -560,58 +607,43 @@
                         re = new RegExp(" +", "g");
                         signatureRaw = signatureRaw.replace(re, " ");
 
-                        for (var z = 0; z < this.pseudoinstruction.numfields; z++) {
-                          re = new RegExp("[Ff]"+z, "g");
-
-                          signatureRaw = signatureRaw.replace(re, this.pseudoinstruction.nameField[z]);
+                        for (var i = 0; i < this._props.number_fields; i++)
+                        {
+                          re = new RegExp("[Ff]"+i, "g");
+                          signatureRaw = signatureRaw.replace(re, this._props.pseudoinstruction.fields[i].name);
                         }
 
-                        this.pseudoinstruction.signature = signature;
-                        this.pseudoinstruction.signatureRaw = signatureRaw;
+                        this._props.pseudoinstruction.signature = signature;
+                        this._props.pseudoinstruction.signatureRaw = signatureRaw;
                       },
 
-                      //Verify new number of fields
-                      change_number_fields(type){
-                        if(type == 0){
-                          if(this.pseudoinstruction.numfields > (this.pseudoinstruction.nwords * 32)){
-                            this.pseudoinstruction.numfieldsAux = (this.pseudoinstruction.nwords * 32);
-                            this.pseudoinstruction.numfields = (this.pseudoinstruction.nwords * 32);
-                          }
-                          else if(this.pseudoinstruction.numfields < 1){
-                            this.pseudoinstruction.numfieldsAux = 1;
-                            this.pseudoinstruction.numfields = 1;
-                          }
-                          else{
-                            this.pseudoinstruction.numfieldsAux = this.pseudoinstruction.numfields;
-                          }
-                        }
-                        if(type == 1){
-                          if(this.pseudoinstruction.numfields > (this.pseudoinstruction.nwords * 32)){
-                            this.pseudoinstruction.numfieldsAux = (this.pseudoinstruction.nwords * 32);
-                            this.pseudoinstruction.numfields = (this.pseudoinstruction.nwords * 32);
-                          }
-                          else if(this.pseudoinstruction.numfields < 0){
-                            this.pseudoinstruction.numfieldsAux = 0;
-                            this.pseudoinstruction.numfields = 0;
-                          }
-                          else{
-                            this.pseudoinstruction.numfieldsAux = this.pseudoinstruction.numfields;
-                          }
-                        }
-                      },
+
+                      /*******************/
+                      /* Modal Functions */
+                      /*******************/
 
                       //Pagination bar names
-                      link_generator (pageNum) {
+                      link_generator (pageNum)
+                      {
                         return this.pseudoinstruction_page_link[pageNum - 1]
                       },
 
-                      page_generator (pageNum) {
+                      page_generator (pageNum)
+                      {
                         return this.pseudoinstruction_page_link[pageNum - 1].slice(1)
                       },
 
+                      //Set original values into the form
+                      reset_form()
+                      {
+                        this.pseudoinstruction_page = 1;
+                      },
+
                       //Form validator
-                      valid(value){
-                        if(parseInt(value) != 0){
+                      valid(value)
+                      {
+                        if(parseInt(value) != 0)
+                        {
                           if(!value){
                             return false;
                           }
@@ -622,56 +654,23 @@
                         else{
                           return true;
                         }
-                      },
-
-                      //Stop user interface refresh
-                      debounce: _.debounce(function (param, e) {
-                        console_log(param);
-                        console_log(e);
-
-                        e.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-                        var re = new RegExp("'","g");
-                        e = e.replace(re, '"');
-                        re = new RegExp("[\f]","g");
-                        e = e.replace(re, '\\f');
-                        re = new RegExp("[\n\]","g");
-                        e = e.replace(re, '\\n');
-                        re = new RegExp("[\r]","g");
-                        e = e.replace(re, '\\r');
-                        re = new RegExp("[\t]","g");
-                        e = e.replace(re, '\\t');
-                        re = new RegExp("[\v]","g");
-                        e = e.replace(re, '\\v');
-
-                        if(e == ""){
-                          this[param] = null;
-                          return;
-                        }
-
-                        console_log("this." + param + "= '" + e + "'");
-
-                        eval("this." + param + "= '" + e + "'");
-
-                        //this[param] = e.toString();
-                        app.$forceUpdate();
-                      }, getDebounceTime())
+                      }
                     },
 
         template:   '<b-modal :id ="id" ' +
                     '         size="lg" ' +
-                    '         title="Edit Pseudoinstruction" ' +
+                    '         :title="title" ' +
                     '         ok-title="Save" ' +
-                    '         @ok="edit_pseudoinstruction_verify($event, element.element, element.index)" ' +
+                    '         @ok="edit_pseudoinstruction_verify" ' +
                     '         v-model="show_modal" ' +
-                    '         @hidden="clean_form">' +
+                    '         @hidden="reset_form">' +
                     '  <b-form>' +
                     '' +
                     '    <!-- Page 1 -->' +
                     '    <div id="editPseudoinstForm1" v-if="pseudoinstruction_page == 1">' +
                     '      <b-form-group label="Name:">' +
                     '        <b-form-input type="text" ' +
-                    '                      v-on:input="debounce(\'pseudoinstruction.name\', $event)" ' +
-                    '                      :value="pseudoinstruction.name" ' +
+                    '                      v-model="pseudoinstruction.name" ' +
                     '                      required ' +
                     '                      placeholder="Enter name" ' +
                     '                      :state="valid(pseudoinstruction.name)" ' +
@@ -683,8 +682,7 @@
                     '      <b-form-group label="Number of Words:">' +
                     '        <b-form-input type="number" ' +
                     '                      min="1" ' +
-                    '                      v-on:input="debounce(\'pseudoinstruction.nwords\', $event)" ' +
-                    '                      :value="pseudoinstruction.nwords" ' +
+                    '                      v-model="pseudoinstruction.nwords" ' +
                     '                      required ' +
                     '                      placeholder="Enter nwords" ' +
                     '                      :state="valid(pseudoinstruction.nwords)" ' +
@@ -697,27 +695,19 @@
                     '        <b-form-input type="text" ' +
                     '                      min="1" ' +
                     '                      :max="32 * pseudoinstruction.nwords" ' +
-                    '                      v-on:input="debounce(\'pseudoinstruction.numfields\', $event)" ' +
-                    '                      :value="pseudoinstruction.numfields" ' +
+                    '                      v-model="number_fields" ' +
                     '                      required ' +
                     '                      placeholder="Enter number of fields" ' +
-                    '                      :state="valid(pseudoinstruction.numfields)" ' +
+                    '                      :state="valid(number_fields)" ' +
                     '                      size="sm" ' +
                     '                      @change="change_number_fields(1)" ' +
                     '                      title="Pseudoinstruction fields">' +
                     '        </b-form-input>' +
                     '      </b-form-group>' +
-                    '' +
-                    '      <div class="d-none">' +
-                    '        <b-form-input type="text" ' +
-                    '                      v-model="pseudoinstruction.numfieldsAux" ' +
-                    '                      title="Pseudoinstruction fields">' +
-                    '        </b-form-input>' +
-                    '      </div>' +
                     '    </div>' +
                     '' +
                     '    <!-- Page 2 -->' +
-                    '    <div id="editPseudoinstForm2" v-if="pseudoinstruction_page == 2">' +
+                    '    <div id="newPseudoinstForm2" v-if="pseudoinstruction_page == 2">' +
                     '      <div class="col-lg-12 col-sm-12 row">' +
                     '        <div class="col-lg-2 col-2 fields">' +
                     '          ' +
@@ -739,8 +729,8 @@
                     '        </div>' +
                     '      </div>' +
                     '' +
-                    '      <div v-if="isNaN(parseInt(pseudoinstruction.numfieldsAux)) == false"> ' +
-                    '        <div v-for="i in parseInt(pseudoinstruction.numfieldsAux)">' +
+                    '      <div v-if="isNaN(parseInt(number_fields)) == false">' +
+                    '        <div v-for="i in parseInt(number_fields)">' +
                     '          <div class="col-lg-12 col-sm-12 row">' +
                     '            <div class="col-lg-2 col-2 fields">' +
                     '              <span class="h6">Field {{i-1}}</span>' +
@@ -748,20 +738,19 @@
                     '            <div class="col-lg-2 col-2 fields">' +
                     '              <b-form-group>' +
                     '                <b-form-input type="text" ' +
-                    '                              v-on:input="debounce(\'pseudoinstruction.nameField[\'+i+\'-1]\', $event)" ' +
-                    '                              :value="pseudoinstruction.nameField[i-1]" ' +
+                    '                              v-model="pseudoinstruction.fields[i-1].name" ' +
                     '                              required ' +
-                    '                              state="valid(pseudoinstruction.nameField[i-1])" ' +
+                    '                              :state="valid(pseudoinstruction.fields[i-1].name)" ' +
                     '                              size="sm" ' +
-                    '                              title="Field name">' +
+                    '                              title="Filed name">' +
                     '                </b-form-input>' +
                     '              </b-form-group>' +
                     '            </div>' +
                     '            <div class="col-lg-2 col-2 fields">' +
                     '              <b-form-group>' +
-                    '                <b-form-select v-model="pseudoinstruction.typeField[i-1]" ' +
+                    '                <b-form-select v-model="pseudoinstruction.fields[i-1].type" ' +
                     '                               required ' +
-                    '                               :state="valid(pseudoinstruction.typeField[i-1])" ' +
+                    '                               :state="valid(pseudoinstruction.fields[i-1].type)" ' +
                     '                               size="sm"' +
                     '                               title="Field type">' +
                     '                  <option value="INT-Reg">INT-Reg</option>' +
@@ -781,12 +770,11 @@
                     '                <b-form-input type="number" ' +
                     '                              min="0" ' +
                     '                              :max="32 * pseudoinstruction.nwords - 1" ' +
-                    '                              v-on:input="debounce(\'pseudoinstruction.startBitField[\'+i+\'-1]\', $event)" ' +
-                    '                              :value="pseudoinstruction.startBitField[i-1]" ' +
+                    '                              v-model="pseudoinstruction.fields[i-1].startbit" ' +
                     '                              required ' +
-                    '                              :state="valid(pseudoinstruction.startBitField[i-1])" ' +
+                    '                              :state="valid(pseudoinstruction.fields[i-1].startbit)" ' +
                     '                              size="sm" ' +
-                    '                              title="Field start bit">' +
+                    '                              title="Filed start bit">' +
                     '                </b-form-input>' +
                     '              </b-form-group>' +
                     '            </div>' +
@@ -795,12 +783,11 @@
                     '                <b-form-input type="number" ' +
                     '                              min="0" ' +
                     '                              :max="32 * pseudoinstruction.nwords - 1" ' +
-                    '                              v-on:input="debounce(\'pseudoinstruction.stopBitField[\'+i+\'-1]\', $event)" ' +
-                    '                              :value="pseudoinstruction.stopBitField[i-1]" ' +
+                    '                              v-model="pseudoinstruction.fields[i-1].stopbit" ' +
                     '                              required ' +
-                    '                              :state="valid(pseudoinstruction.stopBitField[i-1])" ' +
+                    '                              :state="valid(pseudoinstruction.fields[i-1].stopbit)" ' +
                     '                              size="sm" ' +
-                    '                              title="Field end bit">' +
+                    '                              title="Filed end bit">' +
                     '                </b-form-input>' +
                     '              </b-form-group>' +
                     '            </div>' +
@@ -808,13 +795,11 @@
                     '        </div>' +
                     '      </div>' +
                     '    </div>' +
-                    '' +
                     '    <!-- Page 3 -->' +
                     '    <div id="editPseudoinstForm3" v-if="pseudoinstruction_page == 3">' +
                     '      <b-form-group label="Pseudoinstruction Syntax Definition:">' +
                     '        <b-form-input type="text" ' +
-                    '                      v-on:input="debounce(\'pseudoinstruction.signature_definition\', $event)" ' +
-                    '                      :value="pseudoinstruction.signature_definition" ' +
+                    '                      v-model="pseudoinstruction.signature_definition" ' +
                     '                      placeholder="Example: move $F0 $F1" ' +
                     '                      required ' +
                     '                      :state="valid(pseudoinstruction.signature_definition)" ' +
@@ -825,8 +810,7 @@
                     '      </b-form-group>' +
                     '      <b-form-group label="Detailed Syntax:">' +
                     '        <b-form-input type="text" ' +
-                    '                      v-on:input="debounce(\'pseudoinstruction.signature\', $event)" ' +
-                    '                      :value="pseudoinstruction.signature" ' +
+                    '                      v-model="pseudoinstruction.signature" ' +
                     '                      disabled ' +
                     '                      required ' +
                     '                      size="sm" ' +
@@ -835,8 +819,7 @@
                     '      </b-form-group>' +
                     '      <b-form-group label="Pseudoinstruction Syntax:">' +
                     '        <b-form-input type="text" ' +
-                    '                      v-on:input="debounce(\'pseudoinstruction.signatureRaw\', $event)" ' +
-                    '                      :value="pseudoinstruction.signatureRaw" ' +
+                    '                      v-model="pseudoinstruction.signatureRaw" ' +
                     '                      disabled ' +
                     '                      size="sm" ' +
                     '                      title="Pseudoinstruction syntax">' +
@@ -845,10 +828,9 @@
                     '    </div>' +
                     '' +
                     '    <!-- Page 4 -->' +
-                    '    <div id="editPseudoinstForm4" v-if="pseudoinstruction_page == 4">' +
+                    '    <div id="newPseudoinstForm4" v-if="pseudoinstruction_page == 4">' +
                     '      <b-form-group label="Pseudoinstruction Definition:">' +
-                    '        <b-form-textarea v-on:input="debounce(\'pseudoinstruction.definition\', $event)" ' +
-                    '                         :value="pseudoinstruction.definition" ' +
+                    '        <b-form-textarea v-model="pseudoinstruction.definition" ' +
                     '                         placeholder="Example: add reg1 reg0 reg2" ' +
                     '                         :state="valid(pseudoinstruction.definition)" ' +
                     '                         :rows="4" ' +
@@ -858,16 +840,16 @@
                     '    </div>' +
                     '' +
                     '    <!-- Page 5 -->' +
-                    '    <div id="editPseudoinstForm5" v-if="pseudoinstruction_page == 5">' +
-                    '      <b-form-group label="Pseudoinstruction Help:">' +
-                    '        <b-form-textarea v-on:input="debounce(\'pseudoinstruction.help\', $event)" ' +
-                    '                         :value="pseudoinstruction.help" ' +
+                    '    <div id="newPseudoinstForm5" v-if="pseudoinstruction_page == 5">' +
+                    '      <b-form-group label="Pseudoinstruction help:">' +
+                    '        <b-form-textarea v-model="pseudoinstruction.help" ' +
                     '                         placeholder="Example: r3 = r1 + r2" ' +
                     '                         :rows="4" ' +
                     '                         title="Pseudoinstruction help">' +
                     '        </b-form-textarea>' +
                     '      </b-form-group>' +
                     '    </div>' +
+                    '' +
                     '  </b-form>' +
                     '  <hr>' +
                     '  <b-pagination-nav size="sm" ' +
@@ -883,13 +865,3 @@
   }
 
   Vue.component('pseudoinstructions-edit', uielto_pseudoinstructions_edit) ;
-
-  /*Determines the refresh timeout depending on the device being used*/
-  function getDebounceTime(){
-    if(screen.width > 768){
-      return 500;
-    }
-    else{
-      return 1000;
-    }
-  }
