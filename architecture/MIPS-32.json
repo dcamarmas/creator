@@ -1258,6 +1258,7 @@
       "help": "Absolute value of a real 32-bit number.",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "abs.s",
@@ -1305,6 +1306,7 @@
       "help": "Absolute value of a real 64-bit number.",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "abs.d",
@@ -1349,6 +1351,7 @@
       "help": "Sum with overflow",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "signature_definition": "F0 $F3 $F2 $F1",
       "signature": "add,$INT-Reg,$INT-Reg,$INT-Reg",
       "signatureRaw": "add $reg3 $reg2 $reg1",
@@ -1398,6 +1401,7 @@
       "help": "Add the register fs and ft and store the result in fd (float)",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "add.s",
@@ -1451,6 +1455,7 @@
       "help": "Add the register fs and ft and store the result in fd (double)",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "add.d",
@@ -1501,6 +1506,7 @@
       "help": "Add an immediate number with overflow",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "signature_definition": "F0 $F2 $F1 F3",
       "signature": "addi,$INT-Reg,$INT-Reg,inm-signed",
       "signatureRaw": "addi $reg2 $reg1 val",
@@ -1543,6 +1549,7 @@
       "help": "Add an immediate number without overflow",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "addiu",
@@ -1582,6 +1589,7 @@
       "help": "",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "addu",
@@ -1625,6 +1633,7 @@
       "help": "AND logical operation",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "signature_definition": "F0 $F3 $F2 $F1",
       "signature": "and,$INT-Reg,$INT-Reg,$INT-Reg",
       "signatureRaw": "and $reg3 $reg2 $reg1",
@@ -1671,6 +1680,7 @@
       "help": "AND logical operation with an immediate number",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "signature_definition": "F0 $F2 $F1 F3",
       "signature": "andi,$INT-Reg,$INT-Reg,inm-signed",
       "signatureRaw": "andi $reg2 $reg1 val",
@@ -1713,6 +1723,7 @@
       "help": "",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "bc",
@@ -1740,6 +1751,7 @@
       "help": "",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "bc1eqz",
@@ -1780,6 +1792,7 @@
       "help": "",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "bc1nez",
@@ -1817,6 +1830,7 @@
       "help": "",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "signature_definition": "F0 $F1 $F2 F3",
       "signature": "beq,$INT-Reg,$INT-Reg,offset_words",
       "signatureRaw": "beq $reg1 $reg2 off",
@@ -1859,6 +1873,7 @@
       "help": "Conditional branch if the Rsrc register is greater than or equal to 0.",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "bgez",
@@ -1901,6 +1916,7 @@
         "enter_subrutine"
       ],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "bgezal",
@@ -1941,6 +1957,7 @@
       "help": "Conditional branch if Rsrc is greater than 0.",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "bgtz",
@@ -1974,6 +1991,7 @@
       "help": "Conditional branch if Rsrc is less than or equal to 0.",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "blez",
@@ -2007,6 +2025,7 @@
       "help": "Conditional branch if Rsrc is less than 0.",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "bltz",
@@ -2044,6 +2063,7 @@
       "help": "",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "signature_definition": "F0 $F1 $F2 F3",
       "signature": "bne,$INT-Reg,$INT-Reg,offset_words",
       "signatureRaw": "bne $reg1 $reg2 off",
@@ -2086,6 +2106,7 @@
       "help": "Turn a float into a double, the result is saved in fd",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "cvt.d.s",
@@ -2133,6 +2154,7 @@
       "help": "Convert an integer to a double, the result is saved in fd",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "cvt.d.w",
@@ -2180,6 +2202,7 @@
       "help": "Turn a double into a float, the result is saved in fd",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "cvt.s.d",
@@ -2227,6 +2250,7 @@
       "help": "Convert an integer into a float, the result is saved in fd",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "cvt.s.w",
@@ -2274,6 +2298,7 @@
       "help": "Convert a float into an integer, the result is saved in Rdest",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "cvt.w.s",
@@ -2321,6 +2346,7 @@
       "help": "Convert a double into an integer, the result is saved in Rdest",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "cvt.w.d",
@@ -2368,6 +2394,7 @@
       "help": "Divide with overflow",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "div",
@@ -2418,6 +2445,7 @@
       "help": "Divide with overflow. Leave the quotient in the register lo and the rest in the register hi",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "signature_definition": "F0 $F1 $F2",
       "signature": "div,$INT-Reg,$INT-Reg",
       "signatureRaw": "div $rs $rt",
@@ -2461,6 +2489,7 @@
       "help": "Divide fs by ft and leave the result in fd (float)",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "div.s",
@@ -2515,6 +2544,7 @@
       "help": "Divide fs by ft and leave the result in fd (double)",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "div.d",
@@ -2569,6 +2599,7 @@
       "help": "Unconditional jump.",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "j",
@@ -2598,6 +2629,7 @@
         "enter_subrutine"
       ],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "jal",
@@ -2627,6 +2659,7 @@
         "enter_subrutine"
       ],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "jalr",
@@ -2669,6 +2702,7 @@
         "exit_subrutine"
       ],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "jr",
@@ -2700,6 +2734,7 @@
       "help": "",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "signature_definition": "F0 $F1 F2 ($F3)",
       "signature": "lb,$INT-Reg,inm-signed,($INT-Reg)",
       "signatureRaw": "lb $reg1 val ($reg2)",
@@ -2742,6 +2777,7 @@
       "help": "",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "lbu",
@@ -2778,6 +2814,7 @@
       "help": "Load 16 bits of the specified address, sign is extended",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "signature_definition": "F0 $F1 F2 ($F3)",
       "signature": "lh,$INT-Reg,inm-signed,($INT-Reg)",
       "signatureRaw": "lh $reg1 val ($reg2)",
@@ -2820,6 +2857,7 @@
       "help": "Load 16 bits of the specified address, no sign is extended",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "lhu",
@@ -2856,6 +2894,7 @@
       "help": "Load the 16 bits of the lower part of the immediate value in the upper part of the register. The bits of the lower part are set to 0",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "signature_definition": "F0 $F1 F2",
       "signature": "lui,$INT-Reg,inm-signed",
       "signatureRaw": "lui $reg1 val",
@@ -2889,6 +2928,7 @@
       "help": "Load a word from the specified address",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "signature_definition": "F0 $F1 F2 ($F3)",
       "signature": "lw,$INT-Reg,inm-signed,($INT-Reg)",
       "signatureRaw": "lw $reg1 val ($reg2)",
@@ -2931,6 +2971,7 @@
       "help": "",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "lwc1",
@@ -2970,6 +3011,7 @@
       "help": "Moves the contents of the CPsrc register of the floating-point coprocessor to the Rdest CPU register.",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "mfc1",
@@ -3010,6 +3052,7 @@
       "help": "Move the contents of the HI register to the Rdest register.",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "mfhi",
@@ -3044,6 +3087,7 @@
       "help": "Move the contents of the LO register to the Rdest register.",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "mflo",
@@ -3078,6 +3122,7 @@
       "help": "Division module with overflow",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "mod",
@@ -3124,6 +3169,7 @@
       "help": "Division module without overflow",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "modu",
@@ -3170,6 +3216,7 @@
       "help": "Move the contents of the fs record to the fd record. (float)",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "mov.s",
@@ -3217,6 +3264,7 @@
       "help": "Move the contents of the fs record to the fd record. (double)",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "mov.d",
@@ -3264,6 +3312,7 @@
       "help": "Move the contents of the Rsrc register of the CPU to the CPdest register of the floating-point coprocessor.",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "mtc1",
@@ -3304,6 +3353,7 @@
       "help": "Move the contents of the Rsrc register to the HI register.",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "mthi",
@@ -3338,6 +3388,7 @@
       "help": "Move the contents of the Rsrc register to the LO register.",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "mtlo",
@@ -3369,6 +3420,7 @@
       "help": "",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "signature_definition": "F0 $F1 $F2 $F3",
       "signature": "mul,$INT-Reg,$INT-Reg,$INT-Reg",
       "signatureRaw": "mul $reg1 $reg2 $reg3",
@@ -3418,6 +3470,7 @@
       "help": "Multiply the register fs and ft and leave your result in fd. (float)",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "mul.s",
@@ -3471,6 +3524,7 @@
       "help": "Multiply the register fs and ft and leave your result in fd. (double)",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "mul.d",
@@ -3524,6 +3578,7 @@
       "help": "Multiply, the low part of the result is left in the lo register and the high part in the hi register",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "mult",
@@ -3564,6 +3619,7 @@
       "help": "Multiply without overflow, the low part of the result is left in the lo register and the high part in the hi register",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "multu",
@@ -3601,6 +3657,7 @@
       "help": "It does not perform any operation",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "signature_definition": "F0",
       "signature": "nop",
       "signatureRaw": "nop",
@@ -3632,6 +3689,7 @@
       "help": "NOR Logic Operation",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "nor",
@@ -3675,6 +3733,7 @@
       "help": "OR Logic Operation",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "signature_definition": "F0 $F1 $F2 $F3",
       "signature": "or,$INT-Reg,$INT-Reg,$INT-Reg",
       "signatureRaw": "or $reg1 $reg2 $reg3",
@@ -3721,6 +3780,7 @@
       "help": "OR Logic Operation with immediate",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "signature_definition": "F0 $F1 $F2 F3",
       "signature": "ori,$INT-Reg,$INT-Reg,inm-signed",
       "signatureRaw": "ori $reg1 $reg2 val",
@@ -3763,6 +3823,7 @@
       "help": "Right rotation of inm bits",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "rotr",
@@ -3816,6 +3877,7 @@
       "help": "Reciprocal Square Root fd = 1.0/sqrt.s(fs) (float)",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "rsqrt.s",
@@ -3863,6 +3925,7 @@
       "help": "Reciprocal Square Root fd = 1.0/sqrt.s(fs) (double)",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "rsqrt.d",
@@ -3910,6 +3973,7 @@
       "help": "",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "sb",
@@ -3949,6 +4013,7 @@
       "help": "Stores the low half word (16 bits) of a register in the indicated memory address.",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "sh",
@@ -3988,6 +4053,7 @@
       "help": "Logical bit shift to the left",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "sll",
@@ -4034,6 +4100,7 @@
       "help": "Set Rdest to 1 if Rsrc1 is less than Rsrc2, otherwise set 0 (for signed numbers).",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "slt",
@@ -4080,6 +4147,7 @@
       "help": "Set Rdest to 1 if Rsrc1 is less than Rsrc2, otherwise set 0 (for unsigned numbers).",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "sltu",
@@ -4126,6 +4194,7 @@
       "help": "Set Rdest to 1 if Rsrc1 is less than inm, otherwise set 0 (for signed numbers).",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "slti",
@@ -4165,6 +4234,7 @@
       "help": "Set Rdest to 1 if Rsrc1 is less than inm, otherwise set 0 (for unsigned numbers).",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "sltiu",
@@ -4204,6 +4274,7 @@
       "help": "Square root of fs (float): fd=sqrt(fs)",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "sqrt.s",
@@ -4251,6 +4322,7 @@
       "help": "Square root of fs (double)",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "sqrt.d",
@@ -4298,6 +4370,7 @@
       "help": "Arithmetic bit shift to the right",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "sra",
@@ -4344,6 +4417,7 @@
       "help": "Logical bit shift to the right",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "srl",
@@ -4394,6 +4468,7 @@
       "help": "Subtraction (with overflow)",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "signature_definition": "F0 $F1 $F2 $F3",
       "signature": "sub,$INT-Reg,$INT-Reg,$INT-Reg",
       "signatureRaw": "sub $reg1 $reg2 $reg3",
@@ -4443,6 +4518,7 @@
       "help": "Subtraction (float): fd = fs-ft",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "sub.s",
@@ -4496,6 +4572,7 @@
       "help": "Subtraction (double)",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "sub.d",
@@ -4549,6 +4626,7 @@
       "help": "Subtraction (without overflow)",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "subu",
@@ -4592,6 +4670,7 @@
       "help": "Store the Rsrc in the indicated address.",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "signature_definition": "F0 $F1 F2 ($F3)",
       "signature": "sw,$INT-Reg,inm-signed,($INT-Reg)",
       "signatureRaw": "sw $reg1 val ($reg2)",
@@ -4634,6 +4713,7 @@
       "help": "",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "swc1",
@@ -4673,6 +4753,7 @@
       "help": "",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "sdc1",
@@ -4709,6 +4790,7 @@
       "help": "XOR Logic Operation",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "signature_definition": "F0 $F1 $F2 $F3",
       "signature": "xor,$INT-Reg,$INT-Reg,$INT-Reg",
       "signatureRaw": "xor $reg1 $reg2 $reg3",
@@ -4755,6 +4837,7 @@
       "help": "XOR Logic Operation with immediate number",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "signature_definition": "F0 $F1 $F2 F3",
       "signature": "xori,$INT-Reg,$INT-Reg,inm-signed",
       "signatureRaw": "xori $reg1 $reg2 val",
@@ -4794,6 +4877,7 @@
       "help": "",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "signature_definition": "F0",
       "signature": "syscall",
       "signatureRaw": "syscall",
@@ -4825,6 +4909,7 @@
       "help": "Divide without overflow",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "divu",
@@ -4878,6 +4963,7 @@
       "help": "Divide without overflow. Leave quotient in the register lo and the rest in the register hi",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "divu",
@@ -4918,6 +5004,7 @@
       "help": "",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "ldc1",
@@ -4957,6 +5044,7 @@
       "help": "",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "bc1f",
@@ -5004,6 +5092,7 @@
       "help": "",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "bc1t",
@@ -5051,6 +5140,7 @@
       "help": "",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "c.eq.s",
@@ -5104,6 +5194,7 @@
       "help": "",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "c.eq.d",
@@ -5157,6 +5248,7 @@
       "help": "",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "c.olt.s",
@@ -5210,6 +5302,7 @@
       "help": "",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "c.olt.d",
@@ -5263,6 +5356,7 @@
       "help": "",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "c.ole.s",
@@ -5316,6 +5410,7 @@
       "help": "",
       "properties": [],
       "nwords": 1,
+      "power_consumption": 1,
       "fields": [
         {
           "name": "c.ole.d",
