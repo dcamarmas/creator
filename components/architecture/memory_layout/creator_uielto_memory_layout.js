@@ -43,7 +43,7 @@
                   }
                 },
 
-    template:   '<div class="col-lg-12 col-sm-12 row memoryLayoutDiv">' +
+    template:   '<div class="col-lg-12 col-sm-12 row memoryLayoutDiv  mx-0 px-0">' +
                 '' +
                 '  <div class="col-lg-12 col-sm-12">' +
                 '    <span class="h6">Memory layout:</span>' +

@@ -332,6 +332,7 @@ try
       begin_callee: 0,
       end_callee: 0,
 
+
       //
       //Stats
       //
@@ -340,6 +341,16 @@ try
       stats: stats,
       //Stats Graph values
       stats_value: stats_value,
+
+
+      //
+      //Power Consumption
+      //
+
+      total_power_consumption: total_power_consumption,
+      power_consumption: power_consumption,
+      //Power consumption Graph values
+      power_consumption_value: power_consumption_value,
 
       //
       //Display and keyboard
