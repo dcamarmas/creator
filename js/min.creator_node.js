@@ -1254,8 +1254,23 @@ function capi_sbrk ( value1, value2 )
 		throw packExecute(true, "capi_syscall: negative size", 'danger', null) ;
 	}
 
-        var new_addr = creator_memory_alloc(new_size) ;
+    var new_addr = creator_memory_alloc(new_size) ;
 	architecture.components[ret2.indexComp].elements[ret2.indexElem].value = new_addr ;
+}
+
+function capi_get_power_consumption ( value1 )
+{
+	/* Google Analytics */
+	creator_ga('execute', 'execute.syscall', 'execute.syscall.get_power_consumption');
+
+	/* Get register id */
+	var ret1 = crex_findReg(value1) ;
+	if (ret1.match == 0) {
+		throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
+	}
+
+	//Store power consumption in the register
+	architecture.components[ret1.indexComp].elements[ret1.indexElem].value = total_power_consumption;
 }
 
 
@@ -2897,6 +2912,28 @@ var stats = [
   { type: 'Conditional bifurcation', number_instructions: 0, percentage: 0},
   { type: 'Unconditional bifurcation', number_instructions: 0, percentage: 0},
   { type: 'Other', number_instructions: 0, percentage: 0},
+];
+/*Power consumption*/
+var total_power_consumption = 0;
+var power_consumption_value = [
+                                {
+                                  data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                                }
+                              ];
+var power_consumption = [
+  { type: 'Arithmetic integer', power_consumption: 0, percentage: 0 },
+  { type: 'Arithmetic floating point', power_consumption: 0, percentage: 0},
+  { type: 'Logic', power_consumption: 0, percentage: 0, abbreviation: "Log" },
+  { type: 'Transfer between registers', power_consumption: 0, percentage: 0},
+  { type: 'Memory access', power_consumption: 0, percentage: 0},
+  { type: 'Comparison', power_consumption: 0, percentage: 0},
+  { type: 'I/O', power_consumption: 0, percentage: 0},
+  { type: 'Syscall', power_consumption: 0, percentage: 0},
+  { type: 'Control', power_consumption: 0, percentage: 0},
+  { type: 'Function call', power_consumption: 0, percentage: 0},
+  { type: 'Conditional bifurcation', power_consumption: 0, percentage: 0},
+  { type: 'Unconditional bifurcation', power_consumption: 0, percentage: 0},
+  { type: 'Other', power_consumption: 0, percentage: 0},
 ];
 /*Keyboard*/
 var keyboard = '' ;
@@ -6673,6 +6710,9 @@ function execute_instruction ( )
     // Refresh stats
     stats_update(type) ;
 
+    // Refresh power consumption
+    power_consumtion_update(type) ;
+
     // Execution error
     if (execution_index == -1){
        error = 1;
@@ -6769,7 +6809,10 @@ function reset ()
   execution_init = 1;
 
   // Reset stats
-    stats_reset() ;
+  stats_reset();
+
+  //Power consumption reset
+  power_consumtion_reset();
 
   // Reset console
   mutex_read    = false ;
@@ -6972,6 +7015,49 @@ function stats_reset ( )
 
     stats[i].number_instructions = 0;
     stats_value[i] = 0;
+  }
+}
+
+
+/*
+ * Power consumption
+ */
+
+function power_consumtion_update ( type )
+{
+  for (var i = 0; i < power_consumption.length; i++)
+  {
+    if (type == power_consumption[i].type)
+    {
+      power_consumption[i].power_consumption++;
+      power_consumption_value[0].data[i] ++;
+
+      total_power_consumption++;
+      if (typeof app !== "undefined") {
+        app._data.total_power_consumption++;
+      }
+    }
+  }
+
+  //Power Consumptiom
+  for (var i = 0; i < stats.length; i++){
+    power_consumption[i].percentage = ((power_consumption[i].power_consumption/total_power_consumption)*100).toFixed(2);
+  }
+}
+
+function power_consumtion_reset ( )
+{
+  total_power_consumption = 0 ;
+  if (typeof app !== "undefined") {
+    app._data.total_power_consumption = 0 ;
+  }
+
+  for (var i = 0; i < power_consumption.length; i++)
+  {
+    power_consumption[i].percentage = 0;
+
+    power_consumption[i].number_instructions = 0;
+    power_consumption_value[0].data[i] = 0;
   }
 }
 

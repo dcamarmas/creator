@@ -4896,7 +4896,7 @@
           "valueField": "001100"
         }
       ],
-      "definition": "switch(v0){\ncase 1:\ncapi_print_int('a0');\nbreak;\ncase 2:\ncapi_print_float('f12');\nbreak;\ncase 3:\ncapi_print_double('FP12');\nbreak;\ncase 4:\ncapi_print_string('a0');\nbreak;\ncase 5:\ncapi_read_int('v0');\nbreak;\ncase 6:\ncapi_read_float('f0');\nbreak;\ncase 7:\ncapi_read_double('FP0');\nbreak;\ncase 8:\ncapi_read_string('a0', 'a1');\nbreak;\ncase 9:\ncapi_sbrk('a0', 'v0');\nbreak;\ncase 10:\ncapi_exit();\nbreak;\ncase 11:\ncapi_print_char('a0');\nbreak;\ncase 12:\ncapi_read_char('v0');\nbreak;\n}"
+      "definition": "switch(v0){\ncase 1:\ncapi_print_int('a0');\nbreak;\ncase 2:\ncapi_print_float('f12');\nbreak;\ncase 3:\ncapi_print_double('FP12');\nbreak;\ncase 4:\ncapi_print_string('a0');\nbreak;\ncase 5:\ncapi_read_int('v0');\nbreak;\ncase 6:\ncapi_read_float('f0');\nbreak;\ncase 7:\ncapi_read_double('FP0');\nbreak;\ncase 8:\ncapi_read_string('a0', 'a1');\nbreak;\ncase 9:\ncapi_sbrk('a0', 'v0');\nbreak;\ncase 10:\ncapi_exit();\nbreak;\ncase 11:\ncapi_print_char('a0');\nbreak;\ncase 12:\ncapi_read_char('v0');\nbreak;\ncase 13:\ncapi_get_power_consumption('v0');\nbreak;\n}"
     },
     {
       "name": "divu",

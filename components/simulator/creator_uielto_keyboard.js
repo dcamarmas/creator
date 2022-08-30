@@ -85,7 +85,7 @@
               },
 
 template:     ' <div>' +
-              '   <b-container fluid align-h="start">' +
+              '   <b-container fluid align-h="start" class="mx-0 px-0">' +
               '     <b-row cols="2" align-h="start">' +
               '       <b-col cols="1">' +
               '         <span class="fa fa-keyboard fa-2x mb-2 consoleIcon"></span>' +
@@ -101,7 +101,7 @@ template:     ' <div>' +
               '     </b-row>' +
               '   </b-container>' +
               ' ' +
-              '   <b-container fluid align-h="end">' +
+              '   <b-container fluid align-h="end" class="mx-0 px-0">' +
               '     <b-row cols="3" align-h="end">' +
               '       <b-col>' +
               '         <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm keyboardButton"' +

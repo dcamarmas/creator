@@ -145,7 +145,7 @@
             ' ' +
             '   <b-container fluid align-h="between" class="mx-0 px-0">' +
             '     <b-row align-v="start" cols="1">' +
-            '       <b-col class="mx-0 px-0" style="min-height:35vh !important;">' +
+            '       <b-col class="mx-0 pl-0 pr-2" style="min-height:35vh !important;">' +
             ' ' +
             '         <b-table sticky-header ' +
             '                 striped ' +

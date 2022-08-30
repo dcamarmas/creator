@@ -119,7 +119,7 @@
                 '  <!-- Register File table -->' +
                 '  <div class="col-lg-12 col-sm-12 p-0">' +
                 '    <br>' +
-                '    <div class="col-lg-12 col-sm-12 pl-0" v-for="(item, index) in register_file">' +
+                '    <div class="col-lg-12 col-sm-12 px-0" v-for="(item, index) in register_file">' +
                 '' +
                 '      <!-- For each register file -->' +
                 '      <b-card no-body class="mb-1">' +

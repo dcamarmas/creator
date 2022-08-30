@@ -54,7 +54,7 @@
               },
 
   template:   ' <div>' +
-              '   <b-container fluid align-h="between" class="mx-0 px-0">' +
+              '   <b-container fluid align-h="between" class="mx-0 px-2">' +
               '     <b-row cols-xl="2" cols-lg="1" cols-md="2" cols-sm="1" cols-xs="1" cols="1" >' +
               '       <b-col align-h="start" class="px-1">' +
               '         <b-form-group label="Register value representation:" v-slot="{ ariaDescribedby }">' +
@@ -91,7 +91,7 @@
               '   </b-container>' +
               '   ' +
               ' ' +
-              '   <b-container fluid align-h="center" class="mx-0 px-0">' +
+              '   <b-container fluid align-h="center" class="mx-0 px-2">' +
               '     <b-row align-h="center" cols="1">' +
               '       <b-col v-for="item in architecture_hash">' +
               '         <b-container fluid align-h="center" class="px-0 mx-0 mb-2" v-if="(register_type == architecture.components[item.index].type) || (register_type == \'integer\' && architecture.components[item.index].type == \'control\')">' +

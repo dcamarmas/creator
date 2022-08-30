@@ -25,7 +25,8 @@
 
         props:      {
                       group:                        { type: Array,   required: true },
-                      browser:                      { type: String,  required: true }
+                      browser:                      { type: String,  required: true },
+                      arch_available:               { type: Array,   required: true }
                     },
 
         data:       function () {
@@ -90,6 +91,20 @@
                           app.$forceUpdate();
                         }
                       },
+
+
+
+                      //
+                      // Architecture Selector
+                      //
+
+                      load_arch_select(arch)
+                      {
+                        console.log(name);
+                        uielto_preload_architecture.methods.load_arch_select(arch);
+                      },
+
+
 
 
                       //
@@ -454,12 +469,16 @@
 
 
   function button_architecture(){
-    return  '<b-button v-if="item==\'btn_architecture\'" class="btn btn-block btn-outline-secondary menuGroup btn-sm arch_btn h-100 mr-1 text-truncate"' + 
-            '          id="arch_btn_sim" ' +
-            '          @click="change_UI_mode(\'architecture\')"> ' +
-            '  <span class="fas fa-sitemap"></span> ' +
-            '  Architecture' +
-            '</b-button>'
+    return  '<b-dropdown class="btn btn-block menuGroup arch_btn h-100 mr-1 p-0 text-truncate"' +
+            '            split' +
+            '            v-if="item==\'btn_architecture\'"' +
+            '            right' +
+            '            text="Architecture"' +
+            '            size="sm"' +
+            '            variant="outline-secondary"' +
+            '            @click="change_UI_mode(\'architecture\')">' +
+            '  <b-dropdown-item v-for="item in arch_available" @click="load_arch_select(item)">{{item.alt}}</b-dropdown-item>' +
+            '</b-dropdown>'
   }
 
   function button_assembly(){

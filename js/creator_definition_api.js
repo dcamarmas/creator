@@ -346,8 +346,23 @@ function capi_sbrk ( value1, value2 )
 		throw packExecute(true, "capi_syscall: negative size", 'danger', null) ;
 	}
 
-        var new_addr = creator_memory_alloc(new_size) ;
+    var new_addr = creator_memory_alloc(new_size) ;
 	architecture.components[ret2.indexComp].elements[ret2.indexElem].value = new_addr ;
+}
+
+function capi_get_power_consumption ( value1 )
+{
+	/* Google Analytics */
+	creator_ga('execute', 'execute.syscall', 'execute.syscall.get_power_consumption');
+
+	/* Get register id */
+	var ret1 = crex_findReg(value1) ;
+	if (ret1.match == 0) {
+		throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
+	}
+
+	//Store power consumption in the register
+	architecture.components[ret1.indexComp].elements[ret1.indexElem].value = total_power_consumption;
 }
 
 

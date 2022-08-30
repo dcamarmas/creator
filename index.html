@@ -166,7 +166,8 @@
               <!-- Navbar -->
               <uielto-toolbar id="navbar_load_architecture" 
                               components=" | | |btn_configuration,btn_information" 
-                              :browser="browser">
+                              :browser="browser"
+                              :arch_available="arch_available">
               </uielto-toolbar>
           
 
@@ -231,7 +232,8 @@
               <!-- Navbar -->
               <uielto-toolbar id="navbar_architecture" 
                               components="btn_assembly,btn_simulator|btn_save_architecture|btn_advanced_mode|btn_configuration,btn_information" 
-                              :browser="browser">
+                              :browser="browser"
+                              :arch_available="arch_available">
               </uielto-toolbar>
 
               
@@ -493,7 +495,8 @@
               <!-- Navbar -->
               <uielto-toolbar id="navbar_assembly" 
                               components="btn_architecture,btn_simulator|dropdown_assembly_file,dropdown_library|btn_compile|btn_configuration,btn_information" 
-                              :browser="browser">
+                              :browser="browser"
+                              :arch_available="arch_available">
               </uielto-toolbar>
 
               <!-- Assembly navbar modals -->
@@ -567,7 +570,8 @@
               <!-- Navbar -->
               <uielto-toolbar id="navbar_simulator" 
                               components="btn_architecture,btn_assembly|btn_reset,btn_instruction,btn_run,btn_stop|btn_examples,btn_calculator|btn_configuration,btn_information" 
-                              :browser="browser">
+                              :browser="browser"
+                              :arch_available="arch_available">
               </uielto-toolbar>
 
 
@@ -626,12 +630,18 @@
 
 
                     <!-- Stats view--->
-                    <stats  id="stats" 
-                            :data_mode="data_mode" 
-                            :stats="stats" 
+                    <stats  :stats="stats" 
                             :stats_value="stats_value"
                             v-if="data_mode == 'stats'">  
                     </stats>
+
+
+                    <!-- Power Consumption view--->
+                    <power-consumption  :power_consumption="power_consumption" 
+                                        :power_consumption_value="power_consumption_value"
+                                        :total_power_consumption="total_power_consumption"
+                                        v-if="data_mode == 'power_consumption'">  
+                    </power-consumption>
 
                   </b-col>
 
