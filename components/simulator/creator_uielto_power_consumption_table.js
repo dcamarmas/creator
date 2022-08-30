@@ -35,7 +35,7 @@
                       label: 'Type',
                       sortable: true
                     },
-                    number_instructions: {
+                    power_consumption: {
                       label: 'Power Consumption',
                       sortable: true
                     },

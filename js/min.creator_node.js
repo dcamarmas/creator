@@ -1254,8 +1254,23 @@ function capi_sbrk ( value1, value2 )
 		throw packExecute(true, "capi_syscall: negative size", 'danger', null) ;
 	}
 
-        var new_addr = creator_memory_alloc(new_size) ;
+    var new_addr = creator_memory_alloc(new_size) ;
 	architecture.components[ret2.indexComp].elements[ret2.indexElem].value = new_addr ;
+}
+
+function capi_get_power_consumption ( value1 )
+{
+	/* Google Analytics */
+	creator_ga('execute', 'execute.syscall', 'execute.syscall.get_power_consumption');
+
+	/* Get register id */
+	var ret1 = crex_findReg(value1) ;
+	if (ret1.match == 0) {
+		throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
+	}
+
+	//Store power consumption in the register
+	architecture.components[ret1.indexComp].elements[ret1.indexElem].value = total_power_consumption;
 }
 
 
@@ -2900,7 +2915,11 @@ var stats = [
 ];
 /*Power consumption*/
 var total_power_consumption = 0;
-var power_consumption_value = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+var power_consumption_value = [
+                                {
+                                  data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                                }
+                              ];
 var power_consumption = [
   { type: 'Arithmetic integer', power_consumption: 0, percentage: 0 },
   { type: 'Arithmetic floating point', power_consumption: 0, percentage: 0},
@@ -7011,7 +7030,7 @@ function power_consumtion_update ( type )
     if (type == power_consumption[i].type)
     {
       power_consumption[i].power_consumption++;
-      power_consumption_value[i] ++;
+      power_consumption_value[0].data[i] ++;
 
       total_power_consumption++;
       if (typeof app !== "undefined") {
@@ -7038,7 +7057,7 @@ function power_consumtion_reset ( )
     power_consumption[i].percentage = 0;
 
     power_consumption[i].number_instructions = 0;
-    power_consumption_value[i] = 0;
+    power_consumption_value[0].data[i] = 0;
   }
 }
 

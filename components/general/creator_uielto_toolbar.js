@@ -26,7 +26,8 @@
     props:      {
                   id:                           { type: String,  required: true },
                   components:                   { type: String,  required: true },
-                  browser:                      { type: String,  required: true }
+                  browser:                      { type: String,  required: true },
+                  arch_available:               { type: Array,   required: true }
                 },
 
     computed:   {
@@ -44,7 +45,8 @@
               '   <b-cols class="px-2 py-1"' +
               '           v-for="(item, index) in components_array">' +
               '     <toolbar-btngroup :group="item.split(\',\')"' +
-              '                       :browser="browser">' +
+              '                       :browser="browser"' +
+              '                       :arch_available="arch_available">' +
               '     </toolbar-btngroup>' +
               ' ' +
               '     <div class="w-100 d-block d-sm-none"></div>' +

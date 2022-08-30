@@ -26,6 +26,7 @@
   props:      {
                 power_consumption:       { type: Array,  required: true },
                 power_consumption_value: { type: Number, required: true },
+                total_power_consumption: { type: Number, required: true },
               },
 
   data:       function () {
@@ -54,10 +55,14 @@
               '           buttons' +
               '         ></b-form-radio-group>' +
               '       </b-form-group>' +
-              ' ' +
+              '' +
+              '       <b-list-group class="align-items-center py-2 px-4">' +
+              '         <b-list-group-item>Total power consumption: {{total_power_consumption}}</b-list-group-item>' +
+              '       </b-list-group>' +
+              '' +
               '       <plot-power-consumption  :power_consumption_value="power_consumption_value" v-if="power_consumption_representation == \'graphic\'"></plot-power-consumption>  ' +
               '       <table-power-consumption :power_consumption="power_consumption" v-if="power_consumption_representation == \'table\'"></table-power-consumption> ' +
-              ' ' +
+              '' +
               '     </b-col>' +
               '   </b-row>' +
               ' </b-container>'
