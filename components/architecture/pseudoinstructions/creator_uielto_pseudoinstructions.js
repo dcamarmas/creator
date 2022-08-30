@@ -40,7 +40,7 @@
                       {
                         app._data.modal_field_pseudoinstruction.title             = "Fields of " + name;
                         app._data.modal_field_pseudoinstruction.index             = index;
-                        app._data.modal_field_pseudoinstruction.pseudoinstruction = Object.assign({}, architecture.pseudoinstructions[index]);
+                        app._data.modal_field_pseudoinstruction.pseudoinstruction = structuredClone(architecture.pseudoinstructions[index]);
 
                         this.$root.$emit('bv::show::modal', 'fields_pseudoinstructions', button);
                       },
@@ -50,7 +50,8 @@
                       {
                         app._data.modal_edit_pseudoinstruction.title               = "Edit  " + name;
                         app._data.modal_edit_pseudoinstruction.index               = index;
-                        app._data.modal_edit_pseudoinstruction.pseudoinstruction   = Object.assign({}, architecture.pseudoinstructions[index]);
+                        app._data.modal_edit_pseudoinstruction.pseudoinstruction = structuredClone(architecture.pseudoinstructions[index]);
+
                         app._data.modal_edit_pseudoinstruction.number_fields       = app._data.modal_edit_pseudoinstruction.pseudoinstruction.fields.length;
 
                         this.$root.$emit('bv::show::modal', 'edit_pseudoinstructions', button);
