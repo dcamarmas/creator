@@ -44,17 +44,17 @@
 
                     for(var i = 0; i < this._props.memory_layout.length; i++)
                     {
-                      if (!this._props.memory_layout[i])
+                      if (!this._props.memory_layout[i].value)
                       {
                         show_notification('Please complete all fields', 'danger') ;
                         return;
                       }
 
-                      if(this._props.memory_layout[i] != "" && this._props.memory_layout[i] != null)
+                      if(this._props.memory_layout[i].value != "" && this._props.memory_layout[i].value != null)
                       {
-                        if(!isNaN(parseInt(this._props.memory_layout[i])))
+                        if(!isNaN(parseInt(this._props.memory_layout[i].value)))
                         {
-                          if (parseInt(this._props.memory_layout[i]) < 0) 
+                          if (parseInt(this._props.memory_layout[i].value) < 0) 
                           {
                             show_notification('The value can not be negative', 'danger') ;
                             return;
@@ -69,7 +69,7 @@
 
                       for (var j = i+1; j < this._props.memory_layout.length; j++)
                       {
-                        if (parseInt(this._props.memory_layout[i]) >= parseInt(this._props.memory_layout[j]))
+                        if (parseInt(this._props.memory_layout[i].value) >= parseInt(this._props.memory_layout[j].value))
                         {
                           show_notification('The segment can not be overlap', 'danger') ;
                           return;
@@ -77,7 +77,7 @@
                       }
                     }
 
-                    this.edit_memory_layout(name);
+                    this.edit_memory_layout();
                   },
 
                   //Edit memory layout
@@ -85,11 +85,8 @@
                   {
                     this.show_modal = false;
 
-                    for(var i = 0; i < this._props.memory_layout.length; i++){
-                      architecture.memory_layout[i].value = this._props.memory_layout[i];
-                    }
+                    architecture.memory_layout = structuredClone(this._props.memory_layout);
 
-                    app._data.architecture = architecture;
                     backup_stack_address = architecture.memory_layout[4].value;
                     backup_data_address = architecture.memory_layout[3].value;
 
@@ -122,8 +119,8 @@
                 '  <b-form>' +
                 '    <b-form-group label=".text Start:">' +
                 '      <b-form-input type="text" ' +
-                '                v-model="memory_layout[0]" ' +
-                '                :state="valid(memory_layout[0])" ' +
+                '                v-model="memory_layout[0].value" ' +
+                '                :state="valid(memory_layout[0].value)" ' +
                 '                required ' +
                 '                size="sm" ' +
                 '                class="memoryLayoutForm">' +
@@ -132,8 +129,8 @@
                 '' +
                 '    <b-form-group label=".text End:">' +
                 '      <b-form-input type="text" ' +
-                '                v-model="memory_layout[1]" ' +
-                '                :state="valid(memory_layout[1])" ' +
+                '                v-model="memory_layout[1].value" ' +
+                '                :state="valid(memory_layout[1].value)" ' +
                 '                required ' +
                 '                size="sm" ' +
                 '                class="memoryLayoutForm">' +
@@ -142,8 +139,8 @@
                 '' +
                 '    <b-form-group label=".data Start:">' +
                 '      <b-form-input type="text" ' +
-                '                v-model="memory_layout[2]" ' +
-                '                :state="valid(memory_layout[2])" ' +
+                '                v-model="memory_layout[2].value" ' +
+                '                :state="valid(memory_layout[2].value)" ' +
                 '                required ' +
                 '                size="sm" ' +
                 '                class="memoryLayoutForm">' +
@@ -152,8 +149,8 @@
                 '' +
                 '    <b-form-group label=".data End:">' +
                 '      <b-form-input type="text" ' +
-                '                v-model="memory_layout[3]" ' +
-                '                :state="valid(memory_layout[3])" ' +
+                '                v-model="memory_layout[3].value" ' +
+                '                :state="valid(memory_layout[3].value)" ' +
                 '                required ' +
                 '                size="sm" ' +
                 '                class="memoryLayoutForm">' +
@@ -162,8 +159,8 @@
                 '' +
                 '    <b-form-group label=".stack End:">' +
                 '      <b-form-input type="text" ' +
-                '                v-model="memory_layout[4]" ' +
-                '                :state="valid(memory_layout[4])" ' +
+                '                v-model="memory_layout[4].value" ' +
+                '                :state="valid(memory_layout[4].value)" ' +
                 '                required ' +
                 '                size="sm" ' +
                 '                class="memoryLayoutForm">' +
@@ -172,8 +169,8 @@
                 '' +
                 '    <b-form-group label=".stack Start:">' +
                 '      <b-form-input type="text" ' +
-                '                v-model="memory_layout[5]"' +
-                '                :state="valid(memory_layout[5])" ' +
+                '                v-model="memory_layout[5].value"' +
+                '                :state="valid(memory_layout[5].value)" ' +
                 '                required size="sm" ' +
                 '                class="memoryLayoutForm">' +
                 '      </b-form-input>' +
