@@ -62,6 +62,9 @@ try
       //Accesskey
       browser: "",
 
+      //Displayed notifications
+      notifications: notifications, //TODO: copy?
+
 
       //
       // Current view
@@ -76,9 +79,6 @@ try
 
       //Notification speed
       notification_time: 1500,
-
-      //Displayed notifications
-      notifications: notifications, //TODO: copy?
 
       // Instruction help size
       instruction_help_size: 33,
@@ -292,7 +292,7 @@ try
       instructions_packed: 20,
 
       //Run button
-      runExecution: false,
+      run_execution: false,
 
       //Reset button
       resetBut: false,
@@ -485,11 +485,11 @@ try
       {
         show_notification("There has been an exception. Error description: '" + error, 'danger') ;
 
-        if (executionIndex != -1) {
-          instructions[executionIndex]._rowVariant = 'danger';
+        if (execution_index != -1) {
+          instructions[execution_index]._rowVariant = 'danger';
         }
         
-        executionIndex = -1;
+        execution_index = -1;
 
         /* Google Analytics */
         creator_ga('execute', 'execute.exception', 'execute.exception.' + error);

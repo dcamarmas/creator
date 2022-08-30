@@ -61,6 +61,7 @@
                       nwords: 1,
                       help: '',
                       properties: [],
+                      power_consumption: 1,
                       separated: [],
                       fields: [{name: '', type: '', startbit: '', stopbit: '', valueField: ''}],
                       signature: '',
@@ -162,7 +163,7 @@
                     }
 
                     //Verify empty fields
-                    if (!this.instruction.name || !this.instruction.type || !this.instruction.co || !this.instruction.nwords || !this.number_fields || !this.instruction.signature_definition || !this.instruction.definition || empty == 1)
+                    if (!this.instruction.name || !this.instruction.type || !this.instruction.co || !this.instruction.nwords || !this.instruction.power_consumption || !this.number_fields || !this.instruction.signature_definition || !this.instruction.definition || empty == 1)
                     {
                       show_notification('Please complete all fields', 'danger') ;
                       return;
@@ -250,6 +251,7 @@
                       help: this.instruction.help,
                       properties: this.instruction.properties,
                       nwords: this.instruction.nwords,
+                      power_consumption: this.instruction.power_consumption,
                       signature_definition: this.instruction.signature_definition,
                       signature: signature, 
                       signatureRaw: signatureRaw,
@@ -443,6 +445,7 @@
                     this.instruction.cop = '';
                     this.instruction.nwords = 1;
                     this.instruction.separated = [];
+                    this.instruction.power_consumption = 1;
                     this.instruction.properties = [];
                     this.number_fields = "1";
                     this.instruction.fields = [{name: '', type: '', startbit: '', stopbit: '', valueField: ''}];
@@ -507,6 +510,17 @@
                 '                      required ' +
                 '                      placeholder="Enter nwords" ' +
                 '                      :state="valid(instruction.nwords)" ' +
+                '                      size="sm" ' +
+                '                      title="Intruction size">' +
+                '        </b-form-input>' +
+                '      </b-form-group>' +
+                '      <b-form-group label="Power Consumption:">' +
+                '        <b-form-input type="number" ' +
+                '                      min="1" ' +
+                '                      v-model="instruction.power_consumption" ' +
+                '                      required ' +
+                '                      placeholder="Enter power consumption" ' +
+                '                      :state="valid(instruction.power_consumption)" ' +
                 '                      size="sm" ' +
                 '                      title="Intruction size">' +
                 '        </b-form-input>' +

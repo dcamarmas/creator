@@ -107,15 +107,10 @@ var notifications = [];
 /*Available examples*/
 var example_set_available = [];
 var example_available = [];
-/*Execution*/
-var executionIndex = 0;
-var runExecution = false;
-var runProgram = false;
-var iter1 = 1;
-var executionInit = 1;
+
 /*Keyboard*/
 var consoleMutex = false;
-var mutexRead = false;
+var mutex_read = false;
 var newExecution = true;
 /*Instructions memory*/
 var instructions = [];
@@ -410,8 +405,8 @@ function assembly_compiler()
         creator_memory_clear() ;
         extern = [];
         data = [];
-        executionInit = 1;
-        mutexRead = false;
+        execution_init = 1;
+        mutex_read = false;
 
         pc = 4;
 

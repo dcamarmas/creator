@@ -146,7 +146,7 @@
                     }
 
                     //Verify empty fields
-                    if (!this._props.instruction.name || !this._props.instruction.type || !this._props.instruction.co || !this._props.instruction.nwords || !this._props.number_fields || !this._props.instruction.signature_definition || !this._props.instruction.definition || empty == 1)
+                    if (!this._props.instruction.name || !this._props.instruction.type || !this._props.instruction.co || !this._props.instruction.nwords || !this._props.instruction.power_consumption || !this._props.number_fields || !this._props.instruction.signature_definition || !this._props.instruction.definition || empty == 1)
                     {
                       show_notification('Please complete all fields', 'danger') ;
                       return;
@@ -221,6 +221,7 @@
                     architecture.instructions[this._props.index].co = this._props.instruction.co;
                     architecture.instructions[this._props.index].cop = this._props.instruction.cop;
                     architecture.instructions[this._props.index].nwords = this._props.instruction.nwords;
+                    architecture.instructions[this._props.index].power_consumption = this._props.instruction.power_consumption;
                     architecture.instructions[this._props.index].help = this._props.instruction.help;
                     architecture.instructions[this._props.index].signature_definition = this._props.instruction.signature_definition;
                     architecture.instructions[this._props.index].definition = this._props.instruction.definition;
@@ -488,6 +489,17 @@
                 '                      :state="valid(instruction.nwords)" ' +
                 '                      size="sm" ' +
                 '                      title="Instruction size">' +
+                '        </b-form-input>' +
+                '      </b-form-group>' +
+                '      <b-form-group label="Power Consumption:">' +
+                '        <b-form-input type="number" ' +
+                '                      min="1" ' +
+                '                      v-model="instruction.power_consumption" ' +
+                '                      required ' +
+                '                      placeholder="Enter power consumption" ' +
+                '                      :state="valid(instruction.power_consumption)" ' +
+                '                      size="sm" ' +
+                '                      title="Intruction size">' +
                 '        </b-form-input>' +
                 '      </b-form-group>' +
                 '      <b-form-group label="Number of fields: (Including co and cop)">' +
