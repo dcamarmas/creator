@@ -2017,13 +2017,6 @@ function main_memory_packs_forav ( addr, value )
 
 function main_memory_datatypes_packs_foravt ( addr, value, type, size )
 {
-  console.log(addr)
-  console.log(value)
-  console.log(type)
-  console.log(size)
-
-  console.log(main_memory_datatypes[addr])
-
   var default_value = "00"
 
   if (typeof(main_memory_datatypes[addr]) !== 'undefined')
