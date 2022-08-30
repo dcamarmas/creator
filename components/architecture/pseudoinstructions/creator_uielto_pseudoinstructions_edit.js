@@ -93,50 +93,10 @@
                       {
                         this.show_modal = false;
 
-                        //General fields
-                        architecture.pseudoinstructions[this._props.index].name       = this._props.pseudoinstruction.name;
-                        architecture.pseudoinstructions[this._props.index].help       = this._props.pseudoinstruction.help;
-                        architecture.pseudoinstructions[this._props.index].properties = this._props.pseudoinstruction.properties;
-                        architecture.pseudoinstructions[this._props.index].nwords     = this._props.pseudoinstruction.nwords;
-                        architecture.pseudoinstructions[this._props.index].signature_definition = this._props.pseudoinstruction.signature_definition;
-                        architecture.pseudoinstructions[this._props.index].definition = this._props.pseudoinstruction.definition;
-                        
-                        //Intruction fields
-                        for (var j = 0; j < this._props.number_fields; j++)
-                        {
-                          if(j < architecture.pseudoinstructions[this._props.index].fields.length)
-                          {
-                            architecture.pseudoinstructions[this._props.index].fields[j].name     = this._props.pseudoinstruction.fields[j].name;
-                            architecture.pseudoinstructions[this._props.index].fields[j].type     = this._props.pseudoinstruction.fields[j].type;
-                            architecture.pseudoinstructions[this._props.index].fields[j].startbit = this._props.pseudoinstruction.fields[j].startbit;
-                            architecture.pseudoinstructions[this._props.index].fields[j].stopbit  = this._props.pseudoinstruction.fields[j].stopbit;
-                          }
-                          else
-                          {
-                            var new_field = {
-                                              name: this._props.pseudoinstruction.fields[j].name, 
-                                              type: this._props.pseudoinstruction.fields[j].type, 
-                                              startbit: this._props.pseudoinstruction.fields[j].startbit, 
-                                              stopbit: this._props.pseudoinstruction.fields[j].stopbit
-                                            };
-                            architecture.pseudoinstructions[this._props.index].fields.push(new_field);
-                          }
-                        }
-
                         //Generate new signature
                         this.generate_signature();
 
-                        var signature = this._props.pseudoinstruction.signature;
-                        var signatureRaw = this._props.pseudoinstruction.signatureRaw;
-
-                        architecture.pseudoinstructions[this._props.index].signature = signature;
-                        architecture.pseudoinstructions[this._props.index].signatureRaw = signatureRaw;
-
-                        if(architecture.pseudoinstructions[this._props.index].fields.length > this._props.pseudoinstruction.number_fields){
-                          architecture.pseudoinstructions[this._props.index].fields.splice(this._props.pseudoinstruction.number_fields, (architecture.pseudoinstructions[i].fields.length - this._props.pseudoinstruction.number_fields));
-                        }
-
-                        //architecture.pseudoinstructions[this._props.index] = this._props.pseudoinstructions; //TODO
+                        Object.assign(architecture.pseudoinstructions[this._props.index], this._props.pseudoinstruction);
 
                         show_notification('Pseudoinstruction correctly modified', 'success') ;
                       },

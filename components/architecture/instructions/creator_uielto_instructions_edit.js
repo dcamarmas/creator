@@ -215,70 +215,10 @@
                   {
                     this.show_modal = false;
 
-                    //General fields
-                    architecture.instructions[this._props.index].name = this._props.instruction.name;
-                    architecture.instructions[this._props.index].type = this._props.instruction.type;
-                    architecture.instructions[this._props.index].co = this._props.instruction.co;
-                    architecture.instructions[this._props.index].cop = this._props.instruction.cop;
-                    architecture.instructions[this._props.index].nwords = this._props.instruction.nwords;
-                    architecture.instructions[this._props.index].power_consumption = this._props.instruction.power_consumption;
-                    architecture.instructions[this._props.index].help = this._props.instruction.help;
-                    architecture.instructions[this._props.index].signature_definition = this._props.instruction.signature_definition;
-                    architecture.instructions[this._props.index].definition = this._props.instruction.definition;
-                    architecture.instructions[this._props.index].properties = this._props.instruction.properties;
-
-                    if(ex_cop == false){
-                      architecture.instructions[this._props.index].cop = '';
-                    }
-
-                    //Verify separated value
-                    if (!architecture.instructions[this._props.index].separated){
-                      architecture.instructions[this._props.index].separated = Array(this._props.instruction.number_fields).fill(false);
-                    }
-
-                    //Intruction fields
-                    for (var j = 0; j < this._props.number_fields; j++)
-                    {
-                      if (j < architecture.instructions[this._props.index].fields.length)
-                      {
-                        architecture.instructions[this._props.index].fields[j].name = this._props.instruction.fields[j].name;
-                        architecture.instructions[this._props.index].fields[j].type = this._props.instruction.fields[j].type;
-                        architecture.instructions[this._props.index].fields[j].valueField = this._props.instruction.fields[j].valueField;
-                      }
-                      else
-                      {
-                        var new_field = {
-                                          name: this._props.instruction.fields[j].name, 
-                                          type: this._props.instruction.fields[j].type, 
-                                          startbit: this._props.instruction.fields[j].startbit, 
-                                          stopbit: this._props.instruction.fields[j].stopbit, 
-                                          valueField: this._props.instruction.fields[j].valueField
-                                        };
-                        architecture.instructions[this._props.index].fields.push(new_field);
-                      }
-
-                      if (!architecture.instructions[this._props.index].separated)
-                      {
-                        architecture.instructions[this._props.index].fields[j].startbit = !this._props.instruction.separated[j] ? parseInt(this._props.instruction.fields[j].startbit) : this._props.instruction.fields[j].startbit.map(val => parseInt(val));
-                        architecture.instructions[this._props.index].fields[j].stopbit = !this._props.instruction.separated[j] ? parseInt(this._props.instruction.fields[j].stopbit): this._props.instruction.fields[j].stopbit.map(val => parseInt(val));
-                        architecture.instructions[this._props.index].separated[j] = this._props.instruction.separated[j];
-                      }
-                    }
-
                     //Generate new signature
                     this.generate_signature();
 
-                    var signature = this._props.instruction.signature;
-                    var signatureRaw = this._props.instruction.signatureRaw;
-
-                    architecture.instructions[this._props.index].signature = signature;
-                    architecture.instructions[this._props.index].signatureRaw = signatureRaw;
-
-                    if(architecture.instructions[this._props.index].fields.length > this._props.number_fields){
-                      architecture.instructions[this._props.index].fields.splice(this._props.number_fields, (architecture.instructions[i].fields.length - this._props.number_fields));
-                    }
-                    
-                    //architecture.instructions[this._props.index] = this._props.instruction; //TODO
+                    Object.assign(architecture.instructions[this._props.index], this._props.instruction);
 
                     show_notification('The instruction has been modified, please check the definition of the pseudoinstructions', 'info') ;
                   },
