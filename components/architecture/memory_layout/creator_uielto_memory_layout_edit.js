@@ -24,15 +24,15 @@
   var uielto_memory_layout_form = {
 
     props:      {
-                  id:                             { type: String, required: true },
-                  memory_layout:                  { type: Array , required: true }
-                  
+                  id:                             { type: String, required: true }
                 },
 
     data:       function () {
                   return {
+                    memory_layout: ["", "", "", "", "", ""],
+
                     //Modals memory layout
-                    show_modal: false
+                    show_modal: false,
                   }
                 },
 
@@ -42,19 +42,19 @@
                   {
                     evt.preventDefault();
 
-                    for(var i = 0; i < this._props.memory_layout.length; i++)
+                    for(var i = 0; i < this.memory_layout.length; i++)
                     {
-                      if (!this._props.memory_layout[i].value)
+                      if (!this.memory_layout[i].value)
                       {
                         show_notification('Please complete all fields', 'danger') ;
                         return;
                       }
 
-                      if(this._props.memory_layout[i].value != "" && this._props.memory_layout[i].value != null)
+                      if(this.memory_layout[i].value != "" && this.memory_layout[i].value != null)
                       {
-                        if(!isNaN(parseInt(this._props.memory_layout[i].value)))
+                        if(!isNaN(parseInt(this.memory_layout[i].value)))
                         {
-                          if (parseInt(this._props.memory_layout[i].value) < 0) 
+                          if (parseInt(this.memory_layout[i].value) < 0) 
                           {
                             show_notification('The value can not be negative', 'danger') ;
                             return;
@@ -67,9 +67,9 @@
                         }
                       }
 
-                      for (var j = i+1; j < this._props.memory_layout.length; j++)
+                      for (var j = i+1; j < this.memory_layout.length; j++)
                       {
-                        if (parseInt(this._props.memory_layout[i].value) >= parseInt(this._props.memory_layout[j].value))
+                        if (parseInt(this.memory_layout[i].value) >= parseInt(this.memory_layout[j].value))
                         {
                           show_notification('The segment can not be overlap', 'danger') ;
                           return;
@@ -85,7 +85,7 @@
                   {
                     this.show_modal = false;
 
-                    architecture.memory_layout = structuredClone(this._props.memory_layout);
+                    architecture.memory_layout = structuredClone(this.memory_layout);
 
                     backup_stack_address = architecture.memory_layout[4].value;
                     backup_data_address = architecture.memory_layout[3].value;
