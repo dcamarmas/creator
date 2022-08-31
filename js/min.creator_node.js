@@ -7030,7 +7030,12 @@ function power_consumtion_update ( type )
     if (type == power_consumption[i].type)
     {
       power_consumption[i].power_consumption++;
-      power_consumption_value[0].data[i] ++;
+
+      //Update power consumption plot
+      const aux_power_consumption_value = structuredClone(power_consumption_value[0].data);
+      aux_power_consumption_value[i] ++;
+      power_consumption_value = [{data: aux_power_consumption_value}];
+      app._data.power_consumption_value = power_consumption_value;
 
       total_power_consumption++;
       if (typeof app !== "undefined") {
@@ -7043,6 +7048,8 @@ function power_consumtion_update ( type )
   for (var i = 0; i < stats.length; i++){
     power_consumption[i].percentage = ((power_consumption[i].power_consumption/total_power_consumption)*100).toFixed(2);
   }
+
+  app._data.render++;
 }
 
 function power_consumtion_reset ( )
@@ -7057,7 +7064,12 @@ function power_consumtion_reset ( )
     power_consumption[i].percentage = 0;
 
     power_consumption[i].number_instructions = 0;
-    power_consumption_value[0].data[i] = 0;
+
+    //Update power consumption plot
+    const aux_power_consumption_value = structuredClone(power_consumption_value[0].data);
+    aux_power_consumption_value[i] = 0;
+    power_consumption_value = [{data: aux_power_consumption_value}];
+    app._data.power_consumption_value = power_consumption_value;
   }
 }
 

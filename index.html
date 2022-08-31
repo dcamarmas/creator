@@ -613,6 +613,7 @@
 
                     <!-- Registers view -->
                     <register-file  id="register_file"
+                                    :render="render"
                                     :data_mode="data_mode"
                                     :register_type="register_type"
                                     v-if="data_mode == 'registers'">                  
