@@ -40,7 +40,6 @@
                     //Refresh UI
                     uielto_toolbar_btngroup.methods.change_UI_mode('simulator');
                     uielto_data_view_selector.methods.change_data_view('registers', 'int');
-                    app.$forceUpdate();
                     hide_loading();
                   }
                 },

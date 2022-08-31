@@ -88,7 +88,6 @@
 
                            //Close all toast and refresh
                           app.$bvToast.hide()
-                          app.$forceUpdate();
                         }
                       },
 
@@ -102,7 +101,6 @@
 
                         //Close all toast and refresh
                         app.$bvToast.hide()
-                        app.$forceUpdate();
                       },
 
                       //

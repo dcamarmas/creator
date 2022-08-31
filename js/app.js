@@ -150,12 +150,6 @@ try
         title: '',
         index: ''
       },
-
-
-      //Edit memory layout modal
-      modal_edit_memory_layout: { //TODO: include into memory_layout component - modal info
-        memory_layout: ["", "", "", "", "", ""]
-      },
       
 
       //Edit register file modal
