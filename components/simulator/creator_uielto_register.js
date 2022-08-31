@@ -41,7 +41,7 @@
 
                       switch(this.value_representation){
                         case "unsigned":
-                          if (architecture.components[architecture.components[this._props.component.index].type].type == "control" || architecture.components[this._props.component.index].type == "integer") {
+                          if (architecture.components[this._props.component.index].type == "control" || architecture.components[this._props.component.index].type == "integer") {
                             ret = parseInt(register.value.toString(10)) >>> 0;
                           }
                           else {

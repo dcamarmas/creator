@@ -86,13 +86,11 @@
                             textarea_assembly_editor.toTextArea();
                           }
 
-                          //Close all toast and refresh
+                           //Close all toast and refresh
                           app.$bvToast.hide()
                           app.$forceUpdate();
                         }
                       },
-
-
 
                       //
                       // Architecture Selector
@@ -102,10 +100,11 @@
                       {
                         console.log(name);
                         uielto_preload_architecture.methods.load_arch_select(arch);
+                        
+                        //Close all toast and refresh
+                        app.$bvToast.hide()
+                        app.$forceUpdate();
                       },
-
-
-
 
                       //
                       // Architecture
@@ -469,7 +468,7 @@
 
 
   function button_architecture(){
-    return  '<b-dropdown class="btn btn-block menuGroup arch_btn h-100 mr-1 p-0 text-truncate"' +
+    return  '<b-dropdown class="btn btn-block menuGroup arch_btn h-100 mr-1 p-0"' +
             '            split' +
             '            v-if="item==\'btn_architecture\'"' +
             '            right' +
@@ -477,7 +476,7 @@
             '            size="sm"' +
             '            variant="outline-secondary"' +
             '            @click="change_UI_mode(\'architecture\')">' +
-            '  <b-dropdown-item v-for="item in arch_available" @click="load_arch_select(item)">{{item.alt}}</b-dropdown-item>' +
+            '  <b-dropdown-item v-for="item in arch_available" @click="load_arch_select(item)">{{item.name}}</b-dropdown-item>' +
             '</b-dropdown>'
   }
 
