@@ -49,6 +49,9 @@ try
       /* Global Variables */
       /********************/
 
+      //Forces vue to reload a component, similar to $forceUpdate()
+      render: 0,
+
       //
       // General information
       //

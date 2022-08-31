@@ -24,6 +24,7 @@
         var uielto_register = {
 
         props:      {
+                      render:                 { type: Number, required: true },
                       component:              { type: Object, required: true },
                       register:               { type: Object, required: true },
                       name_representation:    { type: String, required: true },

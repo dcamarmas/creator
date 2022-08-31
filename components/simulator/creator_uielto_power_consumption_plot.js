@@ -37,8 +37,12 @@
                   //Power_consumption Graph configure
                   chartOptions: {
                     chart: {
-                      type: 'bar',
-                      height: 350
+                      id: 'graphic',
+                      type: 'bar'
+                    },
+                    labels: ["Arithmetic integer", "Arithmetic floating point", "Logic", "Transfer between registers", "Memory access", "Comparison", "I/O", "Syscall", "Control", "Function call", "Conditional bifurcation", "Unconditional bifurcation", "Other"],
+                    dataLabels: {
+                      enabled: true
                     },
                     plotOptions: {
                       bar: {
@@ -48,12 +52,8 @@
                         distributed: true,
                       },
                     },
-                    dataLabels: {
-                      enabled: true,
-                      style: {
-                        fontSize: '12px',
-                        colors: ["#304758"]
-                      }
+                    fill: {
+                      opacity: 1
                     },
                     legend: {
                       show: false
@@ -65,15 +65,11 @@
                     },
                     xaxis: {
                       categories: ["Arithmetic integer", "Arithmetic floating point", "Logic", "Transfer between registers", "Memory access", "Comparison", "I/O", "Syscall", "Control", "Function call", "Conditional bifurcation", "Unconditional bifurcation", "Other"],
-                      
                     },
                     yaxis: {
                       title: {
                         text: 'Power Consumption'
                       }
-                    },
-                    fill: {
-                      opacity: 1
                     },
                     tooltip: {
                       y: {
@@ -87,11 +83,12 @@
               },
 
   template:   ' <div id="power_consumption_plot" class="stats px-0">' +
-              '   <apexchart id="graphic" ' +
-              '              type="bar" ' +
-              '              :options="chartOptions" ' +
-              '              :series="power_consumption_value" ' +
-              '              height="150%" >' +
+              '  <apexchart id="graphic"' +
+              '             ref="power_consumption_plot"' +
+              '             type="bar" ' +
+              '             :options="chartOptions" ' +
+              '             :series="power_consumption_value" ' +
+              '             height="150%" >' +
               '   </apexchart>' +
               ' </div>'
 

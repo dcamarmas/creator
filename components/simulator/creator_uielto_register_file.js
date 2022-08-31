@@ -24,6 +24,7 @@
   var uielto_register_file = {
 
   props:      {
+                render:                  { type: Number, required: true },
                 data_mode:               { type: String, required: true },
                 register_type:           { type: String, required: true }
               },
@@ -98,7 +99,7 @@
               '           <b-row align-h="start" cols-xl="4" cols-lg="4" cols-md="4" cols-sm="3" cols-xs="3" cols="3">' +
               '             <b-col class="p-1 mx-0" v-for="(item2, index) in architecture.components[item.index].elements">' +
               ' ' +
-              '               <register :component="item"' +
+              '               <register :render="render" :component="item"' +
               '                         :register="item2"' +
               '                         :name_representation="reg_name_representation"' +
               '                         :value_representation="reg_representation">' +

@@ -98,9 +98,8 @@
 
                       load_arch_select(arch)
                       {
-                        console.log(name);
                         uielto_preload_architecture.methods.load_arch_select(arch);
-                        
+
                         //Close all toast and refresh
                         app.$bvToast.hide()
                         app.$forceUpdate();
