@@ -78,6 +78,7 @@ do
        error=1
   else
        echo "Equals";
+       error=1
   fi
   rm   /tmp/e-$I.out
 done
@@ -87,6 +88,5 @@ done
 #
 
 if [[ -v error ]]; then
-    echo aqui
     exit -1
 fi
