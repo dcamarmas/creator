@@ -1,5 +1,5 @@
 /*
- *  Copyright 2018-2021 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
+ *  Copyright 2018-2022 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
  *  This file is part of CREATOR.
  *
@@ -99,7 +99,7 @@ function capi_mem_read ( addr, type )
 
 	// 2) check address is into text segment
 	var addr_16 = parseInt(addr, 16);
-	if((addr_16 >= architecture.memory_layout[0].value) && (addr_16 <= architecture.memory_layout[1].value))
+	if((addr_16 >= parseInt(architecture.memory_layout[0].value)) && (addr_16 <= parseInt(architecture.memory_layout[1].value)))
     {
         creator_executor_exit();
         capi_raise('Segmentation fault. You tried to read in the text segment');
@@ -220,12 +220,8 @@ function capi_print_string ( value1 )
 
 	/* Print string */
 	var addr = architecture.components[ret1.indexComp].elements[ret1.indexElem].value;
-	var ret  = creator_memory_get_string_from_memory(addr) ;
-	if (ret.error == true) {
-		throw packExecute(true, ret.msg, ret.type, ret.draw) ;
-	}
-
-	display_print(ret.draw) ;
+        var msg  = readMemory(parseInt(addr), "string") ;
+	display_print(msg) ;
 }
 
 function capi_read_int ( value1 )
@@ -346,12 +342,27 @@ function capi_sbrk ( value1, value2 )
 
 	/* Request more memory */
 	var new_size = parseInt(architecture.components[ret1.indexComp].elements[ret1.indexElem].value) ;
-	var ret = creator_memory_sbrk(new_size) ;
-	if (ret.error == true) {
-		throw packExecute(true, ret.msg, ret.type, ret.draw) ;
+	if (new_size < 0) {
+		throw packExecute(true, "capi_syscall: negative size", 'danger', null) ;
 	}
 
-	architecture.components[ret2.indexComp].elements[ret2.indexElem].value = ret.draw ;
+    var new_addr = creator_memory_alloc(new_size) ;
+	architecture.components[ret2.indexComp].elements[ret2.indexElem].value = new_addr ;
+}
+
+function capi_get_power_consumption ( value1 )
+{
+	/* Google Analytics */
+	creator_ga('execute', 'execute.syscall', 'execute.syscall.get_power_consumption');
+
+	/* Get register id */
+	var ret1 = crex_findReg(value1) ;
+	if (ret1.match == 0) {
+		throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
+	}
+
+	//Store power consumption in the register
+	architecture.components[ret1.indexComp].elements[ret1.indexElem].value = total_power_consumption;
 }
 
 
@@ -364,7 +375,12 @@ function capi_callconv_begin ( addr )
 {
 	var function_name = "" ;
 
-	// 1.- get function name
+	// 1) Passing Convection enable?
+	if (architecture.arch_conf[5].value == 0) {
+		return;
+	}
+
+	// 2) get function name
 	if (typeof architecture.components[0] !== "undefined")
 	{
 		if (typeof tag_instructions[addr] == "undefined")
@@ -372,21 +388,26 @@ function capi_callconv_begin ( addr )
 		else function_name = tag_instructions[addr] ;
 	}
 
-	// 2.- callstack_enter
+	// 3) callstack_enter
 	creator_callstack_enter(function_name) ;
 }
 
 function capi_callconv_end ()
 {
-	// 1.- callstack_leave
+	// 1) Passing Convection enable?
+	if (architecture.arch_conf[5].value == 0) {
+		return;
+	}
+
+	// 2) Callstack_leave
 	var ret = creator_callstack_leave();
 
-	// 2) If everything is ok, just return 
+	// 3) If everything is ok, just return 
 	if (ret.ok) {
 		return;
 	}
 
-	// 3) Othewise report some warning...
+	// 4) Othewise report some warning...
 	// Google Analytics
 	creator_ga('execute', 'execute.exception', 'execute.exception.protection_jrra' + ret.msg);
 

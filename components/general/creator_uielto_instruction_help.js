@@ -1,5 +1,5 @@
 /*
- *  Copyright 2018-2021 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
+ *  Copyright 2018-2022 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
  *  This file is part of CREATOR.
  *
@@ -19,55 +19,62 @@
  */
 
 
-        /* jshint esversion: 6 */
+  /* jshint esversion: 6 */
 
-        var uielto_instruction_help = {
-              props:      {
-                             architecture:    { type: Object, required: true },
-                             id: 							{ type: String, required: true }
-                          },
+  var uielto_instruction_help = {
+    
+    props:      {
+                  id:                       { type: String, required: true },
+                  architecture:             { type: Object, required: true },
+                  instruction_help_size:    { type: Object, required: true }
+                   
+                },
 
-              data: 			function () {
-  													return {
-	              							/*Help Filter*/
-	      											instHelpFilter: null,
-	      											/*Help table*/
-	      											insHelpFields: ['name']
-	      										}
-              						},
+    data:       function () {
+                  return {
+                    //Help Filter
+                    instHelpFilter: null,
 
-              template:   '<b-sidebar :id="id" sidebar-class="border-left border-info" title="Instruction Help" right shadow width="33vw">' +
-              						'	<div class="px-3 py-2">' +
-													'	' +
-													'	              <b-form-input' +
-													'	                id="filter-input"' +
-													'	                v-model="instHelpFilter"' +
-													'	                type="search"' +
-													'	                placeholder="Search instruction"' +
-													'	                size=sm' +
-													'	              ></b-form-input>' +
-													'	' +
-													'	              <br>' +
-													'	' +
-													'	              <b-table small :items="architecture.instructions" ' +
-													'	                             :fields="insHelpFields" ' +
-													'	                             class="text-left help-scroll-y"' +
-													'	                             :filter="instHelpFilter"' +
-													'	                             thead-class="d-none">' +
-													'	' +
-													'	                <template v-slot:cell(name)="row">' +
-													'	                  <h4>{{row.item.name}}</h4>' +
-													'	                  <em>{{row.item.signatureRaw}}</em>' +
-													'	                  <br>' +
-													'	                  {{row.item.help}}' +
-													'	                </template>' +
-													'	' +
-													'	              </b-table>' +
-													'	' +
-													'	            </div>'+
-													'</b-sidebar'
-       	}
+                    //Help table
+                    insHelpFields: ['name']
+                  }
+                },
 
-        Vue.component('sidebar-instruction-help', uielto_instruction_help) ;
+    methods:   {
+                  get_width(){
+                    return this._props.instruction_help_size + "vw"
+                  }
+                },
 
+    template:   '<b-sidebar :id="id" sidebar-class="border-left border-info px-3 py-2" right shadow' + 
+                '           title="Instruction Help"' +
+                '           :width="get_width()">' +
+                ' ' +
+                ' <b-form-input id="filter-input"' +
+                '               v-model="instHelpFilter"' +
+                '               type="search"' +
+                '               placeholder="Search instruction"' +
+                '               size=sm' +
+                ' ></b-form-input>' +
+                ' ' +
+                ' <br>' +
+                ' ' +
+                ' <b-table small :items="architecture.instructions" ' +
+                '                :fields="insHelpFields" ' +
+                '                class="text-left help-scroll-y"' +
+                '                :filter="instHelpFilter"' +
+                '                thead-class="d-none">' +
+                ' ' +
+                '   <template v-slot:cell(name)="row">' +
+                '     <h4>{{row.item.name}}</h4>' +
+                '     <em>{{row.item.signatureRaw}}</em>' +
+                '     <br>' +
+                '     {{row.item.help}}' +
+                '   </template>' +
+                ' ' +
+                ' </b-table>' +
+                ' ' +
+                '</b-sidebar'
+  }
 
+  Vue.component('sidebar-instruction-help', uielto_instruction_help) ;

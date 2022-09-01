@@ -1,5 +1,5 @@
 /*
- *  Copyright 2018-2021 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
+ *  Copyright 2018-2022 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
  *  This file is part of CREATOR.
  *
@@ -19,106 +19,164 @@
  */
 
 
-        /* jshint esversion: 6 */
+  /* jshint esversion: 6 */
 
-        var uielto_data_view_selector = {
+  var uielto_data_view_selector = {
 
-        props:      {
-                      name_reg:          { type: String, required: true },
-                      reg_type:          { type: String, required: true },
-                      register_file_num: { type: Number, required: true }
-                    },
+  props:      {
+                name_reg:          { type: String, required: true },
+                reg_type:          { type: String, required: true },
+                register_file_num: { type: Number, required: true }
+              },
 
-        data:       function () {
-                      return {
-                        reg_representation_options: [
-                            { text: 'INT Registers', value: 'int' },
-                            { text: 'FP Registers', value: 'fp' }
-                          ]
+  data:       function () {
+                return {
+                  reg_representation_options: [
+                                                { text: 'INT Registers', value: 'int', pressed: true   },
+                                                { text: 'FP Registers',  value: 'fp',  pressed: false  }
+                                              ],
+
+                  register_variant: "secondary",
+                  memory_pressed: false,
+                  stat_pressed: false,
+                  power_consumption_pressed: false
+                }
+              },
+
+  methods:    {
+                change_data_view(e, type){
+                  app._data.data_mode = e; //TODO: vue bidirectional updates
+
+                  if(e == "registers" && type != ''){
+                    if(type == "int"){
+                      app._data.register_type = 'integer'; //TODO: vue bidirectional updates
+                      app._data.name_reg = 'INT Registers'; //TODO: vue bidirectional updates
+                      app._data.reg_type = 'int'; //TODO: vue bidirectional updates
+
+                      //Change button backgroun
+                      if (typeof this.reg_representation_options !== "undefined") {
+                        this.reg_representation_options[0].pressed = true;
+                        this.reg_representation_options[1].pressed = false;
                       }
-                    },
+                    }
+                    else if(type == "fp"){
+                      app._data.register_type = 'floating point'; //TODO: vue bidirectional updates
+                      app._data.name_reg = 'FP Registers'; //TODO: vue bidirectional updates
+                      app._data.reg_type = 'fp'; //TODO: vue bidirectional updates
 
-        methods:    {
-                      change_data_view(e, type){
-                        app._data.data_mode = e; //TODO: vue bidirectional updates
+                      //Change button backgroun
+                      if (typeof this.reg_representation_options !== "undefined") {
+                        this.reg_representation_options[0].pressed = false;
+                        this.reg_representation_options[1].pressed = true;
+                      }
+                    }
 
-                        if(e == "registers"){
-                          if(type == "int"){
-                            app._data.register_type = 'integer'; //TODO: vue bidirectional updates
-                            app._data.name_tab_Reg = "Decimal"; //TODO: vue bidirectional updates
-                            app._data.name_reg = 'INT Registers'; //TODO: vue bidirectional updates
-                            app._data.reg_type = 'int'; //TODO: vue bidirectional updates
-                          }
-                          else if(type == "fp"){
-                            app._data.register_type = 'floating point'; //TODO: vue bidirectional updates
-                            app._data.name_tab_Reg = "Real"; //TODO: vue bidirectional updates
-                            app._data.name_reg = 'FP Registers'; //TODO: vue bidirectional updates
-                            app._data.reg_type = 'fp'; //TODO: vue bidirectional updates
-                          }
-                        }
-                        if(e == "memory"){
-                          app._data.data_mode = e; //TODO: vue bidirectional updates
-                        }
+                    //Change button backgroun
+                    this.register_variant                      = "secondary";
+                    this.memory_pressed                        = false;
+                    this.stat_pressed                          = false;
+                    this.power_consumption_pressed             = false;
+                  }
 
-                        //app.$forceUpdate();
+                  if(e == "memory"){
+                    //Change button backgroun
+                    this.reg_representation_options[0].pressed = false;
+                    this.reg_representation_options[1].pressed = false;
+                    this.register_variant                      = "outline-secondary";
+                    this.memory_pressed                        = true;
+                    this.stat_pressed                          = false;
+                    this.power_consumption_pressed             = false;
+                  }
 
-                        /* Google Analytics */
-                        creator_ga('send', 'event', 'data', 'data.view', 'data.view.' + app._data.data_mode);
-                      }               
-                    },
+                  if(e == "stats"){
+                    //Change button backgroun
+                    this.reg_representation_options[0].pressed = false;
+                    this.reg_representation_options[1].pressed = false;
+                    this.register_variant                      = "outline-secondary";
+                    this.memory_pressed                        = false;
+                    this.stat_pressed                          = true;
+                    this.power_consumption_pressed             = false;
+                  }
 
-        template:   ' <div class="col-lg-12 col-sm-12 mb-3 px-0">' +
-                    '   <div class="col-lg-12 col-sm-12 buttons row">' +
-                    '     <div class="col-lg-4 col-sm-4 buttons">' +
-                    '       <b-dropdown split ' +
-                    '                   right ' +
-                    '                   :text="name_reg" ' +
-                    '                   size="sm" ' +
-                    '                   class="btn btn-block btn-sm nopadding h-100" ' +
-                    '                   variant="outline-secondary" ' +
-                    '                   @click="change_data_view(\'registers\', reg_type)">' +
-                    '         <b-dropdown-item @click="change_data_view(\'registers\', \'int\')">CPU-INT Registers</b-dropdown-item>' +
-                    '         <b-dropdown-item @click="change_data_view(\'registers\', \'fp\')">CPU-FP Registers</b-dropdown-item>' +
-                    '       </b-dropdown>' +
-                    '     </div>' +
-                    '     <div class="col-lg-4 col-sm-4 buttons">' +
-                    '       <b-button class="btn btn-outline-secondary btn-block opcionsGroup btn-sm h-100" ' +
-                    '                 id="memory_btn" ' +
-                    '                 @click="change_data_view(\'memory\')">' +
-                    '         <span class="fas fa-memory"></span>' +
-                    '         Memory ' +
-                    '       </b-button>' +
-                    '     </div>' +
-                    '     <div class="col-lg-4 col-sm-4 buttons">' +
-                    '       <b-button class="btn btn-outline-secondary btn-block opcionsGroup btn-sm h-100" ' +
-                    '                 id="stats_btn" ' +
-                    '                 @click="change_data_view(\'stats\')">' +
-                    '         <span class=" fas fa-chart-bar"></span>' +
-                    '         Stats' +
-                    '       </b-button>' +
-                    '     </div>' +
-                    '   </div>' +
-                    ' </div>'
+                  if(e == "power_consumption"){
+                    //Change button backgroun
+                    this.reg_representation_options[0].pressed = false;
+                    this.reg_representation_options[1].pressed = false;
+                    this.register_variant                      = "outline-secondary";
+                    this.memory_pressed                        = false;
+                    this.stat_pressed                          = false;
+                    this.power_consumption_pressed             = true;
+                  }
 
-                    //TODO: not found
-                    /*' <div class="col-lg-12 col-sm-12 mb-3 px-0" v-if="register_file_num <= 4">' +
-                    '   <b-form-group v-slot="{ ariaDescribedby }">' +
-                    '     <b-form-radio-group' +
-                    '       id="btn-radios-1"' +
-                    '       class="w-100"' +
-                    '       v-model="reg_type"' +
-                    '       :options="reg_representation_options"' +
-                    '       button-variant="outline-secondary"' +
-                    '       size="sm"' +
-                    '       :aria-describedby="ariaDescribedby"' +
-                    '       name="radios-btn-default"' +
-                    '       buttons' +
-                    '       @click="change_data_view(\'registers\',reg_representation)"' +
-                    '     ></b-form-radio-group>' +
-                    '   </b-form-group>' +
-                    ' </div>'*/
-      
-        }
+                  /* Google Analytics */
+                  creator_ga('send', 'event', 'data', 'data.view', 'data.view.' + app._data.data_mode);
+                }               
+              },
 
-        Vue.component('data-view-selector', uielto_data_view_selector) ;
+  computed:   {
 
+              },
+
+  template:   '<b-container fluid align-h="center" class="mx-0 px-2">' +
+              '  <b-row cols="1" >' +
+              '' +
+              '    <b-col class="px-1">' +
+              '      <b-button-group class="w-100 pb-3">' +
+              '' +
+              '        <b-button v-if="register_file_num <= 4"' +
+              '                  v-for="item in reg_representation_options"' +
+              '                  :id="item.value"' +
+              '                  size="sm"' +
+              '                  :pressed.sync="item.pressed"' +
+              '                  variant="outline-secondary"' +
+              '                  @click="change_data_view(\'registers\', item.value)">' +
+              '          {{item.text}}' +
+              '        </b-button>' +
+              '' +
+              '        <b-dropdown split' +
+              '                    v-if="register_file_num > 4"' +
+              '                    right' +
+              '                    :text="name_reg"' +
+              '                    size="sm"' +
+              '                    :variant="register_variant"' +
+              '                    @click="change_data_view(\'registers\', reg_type)">' +
+              '          <b-dropdown-item @click="change_data_view(\'registers\', \'int\')">CPU-INT Registers</b-dropdown-item>' +
+              '          <b-dropdown-item @click="change_data_view(\'registers\', \'fp\')">CPU-FP Registers</b-dropdown-item>' +
+              '        </b-dropdown>' +
+              '' +
+              '        <b-button id="memory_btn"' +
+              '                  size="sm"' +
+              '                  :pressed.sync="memory_pressed"' +
+              '                  variant="outline-secondary"' +
+              '                  @click="change_data_view(\'memory\', \'\')">' +
+              '          <span class="fas fa-memory"></span>' +
+              '          Memory' +
+              '        </b-button>' +
+              '' +
+              '        <b-button id="stats_btn"' +
+              '                  size="sm"' +
+              '                  :pressed.sync="stat_pressed"' +
+              '                  variant="outline-secondary"' +
+              '                  @click="change_data_view(\'stats\', \'\')">' +
+              '          <span class=" fas fa-chart-bar"></span>' +
+              '          Stats' +
+              '        </b-button>' +
+              '' +
+              '        <b-button id="stats_btn"' +
+              '                  size="sm"' +
+              '                  :pressed.sync="power_consumption_pressed"' +
+              '                  variant="outline-secondary"' +
+              '                  @click="change_data_view(\'power_consumption\', \'\')">' +
+              '          <span class=" fas fa-bolt"></span>' +
+              '          Power Consumption' +
+              '        </b-button>' +
+              '        ' +
+              '      </b-button-group>' +
+              '    </b-col>' +
+              '' +
+              '  </b-row>' +
+              '</b-container>'
+
+  }
+
+  Vue.component('data-view-selector', uielto_data_view_selector) ;
