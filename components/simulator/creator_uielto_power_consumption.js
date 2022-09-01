@@ -42,8 +42,8 @@
   template:   ' <b-container fluid align-h="center" class="mx-0 my-3 px-2">' +
               '   <b-row cols-xl="2" cols-lg="1" cols-md="2" cols-sm="1" cols-xs="1" cols="1">' +
               '     <b-col align-h="center" class="px-2">' +
-              '       <div class="border m-1 p-1">' +
-              '         <b-badge variant="light" class="h6 groupLabelling border">Power consumption view</b-badge>' +
+              '       <div class="border m-1 py-1 px-2">' +
+              '         <b-badge variant="light" class="h6 groupLabelling border mx-2 my-0">Power consumption view</b-badge>' +
               '         <b-form-group class="mb-2" v-slot="{ ariaDescribedby }">' +
               '           <b-form-radio-group' +
               '             id="btn-radios-1"' +
