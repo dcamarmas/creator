@@ -12,8 +12,15 @@ for I in $MIPS_TEST;
 do
    echo -n " * ./travis/mips/correct/test-mips-$I: "
    ./creator.sh -a ./architecture/MIPS-32.json \
-                -s ./travis/mips/correct/test-mips-$I.s \
-                -r ./travis/mips/correct/test-mips-$I.out -o min | tail -1
+                -s ./travis/mips/correct/test-mips-$I.s -o min > /tmp/e-$I.out
+   diff /tmp/e-$I.out ./travis/mips/correct/test-mips-$I.out
+   if [ $? -ne 0 ]; then
+       echo "Different: Error $I with different outputs...";
+       error=1
+   else
+       echo "Equals";
+   fi
+   rm   /tmp/e-$I.out
 done
 
 echo ""
@@ -27,6 +34,7 @@ do
    diff /tmp/e-$I.out ./travis/mips/error/testerror-mips-$I.out
    if [ $? -ne 0 ]; then
        echo "Different: Error $I with different outputs...";
+       error=1
    else
        echo "Equals";
    fi
@@ -44,6 +52,7 @@ do
    diff /tmp/e-$I.out ./travis/mips/sentinel/testsentinel-mips-$I.out
    if [ $? -ne 0 ]; then
        echo "Different: Error $I with different outputs...";
+       error=1
    else
        echo "Equals";
    fi
@@ -62,7 +71,21 @@ for I in $RV_TEST;
 do
   echo -n " * ./travis/riscv/correct/test-riscv-$I: "
   ./creator.sh -a ./architecture/RISC-V.json \
-               -s ./travis/riscv/correct/test-riscv-$I.s \
-               -r ./travis/riscv/correct/test-riscv-$I.out -o min | tail -1
+               -s ./travis/riscv/correct/test-riscv-$I.s -o min > /tmp/e-$I.out
+  diff /tmp/e-$I.out ./travis/riscv/correct/test-riscv-$I.out
+  if [ $? -ne 0 ]; then
+       echo "Different: Error $I with different outputs...";
+       error=1
+  else
+       echo "Equals";
+  fi
+  rm   /tmp/e-$I.out
 done
 
+#
+# Return
+#
+
+if [[ -v error ]]; then
+    exit -1
+fi

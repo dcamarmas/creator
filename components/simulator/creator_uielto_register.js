@@ -24,6 +24,7 @@
         var uielto_register = {
 
         props:      {
+                      render:                 { type: Number, required: true },
                       component:              { type: Object, required: true },
                       register:               { type: Object, required: true },
                       name_representation:    { type: String, required: true },
@@ -41,7 +42,7 @@
 
                       switch(this.value_representation){
                         case "unsigned":
-                          if (architecture.components[architecture.components[this._props.component.index].type].type == "control" || architecture.components[this._props.component.index].type == "integer") {
+                          if (architecture.components[this._props.component.index].type == "control" || architecture.components[this._props.component.index].type == "integer") {
                             ret = parseInt(register.value.toString(10)) >>> 0;
                           }
                           else {

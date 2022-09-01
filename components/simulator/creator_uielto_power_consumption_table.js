@@ -24,6 +24,7 @@
   var uielto_power_consumption_table = {
 
   props:      {
+                render:                  { type: Number, required: true },
                 power_consumption:       { type: Array,  required: true }
               },
               

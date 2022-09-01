@@ -87,7 +87,7 @@
 
                         //Refresh UI
                         hide_loading();
-                        show_notification('The selected architecture has been loaded correctly', 'success');
+                        show_notification(e.name + ' architecture has been loaded correctly', 'success');
 
                         // Google Analytics
                         creator_ga('architecture', 'architecture.loading', 'architectures.loading.customized' + e.name);
@@ -107,14 +107,14 @@
 
                       //Refresh UI
                       hide_loading();
-                      show_notification('The selected architecture has been loaded correctly', 'success');
+                      show_notification(e.name + ' architecture has been loaded correctly', 'success');
 
                       // Google Analytics
                       creator_ga('architecture', 'architecture.loading', 'architectures.loading.customized');
 
                       }).fail(function() {
                         hide_loading();
-                        show_notification('The selected architecture is not currently available', 'info');
+                        show_notification(e.name + ' architecture is not currently available', 'info');
                       });
                   },
 
@@ -132,8 +132,8 @@
                     architecture_hash = [];
                     for (i = 0; i < architecture.components.length; i++)
                     {
-                         architecture_hash.push({name: architecture.components[i].name, index: i});
-                         app._data.architecture_hash = architecture_hash; 
+                      architecture_hash.push({name: architecture.components[i].name, index: i});
+                      app._data.architecture_hash = architecture_hash; 
                     }
 
                     //Define stack limits
@@ -145,10 +145,15 @@
                       uielto_preload_architecture.methods.load_examples_available();
                     }
 
+                    //Reset execution
+                    instructions = [];
+                    app._data.instructions = instructions;
+                    creator_memory_clear() ;
+
                     //Refresh UI
                     uielto_toolbar_btngroup.methods.change_UI_mode('simulator');
                     uielto_data_view_selector.methods.change_data_view('registers', 'int');
-                    app.$forceUpdate();
+                    app._data.render++; //Forces vue to reload a component, similar to $forceUpdate()
                   },
 
                   //Load the available examples

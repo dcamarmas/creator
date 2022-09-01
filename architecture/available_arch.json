@@ -1,18 +1,18 @@
 [
   {
-    "name": "MIPS-32",
-    "img": "./images/mips_logo.png",
-    "alt":"MIPS",
-    "id": "select_confMIPS",
-    "examples":["default"],
-    "description": "The MIPS processor was developed by Dr.John Hennessey and his graduate students at Stanford University in the early 1980s. It is currently one of the major processors in the embedded processor market."
-  },
-  {
     "name": "RISC-V",
     "img": "./images/risc-v_logo.png",
     "alt": "RISC-V",
     "id": "select_confRISV",
     "examples":["default_rv"],
     "description": "RISC-V is an instruction set architecture (ISA) whose design is based on the RISC type and its hardware is free. This architecture was created in 2010 at the University of California, Berkeley."
-}
+  },
+  {
+    "name": "MIPS-32",
+    "img": "./images/mips_logo.png",
+    "alt":"MIPS",
+    "id": "select_confMIPS",
+    "examples":["default"],
+    "description": "The MIPS processor was developed by Dr.John Hennessey and his graduate students at Stanford University in the early 1980s. It is currently one of the major processors in the embedded processor market."
+  }
 ]
