@@ -1,5 +1,5 @@
 /*
- *  Copyright 2018-2021 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
+ *  Copyright 2018-2022 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
  *  This file is part of CREATOR.
  *
@@ -19,43 +19,42 @@
  */
 
 
-				/* jshint esversion: 6 */
+  /* jshint esversion: 6 */
 
-				var uielto_stats_table = {
+  var uielto_stats_table = {
 
-				props:      {
-											stats: 			 { type: Array,  required: true }
-										},
-										
-				data: 			function () {
-											return {
-												/*Stats table fields*/
-												statsFields: {
-													type: {
-														label: 'Type',
-														sortable: true
-													},
-													number_instructions: {
-														label: 'Number of instructions',
-														sortable: true
-													},
-													percentage: {
-														label: 'Percentage',
-														sortable: true
-													}
-												}
-											}
-										},
+  props:      {
+                stats:       { type: Array,  required: true }
+              },
+              
+  data:       function () {
+                return {
+                  /*Stats table fields*/
+                  statsFields: {
+                    type: {
+                      label: 'Type',
+                      sortable: true
+                    },
+                    number_instructions: {
+                      label: 'Number of instructions',
+                      sortable: true
+                    },
+                    percentage: {
+                      label: 'Percentage',
+                      sortable: true
+                    }
+                  }
+                }
+              },
 
-				template:   '	<b-table striped ' +
-										'	 small ' +
-										'	 hover ' +
-										'	 :items="stats" ' +
-										'	 :fields="statsFields" ' +
-										'	 class="stats text-center px-0">' +
-										'	<b-table>'
-			
-				}
+  template:   ' <b-table striped ' +
+              '  small ' +
+              '  hover ' +
+              '  :items="stats" ' +
+              '  :fields="statsFields" ' +
+              '  class="stats text-center px-0">' +
+              ' <b-table>'
 
-				Vue.component('table-stats', uielto_stats_table) ;
+  }
 
+  Vue.component('table-stats', uielto_stats_table) ;

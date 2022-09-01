@@ -1,5 +1,5 @@
 /*
- *  Copyright 2018-2021 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
+ *  Copyright 2018-2022 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
  *  This file is part of CREATOR.
  *
@@ -19,30 +19,36 @@
  */
 
 
-        /* jshint esversion: 6 */
+  /* jshint esversion: 6 */
 
-        var uielto_notifications = {
+  var uielto_notifications = {
 
-              props:  {
-                        notifications: { type: Array, required: true }
-                      },
-
-
-              template:   ' <div>' +
-                          '   <span class="h6" v-if="notifications.length == 0">' +
-                          '     There\'s no notification at the moment' +
-                          '   </span>' +
-                          '   <b-alert show :variant="item.color" v-for="item in notifications">' +
-                          '     <span class="h6">' +
-                          '       <span class="fas fa-info-circle" v-if="item.color!=\'danger\'"></span>' +
-                          '       <span class="fas fa-exclamation-triangle" v-if="item.color==\'danger\'"></span> ' +
-                          '         {{item.mess}}' +
-                          '       </span>' +
-                          '       <span class="h6">{{item.time}}   -   {{item.date}}</span>' +
-                          '   </b-alert>' +
-                          ' </div>'
-        }
-
-        Vue.component('uielto-notifications', uielto_notifications) ;
+    props:  {
+              id:            { type: String, required: true },
+              notifications: { type: Array,  required: true }
+            },
 
 
+    template:   ' <b-modal :id ="id" ' +
+                '          title="Notifications" ' +
+                '          scrollable' +
+                '          hide-footer>' +
+                ' ' +
+                '   <span class="h6" v-if="notifications.length == 0">' +
+                '     There\'s no notification at the moment' +
+                '   </span>' +
+                ' ' +
+                '   <b-alert show :variant="item.color"' +
+                '            v-for="item in notifications">' +
+                '     <span class="h6">' +
+                '       <span class="fas fa-info-circle" v-if="item.color!=\'danger\'"></span>' +
+                '       <span class="fas fa-exclamation-triangle" v-if="item.color==\'danger\'"></span> ' +
+                '         {{item.mess}}' +
+                '     </span>' +
+                '     <span class="h6">{{item.time}}   -   {{item.date}}</span>' +
+                '   </b-alert>' +
+                ' ' +
+                ' </b-modal>'
+  }
+
+  Vue.component('uielto-notifications', uielto_notifications) ;

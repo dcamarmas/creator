@@ -1,5 +1,5 @@
 /*
- *  Copyright 2018-2021 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
+ *  Copyright 2018-2022 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
  *  This file is part of CREATOR.
  *
@@ -31,11 +31,11 @@
    * @return {number} 2^n with n as
    *      0 -> -infinite
    *      1 -> -normalized number
-   *      2 -> -non normalized number
+   *      2 -> -non-normalized number
    *      3 -> -0
    *      4 -> +0
    *      5 -> +normalized number
-   *      6 -> +non normalized number
+   *      6 -> +non-normalized number
    *      7 -> +inf
    *      8 -> -NaN
    *      9 -> +NaN
@@ -64,25 +64,25 @@
 
   function hex2char8 ( hexvalue )
   {
-	var num_char = ((hexvalue.toString().length))/2;
-	var exponent = 0;
-	var pos = 0;
+  var num_char = ((hexvalue.toString().length))/2;
+  var exponent = 0;
+  var pos = 0;
 
-	var valuec = [] ;
+  var valuec = [] ;
 
-	for (var i = 0; i < num_char; i++) {
-	     var auxHex = hexvalue.substring(pos, pos+2);
-	     valuec[i] = String.fromCharCode(parseInt(auxHex, 16));
-	     pos = pos + 2;
-	}
+  for (var i = 0; i < num_char; i++) {
+       var auxHex = hexvalue.substring(pos, pos+2);
+       valuec[i] = String.fromCharCode(parseInt(auxHex, 16));
+       pos = pos + 2;
+  }
 
-	var characters = '';
+  var characters = '';
 
-	for (var i = 0; i < valuec.length; i++){
-	     characters = characters + valuec[i] + ' ';
-	}
+  for (var i = 0; i < valuec.length; i++){
+       characters = characters + valuec[i] + ' ';
+  }
 
-	return  characters;
+  return  characters;
   }
 
   function hex2float ( hexvalue )
@@ -111,7 +111,7 @@
 	  value_bit = value_bit + aux;
 	}
 
-  value_bit = value_bit.padStart(32, "0");
+	value_bit = value_bit.padStart(32, "0");
 
 	var buffer = new ArrayBuffer(4);
 	new Uint8Array( buffer ).set( value_bit.match(/.{8}/g).map( binaryStringToInt ) );
@@ -193,7 +193,7 @@
           part = s.substr(i+1-4, 4);
           accum = 0;
           for (k = 0; k < 4; k += 1)
-	  {
+    {
              if (part[k] !== '0' && part[k] !== '1') {
                  return { valid: false };
              }
@@ -211,7 +211,7 @@
       {
           accum = 0;
           for (k = 0; k <= i; k += 1)
-	  {
+    {
              if (s[k] !== '0' && s[k] !== '1') {
                  return { valid: false };
              }
@@ -242,14 +242,14 @@
       return new DataView( buffer ).getFloat64(0, false);
   }
 
-  function float2int_v2 ( value ) 
+  function float2int_v2 ( value )
   {
-    return parseInt(float2bin(value),2);
+      return parseInt(float2bin(value),2);
   }
 
-  function int2float_v2 ( value ) 
+  function int2float_v2 ( value )
   {
-    return hex2float("0x" + bin2hex(value.toString(2)));
+      return hex2float("0x" + bin2hex(value.toString(2)));
   }
 
 
@@ -259,13 +259,13 @@
 
   function clean_string( value, prefix )
   {
-	var value2 = value.replace(/[&\/\\#,+()$~%.'":*?<>{}]/g, '_');
+  var value2 = value.replace(/[&\/\\#,+()$~%.'":*?<>{}]/g, '_');
 
-	re = new RegExp("^[0-9]+$");
-	if (value2.search(re) != -1 && prefix != "undefined") {
-		value2 = prefix + value2;
-	}
+  re = new RegExp("^[0-9]+$");
+  if (value2.search(re) != -1 && prefix != "undefined") {
+    value2 = prefix + value2;
+  }
 
-	return value2;
+  return value2;
   }
 

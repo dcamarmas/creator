@@ -26,10 +26,9 @@
 
 ### :microscope:	 Nightly build:
 
-| GitHub Repository | Source Code                     | Creator                                | 
+| GitHub Repository | Source Code                             | Creator                                | 
 |-------------------|-----------------------------------------|----------------------------------------| 
 | Diego             | https://github.com/dcamarmas/creator/   |  https://dcamarmas.github.io/creator/  | 
-| Lucas             | https://github.com/luck5941/creator/    |  https://luck5941.github.io/creator/   | 
 | Alejandro         | https://github.com/acaldero/creator/    |  https://acaldero.github.io/creator/   | 
 
 
@@ -37,40 +36,51 @@
 
 #### :point_right:	 RISC-V
 
-| Description                | Link                                                                     |
-|----------------------------|--------------------------------------------------------------------------| 
-| Data Storage               | https://dcamarmas.github.io/creator/?example_set=default_rv&example=e1   |
-| ALU operations             | https://dcamarmas.github.io/creator/?example_set=default_rv&example=e2   |
-| Store/Load Data in Memory  | https://dcamarmas.github.io/creator/?example_set=default_rv&example=e3   |
-| FPU operations             | https://dcamarmas.github.io/creator/?example_set=default_rv&example=e4   |
-| Loop                       | https://dcamarmas.github.io/creator/?example_set=default_rv&example=e5   |
-| Branch                     | https://dcamarmas.github.io/creator/?example_set=default_rv&example=e6   |
-| Loop + Memory              | https://dcamarmas.github.io/creator/?example_set=default_rv&example=e7   |
-| Copy of matrices           | https://dcamarmas.github.io/creator/?example_set=default_rv&example=e8   |
-| I/O Syscalls               | https://dcamarmas.github.io/creator/?example_set=default_rv&example=e9   |
-| I/O Syscalls + Strings     | https://dcamarmas.github.io/creator/?example_set=default_rv&example=e10  |
-| Subrutines                 | https://dcamarmas.github.io/creator/?example_set=default_rv&example=e11  |
-| Factorial                  | https://dcamarmas.github.io/creator/?example_set=default_rv&example=e12  |
+| Description                | Link                                                                                         |
+|----------------------------|----------------------------------------------------------------------------------------------| 
+| Data Storage               | https://dcamarmas.github.io/creator/?architecture=RISC-V&example_set=default_rv&example=e1   |
+| ALU operations             | https://dcamarmas.github.io/creator/?architecture=RISC-V&example_set=default_rv&example=e2   |
+| Store/Load Data in Memory  | https://dcamarmas.github.io/creator/?architecture=RISC-V&example_set=default_rv&example=e3   |
+| FPU operations             | https://dcamarmas.github.io/creator/?architecture=RISC-V&example_set=default_rv&example=e4   |
+| Loop                       | https://dcamarmas.github.io/creator/?architecture=RISC-V&example_set=default_rv&example=e5   |
+| Branch                     | https://dcamarmas.github.io/creator/?architecture=RISC-V&example_set=default_rv&example=e6   |
+| Loop + Memory              | https://dcamarmas.github.io/creator/?architecture=RISC-V&example_set=default_rv&example=e7   |
+| Copy of matrices           | https://dcamarmas.github.io/creator/?architecture=RISC-V&example_set=default_rv&example=e8   |
+| I/O Syscalls               | https://dcamarmas.github.io/creator/?architecture=RISC-V&example_set=default_rv&example=e9   |
+| I/O Syscalls + Strings     | https://dcamarmas.github.io/creator/?architecture=RISC-V&example_set=default_rv&example=e10  |
+| Subrutines                 | https://dcamarmas.github.io/creator/?architecture=RISC-V&example_set=default_rv&example=e11  |
+| Factorial                  | https://dcamarmas.github.io/creator/?architecture=RISC-V&example_set=default_rv&example=e12  |
 
 #### :point_right:	 MIPS
 
-| Description                | Link                                                                  |
-|----------------------------|-----------------------------------------------------------------------|
-| Data Storage               | https://dcamarmas.github.io/creator/?example_set=default&example=e1   |
-| ALU operations             | https://dcamarmas.github.io/creator/?example_set=default&example=e2   |
-| Store/Load Data in Memory  | https://dcamarmas.github.io/creator/?example_set=default&example=e3   |
-| FPU operations             | https://dcamarmas.github.io/creator/?example_set=default&example=e4   |
-| Loop                       | https://dcamarmas.github.io/creator/?example_set=default&example=e5   |
-| Branch                     | https://dcamarmas.github.io/creator/?example_set=default&example=e6   |
-| Loop + Memory              | https://dcamarmas.github.io/creator/?example_set=default&example=e7   |
-| Copy of matrices           | https://dcamarmas.github.io/creator/?example_set=default&example=e8   |
-| I/O Syscalls               | https://dcamarmas.github.io/creator/?example_set=default&example=e9   |
-| I/O Syscalls + Strings     | https://dcamarmas.github.io/creator/?example_set=default&example=e10  |
-| Subrutines                 | https://dcamarmas.github.io/creator/?example_set=default&example=e11  |
-| Factorial                  | https://dcamarmas.github.io/creator/?example_set=default&example=e12  |
+| Description                | Link                                                                                       |
+|----------------------------|--------------------------------------------------------------------------------------------|
+| Data Storage               | https://dcamarmas.github.io/creator/?architecture=MIPS-32&example_set=default&example=e1   |
+| ALU operations             | https://dcamarmas.github.io/creator/?architecture=MIPS-32&example_set=default&example=e2   |
+| Store/Load Data in Memory  | https://dcamarmas.github.io/creator/?architecture=MIPS-32&example_set=default&example=e3   |
+| FPU operations             | https://dcamarmas.github.io/creator/?architecture=MIPS-32&example_set=default&example=e4   |
+| Loop                       | https://dcamarmas.github.io/creator/?architecture=MIPS-32&example_set=default&example=e5   |
+| Branch                     | https://dcamarmas.github.io/creator/?architecture=MIPS-32&example_set=default&example=e6   |
+| Loop + Memory              | https://dcamarmas.github.io/creator/?architecture=MIPS-32&example_set=default&example=e7   |
+| Copy of matrices           | https://dcamarmas.github.io/creator/?architecture=MIPS-32&example_set=default&example=e8   |
+| I/O Syscalls               | https://dcamarmas.github.io/creator/?architecture=MIPS-32&example_set=default&example=e9   |
+| I/O Syscalls + Strings     | https://dcamarmas.github.io/creator/?architecture=MIPS-32&example_set=default&example=e10  |
+| Subrutines                 | https://dcamarmas.github.io/creator/?architecture=MIPS-32&example_set=default&example=e11  |
+| Factorial                  | https://dcamarmas.github.io/creator/?architecture=MIPS-32&example_set=default&example=e12  |
 
 
 ## ChangeLog
+
+### :atom: 3.1.x:
+- [x] User Interface:
+     * Example set added
+     * The Instruction help width can be now configure from the configuration modal
+     * Clarification on intitial CREATOR page
+     * Better responsive behaviour on different screen sizes
+- [x] Modular design:
+     * Interface based on Vue components for all UI elements in CREATOR
+     * Simulated main memory reworked
+
 
 ### :atom: 3.0.x:
 - [x] Several minor RISC-V improvements
@@ -91,14 +101,14 @@
      * Help:
        * ./creator.sh -h
      * Example: creator compiles and executes the example2.txt, showing the final state:
-       * ./creator.sh -a architecture/MIPS-32-like.json -s examples/MIPS/example2.txt
+       * ./creator.sh -a architecture/MIPS-32.json -s examples/MIPS/example2.txt
      * Example: save final state into 'salida.txt' file:
-       * ./creator.sh -a ./architecture/MIPS-32-like.json -s ./examples/MIPS/example2.txt -o min > salida.txt
+       * ./creator.sh -a ./architecture/MIPS-32.json -s ./examples/MIPS/example2.txt -o min > salida.txt
      * Example: compare final state and the state saved on 'salida.txt' file:
-       * ./creator.sh -a ./architecture/MIPS-32-like.json -s ./examples/MIPS/example2.txt -o min -r salida.txt
+       * ./creator.sh -a ./architecture/MIPS-32.json -s ./examples/MIPS/example2.txt -o min -r salida.txt
 - [x] Creator now accepts three GET values:
      * Preload the MIPS architecture:
-       * https://creatorsim.github.io/creator/?architecture=MIPS-32-like
+       * https://creatorsim.github.io/creator/?architecture=MIPS-32
      * Preload example 'e3' from example set 'uc3m-ec':
        * https://creatorsim.github.io/creator/?example_set=uc3m-ec&example=e3
 - [x] Bootstrap-vue upgraded up to v2.15.0
