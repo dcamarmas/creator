@@ -222,35 +222,35 @@ function register_value_serialize(object)
 
   function hex2float ( hexvalue )
   {
-	/*var sign     = (hexvalue & 0x80000000) ? -1 : 1;
-	var exponent = ((hexvalue >> 23) & 0xff) - 127;
-	var mantissa = 1 + ((hexvalue & 0x7fffff) / 0x800000);
+    /*var sign     = (hexvalue & 0x80000000) ? -1 : 1;
+    var exponent = ((hexvalue >> 23) & 0xff) - 127;
+    var mantissa = 1 + ((hexvalue & 0x7fffff) / 0x800000);
 
-	var valuef = sign * mantissa * Math.pow(2, exponent);
-	if (-127 == exponent)
-	  if (1 == mantissa)
-	    valuef = (sign == 1) ? "+0" : "-0";
-	  else valuef = sign * ((hexvalue & 0x7fffff) / 0x7fffff) * Math.pow(2, -126);
-	if (128 == exponent)
-	  if (1 == mantissa)
-	    valuef = (sign == 1) ? "+Inf" : "-Inf";
-	  else valuef = NaN;
+    var valuef = sign * mantissa * Math.pow(2, exponent);
+    if (-127 == exponent)
+      if (1 == mantissa)
+        valuef = (sign == 1) ? "+0" : "-0";
+      else valuef = sign * ((hexvalue & 0x7fffff) / 0x7fffff) * Math.pow(2, -126);
+    if (128 == exponent)
+      if (1 == mantissa)
+        valuef = (sign == 1) ? "+Inf" : "-Inf";
+      else valuef = NaN;
 
-	return valuef ;*/
-	var value = hexvalue.split('x');
-	var value_bit = '';
+    return valuef ;*/
+    var value = hexvalue.split('x');
+    var value_bit = '';
 
-	for (var i = 0; i < value[1].length; i++){
-	  var aux = value[1].charAt(i);
-	  aux = (parseInt(aux, 16)).toString(2).padStart(4, "0");
-	  value_bit = value_bit + aux;
-	}
+    for (var i = 0; i < value[1].length; i++){
+      var aux = value[1].charAt(i);
+      aux = (parseInt(aux, 16)).toString(2).padStart(4, "0");
+      value_bit = value_bit + aux;
+    }
 
-	value_bit = value_bit.padStart(32, "0");
+    value_bit = value_bit.padStart(32, "0");
 
-	var buffer = new ArrayBuffer(4);
-	new Uint8Array( buffer ).set( value_bit.match(/.{8}/g).map( binaryStringToInt ) );
-	return new DataView( buffer ).getFloat32(0, false);
+    var buffer = new ArrayBuffer(4);
+    new Uint8Array( buffer ).set( value_bit.match(/.{8}/g).map( binaryStringToInt ) );
+    return new DataView( buffer ).getFloat32(0, false);
   }
 
   function uint_to_float32 ( value )
@@ -1072,6 +1072,13 @@ function capi_print_float ( value1 )
 
 	/* Print float */
 	var value = architecture.components[ret1.indexComp].elements[ret1.indexElem].value;
+	
+	//Add .0 if the number is 0.0 or similar
+	var aux_value = value.toString();
+	if (aux_value.indexOf(".") == -1)
+	{
+		value = aux_value + ".0";
+	}
 
 	display_print(value) ;
 }
@@ -1089,6 +1096,13 @@ function capi_print_double ( value1 )
 
 	/* Print double */
 	var value = architecture.components[ret1.indexComp].elements[ret1.indexElem].value;
+
+	//Add .0 if the number is 0.0 or similar
+	var aux_value = value.toString();
+	if (aux_value.indexOf(".") == -1)
+	{
+		value = aux_value + ".0";
+	}
 
 	display_print(value) ;
 }
@@ -1110,7 +1124,7 @@ function capi_print_char ( value1 )
 	var length = aux2.length;
 
 	var value = aux2.substring(length-2, length) ;
-		value = String.fromCharCode(parseInt(value, 16)) ;
+	value = String.fromCharCode(parseInt(value, 16)) ;
 
 	display_print(value) ;
 }
@@ -1841,7 +1855,7 @@ function readRegister ( indexComp, indexElem )
 
   if (architecture.components[indexComp].type == "floating point")
   {
-    return parseFloat((architecture.components[indexComp].elements[indexElem].value).toString());
+    return parseFloat((architecture.components[indexComp].elements[indexElem].value).toString()); //TODO: big_int2hex -> hex2float
   }
 }
 
@@ -1904,7 +1918,7 @@ function writeRegister ( value, indexComp, indexElem )
         throw packExecute(true, 'The register '+ architecture.components[indexComp].elements[indexElem].name.join(' | ') +' cannot be written', 'danger', null);
       }
 
-      architecture.components[indexComp].elements[indexElem].value = parseFloat(value);
+      architecture.components[indexComp].elements[indexElem].value = parseFloat(value); //TODO: float2bin -> bin2hex -> hex2big_int
       creator_callstack_writeRegister(indexComp, indexElem);
 
       if ((architecture.components[indexComp].elements[indexElem].properties.includes('pointer') != false) &&
