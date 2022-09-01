@@ -359,7 +359,7 @@
 
 
                       <!-- Instruction definition -->
-                      <b-tab title="Instructions Definition" :disabled="advanced_mode" v-if="!advanced_mode">
+                      <b-tab title="Instructions" :disabled="advanced_mode" v-if="!advanced_mode">
                         
                         <instructions :instructions="architecture.instructions"></instructions>
 
@@ -398,7 +398,7 @@
 
 
                       <!-- Pseudoinstruction definition -->
-                      <b-tab title="Pseudoinstructions Definition" :disabled="advanced_mode" v-if="!advanced_mode">
+                      <b-tab title="Pseudoinstructions" :disabled="advanced_mode" v-if="!advanced_mode">
                         
                         <pseudoinstructions :pseudoinstructions="architecture.pseudoinstructions"></pseudoinstructions>
 
@@ -437,7 +437,7 @@
 
 
                       <!-- Directives definition -->
-                      <b-tab title="Directives Definition" :disabled="advanced_mode" v-if="!advanced_mode">
+                      <b-tab title="Directives" :disabled="advanced_mode" v-if="!advanced_mode">
 
                         <directives :directives="architecture.directives"></directives>
 
@@ -494,7 +494,7 @@
 
               <!-- Navbar -->
               <uielto-toolbar id="navbar_assembly" 
-                              components="btn_architecture,btn_simulator|dropdown_assembly_file,dropdown_library|btn_compile|btn_configuration,btn_information" 
+                              components="btn_architecture,btn_simulator|btn_compile|dropdown_assembly_file,dropdown_library|btn_configuration,btn_information" 
                               :browser="browser"
                               :arch_available="arch_available">
               </uielto-toolbar>

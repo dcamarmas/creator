@@ -55,44 +55,50 @@
               },
 
   template:   ' <div>' +
-              '   <b-container fluid align-h="between" class="mx-0 px-2">' +
-              '     <b-row cols-xl="2" cols-lg="1" cols-md="2" cols-sm="1" cols-xs="1" cols="1" >' +
-              '       <b-col align-h="start" class="px-1">' +
-              '         <b-form-group label="Register value representation:" v-slot="{ ariaDescribedby }">' +
-              '           <b-form-radio-group' +
-              '             id="btn-radios-1"' +
-              '             class="w-100"' +
-              '             v-model="reg_representation"' +
-              '             :options="reg_representation_options"' +
-              '             button-variant="outline-secondary"' +
-              '             size="sm"' +
-              '             :aria-describedby="ariaDescribedby"' +
-              '             name="radios-btn-default"' +
-              '             buttons' +
-              '           ></b-form-radio-group>' +
-              '         </b-form-group>' +
+              '   <b-container fluid align-h="between" class="mx-0 my-3 px-2">' +
+              '     <b-row cols-xl="2" cols-lg="1" cols-md="2" cols-sm="1" cols-xs="1" cols="1">' +
+              '       <b-col align-h="start" class="px-2 col">' +
+              '         <div class="border m-1 p-1">' +
+              '           <b-badge variant="light" class="h6 groupLabelling border">Register value representation</b-badge>' +
+              '           <b-form-group class="mb-2" v-slot="{ ariaDescribedby }">' +
+              '             <b-form-radio-group' +
+              '               id="btn-radios-1"' +
+              '               class="w-100"' +
+              '               v-model="reg_representation"' +
+              '               :options="reg_representation_options"' +
+              '               button-variant="outline-secondary"' +
+              '               size="sm"' +
+              '               :aria-describedby="ariaDescribedby"' +
+              '               name="radios-btn-default"' +
+              '               buttons' +
+              '             ></b-form-radio-group>' +
+              '           </b-form-group>' +
+              '         </div >' +
               '       </b-col>' +
               ' ' +
-              '       <b-col align-h="end" class="px-1">' +
-              '         <b-form-group label="Register name representation:" v-slot="{ ariaDescribedby }">' +
-              '           <b-form-radio-group' +
-              '             id="btn-radios-2"' +
-              '             class="w-100"' +
-              '             v-model="reg_name_representation"' +
-              '             :options="reg_name_representation_options"' +
-              '             button-variant="outline-secondary"' +
-              '             size="sm"' +
-              '             :aria-describedby="ariaDescribedby"' +
-              '             name="radios-btn-default"' +
-              '             buttons' +
-              '           ></b-form-radio-group>' +
-              '         </b-form-group>' +
+              '       <b-col align-h="end" class="px-2 col">' +
+              '         <div class="border m-1 p-1">' +
+              '           <b-badge variant="light" class="h6 groupLabelling border">Register name representation</b-badge>' +
+              '           <b-form-group class="mb-2" v-slot="{ ariaDescribedby }">' +
+              '             <b-form-radio-group' +
+              '               id="btn-radios-2"' +
+              '               class="w-100"' +
+              '               v-model="reg_name_representation"' +
+              '               :options="reg_name_representation_options"' +
+              '               button-variant="outline-secondary"' +
+              '               size="sm"' +
+              '               :aria-describedby="ariaDescribedby"' +
+              '               name="radios-btn-default"' +
+              '               buttons' +
+              '             ></b-form-radio-group>' +
+              '           </b-form-group>' +
+              '         </div >' +
               '       </b-col>' +
               '     </b-row>' +
               '   </b-container>' +
               '   ' +
               ' ' +
-              '   <b-container fluid align-h="center" class="mx-0 px-2">' +
+              '   <b-container fluid align-h="center" class="mx-0 px-3 my-2">' +
               '     <b-row align-h="center" cols="1">' +
               '       <b-col v-for="item in architecture_hash">' +
               '         <b-container fluid align-h="center" class="px-0 mx-0 mb-2" v-if="(register_type == architecture.components[item.index].type) || (register_type == \'integer\' && architecture.components[item.index].type == \'control\')">' +
