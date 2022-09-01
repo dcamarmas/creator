@@ -231,7 +231,7 @@
 
               <!-- Navbar -->
               <uielto-toolbar id="navbar_architecture" 
-                              components="btn_assembly,btn_simulator|btn_save_architecture|btn_advanced_mode|btn_configuration,btn_information" 
+                              components="btn_assembly,btn_simulator|btn_save_architecture||btn_configuration,btn_information" 
                               :browser="browser"
                               :arch_available="arch_available">
               </uielto-toolbar>
@@ -296,7 +296,7 @@
 
 
                       <!-- Register File -->
-                      <b-tab title="Register File" :disabled="advanced_mode" v-if="!advanced_mode">
+                      <b-tab title="Register File">
 
                         <register-file-arch :register_file="architecture.components"></register-file-arch>
 
@@ -359,7 +359,7 @@
 
 
                       <!-- Instruction definition -->
-                      <b-tab title="Instructions" :disabled="advanced_mode" v-if="!advanced_mode">
+                      <b-tab title="Instructions">
                         
                         <instructions :instructions="architecture.instructions"></instructions>
 
@@ -398,7 +398,7 @@
 
 
                       <!-- Pseudoinstruction definition -->
-                      <b-tab title="Pseudoinstructions" :disabled="advanced_mode" v-if="!advanced_mode">
+                      <b-tab title="Pseudoinstructions">
                         
                         <pseudoinstructions :pseudoinstructions="architecture.pseudoinstructions"></pseudoinstructions>
 
@@ -437,7 +437,7 @@
 
 
                       <!-- Directives definition -->
-                      <b-tab title="Directives" :disabled="advanced_mode" v-if="!advanced_mode">
+                      <b-tab title="Directives">
 
                         <directives :directives="architecture.directives"></directives>
 
