@@ -104,16 +104,6 @@
                       },
 
                       //
-                      // Architecture
-                      //
-
-                      //Change advanced mode
-                      change_advanced_mode()
-                      {
-                        app._data.advanced_mode = !app._data.advanced_mode
-                      },
-
-                      //
                       // Assembly
                       //
 
@@ -440,7 +430,6 @@
                               button_assembly() +
                               button_simulator() +
                               button_save_architecture() +
-                              button_advanced_mode() +
                               dropdown_assembly_file() +
                               button_compile() +
                               dropdown_library() +
@@ -502,21 +491,6 @@
             '  <span class="fas fa-download"></span> ' +
             '  Save' +
             '</b-button>'
-  }
-
-  function button_advanced_mode(){
-    return  '<div class="buttons" v-if="item==\'btn_advanced_mode\'" @click="change_advanced_mode">' +
-            '  <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100"' +
-            '            id="advanced_mode1" ' +
-            '            v-if="app._data.advanced_mode == true">' +
-            '    Advanced Mode: deactivated' +
-            '  </b-button>' +
-            '  <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100"  ' +
-            '            id="advanced_mode2" ' +
-            '            v-if="app._data.advanced_mode == false">' +
-            '    Advanced Mode: activate' +
-            '  </b-button>' +
-            '</div>'
   }
 
   function dropdown_assembly_file(){
