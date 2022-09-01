@@ -39,30 +39,34 @@
     }
   },
 
-  template:   ' <b-container fluid align-h="center" class="mx-0 px-2">' +
-              '   <b-row cols="1" >' +
-              '     <b-col align-h="center" class="px-0">' +
-              '       <b-form-group label="Power consumption view:" v-slot="{ ariaDescribedby }">' +
-              '         <b-form-radio-group' +
-              '           id="btn-radios-1"' +
-              '           class="w-50"' +
-              '           v-model="power_consumption_representation"' +
-              '           :options="power_consumption_representation_options"' +
-              '           button-variant="outline-secondary"' +
-              '           size="sm"' +
-              '           :aria-describedby="ariaDescribedby"' +
-              '           name="radios-btn-default"' +
-              '           buttons' +
-              '         ></b-form-radio-group>' +
-              '       </b-form-group>' +
+  template:   ' <b-container fluid align-h="center" class="mx-0 my-3 px-2">' +
+              '   <b-row cols-xl="2" cols-lg="1" cols-md="2" cols-sm="1" cols-xs="1" cols="1">' +
+              '     <b-col align-h="center" class="px-2">' +
+              '       <div class="border m-1 p-1">' +
+              '         <b-badge variant="light" class="h6 groupLabelling border">Power consumption view</b-badge>' +
+              '         <b-form-group class="mb-2" v-slot="{ ariaDescribedby }">' +
+              '           <b-form-radio-group' +
+              '             id="btn-radios-1"' +
+              '             class="w-100"' +
+              '             v-model="power_consumption_representation"' +
+              '             :options="power_consumption_representation_options"' +
+              '             button-variant="outline-secondary"' +
+              '             size="sm"' +
+              '             :aria-describedby="ariaDescribedby"' +
+              '             name="radios-btn-default"' +
+              '             buttons' +
+              '           ></b-form-radio-group>' +
+              '         </b-form-group>' +
+              '       </div >' +
+              '     </b-col>' +
               '' +
-              '       <b-list-group class="align-items-center py-2 px-4">' +
-              '         <b-list-group-item>Total power consumption: {{total_power_consumption}}</b-list-group-item>' +
-              '       </b-list-group>' +
+              '     <b-col></b-col>' +
+              '   </b-row>' +
               '' +
+              '   <b-row cols="1">' +
+              '     <b-col align-h="center" class="px-2 my-2">' +
               '       <plot-power-consumption  :power_consumption_value="power_consumption_value" v-if="power_consumption_representation == \'graphic\'"></plot-power-consumption>  ' +
               '       <table-power-consumption :power_consumption="power_consumption" v-if="power_consumption_representation == \'table\'"></table-power-consumption> ' +
-              '' +
               '     </b-col>' +
               '   </b-row>' +
               ' </b-container>'

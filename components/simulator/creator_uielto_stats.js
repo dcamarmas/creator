@@ -38,26 +38,34 @@
     }
   },
 
-  template:   ' <b-container fluid align-h="center" class="mx-0 px-2">' +
-              '   <b-row cols="1" >' +
-              '     <b-col align-h="center" class="px-0">' +
-              '       <b-form-group label="Stats view:" v-slot="{ ariaDescribedby }">' +
-              '         <b-form-radio-group' +
-              '           id="btn-radios-1"' +
-              '           class="w-50"' +
-              '           v-model="stat_representation"' +
-              '           :options="stat_representation_options"' +
-              '           button-variant="outline-secondary"' +
-              '           size="sm"' +
-              '           :aria-describedby="ariaDescribedby"' +
-              '           name="radios-btn-default"' +
-              '           buttons' +
-              '         ></b-form-radio-group>' +
-              '       </b-form-group>' +
-              ' ' +
+  template:   ' <b-container fluid align-h="center" class="mx-0 my-3 px-2">' +
+              '   <b-row cols-xl="2" cols-lg="1" cols-md="2" cols-sm="1" cols-xs="1" cols="1">' +
+              '     <b-col align-h="center" class="px-2">' +
+              '       <div class="border m-1 p-1">' +
+              '         <b-badge variant="light" class="h6 groupLabelling border">Stats view</b-badge>' +
+              '         <b-form-group class="mb-2" v-slot="{ ariaDescribedby }">' +
+              '           <b-form-radio-group' +
+              '             id="btn-radios-1"' +
+              '             class="w-100"' +
+              '             v-model="stat_representation"' +
+              '             :options="stat_representation_options"' +
+              '             button-variant="outline-secondary"' +
+              '             size="sm"' +
+              '             :aria-describedby="ariaDescribedby"' +
+              '             name="radios-btn-default"' +
+              '             buttons' +
+              '           ></b-form-radio-group>' +
+              '         </b-form-group>' +
+              '       </div >' +
+              '     </b-col>' +
+              '' +
+              '     <b-col></b-col>' +
+              '   </b-row>' +
+              '' +
+              '   <b-row cols="1">' +
+              '     <b-col align-h="center" class="px-2 my-2">' +
               '       <plot-stats :stats_value="stats_value" v-if="stat_representation == \'graphic\'"></plot-stats>  ' +
               '       <table-stats :stats="stats" v-if="stat_representation == \'table\'"></table-stats> ' +
-              ' ' +
               '     </b-col>' +
               '   </b-row>' +
               ' </b-container>'

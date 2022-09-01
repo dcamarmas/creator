@@ -545,7 +545,7 @@
   }
 
   function button_compile(){
-    return  '<b-button v-if="item==\'btn_compile\'" class="btn btn-block btn-outline-secondary menuGroup btn-sm h-100" ' +
+    return  '<b-button v-if="item==\'btn_compile\'" class="btn btn-block btn-outline-secondary actionsGroup btn-sm h-100" ' +
             '          id="compile_assembly" ' +
             '          @click="assembly_compiler()">' +
             '  <span class="fas fa-sign-in-alt"></span>' +

@@ -47,32 +47,42 @@
                    
             },
 
-  template: ' <b-container fluid align-h="center" class="mx-0 px-2">' +
-            '   <b-row cols="1" >' +
+  template: ' <b-container fluid align-h="center" class="mx-0 my-3 px-2">' +
+            '   <b-row cols-xl="2" cols-lg="1" cols-md="2" cols-sm="1" cols-xs="1" cols="1">' +
             '     <b-col align-h="center" class="px-2">' +
-            '       <b-form-group label="Main memory segment:" v-slot="{ ariaDescribedby }" >' +
-            '         <b-form-radio-group' +
-            '           id="btn-radios-1"' +
-            '           class="w-50 px-0"' +
-            '           v-model="mem_representation"' +
-            '           :options="mem_representation_options"' +
-            '           button-variant="outline-secondary"' +
-            '           size="sm"' +
-            '           :aria-describedby="ariaDescribedby"' +
-            '           name="radios-btn-default"' +
-            '           buttons' +
-            '         ></b-form-radio-group>' +
-            '       </b-form-group>' +
+            '       <div class="border m-1 p-1">' +
+            '         <b-badge variant="light" class="h6 groupLabelling border">Main memory segment</b-badge>' +
+            '         <b-form-group class="mb-2" v-slot="{ ariaDescribedby }" >' +
+            '           <b-form-radio-group' +
+            '             id="btn-radios-1"' +
+            '             class="w-100"' +
+            '             v-model="mem_representation"' +
+            '             :options="mem_representation_options"' +
+            '             button-variant="outline-secondary"' +
+            '             size="sm"' +
+            '             :aria-describedby="ariaDescribedby"' +
+            '             name="radios-btn-default"' +
+            '             buttons' +
+            '           ></b-form-radio-group>' +
+            '         </b-form-group>' +
+            '       </div >' +
+            '     </b-col>' +
             '' +
-            '       <table-mem :main_memory="main_memory"' +
+            '     <b-col></b-col>' +
+            '   </b-row>' +
+            '' +
+            '   <b-row cols="1">' +
+            '     <b-col align-h="center" class="px-2">' +
+            '       <table-mem class="my-2"' +
+            '                  :main_memory="main_memory"' +
             '                  :memory_segment="mem_representation"' +
             '                  :track_stack_names="track_stack_names" ' +
             '                  :callee_subrutine="callee_subrutine" ' +
             '                  :caller_subrutine="caller_subrutine">' +
             '       </table-mem>' +
-            ' ' +
             '     </b-col>' +
             '   </b-row>' +
+            '' +
             ' </b-container>'
   }
 
