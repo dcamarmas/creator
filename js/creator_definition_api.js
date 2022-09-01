@@ -164,6 +164,13 @@ function capi_print_float ( value1 )
 
 	/* Print float */
 	var value = architecture.components[ret1.indexComp].elements[ret1.indexElem].value;
+	
+	//Add .0 if the number is 0.0 or similar
+	var aux_value = value.toString();
+	if (aux_value.indexOf(".") == -1)
+	{
+		value = aux_value + ".0";
+	}
 
 	display_print(value) ;
 }
@@ -181,6 +188,13 @@ function capi_print_double ( value1 )
 
 	/* Print double */
 	var value = architecture.components[ret1.indexComp].elements[ret1.indexElem].value;
+
+	//Add .0 if the number is 0.0 or similar
+	var aux_value = value.toString();
+	if (aux_value.indexOf(".") == -1)
+	{
+		value = aux_value + ".0";
+	}
 
 	display_print(value) ;
 }
@@ -202,7 +216,7 @@ function capi_print_char ( value1 )
 	var length = aux2.length;
 
 	var value = aux2.substring(length-2, length) ;
-		value = String.fromCharCode(parseInt(value, 16)) ;
+	value = String.fromCharCode(parseInt(value, 16)) ;
 
 	display_print(value) ;
 }

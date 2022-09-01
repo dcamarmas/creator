@@ -10,7 +10,7 @@ MIPS_TEST="002 003 004 005 006 007 008 011 012 020 021 023 024 025 026 030 031"
 for I in $MIPS_TEST;
 do
   echo " * ./mips/correct/test$I... "
-  ./creator.sh -a ./architecture/MIPS-32.json -s ./travis/mips/correct/test-mips-$I.s -o min | grep "PC" > ./travis/mips/correct/test-mips-$I.out
+  ./creator.sh -a ./architecture/MIPS-32.json -s ./travis/mips/correct/test-mips-$I.s -o min > ./travis/mips/correct/test-mips-$I.out
 done
 
 echo " MIPS common errors:"
@@ -39,6 +39,6 @@ RV_TEST="002 003 004 005 006 007 008 011 012"
 for I in $RV_TEST;
 do
   echo " * ./riscv/correct/example$I... "
-  ./creator.sh -a ./architecture/RISC-V.json -s ./travis/riscv/correct/test-riscv-$I.s -o min | grep "PC" > ./travis/riscv/correct/test-riscv-$I.out
+  ./creator.sh -a ./architecture/RISC-V.json -s ./travis/riscv/correct/test-riscv-$I.s -o min > ./travis/riscv/correct/test-riscv-$I.out
 done
 

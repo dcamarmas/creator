@@ -49,6 +49,9 @@ try
       /* Global Variables */
       /********************/
 
+      //Forces vue to reload a component, similar to $forceUpdate()
+      render: 0,
+
       //
       // General information
       //
@@ -131,10 +134,6 @@ try
       architecture_hash: architecture_hash,
 
 
-      //Advanced mode
-      advanced_mode: true,
-
-
       //Edit architecture field modal
       modal_edit_arch_field: { //TODO: include into arch_conf component - modal info
         title: '',
@@ -146,12 +145,6 @@ try
       modal_reset_arch_field:{ //TODO: include into arch_conf component - modal info
         title: '',
         index: ''
-      },
-
-
-      //Edit memory layout modal
-      modal_edit_memory_layout: { //TODO: include into memory_layout component - modal info
-        memory_layout: ["", "", "", "", "", ""]
       },
       
 
@@ -468,20 +461,6 @@ try
           }
         }
       },
-
-
-
-
-      /****************/
-      /* Architecture */
-      /****************/
-
-
-
-
-      /************/
-      /* Assembly */
-      /************/
 
 
 

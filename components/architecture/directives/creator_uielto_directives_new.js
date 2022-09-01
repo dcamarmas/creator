@@ -48,7 +48,7 @@
                                   ],
 
                     //Directive form
-                    directive_fields:{
+                    directive:{
                       name: '',
                       action: '',
                       size: null,
@@ -65,20 +65,20 @@
                   {
                     evt.preventDefault();
 
-                    if (!this.directive_fields.name || !this.directive_fields.action)
+                    if (!this.directive.name || !this.directive.action)
                     {
                       show_notification('Please complete all fields', 'danger') ;
                     }
                     else 
                     {
-                      if(isNaN(parseInt(this.directive_fields.size)) && (this.directive_fields.action == 'byte' || this.directive_fields.action == 'half_word' || this.directive_fields.action == 'word' || this.directive_fields.action == 'double_word' || this.directive_fields.action == 'float' || this.directive_fields.action == 'double' || this.directive_fields.action == 'space')){
+                      if(isNaN(parseInt(this.directive.size)) && (this.directive.action == 'byte' || this.directive.action == 'half_word' || this.directive.action == 'word' || this.directive.action == 'double_word' || this.directive.action == 'float' || this.directive.action == 'double' || this.directive.action == 'space')){
                         show_notification('Please complete all fields', 'danger') ;
                       }
                       else
                       {
                         for (var i = 0; i < architecture.directives.length; i++)
                         {
-                          if(this.directive_fields.name == architecture.directives[i].name)
+                          if(this.directive.name == architecture.directives[i].name)
                           {
                             show_notification('The directive already exists', 'danger') ;
                             return;
@@ -96,9 +96,9 @@
                     this.show_modal = false;
 
                     var new_directive = {
-                                          name: this.directive_fields.name, 
-                                          action: this.directive_fields.action, 
-                                          size: this.directive_fields.size
+                                          name: this.directive.name, 
+                                          action: this.directive.action, 
+                                          size: this.directive.size
                                         };
                     architecture.directives.push(new_directive);
 
@@ -108,9 +108,9 @@
                   //Clean directive form
                   clean_form()
                   {
-                    this.directive_fields.name = '';
-                    this.directive_fields.action = '';
-                    this.directive_fields.size = null;
+                    this.directive.name = '';
+                    this.directive.action = '';
+                    this.directive.size = null;
                   },
 
                   //Form validator
@@ -140,8 +140,8 @@
                 '  <b-form>' +
                 '    <b-form-group label="Name:">' +
                 '      <b-form-input type="text"' +
-                '                    :state="valid(directive_fields.name)" ' +
-                '                    v-model="directive_fields.name" ' +
+                '                    :state="valid(directive.name)" ' +
+                '                    v-model="directive.name" ' +
                 '                    required ' +
                 '                    placeholder="Enter name" ' +
                 '                    size="sm" ' +
@@ -152,18 +152,18 @@
                 '    <b-form-group label="action:">' +
                 '      <b-form-select :options="actionTypes" ' +
                 '                     required ' +
-                '                     v-model="directive_fields.action" ' +
-                '                     :state="valid(directive_fields.action)" ' +
+                '                     v-model="directive.action" ' +
+                '                     :state="valid(directive.action)" ' +
                 '                     size="sm"' +
                 '                     title="Action">' +
                 '      </b-form-select>' +
                 '    </b-form-group>' +
                 '' +
                 '    <b-form-group label="Size:" ' +
-                '                  v-if="directive_fields.action != \'\' && directive_fields.action != \'data_segment\' && directive_fields.action != \'code_segment\' && directive_fields.action != \'main_function\' && directive_fields.action != \'kmain_function\' && directive_fields.action != \'global_symbol\' && directive_fields.action != \'data_size\' && directive_fields.action != \'ascii_not_null_end\' && directive_fields.action != \'ascii_null_end\' && directive_fields.action != \'align\' && directive_fields.action != \'balign\'">' +
+                '                  v-if="directive.action != \'\' && directive.action != \'data_segment\' && directive.action != \'code_segment\' && directive.action != \'main_function\' && directive.action != \'kmain_function\' && directive.action != \'global_symbol\' && directive.action != \'data_size\' && directive.action != \'ascii_not_null_end\' && directive.action != \'ascii_null_end\' && directive.action != \'align\' && directive.action != \'balign\'">' +
                 '      <b-form-input type="number" ' +
-                '                    :state="valid(directive_fields.size)" ' +
-                '                    v-model="directive_fields.size" ' +
+                '                    :state="valid(directive.size)" ' +
+                '                    v-model="directive.size" ' +
                 '                    required ' +
                 '                    placeholder="Enter size" ' +
                 '                    size="sm" ' +
