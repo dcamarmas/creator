@@ -58,8 +58,8 @@
               '   <b-container fluid align-h="between" class="mx-0 my-3 px-2">' +
               '     <b-row cols-xl="2" cols-lg="1" cols-md="2" cols-sm="1" cols-xs="1" cols="1">' +
               '       <b-col align-h="start" class="px-2 col">' +
-              '         <div class="border m-1 p-1">' +
-              '           <b-badge variant="light" class="h6 groupLabelling border">Register value representation</b-badge>' +
+              '         <div class="border m-1 py-1 px-2">' +
+              '           <b-badge variant="light" class="h6 groupLabelling border mx-2 my-0">Register value representation</b-badge>' +
               '           <b-form-group class="mb-2" v-slot="{ ariaDescribedby }">' +
               '             <b-form-radio-group' +
               '               id="btn-radios-1"' +
@@ -77,8 +77,8 @@
               '       </b-col>' +
               ' ' +
               '       <b-col align-h="end" class="px-2 col">' +
-              '         <div class="border m-1 p-1">' +
-              '           <b-badge variant="light" class="h6 groupLabelling border">Register name representation</b-badge>' +
+              '         <div class="border m-1 py-1 px-2">' +
+              '           <b-badge variant="light" class="h6 groupLabelling border mx-2 my-0">Register name representation</b-badge>' +
               '           <b-form-group class="mb-2" v-slot="{ ariaDescribedby }">' +
               '             <b-form-radio-group' +
               '               id="btn-radios-2"' +
