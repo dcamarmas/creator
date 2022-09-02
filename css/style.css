@@ -363,6 +363,12 @@ h2 {
   left: -0.7vw;
 }
 
+.groupLabelling {
+  float: top;
+  position: relative;
+  top: -0.6vw;
+}
+
 .binaryTag {
   position:relative;top:-9px;
 }
@@ -467,6 +473,12 @@ h2 {
     opacity: 1;
     text-align: center;
   }
+
+  .groupLabelling {
+    float: top;
+    position: relative;
+    top: -2.3vw;
+  }
 }
 
 @media only screen and (max-width: 540px) {
@@ -483,5 +495,11 @@ h2 {
     padding: 10px;
     opacity: 1;
     text-align: center;
+  }
+
+  .groupLabelling {
+    float: top;
+    position: relative;
+    top: -3.2vw;
   }
 }

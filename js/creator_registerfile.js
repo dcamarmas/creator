@@ -126,7 +126,7 @@ function readRegister ( indexComp, indexElem )
 
   if (architecture.components[indexComp].type == "floating point")
   {
-    return parseFloat((architecture.components[indexComp].elements[indexElem].value).toString());
+    return parseFloat((architecture.components[indexComp].elements[indexElem].value).toString()); //TODO: big_int2hex -> hex2float
   }
 }
 
@@ -189,7 +189,7 @@ function writeRegister ( value, indexComp, indexElem )
         throw packExecute(true, 'The register '+ architecture.components[indexComp].elements[indexElem].name.join(' | ') +' cannot be written', 'danger', null);
       }
 
-      architecture.components[indexComp].elements[indexElem].value = parseFloat(value);
+      architecture.components[indexComp].elements[indexElem].value = parseFloat(value); //TODO: float2bin -> bin2hex -> hex2big_int
       creator_callstack_writeRegister(indexComp, indexElem);
 
       if ((architecture.components[indexComp].elements[indexElem].properties.includes('pointer') != false) &&
