@@ -247,9 +247,36 @@
       return parseInt(float2bin(value),2);
   }
 
+  function double2int_v2 ( value )
+  {
+      return parseInt(double2bin(value),2);
+  }
+
   function int2float_v2 ( value )
   {
       return hex2float("0x" + bin2hex(value.toString(2)));
+  }
+
+  function full_print ( value, bin_value, add_dot_zero )
+  {
+    var print_value = value;
+
+    //Add - if the number is -0.0
+    if ( bin_value != null && value == 0 && bin_value[0] == 1 ) {
+      print_value  = "-" + print_value;
+    }
+
+    //Add .0 if the number is 0.0 or similar
+    if (add_dot_zero)
+    {
+      var aux_value = value.toString();
+      if (aux_value.indexOf(".") == -1)
+      {
+        print_value = print_value + ".0";
+      }
+    }
+
+    return print_value
   }
 
 
