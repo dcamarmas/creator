@@ -21,74 +21,124 @@
 
 function bi_intToBigInt ( int_value, int_base )
 {
-	var auxBigInt = null ;
-
-	if (typeof bigInt !== "undefined" && int_base == 16)
-		auxBigInt = bigInt(int_value, int_base).value ;
-
-	else if (typeof bigInt !== "undefined")
-		auxBigInt = bigInt(parseInt(int_value) >>> 0, int_base).value ;
-
-	else auxBigInt = BigInt(parseInt(int_value) >>> 0, int_base) ;
-
-	return auxBigInt ;
+  return BigInt(parseInt(int_value) >>> 0, int_base) ;
 }
 
 
-/*String to number/bigint*/
-function register_value_deserialize(object)
+
+
+
+
+
+
+
+
+function bi_floatToBigInt ( float_value )
 {
-	var auxObject = object;
+  var BigInt_value = null ;
+  var bin          = float2bin(float_value);
+  var hex          = bin2hex(bin);
 
-	for (var i=0; i<auxObject.components.length; i++)
-	{
-		var aux = null ;
-		var auxBigInt = null ;
+  BigInt_value = BigInt("0x" + hex);
 
-		for (var j = 0; j < auxObject.components[i].elements.length; j++)
-		{
-			aux = auxObject.components[i].elements[j].value;
-			if (auxObject.components[i].type != "floating point")
-				auxObject.components[i].elements[j].value = bi_intToBigInt(aux,10) ;
-			else
-				auxObject.components[i].elements[j].value = parseFloat(aux) ;
-
-			if (auxObject.components[i].double_precision != true)
-			{
-				aux = auxObject.components[i].elements[j].default_value;
-				if (auxObject.components[i].type != "floating point")
-					auxObject.components[i].elements[j].default_value = bi_intToBigInt(aux,10) ;
-				else
-					auxObject.components[i].elements[j].value = parseFloat(aux) ;
-			}
-		}
-
-	}
-
-	return auxObject;
+  return BigInt_value ;
 }
 
-/*Number/Bigint to string*/
-function register_value_serialize(object)
+function bi_BigIntTofloat ( big_int_value )
 {
-	var auxObject = jQuery.extend(true, {}, object);
+  var hex = big_int_value.toString(16);
 
-	for (var i=0; i<architecture.components.length; i++)
-	{
-		for (var j = 0; j < architecture.components[i].elements.length; j++)
-		{
-			var aux = architecture.components[i].elements[j].value;
-			auxObject.components[i].elements[j].value = aux.toString();
+  return hex2float("0x" + hex);
+}
 
-			if (architecture.components[i].double_precision != true)
-			{
-				var aux2 = architecture.components[i].elements[j].default_value;
-				auxObject.components[i].elements[j].default_value = aux2.toString();
-			}
-		}
-	}
 
-	return auxObject;
+
+
+function bi_doubleToBigInt ( double_value )
+{
+  var BigInt_value = null ;
+  var bin          = double2bin(double_value);
+  var hex          = bin2hex(bin);
+
+  BigInt_value = BigInt("0x" + hex);
+
+  return BigInt_value ;
+}
+
+function bi_BigIntTodouble ( big_int_value )
+{
+  var hex = big_int_value.toString(16);
+
+  return hex2double("0x" + hex);
+}
+
+
+
+
+
+
+
+
+//String to number/bigint
+function register_value_deserialize( architecture )
+{
+  //var architecture = architecture;
+
+  for (var i=0; i<architecture.components.length; i++)
+  {
+    for (var j=0; j< architecture.components[i].elements.length; j++)
+    {
+      if (architecture.components[i].type != "floating point"){
+        architecture.components[i].elements[j].value = bi_intToBigInt(architecture.components[i].elements[j].value,10) ;
+      }
+      else{
+        architecture.components[i].elements[j].value = bi_floatToBigInt(architecture.components[i].elements[j].value) ;
+      }
+
+      if (architecture.components[i].double_precision != true)
+      {
+        if (architecture.components[i].type != "floating point"){
+          architecture.components[i].elements[j].default_value = bi_intToBigInt(architecture.components[i].elements[j].default_value,10) ;
+        }
+        else{
+          architecture.components[i].elements[j].default_value = bi_floatToBigInt(architecture.components[i].elements[j].default_value) ;
+        }
+      }
+    }
+  }
+
+  return architecture;
+}
+
+//Number/Bigint to string
+function register_value_serialize( architecture )
+{
+  var aux_architecture = jQuery.extend(true, {}, architecture);
+
+  for (var i=0; i<architecture.components.length; i++)
+  {
+    for (var j=0; j < architecture.components[i].elements.length; j++)
+    {
+      if (architecture.components[i].type != "floating point"){
+        aux_architecture.components[i].elements[j].value = parseInt(architecture.components[i].elements[j].value);
+      }
+      else{
+        aux_architecture.components[i].elements[j].value = bi_BigIntTofloat(architecture.components[i].elements[j].value);
+      }
+
+      if (architecture.components[i].double_precision != true)
+      {
+        if (architecture.components[i].type != "floating point"){
+          aux_architecture.components[i].elements[j].default_value = parseInt(architecture.components[i].elements[j].default_value);
+        }
+        else{
+          aux_architecture.components[i].elements[j].default_value = bi_BigIntTofloat(architecture.components[i].elements[j].default_value);
+        }
+      }
+    }
+  }
+
+  return aux_architecture;
 }
 /*
  *  Copyright 2018-2022 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
@@ -382,9 +432,36 @@ function register_value_serialize(object)
       return parseInt(float2bin(value),2);
   }
 
+  function double2int_v2 ( value )
+  {
+      return parseInt(double2bin(value),2);
+  }
+
   function int2float_v2 ( value )
   {
       return hex2float("0x" + bin2hex(value.toString(2)));
+  }
+
+  function full_print ( value, bin_value, add_dot_zero )
+  {
+    var print_value = value;
+
+    //Add - if the number is -0.0
+    if ( bin_value != null && value == 0 && bin_value[0] == 1 ) {
+      print_value  = "-" + print_value;
+    }
+
+    //Add .0 if the number is 0.0 or similar
+    if (add_dot_zero)
+    {
+      var aux_value = value.toString();
+      if (aux_value.indexOf(".") == -1)
+      {
+        print_value = print_value + ".0";
+      }
+    }
+
+    return print_value
   }
 
 
@@ -1053,10 +1130,14 @@ function capi_print_int ( value1 )
 	}
 
 	/* Print integer */
-	var value   = architecture.components[ret1.indexComp].elements[ret1.indexElem].value;
+	var value   = readRegister(ret1.indexComp, ret1.indexElem);
 	var val_int = parseInt(value.toString()) >> 0 ;
 
-	display_print(val_int) ;
+
+	var value = readRegister(ret1.indexComp, ret1.indexElem);
+	var val_int = parseInt(value.toString()) >> 0 ;
+
+	display_print(full_print(val_int, null, false));
 }
 
 function capi_print_float ( value1 )
@@ -1071,16 +1152,10 @@ function capi_print_float ( value1 )
 	}
 
 	/* Print float */
-	var value = architecture.components[ret1.indexComp].elements[ret1.indexElem].value;
-	
-	//Add .0 if the number is 0.0 or similar
-	var aux_value = value.toString();
-	if (aux_value.indexOf(".") == -1)
-	{
-		value = aux_value + ".0";
-	}
+	var value = readRegister(ret1.indexComp, ret1.indexElem);
+	var bin = float2bin(value);
 
-	display_print(value) ;
+	display_print(full_print(value, bin, true));
 }
 
 function capi_print_double ( value1 )
@@ -1095,16 +1170,10 @@ function capi_print_double ( value1 )
 	}
 
 	/* Print double */
-	var value = architecture.components[ret1.indexComp].elements[ret1.indexElem].value;
+	var value = readRegister(ret1.indexComp, ret1.indexElem);
+	var bin = double2bin(value);
 
-	//Add .0 if the number is 0.0 or similar
-	var aux_value = value.toString();
-	if (aux_value.indexOf(".") == -1)
-	{
-		value = aux_value + ".0";
-	}
-
-	display_print(value) ;
+	display_print(full_print(value, bin, true));
 }
 
 function capi_print_char ( value1 )
@@ -1119,7 +1188,7 @@ function capi_print_char ( value1 )
 	}
 
 	/* Print char */
-	var aux    = architecture.components[ret1.indexComp].elements[ret1.indexElem].value;
+	var aux    = readRegister(ret1.indexComp, ret1.indexElem);
 	var aux2   = aux.toString(16);
 	var length = aux2.length;
 
@@ -1141,7 +1210,7 @@ function capi_print_string ( value1 )
 	}
 
 	/* Print string */
-	var addr = architecture.components[ret1.indexComp].elements[ret1.indexElem].value;
+	var addr = readRegister(ret1.indexComp, ret1.indexElem);
         var msg  = readMemory(parseInt(addr), "string") ;
 	display_print(msg) ;
 }
@@ -1263,13 +1332,13 @@ function capi_sbrk ( value1, value2 )
 	}
 
 	/* Request more memory */
-	var new_size = parseInt(architecture.components[ret1.indexComp].elements[ret1.indexElem].value) ;
+	var new_size = parseInt(readRegister(ret1.indexComp, ret1.indexElem)) ;
 	if (new_size < 0) {
 		throw packExecute(true, "capi_syscall: negative size", 'danger', null) ;
 	}
 
     var new_addr = creator_memory_alloc(new_size) ;
-	architecture.components[ret2.indexComp].elements[ret2.indexElem].value = new_addr ;
+	writeRegister(new_addr, ret2.indexComp, ret2.indexElem);
 }
 
 function capi_get_power_consumption ( value1 )
@@ -1284,7 +1353,7 @@ function capi_get_power_consumption ( value1 )
 	}
 
 	//Store power consumption in the register
-	architecture.components[ret1.indexComp].elements[ret1.indexElem].value = total_power_consumption;
+	writeRegister(total_power_consumption, ret1.indexComp, ret1.indexElem);
 }
 
 
@@ -1781,51 +1850,6 @@ function crex_findReg ( value1 )
   return ret ;
 }
 
-/*Modifies double precision registers according to simple precision registers*/
-function updateDouble(comp, elem)
-{
-  for (var j = 0; j < architecture.components.length; j++)
-    {
-    for (var z = 0; z < architecture.components[j].elements.length && architecture.components[j].double_precision == true; z++)
-        {
-      if (architecture.components[comp].elements[elem].name.includes(architecture.components[j].elements[z].simple_reg[0]) != false){
-        var simple = bin2hex(float2bin(architecture.components[comp].elements[elem].value));
-        var double = bin2hex(double2bin(architecture.components[j].elements[z].value)).substr(8, 15);
-        var newDouble = simple + double;
-
-        architecture.components[j].elements[z].value = hex2double("0x"+newDouble);
-      }
-      if (architecture.components[comp].elements[elem].name.includes(architecture.components[j].elements[z].simple_reg[1]) != false){
-        var simple = bin2hex(float2bin(architecture.components[comp].elements[elem].value));
-        var double = bin2hex(double2bin(architecture.components[j].elements[z].value)).substr(0, 8);
-        var newDouble = double + simple;
-
-        architecture.components[j].elements[z].value = hex2double("0x"+newDouble);
-      }
-    }
-  }
-}
-
-/*Modifies single precision registers according to double precision registers*/
-function updateSimple ( comp, elem )
-{
-  var part1 = bin2hex(double2bin(architecture.components[comp].elements[elem].value)).substr(0, 8);
-  var part2 = bin2hex(double2bin(architecture.components[comp].elements[elem].value)).substr(8, 15);
-
-  for (var j = 0; j < architecture.components.length; j++)
-    {
-    for (var z = 0; z < architecture.components[j].elements.length; z++)
-        {
-      if (architecture.components[j].elements[z].name.includes(architecture.components[comp].elements[elem].simple_reg[0]) != false) {
-        architecture.components[j].elements[z].value = hex2float("0x"+part1);
-      }
-      if (architecture.components[j].elements[z].name.includes(architecture.components[comp].elements[elem].simple_reg[1]) != false) {
-        architecture.components[j].elements[z].value = hex2float("0x"+part2);
-      }
-    }
-  }
-}
-
 function readRegister ( indexComp, indexElem )
 {
   var draw = {
@@ -1849,13 +1873,23 @@ function readRegister ( indexComp, indexElem )
   if ((architecture.components[indexComp].type == "control") ||
       (architecture.components[indexComp].type == "integer"))
   {
-    console_log(parseInt((architecture.components[indexComp].elements[indexElem].value).toString()));
-    return parseInt((architecture.components[indexComp].elements[indexElem].value).toString());
+    console_log(parseInt(architecture.components[indexComp].elements[indexElem].value));
+    return parseInt(architecture.components[indexComp].elements[indexElem].value);
   }
 
   if (architecture.components[indexComp].type == "floating point")
   {
-    return parseFloat((architecture.components[indexComp].elements[indexElem].value).toString()); //TODO: big_int2hex -> hex2float
+    if(architecture.components[indexComp].double_precision == false){
+      //return parseFloat((architecture.components[indexComp].elements[indexElem].value).toString()); //TODO: big_int2hex -> hex2float //TODO
+      console_log(bi_BigIntTofloat(architecture.components[indexComp].elements[indexElem].value));
+      return bi_BigIntTofloat(architecture.components[indexComp].elements[indexElem].value);
+    }
+    else{
+      //return parseFloat((architecture.components[indexComp].elements[indexElem].value).toString()); //TODO: big_int2hex -> hex2float //TODO
+      console_log(bi_BigIntTodouble(architecture.components[indexComp].elements[indexElem].value));
+      return bi_BigIntTodouble(architecture.components[indexComp].elements[indexElem].value);
+    }
+
   }
 }
 
@@ -1918,7 +1952,8 @@ function writeRegister ( value, indexComp, indexElem )
         throw packExecute(true, 'The register '+ architecture.components[indexComp].elements[indexElem].name.join(' | ') +' cannot be written', 'danger', null);
       }
 
-      architecture.components[indexComp].elements[indexElem].value = parseFloat(value); //TODO: float2bin -> bin2hex -> hex2big_int
+      //architecture.components[indexComp].elements[indexElem].value = parseFloat(value); //TODO: float2bin -> bin2hex -> hex2big_int //TODO
+      architecture.components[indexComp].elements[indexElem].value = bi_floatToBigInt(value);
       creator_callstack_writeRegister(indexComp, indexElem);
 
       if ((architecture.components[indexComp].elements[indexElem].properties.includes('pointer') != false) &&
@@ -1946,7 +1981,8 @@ function writeRegister ( value, indexComp, indexElem )
         throw packExecute(true, 'The register '+ architecture.components[indexComp].elements[indexElem].name.join(' | ') +' cannot be written', 'danger', null);
       }
 
-      architecture.components[indexComp].elements[indexElem].value = parseFloat(value);
+      //architecture.components[indexComp].elements[indexElem].value = parseFloat(value); //TODO
+      architecture.components[indexComp].elements[indexElem].value = bi_doubleToBigInt(value);
       updateSimple(indexComp, indexElem);
       creator_callstack_writeRegister(indexComp, indexElem);
 
@@ -1957,7 +1993,50 @@ function writeRegister ( value, indexComp, indexElem )
   }
 }
 
-/*
+/*Modifies double precision registers according to simple precision registers*/
+function updateDouble(comp, elem)
+{
+  for (var j = 0; j < architecture.components.length; j++)
+    {
+    for (var z = 0; z < architecture.components[j].elements.length && architecture.components[j].double_precision == true; z++)
+        {
+      if (architecture.components[comp].elements[elem].name.includes(architecture.components[j].elements[z].simple_reg[0]) != false){
+        var simple = bin2hex(float2bin(readRegister(comp, elem)));
+        var double = bin2hex(double2bin(readRegister(j, z))).substr(8, 15);
+        var newDouble = simple + double;
+
+        architecture.components[j].elements[z].value = bi_doubleToBigInt(hex2double("0x"+newDouble));
+      }
+      if (architecture.components[comp].elements[elem].name.includes(architecture.components[j].elements[z].simple_reg[1]) != false){
+        var simple = bin2hex(float2bin(readRegister(comp, elem)));
+        var double = bin2hex(double2bin(readRegister(j, z))).substr(0, 8);
+        var newDouble = double + simple;
+
+        architecture.components[j].elements[z].value = bi_doubleToBigInt(hex2double("0x"+newDouble));
+      }
+    }
+  }
+}
+
+/*Modifies single precision registers according to double precision registers*/
+function updateSimple ( comp, elem )
+{
+  var part1 = bin2hex(double2bin(readRegister(comp, elem))).substr(0, 8);
+  var part2 = bin2hex(double2bin(readRegister(comp, elem))).substr(8, 15);
+
+  for (var j = 0; j < architecture.components.length; j++)
+  {
+    for (var z = 0; z < architecture.components[j].elements.length; z++)
+    {
+      if (architecture.components[j].elements[z].name.includes(architecture.components[comp].elements[elem].simple_reg[0]) != false) {
+        architecture.components[j].elements[z].value = bi_floatToBigInt(hex2float("0x"+part1));
+      }
+      if (architecture.components[j].elements[z].name.includes(architecture.components[comp].elements[elem].simple_reg[1]) != false) {
+        architecture.components[j].elements[z].value = bi_floatToBigInt(hex2float("0x"+part2));
+      }
+    }
+  }
+}/*
  *  Copyright 2018-2022 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
  *  This file is part of CREATOR.
@@ -6417,7 +6496,8 @@ function execute_instruction ( )
 
   do {
     console_log(execution_index);
-    console_log(architecture.components[0].elements[0].value);
+    //console_log(architecture.components[0].elements[0].value); //TODO
+    console_log(readRegister(0, 0));
 
     if (instructions.length == 0) {
       return packExecute(true, 'No instructions in memory', 'danger', null);
@@ -6439,7 +6519,8 @@ function execute_instruction ( )
       {
         if (instructions[i].Label == architecture.arch_conf[4].value) {
           //draw.success.push(execution_index) ;
-          architecture.components[0].elements[0].value = bi_intToBigInt(instructions[i].Address, 10);
+          //architecture.components[0].elements[0].value = bi_intToBigInt(instructions[i].Address, 10); //TODO
+          writeRegister(bi_intToBigInt(instructions[i].Address, 10), 0, 0);
           execution_init = 0;
           break;
         }
@@ -6455,7 +6536,8 @@ function execute_instruction ( )
 
     for (var i = 0; i < instructions.length; i++)
     {
-      if (parseInt(instructions[i].Address, 16) == architecture.components[0].elements[0].value) 
+      //if (parseInt(instructions[i].Address, 16) == architecture.components[0].elements[0].value) //TODO
+      if (parseInt(instructions[i].Address, 16) == readRegister(0, 0)) 
       {
         execution_index = i;
 
@@ -6573,7 +6655,8 @@ function execute_instruction ( )
     //Increase PC
     //TODO: other register
     word_size = parseInt(architecture.arch_conf[1].value) / 8;
-    architecture.components[0].elements[0].value = architecture.components[0].elements[0].value + bi_intToBigInt(nwords * word_size,10) ;
+    //architecture.components[0].elements[0].value = architecture.components[0].elements[0].value + bi_intToBigInt(nwords * word_size,10) ; //TODO
+    writeRegister(readRegister(0,0) + (nwords * word_size), 0,0);
     console_log(auxDef);
 
 
@@ -6710,10 +6793,10 @@ function execute_instruction ( )
     {
       var msg = '' ;
       if (e instanceof SyntaxError)
-        msg = 'The definition of the instruction contains errors, please review it' ;
+        msg = 'The definition of the instruction contains errors, please review it' + e.stack ; //TODO
       else msg = e.msg ;
 
-      console_log("Error: " + e);
+      console_log("Error: " + e.stack);
       error = 1;
       draw.danger.push(execution_index) ;
       execution_index = -1;
@@ -6738,7 +6821,8 @@ function execute_instruction ( )
     {
       for (var i = 0; i < instructions.length; i++)
       {
-        if (parseInt(instructions[i].Address, 16) == architecture.components[0].elements[0].value) {
+        //if (parseInt(instructions[i].Address, 16) == architecture.components[0].elements[0].value) { //TODO
+        if (parseInt(instructions[i].Address, 16) == readRegister(0, 0)) {
           execution_index = i;
           draw.success.push(execution_index) ;
           break;
@@ -6853,16 +6937,16 @@ function reset ()
           for (var b = 0; b < architecture.components[a].elements.length; b++)
           {
             if (architecture.components[a].elements[b].name.includes(architecture.components[i].elements[j].simple_reg[0]) != false){
-              aux_sim1 = bin2hex(float2bin(architecture.components[a].elements[b].default_value));
+              aux_sim1 = bin2hex(float2bin(bi_BigIntTofloat(architecture.components[a].elements[b].default_value)));
             }
             if (architecture.components[a].elements[b].name.includes(architecture.components[i].elements[j].simple_reg[1]) != false){
-              aux_sim2 = bin2hex(float2bin(architecture.components[a].elements[b].default_value));
+              aux_sim2 = bin2hex(float2bin(bi_BigIntTofloat(architecture.components[a].elements[b].default_value)));
             }
           }
         }
 
         aux_value = aux_sim1 + aux_sim2;
-        architecture.components[i].elements[j].value = hex2double("0x" + aux_value);
+        architecture.components[i].elements[j].value = bi_floatToBigInt(hex2double("0x" + aux_value)); //TODO: no estoy seguro
       }
     }
   }
@@ -7145,12 +7229,14 @@ function kbd_read_double ( keystroke, params )
 function kbd_read_string ( keystroke, params )
 {
   var value = "";
-  var neltos = architecture.components[params.indexComp2].elements[params.indexElem2].value ;
+  //var neltos = architecture.components[params.indexComp2].elements[params.indexElem2].value ; //TODO
+  var neltos = readRegister ( params.indexComp2, params.indexElem2 );
   for (var i = 0; (i < neltos) && (i < keystroke.length); i++) {
     value = value + keystroke.charAt(i);
   }
 
-  var addr = architecture.components[params.indexComp].elements[params.indexElem].value ;
+  //var addr = architecture.components[params.indexComp].elements[params.indexElem].value ; //TODO
+  var neltos = readRegister ( params.indexComp, params.indexElem );
   writeMemory(value, parseInt(addr), "string") ;
 
   return value ;
@@ -7466,7 +7552,6 @@ function assembly_compile ( code )
 function execute_program ( limit_n_instructions )
 {
     var ret = {} ;
-
     ret = executeProgramOneShot(limit_n_instructions) ;
     if (ret.error === true)
     {
@@ -7517,10 +7602,10 @@ function get_state ( )
                 for (var a = 0; a < architecture_hash.length; a++) {
                   for (var b = 0; b < architecture.components[a].elements.length; b++) {
                     if(architecture.components[a].elements[b].name == architecture.components[i].elements[j].simple_reg[0]){
-                      aux_sim1 = bin2hex(float2bin(architecture.components[a].elements[b].default_value));
+                      aux_sim1 = bin2hex(float2bin(bi_BigIntTofloat(architecture.components[a].elements[b].default_value)));
                     }
                     if(architecture.components[a].elements[b].name == architecture.components[i].elements[j].simple_reg[1]){
-                      aux_sim2 = bin2hex(float2bin(architecture.components[a].elements[b].default_value));
+                      aux_sim2 = bin2hex(float2bin(bi_BigIntTofloat(architecture.components[a].elements[b].default_value)));
                     }
                   }
                 }
@@ -7545,10 +7630,10 @@ function get_state ( )
             if (architecture.components[i].type == "floating point") 
             {
                 if(architecture.components[i].double_precision == false){
-                  elto_string = "0x" + bin2hex(float2bin(elto_value)) ;
+                  elto_string = "0x" + bin2hex(float2bin(bi_BigIntTofloat(elto_value))) ;
                 }
                 if (architecture.components[i].double_precision == true) {
-                  elto_string = "0x" + bin2hex(double2bin(elto_value)) ;
+                  elto_string = "0x" + bin2hex(double2bin(bi_BigIntTodouble(elto_value))) ;
                 }
             }
 

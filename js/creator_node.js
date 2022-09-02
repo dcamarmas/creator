@@ -85,7 +85,6 @@ function assembly_compile ( code )
 function execute_program ( limit_n_instructions )
 {
     var ret = {} ;
-
     ret = executeProgramOneShot(limit_n_instructions) ;
     if (ret.error === true)
     {
@@ -136,10 +135,10 @@ function get_state ( )
                 for (var a = 0; a < architecture_hash.length; a++) {
                   for (var b = 0; b < architecture.components[a].elements.length; b++) {
                     if(architecture.components[a].elements[b].name == architecture.components[i].elements[j].simple_reg[0]){
-                      aux_sim1 = bin2hex(float2bin(architecture.components[a].elements[b].default_value));
+                      aux_sim1 = bin2hex(float2bin(bi_BigIntTofloat(architecture.components[a].elements[b].default_value)));
                     }
                     if(architecture.components[a].elements[b].name == architecture.components[i].elements[j].simple_reg[1]){
-                      aux_sim2 = bin2hex(float2bin(architecture.components[a].elements[b].default_value));
+                      aux_sim2 = bin2hex(float2bin(bi_BigIntTofloat(architecture.components[a].elements[b].default_value)));
                     }
                   }
                 }
@@ -164,10 +163,10 @@ function get_state ( )
             if (architecture.components[i].type == "floating point") 
             {
                 if(architecture.components[i].double_precision == false){
-                  elto_string = "0x" + bin2hex(float2bin(elto_value)) ;
+                  elto_string = "0x" + bin2hex(float2bin(bi_BigIntTofloat(elto_value))) ;
                 }
                 if (architecture.components[i].double_precision == true) {
-                  elto_string = "0x" + bin2hex(double2bin(elto_value)) ;
+                  elto_string = "0x" + bin2hex(double2bin(bi_BigIntTodouble(elto_value))) ;
                 }
             }
 

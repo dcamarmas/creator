@@ -48,14 +48,14 @@
                   switch(view){
                     case "hex":
                       if (architecture.components[this._props.component.index].type == "control" || architecture.components[this._props.component.index].type == "integer") {
-                        ret = "0x" + (((register.value).toString(16)).padStart(register.nbits/4, "0")).toUpperCase();
+                        ret = (((register.value).toString(16)).padStart(register.nbits/4, "0")).toUpperCase();
                       }
                       else {
-                        if (architecture.components[this._props.component.index].type == "floating point") {
-                          ret = "0x" + bin2hex(float2bin(register.value));
+                        if (architecture.components[this._props.component.index].double_precision == false) {
+                          ret = bin2hex(float2bin(bi_BigIntTofloat(register.value)));
                         }
                         else {
-                          ret = "0x" + bin2hex(double2bin(register.value));
+                          ret = bin2hex(double2bin(bi_BigIntTodouble(register.value)));
                         }
                       }         
                       break;
@@ -65,11 +65,11 @@
                         ret = (((register.value).toString(2)).padStart(register.nbits, "0"));
                       }
                       else {
-                        if (architecture.components[this._props.component.index].type == "floating point") {
-                          ret = float2bin(register.value);
+                        if (architecture.components[this._props.component.index].double_precision == false) {
+                          ret = float2bin(bi_BigIntTofloat(register.value));
                         }
                         else {
-                          ret = double2bin(register.value);
+                          ret = double2bin(bi_BigIntTodouble(register.value));
                         }
                       }         
                       break;
@@ -82,12 +82,29 @@
                           ret = (register.value).toString(10);
                       }
                       else {
-                        ret = parseInt(register.value.toString(), 10) >> 0;
+                        // ret = parseInt(register.value.toString(), 10) >> 0;
+                        if (architecture.components[this._props.component.index].double_precision == false) {
+                          ret = float2int_v2 (bi_BigIntTofloat(register.value));
+                        }
+                        else{
+                          ret = double2int_v2 (bi_BigIntTodouble(register.value));
+                        }
                       }
                       break;
 
                     case "unsigned":
-                      ret = parseInt(register.value.toString(10)) >>> 0;
+                      if (architecture.components[this._props.component.index].type == "control" || architecture.components[this._props.component.index].type == "integer") {
+                        ret = parseInt(register.value.toString(10)) >>> 0;
+                      }
+                      else {
+                        //ret = parseInt(register.value.toString(), 10) >>> 0;
+                        if (architecture.components[this._props.component.index].double_precision == false) {
+                          ret = float2int_v2 (bi_BigIntTofloat(register.value)) >>> 0;
+                        }
+                        else{
+                          ret = double2int_v2 (bi_BigIntTodouble(register.value)) >>> 0;
+                        }
+                      }
                       break;
 
                     case "char":
@@ -95,11 +112,11 @@
                         ret = hex2char8((((register.value).toString(16)).padStart(register.nbits/4, "0")));
                       }
                       else {
-                        if (architecture.components[this._props.component.index].type == "floating point") {
-                          ret = hex2char8(bin2hex(float2bin(register.value)));
+                        if (architecture.components[this._props.component.index].double_precision == false) {
+                          ret = hex2char8(bin2hex(float2bin(bi_BigIntTofloat(register.value))));
                         }
                         else {
-                          ret = hex2char8(bin2hex(double2bin(register.value)));
+                          ret = hex2char8(bin2hex(double2bin(bi_BigIntTodouble(register.value))));
                         }
                       } 
                       break;
@@ -109,7 +126,12 @@
                         ret = hex2float("0x"+(((register.value).toString(16)).padStart(register.nbits/4, "0")));
                       }
                       else {
-                        ret = register.value;
+                        if (architecture.components[this._props.component.index].double_precision == false) {
+                          ret = bi_BigIntTofloat(register.value);
+                        }
+                        else{
+                          ret = bi_BigIntTodouble(register.value);
+                        }
                       }
                       break;
                   }
@@ -121,7 +143,7 @@
                 },
 
                 //Update a new register value
-                updateReg(comp, elem, type, precision){
+                update_register(comp, elem, type, precision){
                   for (var i = 0; i < architecture.components[comp].elements.length; i++) {
                     if(type == "integer" || type == "control"){
                       if(architecture.components[comp].elements[i].name == elem && this.newValue.match(/^0x/)){
@@ -141,30 +163,30 @@
                     else if(type =="floating point"){
                       if(precision == false){
                         if(architecture.components[comp].elements[i].name == elem && this.newValue.match(/^0x/)){
-                          architecture.components[comp].elements[i].value = hex2float(this.newValue);
+                          architecture.components[comp].elements[i].value = bi_floatToBigInt(hex2float(this.newValue));
                           updateDouble(comp, i);
                         }
                         else if(architecture.components[comp].elements[i].name == elem && this.newValue.match(/^(\d)+/)){
-                          architecture.components[comp].elements[i].value = parseFloat(this.newValue, 10);
+                          architecture.components[comp].elements[i].value = bi_floatToBigInt(parseFloat(this.newValue, 10));
                           updateDouble(comp, i);
                         }
                         else if(architecture.components[comp].elements[i].name == elem && this.newValue.match(/^-/)){
-                          architecture.components[comp].elements[i].value = parseFloat(this.newValue, 10);
+                          architecture.components[comp].elements[i].value = bi_floatToBigInt(parseFloat(this.newValue, 10));
                           updateDouble(comp, i);
                         }
                       }
 
                       else if(precision == true){
                         if(architecture.components[comp].elements[i].name == elem && this.newValue.match(/^0x/)){
-                          architecture.components[comp].elements[i].value = hex2double(this.newValue);
+                          architecture.components[comp].elements[i].value = bi_floatToBigInt(hex2double(this.newValue));
                           updateSimple(comp, i);
                         }
                         else if(architecture.components[comp].elements[i].name == elem && this.newValue.match(/^(\d)+/)){
-                          architecture.components[comp].elements[i].value = parseFloat(this.newValue, 10);
+                          architecture.components[comp].elements[i].value = bi_floatToBigInt(parseFloat(this.newValue, 10));
                           updateSimple(comp, i);
                         }
                         else if(architecture.components[comp].elements[i].name == elem && this.newValue.match(/^-/)){
-                          architecture.components[comp].elements[i].value = parseFloat(this.newValue, 10);
+                          architecture.components[comp].elements[i].value = bi_floatToBigInt(parseFloat(this.newValue, 10));
                           updateSimple(comp, i)
                         }
                       }
@@ -288,7 +310,7 @@ template:     '<b-popover :target="target" ' +
               ' ' +
               '       <b-col>' +
               '         <b-button class="btn btn-primary btn-sm w-100" ' +
-              '                   @click="updateReg(component.index, register.name, architecture.components[component.index].type, architecture.components[component.index].double_precision)">' +
+              '                   @click="update_register(component.index, register.name, architecture.components[component.index].type, architecture.components[component.index].double_precision)">' +
               '           Update' +
               '          </b-button>' +
               '       </b-col>' +
