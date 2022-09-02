@@ -134,10 +134,6 @@ try
       architecture_hash: architecture_hash,
 
 
-      //Advanced mode
-      advanced_mode: true,
-
-
       //Edit architecture field modal
       modal_edit_arch_field: { //TODO: include into arch_conf component - modal info
         title: '',
@@ -465,20 +461,6 @@ try
           }
         }
       },
-
-
-
-
-      /****************/
-      /* Architecture */
-      /****************/
-
-
-
-
-      /************/
-      /* Assembly */
-      /************/
 
 
 
