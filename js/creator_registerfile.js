@@ -52,51 +52,6 @@ function crex_findReg ( value1 )
   return ret ;
 }
 
-/*Modifies double precision registers according to simple precision registers*/
-function updateDouble(comp, elem)
-{
-  for (var j = 0; j < architecture.components.length; j++)
-    {
-    for (var z = 0; z < architecture.components[j].elements.length && architecture.components[j].double_precision == true; z++)
-        {
-      if (architecture.components[comp].elements[elem].name.includes(architecture.components[j].elements[z].simple_reg[0]) != false){
-        var simple = bin2hex(float2bin(architecture.components[comp].elements[elem].value));
-        var double = bin2hex(double2bin(architecture.components[j].elements[z].value)).substr(8, 15);
-        var newDouble = simple + double;
-
-        architecture.components[j].elements[z].value = hex2double("0x"+newDouble);
-      }
-      if (architecture.components[comp].elements[elem].name.includes(architecture.components[j].elements[z].simple_reg[1]) != false){
-        var simple = bin2hex(float2bin(architecture.components[comp].elements[elem].value));
-        var double = bin2hex(double2bin(architecture.components[j].elements[z].value)).substr(0, 8);
-        var newDouble = double + simple;
-
-        architecture.components[j].elements[z].value = hex2double("0x"+newDouble);
-      }
-    }
-  }
-}
-
-/*Modifies single precision registers according to double precision registers*/
-function updateSimple ( comp, elem )
-{
-  var part1 = bin2hex(double2bin(architecture.components[comp].elements[elem].value)).substr(0, 8);
-  var part2 = bin2hex(double2bin(architecture.components[comp].elements[elem].value)).substr(8, 15);
-
-  for (var j = 0; j < architecture.components.length; j++)
-    {
-    for (var z = 0; z < architecture.components[j].elements.length; z++)
-        {
-      if (architecture.components[j].elements[z].name.includes(architecture.components[comp].elements[elem].simple_reg[0]) != false) {
-        architecture.components[j].elements[z].value = hex2float("0x"+part1);
-      }
-      if (architecture.components[j].elements[z].name.includes(architecture.components[comp].elements[elem].simple_reg[1]) != false) {
-        architecture.components[j].elements[z].value = hex2float("0x"+part2);
-      }
-    }
-  }
-}
-
 function readRegister ( indexComp, indexElem )
 {
   var draw = {
@@ -120,13 +75,23 @@ function readRegister ( indexComp, indexElem )
   if ((architecture.components[indexComp].type == "control") ||
       (architecture.components[indexComp].type == "integer"))
   {
-    console_log(parseInt((architecture.components[indexComp].elements[indexElem].value).toString()));
-    return parseInt((architecture.components[indexComp].elements[indexElem].value).toString());
+    console_log(parseInt(architecture.components[indexComp].elements[indexElem].value));
+    return parseInt(architecture.components[indexComp].elements[indexElem].value);
   }
 
   if (architecture.components[indexComp].type == "floating point")
   {
-    return parseFloat((architecture.components[indexComp].elements[indexElem].value).toString()); //TODO: big_int2hex -> hex2float
+    if(architecture.components[indexComp].double_precision == false){
+      //return parseFloat((architecture.components[indexComp].elements[indexElem].value).toString()); //TODO: big_int2hex -> hex2float //TODO
+      console_log(bi_BigIntTofloat(architecture.components[indexComp].elements[indexElem].value));
+      return bi_BigIntTofloat(architecture.components[indexComp].elements[indexElem].value);
+    }
+    else{
+      //return parseFloat((architecture.components[indexComp].elements[indexElem].value).toString()); //TODO: big_int2hex -> hex2float //TODO
+      console_log(bi_BigIntTodouble(architecture.components[indexComp].elements[indexElem].value));
+      return bi_BigIntTodouble(architecture.components[indexComp].elements[indexElem].value);
+    }
+
   }
 }
 
@@ -189,7 +154,8 @@ function writeRegister ( value, indexComp, indexElem )
         throw packExecute(true, 'The register '+ architecture.components[indexComp].elements[indexElem].name.join(' | ') +' cannot be written', 'danger', null);
       }
 
-      architecture.components[indexComp].elements[indexElem].value = parseFloat(value); //TODO: float2bin -> bin2hex -> hex2big_int
+      //architecture.components[indexComp].elements[indexElem].value = parseFloat(value); //TODO: float2bin -> bin2hex -> hex2big_int //TODO
+      architecture.components[indexComp].elements[indexElem].value = bi_floatToBigInt(value);
       creator_callstack_writeRegister(indexComp, indexElem);
 
       if ((architecture.components[indexComp].elements[indexElem].properties.includes('pointer') != false) &&
@@ -217,7 +183,8 @@ function writeRegister ( value, indexComp, indexElem )
         throw packExecute(true, 'The register '+ architecture.components[indexComp].elements[indexElem].name.join(' | ') +' cannot be written', 'danger', null);
       }
 
-      architecture.components[indexComp].elements[indexElem].value = parseFloat(value);
+      //architecture.components[indexComp].elements[indexElem].value = parseFloat(value); //TODO
+      architecture.components[indexComp].elements[indexElem].value = bi_doubleToBigInt(value);
       updateSimple(indexComp, indexElem);
       creator_callstack_writeRegister(indexComp, indexElem);
 
@@ -228,3 +195,47 @@ function writeRegister ( value, indexComp, indexElem )
   }
 }
 
+/*Modifies double precision registers according to simple precision registers*/
+function updateDouble(comp, elem)
+{
+  for (var j = 0; j < architecture.components.length; j++)
+    {
+    for (var z = 0; z < architecture.components[j].elements.length && architecture.components[j].double_precision == true; z++)
+        {
+      if (architecture.components[comp].elements[elem].name.includes(architecture.components[j].elements[z].simple_reg[0]) != false){
+        var simple = bin2hex(float2bin(readRegister(comp, elem)));
+        var double = bin2hex(double2bin(readRegister(j, z))).substr(8, 15);
+        var newDouble = simple + double;
+
+        architecture.components[j].elements[z].value = bi_doubleToBigInt(hex2double("0x"+newDouble));
+      }
+      if (architecture.components[comp].elements[elem].name.includes(architecture.components[j].elements[z].simple_reg[1]) != false){
+        var simple = bin2hex(float2bin(readRegister(comp, elem)));
+        var double = bin2hex(double2bin(readRegister(j, z))).substr(0, 8);
+        var newDouble = double + simple;
+
+        architecture.components[j].elements[z].value = bi_doubleToBigInt(hex2double("0x"+newDouble));
+      }
+    }
+  }
+}
+
+/*Modifies single precision registers according to double precision registers*/
+function updateSimple ( comp, elem )
+{
+  var part1 = bin2hex(double2bin(readRegister(comp, elem))).substr(0, 8);
+  var part2 = bin2hex(double2bin(readRegister(comp, elem))).substr(8, 15);
+
+  for (var j = 0; j < architecture.components.length; j++)
+  {
+    for (var z = 0; z < architecture.components[j].elements.length; z++)
+    {
+      if (architecture.components[j].elements[z].name.includes(architecture.components[comp].elements[elem].simple_reg[0]) != false) {
+        architecture.components[j].elements[z].value = bi_floatToBigInt(hex2float("0x"+part1));
+      }
+      if (architecture.components[j].elements[z].name.includes(architecture.components[comp].elements[elem].simple_reg[1]) != false) {
+        architecture.components[j].elements[z].value = bi_floatToBigInt(hex2float("0x"+part2));
+      }
+    }
+  }
+}

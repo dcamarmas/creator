@@ -77,9 +77,11 @@
      * The Instruction help width can be now configure from the configuration modal
      * Clarification on intitial CREATOR page
      * Better responsive behaviour on different screen sizes
+     * Power consumption added
 - [x] Modular design:
      * Interface based on Vue components for all UI elements in CREATOR
      * Simulated main memory reworked
+     * Architecture improved
 
 
 ### :atom: 3.0.x:

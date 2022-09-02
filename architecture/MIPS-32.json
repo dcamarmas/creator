@@ -40,8 +40,8 @@
             "PC"
           ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write",
@@ -54,8 +54,8 @@
             "EPC"
           ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write"
@@ -66,8 +66,8 @@
             "CAUSE"
           ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write"
@@ -78,8 +78,8 @@
             "BADVADDR"
           ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write"
@@ -90,8 +90,8 @@
             "STATUS"
           ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write"
@@ -102,8 +102,8 @@
             "HI"
           ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write"
@@ -114,8 +114,8 @@
             "LO"
           ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write"
@@ -126,8 +126,8 @@
             "FIR"
           ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write"
@@ -138,8 +138,8 @@
             "FCSR"
           ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write"
@@ -150,8 +150,8 @@
             "FCCR"
           ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write"
@@ -162,8 +162,8 @@
             "FEXR"
           ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write"
@@ -182,8 +182,8 @@
             "0"
           ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read"
           ]
@@ -194,8 +194,8 @@
             "1"
           ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write"
@@ -207,8 +207,8 @@
             "2"
           ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write"
@@ -220,8 +220,8 @@
             "3"
           ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write"
@@ -233,8 +233,8 @@
             "4"
           ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write"
@@ -246,8 +246,8 @@
             "5"
           ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write"
@@ -259,8 +259,8 @@
             "6"
           ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write"
@@ -272,8 +272,8 @@
             "7"
           ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write"
@@ -285,8 +285,8 @@
             "8"
           ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write"
@@ -298,8 +298,8 @@
             "9"
           ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write"
@@ -311,8 +311,8 @@
             "10"
           ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write"
@@ -324,8 +324,8 @@
             "11"
           ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write"
@@ -337,8 +337,8 @@
             "12"
           ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write"
@@ -350,8 +350,8 @@
             "13"
           ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write"
@@ -363,8 +363,8 @@
             "14"
           ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write"
@@ -376,8 +376,8 @@
             "15"
           ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write"
@@ -389,8 +389,8 @@
             "16"
           ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write",
@@ -403,8 +403,8 @@
             "17"
           ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write",
@@ -417,8 +417,8 @@
             "18"
           ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write",
@@ -431,8 +431,8 @@
             "19"
           ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write",
@@ -445,8 +445,8 @@
             "20"
           ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write",
@@ -459,8 +459,8 @@
             "21"
           ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write",
@@ -473,8 +473,8 @@
             "22"
           ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write",
@@ -487,8 +487,8 @@
             "23"
           ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write",
@@ -501,8 +501,8 @@
             "24"
           ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write"
@@ -514,8 +514,8 @@
             "25"
           ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write"
@@ -527,8 +527,8 @@
             "26"
           ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write"
@@ -540,8 +540,8 @@
             "27"
           ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write"
@@ -553,8 +553,8 @@
             "28"
           ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write",
@@ -568,8 +568,8 @@
             "29"
           ],
           "nbits": "32",
-          "value": "268435452",
-          "default_value": "268435452",
+          "value": 268435452,
+          "default_value": 268435452,
           "properties": [
             "read",
             "write",
@@ -583,8 +583,8 @@
             "30"
           ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write",
@@ -598,8 +598,8 @@
             "31"
           ],
           "nbits": "32",
-          "value": "4294967295",
-          "default_value": "4294967295",
+          "value": 4294967295,
+          "default_value": 4294967295,
           "properties": [
             "read",
             "write"
@@ -617,8 +617,8 @@
             "f0"
           ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0.0,
+          "default_value": 0.0,
           "properties": [
             "read",
             "write"
@@ -629,8 +629,8 @@
             "f1"
           ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0.0,
+          "default_value": 0.0,
           "properties": [
             "read",
             "write"
@@ -641,8 +641,8 @@
             "f2"
           ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0.0,
+          "default_value": 0.0,
           "properties": [
             "read",
             "write"
@@ -653,8 +653,8 @@
             "f3"
           ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0.0,
+          "default_value": 0.0,
           "properties": [
             "read",
             "write"
@@ -665,8 +665,8 @@
             "f4"
           ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0.0,
+          "default_value": 0.0,
           "properties": [
             "read",
             "write"
@@ -677,8 +677,8 @@
             "f5"
           ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0.0,
+          "default_value": 0.0,
           "properties": [
             "read",
             "write"
@@ -689,8 +689,8 @@
             "f6"
           ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0.0,
+          "default_value": 0.0,
           "properties": [
             "read",
             "write"
@@ -701,8 +701,8 @@
             "f7"
           ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0.0,
+          "default_value": 0.0,
           "properties": [
             "read",
             "write"
@@ -713,8 +713,8 @@
             "f8"
           ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0.0,
+          "default_value": 0.0,
           "properties": [
             "read",
             "write"
@@ -725,8 +725,8 @@
             "f9"
           ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0.0,
+          "default_value": 0.0,
           "properties": [
             "read",
             "write"
@@ -737,8 +737,8 @@
             "f10"
           ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0.0,
+          "default_value": 0.0,
           "properties": [
             "read",
             "write"
@@ -749,8 +749,8 @@
             "f11"
           ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0.0,
+          "default_value": 0.0,
           "properties": [
             "read",
             "write"
@@ -761,8 +761,8 @@
             "f12"
           ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0.0,
+          "default_value": 0.0,
           "properties": [
             "read",
             "write"
@@ -773,8 +773,8 @@
             "f13"
           ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0.0,
+          "default_value": 0.0,
           "properties": [
             "read",
             "write"
@@ -785,8 +785,8 @@
             "f14"
           ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0.0,
+          "default_value": 0.0,
           "properties": [
             "read",
             "write"
@@ -797,8 +797,8 @@
             "f15"
           ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0.0,
+          "default_value": 0.0,
           "properties": [
             "read",
             "write"
@@ -809,8 +809,8 @@
             "f16"
           ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0.0,
+          "default_value": 0.0,
           "properties": [
             "read",
             "write"
@@ -821,8 +821,8 @@
             "f17"
           ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0.0,
+          "default_value": 0.0,
           "properties": [
             "read",
             "write"
@@ -833,8 +833,8 @@
             "f18"
           ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0.0,
+          "default_value": 0.0,
           "properties": [
             "read",
             "write"
@@ -845,8 +845,8 @@
             "f19"
           ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0.0,
+          "default_value": 0.0,
           "properties": [
             "read",
             "write"
@@ -857,8 +857,8 @@
             "f20"
           ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0.0,
+          "default_value": 0.0,
           "properties": [
             "read",
             "write"
@@ -869,8 +869,8 @@
             "f21"
           ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0.0,
+          "default_value": 0.0,
           "properties": [
             "read",
             "write"
@@ -881,8 +881,8 @@
             "f22"
           ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0.0,
+          "default_value": 0.0,
           "properties": [
             "read",
             "write"
@@ -893,8 +893,8 @@
             "f23"
           ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0.0,
+          "default_value": 0.0,
           "properties": [
             "read",
             "write"
@@ -905,8 +905,8 @@
             "f24"
           ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0.0,
+          "default_value": 0.0,
           "properties": [
             "read",
             "write"
@@ -917,8 +917,8 @@
             "f25"
           ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0.0,
+          "default_value": 0.0,
           "properties": [
             "read",
             "write"
@@ -929,8 +929,8 @@
             "f26"
           ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0.0,
+          "default_value": 0.0,
           "properties": [
             "read",
             "write"
@@ -941,8 +941,8 @@
             "f27"
           ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0.0,
+          "default_value": 0.0,
           "properties": [
             "read",
             "write"
@@ -953,8 +953,8 @@
             "f28"
           ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0.0,
+          "default_value": 0.0,
           "properties": [
             "read",
             "write"
@@ -965,8 +965,8 @@
             "f29"
           ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0.0,
+          "default_value": 0.0,
           "properties": [
             "read",
             "write"
@@ -977,8 +977,8 @@
             "f30"
           ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0.0,
+          "default_value": 0.0,
           "properties": [
             "read",
             "write"
@@ -989,8 +989,8 @@
             "f31"
           ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0.0,
+          "default_value": 0.0,
           "properties": [
             "read",
             "write"
@@ -1008,7 +1008,7 @@
             "FP0"
           ],
           "nbits": "64",
-          "value": "0",
+          "value": 0.0,
           "simple_reg": [
             "f0",
             "f1"
@@ -1023,7 +1023,7 @@
             "FP2"
           ],
           "nbits": "64",
-          "value": "0",
+          "value": 0.0,
           "simple_reg": [
             "f2",
             "f3"
@@ -1038,7 +1038,7 @@
             "FP4"
           ],
           "nbits": "64",
-          "value": "0",
+          "value": 0.0,
           "simple_reg": [
             "f4",
             "f5"
@@ -1053,7 +1053,7 @@
             "FP6"
           ],
           "nbits": "64",
-          "value": "0",
+          "value": 0.0,
           "simple_reg": [
             "f6",
             "f7"
@@ -1068,7 +1068,7 @@
             "FP8"
           ],
           "nbits": "64",
-          "value": "0",
+          "value": 0.0,
           "simple_reg": [
             "f8",
             "f9"
@@ -1083,7 +1083,7 @@
             "FP10"
           ],
           "nbits": "64",
-          "value": "0",
+          "value": 0.0,
           "simple_reg": [
             "f10",
             "f11"
@@ -1098,7 +1098,7 @@
             "FP12"
           ],
           "nbits": "64",
-          "value": "0",
+          "value": 0.0,
           "simple_reg": [
             "f12",
             "f13"
@@ -1113,7 +1113,7 @@
             "FP14"
           ],
           "nbits": "64",
-          "value": "0",
+          "value": 0.0,
           "simple_reg": [
             "f14",
             "f15"
@@ -1128,7 +1128,7 @@
             "FP16"
           ],
           "nbits": "64",
-          "value": "0",
+          "value": 0.0,
           "simple_reg": [
             "f16",
             "f17"
@@ -1143,7 +1143,7 @@
             "FP18"
           ],
           "nbits": "64",
-          "value": "0",
+          "value": 0.0,
           "simple_reg": [
             "f18",
             "f19"
@@ -1158,7 +1158,7 @@
             "FP20"
           ],
           "nbits": "64",
-          "value": "0",
+          "value": 0.0,
           "simple_reg": [
             "f20",
             "f21"
@@ -1173,7 +1173,7 @@
             "FP22"
           ],
           "nbits": "64",
-          "value": "0",
+          "value": 0.0,
           "simple_reg": [
             "f22",
             "f23"
@@ -1188,7 +1188,7 @@
             "FP24"
           ],
           "nbits": "64",
-          "value": "0",
+          "value": 0.0,
           "simple_reg": [
             "f24",
             "f25"
@@ -1203,7 +1203,7 @@
             "FP26"
           ],
           "nbits": "64",
-          "value": "0",
+          "value": 0.0,
           "simple_reg": [
             "f26",
             "f27"
@@ -1218,7 +1218,7 @@
             "FP28"
           ],
           "nbits": "64",
-          "value": "0",
+          "value": 0.0,
           "simple_reg": [
             "f28",
             "f29"
@@ -1233,7 +1233,7 @@
             "FP30"
           ],
           "nbits": "64",
-          "value": "0",
+          "value": 0.0,
           "simple_reg": [
             "f30",
             "f31"

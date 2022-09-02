@@ -41,16 +41,6 @@
                       var ret = 0;
 
                       switch(this.value_representation){
-                        case "unsigned":
-                          if (architecture.components[this._props.component.index].type == "control" || architecture.components[this._props.component.index].type == "integer") {
-                            ret = parseInt(register.value.toString(10)) >>> 0;
-                          }
-                          else {
-                            //ret = parseInt(register.value.toString(), 10) >>> 0;
-                            ret = float2int_v2 (register.value) >>> 0;
-                          }
-                          break;
-
                         case "signed":
                           if (architecture.components[this._props.component.index].type == "control" || architecture.components[this._props.component.index].type == "integer") {
                             if ((((register.value).toString(2)).padStart(register.nbits, '0')).charAt(0) == 1)
@@ -60,7 +50,27 @@
                           }
                           else {
                             // ret = parseInt(register.value.toString(), 10) >> 0;
-                            ret = float2int_v2 (register.value);
+                            if (architecture.components[this._props.component.index].double_precision == false) {
+                              ret = float2int_v2 (bi_BigIntTofloat(register.value));
+                            }
+                            else{
+                              ret = double2int_v2 (bi_BigIntTodouble(register.value));
+                            }
+                          }
+                          break;
+
+                        case "unsigned":
+                          if (architecture.components[this._props.component.index].type == "control" || architecture.components[this._props.component.index].type == "integer") {
+                            ret = parseInt(register.value.toString(10)) >>> 0;
+                          }
+                          else {
+                            //ret = parseInt(register.value.toString(), 10) >>> 0;
+                            if (architecture.components[this._props.component.index].double_precision == false) {
+                              ret = float2int_v2 (bi_BigIntTofloat(register.value)) >>> 0;
+                            }
+                            else{
+                              ret = double2int_v2 (bi_BigIntTodouble(register.value)) >>> 0;
+                            }
                           }
                           break;
 
@@ -69,7 +79,12 @@
                             ret = hex2float("0x"+(((register.value).toString(16)).padStart(register.nbits/4, "0")));
                           }
                           else {
-                            ret = register.value;
+                            if (architecture.components[this._props.component.index].double_precision == false) {
+                              ret = bi_BigIntTofloat(register.value);
+                            }
+                            else{
+                              ret = bi_BigIntTodouble(register.value);
+                            }
                           }
                           break;
 
@@ -78,11 +93,11 @@
                             ret = (((register.value).toString(16)).padStart(register.nbits/4, "0")).toUpperCase();
                           }
                           else {
-                            if (architecture.components[this._props.component.index].type == "floating point") {
-                              ret = bin2hex(float2bin(register.value));
+                            if (architecture.components[this._props.component.index].double_precision == false) {
+                              ret = bin2hex(float2bin(bi_BigIntTofloat(register.value)));
                             }
                             else {
-                              ret = bin2hex(double2bin(register.value));
+                              ret = bin2hex(double2bin(bi_BigIntTodouble(register.value)));
                             }
                           }         
                           break;

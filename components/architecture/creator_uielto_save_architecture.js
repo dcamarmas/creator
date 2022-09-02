@@ -45,7 +45,7 @@
                     aux_architecture.components.forEach((c, i) => {
                       c.elements.forEach((e, j) => {
                         if (e.default_value) e.value = e.default_value;
-                        else e.value = "0";
+                        else e.value = 0;
                       });
                     });
 
