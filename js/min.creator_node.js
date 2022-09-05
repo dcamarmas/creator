@@ -360,11 +360,11 @@ function register_value_serialize( architecture )
 
       for (i = 0; i < 8; i++)
       {
-          var bits = dv.getUint8(i).toString(2);
-          if (bits.length < 8) {
-            bits = new Array(8 - bits.length).fill('0').join("") + bits;
-          }
-          result += bits;
+        var bits = dv.getUint8(i).toString(2);
+        if (bits.length < 8) {
+          bits = new Array(8 - bits.length).fill('0').join("") + bits;
+        }
+        result += bits;
       }
       return result;
   }
@@ -1850,7 +1850,7 @@ function crex_findReg ( value1 )
   return ret ;
 }
 
-function readRegister ( indexComp, indexElem )
+function readRegister ( indexComp, indexElem, register_type )
 {
   var draw = {
     space: [] ,
@@ -1885,15 +1885,36 @@ function readRegister ( indexComp, indexElem )
       return bi_BigIntTofloat(architecture.components[indexComp].elements[indexElem].value);
     }
     else{
-      //return parseFloat((architecture.components[indexComp].elements[indexElem].value).toString()); //TODO: big_int2hex -> hex2float //TODO
-      console_log(bi_BigIntTodouble(architecture.components[indexComp].elements[indexElem].value));
-      return bi_BigIntTodouble(architecture.components[indexComp].elements[indexElem].value);
+      
+      if (architecture.components[indexComp].double_precision_type == "linked") 
+      {
+        //return parseFloat((architecture.components[indexComp].elements[indexElem].value).toString()); //TODO: big_int2hex -> hex2float //TODO
+        console_log(bi_BigIntTodouble(architecture.components[indexComp].elements[indexElem].value));
+        return bi_BigIntTodouble(architecture.components[indexComp].elements[indexElem].value);
+      }
+      else
+      {
+        if (typeof register_type === 'undefined'){
+          register_type = "DFP-Reg";
+        }
+        if (register_type === 'SFP-Reg'){
+          //return parseFloat((architecture.components[indexComp].elements[indexElem].value).toString()); //TODO: big_int2hex -> hex2float //TODO
+          console_log(bi_BigIntTofloat(architecture.components[indexComp].elements[indexElem].value));
+          return bi_BigIntTofloat(architecture.components[indexComp].elements[indexElem].value);
+        }
+        if (register_type === 'DFP-Reg'){
+          //return parseFloat((architecture.components[indexComp].elements[indexElem].value).toString()); //TODO: big_int2hex -> hex2float //TODO
+          console_log(bi_BigIntTodouble(architecture.components[indexComp].elements[indexElem].value));
+          return bi_BigIntTodouble(architecture.components[indexComp].elements[indexElem].value);
+        }
+      }
+
     }
 
   }
 }
 
-function writeRegister ( value, indexComp, indexElem )
+function writeRegister ( value, indexComp, indexElem, register_type )
 {
   var draw = {
     space: [] ,
@@ -1981,9 +2002,25 @@ function writeRegister ( value, indexComp, indexElem )
         throw packExecute(true, 'The register '+ architecture.components[indexComp].elements[indexElem].name.join(' | ') +' cannot be written', 'danger', null);
       }
 
-      //architecture.components[indexComp].elements[indexElem].value = parseFloat(value); //TODO
-      architecture.components[indexComp].elements[indexElem].value = bi_doubleToBigInt(value);
-      updateSimple(indexComp, indexElem);
+      if (architecture.components[indexComp].double_precision_type == "linked") 
+      {
+        //architecture.components[indexComp].elements[indexElem].value = parseFloat(value); //TODO
+        architecture.components[indexComp].elements[indexElem].value = bi_doubleToBigInt(value);
+        updateSimple(indexComp, indexElem);
+      }
+      else
+      {
+        if (typeof register_type === 'undefined'){
+          register_type = "DFP-Reg";
+        }
+        if (register_type === 'SFP-Reg'){
+          architecture.components[indexComp].elements[indexElem].value = bi_floatToBigInt(value);
+        }
+        if (register_type === 'DFP-Reg'){
+          architecture.components[indexComp].elements[indexElem].value = bi_doubleToBigInt(value);
+        }
+      }
+
       creator_callstack_writeRegister(indexComp, indexElem);
 
       if (typeof window !== "undefined") {
@@ -6767,19 +6804,19 @@ function execute_instruction ( )
               {
                 if (architecture.components[j].elements[z].name.includes(instructionExecParts[i]))
                 {
-                  var_readings_definitions[signatureRawParts[i]]      = "var " + signatureRawParts[i] + "      = readRegister ("+j+" ,"+z+");\n";
-                  var_readings_definitions_prev[signatureRawParts[i]] = "var " + signatureRawParts[i] + "_prev = readRegister ("+j+" ,"+z+");\n";
+                  var_readings_definitions[signatureRawParts[i]]      = "var " + signatureRawParts[i] + "      = readRegister ("+j+" ,"+z+", \""+ signatureParts[i] + "\");\n"
+                  var_readings_definitions_prev[signatureRawParts[i]] = "var " + signatureRawParts[i] + "_prev = readRegister ("+j+" ,"+z+", \""+ signatureParts[i] + "\");\n"
                   var_readings_definitions_name[signatureRawParts[i]] = "var " + signatureRawParts[i] + "_name = '" + instructionExecParts[i] + "';\n";
 
                   re = new RegExp( "(?:\\W|^)(((" + signatureRawParts[i] +") *=)[^=])", "g");
                   //If the register is in the left hand than '=' then write register always
                   if(auxDef.search(re) != -1){
-                    var_writings_definitions[signatureRawParts[i]]  = "writeRegister("+ signatureRawParts[i] +", "+j+", "+z+");\n";
+                    var_writings_definitions[signatureRawParts[i]]  = "writeRegister("+ signatureRawParts[i] +", "+j+", "+z+", \""+ signatureParts[i] + "\");\n";
                   }
                   //Write register only if value is diferent
                   else{
                     var_writings_definitions[signatureRawParts[i]]  = "if(" + signatureRawParts[i] + " != " + signatureRawParts[i] + "_prev)" +
-                                                                      " { writeRegister("+ signatureRawParts[i]+" ,"+j+" ,"+z+"); }\n";
+                                                                      " { writeRegister("+ signatureRawParts[i]+" ,"+j+" ,"+z+", \""+ signatureParts[i] + "\"); }\n";
                   }
 
                 }
@@ -6815,12 +6852,12 @@ function execute_instruction ( )
 
           re = new RegExp( "(?:\\W|^)(((" + clean_aliases +") *=)[^=])", "g");
           if (auxDef.search(re) != -1){
-            writings_description = writings_description+"\nwriteRegister("+ clean_name +", "+i+", "+j+");";
+            writings_description = writings_description+"\nwriteRegister("+ clean_name +", "+i+", "+j+", \""+ signatureParts[i] + "\");";
           }
 
           re = new RegExp("([^a-zA-Z0-9])(?:" + clean_aliases + ")");
           if (auxDef.search(re) != -1){
-            readings_description = readings_description + "var " + clean_name + "      = readRegister("+i+" ,"+j+");\n";
+            readings_description = readings_description + "var " + clean_name + "      = readRegister("+i+" ,"+j+", \""+ signatureParts[i] + "\");\n"
             readings_description = readings_description + "var " + clean_name + "_name = '" + clean_name + "';\n";
           }
         }
