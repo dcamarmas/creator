@@ -17,18 +17,18 @@ main:
     la x7 c
     la x8 d
     
-    fld   FP0  0(x5)
-    fld   FP2  0(x6)
-    fld   FP10 0(x7)
-    fadd.d FP0  FP0  FP0
-    fsub.d FP4  FP10 FP0
-    fdiv.d FP12 FP10 FP2
+    fld   f0  0(x5)
+    fld   f2  0(x6)
+    fld   f10 0(x7)
+    fadd.d f0  f0  f0
+    fsub.d f4  f10 f0
+    fdiv.d f12 f10 f2
     
-    fsd  FP0  0(x8)
+    fsd  f0  0(x8)
     addi x8 x8 8
-    fsd  FP4  0(x8)
+    fsd  f4  0(x8)
     addi x8 x8 8
-    fsd  FP12 0(x8)
+    fsd  f12 0(x8)
 
     li a7 10
     ecall
