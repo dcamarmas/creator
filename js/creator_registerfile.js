@@ -198,23 +198,26 @@ function writeRegister ( value, indexComp, indexElem )
 /*Modifies double precision registers according to simple precision registers*/
 function updateDouble(comp, elem)
 {
-  for (var j = 0; j < architecture.components.length; j++)
+  for (var i = 0; i < architecture.components.length; i++)
+  {
+    if (architecture.components[i].double_precision == true && architecture.components[i].double_precision_type == "linked")
     {
-    for (var z = 0; z < architecture.components[j].elements.length && architecture.components[j].double_precision == true; z++)
-        {
-      if (architecture.components[comp].elements[elem].name.includes(architecture.components[j].elements[z].simple_reg[0]) != false){
-        var simple = bin2hex(float2bin(readRegister(comp, elem)));
-        var double = bin2hex(double2bin(readRegister(j, z))).substr(8, 15);
-        var newDouble = simple + double;
+      for (var j = 0; j < architecture.components[i].elements.length; j++)
+      {
+        if (architecture.components[comp].elements[elem].name.includes(architecture.components[i].elements[j].simple_reg[0]) != false){
+          var simple = bin2hex(float2bin(readRegister(comp, elem)));
+          var double = bin2hex(double2bin(readRegister(i, j))).substr(8, 15);
+          var newDouble = simple + double;
 
-        architecture.components[j].elements[z].value = bi_doubleToBigInt(hex2double("0x"+newDouble));
-      }
-      if (architecture.components[comp].elements[elem].name.includes(architecture.components[j].elements[z].simple_reg[1]) != false){
-        var simple = bin2hex(float2bin(readRegister(comp, elem)));
-        var double = bin2hex(double2bin(readRegister(j, z))).substr(0, 8);
-        var newDouble = double + simple;
+          architecture.components[i].elements[j].value = bi_doubleToBigInt(hex2double("0x"+newDouble));
+        }
+        if (architecture.components[comp].elements[elem].name.includes(architecture.components[i].elements[j].simple_reg[1]) != false){
+          var simple = bin2hex(float2bin(readRegister(comp, elem)));
+          var double = bin2hex(double2bin(readRegister(i, j))).substr(0, 8);
+          var newDouble = double + simple;
 
-        architecture.components[j].elements[z].value = bi_doubleToBigInt(hex2double("0x"+newDouble));
+          architecture.components[i].elements[j].value = bi_doubleToBigInt(hex2double("0x"+newDouble));
+        }
       }
     }
   }
@@ -223,18 +226,21 @@ function updateDouble(comp, elem)
 /*Modifies single precision registers according to double precision registers*/
 function updateSimple ( comp, elem )
 {
-  var part1 = bin2hex(double2bin(readRegister(comp, elem))).substr(0, 8);
-  var part2 = bin2hex(double2bin(readRegister(comp, elem))).substr(8, 15);
-
-  for (var j = 0; j < architecture.components.length; j++)
+  if (architecture.components[comp].double_precision_type == "linked")
   {
-    for (var z = 0; z < architecture.components[j].elements.length; z++)
+    var part1 = bin2hex(double2bin(readRegister(comp, elem))).substr(0, 8);
+    var part2 = bin2hex(double2bin(readRegister(comp, elem))).substr(8, 15);
+
+    for (var i = 0; i < architecture.components.length; i++)
     {
-      if (architecture.components[j].elements[z].name.includes(architecture.components[comp].elements[elem].simple_reg[0]) != false) {
-        architecture.components[j].elements[z].value = bi_floatToBigInt(hex2float("0x"+part1));
-      }
-      if (architecture.components[j].elements[z].name.includes(architecture.components[comp].elements[elem].simple_reg[1]) != false) {
-        architecture.components[j].elements[z].value = bi_floatToBigInt(hex2float("0x"+part2));
+      for (var j = 0; j < architecture.components[i].elements.length; j++)
+      {
+        if (architecture.components[i].elements[j].name.includes(architecture.components[comp].elements[elem].simple_reg[0]) != false) {
+          architecture.components[i].elements[j].value = bi_floatToBigInt(hex2float("0x"+part1));
+        }
+        if (architecture.components[i].elements[j].name.includes(architecture.components[comp].elements[elem].simple_reg[1]) != false) {
+          architecture.components[i].elements[j].value = bi_floatToBigInt(hex2float("0x"+part2));
+        }
       }
     }
   }

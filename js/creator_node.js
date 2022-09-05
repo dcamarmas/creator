@@ -127,7 +127,8 @@ function get_state ( )
             elto_value  = architecture.components[i].elements[j].value ;
 
             //get default value
-            if (architecture.components[i].double_precision == true) {
+            if (architecture.components[i].double_precision == true && architecture.components[i].double_precision_type == "linked")
+            {
                 var aux_value;
                 var aux_sim1;
                 var aux_sim2;
