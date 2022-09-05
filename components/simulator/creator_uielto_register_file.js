@@ -36,7 +36,7 @@
                   reg_representation_options: [
                     { text: 'Signed',   value: 'signed' },
                     { text: 'Unsig.',   value: 'unsigned' },
-                    { text: 'IEEE 754', value: 'decimal'},
+                    { text: 'IEEE 754', value: 'ieee'},
                     { text: 'Hex.',     value: 'hex' }
                   ],
 

@@ -60,7 +60,8 @@ function execute_instruction ( )
 
   do {
     console_log(execution_index);
-    console_log(architecture.components[0].elements[0].value);
+    //console_log(architecture.components[0].elements[0].value); //TODO
+    console_log(readRegister(0, 0));
 
     if (instructions.length == 0) {
       return packExecute(true, 'No instructions in memory', 'danger', null);
@@ -82,7 +83,8 @@ function execute_instruction ( )
       {
         if (instructions[i].Label == architecture.arch_conf[4].value) {
           //draw.success.push(execution_index) ;
-          architecture.components[0].elements[0].value = bi_intToBigInt(instructions[i].Address, 10);
+          //architecture.components[0].elements[0].value = bi_intToBigInt(instructions[i].Address, 10); //TODO
+          writeRegister(bi_intToBigInt(instructions[i].Address, 10), 0, 0);
           execution_init = 0;
           break;
         }
@@ -98,7 +100,8 @@ function execute_instruction ( )
 
     for (var i = 0; i < instructions.length; i++)
     {
-      if (parseInt(instructions[i].Address, 16) == architecture.components[0].elements[0].value) 
+      //if (parseInt(instructions[i].Address, 16) == architecture.components[0].elements[0].value) //TODO
+      if (parseInt(instructions[i].Address, 16) == readRegister(0, 0)) 
       {
         execution_index = i;
 
@@ -216,7 +219,8 @@ function execute_instruction ( )
     //Increase PC
     //TODO: other register
     word_size = parseInt(architecture.arch_conf[1].value) / 8;
-    architecture.components[0].elements[0].value = architecture.components[0].elements[0].value + bi_intToBigInt(nwords * word_size,10) ;
+    //architecture.components[0].elements[0].value = architecture.components[0].elements[0].value + bi_intToBigInt(nwords * word_size,10) ; //TODO
+    writeRegister(readRegister(0,0) + (nwords * word_size), 0,0);
     console_log(auxDef);
 
 
@@ -259,19 +263,19 @@ function execute_instruction ( )
               {
                 if (architecture.components[j].elements[z].name.includes(instructionExecParts[i]))
                 {
-                  var_readings_definitions[signatureRawParts[i]]      = "var " + signatureRawParts[i] + "      = readRegister ("+j+" ,"+z+");\n";
-                  var_readings_definitions_prev[signatureRawParts[i]] = "var " + signatureRawParts[i] + "_prev = readRegister ("+j+" ,"+z+");\n";
+                  var_readings_definitions[signatureRawParts[i]]      = "var " + signatureRawParts[i] + "      = readRegister ("+j+" ,"+z+", \""+ signatureParts[i] + "\");\n"
+                  var_readings_definitions_prev[signatureRawParts[i]] = "var " + signatureRawParts[i] + "_prev = readRegister ("+j+" ,"+z+", \""+ signatureParts[i] + "\");\n"
                   var_readings_definitions_name[signatureRawParts[i]] = "var " + signatureRawParts[i] + "_name = '" + instructionExecParts[i] + "';\n";
 
                   re = new RegExp( "(?:\\W|^)(((" + signatureRawParts[i] +") *=)[^=])", "g");
                   //If the register is in the left hand than '=' then write register always
                   if(auxDef.search(re) != -1){
-                    var_writings_definitions[signatureRawParts[i]]  = "writeRegister("+ signatureRawParts[i] +", "+j+", "+z+");\n";
+                    var_writings_definitions[signatureRawParts[i]]  = "writeRegister("+ signatureRawParts[i] +", "+j+", "+z+", \""+ signatureParts[i] + "\");\n";
                   }
                   //Write register only if value is diferent
                   else{
                     var_writings_definitions[signatureRawParts[i]]  = "if(" + signatureRawParts[i] + " != " + signatureRawParts[i] + "_prev)" +
-                                                                      " { writeRegister("+ signatureRawParts[i]+" ,"+j+" ,"+z+"); }\n";
+                                                                      " { writeRegister("+ signatureRawParts[i]+" ,"+j+" ,"+z+", \""+ signatureParts[i] + "\"); }\n";
                   }
 
                 }
@@ -307,12 +311,12 @@ function execute_instruction ( )
 
           re = new RegExp( "(?:\\W|^)(((" + clean_aliases +") *=)[^=])", "g");
           if (auxDef.search(re) != -1){
-            writings_description = writings_description+"\nwriteRegister("+ clean_name +", "+i+", "+j+");";
+            writings_description = writings_description+"\nwriteRegister("+ clean_name +", "+i+", "+j+", \""+ signatureParts[i] + "\");";
           }
 
           re = new RegExp("([^a-zA-Z0-9])(?:" + clean_aliases + ")");
           if (auxDef.search(re) != -1){
-            readings_description = readings_description + "var " + clean_name + "      = readRegister("+i+" ,"+j+");\n";
+            readings_description = readings_description + "var " + clean_name + "      = readRegister("+i+" ,"+j+", \""+ signatureParts[i] + "\");\n"
             readings_description = readings_description + "var " + clean_name + "_name = '" + clean_name + "';\n";
           }
         }
@@ -353,10 +357,10 @@ function execute_instruction ( )
     {
       var msg = '' ;
       if (e instanceof SyntaxError)
-        msg = 'The definition of the instruction contains errors, please review it' ;
+        msg = 'The definition of the instruction contains errors, please review it' + e.stack ; //TODO
       else msg = e.msg ;
 
-      console_log("Error: " + e);
+      console_log("Error: " + e.stack);
       error = 1;
       draw.danger.push(execution_index) ;
       execution_index = -1;
@@ -381,7 +385,8 @@ function execute_instruction ( )
     {
       for (var i = 0; i < instructions.length; i++)
       {
-        if (parseInt(instructions[i].Address, 16) == architecture.components[0].elements[0].value) {
+        //if (parseInt(instructions[i].Address, 16) == architecture.components[0].elements[0].value) { //TODO
+        if (parseInt(instructions[i].Address, 16) == readRegister(0, 0)) {
           execution_index = i;
           draw.success.push(execution_index) ;
           break;
@@ -481,7 +486,7 @@ function reset ()
   {
     for (var j = 0; j < architecture.components[i].elements.length; j++)
     {
-      if (architecture.components[i].double_precision == false)
+      if (architecture.components[i].double_precision == false || (architecture.components[i].double_precision == true && architecture.components[i].double_precision_type == "extended"))
       {
         architecture.components[i].elements[j].value = architecture.components[i].elements[j].default_value;
       }
@@ -496,16 +501,16 @@ function reset ()
           for (var b = 0; b < architecture.components[a].elements.length; b++)
           {
             if (architecture.components[a].elements[b].name.includes(architecture.components[i].elements[j].simple_reg[0]) != false){
-              aux_sim1 = bin2hex(float2bin(architecture.components[a].elements[b].default_value));
+              aux_sim1 = bin2hex(float2bin(bi_BigIntTofloat(architecture.components[a].elements[b].default_value)));
             }
             if (architecture.components[a].elements[b].name.includes(architecture.components[i].elements[j].simple_reg[1]) != false){
-              aux_sim2 = bin2hex(float2bin(architecture.components[a].elements[b].default_value));
+              aux_sim2 = bin2hex(float2bin(bi_BigIntTofloat(architecture.components[a].elements[b].default_value)));
             }
           }
         }
 
         aux_value = aux_sim1 + aux_sim2;
-        architecture.components[i].elements[j].value = hex2double("0x" + aux_value);
+        architecture.components[i].elements[j].value = bi_floatToBigInt(hex2double("0x" + aux_value)); //TODO: no estoy seguro
       }
     }
   }
@@ -788,12 +793,14 @@ function kbd_read_double ( keystroke, params )
 function kbd_read_string ( keystroke, params )
 {
   var value = "";
-  var neltos = architecture.components[params.indexComp2].elements[params.indexElem2].value ;
+  //var neltos = architecture.components[params.indexComp2].elements[params.indexElem2].value ; //TODO
+  var neltos = readRegister ( params.indexComp2, params.indexElem2 );
   for (var i = 0; (i < neltos) && (i < keystroke.length); i++) {
     value = value + keystroke.charAt(i);
   }
 
-  var addr = architecture.components[params.indexComp].elements[params.indexElem].value ;
+  //var addr = architecture.components[params.indexComp].elements[params.indexElem].value ; //TODO
+  var neltos = readRegister ( params.indexComp, params.indexElem );
   writeMemory(value, parseInt(addr), "string") ;
 
   return value ;

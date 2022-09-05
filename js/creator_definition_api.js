@@ -145,10 +145,14 @@ function capi_print_int ( value1 )
 	}
 
 	/* Print integer */
-	var value   = architecture.components[ret1.indexComp].elements[ret1.indexElem].value;
+	var value   = readRegister(ret1.indexComp, ret1.indexElem);
 	var val_int = parseInt(value.toString()) >> 0 ;
 
-	display_print(val_int) ;
+
+	var value = readRegister(ret1.indexComp, ret1.indexElem);
+	var val_int = parseInt(value.toString()) >> 0 ;
+
+	display_print(full_print(val_int, null, false));
 }
 
 function capi_print_float ( value1 )
@@ -163,16 +167,10 @@ function capi_print_float ( value1 )
 	}
 
 	/* Print float */
-	var value = architecture.components[ret1.indexComp].elements[ret1.indexElem].value;
-	
-	//Add .0 if the number is 0.0 or similar
-	var aux_value = value.toString();
-	if (aux_value.indexOf(".") == -1)
-	{
-		value = aux_value + ".0";
-	}
+	var value = readRegister(ret1.indexComp, ret1.indexElem);
+	var bin = float2bin(value);
 
-	display_print(value) ;
+	display_print(full_print(value, bin, true));
 }
 
 function capi_print_double ( value1 )
@@ -187,16 +185,10 @@ function capi_print_double ( value1 )
 	}
 
 	/* Print double */
-	var value = architecture.components[ret1.indexComp].elements[ret1.indexElem].value;
+	var value = readRegister(ret1.indexComp, ret1.indexElem);
+	var bin = double2bin(value);
 
-	//Add .0 if the number is 0.0 or similar
-	var aux_value = value.toString();
-	if (aux_value.indexOf(".") == -1)
-	{
-		value = aux_value + ".0";
-	}
-
-	display_print(value) ;
+	display_print(full_print(value, bin, true));
 }
 
 function capi_print_char ( value1 )
@@ -211,7 +203,7 @@ function capi_print_char ( value1 )
 	}
 
 	/* Print char */
-	var aux    = architecture.components[ret1.indexComp].elements[ret1.indexElem].value;
+	var aux    = readRegister(ret1.indexComp, ret1.indexElem);
 	var aux2   = aux.toString(16);
 	var length = aux2.length;
 
@@ -233,7 +225,7 @@ function capi_print_string ( value1 )
 	}
 
 	/* Print string */
-	var addr = architecture.components[ret1.indexComp].elements[ret1.indexElem].value;
+	var addr = readRegister(ret1.indexComp, ret1.indexElem);
         var msg  = readMemory(parseInt(addr), "string") ;
 	display_print(msg) ;
 }
@@ -355,13 +347,13 @@ function capi_sbrk ( value1, value2 )
 	}
 
 	/* Request more memory */
-	var new_size = parseInt(architecture.components[ret1.indexComp].elements[ret1.indexElem].value) ;
+	var new_size = parseInt(readRegister(ret1.indexComp, ret1.indexElem)) ;
 	if (new_size < 0) {
 		throw packExecute(true, "capi_syscall: negative size", 'danger', null) ;
 	}
 
     var new_addr = creator_memory_alloc(new_size) ;
-	architecture.components[ret2.indexComp].elements[ret2.indexElem].value = new_addr ;
+	writeRegister(new_addr, ret2.indexComp, ret2.indexElem);
 }
 
 function capi_get_power_consumption ( value1 )
@@ -376,7 +368,7 @@ function capi_get_power_consumption ( value1 )
 	}
 
 	//Store power consumption in the register
-	architecture.components[ret1.indexComp].elements[ret1.indexElem].value = total_power_consumption;
+	writeRegister(total_power_consumption, ret1.indexComp, ret1.indexElem);
 }
 
 

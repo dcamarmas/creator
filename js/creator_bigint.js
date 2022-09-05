@@ -21,72 +21,122 @@
 
 function bi_intToBigInt ( int_value, int_base )
 {
-	var auxBigInt = null ;
-
-	if (typeof bigInt !== "undefined" && int_base == 16)
-		auxBigInt = bigInt(int_value, int_base).value ;
-
-	else if (typeof bigInt !== "undefined")
-		auxBigInt = bigInt(parseInt(int_value) >>> 0, int_base).value ;
-
-	else auxBigInt = BigInt(parseInt(int_value) >>> 0, int_base) ;
-
-	return auxBigInt ;
+  return BigInt(parseInt(int_value) >>> 0, int_base) ;
 }
 
 
-/*String to number/bigint*/
-function register_value_deserialize(object)
+
+
+
+
+
+
+
+
+function bi_floatToBigInt ( float_value )
 {
-	var auxObject = object;
+  var BigInt_value = null ;
+  var bin          = float2bin(float_value);
+  var hex          = bin2hex(bin);
 
-	for (var i=0; i<auxObject.components.length; i++)
-	{
-		var aux = null ;
-		var auxBigInt = null ;
+  BigInt_value = BigInt("0x" + hex);
 
-		for (var j = 0; j < auxObject.components[i].elements.length; j++)
-		{
-			aux = auxObject.components[i].elements[j].value;
-			if (auxObject.components[i].type != "floating point")
-				auxObject.components[i].elements[j].value = bi_intToBigInt(aux,10) ;
-			else
-				auxObject.components[i].elements[j].value = parseFloat(aux) ;
-
-			if (auxObject.components[i].double_precision != true)
-			{
-				aux = auxObject.components[i].elements[j].default_value;
-				if (auxObject.components[i].type != "floating point")
-					auxObject.components[i].elements[j].default_value = bi_intToBigInt(aux,10) ;
-				else
-					auxObject.components[i].elements[j].value = parseFloat(aux) ;
-			}
-		}
-
-	}
-
-	return auxObject;
+  return BigInt_value ;
 }
 
-/*Number/Bigint to string*/
-function register_value_serialize(object)
+function bi_BigIntTofloat ( big_int_value )
 {
-	var auxObject = jQuery.extend(true, {}, object);
+  var hex = big_int_value.toString(16);
 
-	for (var i=0; i<architecture.components.length; i++)
-	{
-		for (var j = 0; j < architecture.components[i].elements.length; j++)
-		{
-			var aux = architecture.components[i].elements[j].value;
-			auxObject.components[i].elements[j].value = aux.toString();
+  return hex2float("0x" + hex);
+}
 
-			if (architecture.components[i].double_precision != true)
-			{
-				var aux2 = architecture.components[i].elements[j].default_value;
-				auxObject.components[i].elements[j].default_value = aux2.toString();
-			}
-		}
-	}
 
-	return auxObject;
+
+
+function bi_doubleToBigInt ( double_value )
+{
+  var BigInt_value = null ;
+  var bin          = double2bin(double_value);
+  var hex          = bin2hex(bin);
+
+  BigInt_value = BigInt("0x" + hex);
+
+  return BigInt_value ;
+}
+
+function bi_BigIntTodouble ( big_int_value )
+{
+  var hex = big_int_value.toString(16);
+
+  return hex2double("0x" + hex);
+}
+
+
+
+
+
+
+
+
+//String to number/bigint
+function register_value_deserialize( architecture )
+{
+  //var architecture = architecture;
+
+  for (var i=0; i<architecture.components.length; i++)
+  {
+    for (var j=0; j< architecture.components[i].elements.length; j++)
+    {
+      if (architecture.components[i].type != "floating point"){
+        architecture.components[i].elements[j].value = bi_intToBigInt(architecture.components[i].elements[j].value,10) ;
+      }
+      else{
+        architecture.components[i].elements[j].value = bi_floatToBigInt(architecture.components[i].elements[j].value) ;
+      }
+
+      if (architecture.components[i].double_precision != true)
+      {
+        if (architecture.components[i].type != "floating point"){
+          architecture.components[i].elements[j].default_value = bi_intToBigInt(architecture.components[i].elements[j].default_value,10) ;
+        }
+        else{
+          architecture.components[i].elements[j].default_value = bi_floatToBigInt(architecture.components[i].elements[j].default_value) ;
+        }
+      }
+    }
+  }
+
+  return architecture;
+}
+
+//Number/Bigint to string
+function register_value_serialize( architecture )
+{
+  var aux_architecture = jQuery.extend(true, {}, architecture);
+
+  for (var i=0; i<architecture.components.length; i++)
+  {
+    for (var j=0; j < architecture.components[i].elements.length; j++)
+    {
+      if (architecture.components[i].type != "floating point"){
+        aux_architecture.components[i].elements[j].value = parseInt(architecture.components[i].elements[j].value);
+      }
+      else{
+        aux_architecture.components[i].elements[j].value = bi_BigIntTofloat(architecture.components[i].elements[j].value);
+      }
+
+      if (architecture.components[i].double_precision != true)
+      {
+        if (architecture.components[i].type != "floating point"){
+          aux_architecture.components[i].elements[j].default_value = parseInt(architecture.components[i].elements[j].default_value);
+        }
+        else{
+          aux_architecture.components[i].elements[j].default_value = bi_BigIntTofloat(architecture.components[i].elements[j].default_value);
+        }
+      }
+    }
+  }
+
+  return aux_architecture;
 }

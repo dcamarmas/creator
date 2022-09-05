@@ -8,7 +8,7 @@
   },
   {
     "name": "RISC-V Examples",
-    "id": "default_rv",
+    "id": "default",
     "architecture":"RISC-V",
     "url":"examples/RISCV/list.json",
     "description": "RISC-V examples"
