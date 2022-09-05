@@ -121,7 +121,21 @@
                       } 
                       break;
 
-                    case "decimal":
+                    case "ieee32":
+                      if (architecture.components[this._props.component.index].type == "control" || architecture.components[this._props.component.index].type == "integer") {
+                        ret = hex2float("0x"+(((register.value).toString(16)).padStart(register.nbits/4, "0")));
+                      }
+                      else {
+                        if (architecture.components[this._props.component.index].double_precision == false) {
+                          ret = bi_BigIntTofloat(register.value);
+                        }
+                        else{
+                          ret = bi_BigIntTodouble(register.value);
+                        }
+                      }
+                      break;
+
+                    case "ieee64":
                       if (architecture.components[this._props.component.index].type == "control" || architecture.components[this._props.component.index].type == "integer") {
                         ret = hex2float("0x"+(((register.value).toString(16)).padStart(register.nbits/4, "0")));
                       }
@@ -285,13 +299,23 @@ template:     '<b-popover :target="target" ' +
               '        </td>' +
               '      </tr>' +
               '      <tr>' +
-              '        <td>IEEE 754</td>' +
+              '        <td>IEEE 754 (32 bits)</td>' +
               '        <td>' +
               '          <b-badge class="registerPopover">' +
-              '            {{show_value(register, \'decimal\')}}' +
+              '            {{show_value(register, \'ieee32\')}}' +
               '          </b-badge>' +
               '        </td>' +
               '      </tr>' +
+
+              '      <tr v-if="component.double_precision_type != \'linked\'">' +
+              '        <td>IEEE 754 (64 bits)</td>' +
+              '        <td>' +
+              '          <b-badge class="registerPopover">' +
+              '            {{show_value(register, \'ieee64\')}}' +
+              '          </b-badge>' +
+              '        </td>' +
+              '      </tr>' +
+
               '    </tbody>' +
               '  </table>' +
               '' +

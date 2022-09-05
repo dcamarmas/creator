@@ -484,14 +484,15 @@
     {
       "name": "Simple floating point registers",
       "type": "floating point",
-      "double_precision": false,
+      "double_precision": true,
+      "double_precision_type": "extended",
       "elements": [
         {
           "name": [
             "ft0",
             "f0"
           ],
-          "nbits": "32",
+          "nbits": "64",
           "value": 0.0,
           "default_value": 0.0,
           "properties": [
@@ -504,7 +505,7 @@
             "ft1",
             "f1"
           ],
-          "nbits": "32",
+          "nbits": "64",
           "value": 0.0,
           "default_value": 0.0,
           "properties": [
@@ -517,7 +518,7 @@
             "ft2",
             "f2"
           ],
-          "nbits": "32",
+          "nbits": "64",
           "value": 0.0,
           "default_value": 0.0,
           "properties": [
@@ -530,7 +531,7 @@
             "ft3",
             "f3"
           ],
-          "nbits": "32",
+          "nbits": "64",
           "value": 0.0,
           "default_value": 0.0,
           "properties": [
@@ -543,7 +544,7 @@
             "ft4",
             "f4"
           ],
-          "nbits": "32",
+          "nbits": "64",
           "value": 0.0,
           "default_value": 0.0,
           "properties": [
@@ -556,7 +557,7 @@
             "ft5",
             "f5"
           ],
-          "nbits": "32",
+          "nbits": "64",
           "value": 0.0,
           "default_value": 0.0,
           "properties": [
@@ -569,7 +570,7 @@
             "ft6",
             "f6"
           ],
-          "nbits": "32",
+          "nbits": "64",
           "value": 0.0,
           "default_value": 0.0,
           "properties": [
@@ -582,7 +583,7 @@
             "ft7",
             "f7"
           ],
-          "nbits": "32",
+          "nbits": "64",
           "value": 0.0,
           "default_value": 0.0,
           "properties": [
@@ -595,7 +596,7 @@
             "fs0",
             "f8"
           ],
-          "nbits": "32",
+          "nbits": "64",
           "value": 0.0,
           "default_value": 0.0,
           "properties": [
@@ -608,7 +609,7 @@
             "fs1",
             "f9"
           ],
-          "nbits": "32",
+          "nbits": "64",
           "value": 0.0,
           "default_value": 0.0,
           "properties": [
@@ -621,7 +622,7 @@
             "fa0",
             "f10"
           ],
-          "nbits": "32",
+          "nbits": "64",
           "value": 0.0,
           "default_value": 0.0,
           "properties": [
@@ -634,7 +635,7 @@
             "fa1",
             "f11"
           ],
-          "nbits": "32",
+          "nbits": "64",
           "value": 0.0,
           "default_value": 0.0,
           "properties": [
@@ -647,7 +648,7 @@
             "fa2",
             "f12"
           ],
-          "nbits": "32",
+          "nbits": "64",
           "value": 0.0,
           "default_value": 0.0,
           "properties": [
@@ -660,7 +661,7 @@
             "fa3",
             "f13"
           ],
-          "nbits": "32",
+          "nbits": "64",
           "value": 0.0,
           "default_value": 0.0,
           "properties": [
@@ -673,7 +674,7 @@
             "fa4",
             "f14"
           ],
-          "nbits": "32",
+          "nbits": "64",
           "value": 0.0,
           "default_value": 0.0,
           "properties": [
@@ -686,7 +687,7 @@
             "fa5",
             "f15"
           ],
-          "nbits": "32",
+          "nbits": "64",
           "value": 0.0,
           "default_value": 0.0,
           "properties": [
@@ -699,7 +700,7 @@
             "fa6",
             "f16"
           ],
-          "nbits": "32",
+          "nbits": "64",
           "value": 0.0,
           "default_value": 0.0,
           "properties": [
@@ -712,7 +713,7 @@
             "fa7",
             "f17"
           ],
-          "nbits": "32",
+          "nbits": "64",
           "value": 0.0,
           "default_value": 0.0,
           "properties": [
@@ -725,7 +726,7 @@
             "fs2",
             "f18"
           ],
-          "nbits": "32",
+          "nbits": "64",
           "value": 0.0,
           "default_value": 0.0,
           "properties": [
@@ -738,7 +739,7 @@
             "fs3",
             "f19"
           ],
-          "nbits": "32",
+          "nbits": "64",
           "value": 0.0,
           "default_value": 0.0,
           "properties": [
@@ -751,7 +752,7 @@
             "fs4",
             "f20"
           ],
-          "nbits": "32",
+          "nbits": "64",
           "value": 0.0,
           "default_value": 0.0,
           "properties": [
@@ -764,7 +765,7 @@
             "fs5",
             "f21"
           ],
-          "nbits": "32",
+          "nbits": "64",
           "value": 0.0,
           "default_value": 0.0,
           "properties": [
@@ -777,7 +778,7 @@
             "fs6",
             "f22"
           ],
-          "nbits": "32",
+          "nbits": "64",
           "value": 0.0,
           "default_value": 0.0,
           "properties": [
@@ -790,7 +791,7 @@
             "fs7",
             "f23"
           ],
-          "nbits": "32",
+          "nbits": "64",
           "value": 0.0,
           "default_value": 0.0,
           "properties": [
@@ -800,10 +801,10 @@
         },
         {
           "name": [
-            "fs0",
+            "fs8",
             "f24"
           ],
-          "nbits": "32",
+          "nbits": "64",
           "value": 0.0,
           "default_value": 0.0,
           "properties": [
@@ -813,10 +814,10 @@
         },
         {
           "name": [
-            "fs1",
+            "fs9",
             "f25"
           ],
-          "nbits": "32",
+          "nbits": "64",
           "value": 0.0,
           "default_value": 0.0,
           "properties": [
@@ -829,7 +830,7 @@
             "fs10",
             "f26"
           ],
-          "nbits": "32",
+          "nbits": "64",
           "value": 0.0,
           "default_value": 0.0,
           "properties": [
@@ -842,7 +843,7 @@
             "fs11",
             "f27"
           ],
-          "nbits": "32",
+          "nbits": "64",
           "value": 0.0,
           "default_value": 0.0,
           "properties": [
@@ -855,7 +856,7 @@
             "ft8",
             "f28"
           ],
-          "nbits": "32",
+          "nbits": "64",
           "value": 0.0,
           "default_value": 0.0,
           "properties": [
@@ -868,7 +869,7 @@
             "ft9",
             "f29"
           ],
-          "nbits": "32",
+          "nbits": "64",
           "value": 0.0,
           "default_value": 0.0,
           "properties": [
@@ -881,7 +882,7 @@
             "ft10",
             "f30"
           ],
-          "nbits": "32",
+          "nbits": "64",
           "value": 0.0,
           "default_value": 0.0,
           "properties": [
@@ -894,7 +895,7 @@
             "ft11",
             "f31"
           ],
-          "nbits": "32",
+          "nbits": "64",
           "value": 0.0,
           "default_value": 0.0,
           "properties": [

@@ -74,7 +74,7 @@
                           }
                           break;
 
-                        case "decimal":
+                        case "ieee":
                           if (architecture.components[this._props.component.index].type == "control" || architecture.components[this._props.component.index].type == "integer") {
                             ret = hex2float("0x"+(((register.value).toString(16)).padStart(register.nbits/4, "0")));
                           }
@@ -103,10 +103,13 @@
                           break;
                       }
 
-                      ret = ret.toString();
+                      if (this._props.component.double_precision_type == "linked")
+                      {
+                        ret = ret.toString();
 
-                      if (ret.length > 10) {
-                        return ret.slice(0, 8) + "...";
+                        if (ret.length > 10) {
+                          return ret.slice(0, 8) + "...";
+                        }
                       }
 
                       return ret

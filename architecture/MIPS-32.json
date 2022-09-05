@@ -1002,6 +1002,7 @@
       "name": "Double floating point registers",
       "type": "floating point",
       "double_precision": true,
+      "double_precision_type": "linked",
       "elements": [
         {
           "name": [
