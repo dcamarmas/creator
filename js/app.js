@@ -166,6 +166,7 @@ try
         register_file_index: null,
         type: '',
         double_precision: '',
+        double_precision_type: '',
         reg_id: '',
         simple_reg: []
       },
@@ -176,6 +177,7 @@ try
         register_index: null,
         type: '',
         double_precision: '',
+        double_precision_type: '',
         reg_id: '',
         simple_reg: [],
         register: {}
