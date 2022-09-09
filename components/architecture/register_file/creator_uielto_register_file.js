@@ -56,9 +56,10 @@
                   //Show new register modal
                   new_register_modal(name, index, button)
                   {
-                    app._data.modal_new_register.register_file_index = index;
-                    app._data.modal_new_register.type                = architecture.components[index].type;
-                    app._data.modal_new_register.double_precision    = architecture.components[index].double_precision;
+                    app._data.modal_new_register.register_file_index   = index;
+                    app._data.modal_new_register.type                  = architecture.components[index].type;
+                    app._data.modal_new_register.double_precision      = architecture.components[index].double_precision;
+                    app._data.modal_new_register.double_precision_type = architecture.components[index].double_precision_type;
                     
                     //Load all simple precision registers at the moment //TODO: improve the search
                     app._data.modal_new_register.simple_reg = [];
