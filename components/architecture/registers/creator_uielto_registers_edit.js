@@ -32,6 +32,7 @@
 
                   type:                           { type: String, required: true },
                   double_precision:               { type: String, required: true },
+                  double_precision_type:          { type: String, required: true },
                   reg_id:                         { type: Number, required: true },
                   simple_reg:                     { type: Array,  required: true },
 
@@ -155,7 +156,7 @@
                 '    </b-form-group>' +
                 '' +
                 '    <b-form-group label="Default value:"' +
-                '                  v-if="double_precision == false">' +
+                '                  v-if="double_precision_type != \'linked\'">' +
                 '      <b-form-input type="text" ' +
                 '                    v-model="register.default_value" ' +
                 '                    required ' +
@@ -180,7 +181,7 @@
                 '      </b-form-checkbox-group>' +
                 '    </b-form-group>' +
                 '' +
-                '    <b-form-group label="Simple Floating Points asociate:" v-if="double_precision == true">' +
+                '    <b-form-group label="Simple Floating Points asociate:" v-if="double_precision == true && double_precision_type == \'linked\'">' +
                 '      <div class="col-lg-12 col-sm-12 row m-0">' +
                 '        <div class="col-lg-6 col-sm-6">' +
                 '          <b-form-select required ' +
