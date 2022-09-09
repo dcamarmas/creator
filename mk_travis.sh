@@ -39,6 +39,6 @@ RV_TEST="002 003 004 005 006 007 008 011 012"
 for I in $RV_TEST;
 do
   echo " * ./riscv/correct/example$I... "
-  ./creator.sh -a ./architecture/RISC-V.json -s ./travis/riscv/correct/test-riscv-$I.s -o min > ./travis/riscv/correct/test-riscv-$I.out
+  ./creator.sh -a "./architecture/RISC-V (RV32IMFD).json" -s ./travis/riscv/correct/test-riscv-$I.s -o min > ./travis/riscv/correct/test-riscv-$I.out
 done
 

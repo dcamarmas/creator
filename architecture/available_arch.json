@@ -1,6 +1,6 @@
 [
   {
-    "name": "RISC-V",
+    "name": "RISC-V (RV32IMFD)",
     "img": "./images/risc-v_logo.png",
     "alt": "RISC-V",
     "id": "select_confRISV",
