@@ -44,11 +44,14 @@
                     app._data.modal_edit_register.register_index      = index;
 
                     //Load all simple precision registers at the moment //TODO: improve the search
-                    app._data.modal_edit_register.simple_reg = [];
-                    for (var i = 0; i < architecture_hash.length; i++)
+                    if (architecture.components[this._props.register_file_index].double_precision_type == 'linked') 
                     {
-                      for (var j = 0; j < architecture.components[i].elements.length && architecture.components[i].type =="floating point" && architecture.components[i].double_precision == false; j++){
-                        app._data.modal_edit_register.simple_reg.push({ text: architecture.components[i].elements[j].name, value: architecture.components[i].elements[j].name},);
+                      app._data.modal_edit_register.simple_reg = [];
+                      for (var i = 0; i < architecture_hash.length; i++)
+                      {
+                        for (var j = 0; j < architecture.components[i].elements.length && architecture.components[i].type =="floating point" && architecture.components[i].double_precision == false; j++){
+                          app._data.modal_edit_register.simple_reg.push({ text: architecture.components[i].elements[j].name, value: architecture.components[i].elements[j].name},);
+                        }
                       }
                     }
 
@@ -68,8 +71,9 @@
                     }
 
                     //Get register file information
-                    app._data.modal_edit_register.type             = architecture.components[this._props.register_file_index].type;
-                    app._data.modal_edit_register.double_precision = architecture.components[this._props.register_file_index].double_precision;
+                    app._data.modal_edit_register.type                  = architecture.components[this._props.register_file_index].type;
+                    app._data.modal_edit_register.double_precision      = architecture.components[this._props.register_file_index].double_precision;
+                    app._data.modal_edit_register.double_precision_type = architecture.components[this._props.register_file_index].double_precision_type;
 
                     ///Get register information
                     app._data.modal_edit_register.register = Object.assign({}, architecture.components[this._props.register_file_index].elements[index]);

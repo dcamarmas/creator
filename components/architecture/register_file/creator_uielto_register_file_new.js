@@ -30,17 +30,23 @@
     data:       function () {
                   return {
                     //Register file types
-                    register_file_types:  [
-                                            { text: 'Integer', value: 'integer' },
-                                            { text: 'Floating point', value: 'floating point' },
-                                            { text: 'Control', value: 'control' }
-                                          ],
+                    register_file_types:    [
+                                              { text: 'Integer',        value: 'integer' },
+                                              { text: 'Floating point', value: 'floating point' },
+                                              { text: 'Control',        value: 'control' }
+                                            ],
+
+                    double_precision_type:  [
+                                              { text: 'Linked',   value: 'linked' },
+                                              { text: 'Extended', value: 'extended' },
+                                            ],
 
                     //Directive form
                     register_file: {
                       name: '',
                       type: '',
                       precision: '',
+                      double_precision_type: ''
                     },
 
                     //Modals directives
@@ -59,6 +65,15 @@
                       show_notification('Please complete all fields', 'danger') ;
                     }
                     else{
+                      if (this.register_file.precision.length > 0)
+                      {
+                        if (!this.register_file.double_precision_type)
+                        {
+                          show_notification('Please complete all fields', 'danger') ;
+                          return;
+                        }
+                      }
+                      
                       for (var i = 0; i < architecture_hash.length; i++) {
                         if (this.register_file.name == architecture_hash[i].name)
                         {
@@ -77,17 +92,24 @@
                     this.show_modal = false;
 
                     var precision = false;
-                    if (this.register_file.precision == "precision")
+                    if (this.register_file.precision.length > 0)
                     {
                       precision = true;
+                    }
+
+                    if (precision == false)
+                    {
+                      this.register_file.double_precision_type = '';
                     }
 
                     var new_register_file = {
                                               name: this.register_file.name, 
                                               type: this.register_file.type, 
                                               double_precision: precision ,
+                                              double_precision_type: this.register_file.double_precision_type ,
                                               elements:[]
                                             };
+
                     architecture.components.push(new_register_file);
                     var new_register_file_hash = {name: this.register_file.name, index: architecture_hash.length};
                     architecture_hash.push(new_register_file_hash);
@@ -101,6 +123,7 @@
                     this.register_file.name = '';
                     this.register_file.type = '';
                     this.register_file.precision = '';
+                    this.register_file.double_precision_type = '';
                   },
 
                   //Form validator
@@ -146,7 +169,7 @@
                 '                     :state="valid(register_file.type)" ' +
                 '                     size="sm"' +
                 '                     title="Register file type">' +
-                '    </b-form-select>' +
+                '      </b-form-select>' +
                 '    </b-form-group>' +
                 '' +
                 '    <b-form-group v-if="register_file.type == \'floating point\'">' +
@@ -156,6 +179,18 @@
                 '        </b-form-checkbox>' +
                 '      </b-form-checkbox-group>' +
                 '    </b-form-group>' +
+                '' +
+                '    <b-form-group label="Double Precision Type:"' +
+                '                  v-if="register_file.precision.length > 0">' +
+                '      <b-form-select :options="double_precision_type" ' +
+                '                     required ' +
+                '                     v-model="register_file.double_precision_type" ' +
+                '                     :state="valid(register_file.double_precision_type)" ' +
+                '                     size="sm"' +
+                '                     title="Double Precision type">' +
+                '      </b-form-select>' +
+                '    </b-form-group>' +
+                '' +
                 '  </b-form>' +
                 '</b-modal >'
 
