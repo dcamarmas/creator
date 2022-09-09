@@ -70,7 +70,7 @@ RV_TEST="002 003 004 005 006 007 008 011 012"
 for I in $RV_TEST;
 do
   echo -n " * ./travis/riscv/correct/test-riscv-$I: "
-  ./creator.sh -a ./architecture/RISC-V.json \
+  ./creator.sh -a "./architecture/RISC-V (RV32IMFD).json" \
                -s ./travis/riscv/correct/test-riscv-$I.s -o min > /tmp/e-$I.out
   diff /tmp/e-$I.out ./travis/riscv/correct/test-riscv-$I.out
   if [ $? -ne 0 ]; then
