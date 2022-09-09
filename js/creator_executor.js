@@ -263,19 +263,19 @@ function execute_instruction ( )
               {
                 if (architecture.components[j].elements[z].name.includes(instructionExecParts[i]))
                 {
-                  var_readings_definitions[signatureRawParts[i]]      = "var " + signatureRawParts[i] + "      = readRegister ("+j+" ,"+z+");\n";
-                  var_readings_definitions_prev[signatureRawParts[i]] = "var " + signatureRawParts[i] + "_prev = readRegister ("+j+" ,"+z+");\n";
+                  var_readings_definitions[signatureRawParts[i]]      = "var " + signatureRawParts[i] + "      = readRegister ("+j+" ,"+z+", \""+ signatureParts[i] + "\");\n"
+                  var_readings_definitions_prev[signatureRawParts[i]] = "var " + signatureRawParts[i] + "_prev = readRegister ("+j+" ,"+z+", \""+ signatureParts[i] + "\");\n"
                   var_readings_definitions_name[signatureRawParts[i]] = "var " + signatureRawParts[i] + "_name = '" + instructionExecParts[i] + "';\n";
 
                   re = new RegExp( "(?:\\W|^)(((" + signatureRawParts[i] +") *=)[^=])", "g");
                   //If the register is in the left hand than '=' then write register always
                   if(auxDef.search(re) != -1){
-                    var_writings_definitions[signatureRawParts[i]]  = "writeRegister("+ signatureRawParts[i] +", "+j+", "+z+");\n";
+                    var_writings_definitions[signatureRawParts[i]]  = "writeRegister("+ signatureRawParts[i] +", "+j+", "+z+", \""+ signatureParts[i] + "\");\n";
                   }
                   //Write register only if value is diferent
                   else{
                     var_writings_definitions[signatureRawParts[i]]  = "if(" + signatureRawParts[i] + " != " + signatureRawParts[i] + "_prev)" +
-                                                                      " { writeRegister("+ signatureRawParts[i]+" ,"+j+" ,"+z+"); }\n";
+                                                                      " { writeRegister("+ signatureRawParts[i]+" ,"+j+" ,"+z+", \""+ signatureParts[i] + "\"); }\n";
                   }
 
                 }
@@ -311,12 +311,12 @@ function execute_instruction ( )
 
           re = new RegExp( "(?:\\W|^)(((" + clean_aliases +") *=)[^=])", "g");
           if (auxDef.search(re) != -1){
-            writings_description = writings_description+"\nwriteRegister("+ clean_name +", "+i+", "+j+");";
+            writings_description = writings_description+"\nwriteRegister("+ clean_name +", "+i+", "+j+", \""+ signatureParts[i] + "\");";
           }
 
           re = new RegExp("([^a-zA-Z0-9])(?:" + clean_aliases + ")");
           if (auxDef.search(re) != -1){
-            readings_description = readings_description + "var " + clean_name + "      = readRegister("+i+" ,"+j+");\n";
+            readings_description = readings_description + "var " + clean_name + "      = readRegister("+i+" ,"+j+", \""+ signatureParts[i] + "\");\n"
             readings_description = readings_description + "var " + clean_name + "_name = '" + clean_name + "';\n";
           }
         }
@@ -486,7 +486,7 @@ function reset ()
   {
     for (var j = 0; j < architecture.components[i].elements.length; j++)
     {
-      if (architecture.components[i].double_precision == false)
+      if (architecture.components[i].double_precision == false || (architecture.components[i].double_precision == true && architecture.components[i].double_precision_type == "extended"))
       {
         architecture.components[i].elements[j].value = architecture.components[i].elements[j].default_value;
       }

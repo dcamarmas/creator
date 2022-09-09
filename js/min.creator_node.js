@@ -249,25 +249,25 @@ function register_value_serialize( architecture )
 
   function hex2char8 ( hexvalue )
   {
-  var num_char = ((hexvalue.toString().length))/2;
-  var exponent = 0;
-  var pos = 0;
+    var num_char = ((hexvalue.toString().length))/2;
+    var exponent = 0;
+    var pos = 0;
 
-  var valuec = [] ;
+    var valuec = [] ;
 
-  for (var i = 0; i < num_char; i++) {
-       var auxHex = hexvalue.substring(pos, pos+2);
-       valuec[i] = String.fromCharCode(parseInt(auxHex, 16));
-       pos = pos + 2;
-  }
+    for (var i = 0; i < num_char; i++) {
+         var auxHex = hexvalue.substring(pos, pos+2);
+         valuec[i] = String.fromCharCode(parseInt(auxHex, 16));
+         pos = pos + 2;
+    }
 
-  var characters = '';
+    var characters = '';
 
-  for (var i = 0; i < valuec.length; i++){
-       characters = characters + valuec[i] + ' ';
-  }
+    for (var i = 0; i < valuec.length; i++){
+         characters = characters + valuec[i] + ' ';
+    }
 
-  return  characters;
+    return  characters;
   }
 
   function hex2float ( hexvalue )
@@ -288,6 +288,10 @@ function register_value_serialize( architecture )
 
     return valuef ;*/
     var value = hexvalue.split('x');
+    if (typeof value[1] != "undefined" && value[1].length > 8) {
+      value[1] = value[1].substring(0, 8);
+    }
+
     var value_bit = '';
 
     for (var i = 0; i < value[1].length; i++){
@@ -305,32 +309,32 @@ function register_value_serialize( architecture )
 
   function uint_to_float32 ( value )
   {
-      var buf = new ArrayBuffer(4) ;
-      (new Uint32Array(buf))[0] = value ;
-      return (new Float32Array(buf))[0] ;
+    var buf = new ArrayBuffer(4) ;
+    (new Uint32Array(buf))[0] = value ;
+    return (new Float32Array(buf))[0] ;
   }
 
   function float32_to_uint ( value )
   {
-      var buf = new ArrayBuffer(4) ;
-      (new Float32Array(buf))[0] = value ;
-      return (new Uint32Array(buf))[0];
+    var buf = new ArrayBuffer(4) ;
+    (new Float32Array(buf))[0] = value ;
+    return (new Uint32Array(buf))[0];
   }
 
   function uint_to_float64 ( value0, value1 )
   {
-      var buf = new ArrayBuffer(8) ;
-      var arr = new Uint32Array(buf) ;
-      arr[0] = value0 ;
-      arr[1] = value1 ;
-      return (new Float64Array(buf))[0] ;
+    var buf = new ArrayBuffer(8) ;
+    var arr = new Uint32Array(buf) ;
+    arr[0] = value0 ;
+    arr[1] = value1 ;
+    return (new Float64Array(buf))[0] ;
   }
 
   function float64_to_uint ( value )
   {
-      var buf = new ArrayBuffer(8) ;
-      (new Float64Array(buf))[0] = value ;
-      return (new Uint32Array(buf)) ;
+    var buf = new ArrayBuffer(8) ;
+    (new Float64Array(buf))[0] = value ;
+    return (new Uint32Array(buf)) ;
   }
 
   function float2bin ( number )
@@ -342,104 +346,104 @@ function register_value_serialize( architecture )
 
     for (i = 0; i < 4; i++)
     {
-        var bits = dv.getUint8(i).toString(2);
-        if (bits.length < 8) {
-            bits = new Array(8 - bits.length).fill('0').join("") + bits;
-        }
-        result += bits;
+      var bits = dv.getUint8(i).toString(2);
+      if (bits.length < 8) {
+          bits = new Array(8 - bits.length).fill('0').join("") + bits;
+      }
+      result += bits;
     }
     return result;
   }
 
   function double2bin ( number )
   {
-      var i, result = "";
-      var dv = new DataView(new ArrayBuffer(8));
+    var i, result = "";
+    var dv = new DataView(new ArrayBuffer(8));
 
-      dv.setFloat64(0, number, false);
+    dv.setFloat64(0, number, false);
 
-      for (i = 0; i < 8; i++)
-      {
-          var bits = dv.getUint8(i).toString(2);
-          if (bits.length < 8) {
-            bits = new Array(8 - bits.length).fill('0').join("") + bits;
-          }
-          result += bits;
+    for (i = 0; i < 8; i++)
+    {
+      var bits = dv.getUint8(i).toString(2);
+      if (bits.length < 8) {
+        bits = new Array(8 - bits.length).fill('0').join("") + bits;
       }
-      return result;
+      result += bits;
+    }
+    return result;
   }
 
   function bin2hex ( s )
   {
-      var i, k, part, accum, ret = '';
+    var i, k, part, accum, ret = '';
 
-      for (i = s.length-1; i >= 3; i -= 4)
-      {
-          part = s.substr(i+1-4, 4);
-          accum = 0;
-          for (k = 0; k < 4; k += 1)
+    for (i = s.length-1; i >= 3; i -= 4)
     {
-             if (part[k] !== '0' && part[k] !== '1') {
-                 return { valid: false };
-             }
-             accum = accum * 2 + parseInt(part[k], 10);
-          }
-          if (accum >= 10) {
-              ret = String.fromCharCode(accum - 10 + 'A'.charCodeAt(0)) + ret;
-          }
-          else {
-              ret = String(accum) + ret;
-          }
-      }
-
-      if (i >= 0)
+      part = s.substr(i+1-4, 4);
+      accum = 0;
+      for (k = 0; k < 4; k += 1)
       {
-          accum = 0;
-          for (k = 0; k <= i; k += 1)
-    {
-             if (s[k] !== '0' && s[k] !== '1') {
-                 return { valid: false };
-             }
-             accum = accum * 2 + parseInt(s[k], 10);
-          }
-          ret = String(accum) + ret;
+        if (part[k] !== '0' && part[k] !== '1') {
+          return { valid: false };
+        }
+        accum = accum * 2 + parseInt(part[k], 10);
       }
+      if (accum >= 10) {
+        ret = String.fromCharCode(accum - 10 + 'A'.charCodeAt(0)) + ret;
+      }
+      else {
+        ret = String(accum) + ret;
+      }
+  }
 
-      return ret;
+    if (i >= 0)
+    {
+      accum = 0;
+      for (k = 0; k <= i; k += 1)
+      {
+        if (s[k] !== '0' && s[k] !== '1') {
+          return { valid: false };
+        }
+        accum = accum * 2 + parseInt(s[k], 10);
+      }
+      ret = String(accum) + ret;
+    }
+
+    return ret;
   }
 
   function hex2double ( hexvalue )
   {
-      var value = hexvalue.split('x');
-      var value_bit = '';
+    var value = hexvalue.split('x');
+    var value_bit = '';
 
-      for (var i=0; i<value[1].length; i++)
-      {
-          var aux = value[1].charAt(i);
-          aux = (parseInt(aux, 16)).toString(2).padStart(4, "0");
-          value_bit = value_bit + aux;
-      }
+    for (var i=0; i<value[1].length; i++)
+    {
+      var aux = value[1].charAt(i);
+      aux = (parseInt(aux, 16)).toString(2).padStart(4, "0");
+      value_bit = value_bit + aux;
+    }
 
-      value_bit = value_bit.padStart(64, "0");
+    value_bit = value_bit.padStart(64, "0");
 
-      var buffer = new ArrayBuffer(8);
-      new Uint8Array( buffer ).set( value_bit.match(/.{8}/g).map(binaryStringToInt ));
-      return new DataView( buffer ).getFloat64(0, false);
+    var buffer = new ArrayBuffer(8);
+    new Uint8Array( buffer ).set( value_bit.match(/.{8}/g).map(binaryStringToInt ));
+    return new DataView( buffer ).getFloat64(0, false);
   }
 
   function float2int_v2 ( value )
   {
-      return parseInt(float2bin(value),2);
+    return parseInt(float2bin(value),2);
   }
 
   function double2int_v2 ( value )
   {
-      return parseInt(double2bin(value),2);
+    return parseInt(double2bin(value),2);
   }
 
   function int2float_v2 ( value )
   {
-      return hex2float("0x" + bin2hex(value.toString(2)));
+    return hex2float("0x" + bin2hex(value.toString(2)));
   }
 
   function full_print ( value, bin_value, add_dot_zero )
@@ -471,14 +475,14 @@ function register_value_serialize( architecture )
 
   function clean_string( value, prefix )
   {
-  var value2 = value.replace(/[&\/\\#,+()$~%.'":*?<>{}]/g, '_');
+    var value2 = value.replace(/[&\/\\#,+()$~%.'":*?<>{}]/g, '_');
 
-  re = new RegExp("^[0-9]+$");
-  if (value2.search(re) != -1 && prefix != "undefined") {
-    value2 = prefix + value2;
-  }
+    re = new RegExp("^[0-9]+$");
+    if (value2.search(re) != -1 && prefix != "undefined") {
+      value2 = prefix + value2;
+    }
 
-  return value2;
+    return value2;
   }
 
 /*
@@ -1850,7 +1854,7 @@ function crex_findReg ( value1 )
   return ret ;
 }
 
-function readRegister ( indexComp, indexElem )
+function readRegister ( indexComp, indexElem, register_type )
 {
   var draw = {
     space: [] ,
@@ -1885,15 +1889,36 @@ function readRegister ( indexComp, indexElem )
       return bi_BigIntTofloat(architecture.components[indexComp].elements[indexElem].value);
     }
     else{
-      //return parseFloat((architecture.components[indexComp].elements[indexElem].value).toString()); //TODO: big_int2hex -> hex2float //TODO
-      console_log(bi_BigIntTodouble(architecture.components[indexComp].elements[indexElem].value));
-      return bi_BigIntTodouble(architecture.components[indexComp].elements[indexElem].value);
+      
+      if (architecture.components[indexComp].double_precision_type == "linked") 
+      {
+        //return parseFloat((architecture.components[indexComp].elements[indexElem].value).toString()); //TODO: big_int2hex -> hex2float //TODO
+        console_log(bi_BigIntTodouble(architecture.components[indexComp].elements[indexElem].value));
+        return bi_BigIntTodouble(architecture.components[indexComp].elements[indexElem].value);
+      }
+      else
+      {
+        if (typeof register_type === 'undefined'){
+          register_type = "DFP-Reg";
+        }
+        if (register_type === 'SFP-Reg'){
+          //return parseFloat((architecture.components[indexComp].elements[indexElem].value).toString()); //TODO: big_int2hex -> hex2float //TODO
+          console_log(bi_BigIntTofloat(architecture.components[indexComp].elements[indexElem].value));
+          return bi_BigIntTofloat(architecture.components[indexComp].elements[indexElem].value);
+        }
+        if (register_type === 'DFP-Reg'){
+          //return parseFloat((architecture.components[indexComp].elements[indexElem].value).toString()); //TODO: big_int2hex -> hex2float //TODO
+          console_log(bi_BigIntTodouble(architecture.components[indexComp].elements[indexElem].value));
+          return bi_BigIntTodouble(architecture.components[indexComp].elements[indexElem].value);
+        }
+      }
+
     }
 
   }
 }
 
-function writeRegister ( value, indexComp, indexElem )
+function writeRegister ( value, indexComp, indexElem, register_type )
 {
   var draw = {
     space: [] ,
@@ -1981,9 +2006,25 @@ function writeRegister ( value, indexComp, indexElem )
         throw packExecute(true, 'The register '+ architecture.components[indexComp].elements[indexElem].name.join(' | ') +' cannot be written', 'danger', null);
       }
 
-      //architecture.components[indexComp].elements[indexElem].value = parseFloat(value); //TODO
-      architecture.components[indexComp].elements[indexElem].value = bi_doubleToBigInt(value);
-      updateSimple(indexComp, indexElem);
+      if (architecture.components[indexComp].double_precision_type == "linked") 
+      {
+        //architecture.components[indexComp].elements[indexElem].value = parseFloat(value); //TODO
+        architecture.components[indexComp].elements[indexElem].value = bi_doubleToBigInt(value);
+        updateSimple(indexComp, indexElem);
+      }
+      else
+      {
+        if (typeof register_type === 'undefined'){
+          register_type = "DFP-Reg";
+        }
+        if (register_type === 'SFP-Reg'){
+          architecture.components[indexComp].elements[indexElem].value = bi_floatToBigInt(value);
+        }
+        if (register_type === 'DFP-Reg'){
+          architecture.components[indexComp].elements[indexElem].value = bi_doubleToBigInt(value);
+        }
+      }
+
       creator_callstack_writeRegister(indexComp, indexElem);
 
       if (typeof window !== "undefined") {
@@ -1996,23 +2037,26 @@ function writeRegister ( value, indexComp, indexElem )
 /*Modifies double precision registers according to simple precision registers*/
 function updateDouble(comp, elem)
 {
-  for (var j = 0; j < architecture.components.length; j++)
+  for (var i = 0; i < architecture.components.length; i++)
+  {
+    if (architecture.components[i].double_precision == true && architecture.components[i].double_precision_type == "linked")
     {
-    for (var z = 0; z < architecture.components[j].elements.length && architecture.components[j].double_precision == true; z++)
-        {
-      if (architecture.components[comp].elements[elem].name.includes(architecture.components[j].elements[z].simple_reg[0]) != false){
-        var simple = bin2hex(float2bin(readRegister(comp, elem)));
-        var double = bin2hex(double2bin(readRegister(j, z))).substr(8, 15);
-        var newDouble = simple + double;
+      for (var j = 0; j < architecture.components[i].elements.length; j++)
+      {
+        if (architecture.components[comp].elements[elem].name.includes(architecture.components[i].elements[j].simple_reg[0]) != false){
+          var simple = bin2hex(float2bin(readRegister(comp, elem)));
+          var double = bin2hex(double2bin(readRegister(i, j))).substr(8, 15);
+          var newDouble = simple + double;
 
-        architecture.components[j].elements[z].value = bi_doubleToBigInt(hex2double("0x"+newDouble));
-      }
-      if (architecture.components[comp].elements[elem].name.includes(architecture.components[j].elements[z].simple_reg[1]) != false){
-        var simple = bin2hex(float2bin(readRegister(comp, elem)));
-        var double = bin2hex(double2bin(readRegister(j, z))).substr(0, 8);
-        var newDouble = double + simple;
+          architecture.components[i].elements[j].value = bi_doubleToBigInt(hex2double("0x"+newDouble));
+        }
+        if (architecture.components[comp].elements[elem].name.includes(architecture.components[i].elements[j].simple_reg[1]) != false){
+          var simple = bin2hex(float2bin(readRegister(comp, elem)));
+          var double = bin2hex(double2bin(readRegister(i, j))).substr(0, 8);
+          var newDouble = double + simple;
 
-        architecture.components[j].elements[z].value = bi_doubleToBigInt(hex2double("0x"+newDouble));
+          architecture.components[i].elements[j].value = bi_doubleToBigInt(hex2double("0x"+newDouble));
+        }
       }
     }
   }
@@ -2021,18 +2065,21 @@ function updateDouble(comp, elem)
 /*Modifies single precision registers according to double precision registers*/
 function updateSimple ( comp, elem )
 {
-  var part1 = bin2hex(double2bin(readRegister(comp, elem))).substr(0, 8);
-  var part2 = bin2hex(double2bin(readRegister(comp, elem))).substr(8, 15);
-
-  for (var j = 0; j < architecture.components.length; j++)
+  if (architecture.components[comp].double_precision_type == "linked")
   {
-    for (var z = 0; z < architecture.components[j].elements.length; z++)
+    var part1 = bin2hex(double2bin(readRegister(comp, elem))).substr(0, 8);
+    var part2 = bin2hex(double2bin(readRegister(comp, elem))).substr(8, 15);
+
+    for (var i = 0; i < architecture.components.length; i++)
     {
-      if (architecture.components[j].elements[z].name.includes(architecture.components[comp].elements[elem].simple_reg[0]) != false) {
-        architecture.components[j].elements[z].value = bi_floatToBigInt(hex2float("0x"+part1));
-      }
-      if (architecture.components[j].elements[z].name.includes(architecture.components[comp].elements[elem].simple_reg[1]) != false) {
-        architecture.components[j].elements[z].value = bi_floatToBigInt(hex2float("0x"+part2));
+      for (var j = 0; j < architecture.components[i].elements.length; j++)
+      {
+        if (architecture.components[i].elements[j].name.includes(architecture.components[comp].elements[elem].simple_reg[0]) != false) {
+          architecture.components[i].elements[j].value = bi_floatToBigInt(hex2float("0x"+part1));
+        }
+        if (architecture.components[i].elements[j].name.includes(architecture.components[comp].elements[elem].simple_reg[1]) != false) {
+          architecture.components[i].elements[j].value = bi_floatToBigInt(hex2float("0x"+part2));
+        }
       }
     }
   }
@@ -3334,10 +3381,30 @@ function assembly_compiler()
         data_address = parseInt(architecture.memory_layout[2].value);
         stack_address = parseInt(architecture.memory_layout[4].value);
 
-        architecture.components[1].elements[29].value = bi_intToBigInt(stack_address,10) ;
+        for (var i = 0; i < architecture.components.length; i++)
+        {
+          for (var j = 0; j < architecture.components[i].elements.length; j++)
+          {
+            if (architecture.components[i].elements[j].properties.includes("pointer")) 
+            {
+              if (architecture.components[i].elements[j].properties.includes("code")) 
+              {
+                architecture.components[i].elements[j].value          = bi_intToBigInt(address,10) ;
+                architecture.components[i].elements[j].default_value  = bi_intToBigInt(address,10) ;
+              }
+              if (architecture.components[i].elements[j].properties.includes("stack"))
+              {
+                architecture.components[i].elements[j].value         = bi_intToBigInt(stack_address,10) ;
+                architecture.components[i].elements[j].default_value = bi_intToBigInt(stack_address,10) ;
+              }
+            }
+          }
+        }
+
+        /*architecture.components[1].elements[29].value = bi_intToBigInt(stack_address,10) ;
         architecture.components[0].elements[0].value  = bi_intToBigInt(address,10) ;
         architecture.components[1].elements[29].default_value = bi_intToBigInt(stack_address,10) ;
-        architecture.components[0].elements[0].default_value  = bi_intToBigInt(address,10) ;
+        architecture.components[0].elements[0].default_value  = bi_intToBigInt(address,10) ;*/
 
         /*Reset stats*/
         totalStats = 0;
@@ -5235,31 +5302,63 @@ function instruction_compiler ( instruction, userInstruction, label, line,
             for(var a = 0; a < architecture.instructions[i].fields.length; a++){
               if(architecture.instructions[i].fields[a].name == signatureRawParts[j]){
                 for(var z = 0; z < architecture_hash.length; z++){
-                  for(var w = 0; w < architecture.components[z].elements.length; w++){
-                    if(architecture.components[z].elements[w].name.includes(token) != false && architecture.components[z].type == "floating point" && architecture.components[z].double_precision == false){ //TODO:check
-                      validReg = true;
-                      regNum++;
+                  if (architecture.components[z].double_precision_type == "linked")
+                  {
+                    for(var w = 0; w < architecture.components[z].elements.length; w++){
+                      if(architecture.components[z].elements[w].name.includes(token) != false && architecture.components[z].type == "floating point" && architecture.components[z].double_precision == false){ //TODO:check
+                        validReg = true;
+                        regNum++;
 
-                      fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
-                      var reg = regNum;
+                        fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
+                        var reg = regNum;
 
-                      if(reg.toString(2).length > fieldsLength){
+                        if(reg.toString(2).length > fieldsLength){
 
-                        return packCompileError('m12', token, 'error', "danger") ;
+                          return packCompileError('m12', token, 'error', "danger") ;
+                        }
+
+                        binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (reg.toString(2)).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
+                        //re = RegExp("[fF][0-9]+");
+                        re = RegExp("Field[0-9]+");
+                        console_log(instruction);
+                        instruction = instruction.replace(re, token);
+                        console_log(instruction);
                       }
+                      else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
+                        return packCompileError('m4', token, 'error', "danger") ;
+                      }
+                      if(architecture.components[z].type == "floating point" && architecture.components[z].double_precision == false){
+                        regNum++;
+                      }
+                    }
+                  }
+                  else{
+                    for(var w = 0; w < architecture.components[z].elements.length; w++){
+                      if(architecture.components[z].elements[w].name.includes(token) != false && architecture.components[z].type == "floating point"){ //TODO:check
+                        validReg = true;
+                        regNum++;
 
-                      binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (reg.toString(2)).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
-                      //re = RegExp("[fF][0-9]+");
-                      re = RegExp("Field[0-9]+");
-                      console_log(instruction);
-                      instruction = instruction.replace(re, token);
-                      console_log(instruction);
-                    }
-                    else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
-                      return packCompileError('m4', token, 'error', "danger") ;
-                    }
-                    if(architecture.components[z].type == "floating point" && architecture.components[z].double_precision == false){
-                      regNum++;
+                        fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
+                        var reg = regNum;
+
+                        if(reg.toString(2).length > fieldsLength){
+
+                          return packCompileError('m12', token, 'error', "danger") ;
+                        }
+
+                        binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (reg.toString(2)).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
+                        //re = RegExp("[fF][0-9]+");
+                        re = RegExp("Field[0-9]+");
+                        console_log(instruction);
+                        instruction = instruction.replace(re, token);
+                        console_log(instruction);
+                      }
+                      else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
+                        return packCompileError('m4', token, 'error', "danger") ;
+                      }
+                      if(architecture.components[z].type == "floating point" && architecture.components[z].double_precision == false){
+                        regNum++;
+                      }
                     }
                   }
                 }
@@ -5279,29 +5378,59 @@ function instruction_compiler ( instruction, userInstruction, label, line,
             for(var a = 0; a < architecture.instructions[i].fields.length; a++){
               if(architecture.instructions[i].fields[a].name == signatureRawParts[j]){
                 for(var z = 0; z < architecture_hash.length; z++){
-                  for(var w = 0; w < architecture.components[z].elements.length; w++){
-                    if(architecture.components[z].elements[w].name.includes(token) != false && architecture.components[z].type == "floating point" && architecture.components[z].double_precision == true){ //TODO:check
-                      validReg = true;
-                      regNum++;
+                  if (architecture.components[z].double_precision_type == "linked")
+                  {
+                    for(var w = 0; w < architecture.components[z].elements.length; w++){
+                      if(architecture.components[z].elements[w].name.includes(token) != false && architecture.components[z].type == "floating point" && architecture.components[z].double_precision == true){ //TODO:check
+                        validReg = true;
+                        regNum++;
 
-                      fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
-                      var reg = regNum;
+                        fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
+                        var reg = regNum;
 
-                      if(reg.toString(2).length > fieldsLength){
+                        if(reg.toString(2).length > fieldsLength){
 
-                        return packCompileError('m12', token, 'error', "danger") ;
+                          return packCompileError('m12', token, 'error', "danger") ;
+                        }
+
+                        binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (reg.toString(2)).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
+                        //re = RegExp("[fF][0-9]+");
+                        re = RegExp("Field[0-9]+");
+                        instruction = instruction.replace(re, token);
                       }
+                      else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
+                        return packCompileError('m4', token, 'error', "danger") ;
+                      }
+                      if(architecture.components[z].type == "floating point" && architecture.components[z].double_precision == true){
+                        regNum++;
+                      }
+                    }
+                  }
+                  else{
+                    for(var w = 0; w < architecture.components[z].elements.length; w++){
+                      if(architecture.components[z].elements[w].name.includes(token) != false && architecture.components[z].type == "floating point"){ //TODO:check
+                        validReg = true;
+                        regNum++;
 
-                      binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (reg.toString(2)).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
-                      //re = RegExp("[fF][0-9]+");
-                      re = RegExp("Field[0-9]+");
-                      instruction = instruction.replace(re, token);
-                    }
-                    else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
-                      return packCompileError('m4', token, 'error', "danger") ;
-                    }
-                    if(architecture.components[z].type == "floating point" && architecture.components[z].double_precision == true){
-                      regNum++;
+                        fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
+                        var reg = regNum;
+
+                        if(reg.toString(2).length > fieldsLength){
+
+                          return packCompileError('m12', token, 'error', "danger") ;
+                        }
+
+                        binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (reg.toString(2)).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
+                        //re = RegExp("[fF][0-9]+");
+                        re = RegExp("Field[0-9]+");
+                        instruction = instruction.replace(re, token);
+                      }
+                      else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
+                        return packCompileError('m4', token, 'error', "danger") ;
+                      }
+                      if(architecture.components[z].type == "floating point" && architecture.components[z].double_precision == true){
+                        regNum++;
+                      }
                     }
                   }
                 }
@@ -6699,19 +6828,19 @@ function execute_instruction ( )
               {
                 if (architecture.components[j].elements[z].name.includes(instructionExecParts[i]))
                 {
-                  var_readings_definitions[signatureRawParts[i]]      = "var " + signatureRawParts[i] + "      = readRegister ("+j+" ,"+z+");\n";
-                  var_readings_definitions_prev[signatureRawParts[i]] = "var " + signatureRawParts[i] + "_prev = readRegister ("+j+" ,"+z+");\n";
+                  var_readings_definitions[signatureRawParts[i]]      = "var " + signatureRawParts[i] + "      = readRegister ("+j+" ,"+z+", \""+ signatureParts[i] + "\");\n"
+                  var_readings_definitions_prev[signatureRawParts[i]] = "var " + signatureRawParts[i] + "_prev = readRegister ("+j+" ,"+z+", \""+ signatureParts[i] + "\");\n"
                   var_readings_definitions_name[signatureRawParts[i]] = "var " + signatureRawParts[i] + "_name = '" + instructionExecParts[i] + "';\n";
 
                   re = new RegExp( "(?:\\W|^)(((" + signatureRawParts[i] +") *=)[^=])", "g");
                   //If the register is in the left hand than '=' then write register always
                   if(auxDef.search(re) != -1){
-                    var_writings_definitions[signatureRawParts[i]]  = "writeRegister("+ signatureRawParts[i] +", "+j+", "+z+");\n";
+                    var_writings_definitions[signatureRawParts[i]]  = "writeRegister("+ signatureRawParts[i] +", "+j+", "+z+", \""+ signatureParts[i] + "\");\n";
                   }
                   //Write register only if value is diferent
                   else{
                     var_writings_definitions[signatureRawParts[i]]  = "if(" + signatureRawParts[i] + " != " + signatureRawParts[i] + "_prev)" +
-                                                                      " { writeRegister("+ signatureRawParts[i]+" ,"+j+" ,"+z+"); }\n";
+                                                                      " { writeRegister("+ signatureRawParts[i]+" ,"+j+" ,"+z+", \""+ signatureParts[i] + "\"); }\n";
                   }
 
                 }
@@ -6747,12 +6876,12 @@ function execute_instruction ( )
 
           re = new RegExp( "(?:\\W|^)(((" + clean_aliases +") *=)[^=])", "g");
           if (auxDef.search(re) != -1){
-            writings_description = writings_description+"\nwriteRegister("+ clean_name +", "+i+", "+j+");";
+            writings_description = writings_description+"\nwriteRegister("+ clean_name +", "+i+", "+j+", \""+ signatureParts[i] + "\");";
           }
 
           re = new RegExp("([^a-zA-Z0-9])(?:" + clean_aliases + ")");
           if (auxDef.search(re) != -1){
-            readings_description = readings_description + "var " + clean_name + "      = readRegister("+i+" ,"+j+");\n";
+            readings_description = readings_description + "var " + clean_name + "      = readRegister("+i+" ,"+j+", \""+ signatureParts[i] + "\");\n"
             readings_description = readings_description + "var " + clean_name + "_name = '" + clean_name + "';\n";
           }
         }
@@ -6922,7 +7051,7 @@ function reset ()
   {
     for (var j = 0; j < architecture.components[i].elements.length; j++)
     {
-      if (architecture.components[i].double_precision == false)
+      if (architecture.components[i].double_precision == false || (architecture.components[i].double_precision == true && architecture.components[i].double_precision_type == "extended"))
       {
         architecture.components[i].elements[j].value = architecture.components[i].elements[j].default_value;
       }
@@ -7594,7 +7723,8 @@ function get_state ( )
             elto_value  = architecture.components[i].elements[j].value ;
 
             //get default value
-            if (architecture.components[i].double_precision == true) {
+            if (architecture.components[i].double_precision == true && architecture.components[i].double_precision_type == "linked")
+            {
                 var aux_value;
                 var aux_sim1;
                 var aux_sim2;
