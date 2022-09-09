@@ -482,7 +482,7 @@
       ]
     },
     {
-      "name": "Simple floating point registers",
+      "name": "Floating point registers",
       "type": "floating point",
       "double_precision": true,
       "double_precision_type": "extended",
