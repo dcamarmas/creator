@@ -8,8 +8,8 @@
   },
   {
     "name": "RISC-V Examples",
-    "id": "default_rv",
-    "architecture":"RISC-V",
+    "id": "default",
+    "architecture":"RISC-V (RV32IMFD)",
     "url":"examples/RISCV/list.json",
     "description": "RISC-V examples"
   },
@@ -23,7 +23,7 @@
   {
     "name": "RISC-V from UC3M-AG",
     "id": "uc3m-ec-ag",
-    "architecture":"RISC-V",
+    "architecture":"RISC-V (RV32IMFD)",
     "url":"examples/ag-uc3m-ec/list.json",
     "description": "RISC-V examples for Aula Global at UC3M"
   }
