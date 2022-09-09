@@ -23,6 +23,6 @@ RV_TEST="2 5 6"
 for I in $RV_TEST;
 do
   echo " * ./examples/riscv/example$I... "
-  ./creator.sh -a ./architecture/RISC-V.json -s ./examples/RISCV/example$I.txt
+  ./creator.sh -a "./architecture/RISC-V (RV32IMFD).json" -s ./examples/RISCV/example$I.txt
   echo ""
 done
