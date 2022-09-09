@@ -470,10 +470,30 @@ function assembly_compiler()
         data_address = parseInt(architecture.memory_layout[2].value);
         stack_address = parseInt(architecture.memory_layout[4].value);
 
-        architecture.components[1].elements[29].value = bi_intToBigInt(stack_address,10) ;
+        for (var i = 0; i < architecture.components.length; i++)
+        {
+          for (var j = 0; j < architecture.components[i].elements.length; j++)
+          {
+            if (architecture.components[i].elements[j].properties.includes("pointer")) 
+            {
+              if (architecture.components[i].elements[j].properties.includes("code")) 
+              {
+                architecture.components[i].elements[j].value          = bi_intToBigInt(address,10) ;
+                architecture.components[i].elements[j].default_value  = bi_intToBigInt(address,10) ;
+              }
+              if (architecture.components[i].elements[j].properties.includes("stack"))
+              {
+                architecture.components[i].elements[j].value         = bi_intToBigInt(stack_address,10) ;
+                architecture.components[i].elements[j].default_value = bi_intToBigInt(stack_address,10) ;
+              }
+            }
+          }
+        }
+
+        /*architecture.components[1].elements[29].value = bi_intToBigInt(stack_address,10) ;
         architecture.components[0].elements[0].value  = bi_intToBigInt(address,10) ;
         architecture.components[1].elements[29].default_value = bi_intToBigInt(stack_address,10) ;
-        architecture.components[0].elements[0].default_value  = bi_intToBigInt(address,10) ;
+        architecture.components[0].elements[0].default_value  = bi_intToBigInt(address,10) ;*/
 
         /*Reset stats*/
         totalStats = 0;

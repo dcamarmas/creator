@@ -2,7 +2,7 @@
   "arch_conf": [
     {
       "name": "Name",
-      "value": "RISC-V"
+      "value": "RISC-V (RV32IMFD)"
     },
     {
       "name": "Bits",
@@ -3085,7 +3085,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "var val = capi_split_double(ft, 1);\n capi_mem_write(base+off, val, 'w');\n val = capi_split_double(ft, 0);\n capi_mem_write(base+off+4, val, 'w');",
+      "definition": "var val = capi_split_double(ft, 0);\n capi_mem_write(base+off, val, 'w');\n val = capi_split_double(ft, 1);\n capi_mem_write(base+off+4, val, 'w');",
       "separated": [
         false,
         true,
@@ -5755,7 +5755,7 @@
           "stopbit": 7
         }
       ],
-      "definition": " var isnotalign = capi_bad_align(rs1+inm, 'd');\n if (isnotalign) { capi_raise('The memory must be align'); }\n var val1 = capi_mem_read(rs1+inm, 'w');\n var val2 = capi_mem_read(rs1+inm+4, 'w');\n var buf = new ArrayBuffer(8);\n var arr = (new Uint32Array(buf));\n arr[0] = val1;\n arr[1] = val2;\n rd = (new Float64Array(buf))[0];\n",
+      "definition": " var isnotalign = capi_bad_align(rs1+inm, 'd');\n if (isnotalign) { capi_raise('The memory must be align'); }\n var val1 = capi_mem_read(rs1+inm, 'w');\n var val2 = capi_mem_read(rs1+inm+4, 'w');\n var buf = new ArrayBuffer(8);\n var arr = (new Uint32Array(buf));\n arr[1] = val1;\n arr[0] = val2;\n rd = (new Float64Array(buf))[0];\n",
       "separated": [
         false,
         false,
