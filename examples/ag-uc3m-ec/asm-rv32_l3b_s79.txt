@@ -24,11 +24,11 @@
  # ...
 
 .text
- main:  lw t1 op1
-        lw t2 op2
-        add t3 t1 t2
-        la t4 resultado
-        sw t3 (t4)
+ main:  la t0 op1
+	lw t1 0(t0)
+	la t0 op2
+	lw t2 0(t0)
+	add t3 t1 t2
+        la t0 resultado
+        sw t0 0(t4)
         # ...
-
-
