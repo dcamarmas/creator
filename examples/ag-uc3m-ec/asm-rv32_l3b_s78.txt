@@ -22,7 +22,8 @@
 
 .text
  main: la  t0 c1
-       lbu t1 c2
-       sb  t1 0(t0)
+       la  t1 c2
+       lbu t2 0(t1)
+       sb  t2 0(t0)
        # ...
 

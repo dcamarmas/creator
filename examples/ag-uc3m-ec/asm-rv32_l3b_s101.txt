@@ -26,9 +26,13 @@
   # ...
 
 .text
- main:	 lw  t1 mat+0
-     	 lw  t2 mat+12
+ main:	 li  t0  0	 
+	 lw  t1 mat(t0)
+	 li  t0  12
+     	 lw  t2 mat(t0)
 	 add t3 t1 t2
-	 sw  t3 mat+4
+	 li  t0  4
+	 sw  t3 mat(t0)
+
          # ...
 
