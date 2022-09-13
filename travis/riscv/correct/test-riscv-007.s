@@ -22,7 +22,7 @@ loop1: beq t1 t2 end1     # if(t1 == t2) --> jump to fin1
 
   # loop body
   mul t6 t1 t4             # t1 * t4 -> t6
-  lw  t6 (t5)              # Memory[t5] -> t6
+  lw  t6 0 (t5)            # Memory[t5] -> t6
   add s7 s7 t6             # t6 + s7 -> s7
 
   # loop next...
@@ -34,4 +34,5 @@ loop1: beq t1 t2 end1     # if(t1 == t2) --> jump to fin1
 end1: 
   li a7 10
   ecall
+
 
