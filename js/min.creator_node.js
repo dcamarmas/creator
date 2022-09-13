@@ -3005,7 +3005,8 @@ var compileError = {
   'm23': function(ret) { return "Empty directive"                            + ret.token + "" },
   'm24': function(ret) { return "After the comma you should go a blank --> " + ret.token + "" },
   //'m25': function(ret) { return "Incorrect syntax "                          + ret.token + "" },
-  'm26': function(ret) { return "Syntax error near line: "                   + ret.token + "" }
+  'm26': function(ret) { return "Syntax error near line: "                   + ret.token + "" },
+  'm27': function(ret) { return "Please check instruction syntax, inmediate ranges, register name, etc."}
 } ;
 /*Promise*/
 let promise;
@@ -3145,6 +3146,12 @@ function packCompileError(err_code, err_token, err_ti, err_bgcolor )
   ret.bgcolor    = err_bgcolor ;
   ret.tokenIndex = tokenIndex ;
   ret.line       = nEnters ;
+
+  // generic error
+  if (typeof err_token == "undefined") {
+      err_code  = 'm27' ;
+      ret.token = "" ;
+  }
 
   ret.msg = compileError[err_code](ret) ;
 
