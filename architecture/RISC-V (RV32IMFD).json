@@ -2578,7 +2578,7 @@
           "valueField": "010"
         }
       ],
-      "definition": "rd = (capi_uint2int(rs1) < capi_uint2int(rd)) ? 1 : 0;",
+      "definition": "rd = (capi_uint2int(rs1) < capi_uint2int(rs2)) ? 1 : 0;",
       "separated": [
         false,
         false,
@@ -2637,7 +2637,7 @@
           "valueField": "011"
         }
       ],
-      "definition": "rd = capi_int2uint(rs1 << rs2);",
+      "definition": "rd = ((rs1 >>> 0) < (rs2 >>> 0)) ? 1 : 0;",
       "separated": [
         false,
         false,
@@ -3235,15 +3235,15 @@
       "name": "mulhsu",
       "type": "Arithmetic integer",
       "signature_definition": "F0 F5 F3 F2",
-      "signature": "mul,INT-Reg,INT-Reg,INT-Reg",
-      "signatureRaw": "mul rd rs1 rs2",
+      "signature": "mulhsu,INT-Reg,INT-Reg,INT-Reg",
+      "signatureRaw": "mulhsu rd rs1 rs2",
       "co": "0110011",
       "cop": "0000001000",
       "nwords": 1,
       "power_consumption": 1,
       "fields": [
         {
-          "name": "mul",
+          "name": "mulhsu",
           "type": "co",
           "startbit": 6,
           "stopbit": 0
@@ -3401,7 +3401,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "if (rs2 != 0)\n { rd = parseInt(rs1 / rs2); }\n else { capi_raise('Division by zero not allowed'); }\n",
+      "definition": "if (rs2 != 0)\n { rd = (rs1 >> 0) / (rs2 >> 0); }\n else { capi_raise('Division by zero not allowed'); }\n",
       "separated": [
         false,
         false,
@@ -6684,7 +6684,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "bltu reg2 reg1 off"
+      "definition": "bltu reg2 reg1 off;"
     },
     {
       "name": "bleu",
@@ -6714,7 +6714,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "bgeu reg2 reg1 off"
+      "definition": "bgeu reg2 reg1 off;"
     },
     {
       "name": "blez",
@@ -6738,7 +6738,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "bge x0 reg1 off"
+      "definition": "bge x0 reg1 off;"
     },
     {
       "name": "bgez",
@@ -6762,7 +6762,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "bge reg1 x0 off"
+      "definition": "bge reg1 x0 off;"
     },
     {
       "name": "bltz",
@@ -6786,7 +6786,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "blt reg1 x0 off"
+      "definition": "blt reg1 x0 off;"
     },
     {
       "name": "bgtz",
@@ -6810,7 +6810,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "blt x0 reg1 off"
+      "definition": "blt x0 reg1 off;"
     },
     {
       "name": "bgt",
@@ -6840,7 +6840,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "blt reg2 reg1 off"
+      "definition": "blt reg2 reg1 off;"
     },
     {
       "name": "ble",
@@ -6870,7 +6870,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "bge reg2 reg1 off"
+      "definition": "bge reg2 reg1 off;"
     },
     {
       "name": "jalr",
@@ -6907,24 +6907,6 @@
         }
       ],
       "definition": "jalr x0 0 (rs);"
-    },
-    {
-      "name": "jal",
-      "signature_definition": "jal F0",
-      "signature": "jal,offset_words",
-      "signatureRaw": "jal off",
-      "help": "Unconditional jump, stores the current address at ra (x1).",
-      "properties": [],
-      "nwords": 1,
-      "fields": [
-        {
-          "name": "off",
-          "type": "offset_words",
-          "startbit": 15,
-          "stopbit": 0
-        }
-      ],
-      "definition": "jal x1 off;"
     },
     {
       "name": "j",
