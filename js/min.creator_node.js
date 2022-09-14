@@ -48,6 +48,11 @@ function bi_BigIntTofloat ( big_int_value )
 {
   var hex = big_int_value.toString(16);
 
+  if (hex.length > 8) 
+  {
+    hex = hex.substring(hex.length-8, hex.length);
+  }
+
   return hex2float("0x" + hex);
 }
 
@@ -67,7 +72,7 @@ function bi_doubleToBigInt ( double_value )
 
 function bi_BigIntTodouble ( big_int_value )
 {
-  var hex = big_int_value.toString(16);
+  var hex = (big_int_value.toString(16)).padStart(16, "0");
 
   return hex2double("0x" + hex);
 }
@@ -1345,19 +1350,12 @@ function capi_sbrk ( value1, value2 )
 	writeRegister(new_addr, ret2.indexComp, ret2.indexElem);
 }
 
-function capi_get_power_consumption ( value1 )
+function capi_get_power_consumption ( )
 {
 	/* Google Analytics */
 	creator_ga('execute', 'execute.syscall', 'execute.syscall.get_power_consumption');
 
-	/* Get register id */
-	var ret1 = crex_findReg(value1) ;
-	if (ret1.match == 0) {
-		throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
-	}
-
-	//Store power consumption in the register
-	writeRegister(total_power_consumption, ret1.indexComp, ret1.indexElem);
+	return total_power_consumption;
 }
 
 
