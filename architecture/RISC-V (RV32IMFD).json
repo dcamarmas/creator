@@ -6401,7 +6401,40 @@
           "valueField": "001100"
         }
       ],
-      "definition": "switch(a7){\ncase 1:\ncapi_print_int('a0');\nbreak;\ncase 2:\ncapi_print_float('fa0');\nbreak;\ncase 3:\ncapi_print_double('fa0');\nbreak;\ncase 4:\ncapi_print_string('a0');\nbreak;\ncase 5:\ncapi_read_int('a0');\nbreak;\ncase 6:\ncapi_read_float('fa0');\nbreak;\ncase 7:\ncapi_read_double('fa0');\nbreak;\ncase 8:\ncapi_read_string('a0', 'a1');\nbreak;\ncase 9:\ncapi_sbrk('a0', 'a0');\nbreak;\ncase 10:\ncapi_exit();\nbreak;\ncase 11:\ncapi_print_char('a0');\nbreak;\ncase 12:\ncapi_read_char('a0');\nbreak;\ncase 13:\ncapi_get_power_consumption('a0');\nbreak;\n}"
+      "definition": "switch(a7){\ncase 1:\ncapi_print_int('a0');\nbreak;\ncase 2:\ncapi_print_float('fa0');\nbreak;\ncase 3:\ncapi_print_double('fa0');\nbreak;\ncase 4:\ncapi_print_string('a0');\nbreak;\ncase 5:\ncapi_read_int('a0');\nbreak;\ncase 6:\ncapi_read_float('fa0');\nbreak;\ncase 7:\ncapi_read_double('fa0');\nbreak;\ncase 8:\ncapi_read_string('a0', 'a1');\nbreak;\ncase 9:\ncapi_sbrk('a0', 'a0');\nbreak;\ncase 10:\ncapi_exit();\nbreak;\ncase 11:\ncapi_print_char('a0');\nbreak;\ncase 12:\ncapi_read_char('a0');\nbreak;\n}"
+    },
+    {
+      "name": "rdcycle",
+      "type": "Syscall",
+      "co": "1110011",
+      "cop": "010",
+      "nwords": 1,
+      "power_consumption": 1,
+      "signature_definition": "F0 F1",
+      "signature": "rdcycle,INT-Reg",
+      "signatureRaw": "rdcycle rd",
+      "fields": [
+        {
+          "name": "rdcycle",
+          "type": "co",
+          "startbit": 6,
+          "stopbit": 0
+        },
+        {
+          "name": "rd",
+          "type": "INT-Reg",
+          "startbit": 11,
+          "stopbit": 7
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 14,
+          "stopbit": 12,
+          "valueField": "010"
+        }
+      ],
+      "definition": "rd = capi_get_power_consumption();\n"
     }
   ],
   "pseudoinstructions": [
