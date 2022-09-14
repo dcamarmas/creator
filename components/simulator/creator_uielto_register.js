@@ -76,7 +76,7 @@
 
                         case "ieee":
                           if (architecture.components[this._props.component.index].type == "control" || architecture.components[this._props.component.index].type == "integer") {
-                            ret = hex2float("0x"+(((register.value).toString(16)).padStart(register.nbits/4, "0")));
+                            ret = hex2float("0x"+(((register.value).toString(16)).padStart(8, "0")));
                           }
                           else {
                             if (architecture.components[this._props.component.index].double_precision == false) {
