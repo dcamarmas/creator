@@ -48,6 +48,11 @@ function bi_BigIntTofloat ( big_int_value )
 {
   var hex = big_int_value.toString(16);
 
+  if (hex.length > 8) 
+  {
+    hex = hex.substring(hex.length-8, hex.length);
+  }
+
   return hex2float("0x" + hex);
 }
 
@@ -67,7 +72,7 @@ function bi_doubleToBigInt ( double_value )
 
 function bi_BigIntTodouble ( big_int_value )
 {
-  var hex = big_int_value.toString(16);
+  var hex = (big_int_value.toString(16)).padStart(16, "0");
 
   return hex2double("0x" + hex);
 }
