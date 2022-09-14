@@ -3412,66 +3412,6 @@
       ]
     },
     {
-      "name": "divu",
-      "type": "Arithmetic integer",
-      "signature_definition": "F0 F5 F3 F2",
-      "signature": "divu,INT-Reg,INT-Reg,INT-Reg",
-      "signatureRaw": "divu rd rs1 rs2",
-      "co": "0110011",
-      "cop": "0000001101",
-      "nwords": 1,
-      "power_consumption": 1,
-      "fields": [
-        {
-          "name": "divu",
-          "type": "co",
-          "startbit": 6,
-          "stopbit": 0
-        },
-        {
-          "name": "cop",
-          "type": "cop",
-          "startbit": 31,
-          "stopbit": 25,
-          "valueField": "0000001"
-        },
-        {
-          "name": "rs2",
-          "type": "INT-Reg",
-          "startbit": 24,
-          "stopbit": 20
-        },
-        {
-          "name": "rs1",
-          "type": "INT-Reg",
-          "startbit": 19,
-          "stopbit": 15
-        },
-        {
-          "name": "cop2",
-          "type": "cop",
-          "startbit": 14,
-          "stopbit": 12,
-          "valueField": "101"
-        },
-        {
-          "name": "rd",
-          "type": "INT-Reg",
-          "startbit": 11,
-          "stopbit": 7
-        }
-      ],
-      "definition": "if (rs2 != 0)\n { rd = parseInt(capi_int2uint(rs1) / capi_int2uint(rs2)); }\n else { capi_raise('Division by zero not allowed'); }\n",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
-      ]
-    },
-    {
       "name": "rem",
       "type": "Arithmetic integer",
       "signature_definition": "F0 F5 F3 F2",
@@ -3522,66 +3462,6 @@
         }
       ],
       "definition": "rd = rs1 % rs2;",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
-      ]
-    },
-    {
-      "name": "remu",
-      "type": "Arithmetic integer",
-      "signature_definition": "F0 F5 F3 F2",
-      "signature": "remu,INT-Reg,INT-Reg,INT-Reg",
-      "signatureRaw": "remu rd rs1 rs2",
-      "co": "0110011",
-      "cop": "0000001111",
-      "nwords": 1,
-      "power_consumption": 1,
-      "fields": [
-        {
-          "name": "remu",
-          "type": "co",
-          "startbit": 6,
-          "stopbit": 0
-        },
-        {
-          "name": "cop",
-          "type": "cop",
-          "startbit": 31,
-          "stopbit": 25,
-          "valueField": "0000001"
-        },
-        {
-          "name": "rs2",
-          "type": "INT-Reg",
-          "startbit": 24,
-          "stopbit": 20
-        },
-        {
-          "name": "rs1",
-          "type": "INT-Reg",
-          "startbit": 19,
-          "stopbit": 15
-        },
-        {
-          "name": "cop2",
-          "type": "cop",
-          "startbit": 14,
-          "stopbit": 12,
-          "valueField": "111"
-        },
-        {
-          "name": "rd",
-          "type": "INT-Reg",
-          "startbit": 11,
-          "stopbit": 7
-        }
-      ],
-      "definition": "rd = capi_int2uint(rs1) / capi_int2uint(rs2);",
       "separated": [
         false,
         false,
