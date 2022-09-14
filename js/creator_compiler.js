@@ -3404,38 +3404,48 @@ function pseudoinstruction_compiler ( instruction, label, line )
         re = /no_ret_op\{([^}]*)\};/;
         console_log(re);
         while (definition.search(re) != -1){
-          var match = re.exec(definition);
+          var match2 = re.exec(definition);
 
-          console_log(match[1]);
+          console_log(match2[1]);
 
-          eval(match[1]);
+          eval(match2[1]);
 
           definition = definition.replace(re, '');
           console_log(definition);
         }
 
+        console_log(definition);
+
         re = /op\{([^}]*)\}/;
         console_log(re);
         while (definition.search(re) != -1){
-          var match = re.exec(definition);
+          var match2 = re.exec(definition);
           var result;
 
-          console_log(match[1]);
+          console_log(match2[1]);
 
-          eval("result=" + match[1]);
+          eval("result=" + match2[1]);
 
           definition = definition.replace(re, result);
           console_log(definition);
         }
 
-        while(definition.match(/\'(.*?)\'/)){
+        console_log(definition);
+
+        var stop_while = 0;
+        while(definition.match(/\'(.*?)\'/) && stop_while == 0){
           var re = /\'(.*?)\'/;
-          console_log(re);
-          var match2 = re.exec(instructionParts[match[1]]);
-          console_log(match2);
-          var asciiCode = match2[1].charCodeAt(0);
-          console_log(asciiCode);
-          definition = definition.replace(re, asciiCode)
+          if (typeof match !== "undefined")
+          {
+            var match2 = re.exec(instructionParts[match[1]]);
+            console_log(match2);
+            var asciiCode = match2[1].charCodeAt(0);
+            console_log(asciiCode);
+            definition = definition.replace(re, asciiCode)
+          }
+          else{
+            stop_while = 1;
+          }
         }
 
         console_log(definition);
