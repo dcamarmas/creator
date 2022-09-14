@@ -356,19 +356,12 @@ function capi_sbrk ( value1, value2 )
 	writeRegister(new_addr, ret2.indexComp, ret2.indexElem);
 }
 
-function capi_get_power_consumption ( value1 )
+function capi_get_power_consumption ( )
 {
 	/* Google Analytics */
 	creator_ga('execute', 'execute.syscall', 'execute.syscall.get_power_consumption');
 
-	/* Get register id */
-	var ret1 = crex_findReg(value1) ;
-	if (ret1.match == 0) {
-		throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
-	}
-
-	//Store power consumption in the register
-	writeRegister(total_power_consumption, ret1.indexComp, ret1.indexElem);
+	return total_power_consumption;
 }
 
 
