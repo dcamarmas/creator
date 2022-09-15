@@ -168,7 +168,7 @@
               '                  variant="outline-secondary"' +
               '                  @click="change_data_view(\'power_consumption\', \'\')">' +
               '          <span class=" fas fa-bolt"></span>' +
-              '          Power Consumption' +
+              '          Energy (CLK Cyles)' +
               '        </b-button>' +
               '        ' +
               '      </b-button-group>' +

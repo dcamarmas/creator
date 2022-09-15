@@ -68,7 +68,7 @@
                     },
                     yaxis: {
                       title: {
-                        text: 'Power Consumption'
+                        text: 'CLK Cycles'
                       }
                     },
                     tooltip: {
