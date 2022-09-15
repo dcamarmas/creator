@@ -37,7 +37,7 @@
                       sortable: true
                     },
                     power_consumption: {
-                      label: 'Power Consumption',
+                      label: 'CLK Cycles',
                       sortable: true
                     },
                     percentage: {
