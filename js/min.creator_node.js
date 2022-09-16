@@ -2495,7 +2495,7 @@ function creator_memory_value_by_type ( val, type )
                  break;
 
                 case 'bu':
-                 val = ((val << 24) >> 24) ;
+                 val = ((val << 24) >>> 24) ;
                  break;
 
                 case 'h':
@@ -2505,7 +2505,7 @@ function creator_memory_value_by_type ( val, type )
                  break;
 
                 case 'hu':
-                 val = ((val << 16) >> 16) ;
+                 val = ((val << 16) >>> 16) ;
                  break;
 
                 default:
