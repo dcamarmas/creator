@@ -6,7 +6,7 @@
 .data
     string1: .string "Insert the string length (no more than 100 characters) "
     string2: .string "Insert the string "
-    space:   .section 100
+    space:   .zero 100
 
 .text
 main:
