@@ -8,7 +8,7 @@
     b: .double 11.443
     c: .double 0x7544FFB
     
-    d: .section 24
+    d: .zero 24
     
 .text
 main:

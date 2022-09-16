@@ -14,5 +14,5 @@
  	double:		.double  9741.34
  	stringz: 	.string  "This is a string"
  	string:  	.string  "This is another string"
- 	space:		.section 32
+ 	space:		.zero 32
 
