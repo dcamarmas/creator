@@ -8,7 +8,7 @@
     b: .double 11.443
     c: .double 665.4
     
-    d: .section 24
+    d: .zero 24
     
 .text
 main:
