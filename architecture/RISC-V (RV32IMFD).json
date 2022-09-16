@@ -7181,7 +7181,7 @@
       "size": null
     },
     {
-      "name": ".section",
+      "name": ".zero",
       "action": "space",
       "size": "1"
     },

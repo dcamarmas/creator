@@ -7,8 +7,8 @@
     .align 2
     b1:		.byte 127
     h1:		.half 65535
-    b2:		.section 1
-    h2:		.section 2
+    b2:		.zero 1
+    h2:		.zero 2
 
 .text
 main:
