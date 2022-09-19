@@ -801,7 +801,7 @@ function kbd_read_string ( keystroke, params )
 
   //var addr = architecture.components[params.indexComp].elements[params.indexElem].value ; //TODO
   var neltos = readRegister ( params.indexComp, params.indexElem );
-  writeMemory(value, parseInt(addr), "string") ;
+  writeMemory(value, parseInt(neltos), "string") ;
 
   return value ;
 }

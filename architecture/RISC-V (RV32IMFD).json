@@ -4501,15 +4501,15 @@
       "name": "fmv.x.w",
       "type": "Arithmetic floating point",
       "signature_definition": "F0 F4 F3",
-      "signature": "FMV.X.W,INT-Reg,SFP-Reg",
-      "signatureRaw": "FMV.X.W rd rs1",
+      "signature": "fmv.x.w,INT-Reg,SFP-Reg",
+      "signatureRaw": "fmv.x.w rd rs1",
       "co": "1010011",
       "cop": "111000000000",
       "nwords": 1,
       "power_consumption": 1,
       "fields": [
         {
-          "name": "FMV.X.W",
+          "name": "fmv.x.w",
           "type": "co",
           "startbit": 6,
           "stopbit": 0
@@ -4906,16 +4906,16 @@
     {
       "name": "fmv.w.x",
       "type": "Arithmetic floating point",
-      "signature_definition": "F0 F4 F3 F4",
-      "signature": "FMV.W.X,SFP-Reg,INT-Reg,SFP-Reg",
-      "signatureRaw": "FMV.W.X rd rs1 rd",
+      "signature_definition": "F0 F4 F3",
+      "signature": "fmv.x.w,SFP-Reg,INT-Reg",
+      "signatureRaw": "fmv.x.w rd rs1",
       "co": "1010011",
       "cop": "111100000000",
       "nwords": 1,
       "power_consumption": 1,
       "fields": [
         {
-          "name": "FMV.W.X",
+          "name": "fmv.w.x",
           "type": "co",
           "startbit": 6,
           "stopbit": 0
@@ -6164,15 +6164,15 @@
       "name": "fcvt.w.d",
       "type": "Transfer between registers",
       "signature_definition": "F0 F4 F3",
-      "signature": "FCVT.W.D,INT-Reg,DFP-Reg",
-      "signatureRaw": "FCVT.W.D rd rs1",
+      "signature": "fcvt.w.d,INT-Reg,DFP-Reg",
+      "signatureRaw": "fcvt.w.d rd rs1",
       "co": "1010011",
       "cop": "110000100000",
       "nwords": 1,
       "power_consumption": 1,
       "fields": [
         {
-          "name": "FCVT.W.D",
+          "name": "fcvt.w.d",
           "type": "co",
           "startbit": 6,
           "stopbit": 0
@@ -6218,15 +6218,15 @@
       "name": "fcvt.wu.d",
       "type": "Transfer between registers",
       "signature_definition": "F0 F4 F3",
-      "signature": "FCVT.WU.D,INT-Reg,DFP-Reg",
-      "signatureRaw": "FCVT.WU.D rd rs1",
+      "signature": "fcvt.wu.d,INT-Reg,DFP-Reg",
+      "signatureRaw": "fcvt.wu.d rd rs1",
       "co": "1010011",
       "cop": "110000100001",
       "nwords": 1,
       "power_consumption": 1,
       "fields": [
         {
-          "name": "FCVT.WU.D",
+          "name": "fcvt.wu.d",
           "type": "co",
           "startbit": 6,
           "stopbit": 0
