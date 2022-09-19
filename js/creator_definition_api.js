@@ -26,9 +26,13 @@
 
 function capi_raise ( msg )
 {
-	if (typeof app !== "undefined")
-		 app.exception(msg);
-	else console.log(msg);
+	if (typeof app !== "undefined"){
+		app.exception(msg);
+	}
+	else
+	{
+		console.log(msg);
+	}
 }
 
 function capi_arithmetic_overflow ( op1, op2, res_u )
@@ -101,8 +105,8 @@ function capi_mem_read ( addr, type )
 	var addr_16 = parseInt(addr, 16);
 	if((addr_16 >= parseInt(architecture.memory_layout[0].value)) && (addr_16 <= parseInt(architecture.memory_layout[1].value)))
     {
-        creator_executor_exit();
         capi_raise('Segmentation fault. You tried to read in the text segment');
+        creator_executor_exit();
     }
 
 	// 3) read from memory
