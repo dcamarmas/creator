@@ -476,8 +476,10 @@ try
       {
         show_notification("There has been an exception. Error description: '" + error, 'danger') ;
 
-        if (execution_index != -1) {
+        if (execution_index != -1)
+        {
           instructions[execution_index]._rowVariant = 'danger';
+          app._data.instructions[execution_index]._rowVariant = 'danger';
         }
         
         execution_index = -1;
