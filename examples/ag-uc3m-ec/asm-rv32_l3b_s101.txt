@@ -20,7 +20,7 @@
 
 .data
   .align 2         # siguiente dato alineado a 4
-  vec: .space 20   # 5 elem. * 4 bytes
+  vec: .zero  20   # 5 elem. * 4 bytes
   mat: .word 11, 12, 13
        .word 21, 22, 23
   # ...
