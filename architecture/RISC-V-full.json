@@ -2,7 +2,7 @@
   "arch_conf": [
     {
       "name": "Name",
-      "value": "RISC-V (RV32IMFD)"
+      "value": "RISC-V"
     },
     {
       "name": "Bits",
