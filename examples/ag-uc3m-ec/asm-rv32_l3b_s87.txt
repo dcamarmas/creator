@@ -15,7 +15,7 @@
 
 .data
   .align  2       # siguiente dato alineado a 4
-  vec: .space 20  # 5 elem. * 4 bytes
+  vec: .zero  20  # 5 elem. * 4 bytes
 
 .text
  main:
