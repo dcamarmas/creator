@@ -18,7 +18,7 @@
 
 .data
 .align 2
- resultado: .space 4  # 4 bytes
+ resultado: .zero  4  # 4 bytes
  op1: 	    .word 100
  op2: 	    .word -10
  # ...
