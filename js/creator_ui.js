@@ -89,8 +89,8 @@
       //  $(buttonHex).attr("class", "btn btn-outline-secondary btn-block btn-sm modRegister");
 
   setTimeout(function() {
-    $(buttonDec).attr("style", "background-color:#f5f5f5;");
-    $(buttonHex).attr("style", "background-color:#f5f5f5;");
+    $(buttonDec).attr("style", "");
+    $(buttonHex).attr("style", "");
       //  $(buttonDec).attr("class", "btn btn-outline-secondary btn-block btn-sm registers");
       //  $(buttonHex).attr("class", "btn btn-outline-secondary btn-block btn-sm registers");
   }, 500);
