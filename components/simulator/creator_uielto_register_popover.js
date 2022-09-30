@@ -156,17 +156,6 @@
                   
                 },
 
-
-
-
-
-
-
-
-
-
-
-
                 //Update a new register value
                 update_register(comp, elem, type, precision){
                   for (var i = 0; i < architecture.components[comp].elements.length; i++) {
@@ -216,44 +205,7 @@
                   // Google Analytics
                   creator_ga('data', 'data.change', 'data.change.register_value');
                   creator_ga('data', 'data.change', 'data.change.register_value_' + elem);
-                },
-
-
-
-
-
-
-                //Stop user interface refresh
-                debounce: _.debounce(function (param, e) {
-                  console_log(param);
-                  console_log(e);
-
-                  e.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-                  var re = new RegExp("'","g");
-                  e = e.replace(re, '"');
-                  re = new RegExp("[\f]","g");
-                  e = e.replace(re, '\\f');
-                  re = new RegExp("[\n\]","g");
-                  e = e.replace(re, '\\n');
-                  re = new RegExp("[\r]","g");
-                  e = e.replace(re, '\\r');
-                  re = new RegExp("[\t]","g");
-                  e = e.replace(re, '\\t');
-                  re = new RegExp("[\v]","g");
-                  e = e.replace(re, '\\v');
-
-                  if(e == ""){
-                    this[param] = null;
-                    return;
-                  }
-
-                  console_log("this." + param + "= '" + e + "'");
-
-                  eval("this." + param + "= '" + e + "'");
-
-                  app.$forceUpdate();
-                }, getDebounceTime())
-
+                }
               },
 
 template:     '<b-popover :target="target" ' +
@@ -317,7 +269,7 @@ template:     '<b-popover :target="target" ' +
               '        </td>' +
               '      </tr>' +
 
-              '      <tr v-if="component.double_precision_type != \'linked\'">' +
+              '      <tr v-if="component.double_precision_type != \'linked\' && component.double_precision == true">' +
               '        <td>IEEE 754 (64 bits)</td>' +
               '        <td>' +
               '          <b-badge class="registerPopover">' +
@@ -333,8 +285,7 @@ template:     '<b-popover :target="target" ' +
               '     <b-row align-h="center" cols="2">' +
               ' ' +
               '       <b-col class="popoverFooter">' +
-              '         <b-form-input v-on:input="debounce(\'newValue\', $event)" ' +
-              '                       :value="newValue" ' +
+              '         <b-form-input v-model="newValue" ' +
               '                       type="text" ' +
               '                       size="sm" ' +
               '                       title="New Register Value" ' +
@@ -356,13 +307,3 @@ template:     '<b-popover :target="target" ' +
   }
 
   Vue.component('popover-register', uielto_register_popover)
-
-  /*Determines the refresh timeout depending on the device being used*/
-  function getDebounceTime(){
-    if(screen.width > 768){
-      return 500;
-    }
-    else{
-      return 1000;
-    }
-  }
