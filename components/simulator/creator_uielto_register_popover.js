@@ -269,7 +269,7 @@ template:     '<b-popover :target="target" ' +
               '        </td>' +
               '      </tr>' +
 
-              '      <tr v-if="component.double_precision_type != \'linked\' && component.double_precision == true">' +
+              '      <tr v-if="architecture.components[component.index].double_precision_type != \'linked\' && architecture.components[component.index].double_precision == true">' +
               '        <td>IEEE 754 (64 bits)</td>' +
               '        <td>' +
               '          <b-badge class="registerPopover">' +
