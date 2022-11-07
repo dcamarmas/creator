@@ -22,7 +22,7 @@
     },
     {
       "name": "Passing Convention",
-      "value": "0"
+      "value": "1"
     },
     {
       "name": "Sensitive Register Name",
@@ -177,7 +177,8 @@
             "read",
             "write",
             "pointer",
-            "frame"
+            "frame",
+            "saved"
           ]
         },
         {
@@ -190,7 +191,8 @@
           "default_value": 0,
           "properties": [
             "read",
-            "write"
+            "write",
+            "saved"
           ]
         },
         {
@@ -307,7 +309,8 @@
           "default_value": 0,
           "properties": [
             "read",
-            "write"
+            "write",
+            "saved"
           ]
         },
         {
@@ -320,7 +323,8 @@
           "default_value": 0,
           "properties": [
             "read",
-            "write"
+            "write",
+            "saved"
           ]
         },
         {
@@ -333,7 +337,8 @@
           "default_value": 0,
           "properties": [
             "read",
-            "write"
+            "write",
+            "saved"
           ]
         },
         {
@@ -346,7 +351,8 @@
           "default_value": 0,
           "properties": [
             "read",
-            "write"
+            "write",
+            "saved"
           ]
         },
         {
@@ -359,7 +365,8 @@
           "default_value": 0,
           "properties": [
             "read",
-            "write"
+            "write",
+            "saved"
           ]
         },
         {
@@ -372,7 +379,8 @@
           "default_value": 0,
           "properties": [
             "read",
-            "write"
+            "write",
+            "saved"
           ]
         },
         {
@@ -385,7 +393,8 @@
           "default_value": 0,
           "properties": [
             "read",
-            "write"
+            "write",
+            "saved"
           ]
         },
         {
@@ -398,7 +407,8 @@
           "default_value": 0,
           "properties": [
             "read",
-            "write"
+            "write",
+            "saved"
           ]
         },
         {
@@ -411,7 +421,8 @@
           "default_value": 0,
           "properties": [
             "read",
-            "write"
+            "write",
+            "saved"
           ]
         },
         {
@@ -424,7 +435,8 @@
           "default_value": 0,
           "properties": [
             "read",
-            "write"
+            "write",
+            "saved"
           ]
         },
         {
@@ -1016,7 +1028,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = PC;\n PC = inm;\n capi_drawstack_begin(inm);",
+      "definition": "rd = PC;\n PC = inm;\n capi_callconv_begin(inm); capi_drawstack_begin(inm);",
       "separated": [
         false,
         false,
@@ -1070,7 +1082,7 @@
           "valueField": "000"
         }
       ],
-      "definition": "rd = PC;\n PC = (rs1+inm)&~1;\n capi_drawstack_end(PC);",
+      "definition": "rd = PC;\n PC = (rs1+inm)&~1;\n capi_callconv_end(); capi_drawstack_end(PC);",
       "separated": [
         false,
         false,
