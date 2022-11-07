@@ -168,7 +168,8 @@
           "name": [
             "fp",
             "s0",
-            "x8"
+            "x8",
+            "saved"
           ],
           "nbits": "32",
           "value": 0,
@@ -183,7 +184,8 @@
         {
           "name": [
             "s1",
-            "x9"
+            "x9",
+            "saved"
           ],
           "nbits": "32",
           "value": 0,
@@ -300,7 +302,8 @@
         {
           "name": [
             "s2",
-            "x18"
+            "x18",
+            "saved"
           ],
           "nbits": "32",
           "value": 0,
@@ -313,7 +316,8 @@
         {
           "name": [
             "s3",
-            "x19"
+            "x19",
+            "saved"
           ],
           "nbits": "32",
           "value": 0,
@@ -326,7 +330,8 @@
         {
           "name": [
             "s4",
-            "x20"
+            "x20",
+            "saved"
           ],
           "nbits": "32",
           "value": 0,
@@ -339,7 +344,8 @@
         {
           "name": [
             "s5",
-            "x21"
+            "x21",
+            "saved"
           ],
           "nbits": "32",
           "value": 0,
@@ -352,7 +358,8 @@
         {
           "name": [
             "s6",
-            "x22"
+            "x22",
+            "saved"
           ],
           "nbits": "32",
           "value": 0,
@@ -365,7 +372,8 @@
         {
           "name": [
             "s7",
-            "x23"
+            "x23",
+            "saved"
           ],
           "nbits": "32",
           "value": 0,
@@ -378,7 +386,8 @@
         {
           "name": [
             "s8",
-            "x24"
+            "x24",
+            "saved"
           ],
           "nbits": "32",
           "value": 0,
@@ -391,7 +400,8 @@
         {
           "name": [
             "s9",
-            "x25"
+            "x25",
+            "saved"
           ],
           "nbits": "32",
           "value": 0,
@@ -404,7 +414,8 @@
         {
           "name": [
             "s10",
-            "x26"
+            "x26",
+            "saved"
           ],
           "nbits": "32",
           "value": 0,
@@ -417,7 +428,8 @@
         {
           "name": [
             "s11",
-            "x27"
+            "x27",
+            "saved"
           ],
           "nbits": "32",
           "value": 0,
@@ -1016,7 +1028,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = PC;\n PC = inm;\n capi_drawstack_begin(inm);",
+      "definition": "rd = PC;\n PC = inm;\n capi_callconv_begin(inm); capi_drawstack_begin(inm);",
       "separated": [
         false,
         false,
@@ -1070,7 +1082,7 @@
           "valueField": "000"
         }
       ],
-      "definition": "rd = PC;\n PC = (rs1+inm)&~1;\n capi_drawstack_end(PC);",
+      "definition": "rd = PC;\n PC = (rs1+inm)&~1;\n capi_callconv_end(); capi_drawstack_end(PC);",
       "separated": [
         false,
         false,
