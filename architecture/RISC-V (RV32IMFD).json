@@ -168,8 +168,7 @@
           "name": [
             "fp",
             "s0",
-            "x8",
-            "saved"
+            "x8"
           ],
           "nbits": "32",
           "value": 0,
@@ -178,21 +177,22 @@
             "read",
             "write",
             "pointer",
-            "frame"
+            "frame",
+            "saved"
           ]
         },
         {
           "name": [
             "s1",
-            "x9",
-            "saved"
+            "x9"
           ],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
           "properties": [
             "read",
-            "write"
+            "write",
+            "saved"
           ]
         },
         {
@@ -302,141 +302,141 @@
         {
           "name": [
             "s2",
-            "x18",
-            "saved"
+            "x18"
           ],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
           "properties": [
             "read",
-            "write"
+            "write",
+            "saved"
           ]
         },
         {
           "name": [
             "s3",
-            "x19",
-            "saved"
+            "x19"
           ],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
           "properties": [
             "read",
-            "write"
+            "write",
+            "saved"
           ]
         },
         {
           "name": [
             "s4",
-            "x20",
-            "saved"
+            "x20"
           ],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
           "properties": [
             "read",
-            "write"
+            "write",
+            "saved"
           ]
         },
         {
           "name": [
             "s5",
-            "x21",
-            "saved"
+            "x21"
           ],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
           "properties": [
             "read",
-            "write"
+            "write",
+            "saved"
           ]
         },
         {
           "name": [
             "s6",
-            "x22",
-            "saved"
+            "x22"
           ],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
           "properties": [
             "read",
-            "write"
+            "write",
+            "saved"
           ]
         },
         {
           "name": [
             "s7",
-            "x23",
-            "saved"
+            "x23"
           ],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
           "properties": [
             "read",
-            "write"
+            "write",
+            "saved"
           ]
         },
         {
           "name": [
             "s8",
-            "x24",
-            "saved"
+            "x24"
           ],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
           "properties": [
             "read",
-            "write"
+            "write",
+            "saved"
           ]
         },
         {
           "name": [
             "s9",
-            "x25",
-            "saved"
+            "x25"
           ],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
           "properties": [
             "read",
-            "write"
+            "write",
+            "saved"
           ]
         },
         {
           "name": [
             "s10",
-            "x26",
-            "saved"
+            "x26"
           ],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
           "properties": [
             "read",
-            "write"
+            "write",
+            "saved"
           ]
         },
         {
           "name": [
             "s11",
-            "x27",
-            "saved"
+            "x27"
           ],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
           "properties": [
             "read",
-            "write"
+            "write",
+            "saved"
           ]
         },
         {
