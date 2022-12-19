@@ -21,7 +21,7 @@
 
 ### :mag_right:	 Checks:
 
-[![Build Status](https://travis-ci.com/github/dcamarmas/creator.svg?branch=master)](https://travis-ci.com/dcamarmas/creator)
+[![Build Status](https://travis-ci.com/dcamarmas/creator.svg?branch=master)](https://travis-ci.com/github/dcamarmas/creator)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/84668451decf487bbc85b13129f0ebb5)](https://www.codacy.com/gh/creatorsim/creator/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=creatorsim/creator&amp;utm_campaign=Badge_Grade)
 [![Generic badge](https://img.shields.io/badge/achecker-WCAG%202.0%20(Level%20AAA)-green.svg)](https://shields.io/)
 
