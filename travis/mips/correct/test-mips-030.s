@@ -2,7 +2,6 @@
 #
 # Creator (https://creatorsim.github.io/creator/)
 #
-# Caso de prueba de sbrk
 
 
 .text   
