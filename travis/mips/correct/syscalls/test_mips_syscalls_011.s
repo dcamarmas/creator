@@ -3,9 +3,8 @@
 # Creator (https://creatorsim.github.io/creator/)
 #
 
-
 .text   
     main:
-        li $v0, 9
-        li $a0 8
-        syscall 
+        li $v0, 11
+        li $a0, 'c'
+        syscall

@@ -15,5 +15,3 @@
       la $a0, buffer
       li $a1, -1
       syscall
-      li $t1, 2
-    
