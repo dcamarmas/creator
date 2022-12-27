@@ -20,7 +20,7 @@
 	test:
             # crear "stack frame" para $ra, $fp y una variable local
             
-			li $sp 5
+			addi $sp 4
 
             # return $v0
            jr $ra
