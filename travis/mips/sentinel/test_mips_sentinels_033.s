@@ -24,7 +24,7 @@
 
 			li $s0 2
 
-	b_efs:  lw   $s0 ($sp)
+	b_efs:  lw   $s0 4($sp)
     
             addu $sp $sp 8
 

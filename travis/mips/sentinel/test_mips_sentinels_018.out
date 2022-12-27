@@ -1,6 +1,11 @@
 
 
- Error found.
- Stack pointer cannot be placed in the text segment
-cr[PC]:0x4; ir[sp,29]:0x5; keyboard[0x0]:''; display[0x0]:''; 
+Error at line 29 (addi $reg2 $reg1 val):
+Incorrect instruction syntax for 'addi $reg2 $reg1 val'
+
+  28 undefined
+->29 undefined
+
+Not executed
+keyboard[0x0]:''; display[0x0]:''; 
 
