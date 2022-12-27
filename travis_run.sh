@@ -10,10 +10,10 @@ echo " MIPS: examples"
 MIPS_TEST="002 003 004 005 006 007 008 011 012"
 for I in $MIPS_TEST;
 do
-   echo -n " * ./travis/mips/correct/examples/test_mips_examples_$I..."
+   echo -n " * ./travis/mips/correct/examples/test_mips_example_$I..."
    ./creator.sh -a ./architecture/MIPS-32.json \
-                -s ./travis/mips/correct/examples/test_mips_examples_$I.s -o min > /tmp/e-$I.out
-   diff /tmp/e-$I.out ./travis/mips/correct/examples/test_mips_examples_$I.out
+                -s ./travis/mips/correct/examples/test_mips_example_$I.s -o min > /tmp/e-$I.out
+   diff /tmp/e-$I.out ./travis/mips/correct/examples/test_mips_example_$I.out
    if [ $? -ne 0 ]; then
        echo "Different: Error $I with different outputs...";
        error=1
@@ -28,10 +28,10 @@ echo " MIPS: syscalls"
 MIPS_TEST="001 002 003 004 009 010 011"
 for I in $MIPS_TEST;
 do
-   echo -n " * ./travis/mips/correct/examples/test_mips_examples_$I..."
+   echo -n " * ./travis/mips/correct/syscalls/test_mips_syscall_$I..."
    ./creator.sh -a ./architecture/MIPS-32.json \
-                -s ./travis/mips/correct/examples/test_mips_examples_$I.s -o min > /tmp/e-$I.out
-   diff /tmp/e-$I.out ./travis/mips/correct/examples/test_mips_examples_$I.out
+                -s ./travis/mips/correct/syscalls/test_mips_syscall_$I.s -o min > /tmp/e-$I.out
+   diff /tmp/e-$I.out ./travis/mips/correct/syscalls/test_mips_syscall_$I.out
    if [ $? -ne 0 ]; then
        echo "Different: Error $I with different outputs...";
        error=1
