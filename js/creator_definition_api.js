@@ -74,7 +74,15 @@ function capi_mem_write ( addr, value, type )
 		return;
 	}
 
-	// 2) write into memory
+	// 2) check address is into text segment
+	var addr_16 = parseInt(addr, 16);
+	if((addr_16 >= parseInt(architecture.memory_layout[0].value)) && (addr_16 <= parseInt(architecture.memory_layout[1].value)))
+    {
+        capi_raise('Segmentation fault. You tried to write in the text segment');
+        creator_executor_exit();
+    }
+
+	// 3) write into memory
 	try {
 		writeMemory(value, addr, type);
 	} 

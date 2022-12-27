@@ -1,0 +1,5 @@
+
+Error: ENOENT: no such file or directory, open './travis/mips/error/executor/test_mips_error_executor_002.s'
+Not executed
+keyboard[0x0]:''; display[0x0]:''; 
+
