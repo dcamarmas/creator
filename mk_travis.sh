@@ -29,7 +29,13 @@ do
   ./creator.sh -a ./architecture/MIPS-32.json -s ./travis/mips/error/compiler/test_mips_error_compiler_$I.s -o min > ./travis/mips/error/compiler/test_mips_error_compiler_$I.out
 done
 
-
+echo " MIPS execution common errors:"
+MIPS_TEST="001 002 003 004 005 006 007 008 009"
+for I in $MIPS_TEST;
+do
+  echo " * ./mips/error/executor/test_mips_error_executor_$I... "
+  ./creator.sh -a ./architecture/MIPS-32.json -s ./travis/mips/error/executor/test_mips_error_executor_$I.s -o min > ./travis/mips/error/executor/test_mips_error_executor_$I.out
+done
 
 
 
