@@ -2,7 +2,6 @@
 #
 # Creator (https://creatorsim.github.io/creator/)
 #
-# Caso de prueba donde el programa espera escribir cadenas
 
 .data
     .align 2

@@ -2,16 +2,14 @@
 # Creator (https://creatorsim.github.io/creator/)
 #
 
-# Caso de prueba donde el programa solamente escribe double
-
 .text
 main:
-	# Imprime un entero
+	# print int
 	li $v0 3
 	li.d $FP12 6673
 	syscall
 
-  	# Imprime un valor negativo
+  	# print negative double
     li.d $FP12 -86.974
     syscall
     

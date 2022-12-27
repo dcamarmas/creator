@@ -2,9 +2,6 @@
 #
 # Creator (https://creatorsim.github.io/creator/)
 #
-# Caso de prueba para leer y escribir caracteres
-
-# No imprime ningun valor y tampoco se para la ejecucion cuando le indico que voy a escribir un caracter
 
 .data
 
