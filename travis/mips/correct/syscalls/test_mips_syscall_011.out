@@ -1,0 +1,4 @@
+
+c
+cr[PC]:0xc; ir[v0,2]:0xb; ir[a0,4]:0x63; keyboard[0x0]:''; display[0x0]:'c'; 
+
