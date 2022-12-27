@@ -6,7 +6,7 @@
 #
 
 echo " MIPS examples:"
-MIPS_TEST="002 003 004 005 006 007 008 011 012 021 022 023 024 025 026 027 028 029 030 031 032 033 034 035 036"
+MIPS_TEST="002 003 004 005 006 007 008 011 012"
 for I in $MIPS_TEST;
 do
   echo " * ./travis/mips/correct/examples/test_mips_example_$I..."
