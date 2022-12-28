@@ -13,5 +13,5 @@
 	main:
       li a7, 8
       la a0, buffer
-      li a1, -1
+      li a1, 5
       ecall

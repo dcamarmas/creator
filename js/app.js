@@ -481,8 +481,6 @@ try
           instructions[execution_index]._rowVariant = 'danger';
           app._data.instructions[execution_index]._rowVariant = 'danger';
         }
-        
-        execution_index = -1;
 
         /* Google Analytics */
         creator_ga('execute', 'execute.exception', 'execute.exception.' + error);
