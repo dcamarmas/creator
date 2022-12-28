@@ -1065,7 +1065,7 @@ function capi_mem_write ( addr, value, type )
 	if (capi_bad_align(addr, type))
 	{
 		capi_raise("The memory must be align") ;
-		return;
+		creator_executor_exit( true );
 	}
 
 	// 2) check address is into text segment
@@ -1073,7 +1073,7 @@ function capi_mem_write ( addr, value, type )
 	if((addr_16 >= parseInt(architecture.memory_layout[0].value)) && (addr_16 <= parseInt(architecture.memory_layout[1].value)))
     {
         capi_raise('Segmentation fault. You tried to write in the text segment');
-        creator_executor_exit();
+        creator_executor_exit( true );
     }
 
 	// 3) write into memory
@@ -1082,6 +1082,7 @@ function capi_mem_write ( addr, value, type )
 	} 
 	catch(e) {
 		capi_raise("Invalid memory access to address '0x" + addr.toString(16) + "'") ;
+		creator_executor_exit( true );
 	}
 }
 
@@ -1099,8 +1100,8 @@ function capi_mem_read ( addr, type )
 	// 1) check address is aligned
 	if (capi_bad_align(addr, type))
 	{
-	capi_raise("The memory must be align") ;
-		return val;
+		capi_raise("The memory must be align") ;
+		creator_executor_exit( true );
 	}
 
 	// 2) check address is into text segment
@@ -1108,7 +1109,7 @@ function capi_mem_read ( addr, type )
 	if((addr_16 >= parseInt(architecture.memory_layout[0].value)) && (addr_16 <= parseInt(architecture.memory_layout[1].value)))
     {
         capi_raise('Segmentation fault. You tried to read in the text segment');
-        creator_executor_exit();
+        creator_executor_exit( true );
     }
 
 	// 3) read from memory
@@ -1117,8 +1118,7 @@ function capi_mem_read ( addr, type )
 	} 
 	catch(e) {
 	   capi_raise("Invalid memory access to address '0x" + addr.toString(16) + "'") ;
-	   creator_executor_exit();
-	   return val;
+	   creator_executor_exit( true );
 	}
 
 	// 4) return value
@@ -1136,7 +1136,7 @@ function capi_exit ( )
 	/* Google Analytics */
 	creator_ga('execute', 'execute.syscall', 'execute.syscall.exit');
 
-	return creator_executor_exit() ;
+	return creator_executor_exit( false ) ;
 }
 
 function capi_print_int ( value1 )
@@ -1326,7 +1326,7 @@ function capi_read_string ( value1, value2 )
 	}
 
 	/* Read string */
-        if (typeof document != "undefined") {
+	if (typeof document != "undefined") {
 	    document.getElementById('enter_keyboard').scrollIntoView();
 	}
 
@@ -7045,13 +7045,19 @@ function executeProgramOneShot ( limit_n_instructions )
   return packExecute(true, '"ERROR:" number of instruction limit reached :-(', null, null) ;
 }
 
-function creator_executor_exit ( )
+function creator_executor_exit ( error )
 {
   // Google Analytics
   creator_ga('execute', 'execute.exit');
 
-  // execution_index = -1; // REASON: line 360 said that if execution_index == -1 then throw error... :-(
-  execution_index = instructions.length + 1;
+  if (error)
+  {
+    execution_index = -1;
+  }
+  else
+  {
+    execution_index = instructions.length + 1;
+  }
 }
 
 function reset ()
@@ -7385,13 +7391,11 @@ function kbd_read_double ( keystroke, params )
 function kbd_read_string ( keystroke, params )
 {
   var value = "";
-  //var neltos = architecture.components[params.indexComp2].elements[params.indexElem2].value ; //TODO
   var neltos = readRegister ( params.indexComp2, params.indexElem2 );
   for (var i = 0; (i < neltos) && (i < keystroke.length); i++) {
     value = value + keystroke.charAt(i);
   }
 
-  //var addr = architecture.components[params.indexComp].elements[params.indexElem].value ; //TODO
   var neltos = readRegister ( params.indexComp, params.indexElem );
   writeMemory(value, parseInt(neltos), "string") ;
 
