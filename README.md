@@ -16,7 +16,7 @@
 ## CREATOR project
  
 | Source Code                             | Documentation                  | Creator                                | 
-|-----------------------------------------|--------------------------------|----------------------------------------| 
+|:---------------------------------------:|:------------------------------:|:--------------------------------------:| 
 | https://github.com/creatorsim/creator/  |  https://creatorsim.github.io/ |  https://creatorsim.github.io/creator/ | 
 
 ### :mag_right:	 Checks:
@@ -28,7 +28,7 @@
 ### :microscope:	 Nightly build:
 
 | GitHub Repository | Source Code                             | Creator                                | 
-|-------------------|-----------------------------------------|----------------------------------------| 
+|:-----------------:|:---------------------------------------:|:--------------------------------------:| 
 | Diego             | https://github.com/dcamarmas/creator/   |  https://dcamarmas.github.io/creator/  | 
 | Alejandro         | https://github.com/acaldero/creator/    |  https://acaldero.github.io/creator/   | 
 
@@ -38,7 +38,7 @@
 #### :point_right:	 RISC-V
 
 | Description                | Link                                                                                                    |
-|----------------------------|---------------------------------------------------------------------------------------------------------| 
+|:--------------------------:|:-------------------------------------------------------------------------------------------------------:| 
 | ALU operations             | https://creatorsim.github.io/creator/?architecture=RISC-V%20(RV32IMFD)&example_set=default&example=e2   |
 | Store/Load Data in Memory  | https://creatorsim.github.io/creator/?architecture=RISC-V%20(RV32IMFD)&example_set=default&example=e3   |
 | FPU operations             | https://creatorsim.github.io/creator/?architecture=RISC-V%20(RV32IMFD)&example_set=default&example=e4   |
@@ -54,7 +54,7 @@
 #### :point_right:	 MIPS
 
 | Description                | Link                                                                                        |
-|----------------------------|---------------------------------------------------------------------------------------------|
+|:--------------------------:|:-------------------------------------------------------------------------------------------:|
 | Data Storage               | https://creatorsim.github.io/creator/?architecture=MIPS-32&example_set=default&example=e1   |
 | ALU operations             | https://creatorsim.github.io/creator/?architecture=MIPS-32&example_set=default&example=e2   |
 | Store/Load Data in Memory  | https://creatorsim.github.io/creator/?architecture=MIPS-32&example_set=default&example=e3   |
