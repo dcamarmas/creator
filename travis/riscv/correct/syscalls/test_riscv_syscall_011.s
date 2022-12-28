@@ -4,6 +4,7 @@
 #
 
 .text   
-    main:    
-        li $v0, 12
-        syscall
+    main:
+        li a7, 11
+        li a0, 'c'
+        ecall

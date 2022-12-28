@@ -5,4 +5,6 @@
 
  .data
  	.align 2
-    example:	.directive 221
+ 	example:	.byte 	23
+    example2:	.half	
+    

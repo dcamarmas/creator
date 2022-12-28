@@ -4,5 +4,8 @@
 #
 
  .data
- 	.align 2
-    example:	.directive 221
+    byte: .byte 498
+.text
+main:
+   li t0 10
+    j mains

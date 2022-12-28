@@ -5,4 +5,8 @@
 
  .data
  	.align 2
-    example:	.directive 221
+    spa:	.zero	52428800
+
+.text
+   main:
+   li t0 10

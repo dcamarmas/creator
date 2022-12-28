@@ -5,5 +5,5 @@
 
 .text   
     main:    
-        li $v0, 12
-        syscall
+        li a7, 12
+        ecall

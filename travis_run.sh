@@ -123,14 +123,14 @@ done
 #
 
 echo ""
-echo " RISC-V:"
+echo " RISC-V examples:"
 RV_TEST="002 003 004 005 006 007 008 011 012"
 for I in $RV_TEST;
 do
-  echo -n " * ./travis/riscv/correct/test-riscv-$I: "
+  echo -n " * ./travis/riscv/correct/examples/test_riscv_example_$I: "
   ./creator.sh -a "./architecture/RISC-V (RV32IMFD).json" \
-               -s ./travis/riscv/correct/test-riscv-$I.s -o min > /tmp/e-$I.out
-  diff /tmp/e-$I.out ./travis/riscv/correct/test-riscv-$I.out
+               -s ./travis/riscv/correct/examples/test_riscv_example_$I.s -o min > /tmp/e-$I.out
+  diff /tmp/e-$I.out ./travis/riscv/correct/examples/test_riscv_example_$I.out
   if [ $? -ne 0 ]; then
        echo "Different: Error $I with different outputs...";
        error=1
@@ -138,6 +138,60 @@ do
        echo "Equals";
   fi
   rm   /tmp/e-$I.out
+done
+
+echo ""
+echo " RISC-V syscalls:"
+RV_TEST="001 002 003 004 009 010 011"
+for I in $RV_TEST;
+do
+  echo -n " * ./travis/riscv/correct/syscalls/test_riscv_syscall_$I: "
+  ./creator.sh -a "./architecture/RISC-V (RV32IMFD).json" \
+               -s ./travis/riscv/correct/syscalls/test_riscv_syscall_$I.s -o min > /tmp/e-$I.out
+  diff /tmp/e-$I.out ./travis/riscv/correct/syscalls/test_riscv_syscall_$I.out
+  if [ $? -ne 0 ]; then
+       echo "Different: Error $I with different outputs...";
+       error=1
+  else
+       echo "Equals";
+  fi
+  rm   /tmp/e-$I.out
+done
+
+echo ""
+echo " RISC-V: compile common errors"
+RV_TEST="001 002 003 004 005 006 007 008 009 014 015 016 017 018 019 021 022 023 030"
+for I in $RV_TEST;
+do
+   echo -n " * ./travis/riscv/error/compiler/test_riscv_error_compiler_$I: "
+   ./creator.sh -a "./architecture/RISC-V (RV32IMFD).json" \
+                -s ./travis/riscv/error/compiler/test_riscv_error_compiler_$I.s -o min > /tmp/e-$I.out
+   diff /tmp/e-$I.out ./travis/riscv/error/compiler/test_riscv_error_compiler_$I.out
+   if [ $? -ne 0 ]; then
+       echo "Different: Error $I with different outputs...";
+       error=1
+   else
+       echo "Equals";
+   fi
+   rm   /tmp/e-$I.out
+done
+
+echo ""
+echo " RISC-V: execution common errors"
+RV_TEST="001 002 003 004 005 006 007 008 009"
+for I in $RV_TEST;
+do
+   echo -n " * ./travis/riscv/error/executor/test_riscv_error_executor_$I: "
+   ./creator.sh -a "./architecture/RISC-V (RV32IMFD).json" \
+                -s ./travis/riscv/error/executor/test_riscv_error_executor_$I.s -o min > /tmp/e-$I.out
+   diff /tmp/e-$I.out ./travis/riscv/error/executor/test_riscv_error_executor_$I.out
+   if [ $? -ne 0 ]; then
+       echo "Different: Error $I with different outputs...";
+       error=1
+   else
+       echo "Equals";
+   fi
+   rm   /tmp/e-$I.out
 done
 
 #
