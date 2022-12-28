@@ -1,0 +1,4 @@
+
+Segmentation fault. You tried to read in the text segment
+cr[PC]:0x8; ir[t0,x5]:0xa00293; keyboard[0x0]:''; display[0x0]:''; 
+
