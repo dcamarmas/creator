@@ -3,6 +3,7 @@
 # Creator (https://creatorsim.github.io/creator/)
 #
 
- .data
- 	.align 2
-    example:	.directive 221
+.text
+main:
+    li t0 0x00200000
+    mv sp t0

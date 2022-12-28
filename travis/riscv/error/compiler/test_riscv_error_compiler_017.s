@@ -5,4 +5,5 @@
 
  .data
  	.align 2
-    example:	.directive 221
+    example:	.string "hello world
+
