@@ -1,4 +1,7 @@
 ## Travis Test
+
+[![Build Status](https://travis-ci.com/dcamarmas/creator.svg?branch=master)](https://travis-ci.com/github/dcamarmas/creator)
+
 #### :point_right:	 RISC-V
 
 - Test checking correct behaviour:
