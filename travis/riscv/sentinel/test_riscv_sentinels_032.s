@@ -9,7 +9,7 @@
 
 	main: 
 			
-			li s0 2
+			li s1 2
             jal ra test
 
             # exit
@@ -20,11 +20,11 @@
 	test:
             # crear "stack frame" para ra, fp y una variable local
             addi sp sp -8
-            sw   s0 0(sp)
+            sw   s1 0(sp)
 
-			li s0 2
+			li s1 2
 
-	b_efs:  lw   s0 0(sp)
+	b_efs:  lw   s1 0(sp)
     
             addi sp sp 8
 
