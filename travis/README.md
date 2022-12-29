@@ -137,7 +137,7 @@
       | test_riscv_sentinels_033 | Changing the s0 register inside the test function and saving on stack, but without restoring      | :white_check_mark: |
       | test_riscv_sentinels_034 | Changing register s0 inside the test function and saving to stack, but restoring another address  | :white_check_mark: |
       | test_riscv_sentinels_035 | Changing register s0 inside the test function and saving to stack, but restoring another size     | :white_check_mark: |
-      | test_riscv_sentinels_036 | Changing of register s0 inside the test function andsaving to stack, but the stack is overwritten | :white_check_mark: |
+      | test_riscv_sentinels_036 | Changing of register s0 inside the test function and saving to stack, but the stack is overwritten| :white_check_mark: |
    
     </details>
 
@@ -148,73 +148,73 @@
 
       | Test Name                 | Description               | In use             |
       |:-------------------------:|:-------------------------:|:------------------:|
-      | test_mips_instruction_001 | add                       | :white_check_mark: |
-      | test_mips_instruction_002 | addi                      | :white_check_mark: |
-      | test_mips_instruction_003 | sub                       | :white_check_mark: |
-      | test_mips_instruction_004 | lui                       | :white_check_mark: |
-      | test_mips_instruction_005 | jal                       | :white_check_mark: |
-      | test_mips_instruction_006 | jalr                      | :white_check_mark: |
-      | test_mips_instruction_007 | beq                       | :white_check_mark: |
-      | test_mips_instruction_008 | bne                       | :white_check_mark: |
-      | test_mips_instruction_009 | blt                       | :white_check_mark: |
-      | test_mips_instruction_010 | bge                       | :white_check_mark: |
-      | test_mips_instruction_011 | bltu                      | :white_check_mark: |
-      | test_mips_instruction_012 | bgeu                      | :white_check_mark: |
-      | test_mips_instruction_013 | lb, lh, lw, sb, sh, sw    | :white_check_mark: |
-      | test_mips_instruction_014 | lbu, lhu                  | :white_check_mark: |
-      | test_mips_instruction_015 | slti                      | :white_check_mark: |
-      | test_mips_instruction_016 | sltiu                     | :white_check_mark: |
-      | test_mips_instruction_017 | xori                      | :white_check_mark: |
-      | test_mips_instruction_018 | ori                       | :white_check_mark: |
-      | test_mips_instruction_019 | andi                      | :white_check_mark: |
-      | test_mips_instruction_020 | div-2reg                  | :white_check_mark: |
-      | test_mips_instruction_021 | divu-2reg                 | :white_check_mark: |
-      | test_mips_instruction_022 | rotr                      | :white_check_mark: |
-      | test_mips_instruction_023 | sll                       | :white_check_mark: |
-      | test_mips_instruction_024 | slt                       | :white_check_mark: |
-      | test_mips_instruction_025 | sltu                      | :white_check_mark: |
-      | test_mips_instruction_026 | xori                      | :white_check_mark: |
-      | test_mips_instruction_027 | srl                       | :white_check_mark: |
-      | test_mips_instruction_028 | sra                       | :white_check_mark: |
-      | test_mips_instruction_029 | or                        | :white_check_mark: |
-      | test_mips_instruction_030 | and                       | :white_check_mark: |
-      | test_mips_instruction_031 | l.d y s.d                 | :white_check_mark: |
-      | test_mips_instruction_032 | mult                      | :white_check_mark: |
-      | test_mips_instruction_033 | multu                     | :white_check_mark: |
-      | test_mips_instruction_034 | mul                       | :white_check_mark: |
-      | test_mips_instruction_035 | addu                      | :white_check_mark: |
-      | test_mips_instruction_036 | addiu                     | :white_check_mark: |
-      | test_mips_instruction_037 | b                         | :white_check_mark: |
-      | test_mips_instruction_038 | div                       | :white_check_mark: |
-      | test_mips_instruction_039 | divu                      | :white_check_mark: |
-      | test_mips_instruction_040 | rem/mod                   | :white_check_mark: |
-      | test_mips_instruction_041 | modu                      | :white_check_mark: |
-      | test_mips_instruction_042 | bgt                       | :white_check_mark: |
-      | test_mips_instruction_043 | bgtu                      | :white_check_mark: |
-      | test_mips_instruction_044 | ble                       | :white_check_mark: |
-      | test_mips_instruction_045 | bleu                      | :white_check_mark: |
-      | test_mips_instruction_046 | nor                       | :white_check_mark: |
-      | test_mips_instruction_047 | nop                       | :white_check_mark: |
-      | test_mips_instruction_048 | move                      | :white_check_mark: |
-      | test_mips_instruction_049 | mthi, mtlo, mfhi, mflo    | :white_check_mark: |
-      | test_mips_instruction_050 | subu                      | :white_check_mark: |
-      | test_mips_instruction_051 | beqz                      | :white_check_mark: |
-      | test_mips_instruction_052 | bgez                      | :white_check_mark: |
-      | test_mips_instruction_053 | bgezal                    | :white_check_mark: |
-      | test_mips_instruction_054 | bgtz                      | :white_check_mark: |
-      | test_mips_instruction_055 | blez                      | :white_check_mark: |
-      | test_mips_instruction_056 | blt                       | :white_check_mark: |
-      | test_mips_instruction_057 | bnez                      | :white_check_mark: |
-      | test_mips_instruction_058 | sqrt.s/d, li.s/d          | :white_check_mark: |
-      | test_mips_instruction_059 | add.s/d                   | :white_check_mark: |
-      | test_mips_instruction_060 | sub.s/d                   | :white_check_mark: |
-      | test_mips_instruction_061 | abs.s/d                   | :white_check_mark: |
-      | test_mips_instruction_062 | mul.s/d                   | :white_check_mark: |
-      | test_mips_instruction_063 | div.s/d                   | :white_check_mark: |
-      | test_mips_instruction_064 | rsqrt.s/d                 | :white_check_mark: |
-      | test_mips_instruction_065 | cvt.s.d/d.s               | :white_check_mark: |
-      | test_mips_instruction_066 | cvt.w.d/w.s               | :white_check_mark: |
-      | test_mips_instruction_067 | cvt.s.w/cvt.d.w           | :white_check_mark: |
+      | test_riscv_instruction_001 | add                       | :white_check_mark: |
+      | test_riscv_instruction_002 | addi                      | :white_check_mark: |
+      | test_riscv_instruction_003 | sub                       | :white_check_mark: |
+      | test_riscv_instruction_004 | lui                       | :white_check_mark: |
+      | test_riscv_instruction_005 | jal                       | :white_check_mark: |
+      | test_riscv_instruction_006 | jalr                      | :white_check_mark: |
+      | test_riscv_instruction_007 | beq                       | :white_check_mark: |
+      | test_riscv_instruction_008 | bne                       | :white_check_mark: |
+      | test_riscv_instruction_009 | blt                       | :white_check_mark: |
+      | test_riscv_instruction_010 | bge                       | :white_check_mark: |
+      | test_riscv_instruction_011 | bltu                      | :white_check_mark: |
+      | test_riscv_instruction_012 | bgeu                      | :white_check_mark: |
+      | test_riscv_instruction_013 | lb, lh, lw, sb, sh, sw    | :white_check_mark: |
+      | test_riscv_instruction_014 | lbu, lhu                  | :white_check_mark: |
+      | test_riscv_instruction_015 | slti                      | :white_check_mark: |
+      | test_riscv_instruction_016 | sltiu                     | :white_check_mark: |
+      | test_riscv_instruction_017 | xori                      | :white_check_mark: |
+      | test_riscv_instruction_018 | ori                       | :white_check_mark: |
+      | test_riscv_instruction_019 | andi                      | :white_check_mark: |
+      | test_riscv_instruction_020 | div-2reg                  | :white_check_mark: |
+      | test_riscv_instruction_021 | divu-2reg                 | :white_check_mark: |
+      | test_riscv_instruction_022 | rotr                      | :white_check_mark: |
+      | test_riscv_instruction_023 | sll                       | :white_check_mark: |
+      | test_riscv_instruction_024 | slt                       | :white_check_mark: |
+      | test_riscv_instruction_025 | sltu                      | :white_check_mark: |
+      | test_riscv_instruction_026 | xori                      | :white_check_mark: |
+      | test_riscv_instruction_027 | srl                       | :white_check_mark: |
+      | test_riscv_instruction_028 | sra                       | :white_check_mark: |
+      | test_riscv_instruction_029 | or                        | :white_check_mark: |
+      | test_riscv_instruction_030 | and                       | :white_check_mark: |
+      | test_riscv_instruction_031 | l.d y s.d                 | :white_check_mark: |
+      | test_riscv_instruction_032 | mult                      | :white_check_mark: |
+      | test_riscv_instruction_033 | multu                     | :white_check_mark: |
+      | test_riscv_instruction_034 | mul                       | :white_check_mark: |
+      | test_riscv_instruction_035 | addu                      | :white_check_mark: |
+      | test_riscv_instruction_036 | addiu                     | :white_check_mark: |
+      | test_riscv_instruction_037 | b                         | :white_check_mark: |
+      | test_riscv_instruction_038 | div                       | :white_check_mark: |
+      | test_riscv_instruction_039 | divu                      | :white_check_mark: |
+      | test_riscv_instruction_040 | rem/mod                   | :white_check_mark: |
+      | test_riscv_instruction_041 | modu                      | :white_check_mark: |
+      | test_riscv_instruction_042 | bgt                       | :white_check_mark: |
+      | test_riscv_instruction_043 | bgtu                      | :white_check_mark: |
+      | test_riscv_instruction_044 | ble                       | :white_check_mark: |
+      | test_riscv_instruction_045 | bleu                      | :white_check_mark: |
+      | test_riscv_instruction_046 | nor                       | :white_check_mark: |
+      | test_riscv_instruction_047 | nop                       | :white_check_mark: |
+      | test_riscv_instruction_048 | move                      | :white_check_mark: |
+      | test_riscv_instruction_049 | mthi, mtlo, mfhi, mflo    | :white_check_mark: |
+      | test_riscv_instruction_050 | subu                      | :white_check_mark: |
+      | test_riscv_instruction_051 | beqz                      | :white_check_mark: |
+      | test_riscv_instruction_052 | bgez                      | :white_check_mark: |
+      | test_riscv_instruction_053 | bgezal                    | :white_check_mark: |
+      | test_riscv_instruction_054 | bgtz                      | :white_check_mark: |
+      | test_riscv_instruction_055 | blez                      | :white_check_mark: |
+      | test_riscv_instruction_056 | blt                       | :white_check_mark: |
+      | test_riscv_instruction_057 | bnez                      | :white_check_mark: |
+      | test_riscv_instruction_058 | sqrt.s/d, li.s/d          | :white_check_mark: |
+      | test_riscv_instruction_059 | add.s/d                   | :white_check_mark: |
+      | test_riscv_instruction_060 | sub.s/d                   | :white_check_mark: |
+      | test_riscv_instruction_061 | abs.s/d                   | :white_check_mark: |
+      | test_riscv_instruction_062 | mul.s/d                   | :white_check_mark: |
+      | test_riscv_instruction_063 | div.s/d                   | :white_check_mark: |
+      | test_riscv_instruction_064 | rsqrt.s/d                 | :white_check_mark: |
+      | test_riscv_instruction_065 | cvt.s.d/d.s               | :white_check_mark: |
+      | test_riscv_instruction_066 | cvt.w.d/w.s               | :white_check_mark: |
+      | test_riscv_instruction_067 | cvt.s.w/cvt.d.w           | :white_check_mark: |
       
     </details>
 
