@@ -7,10 +7,11 @@
 
 ## Authors
 * :technologist: Diego Camarmas Alonso (Main Coordinator)
-* :technologist: Lucas Elvira Martín (RISC-V and several improvements)
-* :technologist: Elías Del Pozo Puñal (Beta Tester)
 * :technologist: Félix García Carballeira 
 * :technologist: Alejandro Calderón Mateos
+* :technologist: Elías Del Pozo Puñal (Beta Tester)
+* :technologist: Lucas Elvira Martín (RISC-V and several improvements)
+
 
 
 ## CREATOR project
@@ -24,6 +25,8 @@
 [![Build Status](https://travis-ci.com/dcamarmas/creator.svg?branch=master)](https://travis-ci.com/github/dcamarmas/creator)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/84668451decf487bbc85b13129f0ebb5)](https://www.codacy.com/gh/creatorsim/creator/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=creatorsim/creator&amp;utm_campaign=Badge_Grade)
 [![Generic badge](https://img.shields.io/badge/achecker-WCAG%202.0%20(Level%20AAA)-green.svg)](https://shields.io/)
+
+:clipboard: [Description of Travis Tests](travis/README.md)
 
 ### :microscope:	 Nightly build:
 
