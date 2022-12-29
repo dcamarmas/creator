@@ -136,11 +136,11 @@
       | test_riscv_sentinels_029 | Changing the sp register inside the test function                                                 | :white_check_mark: |
       | test_riscv_sentinels_030 | Changing the gp register inside test function                                                     | :white_check_mark: |
       | test_riscv_sentinels_031 | Changing the tp register inside the test function                                                 | :white_check_mark: |
-      | test_riscv_sentinels_032 | Changing the s0 register inside the test function and saving to the stack                         | :white_check_mark: |
-      | test_riscv_sentinels_033 | Changing the s0 register inside the test function and saving on stack, but without restoring      | :white_check_mark: |
-      | test_riscv_sentinels_034 | Changing register s0 inside the test function and saving to stack, but restoring another address  | :white_check_mark: |
-      | test_riscv_sentinels_035 | Changing register s0 inside the test function and saving to stack, but restoring another size     | :white_check_mark: |
-      | test_riscv_sentinels_036 | Changing of register s0 inside the test function and saving to stack, but the stack is overwritten| :white_check_mark: |
+      | test_riscv_sentinels_032 | Changing the s1 register inside the test function and saving to the stack                         | :white_check_mark: |
+      | test_riscv_sentinels_033 | Changing the s1 register inside the test function and saving on stack, but without restoring      | :white_check_mark: |
+      | test_riscv_sentinels_034 | Changing register s1 inside the test function and saving to stack, but restoring another address  | :white_check_mark: |
+      | test_riscv_sentinels_035 | Changing register s1 inside the test function and saving to stack, but restoring another size     | :white_check_mark: |
+      | test_riscv_sentinels_036 | Changing of register s1 inside the test function and saving to stack, but the stack is overwritten| :white_check_mark: |
    
     </details>
 
