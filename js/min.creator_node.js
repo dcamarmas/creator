@@ -93,7 +93,7 @@ function register_value_deserialize( architecture )
   {
     for (var j=0; j< architecture.components[i].elements.length; j++)
     {
-      if (architecture.components[i].type != "floating point"){
+      if (architecture.components[i].type != "fp_registers"){
         architecture.components[i].elements[j].value = bi_intToBigInt(architecture.components[i].elements[j].value,10) ;
       }
       else{
@@ -102,7 +102,7 @@ function register_value_deserialize( architecture )
 
       if (architecture.components[i].double_precision != true)
       {
-        if (architecture.components[i].type != "floating point"){
+        if (architecture.components[i].type != "fp_registers"){
           architecture.components[i].elements[j].default_value = bi_intToBigInt(architecture.components[i].elements[j].default_value,10) ;
         }
         else{
@@ -124,7 +124,7 @@ function register_value_serialize( architecture )
   {
     for (var j=0; j < architecture.components[i].elements.length; j++)
     {
-      if (architecture.components[i].type != "floating point"){
+      if (architecture.components[i].type != "fp_registers"){
         aux_architecture.components[i].elements[j].value = parseInt(architecture.components[i].elements[j].value);
       }
       else{
@@ -133,7 +133,7 @@ function register_value_serialize( architecture )
 
       if (architecture.components[i].double_precision != true)
       {
-        if (architecture.components[i].type != "floating point"){
+        if (architecture.components[i].type != "fp_registers"){
           aux_architecture.components[i].elements[j].default_value = parseInt(architecture.components[i].elements[j].default_value);
         }
         else{
@@ -1871,14 +1871,14 @@ function readRegister ( indexComp, indexElem, register_type )
     throw packExecute(true, 'The register '+ architecture.components[indexComp].elements[indexElem].name.join(' | ') +' cannot be read', 'danger', null);
   }
 
-  if ((architecture.components[indexComp].type == "control") ||
-      (architecture.components[indexComp].type == "integer"))
+  if ((architecture.components[indexComp].type == "ctrl_registers") ||
+      (architecture.components[indexComp].type == "int_registers"))
   {
     console_log(parseInt(architecture.components[indexComp].elements[indexElem].value));
     return parseInt(architecture.components[indexComp].elements[indexElem].value);
   }
 
-  if (architecture.components[indexComp].type == "floating point")
+  if (architecture.components[indexComp].type == "fp_registers")
   {
     if(architecture.components[indexComp].double_precision == false){
       //return parseFloat((architecture.components[indexComp].elements[indexElem].value).toString()); //TODO: big_int2hex -> hex2float //TODO
@@ -1929,8 +1929,8 @@ function writeRegister ( value, indexComp, indexElem, register_type )
     return;
   }
 
-  if ((architecture.components[indexComp].type == "integer") ||
-      (architecture.components[indexComp].type == "control"))
+  if ((architecture.components[indexComp].type == "int_registers") ||
+      (architecture.components[indexComp].type == "ctrl_registers"))
   {
       if ((architecture.components[indexComp].elements[indexElem].properties.includes('write') != true))
       {
@@ -1960,7 +1960,7 @@ function writeRegister ( value, indexComp, indexElem, register_type )
       }
   }
 
-  else if (architecture.components[indexComp].type =="floating point")
+  else if (architecture.components[indexComp].type =="fp_registers")
   {
     if (architecture.components[indexComp].double_precision == false)
     {
@@ -5258,7 +5258,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
               if(architecture.instructions[i].fields[a].name == signatureRawParts[j]){
                 for(var z = 0; z < architecture_hash.length; z++){
                   for(var w = 0; w < architecture.components[z].elements.length; w++){
-                    if(architecture.components[z].elements[w].name.includes(token) != false && architecture.components[z].type == "integer"){ //TODO:check
+                    if(architecture.components[z].elements[w].name.includes(token) != false && architecture.components[z].type == "int_registers"){ //TODO:check
                       validReg = true;
                       regNum++;
 
@@ -5309,7 +5309,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
                   if (architecture.components[z].double_precision_type == "linked")
                   {
                     for(var w = 0; w < architecture.components[z].elements.length; w++){
-                      if(architecture.components[z].elements[w].name.includes(token) != false && architecture.components[z].type == "floating point" && architecture.components[z].double_precision == false){ //TODO:check
+                      if(architecture.components[z].elements[w].name.includes(token) != false && architecture.components[z].type == "fp_registers" && architecture.components[z].double_precision == false){ //TODO:check
                         validReg = true;
                         regNum++;
 
@@ -5331,14 +5331,14 @@ function instruction_compiler ( instruction, userInstruction, label, line,
                       else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
                         return packCompileError('m4', token, 'error', "danger") ;
                       }
-                      if(architecture.components[z].type == "floating point" && architecture.components[z].double_precision == false){
+                      if(architecture.components[z].type == "fp_registers" && architecture.components[z].double_precision == false){
                         regNum++;
                       }
                     }
                   }
                   else{
                     for(var w = 0; w < architecture.components[z].elements.length; w++){
-                      if(architecture.components[z].elements[w].name.includes(token) != false && architecture.components[z].type == "floating point"){ //TODO:check
+                      if(architecture.components[z].elements[w].name.includes(token) != false && architecture.components[z].type == "fp_registers"){ //TODO:check
                         validReg = true;
                         regNum++;
 
@@ -5360,7 +5360,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
                       else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
                         return packCompileError('m4', token, 'error', "danger") ;
                       }
-                      if(architecture.components[z].type == "floating point" && architecture.components[z].double_precision == false){
+                      if(architecture.components[z].type == "fp_registers" && architecture.components[z].double_precision == false){
                         regNum++;
                       }
                     }
@@ -5385,7 +5385,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
                   if (architecture.components[z].double_precision_type == "linked")
                   {
                     for(var w = 0; w < architecture.components[z].elements.length; w++){
-                      if(architecture.components[z].elements[w].name.includes(token) != false && architecture.components[z].type == "floating point" && architecture.components[z].double_precision == true){ //TODO:check
+                      if(architecture.components[z].elements[w].name.includes(token) != false && architecture.components[z].type == "fp_registers" && architecture.components[z].double_precision == true){ //TODO:check
                         validReg = true;
                         regNum++;
 
@@ -5405,14 +5405,14 @@ function instruction_compiler ( instruction, userInstruction, label, line,
                       else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
                         return packCompileError('m4', token, 'error', "danger") ;
                       }
-                      if(architecture.components[z].type == "floating point" && architecture.components[z].double_precision == true){
+                      if(architecture.components[z].type == "fp_registers" && architecture.components[z].double_precision == true){
                         regNum++;
                       }
                     }
                   }
                   else{
                     for(var w = 0; w < architecture.components[z].elements.length; w++){
-                      if(architecture.components[z].elements[w].name.includes(token) != false && architecture.components[z].type == "floating point"){ //TODO:check
+                      if(architecture.components[z].elements[w].name.includes(token) != false && architecture.components[z].type == "fp_registers"){ //TODO:check
                         validReg = true;
                         regNum++;
 
@@ -5432,7 +5432,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
                       else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
                         return packCompileError('m4', token, 'error', "danger") ;
                       }
-                      if(architecture.components[z].type == "floating point" && architecture.components[z].double_precision == true){
+                      if(architecture.components[z].type == "fp_registers" && architecture.components[z].double_precision == true){
                         regNum++;
                       }
                     }
@@ -5455,7 +5455,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
               if(architecture.instructions[i].fields[a].name == signatureRawParts[j]){
                 for(var z = 0; z < architecture_hash.length; z++){
                   for(var w = 0; w < architecture.components[z].elements.length; w++){
-                    if(architecture.components[z].elements[w].name.includes(token) != false && architecture.components[z].type == "control"){ //TODO: check
+                    if(architecture.components[z].elements[w].name.includes(token) != false && architecture.components[z].type == "ctr_registers"){ //TODO: check
                       validReg = true;
                       regNum++;
 
@@ -5475,7 +5475,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
                     else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
                       return packCompileError('m4', token, 'error', "danger") ;
                     }
-                    if(architecture.components[z].type == "control"){
+                    if(architecture.components[z].type == "ctr_registers"){
                       regNum++;
                     }
                   }
@@ -7420,7 +7420,7 @@ function execute_binary ( index, instructionExecParts, auxDef )
 
       for (var z = 0; z < architecture.components.length; z++){
         console_log(architecture.components[z].type)
-        if(architecture.components[z].type == "control" && architecture.instructions[index].fields[j].type == "Ctrl-Reg"){
+        if(architecture.components[z].type == "ctrl_registers" && architecture.instructions[index].fields[j].type == "Ctrl-Reg"){
           for (var w = 0; w < architecture.components[z].elements.length; w++){
             var auxLength = ((architecture.instructions[index].nwords*32) - architecture.instructions[index].fields[j].stopbit) - ((architecture.instructions[index].nwords*31) - architecture.instructions[index].fields[j].startbit);
             console_log(auxLength);
@@ -7430,7 +7430,7 @@ function execute_binary ( index, instructionExecParts, auxDef )
             }
           }
         }
-        if(architecture.components[z].type == "integer" && architecture.instructions[index].fields[j].type == "INT-Reg"){
+        if(architecture.components[z].type == "int_registers" && architecture.instructions[index].fields[j].type == "INT-Reg"){
           for (var w = 0; w < architecture.components[z].elements.length; w++){
             var auxLength = ((architecture.instructions[index].nwords*32) - architecture.instructions[index].fields[j].stopbit) - ((architecture.instructions[index].nwords*31) - architecture.instructions[index].fields[j].startbit);
             console_log(auxLength);
@@ -7441,7 +7441,7 @@ function execute_binary ( index, instructionExecParts, auxDef )
             }
           }
         }
-        if(architecture.components[z].type == "floating point" && architecture.components[z].double_precision == false && architecture.instructions[index].fields[j].type == "SFP-Reg"){
+        if(architecture.components[z].type == "fp_registers" && architecture.components[z].double_precision == false && architecture.instructions[index].fields[j].type == "SFP-Reg"){
           for (var w = 0; w < architecture.components[z].elements.length; w++){
             var auxLength = ((architecture.instructions[index].nwords*32) - architecture.instructions[index].fields[j].stopbit) - ((architecture.instructions[index].nwords*31) - architecture.instructions[index].fields[j].startbit);
             console_log(auxLength);
@@ -7452,7 +7452,7 @@ function execute_binary ( index, instructionExecParts, auxDef )
             }
           }
         }
-        if(architecture.components[z].type == "floating point" && architecture.components[z].double_precision == true && architecture.instructions[index].fields[j].type == "DFP-Reg"){
+        if(architecture.components[z].type == "fp_registers" && architecture.components[z].double_precision == true && architecture.instructions[index].fields[j].type == "DFP-Reg"){
           for (var w = 0; w < architecture.components[z].elements.length; w++){
             var auxLength = ((architecture.instructions[index].nwords*32) - architecture.instructions[index].fields[j].stopbit) - ((architecture.instructions[index].nwords*31) - architecture.instructions[index].fields[j].startbit);
             console_log(auxLength);
@@ -7713,7 +7713,7 @@ function get_state ( )
 
             // value != default value => dumpt it
             elto_string = "0x" + elto_value.toString(16) ;
-            if (architecture.components[i].type == "floating point") 
+            if (architecture.components[i].type == "fp_registers") 
             {
                 if(architecture.components[i].double_precision == false){
                   elto_string = "0x" + bin2hex(float2bin(bi_BigIntTofloat(elto_value))) ;

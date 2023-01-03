@@ -161,7 +161,7 @@ function get_state ( )
 
             // value != default value => dumpt it
             elto_string = "0x" + elto_value.toString(16) ;
-            if (architecture.components[i].type == "floating point") 
+            if (architecture.components[i].type == "fp_registers") 
             {
                 if(architecture.components[i].double_precision == false){
                   elto_string = "0x" + bin2hex(float2bin(bi_BigIntTofloat(elto_value))) ;

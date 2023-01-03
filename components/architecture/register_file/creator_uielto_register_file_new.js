@@ -172,7 +172,7 @@
                 '      </b-form-select>' +
                 '    </b-form-group>' +
                 '' +
-                '    <b-form-group v-if="register_file.type == \'floating point\'">' +
+                '    <b-form-group v-if="register_file.type == \'fp_registers\'">' +
                 '      <b-form-checkbox-group v-model="register_file.precision">' +
                 '        <b-form-checkbox value="register_file.precision">' +
                 '          Double Precision' +

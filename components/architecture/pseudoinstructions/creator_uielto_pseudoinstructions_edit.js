@@ -206,10 +206,10 @@
                                           {
                                             found = true;
                                           }
-                                          if(architecture.components[a].type == "integer" && reg_id == id){
+                                          if(architecture.components[a].type == "int_registers" && reg_id == id){
                                             found = true;
                                           }
-                                          if(architecture.components[a].type == "integer"){
+                                          if(architecture.components[a].type == "int_registers"){
                                             reg_id++;
                                           }
                                         }
@@ -418,10 +418,10 @@
                                         {
                                           found = true;
                                         }
-                                        if(architecture.components[a].type == "integer" && reg_id == id){
+                                        if(architecture.components[a].type == "int_registers" && reg_id == id){
                                           found = true;
                                         }
-                                        if(architecture.components[a].type == "integer"){
+                                        if(architecture.components[a].type == "int_registers"){
                                           reg_id++;
                                         }
                                       }

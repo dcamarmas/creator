@@ -841,7 +841,7 @@ function execute_binary ( index, instructionExecParts, auxDef )
 
       for (var z = 0; z < architecture.components.length; z++){
         console_log(architecture.components[z].type)
-        if(architecture.components[z].type == "control" && architecture.instructions[index].fields[j].type == "Ctrl-Reg"){
+        if(architecture.components[z].type == "ctrl_registers" && architecture.instructions[index].fields[j].type == "Ctrl-Reg"){
           for (var w = 0; w < architecture.components[z].elements.length; w++){
             var auxLength = ((architecture.instructions[index].nwords*32) - architecture.instructions[index].fields[j].stopbit) - ((architecture.instructions[index].nwords*31) - architecture.instructions[index].fields[j].startbit);
             console_log(auxLength);
@@ -851,7 +851,7 @@ function execute_binary ( index, instructionExecParts, auxDef )
             }
           }
         }
-        if(architecture.components[z].type == "integer" && architecture.instructions[index].fields[j].type == "INT-Reg"){
+        if(architecture.components[z].type == "int_registers" && architecture.instructions[index].fields[j].type == "INT-Reg"){
           for (var w = 0; w < architecture.components[z].elements.length; w++){
             var auxLength = ((architecture.instructions[index].nwords*32) - architecture.instructions[index].fields[j].stopbit) - ((architecture.instructions[index].nwords*31) - architecture.instructions[index].fields[j].startbit);
             console_log(auxLength);
@@ -862,7 +862,7 @@ function execute_binary ( index, instructionExecParts, auxDef )
             }
           }
         }
-        if(architecture.components[z].type == "floating point" && architecture.components[z].double_precision == false && architecture.instructions[index].fields[j].type == "SFP-Reg"){
+        if(architecture.components[z].type == "fp_registers" && architecture.components[z].double_precision == false && architecture.instructions[index].fields[j].type == "SFP-Reg"){
           for (var w = 0; w < architecture.components[z].elements.length; w++){
             var auxLength = ((architecture.instructions[index].nwords*32) - architecture.instructions[index].fields[j].stopbit) - ((architecture.instructions[index].nwords*31) - architecture.instructions[index].fields[j].startbit);
             console_log(auxLength);
@@ -873,7 +873,7 @@ function execute_binary ( index, instructionExecParts, auxDef )
             }
           }
         }
-        if(architecture.components[z].type == "floating point" && architecture.components[z].double_precision == true && architecture.instructions[index].fields[j].type == "DFP-Reg"){
+        if(architecture.components[z].type == "fp_registers" && architecture.components[z].double_precision == true && architecture.instructions[index].fields[j].type == "DFP-Reg"){
           for (var w = 0; w < architecture.components[z].elements.length; w++){
             var auxLength = ((architecture.instructions[index].nwords*32) - architecture.instructions[index].fields[j].stopbit) - ((architecture.instructions[index].nwords*31) - architecture.instructions[index].fields[j].startbit);
             console_log(auxLength);
