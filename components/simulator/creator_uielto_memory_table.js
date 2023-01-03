@@ -251,8 +251,17 @@
             '           <span class="badge badge-white border border-secondary text-secondary mx-1 col">Free <br>stack</span>' +
             '           <span class="badge badge-white border border-secondary text-success mx-1">Callee: <br>{{callee_subrutine}}</span>' +
             '           <span class="badge badge-white border border-secondary text-info mx-1" v-if="track_stack_names.length > 1">Caller: <br>{{caller_subrutine}}</span>' +
-            '           <span class="badge badge-white border border-secondary text-dark mx-1" v-if="track_stack_names.length > 2" align-v="center"><b>&bull;&bull;&bull;<br>{{track_stack_names.length - 2}}</b></span>' +
+            '           <span class="badge badge-white border border-secondary text-dark mx-1" v-if="track_stack_names.length > 2" align-v="center" id="stack_funct_popover"><b>&bull;&bull;&bull;<br>{{track_stack_names.length - 2}}</b></span>' +
             '           <span class="badge badge-white border border-secondary text-dark mx-1">System <br>stack</span>' +
+            ' ' +
+            '           <b-popover target="stack_funct_popover" triggers="hover" placement="top"> '+
+            '             <b-list-group>' +
+            '               <b-list-group-item v-for="(item, index) in track_stack_names.slice().reverse()" v-if="index > 1"> ' +
+            '                 {{item}}' +
+            '               </b-list-group-item>' +
+            '             </b-list-group>'+
+            '           </b-popover>'+
+            ' ' +
             '         </div>' +
             ' ' +
             '       </b-col>' +
