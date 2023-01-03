@@ -24,93 +24,74 @@
   var uielto_data_view_selector = {
 
   props:      {
-                name_reg:          { type: String, required: true },
-                reg_type:          { type: String, required: true },
+                data_mode:         { type: String, required: true },
                 register_file_num: { type: Number, required: true }
               },
 
   data:       function () {
                 return {
+                  current_reg_type: 'int_registers',
+                  current_reg_name: 'INT Registers',
+
                   reg_representation_options: [
-                                                { text: 'INT Registers', value: 'int', pressed: true   },
-                                                { text: 'FP Registers',  value: 'fp',  pressed: false  }
+                                                { text: 'INT Registers', value: 'int_registers' },
+                                                { text: 'FP Registers',  value: 'fp_registers'  }
                                               ],
 
-                  register_variant: "secondary",
-                  memory_pressed: false,
-                  stat_pressed: false,
-                  power_consumption_pressed: false
+                  register_variant: "secondary"
                 }
               },
 
   methods:    {
-                change_data_view(e, type){
+                change_data_view(e)
+                {
                   app._data.data_mode = e; //TODO: vue bidirectional updates
 
-                  if(e == "registers" && type != ''){
-                    if(type == "int"){
-                      app._data.register_type = 'integer'; //TODO: vue bidirectional updates
-                      app._data.name_reg = 'INT Registers'; //TODO: vue bidirectional updates
-                      app._data.reg_type = 'int'; //TODO: vue bidirectional updates
-
-                      //Change button backgroun
-                      if (typeof this.reg_representation_options !== "undefined") {
-                        this.reg_representation_options[0].pressed = true;
-                        this.reg_representation_options[1].pressed = false;
-                      }
-                    }
-                    else if(type == "fp"){
-                      app._data.register_type = 'floating point'; //TODO: vue bidirectional updates
-                      app._data.name_reg = 'FP Registers'; //TODO: vue bidirectional updates
-                      app._data.reg_type = 'fp'; //TODO: vue bidirectional updates
-
-                      //Change button backgroun
-                      if (typeof this.reg_representation_options !== "undefined") {
-                        this.reg_representation_options[0].pressed = false;
-                        this.reg_representation_options[1].pressed = true;
-                      }
-                    }
-
-                    //Change button backgroun
-                    this.register_variant                      = "secondary";
-                    this.memory_pressed                        = false;
-                    this.stat_pressed                          = false;
-                    this.power_consumption_pressed             = false;
+                  if(e == "int_registers")
+                  {
+                    this.current_reg_type = "int_registers";
+                    app._data.register_type = 'integer'; //TODO: vue bidirectional updates
                   }
 
-                  if(e == "memory"){
-                    //Change button backgroun
-                    this.reg_representation_options[0].pressed = false;
-                    this.reg_representation_options[1].pressed = false;
-                    this.register_variant                      = "outline-secondary";
-                    this.memory_pressed                        = true;
-                    this.stat_pressed                          = false;
-                    this.power_consumption_pressed             = false;
-                  }
-
-                  if(e == "stats"){
-                    //Change button backgroun
-                    this.reg_representation_options[0].pressed = false;
-                    this.reg_representation_options[1].pressed = false;
-                    this.register_variant                      = "outline-secondary";
-                    this.memory_pressed                        = false;
-                    this.stat_pressed                          = true;
-                    this.power_consumption_pressed             = false;
-                  }
-
-                  if(e == "power_consumption"){
-                    //Change button backgroun
-                    this.reg_representation_options[0].pressed = false;
-                    this.reg_representation_options[1].pressed = false;
-                    this.register_variant                      = "outline-secondary";
-                    this.memory_pressed                        = false;
-                    this.stat_pressed                          = false;
-                    this.power_consumption_pressed             = true;
+                  else if(e == "fp_registers")
+                  {
+                    this.current_reg_type = "fp_registers";
+                    app._data.register_type = 'floating point'; //TODO: vue bidirectional updates
                   }
 
                   /* Google Analytics */
                   creator_ga('send', 'event', 'data', 'data.view', 'data.view.' + app._data.data_mode);
-                }               
+                },
+
+                get_pressed(button)
+                {
+                  if (button == "registers") {
+                    if (app._data.data_mode == "int_registers" || app._data.data_mode == "fp_registers")
+                    {
+                      return "secondary";
+                    }
+                    else
+                    {
+                      return "outline-secondary";
+                    }
+                  }
+
+                  return button == app._data.data_mode;
+                },
+
+                get_register_name()
+                {
+                  if (app._data.data_mode == "int_registers")
+                  {
+                    current_reg_name = "INT Registers";
+                  }
+                  if (app._data.data_mode == "fp_registers")
+                  {
+                    current_reg_name = "FP Registers";
+                  }
+
+                  return current_reg_name;
+                }
               },
 
   computed:   {
@@ -127,46 +108,46 @@
               '                  v-for="item in reg_representation_options"' +
               '                  :id="item.value"' +
               '                  size="sm"' +
-              '                  :pressed.sync="item.pressed"' +
+              '                  :pressed="get_pressed(item.value)"' +
               '                  variant="outline-secondary"' +
-              '                  @click="change_data_view(\'registers\', item.value)">' +
+              '                  @click="change_data_view(item.value)">' +
               '          {{item.text}}' +
               '        </b-button>' +
               '' +
               '        <b-dropdown split' +
               '                    v-if="register_file_num > 4"' +
               '                    right' +
-              '                    :text="name_reg"' +
+              '                    :text="get_register_name()"' +
               '                    size="sm"' +
-              '                    :variant="register_variant"' +
-              '                    @click="change_data_view(\'registers\', reg_type)">' +
-              '          <b-dropdown-item @click="change_data_view(\'registers\', \'int\')">CPU-INT Registers</b-dropdown-item>' +
-              '          <b-dropdown-item @click="change_data_view(\'registers\', \'fp\')">CPU-FP Registers</b-dropdown-item>' +
+              '                    :variant="get_pressed(\'registers\')"' +
+              '                    @click="change_data_view(current_reg_type)">' +
+              '          <b-dropdown-item @click="change_data_view(\'int_registers\')">CPU-INT Registers</b-dropdown-item>' +
+              '          <b-dropdown-item @click="change_data_view(\'fp_registers\')">CPU-FP Registers</b-dropdown-item>' +
               '        </b-dropdown>' +
               '' +
               '        <b-button id="memory_btn"' +
               '                  size="sm"' +
-              '                  :pressed.sync="memory_pressed"' +
+              '                  :pressed="get_pressed(\'memory\')"' +
               '                  variant="outline-secondary"' +
-              '                  @click="change_data_view(\'memory\', \'\')">' +
+              '                  @click="change_data_view(\'memory\')">' +
               '          <span class="fas fa-memory"></span>' +
               '          Memory' +
               '        </b-button>' +
               '' +
               '        <b-button id="stats_btn"' +
               '                  size="sm"' +
-              '                  :pressed.sync="stat_pressed"' +
+              '                  :pressed="get_pressed(\'stats\')"' +
               '                  variant="outline-secondary"' +
-              '                  @click="change_data_view(\'stats\', \'\')">' +
+              '                  @click="change_data_view(\'stats\')">' +
               '          <span class=" fas fa-chart-bar"></span>' +
               '          Stats' +
               '        </b-button>' +
               '' +
               '        <b-button id="stats_btn"' +
               '                  size="sm"' +
-              '                  :pressed.sync="power_consumption_pressed"' +
+              '                  :pressed="get_pressed(\'power_consumption\')"' +
               '                  variant="outline-secondary"' +
-              '                  @click="change_data_view(\'power_consumption\', \'\')">' +
+              '                  @click="change_data_view(\'power_consumption\')">' +
               '          <span class=" fas fa-bolt"></span>' +
               '          Energy (CLK Cyles)' +
               '        </b-button>' +
