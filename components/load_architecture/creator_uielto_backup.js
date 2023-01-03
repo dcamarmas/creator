@@ -1,5 +1,5 @@
 /*
- *  Copyright 2018-2022 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
+ *  Copyright 2018-2023 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
  *  This file is part of CREATOR.
  *
@@ -72,7 +72,7 @@
                     //Refresh UI
                     uielto_toolbar_btngroup.methods.reset(false);
                     uielto_toolbar_btngroup.methods.change_UI_mode('simulator');
-                    uielto_data_view_selector.methods.change_data_view('registers', 'int');
+                    uielto_data_view_selector.methods.change_data_view('int_registers');
                     
                     show_notification('The backup has been loaded correctly', 'success') ;
                   },

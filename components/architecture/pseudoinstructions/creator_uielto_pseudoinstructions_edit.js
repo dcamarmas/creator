@@ -1,5 +1,5 @@
 /*
- *  Copyright 2018-2022 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
+ *  Copyright 2018-2023 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
  *  This file is part of CREATOR.
  *
@@ -206,10 +206,10 @@
                                           {
                                             found = true;
                                           }
-                                          if(architecture.components[a].type == "integer" && reg_id == id){
+                                          if(architecture.components[a].type == "int_registers" && reg_id == id){
                                             found = true;
                                           }
-                                          if(architecture.components[a].type == "integer"){
+                                          if(architecture.components[a].type == "int_registers"){
                                             reg_id++;
                                           }
                                         }
@@ -418,10 +418,10 @@
                                         {
                                           found = true;
                                         }
-                                        if(architecture.components[a].type == "integer" && reg_id == id){
+                                        if(architecture.components[a].type == "int_registers" && reg_id == id){
                                           found = true;
                                         }
-                                        if(architecture.components[a].type == "integer"){
+                                        if(architecture.components[a].type == "int_registers"){
                                           reg_id++;
                                         }
                                       }

@@ -1,5 +1,5 @@
 /*
- *  Copyright 2018-2022 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
+ *  Copyright 2018-2023 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
  *  This file is part of CREATOR.
  *
@@ -31,13 +31,13 @@
                   return {
                     //Register file types
                     register_file_types:    [
-                                              { text: 'Integer',        value: 'integer' },
-                                              { text: 'Floating point', value: 'floating point' },
-                                              { text: 'Control',        value: 'control' }
+                                              { text: 'Integer',        value: 'int_registers'  },
+                                              { text: 'Floating point', value: 'fp_registers'   },
+                                              { text: 'Control',        value: 'ctrl_registers' }
                                             ],
 
                     double_precision_type:  [
-                                              { text: 'Linked',   value: 'linked' },
+                                              { text: 'Linked',   value: 'linked'   },
                                               { text: 'Extended', value: 'extended' },
                                             ],
 
@@ -172,7 +172,7 @@
                 '      </b-form-select>' +
                 '    </b-form-group>' +
                 '' +
-                '    <b-form-group v-if="register_file.type == \'floating point\'">' +
+                '    <b-form-group v-if="register_file.type == \'fp_registers\'">' +
                 '      <b-form-checkbox-group v-model="register_file.precision">' +
                 '        <b-form-checkbox value="register_file.precision">' +
                 '          Double Precision' +
