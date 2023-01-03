@@ -25,7 +25,6 @@
 
   props:      {
                 render:                  { type: Number, required: true },
-                data_mode:               { type: String, required: true },
                 register_type:           { type: String, required: true }
               },
 
