@@ -4,7 +4,7 @@
   "author": "dcamarma@inf.uc3m.es",
   "version": "3.2",
   "scripts": {
-    "test-creator-node": "./travis_run.sh",
+    "test-creator-node": "./run_travis.sh",
     "build-creator-web": "./mk_min.sh",
     "build-creator-node": "./mk_min.sh"
   },
