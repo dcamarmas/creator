@@ -1,0 +1,3 @@
+
+cr[PC]:0x10; ir[t0,x5]:0xa; ir[s1,x9]:0xffffffec; ir[a0,x10]:0x187; ir[a1,x11]:0x193; keyboard[0x0]:''; display[0x0]:''; 
+

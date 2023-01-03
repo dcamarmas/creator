@@ -1,0 +1,8 @@
+
+First String
+Second String
+a
+
+
+cr[PC]:0x34; ir[a0,x10]:0xa; ir[a7,x17]:0xb; keyboard[0x0]:''; display[0x0]:'First%20StringSecond%20Stringa%0A'; 
+

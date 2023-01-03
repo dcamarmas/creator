@@ -1,5 +1,5 @@
 /*
- *  Copyright 2018-2022 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
+ *  Copyright 2018-2023 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
  *  This file is part of CREATOR.
  *
@@ -453,13 +453,19 @@ function executeProgramOneShot ( limit_n_instructions )
   return packExecute(true, '"ERROR:" number of instruction limit reached :-(', null, null) ;
 }
 
-function creator_executor_exit ( )
+function creator_executor_exit ( error )
 {
   // Google Analytics
   creator_ga('execute', 'execute.exit');
 
-  // execution_index = -1; // REASON: line 360 said that if execution_index == -1 then throw error... :-(
-  execution_index = instructions.length + 1;
+  if (error)
+  {
+    execution_index = -1;
+  }
+  else
+  {
+    execution_index = instructions.length + 1;
+  }
 }
 
 function reset ()
@@ -538,68 +544,6 @@ function crex_show_notification ( msg, level )
   if (typeof window !== "undefined")
     show_notification(msg, level);
   else console.log(level.toUpperCase() + ": " + msg);
-}
-
-function crex_replace_magic ( auxDef )
-{
-  // Before replace...
-  console_log("Before replace: \n" + auxDef + "\n");
-
-  // Write in memory
-  var index = 0;
-  re = /MP.([whbd]).\[(.*?)\] *=/;
-  while (auxDef.search(re) != -1)
-  {
-    index++;
-    var match = re.exec(auxDef);
-    var auxDir;
-    //eval("auxDir="+match[2]);
-
-    re = /MP.[whbd].\[(.*?)\] *=/;
-    auxDef = auxDef.replace(re, "dir" + index + "=");
-    auxDef = "var dir" + index + " = null;\n" + auxDef;
-
-    auxDef = auxDef + "\n writeMemory(dir" + index +","+match[2]+",'"+match[1]+"');";
-    re = /MP.([whb]).\[(.*?)\] *=/;
-  }
-
-  re = new RegExp("MP.([whbd]).(.*?) *=");
-  while (auxDef.search(re) != -1)
-  {
-    index++;
-    var match = re.exec(auxDef);
-    re = new RegExp("MP."+match[1]+"."+match[2]+" *=");
-    auxDef = auxDef.replace(re, "dir" + index + " =");
-    auxDef = "var dir" + index + " = null;\n" + auxDef;
-
-    auxDef = auxDef + "\n writeMemory(dir" + index +","+match[2]+",'"+match[1]+"');";
-    re = new RegExp("MP.([whbd]).(.*?) *=");
-  }
-
-  re = /MP.([whbd]).\[(.*?)\]/;
-  while (auxDef.search(re) != -1)
-  {
-    var match = re.exec(auxDef);
-    var auxDir;
-    //eval("auxDir="+match[2]);
-    re = /MP.[whbd].\[(.*?)\]/;
-    auxDef = auxDef.replace(re, "readMemory("+match[2]+", '"+match[1]+"')");
-    re = /MP.([whbd]).\[(.*?)\]/;
-  }
-
-  re = new RegExp("MP.([whbd]).([0-9]*[a-z]*[0-9]*)");
-  while (auxDef.search(re) != -1)
-  {
-    var match = re.exec(auxDef);
-    re = new RegExp("MP."+match[1]+"."+match[2]);
-    auxDef = auxDef.replace(re, "readMemory("+match[2]+",'"+match[1]+"')");
-    re = new RegExp("MP.([whb]).([0-9]*[a-z]*[0-9]*)");
-  }
-
-  // After replace...
-  console_log("After replace: \n" + auxDef + "\n");
-
-  return auxDef ;
 }
 
 // Modify the stack limit
@@ -793,13 +737,11 @@ function kbd_read_double ( keystroke, params )
 function kbd_read_string ( keystroke, params )
 {
   var value = "";
-  //var neltos = architecture.components[params.indexComp2].elements[params.indexElem2].value ; //TODO
   var neltos = readRegister ( params.indexComp2, params.indexElem2 );
   for (var i = 0; (i < neltos) && (i < keystroke.length); i++) {
     value = value + keystroke.charAt(i);
   }
 
-  //var addr = architecture.components[params.indexComp].elements[params.indexElem].value ; //TODO
   var neltos = readRegister ( params.indexComp, params.indexElem );
   writeMemory(value, parseInt(neltos), "string") ;
 
@@ -899,7 +841,7 @@ function execute_binary ( index, instructionExecParts, auxDef )
 
       for (var z = 0; z < architecture.components.length; z++){
         console_log(architecture.components[z].type)
-        if(architecture.components[z].type == "control" && architecture.instructions[index].fields[j].type == "Ctrl-Reg"){
+        if(architecture.components[z].type == "ctrl_registers" && architecture.instructions[index].fields[j].type == "Ctrl-Reg"){
           for (var w = 0; w < architecture.components[z].elements.length; w++){
             var auxLength = ((architecture.instructions[index].nwords*32) - architecture.instructions[index].fields[j].stopbit) - ((architecture.instructions[index].nwords*31) - architecture.instructions[index].fields[j].startbit);
             console_log(auxLength);
@@ -909,7 +851,7 @@ function execute_binary ( index, instructionExecParts, auxDef )
             }
           }
         }
-        if(architecture.components[z].type == "integer" && architecture.instructions[index].fields[j].type == "INT-Reg"){
+        if(architecture.components[z].type == "int_registers" && architecture.instructions[index].fields[j].type == "INT-Reg"){
           for (var w = 0; w < architecture.components[z].elements.length; w++){
             var auxLength = ((architecture.instructions[index].nwords*32) - architecture.instructions[index].fields[j].stopbit) - ((architecture.instructions[index].nwords*31) - architecture.instructions[index].fields[j].startbit);
             console_log(auxLength);
@@ -920,7 +862,7 @@ function execute_binary ( index, instructionExecParts, auxDef )
             }
           }
         }
-        if(architecture.components[z].type == "floating point" && architecture.components[z].double_precision == false && architecture.instructions[index].fields[j].type == "SFP-Reg"){
+        if(architecture.components[z].type == "fp_registers" && architecture.components[z].double_precision == false && architecture.instructions[index].fields[j].type == "SFP-Reg"){
           for (var w = 0; w < architecture.components[z].elements.length; w++){
             var auxLength = ((architecture.instructions[index].nwords*32) - architecture.instructions[index].fields[j].stopbit) - ((architecture.instructions[index].nwords*31) - architecture.instructions[index].fields[j].startbit);
             console_log(auxLength);
@@ -931,7 +873,7 @@ function execute_binary ( index, instructionExecParts, auxDef )
             }
           }
         }
-        if(architecture.components[z].type == "floating point" && architecture.components[z].double_precision == true && architecture.instructions[index].fields[j].type == "DFP-Reg"){
+        if(architecture.components[z].type == "fp_registers" && architecture.components[z].double_precision == true && architecture.instructions[index].fields[j].type == "DFP-Reg"){
           for (var w = 0; w < architecture.components[z].elements.length; w++){
             var auxLength = ((architecture.instructions[index].nwords*32) - architecture.instructions[index].fields[j].stopbit) - ((architecture.instructions[index].nwords*31) - architecture.instructions[index].fields[j].startbit);
             console_log(auxLength);

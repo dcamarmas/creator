@@ -1,5 +1,5 @@
 /*
- *  Copyright 2018-2022 Felix Garcia Carballeira, Alejandro Calderon Mateos, Diego Camarmas Alonso
+ *  Copyright 2018-2023 Felix Garcia Carballeira, Alejandro Calderon Mateos, Diego Camarmas Alonso
  *
  *  This file is part of CREATOR.
  *
@@ -93,7 +93,7 @@ function register_value_deserialize( architecture )
   {
     for (var j=0; j< architecture.components[i].elements.length; j++)
     {
-      if (architecture.components[i].type != "floating point"){
+      if (architecture.components[i].type != "fp_registers"){
         architecture.components[i].elements[j].value = bi_intToBigInt(architecture.components[i].elements[j].value,10) ;
       }
       else{
@@ -102,7 +102,7 @@ function register_value_deserialize( architecture )
 
       if (architecture.components[i].double_precision != true)
       {
-        if (architecture.components[i].type != "floating point"){
+        if (architecture.components[i].type != "fp_registers"){
           architecture.components[i].elements[j].default_value = bi_intToBigInt(architecture.components[i].elements[j].default_value,10) ;
         }
         else{
@@ -124,7 +124,7 @@ function register_value_serialize( architecture )
   {
     for (var j=0; j < architecture.components[i].elements.length; j++)
     {
-      if (architecture.components[i].type != "floating point"){
+      if (architecture.components[i].type != "fp_registers"){
         aux_architecture.components[i].elements[j].value = parseInt(architecture.components[i].elements[j].value);
       }
       else{
@@ -133,7 +133,7 @@ function register_value_serialize( architecture )
 
       if (architecture.components[i].double_precision != true)
       {
-        if (architecture.components[i].type != "floating point"){
+        if (architecture.components[i].type != "fp_registers"){
           aux_architecture.components[i].elements[j].default_value = parseInt(architecture.components[i].elements[j].default_value);
         }
         else{
@@ -146,7 +146,7 @@ function register_value_serialize( architecture )
   return aux_architecture;
 }
 /*
- *  Copyright 2018-2022 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
+ *  Copyright 2018-2023 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
  *  This file is part of CREATOR.
  *
@@ -189,7 +189,7 @@ function register_value_serialize( architecture )
   }
 
 /*
- *  Copyright 2018-2022 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
+ *  Copyright 2018-2023 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
  *  This file is part of CREATOR.
  *
@@ -491,7 +491,7 @@ function register_value_serialize( architecture )
   }
 
 /*
- *  Copyright 2018-2022 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
+ *  Copyright 2018-2023 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
  *  This file is part of CREATOR.
  *
@@ -993,7 +993,7 @@ function creator_callstack_do_transition ( doAction, indexComponent, indexElemen
 }
 
 /*
- *  Copyright 2018-2022 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
+ *  Copyright 2018-2023 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
  *  This file is part of CREATOR.
  *
@@ -1065,15 +1065,24 @@ function capi_mem_write ( addr, value, type )
 	if (capi_bad_align(addr, type))
 	{
 		capi_raise("The memory must be align") ;
-		return;
+		creator_executor_exit( true );
 	}
 
-	// 2) write into memory
+	// 2) check address is into text segment
+	var addr_16 = parseInt(addr, 16);
+	if((addr_16 >= parseInt(architecture.memory_layout[0].value)) && (addr_16 <= parseInt(architecture.memory_layout[1].value)))
+    {
+        capi_raise('Segmentation fault. You tried to write in the text segment');
+        creator_executor_exit( true );
+    }
+
+	// 3) write into memory
 	try {
 		writeMemory(value, addr, type);
 	} 
 	catch(e) {
 		capi_raise("Invalid memory access to address '0x" + addr.toString(16) + "'") ;
+		creator_executor_exit( true );
 	}
 }
 
@@ -1091,8 +1100,8 @@ function capi_mem_read ( addr, type )
 	// 1) check address is aligned
 	if (capi_bad_align(addr, type))
 	{
-	capi_raise("The memory must be align") ;
-		return val;
+		capi_raise("The memory must be align") ;
+		creator_executor_exit( true );
 	}
 
 	// 2) check address is into text segment
@@ -1100,7 +1109,7 @@ function capi_mem_read ( addr, type )
 	if((addr_16 >= parseInt(architecture.memory_layout[0].value)) && (addr_16 <= parseInt(architecture.memory_layout[1].value)))
     {
         capi_raise('Segmentation fault. You tried to read in the text segment');
-        creator_executor_exit();
+        creator_executor_exit( true );
     }
 
 	// 3) read from memory
@@ -1109,8 +1118,7 @@ function capi_mem_read ( addr, type )
 	} 
 	catch(e) {
 	   capi_raise("Invalid memory access to address '0x" + addr.toString(16) + "'") ;
-	   creator_executor_exit();
-	   return val;
+	   creator_executor_exit( true );
 	}
 
 	// 4) return value
@@ -1128,7 +1136,7 @@ function capi_exit ( )
 	/* Google Analytics */
 	creator_ga('execute', 'execute.syscall', 'execute.syscall.exit');
 
-	return creator_executor_exit() ;
+	return creator_executor_exit( false ) ;
 }
 
 function capi_print_int ( value1 )
@@ -1318,7 +1326,7 @@ function capi_read_string ( value1, value2 )
 	}
 
 	/* Read string */
-        if (typeof document != "undefined") {
+	if (typeof document != "undefined") {
 	    document.getElementById('enter_keyboard').scrollIntoView();
 	}
 
@@ -1527,21 +1535,8 @@ function capi_check_ieee ( s, e, m )
 function capi_float2bin ( f )
 {
 	return float2bin(f) ;
-}
-
-
-/*
- *  CREATOR instruction description API:
- *  Expr
- */
-
-function capi_eval ( expr )
-{
-	eval(crex_replace_magic(expr)) ;
-}
-
-/*
- *  Copyright 2018-2022 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
+}/*
+ *  Copyright 2018-2023 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
  *  This file is part of CREATOR.
  *
@@ -1803,7 +1798,7 @@ function track_stack_reset()
 }
 
 /*
- *  Copyright 2018-2022 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
+ *  Copyright 2018-2023 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
  *  This file is part of CREATOR.
  *
@@ -1876,14 +1871,14 @@ function readRegister ( indexComp, indexElem, register_type )
     throw packExecute(true, 'The register '+ architecture.components[indexComp].elements[indexElem].name.join(' | ') +' cannot be read', 'danger', null);
   }
 
-  if ((architecture.components[indexComp].type == "control") ||
-      (architecture.components[indexComp].type == "integer"))
+  if ((architecture.components[indexComp].type == "ctrl_registers") ||
+      (architecture.components[indexComp].type == "int_registers"))
   {
     console_log(parseInt(architecture.components[indexComp].elements[indexElem].value));
     return parseInt(architecture.components[indexComp].elements[indexElem].value);
   }
 
-  if (architecture.components[indexComp].type == "floating point")
+  if (architecture.components[indexComp].type == "fp_registers")
   {
     if(architecture.components[indexComp].double_precision == false){
       //return parseFloat((architecture.components[indexComp].elements[indexElem].value).toString()); //TODO: big_int2hex -> hex2float //TODO
@@ -1934,8 +1929,8 @@ function writeRegister ( value, indexComp, indexElem, register_type )
     return;
   }
 
-  if ((architecture.components[indexComp].type == "integer") ||
-      (architecture.components[indexComp].type == "control"))
+  if ((architecture.components[indexComp].type == "int_registers") ||
+      (architecture.components[indexComp].type == "ctrl_registers"))
   {
       if ((architecture.components[indexComp].elements[indexElem].properties.includes('write') != true))
       {
@@ -1965,7 +1960,7 @@ function writeRegister ( value, indexComp, indexElem, register_type )
       }
   }
 
-  else if (architecture.components[indexComp].type =="floating point")
+  else if (architecture.components[indexComp].type =="fp_registers")
   {
     if (architecture.components[indexComp].double_precision == false)
     {
@@ -2086,7 +2081,7 @@ function updateSimple ( comp, elem )
     }
   }
 }/*
- *  Copyright 2018-2022 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
+ *  Copyright 2018-2023 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
  *  This file is part of CREATOR.
  *
@@ -2912,7 +2907,7 @@ function creator_memory_storestring ( string, string_length, data_address, label
 }
 
 /*
- *  Copyright 2018-2022 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
+ *  Copyright 2018-2023 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
  *  This file is part of CREATOR.
  *
@@ -5263,7 +5258,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
               if(architecture.instructions[i].fields[a].name == signatureRawParts[j]){
                 for(var z = 0; z < architecture_hash.length; z++){
                   for(var w = 0; w < architecture.components[z].elements.length; w++){
-                    if(architecture.components[z].elements[w].name.includes(token) != false && architecture.components[z].type == "integer"){ //TODO:check
+                    if(architecture.components[z].elements[w].name.includes(token) != false && architecture.components[z].type == "int_registers"){ //TODO:check
                       validReg = true;
                       regNum++;
 
@@ -5314,7 +5309,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
                   if (architecture.components[z].double_precision_type == "linked")
                   {
                     for(var w = 0; w < architecture.components[z].elements.length; w++){
-                      if(architecture.components[z].elements[w].name.includes(token) != false && architecture.components[z].type == "floating point" && architecture.components[z].double_precision == false){ //TODO:check
+                      if(architecture.components[z].elements[w].name.includes(token) != false && architecture.components[z].type == "fp_registers" && architecture.components[z].double_precision == false){ //TODO:check
                         validReg = true;
                         regNum++;
 
@@ -5336,14 +5331,14 @@ function instruction_compiler ( instruction, userInstruction, label, line,
                       else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
                         return packCompileError('m4', token, 'error', "danger") ;
                       }
-                      if(architecture.components[z].type == "floating point" && architecture.components[z].double_precision == false){
+                      if(architecture.components[z].type == "fp_registers" && architecture.components[z].double_precision == false){
                         regNum++;
                       }
                     }
                   }
                   else{
                     for(var w = 0; w < architecture.components[z].elements.length; w++){
-                      if(architecture.components[z].elements[w].name.includes(token) != false && architecture.components[z].type == "floating point"){ //TODO:check
+                      if(architecture.components[z].elements[w].name.includes(token) != false && architecture.components[z].type == "fp_registers"){ //TODO:check
                         validReg = true;
                         regNum++;
 
@@ -5365,7 +5360,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
                       else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
                         return packCompileError('m4', token, 'error', "danger") ;
                       }
-                      if(architecture.components[z].type == "floating point" && architecture.components[z].double_precision == false){
+                      if(architecture.components[z].type == "fp_registers" && architecture.components[z].double_precision == false){
                         regNum++;
                       }
                     }
@@ -5390,7 +5385,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
                   if (architecture.components[z].double_precision_type == "linked")
                   {
                     for(var w = 0; w < architecture.components[z].elements.length; w++){
-                      if(architecture.components[z].elements[w].name.includes(token) != false && architecture.components[z].type == "floating point" && architecture.components[z].double_precision == true){ //TODO:check
+                      if(architecture.components[z].elements[w].name.includes(token) != false && architecture.components[z].type == "fp_registers" && architecture.components[z].double_precision == true){ //TODO:check
                         validReg = true;
                         regNum++;
 
@@ -5410,14 +5405,14 @@ function instruction_compiler ( instruction, userInstruction, label, line,
                       else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
                         return packCompileError('m4', token, 'error', "danger") ;
                       }
-                      if(architecture.components[z].type == "floating point" && architecture.components[z].double_precision == true){
+                      if(architecture.components[z].type == "fp_registers" && architecture.components[z].double_precision == true){
                         regNum++;
                       }
                     }
                   }
                   else{
                     for(var w = 0; w < architecture.components[z].elements.length; w++){
-                      if(architecture.components[z].elements[w].name.includes(token) != false && architecture.components[z].type == "floating point"){ //TODO:check
+                      if(architecture.components[z].elements[w].name.includes(token) != false && architecture.components[z].type == "fp_registers"){ //TODO:check
                         validReg = true;
                         regNum++;
 
@@ -5437,7 +5432,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
                       else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
                         return packCompileError('m4', token, 'error', "danger") ;
                       }
-                      if(architecture.components[z].type == "floating point" && architecture.components[z].double_precision == true){
+                      if(architecture.components[z].type == "fp_registers" && architecture.components[z].double_precision == true){
                         regNum++;
                       }
                     }
@@ -5460,7 +5455,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
               if(architecture.instructions[i].fields[a].name == signatureRawParts[j]){
                 for(var z = 0; z < architecture_hash.length; z++){
                   for(var w = 0; w < architecture.components[z].elements.length; w++){
-                    if(architecture.components[z].elements[w].name.includes(token) != false && architecture.components[z].type == "control"){ //TODO: check
+                    if(architecture.components[z].elements[w].name.includes(token) != false && architecture.components[z].type == "ctr_registers"){ //TODO: check
                       validReg = true;
                       regNum++;
 
@@ -5480,7 +5475,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
                     else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
                       return packCompileError('m4', token, 'error', "danger") ;
                     }
-                    if(architecture.components[z].type == "control"){
+                    if(architecture.components[z].type == "ctr_registers"){
                       regNum++;
                     }
                   }
@@ -6583,7 +6578,7 @@ function binaryStringToInt( b ) {
 }
 
 /*
- *  Copyright 2018-2022 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
+ *  Copyright 2018-2023 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
  *  This file is part of CREATOR.
  *
@@ -7037,13 +7032,19 @@ function executeProgramOneShot ( limit_n_instructions )
   return packExecute(true, '"ERROR:" number of instruction limit reached :-(', null, null) ;
 }
 
-function creator_executor_exit ( )
+function creator_executor_exit ( error )
 {
   // Google Analytics
   creator_ga('execute', 'execute.exit');
 
-  // execution_index = -1; // REASON: line 360 said that if execution_index == -1 then throw error... :-(
-  execution_index = instructions.length + 1;
+  if (error)
+  {
+    execution_index = -1;
+  }
+  else
+  {
+    execution_index = instructions.length + 1;
+  }
 }
 
 function reset ()
@@ -7122,68 +7123,6 @@ function crex_show_notification ( msg, level )
   if (typeof window !== "undefined")
     show_notification(msg, level);
   else console.log(level.toUpperCase() + ": " + msg);
-}
-
-function crex_replace_magic ( auxDef )
-{
-  // Before replace...
-  console_log("Before replace: \n" + auxDef + "\n");
-
-  // Write in memory
-  var index = 0;
-  re = /MP.([whbd]).\[(.*?)\] *=/;
-  while (auxDef.search(re) != -1)
-  {
-    index++;
-    var match = re.exec(auxDef);
-    var auxDir;
-    //eval("auxDir="+match[2]);
-
-    re = /MP.[whbd].\[(.*?)\] *=/;
-    auxDef = auxDef.replace(re, "dir" + index + "=");
-    auxDef = "var dir" + index + " = null;\n" + auxDef;
-
-    auxDef = auxDef + "\n writeMemory(dir" + index +","+match[2]+",'"+match[1]+"');";
-    re = /MP.([whb]).\[(.*?)\] *=/;
-  }
-
-  re = new RegExp("MP.([whbd]).(.*?) *=");
-  while (auxDef.search(re) != -1)
-  {
-    index++;
-    var match = re.exec(auxDef);
-    re = new RegExp("MP."+match[1]+"."+match[2]+" *=");
-    auxDef = auxDef.replace(re, "dir" + index + " =");
-    auxDef = "var dir" + index + " = null;\n" + auxDef;
-
-    auxDef = auxDef + "\n writeMemory(dir" + index +","+match[2]+",'"+match[1]+"');";
-    re = new RegExp("MP.([whbd]).(.*?) *=");
-  }
-
-  re = /MP.([whbd]).\[(.*?)\]/;
-  while (auxDef.search(re) != -1)
-  {
-    var match = re.exec(auxDef);
-    var auxDir;
-    //eval("auxDir="+match[2]);
-    re = /MP.[whbd].\[(.*?)\]/;
-    auxDef = auxDef.replace(re, "readMemory("+match[2]+", '"+match[1]+"')");
-    re = /MP.([whbd]).\[(.*?)\]/;
-  }
-
-  re = new RegExp("MP.([whbd]).([0-9]*[a-z]*[0-9]*)");
-  while (auxDef.search(re) != -1)
-  {
-    var match = re.exec(auxDef);
-    re = new RegExp("MP."+match[1]+"."+match[2]);
-    auxDef = auxDef.replace(re, "readMemory("+match[2]+",'"+match[1]+"')");
-    re = new RegExp("MP.([whb]).([0-9]*[a-z]*[0-9]*)");
-  }
-
-  // After replace...
-  console_log("After replace: \n" + auxDef + "\n");
-
-  return auxDef ;
 }
 
 // Modify the stack limit
@@ -7377,13 +7316,11 @@ function kbd_read_double ( keystroke, params )
 function kbd_read_string ( keystroke, params )
 {
   var value = "";
-  //var neltos = architecture.components[params.indexComp2].elements[params.indexElem2].value ; //TODO
   var neltos = readRegister ( params.indexComp2, params.indexElem2 );
   for (var i = 0; (i < neltos) && (i < keystroke.length); i++) {
     value = value + keystroke.charAt(i);
   }
 
-  //var addr = architecture.components[params.indexComp].elements[params.indexElem].value ; //TODO
   var neltos = readRegister ( params.indexComp, params.indexElem );
   writeMemory(value, parseInt(neltos), "string") ;
 
@@ -7483,7 +7420,7 @@ function execute_binary ( index, instructionExecParts, auxDef )
 
       for (var z = 0; z < architecture.components.length; z++){
         console_log(architecture.components[z].type)
-        if(architecture.components[z].type == "control" && architecture.instructions[index].fields[j].type == "Ctrl-Reg"){
+        if(architecture.components[z].type == "ctrl_registers" && architecture.instructions[index].fields[j].type == "Ctrl-Reg"){
           for (var w = 0; w < architecture.components[z].elements.length; w++){
             var auxLength = ((architecture.instructions[index].nwords*32) - architecture.instructions[index].fields[j].stopbit) - ((architecture.instructions[index].nwords*31) - architecture.instructions[index].fields[j].startbit);
             console_log(auxLength);
@@ -7493,7 +7430,7 @@ function execute_binary ( index, instructionExecParts, auxDef )
             }
           }
         }
-        if(architecture.components[z].type == "integer" && architecture.instructions[index].fields[j].type == "INT-Reg"){
+        if(architecture.components[z].type == "int_registers" && architecture.instructions[index].fields[j].type == "INT-Reg"){
           for (var w = 0; w < architecture.components[z].elements.length; w++){
             var auxLength = ((architecture.instructions[index].nwords*32) - architecture.instructions[index].fields[j].stopbit) - ((architecture.instructions[index].nwords*31) - architecture.instructions[index].fields[j].startbit);
             console_log(auxLength);
@@ -7504,7 +7441,7 @@ function execute_binary ( index, instructionExecParts, auxDef )
             }
           }
         }
-        if(architecture.components[z].type == "floating point" && architecture.components[z].double_precision == false && architecture.instructions[index].fields[j].type == "SFP-Reg"){
+        if(architecture.components[z].type == "fp_registers" && architecture.components[z].double_precision == false && architecture.instructions[index].fields[j].type == "SFP-Reg"){
           for (var w = 0; w < architecture.components[z].elements.length; w++){
             var auxLength = ((architecture.instructions[index].nwords*32) - architecture.instructions[index].fields[j].stopbit) - ((architecture.instructions[index].nwords*31) - architecture.instructions[index].fields[j].startbit);
             console_log(auxLength);
@@ -7515,7 +7452,7 @@ function execute_binary ( index, instructionExecParts, auxDef )
             }
           }
         }
-        if(architecture.components[z].type == "floating point" && architecture.components[z].double_precision == true && architecture.instructions[index].fields[j].type == "DFP-Reg"){
+        if(architecture.components[z].type == "fp_registers" && architecture.components[z].double_precision == true && architecture.instructions[index].fields[j].type == "DFP-Reg"){
           for (var w = 0; w < architecture.components[z].elements.length; w++){
             var auxLength = ((architecture.instructions[index].nwords*32) - architecture.instructions[index].fields[j].stopbit) - ((architecture.instructions[index].nwords*31) - architecture.instructions[index].fields[j].startbit);
             console_log(auxLength);
@@ -7614,7 +7551,7 @@ function execute_binary ( index, instructionExecParts, auxDef )
 }
 
 /*
- *  Copyright 2018-2022 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
+ *  Copyright 2018-2023 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
  *  This file is part of CREATOR.
  *
@@ -7776,7 +7713,7 @@ function get_state ( )
 
             // value != default value => dumpt it
             elto_string = "0x" + elto_value.toString(16) ;
-            if (architecture.components[i].type == "floating point") 
+            if (architecture.components[i].type == "fp_registers") 
             {
                 if(architecture.components[i].double_precision == false){
                   elto_string = "0x" + bin2hex(float2bin(bi_BigIntTofloat(elto_value))) ;
