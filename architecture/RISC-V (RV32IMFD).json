@@ -32,7 +32,7 @@
   "components": [
     {
       "name": "Control registers",
-      "type": "control",
+      "type": "ctrl_registers",
       "double_precision": false,
       "elements": [
         {
@@ -53,7 +53,7 @@
     },
     {
       "name": "Integer registers",
-      "type": "integer",
+      "type": "int_registers",
       "double_precision": false,
       "elements": [
         {
@@ -495,7 +495,7 @@
     },
     {
       "name": "Floating point registers",
-      "type": "floating point",
+      "type": "fp_registers",
       "double_precision": true,
       "double_precision_type": "extended",
       "elements": [

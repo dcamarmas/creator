@@ -301,14 +301,6 @@ try
 
       data_mode: 'int_registers',
 
-
-      //
-      //Registers
-      //
-
-      register_type: 'integer',
-
-
       //
       //Memory
       //

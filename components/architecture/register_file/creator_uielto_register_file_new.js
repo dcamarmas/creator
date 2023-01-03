@@ -31,13 +31,13 @@
                   return {
                     //Register file types
                     register_file_types:    [
-                                              { text: 'Integer',        value: 'integer' },
-                                              { text: 'Floating point', value: 'floating point' },
-                                              { text: 'Control',        value: 'control' }
+                                              { text: 'Integer',        value: 'int_registers'  },
+                                              { text: 'Floating point', value: 'fp_registers'   },
+                                              { text: 'Control',        value: 'ctrl_registers' }
                                             ],
 
                     double_precision_type:  [
-                                              { text: 'Linked',   value: 'linked' },
+                                              { text: 'Linked',   value: 'linked'   },
                                               { text: 'Extended', value: 'extended' },
                                             ],
 
