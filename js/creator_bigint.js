@@ -93,7 +93,7 @@ function register_value_deserialize( architecture )
   {
     for (var j=0; j< architecture.components[i].elements.length; j++)
     {
-      if (architecture.components[i].type != "floating point"){
+      if (architecture.components[i].type != "fp_registers"){
         architecture.components[i].elements[j].value = bi_intToBigInt(architecture.components[i].elements[j].value,10) ;
       }
       else{
@@ -102,7 +102,7 @@ function register_value_deserialize( architecture )
 
       if (architecture.components[i].double_precision != true)
       {
-        if (architecture.components[i].type != "floating point"){
+        if (architecture.components[i].type != "fp_registers"){
           architecture.components[i].elements[j].default_value = bi_intToBigInt(architecture.components[i].elements[j].default_value,10) ;
         }
         else{
@@ -124,7 +124,7 @@ function register_value_serialize( architecture )
   {
     for (var j=0; j < architecture.components[i].elements.length; j++)
     {
-      if (architecture.components[i].type != "floating point"){
+      if (architecture.components[i].type != "fp_registers"){
         aux_architecture.components[i].elements[j].value = parseInt(architecture.components[i].elements[j].value);
       }
       else{
@@ -133,7 +133,7 @@ function register_value_serialize( architecture )
 
       if (architecture.components[i].double_precision != true)
       {
-        if (architecture.components[i].type != "floating point"){
+        if (architecture.components[i].type != "fp_registers"){
           aux_architecture.components[i].elements[j].default_value = parseInt(architecture.components[i].elements[j].default_value);
         }
         else{

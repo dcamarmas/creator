@@ -36,9 +36,7 @@
                   reg_representation_options: [
                                                 { text: 'INT Registers', value: 'int_registers' },
                                                 { text: 'FP Registers',  value: 'fp_registers'  }
-                                              ],
-
-                  register_variant: "secondary"
+                                              ]
                 }
               },
 
@@ -50,13 +48,11 @@
                   if(e == "int_registers")
                   {
                     this.current_reg_type = "int_registers";
-                    app._data.register_type = 'integer'; //TODO: vue bidirectional updates
                   }
 
                   else if(e == "fp_registers")
                   {
                     this.current_reg_type = "fp_registers";
-                    app._data.register_type = 'floating point'; //TODO: vue bidirectional updates
                   }
 
                   /* Google Analytics */

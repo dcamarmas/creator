@@ -47,7 +47,7 @@
 
                   switch(view){
                     case "hex":
-                      if (architecture.components[this._props.component.index].type == "control" || architecture.components[this._props.component.index].type == "integer") {
+                      if (architecture.components[this._props.component.index].type == "ctrl_registers" || architecture.components[this._props.component.index].type == "int_registers") {
                         ret = (((register.value).toString(16)).padStart(register.nbits/4, "0")).toUpperCase();
                       }
                       else {
@@ -61,7 +61,7 @@
                       break;
 
                     case "bin":
-                      if (architecture.components[this._props.component.index].type == "control" || architecture.components[this._props.component.index].type == "integer") {
+                      if (architecture.components[this._props.component.index].type == "ctrl_registers" || architecture.components[this._props.component.index].type == "int_registers") {
                         ret = (((register.value).toString(2)).padStart(register.nbits, "0"));
                       }
                       else {
@@ -75,7 +75,7 @@
                       break;
 
                     case "signed":
-                      if (architecture.components[this._props.component.index].type == "control" || architecture.components[this._props.component.index].type == "integer") {
+                      if (architecture.components[this._props.component.index].type == "ctrl_registers" || architecture.components[this._props.component.index].type == "int_registers") {
                         if ((((register.value).toString(2)).padStart(register.nbits, '0')).charAt(0) == 1)
                           ret = parseInt(register.value.toString(10))-0x100000000;
                         if ((((register.value).toString(2)).padStart(register.nbits, '0')).charAt(0) == 0)
@@ -93,7 +93,7 @@
                       break;
 
                     case "unsigned":
-                      if (architecture.components[this._props.component.index].type == "control" || architecture.components[this._props.component.index].type == "integer") {
+                      if (architecture.components[this._props.component.index].type == "ctrl_registers" || architecture.components[this._props.component.index].type == "int_registers") {
                         ret = parseInt(register.value.toString(10)) >>> 0;
                       }
                       else {
@@ -108,7 +108,7 @@
                       break;
 
                     case "char":
-                      if (architecture.components[this._props.component.index].type == "control" || architecture.components[this._props.component.index].type == "integer") {
+                      if (architecture.components[this._props.component.index].type == "ctrl_registers" || architecture.components[this._props.component.index].type == "int_registers") {
                         ret = hex2char8((((register.value).toString(16)).padStart(register.nbits/4, "0")));
                       }
                       else {
@@ -122,7 +122,7 @@
                       break;
 
                     case "ieee32":
-                      if (architecture.components[this._props.component.index].type == "control" || architecture.components[this._props.component.index].type == "integer") {
+                      if (architecture.components[this._props.component.index].type == "ctrl_registers" || architecture.components[this._props.component.index].type == "int_registers") {
                         ret = hex2float("0x"+(((register.value).toString(16)).padStart(8, "0")));
                       }
                       else {
@@ -136,7 +136,7 @@
                       break;
 
                     case "ieee64":
-                      if (architecture.components[this._props.component.index].type == "control" || architecture.components[this._props.component.index].type == "integer") {
+                      if (architecture.components[this._props.component.index].type == "ctrl_registers" || architecture.components[this._props.component.index].type == "int_registers") {
                         ret = hex2double("0x"+(((register.value).toString(16)).padStart(16, "0")));
                       }
                       else {
@@ -159,7 +159,7 @@
                 //Update a new register value
                 update_register(comp, elem, type, precision){
                   for (var i = 0; i < architecture.components[comp].elements.length; i++) {
-                    if(type == "integer" || type == "control"){
+                    if(type == "int_registers" || type == "ctrl_registers"){
                       if(architecture.components[comp].elements[i].name == elem && this.newValue.match(/^0x/)){
                         var value = this.newValue.split("x");
                         if(value[1].length * 4 > architecture.components[comp].elements[i].nbits){
@@ -174,7 +174,7 @@
                         writeRegister(parseInt(this.newValue,10), comp, i);
                       }
                     }
-                    else if(type =="floating point"){
+                    else if(type =="fp_registers"){
                       if(precision == false){
                         if(architecture.components[comp].elements[i].name == elem && this.newValue.match(/^0x/)){
                           writeRegister(hex2float(this.newValue), comp, i);
@@ -236,7 +236,7 @@ template:     '<b-popover :target="target" ' +
               '          </b-badge>' +
               '        </td>' +
               '      </tr>' +
-              '      <tr v-if="architecture.components[component.index].type != \'floating point\'">' +
+              '      <tr v-if="architecture.components[component.index].type != \'fp_registers\'">' +
               '        <td>Signed</td>' +
               '        <td>' +
               '          <b-badge class="registerPopover">' +
@@ -244,7 +244,7 @@ template:     '<b-popover :target="target" ' +
               '          </b-badge>' +
               '        </td>' +
               '      </tr>' +
-              '      <tr v-if="architecture.components[component.index].type != \'floating point\'">' +
+              '      <tr v-if="architecture.components[component.index].type != \'fp_registers\'">' +
               '        <td>Unsig.</td>' +
               '        <td>' +
               '          <b-badge class="registerPopover">' +
@@ -252,7 +252,7 @@ template:     '<b-popover :target="target" ' +
               '          </b-badge>' +
               '        </td>' +
               '      </tr>' +
-              '      <tr v-if="architecture.components[component.index].type != \'floating point\'">' +
+              '      <tr v-if="architecture.components[component.index].type != \'fp_registers\'">' +
               '        <td>Char</td>' +
               '        <td>' +
               '          <b-badge class="registerPopover">' +

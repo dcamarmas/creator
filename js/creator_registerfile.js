@@ -72,14 +72,14 @@ function readRegister ( indexComp, indexElem, register_type )
     throw packExecute(true, 'The register '+ architecture.components[indexComp].elements[indexElem].name.join(' | ') +' cannot be read', 'danger', null);
   }
 
-  if ((architecture.components[indexComp].type == "control") ||
-      (architecture.components[indexComp].type == "integer"))
+  if ((architecture.components[indexComp].type == "ctrl_registers") ||
+      (architecture.components[indexComp].type == "int_registers"))
   {
     console_log(parseInt(architecture.components[indexComp].elements[indexElem].value));
     return parseInt(architecture.components[indexComp].elements[indexElem].value);
   }
 
-  if (architecture.components[indexComp].type == "floating point")
+  if (architecture.components[indexComp].type == "fp_registers")
   {
     if(architecture.components[indexComp].double_precision == false){
       //return parseFloat((architecture.components[indexComp].elements[indexElem].value).toString()); //TODO: big_int2hex -> hex2float //TODO
@@ -130,8 +130,8 @@ function writeRegister ( value, indexComp, indexElem, register_type )
     return;
   }
 
-  if ((architecture.components[indexComp].type == "integer") ||
-      (architecture.components[indexComp].type == "control"))
+  if ((architecture.components[indexComp].type == "int_registers") ||
+      (architecture.components[indexComp].type == "ctrl_registers"))
   {
       if ((architecture.components[indexComp].elements[indexElem].properties.includes('write') != true))
       {
@@ -161,7 +161,7 @@ function writeRegister ( value, indexComp, indexElem, register_type )
       }
   }
 
-  else if (architecture.components[indexComp].type =="floating point")
+  else if (architecture.components[indexComp].type =="fp_registers")
   {
     if (architecture.components[indexComp].double_precision == false)
     {

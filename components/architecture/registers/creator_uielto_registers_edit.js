@@ -167,7 +167,7 @@
                 '      </b-form-input>' +
                 '    </b-form-group>' +
                 '' +
-                '    <b-form-group label="Properties:" v-if="type != \'control\'">' +
+                '    <b-form-group label="Properties:" v-if="type != \'ctrl_registers\'">' +
                 '      <b-form-checkbox-group v-model="register.properties">' +
                 '        <b-form-checkbox value="read">Read</b-form-checkbox>' +
                 '        <b-form-checkbox value="write">Write</b-form-checkbox>' +

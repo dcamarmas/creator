@@ -95,7 +95,7 @@
                     this.show_modal = false;
 
                     //Add the new register into the register file
-                    if(this._props.type == "integer")
+                    if(this._props.type == "int_registers")
                     {
                       var new_element = {
                                           name:this.register.name, 
@@ -106,7 +106,7 @@
                                         };
                       architecture.components[this._props.register_file_index].elements.push(new_element);
                     }
-                    if(this._props.type == "control")
+                    if(this._props.type == "ctrl_registers")
                     {
                       var new_element = {
                                           name:this.register.name, 
@@ -117,7 +117,7 @@
                                         };
                       architecture.components[this._props.register_file_index].elements.push(new_element);
                     }
-                    if((this._props.type == "floating point")&&(this._props.double_precision == false))
+                    if((this._props.type == "fp_registers")&&(this._props.double_precision == false))
                     {
                       var new_element = {
                                           name:this.register.name, 
@@ -128,7 +128,7 @@
                                         };
                       architecture.components[this._props.register_file_index].elements.push(new_element);
                     }
-                    if((this._props.type == "floating point")&&(this._props.double_precision == true))
+                    if((this._props.type == "fp_registers")&&(this._props.double_precision == true))
                     {
                       var aux_new;
                       var aux_value;
@@ -247,7 +247,7 @@
                 '      </b-form-input>' +
                 '    </b-form-group>' +
                 '' +
-                '    <b-form-group v-if="type != \'control\'" label="Properties:">' +
+                '    <b-form-group v-if="type != \'ctrl_registers\'" label="Properties:">' +
                 '      <b-form-checkbox-group v-model="register.properties">' +
                 '        <b-form-checkbox value="read">Read</b-form-checkbox>' +
                 '        <b-form-checkbox value="write">Write</b-form-checkbox>' +
