@@ -1,7 +1,6 @@
 
 #
 # CREATOR (https://creatorsim.github.io/creator/)
-# WepSIM  (https://wepsim.github.io/wepsim/)
 #
 
 .text
@@ -30,5 +29,5 @@
 
  else_3: # acción 2
 
- fi_3: ...
+ fi_3:   # ...
 

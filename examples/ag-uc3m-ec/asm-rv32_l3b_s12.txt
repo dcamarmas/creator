@@ -1,11 +1,11 @@
 
 #
 # CREATOR (https://creatorsim.github.io/creator/)
-# WepSIM  (https://wepsim.github.io/wepsim/)
 #
 
 .data
   msg_hola: .string "hola mundo\n"
+
 
 .text
   main:
