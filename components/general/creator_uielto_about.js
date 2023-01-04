@@ -34,6 +34,15 @@
                 ' ' +
                 '   <b-card-group>' +
                 '     <card-author ' +
+                '       author_img="/creator/images/author_dcamarmas.png" ' +
+                '       author_alt="author_dcamarmas" ' +
+                '       author_full_name="Diego Camarmas Alonso" ' +
+                '       author_href_linked="https://www.linkedin.com/in/dcamarmas" ' +
+                '       author_href_rgate="https://www.researchgate.net/profile/Diego-Camarmas-Alonso" ' +
+                '       author_href_github="https://github.com/dcamarmas" ' +
+                '     ></card-author>' +
+                ' ' +
+                '     <card-author ' +
                 '       author_img="/creator/images/author_fgarcia.png" ' +
                 '       author_alt="author_fgarcia" ' +
                 '       author_full_name="Félix García Carballeira" ' +
@@ -48,17 +57,18 @@
                 '       author_full_name="Alejandro Calderón Mateos" ' +
                 '       author_href_linked="https://www.linkedin.com/in/alejandro-calderon-mateos/" ' +
                 '       author_href_rgate="https://www.researchgate.net/profile/Alejandro_Calderon2" ' +
-                '       author_href_github="https://github.com/acaldero/wepsim" ' +
+                '       author_href_github="https://github.com/acaldero" ' +
                 '     ></card-author>' +
                 '' +
                 '     <card-author ' +
-                '       author_img="/creator/images/author_dcamarmas.png" ' +
-                '       author_alt="author_dcamarmas" ' +
-                '       author_full_name="Diego Camarmas Alonso" ' +
-                '       author_href_linked="https://www.linkedin.com/in/dcamarmas" ' +
-                '       author_href_rgate="https://www.researchgate.net/profile/Diego-Camarmas-Alonso" ' +
-                '       author_href_github="https://github.com/dcamarmas" ' +
+                '       author_img="/creator/images/author_edelpozo.png" ' +
+                '       author_alt="author_edelpozo" ' +
+                '       author_full_name="Elías del Pozo Puñal" ' +
+                '       author_href_linked="https://www.linkedin.com/in/edelpozop/" ' +
+                '       author_href_rgate="https://www.researchgate.net/profile/Elias-Del-Pozo-Punal-2" ' +
+                '       author_href_github="https://github.com/edelpozop" ' +
                 '     ></card-author>' +
+                '' +
                 '   </b-card-group>' +
                 ' ' +
                 ' </b-modal>'
