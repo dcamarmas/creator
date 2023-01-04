@@ -1,7 +1,6 @@
 
 #
 # CREATOR (https://creatorsim.github.io/creator/)
-# WepSIM  (https://wepsim.github.io/wepsim/)
 #
 
 
@@ -23,6 +22,7 @@
     op1: 	 .double 100
     op2: 	 .double -10.27
     # ...
+
 
 .text
  main:  fld    f0 op1(x0)

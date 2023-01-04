@@ -1,7 +1,6 @@
 
 #
 # CREATOR (https://creatorsim.github.io/creator/)
-# WepSIM  (https://wepsim.github.io/wepsim/)
 #
 
        # int  resultado ;
@@ -32,3 +31,4 @@
         la t0 resultado
         sw t0 0(t4)
         # ...
+
