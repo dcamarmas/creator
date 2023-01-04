@@ -36,19 +36,19 @@
                   return {
                     //Intructions form select
                     instructions_types =  [
-                                            { text: 'Arithmetic integer',         value: 'Arithmetic integer' },
                                             { text: 'Arithmetic floating point',  value: 'Arithmetic floating point' },
-                                            { text: 'Logic',                      value: 'Logic' },
-                                            { text: 'Transfer between registers', value: 'Transfer between registers' },
-                                            { text: 'Memory access',              value: 'Memory access' },
+                                            { text: 'Arithmetic integer',         value: 'Arithmetic integer' },
                                             { text: 'Comparison',                 value: 'Comparison' },
-                                            { text: 'I/O',                        value: 'I/O' },
-                                            { text: 'Syscall',                    value: 'Syscall' },
+                                            { text: 'Conditional bifurcation',    value: 'Conditional bifurcation' },
                                             { text: 'Control',                    value: 'Control' },
                                             { text: 'Function call',              value: 'Function call' },
-                                            { text: 'Conditional bifurcation',    value: 'Conditional bifurcation' },
-                                            { text: 'Unconditional bifurcation',  value: 'Unconditional bifurcation' },
+                                            { text: 'I/O',                        value: 'I/O' },
+                                            { text: 'Logic',                      value: 'Logic' },
+                                            { text: 'Memory access',              value: 'Memory access' },
                                             { text: 'Other',                      value: 'Other' },
+                                            { text: 'Syscall',                    value: 'Syscall' },
+                                            { text: 'Transfer between registers', value: 'Transfer between registers' },
+                                            { text: 'Unconditional bifurcation',  value: 'Unconditional bifurcation' },
                                           ],
 
                     //Allow instruction with fractioned fields
