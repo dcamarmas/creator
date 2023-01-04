@@ -1,7 +1,6 @@
 
 #
 # CREATOR (https://creatorsim.github.io/creator/)
-# WepSIM  (https://wepsim.github.io/wepsim/)
 #
 
 .text
@@ -25,5 +24,6 @@ while:
          # acción
          addi t0 t0 1
          j while
-fin: ...
+
+fin:     # ...
 

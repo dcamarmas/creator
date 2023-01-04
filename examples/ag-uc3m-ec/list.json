@@ -15,7 +15,7 @@
     "id":          "e3",
     "name":        "e3",
     "url":         "examples/ag-uc3m-ec/asm-rv32_l3a_s36.txt",
-    "description": "Example at slide 37 of lesson3a"
+    "description": "Example at slide 36 of lesson3a"
   },
   {
     "id":          "e4",
@@ -27,7 +27,7 @@
     "id":          "e5",
     "name":        "e5",
     "url":         "examples/ag-uc3m-ec/asm-rv32_l3a_s53.txt",
-    "description": "Example at slide 54 of lesson3a"
+    "description": "Example at slide 53 of lesson3a"
   },
   {
     "id":          "e6",
@@ -57,31 +57,31 @@
     "id":          "e10",
     "name":        "e10",
     "url":         "examples/ag-uc3m-ec/asm-rv32_l3a_t67.txt",
-    "description": "Example at slide 66 of lesson3a"
+    "description": "Example at slide 67 of lesson3a"
   },
   {
     "id":          "e11",
     "name":        "e11",
     "url":         "examples/ag-uc3m-ec/asm-rv32_l3a_t71.txt",
-    "description": "Example at slide 70 of lesson3a"
+    "description": "Example at slide 71 of lesson3a"
   },
   {
     "id":          "e12",
     "name":        "e12",
     "url":         "examples/ag-uc3m-ec/asm-rv32_l3a_t75.txt",
-    "description": "Example at slide 74 of lesson3a"
+    "description": "Example at slide 75 of lesson3a"
   },
   {
     "id":          "e13",
     "name":        "e13",
     "url":         "examples/ag-uc3m-ec/asm-rv32_l3b_s12.txt",
-    "description": "Example at slide 15 of lesson3b"
+    "description": "Example at slide 12 of lesson3b"
   },
   {
     "id":          "e14",
     "name":        "e14",
     "url":         "examples/ag-uc3m-ec/asm-rv32_l3b_s23.txt",
-    "description": "Example at slide 25 of lesson3b"
+    "description": "Example at slide 23 of lesson3b"
   },
   {
     "id":          "e15",
@@ -153,12 +153,12 @@
     "id":          "e26",
     "name":        "e26",
     "url":         "examples/ag-uc3m-ec/asm-rv32_l3b_s97.txt",
-    "description": "Example at slide 101 of lesson3b"
+    "description": "Example at slide 97 of lesson3b"
   },
   {
     "id":          "e27",
     "name":        "e27",
     "url":         "examples/ag-uc3m-ec/asm-rv32_l3b_s101.txt",
-    "description": "Example at slide 102 of lesson3b"
+    "description": "Example at slide 101 of lesson3b"
   }
 ]

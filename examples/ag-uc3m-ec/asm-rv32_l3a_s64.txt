@@ -1,7 +1,6 @@
 
 #
 # CREATOR (https://creatorsim.github.io/creator/)
-# WepSIM  (https://wepsim.github.io/wepsim/)
 #
 
 .text
@@ -24,5 +23,6 @@
 
          bne  t0 t2  fin1
          li   t1 1
-  fin1:  ...
+
+  fin1:  # ...
 

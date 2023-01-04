@@ -1,7 +1,6 @@
 
 #
 # CREATOR (https://creatorsim.github.io/creator/)
-# WepSIM  (https://wepsim.github.io/wepsim/)
 #
 
        # char  c1 ;
@@ -27,6 +26,7 @@
    .align 2
    c:   .zero  4  # puntero => dirección
    # ...
+
 
 .text
 main:	        la   t0, ac1

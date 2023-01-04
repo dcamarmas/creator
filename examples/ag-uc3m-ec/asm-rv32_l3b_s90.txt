@@ -1,7 +1,6 @@
 
 #
 # CREATOR (https://creatorsim.github.io/creator/)
-# WepSIM  (https://wepsim.github.io/wepsim/)
 #
 
        # char c1 ;
@@ -20,6 +19,7 @@
    c2:  .byte   'h'
    ac1: .string "hola"
    # ...
+
 
 .text
  main:   
