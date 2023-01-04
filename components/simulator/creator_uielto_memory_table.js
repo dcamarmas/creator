@@ -255,11 +255,13 @@
             '           <span class="badge badge-white border border-secondary text-dark mx-1">System <br>stack</span>' +
             ' ' +
             '           <b-popover target="stack_funct_popover" triggers="hover" placement="top"> '+
-            '             <b-list-group>' +
+            '             <span>0x000...</span>' +
+            '             <b-list-group class="my-2">' +
             '               <b-list-group-item v-for="(item, index) in track_stack_names.slice().reverse()" v-if="index > 1"> ' +
             '                 {{item}}' +
             '               </b-list-group-item>' +
             '             </b-list-group>'+
+            '             <span>0xFFF...</span>' +
             '           </b-popover>'+
             ' ' +
             '         </div>' +
