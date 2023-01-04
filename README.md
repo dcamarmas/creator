@@ -40,19 +40,19 @@
 
 #### :point_right:	 RISC-V
 
-| Description                | Link                                                                                                    |
-|:--------------------------:|:-------------------------------------------------------------------------------------------------------:| 
-| ALU operations             | https://creatorsim.github.io/creator/?architecture=RISC-V%20(RV32IMFD)&example_set=default&example=e2   |
-| Store/Load Data in Memory  | https://creatorsim.github.io/creator/?architecture=RISC-V%20(RV32IMFD)&example_set=default&example=e3   |
-| FPU operations             | https://creatorsim.github.io/creator/?architecture=RISC-V%20(RV32IMFD)&example_set=default&example=e4   |
-| Loop                       | https://creatorsim.github.io/creator/?architecture=RISC-V%20(RV32IMFD)&example_set=default&example=e5   |
-| Branch                     | https://creatorsim.github.io/creator/?architecture=RISC-V%20(RV32IMFD)&example_set=default&example=e6   |
-| Loop + Memory              | https://creatorsim.github.io/creator/?architecture=RISC-V%20(RV32IMFD)&example_set=default&example=e7   |
-| Copy of matrices           | https://creatorsim.github.io/creator/?architecture=RISC-V%20(RV32IMFD)&example_set=default&example=e8   |
-| I/O Syscalls               | https://creatorsim.github.io/creator/?architecture=RISC-V%20(RV32IMFD)&example_set=default&example=e9   |
-| I/O Syscalls + Strings     | https://creatorsim.github.io/creator/?architecture=RISC-V%20(RV32IMFD)&example_set=default&example=e10  |
-| Subrutines                 | https://creatorsim.github.io/creator/?architecture=RISC-V%20(RV32IMFD)&example_set=default&example=e11  |
-| Factorial                  | https://creatorsim.github.io/creator/?architecture=RISC-V%20(RV32IMFD)&example_set=default&example=e12  |
+| Description                | Link                                                                                   |
+|:--------------------------:|:--------------------------------------------------------------------------------------:| 
+| ALU operations             | https://creatorsim.github.io/creator/?architecture=rv&example_set=default&example=e2   |
+| Store/Load Data in Memory  | https://creatorsim.github.io/creator/?architecture=rv&example_set=default&example=e3   |
+| FPU operations             | https://creatorsim.github.io/creator/?architecture=rv&example_set=default&example=e4   |
+| Loop                       | https://creatorsim.github.io/creator/?architecture=rv&example_set=default&example=e5   |
+| Branch                     | https://creatorsim.github.io/creator/?architecture=rv&example_set=default&example=e6   |
+| Loop + Memory              | https://creatorsim.github.io/creator/?architecture=rv&example_set=default&example=e7   |
+| Copy of matrices           | https://creatorsim.github.io/creator/?architecture=rv&example_set=default&example=e8   |
+| I/O Syscalls               | https://creatorsim.github.io/creator/?architecture=rv&example_set=default&example=e9   |
+| I/O Syscalls + Strings     | https://creatorsim.github.io/creator/?architecture=rv&example_set=default&example=e10  |
+| Subrutines                 | https://creatorsim.github.io/creator/?architecture=rv&example_set=default&example=e11  |
+| Factorial                  | https://creatorsim.github.io/creator/?architecture=rv&example_set=default&example=e12  |
 
 #### :point_right:	 MIPS
 

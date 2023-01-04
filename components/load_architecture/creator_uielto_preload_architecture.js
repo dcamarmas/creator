@@ -77,6 +77,13 @@
                   {
                     show_loading();
 
+                    if (e == null) 
+                    {
+                      hide_loading();
+                      show_notification('The architecture is not currently available', 'info');
+                      return;
+                    }
+
                     //Read architecture JSON
                     for (i = 0; i < load_architectures.length; i++)
                     {

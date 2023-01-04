@@ -1,6 +1,7 @@
 [
   {
     "name": "RISC-V (RV32IMFD)",
+    "alias": ["RISC-V (RV32IMFD)", "RISC-V", "risc-v", "RV", "rv", "RV32", "rv32"],
     "img": "./images/risc-v_logo.png",
     "alt": "RISC-V",
     "id": "select_confRISV",
@@ -9,6 +10,7 @@
   },
   {
     "name": "MIPS-32",
+    "alias": ["MIPS-32", "mips-32", "MIPS32", "mips32"],
     "img": "./images/mips_logo.png",
     "alt":"MIPS",
     "id": "select_confMIPS",
