@@ -15,8 +15,8 @@
 | Creator                      | https://creatorsim.github.io/creator/           |
 | Documentation                | https://creatorsim.github.io/                   | 
 | Source Code                  | https://github.com/creatorsim/creator/          | 
-| :clipboard:   Travis Tests   | [Description of Travis Tests](travis/README.md) | 
-| :microscope:	 Nightly build  | https://dcamarmas.github.io/creator             |
+| :clipboard:  Travis Tests    | [Description of Travis Tests](docs/travis.md)   | 
+| :microscope: Nightly build   | https://dcamarmas.github.io/creator             |
 
 
 ## Examples included in CREATOR
