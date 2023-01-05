@@ -2172,11 +2172,11 @@
     {
       "name": "slli",
       "type": "Arithmetic integer",
-      "signature_definition": "F0 F4 F3 F2",
+      "signature_definition": "F0 F1 F3 F4",
       "signature": "slli,INT-Reg,INT-Reg,inm-signed",
       "signatureRaw": "slli rd rs1 shamt",
       "co": "0010011",
-      "cop": "0000000001",
+      "cop": "000000001",
       "nwords": 1,
       "power_consumption": 1,
       "fields": [
@@ -2185,25 +2185,6 @@
           "type": "co",
           "startbit": 6,
           "stopbit": 0
-        },
-        {
-          "name": "cop",
-          "type": "cop",
-          "startbit": 31,
-          "stopbit": 25,
-          "valueField": "0000000"
-        },
-        {
-          "name": "shamt",
-          "type": "inm-signed",
-          "startbit": 24,
-          "stopbit": 20
-        },
-        {
-          "name": "rs1",
-          "type": "INT-Reg",
-          "startbit": 19,
-          "stopbit": 15
         },
         {
           "name": "rd",
@@ -2217,9 +2198,28 @@
           "startbit": 14,
           "stopbit": 12,
           "valueField": "001"
+        },
+        {
+          "name": "rs1",
+          "type": "INT-Reg",
+          "startbit": 19,
+          "stopbit": 15
+        },
+        {
+          "name": "shamt",
+          "type": "inm-signed",
+          "startbit": 25,
+          "stopbit": 20
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 31,
+          "stopbit": 26,
+          "valueField": "000000"
         }
       ],
-      "definition": "rd = capi_int2uint(rs1 << shamt);",
+      "definition": "if (shamt > 0) {rd = capi_int2uint(rs1 << shamt);}",
       "separated": [
         false,
         false,
@@ -2232,11 +2232,11 @@
     {
       "name": "srli",
       "type": "Arithmetic integer",
-      "signature_definition": "F0 F4 F3 F2",
+      "signature_definition": "F0 F1 F3 F4",
       "signature": "srli,INT-Reg,INT-Reg,inm-signed",
       "signatureRaw": "srli rd rs1 shamt",
       "co": "0010011",
-      "cop": "0000000101",
+      "cop": "000000101",
       "nwords": 1,
       "power_consumption": 1,
       "fields": [
@@ -2245,25 +2245,6 @@
           "type": "co",
           "startbit": 6,
           "stopbit": 0
-        },
-        {
-          "name": "cop",
-          "type": "cop",
-          "startbit": 31,
-          "stopbit": 25,
-          "valueField": "0000000"
-        },
-        {
-          "name": "shamt",
-          "type": "inm-signed",
-          "startbit": 24,
-          "stopbit": 20
-        },
-        {
-          "name": "rs1",
-          "type": "INT-Reg",
-          "startbit": 19,
-          "stopbit": 15
         },
         {
           "name": "rd",
@@ -2277,9 +2258,28 @@
           "startbit": 14,
           "stopbit": 12,
           "valueField": "101"
+        },
+        {
+          "name": "rs1",
+          "type": "INT-Reg",
+          "startbit": 19,
+          "stopbit": 15
+        },
+        {
+          "name": "shamt",
+          "type": "inm-signed",
+          "startbit": 24,
+          "stopbit": 20
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 31,
+          "stopbit": 25,
+          "valueField": "0000000"
         }
       ],
-      "definition": "rd = (rs1 >> shamt);",
+      "definition": "if (shamt > 0) {rd = (rs1 >> shamt);}",
       "separated": [
         false,
         false,
@@ -2292,11 +2292,11 @@
     {
       "name": "srai",
       "type": "Arithmetic integer",
-      "signature_definition": "F0 F4 F3 F2",
+      "signature_definition": "F0 F1 F3 F4",
       "signature": "srai,INT-Reg,INT-Reg,inm-signed",
       "signatureRaw": "srai rd rs1 shamt",
       "co": "0010011",
-      "cop": "0100000101",
+      "cop": "010000101",
       "nwords": 1,
       "power_consumption": 1,
       "fields": [
@@ -2305,25 +2305,6 @@
           "type": "co",
           "startbit": 6,
           "stopbit": 0
-        },
-        {
-          "name": "cop",
-          "type": "cop",
-          "startbit": 31,
-          "stopbit": 25,
-          "valueField": "0100000"
-        },
-        {
-          "name": "shamt",
-          "type": "inm-signed",
-          "startbit": 24,
-          "stopbit": 20
-        },
-        {
-          "name": "rs1",
-          "type": "INT-Reg",
-          "startbit": 19,
-          "stopbit": 15
         },
         {
           "name": "rd",
@@ -2337,9 +2318,28 @@
           "startbit": 14,
           "stopbit": 12,
           "valueField": "101"
+        },
+        {
+          "name": "rs1",
+          "type": "INT-Reg",
+          "startbit": 19,
+          "stopbit": 15
+        },
+        {
+          "name": "shamt",
+          "type": "inm-signed",
+          "startbit": 25,
+          "stopbit": 20
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 31,
+          "stopbit": 26,
+          "valueField": "010000"
         }
       ],
-      "definition": "rd = capi_int2uint(rs1 >> shamt);",
+      "definition": "if (shamt > 0) {rd = capi_int2uint(rs1 >> shamt);}",
       "separated": [
         false,
         false,
@@ -3095,126 +3095,6 @@
       ]
     },
     {
-      "name": "slli",
-      "type": "Logic",
-      "signature_definition": "F0 F5 F1 F2",
-      "signature": "slli,INT-Reg,cop,inm-signed",
-      "signatureRaw": "slli rd cop1 shamt",
-      "co": "0010011",
-      "cop": "000000101",
-      "nwords": 1,
-      "power_consumption": 1,
-      "fields": [
-        {
-          "name": "slli",
-          "type": "co",
-          "startbit": 6,
-          "stopbit": 0
-        },
-        {
-          "name": "cop1",
-          "type": "cop",
-          "startbit": 31,
-          "stopbit": 26,
-          "valueField": "000000"
-        },
-        {
-          "name": "shamt",
-          "type": "inm-signed",
-          "startbit": 25,
-          "stopbit": 20
-        },
-        {
-          "name": "rs1",
-          "type": "INT-Reg",
-          "startbit": 19,
-          "stopbit": 15
-        },
-        {
-          "name": "cop2",
-          "type": "cop",
-          "startbit": 14,
-          "stopbit": 12,
-          "valueField": "101"
-        },
-        {
-          "name": "rd",
-          "type": "INT-Reg",
-          "startbit": 11,
-          "stopbit": 7
-        }
-      ],
-      "definition": "rd = capi_int2uint(rs1 << shamt);",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
-      ]
-    },
-    {
-      "name": "srli",
-      "type": "Logic",
-      "signature_definition": "F0 F5 F1 F2",
-      "signature": "srli,INT-Reg,cop,inm-signed",
-      "signatureRaw": "srli rd cop1 shamt",
-      "co": "0010011",
-      "cop": "000000001",
-      "nwords": 1,
-      "power_consumption": 1,
-      "fields": [
-        {
-          "name": "srli",
-          "type": "co",
-          "startbit": 6,
-          "stopbit": 0
-        },
-        {
-          "name": "cop1",
-          "type": "cop",
-          "startbit": 31,
-          "stopbit": 26,
-          "valueField": "000000"
-        },
-        {
-          "name": "shamt",
-          "type": "inm-signed",
-          "startbit": 25,
-          "stopbit": 20
-        },
-        {
-          "name": "rs1",
-          "type": "INT-Reg",
-          "startbit": 19,
-          "stopbit": 15
-        },
-        {
-          "name": "cop2",
-          "type": "cop",
-          "startbit": 14,
-          "stopbit": 12,
-          "valueField": "001"
-        },
-        {
-          "name": "rd",
-          "type": "INT-Reg",
-          "startbit": 11,
-          "stopbit": 7
-        }
-      ],
-      "definition": "rd = capi_int2uint(rs1 >> shamt);",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
-      ]
-    },
-    {
       "name": "addiw",
       "type": "Arithmetic integer",
       "signature_definition": "F0 F4 F2 F1",
@@ -3270,7 +3150,7 @@
       "name": "slliw",
       "type": "Logic",
       "signature_definition": "F0 F5 F3 F2",
-      "signature": "slliw,INT-Reg,INT-Reg,inm-signed",
+      "signature": "slliw,INT-Reg,INT-Reg,inm-unsigned",
       "signatureRaw": "slliw rd rs1 shamt",
       "co": "0011011",
       "cop": "0000000001",
@@ -3292,7 +3172,7 @@
         },
         {
           "name": "shamt",
-          "type": "inm-signed",
+          "type": "inm-unsigned",
           "startbit": 24,
           "stopbit": 20
         },
@@ -3330,7 +3210,7 @@
       "name": "srliw",
       "type": "Logic",
       "signature_definition": "F0 F5 F3 F2",
-      "signature": "srliw,INT-Reg,INT-Reg,inm-signed",
+      "signature": "srliw,INT-Reg,INT-Reg,inm-unsigned",
       "signatureRaw": "srliw rd rs1 shamt",
       "co": "0011011",
       "cop": "0000000101",
@@ -3352,7 +3232,7 @@
         },
         {
           "name": "shamt",
-          "type": "inm-signed",
+          "type": "inm-unsigned",
           "startbit": 24,
           "stopbit": 20
         },
@@ -3390,7 +3270,7 @@
       "name": "sraiw",
       "type": "Arithmetic integer",
       "signature_definition": "F0 F5 F3 F2",
-      "signature": "sraiw,INT-Reg,INT-Reg,inm-signed",
+      "signature": "sraiw,INT-Reg,INT-Reg,inm-unsigned",
       "signatureRaw": "sraiw rd rs1 shamt",
       "co": "0011011",
       "cop": "0100000101",
@@ -3412,7 +3292,7 @@
         },
         {
           "name": "shamt",
-          "type": "inm-signed",
+          "type": "inm-unsigned",
           "startbit": 24,
           "stopbit": 20
         },
