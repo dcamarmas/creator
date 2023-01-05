@@ -2185,7 +2185,7 @@
       "name": "slli",
       "type": "Arithmetic integer",
       "signature_definition": "F0 F4 F3 F2",
-      "signature": "slli,INT-Reg,INT-Reg,inm-signed",
+      "signature": "slli,INT-Reg,INT-Reg,inm-unsigned",
       "signatureRaw": "slli rd rs1 shamt",
       "co": "0010011",
       "cop": "0000000001",
@@ -2207,7 +2207,7 @@
         },
         {
           "name": "shamt",
-          "type": "inm-signed",
+          "type": "inm-unsigned",
           "startbit": 24,
           "stopbit": 20
         },
@@ -2245,7 +2245,7 @@
       "name": "srli",
       "type": "Arithmetic integer",
       "signature_definition": "F0 F4 F3 F2",
-      "signature": "srli,INT-Reg,INT-Reg,inm-signed",
+      "signature": "srli,INT-Reg,INT-Reg,inm-unsigned",
       "signatureRaw": "srli rd rs1 shamt",
       "co": "0010011",
       "cop": "0000000101",
@@ -2267,7 +2267,7 @@
         },
         {
           "name": "shamt",
-          "type": "inm-signed",
+          "type": "inm-unsigned",
           "startbit": 24,
           "stopbit": 20
         },
@@ -2305,7 +2305,7 @@
       "name": "srai",
       "type": "Arithmetic integer",
       "signature_definition": "F0 F4 F3 F2",
-      "signature": "srai,INT-Reg,INT-Reg,inm-signed",
+      "signature": "srai,INT-Reg,INT-Reg,inm-unsigned",
       "signatureRaw": "srai rd rs1 shamt",
       "co": "0010011",
       "cop": "0100000101",
@@ -2327,7 +2327,7 @@
         },
         {
           "name": "shamt",
-          "type": "inm-signed",
+          "type": "inm-unsigned",
           "startbit": 24,
           "stopbit": 20
         },
@@ -3007,7 +3007,7 @@
       "name": "slli",
       "type": "Logic",
       "signature_definition": "F0 F5 F1 F2",
-      "signature": "slli,INT-Reg,cop,inm-signed",
+      "signature": "slli,INT-Reg,cop,inm-unsigned",
       "signatureRaw": "slli rd cop1 shamt",
       "co": "0010011",
       "cop": "000000101",
@@ -3029,7 +3029,7 @@
         },
         {
           "name": "shamt",
-          "type": "inm-signed",
+          "type": "inm-unsigned",
           "startbit": 25,
           "stopbit": 20
         },
@@ -3067,7 +3067,7 @@
       "name": "srli",
       "type": "Logic",
       "signature_definition": "F0 F5 F1 F2",
-      "signature": "srli,INT-Reg,cop,inm-signed",
+      "signature": "srli,INT-Reg,cop,inm-unsigned",
       "signatureRaw": "srli rd cop1 shamt",
       "co": "0010011",
       "cop": "000000001",
@@ -3089,7 +3089,7 @@
         },
         {
           "name": "shamt",
-          "type": "inm-signed",
+          "type": "inm-unsigned",
           "startbit": 25,
           "stopbit": 20
         },
