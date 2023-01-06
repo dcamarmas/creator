@@ -21,7 +21,7 @@
 
 ### :mag_right:	 Checks:
 
-[![Build Status](https://travis-ci.com/dcamarmas/creator.svg?branch=master)](https://travis-ci.com/dcamarmas/creator)
+[![Build Status](https://app.travis-ci.com/creatorsim/creator.svg?branch=master)](https://app.travis-ci.com/creatorsim/creator)
 [![Generic badge](https://img.shields.io/badge/achecker-WCAG%202.0%20(Level%20AAA)-green.svg)](https://shields.io/)
 
 ### :microscope:	 Nightly build:
