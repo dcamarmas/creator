@@ -1,8 +1,12 @@
+<html>
+ <h1 align="center">CREATOR (https://creatorsim.github.io/)</h1>
+</html>
 
-# CREATOR instruction description API (CAPI)
+
+## CREATOR instruction description API (CAPI)
 
 
-## Exceptions
+### Exceptions
 
 * capi_raise(msg)
   ```javascript
@@ -27,7 +31,7 @@
   ** Checks if address is aligned for this architecture.
 
 
-## Memory access
+### Memory access
 
 * capi_mem_write ( destination_address, value2store, byte_or_half_or_word )
   ```javascript
@@ -42,7 +46,7 @@
   ** Read a value from an address
 
 
-## Syscalls
+### Syscalls
 
 * capi_exit ()
   ```javascript
@@ -123,7 +127,7 @@
   ** Get power consumption.
 
 
-## Check stack
+### Check stack
 
 * capi_callconv_begin ( addr )
   ```javascript
@@ -144,7 +148,7 @@
   ** Description.
 
 
-## Draw stack
+### Draw stack
 
 * capi_drawstack_begin ( addr )
   ```javascript
@@ -159,7 +163,7 @@
   ** Description
 
 
-## Representation
+### Representation
 
 * capi_split_double ( reg, index )
   ```javascript
