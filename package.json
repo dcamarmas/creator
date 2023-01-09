@@ -10,9 +10,9 @@
   },
   "dependencies": {
     "colors": "^1.4.0",
-    "jshint": "^2.13.5",
+    "jshint": "^2.13.6",
     "readline-sync": "^1.4.10",
-    "terser": "^5.15.0",
-    "yargs": "^17.6.0"
+    "terser": "^5.16.1",
+    "yargs": "^17.6.2"
   }
 }
