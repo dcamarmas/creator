@@ -1,5 +1,5 @@
 /*
- *  Copyright 2018-2022 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
+ *  Copyright 2018-2023 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
  *  This file is part of CREATOR.
  *
@@ -27,17 +27,25 @@
 
   function creator_ga ( category, action, label )
   {
-      if (typeof ga === "undefined") {
-          return ;
-      }
-
+    if (typeof ga !== "undefined") {
       if (is_ga_initialize == false)
       {
-          ga('create', 'UA-186823627-2', 'auto') ;
-          ga('set', 'transport', 'beacon') ;
-          is_ga_initialize = true ;
+        ga('create', 'UA-186823627-2', 'auto') ;
+        ga('set', 'transport', 'beacon') ;
+        is_ga_initialize = true ;
       }
 
       ga('send', 'event', category, action, label) ;
+    }
+
+    if (typeof gtag !== "undefined") {
+
+      gtag('event',
+            action,
+            {
+              'event_category' : "creator_"+category,
+              'event_label' : label
+            });
+    }
   }
 
