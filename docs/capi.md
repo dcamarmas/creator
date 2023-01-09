@@ -8,7 +8,7 @@
 
 ### Exceptions
 
-* capi_raise(msg) &rarr; Show a error message.
+* capi_raise (msg) &rarr; Show a error message.
   ```javascript
   capi_raise('Problem detected :-(') ;
   ```
@@ -146,49 +146,64 @@
 
 ### Representation
 
-* capi_split_double ( reg, index ) &rarr; Description.
-  ```javascript
-  var val = capi_split_double(ft, 0);
-  ```
-
-* capi_uint2float32 ( value ) &rarr; Description.
-  ```javascript
-  capi_uint2float32(5) ;
-  ```
-
-* capi_float322uint ( value ) &rarr; Description.
-  ```javascript
-  capi_float322uint(5) ;
-  ```
-
-* capi_int2uint ( value ) &rarr; Description.
+* capi_int2uint ( value ) &rarr; Signed integer to unsigned integer
   ```javascript
   capi_int2uint(5) ;
   ```
 
-* capi_uint2int ( value ) &rarr; Description.
+* capi_uint2int ( value ) &rarr; Unsigned integer to signed integer.
   ```javascript
   capi_uint2int(5) ;
   ```
-
-* capi_uint2float64 ( value0, value1 ) &rarr; Description.
+  
+* capi_uint2float32 ( value ) &rarr; Unsigned integer to simple precision IEEE754.
+  ```javascript
+  capi_uint2float32(5) ;
+  ```
+  
+* capi_float322uint ( value ) &rarr; Simple precision IEEE754 to unsigned integer.
+  ```javascript
+  capi_float322uint(5) ;
+  ```
+  
+* capi_uint2float64 ( value0, value1 ) &rarr; Unsigned integer to double precision IEEE754.
   ```javascript
   capi_uint2float64 ( value0, value1 )
   ```
 
-* capi_float642uint ( value ) &rarr; Description.
+* capi_float642uint ( value ) &rarr; Double precision IEEE754 to unsigned integer.
   ```javascript
   capi_float642uint(5) ;
   ```
-
-* capi_check_ieee ( s, e, m ) &rarr; Description.
-  ```javascript
-  rd = capi_check_ieee(parseInt(a[0]), parseInt(a.slice(1,9), 2), parseInt(a.slice(10), 2));
-  ```
-
-* capi_float2bin ( f ) &rarr; Description.
+  
+* capi_float2bin ( f ) &rarr; Simple precision IEEE754 to binary.
   ```javascript
   capi_float2bin(5) ;
   let a = capi_float2bin(rs1);
   ```
+  
+* capi_split_double ( reg, index ) &rarr; Given a double precision IEEE 754 value, get the 32-bits most significant (index=1) bits or the least significant bits (index=0).
+  ```javascript
+  var val = capi_split_double(ft, 0);
+  ```
+
+* capi_check_ieee ( s, e, m ) &rarr; Indicates the type of a value:
+  * 0 &rarr; -infinite
+  * 1 &rarr; -normalized number
+  * 2 &rarr; -non-normalized number
+  * 3 &rarr; -0
+  * 4 &rarr; +0
+  * 5 &rarr; +normalized number
+  * 6 &rarr; +non-normalized number
+  * 7 &rarr; +inf
+  * 8 &rarr; -NaN
+  * 9 &rarr; +NaN
+  
+  <br />
+  
+  ```javascript
+  rd = capi_check_ieee(parseInt(a[0]), parseInt(a.slice(1,9), 2), parseInt(a.slice(10), 2));
+  ```
+
+
 
