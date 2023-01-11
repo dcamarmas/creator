@@ -90,7 +90,7 @@
                       if (e.name == load_architectures[i].id)
                       {
                         var aux_architecture = JSON.parse(load_architectures[i].architecture);
-                        uielto_preload_architecture.methods.load_arch_select_aux(e.name, aux_architecture, true, e);
+                        uielto_preload_architecture.methods.load_arch_select_aux(e.file, aux_architecture, true, e);
 
                         //Refresh UI
                         hide_loading();
@@ -109,7 +109,7 @@
                     });
 
                     //Read architecture JSON
-                    $.getJSON('architecture/'+e.name+'.json' + "?v=" + new Date().getTime(), function(cfg){
+                    $.getJSON('architecture/'+e.file+'.json' + "?v=" + new Date().getTime(), function(cfg){
                       uielto_preload_architecture.methods.load_arch_select_aux(e.name, cfg, true, e);
 
                       //Refresh UI
