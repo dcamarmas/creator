@@ -52,6 +52,41 @@ function capi_bad_align ( addr, type )
 }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /*
  *  CREATOR instruction description API:
  *  Memory access
@@ -63,7 +98,7 @@ function capi_bad_align ( addr, type )
  * Description: similar to memmove/memcpy, store a value into an address
  */
 
-function capi_mem_write ( addr, value, type )
+function capi_mem_write ( addr, value, type, reg_name )
 {
 	var size = 1 ;
 
@@ -90,6 +125,17 @@ function capi_mem_write ( addr, value, type )
 		capi_raise("Invalid memory access to address '0x" + addr.toString(16) + "'") ;
 		creator_executor_exit( true );
 	}
+
+	// 4) Call convenction
+	var ret = crex_findReg(reg_name) ;
+	if (ret.match == 0) {
+		return;
+	}
+
+	var i = ret.indexComp ;
+	var j = ret.indexElem ;
+
+	creator_callstack_newWrite(i, j, addr, type);
 }
 
 /*
@@ -98,7 +144,7 @@ function capi_mem_write ( addr, value, type )
  * Description: read a value from an address
  */
 
-function capi_mem_read ( addr, type )
+function capi_mem_read ( addr, type, reg_name )
 {
 	var size = 1 ;
 	var val  = 0x0 ;
@@ -127,8 +173,21 @@ function capi_mem_read ( addr, type )
 	   creator_executor_exit( true );
 	}
 
-	// 4) return value
-	return creator_memory_value_by_type(val, type) ;
+	var ret = creator_memory_value_by_type(val, type) ;
+
+	// 4) Call convenction
+	var find_ret = crex_findReg(reg_name) ;
+	if (find_ret.match == 0) {
+		return ret;
+	}
+
+	var i = find_ret.indexComp ;
+	var j = find_ret.indexElem ;
+	
+	creator_callstack_newRead(i, j, addr, type);
+
+	// 5) return value
+	return ret ;
 }
 
 
@@ -424,29 +483,6 @@ function capi_callconv_end ()
 
 	// User notification
 	crex_show_notification(ret.msg, 'danger') ;
-}
-
-function capi_callconv_memAction ( action, addr, reg_name, type )
-{
-	// 1) search for reg_name...
-	var ret = crex_findReg(reg_name) ;
-	if (ret.match == 0) {
-		return;
-	}
-
-	var i = ret.indexComp ;
-	var j = ret.indexElem ;
-
-	// 2) switch action...
-	switch (action) 
-	{
-		case 'write': creator_callstack_newWrite(i, j, addr, type);
-					  break;
-		case 'read':  creator_callstack_newRead(i, j, addr, type);
-					  break;
-		default:      crex_show_notification(" Unknown action '" + action + "' at ...sing_convention_memory.\n", 'danger') ;
-					  break;
-	}
 }
 
 
