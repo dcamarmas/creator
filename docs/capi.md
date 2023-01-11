@@ -32,12 +32,12 @@
 
 * capi_mem_write ( destination_address, value2store, byte_or_half_or_word, reg_name ) &rarr; Store a value into an address.
   ```javascript
-  capi_mem_write(base+off+4, val, 'w');
+  capi_mem_write(base+off+4, val, 'w', rt_name);
   ```
 
 * capi_mem_read ( source_address, byte_or_half_or_word, reg_name ) &rarr; Read a value from an address.
   ```javascript
-  capi_mem_read(0x12345, 'b') ;
+  capi_mem_read(0x12345, 'b', rt_name) ;
   ```
 
 
