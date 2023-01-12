@@ -8,12 +8,12 @@
 
 ### Exceptions
 
-* capi_raise (msg) &rarr; Show a error message.
+* capi_raise (msg) &rarr; Show an error message.
   ```javascript
   capi_raise('Problem detected :-(') ;
   ```
 
-* capi_arithmetic_overflow ( op1, op2, res_u ) &rarr; Checks if there is some arithmetic overflow (result 30 is not in range).
+* capi_arithmetic_overflow ( op1, op2, res_u ) &rarr; Checks if there is some arithmetic overflow.
   ```javascript
   var isover = capi_arithmetic_overflow(rs1, inm, rs1+inm);
   if (isover)
@@ -72,55 +72,43 @@
 #### Syscall examples (ecall RISC-V)  
   
   ```javascript
-  switch(a7){
-    case 1:
-    capi_print_int('a0');
-    break;
-    case 2:
-    capi_print_float('fa0');
-    break;
-    case 3:
-    capi_print_double('fa0');
-    break;
-    case 4:
-    capi_print_string('a0');
-    break;
-    case 5:
-    capi_read_int('a0');
-    break;
-    case 6:
-    capi_read_float('fa0');
-    break;
-    case 7:
-    capi_read_double('fa0');
-    break;
-    case 8:
-    capi_read_string('a0', 'a1');
-    break;
-    case 9:
-    capi_sbrk('a0', 'a0');
-    break;
-    case 10:
-    capi_exit();
-    break;
-    case 11:
-    capi_print_char('a0');
-    break;
-    case 12:
-    capi_read_char('a0');
-    break;
+  switch(a7) {
+    case 1:  capi_print_int('a0');
+             break;
+    case 2:  capi_print_float('fa0');
+             break;
+    case 3:  capi_print_double('fa0');
+             break;
+    case 4:  capi_print_string('a0');
+             break;
+    case 5:  capi_read_int('a0');
+             break;
+    case 6:  capi_read_float('fa0');
+             break;
+    case 7:  capi_read_double('fa0');
+             break;
+    case 8:  capi_read_string('a0', 'a1');
+             break;
+    case 9:  capi_sbrk('a0', 'a0');
+             break;
+    case 10: capi_exit();
+             break;
+    case 11: capi_print_char('a0');
+             break;
+    case 12: capi_read_char('a0');
+             break;
   }
   ```
 
 
 ### Check stack
 
-* capi_callconv_begin ( addr ) &rarr; Description.
+* capi_callconv_begin ( addr ) &rarr; Save current state at the CPU that must be preserved by calling convention.
   ```javascript
   capi_callconv_begin(inm)
   ```
 
-* capi_callconv_end () &rarr; Description.
+* capi_callconv_end () &rarr; Checks if the current state at the CPU is the same as when capi_callconv_begin was called.
   ```javascript
   capi_callconv_end();
   ```
@@ -128,12 +116,12 @@
 
 ### Draw stack
 
-* capi_drawstack_begin ( addr ) &rarr; Description.
+* capi_drawstack_begin ( addr ) &rarr; It updates in the User Interface the current stack trace.
   ```javascript
   capi_drawstack_begin(inm);
   ```
 
-* capi_drawstack_end () &rarr; Description.
+* capi_drawstack_end () &rarr; It updates in the User Interface the current stack trace.
   ```javascript
   capi_drawstack_end() ;
   ```
@@ -182,7 +170,7 @@
   var val = capi_split_double(ft, 0);
   ```
 
-* capi_check_ieee ( s, e, m ) &rarr; Indicates the type of a value:
+* capi_check_ieee ( sign, exponent, mantissa ) &rarr; Indicates the type of an IEEE value:
   * 0 &rarr; -infinite
   * 1 &rarr; -normalized number
   * 2 &rarr; -non-normalized number
