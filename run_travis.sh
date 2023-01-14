@@ -234,6 +234,7 @@ done
 # Return
 #
 
-if [[ -v error ]]; then
+if [[ -n "$error" ]]; then
+    echo "Error(s) found."
     exit -1
 fi
