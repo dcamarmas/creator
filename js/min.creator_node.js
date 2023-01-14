@@ -2433,27 +2433,32 @@ function main_memory_datatypes_update ( addr )
 
 function main_memory_datatypes_update_or_create ( addr, value_human, size, type )
 {
+        var addr_i ;
+
         // get main-memory entry for the associated byte at addr
         var data = main_memory_read(addr) ;
 
         // get associated datatype to this main-memory entry
         var data_type = data.data_type ;
 
-        // if there is not associated datatype...
-        if (data_type == null)
-        {
-            // make one and link it...
+        // if not associated datatype, make on... otherwise update it
+        if (data_type == null) {
             data_type = main_memory_datatypes_packs_foravt(addr, value_human, type, size) ;
             main_memory_datatypes[addr] = data_type ;
-
-            // update main-memory reference to datatype-memory
-            data.data_type = data_type ;
-            main_memory_write(addr, data) ;
         }
-        else
-        {
+        else {
             var new_value   = main_memory_read_bydatatype(addr, data_type.type) ;
             data_type.value = new_value ;
+        }
+
+        // update main-memory referencies...
+        var data = null ;
+        for (var i=0; i<size; i++)
+        {
+             addr_i = addr + i ;
+             data = main_memory_read(addr_i) ;
+             data.data_type = data_type ;
+             main_memory_write(addr, data) ;
         }
 }
 
