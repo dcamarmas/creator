@@ -253,19 +253,27 @@ function main_memory_read_bydatatype ( addr, type )
                 case 'hu':
                 case 'half_word':
                      ret = "0x" + main_memory_read_nbytes(addr, word_size_bytes/2) ;
+		     ret = parseInt(ret, 16) ;
                      break;
 
                 case 'w':
                 case 'integer':
-                case 'float':
                 case 'word':
                      ret = "0x" + main_memory_read_nbytes(addr, word_size_bytes) ;
+		     ret = parseInt(ret, 16) ;
+                     break;
+
+                case 'float':
+                     ret = "0x" + main_memory_read_nbytes(addr, word_size_bytes) ;
+		     console.log(ret);
+			ret = hex2float(ret) ;
                      break;
 
                 case 'd':
                 case 'double':
                 case 'double_word':
                      ret = "0x" + main_memory_read_nbytes(addr, word_size_bytes*2) ;
+		     ret = hex2double(ret) ;
                      break;
 
                 case 'c':
@@ -287,10 +295,6 @@ function main_memory_read_bydatatype ( addr, type )
                      break;
 
                 case 'space':
-                     // TODO
-                     break;
-
-                case 'instruction':
                      // TODO
                      break;
         }
@@ -328,7 +332,7 @@ function main_memory_datatypes_update_or_create ( addr, value_human, size, type 
             main_memory_datatypes[addr] = data_type ;
         }
         else {
-            var new_value   = main_memory_read_bydatatype(addr, data_type.type) ;
+            var new_value   = main_memory_read_bydatatype(data_type.address, data_type.type) ;
             data_type.value = new_value ;
         }
 
