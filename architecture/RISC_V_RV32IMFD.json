@@ -1915,7 +1915,7 @@
           "valueField": "000"
         }
       ],
-      "definition": "var isover = capi_arithmetic_overflow(rs1, inm, rs1+inm);\n if (isover)\n { capi_raise('Integer Overflow'); }\n else\n { rd = rs1 + inm; }\n",
+      "definition": "rd = rs1 + inm;\n",
       "separated": [
         false,
         false,
@@ -2019,58 +2019,6 @@
       ],
       "definition": "rd = (capi_int2uint(rs1) < capi_int2uint(inm)) ? 1 : 0;",
       "separated": [
-        false,
-        false,
-        false,
-        false
-      ]
-    },
-    {
-      "name": "xori",
-      "type": "Logic",
-      "signature_definition": "F0 F3 F2 F1",
-      "signature": "xori,INT-Reg,INT-Reg,inm-signed",
-      "signatureRaw": "xori rd rs1 inm",
-      "co": "0010011",
-      "cop": "100",
-      "nwords": 1,
-      "power_consumption": 1,
-      "fields": [
-        {
-          "name": "xori",
-          "type": "co",
-          "startbit": 6,
-          "stopbit": 0
-        },
-        {
-          "name": "inm",
-          "type": "inm-signed",
-          "startbit": 31,
-          "stopbit": 20
-        },
-        {
-          "name": "rs1",
-          "type": "INT-Reg",
-          "startbit": 19,
-          "stopbit": 15
-        },
-        {
-          "name": "rd",
-          "type": "INT-Reg",
-          "startbit": 11,
-          "stopbit": 7
-        },
-        {
-          "name": "cop",
-          "type": "cop",
-          "startbit": 14,
-          "stopbit": 12,
-          "valueField": "100"
-        }
-      ],
-      "definition": "rd = rs1 ^ inm;\n",
-      "separated": [
-        false,
         false,
         false,
         false,

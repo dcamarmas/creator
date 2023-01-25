@@ -32,7 +32,7 @@
       }
 
       code_assembly = data ;
-      uielto_toolbar_btngroup.methods.assembly_compiler(code_assembly)
+      uielto_toolbar_btngroup.methods.assembly_compiler(code_assembly);
 
       // show notification
       show_notification(' The selected example has been loaded.', 'success') ;
@@ -69,6 +69,24 @@
       }
 
       return null ;
+    }
+
+    function preload_example_uri ( asm_decoded )
+    {
+      if (asm_decoded == null)
+      {
+        show_notification('Assembly not valid', 'info') ;
+        return;
+      }
+
+      code_assembly = asm_decoded ;
+      uielto_toolbar_btngroup.methods.assembly_compiler(code_assembly);
+
+      // show notification
+      show_notification('The assembly code has been loaded.', 'success') ;
+
+      // Google Analytics
+      creator_ga('example', 'example.loading', 'example.uri');
     }
 
 
@@ -135,6 +153,29 @@
           }) ;
 
           resolve('Example loaded.') ;
+        }) ;
+      }
+     },
+
+     // parameter: asm
+     {
+        'name':   'asm',
+        'action': function( app, hash )
+      {
+        return new Promise(function(resolve, reject) {
+
+          var assembly = hash.asm.trim() ;
+          if (assembly === "") 
+          {
+            return new Promise(function(resolve, reject) {
+              resolve('Empty assembly.') ;
+            }) ;
+          }
+
+          var asm_decoded = decodeURI(assembly) ;
+          preload_example_uri ( asm_decoded )
+
+          resolve('Assembly loaded.') ;
         }) ;
       }
      }
