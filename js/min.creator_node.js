@@ -3235,7 +3235,7 @@ function load_arch_select ( cfg ) //TODO: repeated?
 
 
 //
-// Console.log
+// console_log
 //
 
 var creator_debug = false ;
@@ -3243,7 +3243,7 @@ var creator_debug = false ;
 function console_log ( msg )
 {
   if (creator_debug) {
-      console.log(msg) ;
+      console_log(msg) ;
   }
 }
 
@@ -3808,10 +3808,54 @@ function assembly_compiler()
                   addr = ((addr - pending_instructions[i].address)/4)-1;
                   console_log(instructionParts);
                   console_log(addr);
-                  var fieldsLength = (startbit-stopbit)+1;
-                  var bin = bi_intToBigInt(addr,10).toString(2);
-                  //bin = bin.substring((startbit-stopbit)+1,bin.length)
-                  bin = bin.padStart(fieldsLength, "0");
+
+
+                  if (startbit.length > 1 && stopbit.length)
+                  {
+                    var fieldsLength = 0;
+                    for (var s = 0; s < startbit.length; s++) {
+                      fieldsLength = fieldsLength + startbit[s]-stopbit[s]+1;
+                    }
+
+                    console_log(fieldsLength);
+                    var bin = bi_intToBigInt(addr,10).toString(2);
+                    bin = bin.padStart(fieldsLength, "0");
+                    console_log(bin);
+
+                    var last_segment = 0;
+                    for (var s = 0; s < startbit.length; s++)
+                    {
+                      var starbit_aux = 31 - startbit[s]; //TODO: using nwords
+                      var stopbit_aux = 32 - stopbit[s]; //TODO: using nwords
+
+                      var fieldsLength2 = stopbit_aux - starbit_aux;
+                      var bin_aux = bin.substring(last_segment, fieldsLength2 + last_segment);
+
+                      last_segment = last_segment + fieldsLength2
+
+                      for (var w = 0; w < instructions.length && exit == 0; w++) {
+                        var aux = "0x" + (pending_instructions[i].address).toString(16);
+                        if(aux == instructions[w].Address){
+                          instructions_binary[w - numBinaries].loaded = instructions_binary[w - numBinaries].loaded.substring(0, instructions_binary[w - numBinaries].loaded.length - (startbit[s] + 1)) + bin_aux + instructions_binary[w - numBinaries].loaded.substring(instructions_binary[w - numBinaries].loaded.length - stopbit[s], instructions_binary[w - numBinaries].loaded.length);
+                        }
+                      }
+                    }
+                  }
+                  else
+                  {
+                    var fieldsLength = (startbit-stopbit)+1;
+                    console_log(fieldsLength);
+                    var bin = bi_intToBigInt(addr,10).toString(2);
+                    bin = bin.padStart(fieldsLength, "0");
+                    console_log(bin);
+
+                    for (var w = 0; w < instructions.length && exit == 0; w++) {
+                      var aux = "0x" + (pending_instructions[i].address).toString(16);
+                      if(aux == instructions[w].Address){
+                        instructions_binary[w - numBinaries].loaded = instructions_binary[w - numBinaries].loaded.substring(0, instructions_binary[w - numBinaries].loaded.length - (startbit + 1)) + bin.padStart(fieldsLength, "0") + instructions_binary[w - numBinaries].loaded.substring(instructions_binary[w - numBinaries].loaded.length - stopbit, instructions_binary[w - numBinaries].loaded.length);
+                      }
+                    }
+                  }
 
                   instructionParts[j] = addr;
                   var newInstruction = "";
@@ -3829,18 +3873,6 @@ function assembly_compiler()
                     var aux = "0x" + (pending_instructions[i].address).toString(16);
                     if(aux == instructions[w].Address){
                       instructions[w].loaded = newInstruction;
-                    }
-                  }
-
-                  for (var w = 0; w < instructions.length && exit == 0; w++) {
-                    var aux = "0x" + (pending_instructions[i].address).toString(16);
-                    if(aux == instructions[w].Address){
-                      instructions[w].loaded = newInstruction;
-                      console_log(w);
-                      console_log(numBinaries);
-                      console_log(w - numBinaries);
-                      console_log(bin.padStart(fieldsLength, "0"));
-                      instructions_binary[w - numBinaries].loaded = instructions_binary[w - numBinaries].loaded.substring(0, instructions_binary[w - numBinaries].loaded.length - (startbit + 1)) + bin.padStart(fieldsLength, "0") + instructions_binary[w - numBinaries].loaded.substring(instructions_binary[w - numBinaries].loaded.length - stopbit, instructions_binary[w - numBinaries].loaded.length);
                       exit = 1;
                     }
                   }
@@ -6895,8 +6927,6 @@ function execute_instruction ( )
           re = new RegExp("[Ff]"+f);
           var res = instruction_loaded.search(re);
 
-          console.log("ITER")
-
           if (res != -1)
           {
             var value = null;
@@ -6930,7 +6960,7 @@ function execute_instruction ( )
               case "address":
               case "offset_bytes":
               case "offset_words":
-                var bin;
+                var bin = "";
 
                 //Get binary
                 if(architecture.instructions[i].separated && architecture.instructions[i].separated[f] == true){
@@ -6941,11 +6971,7 @@ function execute_instruction ( )
                 else{
                   bin = instructionExec.substring(((instruction_nwords*31) - instruction_fields[f].startbit), ((instruction_nwords*32) - instruction_fields[f].stopbit))
                 }
-                console.log((instruction_nwords*31) - instruction_fields[f].startbit);
-                console.log((instruction_nwords*32) - instruction_fields[f].stopbit)
-                console.log("BIN: " + bin)
                 value = get_number_binary (bin);
-                console.log("HEX: " + value)
 
                 break; 
 
@@ -6958,8 +6984,6 @@ function execute_instruction ( )
 
         instructionExec = instruction_loaded;
         instructionExecParts = instructionExec.split(' ');
-
-        console.log(instructionExec);
 
         binary = true;
         auxIndex = i;

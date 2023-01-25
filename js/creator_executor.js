@@ -213,7 +213,7 @@ function execute_instruction ( )
               case "address":
               case "offset_bytes":
               case "offset_words":
-                var bin;
+                var bin = "";
 
                 //Get binary
                 if(architecture.instructions[i].separated && architecture.instructions[i].separated[f] == true){
@@ -224,11 +224,7 @@ function execute_instruction ( )
                 else{
                   bin = instructionExec.substring(((instruction_nwords*31) - instruction_fields[f].startbit), ((instruction_nwords*32) - instruction_fields[f].stopbit))
                 }
-                console.log((instruction_nwords*31) - instruction_fields[f].startbit);
-                console.log((instruction_nwords*32) - instruction_fields[f].stopbit)
-                console.log("BIN: " + bin)
                 value = get_number_binary (bin);
-                console.log("HEX: " + value)
 
                 break; 
 
@@ -241,8 +237,6 @@ function execute_instruction ( )
 
         instructionExec = instruction_loaded;
         instructionExecParts = instructionExec.split(' ');
-
-        console.log(instructionExec);
 
         binary = true;
         auxIndex = i;
