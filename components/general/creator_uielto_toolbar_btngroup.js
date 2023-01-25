@@ -515,6 +515,10 @@
             '    <span class="far fa-file-alt"></span>' +
             '    Examples' +
             '  </b-dropdown-item>' +
+            '  <b-dropdown-item v-b-modal.make_uri>' +
+            '    <span class="fa fa-link"></span>' +
+            '    Get code as URI' +
+            '  </b-dropdown-item>' +
             '</b-dropdown>'
   }
 
