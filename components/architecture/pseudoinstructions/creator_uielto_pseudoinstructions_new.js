@@ -30,7 +30,7 @@
         data:       function () {
                       return {
                         //Pseudoinstruction field number
-                        number_fields: "1",
+                        number_fields: "0",
                         
                         //Intructions form
                         pseudoinstruction: {
@@ -582,8 +582,8 @@
                         }
 
                         //Lower limit
-                        if(this.number_fields < 1){
-                          this.number_fields = 1;
+                        if(this.number_fields < 0){
+                          this.number_fields = 0;
                         }
 
                         //Add fields
@@ -682,7 +682,7 @@
                         this.pseudoinstruction.signature_definition = '';
                         this.pseudoinstruction.signature ='';
                         this.pseudoinstruction.signatureRaw = '';
-                        this.number_fields = 1;
+                        this.number_fields = 0;
                         this.pseudoinstruction.fields = [{name: '', type: '', startbit: '', stopbit: ''}];
                         this.pseudoinstruction.definition = '';
                       },

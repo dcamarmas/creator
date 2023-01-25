@@ -35,7 +35,7 @@
         data:       function () {
                       return {
                         //Pseudoinstruction field number
-                        number_fields: "1",
+                        number_fields: "0",
 
                         //Modal pagination
                         pseudoinstruction_page: 1,
@@ -546,8 +546,8 @@
                         }
 
                         //Lower limit
-                        if(this._props.number_fields < 1){
-                          this._props.number_fields = 1;
+                        if(this._props.number_fields < 0){
+                          this._props.number_fields = 0;
                         }
 
                         //Add fields
@@ -693,7 +693,7 @@
                     '' +
                     '      <b-form-group label="Number of fields: ">' +
                     '        <b-form-input type="text" ' +
-                    '                      min="1" ' +
+                    '                      min="0" ' +
                     '                      :max="32 * pseudoinstruction.nwords" ' +
                     '                      v-model="number_fields" ' +
                     '                      required ' +

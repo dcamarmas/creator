@@ -145,38 +145,101 @@ function execute_instruction ( )
       var numCopCorrect = 0;
 
       for (var y = 0; y < architecture.instructions[i].fields.length; y++) {
-        if(architecture.instructions[i].fields[y].type == "co"){
+        if(architecture.instructions[i].fields[y].type == "co")
+        {
           coStartbit = 31 - parseInt(architecture.instructions[i].fields[y].startbit);
           coStopbit = 32 - parseInt(architecture.instructions[i].fields[y].stopbit);
         }
       }
 
-      if(architecture.instructions[i].co == instructionExecParts[0].substring(coStartbit,coStopbit)){
-        if(architecture.instructions[i].cop != null && architecture.instructions[i].cop != ''){
-          for (var j = 0; j < architecture.instructions[i].fields.length; j++){
-            if (architecture.instructions[i].fields[j].type == "cop") {
+      if(architecture.instructions[i].co == instructionExecParts[0].substring(coStartbit,coStopbit))
+      {
+        if(architecture.instructions[i].cop != null && architecture.instructions[i].cop != '')
+        {
+          for (var j = 0; j < architecture.instructions[i].fields.length; j++)
+          {
+            if (architecture.instructions[i].fields[j].type == "cop")
+            {
               numCop++;
               if (architecture.instructions[i].fields[j].valueField == instructionExecParts[0].substring(((architecture.instructions[i].nwords*31) - architecture.instructions[i].fields[j].startbit), ((architecture.instructions[i].nwords*32) - architecture.instructions[i].fields[j].stopbit))) {
                 numCopCorrect++;
               }
             }
           }
-          if(numCop == numCopCorrect){
-            auxDef = architecture.instructions[i].definition;
-            nwords = architecture.instructions[i].nwords;
-            binary = true;
-            auxIndex = i;
-            break;
+          if(numCop != numCopCorrect){
+            continue;
           }
         }
-        else{
-          auxDef = architecture.instructions[i].definition;
-          nwords = architecture.instructions[i].nwords;
-          binary = true;
-          type = architecture.instructions[i].type;
-          auxIndex = i;
-          break;
+
+        var instruction_loaded    = architecture.instructions[i].signature_definition;
+        var instruction_fields    = architecture.instructions[i].fields;
+        var instruction_nwords    = architecture.instructions[i].nwords;   
+
+        for (var f = 0; f < instruction_fields.length; f++) 
+        {
+          re = new RegExp("[Ff]"+f);
+          var res = instruction_loaded.search(re);
+
+          if (res != -1)
+          {
+            var value = null;
+            re = new RegExp("[Ff]"+f, "g");
+            switch(instruction_fields[f].type)
+            {
+              case "co":
+                value = instruction_fields[f].name;
+                break;
+
+              //TODO: unify register type by register file on architecture
+              case "INT-Reg":
+                var bin = instructionExec.substring(((instruction_nwords*31) - instruction_fields[f].startbit), ((instruction_nwords*32) - instruction_fields[f].stopbit));
+                value = get_register_binary ("int_registers", bin);
+                break; 
+              case "SFP-Reg":
+                var bin = instructionExec.substring(((instruction_nwords*31) - instruction_fields[f].startbit), ((instruction_nwords*32) - instruction_fields[f].stopbit));
+                value = get_register_binary ("fp_registers", bin);
+                break; 
+              case "DFP-Reg":
+                var bin = instructionExec.substring(((instruction_nwords*31) - instruction_fields[f].startbit), ((instruction_nwords*32) - instruction_fields[f].stopbit));
+                value = get_register_binary ("fp_registers", bin);
+                break; 
+              case "Ctrl-Reg":
+                var bin = instructionExec.substring(((instruction_nwords*31) - instruction_fields[f].startbit), ((instruction_nwords*32) - instruction_fields[f].stopbit));
+                value = get_register_binary ("ctrl_registers", bin);
+                break; 
+
+              case "inm-signed":
+              case "inm-unsigned":
+              case "address":
+              case "offset_bytes":
+              case "offset_words":
+                var bin = "";
+
+                //Get binary
+                if(architecture.instructions[i].separated && architecture.instructions[i].separated[f] == true){
+                  for (var sep_index = 0; sep_index < architecture.instructions[i].fields[f].startbit.length; sep_index++) {
+                    bin = bin + instructionExec.substring(((instruction_nwords*31) - instruction_fields[f].startbit[sep_index]), ((instruction_nwords*32) - instruction_fields[f].stopbit[sep_index]))
+                  }
+                }
+                else{
+                  bin = instructionExec.substring(((instruction_nwords*31) - instruction_fields[f].startbit), ((instruction_nwords*32) - instruction_fields[f].stopbit))
+                }
+                value = get_number_binary (bin);
+
+                break; 
+
+              default:
+                break
+            }
+            instruction_loaded = instruction_loaded.replace(re, value);
+          }
         }
+
+        instructionExec = instruction_loaded;
+        instructionExecParts = instructionExec.split(' ');
+
+        binary = true;
+        auxIndex = i;
       }
 
       if (architecture.instructions[i].name == instructionExecParts[0] && instructionExecParts.length == auxSig.length)
@@ -231,74 +294,69 @@ function execute_instruction ( )
       var readings_description = "";
       var writings_description = "";
 
-      if (binary == true) {
-        auxDef = execute_binary(auxIndex, instructionExecParts, auxDef);
+      //TODO: move to the compilation stage
+      re = new RegExp(signatureDef+"$");
+      var match = re.exec(instructionExec);
+      instructionExecParts = [];
+
+      for(var j = 1; j < match.length; j++){
+        instructionExecParts.push(match[j]);
       }
-      else{
-        //TODO: move to the compilation stage
-        re = new RegExp(signatureDef+"$");
-        var match = re.exec(instructionExec);
-        instructionExecParts = [];
+      //END TODO
 
-        for(var j = 1; j < match.length; j++){
-          instructionExecParts.push(match[j]);
-        }
-        //END TODO
+      console_log(instructionExecParts);
 
-        console_log(instructionExecParts);
+      var var_readings_definitions      = {};
+      var var_readings_definitions_prev = {};
+      var var_readings_definitions_name = {};
+      var var_writings_definitions      = {};
 
-        var var_readings_definitions      = {};
-        var var_readings_definitions_prev = {};
-        var var_readings_definitions_name = {};
-        var var_writings_definitions      = {};
-
-        //Generate all registers, values, etc. readings
-        for (var i = 1; i < signatureRawParts.length; i++)
+      //Generate all registers, values, etc. readings
+      for (var i = 1; i < signatureRawParts.length; i++)
+      {
+        if (signatureParts[i] == "INT-Reg" || signatureParts[i] == "SFP-Reg" || signatureParts[i] == "DFP-Reg" || signatureParts[i] == "Ctrl-Reg")
         {
-          if (signatureParts[i] == "INT-Reg" || signatureParts[i] == "SFP-Reg" || signatureParts[i] == "DFP-Reg" || signatureParts[i] == "Ctrl-Reg")
+          for (var j = 0; j < architecture.components.length; j++)
           {
-            for (var j = 0; j < architecture.components.length; j++)
+            for (var z = architecture.components[j].elements.length-1; z >= 0; z--)
             {
-              for (var z = architecture.components[j].elements.length-1; z >= 0; z--)
+              if (architecture.components[j].elements[z].name.includes(instructionExecParts[i]))
               {
-                if (architecture.components[j].elements[z].name.includes(instructionExecParts[i]))
-                {
-                  var_readings_definitions[signatureRawParts[i]]      = "var " + signatureRawParts[i] + "      = readRegister ("+j+" ,"+z+", \""+ signatureParts[i] + "\");\n"
-                  var_readings_definitions_prev[signatureRawParts[i]] = "var " + signatureRawParts[i] + "_prev = readRegister ("+j+" ,"+z+", \""+ signatureParts[i] + "\");\n"
-                  var_readings_definitions_name[signatureRawParts[i]] = "var " + signatureRawParts[i] + "_name = '" + instructionExecParts[i] + "';\n";
+                var_readings_definitions[signatureRawParts[i]]      = "var " + signatureRawParts[i] + "      = readRegister ("+j+" ,"+z+", \""+ signatureParts[i] + "\");\n"
+                var_readings_definitions_prev[signatureRawParts[i]] = "var " + signatureRawParts[i] + "_prev = readRegister ("+j+" ,"+z+", \""+ signatureParts[i] + "\");\n"
+                var_readings_definitions_name[signatureRawParts[i]] = "var " + signatureRawParts[i] + "_name = '" + instructionExecParts[i] + "';\n";
 
-                  re = new RegExp( "(?:\\W|^)(((" + signatureRawParts[i] +") *=)[^=])", "g");
-                  //If the register is in the left hand than '=' then write register always
-                  if(auxDef.search(re) != -1){
-                    var_writings_definitions[signatureRawParts[i]]  = "writeRegister("+ signatureRawParts[i] +", "+j+", "+z+", \""+ signatureParts[i] + "\");\n";
-                  }
-                  //Write register only if value is diferent
-                  else{
-                    var_writings_definitions[signatureRawParts[i]]  = "if(" + signatureRawParts[i] + " != " + signatureRawParts[i] + "_prev)" +
-                                                                      " { writeRegister("+ signatureRawParts[i]+" ,"+j+" ,"+z+", \""+ signatureParts[i] + "\"); }\n";
-                  }
-
+                re = new RegExp( "(?:\\W|^)(((" + signatureRawParts[i] +") *=)[^=])", "g");
+                //If the register is in the left hand than '=' then write register always
+                if(auxDef.search(re) != -1){
+                  var_writings_definitions[signatureRawParts[i]]  = "writeRegister("+ signatureRawParts[i] +", "+j+", "+z+", \""+ signatureParts[i] + "\");\n";
                 }
+                //Write register only if value is diferent
+                else{
+                  var_writings_definitions[signatureRawParts[i]]  = "if(" + signatureRawParts[i] + " != " + signatureRawParts[i] + "_prev)" +
+                                                                    " { writeRegister("+ signatureRawParts[i]+" ,"+j+" ,"+z+", \""+ signatureParts[i] + "\"); }\n";
+                }
+
               }
             }
           }
-          else{
-            var_readings_definitions[signatureRawParts[i]] = "var " + signatureRawParts[i] + " = " + instructionExecParts[i] + ";\n";
-          }
         }
+        else{
+          var_readings_definitions[signatureRawParts[i]] = "var " + signatureRawParts[i] + " = " + instructionExecParts[i] + ";\n";
+        }
+      }
 
-        for (var elto in var_readings_definitions){
-           readings_description = readings_description + var_readings_definitions[elto];
-        }
-        for (var elto in var_readings_definitions_prev){
-           readings_description = readings_description + var_readings_definitions_prev[elto];
-        }
-        for (var elto in var_readings_definitions_name){
-           readings_description = readings_description + var_readings_definitions_name[elto];
-        }
-        for (var elto in var_writings_definitions){
-           writings_description = writings_description + var_writings_definitions[elto];
-        }
+      for (var elto in var_readings_definitions){
+         readings_description = readings_description + var_readings_definitions[elto];
+      }
+      for (var elto in var_readings_definitions_prev){
+         readings_description = readings_description + var_readings_definitions_prev[elto];
+      }
+      for (var elto in var_readings_definitions_name){
+         readings_description = readings_description + var_readings_definitions_name[elto];
+      }
+      for (var elto in var_writings_definitions){
+         writings_description = writings_description + var_writings_definitions[elto];
       }
 
       // writeRegister and readRegister direcly named include into the definition
@@ -828,146 +886,27 @@ function keyboard_read ( fn_post_read, fn_post_params )
  *  Execute binary
  */
 
-function execute_binary ( index, instructionExecParts, auxDef )
+function get_register_binary (type, bin)
 {
-  console_log("Binary");
-
-  for (var j = 0; j < architecture.instructions[index].fields.length; j++)
+  for (var i = 0; i < architecture.components.length; i++)
   {
-    console_log(instructionExecParts[0]);
-    console_log(architecture.instructions[index].fields.length);
-    if(architecture.instructions[index].fields[j].type == "INT-Reg" || architecture.instructions[index].fields[j].type == "SFP-Reg" || architecture.instructions[index].fields[j].type == "DFP-Reg" || architecture.instructions[index].fields[j].type == "Ctrl-Reg") {
-      console_log(instructionExecParts[0].substring(((architecture.instructions[index].nwords*31) - architecture.instructions[index].fields[j].startbit), ((architecture.instructions[index].nwords*32) - architecture.instructions[index].fields[j].stopbit)));
-
-      for (var z = 0; z < architecture.components.length; z++){
-        console_log(architecture.components[z].type)
-        if(architecture.components[z].type == "ctrl_registers" && architecture.instructions[index].fields[j].type == "Ctrl-Reg"){
-          for (var w = 0; w < architecture.components[z].elements.length; w++){
-            var auxLength = ((architecture.instructions[index].nwords*32) - architecture.instructions[index].fields[j].stopbit) - ((architecture.instructions[index].nwords*31) - architecture.instructions[index].fields[j].startbit);
-            console_log(auxLength);
-            console_log((w.toString(2)).padStart(auxLength, "0"));
-            if((w.toString(2)).padStart(auxLength, "0") == instructionExecParts[0].substring(((architecture.instructions[index].nwords*31) - architecture.instructions[index].fields[j].startbit), ((architecture.instructions[index].nwords*32) - architecture.instructions[index].fields[j].stopbit))){
-
-            }
-          }
-        }
-        if(architecture.components[z].type == "int_registers" && architecture.instructions[index].fields[j].type == "INT-Reg"){
-          for (var w = 0; w < architecture.components[z].elements.length; w++){
-            var auxLength = ((architecture.instructions[index].nwords*32) - architecture.instructions[index].fields[j].stopbit) - ((architecture.instructions[index].nwords*31) - architecture.instructions[index].fields[j].startbit);
-            console_log(auxLength);
-            console_log((w.toString(2)).padStart(auxLength, "0"));
-            if((w.toString(2)).padStart(auxLength, "0") == instructionExecParts[0].substring(((architecture.instructions[index].nwords*31) - architecture.instructions[index].fields[j].startbit), ((architecture.instructions[index].nwords*32) - architecture.instructions[index].fields[j].stopbit))){
-              var re = new RegExp(architecture.instructions[index].fields[j].name,"g");
-              auxDef = auxDef.replace(re, architecture.components[z].elements[w].name[0]);
-            }
-          }
-        }
-        if(architecture.components[z].type == "fp_registers" && architecture.components[z].double_precision == false && architecture.instructions[index].fields[j].type == "SFP-Reg"){
-          for (var w = 0; w < architecture.components[z].elements.length; w++){
-            var auxLength = ((architecture.instructions[index].nwords*32) - architecture.instructions[index].fields[j].stopbit) - ((architecture.instructions[index].nwords*31) - architecture.instructions[index].fields[j].startbit);
-            console_log(auxLength);
-            console_log((w.toString(2)).padStart(auxLength, "0"));
-            if((w.toString(2)).padStart(auxLength, "0") == instructionExecParts[0].substring(((architecture.instructions[index].nwords*31) - architecture.instructions[index].fields[j].startbit), ((architecture.instructions[index].nwords*32) - architecture.instructions[index].fields[j].stopbit))){
-              var re = new RegExp(architecture.instructions[index].fields[j].name,"g");
-              auxDef = auxDef.replace(re, architecture.components[z].elements[w].name[0]);
-            }
-          }
-        }
-        if(architecture.components[z].type == "fp_registers" && architecture.components[z].double_precision == true && architecture.instructions[index].fields[j].type == "DFP-Reg"){
-          for (var w = 0; w < architecture.components[z].elements.length; w++){
-            var auxLength = ((architecture.instructions[index].nwords*32) - architecture.instructions[index].fields[j].stopbit) - ((architecture.instructions[index].nwords*31) - architecture.instructions[index].fields[j].startbit);
-            console_log(auxLength);
-            console_log((w.toString(2)).padStart(auxLength, "0"));
-            if((w.toString(2)).padStart(auxLength, "0") == instructionExecParts[0].substring(((architecture.instructions[index].nwords*31) - architecture.instructions[index].fields[j].startbit), ((architecture.instructions[index].nwords*32) - architecture.instructions[index].fields[j].stopbit))){
-              var re = new RegExp(architecture.instructions[index].fields[j].name,"g");
-              auxDef = auxDef.replace(re, architecture.components[z].elements[w].name[0]);
-            }
-          }
+    if(architecture.components[i].type == type)
+    {
+      for (var j = 0; j < architecture.components[i].elements.length; j++)
+      {
+        var len = bin.length;
+        if((j.toString(2)).padStart(len, "0") == bin){
+          return architecture.components[i].elements[j].name[0];
         }
       }
-    }
-
-    if(architecture.instructions[index].fields[j].type == "inm-signed"){
-      var value = "";
-      if(architecture.instructions[index].separated && architecture.instructions[index].separated[j] == true){
-        for (var sep_index = 0; sep_index < architecture.instructions[index].fields[j].startbit.length; sep_index++) {
-          value = value + instructionExecParts[0].substring(((architecture.instructions[index].nwords*31) - architecture.instructions[index].fields[j].startbit[sep_index]), ((architecture.instructions[index].nwords*32) - architecture.instructions[index].fields[j].stopbit[sep_index]))
-        }
-      }
-      else{
-        value = instructionExecParts[0].substring(((architecture.instructions[index].nwords*31) - architecture.instructions[index].fields[j].startbit), ((architecture.instructions[index].nwords*32) - architecture.instructions[index].fields[j].stopbit))
-      }
-      var valueSign = value.charAt(0);
-      var newValue =  value.padStart(32, valueSign) ;
-      newValue = parseInt(newValue, 2) ;
-      var re = new RegExp(architecture.instructions[index].fields[j].name,"g");
-      auxDef = auxDef.replace(re, newValue >> 0);
-    }
-
-    if(architecture.instructions[index].fields[j].type == "inm-unsigned"){
-      var value = "";
-      if(architecture.instructions[index].separated && architecture.instructions[index].separated[j] == true){
-        for (var sep_index = 0; sep_index < architecture.instructions[index].fields[j].startbit.length; sep_index++) {
-          value = value + instructionExecParts[0].substring(((architecture.instructions[index].nwords*31) - architecture.instructions[index].fields[j].startbit[sep_index]), ((architecture.instructions[index].nwords*32) - architecture.instructions[index].fields[j].stopbit[sep_index]))
-        }
-      }
-      else{
-        value = instructionExecParts[0].substring(((architecture.instructions[index].nwords*31) - architecture.instructions[index].fields[j].startbit), ((architecture.instructions[index].nwords*32) - architecture.instructions[index].fields[j].stopbit))
-      }
-      newValue = parseInt(newValue, 2) ;
-      var re = new RegExp(architecture.instructions[index].fields[j].name,"g");
-      auxDef = auxDef.replace(re, newValue >> 0);
-    }
-
-    if(architecture.instructions[index].fields[j].type == "address"){
-      var value = "";
-      if(architecture.instructions[index].separated && architecture.instructions[index].separated[j] == true){
-        for (var sep_index = 0; sep_index < architecture.instructions[index].fields[j].startbit.length; sep_index++) {
-          value = value + instructionExecParts[0].substring(((architecture.instructions[index].nwords*31) - architecture.instructions[index].fields[j].startbit[sep_index]), ((architecture.instructions[index].nwords*32) - architecture.instructions[index].fields[j].stopbit[sep_index]))
-        }
-      }
-      else{
-        value = instructionExecParts[0].substring(((architecture.instructions[index].nwords*31) - architecture.instructions[index].fields[j].startbit), ((architecture.instructions[index].nwords*32) - architecture.instructions[index].fields[j].stopbit))
-      }
-      var re = new RegExp(architecture.instructions[index].fields[j].name,"g");
-      auxDef = auxDef.replace(re, parseInt(value, 2));
-    }
-
-    if(architecture.instructions[index].fields[j].type == "offset_words"){
-      var value = "";
-      if(architecture.instructions[index].separated && architecture.instructions[index].separated[j] == true){
-        for (var sep_index = 0; sep_index < architecture.instructions[index].fields[j].startbit.length; sep_index++) {
-          value = value + instructionExecParts[0].substring(((architecture.instructions[index].nwords*31) - architecture.instructions[index].fields[j].startbit[sep_index]), ((architecture.instructions[index].nwords*32) - architecture.instructions[index].fields[j].stopbit[sep_index]))
-        }
-      }
-      else{
-        value = instructionExecParts[0].substring(((architecture.instructions[index].nwords*31) - architecture.instructions[index].fields[j].startbit), ((architecture.instructions[index].nwords*32) - architecture.instructions[index].fields[j].stopbit))
-      }
-      var valueSign = value.charAt(0);
-      var newValue =  value.padStart(32, valueSign) ;
-      newValue = parseInt(newValue, 2) ;
-      var re = new RegExp(architecture.instructions[index].fields[j].name,"g");
-      auxDef = auxDef.replace(re, newValue >> 0);
-    }
-
-    if(architecture.instructions[index].fields[j].type == "offset_bytes"){
-      var value = "";
-      if(architecture.instructions[index].separated &&  architecture.instructions[index].separated[j] == true){
-        for (var sep_index = 0; sep_index < architecture.instructions[index].fields[j].startbit.length; sep_index++) {
-          value = value + instructionExecParts[0].substring(((architecture.instructions[index].nwords*31) - architecture.instructions[index].fields[j].startbit[sep_index]), ((architecture.instructions[index].nwords*32) - architecture.instructions[index].fields[j].stopbit[sep_index]))
-        }
-      }
-      else{
-        value = instructionExecParts[0].substring(((architecture.instructions[index].nwords*31) - architecture.instructions[index].fields[j].startbit), ((architecture.instructions[index].nwords*32) - architecture.instructions[index].fields[j].stopbit))
-      }
-      var valueSign = value.charAt(0);
-      var newValue =  value.padStart(32, valueSign) ;
-      newValue = parseInt(newValue, 2) ;
-      var re = new RegExp(architecture.instructions[index].fields[j].name,"g");
-      auxDef = auxDef.replace(re, newValue >> 0);
     }
   }
 
-  return auxDef;
+  return null;
 }
 
+
+function get_number_binary (bin)
+{
+  return "0x" + bin2hex(bin);
+}
