@@ -431,12 +431,12 @@
                 '                      title="Instruction size">' +
                 '        </b-form-input>' +
                 '      </b-form-group>' +
-                '      <b-form-group label="Power Consumption:">' +
+                '      <b-form-group label="CLK Cycles:">' +
                 '        <b-form-input type="number" ' +
                 '                      min="1" ' +
                 '                      v-model="instruction.power_consumption" ' +
                 '                      required ' +
-                '                      placeholder="Enter power consumption" ' +
+                '                      placeholder="Enter CLK Cycles" ' +
                 '                      :state="valid(instruction.power_consumption)" ' +
                 '                      size="sm" ' +
                 '                      title="Intruction size">' +
@@ -444,7 +444,7 @@
                 '      </b-form-group>' +
                 '      <b-form-group label="Number of fields: (Including co and cop)">' +
                 '        <b-form-input type="text" ' +
-                '                      min="1" ' +
+                '                      min="0" ' +
                 '                      :max="32 * instruction.nwords" ' +
                 '                      v-model="number_fields" ' +
                 '                      required ' +
