@@ -66,10 +66,16 @@
 
         template:   '<b-modal  :id = "id"' +
                     '          title = "URI" ' +
-                    '          ok-title="Copy" ' +
-                    '          @ok="copy_uri">' +
+                    '          hide-footer' +
+                    '          class="text-center">' +
                     ' ' +
-                    '  <b-form-textarea v-model="make_uri()" :rows="4"></b-form-textarea> ' +
+                    '  <div class="text-center">' +
+                    '    <b-form-textarea v-model="make_uri()" :rows="4"></b-form-textarea> ' +
+                    '    <br> ' +
+                    '    <b-button variant="info" @click="copy_uri()">' +
+                    '      <span class="fas fa-copy"></span> Copy' +
+                    '    </b-button>' +
+                    '  </div>' +
                     '</b-modal>'
   }
 
