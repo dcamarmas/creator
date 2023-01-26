@@ -36,31 +36,12 @@
         methods:    {
                       make_uri ()
                       {
-                        return "https://dcamarmas.github.io/creator/?architecture=rv&asm=" + encodeURIComponent(code_assembly);
+                        return document.URL + "?architecture="+ encodeURIComponent(app._data.architecture_name) + "&asm=" + encodeURIComponent(code_assembly);
                       },
 
                       copy_uri ()
                       {
-                        // Create a dummy input to copy the string array inside it
-                        var dummy = document.createElement("input");
-
-                        // Add it to the document
-                        document.body.appendChild(dummy);
-
-                        // Set its ID
-                        dummy.setAttribute("id", "dummy_id");
-
-                        // Output the array into it
-                        document.getElementById("dummy_id").value="https://dcamarmas.github.io/creator/?architecture=rv&asm=" + encodeURIComponent(code_assembly);
-
-                        // Select it
-                        dummy.select();
-
-                        // Copy its contents
-                        document.execCommand("copy");
-
-                        // Remove it as its not needed anymore
-                        document.body.removeChild(dummy);
+                        navigator.clipboard.writeText(this.make_uri());
                       }
                     },
 
