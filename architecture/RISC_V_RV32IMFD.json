@@ -1805,7 +1805,7 @@
           "valueField": "001"
         }
       ],
-      "definition": "rd = capi_mem_write(inm+rs1, rs2, 'h', rs2_name);",
+      "definition": "capi_mem_write(inm+rs1, rs2, 'h', rs2_name);",
       "separated": [
         false,
         true,
@@ -1863,7 +1863,7 @@
           "valueField": "010"
         }
       ],
-      "definition": "rd = capi_mem_write(inm+rs1, rs2, 'w', rs2_name);",
+      "definition": "capi_mem_write(inm+rs1, rs2, 'w', rs2_name);",
       "separated": [
         false,
         true,
