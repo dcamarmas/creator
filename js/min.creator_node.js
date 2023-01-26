@@ -2391,7 +2391,6 @@ function main_memory_read_bydatatype ( addr, type )
 
                 case 'float':
                      ret = "0x" + main_memory_read_nbytes(addr, word_size_bytes) ;
-		     console.log(ret);
 			ret = hex2float(ret) ;
                      break;
 
