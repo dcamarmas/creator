@@ -29,29 +29,30 @@
 
         data:       function () {
                       return {
-
+                        uri: ""
                       }
                     },
 
         methods:    {
                       make_uri ()
                       {
-                        return window.location.href.split('?')[0] + "?architecture="+ encodeURIComponent(app._data.architecture_name) + "&asm=" + encodeURIComponent(code_assembly);
+                        this.uri = window.location.href.split('?')[0] + "?architecture="+ encodeURIComponent(app._data.architecture_name) + "&asm=" + encodeURIComponent(textarea_assembly_editor.getValue());
                       },
 
                       copy_uri ()
                       {
-                        navigator.clipboard.writeText(this.make_uri());
+                        navigator.clipboard.writeText(this.uri);
                       }
                     },
 
         template:   '<b-modal  :id = "id"' +
                     '          title = "URI" ' +
                     '          hide-footer' +
-                    '          class="text-center">' +
+                    '          class="text-center"' +
+                    '          @shown=make_uri>' +
                     ' ' +
                     '  <div class="text-center">' +
-                    '    <b-form-textarea v-model="make_uri()" :rows="4"></b-form-textarea> ' +
+                    '    <b-form-textarea v-model="uri" :rows="5"></b-form-textarea> ' +
                     '    <br> ' +
                     '    <b-button variant="info" @click="copy_uri()">' +
                     '      <span class="fas fa-copy"></span> Copy' +
