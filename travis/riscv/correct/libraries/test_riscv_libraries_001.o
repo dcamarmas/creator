@@ -1,0 +1,84 @@
+{
+  "instructions_binary": [
+    {
+      "Break": null,
+      "Address": "0x0",
+      "Label": "max",
+      "loaded": "00000000101101010101000011100011",
+      "user": null,
+      "_rowVariant": "",
+      "visible": false,
+      "globl": true
+    },
+    {
+      "Break": null,
+      "Address": "0x4",
+      "Label": "",
+      "loaded": "00000000000001011000010100010011",
+      "user": null,
+      "_rowVariant": "",
+      "visible": false
+    },
+    {
+      "Break": null,
+      "Address": "0x8",
+      "Label": "bigger_symbol",
+      "loaded": "00000000000000001000000001100111",
+      "user": null,
+      "_rowVariant": "",
+      "visible": false,
+      "globl": false
+    },
+    {
+      "Break": null,
+      "Address": "0xc",
+      "Label": "min",
+      "loaded": "00000000101001011101000011100011",
+      "user": null,
+      "_rowVariant": "",
+      "visible": false,
+      "globl": true
+    },
+    {
+      "Break": null,
+      "Address": "0x10",
+      "Label": "",
+      "loaded": "00000000000001011000010100010011",
+      "user": null,
+      "_rowVariant": "",
+      "visible": false
+    },
+    {
+      "Break": null,
+      "Address": "0x14",
+      "Label": "minor_symbol",
+      "loaded": "00000000000000001000000001100111",
+      "user": null,
+      "_rowVariant": "",
+      "visible": false,
+      "globl": false
+    }
+  ],
+  "instructions_tag": [
+    {
+      "tag": "max",
+      "addr": 0,
+      "globl": true
+    },
+    {
+      "tag": "bigger_symbol",
+      "addr": 8,
+      "globl": false
+    },
+    {
+      "tag": "min",
+      "addr": 12,
+      "globl": true
+    },
+    {
+      "tag": "minor_symbol",
+      "addr": 20,
+      "globl": false
+    }
+  ]
+}

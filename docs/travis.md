@@ -30,6 +30,17 @@
 
     </details>
 
+  - Libraries:
+  
+    <details>
+      <summary>Click to expand</summary>
+
+      | Test Name                | Description               | In use             |
+      |:------------------------:|:-------------------------:|:------------------:|
+      | test_riscv_libraries_001 | Min and Max               | :white_check_mark: |
+
+    </details>
+
   - System calls:
   
     <details>
@@ -246,6 +257,17 @@
       | test_mips_example_009 | I/O Syscalls + Strings    | :heavy_multiplication_x: |
       | test_mips_example_011 | Subrutines                | :white_check_mark:       |
       | test_mips_example_012 | Factorial                 | :white_check_mark:       |
+
+    </details>
+
+  - Libraries:
+  
+    <details>
+      <summary>Click to expand</summary>
+
+      | Test Name               | Description               | In use             |
+      |:-----------------------:|:-------------------------:|:------------------:|
+      | test_mpis_libraries_001 | Min and Max               | :white_check_mark: |
 
     </details>
 
