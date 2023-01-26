@@ -3062,8 +3062,8 @@ var load_architectures = [];
 /*Architectures card background*/
 var back_card = [];
 /*Load architecture*/
-var architecture = {components:[], instructions:[], directives:[], memory_layout:[]};
 var architecture_hash = [];
+var architecture = {arch_conf:[], memory_layout:[], components:[], instructions:[], directives:[]};
 
 
 

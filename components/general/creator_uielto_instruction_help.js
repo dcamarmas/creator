@@ -58,6 +58,8 @@
                 ' ></b-form-input>' +
                 ' ' +
                 ' <br>' +
+                ' <a target="_blank" href="./docs/risc_v_reference_guide.pdf"><span class="fas fa-file-pdf"></span> Guide</a>' +
+                ' <br>' +
                 ' ' +
                 ' <b-table small :items="architecture.instructions" ' +
                 '                :fields="insHelpFields" ' +

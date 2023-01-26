@@ -1,0 +1,131 @@
+{
+  "arch_conf": [
+    {
+      "name": "Name",
+      "value": "New Architecture"
+    },
+    {
+      "name": "Bits",
+      "value": "32"
+    },
+    {
+      "name": "Data Format",
+      "value": "big_endian"
+    },
+    {
+      "name": "Memory Alignment",
+      "value": "1"
+    },
+    {
+      "name": "Main Function",
+      "value": "main"
+    },
+    {
+      "name": "Passing Convention",
+      "value": "0"
+    },
+    {
+      "name": "Sensitive Register Name",
+      "value": "1"
+    }
+  ],
+  "components": [
+
+  ],
+  "instructions": [
+    
+  ],
+  "directives": [
+    {
+      "name": ".data",
+      "action": "data_segment",
+      "size": null
+    },
+    {
+      "name": ".text",
+      "action": "code_segment",
+      "size": null
+    },
+    {
+      "name": ".globl",
+      "action": "global_symbol",
+      "size": null
+    },
+    {
+      "name": ".byte",
+      "action": "byte",
+      "size": 1
+    },
+    {
+      "name": ".half",
+      "action": "half_word",
+      "size": 2
+    },
+    {
+      "name": ".word",
+      "action": "word",
+      "size": 4
+    },
+    {
+      "name": ".doubleword",
+      "action": "double_word",
+      "size": 8
+    },
+    {
+      "name": ".float",
+      "action": "float",
+      "size": 4
+    },
+    {
+      "name": ".double",
+      "action": "double",
+      "size": 8
+    },
+    {
+      "name": ".space",
+      "action": "space",
+      "size": 1
+    },
+    {
+      "name": ".ascii",
+      "action": "ascii_not_null_end",
+      "size": null
+    },
+    {
+      "name": ".asciiz",
+      "action": "ascii_null_end",
+      "size": null
+    },
+    {
+      "name": ".align",
+      "action": "align",
+      "size": null
+    }
+  ],
+  "memory_layout": [
+    {
+      "name": "text start",
+      "value": "0x00000000"
+    },
+    {
+      "name": "text end",
+      "value": "0x001FFFFF"
+    },
+    {
+      "name": "data start",
+      "value": "0x00200000"
+    },
+    {
+      "name": "data end",
+      "value": "0x05BBFCBF"
+    },
+    {
+      "name": "stack start",
+      "value": "0x0FFFFFFC"
+    },
+    {
+      "name": "stack end",
+      "value": "0x0FFFFFFF"
+    }
+  ]
+}
