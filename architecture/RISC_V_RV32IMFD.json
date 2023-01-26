@@ -2666,6 +2666,58 @@
       ]
     },
     {
+      "name": "xori2",
+      "type": "Logic",
+      "signature_definition": "F0 F3 F2 F1",
+      "signature": "xori2,INT-Reg,INT-Reg,inm-signed",
+      "signatureRaw": "xori2 rd rs1 inm",
+      "co": "0010011",
+      "cop": "101",
+      "nwords": 1,
+      "power_consumption": 1,
+      "fields": [
+        {
+          "name": "xori2",
+          "type": "co",
+          "startbit": 6,
+          "stopbit": 0
+        },
+        {
+          "name": "inm",
+          "type": "inm-signed",
+          "startbit": 31,
+          "stopbit": 20
+        },
+        {
+          "name": "rs1",
+          "type": "INT-Reg",
+          "startbit": 19,
+          "stopbit": 15
+        },
+        {
+          "name": "rd",
+          "type": "INT-Reg",
+          "startbit": 11,
+          "stopbit": 7
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 14,
+          "stopbit": 12,
+          "valueField": "101"
+        }
+      ],
+      "definition": "rd = rs1 ^ inm;\n",
+      "separated": [
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
       "name": "srl",
       "type": "Arithmetic integer",
       "signature_definition": "F0 F4 F3 F2",
@@ -6335,7 +6387,7 @@
           "stopbit": 16
         }
       ],
-      "definition": "xori reg1 reg2 -1;"
+      "definition": "xori2 reg1 reg2 -1;"
     },
     {
       "name": "neg",
