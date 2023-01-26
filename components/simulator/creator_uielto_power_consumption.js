@@ -62,7 +62,7 @@
               '' +
               '     <b-col>' +
               '       <b-list-group class="align-items-center py-2 px-4">' +
-              '         <b-list-group-item>Total power consumption: {{total_power_consumption}}</b-list-group-item>' +
+              '         <b-list-group-item>Total CLK Cycles: {{total_power_consumption}}</b-list-group-item>' +
               '       </b-list-group>' +
               '     </b-col>' +
               '' +

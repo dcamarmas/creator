@@ -2369,59 +2369,61 @@ function main_memory_read_bydatatype ( addr, type )
 
         switch (type)
         {
-                case 'b':
-                case 'bu':
-                case 'byte':
-                     ret = "0x" + main_memory_read_value(addr) ;
-                     break;
+          case 'b':
+          case 'bu':
+          case 'byte':
+               ret = "0x" + main_memory_read_value(addr) ;
+               ret = parseInt(ret, 16) ;
+               break;
 
-                case 'h':
-                case 'hu':
-                case 'half_word':
-                     ret = "0x" + main_memory_read_nbytes(addr, word_size_bytes/2) ;
-		     ret = parseInt(ret, 16) ;
-                     break;
+          case 'h':
+          case 'hu':
+          case 'half':
+          case 'half_word':
+               ret = "0x" + main_memory_read_nbytes(addr, word_size_bytes/2) ;
+               ret = parseInt(ret, 16) ;
+               break;
 
-                case 'w':
-                case 'integer':
-                case 'word':
-                     ret = "0x" + main_memory_read_nbytes(addr, word_size_bytes) ;
-		     ret = parseInt(ret, 16) ;
-                     break;
+          case 'w':
+          case 'integer':
+          case 'word':
+               ret = "0x" + main_memory_read_nbytes(addr, word_size_bytes) ;
+               ret = parseInt(ret, 16) ;
+               break;
 
-                case 'float':
-                     ret = "0x" + main_memory_read_nbytes(addr, word_size_bytes) ;
-			ret = hex2float(ret) ;
-                     break;
+          case 'float':
+               ret = "0x" + main_memory_read_nbytes(addr, word_size_bytes) ;
+               ret = hex2float(ret) ;
+               break;
 
-                case 'd':
-                case 'double':
-                case 'double_word':
-                     ret = "0x" + main_memory_read_nbytes(addr, word_size_bytes*2) ;
-		     ret = hex2double(ret) ;
-                     break;
+          case 'd':
+          case 'double':
+          case 'double_word':
+               ret = "0x" + main_memory_read_nbytes(addr, word_size_bytes*2) ;
+               ret = hex2double(ret) ;
+               break;
 
-                case 'c':
-                case 'cu':
-                case 'char':
-                     ch = main_memory_read_value(addr) ;
-                     ret = String.fromCharCode(parseInt(ch, 16));
-                     break;
+          case 'c':
+          case 'cu':
+          case 'char':
+               ch = main_memory_read_value(addr) ;
+               ret = String.fromCharCode(parseInt(ch, 16));
+               break;
 
-                case 'asciiz':
-                case 'string':
-                case 'ascii_null_end':
-                     ret = create_memory_read_string(addr) ;
-                     break;
+          case 'asciiz':
+          case 'string':
+          case 'ascii_null_end':
+               ret = create_memory_read_string(addr) ;
+               break;
 
-                case 'ascii':
-                case 'ascii_not_null_end':
-                     // TODO
-                     break;
+          case 'ascii':
+          case 'ascii_not_null_end':
+               // TODO
+               break;
 
-                case 'space':
-                     // TODO
-                     break;
+          case 'space':
+               // TODO
+               break;
         }
 
         return ret ;
@@ -2573,15 +2575,15 @@ function creator_memory_type2size ( type )
                 case 'b':
                 case 'bu':
                 case 'byte':
-                         size = 1 ;
-                         break;
+                     size = 1 ;
+                     break;
 
                 case 'h':
                 case 'hu':
                 case 'half':
                 case 'half_word':
-                         size = word_size_bytes / 2 ;
-                         break;
+                     size = word_size_bytes / 2 ;
+                     break;
 
                 case 'w':
                 case 'wu':
@@ -2589,15 +2591,15 @@ function creator_memory_type2size ( type )
                 case 'float':
                 case 'integer':
                 case 'instruction':
-                         size = word_size_bytes ;
-                         break;
+                     size = word_size_bytes ;
+                     break;
 
                 case 'd':
                 case 'du':
                 case 'double':
                 case 'double_word':
-                         size = word_size_bytes * 2 ;
-                         break;
+                      size = word_size_bytes * 2 ;
+                      break;
         }
 
         return size ;
@@ -2982,18 +2984,18 @@ function creator_memory_is_segment_empty ( segment_name )
 
 function creator_memory_data_compiler ( data_address, value, size, dataLabel, DefValue, type )
 {
-	var ret = {
-		     msg: '',
-		     data_address: 0
-		  } ;
+        var ret = {
+                     msg: '',
+                     data_address: 0
+                  } ;
 
         // If align changes then zerofill first...
-	if ((data_address % align) > 0)
-	{
+        if ((data_address % align) > 0)
+        {
              var to_be_filled = align - (data_address % align) ;
              creator_memory_zerofill(data_address, to_be_filled);
              data_address = data_address + to_be_filled;
-	}
+        }
 
         if ((data_address % size != 0) && (data_address % word_size_bytes != 0)) {
             ret.msg = 'm21' ;
