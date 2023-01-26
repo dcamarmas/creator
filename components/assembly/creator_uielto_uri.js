@@ -36,7 +36,7 @@
         methods:    {
                       make_uri ()
                       {
-                        return document.URL + "?architecture="+ encodeURIComponent(app._data.architecture_name) + "&asm=" + encodeURIComponent(code_assembly);
+                        return window.location.href.split('?')[0] + "?architecture="+ encodeURIComponent(app._data.architecture_name) + "&asm=" + encodeURIComponent(code_assembly);
                       },
 
                       copy_uri ()
