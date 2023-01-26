@@ -2391,7 +2391,6 @@ function main_memory_read_bydatatype ( addr, type )
 
                 case 'float':
                      ret = "0x" + main_memory_read_nbytes(addr, word_size_bytes) ;
-		     console.log(ret);
 			ret = hex2float(ret) ;
                      break;
 
@@ -3062,8 +3061,8 @@ var load_architectures = [];
 /*Architectures card background*/
 var back_card = [];
 /*Load architecture*/
-var architecture = {components:[], instructions:[], directives:[], memory_layout:[]};
 var architecture_hash = [];
+var architecture = {arch_conf:[], memory_layout:[], components:[], instructions:[], directives:[]};
 
 
 

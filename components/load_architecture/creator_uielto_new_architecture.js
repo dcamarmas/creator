@@ -37,11 +37,68 @@
                   //Create a new architecture
                   new_arch()
                   {
+                    show_loading();
+
+
+                    //Read architecture JSON
+                    $.getJSON('architecture/new_arch.json' + "?v=" + new Date().getTime(), function(cfg){
+                      uielto_new_architecture.methods.load_arch_select_aux(cfg);
+
+                      //Refresh UI
+                      hide_loading();
+                      show_notification(e.name + ' architecture has been loaded correctly', 'success');
+
+                      // Google Analytics
+                      creator_ga('architecture', 'architecture.loading', 'architectures.loading.customized');
+
+                      }).fail(function() {
+                        hide_loading();
+                        show_notification(e.name + ' architecture is not currently available', 'info');
+                      });
+                  },
+
+                  //Load architecture in CREATOR
+                  load_arch_select_aux(cfg)
+                  {
+                    //Load architecture
+                    var aux_architecture = cfg;
+                    architecture = register_value_deserialize(aux_architecture);
+                    uielto_preload_architecture.data.architecture_name = architecture.arch_conf[0].value;
+                    app._data.architecture = architecture; 
+                    app._data.architecture_name = architecture.arch_conf[0].value;
+
+                    //Generate architecture hash table
+                    architecture_hash = [];
+                    for (i = 0; i < architecture.components.length; i++)
+                    {
+                      architecture_hash.push({name: architecture.components[i].name, index: i});
+                      app._data.architecture_hash = architecture_hash; 
+                    }
+
+                    //Define stack limits
+                    backup_stack_address = architecture.memory_layout[4].value;
+                    backup_data_address  = architecture.memory_layout[3].value;
+
+                    //Reset execution
+                    instructions = [];
+                    app._data.instructions = instructions;
+                    creator_memory_clear() ;
+
                     //Refresh UI
                     uielto_toolbar_btngroup.methods.change_UI_mode('simulator');
                     uielto_data_view_selector.methods.change_data_view('int_registers');
-                    hide_loading();
-                  }
+                    app._data.render++; //Forces vue to reload a component, similar to $forceUpdate()
+                  },
+
+
+
+
+
+
+
+
+
+
                 },
 
     template:   '<b-card no-body class="overflow-hidden arch_card architectureCard">' +

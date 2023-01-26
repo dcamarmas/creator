@@ -29,47 +29,35 @@
 
         data:       function () {
                       return {
-
+                        uri: ""
                       }
                     },
 
         methods:    {
                       make_uri ()
                       {
-                        return "https://dcamarmas.github.io/creator/?architecture=rv&asm=" + encodeURIComponent(code_assembly);
+                        this.uri = window.location.href.split('?')[0] + "?architecture="+ encodeURIComponent(app._data.architecture_name) + "&asm=" + encodeURIComponent(textarea_assembly_editor.getValue());
                       },
 
                       copy_uri ()
                       {
-                        // Create a dummy input to copy the string array inside it
-                        var dummy = document.createElement("input");
-
-                        // Add it to the document
-                        document.body.appendChild(dummy);
-
-                        // Set its ID
-                        dummy.setAttribute("id", "dummy_id");
-
-                        // Output the array into it
-                        document.getElementById("dummy_id").value="https://dcamarmas.github.io/creator/?architecture=rv&asm=" + encodeURIComponent(code_assembly);
-
-                        // Select it
-                        dummy.select();
-
-                        // Copy its contents
-                        document.execCommand("copy");
-
-                        // Remove it as its not needed anymore
-                        document.body.removeChild(dummy);
+                        navigator.clipboard.writeText(this.uri);
                       }
                     },
 
         template:   '<b-modal  :id = "id"' +
                     '          title = "URI" ' +
-                    '          ok-title="Copy" ' +
-                    '          @ok="copy_uri">' +
+                    '          hide-footer' +
+                    '          class="text-center"' +
+                    '          @shown=make_uri>' +
                     ' ' +
-                    '  <b-form-textarea v-model="make_uri()" :rows="4"></b-form-textarea> ' +
+                    '  <div class="text-center">' +
+                    '    <b-form-textarea v-model="uri" :rows="5"></b-form-textarea> ' +
+                    '    <br> ' +
+                    '    <b-button variant="info" @click="copy_uri()">' +
+                    '      <span class="fas fa-copy"></span> Copy' +
+                    '    </b-button>' +
+                    '  </div>' +
                     '</b-modal>'
   }
 

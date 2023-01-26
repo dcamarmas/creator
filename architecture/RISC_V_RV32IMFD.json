@@ -1805,7 +1805,7 @@
           "valueField": "001"
         }
       ],
-      "definition": "rd = capi_mem_write(inm+rs1, rs2, 'h', rs2_name);",
+      "definition": "capi_mem_write(inm+rs1, rs2, 'h', rs2_name);",
       "separated": [
         false,
         true,
@@ -1863,7 +1863,7 @@
           "valueField": "010"
         }
       ],
-      "definition": "rd = capi_mem_write(inm+rs1, rs2, 'w', rs2_name);",
+      "definition": "capi_mem_write(inm+rs1, rs2, 'w', rs2_name);",
       "separated": [
         false,
         true,
@@ -2657,6 +2657,58 @@
         }
       ],
       "definition": "rd = (rs1 ^ rs2);",
+      "separated": [
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "name": "xori2",
+      "type": "Logic",
+      "signature_definition": "F0 F3 F2 F1",
+      "signature": "xori2,INT-Reg,INT-Reg,inm-signed",
+      "signatureRaw": "xori2 rd rs1 inm",
+      "co": "0010011",
+      "cop": "101",
+      "nwords": 1,
+      "power_consumption": 1,
+      "fields": [
+        {
+          "name": "xori2",
+          "type": "co",
+          "startbit": 6,
+          "stopbit": 0
+        },
+        {
+          "name": "inm",
+          "type": "inm-signed",
+          "startbit": 31,
+          "stopbit": 20
+        },
+        {
+          "name": "rs1",
+          "type": "INT-Reg",
+          "startbit": 19,
+          "stopbit": 15
+        },
+        {
+          "name": "rd",
+          "type": "INT-Reg",
+          "startbit": 11,
+          "stopbit": 7
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 14,
+          "stopbit": 12,
+          "valueField": "101"
+        }
+      ],
+      "definition": "rd = rs1 ^ inm;\n",
       "separated": [
         false,
         false,
@@ -6335,7 +6387,7 @@
           "stopbit": 16
         }
       ],
-      "definition": "xori reg1 reg2 -1;"
+      "definition": "xori2 reg1 reg2 -1;"
     },
     {
       "name": "neg",
