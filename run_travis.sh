@@ -24,6 +24,25 @@ do
 done
 
 echo ""
+echo " MIPS: libraries"
+MIPS_TEST="001"
+for I in $MIPS_TEST;
+do
+   echo -n " * ./travis/mips/correct/libraries/test_mips_libraries_$I..."
+   ./creator.sh -a ./architecture/MIPS_32.json \
+                -l ./travis/mips/correct/libraries/test_mips_libraries_$I.o \
+                -s ./travis/mips/correct/libraries/test_mips_libraries_$I.s -o min > /tmp/e-$I.out
+   diff /tmp/e-$I.out ./travis/mips/correct/libraries/test_mips_libraries_$I.out
+   if [ $? -ne 0 ]; then
+       echo "Different: Error $I with different outputs...";
+       error=1
+   else
+       echo "Equals";
+   fi
+   rm   /tmp/e-$I.out
+done
+
+echo ""
 echo " MIPS: syscalls"
 MIPS_TEST="001 002 003 004 009 010 011"
 for I in $MIPS_TEST;
@@ -129,6 +148,25 @@ do
   ./creator.sh -a ./architecture/RISC_V_RV32IMFD.json \
                -s ./travis/riscv/correct/examples/test_riscv_example_$I.s -o min > /tmp/e-$I.out
   diff /tmp/e-$I.out ./travis/riscv/correct/examples/test_riscv_example_$I.out
+  if [ $? -ne 0 ]; then
+       echo "Different: Error $I with different outputs...";
+       error=1
+  else
+       echo "Equals";
+  fi
+  rm   /tmp/e-$I.out
+done
+
+echo ""
+echo " RISC-V libraries:"
+RV_TEST="001"
+for I in $RV_TEST;
+do
+  echo -n " * ./travis/riscv/correct/libraries/test_riscv_libraries_$I: "
+  ./creator.sh -a ./architecture/RISC_V_RV32IMFD.json \
+               -l ./travis/riscv/correct/libraries/test_riscv_libraries_$I.o \
+               -s ./travis/riscv/correct/libraries/test_riscv_libraries_$I.s -o min > /tmp/e-$I.out
+  diff /tmp/e-$I.out ./travis/riscv/correct/libraries/test_riscv_libraries_$I.out
   if [ $? -ne 0 ]; then
        echo "Different: Error $I with different outputs...";
        error=1

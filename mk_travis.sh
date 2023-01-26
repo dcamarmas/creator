@@ -13,6 +13,14 @@ do
   ./creator.sh -a ./architecture/MIPS_32.json -s ./travis/mips/correct/examples/test_mips_example_$I.s -o min > ./travis/mips/correct/examples/test_mips_example_$I.out
 done
 
+echo " MIPS libraries:"
+MIPS_TEST="001"
+for I in $MIPS_TEST;
+do
+  echo " * ./travis/mips/correct/libraries/test_mips_libraries_$I..."
+  ./creator.sh -a ./architecture/MIPS_32.json -s ./travis/mips/correct/libraries/test_mips_libraries_$I.s -l ./travis/mips/correct/libraries/test_mips_libraries_$I.o -o min > ./travis/mips/correct/libraries/test_mips_libraries_$I.out
+done
+
 echo " MIPS syscalls:"
 MIPS_TEST="001 002 003 004 009 010 011"
 for I in $MIPS_TEST;
@@ -65,6 +73,14 @@ for I in $RV_TEST;
 do
   echo " * ./travis/riscv/correct/examples/test_riscv_example_$I... "
   ./creator.sh -a ./architecture/RISC_V_RV32IMFD.json -s ./travis/riscv/correct/examples/test_riscv_example_$I.s -o min > ./travis/riscv/correct/examples/test_riscv_example_$I.out
+done
+
+echo " RISC-V libraries:"
+RV_TEST="001"
+for I in $RV_TEST;
+do
+  echo " * ./travis/mips/correct/libraries/test_riscv_libraries_$I..."
+  ./creator.sh -a ./architecture/RISC_V_RV32IMFD.json -s ./travis/riscv/correct/libraries/test_riscv_libraries_$I.s -l ./travis/riscv/correct/libraries/test_riscv_libraries_$I.o -o min > ./travis/riscv/correct/libraries/test_riscv_libraries_$I.out
 done
 
 echo " RISC-V syscalls:"

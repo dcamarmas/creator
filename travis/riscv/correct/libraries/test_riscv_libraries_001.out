@@ -1,0 +1,9 @@
+
+10
+
+
+5
+
+
+cr[PC]:0x58; ir[ra,x1]:0x44; ir[a0,x10]:0xa; ir[a1,x11]:0xa; ir[a7,x17]:0xb; keyboard[0x0]:''; display[0x0]:'10%0A5%0A'; 
+
