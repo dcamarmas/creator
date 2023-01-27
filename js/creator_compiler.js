@@ -35,6 +35,7 @@ var back_card = [];
 /*Load architecture*/
 var architecture_hash = [];
 var architecture = {arch_conf:[], memory_layout:[], components:[], instructions:[], directives:[]};
+var architecture_json = ""
 
 
 
