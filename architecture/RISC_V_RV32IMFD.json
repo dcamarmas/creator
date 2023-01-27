@@ -6570,30 +6570,6 @@
       "definition": "bge reg1 x0 off;"
     },
     {
-      "name": "bltz",
-      "signature_definition": "bltz F0 F1",
-      "signature": "bltz,INT-Reg,offset_words",
-      "signatureRaw": "bltz reg1 off",
-      "help": "Conditional branch if Rsrc1 is less than zero.",
-      "properties": [],
-      "nwords": 1,
-      "fields": [
-        {
-          "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
-        },
-        {
-          "name": "off",
-          "type": "offset_words",
-          "startbit": 15,
-          "stopbit": 0
-        }
-      ],
-      "definition": "blt reg1 x0 off;"
-    },
-    {
       "name": "bgtz",
       "signature_definition": "bgtz F0 F1",
       "signature": "bgtz,INT-Reg,offset_words",
