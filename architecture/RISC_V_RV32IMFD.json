@@ -2666,55 +2666,55 @@
       ]
     },
     {
-      "name": "xori2",
+      "name": "xori",
       "type": "Logic",
       "signature_definition": "F0 F3 F2 F1",
-      "signature": "xori2,INT-Reg,INT-Reg,inm-signed",
-      "signatureRaw": "xori2 rd rs1 inm",
+      "signature": "xori,INT-Reg,INT-Reg,inm-signed",
+      "signatureRaw": "xori rd rs1 inm",
       "co": "0010011",
-      "cop": "101",
+      "cop": "100",
       "nwords": 1,
       "power_consumption": 1,
       "fields": [
-        {
-          "name": "xori2",
-          "type": "co",
-          "startbit": 6,
-          "stopbit": 0
-        },
-        {
-          "name": "inm",
-          "type": "inm-signed",
-          "startbit": 31,
-          "stopbit": 20
-        },
-        {
-          "name": "rs1",
-          "type": "INT-Reg",
-          "startbit": 19,
-          "stopbit": 15
-        },
-        {
-          "name": "rd",
-          "type": "INT-Reg",
-          "startbit": 11,
-          "stopbit": 7
-        },
-        {
-          "name": "cop",
-          "type": "cop",
-          "startbit": 14,
-          "stopbit": 12,
-          "valueField": "101"
-        }
+      {
+      "name": "xori",
+      "type": "co",
+      "startbit": 6,
+      "stopbit": 0
+      },
+      {
+      "name": "inm",
+      "type": "inm-signed",
+      "startbit": 31,
+      "stopbit": 20
+      },
+      {
+      "name": "rs1",
+      "type": "INT-Reg",
+      "startbit": 19,
+      "stopbit": 15
+      },
+      {
+      "name": "rd",
+      "type": "INT-Reg",
+      "startbit": 11,
+      "stopbit": 7
+      },
+      {
+      "name": "cop",
+      "type": "cop",
+      "startbit": 14,
+      "stopbit": 12,
+      "valueField": "100"
+      }
       ],
       "definition": "rd = rs1 ^ inm;\n",
       "separated": [
-        false,
-        false,
-        false,
-        false,
-        false
+      false,
+      false,
+      false,
+      false,
+      false
       ]
     },
     {
@@ -6387,7 +6387,7 @@
           "stopbit": 16
         }
       ],
-      "definition": "xori2 reg1 reg2 -1;"
+      "definition": "xori reg1 reg2 -1;"
     },
     {
       "name": "neg",
@@ -6568,30 +6568,6 @@
         }
       ],
       "definition": "bge reg1 x0 off;"
-    },
-    {
-      "name": "bltz",
-      "signature_definition": "bltz F0 F1",
-      "signature": "bltz,INT-Reg,offset_words",
-      "signatureRaw": "bltz reg1 off",
-      "help": "Conditional branch if Rsrc1 is less than zero.",
-      "properties": [],
-      "nwords": 1,
-      "fields": [
-        {
-          "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
-        },
-        {
-          "name": "off",
-          "type": "offset_words",
-          "startbit": 15,
-          "stopbit": 0
-        }
-      ],
-      "definition": "blt reg1 x0 off;"
     },
     {
       "name": "bgtz",

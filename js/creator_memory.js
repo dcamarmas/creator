@@ -663,7 +663,7 @@ function creator_memory_updaterow ( addr )
         addr_base = addr_base - (addr_base % word_size_bytes) ; // get word aligned address
 
     // get_or_create...
-    var elto = { addr:0, addr_begin:'', addr_end:'', value:'', size:0, hex:[], eye:false } ;
+    var elto = { addr:0, addr_begin:'', addr_end:'', value:'', size:0, hex:[], eye:true } ;
     if (typeof app._data.main_memory[addr_base] != "undefined")
     { // reuse the existing element...
         elto = app._data.main_memory[addr_base] ;

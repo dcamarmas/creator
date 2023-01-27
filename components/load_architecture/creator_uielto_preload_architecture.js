@@ -131,6 +131,7 @@
                     //Load architecture
                     var aux_architecture = cfg;
                     architecture = register_value_deserialize(aux_architecture);
+                    architecture_json = e.file;
                     uielto_preload_architecture.data.architecture_name = architecture.arch_conf[0].value;
                     app._data.architecture = architecture; 
                     app._data.architecture_name = architecture.arch_conf[0].value;
@@ -280,7 +281,8 @@
                 '<b-card no-body class="overflow-hidden arch_card architectureCard" ' +
                 '                @mouseover="change_background(item.name, 1)"' +
                 '                @mouseout="change_background(item.name, 0)" ' +
-                '                :border-variant=back_card[index].background>' +
+                '                :border-variant=back_card[index].background' +
+                '                v-if="item.available == 1">' +
                 '  <b-row no-gutters>' +
                 '    <b-col sm="12" @click="load_arch_select(item)" class="w-100">' +
                 '      <b-card-img class="rounded-0"' +
