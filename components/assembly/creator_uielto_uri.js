@@ -36,7 +36,7 @@
         methods:    {
                       make_uri ()
                       {
-                        this.uri = window.location.href.split('?')[0] + "?architecture="+ encodeURIComponent(app._data.architecture_name) + "&asm=" + encodeURIComponent(textarea_assembly_editor.getValue());
+                        this.uri = (window.location.href.split('?')[0]).split('#')[0] + "?architecture="+ encodeURIComponent(app._data.architecture_name) + "&asm=" + encodeURIComponent(textarea_assembly_editor.getValue());
                       },
 
                       copy_uri ()
