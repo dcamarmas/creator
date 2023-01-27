@@ -42,7 +42,7 @@
                     //Read original value from JSON
                     for (var i = 0; i < load_architectures.length; i++)
                     {
-                      if(this._props.architecture_name == load_architectures[i].id)
+                      if(architecture_json == load_architectures[i].id)
                       {
                         var aux_arch = JSON.parse(load_architectures[i].architecture);
                         var aux_architecture = register_value_deserialize(aux_arch);
@@ -63,7 +63,7 @@
                       }
                     }
 
-                    $.getJSON('architecture/' + this._props.architecture_name + '.json', function(cfg){
+                    $.getJSON('architecture/' + architecture_json + '.json', function(cfg){
                       var aux_architecture = cfg;
 
                       var aux_architecture_2 = register_value_deserialize(aux_architecture);

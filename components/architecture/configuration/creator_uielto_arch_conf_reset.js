@@ -39,14 +39,14 @@
 
     methods:    {
                   //Reset the architecture field
-                  reset_arch_field(index, arch)
+                  reset_arch_field(index)
                   {
                     show_loading();
 
                     //Read original value from JSON
                     for (var i = 0; i < load_architectures.length; i++)
                     {
-                      if(arch == load_architectures[i].id)
+                      if(architecture_json == load_architectures[i].file)
                       {
                         var aux_arch = JSON.parse(load_architectures[i].architecture);
                         var aux_architecture = register_value_deserialize(aux_arch);
@@ -60,7 +60,7 @@
                       }
                     }
 
-                    $.getJSON('architecture/'+arch+'.json', function(cfg){
+                    $.getJSON('architecture/'+architecture_json+'.json', function(cfg){
                       var aux_architecture = cfg;
 
                       var aux_architecture_2 = register_value_deserialize(aux_architecture);
@@ -78,7 +78,7 @@
                 '         :title="title" ' +
                 '         ok-variant="danger" ' +
                 '         ok-title="Delete" ' +
-                '         @ok="reset_arch_field(arch_field_index, architecture_name)">' +
+                '         @ok="reset_arch_field(arch_field_index)">' +
                 '  <span class="h6">Are you sure you want to reset the item?</span>' +
                 '</b-modal >'
 

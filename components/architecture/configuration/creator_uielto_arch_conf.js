@@ -99,14 +99,12 @@
                 '' +
                 '      <template v-slot:cell(actions)="row">' +
                 '        <b-button @click.stop="edit_arch_field_modal(row.item.name, row.index, $event.target)" ' +
-                '                  class="btn btn-outline-secondary btn-sm buttonBackground h-100"' +
-                '                  v-if="row.item.name != \'Name\'">' +
+                '                  class="btn btn-outline-secondary btn-sm buttonBackground h-100">' +
                 '          <span class="far fa-edit"></span>' +
                 '          Edit' +
                 '        </b-button>' +
                 '        <b-button @click.stop="reset_arch_field_modal(row.item.name, row.index, $event.target)" ' +
-                '                  class="btn btn-outline-danger btn-sm buttonBackground h-100"' +
-                '                  v-if="row.item.name != \'Name\'">' +
+                '                  class="btn btn-outline-danger btn-sm buttonBackground h-100">' +
                 '          <span class="far fa-trash-alt"></span>' +
                 '          Reset' +
                 '        </b-button> ' +
