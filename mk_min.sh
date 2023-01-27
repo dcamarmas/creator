@@ -87,6 +87,7 @@ cat js/creator_bigint.js \
     components/assembly/creator_uielto_load_assembly.js \
     components/assembly/creator_uielto_save_assembly.js \
     components/assembly/creator_uielto_examples.js \
+    components/assembly/creator_uielto_uri.js \
     components/assembly/creator_uielto_load_library.js \
     components/assembly/creator_uielto_save_library.js \
     components/assembly/creator_uielto_textarea_assembly.js \

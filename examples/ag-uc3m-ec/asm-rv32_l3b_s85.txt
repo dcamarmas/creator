@@ -1,7 +1,6 @@
 
 #
 # CREATOR (https://creatorsim.github.io/creator/)
-# WepSIM  (https://wepsim.github.io/wepsim/)
 #
 
        # int vec[5] ;
@@ -16,6 +15,7 @@
 .data
      .align  2       # siguiente dato alineado a 4
      vec: .zero  20  # 5 elem.*4 bytes
+
 
 .text
  main:  

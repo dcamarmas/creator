@@ -1,5 +1,5 @@
 /*
- *  Copyright 2018-2022 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
+ *  Copyright 2018-2023 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
  *  This file is part of CREATOR.
  *
@@ -30,7 +30,7 @@
         data:       function () {
                       return {
                         //Pseudoinstruction field number
-                        number_fields: "1",
+                        number_fields: "0",
                         
                         //Intructions form
                         pseudoinstruction: {
@@ -172,6 +172,9 @@
                               re = new RegExp(" +", "g");
                               instructions[j] = instructions[j].replace(re, " ");
 
+                              re = new RegExp(",", "g");
+                              instructions[j] = instructions[j].replace(re, "");
+
                               var instruction_parts = instructions[j].split(" ");
 
                               var found = false;
@@ -242,10 +245,10 @@
                                           {
                                             found = true;
                                           }
-                                          if(architecture.components[a].type == "integer" && reg_id == id){
+                                          if(architecture.components[a].type == "int_register" && reg_id == id){
                                             found = true;
                                           }
-                                          if(architecture.components[a].type == "integer"){
+                                          if(architecture.components[a].type == "int_register"){
                                             reg_id++;
                                           }
                                         }
@@ -383,6 +386,9 @@
                             re = new RegExp(" +", "g");
                             instructions[j] = instructions[j].replace(re, " ");
 
+                            re = new RegExp(",", "g");
+                            instructions[j] = instructions[j].replace(re, "");
+
                             var instruction_parts = instructions[j].split(" ");
 
                             var found = false;
@@ -454,10 +460,10 @@
                                         {
                                           found = true;
                                         }
-                                        if(architecture.components[a].type == "integer" && reg_id == id){
+                                        if(architecture.components[a].type == "int_register" && reg_id == id){
                                           found = true;
                                         }
-                                        if(architecture.components[a].type == "integer"){
+                                        if(architecture.components[a].type == "int_register"){
                                           reg_id++;
                                         }
                                       }
@@ -582,8 +588,8 @@
                         }
 
                         //Lower limit
-                        if(this.number_fields < 1){
-                          this.number_fields = 1;
+                        if(this.number_fields < 0){
+                          this.number_fields = 0;
                         }
 
                         //Add fields
@@ -618,12 +624,18 @@
                         re = new RegExp(" +", "g");
                         this.pseudoinstruction.signature_definition = this.pseudoinstruction.signature_definition.replace(re, " ");
 
+                        re = new RegExp(",", "g");
+                        this.pseudoinstruction.signature_definition = this.pseudoinstruction.signature_definition.replace(re, "");
+
                         //New signature generation
                         re = new RegExp("^ +");
                         signature= signature.replace(re, "");
 
                         re = new RegExp(" +", "g");
                         signature = signature.replace(re, " ");
+
+                        re = new RegExp(",", "g");
+                        signature = signature.replace(re, "");
 
                         for (var i = 0; i < this.number_fields; i++)
                         {
@@ -642,6 +654,9 @@
 
                         re = new RegExp(" +", "g");
                         signatureRaw = signatureRaw.replace(re, " ");
+
+                        re = new RegExp(",", "g");
+                        signatureRaw = signatureRaw.replace(re, "");
 
                         for (var i = 0; i < this.number_fields; i++)
                         {
@@ -682,7 +697,7 @@
                         this.pseudoinstruction.signature_definition = '';
                         this.pseudoinstruction.signature ='';
                         this.pseudoinstruction.signatureRaw = '';
-                        this.number_fields = 1;
+                        this.number_fields = 0;
                         this.pseudoinstruction.fields = [{name: '', type: '', startbit: '', stopbit: ''}];
                         this.pseudoinstruction.definition = '';
                       },

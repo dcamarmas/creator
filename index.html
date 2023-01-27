@@ -525,6 +525,9 @@
                         modal="examples">     
               </examples>
 
+              <!-- Get uri -->
+              <make-uri id="make_uri"></make-uri>
+
               <!-- Load binary form -->
               <load-library id="load_binary"></load-library>
 
@@ -614,8 +617,7 @@
                   <b-col lg="5" cols="12">
 
                     <!-- View selector -->
-                    <data-view-selector :name_reg="name_reg" 
-                                        :reg_type="reg_type" 
+                    <data-view-selector :data_mode="data_mode"
                                         :register_file_num="architecture.components.length"> 
                     </data-view-selector>
 
@@ -624,8 +626,7 @@
                     <register-file  id="register_file"
                                     :render="render"
                                     :data_mode="data_mode"
-                                    :register_type="register_type"
-                                    v-if="data_mode == 'registers'">                  
+                                    v-if="data_mode == 'int_registers' ||  data_mode == 'fp_registers'">                  
                     </register-file>
 
 

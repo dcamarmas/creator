@@ -1,5 +1,5 @@
 /*
- *  Copyright 2018-2022 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
+ *  Copyright 2018-2023 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
  *  This file is part of CREATOR.
  *
@@ -62,7 +62,7 @@
               '' +
               '     <b-col>' +
               '       <b-list-group class="align-items-center py-2 px-4">' +
-              '         <b-list-group-item>Total power consumption: {{total_power_consumption}}</b-list-group-item>' +
+              '         <b-list-group-item>Total CLK Cycles: {{total_power_consumption}}</b-list-group-item>' +
               '       </b-list-group>' +
               '     </b-col>' +
               '' +

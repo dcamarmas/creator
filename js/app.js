@@ -1,5 +1,5 @@
 /*
- *  Copyright 2018-2022 Felix Garcia Carballeira, Alejandro Calderon Mateos, Diego Camarmas Alonso
+ *  Copyright 2018-2023 Felix Garcia Carballeira, Alejandro Calderon Mateos, Diego Camarmas Alonso
  *
  *  This file is part of CREATOR.
  *
@@ -299,17 +299,7 @@ try
       //Data view
       //
 
-      data_mode: 'registers',
-
-
-      //
-      //Registers
-      //
-
-      register_type: 'integer',
-      name_reg: 'INT Registers',
-      reg_type: 'int',
-
+      data_mode: 'int_registers',
 
       //
       //Memory
@@ -481,8 +471,6 @@ try
           instructions[execution_index]._rowVariant = 'danger';
           app._data.instructions[execution_index]._rowVariant = 'danger';
         }
-        
-        execution_index = -1;
 
         /* Google Analytics */
         creator_ga('execute', 'execute.exception', 'execute.exception.' + error);

@@ -1,5 +1,5 @@
 /*
- *  Copyright 2018-2022 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
+ *  Copyright 2018-2023 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
  *  This file is part of CREATOR.
  *
@@ -31,19 +31,19 @@
                   return {
                     //Intructions form select
                     instructions_types =  [
-                                            { text: 'Arithmetic integer',         value: 'Arithmetic integer' },
                                             { text: 'Arithmetic floating point',  value: 'Arithmetic floating point' },
-                                            { text: 'Logic',                      value: 'Logic' },
-                                            { text: 'Transfer between registers', value: 'Transfer between registers' },
-                                            { text: 'Memory access',              value: 'Memory access' },
+                                            { text: 'Arithmetic integer',         value: 'Arithmetic integer' },
                                             { text: 'Comparison',                 value: 'Comparison' },
-                                            { text: 'I/O',                        value: 'I/O' },
-                                            { text: 'Syscall',                    value: 'Syscall' },
+                                            { text: 'Conditional bifurcation',    value: 'Conditional bifurcation' },
                                             { text: 'Control',                    value: 'Control' },
                                             { text: 'Function call',              value: 'Function call' },
-                                            { text: 'Conditional bifurcation',    value: 'Conditional bifurcation' },
-                                            { text: 'Unconditional bifurcation',  value: 'Unconditional bifurcation' },
+                                            { text: 'I/O',                        value: 'I/O' },
+                                            { text: 'Logic',                      value: 'Logic' },
+                                            { text: 'Memory access',              value: 'Memory access' },
                                             { text: 'Other',                      value: 'Other' },
+                                            { text: 'Syscall',                    value: 'Syscall' },
+                                            { text: 'Transfer between registers', value: 'Transfer between registers' },
+                                            { text: 'Unconditional bifurcation',  value: 'Unconditional bifurcation' },
                                           ],
 
                     //Allow instruction with fractioned fields
@@ -514,12 +514,12 @@
                 '                      title="Intruction size">' +
                 '        </b-form-input>' +
                 '      </b-form-group>' +
-                '      <b-form-group label="Power Consumption:">' +
+                '      <b-form-group label="CLK Cycles:">' +
                 '        <b-form-input type="number" ' +
                 '                      min="1" ' +
                 '                      v-model="instruction.power_consumption" ' +
                 '                      required ' +
-                '                      placeholder="Enter power consumption" ' +
+                '                      placeholder="Enter CLK Cycles" ' +
                 '                      :state="valid(instruction.power_consumption)" ' +
                 '                      size="sm" ' +
                 '                      title="Intruction size">' +

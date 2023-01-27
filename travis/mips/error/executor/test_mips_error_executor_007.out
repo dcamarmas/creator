@@ -1,0 +1,7 @@
+
+The memory must be align
+
+ Error found.
+ The program has finished with errors
+cr[PC]:0x14; ir[at,1]:0x200000; ir[t0,8]:0x200000; ir[t1,9]:0xa; memory[0x200004]:0x0a; keyboard[0x0]:''; display[0x0]:''; 
+

@@ -1,4 +1,0 @@
-
-The memory must be align
-cr[PC]:0x10; ir[at,1]:0xff334343; ir[t0,8]:0xff334343; keyboard[0x0]:''; display[0x0]:''; 
-

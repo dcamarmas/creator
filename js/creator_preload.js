@@ -25,43 +25,68 @@
 
     function preload_load_example ( data , url )
     {
-        code_assembly = data ;
-        uielto_toolbar_btngroup.methods.assembly_compiler(code_assembly)
+      if (url == null)
+      {
+        show_notification('The example doesn\'t exist', 'info') ;
+        return;
+      }
 
-        // show notification
-        show_notification(' The selected example has been loaded.', 'success') ;
+      code_assembly = data ;
+      uielto_toolbar_btngroup.methods.assembly_compiler(code_assembly);
 
-        // Google Analytics
-        creator_ga('example', 'example.loading', 'example.loading.' + url);
+      // show notification
+      show_notification(' The selected example has been loaded.', 'success') ;
+
+      // Google Analytics
+      creator_ga('example', 'example.loading', 'example.loading.' + url);
     }
 
     function preload_find_example ( example_set_available, hash )
     {
-	    for (var i=0; i<example_set_available.length; i++)
-	    {
-	      for (var j = 0; (j < example_available[i].length) &&
-                              (example_set_available[i].text == hash.example_set); j++)
-              {
-		   if (example_available[i][j].id === hash.example) {
-		       return example_available[i][j].url;
-		   }
-	      }
-	    }
+      for (var i=0; i<example_set_available.length; i++)
+      {
+        for (var j = 0; (j < example_available[i].length) &&
+                        (example_set_available[i].text == hash.example_set); j++)
+        {
+          if (example_available[i][j].id === hash.example) 
+          {
+            return example_available[i][j].url;
+          }
+        }
+      }
 
-	    return null ;
+      return null ;
     }
 
     function preload_find_architecture ( arch_availables, arch_name )
     {
-	    for (var i=0; i<arch_availables.length; i++)
-            {
-		if (arch_availables[i].name == arch_name)
-                {
-                    return arch_availables[i] ;
-		}
-	    }
+      for (var i=0; i<arch_availables.length; i++)
+      {
+        if (arch_availables[i].alias.includes(arch_name))
+        {
+          return arch_availables[i] ;
+        }
+      }
 
-	    return null ;
+      return null ;
+    }
+
+    function preload_example_uri ( asm_decoded )
+    {
+      if (asm_decoded == null)
+      {
+        show_notification('Assembly not valid', 'info') ;
+        return;
+      }
+
+      code_assembly = asm_decoded ;
+      uielto_toolbar_btngroup.methods.assembly_compiler(code_assembly);
+
+      // show notification
+      show_notification('The assembly code has been loaded.', 'success') ;
+
+      // Google Analytics
+      creator_ga('example', 'example.loading', 'example.uri');
     }
 
 
@@ -71,67 +96,89 @@
 
     var creator_preload_tasks = [
 
-	   // parameter: architecture
-	   {
-	      'name':   'architecture',
-	      'action': function( app, hash )
-			{
-			  var arch_name = hash.architecture.trim() ;
-			  if (arch_name === "") {
-			      return new Promise(function(resolve, reject) {
-						     resolve('Empty architecture.') ;
-						 }) ;
-			  }
+     // parameter: architecture
+     {
+        'name':   'architecture',
+        'action': function( app, hash )
+      {
+        var arch_name = hash.architecture.trim() ;
+        if (arch_name === "") 
+        {
+          return new Promise(function(resolve, reject) {
+            resolve('Empty architecture.') ;
+          }) ;
+        }
 
-			  return $.getJSON('architecture/available_arch.json',
-					    function (arch_availables) {
-					      var a_i = preload_find_architecture(arch_availables, arch_name) ;
-					      if (null == a_i) {
-                                                  return 'Unavailable architecture.' ;
-                                              }
+        return $.getJSON( 'architecture/available_arch.json',
+                          function (arch_availables) {
+                            var a_i = preload_find_architecture(arch_availables, arch_name) ;
+                            uielto_preload_architecture.methods.load_arch_select(a_i) ;
+                            return 'Architecture loaded.' ;
+                          }
+                        ) ;
+      }
+     },
 
-					      uielto_preload_architecture.methods.load_arch_select(a_i) ;
-					      return 'Architecture loaded.' ;
-					    }
-					  ) ;
-			}
-	   },
+     // parameter: example_set
+     {
+        'name':   'example_set',
+        'action': function( app, hash )
+      {
+        var exa_set = hash.example_set.trim() ;
+        if (exa_set === "") 
+        {
+          return new Promise(function(resolve, reject) {
+            resolve('Empty example set.') ;
+          }) ;
+        }
 
-	   // parameter: example_set
-	   {
-	      'name':   'example_set',
-	      'action': function( app, hash )
-			{
-			  var exa_set = hash.example_set.trim() ;
-			  if (exa_set === "") {
-			      return new Promise(function(resolve, reject) {
-						     resolve('Empty example set.') ;
-						 }) ;
-			  }
+        uielto_preload_architecture.methods.load_examples_available(hash.example_set) ;
+        return uielto_preload_architecture.data.example_loaded ;
+      }
+     },
 
-			  uielto_preload_architecture.methods.load_examples_available(hash.example_set) ;
-			  return uielto_preload_architecture.data.example_loaded ;
-			}
-	   },
+     // parameter: example
+     {
+        'name':   'example',
+        'action': function( app, hash )
+      {
+        return new Promise(function(resolve, reject) {
+          var url = preload_find_example(example_set_available, hash) ;
+          if (null == url) {
+            reject('Example not found.') ;
+          }
 
-	   // parameter: example
-	   {
-	      'name':   'example',
-	      'action': function( app, hash )
-			{
-			  return new Promise(function(resolve, reject) {
-				var url = preload_find_example(example_set_available, hash) ;
-				if (null == url) {
-				    reject('Example not found.') ;
-			        }
+          $.get(url,function(data) {
+            preload_load_example(data, url) ;
+          }) ;
 
-				$.get(url,function(data) {
-				      preload_load_example(data, url) ;
-				}) ;
-				resolve('Example loaded.') ;
-			  }) ;
-			}
-	   }
+          resolve('Example loaded.') ;
+        }) ;
+      }
+     },
+
+     // parameter: asm
+     {
+        'name':   'asm',
+        'action': function( app, hash )
+      {
+        return new Promise(function(resolve, reject) {
+
+          var assembly = hash.asm.trim() ;
+          if (assembly === "") 
+          {
+            return new Promise(function(resolve, reject) {
+              resolve('Empty assembly.') ;
+            }) ;
+          }
+
+          var asm_decoded = decodeURI(assembly) ;
+          preload_example_uri ( asm_decoded )
+
+          resolve('Assembly loaded.') ;
+        }) ;
+      }
+     }
 
      ] ;
 
@@ -181,13 +228,13 @@
 
         if (hash[key] !== '')
         {
-            try {
-              var v = await act(app, hash) ;
-              o = o + v + '<br>' ;
-            }
-            catch(e) {
-              o = o + e + '<br>' ;
-            }
+          try {
+            var v = await act(app, hash) ;
+            o = o + v + '<br>' ;
+          }
+          catch(e) {
+            o = o + e + '<br>' ;
+          }
         }
       }
 

@@ -1,0 +1,12 @@
+
+
+Error at line 7 (0x12345):
+Number '0x12345' is too big
+
+  6 .data
+->7   example:   .half 0x12345
+  8     
+
+Not executed
+keyboard[0x0]:''; display[0x0]:''; 
+

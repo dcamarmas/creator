@@ -1,5 +1,5 @@
 /*
- *  Copyright 2018-2022 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
+ *  Copyright 2018-2023 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
  *  This file is part of CREATOR.
  *
@@ -77,13 +77,20 @@
                   {
                     show_loading();
 
+                    if (e == null) 
+                    {
+                      hide_loading();
+                      show_notification('The architecture is not currently available', 'info');
+                      return;
+                    }
+
                     //Read architecture JSON
                     for (i = 0; i < load_architectures.length; i++)
                     {
                       if (e.name == load_architectures[i].id)
                       {
                         var aux_architecture = JSON.parse(load_architectures[i].architecture);
-                        uielto_preload_architecture.methods.load_arch_select_aux(e.name, aux_architecture, true, e);
+                        uielto_preload_architecture.methods.load_arch_select_aux(e.file, aux_architecture, true, e);
 
                         //Refresh UI
                         hide_loading();
@@ -102,7 +109,7 @@
                     });
 
                     //Read architecture JSON
-                    $.getJSON('architecture/'+e.name+'.json' + "?v=" + new Date().getTime(), function(cfg){
+                    $.getJSON('architecture/'+e.file+'.json' + "?v=" + new Date().getTime(), function(cfg){
                       uielto_preload_architecture.methods.load_arch_select_aux(e.name, cfg, true, e);
 
                       //Refresh UI
@@ -124,9 +131,10 @@
                     //Load architecture
                     var aux_architecture = cfg;
                     architecture = register_value_deserialize(aux_architecture);
+                    architecture_json = e.file;
                     uielto_preload_architecture.data.architecture_name = architecture.arch_conf[0].value;
                     app._data.architecture = architecture; 
-                    app._data.architecture_name = architecture.arch_conf[0].value; 
+                    app._data.architecture_name = architecture.arch_conf[0].value;
 
                     //Generate architecture hash table
                     architecture_hash = [];
@@ -152,7 +160,7 @@
 
                     //Refresh UI
                     uielto_toolbar_btngroup.methods.change_UI_mode('simulator');
-                    uielto_data_view_selector.methods.change_data_view('registers', 'int');
+                    uielto_data_view_selector.methods.change_data_view('int_registers');
                     app._data.render++; //Forces vue to reload a component, similar to $forceUpdate()
                   },
 
@@ -273,7 +281,8 @@
                 '<b-card no-body class="overflow-hidden arch_card architectureCard" ' +
                 '                @mouseover="change_background(item.name, 1)"' +
                 '                @mouseout="change_background(item.name, 0)" ' +
-                '                :border-variant=back_card[index].background>' +
+                '                :border-variant=back_card[index].background' +
+                '                v-if="item.available == 1">' +
                 '  <b-row no-gutters>' +
                 '    <b-col sm="12" @click="load_arch_select(item)" class="w-100">' +
                 '      <b-card-img class="rounded-0"' +

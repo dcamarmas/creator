@@ -1,5 +1,5 @@
 /*
- *  Copyright 2018-2022 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
+ *  Copyright 2018-2023 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
  *  This file is part of CREATOR.
  *
@@ -40,7 +40,7 @@
                       id: 'graphic',
                       type: 'bar'
                     },
-                    labels: ["Arithmetic integer", "Arithmetic floating point", "Logic", "Transfer between registers", "Memory access", "Comparison", "I/O", "Syscall", "Control", "Function call", "Conditional bifurcation", "Unconditional bifurcation", "Other"],
+                    labels: ["Arithmetic floating point", "Arithmetic integer", "Comparison", "Conditional bifurcation", "Control", "Function call", "I/O", "Logic", "Memory access", "Other", "Syscall", "Transfer between registers", "Unconditional bifurcation"],
                     dataLabels: {
                       enabled: true
                     },
@@ -64,7 +64,7 @@
                       colors: ['transparent']
                     },
                     xaxis: {
-                      categories: ["Arithmetic integer", "Arithmetic floating point", "Logic", "Transfer between registers", "Memory access", "Comparison", "I/O", "Syscall", "Control", "Function call", "Conditional bifurcation", "Unconditional bifurcation", "Other"],
+                      categories: ["Arithmetic floating point", "Arithmetic integer", "Comparison", "Conditional bifurcation", "Control", "Function call", "I/O", "Logic", "Memory access", "Other", "Syscall", "Transfer between registers", "Unconditional bifurcation"],
                     },
                     yaxis: {
                       title: {
