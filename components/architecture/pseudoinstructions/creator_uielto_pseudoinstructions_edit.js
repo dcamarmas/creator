@@ -1,5 +1,5 @@
 /*
- *  Copyright 2018-2022 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
+ *  Copyright 2018-2023 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
  *  This file is part of CREATOR.
  *
@@ -35,7 +35,7 @@
         data:       function () {
                       return {
                         //Pseudoinstruction field number
-                        number_fields: "1",
+                        number_fields: "0",
 
                         //Modal pagination
                         pseudoinstruction_page: 1,
@@ -136,6 +136,9 @@
                               re = new RegExp(" +", "g");
                               instructions[j] = instructions[j].replace(re, " ");
 
+                              re = new RegExp(",", "g");
+                              instructions[j] = instructions[j].replace(re, "");
+
                               var instruction_parts = instructions[j].split(" ");
 
                               var found = false;
@@ -206,10 +209,10 @@
                                           {
                                             found = true;
                                           }
-                                          if(architecture.components[a].type == "integer" && reg_id == id){
+                                          if(architecture.components[a].type == "int_registers" && reg_id == id){
                                             found = true;
                                           }
-                                          if(architecture.components[a].type == "integer"){
+                                          if(architecture.components[a].type == "int_registers"){
                                             reg_id++;
                                           }
                                         }
@@ -347,6 +350,9 @@
                             re = new RegExp(" +", "g");
                             instructions[j] = instructions[j].replace(re, " ");
 
+                            re = new RegExp(",", "g");
+                            instructions[j] = instructions[j].replace(re, "");
+
                             var instruction_parts = instructions[j].split(" ");
 
                             var found = false;
@@ -418,10 +424,10 @@
                                         {
                                           found = true;
                                         }
-                                        if(architecture.components[a].type == "integer" && reg_id == id){
+                                        if(architecture.components[a].type == "int_registers" && reg_id == id){
                                           found = true;
                                         }
-                                        if(architecture.components[a].type == "integer"){
+                                        if(architecture.components[a].type == "int_registers"){
                                           reg_id++;
                                         }
                                       }
@@ -546,8 +552,8 @@
                         }
 
                         //Lower limit
-                        if(this._props.number_fields < 1){
-                          this._props.number_fields = 1;
+                        if(this._props.number_fields < 0){
+                          this._props.number_fields = 0;
                         }
 
                         //Add fields
@@ -582,12 +588,18 @@
                         re = new RegExp(" +", "g");
                         this._props.pseudoinstruction.signature_definition = this._props.pseudoinstruction.signature_definition.replace(re, " ");
 
+                        re = new RegExp(",", "g");
+                        this._props.pseudoinstruction.signature_definition = this._props.pseudoinstruction.signature_definition.replace(re, "");
+
                         //New signature generation
                         re = new RegExp("^ +");
                         signature= signature.replace(re, "");
 
                         re = new RegExp(" +", "g");
                         signature = signature.replace(re, " ");
+
+                        re = new RegExp(",", "g");
+                        signature = signature.replace(re, "");
 
                         for (var i = 0; i < this._props.number_fields; i++)
                         {
@@ -606,6 +618,9 @@
 
                         re = new RegExp(" +", "g");
                         signatureRaw = signatureRaw.replace(re, " ");
+
+                        re = new RegExp(",", "g");
+                        signatureRaw = signatureRaw.replace(re, "");
 
                         for (var i = 0; i < this._props.number_fields; i++)
                         {
@@ -693,7 +708,7 @@
                     '' +
                     '      <b-form-group label="Number of fields: ">' +
                     '        <b-form-input type="text" ' +
-                    '                      min="1" ' +
+                    '                      min="0" ' +
                     '                      :max="32 * pseudoinstruction.nwords" ' +
                     '                      v-model="number_fields" ' +
                     '                      required ' +

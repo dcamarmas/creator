@@ -1,0 +1,11 @@
+
+
+Error at line 29 (addi $reg2 $reg1 val):
+Incorrect instruction syntax for 'addi $reg2 $reg1 val'
+
+  28 undefined
+->29 undefined
+
+Not executed
+keyboard[0x0]:''; display[0x0]:''; 
+

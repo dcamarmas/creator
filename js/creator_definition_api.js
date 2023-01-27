@@ -1,5 +1,5 @@
 /*
- *  Copyright 2018-2022 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
+ *  Copyright 2018-2023 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
  *  This file is part of CREATOR.
  *
@@ -52,6 +52,41 @@ function capi_bad_align ( addr, type )
 }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /*
  *  CREATOR instruction description API:
  *  Memory access
@@ -63,7 +98,7 @@ function capi_bad_align ( addr, type )
  * Description: similar to memmove/memcpy, store a value into an address
  */
 
-function capi_mem_write ( addr, value, type )
+function capi_mem_write ( addr, value, type, reg_name )
 {
 	var size = 1 ;
 
@@ -71,16 +106,36 @@ function capi_mem_write ( addr, value, type )
 	if (capi_bad_align(addr, type))
 	{
 		capi_raise("The memory must be align") ;
-		return;
+		creator_executor_exit( true );
 	}
 
-	// 2) write into memory
+	// 2) check address is into text segment
+	var addr_16 = parseInt(addr, 16);
+	if((addr_16 >= parseInt(architecture.memory_layout[0].value)) && (addr_16 <= parseInt(architecture.memory_layout[1].value)))
+    {
+        capi_raise('Segmentation fault. You tried to write in the text segment');
+        creator_executor_exit( true );
+    }
+
+	// 3) write into memory
 	try {
 		writeMemory(value, addr, type);
 	} 
 	catch(e) {
 		capi_raise("Invalid memory access to address '0x" + addr.toString(16) + "'") ;
+		creator_executor_exit( true );
 	}
+
+	// 4) Call convenction
+	var ret = crex_findReg(reg_name) ;
+	if (ret.match == 0) {
+		return;
+	}
+
+	var i = ret.indexComp ;
+	var j = ret.indexElem ;
+
+	creator_callstack_newWrite(i, j, addr, type);
 }
 
 /*
@@ -89,7 +144,7 @@ function capi_mem_write ( addr, value, type )
  * Description: read a value from an address
  */
 
-function capi_mem_read ( addr, type )
+function capi_mem_read ( addr, type, reg_name )
 {
 	var size = 1 ;
 	var val  = 0x0 ;
@@ -97,8 +152,8 @@ function capi_mem_read ( addr, type )
 	// 1) check address is aligned
 	if (capi_bad_align(addr, type))
 	{
-	capi_raise("The memory must be align") ;
-		return val;
+		capi_raise("The memory must be align") ;
+		creator_executor_exit( true );
 	}
 
 	// 2) check address is into text segment
@@ -106,7 +161,7 @@ function capi_mem_read ( addr, type )
 	if((addr_16 >= parseInt(architecture.memory_layout[0].value)) && (addr_16 <= parseInt(architecture.memory_layout[1].value)))
     {
         capi_raise('Segmentation fault. You tried to read in the text segment');
-        creator_executor_exit();
+        creator_executor_exit( true );
     }
 
 	// 3) read from memory
@@ -115,12 +170,24 @@ function capi_mem_read ( addr, type )
 	} 
 	catch(e) {
 	   capi_raise("Invalid memory access to address '0x" + addr.toString(16) + "'") ;
-	   creator_executor_exit();
-	   return val;
+	   creator_executor_exit( true );
 	}
 
-	// 4) return value
-	return creator_memory_value_by_type(val, type) ;
+	var ret = creator_memory_value_by_type(val, type) ;
+
+	// 4) Call convenction
+	var find_ret = crex_findReg(reg_name) ;
+	if (find_ret.match == 0) {
+		return ret;
+	}
+
+	var i = find_ret.indexComp ;
+	var j = find_ret.indexElem ;
+	
+	creator_callstack_newRead(i, j, addr, type);
+
+	// 5) return value
+	return ret ;
 }
 
 
@@ -134,7 +201,7 @@ function capi_exit ( )
 	/* Google Analytics */
 	creator_ga('execute', 'execute.syscall', 'execute.syscall.exit');
 
-	return creator_executor_exit() ;
+	return creator_executor_exit( false ) ;
 }
 
 function capi_print_int ( value1 )
@@ -324,7 +391,7 @@ function capi_read_string ( value1, value2 )
 	}
 
 	/* Read string */
-        if (typeof document != "undefined") {
+	if (typeof document != "undefined") {
 	    document.getElementById('enter_keyboard').scrollIntoView();
 	}
 
@@ -416,29 +483,6 @@ function capi_callconv_end ()
 
 	// User notification
 	crex_show_notification(ret.msg, 'danger') ;
-}
-
-function capi_callconv_memAction ( action, addr, reg_name, type )
-{
-	// 1) search for reg_name...
-	var ret = crex_findReg(reg_name) ;
-	if (ret.match == 0) {
-		return;
-	}
-
-	var i = ret.indexComp ;
-	var j = ret.indexElem ;
-
-	// 2) switch action...
-	switch (action) 
-	{
-		case 'write': creator_callstack_newWrite(i, j, addr, type);
-					  break;
-		case 'read':  creator_callstack_newRead(i, j, addr, type);
-					  break;
-		default:      crex_show_notification(" Unknown action '" + action + "' at ...sing_convention_memory.\n", 'danger') ;
-					  break;
-	}
 }
 
 
@@ -534,15 +578,3 @@ function capi_float2bin ( f )
 {
 	return float2bin(f) ;
 }
-
-
-/*
- *  CREATOR instruction description API:
- *  Expr
- */
-
-function capi_eval ( expr )
-{
-	eval(crex_replace_magic(expr)) ;
-}
-
