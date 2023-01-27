@@ -136,6 +136,9 @@
                               re = new RegExp(" +", "g");
                               instructions[j] = instructions[j].replace(re, " ");
 
+                              re = new RegExp(",", "g");
+                              instructions[j] = instructions[j].replace(re, "");
+
                               var instruction_parts = instructions[j].split(" ");
 
                               var found = false;
@@ -346,6 +349,9 @@
 
                             re = new RegExp(" +", "g");
                             instructions[j] = instructions[j].replace(re, " ");
+
+                            re = new RegExp(",", "g");
+                            instructions[j] = instructions[j].replace(re, "");
 
                             var instruction_parts = instructions[j].split(" ");
 
@@ -582,12 +588,18 @@
                         re = new RegExp(" +", "g");
                         this._props.pseudoinstruction.signature_definition = this._props.pseudoinstruction.signature_definition.replace(re, " ");
 
+                        re = new RegExp(",", "g");
+                        this._props.pseudoinstruction.signature_definition = this._props.pseudoinstruction.signature_definition.replace(re, "");
+
                         //New signature generation
                         re = new RegExp("^ +");
                         signature= signature.replace(re, "");
 
                         re = new RegExp(" +", "g");
                         signature = signature.replace(re, " ");
+
+                        re = new RegExp(",", "g");
+                        signature = signature.replace(re, "");
 
                         for (var i = 0; i < this._props.number_fields; i++)
                         {
@@ -606,6 +618,9 @@
 
                         re = new RegExp(" +", "g");
                         signatureRaw = signatureRaw.replace(re, " ");
+
+                        re = new RegExp(",", "g");
+                        signatureRaw = signatureRaw.replace(re, "");
 
                         for (var i = 0; i < this._props.number_fields; i++)
                         {

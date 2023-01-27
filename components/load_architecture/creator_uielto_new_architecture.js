@@ -39,21 +39,20 @@
                   {
                     show_loading();
 
-
                     //Read architecture JSON
                     $.getJSON('architecture/new_arch.json' + "?v=" + new Date().getTime(), function(cfg){
                       uielto_new_architecture.methods.load_arch_select_aux(cfg);
 
                       //Refresh UI
                       hide_loading();
-                      show_notification(e.name + ' architecture has been loaded correctly', 'success');
+                      show_notification('New Architecture has been loaded correctly', 'success');
 
                       // Google Analytics
-                      creator_ga('architecture', 'architecture.loading', 'architectures.loading.customized');
+                      creator_ga('architecture', 'architecture.loading', 'architectures.loading.new_architecture');
 
                       }).fail(function() {
                         hide_loading();
-                        show_notification(e.name + ' architecture is not currently available', 'info');
+                        show_notification('New Architecture is not currently available', 'info');
                       });
                   },
 
@@ -63,6 +62,7 @@
                     //Load architecture
                     var aux_architecture = cfg;
                     architecture = register_value_deserialize(aux_architecture);
+                    architecture_json = "new_arch";
                     uielto_preload_architecture.data.architecture_name = architecture.arch_conf[0].value;
                     app._data.architecture = architecture; 
                     app._data.architecture_name = architecture.arch_conf[0].value;
@@ -89,16 +89,6 @@
                     uielto_data_view_selector.methods.change_data_view('int_registers');
                     app._data.render++; //Forces vue to reload a component, similar to $forceUpdate()
                   },
-
-
-
-
-
-
-
-
-
-
                 },
 
     template:   '<b-card no-body class="overflow-hidden arch_card architectureCard">' +

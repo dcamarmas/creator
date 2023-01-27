@@ -70,8 +70,8 @@
                       reader.onloadend = (function(name_arch, description_arch){
                         return function(e){
                           //Add the new architecture on CREATOR
-                          architecture_available.push({name: name_arch, img: "./images/personalized_logo.png", alt: name_arch + " logo" , id:"select_conf"+name_arch , description: description_arch});
-                          load_architectures_available.push({name: name_arch, img: "./images/personalized_logo.png", alt: name_arch + " logo" , id:"select_conf"+name_arch , description: description_arch});
+                          architecture_available.push({name: name_arch, img: "./images/personalized_logo.png", alt: name_arch + " logo" , id:"select_conf"+name_arch , description: description_arch , available: 1});
+                          load_architectures_available.push({name: name_arch, img: "./images/personalized_logo.png", alt: name_arch + " logo" , id:"select_conf"+name_arch , description: description_arch , available: 1});
                           back_card.push({name: architecture_available[architecture_available.length-1].name , background: "default"});
                           load_architectures.push({id: name_arch, architecture: event.currentTarget.result});
 
