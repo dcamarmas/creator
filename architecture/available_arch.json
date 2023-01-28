@@ -20,7 +20,7 @@
     "id": "select_confMIPS",
     "examples":["default"],
     "description": "The MIPS processor was developed by Dr.John Hennessey and his graduate students at Stanford University in the early 1980s. It is currently one of the major processors in the embedded processor market.",
-    "guide":"",
+    "guide":"./docs/mips_32_reference_guide.pdf",
     "available": 1
   },
   {
