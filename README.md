@@ -14,18 +14,17 @@
 |:----------------------------:|:------------------------------------------------| 
 | Creator                      | https://creatorsim.github.io/creator/           |
 | Documentation                | https://creatorsim.github.io/                   | 
+| Examples included            | :point_right: [RISC-V](docs/examples.md#point_right---risc-v) :point_right: [MIPS-32](docs/examples.md#point_right---mips) | 
+
+### Source code and testing
+
+|                              | URL                                             | 
+|:----------------------------:|:------------------------------------------------| 
 | Source Code                  | https://github.com/creatorsim/creator/          | 
 | :clipboard:  Travis Tests    | [Description of Travis Tests](docs/travis.md)   | 
 | :microscope: Nightly build   | https://dcamarmas.github.io/creator             |
 
-
-## Examples included in CREATOR
-
-#### :point_right: [RISC-V](docs/examples.md#point_right---risc-v) 
-#### :point_right: [MIPS-32](docs/examples.md#point_right---mips) 
-
-
-## Supported Internet Browser
+### Supported Internet Browser
 
 ![Edge](https://img.shields.io/badge/Edge-0078D7?style=for-the-badge&logo=Microsoft-edge&logoColor=white)
 ![Firefox](https://img.shields.io/badge/Firefox-FF7139?style=for-the-badge&logo=Firefox-Browser&logoColor=white)
@@ -44,6 +43,19 @@
 ## ChangeLog
 
 <details open>
+<summary>:atom: 3.2.x:</summary>
+
+- [x] User Interface:
+     * New link to the quick reference guide for instructions
+     * The current assembly code can be shared as a simple link
+- [x] Modular design:
+     * Simplified pseudo-instruction forms
+     * Improved memory detail panel
+     * Hardware counter updated in order to know the number of clock cycles consumed since the last reset
+
+</details>
+
+<details>
 <summary>:atom: 3.1.x:</summary>
 
 - [x] User Interface:
