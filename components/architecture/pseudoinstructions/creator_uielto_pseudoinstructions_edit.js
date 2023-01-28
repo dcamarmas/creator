@@ -65,7 +65,7 @@
                             }
                           }
 
-                          if(!this._props.pseudoinstruction.fields[i].name || !this._props.pseudoinstruction.fields[i].type || (!this._props.pseudoinstruction.fields[i].startbit && this._props.pseudoinstruction.fields[i].startbit != 0) || (!this._props.pseudoinstruction.fields[i].stopbit && this._props.pseudoinstruction.fields[i].stopbit != 0))
+                          if(!this._props.pseudoinstruction.fields[i].name || !this._props.pseudoinstruction.fields[i].type)
                           {
                             empty = 1;
                           }
@@ -234,7 +234,7 @@
 
                                     if(signature_parts[z] == "inm-signed" || signature_parts[z] == "inm-unsigned" || signature_parts[z] == "offset_bytes" || signature_parts[z] == "offset_words")
                                     {
-                                      var field_length = architecture.instructions[i].fields[z].startbit - architecture.instructions[i].fields[z].stopbit + 1;
+                                      //var field_length = architecture.instructions[i].fields[z].startbit - architecture.instructions[i].fields[z].stopbit + 1;
                                       if(instruction_parts[z].match(/^0x/))
                                       {
                                         var value = instruction_parts[z].split("x");
@@ -244,11 +244,11 @@
                                           return -1;
                                         }
 
-                                        if(value[1].length*4 > field_length)
+                                        /*if(value[1].length*4 > field_length)
                                         {
                                           show_notification("Immediate number " + instruction_parts[z] + " is too big", 'danger') ;
                                           return -1;
-                                        }
+                                        }*/
                                       }
                                       else if (instruction_parts[z].match(/^(\d)+\.(\d)+/))
                                       {
@@ -258,11 +258,11 @@
                                           return -1;
                                         }
 
-                                        if(this.float2bin(parseFloat(instruction_parts[z])).length > field_length)
+                                        /*if(this.float2bin(parseFloat(instruction_parts[z])).length > field_length)
                                         {
                                           show_notification("Immediate number " + instruction_parts[z] + " is too big", 'danger') ;
                                           return -1;
-                                        }
+                                        }*/
                                       }
                                       else if(isNaN(parseInt(instruction_parts[z]))){
 
@@ -276,7 +276,7 @@
                                           return -1;
                                         }
 
-                                        var num_positive = Math.pow(2, field_length-1);
+                                        /*var num_positive = Math.pow(2, field_length-1);
                                         var num_negative = num_positive * (-1);
                                         num_positive = num_positive -1;
 
@@ -287,13 +287,13 @@
                                         {
                                           show_notification("Immediate number " + instruction_parts[z] + " is too big", 'danger') ;
                                           return -1;
-                                        }
+                                        }*/
                                       }
                                     }
 
                                     if(signature_parts[z] == "address")
                                     {
-                                      var field_length = architecture.instructions[i].fields[z].startbit - architecture.instructions[i].fields[z].stopbit + 1;
+                                      //var field_length = architecture.instructions[i].fields[z].startbit - architecture.instructions[i].fields[z].stopbit + 1;
                                       if(instruction_parts[z].match(/^0x/))
                                       {
                                         var value = instruction_parts[z].split("x");
@@ -303,11 +303,11 @@
                                           return -1;
                                         }
 
-                                        if(value[1].length*4 > field_length)
+                                        /*if(value[1].length*4 > field_length)
                                         {
                                           show_notification("Address " + instruction_parts[z] + " is too big", 'danger') ;
                                           return -1;
-                                        }
+                                        }*/
                                       }
                                     }
 
@@ -448,7 +448,7 @@
 
                                   if(signature_parts[z] == "inm-signed" || signature_parts[z] == "inm-unsigned" || signature_parts[z] == "offset_bytes" || signature_parts[z] == "offset_words")
                                   {
-                                    var field_length = architecture.instructions[i].fields[z].startbit - architecture.instructions[i].fields[z].stopbit + 1;
+                                    //var field_length = architecture.instructions[i].fields[z].startbit - architecture.instructions[i].fields[z].stopbit + 1;
                                     if(instruction_parts[z].match(/^0x/))
                                     {
                                       var value = instruction_parts[z].split("x");
@@ -458,11 +458,11 @@
                                         return -1;
                                       }
 
-                                      if(value[1].length*4 > field_length)
+                                      /*if(value[1].length*4 > field_length)
                                       {
                                         show_notification("Immediate number " + instruction_parts[z] + " is too big", 'danger') ;
                                         return -1;
-                                      }
+                                      }*/
                                     }
                                     else if (instruction_parts[z].match(/^(\d)+\.(\d)+/))
                                     {
@@ -472,11 +472,11 @@
                                         return -1;
                                       }
 
-                                      if(this.float2bin(parseFloat(instruction_parts[z])).length > field_length)
+                                      /*if(this.float2bin(parseFloat(instruction_parts[z])).length > field_length)
                                       {
                                         show_notification("Immediate number " + instruction_parts[z] + " is too big", 'danger') ;
                                         return -1;
-                                      }
+                                      }*/
                                     }
                                     else if(isNaN(parseInt(instruction_parts[z]))){
 
@@ -490,7 +490,7 @@
                                         return -1;
                                       }
 
-                                      var num_positive = Math.pow(2, field_length-1);
+                                      /*var num_positive = Math.pow(2, field_length-1);
                                       var num_negative = num_positive * (-1);
                                       num_positive = num_positive -1;
 
@@ -500,13 +500,13 @@
                                       if(parseInt(instruction_parts[z], 10) > num_positive || parseInt(instruction_parts[z], 10) < num_negative){
                                         show_notification("Immediate number " + instruction_parts[z] + " is too big", 'danger') ;
                                         return -1;
-                                      }
+                                      }*/
                                     }
                                   }
 
                                   if(signature_parts[z] == "address")
                                   {
-                                    var field_length = architecture.instructions[i].fields[z].startbit - architecture.instructions[i].fields[z].stopbit + 1;
+                                    //var field_length = architecture.instructions[i].fields[z].startbit - architecture.instructions[i].fields[z].stopbit + 1;
                                     if(instruction_parts[z].match(/^0x/))
                                     {
                                       var value = instruction_parts[z].split("x");
@@ -516,11 +516,11 @@
                                         return -1;
                                       }
 
-                                      if(value[1].length*4 > field_length)
+                                      /*if(value[1].length*4 > field_length)
                                       {
                                         show_notification("Address " + instruction_parts[z] + " is too big", 'danger') ;
                                         return -1;
-                                      }
+                                      }*/
                                     }
                                   }
 
@@ -562,7 +562,7 @@
                           var diff = this._props.number_fields - this._props.pseudoinstruction.fields.length;
                           for (var i = 0; i < diff; i++)
                           {
-                            var new_field = {name: '', type: '', startbit: '', stopbit: '', valueField: ''};
+                            var new_field = {name: '', type: ''};
                             this._props.pseudoinstruction.fields.push(new_field);
                           }
                         }
@@ -724,33 +724,24 @@
                     '    <!-- Page 2 -->' +
                     '    <div id="newPseudoinstForm2" v-if="pseudoinstruction_page == 2">' +
                     '      <div class="col-lg-12 col-sm-12 row">' +
-                    '        <div class="col-lg-2 col-2 fields">' +
+                    '        <div class="col-lg-4 col-4 fields">' +
                     '          ' +
                     '        </div>' +
-                    '        <div class="col-lg-2 col-2 fields">' +
+                    '        <div class="col-lg-4 col-4 fields">' +
                     '          <span class="h6">Name:</span>' +
                     '        </div>' +
-                    '        <div class="col-lg-2 col-2 fields">' +
+                    '        <div class="col-lg-4 col-4 fields">' +
                     '          <span class="h6">Type</span>' +
-                    '        </div>' +
-                    '        <div class="col-lg-2 col-2 fields">' +
-                    '          <span class="h6">Start Bit</span>' +
-                    '        </div>' +
-                    '        <div class="col-lg-2 col-2 fields">' +
-                    '          <span class="h6">End Bit</span>' +
-                    '        </div>' +
-                    '        <div class="col-lg-2 col-2 fields">' +
-                    '' +
                     '        </div>' +
                     '      </div>' +
                     '' +
                     '      <div v-if="isNaN(parseInt(number_fields)) == false">' +
                     '        <div v-for="i in parseInt(number_fields)">' +
                     '          <div class="col-lg-12 col-sm-12 row">' +
-                    '            <div class="col-lg-2 col-2 fields">' +
+                    '            <div class="col-lg-4 col-4 fields">' +
                     '              <span class="h6">Field {{i-1}}</span>' +
                     '            </div>' +
-                    '            <div class="col-lg-2 col-2 fields">' +
+                    '            <div class="col-lg-4 col-4 fields">' +
                     '              <b-form-group>' +
                     '                <b-form-input type="text" ' +
                     '                              v-model="pseudoinstruction.fields[i-1].name" ' +
@@ -761,7 +752,7 @@
                     '                </b-form-input>' +
                     '              </b-form-group>' +
                     '            </div>' +
-                    '            <div class="col-lg-2 col-2 fields">' +
+                    '            <div class="col-lg-4 col-4 fields">' +
                     '              <b-form-group>' +
                     '                <b-form-select v-model="pseudoinstruction.fields[i-1].type" ' +
                     '                               required ' +
@@ -778,32 +769,6 @@
                     '                  <option value="offset_bytes">Offset Bytes</option>' +
                     '                  <option value="offset_words">Offset Words</option>' +
                     '                </b-form-select>' +
-                    '              </b-form-group>' +
-                    '            </div>' +
-                    '            <div class="col-lg-2 col-2 fields">' +
-                    '              <b-form-group>' +
-                    '                <b-form-input type="number" ' +
-                    '                              min="0" ' +
-                    '                              :max="32 * pseudoinstruction.nwords - 1" ' +
-                    '                              v-model="pseudoinstruction.fields[i-1].startbit" ' +
-                    '                              required ' +
-                    '                              :state="valid(pseudoinstruction.fields[i-1].startbit)" ' +
-                    '                              size="sm" ' +
-                    '                              title="Filed start bit">' +
-                    '                </b-form-input>' +
-                    '              </b-form-group>' +
-                    '            </div>' +
-                    '            <div class="col-lg-2 col-2 fields">' +
-                    '              <b-form-group>' +
-                    '                <b-form-input type="number" ' +
-                    '                              min="0" ' +
-                    '                              :max="32 * pseudoinstruction.nwords - 1" ' +
-                    '                              v-model="pseudoinstruction.fields[i-1].stopbit" ' +
-                    '                              required ' +
-                    '                              :state="valid(pseudoinstruction.fields[i-1].stopbit)" ' +
-                    '                              size="sm" ' +
-                    '                              title="Filed end bit">' +
-                    '                </b-form-input>' +
                     '              </b-form-group>' +
                     '            </div>' +
                     '          </div>' +

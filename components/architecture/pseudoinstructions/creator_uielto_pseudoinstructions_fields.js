@@ -47,33 +47,24 @@
                     '  <b-form>' +
                     '    <div id="viewFieldsPseudo">' +
                     '      <div class="col-lg-12 col-sm-12 row">' +
-                    '        <div class="col-lg-2 col-2 fields">' +
+                    '        <div class="col-lg-4 col-4 fields">' +
                     '' +
                     '        </div>' +
-                    '        <div class="col-lg-2 col-2 fields">' +
+                    '        <div class="col-lg-4 col-4 fields">' +
                     '          <span class="h6">Name:</span>' +
                     '        </div>' +
-                    '        <div class="col-lg-2 col-2 fields">' +
+                    '        <div class="col-lg-4 col-4 fields">' +
                     '          <span class="h6">Type</span>' +
-                    '        </div>' +
-                    '        <div class="col-lg-2 col-2 fields">' +
-                    '          <span class="h6">Start Bit</span>' +
-                    '        </div>' +
-                    '        <div class="col-lg-2 col-2 fields">' +
-                    '          <span class="h6">End Bit</span>' +
-                    '        </div>' +
-                    '        <div class="col-lg-2 col-2 fields">' +
-                    '' +
                     '        </div>' +
                     '      </div>' +
                     '' +
                     '      <div>  ' +
                     '        <div v-for="(item, field_index) in pseudoinstruction.fields">' +
                     '          <div class="col-lg-12 col-sm-12 row">' +
-                    '            <div class="col-lg-2 col-2 fields">' +
+                    '            <div class="col-lg-4 col-4 fields">' +
                     '              <span class="h6">Field {{field_index}}</span>' +
                     '            </div>' +
-                    '            <div class="col-lg-2 col-2 fields">' +
+                    '            <div class="col-lg-4 col-4 fields">' +
                     '              <b-form-group>' +
                     '                <b-form-input type="text" ' +
                     '                              v-model="pseudoinstruction.fields[field_index].name" ' +
@@ -84,7 +75,7 @@
                     '                </b-form-input>' +
                     '              </b-form-group>' +
                     '            </div>' +
-                    '            <div class="col-lg-2 col-2 fields">' +
+                    '            <div class="col-lg-4 col-4 fields">' +
                     '              <b-form-group>' +
                     '                <b-form-input v-model="pseudoinstruction.fields[field_index].type" ' +
                     '                              required ' +
@@ -92,32 +83,6 @@
                     '                              size="sm" ' +
                     '                              disabled ' +
                     '                              title="Field type">' +
-                    '                </b-form-input>' +
-                    '              </b-form-group>' +
-                    '            </div>' +
-                    '            <div class="col-lg-2 col-2 fields">' +
-                    '              <b-form-group>' +
-                    '                <b-form-input type="number" ' +
-                    '                              min="0" ' +
-                    '                              :max="32 * pseudoinstruction.nwords - 1" ' +
-                    '                              v-model="pseudoinstruction.fields[field_index].startbit" ' +
-                    '                              required ' +
-                    '                              size="sm" ' +
-                    '                              disabled ' +
-                    '                              title="Field start bit">' +
-                    '                </b-form-input>' +
-                    '              </b-form-group>' +
-                    '            </div>' +
-                    '            <div class="col-lg-2 col-2 fields">' +
-                    '              <b-form-group>' +
-                    '                <b-form-input type="number"' +
-                    '                              min="0"' +
-                    '                              :max="32 * pseudoinstruction.nwords - 1"' +
-                    '                              v-model="pseudoinstruction.fields[field_index].stopbit"' +
-                    '                              required' +
-                    '                              size="sm"' +
-                    '                              disabled' +
-                    '                              title="Field end bit">' +
                     '                </b-form-input>' +
                     '              </b-form-group>' +
                     '            </div>' +
