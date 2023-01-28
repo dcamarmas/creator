@@ -6339,7 +6339,7 @@
       "properties": [],
       "nwords": 1,
       "fields": [],
-      "definition": "addi x0, x0, 0;"
+      "definition": "addi x0 x0 0;"
     },
     {
       "name": "mv",
@@ -6352,15 +6352,11 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "INT-Reg"
         },
         {
           "name": "reg2",
-          "type": "INT-Reg",
-          "startbit": 20,
-          "stopbit": 16
+          "type": "INT-Reg"
         }
       ],
       "definition": "addi reg1 reg2 0;"
@@ -6376,15 +6372,11 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "INT-Reg"
         },
         {
           "name": "reg2",
-          "type": "INT-Reg",
-          "startbit": 20,
-          "stopbit": 16
+          "type": "INT-Reg"
         }
       ],
       "definition": "xori reg1 reg2 -1;"
@@ -6400,15 +6392,11 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "INT-Reg"
         },
         {
           "name": "reg2",
-          "type": "INT-Reg",
-          "startbit": 20,
-          "stopbit": 16
+          "type": "INT-Reg"
         }
       ],
       "definition": "sub reg1 x0 reg2;"
@@ -6424,15 +6412,11 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "INT-Reg"
         },
         {
           "name": "off",
-          "type": "offset_words",
-          "startbit": 15,
-          "stopbit": 0
+          "type": "offset_words"
         }
       ],
       "definition": "beq reg1 x0 off;"
@@ -6448,15 +6432,11 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "INT-Reg"
         },
         {
           "name": "off",
-          "type": "offset_words",
-          "startbit": 15,
-          "stopbit": 0
+          "type": "offset_words"
         }
       ],
       "definition": "bne reg1 x0 off;"
@@ -6472,21 +6452,15 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "INT-Reg"
         },
         {
           "name": "reg2",
-          "type": "INT-Reg",
-          "startbit": 20,
-          "stopbit": 16
+          "type": "INT-Reg"
         },
         {
           "name": "off",
-          "type": "offset_words",
-          "startbit": 15,
-          "stopbit": 0
+          "type": "offset_words"
         }
       ],
       "definition": "bltu reg2 reg1 off;"
@@ -6502,21 +6476,15 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "INT-Reg"
         },
         {
           "name": "reg2",
-          "type": "INT-Reg",
-          "startbit": 20,
-          "stopbit": 16
+          "type": "INT-Reg"
         },
         {
           "name": "off",
-          "type": "offset_words",
-          "startbit": 15,
-          "stopbit": 0
+          "type": "offset_words"
         }
       ],
       "definition": "bgeu reg2 reg1 off;"
@@ -6532,15 +6500,11 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "INT-Reg"
         },
         {
           "name": "off",
-          "type": "offset_words",
-          "startbit": 15,
-          "stopbit": 0
+          "type": "offset_words"
         }
       ],
       "definition": "bge x0 reg1 off;"
@@ -6556,15 +6520,11 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "INT-Reg"
         },
         {
           "name": "off",
-          "type": "offset_words",
-          "startbit": 15,
-          "stopbit": 0
+          "type": "offset_words"
         }
       ],
       "definition": "bge reg1 x0 off;"
@@ -6580,15 +6540,11 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "INT-Reg"
         },
         {
           "name": "off",
-          "type": "offset_words",
-          "startbit": 15,
-          "stopbit": 0
+          "type": "offset_words"
         }
       ],
       "definition": "blt x0 reg1 off;"
@@ -6604,21 +6560,15 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "INT-Reg"
         },
         {
           "name": "reg2",
-          "type": "INT-Reg",
-          "startbit": 20,
-          "stopbit": 16
+          "type": "INT-Reg"
         },
         {
           "name": "off",
-          "type": "offset_words",
-          "startbit": 15,
-          "stopbit": 0
+          "type": "offset_words"
         }
       ],
       "definition": "blt reg2 reg1 off;"
@@ -6634,21 +6584,15 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "INT-Reg"
         },
         {
           "name": "reg2",
-          "type": "INT-Reg",
-          "startbit": 20,
-          "stopbit": 16
+          "type": "INT-Reg"
         },
         {
           "name": "off",
-          "type": "offset_words",
-          "startbit": 15,
-          "stopbit": 0
+          "type": "offset_words"
         }
       ],
       "definition": "bge reg2 reg1 off;"
@@ -6664,9 +6608,7 @@
       "fields": [
         {
           "name": "rs",
-          "type": "INT-Reg",
-          "startbit": "25",
-          "stopbit": "16"
+          "type": "INT-Reg"
         }
       ],
       "definition": "jalr x1 0 (rs);"
@@ -6682,9 +6624,7 @@
       "fields": [
         {
           "name": "rs",
-          "type": "INT-Reg",
-          "startbit": "25",
-          "stopbit": "16"
+          "type": "INT-Reg"
         }
       ],
       "definition": "jalr x0 0 (rs);"
@@ -6700,9 +6640,7 @@
       "fields": [
         {
           "name": "off",
-          "type": "offset_words",
-          "startbit": 15,
-          "stopbit": 0
+          "type": "offset_words"
         }
       ],
       "definition": "jal x0 off;"
@@ -6729,15 +6667,11 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "SFP-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "SFP-Reg"
         },
         {
           "name": "reg2",
-          "type": "SFP-Reg",
-          "startbit": 20,
-          "stopbit": 16
+          "type": "SFP-Reg"
         }
       ],
       "definition": "fsgnj.s reg1 reg2 reg2;"
@@ -6753,15 +6687,11 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "SFP-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "SFP-Reg"
         },
         {
           "name": "reg2",
-          "type": "SFP-Reg",
-          "startbit": 20,
-          "stopbit": 16
+          "type": "SFP-Reg"
         }
       ],
       "definition": "fsgnjx.s reg1 reg2 reg2;"
@@ -6777,15 +6707,11 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "SFP-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "SFP-Reg"
         },
         {
           "name": "reg2",
-          "type": "SFP-Reg",
-          "startbit": 20,
-          "stopbit": 16
+          "type": "SFP-Reg"
         }
       ],
       "definition": "fsgnjn.s reg1 reg2 reg2;"
@@ -6801,15 +6727,11 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "DFP-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "DFP-Reg"
         },
         {
           "name": "reg2",
-          "type": "DFP-Reg",
-          "startbit": 20,
-          "stopbit": 16
+          "type": "DFP-Reg"
         }
       ],
       "definition": "fsgnj.d reg1 reg2 reg2;"
@@ -6826,15 +6748,11 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "DFP-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "DFP-Reg"
         },
         {
           "name": "reg2",
-          "type": "DFP-Reg",
-          "startbit": 20,
-          "stopbit": 16
+          "type": "DFP-Reg"
         }
       ],
       "definition": "fsgnjx.d reg1 reg2 reg2;"
@@ -6850,15 +6768,11 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "DFP-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "DFP-Reg"
         },
         {
           "name": "reg2",
-          "type": "DFP-Reg",
-          "startbit": 20,
-          "stopbit": 16
+          "type": "DFP-Reg"
         }
       ],
       "definition": "fsgnjn.d reg1 reg2 reg2;"
@@ -6874,15 +6788,11 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "INT-Reg"
         },
         {
           "name": "reg2",
-          "type": "INT-Reg",
-          "startbit": 20,
-          "stopbit": 16
+          "type": "INT-Reg"
         }
       ],
       "definition": "andi reg1 reg2 255;"
@@ -6898,15 +6808,11 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "INT-Reg"
         },
         {
           "name": "reg2",
-          "type": "INT-Reg",
-          "startbit": 20,
-          "stopbit": 16
+          "type": "INT-Reg"
         }
       ],
       "definition": "sltiu reg1 reg2 1;"
@@ -6922,15 +6828,11 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "INT-Reg"
         },
         {
           "name": "reg2",
-          "type": "INT-Reg",
-          "startbit": 20,
-          "stopbit": 16
+          "type": "INT-Reg"
         }
       ],
       "definition": "sltu reg1 x0 reg2;"
@@ -6946,15 +6848,11 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "INT-Reg"
         },
         {
           "name": "reg2",
-          "type": "INT-Reg",
-          "startbit": 20,
-          "stopbit": 16
+          "type": "INT-Reg"
         }
       ],
       "definition": "slt reg1 reg2 x0;"
@@ -6970,15 +6868,11 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "INT-Reg"
         },
         {
           "name": "reg2",
-          "type": "INT-Reg",
-          "startbit": 20,
-          "stopbit": 16
+          "type": "INT-Reg"
         }
       ],
       "definition": "slt reg1 x0 reg2;"
@@ -6994,15 +6888,11 @@
       "fields": [
         {
           "name": "rd",
-          "type": "INT-Reg",
-          "startbit": "25",
-          "stopbit": "21"
+          "type": "INT-Reg"
         },
         {
           "name": "addr",
-          "type": "inm-unsigned",
-          "startbit": "20",
-          "stopbit": "0"
+          "type": "inm-unsigned"
         }
       ],
       "definition": "no_ret_op{tmp=Field.2.(31,0).int - reg.pc;\ntmp_hi='0x'+(((tmp&0xFFFFF000)>>12) + ((tmp&0x00000400)>>11)).toString(16);\ntmp_low='0x'+(tmp&0x00000FFF).toString(16)};\nauipc rd op{tmp_hi};\naddi rd rd op{tmp_low};\n"
@@ -7018,15 +6908,11 @@
       "fields": [
         {
           "name": "rd",
-          "type": "INT-Reg",
-          "startbit": "25",
-          "stopbit": "21"
+          "type": "INT-Reg"
         },
         {
           "name": "val",
-          "type": "inm-signed",
-          "startbit": "15",
-          "stopbit": "0"
+          "type": "inm-signed"
         }
       ],
       "definition": "if(Field.2.SIZE<=12){addi rd x0 val;}\nelse{lui rd 0;\nlui rd Field.2.(31,12).int;\naddi rd rd op{'0x'+(Field.2.(11,0).int ).toString(16)};}"
