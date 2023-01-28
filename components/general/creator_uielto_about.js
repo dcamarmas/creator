@@ -71,6 +71,10 @@
                 '' +
                 '   </b-card-group>' +
                 ' ' +
+                '   <b-list-group>' +
+                '     <b-list-group-item style="text-align: center;">Contact: <a href="mailto: creator.arcos.inf.uc3m.es@gmail.com">creator.arcos.inf.uc3m.es@gmail.com</a></b-list-group-item>' +
+                '   </b-list-group>' +
+                ' ' +
                 ' </b-modal>'
   }
 

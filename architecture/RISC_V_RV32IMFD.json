@@ -955,7 +955,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "auipc",
@@ -992,7 +993,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "jal",
@@ -1033,7 +1035,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "jalr",
@@ -1089,7 +1092,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "beq",
@@ -1147,7 +1151,8 @@
         true,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "bne",
@@ -1205,7 +1210,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "blt",
@@ -1263,7 +1269,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "bge",
@@ -1321,7 +1328,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "bltu",
@@ -1379,7 +1387,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "bgeu",
@@ -1437,7 +1446,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "lb",
@@ -1488,7 +1498,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "lh",
@@ -1540,7 +1551,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "lw",
@@ -1592,7 +1604,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "lhu",
@@ -1644,7 +1657,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "lbu",
@@ -1696,7 +1710,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "sb",
@@ -1754,7 +1769,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "sh",
@@ -1812,7 +1828,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "sw",
@@ -1870,7 +1887,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "addi",
@@ -1921,7 +1939,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "slti",
@@ -1972,7 +1991,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "sltiu",
@@ -2023,7 +2043,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "ori",
@@ -2075,7 +2096,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "andi",
@@ -2127,7 +2149,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "slli",
@@ -2187,7 +2210,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "srli",
@@ -2247,7 +2271,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "srai",
@@ -2307,7 +2332,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "add",
@@ -2367,7 +2393,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "sub",
@@ -2427,7 +2454,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "sll",
@@ -2486,7 +2514,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "slt",
@@ -2545,7 +2574,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "sltu",
@@ -2604,7 +2634,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "xor",
@@ -2663,7 +2694,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "xori",
@@ -2715,7 +2747,8 @@
       false,
       false,
       false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "srl",
@@ -2775,7 +2808,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "sra",
@@ -2835,7 +2869,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "or",
@@ -2895,7 +2930,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "and",
@@ -2955,7 +2991,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     
     {
@@ -3001,7 +3038,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "mul",
@@ -3061,7 +3099,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "mulh",
@@ -3121,7 +3160,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "mulhsu",
@@ -3181,7 +3221,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "mulhu",
@@ -3241,7 +3282,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "div",
@@ -3301,7 +3343,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "rem",
@@ -3361,7 +3404,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "flw",
@@ -3413,7 +3457,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "fsw",
@@ -3472,7 +3517,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "fmadd.s",
@@ -3531,7 +3577,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "fmsub.s",
@@ -3590,7 +3637,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "fnmsub.s",
@@ -3649,7 +3697,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "fnmadd.s",
@@ -3708,7 +3757,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "fadd.s",
@@ -3761,7 +3811,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "fsub.s",
@@ -3814,7 +3865,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "fmul.s",
@@ -3867,7 +3919,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "fdiv.s",
@@ -3920,7 +3973,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "fsqrt.s",
@@ -3974,7 +4028,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "fsgnj.s",
@@ -4035,7 +4090,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "fsgnjn.s",
@@ -4096,7 +4152,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "fsgnjx.s",
@@ -4157,7 +4214,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "fmin.s",
@@ -4218,7 +4276,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "fmax.s",
@@ -4279,7 +4338,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "fcvt.w.s",
@@ -4333,7 +4393,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "fcvt.wu.s",
@@ -4387,7 +4448,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "fmv.x.w",
@@ -4441,7 +4503,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "feq.s",
@@ -4502,7 +4565,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "flt.s",
@@ -4563,7 +4627,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "fle.s",
@@ -4624,7 +4689,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "fclass.s",
@@ -4685,7 +4751,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "fcvt.s.w",
@@ -4739,7 +4806,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "fcvt.s.wu",
@@ -4793,7 +4861,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "fmv.w.x",
@@ -4847,7 +4916,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "fld",
@@ -4899,7 +4969,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "fmadd.d",
@@ -4958,7 +5029,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "fmsub.d",
@@ -5017,7 +5089,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "fnmadd.d",
@@ -5076,7 +5149,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "fnmsub.d",
@@ -5135,7 +5209,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "fadd.d",
@@ -5187,7 +5262,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "fsub.d",
@@ -5239,7 +5315,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "fmul.d",
@@ -5291,7 +5368,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "fdiv.d",
@@ -5343,7 +5421,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "fsqrt.d",
@@ -5396,7 +5475,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "fsgnj.d",
@@ -5457,7 +5537,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "fsgnjn.d",
@@ -5518,7 +5599,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "fsgnjx.d",
@@ -5579,7 +5661,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "fmin.d",
@@ -5640,7 +5723,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "fmax.d",
@@ -5701,7 +5785,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "fcvt.s.d",
@@ -5755,7 +5840,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "fcvt.d.s",
@@ -5809,7 +5895,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "feq.d",
@@ -5869,7 +5956,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "flt.d",
@@ -5929,7 +6017,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "fle.d",
@@ -5989,7 +6078,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "fclass.d",
@@ -6050,7 +6140,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "fcvt.w.d",
@@ -6104,7 +6195,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "fcvt.wu.d",
@@ -6158,7 +6250,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "fcvt.d.w",
@@ -6212,7 +6305,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "fcvt.d.wu",
@@ -6266,7 +6360,8 @@
         false,
         false,
         false
-      ]
+      ],
+      "help":""
     },
     {
       "name": "ecall",
@@ -6293,7 +6388,8 @@
           "valueField": "001100"
         }
       ],
-      "definition": "switch(a7){\ncase 1:\ncapi_print_int('a0');\nbreak;\ncase 2:\ncapi_print_float('fa0');\nbreak;\ncase 3:\ncapi_print_double('fa0');\nbreak;\ncase 4:\ncapi_print_string('a0');\nbreak;\ncase 5:\ncapi_read_int('a0');\nbreak;\ncase 6:\ncapi_read_float('fa0');\nbreak;\ncase 7:\ncapi_read_double('fa0');\nbreak;\ncase 8:\ncapi_read_string('a0', 'a1');\nbreak;\ncase 9:\ncapi_sbrk('a0', 'a0');\nbreak;\ncase 10:\ncapi_exit();\nbreak;\ncase 11:\ncapi_print_char('a0');\nbreak;\ncase 12:\ncapi_read_char('a0');\nbreak;\n}"
+      "definition": "switch(a7){\ncase 1:\ncapi_print_int('a0');\nbreak;\ncase 2:\ncapi_print_float('fa0');\nbreak;\ncase 3:\ncapi_print_double('fa0');\nbreak;\ncase 4:\ncapi_print_string('a0');\nbreak;\ncase 5:\ncapi_read_int('a0');\nbreak;\ncase 6:\ncapi_read_float('fa0');\nbreak;\ncase 7:\ncapi_read_double('fa0');\nbreak;\ncase 8:\ncapi_read_string('a0', 'a1');\nbreak;\ncase 9:\ncapi_sbrk('a0', 'a0');\nbreak;\ncase 10:\ncapi_exit();\nbreak;\ncase 11:\ncapi_print_char('a0');\nbreak;\ncase 12:\ncapi_read_char('a0');\nbreak;\n}",
+      "help":""
     },
     {
       "name": "rdcycle",
@@ -6326,7 +6422,8 @@
           "valueField": "010"
         }
       ],
-      "definition": "rd = capi_get_power_consumption();\n"
+      "definition": "rd = capi_get_power_consumption();\n",
+      "help":""
     }
   ],
   "pseudoinstructions": [
@@ -6339,7 +6436,8 @@
       "properties": [],
       "nwords": 1,
       "fields": [],
-      "definition": "addi x0, x0, 0;"
+      "definition": "addi x0 x0 0;",
+      "help":""
     },
     {
       "name": "mv",
@@ -6352,18 +6450,15 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "INT-Reg"
         },
         {
           "name": "reg2",
-          "type": "INT-Reg",
-          "startbit": 20,
-          "stopbit": 16
+          "type": "INT-Reg"
         }
       ],
-      "definition": "addi reg1 reg2 0;"
+      "definition": "addi reg1 reg2 0;",
+      "help":""
     },
     {
       "name": "not",
@@ -6376,18 +6471,15 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "INT-Reg"
         },
         {
           "name": "reg2",
-          "type": "INT-Reg",
-          "startbit": 20,
-          "stopbit": 16
+          "type": "INT-Reg"
         }
       ],
-      "definition": "xori reg1 reg2 -1;"
+      "definition": "xori reg1 reg2 -1;",
+      "help":""
     },
     {
       "name": "neg",
@@ -6400,18 +6492,15 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "INT-Reg"
         },
         {
           "name": "reg2",
-          "type": "INT-Reg",
-          "startbit": 20,
-          "stopbit": 16
+          "type": "INT-Reg"
         }
       ],
-      "definition": "sub reg1 x0 reg2;"
+      "definition": "sub reg1 x0 reg2;",
+      "help":""
     },
     {
       "name": "beqz",
@@ -6424,18 +6513,15 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "INT-Reg"
         },
         {
           "name": "off",
-          "type": "offset_words",
-          "startbit": 15,
-          "stopbit": 0
+          "type": "offset_words"
         }
       ],
-      "definition": "beq reg1 x0 off;"
+      "definition": "beq reg1 x0 off;",
+      "help":""
     },
     {
       "name": "bnez",
@@ -6448,18 +6534,15 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "INT-Reg"
         },
         {
           "name": "off",
-          "type": "offset_words",
-          "startbit": 15,
-          "stopbit": 0
+          "type": "offset_words"
         }
       ],
-      "definition": "bne reg1 x0 off;"
+      "definition": "bne reg1 x0 off;",
+      "help":""
     },
     {
       "name": "bgtu",
@@ -6472,24 +6555,19 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "INT-Reg"
         },
         {
           "name": "reg2",
-          "type": "INT-Reg",
-          "startbit": 20,
-          "stopbit": 16
+          "type": "INT-Reg"
         },
         {
           "name": "off",
-          "type": "offset_words",
-          "startbit": 15,
-          "stopbit": 0
+          "type": "offset_words"
         }
       ],
-      "definition": "bltu reg2 reg1 off;"
+      "definition": "bltu reg2 reg1 off;",
+      "help":""
     },
     {
       "name": "bleu",
@@ -6502,24 +6580,19 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "INT-Reg"
         },
         {
           "name": "reg2",
-          "type": "INT-Reg",
-          "startbit": 20,
-          "stopbit": 16
+          "type": "INT-Reg"
         },
         {
           "name": "off",
-          "type": "offset_words",
-          "startbit": 15,
-          "stopbit": 0
+          "type": "offset_words"
         }
       ],
-      "definition": "bgeu reg2 reg1 off;"
+      "definition": "bgeu reg2 reg1 off;",
+      "help":""
     },
     {
       "name": "blez",
@@ -6532,18 +6605,15 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "INT-Reg"
         },
         {
           "name": "off",
-          "type": "offset_words",
-          "startbit": 15,
-          "stopbit": 0
+          "type": "offset_words"
         }
       ],
-      "definition": "bge x0 reg1 off;"
+      "definition": "bge x0 reg1 off;",
+      "help":""
     },
     {
       "name": "bgez",
@@ -6556,18 +6626,15 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "INT-Reg"
         },
         {
           "name": "off",
-          "type": "offset_words",
-          "startbit": 15,
-          "stopbit": 0
+          "type": "offset_words"
         }
       ],
-      "definition": "bge reg1 x0 off;"
+      "definition": "bge reg1 x0 off;",
+      "help":""
     },
     {
       "name": "bgtz",
@@ -6580,18 +6647,15 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "INT-Reg"
         },
         {
           "name": "off",
-          "type": "offset_words",
-          "startbit": 15,
-          "stopbit": 0
+          "type": "offset_words"
         }
       ],
-      "definition": "blt x0 reg1 off;"
+      "definition": "blt x0 reg1 off;",
+      "help":""
     },
     {
       "name": "bgt",
@@ -6604,24 +6668,19 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "INT-Reg"
         },
         {
           "name": "reg2",
-          "type": "INT-Reg",
-          "startbit": 20,
-          "stopbit": 16
+          "type": "INT-Reg"
         },
         {
           "name": "off",
-          "type": "offset_words",
-          "startbit": 15,
-          "stopbit": 0
+          "type": "offset_words"
         }
       ],
-      "definition": "blt reg2 reg1 off;"
+      "definition": "blt reg2 reg1 off;",
+      "help":""
     },
     {
       "name": "ble",
@@ -6634,24 +6693,19 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "INT-Reg"
         },
         {
           "name": "reg2",
-          "type": "INT-Reg",
-          "startbit": 20,
-          "stopbit": 16
+          "type": "INT-Reg"
         },
         {
           "name": "off",
-          "type": "offset_words",
-          "startbit": 15,
-          "stopbit": 0
+          "type": "offset_words"
         }
       ],
-      "definition": "bge reg2 reg1 off;"
+      "definition": "bge reg2 reg1 off;",
+      "help":""
     },
     {
       "name": "jalr",
@@ -6664,12 +6718,11 @@
       "fields": [
         {
           "name": "rs",
-          "type": "INT-Reg",
-          "startbit": "25",
-          "stopbit": "16"
+          "type": "INT-Reg"
         }
       ],
-      "definition": "jalr x1 0 (rs);"
+      "definition": "jalr x1 0 (rs);",
+      "help":""
     },
     {
       "name": "jr",
@@ -6682,12 +6735,11 @@
       "fields": [
         {
           "name": "rs",
-          "type": "INT-Reg",
-          "startbit": "25",
-          "stopbit": "16"
+          "type": "INT-Reg"
         }
       ],
-      "definition": "jalr x0 0 (rs);"
+      "definition": "jalr x0 0 (rs);",
+      "help":""
     },
     {
       "name": "j",
@@ -6700,12 +6752,11 @@
       "fields": [
         {
           "name": "off",
-          "type": "offset_words",
-          "startbit": 15,
-          "stopbit": 0
+          "type": "offset_words"
         }
       ],
-      "definition": "jal x0 off;"
+      "definition": "jal x0 off;",
+      "help":""
     },
     {
       "name": "ret",
@@ -6716,7 +6767,8 @@
       "properties": [],
       "nwords": 1,
       "fields": [],
-      "definition": "jalr x0 0 (x1);"
+      "definition": "jalr x0 0 (x1);",
+      "help":""
     },
     {
       "name": "fmv.s",
@@ -6729,18 +6781,15 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "SFP-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "SFP-Reg"
         },
         {
           "name": "reg2",
-          "type": "SFP-Reg",
-          "startbit": 20,
-          "stopbit": 16
+          "type": "SFP-Reg"
         }
       ],
-      "definition": "fsgnj.s reg1 reg2 reg2;"
+      "definition": "fsgnj.s reg1 reg2 reg2;",
+      "help":""
     },
     {
       "name": "fabs.s",
@@ -6753,18 +6802,15 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "SFP-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "SFP-Reg"
         },
         {
           "name": "reg2",
-          "type": "SFP-Reg",
-          "startbit": 20,
-          "stopbit": 16
+          "type": "SFP-Reg"
         }
       ],
-      "definition": "fsgnjx.s reg1 reg2 reg2;"
+      "definition": "fsgnjx.s reg1 reg2 reg2;",
+      "help":""
     },
     {
       "name": "fneg.s",
@@ -6777,18 +6823,15 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "SFP-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "SFP-Reg"
         },
         {
           "name": "reg2",
-          "type": "SFP-Reg",
-          "startbit": 20,
-          "stopbit": 16
+          "type": "SFP-Reg"
         }
       ],
-      "definition": "fsgnjn.s reg1 reg2 reg2;"
+      "definition": "fsgnjn.s reg1 reg2 reg2;",
+      "help":""
     },
     {
       "name": "fmv.d",
@@ -6801,18 +6844,15 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "DFP-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "DFP-Reg"
         },
         {
           "name": "reg2",
-          "type": "DFP-Reg",
-          "startbit": 20,
-          "stopbit": 16
+          "type": "DFP-Reg"
         }
       ],
-      "definition": "fsgnj.d reg1 reg2 reg2;"
+      "definition": "fsgnj.d reg1 reg2 reg2;",
+      "help":""
     },
 
     {
@@ -6826,18 +6866,15 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "DFP-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "DFP-Reg"
         },
         {
           "name": "reg2",
-          "type": "DFP-Reg",
-          "startbit": 20,
-          "stopbit": 16
+          "type": "DFP-Reg"
         }
       ],
-      "definition": "fsgnjx.d reg1 reg2 reg2;"
+      "definition": "fsgnjx.d reg1 reg2 reg2;",
+      "help":""
     },
     {
       "name": "fneg.d",
@@ -6850,18 +6887,15 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "DFP-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "DFP-Reg"
         },
         {
           "name": "reg2",
-          "type": "DFP-Reg",
-          "startbit": 20,
-          "stopbit": 16
+          "type": "DFP-Reg"
         }
       ],
-      "definition": "fsgnjn.d reg1 reg2 reg2;"
+      "definition": "fsgnjn.d reg1 reg2 reg2;",
+      "help":""
     },
     {
       "name": "zext.b",
@@ -6874,18 +6908,15 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "INT-Reg"
         },
         {
           "name": "reg2",
-          "type": "INT-Reg",
-          "startbit": 20,
-          "stopbit": 16
+          "type": "INT-Reg"
         }
       ],
-      "definition": "andi reg1 reg2 255;"
+      "definition": "andi reg1 reg2 255;",
+      "help":""
     },
     {
       "name": "seqz",
@@ -6898,18 +6929,15 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "INT-Reg"
         },
         {
           "name": "reg2",
-          "type": "INT-Reg",
-          "startbit": 20,
-          "stopbit": 16
+          "type": "INT-Reg"
         }
       ],
-      "definition": "sltiu reg1 reg2 1;"
+      "definition": "sltiu reg1 reg2 1;",
+      "help":""
     },
     {
       "name": "snez",
@@ -6922,18 +6950,15 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "INT-Reg"
         },
         {
           "name": "reg2",
-          "type": "INT-Reg",
-          "startbit": 20,
-          "stopbit": 16
+          "type": "INT-Reg"
         }
       ],
-      "definition": "sltu reg1 x0 reg2;"
+      "definition": "sltu reg1 x0 reg2;",
+      "help":""
     },
     {
       "name": "sltz",
@@ -6946,18 +6971,15 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "INT-Reg"
         },
         {
           "name": "reg2",
-          "type": "INT-Reg",
-          "startbit": 20,
-          "stopbit": 16
+          "type": "INT-Reg"
         }
       ],
-      "definition": "slt reg1 reg2 x0;"
+      "definition": "slt reg1 reg2 x0;",
+      "help":""
     },
     {
       "name": "sgtz",
@@ -6970,18 +6992,15 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "INT-Reg"
         },
         {
           "name": "reg2",
-          "type": "INT-Reg",
-          "startbit": 20,
-          "stopbit": 16
+          "type": "INT-Reg"
         }
       ],
-      "definition": "slt reg1 x0 reg2;"
+      "definition": "slt reg1 x0 reg2;",
+      "help":""
     },
     {
       "name": "la",
@@ -6994,18 +7013,15 @@
       "fields": [
         {
           "name": "rd",
-          "type": "INT-Reg",
-          "startbit": "25",
-          "stopbit": "21"
+          "type": "INT-Reg"
         },
         {
           "name": "addr",
-          "type": "inm-unsigned",
-          "startbit": "20",
-          "stopbit": "0"
+          "type": "inm-unsigned"
         }
       ],
-      "definition": "no_ret_op{tmp=Field.2.(31,0).int - reg.pc;\ntmp_hi='0x'+(((tmp&0xFFFFF000)>>12) + ((tmp&0x00000400)>>11)).toString(16);\ntmp_low='0x'+(tmp&0x00000FFF).toString(16)};\nauipc rd op{tmp_hi};\naddi rd rd op{tmp_low};\n"
+      "definition": "no_ret_op{tmp=Field.2.(31,0).int - reg.pc;\ntmp_hi='0x'+(((tmp&0xFFFFF000)>>12) + ((tmp&0x00000400)>>11)).toString(16);\ntmp_low='0x'+(tmp&0x00000FFF).toString(16)};\nauipc rd op{tmp_hi};\naddi rd rd op{tmp_low};\n",
+      "help":""
     },
     {
       "name": "li",
@@ -7018,18 +7034,15 @@
       "fields": [
         {
           "name": "rd",
-          "type": "INT-Reg",
-          "startbit": "25",
-          "stopbit": "21"
+          "type": "INT-Reg"
         },
         {
           "name": "val",
-          "type": "inm-signed",
-          "startbit": "15",
-          "stopbit": "0"
+          "type": "inm-signed"
         }
       ],
-      "definition": "if(Field.2.SIZE<=12){addi rd x0 val;}\nelse{lui rd 0;\nlui rd Field.2.(31,12).int;\naddi rd rd op{'0x'+(Field.2.(11,0).int ).toString(16)};}"
+      "definition": "if(Field.2.SIZE<=12){addi rd x0 val;}\nelse{lui rd 0;\nlui rd Field.2.(31,12).int;\naddi rd rd op{'0x'+(Field.2.(11,0).int ).toString(16)};}",
+      "help":""
     }
   ],
   "directives": [
