@@ -5467,18 +5467,15 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "INT-Reg"
         },
         {
           "name": "reg2",
-          "type": "INT-Reg",
-          "startbit": 20,
-          "stopbit": 16
+          "type": "INT-Reg"
         }
       ],
-      "definition": "add $reg1 $zero $reg2;"
+      "definition": "add $reg1 $zero $reg2;",
+      "help":""
     },
     {
       "name": "b",
@@ -5491,12 +5488,11 @@
       "fields": [
         {
           "name": "inm",
-          "type": "inm-unsigned",
-          "startbit": "25",
-          "stopbit": "0"
+          "type": "inm-unsigned"
         }
       ],
-      "definition": "bgez $zero inm;"
+      "definition": "bgez $zero inm;",
+      "help":""
     },
     {
       "name": "addi",
@@ -5509,24 +5505,19 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "INT-Reg"
         },
         {
           "name": "reg2",
-          "type": "INT-Reg",
-          "startbit": 20,
-          "stopbit": 16
+          "type": "INT-Reg"
         },
         {
           "name": "val",
-          "type": "inm-signed",
-          "startbit": 15,
-          "stopbit": 0
+          "type": "inm-signed"
         }
       ],
-      "definition": "lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\nadd $reg1 $reg2 $at;"
+      "definition": "lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\nadd $reg1 $reg2 $at;",
+      "help":""
     },
     {
       "name": "addiu",
@@ -5539,24 +5530,19 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "INT-Reg"
         },
         {
           "name": "reg2",
-          "type": "INT-Reg",
-          "startbit": 20,
-          "stopbit": 16
+          "type": "INT-Reg"
         },
         {
           "name": "val",
-          "type": "inm-signed",
-          "startbit": 15,
-          "stopbit": 0
+          "type": "inm-signed"
         }
       ],
-      "definition": "lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\naddu $reg1 $reg2 $at;"
+      "definition": "lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\naddu $reg1 $reg2 $at;",
+      "help":""
     },
     {
       "name": "jalr",
@@ -5569,12 +5555,11 @@
       "fields": [
         {
           "name": "rs",
-          "type": "INT-Reg",
-          "startbit": "25",
-          "stopbit": "16"
+          "type": "INT-Reg"
         }
       ],
-      "definition": "jalr $rs $ra;"
+      "definition": "jalr $rs $ra;",
+      "help":""
     },
     {
       "name": "li",
@@ -5587,18 +5572,15 @@
       "fields": [
         {
           "name": "rd",
-          "type": "INT-Reg",
-          "startbit": "25",
-          "stopbit": "21"
+          "type": "INT-Reg"
         },
         {
           "name": "val",
-          "type": "inm-signed",
-          "startbit": "15",
-          "stopbit": "0"
+          "type": "inm-signed"
         }
       ],
-      "definition": "if(Field.2.SIZE<=16){addi $rd $zero val;}\nelse{lui $at Field.2.(31,16).int;\nori $at $at Field.2.(15,0).int;\nadd $rd $zero $at;}"
+      "definition": "if(Field.2.SIZE<=16){addi $rd $zero val;}\nelse{lui $at Field.2.(31,16).int;\nori $at $at Field.2.(15,0).int;\nadd $rd $zero $at;}",
+      "help":""
     },
     {
       "name": "la",
@@ -5611,18 +5593,15 @@
       "fields": [
         {
           "name": "rd",
-          "type": "INT-Reg",
-          "startbit": "25",
-          "stopbit": "21"
+          "type": "INT-Reg"
         },
         {
           "name": "addr",
-          "type": "inm-signed",
-          "startbit": "20",
-          "stopbit": "0"
+          "type": "inm-signed"
         }
       ],
-      "definition": "if(Field.2.SIZE<=16){addi $rd $zero addr;}\nelse{lui $at Field.2.(31,16).int;\nori $at $at Field.2.(15,0).int;\nadd $rd $zero $at;}"
+      "definition": "if(Field.2.SIZE<=16){addi $rd $zero addr;}\nelse{lui $at Field.2.(31,16).int;\nori $at $at Field.2.(15,0).int;\nadd $rd $zero $at;}",
+      "help":""
     },
     {
       "name": "lw",
@@ -5635,18 +5614,15 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "INT-Reg"
         },
         {
           "name": "reg2",
-          "type": "INT-Reg",
-          "startbit": 20,
-          "stopbit": 16
+          "type": "INT-Reg"
         }
       ],
-      "definition": "lw $reg1 0 ($reg2);"
+      "definition": "lw $reg1 0 ($reg2);",
+      "help":""
     },
     {
       "name": "lw",
@@ -5659,18 +5635,15 @@
       "fields": [
         {
           "name": "rd",
-          "type": "INT-Reg",
-          "startbit": "25",
-          "stopbit": "21"
+          "type": "INT-Reg"
         },
         {
           "name": "addr",
-          "type": "inm-signed",
-          "startbit": "15",
-          "stopbit": "0"
+          "type": "inm-signed"
         }
       ],
-      "definition": "if(Field.2.SIZE<=16){lw $rd addr ($zero);}\nelse{lui $at Field.2.(31,16).int;\nori $at $at Field.2.(15,0).int;\nlw $rd 0 ($at);}"
+      "definition": "if(Field.2.SIZE<=16){lw $rd addr ($zero);}\nelse{lui $at Field.2.(31,16).int;\nori $at $at Field.2.(15,0).int;\nlw $rd 0 ($at);}",
+      "help":""
     },
     {
       "name": "lh",
@@ -5683,18 +5656,15 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "INT-Reg"
         },
         {
           "name": "reg2",
-          "type": "INT-Reg",
-          "startbit": 20,
-          "stopbit": 16
+          "type": "INT-Reg"
         }
       ],
-      "definition": "lh $reg1 0 ($reg2);"
+      "definition": "lh $reg1 0 ($reg2);",
+      "help":""
     },
     {
       "name": "lh",
@@ -5707,18 +5677,15 @@
       "fields": [
         {
           "name": "rd",
-          "type": "INT-Reg",
-          "startbit": "25",
-          "stopbit": "21"
+          "type": "INT-Reg"
         },
         {
           "name": "addr",
-          "type": "inm-signed",
-          "startbit": "15",
-          "stopbit": "0"
+          "type": "inm-signed"
         }
       ],
-      "definition": "if(Field.2.SIZE<=16){lh $rd addr ($zero);}\nelse{lui $at Field.2.(31,16).int;\nori $at $at Field.2.(15,0).int;\nlh $rd 0 ($at);}"
+      "definition": "if(Field.2.SIZE<=16){lh $rd addr ($zero);}\nelse{lui $at Field.2.(31,16).int;\nori $at $at Field.2.(15,0).int;\nlh $rd 0 ($at);}",
+      "help":""
     },
     {
       "name": "lhu",
@@ -5731,18 +5698,15 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "INT-Reg"
         },
         {
           "name": "reg2",
-          "type": "INT-Reg",
-          "startbit": 20,
-          "stopbit": 16
+          "type": "INT-Reg"
         }
       ],
-      "definition": "lhu $reg1 0 ($reg2);"
+      "definition": "lhu $reg1 0 ($reg2);",
+      "help":""
     },
     {
       "name": "lhu",
@@ -5755,18 +5719,15 @@
       "fields": [
         {
           "name": "rd",
-          "type": "INT-Reg",
-          "startbit": "25",
-          "stopbit": "21"
+          "type": "INT-Reg"
         },
         {
           "name": "addr",
-          "type": "inm-signed",
-          "startbit": "15",
-          "stopbit": "0"
+          "type": "inm-signed"
         }
       ],
-      "definition": "if(Field.2.SIZE<=16){lhu $rd addr ($zero);}\nelse{lui $at Field.2.(31,16).int;\nori $at $at Field.2.(15,0).int;\nlhu $rd 0 ($at);}"
+      "definition": "if(Field.2.SIZE<=16){lhu $rd addr ($zero);}\nelse{lui $at Field.2.(31,16).int;\nori $at $at Field.2.(15,0).int;\nlhu $rd 0 ($at);}",
+      "help":""
     },
     {
       "name": "lb",
@@ -5779,18 +5740,15 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "INT-Reg"
         },
         {
           "name": "reg2",
-          "type": "INT-Reg",
-          "startbit": 20,
-          "stopbit": 16
+          "type": "INT-Reg"
         }
       ],
-      "definition": "lb $reg1 0 ($reg2);"
+      "definition": "lb $reg1 0 ($reg2);",
+      "help":""
     },
     {
       "name": "lb",
@@ -5803,18 +5761,15 @@
       "fields": [
         {
           "name": "rd",
-          "type": "INT-Reg",
-          "startbit": "25",
-          "stopbit": "21"
+          "type": "INT-Reg"
         },
         {
           "name": "addr",
-          "type": "inm-signed",
-          "startbit": "15",
-          "stopbit": "0"
+          "type": "inm-signed"
         }
       ],
-      "definition": "if(Field.2.SIZE<=16){lb $rd addr ($zero);}\nelse{lui $at Field.2.(31,16).int;\nori $at $at Field.2.(15,0).int;\nlb $rd 0 ($at);}"
+      "definition": "if(Field.2.SIZE<=16){lb $rd addr ($zero);}\nelse{lui $at Field.2.(31,16).int;\nori $at $at Field.2.(15,0).int;\nlb $rd 0 ($at);}",
+      "help":""
     },
     {
       "name": "lbu",
@@ -5827,18 +5782,15 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "INT-Reg"
         },
         {
           "name": "reg2",
-          "type": "INT-Reg",
-          "startbit": 20,
-          "stopbit": 16
+          "type": "INT-Reg"
         }
       ],
-      "definition": "lbu $reg1 0 ($reg2);"
+      "definition": "lbu $reg1 0 ($reg2);",
+      "help":""
     },
     {
       "name": "lbu",
@@ -5851,18 +5803,15 @@
       "fields": [
         {
           "name": "rd",
-          "type": "INT-Reg",
-          "startbit": "25",
-          "stopbit": "21"
+          "type": "INT-Reg"
         },
         {
           "name": "addr",
-          "type": "inm-signed",
-          "startbit": "15",
-          "stopbit": "0"
+          "type": "inm-signed"
         }
       ],
-      "definition": "if(Field.2.SIZE<=16){lbu $rd addr ($zero);}\nelse{lui $at Field.2.(31,16).int;\nori $at $at Field.2.(15,0).int;\nlbu $rd 0 ($at);}"
+      "definition": "if(Field.2.SIZE<=16){lbu $rd addr ($zero);}\nelse{lui $at Field.2.(31,16).int;\nori $at $at Field.2.(15,0).int;\nlbu $rd 0 ($at);}",
+      "help":""
     },
     {
       "name": "l.d",
@@ -5875,18 +5824,15 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "DFP-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "DFP-Reg"
         },
         {
           "name": "reg2",
-          "type": "INT-Reg",
-          "startbit": 20,
-          "stopbit": 16
+          "type": "INT-Reg"
         }
       ],
-      "definition": "ldc1 $reg1 0 ($reg2);"
+      "definition": "ldc1 $reg1 0 ($reg2);",
+      "help":""
     },
     {
       "name": "l.d",
@@ -5899,24 +5845,19 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "DFP-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "DFP-Reg"
         },
         {
           "name": "reg2",
-          "type": "INT-Reg",
-          "startbit": 20,
-          "stopbit": 16
+          "type": "INT-Reg"
         },
         {
           "name": "inm",
-          "type": "inm-signed",
-          "startbit": 15,
-          "stopbit": 0
+          "type": "inm-signed"
         }
       ],
-      "definition": "ldc1 $reg1 inm ($reg2);"
+      "definition": "ldc1 $reg1 inm ($reg2);",
+      "help":""
     },
     {
       "name": "sw",
@@ -5929,18 +5870,15 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "INT-Reg"
         },
         {
           "name": "reg2",
-          "type": "INT-Reg",
-          "startbit": 20,
-          "stopbit": 16
+          "type": "INT-Reg"
         }
       ],
-      "definition": "sw $reg1 0 ($reg2);"
+      "definition": "sw $reg1 0 ($reg2);",
+      "help":""
     },
     {
       "name": "sw",
@@ -5953,18 +5891,15 @@
       "fields": [
         {
           "name": "rd",
-          "type": "INT-Reg",
-          "startbit": "25",
-          "stopbit": "21"
+          "type": "INT-Reg"
         },
         {
           "name": "addr",
-          "type": "inm-signed",
-          "startbit": "15",
-          "stopbit": "0"
+          "type": "inm-signed"
         }
       ],
-      "definition": "if(Field.2.SIZE<=16){sw $rd addr ($zero);}\nelse{lui $at Field.2.(31,16).int;\nori $at $at Field.2.(15,0).int;\nsw $rd 0 ($at);}"
+      "definition": "if(Field.2.SIZE<=16){sw $rd addr ($zero);}\nelse{lui $at Field.2.(31,16).int;\nori $at $at Field.2.(15,0).int;\nsw $rd 0 ($at);}",
+      "help":""
     },
     {
       "name": "sh",
@@ -5977,18 +5912,15 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "INT-Reg"
         },
         {
           "name": "reg2",
-          "type": "INT-Reg",
-          "startbit": 20,
-          "stopbit": 16
+          "type": "INT-Reg"
         }
       ],
-      "definition": "sh $reg1 0 ($reg2);"
+      "definition": "sh $reg1 0 ($reg2);",
+      "help":""
     },
     {
       "name": "sh",
@@ -6001,18 +5933,15 @@
       "fields": [
         {
           "name": "rd",
-          "type": "INT-Reg",
-          "startbit": "25",
-          "stopbit": "21"
+          "type": "INT-Reg"
         },
         {
           "name": "addr",
-          "type": "inm-signed",
-          "startbit": "15",
-          "stopbit": "0"
+          "type": "inm-signed"
         }
       ],
-      "definition": "if(Field.2.SIZE<=16){sh $rd addr ($zero);}\nelse{lui $at Field.2.(31,16).int;\nori $at $at Field.2.(15,0).int;\nsh $rd 0 ($at);}"
+      "definition": "if(Field.2.SIZE<=16){sh $rd addr ($zero);}\nelse{lui $at Field.2.(31,16).int;\nori $at $at Field.2.(15,0).int;\nsh $rd 0 ($at);}",
+      "help":""
     },
     {
       "name": "sb",
@@ -6025,18 +5954,15 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "INT-Reg"
         },
         {
           "name": "reg2",
-          "type": "INT-Reg",
-          "startbit": 20,
-          "stopbit": 16
+          "type": "INT-Reg"
         }
       ],
-      "definition": "sb $reg1 0 ($reg2);"
+      "definition": "sb $reg1 0 ($reg2);",
+      "help":""
     },
     {
       "name": "sb",
@@ -6049,18 +5975,15 @@
       "fields": [
         {
           "name": "rd",
-          "type": "INT-Reg",
-          "startbit": "25",
-          "stopbit": "21"
+          "type": "INT-Reg"
         },
         {
           "name": "addr",
-          "type": "inm-signed",
-          "startbit": "15",
-          "stopbit": "0"
+          "type": "inm-signed"
         }
       ],
-      "definition": "if(Field.2.SIZE<=16){sb $rd addr ($zero);}\nelse{lui $at Field.2.(31,16).int;\nori $at $at Field.2.(15,0).int;\nsb $rd 0 ($at);}"
+      "definition": "if(Field.2.SIZE<=16){sb $rd addr ($zero);}\nelse{lui $at Field.2.(31,16).int;\nori $at $at Field.2.(15,0).int;\nsb $rd 0 ($at);}",
+      "help":""
     },
     {
       "name": "add",
@@ -6073,24 +5996,19 @@
       "fields": [
         {
           "name": "rs",
-          "type": "INT-Reg",
-          "startbit": "25",
-          "stopbit": "21"
+          "type": "INT-Reg"
         },
         {
           "name": "rt",
-          "type": "INT-Reg",
-          "startbit": "20",
-          "stopbit": "16"
+          "type": "INT-Reg"
         },
         {
           "name": "inm",
-          "type": "inm-signed",
-          "startbit": "15",
-          "stopbit": "0"
+          "type": "inm-signed"
         }
       ],
-      "definition": "if(Field.3.SIZE<=16){addi $rs $rt inm;}\nelse{lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\nadd $rs $rt $at;} "
+      "definition": "if(Field.3.SIZE<=16){addi $rs $rt inm;}\nelse{lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\nadd $rs $rt $at;} ",
+      "help":""
     },
     {
       "name": "addu",
@@ -6103,24 +6021,19 @@
       "fields": [
         {
           "name": "rs",
-          "type": "INT-Reg",
-          "startbit": "25",
-          "stopbit": "21"
+          "type": "INT-Reg"
         },
         {
           "name": "rt",
-          "type": "INT-Reg",
-          "startbit": "20",
-          "stopbit": "16"
+          "type": "INT-Reg"
         },
         {
           "name": "inm",
-          "type": "inm-signed",
-          "startbit": "15",
-          "stopbit": "0"
+          "type": "inm-signed"
         }
       ],
-      "definition": "if(Field.3.SIZE<=16){addiu $rs $rt inm;}\nelse{lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\naddu $rs $rt $at;} "
+      "definition": "if(Field.3.SIZE<=16){addiu $rs $rt inm;}\nelse{lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\naddu $rs $rt $at;} ",
+      "help":""
     },
     {
       "name": "and",
@@ -6133,24 +6046,19 @@
       "fields": [
         {
           "name": "rs",
-          "type": "INT-Reg",
-          "startbit": "25",
-          "stopbit": "21"
+          "type": "INT-Reg"
         },
         {
           "name": "rt",
-          "type": "INT-Reg",
-          "startbit": "20",
-          "stopbit": "16"
+          "type": "INT-Reg"
         },
         {
           "name": "inm",
-          "type": "inm-signed",
-          "startbit": "15",
-          "stopbit": "0"
+          "type": "inm-signed"
         }
       ],
-      "definition": "if(Field.3.SIZE<=16){andi $rs $rt inm;}\nelse{lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\nand $rs $rt $at;} "
+      "definition": "if(Field.3.SIZE<=16){andi $rs $rt inm;}\nelse{lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\nand $rs $rt $at;} ",
+      "help":""
     },
     {
       "name": "andi",
@@ -6163,24 +6071,19 @@
       "fields": [
         {
           "name": "rs",
-          "type": "INT-Reg",
-          "startbit": "25",
-          "stopbit": "21"
+          "type": "INT-Reg"
         },
         {
           "name": "rt",
-          "type": "INT-Reg",
-          "startbit": "20",
-          "stopbit": "16"
+          "type": "INT-Reg"
         },
         {
           "name": "inm",
-          "type": "inm-signed",
-          "startbit": "15",
-          "stopbit": "0"
+          "type": "inm-signed"
         }
       ],
-      "definition": "lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\nand $rs $rt $at;"
+      "definition": "lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\nand $rs $rt $at;",
+      "help":""
     },
     {
       "name": "ori",
@@ -6193,24 +6096,19 @@
       "fields": [
         {
           "name": "rs",
-          "type": "INT-Reg",
-          "startbit": "25",
-          "stopbit": "21"
+          "type": "INT-Reg"
         },
         {
           "name": "rt",
-          "type": "INT-Reg",
-          "startbit": "20",
-          "stopbit": "16"
+          "type": "INT-Reg"
         },
         {
           "name": "inm",
-          "type": "inm-signed",
-          "startbit": "15",
-          "stopbit": "0"
+          "type": "inm-signed"
         }
       ],
-      "definition": "lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\nor $rs $rt $at;"
+      "definition": "lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\nor $rs $rt $at;",
+      "help":""
     },
     {
       "name": "mul",
@@ -6223,24 +6121,19 @@
       "fields": [
         {
           "name": "rs",
-          "type": "INT-Reg",
-          "startbit": "25",
-          "stopbit": "21"
+          "type": "INT-Reg"
         },
         {
           "name": "rt",
-          "type": "INT-Reg",
-          "startbit": "20",
-          "stopbit": "16"
+          "type": "INT-Reg"
         },
         {
           "name": "inm",
-          "type": "inm-signed",
-          "startbit": "15",
-          "stopbit": "0"
+          "type": "inm-signed"
         }
       ],
-      "definition": "if(Field.3.SIZE<=16){addi $at $zero inm; mul $rs $rt $at;}\nelse{lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\nmul $rs $rt $at;} "
+      "definition": "if(Field.3.SIZE<=16){addi $at $zero inm; mul $rs $rt $at;}\nelse{lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\nmul $rs $rt $at;} ",
+      "help":""
     },
     {
       "name": "nor",
@@ -6253,24 +6146,19 @@
       "fields": [
         {
           "name": "rs",
-          "type": "INT-Reg",
-          "startbit": "25",
-          "stopbit": "21"
+          "type": "INT-Reg"
         },
         {
           "name": "rt",
-          "type": "INT-Reg",
-          "startbit": "20",
-          "stopbit": "16"
+          "type": "INT-Reg"
         },
         {
           "name": "inm",
-          "type": "inm-signed",
-          "startbit": "15",
-          "stopbit": "0"
+          "type": "inm-signed"
         }
       ],
-      "definition": "if(Field.3.SIZE<=16){addi $at $zero inm; nor $rs $rt $at;}\nelse{lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\nnor $rs $rt $at;} "
+      "definition": "if(Field.3.SIZE<=16){addi $at $zero inm; nor $rs $rt $at;}\nelse{lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\nnor $rs $rt $at;} ",
+      "help":""
     },
     {
       "name": "or",
@@ -6283,24 +6171,19 @@
       "fields": [
         {
           "name": "rs",
-          "type": "INT-Reg",
-          "startbit": "25",
-          "stopbit": "21"
+          "type": "INT-Reg"
         },
         {
           "name": "rt",
-          "type": "INT-Reg",
-          "startbit": "20",
-          "stopbit": "16"
+          "type": "INT-Reg"
         },
         {
           "name": "inm",
-          "type": "inm-signed",
-          "startbit": "15",
-          "stopbit": "0"
+          "type": "inm-signed"
         }
       ],
-      "definition": "if(Field.3.SIZE<=16){ori $rs $rt inm;}\nelse{lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\nor $rs $rt $at;} "
+      "definition": "if(Field.3.SIZE<=16){ori $rs $rt inm;}\nelse{lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\nor $rs $rt $at;} ",
+      "help":""
     },
     {
       "name": "xori",
@@ -6313,24 +6196,19 @@
       "fields": [
         {
           "name": "rs",
-          "type": "INT-Reg",
-          "startbit": "25",
-          "stopbit": "21"
+          "type": "INT-Reg"
         },
         {
           "name": "rt",
-          "type": "INT-Reg",
-          "startbit": "20",
-          "stopbit": "16"
+          "type": "INT-Reg"
         },
         {
           "name": "inm",
-          "type": "inm-signed",
-          "startbit": "15",
-          "stopbit": "0"
+          "type": "inm-signed"
         }
       ],
-      "definition": "lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\nxor $rs $rt $at;"
+      "definition": "lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\nxor $rs $rt $at;",
+      "help":""
     },
     {
       "name": "sub",
@@ -6343,24 +6221,19 @@
       "fields": [
         {
           "name": "rs",
-          "type": "INT-Reg",
-          "startbit": "25",
-          "stopbit": "21"
+          "type": "INT-Reg"
         },
         {
           "name": "rt",
-          "type": "INT-Reg",
-          "startbit": "20",
-          "stopbit": "16"
+          "type": "INT-Reg"
         },
         {
           "name": "inm",
-          "type": "inm-signed",
-          "startbit": "15",
-          "stopbit": "0"
+          "type": "inm-signed"
         }
       ],
-      "definition": "if(Field.3.SIZE<=16){addi $at $zero inm; sub $rs $rt $at;}\nelse{lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\nsub $rs $rt $at;} "
+      "definition": "if(Field.3.SIZE<=16){addi $at $zero inm; sub $rs $rt $at;}\nelse{lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\nsub $rs $rt $at;} ",
+      "help":""
     },
     {
       "name": "subu",
@@ -6373,24 +6246,19 @@
       "fields": [
         {
           "name": "rs",
-          "type": "INT-Reg",
-          "startbit": "25",
-          "stopbit": "21"
+          "type": "INT-Reg"
         },
         {
           "name": "rt",
-          "type": "INT-Reg",
-          "startbit": "20",
-          "stopbit": "16"
+          "type": "INT-Reg"
         },
         {
           "name": "inm",
-          "type": "inm-signed",
-          "startbit": "15",
-          "stopbit": "0"
+          "type": "inm-signed"
         }
       ],
-      "definition": "if(Field.3.SIZE<=16){addi $at $zero inm; subu $rs $rt $at;}\nelse{lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\nsubu $rs $rt $at;} "
+      "definition": "if(Field.3.SIZE<=16){addi $at $zero inm; subu $rs $rt $at;}\nelse{lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\nsubu $rs $rt $at;} ",
+      "help":""
     },
     {
       "name": "rem",
@@ -6403,24 +6271,19 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": "25",
-          "stopbit": "21"
+          "type": "INT-Reg"
         },
         {
           "name": "reg2",
-          "type": "INT-Reg",
-          "startbit": "20",
-          "stopbit": "16"
+          "type": "INT-Reg"
         },
         {
           "name": "reg3",
-          "type": "INT-Reg",
-          "startbit": "15",
-          "stopbit": "10"
+          "type": "INT-Reg"
         }
       ],
-      "definition": "div $reg2 $reg3; mfhi $reg1;"
+      "definition": "div $reg2 $reg3; mfhi $reg1;",
+      "help":""
     },
     {
       "name": "xor",
@@ -6433,24 +6296,19 @@
       "fields": [
         {
           "name": "rs",
-          "type": "INT-Reg",
-          "startbit": "25",
-          "stopbit": "21"
+          "type": "INT-Reg"
         },
         {
           "name": "rt",
-          "type": "INT-Reg",
-          "startbit": "20",
-          "stopbit": "16"
+          "type": "INT-Reg"
         },
         {
           "name": "inm",
-          "type": "inm-signed",
-          "startbit": "15",
-          "stopbit": "0"
+          "type": "inm-signed"
         }
       ],
-      "definition": "if(Field.3.SIZE<=16){xori $rs $rt inm;}\nelse{lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\nxor $rs $rt $at;} "
+      "definition": "if(Field.3.SIZE<=16){xori $rs $rt inm;}\nelse{lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\nxor $rs $rt $at;} ",
+      "help":""
     },
     {
       "name": "l.s",
@@ -6463,18 +6321,15 @@
       "fields": [
         {
           "name": "rs",
-          "type": "SFP-Reg",
-          "startbit": "25",
-          "stopbit": "21"
+          "type": "SFP-Reg"
         },
         {
           "name": "rt",
-          "type": "INT-Reg",
-          "startbit": "20",
-          "stopbit": "16"
+          "type": "INT-Reg"
         }
       ],
-      "definition": "lwc1 $rs 0 ($rt);"
+      "definition": "lwc1 $rs 0 ($rt);",
+      "help":""
     },
     {
       "name": "l.s",
@@ -6487,24 +6342,19 @@
       "fields": [
         {
           "name": "rs",
-          "type": "SFP-Reg",
-          "startbit": "25",
-          "stopbit": "21"
+          "type": "SFP-Reg"
         },
         {
           "name": "rt",
-          "type": "INT-Reg",
-          "startbit": "20",
-          "stopbit": "16"
+          "type": "INT-Reg"
         },
         {
           "name": "off",
-          "type": "inm-signed",
-          "startbit": "15",
-          "stopbit": "0"
+          "type": "inm-signed"
         }
       ],
-      "definition": "lwc1 $rs off ($rt);"
+      "definition": "lwc1 $rs off ($rt);",
+      "help":""
     },
     {
       "name": "s.s",
@@ -6517,18 +6367,15 @@
       "fields": [
         {
           "name": "rs",
-          "type": "SFP-Reg",
-          "startbit": "25",
-          "stopbit": "21"
+          "type": "SFP-Reg"
         },
         {
           "name": "rt",
-          "type": "INT-Reg",
-          "startbit": "20",
-          "stopbit": "16"
+          "type": "INT-Reg"
         }
       ],
-      "definition": "swc1 $rs 0 ($rt);"
+      "definition": "swc1 $rs 0 ($rt);",
+      "help":""
     },
     {
       "name": "s.s",
@@ -6541,24 +6388,19 @@
       "fields": [
         {
           "name": "rs",
-          "type": "SFP-Reg",
-          "startbit": "25",
-          "stopbit": "21"
+          "type": "SFP-Reg"
         },
         {
           "name": "rt",
-          "type": "INT-Reg",
-          "startbit": "20",
-          "stopbit": "16"
+          "type": "INT-Reg"
         },
         {
           "name": "off",
-          "type": "inm-signed",
-          "startbit": "15",
-          "stopbit": "0"
+          "type": "inm-signed"
         }
       ],
-      "definition": "swc1 $rs off ($rt);"
+      "definition": "swc1 $rs off ($rt);",
+      "help":""
     },
     {
       "name": "s.d",
@@ -6571,18 +6413,15 @@
       "fields": [
         {
           "name": "rs",
-          "type": "DFP-Reg",
-          "startbit": "25",
-          "stopbit": "21"
+          "type": "DFP-Reg"
         },
         {
           "name": "rt",
-          "type": "INT-Reg",
-          "startbit": "20",
-          "stopbit": "16"
+          "type": "INT-Reg"
         }
       ],
-      "definition": "sdc1 $rs 0 ($rt);"
+      "definition": "sdc1 $rs 0 ($rt);",
+      "help":""
     },
     {
       "name": "s.d",
@@ -6595,24 +6434,19 @@
       "fields": [
         {
           "name": "rs",
-          "type": "DFP-Reg",
-          "startbit": "25",
-          "stopbit": "21"
+          "type": "DFP-Reg"
         },
         {
           "name": "rt",
-          "type": "INT-Reg",
-          "startbit": "20",
-          "stopbit": "16"
+          "type": "INT-Reg"
         },
         {
           "name": "off",
-          "type": "inm-signed",
-          "startbit": "15",
-          "stopbit": "0"
+          "type": "inm-signed"
         }
       ],
-      "definition": "sdc1 $rs off ($rt);"
+      "definition": "sdc1 $rs off ($rt);",
+      "help":""
     },
     {
       "name": "beq",
@@ -6625,24 +6459,19 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "INT-Reg"
         },
         {
           "name": "inm",
-          "type": "inm-unsigned",
-          "startbit": 20,
-          "stopbit": 16
+          "type": "inm-unsigned"
         },
         {
           "name": "off",
-          "type": "offset_words",
-          "startbit": 15,
-          "stopbit": 0
+          "type": "offset_words"
         }
       ],
-      "definition": "ori $at $zero inm; beq $reg1 $at off;"
+      "definition": "ori $at $zero inm; beq $reg1 $at off;",
+      "help":""
     },
     {
       "name": "bge",
@@ -6655,24 +6484,19 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "INT-Reg"
         },
         {
           "name": "reg2",
-          "type": "INT-Reg",
-          "startbit": 20,
-          "stopbit": 16
+          "type": "INT-Reg"
         },
         {
           "name": "off",
-          "type": "offset_words",
-          "startbit": 15,
-          "stopbit": 0
+          "type": "offset_words"
         }
       ],
-      "definition": "slt $at $reg1 $reg2; beq $at $zero off;"
+      "definition": "slt $at $reg1 $reg2; beq $at $zero off;",
+      "help":""
     },
     {
       "name": "bge",
@@ -6685,24 +6509,19 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "INT-Reg"
         },
         {
           "name": "inm",
-          "type": "inm-unsigned",
-          "startbit": 20,
-          "stopbit": 16
+          "type": "inm-unsigned"
         },
         {
           "name": "off",
-          "type": "offset_words",
-          "startbit": 15,
-          "stopbit": 0
+          "type": "offset_words"
         }
       ],
-      "definition": "slti $at $reg1 inm; beq $at $zero off;"
+      "definition": "slti $at $reg1 inm; beq $at $zero off;",
+      "help":""
     },
     {
       "name": "bgt",
@@ -6715,24 +6534,19 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "INT-Reg"
         },
         {
           "name": "reg2",
-          "type": "INT-Reg",
-          "startbit": 20,
-          "stopbit": 16
+          "type": "INT-Reg"
         },
         {
           "name": "off",
-          "type": "offset_words",
-          "startbit": 15,
-          "stopbit": 0
+          "type": "offset_words"
         }
       ],
-      "definition": "slt $at $reg2 $reg1; bne $at $zero off;"
+      "definition": "slt $at $reg2 $reg1; bne $at $zero off;",
+      "help":""
     },
     {
       "name": "bgt",
@@ -6745,24 +6559,19 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "INT-Reg"
         },
         {
           "name": "inm",
-          "type": "inm-unsigned",
-          "startbit": 20,
-          "stopbit": 16
+          "type": "inm-unsigned"
         },
         {
           "name": "off",
-          "type": "offset_words",
-          "startbit": 15,
-          "stopbit": 0
+          "type": "offset_words"
         }
       ],
-      "definition": "addi $at $zero inm; addi $at $at 1; slt $at $reg1 $at; beq $at $zero off;"
+      "definition": "addi $at $zero inm; addi $at $at 1; slt $at $reg1 $at; beq $at $zero off;",
+      "help":""
     },
     {
       "name": "ble",
@@ -6775,24 +6584,19 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "INT-Reg"
         },
         {
           "name": "reg2",
-          "type": "INT-Reg",
-          "startbit": 20,
-          "stopbit": 16
+          "type": "INT-Reg"
         },
         {
           "name": "off",
-          "type": "offset_words",
-          "startbit": 15,
-          "stopbit": 0
+          "type": "offset_words"
         }
       ],
-      "definition": "slt $at $reg2 $reg1; beq $at $zero off;"
+      "definition": "slt $at $reg2 $reg1; beq $at $zero off;",
+      "help":""
     },
     {
       "name": "ble",
@@ -6805,24 +6609,19 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "INT-Reg"
         },
         {
           "name": "inm",
-          "type": "inm-unsigned",
-          "startbit": 20,
-          "stopbit": 16
+          "type": "inm-unsigned"
         },
         {
           "name": "off",
-          "type": "offset_words",
-          "startbit": 15,
-          "stopbit": 0
+          "type": "offset_words"
         }
       ],
-      "definition": "addi $at $zero inm; addi $at $at 1; slti $at $reg1 inm; bne $at $zero off;"
+      "definition": "addi $at $zero inm; addi $at $at 1; slti $at $reg1 inm; bne $at $zero off;",
+      "help":""
     },
     {
       "name": "blt",
@@ -6835,24 +6634,19 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "INT-Reg"
         },
         {
           "name": "reg2",
-          "type": "INT-Reg",
-          "startbit": 20,
-          "stopbit": 16
+          "type": "INT-Reg"
         },
         {
           "name": "off",
-          "type": "offset_words",
-          "startbit": 15,
-          "stopbit": 0
+          "type": "offset_words"
         }
       ],
-      "definition": "slt $at $reg1 $reg2; bne $at $zero off;"
+      "definition": "slt $at $reg1 $reg2; bne $at $zero off;",
+      "help":""
     },
     {
       "name": "blt",
@@ -6865,24 +6659,19 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "INT-Reg"
         },
         {
           "name": "inm",
-          "type": "inm-unsigned",
-          "startbit": 20,
-          "stopbit": 16
+          "type": "inm-unsigned"
         },
         {
           "name": "off",
-          "type": "offset_words",
-          "startbit": 15,
-          "stopbit": 0
+          "type": "offset_words"
         }
       ],
-      "definition": "slti $at $reg1 inm; bne $at $zero off;"
+      "definition": "slti $at $reg1 inm; bne $at $zero off;",
+      "help":""
     },
     {
       "name": "bne",
@@ -6895,24 +6684,19 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "INT-Reg"
         },
         {
           "name": "inm",
-          "type": "inm-unsigned",
-          "startbit": 20,
-          "stopbit": 16
+          "type": "inm-unsigned"
         },
         {
           "name": "off",
-          "type": "offset_words",
-          "startbit": 15,
-          "stopbit": 0
+          "type": "offset_words"
         }
       ],
-      "definition": "ori $at $zero inm; bne $reg1 $at off;"
+      "definition": "ori $at $zero inm; bne $reg1 $at off;",
+      "help":""
     },
     {
       "name": "beqz",
@@ -6925,18 +6709,15 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "INT-Reg"
         },
         {
           "name": "off",
-          "type": "offset_words",
-          "startbit": 15,
-          "stopbit": 0
+          "type": "offset_words"
         }
       ],
-      "definition": "beq $reg1 $zero off;"
+      "definition": "beq $reg1 $zero off;",
+      "help":""
     },
     {
       "name": "bnez",
@@ -6949,18 +6730,15 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "INT-Reg"
         },
         {
           "name": "off",
-          "type": "offset_words",
-          "startbit": 15,
-          "stopbit": 0
+          "type": "offset_words"
         }
       ],
-      "definition": "bne $reg1 $zero off;"
+      "definition": "bne $reg1 $zero off;",
+      "help":""
     },
     {
       "name": "bgtu",
@@ -6973,24 +6751,19 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "INT-Reg"
         },
         {
           "name": "reg2",
-          "type": "INT-Reg",
-          "startbit": 20,
-          "stopbit": 16
+          "type": "INT-Reg"
         },
         {
           "name": "off",
-          "type": "offset_words",
-          "startbit": 15,
-          "stopbit": 0
+          "type": "offset_words"
         }
       ],
-      "definition": "sltu $at $reg2 $reg1; bne $at $zero off;"
+      "definition": "sltu $at $reg2 $reg1; bne $at $zero off;",
+      "help":""
     },
     {
       "name": "bgtu",
@@ -7003,24 +6776,19 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "INT-Reg"
         },
         {
           "name": "inm",
-          "type": "inm-unsigned",
-          "startbit": 20,
-          "stopbit": 16
+          "type": "inm-unsigned"
         },
         {
           "name": "off",
-          "type": "offset_words",
-          "startbit": 15,
-          "stopbit": 0
+          "type": "offset_words"
         }
       ],
-      "definition": "ori $at $zero inm; beq $at $reg1 off; sltu $at $reg1 $at;"
+      "definition": "ori $at $zero inm; beq $at $reg1 off; sltu $at $reg1 $at;",
+      "help":""
     },
     {
       "name": "bgeu",
@@ -7033,24 +6801,19 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "INT-Reg"
         },
         {
           "name": "reg2",
-          "type": "INT-Reg",
-          "startbit": 20,
-          "stopbit": 16
+          "type": "INT-Reg"
         },
         {
           "name": "off",
-          "type": "offset_words",
-          "startbit": 15,
-          "stopbit": 0
+          "type": "offset_words"
         }
       ],
-      "definition": "sltu $at $reg1 $reg2; beq $at $zero off;"
+      "definition": "sltu $at $reg1 $reg2; beq $at $zero off;",
+      "help":""
     },
     {
       "name": "bgeu",
@@ -7063,24 +6826,19 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "INT-Reg"
         },
         {
           "name": "inm",
-          "type": "inm-unsigned",
-          "startbit": 20,
-          "stopbit": 16
+          "type": "inm-unsigned"
         },
         {
           "name": "off",
-          "type": "offset_words",
-          "startbit": 15,
-          "stopbit": 0
+          "type": "offset_words"
         }
       ],
-      "definition": "sltiu $at $reg1 inm; beq $at $zero off;"
+      "definition": "sltiu $at $reg1 inm; beq $at $zero off;",
+      "help":""
     },
     {
       "name": "bleu",
@@ -7093,24 +6851,19 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "INT-Reg"
         },
         {
           "name": "reg2",
-          "type": "INT-Reg",
-          "startbit": 20,
-          "stopbit": 16
+          "type": "INT-Reg"
         },
         {
           "name": "off",
-          "type": "offset_words",
-          "startbit": 15,
-          "stopbit": 0
+          "type": "offset_words"
         }
       ],
-      "definition": "sltu $at $reg2 $reg1; beq $at $zero off;"
+      "definition": "sltu $at $reg2 $reg1; beq $at $zero off;",
+      "help":""
     },
     {
       "name": "bleu",
@@ -7123,24 +6876,19 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "INT-Reg"
         },
         {
           "name": "inm",
-          "type": "inm-unsigned",
-          "startbit": 20,
-          "stopbit": 16
+          "type": "inm-unsigned"
         },
         {
           "name": "off",
-          "type": "offset_words",
-          "startbit": 15,
-          "stopbit": 0
+          "type": "offset_words"
         }
       ],
-      "definition": "ori $at $zero inm; beq $at $reg1 off; sltu $at $reg1 $at; bne $at $zero off;"
+      "definition": "ori $at $zero inm; beq $at $reg1 off; sltu $at $reg1 $at; bne $at $zero off;",
+      "help":""
     },
     {
       "name": "bltu",
@@ -7153,24 +6901,19 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "INT-Reg"
         },
         {
           "name": "reg2",
-          "type": "INT-Reg",
-          "startbit": 20,
-          "stopbit": 16
+          "type": "INT-Reg"
         },
         {
           "name": "off",
-          "type": "offset_words",
-          "startbit": 15,
-          "stopbit": 0
+          "type": "offset_words"
         }
       ],
-      "definition": "sltu $at $reg1 $reg2; bne $at $zero off;"
+      "definition": "sltu $at $reg1 $reg2; bne $at $zero off;",
+      "help":""
     },
     {
       "name": "bltu",
@@ -7183,24 +6926,19 @@
       "fields": [
         {
           "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
+          "type": "INT-Reg"
         },
         {
           "name": "inm",
-          "type": "inm-unsigned",
-          "startbit": 20,
-          "stopbit": 16
+          "type": "inm-unsigned"
         },
         {
           "name": "off",
-          "type": "offset_words",
-          "startbit": 15,
-          "stopbit": 0
+          "type": "offset_words"
         }
       ],
-      "definition": "sltiu $at $reg1 off; bne $at $zero off;"
+      "definition": "sltiu $at $reg1 off; bne $at $zero off;",
+      "help":""
     },
     {
       "name": "li.s",
@@ -7213,18 +6951,15 @@
       "fields": [
         {
           "name": "rd",
-          "type": "SFP-Reg",
-          "startbit": "25",
-          "stopbit": "21"
+          "type": "SFP-Reg"
         },
         {
           "name": "val",
-          "type": "inm-signed",
-          "startbit": "15",
-          "stopbit": "0"
+          "type": "inm-signed"
         }
       ],
-      "definition": "lui $at Field.2.(31,16).float;\nori $at $at Field.2.(15,0).float;\nmtc1 $at $rd;"
+      "definition": "lui $at Field.2.(31,16).float;\nori $at $at Field.2.(15,0).float;\nmtc1 $at $rd;",
+      "help":""
     },
     {
       "name": "li.d",
@@ -7237,18 +6972,15 @@
       "fields": [
         {
           "name": "rd",
-          "type": "DFP-Reg",
-          "startbit": "25",
-          "stopbit": "21"
+          "type": "DFP-Reg"
         },
         {
           "name": "val",
-          "type": "inm-signed",
-          "startbit": "15",
-          "stopbit": "0"
+          "type": "inm-signed"
         }
       ],
-      "definition": "lui $at Field.2.(31,16).double;\nori $at $at Field.2.(15,0).double;\nmtc1 $at $aliasDouble(rd;1);\nlui $at Field.2.(63,48).double;\nori $at $at Field.2.(47,32).double;\nmtc1 $at $aliasDouble(rd;0);"
+      "definition": "lui $at Field.2.(31,16).double;\nori $at $at Field.2.(15,0).double;\nmtc1 $at $aliasDouble(rd;1);\nlui $at Field.2.(63,48).double;\nori $at $at Field.2.(47,32).double;\nmtc1 $at $aliasDouble(rd;0);",
+      "help":""
     },
     {
       "name": "c.eq.s",
@@ -7260,18 +6992,15 @@
       "fields": [
         {
           "name": "ft",
-          "type": "SFP-Reg",
-          "startbit": "25",
-          "stopbit": "21"
+          "type": "SFP-Reg"
         },
         {
           "name": "fs",
-          "type": "SFP-Reg",
-          "startbit": "20",
-          "stopbit": "16"
+          "type": "SFP-Reg"
         }
       ],
-      "definition": "c.eq.s 0 $fs $ft;"
+      "definition": "c.eq.s 0 $fs $ft;",
+      "help":""
     },
     {
       "name": "c.eq.d",
@@ -7283,18 +7012,15 @@
       "fields": [
         {
           "name": "ft",
-          "type": "DFP-Reg",
-          "startbit": "25",
-          "stopbit": "21"
+          "type": "DFP-Reg"
         },
         {
           "name": "fs",
-          "type": "DFP-Reg",
-          "startbit": "20",
-          "stopbit": "16"
+          "type": "DFP-Reg"
         }
       ],
-      "definition": "c.eq.d 0 $fs $ft;"
+      "definition": "c.eq.d 0 $fs $ft;",
+      "help":""
     },
     {
       "name": "c.olt.s",
@@ -7306,18 +7032,15 @@
       "fields": [
         {
           "name": "ft",
-          "type": "SFP-Reg",
-          "startbit": "25",
-          "stopbit": "21"
+          "type": "SFP-Reg"
         },
         {
           "name": "fs",
-          "type": "SFP-Reg",
-          "startbit": "20",
-          "stopbit": "16"
+          "type": "SFP-Reg"
         }
       ],
-      "definition": "c.olt.s 0 $fs $ft;"
+      "definition": "c.olt.s 0 $fs $ft;",
+      "help":""
     },
     {
       "name": "c.olt.d",
@@ -7329,18 +7052,15 @@
       "fields": [
         {
           "name": "ft",
-          "type": "DFP-Reg",
-          "startbit": "25",
-          "stopbit": "21"
+          "type": "DFP-Reg"
         },
         {
           "name": "fs",
-          "type": "DFP-Reg",
-          "startbit": "20",
-          "stopbit": "16"
+          "type": "DFP-Reg"
         }
       ],
-      "definition": "c.olt.d 0 $fs $ft;"
+      "definition": "c.olt.d 0 $fs $ft;",
+      "help":""
     },
     {
       "name": "c.ole.s",
@@ -7352,18 +7072,15 @@
       "fields": [
         {
           "name": "ft",
-          "type": "SFP-Reg",
-          "startbit": "25",
-          "stopbit": "21"
+          "type": "SFP-Reg"
         },
         {
           "name": "fs",
-          "type": "SFP-Reg",
-          "startbit": "20",
-          "stopbit": "16"
+          "type": "SFP-Reg"
         }
       ],
-      "definition": "c.ole.s 0 $fs $ft;"
+      "definition": "c.ole.s 0 $fs $ft;",
+      "help":""
     },
     {
       "name": "c.ole.d",
@@ -7375,18 +7092,15 @@
       "fields": [
         {
           "name": "ft",
-          "type": "DFP-Reg",
-          "startbit": "25",
-          "stopbit": "21"
+          "type": "DFP-Reg"
         },
         {
           "name": "fs",
-          "type": "DFP-Reg",
-          "startbit": "20",
-          "stopbit": "16"
+          "type": "DFP-Reg"
         }
       ],
-      "definition": "c.ole.d 0 $fs $ft;"
+      "definition": "c.ole.d 0 $fs $ft;",
+      "help":""
     },
     {
       "name": "bc1t",
@@ -7398,12 +7112,11 @@
       "fields": [
         {
           "name": "off",
-          "type": "offset_words",
-          "startbit": "25",
-          "stopbit": "0"
+          "type": "offset_words"
         }
       ],
-      "definition": "bc1t 0 off;"
+      "definition": "bc1t 0 off;",
+      "help":""
     },
     {
       "name": "ror",
@@ -7415,24 +7128,19 @@
       "fields": [
         {
           "name": "reg2",
-          "type": "INT-Reg",
-          "startbit": "25",
-          "stopbit": "21"
+          "type": "INT-Reg"
         },
         {
           "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": "20",
-          "stopbit": "16"
+          "type": "INT-Reg"
         },
         {
           "name": "val",
-          "type": "inm-unsigned",
-          "startbit": "15",
-          "stopbit": "0"
+          "type": "inm-unsigned"
         }
       ],
-      "definition": "sll $at $reg2 op{32-(val)};srl $reg1 $reg2 val;or $reg1 $reg1 $at;"
+      "definition": "sll $at $reg2 op{32-(val)};srl $reg1 $reg2 val;or $reg1 $reg1 $at;",
+      "help":""
     },
     {
       "name": "rol",
@@ -7444,24 +7152,19 @@
       "fields": [
         {
           "name": "reg2",
-          "type": "INT-Reg",
-          "startbit": "25",
-          "stopbit": "21"
+          "type": "INT-Reg"
         },
         {
           "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": "20",
-          "stopbit": "16"
+          "type": "INT-Reg"
         },
         {
           "name": "val",
-          "type": "inm-unsigned",
-          "startbit": "15",
-          "stopbit": "0"
+          "type": "inm-unsigned"
         }
       ],
-      "definition": "srl $at $reg2 op{32-(val)};sll $reg1 $reg2 val;or $reg1 $reg1 $at;"
+      "definition": "srl $at $reg2 op{32-(val)};sll $reg1 $reg2 val;or $reg1 $reg1 $at;",
+      "help":""
     }
   ],
   "directives": [
