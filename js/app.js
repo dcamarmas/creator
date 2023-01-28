@@ -59,8 +59,9 @@ try
       //Version Number
       version: '',
 
-      //Architecture name
+      //Architecture name and guide
       architecture_name: '',
+      architecture_guide: '',
 
       //Accesskey
       browser: "",

@@ -66,6 +66,7 @@
                     uielto_preload_architecture.data.architecture_name = architecture.arch_conf[0].value;
                     app._data.architecture = architecture; 
                     app._data.architecture_name = architecture.arch_conf[0].value;
+                    app._data.architecture_guide = "";
 
                     //Generate architecture hash table
                     architecture_hash = [];
