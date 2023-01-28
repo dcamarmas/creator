@@ -46,7 +46,7 @@
 <summary>:atom: 3.2.x:</summary>
 
 - [x] User Interface:
-     * New link to the quick reference guide for instructions
+     * New link to the quick reference guide for instructions in PDF
      * The current assembly code can be shared as a simple link
 - [x] Modular design:
      * Simplified pseudo-instruction forms
