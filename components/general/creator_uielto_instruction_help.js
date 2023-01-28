@@ -25,7 +25,9 @@
     
     props:      {
                   id:                       { type: String, required: true },
+                  architecture_name:        { type: String, required: true },
                   architecture:             { type: Object, required: true },
+                  architecture_guide:       { type: String, required: true },
                   instruction_help_size:    { type: Object, required: true }
                    
                 },
@@ -58,12 +60,12 @@
                 ' ></b-form-input>' +
                 ' ' +
                 ' <br>' +
-                ' <a target="_blank" href="./docs/risc_v_reference_guide.pdf"><span class="fas fa-file-pdf"></span> Guide</a>' +
+                ' <a v-if="architecture_guide !=\'\'" target="_blank" :href="architecture_guide"><span class="fas fa-file-pdf"></span> {{architecture_name}} Guide</a>' +
                 ' <br>' +
                 ' ' +
                 ' <b-table small :items="architecture.instructions" ' +
                 '                :fields="insHelpFields" ' +
-                '                class="text-left help-scroll-y"' +
+                '                class="text-left help-scroll-y my-3"' +
                 '                :filter="instHelpFilter"' +
                 '                thead-class="d-none">' +
                 ' ' +
