@@ -32,7 +32,8 @@
   data:       function () {
                 return {
                   /*Register form*/
-                  newValue: ''
+                  newValue: '',
+                  precision: "true"
                 }
               },
 
@@ -165,37 +166,37 @@
                         if(value[1].length * 4 > architecture.components[comp].elements[i].nbits){
                           value[1] = value[1].substring(((value[1].length * 4) - architecture.components[comp].elements[i].nbits)/4, value[1].length)
                         }
-                        writeRegister(parseInt(value[1], 16), comp, i);
+                        writeRegister(parseInt(value[1], 16), comp, i, "int_registers");
                       }
                       else if(architecture.components[comp].elements[i].name == elem && this.newValue.match(/^(\d)+/)){
-                        writeRegister(parseInt(this.newValue,10), comp, i);
+                        writeRegister(parseInt(this.newValue,10), comp, i, "int_registers");
                       }
                       else if(architecture.components[comp].elements[i].name == elem && this.newValue.match(/^-/)){
-                        writeRegister(parseInt(this.newValue,10), comp, i);
+                        writeRegister(parseInt(this.newValue,10), comp, i, "int_registers");
                       }
                     }
                     else if(type =="fp_registers"){
                       if(precision == false){
                         if(architecture.components[comp].elements[i].name == elem && this.newValue.match(/^0x/)){
-                          writeRegister(hex2float(this.newValue), comp, i);
+                          writeRegister(hex2float(this.newValue), comp, i, "SFP-Reg");
                         }
                         else if(architecture.components[comp].elements[i].name == elem && this.newValue.match(/^(\d)+/)){
-                          writeRegister(parseFloat(this.newValue, 10), comp, i);
+                          writeRegister(parseFloat(this.newValue, 10), comp, i, "SFP-Reg");
                         }
                         else if(architecture.components[comp].elements[i].name == elem && this.newValue.match(/^-/)){
-                          writeRegister(parseFloat(this.newValue, 10), comp, i);
+                          writeRegister(parseFloat(this.newValue, 10), comp, i, "SFP-Reg");
                         }
                       }
 
                       else if(precision == true){
                         if(architecture.components[comp].elements[i].name == elem && this.newValue.match(/^0x/)){
-                          writeRegister(hex2double(this.newValue), comp, i);
+                          writeRegister(hex2double(this.newValue), comp, i, "DFP-Reg");
                         }
                         else if(architecture.components[comp].elements[i].name == elem && this.newValue.match(/^(\d)+/)){
-                          writeRegister(parseFloat(this.newValue, 10), comp, i);
+                          writeRegister(parseFloat(this.newValue, 10), comp, i, "DFP-Reg");
                         }
                         else if(architecture.components[comp].elements[i].name == elem && this.newValue.match(/^-/)){
-                          writeRegister(parseFloat(this.newValue, 10), comp, i);
+                          writeRegister(parseFloat(this.newValue, 10), comp, i, "DFP-Reg");
                         }
                       }
                     }
@@ -205,6 +206,16 @@
                   // Google Analytics
                   creator_ga('data', 'data.change', 'data.change.register_value');
                   creator_ga('data', 'data.change', 'data.change.register_value_' + elem);
+                },
+
+                get_cols(index)
+                {
+                  if (architecture.components[index].double_precision == true){
+                    return 3;
+                  }
+                  else{
+                    return 2;
+                  }
                 }
               },
 
@@ -282,7 +293,7 @@ template:     '<b-popover :target="target" ' +
               '  </table>' +
               '' +
               '   <b-container fluid align-h="center" class="mx-0">' +
-              '     <b-row align-h="center" cols="2">' +
+              '     <b-row align-h="center" :cols="get_cols(component.index)">' +
               ' ' +
               '       <b-col class="popoverFooter">' +
               '         <b-form-input v-model="newValue" ' +
@@ -293,9 +304,17 @@ template:     '<b-popover :target="target" ' +
               '         </b-form-input>' +
               '       </b-col>' +
               ' ' +
+              '       <b-col v-if="architecture.components[component.index].double_precision == true">' +
+              '         <b-form-select v-model="precision"' +
+              '                        size="sm" block>' +
+              '           <b-form-select-option value="false"       >Simple Precision</b-form-select-option>' +
+              '           <b-form-select-option value="true" active>Double Precision</b-form-select-option>' +
+              '         </b-form-select>' +
+              '       </b-col>' +
+              ' ' +
               '       <b-col>' +
               '         <b-button class="btn btn-primary btn-sm w-100" ' +
-              '                   @click="update_register(component.index, register.name, architecture.components[component.index].type, architecture.components[component.index].double_precision)">' +
+              '                   @click="update_register(component.index, register.name, architecture.components[component.index].type, precision==\'true\')">' +
               '           Update' +
               '          </b-button>' +
               '       </b-col>' +

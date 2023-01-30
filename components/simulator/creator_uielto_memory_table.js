@@ -245,20 +245,22 @@
             ' ' +
             '         <div class="col-lg-12 col-sm-12 row mx-0 px-2 border" v-if="memory_segment == \'stack_memory\'">' + // TODO: only in stack' +
             '           <span class="col-lg-12 col-sm-12 my-1">' +
-            '             <span>Stack memory keys:</span>' +
+            '             <span>Stack memory areas: </span> <span class="fas fa-search-plus" id="stack_funct_popover"></span>' +
             '           </span>' +
             ' ' +
             '           <span class="badge badge-white border border-secondary text-secondary mx-1 col">Free <br>stack</span>' +
             '           <span class="badge badge-white border border-secondary text-success mx-1">Callee: <br>{{callee_subrutine}}</span>' +
             '           <span class="badge badge-white border border-secondary text-info mx-1" v-if="track_stack_names.length > 1">Caller: <br>{{caller_subrutine}}</span>' +
-            '           <span class="badge badge-white border border-secondary text-dark mx-1" v-if="track_stack_names.length > 2" align-v="center" id="stack_funct_popover"><b>&bull;&bull;&bull;<br>{{track_stack_names.length - 2}}</b></span>' +
+            '           <span class="badge badge-white border border-secondary text-dark mx-1" v-if="track_stack_names.length > 2" align-v="center"><b>&bull;&bull;&bull;<br>{{track_stack_names.length - 2}}</b></span>' +
             '           <span class="badge badge-white border border-secondary text-dark mx-1">System <br>stack</span>' +
             ' ' +
             '           <b-popover target="stack_funct_popover" triggers="hover" placement="top"> '+
             '             <span>0x000...</span>' +
             '             <b-list-group class="my-2">' +
-            '               <b-list-group-item v-for="(item, index) in track_stack_names.slice().reverse()" v-if="index > 1"> ' +
-            '                 {{item}}' +
+            '               <b-list-group-item v-for="(item, index) in track_stack_names.slice().reverse()"> ' +
+            '                 <span class="text-success" v-if="index == 0">{{item}}</span>' +
+            '                 <span class="text-info" v-if="index == 1">{{item}}</span>' +
+            '                 <span class="text-dark" v-if="index > 1">{{item}}</span>' +
             '               </b-list-group-item>' +
             '             </b-list-group>'+
             '             <span>0xFFF...</span>' +
