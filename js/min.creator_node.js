@@ -1240,7 +1240,7 @@ function capi_print_float ( value1 )
 	}
 
 	/* Print float */
-	var value = readRegister(ret1.indexComp, ret1.indexElem);
+	var value = readRegister(ret1.indexComp, ret1.indexElem, "SFP-Reg");
 	var bin = float2bin(value);
 
 	display_print(full_print(value, bin, true));
@@ -1258,7 +1258,7 @@ function capi_print_double ( value1 )
 	}
 
 	/* Print double */
-	var value = readRegister(ret1.indexComp, ret1.indexElem);
+	var value = readRegister(ret1.indexComp, ret1.indexElem, "DFP-Reg");
 	var bin = double2bin(value);
 
 	display_print(full_print(value, bin, true));
