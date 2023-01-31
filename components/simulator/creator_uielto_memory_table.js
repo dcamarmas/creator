@@ -126,7 +126,7 @@
               {
                 return {
                          'h6Sm                ':  ((row.item.addr >= parseInt(architecture.memory_layout[0].value)) && (row.item.addr <= (architecture.memory_layout[3].value))),
-                         'h6Sm text-secondary ':  ((row.item.addr < app._data.end_callee)                           && (Math.abs(row.item.addr - app._data.end_callee) < 40)),
+                         'h6Sm text-secondary ':  ((row.item.addr < app._data.end_callee)                           && (Math.abs(row.item.addr - app._data.end_callee) < (this._props.stack_total_list * 4))),
                          'h6Sm text-success   ':  ((row.item.addr < app._data.begin_callee)                         && (row.item.addr >= app._data.end_callee)),
                          'h6Sm text-blue-funny':  ((row.item.addr < app._data.begin_caller)                         && (row.item.addr >= app._data.end_caller)),
                          'h6Sm                ':  (row.item.addr >= app._data.begin_caller)
