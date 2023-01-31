@@ -3521,66 +3521,6 @@
       "help":""
     },
     {
-      "name": "fmadd.s",
-      "type": "Arithmetic floating point",
-      "signature_definition": "F0 F5 F4 F3 F1",
-      "signature": "fmadd.s,SFP-Reg,SFP-Reg,SFP-Reg,SFP-Reg",
-      "signatureRaw": "fmadd.s rd rs1 rs2 rs3",
-      "co": "1000011",
-      "cop": "00",
-      "nwords": 1,
-      "power_consumption": 1,
-      "fields": [
-        {
-          "name": "fmadd.s",
-          "type": "co",
-          "startbit": 6,
-          "stopbit": 0
-        },
-        {
-          "name": "rs3",
-          "type": "SFP-Reg",
-          "startbit": 31,
-          "stopbit": 27
-        },
-        {
-          "name": "cop",
-          "type": "cop",
-          "startbit": 26,
-          "stopbit": 25,
-          "valueField": "00"
-        },
-        {
-          "name": "rs2",
-          "type": "SFP-Reg",
-          "startbit": 24,
-          "stopbit": 20
-        },
-        {
-          "name": "rs1",
-          "type": "SFP-Reg",
-          "startbit": 19,
-          "stopbit": 15
-        },
-        {
-          "name": "rd",
-          "type": "SFP-Reg",
-          "startbit": 11,
-          "stopbit": 7
-        }
-      ],
-      "definition": "rd = rs1 * rs2 + rs3;",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
-      "help":""
-    },
-    {
       "name": "fmsub.s",
       "type": "Arithmetic floating point",
       "signature_definition": "F0 F5 F4 F3 F1",
