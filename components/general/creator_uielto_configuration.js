@@ -26,6 +26,7 @@
     props:      {
                   id:                     { type: String,  required: true },
                   instructions_packed:    { type: Number,  required: true },
+                  stack_total_list:       { type: Number,  required: true },
                   autoscroll:             { type: Boolean, required: true },
                   notification_time:      { type: Number,  required: true },
                   instruction_help_size:  { type: Number,  required: true },
@@ -39,6 +40,10 @@
                   {
                     if(localStorage.getItem("instructions_packed") != null){
                       app._data.instructions_packed = parseInt(localStorage.getItem("instructions_packed"));
+                    }
+
+                    if(localStorage.getItem("stack_total_list") != null){
+                      app._data.stack_total_list = parseInt(localStorage.getItem("stack_total_list"));
                     }
 
                     if(localStorage.getItem("autoscroll") != null){
@@ -108,7 +113,35 @@
                     localStorage.setItem("instructions_packed", this._props.instructions_packed);
                
                     //Google Analytics
-                    creator_ga('configuration', 'configuration.execution_speed', 'configuration.execution_speed.less_speed_' + (prev_instruction_packed > this._props.instructions_packed).toString()) ;
+                    creator_ga('configuration', 'configuration.execution_speed', 'configuration.execution_speed.speed_' + (prev_instruction_packed > this._props.instructions_packed).toString()) ;
+                  },
+
+                  //Change the stack total list values
+                  change_stack_max_list(value)
+                  {
+                    var prev_stack_total_list = this._props.stack_total_list;
+               
+                    if (value)
+                    {
+                      this._props.stack_total_list= this._props.stack_total_list + value;
+                      if (this._props.stack_total_list < 1){
+                        this._props.stack_total_list = 20;
+                      }
+                      if (this._props.stack_total_list > 500) {
+                        this._props.stack_total_list = 500;
+                      }
+                    }
+                    else
+                    {
+                      this._props.stack_total_list = parseInt(this._props.stack_total_list);
+                    }
+
+                    app._data.stack_total_list = this._props.stack_total_list; 
+                     
+                    localStorage.setItem("stack_total_list", this._props.stack_total_list);
+               
+                    //Google Analytics
+                    creator_ga('configuration', 'configuration.stack_total_list', 'configuration.stack_total_list.speed_' + (prev_stack_total_list > this._props.stack_total_list).toString()) ;
                   },
 
                   //Change autoscroll mode
@@ -148,7 +181,7 @@
                     localStorage.setItem("notification_time", this._props.notification_time);
                
                     //Google Analytics
-                    creator_ga('configuration', 'configuration.notification_time', 'configuration.notification_time.less_time_' + (prev_notification_time > this._props.notification_time).toString());
+                    creator_ga('configuration', 'configuration.notification_time', 'configuration.notification_time.time_' + (prev_notification_time > this._props.notification_time).toString());
                   },
 
                   //change instruction help size
@@ -176,7 +209,7 @@
                     localStorage.setItem("instruction_help_size", this._props.instruction_help_size);
                
                     //Google Analytics
-                    creator_ga('configuration', 'configuration.instruction_help_size', 'configuration.instruction_help_size.less_size_' + (prev_instruction_help_size > this._props.instruction_help_size).toString());
+                    creator_ga('configuration', 'configuration.instruction_help_size', 'configuration.instruction_help_size.size_' + (prev_instruction_help_size > this._props.instruction_help_size).toString());
                   },
                 
                   //change the font size
@@ -252,6 +285,27 @@
                   '         </b-form-input>' +
                   '         <b-input-group-append>' +
                   '           <b-btn variant="outline-secondary" @click="change_execution_speed(5)">+</b-btn>' +
+                  '         </b-input-group-append>' +
+                  '       </b-input-group>' +
+                  '     </b-list-group-item>' +
+                  ' ' +
+                  '     <b-list-group-item class="d-flex justify-content-between align-items-center m-1">' +
+                  '       <label for="range-1">Maximum stack values listed:</label>' +
+                  '       <b-input-group>' +
+                  '         <b-input-group-prepend>' +
+                  '           <b-btn variant="outline-secondary" @click="change_stack_max_list(-5)">-</b-btn>' +
+                  '         </b-input-group-prepend>' +
+                  '         <b-form-input id="range-1"' +
+                  '                       v-model="stack_total_list" ' +
+                  '                       @change="change_stack_max_list(0)" ' +
+                  '                       type="range" ' +
+                  '                       min="20" ' +
+                  '                       max="500" ' +
+                  '                       step="5" ' +
+                  '                       title="Stack max view">' +
+                  '         </b-form-input>' +
+                  '         <b-input-group-append>' +
+                  '           <b-btn variant="outline-secondary" @click="change_stack_max_list(5)">+</b-btn>' +
                   '         </b-input-group-append>' +
                   '       </b-input-group>' +
                   '     </b-list-group-item>' +

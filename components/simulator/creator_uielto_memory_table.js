@@ -28,7 +28,8 @@
               memory_segment:     { type: String, required: true },
               track_stack_names:  { type: Array,  required: true }, // TODO: optional
               callee_subrutine:   { type: String, required: true }, // TODO: optional
-              caller_subrutine:   { type: String, required: true }  // TODO: optional
+              caller_subrutine:   { type: String, required: true }, // TODO: optional
+              stack_total_list:   { type: Number, required: true }
             },
 
   data:     function () {
@@ -61,7 +62,7 @@
                 }
 
                 if ((this.memory_segment == "stack_memory") && ((addr >= parseInt(architecture.memory_layout[3].value)))) {
-                  return (Math.abs(addr - app._data.end_callee) < 40);
+                  return (Math.abs(addr - app._data.end_callee) < (this._props.stack_total_list * 4));
                 }
               },
 
