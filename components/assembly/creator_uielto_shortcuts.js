@@ -68,8 +68,7 @@
                     ' ' +
                     '     <b-list-group-item class="d-flex justify-content-between align-items-center">' +
                     '       Block code comment &nbsp&nbsp' +
-                    '       <b-badge variant="primary" pill v-if="browser != \'Mac\'"> Ctrl + m</b-badge>' +
-                    '       <b-badge variant="primary" pill v-if="browser == \'Mac\'"> ⌘ + m</b-badge>' +
+                    '       <b-badge variant="primary" pill> Ctrl + m</b-badge>' +
                     '     </b-list-group-item>' +
                     '   </b-list-group>' +
                     ' </b-popover>'
