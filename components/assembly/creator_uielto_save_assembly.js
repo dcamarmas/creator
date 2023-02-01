@@ -64,7 +64,7 @@
                         this.save_assembly = '';
 
                         //Google Analytics
-                        creator_ga('assembly', 'assebly.save', 'assebly.save');
+                        creator_ga('assembly', 'assembly.save', 'assembly.save');
                       },
 
                       //Stop user interface refresh

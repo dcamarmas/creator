@@ -779,7 +779,7 @@ function kbd_read_int ( keystroke, params )
 function kbd_read_float ( keystroke, params )
 {
   var value = parseFloat(keystroke, 10) ;
-  writeRegister(value, params.indexComp, params.indexElem);
+  writeRegister(value, params.indexComp, params.indexElem, "SFP-Reg");
 
   return value ;
 }
@@ -787,7 +787,7 @@ function kbd_read_float ( keystroke, params )
 function kbd_read_double ( keystroke, params )
 {
   var value = parseFloat(keystroke, 10) ;
-  writeRegister(value, params.indexComp, params.indexElem);
+  writeRegister(value, params.indexComp, params.indexElem, "DFP-Reg");
 
   return value ;
 }
