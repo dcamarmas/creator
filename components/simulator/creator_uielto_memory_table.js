@@ -28,7 +28,8 @@
               memory_segment:     { type: String, required: true },
               track_stack_names:  { type: Array,  required: true }, // TODO: optional
               callee_subrutine:   { type: String, required: true }, // TODO: optional
-              caller_subrutine:   { type: String, required: true }  // TODO: optional
+              caller_subrutine:   { type: String, required: true }, // TODO: optional
+              stack_total_list:   { type: Number, required: true }
             },
 
   data:     function () {
@@ -61,7 +62,7 @@
                 }
 
                 if ((this.memory_segment == "stack_memory") && ((addr >= parseInt(architecture.memory_layout[3].value)))) {
-                  return (Math.abs(addr - app._data.end_callee) < 40);
+                  return (Math.abs(addr - app._data.end_callee) < (this._props.stack_total_list * 4));
                 }
               },
 
@@ -125,7 +126,7 @@
               {
                 return {
                          'h6Sm                ':  ((row.item.addr >= parseInt(architecture.memory_layout[0].value)) && (row.item.addr <= (architecture.memory_layout[3].value))),
-                         'h6Sm text-secondary ':  ((row.item.addr < app._data.end_callee)                           && (Math.abs(row.item.addr - app._data.end_callee) < 40)),
+                         'h6Sm text-secondary ':  ((row.item.addr < app._data.end_callee)                           && (Math.abs(row.item.addr - app._data.end_callee) < (this._props.stack_total_list * 4))),
                          'h6Sm text-success   ':  ((row.item.addr < app._data.begin_callee)                         && (row.item.addr >= app._data.end_callee)),
                          'h6Sm text-blue-funny':  ((row.item.addr < app._data.begin_caller)                         && (row.item.addr >= app._data.end_caller)),
                          'h6Sm                ':  (row.item.addr >= app._data.begin_caller)

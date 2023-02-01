@@ -81,6 +81,9 @@ try
       // Configuration
       //
 
+      //Stack total list values
+      stack_total_list: 40,
+
       //Notification speed
       notification_time: 1500,
 
