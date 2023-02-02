@@ -66,7 +66,7 @@
                         hide_loading();
 
                         /* Google Analytics */
-                        creator_ga('assembly', 'assebly.load', 'assebly.load');
+                        creator_ga('assembly', 'assembly.load', 'assembly.load');
                       },
                     },
 
