@@ -77,7 +77,7 @@
                           {
                             for (var z = 0; z < this.register.name.length; z++)
                             {
-                              if ((architecture.components[i].elements[j].name.includes(this.register.name[z]) != false)){
+                              if ((architecture.components[i].elements[j].name.includes(this.register.name[z]) !== false)){
                                   show_notification('The element already exists', 'danger') ;
                                   return;
                               }
@@ -129,7 +129,7 @@
                                         };
                       architecture.components[this._props.register_file_index].elements.push(new_element);
                     }
-                    if((this._props.type == "fp_registers")&&(this._props.double_precision == true))
+                    if((this._props.type == "fp_registers")&&(this._props.double_precision === true))
                     {
                       var aux_new;
                       var aux_value;
@@ -190,7 +190,7 @@
                   //Form validator
                   valid(value)
                   {
-                    if(parseInt(value) != 0)
+                    if(parseInt(value) !== 0)
                     {
                       if(!value){
                         return false;

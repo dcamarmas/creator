@@ -233,7 +233,7 @@ function creator_callstack_leave()
                 last_index_read = last_elto.register_address_read[i][j].length -1;
 
                 if ( (last_elto.register_address_write[i][j][0] == last_elto.register_address_read[i][j][last_index_read]) &&
-                     (last_elto.register_sm[i][j] == 45) &&
+                     (last_elto.register_sm[i][j] === 45) &&
                      (architecture.components[i].elements[j].properties.includes("saved")) // ...but should be saved
                 )
                 {
@@ -242,7 +242,7 @@ function creator_callstack_leave()
 
                 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-                else if ( (last_elto.register_sm[i][j] != 3) &&
+                else if ( (last_elto.register_sm[i][j] !== 3) &&
                      (architecture.components[i].elements[j].properties.includes("saved")) // ...but should be saved
                 )
                 {
@@ -345,7 +345,7 @@ function creator_callstack_setTop( field, indexComponent, indexElement, value )
     };
 
     // check params
-    if (0 == stack_call_register.length)
+    if (0 === stack_call_register.length)
     {
         ret.ok = false;
         ret.msg = "creator_callstack_getTop: empty stack_call_register !!.\n";
@@ -371,7 +371,7 @@ function creator_callstack_setTop( field, indexComponent, indexElement, value )
 function creator_callstack_setState (indexComponent, indexElement, newState)
 {
     var elto = creator_callstack_getTop();
-    if (elto.ok == false) {
+    if (elto.ok === false) {
         console_log('creator_callstack_setState: ' + elto.msg) ;
     return '' ;
     }
@@ -383,7 +383,7 @@ function creator_callstack_setState (indexComponent, indexElement, newState)
 function creator_callstack_getState (indexComponent, indexElement)
 {
     var elto = creator_callstack_getTop();
-    if (elto.ok == false) {
+    if (elto.ok === false) {
         console_log('creator_callstack_getState: ' + elto.msg) ;
     return '' ;
     }

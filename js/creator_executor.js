@@ -110,12 +110,12 @@ function execute_instruction ( )
         console_log(execution_index);
         console_log(instructions[i].Address);
 
-        if (instructions[execution_index].hide == false) {
+        if (instructions[execution_index].hide === false) {
           draw.info.push(execution_index);
         }
       }
       else{
-        if (instructions[execution_index].hide == false) {
+        if (instructions[execution_index].hide === false) {
           draw.space.push(i);
         }
       }
@@ -875,7 +875,7 @@ function keyboard_read ( fn_post_read, fn_post_params )
     return packExecute(true, 'The execution of the program has finished', 'success', null);
   }
 
-  if (run_program == false) {
+  if (run_program === false) {
     uielto_toolbar_btngroup.methods.execute_program();
   }
 }
