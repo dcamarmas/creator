@@ -337,7 +337,7 @@
                         {
                           var instructions = definition.split(";");
                           console_log(instructions.length)
-                          if(instructions.length == 1)
+                          if(instructions.length === 1)
                           {
                             show_notification('Enter a ";" at the end of each line of code', 'danger') ;
                             return -1;

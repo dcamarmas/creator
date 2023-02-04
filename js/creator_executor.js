@@ -64,7 +64,7 @@ function execute_instruction ( )
     //console_log(architecture.components[0].elements[0].value); //TODO
     console_log(readRegister(0, 0));
 
-    if (instructions.length == 0) {
+    if (instructions.length === 0) {
       return packExecute(true, 'No instructions in memory', 'danger', null);
     }
     if (execution_index < -1) {
@@ -468,7 +468,7 @@ function execute_instruction ( )
       draw.info=[];
       return packExecute(false, 'The execution of the program has finished', 'success', draw); //CHECK
     }
-    else if(execution_index >= instructions.length && mutex_read == false)
+    else if(execution_index >= instructions.length && mutex_read === false)
     {
       for (var i = 0; i < instructions.length; i++){
         draw.space.push(i) ;
@@ -484,7 +484,7 @@ function execute_instruction ( )
     }
     console_log(execution_index) ;
   }
-  while(instructions[execution_index].hide ===true) ;
+  while(instructions[execution_index].hide === true) ;
 
   return packExecute(false, null, null, draw) ;
 }
@@ -501,7 +501,7 @@ function executeProgramOneShot ( limit_n_instructions )
   {
     ret = execute_instruction();
 
-    if (ret.error == true){
+    if (ret.error === true){
       return ret;
     }
     if (execution_index < -1) {
@@ -565,10 +565,10 @@ function reset ()
         {
           for (var b = 0; b < architecture.components[a].elements.length; b++)
           {
-            if (architecture.components[a].elements[b].name.includes(architecture.components[i].elements[j].simple_reg[0]) != false){
+            if (architecture.components[a].elements[b].name.includes(architecture.components[i].elements[j].simple_reg[0]) !== false){
               aux_sim1 = bin2hex(float2bin(bi_BigIntTofloat(architecture.components[a].elements[b].default_value)));
             }
-            if (architecture.components[a].elements[b].name.includes(architecture.components[i].elements[j].simple_reg[1]) != false){
+            if (architecture.components[a].elements[b].name.includes(architecture.components[i].elements[j].simple_reg[1]) !== false){
               aux_sim2 = bin2hex(float2bin(bi_BigIntTofloat(architecture.components[a].elements[b].default_value)));
             }
           }
@@ -833,7 +833,7 @@ function keyboard_read ( fn_post_read, fn_post_params )
   app._data.enter = false;
   console_log(mutex_read);
 
-  if (newExecution == true)
+  if (newExecution === true)
   {
     app._data.keyboard = "";
     consoleMutex    = false;
@@ -842,14 +842,14 @@ function keyboard_read ( fn_post_read, fn_post_params )
 
     show_notification('The data has been uploaded', 'info') ;
 
-    if (run_program == false){
+    if (run_program === false){
       uielto_toolbar_btngroup.methods.executeProgram();
     }
 
     return;
   }
 
-  if (consoleMutex == false) {
+  if (consoleMutex === false) {
     setTimeout(keyboard_read, 1000, fn_post_read, fn_post_params);
     return;
   }

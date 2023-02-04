@@ -63,7 +63,7 @@ function readRegister ( indexComp, indexElem, register_type )
     flash: []
   } ;
 
-  if ((architecture.components[indexComp].elements[indexElem].properties.includes("read") != true))
+  if ((architecture.components[indexComp].elements[indexElem].properties.includes("read") !== true))
   {
     for (var i = 0; i < instructions.length; i++) {
       draw.space.push(i);
@@ -82,7 +82,7 @@ function readRegister ( indexComp, indexElem, register_type )
 
   if (architecture.components[indexComp].type == "fp_registers")
   {
-    if(architecture.components[indexComp].double_precision == false){
+    if(architecture.components[indexComp].double_precision === false){
       //return parseFloat((architecture.components[indexComp].elements[indexElem].value).toString()); //TODO: big_int2hex -> hex2float //TODO
       console_log(bi_BigIntTofloat(architecture.components[indexComp].elements[indexElem].value));
       return bi_BigIntTofloat(architecture.components[indexComp].elements[indexElem].value);

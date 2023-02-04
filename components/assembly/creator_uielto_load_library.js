@@ -37,7 +37,7 @@
 
         methods:    {
                       library_update(){
-                        if (code_binary.length != 0){
+                        if (code_binary.length !== 0){
                             update_binary = JSON.parse(code_binary);
                             load_binary = true;
                             $("#divAssembly").attr("class", "col-lg-10 col-sm-12");

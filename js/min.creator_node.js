@@ -26,14 +26,6 @@ function bi_intToBigInt ( int_value, int_base )
 }
 
 
-
-
-
-
-
-
-
-
 function bi_floatToBigInt ( float_value )
 {
   var BigInt_value = null ;
@@ -58,8 +50,6 @@ function bi_BigIntTofloat ( big_int_value )
 }
 
 
-
-
 function bi_doubleToBigInt ( double_value )
 {
   var BigInt_value = null ;
@@ -79,12 +69,6 @@ function bi_BigIntTodouble ( big_int_value )
 }
 
 
-
-
-
-
-
-
 //String to number/bigint
 function register_value_deserialize( architecture )
 {
@@ -101,7 +85,7 @@ function register_value_deserialize( architecture )
         architecture.components[i].elements[j].value = bi_floatToBigInt(architecture.components[i].elements[j].value) ;
       }
 
-      if (architecture.components[i].double_precision != true)
+      if (architecture.components[i].double_precision !== true)
       {
         if (architecture.components[i].type != "fp_registers"){
           architecture.components[i].elements[j].default_value = bi_intToBigInt(architecture.components[i].elements[j].default_value,10) ;
@@ -115,6 +99,7 @@ function register_value_deserialize( architecture )
 
   return architecture;
 }
+
 
 //Number/Bigint to string
 function register_value_serialize( architecture )
@@ -177,7 +162,7 @@ function register_value_serialize( architecture )
   function creator_ga ( category, action, label )
   {
     if (typeof ga !== "undefined") {
-      if (is_ga_initialize == false)
+      if (is_ga_initialize === false)
       {
         ga('create', 'UA-186823627-2', 'auto') ;
         ga('set', 'transport', 'beacon') ;
@@ -1714,7 +1699,7 @@ function track_stack_getTop()
     };
 
     // check params
-    if (0 == track_stack_limits.length)
+    if (0 === track_stack_limits.length)
     {
         ret.ok = false;
         ret.msg = "track_stack_getTop: empty track_stack_limits !!.\n";
@@ -1772,7 +1757,7 @@ function track_stack_setsp(value)
     }
 
     // check params
-    if (0 == track_stack_limits.length) {
+    if (0 === track_stack_limits.length) {
         return;
     }
 
@@ -1877,7 +1862,7 @@ function readRegister ( indexComp, indexElem, register_type )
     flash: []
   } ;
 
-  if ((architecture.components[indexComp].elements[indexElem].properties.includes("read") != true))
+  if ((architecture.components[indexComp].elements[indexElem].properties.includes("read") !== true))
   {
     for (var i = 0; i < instructions.length; i++) {
       draw.space.push(i);
@@ -1896,7 +1881,7 @@ function readRegister ( indexComp, indexElem, register_type )
 
   if (architecture.components[indexComp].type == "fp_registers")
   {
-    if(architecture.components[indexComp].double_precision == false){
+    if(architecture.components[indexComp].double_precision === false){
       //return parseFloat((architecture.components[indexComp].elements[indexElem].value).toString()); //TODO: big_int2hex -> hex2float //TODO
       console_log(bi_BigIntTofloat(architecture.components[indexComp].elements[indexElem].value));
       return bi_BigIntTofloat(architecture.components[indexComp].elements[indexElem].value);
@@ -3333,7 +3318,7 @@ function get_token()
              index++;
         }
 
-        while ((",()[]{}:#\t\n \r".includes( assembly.charAt(index) ) == false) && (index < assembly.length))
+        while ((",()[]{}:#\t\n \r".includes( assembly.charAt(index) ) === false) && (index < assembly.length))
         {
              index++;
         }
@@ -3379,7 +3364,7 @@ function next_token()
              index++;
         }
 
-        while ((",()[]{}:#\t\n \r".includes( assembly.charAt(index) ) == false) && (index < assembly.length))
+        while ((",()[]{}:#\t\n \r".includes( assembly.charAt(index) ) === false) && (index < assembly.length))
         {
              index++;
         }
@@ -3621,7 +3606,7 @@ function assembly_compiler()
               }
             }
 
-            else if (i== architecture.directives.length-1 && token != architecture.directives[i].name && change == false && token != null)
+            else if (i== architecture.directives.length-1 && token != architecture.directives[i].name && change === false && token != null)
             {
               empty = true;
               //tokenIndex = 0;
@@ -3825,7 +3810,7 @@ function assembly_compiler()
                     bin = bin.padStart(fieldsLength, "0");
                     console_log(bin);
 
-                    for (var w = 0; w < instructions.length && exit == 0; w++) {
+                    for (var w = 0; w < instructions.length && exit === 0; w++) {
                       var aux = "0x" + (pending_instructions[i].address).toString(16);
                       if(aux == instructions[w].Address){
                         instructions_binary[w - numBinaries].loaded = instructions_binary[w - numBinaries].loaded.substring(0, instructions_binary[w - numBinaries].loaded.length - (startbit + 1)) + bin.padStart(fieldsLength, "0") + instructions_binary[w - numBinaries].loaded.substring(instructions_binary[w - numBinaries].loaded.length - stopbit, instructions_binary[w - numBinaries].loaded.length);
@@ -3947,11 +3932,11 @@ function assembly_compiler()
 
             if (i == 0) {
               hide = false;
-              if(update_binary.instructions_binary[i].globl == false){
+              if(update_binary.instructions_binary[i].globl === false){
                 label = "";
               }
             }
-            else if(update_binary.instructions_binary[i].globl == false){
+            else if(update_binary.instructions_binary[i].globl === false){
               hide  = true;
               label = "";
             }
@@ -5293,7 +5278,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
 
             for (var a = 1; a < numToken; a++){
               if(architecture.instructions[i].fields[a].type != "cop"){
-                if(isPseudo == false){
+                if(isPseudo === false){
                   next_token();
                   token = get_token();
 
@@ -5310,7 +5295,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
                 console_log(instruction);
               }
             }
-            if(isPseudo == false){
+            if(isPseudo === false){
               ret = instruction_compiler(instruction, instruction, label, line, pending, pendingAddress, instInit, index, false);
             }
             else{
@@ -5425,7 +5410,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
                       instruction = instruction.replace(re, token);
                     }
 
-                    else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
+                    else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg === false){
                       return packCompileError('m4', token, 'error', "danger") ;
                     }
                     regNum++;
@@ -5450,7 +5435,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
                   if (architecture.components[z].double_precision_type == "linked")
                   {
                     for(var w = 0; w < architecture.components[z].elements.length; w++){
-                      if(architecture.components[z].elements[w].name.includes(token) != false && architecture.components[z].type == "fp_registers" && architecture.components[z].double_precision == false){ //TODO:check
+                      if(architecture.components[z].elements[w].name.includes(token) !==false && architecture.components[z].type == "fp_registers" && architecture.components[z].double_precision === false){ //TODO:check
                         validReg = true;
                         regNum++;
 
@@ -5469,10 +5454,10 @@ function instruction_compiler ( instruction, userInstruction, label, line,
                         instruction = instruction.replace(re, token);
                         console_log(instruction);
                       }
-                      else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
+                      else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg === false){
                         return packCompileError('m4', token, 'error', "danger") ;
                       }
-                      if(architecture.components[z].type == "fp_registers" && architecture.components[z].double_precision == false){
+                      if(architecture.components[z].type == "fp_registers" && architecture.components[z].double_precision === false){
                         regNum++;
                       }
                     }
@@ -5498,10 +5483,10 @@ function instruction_compiler ( instruction, userInstruction, label, line,
                         instruction = instruction.replace(re, token);
                         console_log(instruction);
                       }
-                      else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
+                      else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg === false){
                         return packCompileError('m4', token, 'error', "danger") ;
                       }
-                      if(architecture.components[z].type == "fp_registers" && architecture.components[z].double_precision == false){
+                      if(architecture.components[z].type == "fp_registers" && architecture.components[z].double_precision === false){
                         regNum++;
                       }
                     }
@@ -5526,7 +5511,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
                   if (architecture.components[z].double_precision_type == "linked")
                   {
                     for(var w = 0; w < architecture.components[z].elements.length; w++){
-                      if(architecture.components[z].elements[w].name.includes(token) != false && architecture.components[z].type == "fp_registers" && architecture.components[z].double_precision == true){ //TODO:check
+                      if(architecture.components[z].elements[w].name.includes(token) !== false && architecture.components[z].type == "fp_registers" && architecture.components[z].double_precision === true){ //TODO:check
                         validReg = true;
                         regNum++;
 
@@ -5543,17 +5528,17 @@ function instruction_compiler ( instruction, userInstruction, label, line,
                         re = RegExp("Field[0-9]+");
                         instruction = instruction.replace(re, token);
                       }
-                      else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
+                      else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg === false){
                         return packCompileError('m4', token, 'error', "danger") ;
                       }
-                      if(architecture.components[z].type == "fp_registers" && architecture.components[z].double_precision == true){
+                      if(architecture.components[z].type == "fp_registers" && architecture.components[z].double_precision === true){
                         regNum++;
                       }
                     }
                   }
                   else{
                     for(var w = 0; w < architecture.components[z].elements.length; w++){
-                      if(architecture.components[z].elements[w].name.includes(token) != false && architecture.components[z].type == "fp_registers"){ //TODO:check
+                      if(architecture.components[z].elements[w].name.includes(token) !== false && architecture.components[z].type == "fp_registers"){ //TODO:check
                         validReg = true;
                         regNum++;
 
@@ -5570,10 +5555,10 @@ function instruction_compiler ( instruction, userInstruction, label, line,
                         re = RegExp("Field[0-9]+");
                         instruction = instruction.replace(re, token);
                       }
-                      else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
+                      else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg === false){
                         return packCompileError('m4', token, 'error', "danger") ;
                       }
-                      if(architecture.components[z].type == "fp_registers" && architecture.components[z].double_precision == true){
+                      if(architecture.components[z].type == "fp_registers" && architecture.components[z].double_precision === true){
                         regNum++;
                       }
                     }
@@ -5596,7 +5581,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
               if(architecture.instructions[i].fields[a].name == signatureRawParts[j]){
                 for(var z = 0; z < architecture_hash.length; z++){
                   for(var w = 0; w < architecture.components[z].elements.length; w++){
-                    if(architecture.components[z].elements[w].name.includes(token) != false && architecture.components[z].type == "ctr_registers"){ //TODO: check
+                    if(architecture.components[z].elements[w].name.includes(token) !== false && architecture.components[z].type == "ctr_registers"){ //TODO: check
                       validReg = true;
                       regNum++;
 
@@ -5613,7 +5598,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
                       re = RegExp("Field[0-9]+");
                       instruction = instruction.replace(re, token);
                     }
-                    else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
+                    else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg === false){
                       return packCompileError('m4', token, 'error', "danger") ;
                     }
                     if(architecture.components[z].type == "ctr_registers"){
@@ -5971,7 +5956,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
                   inm = (parseInt(token, 10) >>> 0).toString(2);
                   inm = inm.substring(inm.length - fieldsLength ,inm.length);
                 }
-                if(validTagPC == true){
+                if(validTagPC === true){
                   if(inm.length > (architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1)){
                     return packCompileError('m12', token, 'error', "danger") ;
                   }
@@ -6069,7 +6054,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
                   inm = inm.substring(inm.length - fieldsLength ,inm.length);
 
                 }
-                if(validTagPC == true){
+                if(validTagPC === true){
                   if(inm.length > (architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1)){
                       return packCompileError('m12', token, 'error', "danger") ;
                   }
@@ -6149,7 +6134,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
 
         pending_instructions.push({address: address, instruction: instruction, signature: signatureParts, signatureRaw: signatureRawParts, Label: label, binary: binary, startBit: startBit, stopBit: stopBit, visible: true, line: nEnters});
 
-        if(pending == false){
+        if(pending === false){
           instructions.push({ Break: null, Address: "0x" + address.toString(16), Label: label , loaded: instruction, user: userInstruction, _rowVariant: '', visible: true, hide: false});
           instructions_binary.push({ Break: null, Address: "0x" + address.toString(16), Label: label , loaded: binary, user: null, _rowVariant: '', visible: false});
 
@@ -6192,7 +6177,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
           console_log(binary);
           console_log(bin2hex(binary));
 
-          if(pending == false){
+          if(pending === false){
             instructions.push({ Break: null, Address: "0x" + address.toString(16), Label: label , loaded: instruction, user: userInstruction, _rowVariant: '', visible: true, hide: false});
             instructions_binary.push({ Break: null, Address: "0x" + address.toString(16), Label: label , loaded: binary, user: null, _rowVariant: '', visible: false});
 
@@ -6332,7 +6317,7 @@ function pseudoinstruction_compiler ( instruction, label, line )
 
           for(var b = 0; b < architecture.components[3].elements.length; b++){
             console_log(architecture.components[3].elements[b].name);
-            if(architecture.components[3].elements[b].name.includes(args[0]) != false){
+            if(architecture.components[3].elements[b].name.includes(args[0]) !== false){
               aux = architecture.components[3].elements[b].simple_reg[args[1]];
               console_log(aux);
               break;
@@ -6624,7 +6609,7 @@ function field ( field, action, type )
       return hexNum;
     }
 
-    //if (Number.isInteger(field) == false)
+    //if (Number.isInteger(field) === false)
     if (isNaN(field) === true)
     {
       var ret = creator_memory_findaddress_bytag(field) ;
@@ -6787,7 +6772,7 @@ function execute_instruction ( )
     //console_log(architecture.components[0].elements[0].value); //TODO
     console_log(readRegister(0, 0));
 
-    if (instructions.length == 0) {
+    if (instructions.length === 0) {
       return packExecute(true, 'No instructions in memory', 'danger', null);
     }
     if (execution_index < -1) {
@@ -7191,7 +7176,7 @@ function execute_instruction ( )
       draw.info=[];
       return packExecute(false, 'The execution of the program has finished', 'success', draw); //CHECK
     }
-    else if(execution_index >= instructions.length && mutex_read == false)
+    else if(execution_index >= instructions.length && mutex_read === false)
     {
       for (var i = 0; i < instructions.length; i++){
         draw.space.push(i) ;
@@ -7207,7 +7192,7 @@ function execute_instruction ( )
     }
     console_log(execution_index) ;
   }
-  while(instructions[execution_index].hide ===true) ;
+  while(instructions[execution_index].hide === true) ;
 
   return packExecute(false, null, null, draw) ;
 }
@@ -7224,7 +7209,7 @@ function executeProgramOneShot ( limit_n_instructions )
   {
     ret = execute_instruction();
 
-    if (ret.error == true){
+    if (ret.error === true){
       return ret;
     }
     if (execution_index < -1) {
@@ -7288,10 +7273,10 @@ function reset ()
         {
           for (var b = 0; b < architecture.components[a].elements.length; b++)
           {
-            if (architecture.components[a].elements[b].name.includes(architecture.components[i].elements[j].simple_reg[0]) != false){
+            if (architecture.components[a].elements[b].name.includes(architecture.components[i].elements[j].simple_reg[0]) !== false){
               aux_sim1 = bin2hex(float2bin(bi_BigIntTofloat(architecture.components[a].elements[b].default_value)));
             }
-            if (architecture.components[a].elements[b].name.includes(architecture.components[i].elements[j].simple_reg[1]) != false){
+            if (architecture.components[a].elements[b].name.includes(architecture.components[i].elements[j].simple_reg[1]) !== false){
               aux_sim2 = bin2hex(float2bin(bi_BigIntTofloat(architecture.components[a].elements[b].default_value)));
             }
           }
@@ -7556,7 +7541,7 @@ function keyboard_read ( fn_post_read, fn_post_params )
   app._data.enter = false;
   console_log(mutex_read);
 
-  if (newExecution == true)
+  if (newExecution === true)
   {
     app._data.keyboard = "";
     consoleMutex    = false;
@@ -7565,14 +7550,14 @@ function keyboard_read ( fn_post_read, fn_post_params )
 
     show_notification('The data has been uploaded', 'info') ;
 
-    if (run_program == false){
+    if (run_program === false){
       uielto_toolbar_btngroup.methods.executeProgram();
     }
 
     return;
   }
 
-  if (consoleMutex == false) {
+  if (consoleMutex === false) {
     setTimeout(keyboard_read, 1000, fn_post_read, fn_post_params);
     return;
   }
