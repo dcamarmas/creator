@@ -72,12 +72,12 @@ function execute_instruction ( )
     if (execution_index == -1) {
       return packExecute(true, 'The program has finished with errors', 'danger', null);
     }
-    else if (mutex_read == true) {
+    else if (mutex_read === true) {
       return packExecute(false, '', 'info', null);
     }
 
     //Search a main tag
-    if (execution_init == 1)
+    if (execution_init === 1)
     {
       for (var i = 0; i < instructions.length; i++)
       {
@@ -216,7 +216,7 @@ function execute_instruction ( )
                 var bin = "";
 
                 //Get binary
-                if(architecture.instructions[i].separated && architecture.instructions[i].separated[f] == true){
+                if(architecture.instructions[i].separated && architecture.instructions[i].separated[f] === true){
                   for (var sep_index = 0; sep_index < architecture.instructions[i].fields[f].startbit.length; sep_index++) {
                     bin = bin + instructionExec.substring(((instruction_nwords*31) - instruction_fields[f].startbit[sep_index]), ((instruction_nwords*32) - instruction_fields[f].stopbit[sep_index]))
                   }
@@ -439,7 +439,7 @@ function execute_instruction ( )
     }
 
     // Next instruction to execute
-    if (error != 1 && execution_index < instructions.length)
+    if (error !== 1 && execution_index < instructions.length)
     {
       for (var i = 0; i < instructions.length; i++)
       {
@@ -449,7 +449,7 @@ function execute_instruction ( )
           draw.success.push(execution_index) ;
           break;
         }
-        else if (i == instructions.length-1 && mutex_read == true){
+        else if (i == instructions.length-1 && mutex_read === true){
           execution_index = instructions.length+1;
         }
         else if (i == instructions.length-1){
@@ -459,7 +459,7 @@ function execute_instruction ( )
       }
     }
 
-    if (execution_index >= instructions.length && mutex_read == true)
+    if (execution_index >= instructions.length && mutex_read === true)
     {
       for (var i = 0; i < instructions.length; i++) {
         draw.space.push(i);
@@ -477,13 +477,13 @@ function execute_instruction ( )
       return packExecute(false, 'The execution of the program has finished', 'success', draw);
     }
     else{
-      if (error != 1) {
+      if (error !== 1) {
         draw.success.push(execution_index);
       }
     }
     console_log(execution_index) ;
   }
-  while(instructions[execution_index].hide == true) ;
+  while(instructions[execution_index].hide ===true) ;
 
   return packExecute(false, null, null, draw) ;
 }
@@ -550,7 +550,7 @@ function reset ()
   {
     for (var j = 0; j < architecture.components[i].elements.length; j++)
     {
-      if (architecture.components[i].double_precision == false || (architecture.components[i].double_precision == true && architecture.components[i].double_precision_type == "extended"))
+      if (architecture.components[i].double_precision === false || (architecture.components[i].double_precision === true && architecture.components[i].double_precision_type == "extended"))
       {
         architecture.components[i].elements[j].value = architecture.components[i].elements[j].default_value;
       }

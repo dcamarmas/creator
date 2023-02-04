@@ -655,7 +655,7 @@ function assembly_compiler()
           {
             if (signatureParts[j] == "inm-signed" || signatureParts[j] == "inm-unsigned" || signatureParts[j] == "address")
             {
-              for (var z = 0; z < instructions.length && exit == 0; z++)
+              for (var z = 0; z < instructions.length && exit === 0; z++)
               {
                 if (instructions[z].Label == instructionParts[j])
                 {
@@ -741,7 +741,7 @@ function assembly_compiler()
                 }
               }
 
-              if (exit == 0 && isNaN(instructionParts[j]) == true)
+              if (exit === 0 && isNaN(instructionParts[j]) === true)
               {
                 //tokenIndex = 0;
                 //nEnters = 0 ;
@@ -1021,7 +1021,7 @@ function assembly_compiler()
 
         /*Save binary*/
         for(var i = 0; i < instructions_binary.length; i++){
-          if(extern.length == 0 && instructions_binary[i].Label != ""){
+          if(extern.length === 0 && instructions_binary[i].Label != ""){
             instructions_binary[i].Label = instructions_binary[i].Label + "_symbol";
             instructions_binary[i].globl = false;
           }
@@ -2647,7 +2647,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
                     }
                   }
 
-                  if(isNaN(parseInt(token, 16)) == true){
+                  if(isNaN(parseInt(token, 16)) === true){
                     return packCompileError('m6', token, 'error', "danger") ;
                   }
 
@@ -2664,7 +2664,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
                     }
                   }
 
-                  if (isNaN(parseFloat(token)) == true) {
+                  if (isNaN(parseFloat(token)) === true) {
                       return packCompileError('m6', token, 'error', "danger") ;
                   }
 
@@ -2709,14 +2709,14 @@ function instruction_compiler ( instruction, userInstruction, label, line,
                     }
                   }
 
-                  if (isNaN(parseInt(token)) == true && resultPseudo == -3) {
+                  if (isNaN(parseInt(token)) === true && resultPseudo == -3) {
                       return packCompileError('m6', token, 'error', "danger") ;
                   }
 
                   inm = (parseInt(token, 10) >>> 0).toString(2);
                   inm = inm.substring(inm.length - fieldsLength ,inm.length);
                 }
-                if(validTagPC == true){
+                if(validTagPC === true){
                   console_log(inm.length);
                   if (inm.length > (architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1)) {
 
@@ -2769,7 +2769,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
                       }
                   }
 
-                  if (isNaN(parseInt(token, 16)) == true) {
+                  if (isNaN(parseInt(token, 16)) === true) {
                       return packCompileError('m6', token, 'error', "danger") ;
                   }
 
@@ -2785,7 +2785,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
                       }
                   }
 
-                  if (isNaN(parseFloat(token)) == true) {
+                  if (isNaN(parseFloat(token)) === true) {
                       return packCompileError('m6', token, 'error', "danger") ;
                   }
 
@@ -2826,7 +2826,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
                     }
                   }
 
-                  if (isNaN(parseInt(token)) == true && resultPseudo == -3) {
+                  if (isNaN(parseInt(token)) === true && resultPseudo == -3) {
                       return packCompileError('m6', token, 'error', "danger") ;
                   }
 
@@ -2867,7 +2867,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
                      return packCompileError('m8', token, 'error', "danger") ;
                   }
 
-                  if (isNaN(parseInt(token, 16)) == true) {
+                  if (isNaN(parseInt(token, 16)) === true) {
                       return packCompileError('m9', token, 'error', "danger") ;
                   }
 
@@ -2912,7 +2912,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
                       }
                    }
 
-                   if (isNaN(parseInt(token, 16)) == true) {
+                   if (isNaN(parseInt(token, 16)) === true) {
                        return packCompileError('m6', token, 'error', "danger") ;
                    }
 
@@ -2928,7 +2928,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
                      }
                   }
 
-                  if (isNaN(parseFloat(token)) == true) {
+                  if (isNaN(parseFloat(token)) === true) {
                       return packCompileError('m6', token, 'error', "danger") ;
                   }
 
@@ -2960,7 +2960,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
                       }
                    }
 
-                  if (isNaN(parseInt(token)) == true && resultPseudo == -3) {
+                  if (isNaN(parseInt(token)) === true && resultPseudo == -3) {
                      return packCompileError('m6', token, 'error', "danger") ;
                   }
 
@@ -3009,7 +3009,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
                      }
                   }
 
-                  if (isNaN(parseInt(token, 16)) == true) {
+                  if (isNaN(parseInt(token, 16)) === true) {
                      return packCompileError('m6', token, 'error', "danger") ;
                   }
 
@@ -3025,7 +3025,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
                      }
                   }
 
-                  if (isNaN(parseFloat(token)) == true) {
+                  if (isNaN(parseFloat(token)) === true) {
                       return packCompileError('m6', token, 'error', "danger") ;
                   }
 
@@ -3057,7 +3057,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
                       }
                   }
 
-                  if (isNaN(parseInt(token)) == true && resultPseudo == -3) {
+                  if (isNaN(parseInt(token)) === true && resultPseudo == -3) {
                       return packCompileError('m6', token, 'error', "danger") ;
                   }
 
@@ -3540,7 +3540,7 @@ function pseudoinstruction_compiler ( instruction, label, line )
           var error = false;
           console_log(definition);
           eval(definition);
-          if(error == true){
+          if(error === true){
             console_log("Error pseudo");
             //return packCompileError('m13', "Error pseudoinstruction", 'error', "danger") ;
             return ret;
@@ -3621,7 +3621,7 @@ function field ( field, action, type )
     }
 
     //if (Number.isInteger(field) == false)
-    if (isNaN(field) == true)
+    if (isNaN(field) === true)
     {
       var ret = creator_memory_findaddress_bytag(field) ;
       if (ret.exit == 1) {

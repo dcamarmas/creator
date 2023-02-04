@@ -179,7 +179,7 @@ function creator_callstack_leave()
     };
 
     // check params
-    if (0 == stack_call_register.length) {
+    if (0 === stack_call_register.length) {
         ret.msg = "creator_callstack_Leave: empty stack_call_register !!.\n";
         return ret;
     }

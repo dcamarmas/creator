@@ -249,7 +249,7 @@
                         }
                       }
                     }
-                    if(type == 0)
+                    if(type === 0)
                     {
                       for (var i = 0; i < back_card.length; i++){
                         this._props.back_card[i].background = "default";

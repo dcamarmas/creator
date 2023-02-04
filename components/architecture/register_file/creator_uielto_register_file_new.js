@@ -97,7 +97,7 @@
                       precision = true;
                     }
 
-                    if (precision == false)
+                    if (precision === false)
                     {
                       this.register_file.double_precision_type = '';
                     }
