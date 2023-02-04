@@ -94,7 +94,7 @@ function capi_mem_write ( addr, value, type, reg_name )
 
 	// 4) Call convenction
 	var ret = crex_findReg(reg_name) ;
-	if (ret.match == 0) {
+	if (ret.match === 0) {
 		return;
 	}
 
@@ -177,7 +177,7 @@ function capi_print_int ( value1 )
 
 	/* Get register id */
 	var ret1 = crex_findReg(value1) ;
-	if (ret1.match == 0) {
+	if (ret1.match === 0) {
 		throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
 	}
 
@@ -419,7 +419,7 @@ function capi_callconv_begin ( addr )
 	// 2) get function name
 	if (typeof architecture.components[0] !== "undefined")
 	{
-		if (typeof tag_instructions[addr] == "undefined")
+		if (typeof tag_instructions[addr] === "undefined")
 			 function_name = "0x" + parseInt(addr).toString(16) ;
 		else function_name = tag_instructions[addr] ;
 	}
@@ -431,7 +431,7 @@ function capi_callconv_begin ( addr )
 function capi_callconv_end ()
 {
 	// 1) Passing Convection enable?
-	if (architecture.arch_conf[5].value == 0) {
+	if (architecture.arch_conf[5].value === 0) {
 		return;
 	}
 

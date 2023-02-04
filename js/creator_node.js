@@ -128,7 +128,7 @@ function get_state ( )
             elto_value  = architecture.components[i].elements[j].value ;
 
             //get default value
-            if (architecture.components[i].double_precision == true && architecture.components[i].double_precision_type == "linked")
+            if (architecture.components[i].double_precision === true && architecture.components[i].double_precision_type == "linked")
             {
                 var aux_value;
                 var aux_sim1;
@@ -164,10 +164,10 @@ function get_state ( )
             elto_string = "0x" + elto_value.toString(16) ;
             if (architecture.components[i].type == "fp_registers") 
             {
-                if(architecture.components[i].double_precision == false){
+                if(architecture.components[i].double_precision === false){
                   elto_string = "0x" + bin2hex(float2bin(bi_BigIntTofloat(elto_value))) ;
                 }
-                if (architecture.components[i].double_precision == true) {
+                if (architecture.components[i].double_precision === true) {
                   elto_string = "0x" + bin2hex(double2bin(bi_BigIntTodouble(elto_value))) ;
                 }
             }
@@ -237,7 +237,7 @@ function compare_states ( ref_state, alt_state )
     if (ref_state.includes(';')) {
         ref_state.split(';').map(function(i) {
                          var parts = i.split(':') ;
-                                     if (parts.length != 2) {
+                                     if (parts.length !== 2) {
                                          return ;
                                      }
 

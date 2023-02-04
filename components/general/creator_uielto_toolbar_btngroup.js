@@ -315,7 +315,7 @@
                           }
 
                           //Auto-scroll
-                          if(app._data.autoscroll == true && run_program == false)
+                          if(app._data.autoscroll === true && run_program === false)
                           {
                             if(execution_index >= 0 && (execution_index + 4) < instructions.length)
                             {
@@ -347,24 +347,24 @@
 
                         app._data.run_execution = true;
                         app._data.run_execution = false;
-                        run_program=true;
+                        run_program = true;
 
-                        if (instructions.length == 0)
+                        if (instructions.length === 0)
                         {
                           show_notification('No instructions in memory', 'danger') ;
-                          run_program=false;
+                          run_program = false;
                           return;
                         }
                         if (execution_index < -1)
                         {
                           show_notification('The program has finished', 'warning') ;
-                          run_program=false;
+                          run_program = false;
                           return;
                         }
                         if (execution_index == -1)
                         {
                           show_notification('The program has finished with errors', 'danger') ;
-                          run_program=false;
+                          run_program = false;
                           return;
                         }
 
@@ -375,33 +375,33 @@
                       {
                         for (var i=0; (i<app._data.instructions_packed) && (execution_index >= 0); i++)
                         {
-                          if(mutex_read == true)
+                          if(mutex_read === true)
                           {
                             iter1 = 1;
-                            run_program=false;
+                            run_program = false;
                             return;
                           }
-                          else if(instructions[execution_index].Break == true && iter1 == 0)
+                          else if(instructions[execution_index].Break === true && iter1 === 0)
                           {
                             iter1 = 1;
-                            run_program=false;
+                            run_program = false;
                             return;
                           }
                           else if(this.run_execution === true)
                           {
                             app._data.run_execution = false;
                             iter1 = 1;
-                            run_program=false;
+                            run_program = false;
                             return;
                           }
-                          else if(but === true && i == 0)
+                          else if(but === true && i === 0)
                           {
                             app._data.resetBut = false;
                           }
                           else if(this.resetBut === true)
                           {
                             app._data.resetBut = false;
-                            run_program=false;
+                            run_program = false;
                             return;
                           }
                           else

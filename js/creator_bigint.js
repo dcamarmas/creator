@@ -117,7 +117,7 @@ function register_value_serialize( architecture )
         aux_architecture.components[i].elements[j].value = bi_BigIntTofloat(architecture.components[i].elements[j].value);
       }
 
-      if (architecture.components[i].double_precision != true)
+      if (architecture.components[i].double_precision !== true)
       {
         if (architecture.components[i].type != "fp_registers"){
           aux_architecture.components[i].elements[j].default_value = parseInt(architecture.components[i].elements[j].default_value);

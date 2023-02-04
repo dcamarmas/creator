@@ -872,7 +872,7 @@ function creator_memory_data_compiler ( data_address, value, size, dataLabel, De
              data_address = data_address + to_be_filled;
         }
 
-        if ((data_address % size != 0) && (data_address % word_size_bytes != 0)) {
+        if ((data_address % size !== 0) && (data_address % word_size_bytes !== 0)) {
             ret.msg = 'm21' ;
             ret.data_address = data_address ;
             return ret ;
