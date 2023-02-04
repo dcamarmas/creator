@@ -30,7 +30,7 @@
     data:       function () {
                   return {
                     //Instructions table fields
-                    instructions_fields: ['name', 'co', 'cop', 'nwords', 'signatureRaw', 'properties', 'power_consumption', 'fields', 'definition', 'actions'],
+                    instructions_fields: ['name', 'co', 'cop', 'nwords', 'signatureRaw', 'properties', 'clk_cycles', 'fields', 'definition', 'actions'],
                   }
                 },
 

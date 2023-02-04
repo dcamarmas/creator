@@ -1429,12 +1429,12 @@ function capi_sbrk ( value1, value2 )
 	writeRegister(new_addr, ret2.indexComp, ret2.indexElem);
 }
 
-function capi_get_power_consumption ( )
+function capi_get_clk_cycles ( )
 {
 	/* Google Analytics */
-	creator_ga('execute', 'execute.syscall', 'execute.syscall.get_power_consumption');
+	creator_ga('execute', 'execute.syscall', 'execute.syscall.get_clk_cycles');
 
-	return total_power_consumption;
+	return total_clk_cycles;
 }
 
 
@@ -3160,42 +3160,42 @@ var load_binary = false;
 var totalStats = 0;
 var stats_value = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 var stats = [
-  { type: 'Arithmetic floating point', number_instructions: 0, percentage: 0 },
-  { type: 'Arithmetic integer', number_instructions: 0, percentage: 0},
-  { type: 'Comparison', number_instructions: 0, percentage: 0 },
-  { type: 'Conditional bifurcation', number_instructions: 0, percentage: 0},
-  { type: 'Control', number_instructions: 0, percentage: 0},
-  { type: 'Function call', number_instructions: 0, percentage: 0},
-  { type: 'I/O', number_instructions: 0, percentage: 0},
-  { type: 'Logic', number_instructions: 0, percentage: 0, abbreviation: "Log"},
-  { type: 'Memory access', number_instructions: 0, percentage: 0},
-  { type: 'Other', number_instructions: 0, percentage: 0},
-  { type: 'Syscall', number_instructions: 0, percentage: 0},
-  { type: 'Transfer between registers', number_instructions: 0, percentage: 0},
-  { type: 'Unconditional bifurcation', number_instructions: 0, percentage: 0},
-];
-/*Power consumption*/
-var total_power_consumption = 0;
-var power_consumption_value = [
-                                {
-                                  data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-                                }
-                              ];
-var power_consumption = [
-  { type: 'Arithmetic floating point', power_consumption: 0, percentage: 0 },
-  { type: 'Arithmetic integer', power_consumption: 0, percentage: 0},
-  { type: 'Comparison', power_consumption: 0, percentage: 0 },
-  { type: 'Conditional bifurcation', power_consumption: 0, percentage: 0},
-  { type: 'Control', power_consumption: 0, percentage: 0},
-  { type: 'Function call', power_consumption: 0, percentage: 0},
-  { type: 'I/O', power_consumption: 0, percentage: 0},
-  { type: 'Logic', power_consumption: 0, percentage: 0, abbreviation: "Log"},
-  { type: 'Memory access', power_consumption: 0, percentage: 0},
-  { type: 'Other', power_consumption: 0, percentage: 0},
-  { type: 'Syscall', power_consumption: 0, percentage: 0},
-  { type: 'Transfer between registers', power_consumption: 0, percentage: 0},
-  { type: 'Unconditional bifurcation', power_consumption: 0, percentage: 0},
-];
+              { type: 'Arithmetic floating point', number_instructions: 0, percentage: 0 },
+              { type: 'Arithmetic integer', number_instructions: 0, percentage: 0},
+              { type: 'Comparison', number_instructions: 0, percentage: 0 },
+              { type: 'Conditional bifurcation', number_instructions: 0, percentage: 0},
+              { type: 'Control', number_instructions: 0, percentage: 0},
+              { type: 'Function call', number_instructions: 0, percentage: 0},
+              { type: 'I/O', number_instructions: 0, percentage: 0},
+              { type: 'Logic', number_instructions: 0, percentage: 0, abbreviation: "Log"},
+              { type: 'Memory access', number_instructions: 0, percentage: 0},
+              { type: 'Other', number_instructions: 0, percentage: 0},
+              { type: 'Syscall', number_instructions: 0, percentage: 0},
+              { type: 'Transfer between registers', number_instructions: 0, percentage: 0},
+              { type: 'Unconditional bifurcation', number_instructions: 0, percentage: 0},
+            ];
+/*CLK Cycles*/
+var total_clk_cycles = 0;
+var clk_cycles_value =  [
+                          {
+                            data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                          }
+                        ];
+var clk_cycles =  [
+                    { type: 'Arithmetic floating point', clk_cycles: 0, percentage: 0 },
+                    { type: 'Arithmetic integer', clk_cycles: 0, percentage: 0},
+                    { type: 'Comparison', clk_cycles: 0, percentage: 0 },
+                    { type: 'Conditional bifurcation', clk_cycles: 0, percentage: 0},
+                    { type: 'Control', clk_cycles: 0, percentage: 0},
+                    { type: 'Function call', clk_cycles: 0, percentage: 0},
+                    { type: 'I/O', clk_cycles: 0, percentage: 0},
+                    { type: 'Logic', clk_cycles: 0, percentage: 0, abbreviation: "Log"},
+                    { type: 'Memory access', clk_cycles: 0, percentage: 0},
+                    { type: 'Other', clk_cycles: 0, percentage: 0},
+                    { type: 'Syscall', clk_cycles: 0, percentage: 0},
+                    { type: 'Transfer between registers', clk_cycles: 0, percentage: 0},
+                    { type: 'Unconditional bifurcation', clk_cycles: 0, percentage: 0},
+                  ];
 /*Keyboard*/
 var keyboard = '' ;
 /*Display*/
@@ -7179,7 +7179,7 @@ function execute_instruction ( )
     stats_update(type) ;
 
     // Refresh power consumption
-    power_consumtion_update(type) ;
+    clk_cycles_update(type) ;
 
     // Execution error
     if (execution_index == -1){
@@ -7287,7 +7287,7 @@ function reset ()
   stats_reset();
 
   //Power consumption reset
-  power_consumtion_reset();
+  clk_cycles_reset();
 
   // Reset console
   mutex_read    = false ;
@@ -7433,63 +7433,61 @@ function stats_reset ( )
 
 
 /*
- * Power consumption
+ * CLK Cycles
  */
 
-function power_consumtion_update ( type )
+function clk_cycles_update ( type )
 {
-  for (var i = 0; i < power_consumption.length; i++)
+  for (var i = 0; i < clk_cycles.length; i++)
   {
-    if (type == power_consumption[i].type)
+    if (type == clk_cycles[i].type)
     {
-      power_consumption[i].power_consumption++;
+      clk_cycles[i].clk_cycles++;
 
-      //Update power consumption plot
+      //Update CLK Cycles plot
       if (typeof app !== "undefined") {
-        const aux_power_consumption_value = structuredClone(power_consumption_value[0].data);
-        aux_power_consumption_value[i] ++;
-        power_consumption_value = [{data: aux_power_consumption_value}];
-        app._data.power_consumption_value = power_consumption_value;
+        const aux_clk_cycles_value = structuredClone(clk_cycles_value[0].data);
+        aux_clk_cycles_value[i] ++;
+        clk_cycles_value = [{data: aux_clk_cycles_value}];
+        app._data.clk_cycles_value = clk_cycles_value;
       }
       else{
-        power_consumption_value[0].data[i] ++;
+        clk_cycles_value[0].data[i] ++;
       }
       
-      total_power_consumption++;
+      total_clk_cycles++;
       if (typeof app !== "undefined") {
-        app._data.total_power_consumption++;
+        app._data.total_clk_cycles++;
       }
     }
   }
 
-  //Power Consumptiom
+  //CLK Cycles
   for (var i = 0; i < stats.length; i++){
-    power_consumption[i].percentage = ((power_consumption[i].power_consumption/total_power_consumption)*100).toFixed(2);
+    clk_cycles[i].percentage = ((clk_cycles[i].clk_cycles/total_clk_cycles)*100).toFixed(2);
   }
 }
 
-function power_consumtion_reset ( )
+function clk_cycles_reset ( )
 {
-  total_power_consumption = 0 ;
+  total_clk_cycles = 0 ;
   if (typeof app !== "undefined") {
-    app._data.total_power_consumption = 0 ;
+    app._data.total_clk_cycles = 0 ;
   }
 
-  for (var i = 0; i < power_consumption.length; i++)
+  for (var i = 0; i < clk_cycles.length; i++)
   {
-    power_consumption[i].percentage = 0;
+    clk_cycles[i].percentage = 0;
 
-    power_consumption[i].number_instructions = 0;
-
-    //Update power consumption plot
+    //Update CLK Cycles plot
     if (typeof app !== "undefined") {
-      const aux_power_consumption_value = structuredClone(power_consumption_value[0].data);
-      aux_power_consumption_value[i] = 0;
-      power_consumption_value = [{data: aux_power_consumption_value}];
-      app._data.power_consumption_value = power_consumption_value;
+      const aux_clk_cycles_value = structuredClone(clk_cycles_value[0].data);
+      aux_clk_cycles_value[i] = 0;
+      clk_cycles_value = [{data: aux_clk_cycles_value}];
+      app._data.clk_cycles_value = clk_cycles_value;
     }
     else{
-      power_consumption_value[0].data[i] ++;
+      clk_cycles_value[0].data[i] ++;
     }
   }
 }

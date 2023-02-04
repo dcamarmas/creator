@@ -928,7 +928,7 @@
       "co": "0110011",
       "cop": "0000000000",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "add",
@@ -989,7 +989,7 @@
       "co": "0010011",
       "cop": "000",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "addi",
@@ -1041,7 +1041,7 @@
       "co": "0110011",
       "cop": "0000000111",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "and",
@@ -1102,7 +1102,7 @@
       "co": "0010011",
       "cop": "111",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "andi",
@@ -1155,7 +1155,7 @@
       "co": "0010111",
       "cop": "",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "auipc",
@@ -1193,7 +1193,7 @@
       "co": "1100011",
       "cop": "000",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "beq",
@@ -1252,7 +1252,7 @@
       "co": "1100011",
       "cop": "101",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "bge",
@@ -1311,7 +1311,7 @@
       "co": "1100011",
       "cop": "111",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "bgeu",
@@ -1370,7 +1370,7 @@
       "co": "1100011",
       "cop": "100",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "blt",
@@ -1429,7 +1429,7 @@
       "co": "1100011",
       "cop": "110",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "bltu",
@@ -1488,7 +1488,7 @@
       "co": "1100011",
       "cop": "001",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "bne",
@@ -1547,7 +1547,7 @@
       "co": "0110011",
       "cop": "0000001100",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "div",
@@ -1605,7 +1605,7 @@
       "co": "000000",
       "cop": "001100",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "signature_definition": "F0",
       "signature": "ecall",
       "signatureRaw": "ecall",
@@ -1636,7 +1636,7 @@
       "co": "1010011",
       "cop": "0000001",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "FADD.D",
@@ -1689,7 +1689,7 @@
       "co": "1010011",
       "cop": "0000000",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "fadd.s",
@@ -1743,7 +1743,7 @@
       "co": "1010011",
       "cop": "111000100000001",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "fclass.d",
@@ -1805,7 +1805,7 @@
       "co": "1010011",
       "cop": "111000000000001",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "FCLASS.S",
@@ -1867,7 +1867,7 @@
       "co": "1010011",
       "cop": "010000100000",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "fcvt.d.s",
@@ -1922,7 +1922,7 @@
       "co": "1010011",
       "cop": "110100100000",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "fcvt.d.w",
@@ -1977,7 +1977,7 @@
       "co": "1010011",
       "cop": "110100100001",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "fcvt.d.wu",
@@ -2032,7 +2032,7 @@
       "co": "1010011",
       "cop": "010000000001",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "fcvt.s.d",
@@ -2087,7 +2087,7 @@
       "co": "1010011",
       "cop": "110100000000",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "fcvt.s.w",
@@ -2142,7 +2142,7 @@
       "co": "1010011",
       "cop": "110100000001",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "fcvt.s.wu",
@@ -2197,7 +2197,7 @@
       "co": "1010011",
       "cop": "110000100000",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "fcvt.w.d",
@@ -2252,7 +2252,7 @@
       "co": "1010011",
       "cop": "110000000000",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "fcvt.w.s",
@@ -2307,7 +2307,7 @@
       "co": "1010011",
       "cop": "110000100001",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "fcvt.wu.d",
@@ -2362,7 +2362,7 @@
       "co": "1010011",
       "cop": "110000000001",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "fcvt.wu.s",
@@ -2417,7 +2417,7 @@
       "co": "1010011",
       "cop": "0001101",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "fdiv.d",
@@ -2470,7 +2470,7 @@
       "co": "1010011",
       "cop": "0001000",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "fdiv.s",
@@ -2524,7 +2524,7 @@
       "co": "1010011",
       "cop": "1010001010",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "feq.d",
@@ -2585,7 +2585,7 @@
       "co": "1010011",
       "cop": "1010000010",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "feq.s",
@@ -2647,7 +2647,7 @@
       "co": "0000111",
       "cop": "011",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "fld",
@@ -2700,7 +2700,7 @@
       "co": "1010011",
       "cop": "1010001000",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "fle.d",
@@ -2761,7 +2761,7 @@
       "co": "1010011",
       "cop": "1010000000",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "fle.s",
@@ -2823,7 +2823,7 @@
       "co": "1010011",
       "cop": "1010001001",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "flt.d",
@@ -2884,7 +2884,7 @@
       "co": "1010011",
       "cop": "1010000001",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "flt.s",
@@ -2946,7 +2946,7 @@
       "co": "0000111",
       "cop": "010",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "flw",
@@ -2999,7 +2999,7 @@
       "co": "1000011",
       "cop": "01",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "FMADD.D",
@@ -3059,7 +3059,7 @@
       "co": "1000011",
       "cop": "00",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "fmadd.s",
@@ -3119,7 +3119,7 @@
       "co": "1010011",
       "cop": "0010101001",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "FMAX.D",
@@ -3181,7 +3181,7 @@
       "co": "1010011",
       "cop": "0010100001",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "fmax.s",
@@ -3243,7 +3243,7 @@
       "co": "1010011",
       "cop": "0010101000",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "FMIN.D",
@@ -3305,7 +3305,7 @@
       "co": "1010011",
       "cop": "0010100000",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "fmin.s",
@@ -3367,7 +3367,7 @@
       "co": "1000111",
       "cop": "01",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "fmsub.d",
@@ -3427,7 +3427,7 @@
       "co": "1000111",
       "cop": "00",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "fmsub.s",
@@ -3487,7 +3487,7 @@
       "co": "1010011",
       "cop": "0001001",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "FMUL.D",
@@ -3540,7 +3540,7 @@
       "co": "1010011",
       "cop": "0001000",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "fmul.s",
@@ -3594,7 +3594,7 @@
       "co": "1010011",
       "cop": "111100000000",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "fmv.w.x",
@@ -3649,7 +3649,7 @@
       "co": "1010011",
       "cop": "111000000000",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "fmv.x.w",
@@ -3704,7 +3704,7 @@
       "co": "1001111",
       "cop": "01",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "fnmadd.d",
@@ -3764,7 +3764,7 @@
       "co": "1001111",
       "cop": "00",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "fnmadd.s",
@@ -3824,7 +3824,7 @@
       "co": "1001011",
       "cop": "01",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "fnmsub.d",
@@ -3884,7 +3884,7 @@
       "co": "1001011",
       "cop": "00",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "fnmsub.s",
@@ -3944,7 +3944,7 @@
       "co": "0100111",
       "cop": "011",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "fsd",
@@ -3990,7 +3990,7 @@
       "co": "1010011",
       "cop": "0010001000",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "fsgnj.d",
@@ -4052,7 +4052,7 @@
       "co": "1010011",
       "cop": "0010000000",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "fsgnj.s",
@@ -4114,7 +4114,7 @@
       "co": "1010011",
       "cop": "0010001001",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "fsgnjn.d",
@@ -4176,7 +4176,7 @@
       "co": "1010011",
       "cop": "0010000001",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "fsgnjn.s",
@@ -4238,7 +4238,7 @@
       "co": "1010011",
       "cop": "0010001010",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "fsgnjx.d",
@@ -4300,7 +4300,7 @@
       "co": "1010011",
       "cop": "0010000010",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "fsgnjx.s",
@@ -4362,7 +4362,7 @@
       "co": "1010011",
       "cop": "010110100000",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "FSQRT.D",
@@ -4416,7 +4416,7 @@
       "co": "1010011",
       "cop": "010110000000",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "fsqrt.s",
@@ -4471,7 +4471,7 @@
       "co": "1010011",
       "cop": "0000101",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "FSUB.D",
@@ -4524,7 +4524,7 @@
       "co": "1010011",
       "cop": "0001100",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "fsub.s",
@@ -4578,7 +4578,7 @@
       "co": "0100111",
       "cop": "010",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "fsw",
@@ -4642,7 +4642,7 @@
         "enter_subrutine"
       ],
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "jal",
@@ -4683,7 +4683,7 @@
         "exit_subrutine"
       ],
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "jalr",
@@ -4787,7 +4787,7 @@
       "co": "0000011",
       "cop": "100",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "lbu",
@@ -4840,7 +4840,7 @@
       "co": "0000011",
       "cop": "001",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "lh",
@@ -4893,7 +4893,7 @@
       "co": "0000011",
       "cop": "101",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "lhu",
@@ -4946,7 +4946,7 @@
       "co": "0110111",
       "cop": "",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "lui",
@@ -4985,7 +4985,7 @@
       "co": "0000011",
       "cop": "010",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "lw",
@@ -5038,7 +5038,7 @@
       "co": "0110011",
       "cop": "0000001000",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "mul",
@@ -5099,7 +5099,7 @@
       "co": "0110011",
       "cop": "0000001010",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "mulh",
@@ -5160,7 +5160,7 @@
       "co": "0110011",
       "cop": "0000001000",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "mulhsu",
@@ -5221,7 +5221,7 @@
       "co": "0110011",
       "cop": "0000001011",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "mulhu",
@@ -5282,7 +5282,7 @@
       "co": "0110011",
       "cop": "0000000110",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "or",
@@ -5343,7 +5343,7 @@
       "co": "0010011",
       "cop": "110",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "ori",
@@ -5393,7 +5393,7 @@
       "co": "1110011",
       "cop": "010",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "signature_definition": "F0 F1",
       "signature": "rdcycle,INT-Reg",
       "signatureRaw": "rdcycle rd",
@@ -5418,7 +5418,7 @@
           "valueField": "010"
         }
       ],
-      "definition": "rd = capi_get_power_consumption();\n",
+      "definition": "rd = capi_get_clk_cycles();\n",
       "help": ""
     },
     {
@@ -5430,7 +5430,7 @@
       "co": "0110011",
       "cop": "0000001110",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "rem",
@@ -5491,7 +5491,7 @@
       "co": "0100011",
       "cop": "000",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "sb",
@@ -5550,7 +5550,7 @@
       "co": "0100011",
       "cop": "001",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "sh",
@@ -5609,7 +5609,7 @@
       "co": "0110011",
       "cop": "0000000001",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "sll",
@@ -5669,7 +5669,7 @@
       "co": "0010011",
       "cop": "000000001",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "slli",
@@ -5730,7 +5730,7 @@
       "co": "0110011",
       "cop": "0000000010",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "slt",
@@ -5790,7 +5790,7 @@
       "co": "0010011",
       "cop": "010",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "slti",
@@ -5842,7 +5842,7 @@
       "co": "0010011",
       "cop": "011",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "sltiu",
@@ -5894,7 +5894,7 @@
       "co": "0110011",
       "cop": "0000000011",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "sltu",
@@ -5954,7 +5954,7 @@
       "co": "0110011",
       "cop": "0100000101",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "sra",
@@ -6015,7 +6015,7 @@
       "co": "0010011",
       "cop": "010000101",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "srai",
@@ -6076,7 +6076,7 @@
       "co": "0110011",
       "cop": "0000000101",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "srl",
@@ -6137,7 +6137,7 @@
       "co": "0010011",
       "cop": "000000101",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "srli",
@@ -6198,7 +6198,7 @@
       "co": "0110011",
       "cop": "0100000000",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "sub",
@@ -6259,7 +6259,7 @@
       "co": "0100011",
       "cop": "010",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "sw",
@@ -6318,7 +6318,7 @@
       "co": "0110011",
       "cop": "0000000100",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "xor",
@@ -6378,7 +6378,7 @@
       "co": "0010011",
       "cop": "100",
       "nwords": 1,
-      "power_consumption": 1,
+      "clk_cycles": 1,
       "fields": [
         {
           "name": "xori",

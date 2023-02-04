@@ -21,7 +21,7 @@
 
   /* jshint esversion: 6 */
 
-  var uielto_power_consumption_plot = {
+  var uielto_clk_cycles_plot = {
 
   /*Import Graph component*/
   components: {
@@ -29,12 +29,12 @@
   },
 
   props:      {
-                power_consumption_value: { type: Number, required: true }
+                clk_cycles_value: { type: Number, required: true }
               },
               
   data:       function () {
                 return {
-                  //Power_consumption Graph configure
+                  //clk_cycles Graph configure
                   chartOptions: {
                     chart: {
                       id: 'graphic',
@@ -74,7 +74,7 @@
                     tooltip: {
                       y: {
                         formatter: function (val) {
-                          return "Power Consumption: " + val
+                          return "CLK Cycles: " + val
                         }
                       }
                     }
@@ -82,16 +82,16 @@
                 }
               },
 
-  template:   ' <div id="power_consumption_plot" class="stats px-0">' +
+  template:   ' <div id="clk_cycles_plot" class="stats px-0">' +
               '  <apexchart id="graphic"' +
-              '             ref="power_consumption_plot"' +
+              '             ref="clk_cycles_plot"' +
               '             type="bar" ' +
               '             :options="chartOptions" ' +
-              '             :series="power_consumption_value" ' +
+              '             :series="clk_cycles_value" ' +
               '             height="150%" >' +
               '   </apexchart>' +
               ' </div>'
 
   }
 
-  Vue.component('plot-power-consumption', uielto_power_consumption_plot) ;
+  Vue.component('plot-clk-cycles', uielto_clk_cycles_plot) ;

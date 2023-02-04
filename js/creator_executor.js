@@ -430,7 +430,7 @@ function execute_instruction ( )
     stats_update(type) ;
 
     // Refresh power consumption
-    power_consumtion_update(type) ;
+    clk_cycles_update(type) ;
 
     // Execution error
     if (execution_index == -1){
@@ -538,7 +538,7 @@ function reset ()
   stats_reset();
 
   //Power consumption reset
-  power_consumtion_reset();
+  clk_cycles_reset();
 
   // Reset console
   mutex_read    = false ;
@@ -684,63 +684,61 @@ function stats_reset ( )
 
 
 /*
- * Power consumption
+ * CLK Cycles
  */
 
-function power_consumtion_update ( type )
+function clk_cycles_update ( type )
 {
-  for (var i = 0; i < power_consumption.length; i++)
+  for (var i = 0; i < clk_cycles.length; i++)
   {
-    if (type == power_consumption[i].type)
+    if (type == clk_cycles[i].type)
     {
-      power_consumption[i].power_consumption++;
+      clk_cycles[i].clk_cycles++;
 
-      //Update power consumption plot
+      //Update CLK Cycles plot
       if (typeof app !== "undefined") {
-        const aux_power_consumption_value = structuredClone(power_consumption_value[0].data);
-        aux_power_consumption_value[i] ++;
-        power_consumption_value = [{data: aux_power_consumption_value}];
-        app._data.power_consumption_value = power_consumption_value;
+        const aux_clk_cycles_value = structuredClone(clk_cycles_value[0].data);
+        aux_clk_cycles_value[i] ++;
+        clk_cycles_value = [{data: aux_clk_cycles_value}];
+        app._data.clk_cycles_value = clk_cycles_value;
       }
       else{
-        power_consumption_value[0].data[i] ++;
+        clk_cycles_value[0].data[i] ++;
       }
       
-      total_power_consumption++;
+      total_clk_cycles++;
       if (typeof app !== "undefined") {
-        app._data.total_power_consumption++;
+        app._data.total_clk_cycles++;
       }
     }
   }
 
-  //Power Consumptiom
+  //CLK Cycles
   for (var i = 0; i < stats.length; i++){
-    power_consumption[i].percentage = ((power_consumption[i].power_consumption/total_power_consumption)*100).toFixed(2);
+    clk_cycles[i].percentage = ((clk_cycles[i].clk_cycles/total_clk_cycles)*100).toFixed(2);
   }
 }
 
-function power_consumtion_reset ( )
+function clk_cycles_reset ( )
 {
-  total_power_consumption = 0 ;
+  total_clk_cycles = 0 ;
   if (typeof app !== "undefined") {
-    app._data.total_power_consumption = 0 ;
+    app._data.total_clk_cycles = 0 ;
   }
 
-  for (var i = 0; i < power_consumption.length; i++)
+  for (var i = 0; i < clk_cycles.length; i++)
   {
-    power_consumption[i].percentage = 0;
+    clk_cycles[i].percentage = 0;
 
-    power_consumption[i].number_instructions = 0;
-
-    //Update power consumption plot
+    //Update CLK Cycles plot
     if (typeof app !== "undefined") {
-      const aux_power_consumption_value = structuredClone(power_consumption_value[0].data);
-      aux_power_consumption_value[i] = 0;
-      power_consumption_value = [{data: aux_power_consumption_value}];
-      app._data.power_consumption_value = power_consumption_value;
+      const aux_clk_cycles_value = structuredClone(clk_cycles_value[0].data);
+      aux_clk_cycles_value[i] = 0;
+      clk_cycles_value = [{data: aux_clk_cycles_value}];
+      app._data.clk_cycles_value = clk_cycles_value;
     }
     else{
-      power_consumption_value[0].data[i] ++;
+      clk_cycles_value[0].data[i] ++;
     }
   }
 }
