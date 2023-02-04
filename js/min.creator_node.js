@@ -146,6 +146,7 @@ function register_value_serialize( architecture )
 
   return aux_architecture;
 }
+
 /*
  *  Copyright 2018-2023 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
@@ -196,6 +197,7 @@ function register_value_serialize( architecture )
             });
     }
   }
+
 
 /*
  *  Copyright 2018-2023 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
@@ -498,6 +500,7 @@ function register_value_serialize( architecture )
 
     return value2;
   }
+
 
 /*
  *  Copyright 2018-2023 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
@@ -1000,6 +1003,7 @@ function creator_callstack_do_transition ( doAction, indexComponent, indexElemen
                     "state '" + state + "'' to state '" + new_state + "' and action '" + action + "' is empty (warning).") ;
     }
 }
+
 
 /*
  *  Copyright 2018-2023 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
@@ -1580,7 +1584,8 @@ function capi_check_ieee ( s, e, m )
 function capi_float2bin ( f )
 {
 	return float2bin(f) ;
-}/*
+}
+/*
  *  Copyright 2018-2023 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
  *  This file is part of CREATOR.
@@ -1841,6 +1846,7 @@ function track_stack_reset()
 
     return ret ;
 }
+
 
 /*
  *  Copyright 2018-2023 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
@@ -2125,7 +2131,8 @@ function updateSimple ( comp, elem )
       }
     }
   }
-}/*
+}
+/*
  *  Copyright 2018-2023 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
  *  This file is part of CREATOR.
@@ -3028,6 +3035,7 @@ function creator_memory_storestring ( string, string_length, data_address, label
 
         return main_memory_storedata(data_address, string, string_length, label, string, string, type) + 1;
 }
+
 
 /*
  *  Copyright 2018-2023 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
@@ -6748,6 +6756,7 @@ function binaryStringToInt( b ) {
     return parseInt(b, 2);
 }
 
+
 /*
  *  Copyright 2018-2023 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
@@ -7657,7 +7666,8 @@ function get_register_binary (type, bin)
 function get_number_binary (bin)
 {
   return "0x" + bin2hex(bin);
-}/*
+}
+/*
  *  Copyright 2018-2023 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
  *  This file is part of CREATOR.
