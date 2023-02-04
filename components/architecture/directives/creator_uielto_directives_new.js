@@ -1,3 +1,4 @@
+
 /*
  *  Copyright 2018-2023 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
@@ -116,7 +117,7 @@
                   //Form validator
                   valid(value)
                   {
-                    if(parseInt(value) != 0)
+                    if(parseInt(value) !== 0)
                     {
                       if(!value){
                         return false;

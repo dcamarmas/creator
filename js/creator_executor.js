@@ -1,3 +1,4 @@
+
 /*
  *  Copyright 2018-2023 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
@@ -63,7 +64,7 @@ function execute_instruction ( )
     //console_log(architecture.components[0].elements[0].value); //TODO
     console_log(readRegister(0, 0));
 
-    if (instructions.length == 0) {
+    if (instructions.length === 0) {
       return packExecute(true, 'No instructions in memory', 'danger', null);
     }
     if (execution_index < -1) {
@@ -72,12 +73,12 @@ function execute_instruction ( )
     if (execution_index == -1) {
       return packExecute(true, 'The program has finished with errors', 'danger', null);
     }
-    else if (mutex_read == true) {
+    else if (mutex_read === true) {
       return packExecute(false, '', 'info', null);
     }
 
     //Search a main tag
-    if (execution_init == 1)
+    if (execution_init === 1)
     {
       for (var i = 0; i < instructions.length; i++)
       {
@@ -109,12 +110,12 @@ function execute_instruction ( )
         console_log(execution_index);
         console_log(instructions[i].Address);
 
-        if (instructions[execution_index].hide == false) {
+        if (instructions[execution_index].hide === false) {
           draw.info.push(execution_index);
         }
       }
       else{
-        if (instructions[execution_index].hide == false) {
+        if (instructions[execution_index].hide === false) {
           draw.space.push(i);
         }
       }
@@ -216,7 +217,7 @@ function execute_instruction ( )
                 var bin = "";
 
                 //Get binary
-                if(architecture.instructions[i].separated && architecture.instructions[i].separated[f] == true){
+                if(architecture.instructions[i].separated && architecture.instructions[i].separated[f] === true){
                   for (var sep_index = 0; sep_index < architecture.instructions[i].fields[f].startbit.length; sep_index++) {
                     bin = bin + instructionExec.substring(((instruction_nwords*31) - instruction_fields[f].startbit[sep_index]), ((instruction_nwords*32) - instruction_fields[f].stopbit[sep_index]))
                   }
@@ -430,7 +431,7 @@ function execute_instruction ( )
     stats_update(type) ;
 
     // Refresh power consumption
-    power_consumtion_update(type) ;
+    clk_cycles_update(type) ;
 
     // Execution error
     if (execution_index == -1){
@@ -439,7 +440,7 @@ function execute_instruction ( )
     }
 
     // Next instruction to execute
-    if (error != 1 && execution_index < instructions.length)
+    if (error !== 1 && execution_index < instructions.length)
     {
       for (var i = 0; i < instructions.length; i++)
       {
@@ -449,7 +450,7 @@ function execute_instruction ( )
           draw.success.push(execution_index) ;
           break;
         }
-        else if (i == instructions.length-1 && mutex_read == true){
+        else if (i == instructions.length-1 && mutex_read === true){
           execution_index = instructions.length+1;
         }
         else if (i == instructions.length-1){
@@ -459,7 +460,7 @@ function execute_instruction ( )
       }
     }
 
-    if (execution_index >= instructions.length && mutex_read == true)
+    if (execution_index >= instructions.length && mutex_read === true)
     {
       for (var i = 0; i < instructions.length; i++) {
         draw.space.push(i);
@@ -467,7 +468,7 @@ function execute_instruction ( )
       draw.info=[];
       return packExecute(false, 'The execution of the program has finished', 'success', draw); //CHECK
     }
-    else if(execution_index >= instructions.length && mutex_read == false)
+    else if(execution_index >= instructions.length && mutex_read === false)
     {
       for (var i = 0; i < instructions.length; i++){
         draw.space.push(i) ;
@@ -477,13 +478,13 @@ function execute_instruction ( )
       return packExecute(false, 'The execution of the program has finished', 'success', draw);
     }
     else{
-      if (error != 1) {
+      if (error !== 1) {
         draw.success.push(execution_index);
       }
     }
     console_log(execution_index) ;
   }
-  while(instructions[execution_index].hide == true) ;
+  while(instructions[execution_index].hide === true) ;
 
   return packExecute(false, null, null, draw) ;
 }
@@ -500,7 +501,7 @@ function executeProgramOneShot ( limit_n_instructions )
   {
     ret = execute_instruction();
 
-    if (ret.error == true){
+    if (ret.error === true){
       return ret;
     }
     if (execution_index < -1) {
@@ -538,7 +539,7 @@ function reset ()
   stats_reset();
 
   //Power consumption reset
-  power_consumtion_reset();
+  clk_cycles_reset();
 
   // Reset console
   mutex_read    = false ;
@@ -550,7 +551,7 @@ function reset ()
   {
     for (var j = 0; j < architecture.components[i].elements.length; j++)
     {
-      if (architecture.components[i].double_precision == false || (architecture.components[i].double_precision == true && architecture.components[i].double_precision_type == "extended"))
+      if (architecture.components[i].double_precision === false || (architecture.components[i].double_precision === true && architecture.components[i].double_precision_type == "extended"))
       {
         architecture.components[i].elements[j].value = architecture.components[i].elements[j].default_value;
       }
@@ -564,10 +565,10 @@ function reset ()
         {
           for (var b = 0; b < architecture.components[a].elements.length; b++)
           {
-            if (architecture.components[a].elements[b].name.includes(architecture.components[i].elements[j].simple_reg[0]) != false){
+            if (architecture.components[a].elements[b].name.includes(architecture.components[i].elements[j].simple_reg[0]) !== false){
               aux_sim1 = bin2hex(float2bin(bi_BigIntTofloat(architecture.components[a].elements[b].default_value)));
             }
-            if (architecture.components[a].elements[b].name.includes(architecture.components[i].elements[j].simple_reg[1]) != false){
+            if (architecture.components[a].elements[b].name.includes(architecture.components[i].elements[j].simple_reg[1]) !== false){
               aux_sim2 = bin2hex(float2bin(bi_BigIntTofloat(architecture.components[a].elements[b].default_value)));
             }
           }
@@ -684,63 +685,61 @@ function stats_reset ( )
 
 
 /*
- * Power consumption
+ * CLK Cycles
  */
 
-function power_consumtion_update ( type )
+function clk_cycles_update ( type )
 {
-  for (var i = 0; i < power_consumption.length; i++)
+  for (var i = 0; i < clk_cycles.length; i++)
   {
-    if (type == power_consumption[i].type)
+    if (type == clk_cycles[i].type)
     {
-      power_consumption[i].power_consumption++;
+      clk_cycles[i].clk_cycles++;
 
-      //Update power consumption plot
+      //Update CLK Cycles plot
       if (typeof app !== "undefined") {
-        const aux_power_consumption_value = structuredClone(power_consumption_value[0].data);
-        aux_power_consumption_value[i] ++;
-        power_consumption_value = [{data: aux_power_consumption_value}];
-        app._data.power_consumption_value = power_consumption_value;
+        const aux_clk_cycles_value = structuredClone(clk_cycles_value[0].data);
+        aux_clk_cycles_value[i] ++;
+        clk_cycles_value = [{data: aux_clk_cycles_value}];
+        app._data.clk_cycles_value = clk_cycles_value;
       }
       else{
-        power_consumption_value[0].data[i] ++;
+        clk_cycles_value[0].data[i] ++;
       }
       
-      total_power_consumption++;
+      total_clk_cycles++;
       if (typeof app !== "undefined") {
-        app._data.total_power_consumption++;
+        app._data.total_clk_cycles++;
       }
     }
   }
 
-  //Power Consumptiom
+  //CLK Cycles
   for (var i = 0; i < stats.length; i++){
-    power_consumption[i].percentage = ((power_consumption[i].power_consumption/total_power_consumption)*100).toFixed(2);
+    clk_cycles[i].percentage = ((clk_cycles[i].clk_cycles/total_clk_cycles)*100).toFixed(2);
   }
 }
 
-function power_consumtion_reset ( )
+function clk_cycles_reset ( )
 {
-  total_power_consumption = 0 ;
+  total_clk_cycles = 0 ;
   if (typeof app !== "undefined") {
-    app._data.total_power_consumption = 0 ;
+    app._data.total_clk_cycles = 0 ;
   }
 
-  for (var i = 0; i < power_consumption.length; i++)
+  for (var i = 0; i < clk_cycles.length; i++)
   {
-    power_consumption[i].percentage = 0;
+    clk_cycles[i].percentage = 0;
 
-    power_consumption[i].number_instructions = 0;
-
-    //Update power consumption plot
+    //Update CLK Cycles plot
     if (typeof app !== "undefined") {
-      const aux_power_consumption_value = structuredClone(power_consumption_value[0].data);
-      aux_power_consumption_value[i] = 0;
-      power_consumption_value = [{data: aux_power_consumption_value}];
-      app._data.power_consumption_value = power_consumption_value;
+      const aux_clk_cycles_value = structuredClone(clk_cycles_value[0].data);
+      aux_clk_cycles_value[i] = 0;
+      clk_cycles_value = [{data: aux_clk_cycles_value}];
+      app._data.clk_cycles_value = clk_cycles_value;
     }
     else{
-      power_consumption_value[0].data[i] ++;
+      clk_cycles_value[0].data[i] ++;
     }
   }
 }
@@ -834,7 +833,7 @@ function keyboard_read ( fn_post_read, fn_post_params )
   app._data.enter = false;
   console_log(mutex_read);
 
-  if (newExecution == true)
+  if (newExecution === true)
   {
     app._data.keyboard = "";
     consoleMutex    = false;
@@ -843,14 +842,14 @@ function keyboard_read ( fn_post_read, fn_post_params )
 
     show_notification('The data has been uploaded', 'info') ;
 
-    if (run_program == false){
+    if (run_program === false){
       uielto_toolbar_btngroup.methods.executeProgram();
     }
 
     return;
   }
 
-  if (consoleMutex == false) {
+  if (consoleMutex === false) {
     setTimeout(keyboard_read, 1000, fn_post_read, fn_post_params);
     return;
   }
@@ -876,7 +875,7 @@ function keyboard_read ( fn_post_read, fn_post_params )
     return packExecute(true, 'The execution of the program has finished', 'success', null);
   }
 
-  if (run_program == false) {
+  if (run_program === false) {
     uielto_toolbar_btngroup.methods.execute_program();
   }
 }

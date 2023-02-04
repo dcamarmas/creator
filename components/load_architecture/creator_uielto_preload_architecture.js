@@ -1,3 +1,4 @@
+
 /*
  *  Copyright 2018-2023 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
@@ -226,7 +227,7 @@
                         app._data.example_set_available = example_set_available;
                         app._data.example_available = example_available ; 
 
-                        if (example_set_available.length == 0)
+                        if (example_set_available.length === 0)
                         {
                           reject('Unavailable example list.') ;
                         }
@@ -237,7 +238,7 @@
                   //Change the background of selected achitecture card
                   change_background(name, type)
                   {
-                    if(type == 1)
+                    if(type === 1)
                     {
                       for (var i = 0; i < this._props.back_card.length; i++)
                       {
@@ -249,7 +250,7 @@
                         }
                       }
                     }
-                    if(type == 0)
+                    if(type === 0)
                     {
                       for (var i = 0; i < back_card.length; i++){
                         this._props.back_card[i].background = "default";

@@ -1,3 +1,4 @@
+
 /*
  *  Copyright 2018-2023 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
@@ -61,7 +62,7 @@
                       nwords: 1,
                       help: '',
                       properties: [],
-                      power_consumption: 1,
+                      clk_cycles: 1,
                       separated: [],
                       fields: [{name: '', type: '', startbit: '', stopbit: '', valueField: ''}],
                       signature: '',
@@ -163,7 +164,7 @@
                     }
 
                     //Verify empty fields
-                    if (!this.instruction.name || !this.instruction.type || !this.instruction.co || !this.instruction.nwords || !this.instruction.power_consumption || !this.number_fields || !this.instruction.signature_definition || !this.instruction.definition || empty == 1)
+                    if (!this.instruction.name || !this.instruction.type || !this.instruction.co || !this.instruction.nwords || !this.instruction.clk_cycles || !this.number_fields || !this.instruction.signature_definition || !this.instruction.definition || empty == 1)
                     {
                       show_notification('Please complete all fields', 'danger') ;
                       return;
@@ -251,7 +252,7 @@
                       help: this.instruction.help,
                       properties: this.instruction.properties,
                       nwords: this.instruction.nwords,
-                      power_consumption: this.instruction.power_consumption,
+                      clk_cycles: this.instruction.clk_cycles,
                       signature_definition: this.instruction.signature_definition,
                       signature: signature, 
                       signatureRaw: signatureRaw,
@@ -445,7 +446,7 @@
                     this.instruction.cop = '';
                     this.instruction.nwords = 1;
                     this.instruction.separated = [];
-                    this.instruction.power_consumption = 1;
+                    this.instruction.clk_cycles = 1;
                     this.instruction.properties = [];
                     this.number_fields = "1";
                     this.instruction.fields = [{name: '', type: '', startbit: '', stopbit: '', valueField: ''}];
@@ -517,10 +518,10 @@
                 '      <b-form-group label="CLK Cycles:">' +
                 '        <b-form-input type="number" ' +
                 '                      min="1" ' +
-                '                      v-model="instruction.power_consumption" ' +
+                '                      v-model="instruction.clk_cycles" ' +
                 '                      required ' +
                 '                      placeholder="Enter CLK Cycles" ' +
-                '                      :state="valid(instruction.power_consumption)" ' +
+                '                      :state="valid(instruction.clk_cycles)" ' +
                 '                      size="sm" ' +
                 '                      title="Intruction size">' +
                 '        </b-form-input>' +

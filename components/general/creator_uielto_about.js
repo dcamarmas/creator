@@ -1,3 +1,4 @@
+
 /*
  *  Copyright 2018-2023 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
@@ -72,7 +73,7 @@
                 '   </b-card-group>' +
                 ' ' +
                 '   <b-list-group>' +
-                '     <b-list-group-item style="text-align: center;">Contact: <a href="mailto: creator.arcos.inf.uc3m.es@gmail.com">creator.arcos.inf.uc3m.es@gmail.com</a></b-list-group-item>' +
+                '     <b-list-group-item style="text-align: center;">Contact us: <a href="mailto: creator.arcos.inf.uc3m.es@gmail.com">creator.arcos.inf.uc3m.es@gmail.com</a></b-list-group-item>' +
                 '   </b-list-group>' +
                 ' ' +
                 ' </b-modal>'
