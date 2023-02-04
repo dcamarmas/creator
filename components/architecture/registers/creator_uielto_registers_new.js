@@ -1,3 +1,4 @@
+
 /*
  *  Copyright 2018-2023 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
@@ -56,13 +57,13 @@
                   {
                     evt.preventDefault();
                     
-                    if (this.register.name.length == 0 || !this.register.name)
+                    if (this.register.name.length === 0 || !this.register.name)
                     {
                          show_notification('Please complete all fields', 'danger') ;
                     }
                     else
                     {
-                      if (!this.register.default_value && this._props.double_precision == false){
+                      if (!this.register.default_value && this._props.double_precision === false){
                          show_notification('Please complete all fields', 'danger') ;
                       }
                       else if(isNaN(this.register.default_value)){
@@ -76,7 +77,7 @@
                           {
                             for (var z = 0; z < this.register.name.length; z++)
                             {
-                              if ((architecture.components[i].elements[j].name.includes(this.register.name[z]) != false)){
+                              if ((architecture.components[i].elements[j].name.includes(this.register.name[z]) !== false)){
                                   show_notification('The element already exists', 'danger') ;
                                   return;
                               }
@@ -117,7 +118,7 @@
                                         };
                       architecture.components[this._props.register_file_index].elements.push(new_element);
                     }
-                    if((this._props.type == "fp_registers")&&(this._props.double_precision == false))
+                    if((this._props.type == "fp_registers")&&(this._props.double_precision === false))
                     {
                       var new_element = {
                                           name:this.register.name, 
@@ -128,7 +129,7 @@
                                         };
                       architecture.components[this._props.register_file_index].elements.push(new_element);
                     }
-                    if((this._props.type == "fp_registers")&&(this._props.double_precision == true))
+                    if((this._props.type == "fp_registers")&&(this._props.double_precision === true))
                     {
                       var aux_new;
                       var aux_value;
@@ -189,7 +190,7 @@
                   //Form validator
                   valid(value)
                   {
-                    if(parseInt(value) != 0)
+                    if(parseInt(value) !== 0)
                     {
                       if(!value){
                         return false;

@@ -1,3 +1,6 @@
+
+
+
 /*
  *  Copyright 2018-2023 Felix Garcia Carballeira, Alejandro Calderon Mateos, Diego Camarmas Alonso
  *
@@ -333,13 +336,13 @@ try
 
 
       //
-      //Power Consumption
+      //CLK Cycles
       //
 
-      total_power_consumption: total_power_consumption,
-      power_consumption: power_consumption,
-      //Power consumption Graph values
-      power_consumption_value: power_consumption_value,
+      total_clk_cycles: total_clk_cycles,
+      clk_cycles: clk_cycles,
+      //CLK Cycles Graph values
+      clk_cycles_value: clk_cycles_value,
 
       //
       //Display and keyboard

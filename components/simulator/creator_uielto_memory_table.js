@@ -1,3 +1,4 @@
+
 /*
  *  Copyright 2018-2023 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
@@ -49,7 +50,7 @@
                 var addr = parseInt(row.addr_begin);
 
                 if ((this.memory_segment == "instructions_memory") && ((addr >= parseInt(architecture.memory_layout[0].value)) && (addr <= parseInt(architecture.memory_layout[1].value)))) {
-                  if(row.hide == true){
+                  if(row.hide === true){
                     return false;
                   }
                   else{

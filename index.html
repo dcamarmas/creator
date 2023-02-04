@@ -651,12 +651,12 @@
                     </stats>
 
 
-                    <!-- Power Consumption view--->
-                    <power-consumption  :power_consumption="power_consumption" 
-                                        :power_consumption_value="power_consumption_value"
-                                        :total_power_consumption="total_power_consumption"
-                                        v-if="data_mode == 'power_consumption'">  
-                    </power-consumption>
+                    <!-- CLK Cycles view--->
+                    <clk-cycles :clk_cycles="clk_cycles" 
+                                :clk_cycles_value="clk_cycles_value"
+                                :total_clk_cycles="total_clk_cycles"
+                                v-if="data_mode == 'clk_cycles'">  
+                    </clk-cycles>
 
                   </b-col>
 

@@ -106,9 +106,9 @@ cat js/creator_bigint.js \
     components/simulator/creator_uielto_stats.js \
     components/simulator/creator_uielto_stats_plot.js \
     components/simulator/creator_uielto_stats_table.js \
-    components/simulator/creator_uielto_power_consumption.js \
-    components/simulator/creator_uielto_power_consumption_plot.js \
-    components/simulator/creator_uielto_power_consumption_table.js \
+    components/simulator/creator_uielto_clk_cycles.js \
+    components/simulator/creator_uielto_clk_cycles_plot.js \
+    components/simulator/creator_uielto_clk_cycles_table.js \
     components/simulator/creator_uielto_monitor.js \
     components/simulator/creator_uielto_keyboard.js \
     \

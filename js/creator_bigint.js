@@ -1,3 +1,4 @@
+
 /*
  *  Copyright 2018-2023 Felix Garcia Carballeira, Alejandro Calderon Mateos, Diego Camarmas Alonso
  *
@@ -25,14 +26,6 @@ function bi_intToBigInt ( int_value, int_base )
 }
 
 
-
-
-
-
-
-
-
-
 function bi_floatToBigInt ( float_value )
 {
   var BigInt_value = null ;
@@ -57,8 +50,6 @@ function bi_BigIntTofloat ( big_int_value )
 }
 
 
-
-
 function bi_doubleToBigInt ( double_value )
 {
   var BigInt_value = null ;
@@ -78,12 +69,6 @@ function bi_BigIntTodouble ( big_int_value )
 }
 
 
-
-
-
-
-
-
 //String to number/bigint
 function register_value_deserialize( architecture )
 {
@@ -100,7 +85,7 @@ function register_value_deserialize( architecture )
         architecture.components[i].elements[j].value = bi_floatToBigInt(architecture.components[i].elements[j].value) ;
       }
 
-      if (architecture.components[i].double_precision != true)
+      if (architecture.components[i].double_precision !== true)
       {
         if (architecture.components[i].type != "fp_registers"){
           architecture.components[i].elements[j].default_value = bi_intToBigInt(architecture.components[i].elements[j].default_value,10) ;
@@ -114,6 +99,7 @@ function register_value_deserialize( architecture )
 
   return architecture;
 }
+
 
 //Number/Bigint to string
 function register_value_serialize( architecture )
@@ -131,7 +117,7 @@ function register_value_serialize( architecture )
         aux_architecture.components[i].elements[j].value = bi_BigIntTofloat(architecture.components[i].elements[j].value);
       }
 
-      if (architecture.components[i].double_precision != true)
+      if (architecture.components[i].double_precision !== true)
       {
         if (architecture.components[i].type != "fp_registers"){
           aux_architecture.components[i].elements[j].default_value = parseInt(architecture.components[i].elements[j].default_value);
