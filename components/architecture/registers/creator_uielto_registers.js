@@ -50,7 +50,7 @@
                       app._data.modal_edit_register.simple_reg = [];
                       for (var i = 0; i < architecture_hash.length; i++)
                       {
-                        for (var j = 0; j < architecture.components[i].elements.length && architecture.components[i].type =="fp_registers" && architecture.components[i].double_precision == false; j++){
+                        for (var j = 0; j < architecture.components[i].elements.length && architecture.components[i].type =="fp_registers" && architecture.components[i].double_precision === false; j++){
                           app._data.modal_edit_register.simple_reg.push({ text: architecture.components[i].elements[j].name, value: architecture.components[i].elements[j].name},);
                         }
                       }

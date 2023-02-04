@@ -39,7 +39,7 @@
   methods:    {
                 /*Filter table instructions*/
                 filter(row, filter){
-                  if(row.hide == true){
+                  if(row.hide === true){
                     return false;
                   }
                   else{

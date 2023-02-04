@@ -66,7 +66,7 @@
 
                     architecture.arch_conf[index].value = this._props.arch_field_value;
 
-                    if (index == 0) {
+                    if (index === 0) {
                       app._data.architecture_name = architecture.arch_conf[index].value;
                     }
 

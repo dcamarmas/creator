@@ -81,7 +81,7 @@
                         }
 
                         //Verify empty fields
-                        if (!this.pseudoinstruction.name || !this.pseudoinstruction.nwords || !this.pseudoinstruction.signature_definition || !this.pseudoinstruction.definition || empty == 1) {
+                        if (!this.pseudoinstruction.name || !this.pseudoinstruction.nwords || !this.pseudoinstruction.signature_definition || !this.pseudoinstruction.definition || empty === 1) {
                           show_notification('Please complete all fields', 'danger');
                           return;
                         }
@@ -156,7 +156,7 @@
                           while(code != null)
                           {
                             var instructions = code[1].split(";");
-                            if (instructions.length == 1)
+                            if (instructions.length === 1)
                             {
                               show_notification('Enter a ";" at the end of each line of code', 'danger') ;
                               return -1;
@@ -287,7 +287,7 @@
                                       }
                                       else if (instruction_parts[z].match(/^(\d)+\.(\d)+/))
                                       {
-                                        if(isNaN(parseFloat(instruction_parts[z])) == true)
+                                        if(isNaN(parseFloat(instruction_parts[z])) === true)
                                         {
                                           show_notification("Immediate number " + instruction_parts[z] + " is not valid", 'danger') ;
                                           return -1;
@@ -305,7 +305,7 @@
                                       else 
                                       {
                                         var aux_num = parseInt(instruction_parts[z], 10);
-                                        if(isNaN(parseInt(instruction_parts[z])) == true)
+                                        if(isNaN(parseInt(instruction_parts[z])) === true)
                                         {
                                           show_notification("Immediate number " + instruction_parts[z] + " is not valid", 'danger') ;
                                           return -1;
@@ -332,7 +332,7 @@
                                       if(instruction_parts[z].match(/^0x/))
                                       {
                                         var value = instruction_parts[z].split("x");
-                                        if(isNaN(parseInt(instruction_parts[z], 16)) == true)
+                                        if(isNaN(parseInt(instruction_parts[z], 16)) === true)
                                         {
                                           show_notification("Address " + instruction_parts[z] + " is not valid", 'danger') ;
                                           return -1;
@@ -704,7 +704,7 @@
                       //Form validator
                       valid(value)
                       {
-                        if(parseInt(value) != 0)
+                        if(parseInt(value) !== 0)
                         {
                           if(!value){
                             return false;
