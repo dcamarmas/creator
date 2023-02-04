@@ -76,7 +76,7 @@
                     else
                     {
                       var default_style = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                      if(default_style == true)
+                      if(default_style === true)
                       {
                         document.getElementsByTagName("body")[0].style = "filter: invert(88%) hue-rotate(160deg) !important; background-color: #111 !important;";
                         app._data.dark = true;

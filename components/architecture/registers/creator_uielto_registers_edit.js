@@ -93,7 +93,7 @@
                   //Form validator
                   valid(value)
                   {
-                    if(parseInt(value) != 0)
+                    if(parseInt(value) !== 0)
                     {
                       if(!value){
                         return false;

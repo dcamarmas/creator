@@ -57,7 +57,7 @@
                   {
                     evt.preventDefault();
                     
-                    if (this.register.name.length == 0 || !this.register.name)
+                    if (this.register.name.length === 0 || !this.register.name)
                     {
                          show_notification('Please complete all fields', 'danger') ;
                     }

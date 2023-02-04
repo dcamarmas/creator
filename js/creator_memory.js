@@ -521,10 +521,10 @@ function creator_memory_alignelto ( new_addr, new_size )
         // get align address and size
         for (var i=0; i<align; i++)
         {
-             if (((new_addr + i) % align) == 0) {
+             if (((new_addr + i) % align) === 0) {
                  ret.new_addr = new_addr + i ;
              }
-             if (((new_size + i) % align) == 0) {
+             if (((new_size + i) % align) === 0) {
                  ret.new_size = new_size + i ;
              }
         }

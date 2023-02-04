@@ -53,7 +53,7 @@
                         ret = (((register.value).toString(16)).padStart(register.nbits/4, "0")).toUpperCase();
                       }
                       else {
-                        if (architecture.components[this._props.component.index].double_precision == false) {
+                        if (architecture.components[this._props.component.index].double_precision === false) {
                           ret = bin2hex(float2bin(bi_BigIntTofloat(register.value)));
                         }
                         else {
@@ -67,7 +67,7 @@
                         ret = (((register.value).toString(2)).padStart(register.nbits, "0"));
                       }
                       else {
-                        if (architecture.components[this._props.component.index].double_precision == false) {
+                        if (architecture.components[this._props.component.index].double_precision === false) {
                           ret = float2bin(bi_BigIntTofloat(register.value));
                         }
                         else {
@@ -78,14 +78,14 @@
 
                     case "signed":
                       if (architecture.components[this._props.component.index].type == "ctrl_registers" || architecture.components[this._props.component.index].type == "int_registers") {
-                        if ((((register.value).toString(2)).padStart(register.nbits, '0')).charAt(0) == 1)
+                        if ((((register.value).toString(2)).padStart(register.nbits, '0')).charAt(0) === 1)
                           ret = parseInt(register.value.toString(10))-0x100000000;
-                        if ((((register.value).toString(2)).padStart(register.nbits, '0')).charAt(0) == 0)
+                        if ((((register.value).toString(2)).padStart(register.nbits, '0')).charAt(0) === 0)
                           ret = (register.value).toString(10);
                       }
                       else {
                         // ret = parseInt(register.value.toString(), 10) >> 0;
-                        if (architecture.components[this._props.component.index].double_precision == false) {
+                        if (architecture.components[this._props.component.index].double_precision === false) {
                           ret = float2int_v2 (bi_BigIntTofloat(register.value));
                         }
                         else{
@@ -100,7 +100,7 @@
                       }
                       else {
                         //ret = parseInt(register.value.toString(), 10) >>> 0;
-                        if (architecture.components[this._props.component.index].double_precision == false) {
+                        if (architecture.components[this._props.component.index].double_precision === false) {
                           ret = float2int_v2 (bi_BigIntTofloat(register.value)) >>> 0;
                         }
                         else{
@@ -114,7 +114,7 @@
                         ret = hex2char8((((register.value).toString(16)).padStart(register.nbits/4, "0")));
                       }
                       else {
-                        if (architecture.components[this._props.component.index].double_precision == false) {
+                        if (architecture.components[this._props.component.index].double_precision === false) {
                           ret = hex2char8(bin2hex(float2bin(bi_BigIntTofloat(register.value))));
                         }
                         else {
@@ -128,7 +128,7 @@
                         ret = hex2float("0x"+(((register.value).toString(16)).padStart(8, "0")));
                       }
                       else {
-                        if (architecture.components[this._props.component.index].double_precision == false) {
+                        if (architecture.components[this._props.component.index].double_precision === false) {
                           ret = bi_BigIntTofloat(register.value);
                         }
                         else{
@@ -142,7 +142,7 @@
                         ret = hex2double("0x"+(((register.value).toString(16)).padStart(16, "0")));
                       }
                       else {
-                        if (architecture.components[this._props.component.index].double_precision == false) {
+                        if (architecture.components[this._props.component.index].double_precision === false) {
                           ret = bi_BigIntTodouble(register.value);
                         }
                         else{

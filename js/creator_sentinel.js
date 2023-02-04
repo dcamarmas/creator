@@ -321,7 +321,7 @@ function creator_callstack_getTop()
     };
 
     // check params
-    if (0 == stack_call_register.length)
+    if (0 === stack_call_register.length)
     {
         ret.ok = false;
         ret.msg = "creator_callstack_getTop: empty stack_call_register !!.\n";
