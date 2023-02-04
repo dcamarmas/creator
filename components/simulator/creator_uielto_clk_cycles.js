@@ -21,21 +21,21 @@
 
   /* jshint esversion: 6 */
 
-  var uielto_power_consumption = {
+  var uielto_clk_cycles = {
 
   props:      {
-                power_consumption:       { type: Array,  required: true },
-                power_consumption_value: { type: Number, required: true },
-                total_power_consumption: { type: Number, required: true },
+                clk_cycles:       { type: Array,  required: true },
+                clk_cycles_value: { type: Number, required: true },
+                total_clk_cycles: { type: Number, required: true },
               },
 
   data:       function () {
     return {
-      power_consumption_representation: 'graphic',
-      power_consumption_representation_options: [
-                                                  { text: 'Graphic', value: 'graphic' },
-                                                  { text: 'Table',   value: 'table' }
-                                                ]
+      clk_cycles_representation: 'graphic',
+      clk_cycles_representation_options:  [
+                                            { text: 'Graphic', value: 'graphic' },
+                                            { text: 'Table',   value: 'table' }
+                                          ]
     }
   },
 
@@ -48,8 +48,8 @@
               '           <b-form-radio-group' +
               '             id="btn-radios-1"' +
               '             class="w-100"' +
-              '             v-model="power_consumption_representation"' +
-              '             :options="power_consumption_representation_options"' +
+              '             v-model="clk_cycles_representation"' +
+              '             :options="clk_cycles_representation_options"' +
               '             button-variant="outline-secondary"' +
               '             size="sm"' +
               '             :aria-describedby="ariaDescribedby"' +
@@ -62,7 +62,7 @@
               '' +
               '     <b-col>' +
               '       <b-list-group class="align-items-center py-2 px-4">' +
-              '         <b-list-group-item>Total CLK Cycles: {{total_power_consumption}}</b-list-group-item>' +
+              '         <b-list-group-item>Total CLK Cycles: {{total_clk_cycles}}</b-list-group-item>' +
               '       </b-list-group>' +
               '     </b-col>' +
               '' +
@@ -70,12 +70,12 @@
               '' +
               '   <b-row cols="1">' +
               '     <b-col align-h="center" class="px-2 my-2">' +
-              '       <plot-power-consumption  :power_consumption_value="power_consumption_value" v-if="power_consumption_representation == \'graphic\'"></plot-power-consumption>  ' +
-              '       <table-power-consumption :power_consumption="power_consumption" v-if="power_consumption_representation == \'table\'"></table-power-consumption> ' +
+              '       <plot-clk-cycles  :clk_cycles_value="clk_cycles_value" v-if="clk_cycles_representation == \'graphic\'"></plot-clk-cycles>  ' +
+              '       <table-clk-cycles :clk_cycles="clk_cycles" v-if="clk_cycles_representation == \'table\'"></table-clk-cycles> ' +
               '     </b-col>' +
               '   </b-row>' +
               ' </b-container>'
 
   }
 
-  Vue.component('power-consumption', uielto_power_consumption) ;
+  Vue.component('clk-cycles', uielto_clk_cycles) ;

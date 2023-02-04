@@ -427,12 +427,12 @@ function capi_sbrk ( value1, value2 )
 	writeRegister(new_addr, ret2.indexComp, ret2.indexElem);
 }
 
-function capi_get_power_consumption ( )
+function capi_get_clk_cycles ( )
 {
 	/* Google Analytics */
-	creator_ga('execute', 'execute.syscall', 'execute.syscall.get_power_consumption');
+	creator_ga('execute', 'execute.syscall', 'execute.syscall.get_clk_cycles');
 
-	return total_power_consumption;
+	return total_clk_cycles;
 }
 
 

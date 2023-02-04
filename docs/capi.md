@@ -67,7 +67,7 @@
 
 * capi_sbrk ( value1, value2 ) &rarr; System call for allocating memory.
 
-* capi_get_power_consumption ( ) &rarr; Get power consumption.
+* capi_get_clk_cycles ( ) &rarr; Get CLK Cylces.
   
 #### Syscall examples (ecall RISC-V)  
   

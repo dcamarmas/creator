@@ -21,22 +21,22 @@
 
   /* jshint esversion: 6 */
 
-  var uielto_power_consumption_table = {
+  var uielto_clk_cycles_table = {
 
   props:      {
-                render:                  { type: Number, required: true },
-                power_consumption:       { type: Array,  required: true }
+                render:           { type: Number, required: true },
+                clk_cycles:       { type: Array,  required: true }
               },
               
   data:       function () {
                 return {
-                  /*power_consumption table fields*/
-                  power_consumption_fields: {
+                  /*clk_cycles table fields*/
+                  clk_cycles_fields: {
                     type: {
                       label: 'Type',
                       sortable: true
                     },
-                    power_consumption: {
+                    clk_cycles: {
                       label: 'CLK Cycles',
                       sortable: true
                     },
@@ -51,11 +51,11 @@
   template:   ' <b-table  striped ' +
               '           small ' +
               '           hover ' +
-              '           :items="power_consumption" ' +
-              '           :fields="power_consumption_fields" ' +
+              '           :items="clk_cycles" ' +
+              '           :fields="clk_cycles_fields" ' +
               '           class="stats text-center px-0">' +
               ' <b-table>'
 
   }
 
-  Vue.component('table-power-consumption', uielto_power_consumption_table) ;
+  Vue.component('table-clk-cycles', uielto_clk_cycles_table) ;

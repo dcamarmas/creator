@@ -141,9 +141,9 @@
               '' +
               '        <b-button id="stats_btn"' +
               '                  size="sm"' +
-              '                  :pressed="get_pressed(\'power_consumption\')"' +
+              '                  :pressed="get_pressed(\'clk_cycles\')"' +
               '                  variant="outline-secondary"' +
-              '                  @click="change_data_view(\'power_consumption\')">' +
+              '                  @click="change_data_view(\'clk_cycles\')">' +
               '          <span class=" fas fa-bolt"></span>' +
               '          Energy (CLK Cyles)' +
               '        </b-button>' +
