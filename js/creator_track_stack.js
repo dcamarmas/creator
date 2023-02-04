@@ -117,7 +117,7 @@ function track_stack_leave()
     };
 
     // check params
-    if (0 == track_stack_limits.length)
+    if (0 === track_stack_limits.length)
     {
         ret.msg = "track_stack_Leave: empty track_stack_limits !!.\n";
         return ret;

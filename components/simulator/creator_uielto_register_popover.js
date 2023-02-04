@@ -176,7 +176,7 @@
                       }
                     }
                     else if(type =="fp_registers"){
-                      if(precision == false){
+                      if(precision === false){
                         if(architecture.components[comp].elements[i].name == elem && this.newValue.match(/^0x/)){
                           writeRegister(hex2float(this.newValue), comp, i, "SFP-Reg");
                         }
@@ -188,7 +188,7 @@
                         }
                       }
 
-                      else if(precision == true){
+                      else if(precision === true){
                         if(architecture.components[comp].elements[i].name == elem && this.newValue.match(/^0x/)){
                           writeRegister(hex2double(this.newValue), comp, i, "DFP-Reg");
                         }
@@ -210,7 +210,7 @@
 
                 get_cols(index)
                 {
-                  if (architecture.components[index].double_precision == true){
+                  if (architecture.components[index].double_precision === true){
                     return 3;
                   }
                   else{

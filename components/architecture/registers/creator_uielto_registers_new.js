@@ -62,7 +62,7 @@
                     }
                     else
                     {
-                      if (!this.register.default_value && this._props.double_precision == false){
+                      if (!this.register.default_value && this._props.double_precision === false){
                          show_notification('Please complete all fields', 'danger') ;
                       }
                       else if(isNaN(this.register.default_value)){
@@ -117,7 +117,7 @@
                                         };
                       architecture.components[this._props.register_file_index].elements.push(new_element);
                     }
-                    if((this._props.type == "fp_registers")&&(this._props.double_precision == false))
+                    if((this._props.type == "fp_registers")&&(this._props.double_precision === false))
                     {
                       var new_element = {
                                           name:this.register.name, 

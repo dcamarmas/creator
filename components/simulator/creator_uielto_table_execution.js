@@ -63,7 +63,7 @@
                     creator_ga('send', 'event', 'execute', 'execute.breakpoint', 'execute.breakpoint');
 
                   }
-                  else if(instructions[index].Break == true){
+                  else if(instructions[index].Break === true){
                     instructions[index].Break = null;
                     app._data.instructions[index].Break = null; //TODO: vue bidirectional updates
                   }
