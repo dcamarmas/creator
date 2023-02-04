@@ -49,43 +49,8 @@ function capi_arithmetic_overflow ( op1, op2, res_u )
 function capi_bad_align ( addr, type )
 {
 	size = creator_memory_type2size(type) ;
-	return (addr % size != 0) ; // && (architecture.properties.memory_align == true) ; <- FUTURE-WORK
+	return (addr % size !== 0) ; // && (architecture.properties.memory_align == true) ; <- FUTURE-WORK
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 /*
@@ -178,7 +143,7 @@ function capi_mem_read ( addr, type, reg_name )
 
 	// 4) Call convenction
 	var find_ret = crex_findReg(reg_name) ;
-	if (find_ret.match == 0) {
+	if (find_ret.match === 0) {
 		return ret;
 	}
 
@@ -382,12 +347,12 @@ function capi_read_string ( value1, value2 )
 
 	/* Get register id */
 	var ret1 = crex_findReg(value1) ;
-	if (ret1.match == 0) {
+	if (ret1.match === 0) {
 		throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
 	}
 
 	var ret2 = crex_findReg(value2) ;
-	if (ret2.match == 0) {
+	if (ret2.match === 0) {
 		throw packExecute(true, "capi_syscall: register " + value2 + " not found", 'danger', null);
 	}
 
@@ -409,12 +374,12 @@ function capi_sbrk ( value1, value2 )
 
 	/* Get register id */
 	var ret1 = crex_findReg(value1) ;
-	if (ret1.match == 0) {
+	if (ret1.match === 0) {
 		throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
 	}
 
 	var ret2 = crex_findReg(value2) ;
-	if (ret2.match == 0) {
+	if (ret2.match === 0) {
 		throw packExecute(true, "capi_syscall: register " + value2 + " not found", 'danger', null);
 	}
 
@@ -447,7 +412,7 @@ function capi_callconv_begin ( addr )
 	var function_name = "" ;
 
 	// 1) Passing Convection enable?
-	if (architecture.arch_conf[5].value == 0) {
+	if (architecture.arch_conf[5].value === 0) {
 		return;
 	}
 
@@ -532,10 +497,10 @@ function capi_split_double ( reg, index )
 {
 	var value = bin2hex(double2bin(reg));
 	console_log(value);
-	if(index == 0){
+	if(index === 0){
 		return value.substring(0,8);
 	}
-	if(index == 1) {
+	if(index === 1) {
 		return value.substring(8,16);
 	}
 }

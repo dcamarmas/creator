@@ -448,11 +448,11 @@ function assembly_compiler()
             instructions.push(update_binary.instructions_binary[i]);
             if(i == 0){
               instructions[instructions.length-1].hide = false;
-              if(update_binary.instructions_binary[i].globl == false){
+              if(update_binary.instructions_binary[i].globl === false){
                 instructions[instructions.length-1].Label = "";
               }
             }
-            else if(update_binary.instructions_binary[i].globl == false){
+            else if(update_binary.instructions_binary[i].globl === false){
               instructions[instructions.length-1].Label = "";
               instructions[instructions.length-1].hide = true;
             }
@@ -652,7 +652,7 @@ function assembly_compiler()
           var instructionParts  = (pending_instructions[i].instruction).split(' ');
           console_log(instructionParts);
 
-          for (var j = 0; j < signatureParts.length && exit == 0; j++)
+          for (var j = 0; j < signatureParts.length && exit === 0; j++)
           {
             if (signatureParts[j] == "inm-signed" || signatureParts[j] == "inm-unsigned" || signatureParts[j] == "address")
             {
@@ -675,7 +675,7 @@ function assembly_compiler()
                     }
                   }
 
-                  for (var w=0; w < instructions.length && exit == 0; w++)
+                  for (var w=0; w < instructions.length && exit === 0; w++)
                   {
                     var aux = "0x" + (pending_instructions[i].address).toString(16);
                     if (aux == instructions[w].Address) {
@@ -683,7 +683,7 @@ function assembly_compiler()
                     }
                   }
 
-                  for (var w=0; w < instructions.length && exit == 0; w++)
+                  for (var w=0; w < instructions.length && exit === 0; w++)
                   {
                     var aux = "0x" + (pending_instructions[i].address).toString(16);
                     if (aux == instructions[w].Address)
@@ -770,7 +770,7 @@ function assembly_compiler()
 
             if (signatureParts[j] == "offset_words")
             {
-              for (var z = 0; z < instructions.length && exit == 0; z++)
+              for (var z = 0; z < instructions.length && exit === 0; z++)
               {
                 if(instructions[z].Label == instructionParts[j])
                 {
@@ -806,7 +806,7 @@ function assembly_compiler()
 
                       last_segment = last_segment + fieldsLength2
 
-                      for (var w = 0; w < instructions.length && exit == 0; w++) {
+                      for (var w = 0; w < instructions.length && exit === 0; w++) {
                         var aux = "0x" + (pending_instructions[i].address).toString(16);
                         if(aux == instructions[w].Address){
                           instructions_binary[w - numBinaries].loaded = instructions_binary[w - numBinaries].loaded.substring(0, instructions_binary[w - numBinaries].loaded.length - (startbit[s] + 1)) + bin_aux + instructions_binary[w - numBinaries].loaded.substring(instructions_binary[w - numBinaries].loaded.length - stopbit[s], instructions_binary[w - numBinaries].loaded.length);
@@ -1043,7 +1043,7 @@ function assembly_compiler()
 
         /*Save tags*/
         for(var i = 0; i < instructions_tag.length; i++){
-          if(extern.length == 0 && instructions_tag[i].tag != ""){
+          if(extern.length === 0 && instructions_tag[i].tag != ""){
             instructions_tag[i].tag = instructions_tag[i].tag + "_symbol";
             instructions_tag[i].globl = false;
             break;
@@ -1107,7 +1107,7 @@ function data_segment_compiler()
           var found = false;
           if (token.search(/\:$/) != -1)
           {
-              if (token.length == 1)
+              if (token.length === 1)
               {
                   return packCompileError('m0', "Empty label", 'error', "danger");
               }
@@ -1195,7 +1195,7 @@ function data_segment_compiler()
                       }
 
                       auxTokenString = value[1].padStart(2*architecture.directives[j].size, "0");
-                      if(value[1].length == 0){
+                      if(value[1].length === 0){
                         return packCompileError('m19', token, 'error', "danger") ;
                       }
 
@@ -2054,7 +2054,7 @@ function code_segment_compiler()
 
             console_log("token: " + token)
 
-            for (var i = 0; i < architecture.pseudoinstructions.length && exists == false; i++){
+            for (var i = 0; i < architecture.pseudoinstructions.length && exists === false; i++){
               if(architecture.pseudoinstructions[i].name == token){
                 numToken = architecture.pseudoinstructions[i].fields.length;
                 console_log(numToken)
@@ -2221,7 +2221,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
 
   var stopFor = false;
 
-  for(var i = instIndex; i < architecture.instructions.length && stopFor == false; i++){
+  for(var i = instIndex; i < architecture.instructions.length && stopFor === false; i++){
     if(architecture.instructions[i].name != instructionParts[0]){
       continue;
     }
@@ -2263,7 +2263,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
       re = new RegExp(signatureDef+"$");
       console_log(re);
       if(oriInstruction.search(re) == -1){
-        if(isPseudo == false){
+        if(isPseudo === false){
           console_log(get_token())
 
           tokenIndex = instInit;
@@ -2396,7 +2396,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
               if(architecture.instructions[i].fields[a].name == signatureRawParts[j]){
                 for(var z = 0; z < architecture_hash.length; z++){
                   for(var w = 0; w < architecture.components[z].elements.length; w++){
-                    if(architecture.components[z].elements[w].name.includes(token) != false && architecture.components[z].type == "int_registers"){ //TODO:check
+                    if(architecture.components[z].elements[w].name.includes(token) !== false && architecture.components[z].type == "int_registers"){ //TODO:check
                       validReg = true;
                       regNum++;
 
@@ -2476,7 +2476,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
                   }
                   else{
                     for(var w = 0; w < architecture.components[z].elements.length; w++){
-                      if(architecture.components[z].elements[w].name.includes(token) != false && architecture.components[z].type == "fp_registers"){ //TODO:check
+                      if(architecture.components[z].elements[w].name.includes(token) !== false && architecture.components[z].type == "fp_registers"){ //TODO:check
                         validReg = true;
                         regNum++;
 
@@ -2834,7 +2834,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
                   inm = (parseInt(token, 10) >>> 0).toString(2);
                   inm = inm.substring(inm.length - fieldsLength ,inm.length);
                 }
-                if(validTagPC == true){
+                if(validTagPC === true){
                   console_log(inm.length);
                   if (inm.length > (architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1)) {
                      return packCompileError('m12', token, 'error', "danger") ;
@@ -3126,7 +3126,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
         }
       }
 
-      if(validTagPC == false && resultPseudo == -3){
+      if(validTagPC === false && resultPseudo == -3){
         console_log("pendiente");
 
 
@@ -3592,7 +3592,7 @@ function field ( field, action, type )
       else
       {
       var ret = creator_memory_findaddress_bytag(field) ;
-      if (ret.exit == 1) {
+      if (ret.exit === 1) {
               var numAux = ret.value ;
               return (numAux.toString(2)).length;
     }

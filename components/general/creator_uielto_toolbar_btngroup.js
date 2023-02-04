@@ -394,11 +394,11 @@
                             run_program=false;
                             return;
                           }
-                          else if(but == true && i == 0)
+                          else if(but === true && i == 0)
                           {
                             app._data.resetBut = false;
                           }
-                          else if(this.resetBut == true)
+                          else if(this.resetBut === true)
                           {
                             app._data.resetBut = false;
                             run_program=false;

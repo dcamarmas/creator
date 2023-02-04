@@ -51,7 +51,7 @@
                           }
                           else {
                             // ret = parseInt(register.value.toString(), 10) >> 0;
-                            if (architecture.components[this._props.component.index].double_precision == false) {
+                            if (architecture.components[this._props.component.index].double_precision === false) {
                               ret = float2int_v2 (bi_BigIntTofloat(register.value));
                             }
                             else{
@@ -66,7 +66,7 @@
                           }
                           else {
                             //ret = parseInt(register.value.toString(), 10) >>> 0;
-                            if (architecture.components[this._props.component.index].double_precision == false) {
+                            if (architecture.components[this._props.component.index].double_precision === false) {
                               ret = float2int_v2 (bi_BigIntTofloat(register.value)) >>> 0;
                             }
                             else{
