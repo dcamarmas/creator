@@ -84,7 +84,7 @@ function execute_instruction ( )
       {
         if (instructions[i].Label == architecture.arch_conf[4].value) {
           //draw.success.push(execution_index) ;
-          //architecture.components[0].elements[0].value = bi_intToBigInt(instructions[i].Address, 10); //TODO
+          //architecture.components[0].elements[0].value = bi_intToBigInt(instructions[i].Address, 10); //TODO: PC
           writeRegister(bi_intToBigInt(instructions[i].Address, 10), 0, 0);
           execution_init = 0;
           break;
@@ -101,7 +101,7 @@ function execute_instruction ( )
 
     for (var i = 0; i < instructions.length; i++)
     {
-      //if (parseInt(instructions[i].Address, 16) == architecture.components[0].elements[0].value) //TODO
+      //if (parseInt(instructions[i].Address, 16) == architecture.components[0].elements[0].value) //TODO: PC
       if (parseInt(instructions[i].Address, 16) == readRegister(0, 0)) 
       {
         execution_index = i;
@@ -133,6 +133,9 @@ function execute_instruction ( )
     var nwords;
     var auxDef;
     var type;
+
+    //Interrupt Acknowledge Cycle (IAC)
+    iac();
 
     //Search the instruction to execute
     //TODO: move the instruction identification to the compiler stage, binary not
@@ -283,7 +286,7 @@ function execute_instruction ( )
     //Increase PC
     //TODO: other register
     word_size = parseInt(architecture.arch_conf[1].value) / 8;
-    //architecture.components[0].elements[0].value = architecture.components[0].elements[0].value + bi_intToBigInt(nwords * word_size,10) ; //TODO
+    //architecture.components[0].elements[0].value = architecture.components[0].elements[0].value + bi_intToBigInt(nwords * word_size,10) ; //TODO: PC
     writeRegister(readRegister(0,0) + (nwords * word_size), 0,0);
     console_log(auxDef);
 
@@ -535,6 +538,9 @@ function reset ()
   execution_index = 0;
   execution_init = 1;
 
+  //Interrupt reset
+  interrupt = -1;
+
   // Reset stats
   stats_reset();
 
@@ -742,6 +748,22 @@ function clk_cycles_reset ( )
       clk_cycles_value[0].data[i] ++;
     }
   }
+}
+
+
+/*
+ * Interrupts
+ */
+
+function iac ()
+{
+  var intr = capi_get_interrupt() ;
+
+  if (0 <= intr)
+  {
+     // if (typedef instrucciones["isr"] != undefined)
+     //     instrucciones["isr"] ;
+  } 
 }
 
 
