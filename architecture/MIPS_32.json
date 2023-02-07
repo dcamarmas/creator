@@ -2856,7 +2856,7 @@
           "valueField": "011010"
         }
       ],
-      "definition": "if (rt != 0)\n { var cociente = (capi_uint2int(rs) / capi_uint2int(rt));\n if (cociente < 0) { rd = Math.ceil(cociente); } else { rd = Math.floor(cociente); }\n }\n else\n { capi_raise('Division by zero not allowed'); }\n"
+      "definition": "if (rt != 0)\n { var cociente = (capi_uint2int(rs) / capi_uint2int(rt));\n if (cociente < 0) { rd = Math.ceil(cociente); } else { rd = Math.floor(cociente); }\n }\n else\n { capi_set_int(1); }\n"
     },
     {
       "name": "div",
@@ -7090,6 +7090,62 @@
         }
       ],
       "definition": "lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\nxor $rs $rt $at;"
+    },
+    {
+      "name": "isr",
+      "type": "Logic",
+      "signature_definition": "F0",
+      "signature": "isr",
+      "signatureRaw": "isr",
+      "co": "000000",
+      "cop": "001101",
+      "nwords": 1,
+      "clk_cycles": 1,
+      "fields": [
+        {
+          "name": "isr",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 5,
+          "stopbit": 0,
+          "valueField": "001101"
+        }
+      ],
+      "definition": "  var type = capi_get_interrupt();\n  switch(type)\n  {\n    case 0: //interruption\n      //TODO\n      break;\n\n    case 1: //exception\n      capi_raise('Division by zero not allowed');\n      break;\n\n    case 2: //syscall\n      switch(v0){\n        case 1:\n        capi_print_int('a0');\n        break;\n        case 2:\n        capi_print_float('f12');\n        break;\n        case 3:\n        capi_print_double('FP12');\n        break;\n        case 4:\n        capi_print_string('a0');\n        break;\n        case 5:\n        capi_read_int('v0');\n        break;\n        case 6:\n        capi_read_float('f0');\n        break;\n        case 7:\n        capi_read_double('FP0');\n        break;\n        case 8:\n        capi_read_string('a0', 'a1');\n        break;\n        case 9:\n        capi_sbrk('a0', 'v0');\n        break;\n        case 10:\n        capi_exit();\n        break;\n        case 11:\n        capi_print_char('a0');\n        break;\n        case 12:\n        capi_read_char('v0');\n        break;\n        }\n      break;\n  }",
+      "help": ""
+    },
+    {
+      "name": "ecall2",
+      "type": "Syscall",
+      "co": "000000",
+      "cop": "001111",
+      "nwords": 1,
+      "clk_cycles": 1,
+      "signature_definition": "F0",
+      "signature": "ecall2",
+      "signatureRaw": "ecall2",
+      "fields": [
+        {
+          "name": "ecall2",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 5,
+          "stopbit": 0,
+          "valueField": "001111"
+        }
+      ],
+      "definition": "capi_set_int(2);",
+      "help": ""
     }
   ],
   "directives": [
