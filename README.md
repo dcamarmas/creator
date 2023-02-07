@@ -21,7 +21,7 @@
 |                              | URL                                             | 
 |:----------------------------:|:------------------------------------------------| 
 | Source Code                  | https://github.com/creatorsim/creator/          | 
-| :clipboard:  Travis Tests    | [Description of Travis Tests](docs/travis.md)   | 
+| :clipboard:  Tests           | [Test Descriptions](docs/test.md)               | 
 | :microscope: Nightly build   | https://dcamarmas.github.io/creator             |
 
 ### Supported Internet Browser
