@@ -1027,6 +1027,7 @@ function capi_raise ( msg )
 	}
 }
 
+
 function capi_arithmetic_overflow ( op1, op2, res_u )
 {
 	op1_u = capi_uint2int(op1) ;
@@ -1037,10 +1038,22 @@ function capi_arithmetic_overflow ( op1, op2, res_u )
 		   ((op1_u < 0) && (op2_u < 0) && (res_u > 0)) ;
 }
 
+
 function capi_bad_align ( addr, type )
 {
 	size = creator_memory_type2size(type) ;
 	return (addr % size !== 0) ; // && (architecture.properties.memory_align == true) ; <- FUTURE-WORK
+}
+
+
+function capi_get_interrupt ( )
+{
+	return interrupt;
+}
+
+function capi_set_interrupt ( type )
+{
+	interrupt = type;
 }
 
 
@@ -1161,6 +1174,7 @@ function capi_exit ( )
 	return creator_executor_exit( false ) ;
 }
 
+
 function capi_print_int ( value1 )
 {
 	/* Google Analytics */
@@ -1183,6 +1197,7 @@ function capi_print_int ( value1 )
 	display_print(full_print(val_int, null, false));
 }
 
+
 function capi_print_float ( value1 )
 {
 	/* Google Analytics */
@@ -1201,6 +1216,7 @@ function capi_print_float ( value1 )
 	display_print(full_print(value, bin, true));
 }
 
+
 function capi_print_double ( value1 )
 {
 	/* Google Analytics */
@@ -1218,6 +1234,7 @@ function capi_print_double ( value1 )
 
 	display_print(full_print(value, bin, true));
 }
+
 
 function capi_print_char ( value1 )
 {
@@ -1241,6 +1258,7 @@ function capi_print_char ( value1 )
 	display_print(value) ;
 }
 
+
 function capi_print_string ( value1 )
 {
 	/* Google Analytics */
@@ -1257,6 +1275,7 @@ function capi_print_string ( value1 )
         var msg  = readMemory(parseInt(addr), "string") ;
 	display_print(msg) ;
 }
+
 
 function capi_read_int ( value1 )
 {
@@ -1277,6 +1296,7 @@ function capi_read_int ( value1 )
 	return keyboard_read(kbd_read_int, ret1) ;
 }
 
+
 function capi_read_float ( value1 )
 {
 	/* Google Analytics */
@@ -1294,6 +1314,7 @@ function capi_read_float ( value1 )
 
 	return keyboard_read(kbd_read_float, ret1) ;
 }
+
 
 function capi_read_double ( value1 )
 {
@@ -1313,6 +1334,7 @@ function capi_read_double ( value1 )
 	return keyboard_read(kbd_read_double, ret1) ;
 }
 
+
 function capi_read_char ( value1 )
 {
 	/* Google Analytics */
@@ -1330,6 +1352,7 @@ function capi_read_char ( value1 )
 
 	return keyboard_read(kbd_read_char, ret1) ;
 }
+
 
 function capi_read_string ( value1, value2 )
 {
@@ -1358,6 +1381,7 @@ function capi_read_string ( value1, value2 )
 	return keyboard_read(kbd_read_string, ret1) ;
 }
 
+
 function capi_sbrk ( value1, value2 )
 {
 	/* Google Analytics */
@@ -1383,6 +1407,7 @@ function capi_sbrk ( value1, value2 )
     var new_addr = creator_memory_alloc(new_size) ;
 	writeRegister(new_addr, ret2.indexComp, ret2.indexElem);
 }
+
 
 function capi_get_clk_cycles ( )
 {
@@ -1418,6 +1443,7 @@ function capi_callconv_begin ( addr )
 	// 3) callstack_enter
 	creator_callstack_enter(function_name) ;
 }
+
 
 function capi_callconv_end ()
 {
@@ -1464,6 +1490,7 @@ function capi_drawstack_begin ( addr )
 	track_stack_enter(function_name) ;
 }
 
+
 function capi_drawstack_end ()
 {
 	// track leave
@@ -1496,40 +1523,48 @@ function capi_split_double ( reg, index )
 	}
 }
 
+
 function capi_uint2float32 ( value )
 {
 	return uint_to_float32(value) ;
 }
+
 
 function capi_float322uint ( value )
 {
 	return float32_to_uint(value) ;
 }
 
+
 function capi_int2uint ( value )
 {
 	return (value >>> 0) ;
 }
+
 
 function capi_uint2int ( value )
 {
 	return (value >> 0) ;
 }
 
+
 function capi_uint2float64 ( value0, value1 )
 {
 	return uint_to_float64(value0, value1) ;
 }
+
 
 function capi_float642uint ( value )
 {
 	return float64_to_uint(value) ;
 }
 
+
 function capi_check_ieee ( s, e, m )
 {
 	return checkTypeIEEE(s, e, m) ;
 }
+
 
 function capi_float2bin ( f )
 {
@@ -3159,6 +3194,8 @@ var clk_cycles =  [
 var keyboard = '' ;
 /*Display*/
 var display = '' ;
+/*Interrupts*/
+var interrupt = -1;
 
 
 //
@@ -6792,7 +6829,7 @@ function execute_instruction ( )
       {
         if (instructions[i].Label == architecture.arch_conf[4].value) {
           //draw.success.push(execution_index) ;
-          //architecture.components[0].elements[0].value = bi_intToBigInt(instructions[i].Address, 10); //TODO
+          //architecture.components[0].elements[0].value = bi_intToBigInt(instructions[i].Address, 10); //TODO: PC
           writeRegister(bi_intToBigInt(instructions[i].Address, 10), 0, 0);
           execution_init = 0;
           break;
@@ -6809,7 +6846,7 @@ function execute_instruction ( )
 
     for (var i = 0; i < instructions.length; i++)
     {
-      //if (parseInt(instructions[i].Address, 16) == architecture.components[0].elements[0].value) //TODO
+      //if (parseInt(instructions[i].Address, 16) == architecture.components[0].elements[0].value) //TODO: PC
       if (parseInt(instructions[i].Address, 16) == readRegister(0, 0)) 
       {
         execution_index = i;
@@ -6841,6 +6878,9 @@ function execute_instruction ( )
     var nwords;
     var auxDef;
     var type;
+
+    //Interrupt Acknowledge Cycle (IAC)
+    iac();
 
     //Search the instruction to execute
     //TODO: move the instruction identification to the compiler stage, binary not
@@ -6991,7 +7031,7 @@ function execute_instruction ( )
     //Increase PC
     //TODO: other register
     word_size = parseInt(architecture.arch_conf[1].value) / 8;
-    //architecture.components[0].elements[0].value = architecture.components[0].elements[0].value + bi_intToBigInt(nwords * word_size,10) ; //TODO
+    //architecture.components[0].elements[0].value = architecture.components[0].elements[0].value + bi_intToBigInt(nwords * word_size,10) ; //TODO: PC
     writeRegister(readRegister(0,0) + (nwords * word_size), 0,0);
     console_log(auxDef);
 
@@ -7243,6 +7283,9 @@ function reset ()
   execution_index = 0;
   execution_init = 1;
 
+  //Interrupt reset
+  interrupt = -1;
+
   // Reset stats
   stats_reset();
 
@@ -7450,6 +7493,22 @@ function clk_cycles_reset ( )
       clk_cycles_value[0].data[i] ++;
     }
   }
+}
+
+
+/*
+ * Interrupts
+ */
+
+function iac ()
+{
+  var intr = capi_get_interrupt() ;
+
+  if (0 <= intr)
+  {
+     // if (typedef instrucciones["isr"] != undefined)
+     //     instrucciones["isr"] ;
+  } 
 }
 
 

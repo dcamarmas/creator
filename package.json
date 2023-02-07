@@ -1,10 +1,10 @@
 {
-  "name": "creator-travisci",
+  "name": "creator",
   "description": "Check CREATOR",
   "author": "dcamarma@inf.uc3m.es",
-  "version": "3.2",
+  "version": "3.3",
   "scripts": {
-    "test-creator-node": "./run_travis.sh",
+    "test-creator-node": "./run_test.sh",
     "build-creator-web": "./mk_min.sh",
     "build-creator-node": "./mk_min.sh"
   },

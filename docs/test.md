@@ -4,7 +4,7 @@
 
 ## Travis Test
 
-[![Build Status](https://travis-ci.com/dcamarmas/creator.svg?branch=master)](https://travis-ci.com/github/dcamarmas/creator)
+![example workflow](https://github.com/dcamarmas/creator/actions/workflows/node.js.yml/badge.svg)
 
 #### :point_right:	 RISC-V
 
