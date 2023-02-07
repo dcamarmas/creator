@@ -171,6 +171,8 @@ var clk_cycles =  [
 var keyboard = '' ;
 /*Display*/
 var display = '' ;
+/*Interrupts*/
+var interrupt = -1;
 
 
 //
