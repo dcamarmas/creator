@@ -1056,6 +1056,11 @@ function capi_set_interrupt ( type )
 	interrupt = type;
 }
 
+function capi_reset_interrupt ( )
+{
+	interrupt = -1;
+}
+
 
 /*
  *  CREATOR instruction description API:
@@ -1570,6 +1575,7 @@ function capi_float2bin ( f )
 {
 	return float2bin(f) ;
 }
+
 /*
  *  Copyright 2018-2023 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
@@ -6880,11 +6886,12 @@ function execute_instruction ( )
     var type;
 
     //Interrupt Acknowledge Cycle (IAC)
-    iac();
+    IAC();
 
     //Search the instruction to execute
     //TODO: move the instruction identification to the compiler stage, binary not
-    for (var i = 0; i < architecture.instructions.length; i++) {
+    for (var i = 0; i < architecture.instructions.length; i++)
+    {
       var auxSig = architecture.instructions[i].signatureRaw.split(' ');
 
       var coStartbit;
@@ -7283,8 +7290,8 @@ function reset ()
   execution_index = 0;
   execution_init = 1;
 
-  //Interrupt reset
-  interrupt = -1;
+  // Interrupt reset
+  capi_reset_interrupt() ;
 
   // Reset stats
   stats_reset();
@@ -7352,7 +7359,7 @@ function reset ()
 function crex_show_notification ( msg, level )
 {
   if (typeof window !== "undefined")
-    show_notification(msg, level);
+       show_notification(msg, level);
   else console.log(level.toUpperCase() + ": " + msg);
 }
 
@@ -7500,15 +7507,41 @@ function clk_cycles_reset ( )
  * Interrupts
  */
 
-function iac ()
+function IAC ()
 {
+  // Get if interruption is on...
   var intr = capi_get_interrupt() ;
 
-  if (0 <= intr)
+  // If not interruption pending -> return
+  if (intr < 0) {
+      return ;
+  }
+
+  // (1/2) search for ISR...
+  var index = -1 ;
+  for (var i = 0; i < architecture.instructions.length; i++)
   {
-     // if (typedef instrucciones["isr"] != undefined)
-     //     instrucciones["isr"] ;
-  } 
+      if ('ISR' == architecture.instructions[i].name.toUpperCase()) {
+          index = i ;
+	  break ;
+      }
+  }
+  if (-1 == index) {
+      // TODO: ask if clear interrupt in architecture without interruptions !
+      return ;
+  }
+
+  // (2/2) execute ISR...
+  var auxDef = architecture.instructions[index].definition ;
+      auxDef = auxDef.replace(/this./g,"elto.") ;
+
+  eval("   try {\n" +
+	     auxDef + "\n" +
+       "   }\n" +
+       "   catch(e){\n" +
+       "     throw e;\n" +
+       "   }\n" +
+       "}; ") ;
 }
 
 
@@ -7676,6 +7709,7 @@ function get_number_binary (bin)
 {
   return "0x" + bin2hex(bin);
 }
+
 /*
  *  Copyright 2018-2023 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
