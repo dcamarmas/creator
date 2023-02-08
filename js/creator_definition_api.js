@@ -65,6 +65,11 @@ function capi_set_interrupt ( type )
 	interrupt = type;
 }
 
+function capi_reset_interrupt ( )
+{
+	interrupt = -1;
+}
+
 
 /*
  *  CREATOR instruction description API:
