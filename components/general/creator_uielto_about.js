@@ -76,6 +76,23 @@
                 '     <b-list-group-item style="text-align: center;">Contact us: <a href="mailto: creator.arcos.inf.uc3m.es@gmail.com">creator.arcos.inf.uc3m.es@gmail.com</a></b-list-group-item>' +
                 '   </b-list-group>' +
                 ' ' +
+                '   <b-list-group>' +
+                '     <b-list-group-item style="text-align: center;">' +
+                '       <b-row align-h="center">' +
+                '         <b-col cols="4">' +
+                '           <a target="_blank" href=\'https://www.arcos.inf.uc3m.es/\'>' +
+                '             <img alt="ARCOS" class="p-0 headerLogo" src="./images/arcos.svg">' +
+                '           </a>' +
+                '         </b-col>' +
+                '         <b-col cols="8">' +
+                '           <a target="_blank" href=\'https://www.inf.uc3m.es/\'>' +
+                '             <img alt="Computer Science and Engineering Departament" class="p-0 headerLogo" src="./images/dptoinf.png" style="width: 90%; height: auto">' +
+                '           </a>' +
+                '         </b-col>' +
+                '       </b-row>' +
+                '     </b-list-group-item>' +
+                '   </b-list-group>' +
+                ' ' +
                 ' </b-modal>'
   }
 
