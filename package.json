@@ -2,7 +2,7 @@
   "name": "creator",
   "description": "Check CREATOR",
   "author": "dcamarma@inf.uc3m.es",
-  "version": "3.3",
+  "version": "3.2.1",
   "scripts": {
     "test-creator-node": "./run_test.sh",
     "build-creator-web": "./mk_min.sh",
@@ -12,7 +12,7 @@
     "colors": "^1.4.0",
     "jshint": "^2.13.6",
     "readline-sync": "^1.4.10",
-    "terser": "^5.16.3",
-    "yargs": "^17.6.2"
+    "terser": "^5.16.4",
+    "yargs": "^17.7.0"
   }
 }
