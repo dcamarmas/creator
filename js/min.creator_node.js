@@ -173,7 +173,6 @@ function register_value_serialize( architecture )
     }
 
     if (typeof gtag !== "undefined") {
-
       gtag('event',
             action,
             {
@@ -1957,7 +1956,7 @@ function writeRegister ( value, indexComp, indexElem, register_type )
       }
 
       if (typeof window !== "undefined") {
-              btn_glow(architecture.components[indexComp].elements[indexElem].name, "Int") ;
+        btn_glow(architecture.components[indexComp].elements[indexElem].name, "Int") ;
       }
   }
 
@@ -1988,7 +1987,7 @@ function writeRegister ( value, indexComp, indexElem, register_type )
       updateDouble(indexComp, indexElem);
 
       if (typeof window !== "undefined") {
-              btn_glow(architecture.components[indexComp].elements[indexElem].name, "FP") ;
+        btn_glow(architecture.components[indexComp].elements[indexElem].name, "FP") ;
       }
     }
 

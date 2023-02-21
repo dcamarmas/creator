@@ -287,7 +287,9 @@
                       execute_instruction ()
                       {
                         // Google Analytics
-                        creator_ga('execute', 'execute.instruction', 'execute.instruction');
+                        if (run_program == false){
+                          creator_ga('execute', 'execute.instruction', 'execute.instruction');
+                        }
 
                         var ret = execute_instruction();
 
@@ -299,7 +301,7 @@
                           show_notification(ret.msg, ret.type);
                         }
 
-                        if (ret.draw != null)
+                        if ((ret.draw != null) && (run_program == false))
                         {
                           for (var i=0; i<ret.draw.space.length; i++) {
                             instructions[ret.draw.space[i]]._rowVariant = '';
