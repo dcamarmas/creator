@@ -81,19 +81,18 @@
 
   function btn_glow ( btn_name, post_label )
   {
-  var buttonDec = '#popoverValueContent' + btn_name + post_label ;
-  var buttonHex = '#popoverValueContent' + btn_name;
+    if (run_program == false)
+    {
+      var buttonDec = '#popoverValueContent' + btn_name + post_label ;
+      var buttonHex = '#popoverValueContent' + btn_name;
 
-          $(buttonDec).attr("style", "background-color:#c2c2c2;");
-          $(buttonHex).attr("style", "background-color:#c2c2c2;");
-      //  $(buttonDec).attr("class", "btn btn-outline-secondary btn-block btn-sm modRegister");
-      //  $(buttonHex).attr("class", "btn btn-outline-secondary btn-block btn-sm modRegister");
+      $(buttonDec).attr("style", "background-color:#c2c2c2;");
+      $(buttonHex).attr("style", "background-color:#c2c2c2;");
 
-  setTimeout(function() {
-    $(buttonDec).attr("style", "");
-    $(buttonHex).attr("style", "");
-      //  $(buttonDec).attr("class", "btn btn-outline-secondary btn-block btn-sm registers");
-      //  $(buttonHex).attr("class", "btn btn-outline-secondary btn-block btn-sm registers");
-  }, 500);
+      setTimeout(function() {
+        $(buttonDec).attr("style", "");
+        $(buttonHex).attr("style", "");
+      }, 500);
+    }
   }
 
