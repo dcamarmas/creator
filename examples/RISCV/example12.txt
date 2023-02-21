@@ -9,7 +9,7 @@
 
      main: 
            # t1 = factorial(5)
-           li  a0 100
+           li  a0 5
            jal x1 factorial
 
            # print_int(t1)
