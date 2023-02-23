@@ -38,7 +38,7 @@
                   //clk_cycles Graph configure
                   chartOptions: {
                     chart: {
-                      id: 'graphic',
+                      id: 'clk_plot',
                       type: 'bar'
                     },
                     labels: ["Arithmetic floating point", "Arithmetic integer", "Comparison", "Conditional bifurcation", "Control", "Function call", "I/O", "Logic", "Memory access", "Other", "Syscall", "Transfer between registers", "Unconditional bifurcation"],
@@ -83,9 +83,8 @@
                 }
               },
 
-  template:   ' <div id="clk_cycles_plot" class="stats px-0">' +
-              '  <apexchart id="graphic"' +
-              '             ref="clk_cycles_plot"' +
+  template:   ' <div class="stats px-0">' +
+              '  <apexchart ref="clk_cycles_plot"' +
               '             type="bar" ' +
               '             :options="chartOptions" ' +
               '             :series="clk_cycles_value" ' +

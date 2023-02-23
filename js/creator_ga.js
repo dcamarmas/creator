@@ -40,7 +40,6 @@
     }
 
     if (typeof gtag !== "undefined") {
-
       gtag('event',
             action,
             {

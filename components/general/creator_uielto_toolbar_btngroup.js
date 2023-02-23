@@ -229,40 +229,30 @@
                       // Simulator actions
                       //
 
-                      // Reset execution
-                      reset ( reset_graphic )
+                      execution_UI_update (ret)
                       {
-                        // Google Analytics
-                        creator_ga('execute', 'execute.reset', 'execute.reset');
+                        for (var i=0; i<ret.draw.space.length; i++) {
+                          instructions[ret.draw.space[i]]._rowVariant = '';
+                        }
+                        for (var i=0; i<ret.draw.success.length; i++) {
+                          instructions[ret.draw.success[i]]._rowVariant = 'success';
+                        }
+                        for (var i=0; i<ret.draw.info.length; i++) {
+                          instructions[ret.draw.info[i]]._rowVariant = 'info';
+                        }
+                        for (var i=0; i<ret.draw.danger.length; i++) {
+                          instructions[ret.draw.danger[i]]._rowVariant = 'danger';
+                        }
 
-                        show_loading();
-                        setTimeout(function() {
-                          // UI: reset I/O
-                          app._data.resetBut = true ;
-                          app._data.keyboard = "" ;
-                          app._data.display  = "" ;
-                          app._data.enter    = null ;
-
-                          // UI: reset row color...
-                          for (var i = 0; i < instructions.length; i++) {
-                            instructions[i]._rowVariant = '' ;
-                          }
-
-                          reset(reset_graphic);
-
-                          // UI: set default row color...
-                          for (var i = 0; i < instructions.length; i++) 
+                        //Auto-scroll
+                        if(app._data.autoscroll === true && run_program === false)
+                        {
+                          if(execution_index >= 0 && (execution_index + 4) < instructions.length)
                           {
-                            if (instructions[i].Label == "main") {
-                              instructions[i]._rowVariant = 'success' ;
-                            }
-                          }
-
-                          //Auto-scroll
-                          if(execution_index >= 0 && (execution_index + + (parseInt(architecture.arch_conf[1].value) / 8)) < instructions.length){
-                            var id = "#inst_table__row_" + instructions[execution_index + 4].Address;
+                            var id = "#inst_table__row_" + instructions[execution_index + (parseInt(architecture.arch_conf[1].value) / 8)].Address;
                             var row_pos = $(id).position();
-                            if(row_pos){
+                            if(row_pos)
+                            {
                               var pos = row_pos.top - $('.instructions_table').height();
                               $('.instructions_table').animate({scrollTop: (pos)}, 200);
                             }
@@ -270,14 +260,56 @@
                           else if(execution_index > 0 && (execution_index + 4) >= instructions.length){
                             $('.instructions_table').animate({scrollTop: ($('.instructions_table').height())}, 300);
                           }
+                        }
 
-                          //Reset graphic
-                          if(reset_graphic === true && app._data.data_mode == "stats"){
-                            ApexCharts.exec('graphic', 'updateSeries', stats_value);
+                        if(app._data.data_mode == "stats"){
+                          ApexCharts.exec('stat_plot', 'updateSeries', stats_value);
+                        }
+
+                        if(app._data.data_mode == "clk_cycles"){
+                          ApexCharts.exec('clk_plot',  'updateSeries', clk_cycles_value);
+                        }
+                      },
+
+                      // Reset execution
+                      reset ( reset_graphic )
+                      {
+                        // Google Analytics
+                        creator_ga('execute', 'execute.reset', 'execute.reset');
+
+                        var draw = {
+                            space:   [],
+                            info:    [],
+                            success: [],
+                            danger:  [],
+                            flash:   []
+                        } ;
+
+                        // UI: reset I/O
+                        app._data.resetBut = true ;
+                        app._data.keyboard = "" ;
+                        app._data.display  = "" ;
+                        app._data.enter    = null ;
+
+                        reset(reset_graphic);
+
+                        for (var i = 0; i < instructions.length; i++) {
+                          draw.space.push(i);
+                        }
+                        
+                        draw.success = [];
+                        draw.info = [];
+
+                        // UI: set default row color...
+                        for (var i = 0; i < instructions.length; i++) 
+                        {
+                          if (instructions[i].Label == "main") {
+                            draw.success.push(i);
                           }
+                        }
 
-                          hide_loading();
-                        }, 25);
+                        var ret = packExecute(false, null, null, draw) ;
+                        this.execution_UI_update (ret);
 
                         // Close all toast
                         app.$bvToast.hide()
@@ -301,42 +333,8 @@
 
                         if (ret.draw != null)
                         {
-                          for (var i=0; i<ret.draw.space.length; i++) {
-                            instructions[ret.draw.space[i]]._rowVariant = '';
-                          }
-                          for (var i=0; i<ret.draw.success.length; i++) {
-                            instructions[ret.draw.success[i]]._rowVariant = 'success';
-                          }
-                          for (var i=0; i<ret.draw.info.length; i++) {
-                            instructions[ret.draw.info[i]]._rowVariant = 'info';
-                          }
-                          for (var i=0; i<ret.draw.danger.length; i++) {
-                            instructions[ret.draw.danger[i]]._rowVariant = 'danger';
-                          }
-
-                          //Auto-scroll
-                          if(app._data.autoscroll === true && run_program === false)
-                          {
-                            if(execution_index >= 0 && (execution_index + 4) < instructions.length)
-                            {
-                              var id = "#inst_table__row_" + instructions[execution_index + (parseInt(architecture.arch_conf[1].value) / 8)].Address;
-                              var row_pos = $(id).position();
-                              if(row_pos)
-                              {
-                                var pos = row_pos.top - $('.instructions_table').height();
-                                $('.instructions_table').animate({scrollTop: (pos)}, 200);
-                              }
-                            }
-                            else if(execution_index > 0 && (execution_index + 4) >= instructions.length){
-                              $('.instructions_table').animate({scrollTop: ($('.instructions_table').height())}, 300);
-                            }
-                          }
-
-                          if(app._data.data_mode == "stats"){
-                            ApexCharts.exec('graphic', 'updateSeries', stats_value);
-                          }
-                          return ;
-                         }
+                          this.execution_UI_update (ret);
+                        }
                       },
 
                       //Execute all program
@@ -368,27 +366,33 @@
                           return;
                         }
 
-                        this.program_execution_inst(but);
+                        this.execute_program_packed(but);
+
                       },
 
-                      program_execution_inst(but)
+                      execute_program_packed(but)
                       {
+                        var ret;
+
                         for (var i=0; (i<app._data.instructions_packed) && (execution_index >= 0); i++)
                         {
                           if(mutex_read === true)
                           {
+                            this.execution_UI_update (ret);
                             iter1 = 1;
                             run_program = false;
                             return;
                           }
                           else if(instructions[execution_index].Break === true && iter1 === 0)
                           {
+                            this.execution_UI_update (ret);
                             iter1 = 1;
                             run_program = false;
                             return;
                           }
                           else if(this.run_execution === true)
                           {
+                            this.execution_UI_update (ret);
                             app._data.run_execution = false;
                             iter1 = 1;
                             run_program = false;
@@ -400,19 +404,31 @@
                           }
                           else if(this.resetBut === true)
                           {
+                            this.execution_UI_update (ret);
                             app._data.resetBut = false;
                             run_program = false;
                             return;
                           }
                           else
                           {
-                            this.execute_instruction();
+                            ret = execute_instruction();
+
+                            if (typeof ret === "undefined") {
+                              console.log("AQUI hemos llegado y un poema se ha encontrado...") ;
+                            }
+
+                            if (ret.msg != null) {
+                              show_notification(ret.msg, ret.type);
+                            }
                             iter1 = 0;
                           }
                         }
 
                         if(execution_index >= 0){
-                          setTimeout(this.program_execution_inst, 15);
+                          setTimeout(this.execute_program_packed, 15);
+                        }
+                        else{
+                          this.execution_UI_update (ret);
                         }
                       },
 

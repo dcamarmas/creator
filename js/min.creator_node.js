@@ -173,7 +173,6 @@ function register_value_serialize( architecture )
     }
 
     if (typeof gtag !== "undefined") {
-
       gtag('event',
             action,
             {
@@ -1998,7 +1997,7 @@ function writeRegister ( value, indexComp, indexElem, register_type )
       }
 
       if (typeof window !== "undefined") {
-              btn_glow(architecture.components[indexComp].elements[indexElem].name, "Int") ;
+        btn_glow(architecture.components[indexComp].elements[indexElem].name, "Int") ;
       }
   }
 
@@ -2029,7 +2028,7 @@ function writeRegister ( value, indexComp, indexElem, register_type )
       updateDouble(indexComp, indexElem);
 
       if (typeof window !== "undefined") {
-              btn_glow(architecture.components[indexComp].elements[indexElem].name, "FP") ;
+        btn_glow(architecture.components[indexComp].elements[indexElem].name, "FP") ;
       }
     }
 
@@ -3109,7 +3108,7 @@ var compileError = {
    'm7': function(ret) { return "Tag '"                              + ret.token + "' is not valid" },
    'm8': function(ret) { return "Address '"                          + ret.token + "' is too big" },
    'm9': function(ret) { return "Address '"                          + ret.token + "' is not valid" },
-    'm10': function(ret) { return ".space value out of range ("        + ret.token + " is greater than 50MiB)" },
+  'm10': function(ret) { return ".space value out of range ("        + ret.token + " is greater than 50MiB)" },
       //'m11': function(ret) { return "This field '"                       + ret.token + "' must end with ')'" },
   'm12': function(ret) { return "This field is too small to encode in binary '" + ret.token + "" },
   'm13': function(ret) { return "Incorrect pseudoinstruction definition "    + ret.token + "" },
@@ -7455,15 +7454,7 @@ function clk_cycles_update ( type )
       clk_cycles[i].clk_cycles++;
 
       //Update CLK Cycles plot
-      if (typeof app !== "undefined") {
-        const aux_clk_cycles_value = structuredClone(clk_cycles_value[0].data);
-        aux_clk_cycles_value[i] ++;
-        clk_cycles_value = [{data: aux_clk_cycles_value}];
-        app._data.clk_cycles_value = clk_cycles_value;
-      }
-      else{
-        clk_cycles_value[0].data[i] ++;
-      }
+      clk_cycles_value[0].data[i] ++;
       
       total_clk_cycles++;
       if (typeof app !== "undefined") {
@@ -7490,15 +7481,7 @@ function clk_cycles_reset ( )
     clk_cycles[i].percentage = 0;
 
     //Update CLK Cycles plot
-    if (typeof app !== "undefined") {
-      const aux_clk_cycles_value = structuredClone(clk_cycles_value[0].data);
-      aux_clk_cycles_value[i] = 0;
-      clk_cycles_value = [{data: aux_clk_cycles_value}];
-      app._data.clk_cycles_value = clk_cycles_value;
-    }
-    else{
-      clk_cycles_value[0].data[i] ++;
-    }
+    clk_cycles_value[0].data[i] = 0;
   }
 }
 
