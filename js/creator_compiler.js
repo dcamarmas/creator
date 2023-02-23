@@ -80,7 +80,7 @@ var compileError = {
    'm7': function(ret) { return "Tag '"                              + ret.token + "' is not valid" },
    'm8': function(ret) { return "Address '"                          + ret.token + "' is too big" },
    'm9': function(ret) { return "Address '"                          + ret.token + "' is not valid" },
-    'm10': function(ret) { return ".space value out of range ("        + ret.token + " is greater than 50MiB)" },
+  'm10': function(ret) { return ".space value out of range ("        + ret.token + " is greater than 50MiB)" },
       //'m11': function(ret) { return "This field '"                       + ret.token + "' must end with ')'" },
   'm12': function(ret) { return "This field is too small to encode in binary '" + ret.token + "" },
   'm13': function(ret) { return "Incorrect pseudoinstruction definition "    + ret.token + "" },
