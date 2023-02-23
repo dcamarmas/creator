@@ -40,7 +40,7 @@
                   chartOptions: {
                     colors:['red', 'blue', 'yellow', 'purple', 'green', 'orange', 'gray', 'pink', 'teal', 'black', 'lime', 'indigo', 'cyan'],
                     chart: {
-                      id: 'graphic',
+                      id: 'stat_plot',
                       type: 'donut',
                     },
                     labels: ["Arithmetic floating point", "Arithmetic integer", "Comparison", "Conditional bifurcation", "Control", "Function call", "I/O", "Logic", "Memory access", "Other", "Syscall", "Transfer between registers", "Unconditional bifurcation"],
@@ -100,9 +100,8 @@
                 }
               },
 
-  template:   ' <div id="stat_plot" class="stats px-0">' +
-              '   <apexchart id="graphic" ' +
-              '              type="donut" ' +
+  template:   ' <div class="stats px-0">' +
+              '   <apexchart type="donut" ' +
               '              :options="chartOptions" ' +
               '              :series="stats_value" ' +
               '              height="150%" >' +
