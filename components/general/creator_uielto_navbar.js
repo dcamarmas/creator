@@ -68,22 +68,6 @@
                 '         </b-row>' +
                 '       </b-container>' +
                 '   </b-navbar-brand>' +
-                ' ' +
-                '   <b-navbar-toggle target="nav_collapse" aria-label="Open/Close more information"></b-navbar-toggle>' +
-                '     <b-collapse is-nav id="nav_collapse">' +
-                '       <b-navbar-nav class="ml-auto">' +
-                '         <b-nav-item class="mb-0 pb-0 p-0" target="_blank" href=\'https://www.arcos.inf.uc3m.es/\'>' +
-                '           <img alt="ARCOS" class="p-0 headerLogo" src="./images/arcos.svg">' +
-                '         </b-nav-item>' +
-                ' ' +
-                '         <b-nav-item class="mb-0 pb-0 p-0" target="_blank" href=\'https://www.inf.uc3m.es/\'>' +
-                '           <img alt="Computer Science and Engineering Departament" ' +
-                '                class="p-0 headerLogo" ' +
-                '                src="./images/dptoinf.png">' +
-                '         </b-nav-item>' +
-                '       </b-navbar-nav>' +
-                '     </b-collapse>' +
-                '   </b-navbar-toggle>' +
                 ' </b-navbar>'
   }
 
