@@ -32,7 +32,10 @@
 
         data:       function () {
                       return {
-
+                        reset_disable: false,
+                        instruction_disable: false,
+                        run_disable = false,
+                        stop_disable: true
                       }
                     },
 
@@ -366,6 +369,12 @@
                           return;
                         }
 
+                        //Change buttons status
+                        this.reset_disable = true;
+                        this.instruction_disable = true;
+                        this.run_disable = true;
+                        this.stop_disable = false;
+
                         this.execute_program_packed(but);
 
                       },
@@ -379,6 +388,13 @@
                           if(mutex_read === true)
                           {
                             this.execution_UI_update (ret);
+
+                            //Change buttons status
+                            this.reset_disable = false;
+                            this.instruction_disable = false;
+                            this.run_disable = false;
+                            this.stop_disable = true;
+                            
                             iter1 = 1;
                             run_program = false;
                             return;
@@ -386,6 +402,13 @@
                           else if(instructions[execution_index].Break === true && iter1 === 0)
                           {
                             this.execution_UI_update (ret);
+
+                            //Change buttons status
+                            this.reset_disable = false;
+                            this.instruction_disable = false;
+                            this.run_disable = false;
+                            this.stop_disable = true;
+
                             iter1 = 1;
                             run_program = false;
                             return;
@@ -393,6 +416,13 @@
                           else if(this.run_execution === true)
                           {
                             this.execution_UI_update (ret);
+
+                            //Change buttons status
+                            this.reset_disable = false;
+                            this.instruction_disable = false;
+                            this.run_disable = false;
+                            this.stop_disable = true;
+
                             app._data.run_execution = false;
                             iter1 = 1;
                             run_program = false;
@@ -405,6 +435,13 @@
                           else if(this.resetBut === true)
                           {
                             this.execution_UI_update (ret);
+
+                            //Change buttons status
+                            this.reset_disable = false;
+                            this.instruction_disable = false;
+                            this.run_disable = false;
+                            this.stop_disable = true;
+
                             app._data.resetBut = false;
                             run_program = false;
                             return;
@@ -429,6 +466,12 @@
                         }
                         else{
                           this.execution_UI_update (ret);
+
+                          //Change buttons status
+                          this.reset_disable = false;
+                          this.instruction_disable = false;
+                          this.run_disable = false;
+                          this.stop_disable = true;
                         }
                       },
 
@@ -436,6 +479,12 @@
                       stop_execution() 
                       {
                         app._data.run_execution = true;
+
+                        //Change buttons status
+                        this.reset_disable = false;
+                        this.instruction_disable = false;
+                        this.run_disable = false;
+                        this.stop_disable = true;
                       },
                     },
                     
@@ -567,6 +616,7 @@
 
   function button_reset(){
     return  '<b-button v-if="item==\'btn_reset\'" @click="reset(true)" ' +
+            '          :disabled="reset_disable"' +
             '          class="btn btn-block btn-outline-secondary actionsGroup btn-sm h-100 mr-1 text-truncate">' +
             '  <span class="fas fa-power-off"></span>' +
             '  Reset' +
@@ -575,6 +625,7 @@
 
   function button_instruction(){
     return  '<b-button v-if="item==\'btn_instruction\'" accesskey="a" ' +
+            '          :disabled="instruction_disable"' +
             '          class="btn btn-block btn-outline-secondary actionsGroup btn-sm h-100 mr-1 text-truncate" ' +
             '          @click="execute_instruction" id="inst">' +
             '  <span class="fas fa-fast-forward"></span>' +
@@ -588,6 +639,7 @@
   function button_run(){
     return  '<b-button v-if="item==\'btn_run\' && run_execution == false" class="btn btn-block btn-outline-secondary actionsGroup btn-sm h-100 mr-1" ' +
             '          @click="execute_program(true)" ' +
+            '          :disabled="run_disable"' +
             '          id="playExecution">' +
             '  <span class="fas fa-play"></span>' +
             '  Run' +
@@ -597,8 +649,8 @@
   function button_stop(){
     return  '<b-button v-if="item==\'btn_stop\'" class="btn btn-block btn-outline-secondary actionsGroup btn-sm h-100 text-truncate" ' +
             '          @click="stop_execution" ' +
+            '          :disabled="stop_disable"' +
             '          id="stop_execution">' +
-            //'          style="display: none">' +
             '  <span class="fas fa-stop"></span>' +
             '  Stop' +
             '</b-button>'
