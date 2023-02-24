@@ -313,6 +313,7 @@ try
       //
 
       main_memory: {},
+      main_memory_busy: false,
 
       //Stack
       track_stack_names: track_stack_names,

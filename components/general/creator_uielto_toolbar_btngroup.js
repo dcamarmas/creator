@@ -374,6 +374,7 @@
                         this.instruction_disable = true;
                         this.run_disable = true;
                         this.stop_disable = false;
+                        app._data.main_memory_busy = true;
 
                         this.execute_program_packed(but);
 
@@ -394,6 +395,7 @@
                             this.instruction_disable = false;
                             this.run_disable = false;
                             this.stop_disable = true;
+                            app._data.main_memory_busy = false;
                             
                             iter1 = 1;
                             run_program = false;
@@ -408,6 +410,7 @@
                             this.instruction_disable = false;
                             this.run_disable = false;
                             this.stop_disable = true;
+                            app._data.main_memory_busy = false;
 
                             iter1 = 1;
                             run_program = false;
@@ -422,6 +425,7 @@
                             this.instruction_disable = false;
                             this.run_disable = false;
                             this.stop_disable = true;
+                            app._data.main_memory_busy = false;
 
                             app._data.run_execution = false;
                             iter1 = 1;
@@ -441,6 +445,7 @@
                             this.instruction_disable = false;
                             this.run_disable = false;
                             this.stop_disable = true;
+                            app._data.main_memory_busy = false;
 
                             app._data.resetBut = false;
                             run_program = false;
@@ -472,6 +477,7 @@
                           this.instruction_disable = false;
                           this.run_disable = false;
                           this.stop_disable = true;
+                          app._data.main_memory_busy = false;
                         }
                       },
 
@@ -485,6 +491,7 @@
                         this.instruction_disable = false;
                         this.run_disable = false;
                         this.stop_disable = true;
+                        app._data.main_memory_busy = false;
                       },
                     },
                     
