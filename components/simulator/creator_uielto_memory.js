@@ -25,12 +25,13 @@
   var uielto_memory = {
 
   props:    {
-              main_memory:        { type: Array,  required: true },
-              memory_segment:     { type: String, required: true },
-              track_stack_names:  { type: Array,  required: true }, // TODO: optional
-              callee_subrutine:   { type: String, required: true }, // TODO: optional
-              caller_subrutine:   { type: String, required: true },  // TODO: optional
-              stack_total_list:   { type: Number, required: true }
+              main_memory:        { type: Array,   required: true },
+              memory_segment:     { type: String,  required: true },
+              track_stack_names:  { type: Array,   required: true }, // TODO: optional
+              callee_subrutine:   { type: String,  required: true }, // TODO: optional
+              caller_subrutine:   { type: String,  required: true },  // TODO: optional
+              stack_total_list:   { type: Number,  required: true },
+              main_memory_busy:   { type: Boolean, required: true }
             },
 
   data:     function () {
@@ -81,7 +82,8 @@
             '                  :track_stack_names="track_stack_names" ' +
             '                  :callee_subrutine="callee_subrutine" ' +
             '                  :caller_subrutine="caller_subrutine"' +
-            '                  :stack_total_list="stack_total_list">' +
+            '                  :stack_total_list="stack_total_list"' +
+            '                  :main_memory_busy="main_memory_busy">' +
             '       </table-mem>' +
             '     </b-col>' +
             '   </b-row>' +
