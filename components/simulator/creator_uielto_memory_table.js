@@ -25,12 +25,13 @@
   var uielto_memory = {
 
   props:    {
-              main_memory:        { type: Array,  required: true },
-              memory_segment:     { type: String, required: true },
-              track_stack_names:  { type: Array,  required: true }, // TODO: optional
-              callee_subrutine:   { type: String, required: true }, // TODO: optional
-              caller_subrutine:   { type: String, required: true }, // TODO: optional
-              stack_total_list:   { type: Number, required: true }
+              main_memory:        { type: Array,   required: true },
+              memory_segment:     { type: String,  required: true },
+              track_stack_names:  { type: Array,   required: true }, // TODO: optional
+              callee_subrutine:   { type: String,  required: true }, // TODO: optional
+              caller_subrutine:   { type: String,  required: true }, // TODO: optional
+              stack_total_list:   { type: Number,  required: true },
+              main_memory_busy:   { type: Boolean, required: true }
             },
 
   data:     function () {
@@ -132,7 +133,7 @@
                          'h6Sm text-blue-funny':  ((row.item.addr < app._data.begin_caller)                         && (row.item.addr >= app._data.end_caller)),
                          'h6Sm                ':  (row.item.addr >= app._data.begin_caller)
                         }
-              }       
+              }
             },
   computed: {
               main_memory_items ()
@@ -150,20 +151,28 @@
             '       <b-col class="mx-0 pl-0 pr-2" style="min-height:35vh !important;">' +
             ' ' +
             '         <b-table sticky-header ' +
-            '                 striped ' +
+            '                 striped ref="table"' +
             '                 small ' +
             '                 hover ' +
+            '                 :busy="main_memory_busy"' +
             '                 :items="main_memory_items" ' +
             '                 :fields="memFields" ' +
             '                 :filter-function=filter ' +
             '                 filter=" " ' +
             '                 class="memory_table align-items-start" ' +
             '                 @row-clicked="select_data_type">' +
-            '      ' +
+            ' ' +
+            '           <template #table-busy>' +
+            '             <div class="text-center text-primary my-2">' +
+            '               <b-spinner class="align-middle"></b-spinner>' +
+            '               <strong> Running...</strong>' +
+            '             </div>' +
+            '           </template>' +
+            ' ' +
             '           <template v-slot:head(Tag)="row">' +
             '             &nbsp;' +
             '           </template>' +
-            '      ' +
+            ' ' +
             '           <template v-slot:cell(Tag)="row">' +
             '             <div v-for="item in architecture_hash">' +
             '               <div v-for="item2 in architecture.components[item.index].elements">' +
