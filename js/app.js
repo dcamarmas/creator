@@ -292,12 +292,6 @@ try
       //Run instructions
       instructions_packed: 20,
 
-      //Run button
-      run_execution: false,
-
-      //Reset button
-      resetBut: false,
-
       //Instructions
       instructions: instructions,
 

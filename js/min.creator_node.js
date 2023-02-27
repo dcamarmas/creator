@@ -6729,17 +6729,14 @@ function binaryStringToInt( b ) {
 
 
 
-/*Execution*/
-var execution_index = 0;
-var run_execution = false;
-var run_program = false;
-var iter1 = 1;
-var execution_init = 1;
-
-
 /*
  * Execution
  */
+
+var execution_index = 0;
+var run_program = false;
+var execution_init = 1;
+
 
 function packExecute ( error, err_msg, err_type, draw )
 {
@@ -6766,7 +6763,8 @@ function execute_instruction ( )
   console_log(mutex_read);
   newExecution = false;
 
-  do {
+  do
+  {
     console_log(execution_index);
     //console_log(architecture.components[0].elements[0].value); //TODO
     console_log(readRegister(0, 0));
@@ -7533,7 +7531,7 @@ function keyboard_read ( fn_post_read, fn_post_params )
 
     show_notification('The data has been uploaded', 'info') ;
 
-    if (run_program === false){
+    if (run_program === true){
       uielto_toolbar_btngroup.methods.executeProgram();
     }
 
@@ -7566,7 +7564,7 @@ function keyboard_read ( fn_post_read, fn_post_params )
     return packExecute(true, 'The execution of the program has finished', 'success', null);
   }
 
-  if (run_program === false) {
+  if (run_program === true) {
     uielto_toolbar_btngroup.methods.execute_program();
   }
 }
