@@ -1253,7 +1253,7 @@ function capi_print_string ( value1 )
 
 	/* Print string */
 	var addr = readRegister(ret1.indexComp, ret1.indexElem);
-        var msg  = readMemory(parseInt(addr), "string") ;
+    var msg  = readMemory(parseInt(addr), "string") ;
 	display_print(msg) ;
 }
 
@@ -1273,6 +1273,7 @@ function capi_read_int ( value1 )
 	    document.getElementById('enter_keyboard').scrollIntoView();
 	}
 
+	mutex_keyboard = true;
 	return keyboard_read(kbd_read_int, ret1) ;
 }
 
@@ -1291,6 +1292,7 @@ function capi_read_float ( value1 )
 	    document.getElementById('enter_keyboard').scrollIntoView();
 	}
 
+	mutex_keyboard = true;
 	return keyboard_read(kbd_read_float, ret1) ;
 }
 
@@ -1309,6 +1311,7 @@ function capi_read_double ( value1 )
 	    document.getElementById('enter_keyboard').scrollIntoView();
 	}
 
+	mutex_keyboard = true;
 	return keyboard_read(kbd_read_double, ret1) ;
 }
 
@@ -1327,6 +1330,7 @@ function capi_read_char ( value1 )
 	    document.getElementById('enter_keyboard').scrollIntoView();
 	}
 
+	mutex_keyboard = true;
 	return keyboard_read(kbd_read_char, ret1) ;
 }
 
@@ -1354,6 +1358,7 @@ function capi_read_string ( value1, value2 )
 	ret1.indexComp2 = ret2.indexComp ;
 	ret1.indexElem2 = ret2.indexElem ;
 
+	mutex_keyboard = true;
 	return keyboard_read(kbd_read_string, ret1) ;
 }
 
@@ -3097,11 +3102,6 @@ var notifications = [];
 /*Available examples*/
 var example_set_available = [];
 var example_available = [];
-
-/*Keyboard*/
-var consoleMutex = false;
-var mutex_read = false;
-var newExecution = true;
 /*Instructions memory*/
 var instructions = [];
 var instructions_tag = [];
@@ -3114,50 +3114,6 @@ var data_tag = [];
 var code_binary = '';
 var update_binary = '';
 var load_binary = false;
-/*Stats*/
-var totalStats = 0;
-var stats_value = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-var stats = [
-              { type: 'Arithmetic floating point', number_instructions: 0, percentage: 0 },
-              { type: 'Arithmetic integer', number_instructions: 0, percentage: 0},
-              { type: 'Comparison', number_instructions: 0, percentage: 0 },
-              { type: 'Conditional bifurcation', number_instructions: 0, percentage: 0},
-              { type: 'Control', number_instructions: 0, percentage: 0},
-              { type: 'Function call', number_instructions: 0, percentage: 0},
-              { type: 'I/O', number_instructions: 0, percentage: 0},
-              { type: 'Logic', number_instructions: 0, percentage: 0, abbreviation: "Log"},
-              { type: 'Memory access', number_instructions: 0, percentage: 0},
-              { type: 'Other', number_instructions: 0, percentage: 0},
-              { type: 'Syscall', number_instructions: 0, percentage: 0},
-              { type: 'Transfer between registers', number_instructions: 0, percentage: 0},
-              { type: 'Unconditional bifurcation', number_instructions: 0, percentage: 0},
-            ];
-/*CLK Cycles*/
-var total_clk_cycles = 0;
-var clk_cycles_value =  [
-                          {
-                            data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-                          }
-                        ];
-var clk_cycles =  [
-                    { type: 'Arithmetic floating point', clk_cycles: 0, percentage: 0 },
-                    { type: 'Arithmetic integer', clk_cycles: 0, percentage: 0},
-                    { type: 'Comparison', clk_cycles: 0, percentage: 0 },
-                    { type: 'Conditional bifurcation', clk_cycles: 0, percentage: 0},
-                    { type: 'Control', clk_cycles: 0, percentage: 0},
-                    { type: 'Function call', clk_cycles: 0, percentage: 0},
-                    { type: 'I/O', clk_cycles: 0, percentage: 0},
-                    { type: 'Logic', clk_cycles: 0, percentage: 0, abbreviation: "Log"},
-                    { type: 'Memory access', clk_cycles: 0, percentage: 0},
-                    { type: 'Other', clk_cycles: 0, percentage: 0},
-                    { type: 'Syscall', clk_cycles: 0, percentage: 0},
-                    { type: 'Transfer between registers', clk_cycles: 0, percentage: 0},
-                    { type: 'Unconditional bifurcation', clk_cycles: 0, percentage: 0},
-                  ];
-/*Keyboard*/
-var keyboard = '' ;
-/*Display*/
-var display = '' ;
 
 
 //
@@ -6760,8 +6716,8 @@ function execute_instruction ( )
       flash:   []
   } ;
 
-  console_log(mutex_read);
-  newExecution = false;
+  var error = 0;
+  var index;
 
   do
   {
@@ -6778,7 +6734,7 @@ function execute_instruction ( )
     if (execution_index == -1) {
       return packExecute(true, 'The program has finished with errors', 'danger', null);
     }
-    else if (mutex_read === true) {
+    else if (mutex_keyboard === true) {
       return packExecute(false, '', 'info', null);
     }
 
@@ -6801,12 +6757,8 @@ function execute_instruction ( )
       }
     }
 
-    var error = 0;
-    var index;
-
     for (var i = 0; i < instructions.length; i++)
     {
-      //if (parseInt(instructions[i].Address, 16) == architecture.components[0].elements[0].value) //TODO
       if (parseInt(instructions[i].Address, 16) == readRegister(0, 0)) 
       {
         execution_index = i;
@@ -6834,7 +6786,6 @@ function execute_instruction ( )
     var signatureRawParts;
 
     var binary;
-    var auxIndex; //TODO: probar que sigue igual
     var nwords;
     var auxDef;
     var type;
@@ -6945,7 +6896,6 @@ function execute_instruction ( )
         instructionExecParts = instructionExec.split(' ');
 
         binary = true;
-        auxIndex = i;
       }
 
       if (architecture.instructions[i].name == instructionExecParts[0] && instructionExecParts.length == auxSig.length)
@@ -6988,7 +6938,6 @@ function execute_instruction ( )
     //Increase PC
     //TODO: other register
     word_size = parseInt(architecture.arch_conf[1].value) / 8;
-    //architecture.components[0].elements[0].value = architecture.components[0].elements[0].value + bi_intToBigInt(nwords * word_size,10) ; //TODO
     writeRegister(readRegister(0,0) + (nwords * word_size), 0,0);
     console_log(auxDef);
 
@@ -7042,7 +6991,6 @@ function execute_instruction ( )
                   var_writings_definitions[signatureRawParts[i]]  = "if(" + signatureRawParts[i] + " != " + signatureRawParts[i] + "_prev)" +
                                                                     " { writeRegister("+ signatureRawParts[i]+" ,"+j+" ,"+z+", \""+ signatureParts[i] + "\"); }\n";
                 }
-
               }
             }
           }
@@ -7140,8 +7088,8 @@ function execute_instruction ( )
 
     // Execution error
     if (execution_index == -1){
-       error = 1;
-       return packExecute(false, '', 'info', null); //CHECK
+      error = 1;
+      return packExecute(false, '', 'info', null); //CHECK
     }
 
     // Next instruction to execute
@@ -7149,13 +7097,12 @@ function execute_instruction ( )
     {
       for (var i = 0; i < instructions.length; i++)
       {
-        //if (parseInt(instructions[i].Address, 16) == architecture.components[0].elements[0].value) { //TODO
         if (parseInt(instructions[i].Address, 16) == readRegister(0, 0)) {
           execution_index = i;
           draw.success.push(execution_index) ;
           break;
         }
-        else if (i == instructions.length-1 && mutex_read === true){
+        else if (i == instructions.length-1 && mutex_keyboard === true){
           execution_index = instructions.length+1;
         }
         else if (i == instructions.length-1){
@@ -7165,7 +7112,7 @@ function execute_instruction ( )
       }
     }
 
-    if (execution_index >= instructions.length && mutex_read === true)
+    if (execution_index >= instructions.length && mutex_keyboard === true)
     {
       for (var i = 0; i < instructions.length; i++) {
         draw.space.push(i);
@@ -7173,7 +7120,7 @@ function execute_instruction ( )
       draw.info=[];
       return packExecute(false, 'The execution of the program has finished', 'success', draw); //CHECK
     }
-    else if(execution_index >= instructions.length && mutex_read === false)
+    else if(execution_index >= instructions.length && mutex_keyboard === false)
     {
       for (var i = 0; i < instructions.length; i++){
         draw.space.push(i) ;
@@ -7217,21 +7164,6 @@ function executeProgramOneShot ( limit_n_instructions )
   return packExecute(true, '"ERROR:" number of instruction limit reached :-(', null, null) ;
 }
 
-function creator_executor_exit ( error )
-{
-  // Google Analytics
-  creator_ga('execute', 'execute.exit');
-
-  if (error)
-  {
-    execution_index = -1;
-  }
-  else
-  {
-    execution_index = instructions.length + 1;
-  }
-}
-
 function reset ()
 {
   // Google Analytics
@@ -7239,6 +7171,7 @@ function reset ()
 
   execution_index = 0;
   execution_init = 1;
+  run_program = false;
 
   // Reset stats
   stats_reset();
@@ -7247,8 +7180,7 @@ function reset ()
   clk_cycles_reset();
 
   // Reset console
-  mutex_read    = false ;
-  newExecution = true ;
+  mutex_keyboard    = false ;
   keyboard = '' ;
   display  = '' ;
 
@@ -7297,6 +7229,24 @@ function reset ()
 
   return true ;
 }
+
+//Exit syscall
+function creator_executor_exit ( error )
+{
+  // Google Analytics
+  creator_ga('execute', 'execute.exit');
+
+  if (error)
+  {
+    execution_index = -1;
+  }
+  else
+  {
+    execution_index = instructions.length + 1;
+  }
+}
+
+
 
 
 /*
@@ -7351,6 +7301,25 @@ function writeStackLimit ( stackLimit )
  * Stats
  */
 
+var totalStats = 0;
+var stats_value = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+var stats = [
+              { type: 'Arithmetic floating point', number_instructions: 0, percentage: 0 },
+              { type: 'Arithmetic integer', number_instructions: 0, percentage: 0},
+              { type: 'Comparison', number_instructions: 0, percentage: 0 },
+              { type: 'Conditional bifurcation', number_instructions: 0, percentage: 0},
+              { type: 'Control', number_instructions: 0, percentage: 0},
+              { type: 'Function call', number_instructions: 0, percentage: 0},
+              { type: 'I/O', number_instructions: 0, percentage: 0},
+              { type: 'Logic', number_instructions: 0, percentage: 0, abbreviation: "Log"},
+              { type: 'Memory access', number_instructions: 0, percentage: 0},
+              { type: 'Other', number_instructions: 0, percentage: 0},
+              { type: 'Syscall', number_instructions: 0, percentage: 0},
+              { type: 'Transfer between registers', number_instructions: 0, percentage: 0},
+              { type: 'Unconditional bifurcation', number_instructions: 0, percentage: 0},
+            ];
+
+
 function stats_update ( type )
 {
   for (var i = 0; i < stats.length; i++)
@@ -7392,6 +7361,28 @@ function stats_reset ( )
 /*
  * CLK Cycles
  */
+
+var total_clk_cycles = 0;
+var clk_cycles_value =  [
+                          {
+                            data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                          }
+                        ];
+var clk_cycles =  [
+                    { type: 'Arithmetic floating point', clk_cycles: 0, percentage: 0 },
+                    { type: 'Arithmetic integer', clk_cycles: 0, percentage: 0},
+                    { type: 'Comparison', clk_cycles: 0, percentage: 0 },
+                    { type: 'Conditional bifurcation', clk_cycles: 0, percentage: 0},
+                    { type: 'Control', clk_cycles: 0, percentage: 0},
+                    { type: 'Function call', clk_cycles: 0, percentage: 0},
+                    { type: 'I/O', clk_cycles: 0, percentage: 0},
+                    { type: 'Logic', clk_cycles: 0, percentage: 0, abbreviation: "Log"},
+                    { type: 'Memory access', clk_cycles: 0, percentage: 0},
+                    { type: 'Other', clk_cycles: 0, percentage: 0},
+                    { type: 'Syscall', clk_cycles: 0, percentage: 0},
+                    { type: 'Transfer between registers', clk_cycles: 0, percentage: 0},
+                    { type: 'Unconditional bifurcation', clk_cycles: 0, percentage: 0},
+                  ];
 
 function clk_cycles_update ( type )
 {
@@ -7437,6 +7428,12 @@ function clk_cycles_reset ( )
 /*
  * I/O
  */
+
+var keyboard = '' ;
+var display = '' ;
+
+//Keyboard
+var mutex_keyboard = false;
 
 function display_print ( info )
 {
@@ -7495,7 +7492,7 @@ function kbd_read_string ( keystroke, params )
 }
 
 
-function keyboard_read ( fn_post_read, fn_post_params )
+function keyboard_read ( fn_post_read, fn_post_params)
 {
   var draw = {
     space: [] ,
@@ -7518,27 +7515,9 @@ function keyboard_read ( fn_post_read, fn_post_params )
   }
 
   // UI
-  mutex_read = true;
   app._data.enter = false;
-  console_log(mutex_read);
 
-  if (newExecution === true)
-  {
-    app._data.keyboard = "";
-    consoleMutex    = false;
-    mutex_read       = false;
-    app._data.enter = null;
-
-    show_notification('The data has been uploaded', 'info') ;
-
-    if (run_program === true){
-      uielto_toolbar_btngroup.methods.executeProgram();
-    }
-
-    return;
-  }
-
-  if (consoleMutex === false) {
+  if (mutex_keyboard === true) {
     setTimeout(keyboard_read, 1000, fn_post_read, fn_post_params);
     return;
   }
@@ -7546,13 +7525,9 @@ function keyboard_read ( fn_post_read, fn_post_params )
   fn_post_read(app._data.keyboard, fn_post_params) ;
 
   app._data.keyboard = "";
-  consoleMutex    = false;
-  mutex_read       = false;
   app._data.enter = null;
 
   show_notification('The data has been uploaded', 'info') ;
-
-  console_log(mutex_read);
 
   if (execution_index >= instructions.length)
   {

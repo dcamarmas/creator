@@ -345,7 +345,7 @@ try
 
       display: '',
       keyboard: '',
-      enter: null,
+      enter: null, // Draw text area border in read
     },
 
 
