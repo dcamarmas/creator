@@ -263,7 +263,7 @@ function capi_print_string ( value1 )
 
 	/* Print string */
 	var addr = readRegister(ret1.indexComp, ret1.indexElem);
-        var msg  = readMemory(parseInt(addr), "string") ;
+    var msg  = readMemory(parseInt(addr), "string") ;
 	display_print(msg) ;
 }
 
@@ -283,6 +283,7 @@ function capi_read_int ( value1 )
 	    document.getElementById('enter_keyboard').scrollIntoView();
 	}
 
+	mutex_keyboard = true;
 	return keyboard_read(kbd_read_int, ret1) ;
 }
 
@@ -301,6 +302,7 @@ function capi_read_float ( value1 )
 	    document.getElementById('enter_keyboard').scrollIntoView();
 	}
 
+	mutex_keyboard = true;
 	return keyboard_read(kbd_read_float, ret1) ;
 }
 
@@ -319,6 +321,7 @@ function capi_read_double ( value1 )
 	    document.getElementById('enter_keyboard').scrollIntoView();
 	}
 
+	mutex_keyboard = true;
 	return keyboard_read(kbd_read_double, ret1) ;
 }
 
@@ -337,6 +340,7 @@ function capi_read_char ( value1 )
 	    document.getElementById('enter_keyboard').scrollIntoView();
 	}
 
+	mutex_keyboard = true;
 	return keyboard_read(kbd_read_char, ret1) ;
 }
 
@@ -364,6 +368,7 @@ function capi_read_string ( value1, value2 )
 	ret1.indexComp2 = ret2.indexComp ;
 	ret1.indexElem2 = ret2.indexElem ;
 
+	mutex_keyboard = true;
 	return keyboard_read(kbd_read_string, ret1) ;
 }
 

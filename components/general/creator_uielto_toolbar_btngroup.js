@@ -385,7 +385,7 @@
                         {
                           if  ( 
                                 (run_program == false) ||                       // stop button pressed
-                                (mutex_read === true)  ||                       // wait for user input at keyboard
+                                (mutex_keyboard === true)  ||                   // wait for user input at keyboard
                                 (instructions[execution_index].Break === true)  // stop because a breakpoint
                               )
                           {
@@ -398,7 +398,9 @@
                             this.stop_disable = true;
                             app._data.main_memory_busy = false;
                             
-                            run_program = false; //In case read or breakpoint --> stop
+                            if (instructions[execution_index].Break === true){
+                              run_program = false; //In case breakpoint --> stop
+                            }
                             return;
                           }
                           else
