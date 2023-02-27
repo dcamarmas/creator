@@ -289,7 +289,6 @@
                         } ;
 
                         // UI: reset I/O
-                        app._data.resetBut = true ;
                         app._data.keyboard = "" ;
                         app._data.display  = "" ;
                         app._data.enter    = null ;
@@ -327,7 +326,7 @@
                         var ret = execute_instruction();
 
                         if (typeof ret === "undefined") {
-                          console.log("AQUI hemos llegado y un poema se ha encontrado...") ;
+                          console.log("Something weird happened :-S") ;
                         }
 
                         if (ret.msg != null) {
@@ -341,13 +340,13 @@
                       },
 
                       //Execute all program
-                      execute_program (but)
+                      execute_program ()
                       {
+                        var ret;
+
                         // Google Analytics
                         creator_ga('execute', 'execute.run', 'execute.run');
 
-                        app._data.run_execution = true;
-                        app._data.run_execution = false;
                         run_program = true;
 
                         if (instructions.length === 0)
@@ -376,17 +375,19 @@
                         this.stop_disable = false;
                         app._data.main_memory_busy = true;
 
-                        this.execute_program_packed(but);
-
+                        this.execute_program_packed(ret);
                       },
 
-                      execute_program_packed(but)
+                      execute_program_packed(ret)
                       {
-                        var ret;
 
                         for (var i=0; (i<app._data.instructions_packed) && (execution_index >= 0); i++)
                         {
-                          if(mutex_read === true)
+                          if  ( 
+                                (run_program == false) ||                       // stop button pressed
+                                (mutex_read === true)  ||                       // wait for user input at keyboard
+                                (instructions[execution_index].Break === true)  // stop because a breakpoint
+                              )
                           {
                             this.execution_UI_update (ret);
 
@@ -397,58 +398,7 @@
                             this.stop_disable = true;
                             app._data.main_memory_busy = false;
                             
-                            iter1 = 1;
-                            run_program = false;
-                            return;
-                          }
-                          else if(instructions[execution_index].Break === true && iter1 === 0)
-                          {
-                            this.execution_UI_update (ret);
-
-                            //Change buttons status
-                            this.reset_disable = false;
-                            this.instruction_disable = false;
-                            this.run_disable = false;
-                            this.stop_disable = true;
-                            app._data.main_memory_busy = false;
-
-                            iter1 = 1;
-                            run_program = false;
-                            return;
-                          }
-                          else if(this.run_execution === true)
-                          {
-                            this.execution_UI_update (ret);
-
-                            //Change buttons status
-                            this.reset_disable = false;
-                            this.instruction_disable = false;
-                            this.run_disable = false;
-                            this.stop_disable = true;
-                            app._data.main_memory_busy = false;
-
-                            app._data.run_execution = false;
-                            iter1 = 1;
-                            run_program = false;
-                            return;
-                          }
-                          else if(but === true && i === 0)
-                          {
-                            app._data.resetBut = false;
-                          }
-                          else if(this.resetBut === true)
-                          {
-                            this.execution_UI_update (ret);
-
-                            //Change buttons status
-                            this.reset_disable = false;
-                            this.instruction_disable = false;
-                            this.run_disable = false;
-                            this.stop_disable = true;
-                            app._data.main_memory_busy = false;
-
-                            app._data.resetBut = false;
-                            run_program = false;
+                            run_program = false; //In case read or breakpoint --> stop
                             return;
                           }
                           else
@@ -456,18 +406,17 @@
                             ret = execute_instruction();
 
                             if (typeof ret === "undefined") {
-                              console.log("AQUI hemos llegado y un poema se ha encontrado...") ;
+                              console.log("Something weird happened :-S") ;
                             }
 
                             if (ret.msg != null) {
                               show_notification(ret.msg, ret.type);
                             }
-                            iter1 = 0;
                           }
                         }
 
                         if(execution_index >= 0){
-                          setTimeout(this.execute_program_packed, 15);
+                          setTimeout(this.execute_program_packed, 15, ret);
                         }
                         else{
                           this.execution_UI_update (ret);
@@ -484,7 +433,7 @@
                       //Stop program excution
                       stop_execution() 
                       {
-                        app._data.run_execution = true;
+                        run_program = false;
 
                         //Change buttons status
                         this.reset_disable = false;
@@ -644,8 +593,8 @@
   }
 
   function button_run(){
-    return  '<b-button v-if="item==\'btn_run\' && run_execution == false" class="btn btn-block btn-outline-secondary actionsGroup btn-sm h-100 mr-1" ' +
-            '          @click="execute_program(true)" ' +
+    return  '<b-button v-if="item==\'btn_run\'" class="btn btn-block btn-outline-secondary actionsGroup btn-sm h-100 mr-1" ' +
+            '          @click="execute_program" ' +
             '          :disabled="run_disable"' +
             '          id="playExecution">' +
             '  <span class="fas fa-play"></span>' +
