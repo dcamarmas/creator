@@ -381,13 +381,13 @@
                         this.stop_disable = false;
                         app._data.main_memory_busy = true;
 
-                        this.execute_program_packed(ret);
+                        uielto_toolbar_btngroup.methods.execute_program_packed(ret, this);
                       },
 
-                      execute_program_packed(ret)
+                      execute_program_packed(ret,local_this)
                       {
 
-                        for (var i=0; (i<app._data.instructions_packed) && (execution_index >= 0); i++)
+                        for (var i=0; (i<instructions_packed) && (execution_index >= 0); i++)
                         {
                           if  ( 
                                 (run_program == 0)  ||                                                  // stop button pressed
@@ -395,13 +395,13 @@
                                 ((instructions[execution_index].Break === true) && (run_program != 2))  // stop because a breakpoint
                               )
                           {
-                            this.execution_UI_update (ret);
+                            local_this.execution_UI_update (ret);
 
                             //Change buttons status
-                            this.reset_disable = false;
-                            this.instruction_disable = false;
-                            this.run_disable = false;
-                            this.stop_disable = true;
+                            local_this.reset_disable = false;
+                            local_this.instruction_disable = false;
+                            local_this.run_disable = false;
+                            local_this.stop_disable = true;
                             app._data.main_memory_busy = false;
                             
                             if (instructions[execution_index].Break === true){
@@ -415,25 +415,46 @@
 
                             if (typeof ret === "undefined") {
                               console.log("Something weird happened :-S") ;
+                              run_program = 0;
+
+                              local_this.execution_UI_update (ret);
+
+                              //Change buttons status
+                              local_this.reset_disable = false;
+                              local_this.instruction_disable = false;
+                              local_this.run_disable = false;
+                              local_this.stop_disable = true;
+                              app._data.main_memory_busy = false;
+
+                              return;
                             }
 
                             if (ret.msg != null) {
                               show_notification(ret.msg, ret.type);
+
+                              local_this.execution_UI_update (ret);
+
+                              //Change buttons status
+                              local_this.reset_disable = false;
+                              local_this.instruction_disable = false;
+                              local_this.run_disable = false;
+                              local_this.stop_disable = true;
+                              app._data.main_memory_busy = false;
                             }
                           }
                         }
 
                         if(execution_index >= 0){
-                          setTimeout(this.execute_program_packed, 15, ret);
+                          setTimeout(uielto_toolbar_btngroup.methods.execute_program_packed, 15, ret, local_this);
                         }
                         else{
-                          this.execution_UI_update (ret);
-
+                          local_this.execution_UI_update (ret);
+                          console.log("AQUI");
                           //Change buttons status
-                          this.reset_disable = false;
-                          this.instruction_disable = false;
-                          this.run_disable = false;
-                          this.stop_disable = true;
+                          local_this.reset_disable = false;
+                          local_this.instruction_disable = false;
+                          local_this.run_disable = false;
+                          local_this.stop_disable = true;
                           app._data.main_memory_busy = false;
                         }
                       },
