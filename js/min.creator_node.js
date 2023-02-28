@@ -6689,9 +6689,10 @@ function binaryStringToInt( b ) {
  * Execution
  */
 
-var execution_index = 0;
-var run_program     = 0; // 0: stopped, 1: running, 2: stopped-by-breakpoint, 3: stopped-by-mutex-read
-var execution_init  = 1;
+var execution_index     = 0;
+var run_program         = 0; // 0: stopped, 1: running, 2: stopped-by-breakpoint, 3: stopped-by-mutex-read
+var execution_init      = 1;
+var instructions_packed = 100;
 
 
 function packExecute ( error, err_msg, err_type, draw )
@@ -6729,6 +6730,7 @@ function execute_instruction ( )
       return packExecute(true, 'No instructions in memory', 'danger', null);
     }
     if (execution_index < -1) {
+      console.log("EXECUTOR")
       return packExecute(true, 'The program has finished', 'warning', null);
     }
     if (execution_index == -1) {
@@ -7538,7 +7540,8 @@ function keyboard_read ( fn_post_read, fn_post_params)
   }
 
   if (run_program === 1) {
-    uielto_toolbar_btngroup.methods.execute_program();
+    //uielto_toolbar_btngroup.methods.execute_program();
+    $("#playExecution").trigger("click");
   }
 }
 

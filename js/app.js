@@ -289,9 +289,6 @@ try
       // Execution
       //
 
-      //Run instructions
-      instructions_packed: 20,
-
       //Instructions
       instructions: instructions,
 
