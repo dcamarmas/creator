@@ -388,7 +388,6 @@ function assembly_compiler()
         extern = [];
         data = [];
         execution_init = 1;
-        mutex_read = false;
 
         pc = 4;
 

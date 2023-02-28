@@ -1273,7 +1273,7 @@ function capi_read_int ( value1 )
 	    document.getElementById('enter_keyboard').scrollIntoView();
 	}
 
-	mutex_keyboard = true;
+	run_program = 3;
 	return keyboard_read(kbd_read_int, ret1) ;
 }
 
@@ -1292,7 +1292,7 @@ function capi_read_float ( value1 )
 	    document.getElementById('enter_keyboard').scrollIntoView();
 	}
 
-	mutex_keyboard = true;
+	run_program = 3;
 	return keyboard_read(kbd_read_float, ret1) ;
 }
 
@@ -1311,7 +1311,7 @@ function capi_read_double ( value1 )
 	    document.getElementById('enter_keyboard').scrollIntoView();
 	}
 
-	mutex_keyboard = true;
+	run_program = 3;
 	return keyboard_read(kbd_read_double, ret1) ;
 }
 
@@ -1330,7 +1330,7 @@ function capi_read_char ( value1 )
 	    document.getElementById('enter_keyboard').scrollIntoView();
 	}
 
-	mutex_keyboard = true;
+	run_program = 3;
 	return keyboard_read(kbd_read_char, ret1) ;
 }
 
@@ -1358,7 +1358,7 @@ function capi_read_string ( value1, value2 )
 	ret1.indexComp2 = ret2.indexComp ;
 	ret1.indexElem2 = ret2.indexElem ;
 
-	mutex_keyboard = true;
+	run_program = 3;
 	return keyboard_read(kbd_read_string, ret1) ;
 }
 
@@ -1539,6 +1539,7 @@ function capi_float2bin ( f )
 {
 	return float2bin(f) ;
 }
+
 /*
  *  Copyright 2018-2023 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
@@ -3380,7 +3381,6 @@ function assembly_compiler()
         extern = [];
         data = [];
         execution_init = 1;
-        mutex_read = false;
 
         pc = 4;
 
@@ -6690,8 +6690,8 @@ function binaryStringToInt( b ) {
  */
 
 var execution_index = 0;
-var run_program = false;
-var execution_init = 1;
+var run_program     = 0; // 0: stopped, 1: running, 2: stopped-by-breakpoint, 3: stopped-by-mutex-read
+var execution_init  = 1;
 
 
 function packExecute ( error, err_msg, err_type, draw )
@@ -6734,7 +6734,7 @@ function execute_instruction ( )
     if (execution_index == -1) {
       return packExecute(true, 'The program has finished with errors', 'danger', null);
     }
-    else if (mutex_keyboard === true) {
+    else if (run_program === 3) {
       return packExecute(false, '', 'info', null);
     }
 
@@ -7102,7 +7102,7 @@ function execute_instruction ( )
           draw.success.push(execution_index) ;
           break;
         }
-        else if (i == instructions.length-1 && mutex_keyboard === true){
+        else if ((i == instructions.length-1) && (run_program === 3)){
           execution_index = instructions.length+1;
         }
         else if (i == instructions.length-1){
@@ -7112,7 +7112,7 @@ function execute_instruction ( )
       }
     }
 
-    if (execution_index >= instructions.length && mutex_keyboard === true)
+    if ((execution_index >= instructions.length) && (run_program === 3))
     {
       for (var i = 0; i < instructions.length; i++) {
         draw.space.push(i);
@@ -7120,7 +7120,7 @@ function execute_instruction ( )
       draw.info=[];
       return packExecute(false, 'The execution of the program has finished', 'success', draw); //CHECK
     }
-    else if(execution_index >= instructions.length && mutex_keyboard === false)
+    else if ((execution_index >= instructions.length) && (run_program != 3))
     {
       for (var i = 0; i < instructions.length; i++){
         draw.space.push(i) ;
@@ -7171,7 +7171,7 @@ function reset ()
 
   execution_index = 0;
   execution_init = 1;
-  run_program = false;
+  run_program = 0;
 
   // Reset stats
   stats_reset();
@@ -7180,7 +7180,6 @@ function reset ()
   clk_cycles_reset();
 
   // Reset console
-  mutex_keyboard    = false ;
   keyboard = '' ;
   display  = '' ;
 
@@ -7433,7 +7432,6 @@ var keyboard = '' ;
 var display = '' ;
 
 //Keyboard
-var mutex_keyboard = false;
 
 function display_print ( info )
 {
@@ -7517,7 +7515,7 @@ function keyboard_read ( fn_post_read, fn_post_params)
   // UI
   app._data.enter = false;
 
-  if (mutex_keyboard === true) {
+  if (3 === run_program) {
     setTimeout(keyboard_read, 1000, fn_post_read, fn_post_params);
     return;
   }
@@ -7539,7 +7537,7 @@ function keyboard_read ( fn_post_read, fn_post_params)
     return packExecute(true, 'The execution of the program has finished', 'success', null);
   }
 
-  if (run_program === true) {
+  if (run_program === 1) {
     uielto_toolbar_btngroup.methods.execute_program();
   }
 }
@@ -7573,6 +7571,7 @@ function get_number_binary (bin)
 {
   return "0x" + bin2hex(bin);
 }
+
 /*
  *  Copyright 2018-2023 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *

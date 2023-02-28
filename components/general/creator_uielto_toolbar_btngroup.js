@@ -234,6 +234,10 @@
 
                       execution_UI_update (ret)
                       {
+                        if (typeof ret === "undefined") {
+                            return ;
+                        }
+
                         for (var i=0; i<ret.draw.space.length; i++) {
                           instructions[ret.draw.space[i]]._rowVariant = '';
                         }
@@ -248,7 +252,7 @@
                         }
 
                         //Auto-scroll
-                        if(app._data.autoscroll === true && run_program === false)
+                        if ((app._data.autoscroll === true) && (run_program != 1))
                         {
                           if(execution_index >= 0 && (execution_index + 4) < instructions.length)
                           {
@@ -347,24 +351,26 @@
                         // Google Analytics
                         creator_ga('execute', 'execute.run', 'execute.run');
 
-                        run_program = true;
+                        if (run_program == 0) {
+                          run_program = 1;
+                        }
 
                         if (instructions.length === 0)
                         {
                           show_notification('No instructions in memory', 'danger') ;
-                          run_program = false;
+                          run_program = 0;
                           return;
                         }
                         if (execution_index < -1)
                         {
                           show_notification('The program has finished', 'warning') ;
-                          run_program = false;
+                          run_program = 0;
                           return;
                         }
                         if (execution_index == -1)
                         {
                           show_notification('The program has finished with errors', 'danger') ;
-                          run_program = false;
+                          run_program = 0;
                           return;
                         }
 
@@ -384,9 +390,9 @@
                         for (var i=0; (i<app._data.instructions_packed) && (execution_index >= 0); i++)
                         {
                           if  ( 
-                                (run_program == false) ||                       // stop button pressed
-                                (mutex_keyboard === true)  ||                   // wait for user input at keyboard
-                                (instructions[execution_index].Break === true)  // stop because a breakpoint
+                                (run_program == 0)  ||                                                  // stop button pressed
+                                (run_program == 3)  ||                                                  // wait for user input at keyboard
+                                ((instructions[execution_index].Break === true) && (run_program != 2))  // stop because a breakpoint
                               )
                           {
                             this.execution_UI_update (ret);
@@ -399,7 +405,7 @@
                             app._data.main_memory_busy = false;
                             
                             if (instructions[execution_index].Break === true){
-                              run_program = false; //In case breakpoint --> stop
+                              run_program = 2; //In case breakpoint --> stop
                             }
                             return;
                           }
@@ -435,7 +441,7 @@
                       //Stop program excution
                       stop_execution() 
                       {
-                        run_program = false;
+                        run_program = 0;
 
                         //Change buttons status
                         this.reset_disable = false;
