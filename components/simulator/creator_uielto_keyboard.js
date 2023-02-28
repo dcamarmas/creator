@@ -47,7 +47,7 @@
                 consoleEnter(){
                   if(this.local_keyboard != ""){
                     app._data.keyboard = this.local_keyboard; //TODO: vue bidirectional updates
-                    consoleMutex = true;
+                    run_program = 1 ;
                     this.local_keyboard = "";
                   }
                 },

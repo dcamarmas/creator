@@ -110,11 +110,6 @@ var notifications = [];
 /*Available examples*/
 var example_set_available = [];
 var example_available = [];
-
-/*Keyboard*/
-var consoleMutex = false;
-var mutex_read = false;
-var newExecution = true;
 /*Instructions memory*/
 var instructions = [];
 var instructions_tag = [];
@@ -127,52 +122,6 @@ var data_tag = [];
 var code_binary = '';
 var update_binary = '';
 var load_binary = false;
-/*Stats*/
-var totalStats = 0;
-var stats_value = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-var stats = [
-              { type: 'Arithmetic floating point', number_instructions: 0, percentage: 0 },
-              { type: 'Arithmetic integer', number_instructions: 0, percentage: 0},
-              { type: 'Comparison', number_instructions: 0, percentage: 0 },
-              { type: 'Conditional bifurcation', number_instructions: 0, percentage: 0},
-              { type: 'Control', number_instructions: 0, percentage: 0},
-              { type: 'Function call', number_instructions: 0, percentage: 0},
-              { type: 'I/O', number_instructions: 0, percentage: 0},
-              { type: 'Logic', number_instructions: 0, percentage: 0, abbreviation: "Log"},
-              { type: 'Memory access', number_instructions: 0, percentage: 0},
-              { type: 'Other', number_instructions: 0, percentage: 0},
-              { type: 'Syscall', number_instructions: 0, percentage: 0},
-              { type: 'Transfer between registers', number_instructions: 0, percentage: 0},
-              { type: 'Unconditional bifurcation', number_instructions: 0, percentage: 0},
-            ];
-/*CLK Cycles*/
-var total_clk_cycles = 0;
-var clk_cycles_value =  [
-                          {
-                            data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-                          }
-                        ];
-var clk_cycles =  [
-                    { type: 'Arithmetic floating point', clk_cycles: 0, percentage: 0 },
-                    { type: 'Arithmetic integer', clk_cycles: 0, percentage: 0},
-                    { type: 'Comparison', clk_cycles: 0, percentage: 0 },
-                    { type: 'Conditional bifurcation', clk_cycles: 0, percentage: 0},
-                    { type: 'Control', clk_cycles: 0, percentage: 0},
-                    { type: 'Function call', clk_cycles: 0, percentage: 0},
-                    { type: 'I/O', clk_cycles: 0, percentage: 0},
-                    { type: 'Logic', clk_cycles: 0, percentage: 0, abbreviation: "Log"},
-                    { type: 'Memory access', clk_cycles: 0, percentage: 0},
-                    { type: 'Other', clk_cycles: 0, percentage: 0},
-                    { type: 'Syscall', clk_cycles: 0, percentage: 0},
-                    { type: 'Transfer between registers', clk_cycles: 0, percentage: 0},
-                    { type: 'Unconditional bifurcation', clk_cycles: 0, percentage: 0},
-                  ];
-/*Keyboard*/
-var keyboard = '' ;
-/*Display*/
-var display = '' ;
-/*Interrupts*/
-var interrupt = -1;
 
 
 //
@@ -439,7 +388,6 @@ function assembly_compiler()
         extern = [];
         data = [];
         execution_init = 1;
-        mutex_read = false;
 
         pc = 4;
 

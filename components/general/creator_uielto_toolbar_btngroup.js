@@ -234,6 +234,10 @@
 
                       execution_UI_update (ret)
                       {
+                        if (typeof ret === "undefined") {
+                            return ;
+                        }
+
                         for (var i=0; i<ret.draw.space.length; i++) {
                           instructions[ret.draw.space[i]]._rowVariant = '';
                         }
@@ -248,7 +252,7 @@
                         }
 
                         //Auto-scroll
-                        if(app._data.autoscroll === true && run_program === false)
+                        if ((app._data.autoscroll === true) && (run_program != 1))
                         {
                           if(execution_index >= 0 && (execution_index + 4) < instructions.length)
                           {
@@ -289,7 +293,6 @@
                         } ;
 
                         // UI: reset I/O
-                        app._data.resetBut = true ;
                         app._data.keyboard = "" ;
                         app._data.display  = "" ;
                         app._data.enter    = null ;
@@ -327,7 +330,7 @@
                         var ret = execute_instruction();
 
                         if (typeof ret === "undefined") {
-                          console.log("AQUI hemos llegado y un poema se ha encontrado...") ;
+                          console.log("Something weird happened :-S") ;
                         }
 
                         if (ret.msg != null) {
@@ -341,31 +344,33 @@
                       },
 
                       //Execute all program
-                      execute_program (but)
+                      execute_program ()
                       {
+                        var ret;
+
                         // Google Analytics
                         creator_ga('execute', 'execute.run', 'execute.run');
 
-                        app._data.run_execution = true;
-                        app._data.run_execution = false;
-                        run_program = true;
+                        if (run_program == 0) {
+                          run_program = 1;
+                        }
 
                         if (instructions.length === 0)
                         {
                           show_notification('No instructions in memory', 'danger') ;
-                          run_program = false;
+                          run_program = 0;
                           return;
                         }
                         if (execution_index < -1)
                         {
                           show_notification('The program has finished', 'warning') ;
-                          run_program = false;
+                          run_program = 0;
                           return;
                         }
                         if (execution_index == -1)
                         {
                           show_notification('The program has finished with errors', 'danger') ;
-                          run_program = false;
+                          run_program = 0;
                           return;
                         }
 
@@ -376,79 +381,32 @@
                         this.stop_disable = false;
                         app._data.main_memory_busy = true;
 
-                        this.execute_program_packed(but);
-
+                        uielto_toolbar_btngroup.methods.execute_program_packed(ret, this);
                       },
 
-                      execute_program_packed(but)
+                      execute_program_packed(ret,local_this)
                       {
-                        var ret;
 
-                        for (var i=0; (i<app._data.instructions_packed) && (execution_index >= 0); i++)
+                        for (var i=0; (i<instructions_packed) && (execution_index >= 0); i++)
                         {
-                          if(mutex_read === true)
+                          if  ( 
+                                (run_program == 0)  ||                                                  // stop button pressed
+                                (run_program == 3)  ||                                                  // wait for user input at keyboard
+                                ((instructions[execution_index].Break === true) && (run_program != 2))  // stop because a breakpoint
+                              )
                           {
-                            this.execution_UI_update (ret);
+                            local_this.execution_UI_update (ret);
 
                             //Change buttons status
-                            this.reset_disable = false;
-                            this.instruction_disable = false;
-                            this.run_disable = false;
-                            this.stop_disable = true;
+                            local_this.reset_disable = false;
+                            local_this.instruction_disable = false;
+                            local_this.run_disable = false;
+                            local_this.stop_disable = true;
                             app._data.main_memory_busy = false;
                             
-                            iter1 = 1;
-                            run_program = false;
-                            return;
-                          }
-                          else if(instructions[execution_index].Break === true && iter1 === 0)
-                          {
-                            this.execution_UI_update (ret);
-
-                            //Change buttons status
-                            this.reset_disable = false;
-                            this.instruction_disable = false;
-                            this.run_disable = false;
-                            this.stop_disable = true;
-                            app._data.main_memory_busy = false;
-
-                            iter1 = 1;
-                            run_program = false;
-                            return;
-                          }
-                          else if(this.run_execution === true)
-                          {
-                            this.execution_UI_update (ret);
-
-                            //Change buttons status
-                            this.reset_disable = false;
-                            this.instruction_disable = false;
-                            this.run_disable = false;
-                            this.stop_disable = true;
-                            app._data.main_memory_busy = false;
-
-                            app._data.run_execution = false;
-                            iter1 = 1;
-                            run_program = false;
-                            return;
-                          }
-                          else if(but === true && i === 0)
-                          {
-                            app._data.resetBut = false;
-                          }
-                          else if(this.resetBut === true)
-                          {
-                            this.execution_UI_update (ret);
-
-                            //Change buttons status
-                            this.reset_disable = false;
-                            this.instruction_disable = false;
-                            this.run_disable = false;
-                            this.stop_disable = true;
-                            app._data.main_memory_busy = false;
-
-                            app._data.resetBut = false;
-                            run_program = false;
+                            if (instructions[execution_index].Break === true){
+                              run_program = 2; //In case breakpoint --> stop
+                            }
                             return;
                           }
                           else
@@ -456,27 +414,47 @@
                             ret = execute_instruction();
 
                             if (typeof ret === "undefined") {
-                              console.log("AQUI hemos llegado y un poema se ha encontrado...") ;
+                              console.log("Something weird happened :-S") ;
+                              run_program = 0;
+
+                              local_this.execution_UI_update (ret);
+
+                              //Change buttons status
+                              local_this.reset_disable = false;
+                              local_this.instruction_disable = false;
+                              local_this.run_disable = false;
+                              local_this.stop_disable = true;
+                              app._data.main_memory_busy = false;
+
+                              return;
                             }
 
                             if (ret.msg != null) {
                               show_notification(ret.msg, ret.type);
+
+                              local_this.execution_UI_update (ret);
+
+                              //Change buttons status
+                              local_this.reset_disable = false;
+                              local_this.instruction_disable = false;
+                              local_this.run_disable = false;
+                              local_this.stop_disable = true;
+                              app._data.main_memory_busy = false;
                             }
-                            iter1 = 0;
                           }
                         }
 
                         if(execution_index >= 0){
-                          setTimeout(this.execute_program_packed, 15);
+                          setTimeout(uielto_toolbar_btngroup.methods.execute_program_packed, 15, ret, local_this);
                         }
                         else{
-                          this.execution_UI_update (ret);
-
+                          local_this.execution_UI_update (ret);
+                          console.log("AQUI");
                           //Change buttons status
-                          this.reset_disable = false;
-                          this.instruction_disable = false;
-                          this.run_disable = false;
-                          this.stop_disable = true;
+                          local_this.reset_disable = false;
+                          local_this.instruction_disable = false;
+                          local_this.run_disable = false;
+                          local_this.stop_disable = true;
                           app._data.main_memory_busy = false;
                         }
                       },
@@ -484,7 +462,7 @@
                       //Stop program excution
                       stop_execution() 
                       {
-                        app._data.run_execution = true;
+                        run_program = 0;
 
                         //Change buttons status
                         this.reset_disable = false;
@@ -644,8 +622,8 @@
   }
 
   function button_run(){
-    return  '<b-button v-if="item==\'btn_run\' && run_execution == false" class="btn btn-block btn-outline-secondary actionsGroup btn-sm h-100 mr-1" ' +
-            '          @click="execute_program(true)" ' +
+    return  '<b-button v-if="item==\'btn_run\'" class="btn btn-block btn-outline-secondary actionsGroup btn-sm h-100 mr-1" ' +
+            '          @click="execute_program" ' +
             '          :disabled="run_disable"' +
             '          id="playExecution">' +
             '  <span class="fas fa-play"></span>' +

@@ -36,4 +36,3 @@
 | I/O Syscalls + Strings     | https://creatorsim.github.io/creator/?architecture=mips32&example_set=default&example=e10   |
 | Subrutines                 | https://creatorsim.github.io/creator/?architecture=mips32&example_set=default&example=e11   |
 | Factorial                  | https://creatorsim.github.io/creator/?architecture=mips32&example_set=default&example=e12   |
-

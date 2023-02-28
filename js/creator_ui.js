@@ -81,7 +81,7 @@
 
   function btn_glow ( btn_name, post_label )
   {
-    if (run_program == false)
+    if (0 == run_program)
     {
       var buttonDec = '#popoverValueContent' + btn_name + post_label ;
       var buttonHex = '#popoverValueContent' + btn_name;

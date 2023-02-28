@@ -5,13 +5,15 @@ name: Node.js CI
 
 on:
   push:
-    branches: '**'        # matches every branch
+    branches: [ "master" ]
   pull_request:
-    branches: '**'        # matches every branch
+    branches: [ "master" ]
 
 jobs:
   build:
+
     runs-on: ubuntu-latest
+
     strategy:
       matrix:
         node-version: [18.x]
@@ -27,4 +29,5 @@ jobs:
     - name: Install dependencies
       run: npm ci
     - run: npm run build --if-present
+    #-run: npm run test
     - run: npm run test-creator-node

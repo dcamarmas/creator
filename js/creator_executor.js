@@ -22,17 +22,15 @@
 
 
 
-/*Execution*/
-var execution_index = 0;
-var run_execution = false;
-var run_program = false;
-var iter1 = 1;
-var execution_init = 1;
-
-
 /*
  * Execution
  */
+
+var execution_index     = 0;
+var run_program         = 0; // 0: stopped, 1: running, 2: stopped-by-breakpoint, 3: stopped-by-mutex-read
+var execution_init      = 1;
+var instructions_packed = 100;
+
 
 function packExecute ( error, err_msg, err_type, draw )
 {
@@ -56,10 +54,11 @@ function execute_instruction ( )
       flash:   []
   } ;
 
-  console_log(mutex_read);
-  newExecution = false;
+  var error = 0;
+  var index;
 
-  do {
+  do
+  {
     console_log(execution_index);
     //console_log(architecture.components[0].elements[0].value); //TODO
     console_log(readRegister(0, 0));
@@ -68,12 +67,13 @@ function execute_instruction ( )
       return packExecute(true, 'No instructions in memory', 'danger', null);
     }
     if (execution_index < -1) {
+      console.log("EXECUTOR")
       return packExecute(true, 'The program has finished', 'warning', null);
     }
     if (execution_index == -1) {
       return packExecute(true, 'The program has finished with errors', 'danger', null);
     }
-    else if (mutex_read === true) {
+    else if (run_program === 3) {
       return packExecute(false, '', 'info', null);
     }
 
@@ -84,7 +84,7 @@ function execute_instruction ( )
       {
         if (instructions[i].Label == architecture.arch_conf[4].value) {
           //draw.success.push(execution_index) ;
-          //architecture.components[0].elements[0].value = bi_intToBigInt(instructions[i].Address, 10); //TODO: PC
+          //architecture.components[0].elements[0].value = bi_intToBigInt(instructions[i].Address, 10); //TODO
           writeRegister(bi_intToBigInt(instructions[i].Address, 10), 0, 0);
           execution_init = 0;
           break;
@@ -96,12 +96,8 @@ function execute_instruction ( )
       }
     }
 
-    var error = 0;
-    var index;
-
     for (var i = 0; i < instructions.length; i++)
     {
-      //if (parseInt(instructions[i].Address, 16) == architecture.components[0].elements[0].value) //TODO: PC
       if (parseInt(instructions[i].Address, 16) == readRegister(0, 0)) 
       {
         execution_index = i;
@@ -129,18 +125,13 @@ function execute_instruction ( )
     var signatureRawParts;
 
     var binary;
-    var auxIndex; //TODO: probar que sigue igual
     var nwords;
     var auxDef;
     var type;
 
-    //Interrupt Acknowledge Cycle (IAC)
-    IAC();
-
     //Search the instruction to execute
     //TODO: move the instruction identification to the compiler stage, binary not
-    for (var i = 0; i < architecture.instructions.length; i++)
-    {
+    for (var i = 0; i < architecture.instructions.length; i++) {
       var auxSig = architecture.instructions[i].signatureRaw.split(' ');
 
       var coStartbit;
@@ -244,7 +235,6 @@ function execute_instruction ( )
         instructionExecParts = instructionExec.split(' ');
 
         binary = true;
-        auxIndex = i;
       }
 
       if (architecture.instructions[i].name == instructionExecParts[0] && instructionExecParts.length == auxSig.length)
@@ -287,7 +277,6 @@ function execute_instruction ( )
     //Increase PC
     //TODO: other register
     word_size = parseInt(architecture.arch_conf[1].value) / 8;
-    //architecture.components[0].elements[0].value = architecture.components[0].elements[0].value + bi_intToBigInt(nwords * word_size,10) ; //TODO: PC
     writeRegister(readRegister(0,0) + (nwords * word_size), 0,0);
     console_log(auxDef);
 
@@ -341,7 +330,6 @@ function execute_instruction ( )
                   var_writings_definitions[signatureRawParts[i]]  = "if(" + signatureRawParts[i] + " != " + signatureRawParts[i] + "_prev)" +
                                                                     " { writeRegister("+ signatureRawParts[i]+" ,"+j+" ,"+z+", \""+ signatureParts[i] + "\"); }\n";
                 }
-
               }
             }
           }
@@ -439,8 +427,8 @@ function execute_instruction ( )
 
     // Execution error
     if (execution_index == -1){
-       error = 1;
-       return packExecute(false, '', 'info', null); //CHECK
+      error = 1;
+      return packExecute(false, '', 'info', null); //CHECK
     }
 
     // Next instruction to execute
@@ -448,13 +436,12 @@ function execute_instruction ( )
     {
       for (var i = 0; i < instructions.length; i++)
       {
-        //if (parseInt(instructions[i].Address, 16) == architecture.components[0].elements[0].value) { //TODO
         if (parseInt(instructions[i].Address, 16) == readRegister(0, 0)) {
           execution_index = i;
           draw.success.push(execution_index) ;
           break;
         }
-        else if (i == instructions.length-1 && mutex_read === true){
+        else if ((i == instructions.length-1) && (run_program === 3)){
           execution_index = instructions.length+1;
         }
         else if (i == instructions.length-1){
@@ -464,7 +451,7 @@ function execute_instruction ( )
       }
     }
 
-    if (execution_index >= instructions.length && mutex_read === true)
+    if ((execution_index >= instructions.length) && (run_program === 3))
     {
       for (var i = 0; i < instructions.length; i++) {
         draw.space.push(i);
@@ -472,7 +459,7 @@ function execute_instruction ( )
       draw.info=[];
       return packExecute(false, 'The execution of the program has finished', 'success', draw); //CHECK
     }
-    else if(execution_index >= instructions.length && mutex_read === false)
+    else if ((execution_index >= instructions.length) && (run_program != 3))
     {
       for (var i = 0; i < instructions.length; i++){
         draw.space.push(i) ;
@@ -516,21 +503,6 @@ function executeProgramOneShot ( limit_n_instructions )
   return packExecute(true, '"ERROR:" number of instruction limit reached :-(', null, null) ;
 }
 
-function creator_executor_exit ( error )
-{
-  // Google Analytics
-  creator_ga('execute', 'execute.exit');
-
-  if (error)
-  {
-    execution_index = -1;
-  }
-  else
-  {
-    execution_index = instructions.length + 1;
-  }
-}
-
 function reset ()
 {
   // Google Analytics
@@ -538,9 +510,7 @@ function reset ()
 
   execution_index = 0;
   execution_init = 1;
-
-  // Interrupt reset
-  capi_reset_interrupt() ;
+  run_program = 0;
 
   // Reset stats
   stats_reset();
@@ -549,8 +519,6 @@ function reset ()
   clk_cycles_reset();
 
   // Reset console
-  mutex_read    = false ;
-  newExecution = true ;
   keyboard = '' ;
   display  = '' ;
 
@@ -600,6 +568,24 @@ function reset ()
   return true ;
 }
 
+//Exit syscall
+function creator_executor_exit ( error )
+{
+  // Google Analytics
+  creator_ga('execute', 'execute.exit');
+
+  if (error)
+  {
+    execution_index = -1;
+  }
+  else
+  {
+    execution_index = instructions.length + 1;
+  }
+}
+
+
+
 
 /*
  * Auxiliar functions
@@ -608,7 +594,7 @@ function reset ()
 function crex_show_notification ( msg, level )
 {
   if (typeof window !== "undefined")
-       show_notification(msg, level);
+    show_notification(msg, level);
   else console.log(level.toUpperCase() + ": " + msg);
 }
 
@@ -653,6 +639,25 @@ function writeStackLimit ( stackLimit )
  * Stats
  */
 
+var totalStats = 0;
+var stats_value = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+var stats = [
+              { type: 'Arithmetic floating point', number_instructions: 0, percentage: 0 },
+              { type: 'Arithmetic integer', number_instructions: 0, percentage: 0},
+              { type: 'Comparison', number_instructions: 0, percentage: 0 },
+              { type: 'Conditional bifurcation', number_instructions: 0, percentage: 0},
+              { type: 'Control', number_instructions: 0, percentage: 0},
+              { type: 'Function call', number_instructions: 0, percentage: 0},
+              { type: 'I/O', number_instructions: 0, percentage: 0},
+              { type: 'Logic', number_instructions: 0, percentage: 0, abbreviation: "Log"},
+              { type: 'Memory access', number_instructions: 0, percentage: 0},
+              { type: 'Other', number_instructions: 0, percentage: 0},
+              { type: 'Syscall', number_instructions: 0, percentage: 0},
+              { type: 'Transfer between registers', number_instructions: 0, percentage: 0},
+              { type: 'Unconditional bifurcation', number_instructions: 0, percentage: 0},
+            ];
+
+
 function stats_update ( type )
 {
   for (var i = 0; i < stats.length; i++)
@@ -694,6 +699,28 @@ function stats_reset ( )
 /*
  * CLK Cycles
  */
+
+var total_clk_cycles = 0;
+var clk_cycles_value =  [
+                          {
+                            data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                          }
+                        ];
+var clk_cycles =  [
+                    { type: 'Arithmetic floating point', clk_cycles: 0, percentage: 0 },
+                    { type: 'Arithmetic integer', clk_cycles: 0, percentage: 0},
+                    { type: 'Comparison', clk_cycles: 0, percentage: 0 },
+                    { type: 'Conditional bifurcation', clk_cycles: 0, percentage: 0},
+                    { type: 'Control', clk_cycles: 0, percentage: 0},
+                    { type: 'Function call', clk_cycles: 0, percentage: 0},
+                    { type: 'I/O', clk_cycles: 0, percentage: 0},
+                    { type: 'Logic', clk_cycles: 0, percentage: 0, abbreviation: "Log"},
+                    { type: 'Memory access', clk_cycles: 0, percentage: 0},
+                    { type: 'Other', clk_cycles: 0, percentage: 0},
+                    { type: 'Syscall', clk_cycles: 0, percentage: 0},
+                    { type: 'Transfer between registers', clk_cycles: 0, percentage: 0},
+                    { type: 'Unconditional bifurcation', clk_cycles: 0, percentage: 0},
+                  ];
 
 function clk_cycles_update ( type )
 {
@@ -737,50 +764,13 @@ function clk_cycles_reset ( )
 
 
 /*
- * Interrupts
- */
-
-function IAC ()
-{
-  // Get if interruption is on...
-  var intr = capi_get_interrupt() ;
-
-  // If not interruption pending -> return
-  if (intr < 0) {
-      return ;
-  }
-
-  // (1/2) search for ISR...
-  var index = -1 ;
-  for (var i = 0; i < architecture.instructions.length; i++)
-  {
-      if ('ISR' == architecture.instructions[i].name.toUpperCase()) {
-          index = i ;
-	  break ;
-      }
-  }
-  if (-1 == index) {
-      // TODO: ask if clear interrupt in architecture without interruptions !
-      return ;
-  }
-
-  // (2/2) execute ISR...
-  var auxDef = architecture.instructions[index].definition ;
-      auxDef = auxDef.replace(/this./g,"elto.") ;
-
-  eval("   try {\n" +
-	     auxDef + "\n" +
-       "   }\n" +
-       "   catch(e){\n" +
-       "     throw e;\n" +
-       "   }\n" +
-       "}; ") ;
-}
-
-
-/*
  * I/O
  */
+
+var keyboard = '' ;
+var display = '' ;
+
+//Keyboard
 
 function display_print ( info )
 {
@@ -839,7 +829,7 @@ function kbd_read_string ( keystroke, params )
 }
 
 
-function keyboard_read ( fn_post_read, fn_post_params )
+function keyboard_read ( fn_post_read, fn_post_params)
 {
   var draw = {
     space: [] ,
@@ -862,27 +852,9 @@ function keyboard_read ( fn_post_read, fn_post_params )
   }
 
   // UI
-  mutex_read = true;
   app._data.enter = false;
-  console_log(mutex_read);
 
-  if (newExecution === true)
-  {
-    app._data.keyboard = "";
-    consoleMutex    = false;
-    mutex_read       = false;
-    app._data.enter = null;
-
-    show_notification('The data has been uploaded', 'info') ;
-
-    if (run_program === false){
-      uielto_toolbar_btngroup.methods.executeProgram();
-    }
-
-    return;
-  }
-
-  if (consoleMutex === false) {
+  if (3 === run_program) {
     setTimeout(keyboard_read, 1000, fn_post_read, fn_post_params);
     return;
   }
@@ -890,13 +862,9 @@ function keyboard_read ( fn_post_read, fn_post_params )
   fn_post_read(app._data.keyboard, fn_post_params) ;
 
   app._data.keyboard = "";
-  consoleMutex    = false;
-  mutex_read       = false;
   app._data.enter = null;
 
   show_notification('The data has been uploaded', 'info') ;
-
-  console_log(mutex_read);
 
   if (execution_index >= instructions.length)
   {
@@ -908,8 +876,9 @@ function keyboard_read ( fn_post_read, fn_post_params )
     return packExecute(true, 'The execution of the program has finished', 'success', null);
   }
 
-  if (run_program === false) {
-    uielto_toolbar_btngroup.methods.execute_program();
+  if (run_program === 1) {
+    //uielto_toolbar_btngroup.methods.execute_program();
+    $("#playExecution").trigger("click");
   }
 }
 
