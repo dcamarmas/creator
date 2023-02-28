@@ -36,7 +36,6 @@ function capi_raise ( msg )
 	}
 }
 
-
 function capi_arithmetic_overflow ( op1, op2, res_u )
 {
 	op1_u = capi_uint2int(op1) ;
@@ -47,27 +46,10 @@ function capi_arithmetic_overflow ( op1, op2, res_u )
 		   ((op1_u < 0) && (op2_u < 0) && (res_u > 0)) ;
 }
 
-
 function capi_bad_align ( addr, type )
 {
 	size = creator_memory_type2size(type) ;
 	return (addr % size !== 0) ; // && (architecture.properties.memory_align == true) ; <- FUTURE-WORK
-}
-
-
-function capi_get_interrupt ( )
-{
-	return interrupt;
-}
-
-function capi_set_interrupt ( type )
-{
-	interrupt = type;
-}
-
-function capi_reset_interrupt ( )
-{
-	interrupt = -1;
 }
 
 
@@ -188,7 +170,6 @@ function capi_exit ( )
 	return creator_executor_exit( false ) ;
 }
 
-
 function capi_print_int ( value1 )
 {
 	/* Google Analytics */
@@ -211,7 +192,6 @@ function capi_print_int ( value1 )
 	display_print(full_print(val_int, null, false));
 }
 
-
 function capi_print_float ( value1 )
 {
 	/* Google Analytics */
@@ -230,7 +210,6 @@ function capi_print_float ( value1 )
 	display_print(full_print(value, bin, true));
 }
 
-
 function capi_print_double ( value1 )
 {
 	/* Google Analytics */
@@ -248,7 +227,6 @@ function capi_print_double ( value1 )
 
 	display_print(full_print(value, bin, true));
 }
-
 
 function capi_print_char ( value1 )
 {
@@ -272,7 +250,6 @@ function capi_print_char ( value1 )
 	display_print(value) ;
 }
 
-
 function capi_print_string ( value1 )
 {
 	/* Google Analytics */
@@ -286,10 +263,9 @@ function capi_print_string ( value1 )
 
 	/* Print string */
 	var addr = readRegister(ret1.indexComp, ret1.indexElem);
-        var msg  = readMemory(parseInt(addr), "string") ;
+    var msg  = readMemory(parseInt(addr), "string") ;
 	display_print(msg) ;
 }
-
 
 function capi_read_int ( value1 )
 {
@@ -307,9 +283,9 @@ function capi_read_int ( value1 )
 	    document.getElementById('enter_keyboard').scrollIntoView();
 	}
 
+	run_program = 3;
 	return keyboard_read(kbd_read_int, ret1) ;
 }
-
 
 function capi_read_float ( value1 )
 {
@@ -326,9 +302,9 @@ function capi_read_float ( value1 )
 	    document.getElementById('enter_keyboard').scrollIntoView();
 	}
 
+	run_program = 3;
 	return keyboard_read(kbd_read_float, ret1) ;
 }
-
 
 function capi_read_double ( value1 )
 {
@@ -345,9 +321,9 @@ function capi_read_double ( value1 )
 	    document.getElementById('enter_keyboard').scrollIntoView();
 	}
 
+	run_program = 3;
 	return keyboard_read(kbd_read_double, ret1) ;
 }
-
 
 function capi_read_char ( value1 )
 {
@@ -364,9 +340,9 @@ function capi_read_char ( value1 )
 	    document.getElementById('enter_keyboard').scrollIntoView();
 	}
 
+	run_program = 3;
 	return keyboard_read(kbd_read_char, ret1) ;
 }
-
 
 function capi_read_string ( value1, value2 )
 {
@@ -392,9 +368,9 @@ function capi_read_string ( value1, value2 )
 	ret1.indexComp2 = ret2.indexComp ;
 	ret1.indexElem2 = ret2.indexElem ;
 
+	run_program = 3;
 	return keyboard_read(kbd_read_string, ret1) ;
 }
-
 
 function capi_sbrk ( value1, value2 )
 {
@@ -421,7 +397,6 @@ function capi_sbrk ( value1, value2 )
     var new_addr = creator_memory_alloc(new_size) ;
 	writeRegister(new_addr, ret2.indexComp, ret2.indexElem);
 }
-
 
 function capi_get_clk_cycles ( )
 {
@@ -457,7 +432,6 @@ function capi_callconv_begin ( addr )
 	// 3) callstack_enter
 	creator_callstack_enter(function_name) ;
 }
-
 
 function capi_callconv_end ()
 {
@@ -504,7 +478,6 @@ function capi_drawstack_begin ( addr )
 	track_stack_enter(function_name) ;
 }
 
-
 function capi_drawstack_end ()
 {
 	// track leave
@@ -537,48 +510,40 @@ function capi_split_double ( reg, index )
 	}
 }
 
-
 function capi_uint2float32 ( value )
 {
 	return uint_to_float32(value) ;
 }
-
 
 function capi_float322uint ( value )
 {
 	return float32_to_uint(value) ;
 }
 
-
 function capi_int2uint ( value )
 {
 	return (value >>> 0) ;
 }
-
 
 function capi_uint2int ( value )
 {
 	return (value >> 0) ;
 }
 
-
 function capi_uint2float64 ( value0, value1 )
 {
 	return uint_to_float64(value0, value1) ;
 }
-
 
 function capi_float642uint ( value )
 {
 	return float64_to_uint(value) ;
 }
 
-
 function capi_check_ieee ( s, e, m )
 {
 	return checkTypeIEEE(s, e, m) ;
 }
-
 
 function capi_float2bin ( f )
 {
