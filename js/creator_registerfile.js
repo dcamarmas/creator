@@ -1,3 +1,4 @@
+
 /*
  *  Copyright 2018-2023 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
@@ -39,7 +40,7 @@ function crex_findReg ( value1 )
   {
      for (var j = 0; j < architecture.components[i].elements.length; j++)
      {
-        if (architecture.components[i].elements[j].name.includes(value1) != false)
+        if (architecture.components[i].elements[j].name.includes(value1) !== false)
         {
           ret.match = 1;
           ret.indexComp = i;
@@ -62,7 +63,7 @@ function readRegister ( indexComp, indexElem, register_type )
     flash: []
   } ;
 
-  if ((architecture.components[indexComp].elements[indexElem].properties.includes("read") != true))
+  if ((architecture.components[indexComp].elements[indexElem].properties.includes("read") !== true))
   {
     for (var i = 0; i < instructions.length; i++) {
       draw.space.push(i);
@@ -81,7 +82,7 @@ function readRegister ( indexComp, indexElem, register_type )
 
   if (architecture.components[indexComp].type == "fp_registers")
   {
-    if(architecture.components[indexComp].double_precision == false){
+    if(architecture.components[indexComp].double_precision === false){
       //return parseFloat((architecture.components[indexComp].elements[indexElem].value).toString()); //TODO: big_int2hex -> hex2float //TODO
       console_log(bi_BigIntTofloat(architecture.components[indexComp].elements[indexElem].value));
       return bi_BigIntTofloat(architecture.components[indexComp].elements[indexElem].value);
@@ -133,9 +134,9 @@ function writeRegister ( value, indexComp, indexElem, register_type )
   if ((architecture.components[indexComp].type == "int_registers") ||
       (architecture.components[indexComp].type == "ctrl_registers"))
   {
-      if ((architecture.components[indexComp].elements[indexElem].properties.includes('write') != true))
+      if ((architecture.components[indexComp].elements[indexElem].properties.includes('write') !== true))
       {
-        if ((architecture.components[indexComp].elements[indexElem].properties.includes('ignore_write') != false)){
+        if ((architecture.components[indexComp].elements[indexElem].properties.includes('ignore_write') !== false)){
           return;
         }
 
@@ -150,24 +151,24 @@ function writeRegister ( value, indexComp, indexElem, register_type )
       architecture.components[indexComp].elements[indexElem].value = bi_intToBigInt(value,10);
       creator_callstack_writeRegister(indexComp, indexElem);
 
-      if ((architecture.components[indexComp].elements[indexElem].properties.includes('pointer') != false) &&
-          (architecture.components[indexComp].elements[indexElem].properties.includes('stack') != false)   &&
+      if ((architecture.components[indexComp].elements[indexElem].properties.includes('pointer') !== false) &&
+          (architecture.components[indexComp].elements[indexElem].properties.includes('stack') !== false)   &&
           (value != parseInt(architecture.memory_layout[4].value))) {
             writeStackLimit(parseInt(bi_intToBigInt(value,10)));
       }
 
       if (typeof window !== "undefined") {
-              btn_glow(architecture.components[indexComp].elements[indexElem].name, "Int") ;
+        btn_glow(architecture.components[indexComp].elements[indexElem].name, "Int") ;
       }
   }
 
   else if (architecture.components[indexComp].type =="fp_registers")
   {
-    if (architecture.components[indexComp].double_precision == false)
+    if (architecture.components[indexComp].double_precision === false)
     {
-      if ((architecture.components[indexComp].elements[indexElem].properties.includes('write') != true))
+      if ((architecture.components[indexComp].elements[indexElem].properties.includes('write') !== true))
       {
-        if ((architecture.components[indexComp].elements[indexElem].properties.includes('ignore_write') != false)){
+        if ((architecture.components[indexComp].elements[indexElem].properties.includes('ignore_write') !== false)){
           return;
         }
         draw.danger.push(execution_index);
@@ -179,8 +180,8 @@ function writeRegister ( value, indexComp, indexElem, register_type )
       architecture.components[indexComp].elements[indexElem].value = bi_floatToBigInt(value);
       creator_callstack_writeRegister(indexComp, indexElem);
 
-      if ((architecture.components[indexComp].elements[indexElem].properties.includes('pointer') != false) &&
-          (architecture.components[indexComp].elements[indexElem].properties.includes('stack') != false)   &&
+      if ((architecture.components[indexComp].elements[indexElem].properties.includes('pointer') !== false) &&
+          (architecture.components[indexComp].elements[indexElem].properties.includes('stack') !== false)   &&
           (value != parseInt(architecture.memory_layout[4].value))) {
             writeStackLimit(parseFloat(value));
       }
@@ -188,15 +189,15 @@ function writeRegister ( value, indexComp, indexElem, register_type )
       updateDouble(indexComp, indexElem);
 
       if (typeof window !== "undefined") {
-              btn_glow(architecture.components[indexComp].elements[indexElem].name, "FP") ;
+        btn_glow(architecture.components[indexComp].elements[indexElem].name, "FP") ;
       }
     }
 
-    else if (architecture.components[indexComp].double_precision == true)
+    else if (architecture.components[indexComp].double_precision === true)
     {
-      if ((architecture.components[indexComp].elements[indexElem].properties.includes('write') != true))
+      if ((architecture.components[indexComp].elements[indexElem].properties.includes('write') !== true))
       {
-        if ((architecture.components[indexComp].elements[indexElem].properties.includes('ignore_write') != false)){
+        if ((architecture.components[indexComp].elements[indexElem].properties.includes('ignore_write') !== false)){
           return;
         }
         draw.danger.push(execution_index);
@@ -237,18 +238,18 @@ function updateDouble(comp, elem)
 {
   for (var i = 0; i < architecture.components.length; i++)
   {
-    if (architecture.components[i].double_precision == true && architecture.components[i].double_precision_type == "linked")
+    if (architecture.components[i].double_precision === true && architecture.components[i].double_precision_type == "linked")
     {
       for (var j = 0; j < architecture.components[i].elements.length; j++)
       {
-        if (architecture.components[comp].elements[elem].name.includes(architecture.components[i].elements[j].simple_reg[0]) != false){
+        if (architecture.components[comp].elements[elem].name.includes(architecture.components[i].elements[j].simple_reg[0]) !== false){
           var simple = bin2hex(float2bin(readRegister(comp, elem)));
           var double = bin2hex(double2bin(readRegister(i, j))).substr(8, 15);
           var newDouble = simple + double;
 
           architecture.components[i].elements[j].value = bi_doubleToBigInt(hex2double("0x"+newDouble));
         }
-        if (architecture.components[comp].elements[elem].name.includes(architecture.components[i].elements[j].simple_reg[1]) != false){
+        if (architecture.components[comp].elements[elem].name.includes(architecture.components[i].elements[j].simple_reg[1]) !== false){
           var simple = bin2hex(float2bin(readRegister(comp, elem)));
           var double = bin2hex(double2bin(readRegister(i, j))).substr(0, 8);
           var newDouble = double + simple;
@@ -272,10 +273,10 @@ function updateSimple ( comp, elem )
     {
       for (var j = 0; j < architecture.components[i].elements.length; j++)
       {
-        if (architecture.components[i].elements[j].name.includes(architecture.components[comp].elements[elem].simple_reg[0]) != false) {
+        if (architecture.components[i].elements[j].name.includes(architecture.components[comp].elements[elem].simple_reg[0]) !== false) {
           architecture.components[i].elements[j].value = bi_floatToBigInt(hex2float("0x"+part1));
         }
-        if (architecture.components[i].elements[j].name.includes(architecture.components[comp].elements[elem].simple_reg[1]) != false) {
+        if (architecture.components[i].elements[j].name.includes(architecture.components[comp].elements[elem].simple_reg[1]) !== false) {
           architecture.components[i].elements[j].value = bi_floatToBigInt(hex2float("0x"+part2));
         }
       }

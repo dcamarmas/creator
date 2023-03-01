@@ -68,6 +68,21 @@
                 '         </b-row>' +
                 '       </b-container>' +
                 '   </b-navbar-brand>' +
+                ' ' +
+                '   <b-navbar-toggle target="nav_collapse" aria-label="Open/Close more information"></b-navbar-toggle>' +
+                '     <b-collapse is-nav id="nav_collapse">' +
+                '       <b-navbar-nav class="ml-auto">' +
+                '         <b-nav-item class="mb-0 pb-0 p-0">' +
+                '           <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground h-100"' +
+                '                     v-b-modal.about>' +
+                '             <span class="fas fa-address-card"></span> ' +
+                '             About us' +
+                '           </b-button>' +
+                '         </b-nav-item>' +
+                ' ' +
+                '       </b-navbar-nav>' +
+                '     </b-collapse>' +
+                '   </b-navbar-toggle>' +
                 ' </b-navbar>'
   }
 

@@ -1,3 +1,4 @@
+
 /*
  *  Copyright 2018-2023 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
@@ -53,7 +54,7 @@
                   {
                     evt.preventDefault();
 
-                    if (this._props.register.name.length == 0 || !this._props.register.name || (typeof(this._props.register.default_value) !== 'undefined' && !(this._props.register.default_value).toString())) {
+                    if (this._props.register.name.length === 0 || !this._props.register.name || (typeof(this._props.register.default_value) !== 'undefined' && !(this._props.register.default_value).toString())) {
                       show_notification('Please complete all fields', 'danger') ;
                     }
                     else if(typeof(this._props.register.default_value) !== 'undefined' && isNaN((this._props.register.default_value).toString())){
@@ -67,7 +68,7 @@
                         {
                           for (var z = 0; z < this._props.register.name.length; z++)
                           {
-                            if ((architecture.components[i].elements[j].name.includes(this._props.register.name[z]) != false) && (this._props.register_file_index != i || this._props.register_index != j)){
+                            if ((architecture.components[i].elements[j].name.includes(this._props.register.name[z]) !== false) && (this._props.register_file_index != i || this._props.register_index != j)){
                                 show_notification('The element already exists', 'danger') ;
                                 return;
                             }
@@ -92,7 +93,7 @@
                   //Form validator
                   valid(value)
                   {
-                    if(parseInt(value) != 0)
+                    if(parseInt(value) !== 0)
                     {
                       if(!value){
                         return false;

@@ -1,3 +1,4 @@
+
 /*
  *  Copyright 2018-2023 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
@@ -266,7 +267,7 @@
     var print_value = value;
 
     //Add - if the number is -0.0
-    if ( bin_value != null && value == 0 && bin_value[0] == 1 ) {
+    if ( bin_value != null && value === 0 && bin_value[0] === 1 ) {
       print_value  = "-" + print_value;
     }
 

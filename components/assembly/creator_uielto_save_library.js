@@ -1,3 +1,4 @@
+
 /*
  *  Copyright 2018-2023 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
@@ -48,7 +49,7 @@
                             return;
                           }
 
-                          if (creator_memory_is_segment_empty(memory_hash[0]) == false) {
+                          if (creator_memory_is_segment_empty(memory_hash[0]) === false) {
                             show_notification('You can not enter data in a library', 'danger') ;
                             return;
                           }

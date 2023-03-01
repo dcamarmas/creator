@@ -1,3 +1,4 @@
+
 /*
  *  Copyright 2018-2023 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
@@ -38,7 +39,7 @@
   methods:    {
                 /*Filter table instructions*/
                 filter(row, filter){
-                  if(row.hide == true){
+                  if(row.hide === true){
                     return false;
                   }
                   else{
@@ -63,7 +64,7 @@
                     creator_ga('send', 'event', 'execute', 'execute.breakpoint', 'execute.breakpoint');
 
                   }
-                  else if(instructions[index].Break == true){
+                  else if(instructions[index].Break === true){
                     instructions[index].Break = null;
                     app._data.instructions[index].Break = null; //TODO: vue bidirectional updates
                   }

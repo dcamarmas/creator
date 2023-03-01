@@ -1,3 +1,4 @@
+
 /*
  *  Copyright 2018-2023 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
@@ -146,7 +147,7 @@
                     }
 
                     //Verify empty fields
-                    if (!this._props.instruction.name || !this._props.instruction.type || !this._props.instruction.co || !this._props.instruction.nwords || !this._props.instruction.power_consumption || !this._props.number_fields || !this._props.instruction.signature_definition || !this._props.instruction.definition || empty == 1)
+                    if (!this._props.instruction.name || !this._props.instruction.type || !this._props.instruction.co || !this._props.instruction.nwords || !this._props.instruction.clk_cycles || !this._props.number_fields || !this._props.instruction.signature_definition || !this._props.instruction.definition || empty == 1)
                     {
                       show_notification('Please complete all fields', 'danger') ;
                       return;
@@ -434,10 +435,10 @@
                 '      <b-form-group label="CLK Cycles:">' +
                 '        <b-form-input type="number" ' +
                 '                      min="1" ' +
-                '                      v-model="instruction.power_consumption" ' +
+                '                      v-model="instruction.clk_cycles" ' +
                 '                      required ' +
                 '                      placeholder="Enter CLK Cycles" ' +
-                '                      :state="valid(instruction.power_consumption)" ' +
+                '                      :state="valid(instruction.clk_cycles)" ' +
                 '                      size="sm" ' +
                 '                      title="Intruction size">' +
                 '        </b-form-input>' +

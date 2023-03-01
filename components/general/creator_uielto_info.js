@@ -1,3 +1,4 @@
+
 /*
  *  Copyright 2018-2023 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
@@ -61,12 +62,6 @@
                 '             v-b-modal.notifications>' +
                 '     <span class="fas fa-bell"></span> ' +
                 '     Show Notifications' +
-                '   </b-button>' +
-                ' ' +
-                '   <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground h-100"' +
-                '             v-b-modal.about>' +
-                '     <span class="fas fa-address-card"></span> ' +
-                '     About us' +
                 '   </b-button>' +
                 ' </b-popover>'
   }
