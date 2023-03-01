@@ -124,7 +124,6 @@
 
           <!-- Configuration modal -->
           <form-configuration id="configuration"
-                              :instructions_packed="instructions_packed"
                               :stack_total_list="stack_total_list" 
                               :autoscroll="autoscroll"
                               :instruction_help_size="instruction_help_size"
@@ -639,7 +638,8 @@
                             :track_stack_names="track_stack_names" 
                             :callee_subrutine="callee_subrutine" 
                             :caller_subrutine="caller_subrutine"
-                            :stack_total_list="stack_total_list"
+                            :stack_total_list="stack_total_list" 
+                            :main_memory_busy="main_memory_busy"
                             v-if="data_mode == 'memory'">
                     </memory>
 
@@ -651,12 +651,12 @@
                     </stats>
 
 
-                    <!-- Power Consumption view--->
-                    <power-consumption  :power_consumption="power_consumption" 
-                                        :power_consumption_value="power_consumption_value"
-                                        :total_power_consumption="total_power_consumption"
-                                        v-if="data_mode == 'power_consumption'">  
-                    </power-consumption>
+                    <!-- CLK Cycles view--->
+                    <clk-cycles :clk_cycles="clk_cycles" 
+                                :clk_cycles_value="clk_cycles_value"
+                                :total_clk_cycles="total_clk_cycles"
+                                v-if="data_mode == 'clk_cycles'">  
+                    </clk-cycles>
 
                   </b-col>
 

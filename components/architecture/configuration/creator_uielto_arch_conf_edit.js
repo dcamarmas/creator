@@ -1,3 +1,4 @@
+
 /*
  *  Copyright 2018-2023 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
@@ -65,7 +66,7 @@
 
                     architecture.arch_conf[index].value = this._props.arch_field_value;
 
-                    if (index == 0) {
+                    if (index === 0) {
                       app._data.architecture_name = architecture.arch_conf[index].value;
                     }
 
@@ -75,7 +76,7 @@
                   //Form validator
                   valid(value)
                   {
-                    if(parseInt(value) != 0){
+                    if(parseInt(value) !== 0){
                       if(!value){
                         return false;
                       }

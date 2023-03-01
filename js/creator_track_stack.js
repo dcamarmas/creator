@@ -1,3 +1,4 @@
+
 /*
  *  Copyright 2018-2023 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
@@ -117,7 +118,7 @@ function track_stack_leave()
     };
 
     // check params
-    if (0 == track_stack_limits.length)
+    if (0 === track_stack_limits.length)
     {
         ret.msg = "track_stack_Leave: empty track_stack_limits !!.\n";
         return ret;
@@ -162,7 +163,7 @@ function track_stack_getTop()
     };
 
     // check params
-    if (0 == track_stack_limits.length)
+    if (0 === track_stack_limits.length)
     {
         ret.ok = false;
         ret.msg = "track_stack_getTop: empty track_stack_limits !!.\n";
@@ -190,7 +191,7 @@ function track_stack_setTop( field, indexComponent, indexElement, value )
     };
 
     // check params
-    if (0 == track_stack_limits.length)
+    if (0 === track_stack_limits.length)
     {
         ret.ok = false;
         ret.msg = "track_stack_getTop: empty track_stack_limits !!.\n";
@@ -220,7 +221,7 @@ function track_stack_setsp(value)
     }
 
     // check params
-    if (0 == track_stack_limits.length) {
+    if (0 === track_stack_limits.length) {
         return;
     }
 

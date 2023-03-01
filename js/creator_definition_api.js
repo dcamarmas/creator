@@ -1,3 +1,4 @@
+
 /*
  *  Copyright 2018-2023 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
@@ -48,43 +49,8 @@ function capi_arithmetic_overflow ( op1, op2, res_u )
 function capi_bad_align ( addr, type )
 {
 	size = creator_memory_type2size(type) ;
-	return (addr % size != 0) ; // && (architecture.properties.memory_align == true) ; <- FUTURE-WORK
+	return (addr % size !== 0) ; // && (architecture.properties.memory_align == true) ; <- FUTURE-WORK
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 /*
@@ -128,7 +94,7 @@ function capi_mem_write ( addr, value, type, reg_name )
 
 	// 4) Call convenction
 	var ret = crex_findReg(reg_name) ;
-	if (ret.match == 0) {
+	if (ret.match === 0) {
 		return;
 	}
 
@@ -177,7 +143,7 @@ function capi_mem_read ( addr, type, reg_name )
 
 	// 4) Call convenction
 	var find_ret = crex_findReg(reg_name) ;
-	if (find_ret.match == 0) {
+	if (find_ret.match === 0) {
 		return ret;
 	}
 
@@ -211,7 +177,7 @@ function capi_print_int ( value1 )
 
 	/* Get register id */
 	var ret1 = crex_findReg(value1) ;
-	if (ret1.match == 0) {
+	if (ret1.match === 0) {
 		throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
 	}
 
@@ -297,7 +263,7 @@ function capi_print_string ( value1 )
 
 	/* Print string */
 	var addr = readRegister(ret1.indexComp, ret1.indexElem);
-        var msg  = readMemory(parseInt(addr), "string") ;
+    var msg  = readMemory(parseInt(addr), "string") ;
 	display_print(msg) ;
 }
 
@@ -317,6 +283,7 @@ function capi_read_int ( value1 )
 	    document.getElementById('enter_keyboard').scrollIntoView();
 	}
 
+	run_program = 3;
 	return keyboard_read(kbd_read_int, ret1) ;
 }
 
@@ -335,6 +302,7 @@ function capi_read_float ( value1 )
 	    document.getElementById('enter_keyboard').scrollIntoView();
 	}
 
+	run_program = 3;
 	return keyboard_read(kbd_read_float, ret1) ;
 }
 
@@ -353,6 +321,7 @@ function capi_read_double ( value1 )
 	    document.getElementById('enter_keyboard').scrollIntoView();
 	}
 
+	run_program = 3;
 	return keyboard_read(kbd_read_double, ret1) ;
 }
 
@@ -371,6 +340,7 @@ function capi_read_char ( value1 )
 	    document.getElementById('enter_keyboard').scrollIntoView();
 	}
 
+	run_program = 3;
 	return keyboard_read(kbd_read_char, ret1) ;
 }
 
@@ -381,12 +351,12 @@ function capi_read_string ( value1, value2 )
 
 	/* Get register id */
 	var ret1 = crex_findReg(value1) ;
-	if (ret1.match == 0) {
+	if (ret1.match === 0) {
 		throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
 	}
 
 	var ret2 = crex_findReg(value2) ;
-	if (ret2.match == 0) {
+	if (ret2.match === 0) {
 		throw packExecute(true, "capi_syscall: register " + value2 + " not found", 'danger', null);
 	}
 
@@ -398,6 +368,7 @@ function capi_read_string ( value1, value2 )
 	ret1.indexComp2 = ret2.indexComp ;
 	ret1.indexElem2 = ret2.indexElem ;
 
+	run_program = 3;
 	return keyboard_read(kbd_read_string, ret1) ;
 }
 
@@ -408,12 +379,12 @@ function capi_sbrk ( value1, value2 )
 
 	/* Get register id */
 	var ret1 = crex_findReg(value1) ;
-	if (ret1.match == 0) {
+	if (ret1.match === 0) {
 		throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
 	}
 
 	var ret2 = crex_findReg(value2) ;
-	if (ret2.match == 0) {
+	if (ret2.match === 0) {
 		throw packExecute(true, "capi_syscall: register " + value2 + " not found", 'danger', null);
 	}
 
@@ -427,12 +398,12 @@ function capi_sbrk ( value1, value2 )
 	writeRegister(new_addr, ret2.indexComp, ret2.indexElem);
 }
 
-function capi_get_power_consumption ( )
+function capi_get_clk_cycles ( )
 {
 	/* Google Analytics */
-	creator_ga('execute', 'execute.syscall', 'execute.syscall.get_power_consumption');
+	creator_ga('execute', 'execute.syscall', 'execute.syscall.get_clk_cycles');
 
-	return total_power_consumption;
+	return total_clk_cycles;
 }
 
 
@@ -446,14 +417,14 @@ function capi_callconv_begin ( addr )
 	var function_name = "" ;
 
 	// 1) Passing Convection enable?
-	if (architecture.arch_conf[5].value == 0) {
+	if (architecture.arch_conf[5].value === 0) {
 		return;
 	}
 
 	// 2) get function name
 	if (typeof architecture.components[0] !== "undefined")
 	{
-		if (typeof tag_instructions[addr] == "undefined")
+		if (typeof tag_instructions[addr] === "undefined")
 			 function_name = "0x" + parseInt(addr).toString(16) ;
 		else function_name = tag_instructions[addr] ;
 	}
@@ -465,7 +436,7 @@ function capi_callconv_begin ( addr )
 function capi_callconv_end ()
 {
 	// 1) Passing Convection enable?
-	if (architecture.arch_conf[5].value == 0) {
+	if (architecture.arch_conf[5].value === 0) {
 		return;
 	}
 
@@ -531,10 +502,10 @@ function capi_split_double ( reg, index )
 {
 	var value = bin2hex(double2bin(reg));
 	console_log(value);
-	if(index == 0){
+	if(index === 0){
 		return value.substring(0,8);
 	}
-	if(index == 1) {
+	if(index === 1) {
 		return value.substring(8,16);
 	}
 }

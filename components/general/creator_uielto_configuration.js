@@ -1,3 +1,4 @@
+
 /*
  *  Copyright 2018-2023 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
@@ -25,7 +26,6 @@
 
     props:      {
                   id:                     { type: String,  required: true },
-                  instructions_packed:    { type: Number,  required: true },
                   stack_total_list:       { type: Number,  required: true },
                   autoscroll:             { type: Boolean, required: true },
                   notification_time:      { type: Number,  required: true },
@@ -38,10 +38,6 @@
                   //Loads the configuration values from cache
                   get_configuration()
                   {
-                    if(localStorage.getItem("instructions_packed") != null){
-                      app._data.instructions_packed = parseInt(localStorage.getItem("instructions_packed"));
-                    }
-
                     if(localStorage.getItem("stack_total_list") != null){
                       app._data.stack_total_list = parseInt(localStorage.getItem("stack_total_list"));
                     }
@@ -75,7 +71,7 @@
                     else
                     {
                       var default_style = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                      if(default_style == true)
+                      if(default_style === true)
                       {
                         document.getElementsByTagName("body")[0].style = "filter: invert(88%) hue-rotate(160deg) !important; background-color: #111 !important;";
                         app._data.dark = true;
@@ -86,34 +82,6 @@
                         app._data.dark = false;
                       }
                     }
-                  },
-
-                  //Change the execution speed
-                  change_execution_speed(value)
-                  {
-                    var prev_instruction_packed = this._props.instructions_packed;
-               
-                    if (value)
-                    {
-                      this._props.instructions_packed= this._props.instructions_packed + value;
-                      if (this._props.instructions_packed < 1){
-                        this._props.instructions_packed = 1;
-                      }
-                      if (this._props.instructions_packed > 101) {
-                        this._props.instructions_packed = 101;
-                      }
-                    }
-                    else
-                    {
-                      this._props.instructions_packed = parseInt(this._props.instructions_packed);
-                    }
-
-                    app._data.instructions_packed = this._props.instructions_packed; 
-                     
-                    localStorage.setItem("instructions_packed", this._props.instructions_packed);
-               
-                    //Google Analytics
-                    creator_ga('configuration', 'configuration.execution_speed', 'configuration.execution_speed.speed_' + (prev_instruction_packed > this._props.instructions_packed).toString()) ;
                   },
 
                   //Change the stack total list values
@@ -268,27 +236,6 @@
                   '           hide-footer>' +
                   ' ' +
                   '   <b-list-group>' +
-                  '     <b-list-group-item class="d-flex justify-content-between align-items-center m-1">' +
-                  '       <label for="range-1">Execution Speed:</label>' +
-                  '       <b-input-group>' +
-                  '         <b-input-group-prepend>' +
-                  '           <b-btn variant="outline-secondary" @click="change_execution_speed(-5)">-</b-btn>' +
-                  '         </b-input-group-prepend>' +
-                  '         <b-form-input id="range-1"' +
-                  '                       v-model="instructions_packed" ' +
-                  '                       @change="change_execution_speed(0)" ' +
-                  '                       type="range" ' +
-                  '                       min="1" ' +
-                  '                       max="101" ' +
-                  '                       step="5" ' +
-                  '                       title="Execution Speed">' +
-                  '         </b-form-input>' +
-                  '         <b-input-group-append>' +
-                  '           <b-btn variant="outline-secondary" @click="change_execution_speed(5)">+</b-btn>' +
-                  '         </b-input-group-append>' +
-                  '       </b-input-group>' +
-                  '     </b-list-group-item>' +
-                  ' ' +
                   '     <b-list-group-item class="d-flex justify-content-between align-items-center m-1">' +
                   '       <label for="range-1">Maximum stack values listed:</label>' +
                   '       <b-input-group>' +

@@ -1,3 +1,4 @@
+
 /*
  *  Copyright 2018-2023 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
@@ -56,7 +57,7 @@
         methods:    {
                       /*Change bits of calculator*/
                       changeBitsCalculator(){
-                        if(this.bits == 32){
+                        if(this.bits === 32){
                           this.calculator.bits = 32;
                           this.calculator.variant32 = "primary";
                           this.calculator.variant64 = "outline-primary";
@@ -65,7 +66,7 @@
                           this.calculator.lengthExponent = 8;
                           this.calculator.lengthMantissa = 23;
                         }
-                        if(this.bits == 64){
+                        if(this.bits === 64){
                           this.calculator.bits = 64;
                           this.calculator.variant64 = "primary";
                           this.calculator.variant32 = "outline-primary";
@@ -93,7 +94,7 @@
                             var float;
                             var binary;
 
-                            if(this.calculator.bits == 32){
+                            if(this.calculator.bits === 32){
                               var re = /[0-9A-Fa-f]{8}/g;
                               if(!re.test(hex)){
                                 show_notification('Character not allowed', 'danger') ;
@@ -129,7 +130,7 @@
                               creator_ga('send', 'event', 'calculator', 'calculator.32', 'calculator.32.hex');
                               creator_ga('send', 'event', 'calculator', 'calculator.32', 'calculator.32.0x' + hex);
                             }
-                            if(this.calculator.bits == 64){
+                            if(this.calculator.bits === 64){
                               var re = /[0-9A-Fa-f]{16}/g;
                               if(!re.test(hex)){
                                 show_notification('Character not allowed', 'danger') ;
@@ -167,7 +168,7 @@
 
                             break;
                           case 1:
-                            if(this.calculator.bits == 32){
+                            if(this.calculator.bits === 32){
                               this.calculator.sign = this.calculator.sign.padStart(1, "0");
                               this.calculator.exponent = this.calculator.exponent.padStart(8, "0");
                               this.calculator.mantissa = this.calculator.mantissa.padStart(23, "0");
@@ -204,7 +205,7 @@
                               creator_ga('send', 'event', 'calculator', 'calculator.32', 'calculator.32.bin');
                               creator_ga('send', 'event', 'calculator', 'calculator.32', 'calculator.32.' + binary);
                             }
-                            if(this.calculator.bits == 64){
+                            if(this.calculator.bits === 64){
                               this.calculator.sign = this.calculator.sign.padStart(1, "0");
                               this.calculator.exponent = this.calculator.exponent.padStart(11, "0");
                               this.calculator.mantissa = this.calculator.mantissa.padStart(52, "0");
@@ -245,7 +246,7 @@
                             var binary;
                             var hexadecimal;
 
-                            if(this.calculator.bits == 32){
+                            if(this.calculator.bits === 32){
                               hexadecimal = bin2hex(float2bin(float));
                               binary = float2bin(float);
 
@@ -269,7 +270,7 @@
                               creator_ga('send', 'event', 'calculator', 'calculator.32', 'calculator.32.' + this.calculator.decimal);
                             }
 
-                            if(this.calculator.bits == 64){
+                            if(this.calculator.bits === 64){
                               hexadecimal = bin2hex(double2bin(float));
                               binary = double2bin(float);
 

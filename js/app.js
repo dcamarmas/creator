@@ -1,3 +1,6 @@
+
+
+
 /*
  *  Copyright 2018-2023 Felix Garcia Carballeira, Alejandro Calderon Mateos, Diego Camarmas Alonso
  *
@@ -286,15 +289,6 @@ try
       // Execution
       //
 
-      //Run instructions
-      instructions_packed: 20,
-
-      //Run button
-      run_execution: false,
-
-      //Reset button
-      resetBut: false,
-
       //Instructions
       instructions: instructions,
 
@@ -310,6 +304,7 @@ try
       //
 
       main_memory: {},
+      main_memory_busy: false,
 
       //Stack
       track_stack_names: track_stack_names,
@@ -333,13 +328,13 @@ try
 
 
       //
-      //Power Consumption
+      //CLK Cycles
       //
 
-      total_power_consumption: total_power_consumption,
-      power_consumption: power_consumption,
-      //Power consumption Graph values
-      power_consumption_value: power_consumption_value,
+      total_clk_cycles: total_clk_cycles,
+      clk_cycles: clk_cycles,
+      //CLK Cycles Graph values
+      clk_cycles_value: clk_cycles_value,
 
       //
       //Display and keyboard
@@ -347,7 +342,7 @@ try
 
       display: '',
       keyboard: '',
-      enter: null,
+      enter: null, // Draw text area border in read
     },
 
 

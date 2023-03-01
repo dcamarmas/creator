@@ -1,3 +1,4 @@
+
 /*
  *  Copyright 2018-2023 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
@@ -520,10 +521,10 @@ function creator_memory_alignelto ( new_addr, new_size )
         // get align address and size
         for (var i=0; i<align; i++)
         {
-             if (((new_addr + i) % align) == 0) {
+             if (((new_addr + i) % align) === 0) {
                  ret.new_addr = new_addr + i ;
              }
-             if (((new_size + i) % align) == 0) {
+             if (((new_size + i) % align) === 0) {
                  ret.new_size = new_size + i ;
              }
         }
@@ -852,7 +853,7 @@ function creator_memory_is_segment_empty ( segment_name )
                                          return creator_memory_is_address_inside_segment(segment_name, elto) ;
                                       });
 
-          return (insiders.length == 0) ;
+          return (insiders.length === 0) ;
 }
 
 
@@ -871,7 +872,7 @@ function creator_memory_data_compiler ( data_address, value, size, dataLabel, De
              data_address = data_address + to_be_filled;
         }
 
-        if ((data_address % size != 0) && (data_address % word_size_bytes != 0)) {
+        if ((data_address % size !== 0) && (data_address % word_size_bytes !== 0)) {
             ret.msg = 'm21' ;
             ret.data_address = data_address ;
             return ret ;
