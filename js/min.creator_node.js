@@ -174,9 +174,10 @@ function register_value_serialize( architecture )
 
     if (typeof gtag !== "undefined") {
       gtag('event',
-            action,
+            label,
             {
               'event_category' : "creator_"+category,
+              'event_action' : action,
               'event_label' : label
             });
     }
