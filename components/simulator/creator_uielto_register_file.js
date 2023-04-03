@@ -101,7 +101,7 @@
               '   <b-container fluid align-h="center" class="mx-0 px-3 my-2">' +
               '     <b-row align-h="center" cols="1">' +
               '       <b-col v-for="item in architecture_hash">' +
-              '         <b-container fluid align-h="center" class="px-0 mx-0 mb-2" v-if="(data_mode == architecture.components[item.index].type) || (data_mode == \'int_registers\' && architecture.components[item.index].type == \'ctrl_register\')">' +
+              '         <b-container fluid align-h="center" class="px-0 mx-0 mb-2" v-if="(data_mode == architecture.components[item.index].type) || (data_mode == \'int_registers\' && architecture.components[item.index].type == \'ctrl_registers\')">' +
               '           <b-row align-h="start" cols-xl="4" cols-lg="4" cols-md="4" cols-sm="3" cols-xs="3" cols="3">' +
               '             <b-col class="p-1 mx-0" v-for="(item2, index) in architecture.components[item.index].elements">' +
               ' ' +
