@@ -433,18 +433,15 @@ function assembly_compiler()
         {
           for (var j = 0; j < architecture.components[i].elements.length; j++)
           {
-            if (architecture.components[i].elements[j].properties.includes("pointer")) 
+            if (architecture.components[i].elements[j].properties.includes("program_counter")) 
             {
-              if (architecture.components[i].elements[j].properties.includes("code")) 
-              {
-                architecture.components[i].elements[j].value          = bi_intToBigInt(address,10) ;
-                architecture.components[i].elements[j].default_value  = bi_intToBigInt(address,10) ;
-              }
-              if (architecture.components[i].elements[j].properties.includes("stack"))
-              {
-                architecture.components[i].elements[j].value         = bi_intToBigInt(stack_address,10) ;
-                architecture.components[i].elements[j].default_value = bi_intToBigInt(stack_address,10) ;
-              }
+              architecture.components[i].elements[j].value          = bi_intToBigInt(address,10) ;
+              architecture.components[i].elements[j].default_value  = bi_intToBigInt(address,10) ;
+            }
+            if (architecture.components[i].elements[j].properties.includes("stack_pointer"))
+            {
+              architecture.components[i].elements[j].value         = bi_intToBigInt(stack_address,10) ;
+              architecture.components[i].elements[j].default_value = bi_intToBigInt(stack_address,10) ;
             }
           }
         }
