@@ -449,7 +449,6 @@
                         }
                         else{
                           local_this.execution_UI_update (ret);
-                          console.log("AQUI");
                           //Change buttons status
                           local_this.reset_disable = false;
                           local_this.instruction_disable = false;

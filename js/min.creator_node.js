@@ -2242,11 +2242,27 @@ function main_memory_write ( addr, value )
 
 function main_memory_zerofill ( addr, size )
 {
-        for (var i=0; i<size; i++)
+        //Old zerofill version
+        /*for (var i=0; i<size; i++)
         {
              var value = main_memory_packs_forav(addr+i, '00') ;
              main_memory_write(addr+i, value) ;
-        }
+        }*/
+
+        var base = {
+               addr: 0,
+               bin: '00',
+               def_bin: "00",
+               tag: null,
+               data_type: null,
+               reset: true,
+               break: false
+        } ;
+
+        // Thanks for this line to Gonzalo Juarez Tello :-)
+        var value = Array(size).fill(base).map( (x,i) => { return {...x, addr: addr+i};}  ) ;
+
+        main_memory.splice(addr, size, ...value);
 }
 
 function main_memory_update_associated_datatype ( addr, value, datatype )
