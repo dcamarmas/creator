@@ -53,6 +53,35 @@ function crex_findReg ( value1 )
   return ret ;
 }
 
+function crex_findReg_bytag ( value1 )
+{
+  var ret = {} ;
+
+  ret.match = 0;
+  ret.indexComp = null;
+  ret.indexElem = null;
+
+  if (value1 == "") {
+    return ret;
+  }
+
+  for (var i = 0; i < architecture.components.length; i++)
+  {
+     for (var j = 0; j < architecture.components[i].elements.length; j++)
+     {
+        if (architecture.components[i].elements[j].properties.includes(value1) !== false)
+        {
+          ret.match = 1;
+          ret.indexComp = i;
+          ret.indexElem = j;
+          break ;
+        }
+     }
+  }
+
+  return ret ;
+}
+
 function readRegister ( indexComp, indexElem, register_type )
 {
   var draw = {
