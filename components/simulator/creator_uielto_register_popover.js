@@ -78,10 +78,12 @@
 
                     case "signed":
                       if (architecture.components[this._props.component.index].type == "ctrl_registers" || architecture.components[this._props.component.index].type == "int_registers") {
-                        if ((((register.value).toString(2)).padStart(register.nbits, '0')).charAt(0) === 1)
+                        if ((((register.value).toString(2)).padStart(register.nbits, '0')).charAt(0) == 1){
                           ret = parseInt(register.value.toString(10))-0x100000000;
-                        if ((((register.value).toString(2)).padStart(register.nbits, '0')).charAt(0) === 0)
+                        }
+                        if ((((register.value).toString(2)).padStart(register.nbits, '0')).charAt(0) == 0){
                           ret = (register.value).toString(10);
+                        }
                       }
                       else {
                         // ret = parseInt(register.value.toString(), 10) >> 0;
