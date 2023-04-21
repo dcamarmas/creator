@@ -47,12 +47,11 @@ function packExecute ( error, err_msg, err_type, draw )
 function execute_instruction ( )
 {
   var draw = {
-    space:   [],
-    info:    [],
-    success: [],
-    warning: [],
-    danger:  [],
-    flash:   []
+      space:   [],
+      info:    [],
+      success: [],
+      danger:  [],
+      flash:   []
   } ;
 
   var error = 0;
@@ -68,6 +67,7 @@ function execute_instruction ( )
       return packExecute(true, 'No instructions in memory', 'danger', null);
     }
     if (execution_index < -1) {
+      console.log("EXECUTOR")
       return packExecute(true, 'The program has finished', 'warning', null);
     }
     if (execution_index == -1) {
@@ -96,41 +96,26 @@ function execute_instruction ( )
       }
     }
 
-    //Get execution index by PC
-    get_execution_index (draw);
-
-
-    //Ask interruption before execute intruction
-    var i_reg = crex_findReg_bytag ("event_cause");
-    if (i_reg.match != 0)
+    for (var i = 0; i < instructions.length; i++)
     {
-      var i_reg_value = readRegister(i_reg.indexComp, i_reg.indexElem);
-      if (i_reg_value != 0)
+      if (parseInt(instructions[i].Address, 16) == readRegister(0, 0)) 
       {
-        console.log("Interruption detected");
-        //TODO: Print badget on instruction
-        draw.warning.push(execution_index);
+        execution_index = i;
 
-        //Save register PC (in EPC), STATUS
-        var epc_reg = crex_findReg_bytag ("exception_program_counter");
-        var pc_reg  = crex_findReg_bytag ("program_counter");
+        console_log(instructions[execution_index].hide);
+        console_log(execution_index);
+        console_log(instructions[i].Address);
 
-        var pc_reg_value = readRegister(pc_reg.indexComp, pc_reg.indexElem);
-        writeRegister(pc_reg_value, epc_reg.indexComp, epc_reg.indexElem);
-
-        //TODO: get new PC
-        var handler_addres = 0;
-
-        //Load in PC new PC (associated handler) and modify execution_index
-        writeRegister(handler_addres, pc_reg.indexComp, pc_reg.indexElem);
-        get_execution_index (draw);
-
-        //Reset CAUSE register
-        console.log(i_reg);
-        writeRegister(0, i_reg.indexComp, i_reg.indexElem);
+        if (instructions[execution_index].hide === false) {
+          draw.info.push(execution_index);
+        }
+      }
+      else{
+        if (instructions[execution_index].hide === false) {
+          draw.space.push(i);
+        }
       }
     }
-
 
     var instructionExec = instructions[execution_index].loaded;
     var instructionExecParts = instructionExec.split(' ');
@@ -290,9 +275,9 @@ function execute_instruction ( )
     //END TODO
 
     //Increase PC
-    var pc_reg = crex_findReg_bytag ("program_counter");
+    //TODO: other register
     word_size = parseInt(architecture.arch_conf[1].value) / 8;
-    writeRegister(readRegister(pc_reg.indexComp, pc_reg.indexElem) + (nwords * word_size), 0,0);
+    writeRegister(readRegister(0,0) + (nwords * word_size), 0,0);
     console_log(auxDef);
 
 
@@ -451,9 +436,7 @@ function execute_instruction ( )
     {
       for (var i = 0; i < instructions.length; i++)
       {
-        var pc_reg = crex_findReg_bytag ("program_counter");
-        var pc_reg_value = readRegister(pc_reg.indexComp, pc_reg.indexElem);
-        if (parseInt(instructions[i].Address, 16) == pc_reg_value) {
+        if (parseInt(instructions[i].Address, 16) == readRegister(0, 0)) {
           execution_index = i;
           draw.success.push(execution_index) ;
           break;
@@ -608,35 +591,6 @@ function creator_executor_exit ( error )
  * Auxiliar functions
  */
 
-//Get execution index by PC
-function get_execution_index ( draw )
-{
-  var pc_reg = crex_findReg_bytag ("program_counter");
-  var pc_reg_value = readRegister(pc_reg.indexComp, pc_reg.indexElem);
-  for (var i = 0; i < instructions.length; i++)
-  {
-    if (parseInt(instructions[i].Address, 16) == pc_reg_value) 
-    {
-      execution_index = i;
-
-      console_log(instructions[execution_index].hide);
-      console_log(execution_index);
-      console_log(instructions[i].Address);
-
-      if (instructions[execution_index].hide === false) {
-        draw.info.push(execution_index);
-      }
-    }
-    else{
-      if (instructions[execution_index].hide === false) {
-        draw.space.push(i);
-      }
-    }
-  }
-
-  return i;
-}
-
 function crex_show_notification ( msg, level )
 {
   if (typeof window !== "undefined")
@@ -648,12 +602,11 @@ function crex_show_notification ( msg, level )
 function writeStackLimit ( stackLimit )
 {
   var draw = {
-    space:   [],
-    info:    [],
-    success: [],
-    warning: [],
-    danger:  [],
-    flash:   []
+    space: [] ,
+    info: [] ,
+    success: [] ,
+    danger: [],
+    flash: []
   } ;
   
   if (stackLimit == null) {
@@ -879,12 +832,11 @@ function kbd_read_string ( keystroke, params )
 function keyboard_read ( fn_post_read, fn_post_params)
 {
   var draw = {
-    space:   [],
-    info:    [],
-    success: [],
-    warning: [],
-    danger:  [],
-    flash:   []
+    space: [] ,
+    info: [] ,
+    success: [] ,
+    danger: [],
+    flash: []
   } ;
 
   // CL
