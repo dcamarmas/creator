@@ -81,7 +81,7 @@ var compileError = {
    'm8': function(ret) { return "Address '"                          + ret.token + "' is too big" },
    'm9': function(ret) { return "Address '"                          + ret.token + "' is not valid" },
   'm10': function(ret) { return ".space value out of range ("        + ret.token + " is greater than 50MiB)" },
-//'m11': function(ret) { return "This field '"                       + ret.token + "' must end with ')'" },
+      //'m11': function(ret) { return "This field '"                       + ret.token + "' must end with ')'" },
   'm12': function(ret) { return "This field is too small to encode in binary '" + ret.token + "" },
   'm13': function(ret) { return "Incorrect pseudoinstruction definition "    + ret.token + "" },
   'm14': function(ret) { return "Invalid directive: "                        + ret.token + "" },
@@ -90,7 +90,7 @@ var compileError = {
   'm17': function(ret) { return 'The string of characters must end with "'   + ret.token + "" },
   'm18': function(ret) { return "Number '"                                   + ret.token + "' is too big" },
   'm19': function(ret) { return "Number '"                                   + ret.token + "' is empty" },
-//'m20': function(ret) { return "The text segment should start with '"       + ret.token + "'" },
+      //'m20': function(ret) { return "The text segment should start with '"       + ret.token + "'" },
   'm21': function(ret) { return "The data must be aligned"                   + ret.token + "" },
   'm22': function(ret) { return "The number should be positive '"            + ret.token + "'" },
   'm23': function(ret) { return "Empty directive"                            + ret.token + "" },
@@ -433,15 +433,18 @@ function assembly_compiler()
         {
           for (var j = 0; j < architecture.components[i].elements.length; j++)
           {
-            if (architecture.components[i].elements[j].properties.includes("program_counter")) 
+            if (architecture.components[i].elements[j].properties.includes("pointer")) 
             {
-              architecture.components[i].elements[j].value          = bi_intToBigInt(address,10) ;
-              architecture.components[i].elements[j].default_value  = bi_intToBigInt(address,10) ;
-            }
-            if (architecture.components[i].elements[j].properties.includes("stack_pointer"))
-            {
-              architecture.components[i].elements[j].value         = bi_intToBigInt(stack_address,10) ;
-              architecture.components[i].elements[j].default_value = bi_intToBigInt(stack_address,10) ;
+              if (architecture.components[i].elements[j].properties.includes("code")) 
+              {
+                architecture.components[i].elements[j].value          = bi_intToBigInt(address,10) ;
+                architecture.components[i].elements[j].default_value  = bi_intToBigInt(address,10) ;
+              }
+              if (architecture.components[i].elements[j].properties.includes("stack"))
+              {
+                architecture.components[i].elements[j].value         = bi_intToBigInt(stack_address,10) ;
+                architecture.components[i].elements[j].default_value = bi_intToBigInt(stack_address,10) ;
+              }
             }
           }
         }
@@ -1069,7 +1072,7 @@ function data_segment_compiler()
               }
 
               for (var i = 0; i < instructions.length; i++)
-              {
+        {
                    if (instructions[i].Label == token.substring(0,token.length-1)) {
                        return packCompileError('m1', token.substring(0,token.length-1), 'error', "danger") ;
                    }
@@ -1081,11 +1084,11 @@ function data_segment_compiler()
           }
 
           for (var j = 0; j < architecture.directives.length; j++)
-          {
+    {
             if (token == architecture.directives[j].name)
-            {
+      {
               switch (architecture.directives[j].action)
-              {
+        {
                 case "byte":
                   var isByte = true;
 
@@ -2134,7 +2137,8 @@ function code_segment_compiler()
 }
 
 /* Compile instruction */
-function instruction_compiler ( instruction, userInstruction, label, line, pending, pendingAddress, instInit, instIndex, isPseudo )
+function instruction_compiler ( instruction, userInstruction, label, line,
+        pending, pendingAddress, instInit, instIndex, isPseudo )
 {
   var ret = {
           errorcode: "",
