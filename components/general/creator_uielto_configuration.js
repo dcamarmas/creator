@@ -36,15 +36,7 @@
 
     data:       function () {
                   return {
-                    //Intructions form select
-                    target_boards = [
-                                      { text: 'ESP32-C3',  value: 'ESP32_C3' },
-                                    ],
 
-
-                    target_board = "ESP32_C3", //TODO: temporal
-                    target_port  = "ttyUSB0",  //TODO: temporal
-                    flash_url    = "localhost:8080",     //TODO: temporal
                   }
                 },
 
@@ -364,30 +356,6 @@
                   '                        @change="change_debug_mode">' +
                   '       </b-form-checkbox>' +
                   '     </b-list-group-item>' +
-                  ' ' +
-                  '     <b-list-group-item class="justify-content-between align-items-center m-1">' +
-                  '       <label for="range-6">Target Board:</label>' +
-                  '       <b-form-select v-model="target_board" ' +
-                  '                      :options="target_boards" ' +
-                  '                      size="sm"' +
-                  '                      title="Target board">' +
-                  '       </b-form-select>' +
-                  '       <label for="range-6" class="mt-2">Target Port:</label>' +
-                  '       <b-form-input type="text" ' +
-                  '                     v-model="target_port" ' +
-                  '                     placeholder="Enter target port" ' +
-                  '                     size="sm" ' +
-                  '                     title="Target port">' +
-                  '       </b-form-input>' +
-                  '       <label for="range-6" class="mt-2">Flash URL:</label>' +
-                  '       <b-form-input type="text" ' +
-                  '                     v-model="flash_url" ' +
-                  '                     placeholder="Enter flash URL" ' +
-                  '                     size="sm" ' +
-                  '                     title="Flash URL">' +
-                  '       </b-form-input>' +
-                  '     </b-list-group-item>' +
-                  '   </b-list-group>' +
                   ' ' +
                   ' </b-modal>'
 
