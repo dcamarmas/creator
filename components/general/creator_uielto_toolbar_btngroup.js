@@ -458,6 +458,12 @@
                         }
                       },
 
+                      //Flash program
+                      flash_program() 
+                      {
+                        
+                      },
+
                       //Stop program excution
                       stop_execution() 
                       {
@@ -486,6 +492,7 @@
                               button_reset() +
                               button_instruction() +
                               button_run() +
+                              button_flash() +
                               button_stop() +
                               button_examples() +
                               button_calculator() +
@@ -627,6 +634,16 @@
             '          id="playExecution">' +
             '  <span class="fas fa-play"></span>' +
             '  Run' +
+            '</b-button>'
+  }
+
+  function button_flash(){
+    return  '<b-button v-if="item==\'btn_flash\'" class="btn btn-block btn-outline-secondary actionsGroup btn-sm h-100 mr-1" ' +
+            '          @click="flash_program" ' +
+            '          :disabled="run_disable"' +
+            '          id="flashExecution">' +
+            '  <span class="fa-brands fa-usb"></span>' +
+            '  Flash' +
             '</b-button>'
   }
 
