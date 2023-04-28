@@ -95,6 +95,7 @@ cat js/creator_bigint.js \
     components/assembly/creator_uielto_error.js \
     components/assembly/creator_uielto_library_tags.js \
     \
+    components/simulator/creator_uielto_target_flash.js \
     components/simulator/creator_uielto_calculator.js \
     components/simulator/creator_uielto_table_execution.js \
     components/simulator/creator_uielto_data_view_selector.js \

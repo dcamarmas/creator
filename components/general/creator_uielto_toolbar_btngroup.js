@@ -639,9 +639,8 @@
 
   function button_flash(){
     return  '<b-button v-if="item==\'btn_flash\'" class="btn btn-block btn-outline-secondary actionsGroup btn-sm h-100 mr-1" ' +
-            '          @click="flash_program" ' +
-            '          :disabled="run_disable"' +
-            '          id="flashExecution">' +
+            '          v-b-modal.flash ' +
+            '          :disabled="run_disable">' +
             '  <span class="fa-brands fa-usb"></span>' +
             '  Flash' +
             '</b-button>'
