@@ -3,9 +3,9 @@
 # CREATOR (https://creatorsim.github.io/creator/)
 #
 
-       # // tira de caracteres (strings)
-       # char c1[10] ;
-       # char ac1[] = "hola" ;
+# // tira de caracteres (strings)
+# char c1[10] ;
+# char ac1[] = "hola" ;
 
 .data
 # strings
