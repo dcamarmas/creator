@@ -36,15 +36,7 @@
 
     data:       function () {
                   return {
-                    //Intructions form select
-                    target_types =  [
-                                      { text: 'ESP32-C3',  value: 'ESP32_C3' },
-                                    ],
 
-
-                    target_type = "ESP32_C3", //TODO: temporal
-                    target_port = "ttyUSB0",  //TODO: temporal
-                    flash_port  = "8080",     //TODO: temporal
                   }
                 },
 
@@ -364,30 +356,6 @@
                   '                        @change="change_debug_mode">' +
                   '       </b-form-checkbox>' +
                   '     </b-list-group-item>' +
-                  ' ' +
-                  '     <b-list-group-item class="justify-content-between align-items-center m-1">' +
-                  '       <label for="range-6">Target Type:</label>' +
-                  '       <b-form-select v-model="target_type" ' +
-                  '                      :options="target_types" ' +
-                  '                      size="sm"' +
-                  '                      title="Target type">' +
-                  '       </b-form-select>' +
-                  '       <label for="range-6" class="mt-2">Target Port:</label>' +
-                  '       <b-form-input type="text" ' +
-                  '                     v-model="target_port" ' +
-                  '                     placeholder="Enter target port" ' +
-                  '                     size="sm" ' +
-                  '                     title="Target port">' +
-                  '       </b-form-input>' +
-                  '       <label for="range-6" class="mt-2">Flash Port:</label>' +
-                  '       <b-form-input type="text" ' +
-                  '                     v-model="flash_port" ' +
-                  '                     placeholder="Enter flas port" ' +
-                  '                     size="sm" ' +
-                  '                     title="Flash port">' +
-                  '       </b-form-input>' +
-                  '     </b-list-group-item>' +
-                  '   </b-list-group>' +
                   ' ' +
                   ' </b-modal>'
 

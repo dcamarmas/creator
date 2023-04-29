@@ -10,7 +10,7 @@
 .text
   main:
          # printf("hola mundo\n") ;
-         li a7 4         
-         la a0 msg_hola  
+         li a7, 4         
+         la a0, msg_hola  
          ecall
 

@@ -67,6 +67,7 @@ try
       architecture_guide: '',
 
       //Accesskey
+      os: "",
       browser: "",
 
       //Displayed notifications
@@ -354,6 +355,7 @@ try
     created(){
       uielto_navbar.methods.load_num_version();
       uielto_preload_architecture.methods.load_arch_available();
+      this.detect_os();
       this.detect_browser();
       
     },
@@ -393,6 +395,21 @@ try
        * General methots *
        *******************/
 
+      //Detects the operating system being used
+      detect_os(){
+        if (navigator.appVersion.indexOf("Win") != -1) {
+          this.os = "Win";
+        } 
+        else if (navigator.appVersion.indexOf("Mac") != -1) {
+          this.os = "Mac";
+        }
+        else if (navigator.appVersion.indexOf("X11") != -1) {
+          this.os = "Linux";
+        }
+        else if (navigator.appVersion.indexOf("Linux") != -1) {
+          this.os = "Linux";
+        }
+      },
 
       //Detects the browser being used
       detect_browser(){
