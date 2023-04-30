@@ -12,17 +12,17 @@
 .text
 
 main:
-    li $v0 4
-    la $a0 string1
+    li $v0, 4
+    la $a0, string1
     syscall
     
-    la $a0 string2
+    la $a0, string2
     syscall
     
-    la $a0 string3
+    la $a0, string3
     syscall
 
-    li $a0 '\n'
-    li $v0 11
+    li $a0, '\n'
+    li $v0, 11
     syscall
 
