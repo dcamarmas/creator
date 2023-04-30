@@ -6,8 +6,8 @@
 .text
 main:
 
-	li $t0 0x234566
-  li $t1 -466742
+  li $t0, 0x234566
+  li $t1, -466742
 
   mthi $t0
   mtlo $t1

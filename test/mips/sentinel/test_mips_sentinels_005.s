@@ -9,18 +9,18 @@
 
 	main: 
 			
-			li $fp 5
+			li $fp, 5
             jal test
 
             # exit
-            li $v0 10
+            li $v0, 10
             syscall
 
 
 	test:
             # crear "stack frame" para $ra, $fp y una variable local
             
-			li $fp 5
+			li $fp, 5
 
             # return $v0
            jr $ra
