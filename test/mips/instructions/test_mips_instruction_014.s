@@ -13,14 +13,14 @@
 .text
 main:
 
-    la $t0 b1
-    la $t1 h1
+    la $t0, b1
+    la $t1, h1
 
-    lbu $t2 0($t0)
-    lhu $t3 0 ($t1)
+    lbu $t2, 0($t0)
+    lhu $t3, 0($t1)
 
-    la $t4 b2
-    sb $t5 0($t4)
+    la $t4, b2
+    sb $t5, 0($t4)
 
-    la $t6 h2
-    sh $t7 0($t6)
+    la $t6, h2
+    sh $t7, 0($t6)

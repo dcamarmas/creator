@@ -6,5 +6,5 @@
  .data
  	.align 2
  	example:	.byte 	23
-    example2:	.half	
+   example2:	.half	
     

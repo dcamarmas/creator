@@ -5,6 +5,6 @@
 
 .text
 main:
-	li $v0 7
+	li $v0, 7
     syscall
     

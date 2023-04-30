@@ -4,6 +4,6 @@
 #
 
  .data
- 	A:		.word -1
-    a:		.byte -1
-	A:		.half 23
+   A:    .word -1
+   a:    .byte -1
+   A:    .half 23
