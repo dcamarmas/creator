@@ -1,0 +1,6 @@
+.text
+.type main, @function
+.globl main
+li x1, 1
+li x2, 2
+		

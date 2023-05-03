@@ -3,7 +3,7 @@
 Error at line 9 (A):
 Repeated tag: A
 
-  8     a:		.byte -1
+  8    a:		.byte -1
 ->9 	A:		.half 23
 
 Not executed

@@ -5,4 +5,4 @@
 
 .text
 main_:
-    li t0 10
+    li t0, 10
