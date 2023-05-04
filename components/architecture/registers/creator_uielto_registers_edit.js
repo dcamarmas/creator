@@ -174,11 +174,19 @@
                 '        <b-form-checkbox value="write">Write</b-form-checkbox>' +
                 '        <b-form-checkbox value="ignore_write">Ignore Write</b-form-checkbox>' +
                 '        <b-form-checkbox value="saved">Saved</b-form-checkbox>' +
-                '        <b-form-checkbox value="pointer">Pointer</b-form-checkbox>' +
-                '        <b-form-checkbox value="data">Data</b-form-checkbox>' +
-                '        <b-form-checkbox value="code">Code</b-form-checkbox>' +
-                '        <b-form-checkbox value="stack">Stack</b-form-checkbox>' +
-                '        <b-form-checkbox value="frame">Frame</b-form-checkbox>' +
+                '        <br>' +
+                '        <hr>' +
+                '        <b-form-checkbox value="program_counter">Program Counter</b-form-checkbox>' +
+                '        <b-form-checkbox value="global_pointer">Global Pointer</b-form-checkbox>' +
+                '        <b-form-checkbox value="stack_pointer">Stack Pointer</b-form-checkbox>' +
+                '        <b-form-checkbox value="frame_pointer">Frame Pointer</b-form-checkbox>' +
+                '        <br>' +
+                '        <hr>' +
+                '        <b-form-checkbox value="event_signal">Event Signal</b-form-checkbox>' +
+                '        <b-form-checkbox value="event_cause">Event Cause</b-form-checkbox>' +
+                '        <b-form-checkbox value="status_register">Status Register</b-form-checkbox>' +
+                '        <b-form-checkbox value="exception_program_counter">Exception Program Counter</b-form-checkbox>' +
+                '      </b-form-checkbox-group>' +
                 '      </b-form-checkbox-group>' +
                 '    </b-form-group>' +
                 '' +

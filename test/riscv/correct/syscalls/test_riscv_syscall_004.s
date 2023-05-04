@@ -12,17 +12,17 @@
 .text
 
 main:
-    li a7 4
-    la a0 string1
+    li a7, 4
+    la a0, string1
     ecall
     
-    la a0 string2
+    la a0, string2
     ecall
     
-    la a0 string3
+    la a0, string3
     ecall
 
-    li a0 '\n'
-    li a7 11
+    li a0, '\n'
+    li a7, 11
     ecall
 

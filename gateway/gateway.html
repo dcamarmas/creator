@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>WepSIM - gateway</title>
+    </head>
+    <body>
+        <center>
+	<table border="0" cellspacing="10" cellpadding="10">
+	<tr>
+	<td>
+		<p>
+		<label for="div_asm">(1) Put the assembly code here:</label><br>
+		<textarea id="div_asm" name="div_asm" 
+                          style="width:100%"
+                          rows="20" cols="50">
+li x1, 1
+li x2, 2
+		</textarea>
+		</p>
+
+		<p>
+		<label for="div_url">(2) Set the gateway URL:</label><br>
+		<input type="text" style="width:100%"
+		       id="div_url" name="div_url" 
+		       value="http://localhost:8080">
+		</p>
+
+		<p>
+		<label for="div_dev">(3) Set PORT:</label><br>
+		<input type="text" style="width:100%"
+		       id="div_dev" name="div_dev" 
+		       value="/dev/ttyUSB0">
+		</p>
+
+		<p>
+		<label for="div_dev">(4) Set target:</label><br>
+		<input type="text" style="width:100%"
+		       id="div_target" name="div_target" 
+		       value="esp32c3">
+		</p>
+
+
+		<p>
+		<label for="btn_flash">(5) Press the button to flash:</label><br>
+		<button id="btn_flash"
+			onclick="gateway_do_flash('div_asm', 'div_url', 'div_dev', 'div_target');">Press to flash...</button>
+		</p>
+	</td>
+	</tr>
+	</table>
+        </center>
+    </body>
+</html>
+
+<script>
+
+	async function gateway_remote_flash ( flash_url, flash_args, info_div )
+	{
+             var fetch_args = {
+			        method:  'POST',
+			        headers: {
+				            'Content-type': 'application/json',
+				            'Accept':       'application/json'
+				         },
+			        body:    JSON.stringify(flash_args)
+	 	              } ;
+
+             try
+             {
+                var res  = await fetch(flash_url, fetch_args) ;
+                var jres = await res.json();
+             }
+             catch (err)
+             {
+	        console.log(err + '\n') ;
+             }
+	}
+
+	function gateway_do_flash ( div_asm_name, div_url_name, div_dev_name, div_target_name )
+	{
+             var ddev = document.getElementById(div_dev_name) ;
+             var ddet = document.getElementById(div_target_name) ;
+             var dasm = document.getElementById(div_asm_name) ;
+	     var farg = {
+			   target_board: ddet.value,
+			   target_port:  ddev.value,
+			   assembly:     dasm.value,
+			} ;
+
+	     var udiv = document.getElementById(div_url_name) ;
+	     var furl = udiv.value ;
+	     gateway_remote_flash(furl + "/flash", farg);
+	}
+
+</script>
+

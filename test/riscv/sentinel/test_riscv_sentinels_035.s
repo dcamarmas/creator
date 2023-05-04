@@ -9,24 +9,24 @@
 
 	main: 
 			
-			li s1 2
-            jal ra test
+			li s1, 2
+            jal ra, test
 
             # exit
-            li a7 10
+            li a7, 10
             ecall
 
 
 	test:
             # crear "stack frame" para ra, fp y una variable local
-            addi sp sp -8
-            sw   s1 0(sp)
+            addi sp, sp, -8
+            sw   s1, 0(sp)
 
-			li s1 2
+			li s1, 2
 
-	b_efs:  lh   s1 0(sp)
+	b_efs:  lh   s1, 0(sp)
     
-            addi sp sp 8
+            addi sp, sp, 8
 
             # return a7
             jr ra
