@@ -135,6 +135,11 @@
               '         </template> ' +
               ' ' +
               '         <template v-slot:cell(tag)="row">' +
+              '           <b-badge variant="warning" ' +
+              '                    class="border border-warning shadow executionTag" ' +
+              '                    v-if="row.item._rowVariant==\'warning\'">' +
+              '             Interrupted' +
+              '           </b-badge>' +
               '           <b-badge variant="info" ' +
               '                    class="border border-info shadow executionTag" ' +
               '                    v-if="row.item._rowVariant==\'info\' && enter == false">' +

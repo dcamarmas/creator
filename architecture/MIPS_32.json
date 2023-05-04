@@ -45,8 +45,7 @@
           "properties": [
             "read",
             "write",
-            "pointer",
-            "code"
+            "program_counter"
           ]
         },
         {
@@ -58,7 +57,8 @@
           "default_value": 0,
           "properties": [
             "read",
-            "write"
+            "write",
+            "exception_program_counter"
           ]
         },
         {
@@ -70,7 +70,8 @@
           "default_value": 0,
           "properties": [
             "read",
-            "write"
+            "write",
+            "event_cause"
           ]
         },
         {
@@ -94,7 +95,8 @@
           "default_value": 0,
           "properties": [
             "read",
-            "write"
+            "write",
+            "status_register"
           ]
         },
         {
@@ -558,8 +560,7 @@
           "properties": [
             "read",
             "write",
-            "pointer",
-            "data"
+            "global_pointer"
           ]
         },
         {
@@ -573,8 +574,7 @@
           "properties": [
             "read",
             "write",
-            "pointer",
-            "stack"
+            "stack_pointer"
           ]
         },
         {
@@ -588,8 +588,7 @@
           "properties": [
             "read",
             "write",
-            "pointer",
-            "frame"
+            "frame_pointer"
           ]
         },
         {
@@ -5453,6 +5452,28 @@
         }
       ],
       "definition": "reg1 = reg2 ^ val;"
+    },
+    {
+      "name": "rfe",
+      "type": "Other",
+      "co": "110011",
+      "cop": null,
+      "help": "Return from exception",
+      "properties": [],
+      "nwords": 1,
+      "clk_cycles": 1,
+      "signature_definition": "F0",
+      "signature": "rfe",
+      "signatureRaw": "rfe",
+      "fields": [
+        {
+          "name": "rfe",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        }
+      ],
+      "definition": "PC = EPC;\n"
     }
   ],
   "pseudoinstructions": [

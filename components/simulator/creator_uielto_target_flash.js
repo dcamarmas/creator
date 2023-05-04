@@ -31,12 +31,17 @@
         data:       function () {
                       return {
                         target_boards = [
-                                          { text: 'ESP32-C3',  value: 'ESP32_C3' },
+                                          { text: 'ESP32',     value: 'esp32' },
+                                          { text: 'ESP32-C2',  value: 'esp32_c2' },
+                                          { text: 'ESP32-C3',  value: 'esp32_c3' },
+                                          { text: 'ESP32-H2',  value: 'esp32_h2' },
+                                          { text: 'ESP32-S2',  value: 'esp32_s2' },
+                                          { text: 'ESP32-S3',  value: 'esp32_s3' },
                                         ],
 
-                        target_ports  = { Win: 'COMM', Mac: '/dev/cu.usbserial-1110', Linux: 'ttyUSB0' },
+                        target_ports  = { Win: 'COM1', Mac: '/dev/cu.', Linux: '/dev/tty' },
 
-                        target_board  = "ESP32_C3",
+                        target_board  = "esp32_c3",
                         target_port   = this.get_target_port(),
                         flash_url     = "localhost:8080",
 
@@ -50,7 +55,21 @@
                       get_target_port()
                       {
                         return target_ports[this._props.os];
-                      }
+                      },
+
+                      //Download driver
+                      download_driver(){
+                        var link = document.createElement("a");
+                        link.download = "driver.zip";
+                        link.href = (window.location.href.split('?')[0]).split('#')[0] + "/gateway/" + target_board + "/driver.zip";
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                        delete link;
+
+                        //Google Analytics
+                        creator_ga('simulator', 'simulator.download_driver', 'simulator.download_driver');
+                      },
                     },
 
       template:     ' <b-modal :id="id"' +
@@ -104,7 +123,10 @@
                     '   </b-container>' +
                     ' ' +
                     '   <b-container fluid align-h="center" class="mx-0 px-0">' +
-                    '     <b-row cols="1" align-h="center">' +
+                    '     <b-row cols="2" align-h="center">' +
+                    '       <b-col class="pt-2">' +
+                    '         <b-button class="btn btn-sm btn-block" variant="outline-primary" @click="download_driver">Download Driver</b-button>' +
+                    '       </b-col>' +
                     '       <b-col class="pt-2">' +
                     '         <b-button class="btn btn-sm btn-block" variant="primary">Flash</b-button>' +
                     '       </b-col>' +
