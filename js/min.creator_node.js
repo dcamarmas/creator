@@ -1956,8 +1956,7 @@ function writeRegister ( value, indexComp, indexElem, register_type )
       architecture.components[indexComp].elements[indexElem].value = bi_intToBigInt(value,10);
       creator_callstack_writeRegister(indexComp, indexElem);
 
-      if ((architecture.components[indexComp].elements[indexElem].properties.includes('pointer') !== false) &&
-          (architecture.components[indexComp].elements[indexElem].properties.includes('stack') !== false)   &&
+      if ((architecture.components[indexComp].elements[indexElem].properties.includes('stack_pointer') !== false) &&
           (value != parseInt(architecture.memory_layout[4].value))) {
             writeStackLimit(parseInt(bi_intToBigInt(value,10)));
       }
@@ -1985,8 +1984,7 @@ function writeRegister ( value, indexComp, indexElem, register_type )
       architecture.components[indexComp].elements[indexElem].value = bi_floatToBigInt(value);
       creator_callstack_writeRegister(indexComp, indexElem);
 
-      if ((architecture.components[indexComp].elements[indexElem].properties.includes('pointer') !== false) &&
-          (architecture.components[indexComp].elements[indexElem].properties.includes('stack') !== false)   &&
+      if ((architecture.components[indexComp].elements[indexElem].properties.includes('stack_pointer') !== false) &&
           (value != parseInt(architecture.memory_layout[4].value))) {
             writeStackLimit(parseFloat(value));
       }
@@ -3443,18 +3441,15 @@ function assembly_compiler()
         {
           for (var j = 0; j < architecture.components[i].elements.length; j++)
           {
-            if (architecture.components[i].elements[j].properties.includes("pointer")) 
+            if (architecture.components[i].elements[j].properties.includes("program_counter")) 
             {
-              if (architecture.components[i].elements[j].properties.includes("code")) 
-              {
-                architecture.components[i].elements[j].value          = bi_intToBigInt(address,10) ;
-                architecture.components[i].elements[j].default_value  = bi_intToBigInt(address,10) ;
-              }
-              if (architecture.components[i].elements[j].properties.includes("stack"))
-              {
-                architecture.components[i].elements[j].value         = bi_intToBigInt(stack_address,10) ;
-                architecture.components[i].elements[j].default_value = bi_intToBigInt(stack_address,10) ;
-              }
+              architecture.components[i].elements[j].value          = bi_intToBigInt(address,10) ;
+              architecture.components[i].elements[j].default_value  = bi_intToBigInt(address,10) ;
+            }
+            if (architecture.components[i].elements[j].properties.includes("stack_pointer"))
+            {
+              architecture.components[i].elements[j].value         = bi_intToBigInt(stack_address,10) ;
+              architecture.components[i].elements[j].default_value = bi_intToBigInt(stack_address,10) ;
             }
           }
         }
