@@ -35,8 +35,8 @@
                   current_reg_name: 'INT Registers',
 
                   reg_representation_options: [
-                                                { text: 'INT Registers', value: 'int_registers' },
-                                                { text: 'FP Registers',  value: 'fp_registers'  }
+                                                { text: 'INT/Ctrl Registers', value: 'int_registers' },
+                                                { text: 'FP Registers',       value: 'fp_registers'  }
                                               ]
                 }
               },
@@ -80,7 +80,7 @@
                 {
                   if (app._data.data_mode == "int_registers")
                   {
-                    current_reg_name = "INT Registers";
+                    current_reg_name = "INT/Ctrl Registers";
                   }
                   if (app._data.data_mode == "fp_registers")
                   {
@@ -118,7 +118,7 @@
               '                    size="sm"' +
               '                    :variant="get_pressed(\'registers\')"' +
               '                    @click="change_data_view(current_reg_type)">' +
-              '          <b-dropdown-item @click="change_data_view(\'int_registers\')">CPU-INT Registers</b-dropdown-item>' +
+              '          <b-dropdown-item @click="change_data_view(\'int_registers\')">CPU-INT/Ctrl Registers</b-dropdown-item>' +
               '          <b-dropdown-item @click="change_data_view(\'fp_registers\')">CPU-FP Registers</b-dropdown-item>' +
               '        </b-dropdown>' +
               '' +
