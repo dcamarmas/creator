@@ -247,6 +247,9 @@
                         for (var i=0; i<ret.draw.info.length; i++) {
                           instructions[ret.draw.info[i]]._rowVariant = 'info';
                         }
+                        for (var i=0; i<ret.draw.warning.length; i++) {
+                          instructions[ret.draw.warning[i]]._rowVariant = 'warning';
+                        }
                         for (var i=0; i<ret.draw.danger.length; i++) {
                           instructions[ret.draw.danger[i]]._rowVariant = 'danger';
                         }
@@ -288,6 +291,7 @@
                             space:   [],
                             info:    [],
                             success: [],
+                            warning: [],
                             danger:  [],
                             flash:   []
                         } ;
