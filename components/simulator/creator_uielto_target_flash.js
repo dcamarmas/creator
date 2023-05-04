@@ -31,17 +31,17 @@
         data:       function () {
                       return {
                         target_boards = [
-                                          { text: 'ESP32',  value: 'ESP32' },
-                                          { text: 'ESP32-C2',  value: 'ESP32_C2' },
-                                          { text: 'ESP32-C3',  value: 'ESP32_C3' },
-                                          { text: 'ESP32-H2',  value: 'ESP32_H2' },
-                                          { text: 'ESP32-S2',  value: 'ESP32_S2' },
-                                          { text: 'ESP32-S3',  value: 'ESP32_S3' },
+                                          { text: 'ESP32',     value: 'esp32' },
+                                          { text: 'ESP32-C2',  value: 'esp32_c2' },
+                                          { text: 'ESP32-C3',  value: 'esp32_c3' },
+                                          { text: 'ESP32-H2',  value: 'esp32_h2' },
+                                          { text: 'ESP32-S2',  value: 'esp32_s2' },
+                                          { text: 'ESP32-S3',  value: 'esp32_s3' },
                                         ],
 
                         target_ports  = { Win: 'COM1', Mac: '/dev/cu.', Linux: '/dev/tty' },
 
-                        target_board  = "ESP32_C3",
+                        target_board  = "esp32_c3",
                         target_port   = this.get_target_port(),
                         flash_url     = "localhost:8080",
 
