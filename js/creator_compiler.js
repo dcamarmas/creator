@@ -70,19 +70,19 @@ var pending_tags = [];
 var extern = [];
 /*Error code messages*/
 var compileError = {
-   'm0': function(ret) { return ""                                   + ret.token + "" },
-   'm1': function(ret) { return "Repeated tag: "                     + ret.token + "" },
-   'm2': function(ret) { return "Instruction '"                      + ret.token + "' not found" },
-   'm3': function(ret) { return "Incorrect instruction syntax for '" + ret.token + "'" },
-   'm4': function(ret) { return "Register '"                         + ret.token + "' not found" },
-   'm5': function(ret) { return "Immediate number '"                 + ret.token + "' is too big" },
-   'm6': function(ret) { return "Immediate number '"                 + ret.token + "' is not valid" },
-   'm7': function(ret) { return "Tag '"                              + ret.token + "' is not valid" },
-   'm8': function(ret) { return "Address '"                          + ret.token + "' is too big" },
-   'm9': function(ret) { return "Address '"                          + ret.token + "' is not valid" },
-  'm10': function(ret) { return ".space value out of range ("        + ret.token + " is greater than 50MiB)" },
-//'m11': function(ret) { return "This field '"                       + ret.token + "' must end with ')'" },
-  'm12': function(ret) { return "This field is too small to encode in binary '" + ret.token + "" },
+   'm0': function(ret) { return ""                                           + ret.token + "" },
+   'm1': function(ret) { return "Repeated tag: "                             + ret.token + "" },
+   'm2': function(ret) { return "Instruction '"                              + ret.token + "' not found" },
+   'm3': function(ret) { return "Incorrect instruction syntax for '"         + ret.token + "'" },
+   'm4': function(ret) { return "Register '"                                 + ret.token + "' not found" },
+   'm5': function(ret) { return "Immediate number '"                         + ret.token + "' is too big" },
+   'm6': function(ret) { return "Immediate number '"                         + ret.token + "' is not valid" },
+   'm7': function(ret) { return "Tag '"                                      + ret.token + "' is not valid" },
+   'm8': function(ret) { return "Address '"                                  + ret.token + "' is too big" },
+   'm9': function(ret) { return "Address '"                                  + ret.token + "' is not valid" },
+  'm10': function(ret) { return ".space value out of range ("                + ret.token + " is greater than 50MiB)" },
+  'm11': function(ret) { return "The space directive value should be positive and greater than zero" },
+  'm12': function(ret) { return "This field is too small to encode in binary '"              + ret.token + "" },
   'm13': function(ret) { return "Incorrect pseudoinstruction definition "    + ret.token + "" },
   'm14': function(ret) { return "Invalid directive: "                        + ret.token + "" },
   'm15': function(ret) { return "Invalid value '"                            + ret.token + "' as number." },
@@ -1779,8 +1779,8 @@ function data_segment_compiler()
                     return packCompileError('m15', token, 'error', "danger") ;
                   }
 
-                  if (parseInt(token) < 0){
-                    return packCompileError('m22', token, 'error', "danger") ;
+                  if (parseInt(token) <= 0){
+                    return packCompileError('m11', token, 'error', "danger") ;
                   }
 
                   if (parseInt(token) > 50*1024*1024){
