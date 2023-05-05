@@ -4,8 +4,9 @@
 #
 
 .data
-    .align 2
     b1:		.byte 127
+
+    .align 1
     h1:		.half 65535
     b2:		.zero 1
     h2:		.zero 2

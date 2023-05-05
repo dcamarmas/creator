@@ -4,12 +4,15 @@
 #
 
 .data
-    .align 2
     w1:		.word 14
     b1:		.byte 127
+
+    .align 1
     h1:		.half 32767
     w2:		.zero 4
     b2:		.zero 1
+
+    .align 1
     h2:		.zero 2
 
 .text
