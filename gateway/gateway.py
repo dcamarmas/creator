@@ -62,45 +62,45 @@ def creator_build(file):
 
 
 def do_get_form(request):
-    try:
-        return send_file('gateway.html')
-    except Exception as e:
-        return str(e)
+	try:
+		return send_file('gateway.html')
+	except Exception as e:
+		return str(e)
 
 def do_flash_request(request):
-    try:
-       req_data = request.get_json()
+	try:
+		req_data = request.get_json()
 
-       asm_code = req_data['assembly']
-       text_file = open("tmp_assembly.s", "w")
-       ret = text_file.write(asm_code)
-       text_file.close()
+		asm_code = req_data['assembly']
+		text_file = open("tmp_assembly.s", "w")
+		ret = text_file.write(asm_code)
+		text_file.close()
 
-       target_device = req_data['target_port']
-       board = req_data['target_board']
-
-
-       creator_build('tmp_assembly.s');
-
-       result = subprocess.run(['idf.py',  'fullclean'])
-       req_data['status'] = 'done'
-
-       result = subprocess.run(['idf.py',  'set-target', board])
-       req_data['status'] = 'done'
+		target_device = req_data['target_port']
+		board = req_data['target_board']
 
 
-       result = subprocess.run(['idf.py', 'build'])
-       req_data['status'] = 'done'
+		creator_build('tmp_assembly.s');
 
-       result = subprocess.run(['idf.py', '-p', target_device, 'flash'])
-       req_data['status'] = 'done'
+		result = subprocess.run(['idf.py',  'fullclean'])
+		req_data['status'] = 'done'
 
-       result = subprocess.run(['idf.py', '-p', target_device, 'monitor'])
-       req_data['status'] = 'done'
-    except Exception as e:
-       req_data['status'] = 'error'
+		result = subprocess.run(['idf.py',  'set-target', board])
+		req_data['status'] = 'done'
 
-    return jsonify(req_data)
+
+		result = subprocess.run(['idf.py', 'build'])
+		req_data['status'] = 'done'
+
+		result = subprocess.run(['idf.py', '-p', target_device, 'flash'])
+		req_data['status'] = 'done'
+
+		result = subprocess.run(['idf.py', '-p', target_device, 'monitor'])
+		req_data['status'] = 'done'
+	except Exception as e:
+		req_data['status'] = 'error'
+
+	return jsonify(req_data)
 
 
 # Setup flask and cors:
@@ -112,29 +112,29 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 @app.route("/", methods=["GET"])
 @cross_origin()
 def get_form():
-    return do_get_form(request)
+	return do_get_form(request)
 
 # (2) POST /flash -> flash
 @app.route("/flash", methods=["POST"])
 @cross_origin()
 def post_flash():
-    return do_flash_request(request)
+	return do_flash_request(request)
 
 # (3) GET /status -> send tmp_output.txt
 @app.route("/status", methods=["GET"])
 @cross_origin()
 def get_status():
-    def generate():
-        try:
-            fin = open("tmp_output.txt",  "rt")
-            for line in fin:
-                yield "data: " + line + "\n"
-            fin.close()
-            yield "data: \n\n"
-            os.remove("tmp_output.txt")
-        except Exception as e:
-            return str(e)
-    return Response(generate(), mimetype= 'text/event-stream') ;
+	def generate():
+		try:
+			fin = open("tmp_output.txt",  "rt")
+			for line in fin:
+				yield "data: " + line + "\n"
+			fin.close()
+			yield "data: \n\n"
+			os.remove("tmp_output.txt")
+		except Exception as e:
+			return str(e)
+	return Response(generate(), mimetype= 'text/event-stream') ;
 
 # Run
 app.run(host='0.0.0.0', port=8080, debug=True)
