@@ -77,7 +77,7 @@ def creator_build(file_in, file_out):
 
 		return 0
 
-	except e:
+	except Exception as e:
 		print("Error adapting assembly file... :-/")
 		return -1
 
