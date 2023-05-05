@@ -1,97 +1,302 @@
 <!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <!-- Google tag (gtag.js) - GA4 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-X30SC9SWE2"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
 
-<html>
-    <head>
-        <title>WepSIM - gateway</title>
-    </head>
-    <body>
-        <center>
-	<table border="0" cellspacing="10" cellpadding="10">
-	<tr>
-	<td>
-		<p>
-		<label for="div_asm">(1) Put the assembly code here:</label><br>
-		<textarea id="div_asm" name="div_asm" 
-                          style="width:100%"
-                          rows="20" cols="50">
-li x1, 1
-li x2, 2
-		</textarea>
-		</p>
+      gtag('config', 'G-X30SC9SWE2');
+    </script>
 
-		<p>
-		<label for="div_url">(2) Set the gateway URL:</label><br>
-		<input type="text" style="width:100%"
-		       id="div_url" name="div_url" 
-		       value="http://localhost:8080">
-		</p>
+    <!-- Google tag (gtag.js) - Universal analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-186823627-2"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
 
-		<p>
-		<label for="div_dev">(3) Set PORT:</label><br>
-		<input type="text" style="width:100%"
-		       id="div_dev" name="div_dev" 
-		       value="/dev/ttyUSB0">
-		</p>
+      gtag('config', 'UA-186823627-2');
+    </script>
 
-		<p>
-		<label for="div_dev">(4) Set target:</label><br>
-		<input type="text" style="width:100%"
-		       id="div_target" name="div_target" 
-		       value="esp32c3">
-		</p>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>CREATOR - gateway</title>
+
+    <!-- Required stylesheets -->
+    <link type="text/css" rel="stylesheet" href="https://creatorsim.github.io/creator/external/bootstrap_vue/bootstrap.min.css"/>
+    <link type="text/css" rel="stylesheet" href="https://creatorsim.github.io/creator/external/bootstrap_vue/bootstrap-largegrid.min.css"/>
+    <link type="text/css" rel="stylesheet" href="https://creatorsim.github.io/creator/external/bootstrap_vue/bootstrap-vue.min.css"/>
+    <link type="text/css" rel='stylesheet' href="https://creatorsim.github.io/creator/external/fontawesome/css/all.css">
+    <link rel="stylesheet" href="https://creatorsim.github.io/creator/external/codemirror/codemirror.css">
+
+    <!-- Required scripts -->
+    <script src="https://creatorsim.github.io/creator/external/bootstrap_vue/polyfill.min.js"></script>
+    <script src="https://creatorsim.github.io/creator/external/bootstrap_vue/vue.min.js"></script>
+    <script src="https://creatorsim.github.io/creator/external/bootstrap_vue/bootstrap-vue.min.js"></script>
+    <script src="https://creatorsim.github.io/creator/external/jquery.min.js"></script>
+    <script src="https://creatorsim.github.io/creator/external/lodash.js"></script>
+
+    <!--Codemirror scripts-->
+    <script src="https://creatorsim.github.io/creator/external/codemirror/codemirror.js"></script>
+    <script src="https://creatorsim.github.io/creator/external/codemirror/keymap/vim.js"></script>
+    <script src="https://creatorsim.github.io/creator/external/codemirror/keymap/sublime.js"></script>
+    <script src="https://creatorsim.github.io/creator/external/codemirror/mode/gas/gas.js"></script>
+    <script src="https://creatorsim.github.io/creator/external/codemirror/mode/javascript/javascript.js"></script>
+    <script src="https://creatorsim.github.io/creator/external/codemirror/addon/display/autorefresh.js"></script>
+    <script src="https://creatorsim.github.io/creator/external/codemirror/addon/comment/comment.js"></script>
+    <script src="https://creatorsim.github.io/creator/external/codemirror/addon/hint/show-hint.js"></script>
+
+    <!--Apexcharts scripts-->
+    <script>
+      window.Promise ||
+        document.write(
+          '<script src="https://creatorsim.github.io/creator/external/apexcharts/polyfill.min.js"><\/script>'
+        )
+      window.Promise ||
+        document.write(
+          '<script src="https://creatorsim.github.io/creator/external/apexcharts/classList.min.js"><\/script>'
+        )
+      window.Promise ||
+        document.write(
+          '<script src="https://creatorsim.github.io/creator/external/apexcharts/findindex_polyfill_mdn"><\/script>'
+        )
+    </script>
+    <script src="https://creatorsim.github.io/creator/external/apexcharts/apexcharts"></script>
+    <script src="https://creatorsim.github.io/creator/external/apexcharts/vue-apexcharts"></script>
+
+    <script>
+      //
+      // Preload variables
+      //
+
+      var board    = '';
+      var port     = '';
+      var assembly = '';
+
+      var preload_tasks = [
+
+        // parameter: architecture
+        {
+          'name':   'board',
+          'action': function( app, hash )
+          {
+            var aux_board = hash.board.trim() ;
+            if (aux_board === "") 
+            {
+              return new Promise(function(resolve, reject) {
+                resolve('Empty board.') ;
+              }) ;
+            }
+
+            board = decodeURI(aux_board) ;
+
+            resolve('Board loaded.') ;
+          }
+        },
+
+        // parameter: example_set
+        {
+          'name':   'port',
+          'action': function( app, hash )
+          {
+            var aux_port = hash.port.trim() ;
+            if (aux_port === "") 
+            {
+              return new Promise(function(resolve, reject) {
+                resolve('Empty port.') ;
+              }) ;
+            }
+
+            port = decodeURI(aux_port) ;
+
+            resolve('Port loaded.') ;
+          }
+        },
+
+        // parameter: asm
+        {
+          'name':   'asm',
+          'action': function( app, hash )
+          {
+            return new Promise(function(resolve, reject) {
+
+              var aux_asm = hash.asm.trim() ;
+              if (aux_asm === "") 
+              {
+                return new Promise(function(resolve, reject) {
+                  resolve('Empty assembly.') ;
+                }) ;
+              }
+
+              assembly = decodeURI(aux_asm) ;
+
+              resolve('Assembly loaded.') ;
+            }) ;
+          }
+        }
+      ] ;
+
+    </script>
+  </head>
+
+  <body>
+    <!-- Our application root element -->
+    <div id="app">
+      <b-container class="mx-0 px-0">
+         <b-container fluid align-h="center" class="mx-0 px-0">
+           <b-row cols="1" align-h="center">
+             <b-col class="pt-2">
+               <b-button class="btn btn-sm btn-block" variant="primary" @click="do_flash">Flash</b-button>
+             </b-col>
+           </b-row>
+         </b-container>
+
+         <b-container fluid align-h="center" class="mx-0 px-0">
+           <b-row cols="1" align-h="center">
+             <b-col class="pt-2">
+               <label for="range-6">Monitor:</label>
+               <b-form-textarea id="textarea_display" 
+                                v-model="display" 
+                                rows="5" 
+                                disabled 
+                                no-resize 
+                                title="Display">
+               </b-form-textarea>
+             </b-col>
+           </b-row>
+         </b-container>
+      </b-container>
+    </div>
+
+    <!-- Start running your app -->
+    <script>
+      window.app = new Vue({
+        el: '#app',
+        data: {
+          display : "",
+        },
+
+        mounted(){
+          //Pre-load following URL params
+          var url_hash = preload_get2hash(window.location) ;
+          preload_fromHash(this, url_hash) ;
+        },
+
+        methods:  {
+                    do_flash( )
+                    {
+                      gateway_do_flash ( assembly, port, board );
+                    }
+                  }
+      })
 
 
-		<p>
-		<label for="btn_flash">(5) Press the button to flash:</label><br>
-		<button id="btn_flash"
-			onclick="gateway_do_flash('div_asm', 'div_url', 'div_dev', 'div_target');">Press to flash...</button>
-		</p>
-	</td>
-	</tr>
-	</table>
-        </center>
-    </body>
+
+      //
+      // Web service functions
+      //
+
+      function gateway_do_flash ( asm, target_port, target_board )
+      {
+        var farg =  {
+                      target_board: target_board,
+                      target_port:  target_port,
+                      assembly:     asm,
+                    } ;
+
+        var furl = (window.location.href.split('?')[0]).split('#')[0] ;
+
+        gateway_remote_flash(furl + "/flash", farg);
+      }
+
+      async function gateway_remote_flash ( flash_url, flash_args, info_div )
+      {
+        var fetch_args =  {
+                            method:   'POST',
+                            headers:  {
+                                        'Content-type': 'application/json',
+                                        'Accept':       'application/json'
+                                      },
+                            body:     JSON.stringify(flash_args)
+                          } ;
+        try
+        {
+          var res  = await fetch(flash_url, fetch_args) ;
+          var jres = await res.json();
+        }
+        catch (err)
+        {
+          console.log(err + '\n') ;
+        }
+      }
+
+
+
+      //
+      // Preload work from URL
+      //
+
+      function preload_get2hash ( window_location )
+      {
+        var hash       = {} ;
+        var hash_field = '' ;
+        var uri_obj    = null ;
+
+        // 1.- check params
+        if (typeof window_location === "undefined") {
+           return hash ;
+        }
+
+        // 2.- get parameters
+        var parameters = new URL(window_location).searchParams ;
+        for (i=0; i<preload_tasks.length; i++)
+        {
+          hash_field = preload_tasks[i].name ;
+          hash[hash_field] = parameters.get(hash_field) ;
+
+          // overwrite null with default values
+          if (hash[hash_field] === null) {
+            hash[hash_field] = '' ;
+          }
+        }
+
+        return hash ;
+      }
+
+      async function preload_fromHash ( app, hash )
+      {
+        var key = '' ;
+        var act = function() {} ;
+
+        // preload tasks in order
+        var o = '' ;
+        for (var i=0; i<preload_tasks.length; i++)
+        {
+          key = preload_tasks[i].name ;
+          act = preload_tasks[i].action ;
+
+          if (hash[key] !== '')
+          {
+            try {
+              var v = await act(app, hash) ;
+              o = o + v + '<br>' ;
+            }
+            catch(e) {
+              o = o + e + '<br>' ;
+            }
+          }
+        }
+
+        // return ok
+        return o ;
+      }
+
+    </script>
+  </body>
 </html>
-
-<script>
-
-	async function gateway_remote_flash ( flash_url, flash_args, info_div )
-	{
-             var fetch_args = {
-			        method:  'POST',
-			        headers: {
-				            'Content-type': 'application/json',
-				            'Accept':       'application/json'
-				         },
-			        body:    JSON.stringify(flash_args)
-	 	              } ;
-
-             try
-             {
-                var res  = await fetch(flash_url, fetch_args) ;
-                var jres = await res.json();
-             }
-             catch (err)
-             {
-	        console.log(err + '\n') ;
-             }
-	}
-
-	function gateway_do_flash ( div_asm_name, div_url_name, div_dev_name, div_target_name )
-	{
-             var ddev = document.getElementById(div_dev_name) ;
-             var ddet = document.getElementById(div_target_name) ;
-             var dasm = document.getElementById(div_asm_name) ;
-	     var farg = {
-			   target_board: ddet.value,
-			   target_port:  ddev.value,
-			   assembly:     dasm.value,
-			} ;
-
-	     var udiv = document.getElementById(div_url_name) ;
-	     var furl = udiv.value ;
-	     gateway_remote_flash(furl + "/flash", farg);
-	}
-
-</script>
-
