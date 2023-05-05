@@ -22,6 +22,8 @@
 
   /* jshint esversion: 6 */
 
+  var this_display = null;
+
   var uielto_flash = {
         props:      {
                       id:             { type: String, required: true },
@@ -44,7 +46,9 @@
 
                         target_board  = "esp32c3",
                         target_port   = this.get_target_port(),
-                        flash_url     = "localhost:8080",
+                        flash_url     = "http://localhost:8080",
+
+                        display = "",
 
                         isHidden = false,
                       }
@@ -71,12 +75,18 @@
                         creator_ga('simulator', 'simulator.download_driver', 'simulator.download_driver');
                       },
 
-                      //Load gateway html
-                      load_gateway()
+                      do_flash( )
                       {
-                        this.isHidden = true;
-                        document.getElementById("iframe_gateway").src = this.flash_url + "?board=" + encodeURIComponent(this.target_board) + "&port=" + encodeURIComponent(this.target_port) + "&asm=" + encodeURIComponent(this._props.assembly_code);
-                      }
+                        var farg =  {
+                                      target_board: this.target_board,
+                                      target_port:  this.target_port,
+                                      assembly:     this._props.assembly_code,
+                                    } ;
+
+                        this_display = this;
+
+                        gateway_remote_flash(this.flash_url + "/flash", farg).then( function(data) { this_display.display += data } )
+                      },
                     },
 
       template:     ' <b-modal :id="id"' +
@@ -137,20 +147,22 @@
                     '   <b-container fluid align-h="center" class="mx-0 px-0">' +
                     '     <b-row cols="1" align-h="center">' +
                     '       <b-col class="pt-2">' +
-                    '         <b-button class="btn btn-sm btn-block" variant="primary" @click="load_gateway" v-if="!isHidden">Next</b-button>' +
+                    '         <b-button class="btn btn-sm btn-block" variant="primary" @click="do_flash">Flash</b-button>' +
                     '       </b-col>' +
                     '     </b-row>' +
                     '   </b-container>' +
                     ' ' +
                     '   <b-container fluid align-h="center" class="mx-0 px-0">' +
                     '     <b-row cols="1" align-h="center">' +
-                    '       <b-col>' +
-                    '         <iframe id="iframe_gateway" onload=\'javascript:(function(o){o.style.height=o.contentWindow.document.body.scrollHeight+"px";}(this));\'' +
-                    '           frameborder="0"' +
-                    '           width="100%"' +
-                    '           height="auto"' +
-                    '           scrolling="no">' +
-                    '         </iframe>' +
+                    '       <b-col class="pt-2">' +
+                    '         <label for="range-6">Monitor:</label>' +
+                    '         <b-form-textarea  id="textarea_display" ' +
+                    '                           v-model="display" ' +
+                    '                           rows="5" ' +
+                    '                           disabled ' +
+                    '                           no-resize ' +
+                    '                           title="Display">' +
+                    '         </b-form-textarea>' +
                     '       </b-col>' +
                     '     </b-row>' +
                     '   </b-container>' +
@@ -159,3 +171,31 @@
   }
 
   Vue.component('flash', uielto_flash)
+
+
+  //
+  // Web service functions
+  //
+
+  async function gateway_remote_flash ( flash_url, flash_args, info_div )
+  {
+    var fetch_args =  {
+                        method:   'POST',
+                        headers:  {
+                                    'Content-type': 'application/json',
+                                    'Accept':       'application/json'
+                                  },
+                        body:     JSON.stringify(flash_args)
+                      } ;
+    try
+    {
+      var res  = await fetch(flash_url, fetch_args) ;
+      var jres = await res.json();
+
+      return jres.status
+    }
+    catch (err)
+    {
+      return err;
+    }
+  }
