@@ -26,7 +26,7 @@ main:
   # print out of range byte
   li t0, 4
   la t1, byte
-  lb a0, 4(t1)
+  lb a0, 1(t1)
   ecall
   
   # print half
