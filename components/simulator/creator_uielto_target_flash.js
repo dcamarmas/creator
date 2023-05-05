@@ -46,8 +46,6 @@
                         target_port   = this.get_target_port(),
                         flash_url     = "localhost:8080",
 
-                        display = "",
-
                         isHidden = false,
                       }
                     },
