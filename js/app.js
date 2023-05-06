@@ -129,7 +129,7 @@ try
       //Backup 
       //
 
-      date_copy: '', //TODO: include into backup component - modal info
+      backup_date: '', //TODO: include into backup component - modal info
 
 
 
@@ -463,8 +463,8 @@ try
       //Show backup modal
       backup_modal(){
         if (typeof(Storage) !== "undefined"){
-          if(localStorage.getItem("architecture_copy") != null && localStorage.getItem("assembly_copy") != null && localStorage.getItem("date_copy") != null){
-            this.date_copy = localStorage.getItem("date_copy");
+          if(localStorage.getItem("backup_arch") != null && localStorage.getItem("backup_asm") != null && localStorage.getItem("backup_date") != null){
+            this.backup_date = localStorage.getItem("backup_date");
             this.$root.$emit('bv::show::modal', 'copy');
           }
         }

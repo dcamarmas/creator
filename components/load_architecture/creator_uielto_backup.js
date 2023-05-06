@@ -26,7 +26,7 @@
 
     props:      {
                   id:          { type: String, required: true },
-                  date_copy:   { type: String, required: true }
+                  backup_date: { type: String, required: true }
                 },
 
     data:       function () {
@@ -41,9 +41,9 @@
                   load_copy()
                   {
                     //Load architecture from cache
-                    var aux_architecture = JSON.parse(localStorage.getItem("architecture_copy"));
+                    var aux_architecture = JSON.parse(localStorage.getItem("backup_arch"));
                     architecture = register_value_deserialize(aux_architecture);
-                    app._data.architecture_name = localStorage.getItem("arch_name"); 
+                    app._data.architecture_name = localStorage.getItem("backup_arch_name"); 
                     app._data.architecture = architecture;
 
                     //Generate architecture hash table
@@ -68,7 +68,7 @@
                     }
 
                     //Load the last assembly code from cache
-                    code_assembly = localStorage.getItem("assembly_copy");
+                    code_assembly = localStorage.getItem("backup_asm");
 
                     //Refresh UI
                     uielto_toolbar_btngroup.methods.reset(false);
@@ -81,9 +81,10 @@
                   //Delete backup on cache
                   remove_copy()
                   {
-                    localStorage.removeItem("architecture_copy");
-                    localStorage.removeItem("assembly_copy");
-                    localStorage.removeItem("date_copy");
+                    localStorage.removeItem("backup_arch_name");
+                    localStorage.removeItem("backup_arch");
+                    localStorage.removeItem("backup_asm");
+                    localStorage.removeItem("backup_date");
 
                     this.show_modal=false;
                   }
@@ -99,7 +100,7 @@
                 '  </span>' +
                 '  <br>' +
                 '  <span class="h6">' +
-                '    Date: {{date_copy}}' +
+                '    Date: {{backup_date}}' +
                 '  </span>' +
                 ' ' +
                 '  <b-container fluid align-h="center" class="mx-0 px-0">' +
