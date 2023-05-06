@@ -149,10 +149,10 @@
                               var date = new Date();
                               var auxDate = date.getHours()+":"+date.getMinutes()+":"+date.getSeconds()+" - "+date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear();
 
-                              localStorage.setItem("arch_name", app._data.architecture_name);
-                              localStorage.setItem("architecture_copy", aux_arch);
-                              localStorage.setItem("assembly_copy", code_assembly);
-                              localStorage.setItem("date_copy", auxDate);
+                              localStorage.setItem("backup_arch_name", app._data.architecture_name);
+                              localStorage.setItem("backup_arch", aux_arch);
+                              localStorage.setItem("backup_asm", code_assembly);
+                              localStorage.setItem("backup_date", auxDate);
                             }
 
                             //show error/warning
