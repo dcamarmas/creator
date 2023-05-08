@@ -25,15 +25,15 @@
                           style="width:100%"
                           rows="20" cols="50">
 .data
-     msg:  .string "Hi persons!"
+     msg:  .asciiz "Hi persons!"
 
 .text
      main:
-           la a0, msg
-	   li a7, 4
-	   ecall
+           la $a0, msg
+	   li $v0, 4
+	   syscall
 
-           jr ra
+           jr $ra
 		</textarea>
 	  </div>
 
@@ -66,10 +66,10 @@
 		       value="esp32c3"
                        placeholder="esp32... (type to search)">
 		<datalist id="dlo_target">
-		  <option value="esp32c3">
-		  <option value="esp32c6">
-		  <option value="esp32s2">
-		  <option value="esp32s3">
+		  <option value="esp32c3">esp32 c3 - RISC-V
+		  <option value="esp32c6">esp32 c6 - RISC-V
+		  <option value="esp32s2">esp32 s2 - MIPS
+		  <option value="esp32s3">esp32 s3 - MIPS
 		</datalist>
 		</p>
 
