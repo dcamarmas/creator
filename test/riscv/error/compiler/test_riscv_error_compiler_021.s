@@ -11,5 +11,5 @@
     
 .text
 main:
-	li t0 578
+	li t0, 578
 

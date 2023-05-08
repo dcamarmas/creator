@@ -67,6 +67,7 @@ try
       architecture_guide: '',
 
       //Accesskey
+      os: "",
       browser: "",
 
       //Displayed notifications
@@ -128,7 +129,7 @@ try
       //Backup 
       //
 
-      date_copy: '', //TODO: include into backup component - modal info
+      backup_date: '', //TODO: include into backup component - modal info
 
 
 
@@ -354,6 +355,7 @@ try
     created(){
       uielto_navbar.methods.load_num_version();
       uielto_preload_architecture.methods.load_arch_available();
+      this.detect_os();
       this.detect_browser();
       
     },
@@ -393,6 +395,21 @@ try
        * General methots *
        *******************/
 
+      //Detects the operating system being used
+      detect_os(){
+        if (navigator.appVersion.indexOf("Win") != -1) {
+          this.os = "Win";
+        } 
+        else if (navigator.appVersion.indexOf("Mac") != -1) {
+          this.os = "Mac";
+        }
+        else if (navigator.appVersion.indexOf("X11") != -1) {
+          this.os = "Linux";
+        }
+        else if (navigator.appVersion.indexOf("Linux") != -1) {
+          this.os = "Linux";
+        }
+      },
 
       //Detects the browser being used
       detect_browser(){
@@ -446,8 +463,8 @@ try
       //Show backup modal
       backup_modal(){
         if (typeof(Storage) !== "undefined"){
-          if(localStorage.getItem("architecture_copy") != null && localStorage.getItem("assembly_copy") != null && localStorage.getItem("date_copy") != null){
-            this.date_copy = localStorage.getItem("date_copy");
+          if(localStorage.getItem("backup_arch") != null && localStorage.getItem("backup_asm") != null && localStorage.getItem("backup_date") != null){
+            this.backup_date = localStorage.getItem("backup_date");
             this.$root.$emit('bv::show::modal', 'copy');
           }
         }

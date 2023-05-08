@@ -95,6 +95,7 @@ cat js/creator_bigint.js \
     components/assembly/creator_uielto_error.js \
     components/assembly/creator_uielto_library_tags.js \
     \
+    components/simulator/creator_uielto_target_flash.js \
     components/simulator/creator_uielto_calculator.js \
     components/simulator/creator_uielto_table_execution.js \
     components/simulator/creator_uielto_data_view_selector.js \
@@ -133,6 +134,19 @@ cat js/creator_bigint.js \
     js/creator_executor.js \
     \
     js/creator_node.js > js/min.creator_node.js
+
+# zipping...
+echo "  * Gateway zipping..."
+
+cd gateway
+rm *.zip
+
+zip -9rq esp32c3.zip esp32c3/
+zip -9rq esp32c6.zip esp32c6/
+zip -9rq esp32h2.zip esp32h2/
+zip -9rq esp32s2.zip esp32s2/
+zip -9rq esp32s3.zip esp32s3/
+cd ..
 
 
 # the end
