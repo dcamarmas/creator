@@ -27,8 +27,7 @@
   var uielto_flash = {
         props:      {
                       id:             { type: String, required: true },
-                      os:             { type: String, required: true },
-                      assembly_code:  { type: String, required: true }
+                      os:             { type: String, required: true }
                     },
 
         data:       function () {
@@ -81,12 +80,12 @@
                         var farg =  {
                                       target_board: this.target_board,
                                       target_port:  this.target_port,
-                                      assembly:     this._props.assembly_code,
+                                      assembly:     code_assembly,
                                     } ;
 
                         this_display = this;
 
-                        gateway_remote_flash(this.flash_url + "/flash", farg).then( function(data) { this_display.display += data; this_display.flashing = false } )
+                        gateway_remote_flash(this.flash_url + "/flash", farg).then( function(data) { this_display.display += data; this_display.flashing = false; var monitor = getElementById('textarea_display'); monitor.scrollTop = textarea.scrollHeight; } )
 
                         //Google Analytics
                         creator_ga('simulator', 'simulator.flash', 'simulator.flash');
@@ -165,7 +164,7 @@
                     '         <label for="range-6">Monitor:</label>' +
                     '         <b-form-textarea  id="textarea_display" ' +
                     '                           v-model="display" ' +
-                    '                           rows="5" ' +
+                    '                           rows="8" ' +
                     '                           disabled ' +
                     '                           no-resize ' +
                     '                           title="Display">' +
@@ -184,7 +183,7 @@
   // Web service functions
   //
 
-  async function gateway_remote_flash ( flash_url, flash_args, info_div )
+  async function gateway_remote_flash ( flash_url, flash_args )
   {
     var fetch_args =  {
                         method:   'POST',

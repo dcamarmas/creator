@@ -1,0 +1,27 @@
+CMake Error at /usr/local/share/cmake-3.20/Modules/CMakeTestCCompiler.cmake:66 (message):
+  The C compiler
+
+    "/home/dcamarma/.espressif/tools/riscv32-esp-elf/esp-2021r2-patch3-8.4.0/riscv32-esp-elf/bin/riscv32-esp-elf-gcc"
+
+  is not able to compile a simple test program.
+
+  It fails with the following output:
+
+    Change Dir: /var/www/html/creator/gateway/esp32-rv/build/CMakeFiles/CMakeTmp
+    
+    Run Build Command(s):/usr/bin/ninja cmTC_0c8cf && [1/2] Building C object CMakeFiles/cmTC_0c8cf.dir/testCCompiler.c.obj
+    FAILED: CMakeFiles/cmTC_0c8cf.dir/testCCompiler.c.obj 
+    /home/dcamarma/.espressif/tools/riscv32-esp-elf/esp-2021r2-patch3-8.4.0/riscv32-esp-elf/bin/riscv32-esp-elf-gcc   -march=rv32imc_zicsr_zifencei -o CMakeFiles/cmTC_0c8cf.dir/testCCompiler.c.obj -c testCCompiler.c
+    cc1: error: -march=rv32imc_zicsr_zifencei: unsupported ISA substring '_zicsr_zifencei'
+    ninja: build stopped: subcommand failed.
+    
+    
+
+  
+
+  CMake will not be able to correctly generate this project.
+Call Stack (most recent call first):
+  /home/dcamarma/esp/esp-idf/tools/cmake/project.cmake:365 (__project)
+  CMakeLists.txt:6 (project)
+
+

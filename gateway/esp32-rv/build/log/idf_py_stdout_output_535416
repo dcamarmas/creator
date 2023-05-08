@@ -1,0 +1,13 @@
+-- Existing sdkconfig '/var/www/html/creator/gateway/esp32-rv/sdkconfig' renamed to '/var/www/html/creator/gateway/esp32-rv/sdkconfig.old'.
+-- Found Git: /usr/bin/git (found version "2.32.0") 
+-- The C compiler identification is GNU 8.4.0
+-- The CXX compiler identification is GNU 8.4.0
+-- The ASM compiler identification is GNU
+-- Found assembler: /home/dcamarma/.espressif/tools/riscv32-esp-elf/esp-2021r2-patch3-8.4.0/riscv32-esp-elf/bin/riscv32-esp-elf-gcc
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - failed
+-- Check for working C compiler: /home/dcamarma/.espressif/tools/riscv32-esp-elf/esp-2021r2-patch3-8.4.0/riscv32-esp-elf/bin/riscv32-esp-elf-gcc
+-- Check for working C compiler: /home/dcamarma/.espressif/tools/riscv32-esp-elf/esp-2021r2-patch3-8.4.0/riscv32-esp-elf/bin/riscv32-esp-elf-gcc - broken
+-- Configuring incomplete, errors occurred!
+See also "/var/www/html/creator/gateway/esp32-rv/build/CMakeFiles/CMakeOutput.log".
+See also "/var/www/html/creator/gateway/esp32-rv/build/CMakeFiles/CMakeError.log".
