@@ -139,6 +139,8 @@ cat js/creator_bigint.js \
 echo "  * Gateway zipping..."
 
 cd gateway
+rm *.zip
+
 zip -9rq esp32c3.zip esp32c3/
 zip -9rq esp32c6.zip esp32c6/
 zip -9rq esp32h2.zip esp32h2/
