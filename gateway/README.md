@@ -1,12 +1,24 @@
+
+## How to install the ESP32 software
+
+Follow the instructions from:
+[https://docs.espressif.com/projects/esp-idf/en/v4.3.5/esp32/get-started/linux-setup.html](https://docs.espressif.com/projects/esp-idf/en/v4.3.5/esp32/get-started/linux-setup.html)
+
+
+## Each time you execute an example
+
+Load the environment variable for your board with:
 ```
-pip3 install flask flask_cors
+. $HOME/esp/esp-idf/export.sh
+```
 
-# https://docs.espressif.com/projects/esp-idf/en/v4.3.5/esp32/get-started/linux-setup.html
-sudo apt-get install git wget flex bison gperf python3 python3-pip python3-setuptools cmake ninja-build ccache libffi-dev libssl-dev dfu-util libusb-1.0-0
+Unzip the driver.zip file and change into the driver directory associated to your board with "cd [esp32c3]", for example:
+```
+unzip driver.zip
+cd esp32c3
+```
 
-# https://docs.espressif.com/projects/esp-idf/en/v4.3.5/esp32/get-started/index.html#get-started-get-esp-idf
-mkdir -p ~/esp
-cd ~/esp
-git clone -b v4.3.5 --recursive https://github.com/espressif/esp-idf.git
-
+Execute the gateway web service:
+```
+python3 gateway.py
 ```
