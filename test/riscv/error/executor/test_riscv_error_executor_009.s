@@ -6,4 +6,4 @@
 .text
 main:
 	
-	li zero 10
+	li zero, 10

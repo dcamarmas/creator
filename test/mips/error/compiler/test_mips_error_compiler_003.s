@@ -4,9 +4,9 @@
 #
 
  .data
- 	A:		.word -1
-    a:		.byte -1
+   A:    .word -1
+   a:    .byte -1
     
 .text
 main:
-	add 25 $t1 12
+   add 25, $t1, 12

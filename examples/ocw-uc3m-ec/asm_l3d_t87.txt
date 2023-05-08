@@ -23,11 +23,11 @@
 
            # print_int(v1)
            move $a0, $v0
-           li   $v0 1
+           li   $v0, 1
            syscall
 
            # exit
-           li $v0 10
+           li $v0, 10
            syscall
 
 

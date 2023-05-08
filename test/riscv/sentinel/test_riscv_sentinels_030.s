@@ -9,18 +9,18 @@
 
     main: 
             
-            li gp 5
-            jal ra test
+            li gp, 5
+            jal ra, test
 
             # exit
-            li a7 10
+            li a7, 10
             ecall
 
 
     test:
             # crear "stack frame" para ra, fp y una variable local
             
-            li gp 5
+            li gp, 5
 
             # return a7
            jr ra
