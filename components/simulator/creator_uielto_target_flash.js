@@ -34,15 +34,14 @@
         data:       function () {
                       return {
                         target_boards = [
-                                          { text: 'ESP32',     value: 'esp32' },
-                                          { text: 'ESP32-C2',  value: 'esp32c2' },
-                                          { text: 'ESP32-C3',  value: 'esp32c3' },
-                                          { text: 'ESP32-H2',  value: 'esp32h2' },
-                                          { text: 'ESP32-S2',  value: 'esp32s2' },
-                                          { text: 'ESP32-S3',  value: 'esp32s3' },
+                                          { text: 'ESP32-C2 (RISC-V)',  value: 'esp32c2' },
+                                          { text: 'ESP32-C3 (RISC-V)',  value: 'esp32c3' },
+                                          { text: 'ESP32-H2 (RISC-V)',  value: 'esp32h2' },
+                                          { text: 'ESP32-S2 (MIPS-32)',  value: 'esp32s2' },
+                                          { text: 'ESP32-S3 (MIPS-32)',  value: 'esp32s3' },
                                         ],
 
-                        target_ports  = { Win: 'COM1', Mac: '/dev/cu.', Linux: '/dev/tty' },
+                        target_ports  = { Win: 'COM1', Mac: '/dev/cu.usbserial-210', Linux: '/dev/ttyUSB0' },
 
                         target_board  = "esp32c3",
                         target_port   = this.get_target_port(),
@@ -204,6 +203,10 @@
     }
     catch (err)
     {
+      if (err == "TypeError: Failed to fetch") {
+        err = "Please, execute 'python3 gateway.py' and connect your board first\n";
+      }
+
       return err + "\n";
     }
   }
