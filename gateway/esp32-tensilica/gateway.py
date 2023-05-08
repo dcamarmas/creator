@@ -23,7 +23,7 @@
 
 from flask import Flask, request, jsonify, send_file, Response
 from flask_cors import CORS, cross_origin
-import subprocess, os
+import subprocess
 
 
 # (1) Get form values
