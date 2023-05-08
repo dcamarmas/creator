@@ -94,7 +94,8 @@
 
       template:     ' <b-modal :id="id"' +
                     '          title="Target Board Flash"' +
-                    '          hide-footer>' +
+                    '          hide-footer' +
+                    '          size="lg">' +
                     ' ' +
                     '   <b-container fluid align-h="center" class="mx-0 px-0">' +
                     '     <b-row cols="1" align-h="center">' +
@@ -163,6 +164,7 @@
                     '       <b-col class="pt-2">' +
                     '         <label for="range-6">Monitor:</label>' +
                     '         <b-form-textarea  id="textarea_display" ' +
+                    '                           size="sm"' +
                     '                           v-model="display" ' +
                     '                           rows="8" ' +
                     '                           disabled ' +
