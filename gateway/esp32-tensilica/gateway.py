@@ -84,7 +84,7 @@ def creator_build(file_in, file_out):
 		return -1
 
 def do_cmd(req_data, cmd_array):
-	result = subprocess.run(cmd_array, capture_output=False)
+	result = subprocess.run(cmd_array)
 
 	if result.stdout != None:
 		req_data['status'] += result.stdout.decode('utf-8') + '\n'

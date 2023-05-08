@@ -27,22 +27,20 @@
   var uielto_flash = {
         props:      {
                       id:             { type: String, required: true },
-                      os:             { type: String, required: true },
-                      assembly_code:  { type: String, required: true }
+                      os:             { type: String, required: true }
                     },
 
         data:       function () {
                       return {
                         target_boards = [
-                                          { text: 'ESP32',     value: 'esp32' },
-                                          { text: 'ESP32-C2',  value: 'esp32c2' },
-                                          { text: 'ESP32-C3',  value: 'esp32c3' },
-                                          { text: 'ESP32-H2',  value: 'esp32h2' },
-                                          { text: 'ESP32-S2',  value: 'esp32s2' },
-                                          { text: 'ESP32-S3',  value: 'esp32s3' },
+                                          { text: 'ESP32-C2 (RISC-V)',  value: 'esp32c2' },
+                                          { text: 'ESP32-C3 (RISC-V)',  value: 'esp32c3' },
+                                          { text: 'ESP32-H2 (RISC-V)',  value: 'esp32h2' },
+                                          { text: 'ESP32-S2 (MIPS-32)',  value: 'esp32s2' },
+                                          { text: 'ESP32-S3 (MIPS-32)',  value: 'esp32s3' },
                                         ],
 
-                        target_ports  = { Win: 'COM1', Mac: '/dev/cu.', Linux: '/dev/tty' },
+                        target_ports  = { Win: 'COM1', Mac: '/dev/cu.usbserial-210', Linux: '/dev/ttyUSB0' },
 
                         target_board  = "esp32c3",
                         target_port   = this.get_target_port(),
@@ -82,12 +80,12 @@
                         var farg =  {
                                       target_board: this.target_board,
                                       target_port:  this.target_port,
-                                      assembly:     this._props.assembly_code,
+                                      assembly:     code_assembly,
                                     } ;
 
                         this_display = this;
 
-                        gateway_remote_flash(this.flash_url + "/flash", farg).then( function(data) { this_display.display += data; this_display.flashing = false } )
+                        gateway_remote_flash(this.flash_url + "/flash", farg).then( function(data) { this_display.display += data; this_display.flashing = false; var monitor = getElementById('textarea_display'); monitor.scrollTop = textarea.scrollHeight; } )
 
                         //Google Analytics
                         creator_ga('simulator', 'simulator.flash', 'simulator.flash');
@@ -96,7 +94,8 @@
 
       template:     ' <b-modal :id="id"' +
                     '          title="Target Board Flash"' +
-                    '          hide-footer>' +
+                    '          hide-footer' +
+                    '          size="lg">' +
                     ' ' +
                     '   <b-container fluid align-h="center" class="mx-0 px-0">' +
                     '     <b-row cols="1" align-h="center">' +
@@ -165,8 +164,9 @@
                     '       <b-col class="pt-2">' +
                     '         <label for="range-6">Monitor:</label>' +
                     '         <b-form-textarea  id="textarea_display" ' +
+                    '                           size="sm"' +
                     '                           v-model="display" ' +
-                    '                           rows="5" ' +
+                    '                           rows="8" ' +
                     '                           disabled ' +
                     '                           no-resize ' +
                     '                           title="Display">' +
@@ -185,7 +185,7 @@
   // Web service functions
   //
 
-  async function gateway_remote_flash ( flash_url, flash_args, info_div )
+  async function gateway_remote_flash ( flash_url, flash_args )
   {
     var fetch_args =  {
                         method:   'POST',
@@ -204,6 +204,10 @@
     }
     catch (err)
     {
+      if (err == "TypeError: Failed to fetch") {
+        err = "Please, execute 'python3 gateway.py' and connect your board first\n";
+      }
+
       return err + "\n";
     }
   }
