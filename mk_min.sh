@@ -136,6 +136,8 @@ cat js/creator_bigint.js \
     js/creator_node.js > js/min.creator_node.js
 
 # zipping...
+echo "  * Gateway zipping..."
+
 cd gateway
 zip -9rq esp32c3.zip esp32c3/
 zip -9rq esp32c6.zip esp32c6/
