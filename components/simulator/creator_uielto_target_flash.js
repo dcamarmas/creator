@@ -84,11 +84,31 @@
                                     } ;
 
                         this_display = this;
-
-                        gateway_remote_flash(this.flash_url + "/flash", farg).then( function(data) { this_display.display += data; this_display.flashing = false; var monitor = getElementById('textarea_display'); monitor.scrollTop = textarea.scrollHeight; } )
+                        gateway_remote_flash(this.flash_url + "/flash", farg).then( function(data) { 
+				                                                       this_display.display += data; 
+				                                                       this_display.flashing = false; 
+				                                                       var monitor = document.getElementById('textarea_display'); 
+				                                                       monitor.scrollTop = monitor.scrollHeight; 
+			                                                             } ) ;
 
                         //Google Analytics
                         creator_ga('simulator', 'simulator.flash', 'simulator.flash');
+                      },
+
+                      do_stop_flash( )
+                      {
+                        this.flashing = false;
+
+                        this_display = this;
+                        gateway_remote_stop_flash(this.flash_url + "/stop").then( function(data) { 
+				                                                     this_display.display += data; 
+				                                                     this_display.flashing = false; 
+				                                                     var monitor = document.getElementById('textarea_display'); 
+				                                                     monitor.scrollTop = monitor.scrollHeight; 
+			                                                          } ) ;
+
+                        //Google Analytics
+                        creator_ga('simulator', 'simulator.stop_flash', 'simulator.stop_flash');
                       },
                     },
 
@@ -162,6 +182,16 @@
                     '   <b-container fluid align-h="center" class="mx-0 px-0">' +
                     '     <b-row cols="1" align-h="center">' +
                     '       <b-col class="pt-2">' +
+                    '         <b-button class="btn btn-sm btn-block" variant="danger" @click="do_stop_flash">' +
+                    '           <span>Stop</span>' +
+                    '         </b-button>' +
+                    '       </b-col>' +
+                    '     </b-row>' +
+                    '   </b-container>' +
+                    ' ' +
+                    '   <b-container fluid align-h="center" class="mx-0 px-0">' +
+                    '     <b-row cols="1" align-h="center">' +
+                    '       <b-col class="pt-2">' +
                     '         <label for="range-6">Monitor:</label>' +
                     '         <b-form-textarea  id="textarea_display" ' +
                     '                           size="sm"' +
@@ -204,10 +234,30 @@
     }
     catch (err)
     {
-      if (err == "TypeError: Failed to fetch") {
-        err = "Please, execute 'python3 gateway.py' and connect your board first\n";
+      if (err.toString() == "TypeError: Failed to fetch") {
+        return "Please, execute 'python3 gateway.py' and connect your board first\n";
       }
 
-      return err + "\n";
+      return err.toString() + "\n";
     }
   }
+
+  async function gateway_remote_stop_flash ( flash_url )
+  {
+    try
+    {
+      var res  = await fetch(flash_url, {}) ;
+      var jres = await res.json();
+
+      return jres.status
+    }
+    catch (err)
+    {
+      if (err.toString() == "TypeError: Failed to fetch") {
+        return "Please, execute 'python3 gateway.py' and connect your board first\n";
+      }
+
+      return err.toString() + "\n";
+    }
+  }
+
