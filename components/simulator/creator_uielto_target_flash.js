@@ -147,7 +147,24 @@
                     '   <b-container fluid align-h="center" class="mx-0 px-0">' +
                     '     <b-row cols="1" align-h="center">' +
                     '       <b-col class="pt-2">' +
-                    '         <label for="range-6">(3) Target Port:</label>' +
+                    '         <label for="range-6">(3) Read README:</label>' +
+                    '         <b-button class="btn btn-sm btn-block" variant="outline-secondary" v-b-toggle.collapse_readme>View README</b-button>' +
+                    '         <b-collapse id="collapse_readme">' +
+                    '           <b-card>' +
+                    '             How to install the ESP32 software:' +
+                    '             Follow the instructions from: https://docs.espressif.com/projects/esp-idf/en/v4.3.5/esp32/get-started/linux-setup.html:' +
+                    '             (1)' +
+                    '             (2)' +
+                    '           </b-card>' +
+                    '         </b-collapse>' +
+                    '       </b-col>' +
+                    '     </b-row>' +
+                    '   </b-container>' +
+                    ' ' +
+                    '   <b-container fluid align-h="center" class="mx-0 px-0">' +
+                    '     <b-row cols="1" align-h="center">' +
+                    '       <b-col class="pt-2">' +
+                    '         <label for="range-6">(4) Target Port:</label>' +
                     '         <b-form-input type="text" ' +
                     '                       v-model="target_port" ' +
                     '                       placeholder="Enter target port" ' +
@@ -161,7 +178,7 @@
                     '   <b-container fluid align-h="center" class="mx-0 px-0">' +
                     '     <b-row cols="1" align-h="center">' +
                     '       <b-col class="pt-2">' +
-                    '         <label for="range-6">(4) Flash URL:</label>' +
+                    '         <label for="range-6">(5) Flash URL:</label>' +
                     '         <b-form-input type="text" ' +
                     '                       v-model="flash_url" ' +
                     '                       placeholder="Enter flash URL" ' +
