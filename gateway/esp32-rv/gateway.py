@@ -131,6 +131,19 @@ def do_flash_request(request):
 	return jsonify(req_data)
 
 
+# (3) Stop flashing
+def do_stop_flash_request(request):
+	try:
+		req_data = request.get_json()
+		req_data['status'] = ''
+                do_cmd(req_data, ['pkill',  'python'])
+
+	except Exception as e:
+		req_data['status'] += str(e) + '\n'
+
+	return jsonify(req_data)
+
+
 # Setup flask and cors:
 app  = Flask(__name__)
 cors = CORS(app)
@@ -147,6 +160,12 @@ def get_form():
 @cross_origin()
 def post_flash():
 	return do_flash_request(request)
+
+# (3) POST /stop -> cancel
+@app.route("/stop", methods=["POST"])
+@cross_origin()
+def post_flash():
+	return do_stop_flash_request(request)
 
 
 # Run
