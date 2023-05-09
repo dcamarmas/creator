@@ -225,6 +225,7 @@
                                   },
                         body:     JSON.stringify(flash_args)
                       } ;
+
     try
     {
       var res  = await fetch(flash_url, fetch_args) ;
@@ -244,9 +245,18 @@
 
   async function gateway_remote_stop_flash ( flash_url )
   {
+    var fetch_args =  {
+                        method:   'POST',
+                        headers:  {
+                                    'Content-type': 'application/json',
+                                    'Accept':       'application/json'
+                                  },
+                        body:     ''
+                      } ;
+
     try
     {
-      var res  = await fetch(flash_url, {}) ;
+      var res  = await fetch(flash_url, fetch_args) ;
       var jres = await res.json();
 
       return jres.status
