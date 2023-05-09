@@ -176,9 +176,9 @@
                     '     <b-row cols="2" align-h="center">' +
                     '       <b-col class="pt-2">' +
                     '         <b-button class="btn btn-sm btn-block" variant="primary" @click="do_flash" :pressed="flashing">' +
-                    '           <b-spinner small v-if="flashing"></b-spinner>' +
                     '           <span v-if="!flashing"><span class="fas fa-bolt-lightning"></span> Flash</span>' +
                     '           <span v-if="flashing"><span class="fas fa-bolt-lightning"></span>  Flashing...</span>' +
+                    '           <b-spinner small v-if="flashing"></b-spinner>' +
                     '         </b-button>' +
                     '       </b-col>' +
                     '       <b-col class="pt-2">' +
