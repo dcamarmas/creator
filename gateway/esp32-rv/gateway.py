@@ -23,7 +23,7 @@
 
 from flask import Flask, request, jsonify, send_file, Response
 from flask_cors import CORS, cross_origin
-import subprocess
+import subprocess, os, signal
 
 
 # (1) Get form values
@@ -84,7 +84,7 @@ def creator_build(file_in, file_out):
                 return -1
 
 def do_cmd(req_data, cmd_array):
-        result = subprocess.run(cmd_array, capture_output=False)
+        result   = subprocess.run(cmd_array, capture_output=False)
 
         if result.stdout != None:
                 req_data['status'] += result.stdout.decode('utf-8') + '\n'
@@ -136,7 +136,7 @@ def do_stop_flash_request(request):
         try:
                 req_data = request.get_json()
                 req_data['status'] = ''
-                do_cmd(req_data, ['pkill',  'python'])
+                do_cmd(req_data, ['pkill',  'idf.py'])
 
         except Exception as e:
                 req_data['status'] += str(e) + '\n'

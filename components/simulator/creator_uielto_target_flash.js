@@ -84,12 +84,12 @@
                                     } ;
 
                         this_display = this;
-                        gateway_remote_flash(this.flash_url + "/flash", farg).then( function(data) { 
-				                                                       this_display.display += data; 
-				                                                       this_display.flashing = false; 
-				                                                       var monitor = document.getElementById('textarea_display'); 
-				                                                       monitor.scrollTop = monitor.scrollHeight; 
-			                                                             } ) ;
+                        gateway_remote_flash(this.flash_url + "/flash", farg).then( function(data)  { 
+                                      				                                                        this_display.display += data; 
+                                      				                                                        this_display.flashing = false; 
+                                      				                                                        var monitor = document.getElementById('textarea_display'); 
+                                      				                                                        monitor.scrollTop = monitor.scrollHeight; 
+                                      			                                                        } ) ;
 
                         //Google Analytics
                         creator_ga('simulator', 'simulator.flash', 'simulator.flash');
@@ -100,15 +100,20 @@
                         this.flashing = false;
 
                         this_display = this;
-                        gateway_remote_stop_flash(this.flash_url + "/stop").then( function(data) { 
-				                                                     this_display.display += data; 
-				                                                     this_display.flashing = false; 
-				                                                     var monitor = document.getElementById('textarea_display'); 
-				                                                     monitor.scrollTop = monitor.scrollHeight; 
-			                                                          } ) ;
+                        gateway_remote_stop_flash(this.flash_url + "/stop").then( function(data)  { 
+                                      				                                                      this_display.display += data; 
+                                      				                                                      this_display.flashing = false; 
+                                      				                                                      var monitor = document.getElementById('textarea_display'); 
+                                      				                                                      monitor.scrollTop = monitor.scrollHeight; 
+                                      			                                                      } ) ;
 
                         //Google Analytics
                         creator_ga('simulator', 'simulator.stop_flash', 'simulator.stop_flash');
+                      },
+
+                      clean( )
+                      {
+                        this.display = "";
                       },
                     },
 
@@ -168,22 +173,17 @@
                     '   </b-container>' +
                     ' ' +
                     '   <b-container fluid align-h="center" class="mx-0 px-0">' +
-                    '     <b-row cols="1" align-h="center">' +
+                    '     <b-row cols="2" align-h="center">' +
                     '       <b-col class="pt-2">' +
                     '         <b-button class="btn btn-sm btn-block" variant="primary" @click="do_flash" :pressed="flashing">' +
                     '           <b-spinner small v-if="flashing"></b-spinner>' +
-                    '           <span v-if="!flashing">Flash</span>' +
-                    '           <span v-if="flashing">Flashing...</span>' +
+                    '           <span v-if="!flashing"><span class="fas fa-bolt-lightning"></span> Flash</span>' +
+                    '           <span v-if="flashing"><span class="fas fa-bolt-lightning"></span>  Flashing...</span>' +
                     '         </b-button>' +
                     '       </b-col>' +
-                    '     </b-row>' +
-                    '   </b-container>' +
-                    ' ' +
-                    '   <b-container fluid align-h="center" class="mx-0 px-0">' +
-                    '     <b-row cols="1" align-h="center">' +
                     '       <b-col class="pt-2">' +
-                    '         <b-button class="btn btn-sm btn-block" variant="danger" @click="do_stop_flash">' +
-                    '           <span>Stop</span>' +
+                    '         <b-button class="btn btn-sm btn-block" variant="outline-danger" @click="do_stop_flash">' +
+                    '           <span><span class="fas fa-stop"></span> Stop</span>' +
                     '         </b-button>' +
                     '       </b-col>' +
                     '     </b-row>' +
@@ -201,6 +201,16 @@
                     '                           no-resize ' +
                     '                           title="Display">' +
                     '         </b-form-textarea>' +
+                    '       </b-col>' +
+                    '     </b-row>' +
+                    '   </b-container>' +
+                    ' ' +
+                    '   <b-container fluid align-h="center" class="mx-0 px-0">' +
+                    '     <b-row cols="1" align-h="center">' +
+                    '       <b-col class="pt-2">' +
+                    '         <b-button class="btn btn-sm btn-block" variant="outline-secondary" @click="clean">' +
+                    '           <span><span class="fas fa-broom"></span> Clean</span>' +
+                    '         </b-button>' +
                     '       </b-col>' +
                     '     </b-row>' +
                     '   </b-container>' +
