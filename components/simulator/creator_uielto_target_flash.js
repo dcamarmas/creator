@@ -251,7 +251,7 @@
                                     'Content-type': 'application/json',
                                     'Accept':       'application/json'
                                   },
-                        body:     ''
+                        body:     JSON.stringify({})
                       } ;
 
     try
