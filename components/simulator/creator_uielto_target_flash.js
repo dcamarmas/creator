@@ -36,8 +36,8 @@
                                           { text: 'ESP32-C2 (RISC-V)',  value: 'esp32c2' },
                                           { text: 'ESP32-C3 (RISC-V)',  value: 'esp32c3' },
                                           { text: 'ESP32-H2 (RISC-V)',  value: 'esp32h2' },
-                                          { text: 'ESP32-S2 (MIPS-32)',  value: 'esp32s2' },
-                                          { text: 'ESP32-S3 (MIPS-32)',  value: 'esp32s3' },
+                                          //{ text: 'ESP32-S2 (MIPS-32)',  value: 'esp32s2' },
+                                          //{ text: 'ESP32-S3 (MIPS-32)',  value: 'esp32s3' },
                                         ],
 
                         target_ports  = { Win: 'COM1', Mac: '/dev/cu.usbserial-210', Linux: '/dev/ttyUSB0' },
@@ -88,7 +88,8 @@
                                       				                                                        this_display.display += data; 
                                       				                                                        this_display.flashing = false; 
                                       				                                                        var monitor = document.getElementById('textarea_display'); 
-                                      				                                                        monitor.scrollTop = monitor.scrollHeight; 
+                                      				                                                        monitor.scrollTop = monitor.scrollHeight;
+                                                                                                      show_notification(data, 'danger') ;
                                       			                                                        } ) ;
 
                         //Google Analytics
@@ -104,7 +105,8 @@
                                       				                                                      this_display.display += data; 
                                       				                                                      this_display.flashing = false; 
                                       				                                                      var monitor = document.getElementById('textarea_display'); 
-                                      				                                                      monitor.scrollTop = monitor.scrollHeight; 
+                                      				                                                      monitor.scrollTop = monitor.scrollHeight;
+                                                                                                    show_notification(data, 'danger') ;
                                       			                                                      } ) ;
 
                         //Google Analytics
@@ -125,7 +127,28 @@
                     '   <b-container fluid align-h="center" class="mx-0 px-0">' +
                     '     <b-row cols="1" align-h="center">' +
                     '       <b-col class="pt-2">' +
-                    '         <label for="range-6">(1) Target Board:</label>' +
+                    '         <label for="range-6">(1) Install the ESP32 Software:</label>' +
+                    '         <b-button class="btn btn-sm btn-block" variant="outline-secondary" v-b-toggle.collapse_readme_1>View README</b-button>' +
+                    '         <b-collapse id="collapse_readme_1">' +
+                    '           <b-card header="How to install the ESP32 software (only the first time)" class="text-center">' +
+
+                    '             <b-row no-gutters>' +
+                    '               <b-col md="12">' +
+                    '                 <b-card-text style="text-align: center;margin:2%;">' +
+                    '                   <span>Follow the instructions from: <a href="https://docs.espressif.com/projects/esp-idf/en/latest/esp32/" target="_blank">https://docs.espressif.com/projects/esp-idf/en/latest/esp32/</a></span>' +
+                    '                 </b-card-text>' +
+                    '               </b-col>' +
+                    '             </b-row>' +
+                    '           </b-card>' +
+                    '         </b-collapse>' +
+                    '       </b-col>' +
+                    '     </b-row>' +
+                    '   </b-container>' +
+                    ' ' +
+                    '   <b-container fluid align-h="center" class="mx-0 px-0">' +
+                    '     <b-row cols="1" align-h="center">' +
+                    '       <b-col class="pt-2">' +
+                    '         <label for="range-6">(2) Select Target Board:</label>' +
                     '         <b-form-select v-model="target_board" ' +
                     '                        :options="target_boards" ' +
                     '                        size="sm"' +
@@ -138,7 +161,7 @@
                     '   <b-container fluid align-h="center" class="mx-0 px-0">' +
                     '     <b-row cols="1" align-h="center">' +
                     '       <b-col class="pt-2">' +
-                    '         <label for="range-6">(2) Download the driver:</label>' +
+                    '         <label for="range-6">(3) Download the driver:</label>' +
                     '         <b-button class="btn btn-sm btn-block" variant="outline-primary" @click="download_driver">Download Driver</b-button>' +
                     '       </b-col>' +
                     '     </b-row>' +
@@ -147,14 +170,32 @@
                     '   <b-container fluid align-h="center" class="mx-0 px-0">' +
                     '     <b-row cols="1" align-h="center">' +
                     '       <b-col class="pt-2">' +
-                    '         <label for="range-6">(3) Read README:</label>' +
-                    '         <b-button class="btn btn-sm btn-block" variant="outline-secondary" v-b-toggle.collapse_readme>View README</b-button>' +
-                    '         <b-collapse id="collapse_readme">' +
-                    '           <b-card>' +
-                    '             How to install the ESP32 software:' +
-                    '             Follow the instructions from: https://docs.espressif.com/projects/esp-idf/en/v4.3.5/esp32/get-started/linux-setup.html:' +
-                    '             (1)' +
-                    '             (2)' +
+                    '         <label for="range-6">(4) Run driver:</label>' +
+                    '         <b-button class="btn btn-sm btn-block" variant="outline-secondary" v-b-toggle.collapse_readme_2>View README</b-button>' +
+                    '         <b-collapse id="collapse_readme_2">' +
+                    '           <b-card header="How to run the driver" class="text-center">' +
+                    '             <b-row no-gutters>' +
+                    '               <b-col md="12">' +
+                    '                 <b-card-text style="text-align: justify;margin:2%;">' +
+                    '                   <span>Load the environment variable for your board with:</span>' +
+                    '                   <br>' +
+                    '                   <code>. $HOME/esp/esp-idf/export.sh</code>' +
+                    '                   <br>' +
+                    '                   <br>' +
+                    '                   <span>Unzip the driver.zip file and change into the driver directory associated to your board with "cd <board>", for example:</span>' +
+                    '                   <br>' +
+                    '                   <code>unzip driver.zip</code>' +
+                    '                   <br>' +
+                    '                   <code>cd &lt;board&gt;</code>' +
+                    '                   <br>' +
+                    '                   <br>' +
+                    '                   <span>Execute the gateway web service:</span>' +
+                    '                   <br>' +
+                    '                   <code>python3 gateway.py</code>' +
+                    '                   <br>' +
+                    '                 </b-card-text>' +
+                    '               </b-col>' +
+                    '             </b-row>' +
                     '           </b-card>' +
                     '         </b-collapse>' +
                     '       </b-col>' +
@@ -164,7 +205,7 @@
                     '   <b-container fluid align-h="center" class="mx-0 px-0">' +
                     '     <b-row cols="1" align-h="center">' +
                     '       <b-col class="pt-2">' +
-                    '         <label for="range-6">(4) Target Port:</label>' +
+                    '         <label for="range-6">(5) Target Port: (please verify the port on your computer)</label>' +
                     '         <b-form-input type="text" ' +
                     '                       v-model="target_port" ' +
                     '                       placeholder="Enter target port" ' +
@@ -178,7 +219,7 @@
                     '   <b-container fluid align-h="center" class="mx-0 px-0">' +
                     '     <b-row cols="1" align-h="center">' +
                     '       <b-col class="pt-2">' +
-                    '         <label for="range-6">(5) Flash URL:</label>' +
+                    '         <label for="range-6">(6) Flash URL:</label>' +
                     '         <b-form-input type="text" ' +
                     '                       v-model="flash_url" ' +
                     '                       placeholder="Enter flash URL" ' +
@@ -206,7 +247,7 @@
                     '     </b-row>' +
                     '   </b-container>' +
                     ' ' +
-                    '   <b-container fluid align-h="center" class="mx-0 px-0">' +
+                    /*'   <b-container fluid align-h="center" class="mx-0 px-0">' +
                     '     <b-row cols="1" align-h="center">' +
                     '       <b-col class="pt-2">' +
                     '         <label for="range-6">Monitor:</label>' +
@@ -230,7 +271,7 @@
                     '         </b-button>' +
                     '       </b-col>' +
                     '     </b-row>' +
-                    '   </b-container>' +
+                    '   </b-container>' +*/
                     ' </b-modal>'
   
   }
