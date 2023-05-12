@@ -305,7 +305,7 @@
                     '       <b-container fluid align-h="center" class="mx-0 px-0">' +
                     '         <b-row cols="1" align-h="center">' +
                     '           <b-col class="pt-2">' +
-                    '             <span>To stop the program execution press ctrl + * in the terminal</span>' +
+                    '             <span>To stop the program execution press ctrl + ] in the terminal</span>' +
                     '           </b-col>' +
                     '         </b-row>' +
                     '       </b-container>' +
