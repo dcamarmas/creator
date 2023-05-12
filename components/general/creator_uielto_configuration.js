@@ -34,6 +34,12 @@
                   c_debug:                { type: Boolean, required: true }
                 },
 
+    data:       function () {
+                  return {
+
+                  }
+                },
+
     methods:    {
                   //Loads the configuration values from cache
                   get_configuration()
@@ -236,7 +242,7 @@
                   '           hide-footer>' +
                   ' ' +
                   '   <b-list-group>' +
-                  '     <b-list-group-item class="d-flex justify-content-between align-items-center m-1">' +
+                  '     <b-list-group-item class="justify-content-between align-items-center m-1">' +
                   '       <label for="range-1">Maximum stack values listed:</label>' +
                   '       <b-input-group>' +
                   '         <b-input-group-prepend>' +
@@ -257,7 +263,7 @@
                   '       </b-input-group>' +
                   '     </b-list-group-item>' +
                   ' ' +
-                  '     <b-list-group-item class="d-flex justify-content-between align-items-center m-1">' +
+                  '     <b-list-group-item class="justify-content-between align-items-center m-1">' +
                   '       <label for="range-2">Execution Autoscroll:</label>' +
                   '       <b-form-checkbox id="range-2"' +
                   '                        v-model="autoscroll" ' +
@@ -268,7 +274,7 @@
                   '       </b-form-checkbox>' +
                   '     </b-list-group-item>' +
                   ' ' +
-                  '     <b-list-group-item class="d-flex justify-content-between align-items-center m-1">' +
+                  '     <b-list-group-item class="justify-content-between align-items-center m-1">' +
                   '       <label for="range-3">Notification Time:</label>' +
                   '       <b-input-group>' +
                   '         <b-input-group-prepend>' +
@@ -289,7 +295,7 @@
                   '       </b-input-group>' +
                   '     </b-list-group-item>' +
                   ' ' +
-                  '     <b-list-group-item class="d-flex justify-content-between align-items-center m-1">' +
+                  '     <b-list-group-item class="justify-content-between align-items-center m-1">' +
                   '       <label for="range-3">Instruction Help Size:</label>' +
                   '       <b-input-group>' +
                   '         <b-input-group-prepend>' +
@@ -310,7 +316,7 @@
                   '       </b-input-group>' +
                   '     </b-list-group-item>' +
                   ' ' +
-                  /*'     <b-list-group-item class="d-flex justify-content-between align-items-center m-1">' +
+                  /*'     <b-list-group-item class="justify-content-between align-items-center m-1">' +
                   '       <label for="range-4">Font Size:</label>' +
                   '       <b-input-group>' +
                   '         <b-input-group-prepend>' +
@@ -331,7 +337,7 @@
                   '       </b-input-group>' +
                   '     </b-list-group-item>' +*/
                   ' ' +
-                  '     <b-list-group-item class="d-flex justify-content-between align-items-center m-1">' +
+                  '     <b-list-group-item class="justify-content-between align-items-center m-1">' +
                   '       <label for="range-5">Dark Mode:</label>' +
                   '       <b-form-checkbox id="range-5"' +
                   '                        name="check-button"' +
@@ -341,7 +347,7 @@
                   '       </b-form-checkbox>' +
                   '     </b-list-group-item>' +
                   ' ' +
-                  '     <b-list-group-item class="d-flex justify-content-between align-items-center m-1">' +
+                  '     <b-list-group-item class="justify-content-between align-items-center m-1">' +
                   '       <label for="range-6">Debug:</label>' +
                   '       <b-form-checkbox id="range-6"' +
                   '                        v-model="c_debug"' +
@@ -350,7 +356,6 @@
                   '                        @change="change_debug_mode">' +
                   '       </b-form-checkbox>' +
                   '     </b-list-group-item>' +
-                  '   </b-list-group>' +
                   ' ' +
                   ' </b-modal>'
 

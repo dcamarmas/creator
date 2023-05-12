@@ -45,8 +45,7 @@
           "properties": [
             "read",
             "write",
-            "pointer",
-            "code"
+            "program_counter"
           ]
         }
       ]
@@ -93,8 +92,7 @@
           "properties": [
             "read",
             "write",
-            "pointer",
-            "stack"
+            "stack_pointer"
           ]
         },
         {
@@ -108,8 +106,7 @@
           "properties": [
             "read",
             "write",
-            "pointer",
-            "data"
+            "global_pointer"
           ]
         },
         {
@@ -176,8 +173,7 @@
           "properties": [
             "read",
             "write",
-            "pointer",
-            "frame",
+            "frame_pointer",
             "saved"
           ]
         },

@@ -8,4 +8,4 @@
     
 .text
 main:
-   li $t0 0xhello
+   li $t0, 0xhello

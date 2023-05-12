@@ -9,25 +9,25 @@
 
 	main: 
 			
-			li $s0 2
+			li $s0, 2
             jal test
 
             # exit
-            li $v0 10
+            li $v0, 10
             syscall
 
 
 	test:
             # crear "stack frame" para $ra, $fp y una variable local
-            subu $sp $sp 8
-            sw   $s0 ($sp)
-            sw   $t0 ($sp)
+            subu $sp, $sp, 8
+            sw   $s0, ($sp)
+            sw   $t0, ($sp)
 
-			li $s0 2
+			li $s0, 2
 
-	b_efs:  lw   $s0 ($sp)
+	b_efs:  lw   $s0, ($sp)
     
-            addu $sp $sp 8
+            addu $sp, $sp, 8
 
             # return $v0
             jr $ra

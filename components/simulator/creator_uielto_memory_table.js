@@ -178,27 +178,27 @@
             '               <div v-for="item2 in architecture.components[item.index].elements">' +
             '               <b-badge variant="info" ' +
             '                        class="border border-info shadow memoryTag" ' +
-            '                        v-if="item2.properties.includes(\'pointer\') && item2.properties.includes(\'data\') && ((parseInt(item2.value) & 0xFFFFFFFC) == (row.item.addr & 0xFFFFFFFC))">' +
+            '                        v-if="item2.properties.includes(\'global_pointer\') && ((parseInt(item2.value) & 0xFFFFFFFC) == (row.item.addr & 0xFFFFFFFC))">' +
             '                 {{item2.name[0]}}' +
             '               </b-badge>' +
             '               <span class="fas fa-long-arrow-alt-right" ' +
-            '                     v-if="item2.properties.includes(\'pointer\') && item2.properties.includes(\'data\') && ((parseInt(item2.value) & 0xFFFFFFFC) == (row.item.addr & 0xFFFFFFFC))">' +
+            '                     v-if="item2.properties.includes(\'global_pointer\') && ((parseInt(item2.value) & 0xFFFFFFFC) == (row.item.addr & 0xFFFFFFFC))">' +
             '               </span>' +
             '               <b-badge variant="success" ' +
             '                        class="border border-success shadow memoryTag" ' +
-            '                        v-if="item2.properties.includes(\'pointer\') && item2.properties.includes(\'code\') && ((parseInt(item2.value) & 0xFFFFFFFC) == (row.item.addr & 0xFFFFFFFC))">' +
+            '                        v-if="item2.properties.includes(\'program_counter\') && ((parseInt(item2.value) & 0xFFFFFFFC) == (row.item.addr & 0xFFFFFFFC))">' +
             '                 {{item2.name[0]}}' +
             '               </b-badge>' +
             '               <span class="fas fa-long-arrow-alt-right" ' +
-            '                     v-if="item2.properties.includes(\'pointer\') && item2.properties.includes(\'code\') && ((parseInt(item2.value) & 0xFFFFFFFC) == (row.item.addr & 0xFFFFFFFC))">' +
+            '                     v-if="item2.properties.includes(\'program_counter\') && ((parseInt(item2.value) & 0xFFFFFFFC) == (row.item.addr & 0xFFFFFFFC))">' +
             '               </span>' +
             '               <b-badge variant="info" ' +
             '                        class="border border-info shadow memoryTag" ' +
-            '                        v-if="item2.properties.includes(\'pointer\') && (item2.properties.includes(\'stack\') || item2.properties.includes(\'frame\'))&& ((parseInt(item2.value) & 0xFFFFFFFC) == (row.item.addr & 0xFFFFFFFC))">' +
+            '                     v-if="(item2.properties.includes(\'stack_pointer\') || item2.properties.includes(\'frame_pointer\')) && ((parseInt(item2.value) & 0xFFFFFFFC) == (row.item.addr & 0xFFFFFFFC))">' +
             '                 {{item2.name[0]}}' +
             '               </b-badge>' +
             '               <span class="fas fa-long-arrow-alt-right" ' +
-            '                     v-if="item2.properties.includes(\'pointer\') && (item2.properties.includes(\'stack\') || item2.properties.includes(\'frame\') )&& ((parseInt(item2.value) & 0xFFFFFFFC) == (row.item.addr & 0xFFFFFFFC))">' +
+            '                 v-if="(item2.properties.includes(\'stack_pointer\') || item2.properties.includes(\'frame_pointer\') ) && ((parseInt(item2.value) & 0xFFFFFFFC) == (row.item.addr & 0xFFFFFFFC))">' +
             '               </span>  ' +
             '             </div>' +
             '           </div>' +

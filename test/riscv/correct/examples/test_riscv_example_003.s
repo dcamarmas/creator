@@ -4,34 +4,38 @@
 #
 
 .data
-    .align 2
     w1:     .word 14
     b1:     .byte 120
+
+    .align 1
     h1:     .half 22
     w2:     .zero 4
     b2:     .zero 1
+
+    .align 1
     h2:     .zero 2
 
 .text
 main:
     
-    la x5 w1          # w1 address -> x5
-    la x6 b1          # b1 address -> x6
-    la x7 h1          # h1 address -> x7
+    la t0, w1         # w1 address -> t0
+    la t1, b1         # b1 address -> t1
+    la t2, h1         # h1 address -> t2
     
-    lw x8 0 (x5)      # Memory[x5] -> x8
+    lw t3,  0(t0)     # Memory[t0] -> t3
     
-    lb x10 0(x6)      # Memory[x6] -> x10
+    lb t4,  0(t1)     # Memory[t1] -> t4
     
-    lh x12 0 (x7)     # Memory[x7] -> x12
+    lh t5, 0 (t2)     # Memory[t2] -> t5
     
-    la x14 w2         # w2 address -> x14
-    sw x8  0(x14)     # x8 -> Memory[w2]
+    la t0, w2         # w2 address -> t0
+    sw t3,  0(t0)     # t3 -> Memory[w2]
 
-    la x14 b2         # b2 address -> x14
-    sb x10 0(x14)     # x10 -> Memory[b2]
+    la t0, b2         # b2 address -> t0
+    sb t4, 0(t0)      # t4 -> Memory[b2]
 
-    la x14 h2         # h2 address -> x14
-    sh x12 0(x14)     # x12 -> Memory[h2]
-
-
+    la t0, h2         # h2 address -> t0
+    sh t5, 0(t0)      # t5 -> Memory[h2]
+   
+    # return 
+    jr ra

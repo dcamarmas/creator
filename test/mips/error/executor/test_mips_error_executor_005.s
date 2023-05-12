@@ -6,5 +6,5 @@
 .text
 main:
 	
-    li $t0 10
-	sw $t0 0
+    li $t0, 10
+	sw $t0, 0

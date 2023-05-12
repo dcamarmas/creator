@@ -8,27 +8,27 @@
 .text
 
     main: 
-            li t1 1
-            li a0 5
-            jal ra test
+            li t1, 1
+            li a0, 5
+            jal ra, test
 
             # exit
-            li a7 10
+            li a7, 10
             ecall
 
 
     test:
             # crear "stack frame" para ra, fp y una variable local
-            addi sp sp -12
-            sw   ra 8(sp)
-            sw   fp 4(sp)
-            addi fp sp 4
+            addi sp, sp, -12
+            sw   ra, 8(sp)
+            sw   fp, 4(sp)
+            addi fp, sp, 4
 
-            li t1 2
+            li t1, 2
 
-    b_efs:  lw   ra 8(sp)
-            lw   fp 4(sp)
-            addi sp sp 12
+    b_efs:  lw   ra, 8(sp)
+            lw   fp, 4(sp)
+            addi sp, sp, 12
 
             # return a7
            jr ra

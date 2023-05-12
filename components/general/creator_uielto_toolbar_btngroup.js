@@ -149,10 +149,10 @@
                               var date = new Date();
                               var auxDate = date.getHours()+":"+date.getMinutes()+":"+date.getSeconds()+" - "+date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear();
 
-                              localStorage.setItem("arch_name", app._data.architecture_name);
-                              localStorage.setItem("architecture_copy", aux_arch);
-                              localStorage.setItem("assembly_copy", code_assembly);
-                              localStorage.setItem("date_copy", auxDate);
+                              localStorage.setItem("backup_arch_name", app._data.architecture_name);
+                              localStorage.setItem("backup_arch", aux_arch);
+                              localStorage.setItem("backup_asm", code_assembly);
+                              localStorage.setItem("backup_date", auxDate);
                             }
 
                             //show error/warning
@@ -247,6 +247,9 @@
                         for (var i=0; i<ret.draw.info.length; i++) {
                           instructions[ret.draw.info[i]]._rowVariant = 'info';
                         }
+                        for (var i=0; i<ret.draw.warning.length; i++) {
+                          instructions[ret.draw.warning[i]]._rowVariant = 'warning';
+                        }
                         for (var i=0; i<ret.draw.danger.length; i++) {
                           instructions[ret.draw.danger[i]]._rowVariant = 'danger';
                         }
@@ -288,6 +291,7 @@
                             space:   [],
                             info:    [],
                             success: [],
+                            warning: [],
                             danger:  [],
                             flash:   []
                         } ;
@@ -458,6 +462,12 @@
                         }
                       },
 
+                      //Flash program
+                      flash_program() 
+                      {
+                        
+                      },
+
                       //Stop program excution
                       stop_execution() 
                       {
@@ -486,6 +496,7 @@
                               button_reset() +
                               button_instruction() +
                               button_run() +
+                              button_flash() +
                               button_stop() +
                               button_examples() +
                               button_calculator() +
@@ -627,6 +638,15 @@
             '          id="playExecution">' +
             '  <span class="fas fa-play"></span>' +
             '  Run' +
+            '</b-button>'
+  }
+
+  function button_flash(){
+    return  '<b-button v-if="item==\'btn_flash\'" class="btn btn-block btn-outline-secondary actionsGroup btn-sm h-100 mr-1" ' +
+            '          v-b-modal.flash ' +
+            '          :disabled="run_disable">' +
+            '  <span class="fa-brands fa-usb"></span>' +
+            '  Flash' +
             '</b-button>'
   }
 
