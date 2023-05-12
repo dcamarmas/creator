@@ -30,7 +30,7 @@ factorial:
 
            # if (a0 < 2):
            #     return 1
-           li x5, 2
+           li   x5, 2
            bge  a0, t0, b_else
            li   a0, 1 
            beq  x0, x0, b_efs
