@@ -20,9 +20,9 @@
        # ...
 
 .text
- main: la  t0 c1
-       la  t1 c2
-       lbu t2 0(t1)
-       sb  t2 0(t0)
+ main: la  t0, c1
+       la  t1, c2
+       lbu t2, 0(t1)
+       sb  t2, 0(t0)
        # ...
 

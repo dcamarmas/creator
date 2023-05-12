@@ -164,6 +164,12 @@
                     uielto_toolbar_btngroup.methods.change_UI_mode('simulator');
                     uielto_data_view_selector.methods.change_data_view('int_registers');
                     app._data.render++; //Forces vue to reload a component, similar to $forceUpdate()
+
+                    //Save current architecture into cache
+                    var aux_object = jQuery.extend(true, {}, architecture);
+                    var aux_architecture = register_value_serialize(aux_object);
+                    var aux_arch = JSON.stringify(aux_architecture, null, 2);
+                    localStorage.setItem("architecture_preload", aux_arch);
                   },
 
                   //Load the available examples

@@ -5,4 +5,4 @@
 
 .text
 main:
-    li sp 0
+    li sp, 0

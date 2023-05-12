@@ -216,7 +216,7 @@
               </delete-architecture>
 
               <!-- Backup modal -->
-              <uielto-backup id="copy" :date_copy="date_copy"></uielto-backup>
+              <uielto-backup id="copy" :backup_date="backup_date"></uielto-backup>
 
             </b-col>
           </b-row>
@@ -583,13 +583,18 @@
 
               <!-- Navbar -->
               <uielto-toolbar id="navbar_simulator" 
-                              components="btn_architecture,btn_assembly|btn_reset,btn_instruction,btn_run,btn_stop|btn_examples,btn_calculator|btn_configuration,btn_information" 
+                              components="btn_architecture,btn_assembly|btn_reset,btn_instruction,btn_run,btn_flash,btn_stop|btn_examples,btn_calculator|btn_configuration,btn_information" 
                               :browser="browser"
                               :arch_available="arch_available">
               </uielto-toolbar>
 
 
               <!-- Simulator navbar modals -->
+
+              <!-- Flash -->
+              <flash  id="flash"
+                      :os="os">          
+              </flash>
 
               <!-- Examples modal -->
               <examples id="examples2" 

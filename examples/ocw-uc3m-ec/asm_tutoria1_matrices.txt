@@ -32,36 +32,36 @@ rellenar: # $a0 <- primero parámetro => A
           # $a3 <- cuarto parámetro  x
       
          # for (i=0; i<M; i++)         
-         li $t0 0            # i = $t0
-   for1: bge $t0 $a1 finfor1 # (i >= M) ir a finfor1
+         li $t0, 0            # i = $t0
+   for1: bge $t0, $a1, finfor1 # (i >= M) ir a finfor1
          # for (j=0; j<N; j++)
-         li $t1 0            # j = $t1
-   for2: bge $t1 $a2 finfor2 # (i >= N) ir a finfor1
+         li $t1, 0            # j = $t1
+   for2: bge $t1, $a2, finfor2 # (i >= N) ir a finfor1
             # i*N + j                # "cuantos elementos dejo atrás"
             # (i*N + j) * 4          # "cuantos bytes hay desde el inicio de matriz"
             # matriz + (i*N + j) * 4 # dirección del elemento (i,j)
             #             
             # dirección del elemento (i,j)
-            mul  $t3 $t0 $a2 # i*N
-            add  $t3 $t3 $t1 # + j
-            mul  $t3 $t3 4   # * 4
-            add  $t3 $a0 $t3 # matriz + (i*N+j)...
+            mul  $t3, $t0, $a2 # i*N
+            add  $t3, $t3, $t1 # + j
+            mul  $t3, $t3, 4   # * 4
+            add  $t3, $a0, $t3 # matriz + (i*N+j)...
             # matriz[i][j] = 0
-            sw $zero ($t3) # memoria[$t3] = 0
+            sw $zero, ($t3) # memoria[$t3] = 0
            #
-         addi $t1 $t1 1
+         addi $t1, $t1, 1
          b for2
 finfor2: # fin for (j=0...
-         addi $t0 $t0 1
+         addi $t0, $t0, 1
          b for1
 finfor1: # ...
 
            # return ok
-           li $v0 0
+           li $v0, 0
            jr $ra # return
       
            # return ko
-fin_error: li $v0 -1
+fin_error: li $v0, -1
            jr $ra      
     
 
@@ -75,9 +75,9 @@ fin_error: li $v0 -1
 
 main: 
       # invocar a Init: 1) paso de parámetros + 2) jal
-      la $a0 matriz
-      li $a1 2
-      li $a2 3
+      la $a0, matriz
+      li $a1, 2
+      li $a2, 3
       jal rellenar # RA <- PC
                    # PC <- Init
       

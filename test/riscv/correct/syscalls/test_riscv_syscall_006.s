@@ -5,5 +5,5 @@
 
 .text
 main:
-	li a7 6
+	li a7, 6
     ecall

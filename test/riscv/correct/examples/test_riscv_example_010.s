@@ -10,23 +10,33 @@
 
 .text
 main:
-    la a0 string1
-    li a7 4
+    # print "Insert string length..."
+    la a0, string1
+    li a7, 4
     ecall
-    
-    li a7 5
+
+    # read int
+    li a7, 5
     ecall
-    add t0 a7 zero
-    
-    la a0 string2
-    li a7 4
+
+    add t0, a0, zero
+
+    # print "Insert string..."
+    la a0, string2
+    li a7, 4
     ecall
-    
-    la a0 space
-    add a1 t0 zero
-    li a7 8
+
+    # read string
+    la  a0, space
+    add a1, t0, zero
+    li a7, 8
     ecall
-    
-    li a7 4
+
+    # print string
+    la a0, space
+    li a7, 4
     ecall
+
+    # return
+    jr ra
 
