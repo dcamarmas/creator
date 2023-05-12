@@ -35,6 +35,7 @@ loop2:  beq  t3, t5, end2
 end2:   addi t4, t4, 1
         add  t5, zero, zero
         beq  x0, x0, loop1
-end1:   li   a7, 10
-        ecall
+end1:   
+        # return
+        jr ra
 
