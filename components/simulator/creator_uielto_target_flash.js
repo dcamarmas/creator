@@ -47,6 +47,7 @@
                         flash_url     = "http://localhost:8080",
 
                         flashing = false,
+                        running  = false,
 
                         display = "",
                       }
@@ -75,6 +76,13 @@
 
                       do_flash( )
                       {
+                        if(instructions.length == 0)
+                        {
+                          show_notification("Compile a program first", 'danger') ;
+                          return;
+                        }
+
+
                         this.flashing = true;
 
                         var farg =  {
@@ -94,6 +102,29 @@
 
                         //Google Analytics
                         creator_ga('simulator', 'simulator.flash', 'simulator.flash');
+                      },
+
+                      do_monitor( )
+                      {
+                        this.running = true;
+
+                        var farg =  {
+                                      target_board: this.target_board,
+                                      target_port:  this.target_port,
+                                      assembly:     code_assembly,
+                                    } ;
+
+                        this_display = this;
+                        gateway_remote_monitor(this.flash_url + "/monitor", farg).then( function(data)  { 
+                                                                                                          this_display.display += data; 
+                                                                                                          this_display.running = false; 
+                                                                                                          var monitor = document.getElementById('textarea_display'); 
+                                                                                                          monitor.scrollTop = monitor.scrollHeight;
+                                                                                                          show_notification(data, 'danger') ;
+                                                                                                        } ) ;
+
+                        //Google Analytics
+                        creator_ga('simulator', 'simulator.monitor', 'simulator.monitor');
                       },
 
                       do_stop_flash( )
@@ -160,7 +191,24 @@
                     '       <b-container fluid align-h="center" class="mx-0 px-0">' +
                     '         <b-row cols="1" align-h="center">' +
                     '           <b-col class="pt-2">' +
-                    '             <label for="range-6">(3) Download the driver:</label>' +
+                    '             <label for="range-6">(3) Install python3 packages:</label>' +
+                    '             <b-card class="text-center">' +
+                    '               <b-row no-gutters>' +
+                    '                 <b-col md="12">' +
+                    '                   <b-card-text style="text-align: left;margin:2%;">' +
+                    '                     <code>pip3 install flask flask_cors</code>' +
+                    '                   </b-card-text>' +
+                    '                 </b-col>' +
+                    '               </b-row>' +
+                    '             </b-card>' +
+                    '           </b-col>' +
+                    '         </b-row>' +
+                    '       </b-container>' +
+                    ' ' +
+                    '       <b-container fluid align-h="center" class="mx-0 px-0">' +
+                    '         <b-row cols="1" align-h="center">' +
+                    '           <b-col class="pt-2">' +
+                    '             <label for="range-6">(4) Download the driver:</label>' +
                     '             <b-button class="btn btn-sm btn-block" variant="outline-primary" @click="download_driver"><span class="fas fa-download"></span> Download Driver</b-button>' +
                     '           </b-col>' +
                     '         </b-row>' +
@@ -169,7 +217,7 @@
                     '       <b-container fluid align-h="center" class="mx-0 px-0">' +
                     '         <b-row cols="1" align-h="center">' +
                     '           <b-col class="pt-2">' +
-                    '             <label for="range-6">(4) Run driver:</label>' +
+                    '             <label for="range-6">(5) Run driver:</label>' +
                     '             <b-card class="text-center">' +
                     '               <b-row no-gutters>' +
                     '                 <b-col md="12">' +
@@ -198,8 +246,8 @@
                     '         </b-row>' +
                     '       </b-container>' +
                     '     </b-tab>' +
+                    ' '+
                     '     <b-tab title="Run" active>' +
-                    ' ' +
                     '       <b-container fluid align-h="center" class="mx-0 px-0">' +
                     '         <b-row cols="1" align-h="center">' +
                     '           <b-col class="pt-2">' +
@@ -233,16 +281,31 @@
                     '       <b-container fluid align-h="center" class="mx-0 px-0">' +
                     '         <b-row cols="2" align-h="center">' +
                     '           <b-col class="pt-2">' +
-                    '             <b-button class="btn btn-sm btn-block" variant="primary" @click="do_flash" :pressed="flashing" :disabled="flashing">' +
+                    '             <b-button class="btn btn-sm btn-block" variant="primary" @click="do_flash" :pressed="flashing" :disabled="flashing || running">' +
                     '               <span v-if="!flashing"><span class="fas fa-bolt-lightning"></span> Flash</span>' +
                     '               <span v-if="flashing"><span class="fas fa-bolt-lightning"></span>  Flashing...</span>' +
                     '               <b-spinner small v-if="flashing"></b-spinner>' +
                     '             </b-button>' +
                     '           </b-col>' +
                     '           <b-col class="pt-2">' +
+                    '             <b-button class="btn btn-sm btn-block" variant="primary" @click="do_monitor" :pressed="running" :disabled="running || flashing">' +
+                    '               <span v-if="!running"><span class="fas fa-play"></span> Monitor</span>' +
+                    '               <span v-if="running"><span class="fas fa-play"></span>  Runing...</span>' +
+                    '               <b-spinner small v-if="running"></b-spinner>' +
+                    '             </b-button>' +
+                    '           </b-col>' +
+                    /*'           <b-col class="pt-2">' +
                     '             <b-button class="btn btn-sm btn-block" variant="outline-danger" @click="do_stop_flash" :disabled="!flashing">' +
                     '               <span><span class="fas fa-stop"></span> Stop</span>' +
                     '             </b-button>' +
+                    '           </b-col>' +*/
+                    '         </b-row>' +
+                    '       </b-container>' +
+                    ' ' +
+                    '       <b-container fluid align-h="center" class="mx-0 px-0">' +
+                    '         <b-row cols="1" align-h="center">' +
+                    '           <b-col class="pt-2">' +
+                    '             <span>To stop the program execution press ctrl + ] in the terminal</span>' +
                     '           </b-col>' +
                     '         </b-row>' +
                     '       </b-container>' +
@@ -286,6 +349,34 @@
   //
 
   async function gateway_remote_flash ( flash_url, flash_args )
+  {
+    var fetch_args =  {
+                        method:   'POST',
+                        headers:  {
+                                    'Content-type': 'application/json',
+                                    'Accept':       'application/json'
+                                  },
+                        body:     JSON.stringify(flash_args)
+                      } ;
+
+    try
+    {
+      var res  = await fetch(flash_url, fetch_args) ;
+      var jres = await res.json();
+
+      return jres.status
+    }
+    catch (err)
+    {
+      if (err.toString() == "TypeError: Failed to fetch") {
+        return "Please, execute 'python3 gateway.py' and connect your board first\n";
+      }
+
+      return err.toString() + "\n";
+    }
+  }
+
+  async function gateway_remote_monitor ( flash_url, flash_args )
   {
     var fetch_args =  {
                         method:   'POST',
