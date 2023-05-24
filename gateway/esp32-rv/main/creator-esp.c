@@ -81,7 +81,7 @@ void app_main(void)
     /////////
 
  
-    printf("Started programa... \n");
+    printf("Started program... \n");
     printf("-------------------\n");
 
     int x = esp_cpu_get_cycle_count();
