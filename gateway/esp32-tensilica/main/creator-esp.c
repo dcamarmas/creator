@@ -29,71 +29,71 @@ void main(void);
 // Falta el read string
 int _myecall_c(int a0, int a1)
 {
-	int res = 0;
-	char c;
+  int res = 0;
+  char c;
 
 
-        if (a0 == 1)   // print int
-                printf(">%d\n", a1);
-        
-        if (a0 == 4)  // print string
-		printf(">%s\n", (char *) a1);
+  if (a0 == 1)   // print int
+    printf(">%d\n", a1);
+    
+  if (a0 == 4)  // print string
+    printf(">%s\n", (char *) a1);
 
-        if (a0 == 11)  // print exit
-		printf(">%c\n", a1);
+  if (a0 == 11)  // print exit
+    printf(">%c\n", a1);
 
-        if (a0 == 5)  // read int
-		scanf("%d", &res);
+  if (a0 == 5)  // read int
+    scanf("%d", &res);
 
-        if (a0 == 8){ // read string
-		char *s;
+  if (a0 == 8){ // read string
+    char *s;
 
-		s = (char *) a1;
-		scanf("%c", s);
-		res = (int) s;
-	}
-	
-        if (a0 == 12){ // read char
-		//scanf("%c", &c);
-		read(0, &c, 1);
-		res = (int) c;
-	}
+    s = (char *) a1;
+    scanf("%c", s);
+    res = (int) s;
+  }
+  
+  if (a0 == 12){ // read char
+    //scanf("%c", &c);
+    read(0, &c, 1);
+    res = (int) c;
+  }
 
-	if (a0 == 10)
-		_exit(0);
+  if (a0 == 10)
+    _exit(0);
 
-        return res;
+  return res;
 }
 
 int _esp_cpu_get_cycle_count(void) {
-	return(esp_cpu_get_cycle_count());
+  return(esp_cpu_get_cycle_count());
 }
 
 void app_main(void)
 {
-    /////////// para leer del monitor
+  /////////// para leer del monitor
    // setvbuf(stdin, NULL, _IONBF, 0);
-    //setvbuf(stdout, NULL, _IONBF, 0);
-    ESP_ERROR_CHECK(uart_driver_install(CONFIG_ESP_CONSOLE_UART_NUM, 256, 0, 0, NULL, 0));
-    esp_vfs_dev_uart_use_driver(CONFIG_ESP_CONSOLE_UART_NUM);
-    esp_vfs_dev_uart_port_set_rx_line_endings(CONFIG_ESP_CONSOLE_UART_NUM, ESP_LINE_ENDINGS_CR);
-    esp_vfs_dev_uart_port_set_tx_line_endings(CONFIG_ESP_CONSOLE_UART_NUM, ESP_LINE_ENDINGS_CRLF);
-    /////////
+  //setvbuf(stdout, NULL, _IONBF, 0);
+  ESP_ERROR_CHECK(uart_driver_install(CONFIG_ESP_CONSOLE_UART_NUM, 256, 0, 0, NULL, 0));
+  esp_vfs_dev_uart_use_driver(CONFIG_ESP_CONSOLE_UART_NUM);
+  esp_vfs_dev_uart_port_set_rx_line_endings(CONFIG_ESP_CONSOLE_UART_NUM, ESP_LINE_ENDINGS_CR);
+  esp_vfs_dev_uart_port_set_tx_line_endings(CONFIG_ESP_CONSOLE_UART_NUM, ESP_LINE_ENDINGS_CRLF);
+  /////////
 
  
-    printf("Started programa... \n");
-    printf("-------------------\n");
+  printf("Started program... \n");
+  printf("-------------------\n");
 
-    int x = esp_cpu_get_cycle_count();
+  int x = esp_cpu_get_cycle_count();
 
-    main();
+  main();
  
-    x= esp_cpu_get_cycle_count() - x ;
+  x= esp_cpu_get_cycle_count() - x ;
 
-    printf("Finished program: %d cycles \n", x);
-    printf("-------------------\n");
+  printf("Finished program: %d cycles \n", x);
+  printf("-------------------\n");
 
-    return;
+  return;
 
 }
 
