@@ -8,6 +8,9 @@
 .text
 
      main: 
+           addi sp, sp, -4
+           sw ra, 0(sp)
+
            # t1 = factorial(5)
            li  a0, 5
            jal x1, factorial
@@ -16,9 +19,10 @@
            li  a7, 1
            ecall
 
-           # exit
-           li a7, 10
-           ecall
+           # return
+           lw ra, 0(sp)
+           addi sp, sp, 4
+           jr ra
 
 
 factorial:
@@ -49,4 +53,3 @@ factorial:
 
            # return t0
            jr ra
-
