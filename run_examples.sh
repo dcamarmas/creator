@@ -6,7 +6,7 @@
 #
 
 echo " MIPS examples:"
-MIPS_TEST="2 3 4 5 6 7 8 11"
+MIPS_TEST="2 3 4 5 6 7 8 11 12"
 for I in $MIPS_TEST;
 do
   echo " * ./examples/MIPS/example$I... "
@@ -19,7 +19,7 @@ done
 #
 
 echo " RISC-V:"
-RV_TEST="2 5 6"
+RV_TEST="2 3 4 5 6 7 8 11 12"
 for I in $RV_TEST;
 do
   echo " * ./examples/riscv/example$I... "
