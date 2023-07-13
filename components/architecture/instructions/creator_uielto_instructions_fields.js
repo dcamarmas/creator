@@ -159,7 +159,7 @@
                 '                              v-if="typeof(instruction.fields[field_index].stopbit) !== \'object\'"' +
                 '                              title="Field end bit">' +
                 '                </b-form-input>' +
-                '                <b-form-input v-else v-for="(j, ind) in iinstruction.fields[field_index].stopbit"' +
+                '                <b-form-input v-else v-for="(j, ind) in instruction.fields[field_index].stopbit"' +
                 '                              type="number" min="0" :max="32 * instruction.nwords - 1"' +
                 '                              v-model="instruction.fields[field_index].stopbit[ind]"' +
                 '                              required' +
