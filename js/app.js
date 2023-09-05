@@ -23,7 +23,6 @@
 
 
 /*General*/
-var toHandler = null;
 
 
 /****************
