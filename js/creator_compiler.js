@@ -1737,7 +1737,7 @@ function data_segment_compiler()
                       return packCompileError('m17', "", 'error', "danger") ;
                     }
 
-                    data_address = creator_memory_storestring(string, string.length, data_address, label, "asciiz", align);
+                    data_address = creator_memory_storestring(string, string.length, data_address, label, "asciiz", align) + 1;
 
                     console_log("ascii_null_end Terminado");
 
