@@ -465,8 +465,7 @@ function assembly_compiler()
         /*Start of compilation*/
         first_token();
         if (get_token() == null) {
-            hide_loading();
-            return packCompileError('m0', 'Please enter the assembly code before compiling', 'warning', 'danger') ;
+          return packCompileError('m0', 'Please enter the assembly code before compiling', 'warning', 'danger') ;
         }
 
         token = get_token();
@@ -1737,7 +1736,7 @@ function data_segment_compiler()
                       return packCompileError('m17', "", 'error', "danger") ;
                     }
 
-                    data_address = creator_memory_storestring(string, string.length, data_address, label, "asciiz", align);
+                    data_address = creator_memory_storestring(string, string.length, data_address, label, "asciiz", align) + 1;
 
                     console_log("ascii_null_end Terminado");
 
