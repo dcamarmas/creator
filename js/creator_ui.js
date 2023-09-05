@@ -48,26 +48,28 @@
    *  Loading
    */
 
+  var loading_handler = null;
+
   function show_loading()
   {
      // if loading is programmed, skip
-     if (toHandler != null) {
+     if (loading_handler != null) {
          return ;
      }
 
      // after half second show the loading spinner
-     toHandler = setTimeout(function(){
+     loading_handler = setTimeout(function(){
              $("#loading").show() ;
-             toHandler = null ;
+             loading_handler = null ;
           }, 500) ;
   }
 
   function hide_loading ( )
   {
       // if loading is programmed, cancel it
-      if (toHandler != null) {
-          clearTimeout(toHandler);
-          toHandler = null;
+      if (loading_handler != null) {
+          clearTimeout(loading_handler);
+          loading_handler = null;
       }
 
       // disable loading spinner

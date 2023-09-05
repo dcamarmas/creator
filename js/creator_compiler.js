@@ -465,8 +465,7 @@ function assembly_compiler()
         /*Start of compilation*/
         first_token();
         if (get_token() == null) {
-            hide_loading();
-            return packCompileError('m0', 'Please enter the assembly code before compiling', 'warning', 'danger') ;
+          return packCompileError('m0', 'Please enter the assembly code before compiling', 'warning', 'danger') ;
         }
 
         token = get_token();
