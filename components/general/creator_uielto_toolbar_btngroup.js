@@ -22,6 +22,8 @@
 
   /* jshint esversion: 6 */
 
+  var this_compiling = null;
+
   var uielto_toolbar_btngroup = {
 
         props:      {
@@ -32,9 +34,10 @@
 
         data:       function () {
                       return {
+                        compiling: false,
                         reset_disable: false,
                         instruction_disable: false,
-                        run_disable = false,
+                        run_disable: false,
                         stop_disable: true
                       }
                     },
@@ -119,7 +122,9 @@
                       //Compile assembly code
                       assembly_compiler(code)
                       {
-                        show_loading();
+                        //Change buttons status
+                        this_compiling = this;
+                        this_compiling.compiling = true;
 
                         promise = new Promise((resolve, reject) => {
                           setTimeout(function() {
@@ -156,7 +161,10 @@
                             }
 
                             //show error/warning
-                            hide_loading();
+                            
+                            //Change buttons status
+                            this_compiling.compiling = false;
+
                             switch (ret.type)
                             {
                               case "error":
@@ -589,6 +597,7 @@
             '          @click="assembly_compiler()">' +
             '  <span class="fas fa-sign-in-alt"></span>' +
             '  Compile/Linked' +
+            ' <b-spinner small v-if="compiling" class="ml-3"></b-spinner>' +
             '</b-button>'
   }
 
