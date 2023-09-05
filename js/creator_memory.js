@@ -916,6 +916,6 @@ function creator_memory_storestring ( string, string_length, data_address, label
             data_tag.push({tag: label, addr: data_address});
         }
 
-        return main_memory_storedata(data_address, string, string_length, label, string, string, type) + 1;
+        return main_memory_storedata(data_address, string, string_length, label, string, string, type);
 }
 

@@ -3021,7 +3021,7 @@ function creator_memory_storestring ( string, string_length, data_address, label
             data_tag.push({tag: label, addr: data_address});
         }
 
-        return main_memory_storedata(data_address, string, string_length, label, string, string, type) + 1;
+        return main_memory_storedata(data_address, string, string_length, label, string, string, type);
 }
 
 
@@ -3491,8 +3491,7 @@ function assembly_compiler()
         /*Start of compilation*/
         first_token();
         if (get_token() == null) {
-            hide_loading();
-            return packCompileError('m0', 'Please enter the assembly code before compiling', 'warning', 'danger') ;
+          return packCompileError('m0', 'Please enter the assembly code before compiling', 'warning', 'danger') ;
         }
 
         token = get_token();
@@ -4763,7 +4762,7 @@ function data_segment_compiler()
                       return packCompileError('m17', "", 'error', "danger") ;
                     }
 
-                    data_address = creator_memory_storestring(string, string.length, data_address, label, "asciiz", align);
+                    data_address = creator_memory_storestring(string, string.length, data_address, label, "asciiz", align) + 1;
 
                     console_log("ascii_null_end Terminado");
 
