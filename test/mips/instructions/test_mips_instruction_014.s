@@ -9,6 +9,7 @@
     .align 1
     h1:		.half 65535
     b2:		.space 1
+    .align 1
     h2:		.space 2
 
 .text
