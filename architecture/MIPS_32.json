@@ -9,6 +9,10 @@
       "value": "32"
     },
     {
+      "name": "Description",
+      "value": "The MIPS processor was developed by Dr.John Hennessey and his graduate students at Stanford University in the early 1980s. It is currently one of the major processors in the embedded processor market."
+    },
+    {
       "name": "Data Format",
       "value": "big_endian"
     },

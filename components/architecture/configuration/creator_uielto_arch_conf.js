@@ -81,7 +81,7 @@
                 '      </template>' +
                 '' +
                 '      <template v-slot:cell(value)="row">' +
-                '        <span v-if="row.item.name == \'Name\' || row.item.name == \'Bits\' || row.item.name == \'Main Function\'">' +
+                '        <span v-if="row.item.name == \'Name\' || row.item.name == \'Bits\' || row.item.name == \'Description\' || row.item.name == \'Main Function\'">' +
                 '          {{row.item.value}}' +
                 '        </span>' +
                 '        <span v-if="row.item.value == \'big_endian\'">' +
