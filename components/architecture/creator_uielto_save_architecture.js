@@ -77,7 +77,7 @@
 
                     //Add the new architecture on CREATOR
                     var name_arch = file_name.replace("\.json", "");
-                    load_architectures_available.push({name: name_arch, img: "./images/personalized_logo.png", alt: name_arch + " logo" , id:"select_conf"+name_arch , description: "" , available: 1});
+                    load_architectures_available.push({name: name_arch, img: "./images/personalized_logo.png", alt: name_arch + " logo" , id:"select_conf"+name_arch , description: architecture.arch_conf[2].value , available: 1});
                     load_architectures.push({id: name_arch, architecture: text_2_write});
 
                     //Refresh cache values

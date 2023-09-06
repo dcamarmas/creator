@@ -82,7 +82,7 @@ function execute_instruction ( )
     {
       for (var i = 0; i < instructions.length; i++)
       {
-        if (instructions[i].Label == architecture.arch_conf[4].value) {
+        if (instructions[i].Label == architecture.arch_conf[5].value) {
           //draw.success.push(execution_index) ;
           //architecture.components[0].elements[0].value = bi_intToBigInt(instructions[i].Address, 10); //TODO
           writeRegister(bi_intToBigInt(instructions[i].Address, 10), 0, 0);
@@ -91,7 +91,7 @@ function execute_instruction ( )
         }
         else if (i == instructions.length-1) {
           execution_index = -1;
-          return packExecute(true, 'Label "'+ architecture.arch_conf[4].value +'" not found', 'danger', null);
+          return packExecute(true, 'Label "'+ architecture.arch_conf[5].value +'" not found', 'danger', null);
         }
       }
     }

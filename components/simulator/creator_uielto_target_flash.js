@@ -66,7 +66,7 @@
                       {
                         var link = document.createElement("a");
                         link.download = "driver.zip";
-                        link.href = (window.location.href.split('?')[0]).split('#')[0] + "/gateway/" + target_board + ".zip";
+                        link.href = (window.location.href.split('?')[0]).split('#')[0] + "/gateway/" + this.target_board + ".zip";
                         document.body.appendChild(link);
                         link.click();
                         document.body.removeChild(link);
