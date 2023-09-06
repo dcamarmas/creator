@@ -44,30 +44,30 @@
                   //Loads the configuration values from cache
                   get_configuration()
                   {
-                    if(localStorage.getItem("stack_total_list") != null){
-                      app._data.stack_total_list = parseInt(localStorage.getItem("stack_total_list"));
+                    if(localStorage.getItem("conf_stack_total_list") != null){
+                      app._data.stack_total_list = parseInt(localStorage.getItem("conf_stack_total_list"));
                     }
 
-                    if(localStorage.getItem("autoscroll") != null){
-                      app._data.autoscroll = (localStorage.getItem("autoscroll") === "true");
+                    if(localStorage.getItem("conf_autoscroll") != null){
+                      app._data.autoscroll = (localStorage.getItem("conf_autoscroll") === "true");
                     }
 
-                    if(localStorage.getItem("notification_time") != null){
-                      app._data.notification_time = parseInt(localStorage.getItem("notification_time"));
+                    if(localStorage.getItem("conf_notification_time") != null){
+                      app._data.notification_time = parseInt(localStorage.getItem("conf_notification_time"));
                     }
 
-                    if(localStorage.getItem("instruction_help_size") != null){
-                      app._data.instruction_help_size = parseInt(localStorage.getItem("instruction_help_size"));
+                    if(localStorage.getItem("conf_instruction_help_size") != null){
+                      app._data.instruction_help_size = parseInt(localStorage.getItem("conf_instruction_help_size"));
                     }
                   },
 
                   //Verify if dark mode was activated from cache
                   get_dark_mode()
                   {
-                    if(localStorage.getItem("dark_mode") != null)
+                    if(localStorage.getItem("conf_dark_mode") != null)
                     {
-                      document.getElementsByTagName("body")[0].style = localStorage.getItem("dark_mode");
-                      if(localStorage.getItem("dark_mode") == ""){
+                      document.getElementsByTagName("body")[0].style = localStorage.getItem("conf_dark_mode");
+                      if(localStorage.getItem("conf_dark_mode") == ""){
                         app._data.dark = false;
                       }
                       else{
@@ -112,7 +112,7 @@
 
                     app._data.stack_total_list = this._props.stack_total_list; 
                      
-                    localStorage.setItem("stack_total_list", this._props.stack_total_list);
+                    localStorage.setItem("conf_stack_total_list", this._props.stack_total_list);
                
                     //Google Analytics
                     creator_ga('configuration', 'configuration.stack_total_list', 'configuration.stack_total_list.speed_' + (prev_stack_total_list > this._props.stack_total_list).toString()) ;
@@ -122,7 +122,7 @@
                   change_autoscroll()
                   {
                     this._props.autoscroll= !this._props.autoscroll;
-                    localStorage.setItem("autoscroll", this._props.autoscroll);
+                    localStorage.setItem("conf_autoscroll", this._props.autoscroll);
 
                     app._data.autoscroll = this._props.autoscroll; 
                 
@@ -152,7 +152,7 @@
 
                     app._data.notification_time = this._props.notification_time; 
                
-                    localStorage.setItem("notification_time", this._props.notification_time);
+                    localStorage.setItem("conf_notification_time", this._props.notification_time);
                
                     //Google Analytics
                     creator_ga('configuration', 'configuration.notification_time', 'configuration.notification_time.time_' + (prev_notification_time > this._props.notification_time).toString());
@@ -180,7 +180,7 @@
 
                     app._data.instruction_help_size = this._props.instruction_help_size; 
                
-                    localStorage.setItem("instruction_help_size", this._props.instruction_help_size);
+                    localStorage.setItem("conf_instruction_help_size", this._props.instruction_help_size);
                
                     //Google Analytics
                     creator_ga('configuration', 'configuration.instruction_help_size', 'configuration.instruction_help_size.size_' + (prev_instruction_help_size > this._props.instruction_help_size).toString());
@@ -202,7 +202,7 @@
                     }
                 
                     document.getElementsByTagName("body")[0].style.fontSize = this._props.fontSize + "px";
-                    //localStorage.setItem("fontSize", this._props.fontSize);
+                    //localStorage.setItem("conf_fontSize", this._props.fontSize);
                   },*/
 
                   //Dark  Mode
@@ -212,12 +212,12 @@
                     if (this._props.dark)
                     {
                       document.getElementsByTagName("body")[0].style = "filter: invert(88%) hue-rotate(160deg) !important; background-color: #111 !important;";
-                      localStorage.setItem("dark_mode", "filter: invert(88%) hue-rotate(160deg) !important; background-color: #111 !important;");
+                      localStorage.setItem("conf_dark_mode", "filter: invert(88%) hue-rotate(160deg) !important; background-color: #111 !important;");
                     }
                     else
                     {
                       document.getElementsByTagName("body")[0].style = "";
-                      localStorage.setItem("dark_mode", "");
+                      localStorage.setItem("conf_dark_mode", "");
                     }
 
                     app._data.dark = this._props.dark; 
