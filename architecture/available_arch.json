@@ -7,7 +7,7 @@
     "alt": "RISC-V",
     "id": "select_confRISV",
     "examples":["default"],
-    "description": "RISC-V is an instruction set architecture (ISA) whose design is based on the RISC type and its hardware is free. This architecture was created in 2010 at the University of California, Berkeley.",
+    "description": "RISC-V is an instruction set architecture (ISA) is based on the RISC type and its hardware is free. This architecture was created in 2010 at the University of California, Berkeley.",
     "guide":"./docs/risc_v_reference_guide.pdf",
     "available": 1
   },

@@ -120,6 +120,17 @@
                 '      </b-form-input>' +
                 '    </b-form-group>' +
                 '' +
+                '    </b-form-group>' +
+                '    <b-form-group v-if="arch_field == \'Description\'">' +
+                '      <span>{{arch_field}}:</span>' +
+                '        <b-form-textarea v-model="arch_field_value" ' +
+                '                         no-resize ' +
+                '                         rows="1" ' +
+                '                         max-rows="4"' +
+                '                         title="Architecture Definition">' +
+                '        </b-form-textarea>' +
+                '    </b-form-group>' +
+                '' +
                 '    <b-form-group v-if="arch_field == \'Data Format\'">' +
                 '      <span>{{arch_field}}:</span>' +
                 '      <b-form-select :options="actionTypes" ' +

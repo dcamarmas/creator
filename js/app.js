@@ -352,7 +352,6 @@ try
       target_board: "esp32c3", //TODO: include into flash component - modal info
       target_port: "", //TODO: include into flash component - modal info
       flash_url: "http://localhost:8080", //TODO: include into flash component - modal info
-
     },
 
 
