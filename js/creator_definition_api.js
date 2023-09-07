@@ -417,7 +417,7 @@ function capi_callconv_begin ( addr )
 	var function_name = "" ;
 
 	// 1) Passing Convection enable?
-	if (architecture.arch_conf[5].value === 0) {
+	if (architecture.arch_conf[6].value === 0) {
 		return;
 	}
 
@@ -436,7 +436,7 @@ function capi_callconv_begin ( addr )
 function capi_callconv_end ()
 {
 	// 1) Passing Convection enable?
-	if (architecture.arch_conf[5].value === 0) {
+	if (architecture.arch_conf[6].value === 0) {
 		return;
 	}
 

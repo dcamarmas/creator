@@ -343,6 +343,15 @@ try
       display: '',
       keyboard: '',
       enter: null, // Draw text area border in read
+
+      //
+      //Flash
+      //
+
+      target_ports: { Win: 'COM1', Mac: '/dev/cu.usbserial-210', Linux: '/dev/ttyUSB0' }, //TODO: include into flash component - modal info
+      target_board: "esp32c3", //TODO: include into flash component - modal info
+      target_port: "", //TODO: include into flash component - modal info
+      flash_url: "http://localhost:8080", //TODO: include into flash component - modal info
     },
 
 
@@ -356,7 +365,7 @@ try
       uielto_preload_architecture.methods.load_arch_available();
       this.detect_os();
       this.detect_browser();
-      
+      this.get_target_port();
     },
 
 
@@ -491,6 +500,12 @@ try
         creator_ga('execute', 'execute.exception', 'execute.exception.' + error);
 
         return;
+      },
+
+      //Get target por by SO
+      get_target_port()
+      {
+        this.target_port = this.target_ports[this.os];
       },
     },
   });

@@ -9,6 +9,10 @@
       "value": "32"
     },
     {
+      "name": "Description",
+      "value": "RISC-V is an instruction set architecture (ISA) is based on the RISC type and its hardware is free. This architecture was created in 2010 at the University of California, Berkeley."
+    },
+    {
       "name": "Data Format",
       "value": "big_endian"
     },
