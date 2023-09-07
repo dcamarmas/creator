@@ -27,7 +27,9 @@
   var uielto_flash = {
         props:      {
                       id:             { type: String, required: true },
-                      os:             { type: String, required: true }
+                      target_board:   { type: String, required: true },
+                      target_port:    { type: String, required: true },
+                      flash_url:      { type: String, required: true }
                     },
 
         data:       function () {
@@ -40,11 +42,11 @@
                                         //{ text: 'ESP32-S3 (MIPS-32)', value: 'esp32s3' },
                                         ],
 
-                        target_ports  = { Win: 'COM1', Mac: '/dev/cu.usbserial-210', Linux: '/dev/ttyUSB0' },
+                        /*target_ports  = { Win: 'COM1', Mac: '/dev/cu.usbserial-210', Linux: '/dev/ttyUSB0' },
 
                         target_board  = "esp32c3",
                         target_port   = this.get_target_port(),
-                        flash_url     = "http://localhost:8080",
+                        flash_url     = "http://localhost:8080",*/
 
                         flashing = false,
                         running  = false,
@@ -54,17 +56,17 @@
                     },
 
         methods:    {
-                      get_target_port()
+                      /*get_target_port()
                       {
                         return target_ports[this._props.os];
-                      },
+                      },*/
 
                       //Download driver
                       download_driver()
                       {
                         var link = document.createElement("a");
                         link.download = "driver.zip";
-                        link.href = (window.location.href.split('?')[0]).split('#')[0] + "/gateway/" + target_board + ".zip";
+                        link.href = (window.location.href.split('?')[0]).split('#')[0] + "/gateway/" + this.target_board + ".zip";
                         document.body.appendChild(link);
                         link.click();
                         document.body.removeChild(link);
@@ -76,6 +78,8 @@
 
                       do_flash( )
                       {
+                        this.save();
+
                         if(instructions.length == 0)
                         {
                           show_notification("Compile a program first", 'danger') ;
@@ -106,6 +110,8 @@
 
                       do_monitor( )
                       {
+                        this.save();
+
                         this.running = true;
 
                         var farg =  {
@@ -129,6 +135,8 @@
 
                       do_stop_flash( )
                       {
+                        this.save();
+                        
                         this.flashing = false;
 
                         this_display = this;
@@ -144,6 +152,13 @@
                         creator_ga('simulator', 'simulator.stop_flash', 'simulator.stop_flash');
                       },
 
+                      save( )
+                      {
+                        app._data.target_board = this._props.target_board;
+                        app._data.target_port = this._props.target_port;
+                        app._data.flash_url = this._props.flash_url;
+                      },
+
                       clean( )
                       {
                         this.display = "";
@@ -153,7 +168,7 @@
       template:     ' <b-modal :id="id"' +
                     '          title="Target Board Flash"' +
                     '          hide-footer' +
-                    '          >' +
+                    '          @hidden="save">' +
                     ' ' +
                     '   <b-container fluid align-h="center" class="mx-0 px-0">' +
                     '     <b-row cols="1" align-h="center">' +
