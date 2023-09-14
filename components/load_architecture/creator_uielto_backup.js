@@ -25,18 +25,28 @@
   var uielto_backup = {
 
     props:      {
-                  id:          { type: String, required: true },
-                  backup_date: { type: String, required: true }
+                  id:          { type: String, required: true }
                 },
 
     data:       function () {
                   return {
                     //Show modal
-                    show_modal: false
+                    show_modal: false,
+
+                    backup_date: localStorage.getItem("backup_date")
                   }
                 },
 
     methods:    {
+                  //Show backup modal
+                  backup_modal(env){
+                    if (typeof(Storage) !== "undefined"){
+                      if(localStorage.getItem("backup_arch") != null && localStorage.getItem("backup_asm") != null && localStorage.getItem("backup_date") != null){
+                        env.$root.$emit('bv::show::modal', 'copy');
+                      }
+                    }
+                  },
+
                   //Load backup from cache
                   load_copy()
                   {
