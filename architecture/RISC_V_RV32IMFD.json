@@ -1023,7 +1023,7 @@
           "valueField": "000"
         }
       ],
-      "definition": "rd = rs1 + inm;\n",
+      "definition": "rd = rs1 + inm;",
       "separated": [
         false,
         false,
@@ -1136,7 +1136,7 @@
           "valueField": "111"
         }
       ],
-      "definition": "rd = rs1 & capi_int2uint(inm);\n",
+      "definition": "rd = rs1 & capi_int2uint(inm);",
       "separated": [
         false,
         false,
@@ -1588,7 +1588,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "if (rs2 != 0)\n { rd = (rs1 >> 0) / (rs2 >> 0); }\n else { capi_raise('Division by zero not allowed'); }\n",
+      "definition": "if (rs2 != 0)\n { rd = (rs1 >> 0) / (rs2 >> 0); }\n else { capi_raise('Division by zero not allowed'); }",
       "separated": [
         false,
         false,
@@ -2451,7 +2451,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "if (rs2 != 0)\n { rd = rs1 / rs2; }\n else { capi_raise('Division by zero not allowed'); }\n",
+      "definition": "if (rs2 != 0)\n { rd = rs1 / rs2; }\n else { capi_raise('Division by zero not allowed'); }",
       "separated": [
         false,
         false,
@@ -2504,7 +2504,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "if (rs2 != 0)\n { rd = rs1 / rs2; }\n else { capi_raise('Division by zero not allowed'); }\n",
+      "definition": "if (rs2 != 0)\n { rd = rs1 / rs2; }\n else { capi_raise('Division by zero not allowed'); }",
       "separated": [
         false,
         false,
@@ -3629,7 +3629,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = rs1;",
+      "definition": "rd = capi_uint2float32(rs1);",
       "separated": [
         false,
         false,
@@ -3684,7 +3684,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = rs1;",
+      "definition": "rd = capi_float322uint(rs1);",
       "separated": [
         false,
         false,
@@ -5377,7 +5377,7 @@
           "valueField": "110"
         }
       ],
-      "definition": "rd = rs1 | inm;\n",
+      "definition": "rd = rs1 | inm;",
       "separated": [
         false,
         false,
@@ -5418,7 +5418,7 @@
           "valueField": "010"
         }
       ],
-      "definition": "rd = capi_get_clk_cycles();\n",
+      "definition": "rd = capi_get_clk_cycles();",
       "help": ""
     },
     {
@@ -6412,7 +6412,7 @@
           "valueField": "100"
         }
       ],
-      "definition": "rd = rs1 ^ inm;\n",
+      "definition": "rd = rs1 ^ inm;",
       "separated": [
         false,
         false,
@@ -6830,7 +6830,7 @@
           "type": "inm-unsigned"
         }
       ],
-      "definition": "no_ret_op{tmp=Field.2.(31,0).int - reg.pc;\ntmp_hi='0x'+(((tmp&0xFFFFF000)>>12) + ((tmp&0x00000400)>>11)).toString(16);\ntmp_low='0x'+(tmp&0x00000FFF).toString(16)};\nauipc rd op{tmp_hi};\naddi rd rd op{tmp_low};\n"
+      "definition": "no_ret_op{tmp=Field.2.(31,0).int - reg.pc;\ntmp_hi='0x'+(((tmp&0xFFFFF000)>>12) + ((tmp&0x00000400)>>11)).toString(16);\ntmp_low='0x'+(tmp&0x00000FFF).toString(16)};\nauipc rd op{tmp_hi};\naddi rd rd op{tmp_low};"
     },
     {
       "name": "li",
