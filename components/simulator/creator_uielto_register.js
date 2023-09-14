@@ -127,8 +127,8 @@
                           if (typeof register.name[1] === "undefined"){
                             return register.name[0];
                           }
-                          
-                          return register.name[1];
+
+                          return register.name.slice(1,register.name.length).join(' | ');
                         case "all":
                           return register.name.join(' | ');
                       }

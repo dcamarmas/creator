@@ -184,8 +184,8 @@
       "elements": [
         {
           "name": [
-            "zero",
-            "0"
+            "0",
+            "zero"
           ],
           "nbits": "32",
           "value": 0,
@@ -196,8 +196,8 @@
         },
         {
           "name": [
-            "at",
-            "1"
+            "1",
+            "at"
           ],
           "nbits": "32",
           "value": 0,
@@ -209,8 +209,8 @@
         },
         {
           "name": [
-            "v0",
-            "2"
+            "2",
+            "v0"
           ],
           "nbits": "32",
           "value": 0,
@@ -222,8 +222,8 @@
         },
         {
           "name": [
-            "v1",
-            "3"
+            "3",
+            "v1"
           ],
           "nbits": "32",
           "value": 0,
@@ -235,8 +235,8 @@
         },
         {
           "name": [
-            "a0",
-            "4"
+            "4",
+            "a0"
           ],
           "nbits": "32",
           "value": 0,
@@ -248,8 +248,8 @@
         },
         {
           "name": [
-            "a1",
-            "5"
+            "5",
+            "a1"
           ],
           "nbits": "32",
           "value": 0,
@@ -261,8 +261,8 @@
         },
         {
           "name": [
-            "a2",
-            "6"
+            "6",
+            "a2"
           ],
           "nbits": "32",
           "value": 0,
@@ -274,8 +274,8 @@
         },
         {
           "name": [
-            "a3",
-            "7"
+            "7",
+            "a3"
           ],
           "nbits": "32",
           "value": 0,
@@ -287,8 +287,8 @@
         },
         {
           "name": [
-            "t0",
-            "8"
+            "8",
+            "t0"
           ],
           "nbits": "32",
           "value": 0,
@@ -300,8 +300,8 @@
         },
         {
           "name": [
-            "t1",
-            "9"
+            "9",
+            "t1"
           ],
           "nbits": "32",
           "value": 0,
@@ -313,8 +313,8 @@
         },
         {
           "name": [
-            "t2",
-            "10"
+            "10",
+            "t2"
           ],
           "nbits": "32",
           "value": 0,
@@ -326,8 +326,8 @@
         },
         {
           "name": [
-            "t3",
-            "11"
+            "11",
+            "t3"
           ],
           "nbits": "32",
           "value": 0,
@@ -339,8 +339,8 @@
         },
         {
           "name": [
-            "t4",
-            "12"
+            "12",
+            "t4"
           ],
           "nbits": "32",
           "value": 0,
@@ -352,8 +352,8 @@
         },
         {
           "name": [
-            "t5",
-            "13"
+            "13",
+            "t5"
           ],
           "nbits": "32",
           "value": 0,
@@ -365,8 +365,8 @@
         },
         {
           "name": [
-            "t6",
-            "14"
+            "14",
+            "t6"
           ],
           "nbits": "32",
           "value": 0,
@@ -378,8 +378,8 @@
         },
         {
           "name": [
-            "t7",
-            "15"
+            "15",
+            "t7"
           ],
           "nbits": "32",
           "value": 0,
@@ -391,8 +391,8 @@
         },
         {
           "name": [
-            "s0",
-            "16"
+            "16",
+            "s0"
           ],
           "nbits": "32",
           "value": 0,
@@ -405,8 +405,8 @@
         },
         {
           "name": [
-            "s1",
-            "17"
+            "17",
+            "s1"
           ],
           "nbits": "32",
           "value": 0,
@@ -419,8 +419,8 @@
         },
         {
           "name": [
-            "s2",
-            "18"
+            "18",
+            "s2"
           ],
           "nbits": "32",
           "value": 0,
@@ -433,8 +433,8 @@
         },
         {
           "name": [
-            "s3",
-            "19"
+            "19",
+            "s3"
           ],
           "nbits": "32",
           "value": 0,
@@ -447,8 +447,8 @@
         },
         {
           "name": [
-            "s4",
-            "20"
+            "20",
+            "s4"
           ],
           "nbits": "32",
           "value": 0,
@@ -461,8 +461,8 @@
         },
         {
           "name": [
-            "s5",
-            "21"
+            "21",
+            "s5"
           ],
           "nbits": "32",
           "value": 0,
@@ -475,8 +475,8 @@
         },
         {
           "name": [
-            "s6",
-            "22"
+            "22",
+            "s6"
           ],
           "nbits": "32",
           "value": 0,
@@ -489,8 +489,8 @@
         },
         {
           "name": [
-            "s7",
-            "23"
+            "23",
+            "s7"
           ],
           "nbits": "32",
           "value": 0,
@@ -503,8 +503,8 @@
         },
         {
           "name": [
-            "t8",
-            "24"
+            "24",
+            "t8"
           ],
           "nbits": "32",
           "value": 0,
@@ -516,8 +516,8 @@
         },
         {
           "name": [
-            "t9",
-            "25"
+            "25",
+            "t9"
           ],
           "nbits": "32",
           "value": 0,
@@ -529,8 +529,8 @@
         },
         {
           "name": [
-            "k0",
-            "26"
+            "26",
+            "k0"
           ],
           "nbits": "32",
           "value": 0,
@@ -542,8 +542,8 @@
         },
         {
           "name": [
-            "k1",
-            "27"
+            "27",
+            "k1"
           ],
           "nbits": "32",
           "value": 0,
@@ -555,8 +555,8 @@
         },
         {
           "name": [
-            "gp",
-            "28"
+            "28",
+            "gp"
           ],
           "nbits": "32",
           "value": 0,
@@ -569,8 +569,8 @@
         },
         {
           "name": [
-            "sp",
-            "29"
+            "29",
+            "sp"
           ],
           "nbits": "32",
           "value": 268435452,
@@ -583,8 +583,8 @@
         },
         {
           "name": [
-            "fp",
-            "30"
+            "30",
+            "fp"
           ],
           "nbits": "32",
           "value": 0,
@@ -597,8 +597,8 @@
         },
         {
           "name": [
-            "ra",
-            "31"
+            "31",
+            "ra"
           ],
           "nbits": "32",
           "value": 4294967295,
@@ -1392,7 +1392,7 @@
           "valueField": "100000"
         }
       ],
-      "definition": "var isover = capi_arithmetic_overflow(reg1, reg2, reg1+reg2);\n if (!isover)\n { reg3 = reg1 + reg2; }\n else\n { capi_raise('Integer Overflow'); }\n"
+      "definition": "var isover = capi_arithmetic_overflow(reg1, reg2, reg1+reg2);\n if (!isover)\n { reg3 = reg1 + reg2; }\n else\n { capi_raise('Integer Overflow'); }"
     },
     {
       "name": "add.d",
@@ -1540,7 +1540,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "var isover = capi_arithmetic_overflow(reg1, val, reg1+val);\n if (!isover)\n { reg2 = reg1 + val; }\n else\n { capi_raise('Integer Overflow'); }\n"
+      "definition": "var isover = capi_arithmetic_overflow(reg1, val, reg1+val);\n if (!isover)\n { reg2 = reg1 + val; }\n else\n { capi_raise('Integer Overflow'); }"
     },
     {
       "name": "addiu",
@@ -2859,7 +2859,7 @@
           "valueField": "011010"
         }
       ],
-      "definition": "if (rt != 0)\n { var cociente = (capi_uint2int(rs) / capi_uint2int(rt));\n if (cociente < 0) { rd = Math.ceil(cociente); } else { rd = Math.floor(cociente); }\n }\n else\n { capi_raise('Division by zero not allowed'); }\n"
+      "definition": "if (rt != 0)\n { var cociente = (capi_uint2int(rs) / capi_uint2int(rt));\n if (cociente < 0) { rd = Math.ceil(cociente); } else { rd = Math.floor(cociente); }\n }\n else\n { capi_raise('Division by zero not allowed'); }"
     },
     {
       "name": "div",
@@ -2900,7 +2900,7 @@
           "valueField": "011010"
         }
       ],
-      "definition": "HI = capi_uint2int(rs) % capi_uint2int(rt);\nvar cociente = (capi_uint2int(rs) / capi_uint2int(rt));\nif (cociente < 0) {\n    LO = Math.ceil(cociente);\n} else {\n    LO = Math.floor(cociente);\n}\n"
+      "definition": "HI = capi_uint2int(rs) % capi_uint2int(rt);\nvar cociente = (capi_uint2int(rs) / capi_uint2int(rt));\nif (cociente < 0) {\n    LO = Math.ceil(cociente);\n} else {\n    LO = Math.floor(cociente);\n}"
     },
     {
       "name": "div.d",
@@ -2955,7 +2955,7 @@
           "valueField": "000011"
         }
       ],
-      "definition": "if (ft != 0)\n { fd = fs / ft; }\n else { capi_raise('Division by zero not allowed'); }\n"
+      "definition": "if (ft != 0)\n { fd = fs / ft; }\n else { capi_raise('Division by zero not allowed'); }"
     },
     {
       "name": "div.s",
@@ -3010,7 +3010,7 @@
           "valueField": "000011"
         }
       ],
-      "definition": "if (ft != 0)\n { fd = fs / ft; }\n else { capi_raise('Division by zero not allowed'); }\n"
+      "definition": "if (ft != 0)\n { fd = fs / ft; }\n else { capi_raise('Division by zero not allowed'); }"
     },
     {
       "name": "divu",
@@ -3064,7 +3064,7 @@
           "valueField": "011011"
         }
       ],
-      "definition": "if (rt != 0)\n { rd = Math.floor(capi_int2uint(rs) / capi_int2uint(rt)); }\n else { capi_raise('Division by zero not allowed'); }\n"
+      "definition": "if (rt != 0)\n { rd = Math.floor(capi_int2uint(rs) / capi_int2uint(rt)); }\n else { capi_raise('Division by zero not allowed'); }"
     },
     {
       "name": "divu",
@@ -3105,7 +3105,7 @@
           "valueField": "011011"
         }
       ],
-      "definition": "if (rt != 0)\n { LO = Math.floor(capi_int2uint(rs) / capi_int2uint(rt));\nHI = capi_int2uint(rs) % capi_int2uint(rt); }\n else { capi_raise('Division by zero not allowed'); }\n"
+      "definition": "if (rt != 0)\n { LO = Math.floor(capi_int2uint(rs) / capi_int2uint(rt));\nHI = capi_int2uint(rs) % capi_int2uint(rt); }\n else { capi_raise('Division by zero not allowed'); }"
     },
     {
       "name": "j",
@@ -3598,7 +3598,7 @@
           "stopbit": 11
         }
       ],
-      "definition": "rt = capi_float322uint(fs);\n"
+      "definition": "rt = capi_float322uint(fs);"
     },
     {
       "name": "mfhi",
@@ -3899,7 +3899,7 @@
           "stopbit": 11
         }
       ],
-      "definition": "var fs = capi_uint2float32(rt);\n"
+      "definition": "fs = capi_uint2float32(rt);"
     },
     {
       "name": "mthi",
@@ -4165,7 +4165,7 @@
           "valueField": "011000"
         }
       ],
-      "definition": "var result = capi_uint2int(rs) * capi_uint2int(rt);\n HI=Math.floor(result / Math.pow (2, 32));\n LO=result % Math.pow(2, 32);\n"
+      "definition": "var result = capi_uint2int(rs) * capi_uint2int(rt);\n HI=Math.floor(result / Math.pow (2, 32));\n LO=result % Math.pow(2, 32);"
     },
     {
       "name": "multu",
@@ -4206,7 +4206,7 @@
           "valueField": "011001"
         }
       ],
-      "definition": "var result = capi_int2uint(rs) * capi_int2uint(rt);\n HI = Math.floor(result / Math.pow(2, 32));\n HI = HI >>> 0;\n LO = result % Math.pow(2, 32);\n LO = LO >>> 0;\n"
+      "definition": "var result = capi_int2uint(rs) * capi_int2uint(rt);\n HI = Math.floor(result / Math.pow(2, 32));\n HI = HI >>> 0;\n LO = result % Math.pow(2, 32);\n LO = LO >>> 0;"
     },
     {
       "name": "nop",
@@ -5477,7 +5477,7 @@
           "stopbit": 26
         }
       ],
-      "definition": "PC = EPC;\n"
+      "definition": "PC = EPC;"
     }
   ],
   "pseudoinstructions": [
