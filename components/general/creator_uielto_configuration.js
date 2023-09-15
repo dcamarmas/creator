@@ -39,8 +39,8 @@
                   return {
                     architectures = [
                                       { text: 'None',  value: 'none' },
-                                      { text: 'RISC-V (RV32IMFD)',  value: 'RISC_V_RV32IMFD' },
-                                      { text: 'MIPS-32',            value: 'MIPS_32' },
+                                      { text: 'RISC-V (RV32IMFD)',  value: 'RISC-V (RV32IMFD)' },
+                                      { text: 'MIPS-32',            value: 'MIPS-32' },
                                     ]
 
                   }
@@ -50,6 +50,10 @@
                   //Loads the configuration values from cache
                   get_configuration()
                   {
+                    if(localStorage.getItem("conf_default_architecture") != null){
+                      app._data.default_architecture = localStorage.getItem("conf_default_architecture");
+                    }
+
                     if(localStorage.getItem("conf_stack_total_list") != null){
                       app._data.stack_total_list = parseInt(localStorage.getItem("conf_stack_total_list"));
                     }

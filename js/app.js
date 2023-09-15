@@ -1,6 +1,4 @@
 
-
-
 /*
  *  Copyright 2018-2023 Felix Garcia Carballeira, Alejandro Calderon Mateos, Diego Camarmas Alonso
  *
@@ -125,13 +123,6 @@ try
 
       //Delete architecture modal 
       modal_delete_arch_index: 0, //TODO: include into delete architecture component - modal info
-
-
-      //
-      //Backup 
-      //
-
-      backup_date: '', //TODO: include into backup component - modal info
 
 
 
@@ -378,7 +369,7 @@ try
      ************************/
     mounted(){
       this.validate_browser();
-      this.backup_modal();
+      uielto_backup.methods.backup_modal(this);
 
       //Pre-load following URL params
       var url_hash = creator_preload_get2hash(window.location) ;
@@ -468,23 +459,6 @@ try
 
 
 
-      /*************************/
-      /* Architecture Selector */
-      /*************************/
-
-      //Show backup modal
-      backup_modal(){
-        if (typeof(Storage) !== "undefined"){
-          if(localStorage.getItem("backup_arch") != null && localStorage.getItem("backup_asm") != null && localStorage.getItem("backup_date") != null){
-            this.backup_date = localStorage.getItem("backup_date");
-            this.$root.$emit('bv::show::modal', 'copy');
-          }
-        }
-      },
-
-
-
-
       /*************/
       /* Simulator */
       /*************/
@@ -523,10 +497,10 @@ try
 
   //Error handler
   Vue.config.errorHandler = function (err, vm, info) {
-      show_notification('An error has ocurred, the simulator is going to restart.  \n Error: ' + err, 'danger') ;
-      setTimeout(function(){
-        location.reload(true)
-      }, 3000);
+    show_notification('An error has ocurred, the simulator is going to restart.  \n Error: ' + err, 'danger') ;
+    setTimeout(function(){
+      location.reload(true)
+    }, 3000);
   }
 
   /*Closing alert*/

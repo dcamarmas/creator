@@ -39,7 +39,7 @@
                 },
 
     methods:    {
-                  //Load the available architectures and check if exists backup
+                  //Load the available architectures
                   load_arch_available()
                   {
                     //Read architectures availables JSON
@@ -70,7 +70,48 @@
                       for (var i = 0; i < architecture_available.length; i++){
                         back_card.push({name: architecture_available[i].name , background: "default"});
                       }
+
+                      uielto_preload_architecture.methods.load_default_architecture(architecture_available);
                     });
+                  },
+
+                  //Load default architecture in CREATOR
+                  load_default_architecture(architecture_available){
+                    if (typeof(Storage) !== "undefined"){
+                      var e = null;
+
+                      if(localStorage.getItem("conf_default_architecture") != null && localStorage.getItem("conf_default_architecture") != "none" ){
+                        var default_architecture = localStorage.getItem("conf_default_architecture");
+
+                        for (var i = 0; i < architecture_available.length; i++)
+                        {
+                          if (architecture_available[i].name == default_architecture) {
+                            e = architecture_available[i];
+                          }
+                        }
+
+                        //Synchronous JSON read
+                        $.ajaxSetup({
+                            async: false
+                        });
+
+                        //Read architecture JSON
+                        $.getJSON('architecture/'+e.file+'.json' + "?v=" + new Date().getTime(), function(cfg){
+                          uielto_preload_architecture.methods.load_arch_select_aux(cfg, true, e);
+
+                          //Refresh UI
+                          hide_loading();
+                          show_notification(e.name + ' architecture has been loaded correctly', 'success');
+
+                          // Google Analytics
+                          creator_ga('architecture', 'architecture.loading', 'architectures.loading.preload_cache');
+
+                          }).fail(function() {
+                            hide_loading();
+                            show_notification(e.name + ' architecture is not currently available', 'info');
+                          });
+                      }
+                    }
                   },
 
                   //Load selected architecture on CREATOR
@@ -91,7 +132,7 @@
                       if (e.name == load_architectures[i].id)
                       {
                         var aux_architecture = JSON.parse(load_architectures[i].architecture);
-                        uielto_preload_architecture.methods.load_arch_select_aux(e.file, aux_architecture, true, e);
+                        uielto_preload_architecture.methods.load_arch_select_aux(aux_architecture, true, e);
 
                         //Refresh UI
                         hide_loading();
@@ -111,7 +152,7 @@
 
                     //Read architecture JSON
                     $.getJSON('architecture/'+e.file+'.json' + "?v=" + new Date().getTime(), function(cfg){
-                      uielto_preload_architecture.methods.load_arch_select_aux(e.name, cfg, true, e);
+                      uielto_preload_architecture.methods.load_arch_select_aux(cfg, true, e);
 
                       //Refresh UI
                       hide_loading();
@@ -127,7 +168,7 @@
                   },
 
                   //Load architecture in CREATOR
-                  load_arch_select_aux(ename, cfg, load_associated_examples, e)
+                  load_arch_select_aux(cfg, load_associated_examples, e)
                   {
                     //Load architecture
                     var aux_architecture = cfg;
@@ -169,7 +210,6 @@
                     var aux_object = jQuery.extend(true, {}, architecture);
                     var aux_architecture = register_value_serialize(aux_object);
                     var aux_arch = JSON.stringify(aux_architecture, null, 2);
-                    localStorage.setItem("architecture_preload", aux_arch);
                   },
 
                   //Load the available examples
@@ -219,7 +259,7 @@
                           if (current_architecture == '')
                           {
                             $.getJSON('architecture/'+ set[i].architecture +'.json', function(cfg) {
-                              uielto_preload_architecture.methods.load_arch_select_aux(set[i].architecture,cfg, false, null);
+                              uielto_preload_architecture.methods.load_arch_select_aux(cfg, false, null);
                             }) ;
                           }
 
