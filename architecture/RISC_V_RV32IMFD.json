@@ -61,8 +61,8 @@
       "elements": [
         {
           "name": [
-            "zero",
-            "x0"
+            "x0",
+            "zero"
           ],
           "nbits": "32",
           "value": 0,
@@ -74,8 +74,8 @@
         },
         {
           "name": [
-            "ra",
-            "x1"
+            "x1",
+            "ra"
           ],
           "nbits": "32",
           "value": 4294967295,
@@ -87,8 +87,8 @@
         },
         {
           "name": [
-            "sp",
-            "x2"
+            "x2",
+            "sp"
           ],
           "nbits": "32",
           "value": 268435452,
@@ -101,8 +101,8 @@
         },
         {
           "name": [
-            "gp",
-            "x3"
+            "x3",
+            "gp"
           ],
           "nbits": "32",
           "value": 0,
@@ -115,8 +115,8 @@
         },
         {
           "name": [
-            "tp",
-            "x4"
+            "x4",
+            "tp"
           ],
           "nbits": "32",
           "value": 0,
@@ -128,8 +128,8 @@
         },
         {
           "name": [
-            "t0",
-            "x5"
+            "x5",
+            "t0"
           ],
           "nbits": "32",
           "value": 0,
@@ -141,8 +141,8 @@
         },
         {
           "name": [
-            "t1",
-            "x6"
+            "x6",
+            "t1"
           ],
           "nbits": "32",
           "value": 0,
@@ -154,8 +154,8 @@
         },
         {
           "name": [
-            "t2",
-            "x7"
+            "x7",
+            "t2"
           ],
           "nbits": "32",
           "value": 0,
@@ -167,9 +167,9 @@
         },
         {
           "name": [
+            "x8",
             "fp",
-            "s0",
-            "x8"
+            "s0"
           ],
           "nbits": "32",
           "value": 0,
@@ -183,8 +183,8 @@
         },
         {
           "name": [
-            "s1",
-            "x9"
+            "x9",
+            "s1"
           ],
           "nbits": "32",
           "value": 0,
@@ -197,8 +197,8 @@
         },
         {
           "name": [
-            "a0",
-            "x10"
+            "x10",
+            "a0"
           ],
           "nbits": "32",
           "value": 0,
@@ -210,8 +210,8 @@
         },
         {
           "name": [
-            "a1",
-            "x11"
+            "x11",
+            "a1"
           ],
           "nbits": "32",
           "value": 0,
@@ -223,8 +223,8 @@
         },
         {
           "name": [
-            "a2",
-            "x12"
+            "x12",
+            "a2"
           ],
           "nbits": "32",
           "value": 0,
@@ -236,8 +236,8 @@
         },
         {
           "name": [
-            "a3",
-            "x13"
+            "x13",
+            "a3"
           ],
           "nbits": "32",
           "value": 0,
@@ -249,8 +249,8 @@
         },
         {
           "name": [
-            "a4",
-            "x14"
+            "x14",
+            "a4"
           ],
           "nbits": "32",
           "value": 0,
@@ -262,8 +262,8 @@
         },
         {
           "name": [
-            "a5",
-            "x15"
+            "x15",
+            "a5"
           ],
           "nbits": "32",
           "value": 0,
@@ -275,8 +275,8 @@
         },
         {
           "name": [
-            "a6",
-            "x16"
+            "x16",
+            "a6"
           ],
           "nbits": "32",
           "value": 0,
@@ -288,8 +288,8 @@
         },
         {
           "name": [
-            "a7",
-            "x17"
+            "x17",
+            "a7"
           ],
           "nbits": "32",
           "value": 0,
@@ -301,8 +301,8 @@
         },
         {
           "name": [
-            "s2",
-            "x18"
+            "x18",
+            "s2"
           ],
           "nbits": "32",
           "value": 0,
@@ -315,8 +315,8 @@
         },
         {
           "name": [
-            "s3",
-            "x19"
+            "x19",
+            "s3"
           ],
           "nbits": "32",
           "value": 0,
@@ -329,8 +329,8 @@
         },
         {
           "name": [
-            "s4",
-            "x20"
+            "x20",
+            "s4"
           ],
           "nbits": "32",
           "value": 0,
@@ -343,8 +343,8 @@
         },
         {
           "name": [
-            "s5",
-            "x21"
+            "x21",
+            "s5"
           ],
           "nbits": "32",
           "value": 0,
@@ -357,8 +357,8 @@
         },
         {
           "name": [
-            "s6",
-            "x22"
+            "x22",
+            "s6"
           ],
           "nbits": "32",
           "value": 0,
@@ -371,8 +371,8 @@
         },
         {
           "name": [
-            "s7",
-            "x23"
+            "x23",
+            "s7"
           ],
           "nbits": "32",
           "value": 0,
@@ -385,8 +385,8 @@
         },
         {
           "name": [
-            "s8",
-            "x24"
+            "x24",
+            "s8"
           ],
           "nbits": "32",
           "value": 0,
@@ -399,8 +399,8 @@
         },
         {
           "name": [
-            "s9",
-            "x25"
+            "x25",
+            "s9"
           ],
           "nbits": "32",
           "value": 0,
@@ -413,8 +413,8 @@
         },
         {
           "name": [
-            "s10",
-            "x26"
+            "x26",
+            "s10"
           ],
           "nbits": "32",
           "value": 0,
@@ -427,8 +427,8 @@
         },
         {
           "name": [
-            "s11",
-            "x27"
+            "x27",
+            "s11"
           ],
           "nbits": "32",
           "value": 0,
@@ -441,8 +441,8 @@
         },
         {
           "name": [
-            "t3",
-            "x28"
+            "x28",
+            "t3"
           ],
           "nbits": "32",
           "value": 0,
@@ -454,8 +454,8 @@
         },
         {
           "name": [
-            "t4",
-            "x29"
+            "x29",
+            "t4"
           ],
           "nbits": "32",
           "value": 0,
@@ -467,8 +467,8 @@
         },
         {
           "name": [
-            "t5",
-            "x30"
+            "x30",
+            "t5"
           ],
           "nbits": "32",
           "value": 0,
@@ -480,8 +480,8 @@
         },
         {
           "name": [
-            "t6",
-            "x31"
+            "x31",
+            "t6"
           ],
           "nbits": "32",
           "value": 0,
@@ -1023,7 +1023,7 @@
           "valueField": "000"
         }
       ],
-      "definition": "rd = rs1 + inm;\n",
+      "definition": "rd = rs1 + inm;",
       "separated": [
         false,
         false,
@@ -1136,7 +1136,7 @@
           "valueField": "111"
         }
       ],
-      "definition": "rd = rs1 & capi_int2uint(inm);\n",
+      "definition": "rd = rs1 & capi_int2uint(inm);",
       "separated": [
         false,
         false,
@@ -1588,7 +1588,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "if (rs2 != 0)\n { rd = (rs1 >> 0) / (rs2 >> 0); }\n else { capi_raise('Division by zero not allowed'); }\n",
+      "definition": "if (rs2 != 0)\n { rd = (rs1 >> 0) / (rs2 >> 0); }\n else { capi_raise('Division by zero not allowed'); }",
       "separated": [
         false,
         false,
@@ -2451,7 +2451,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "if (rs2 != 0)\n { rd = rs1 / rs2; }\n else { capi_raise('Division by zero not allowed'); }\n",
+      "definition": "if (rs2 != 0)\n { rd = rs1 / rs2; }\n else { capi_raise('Division by zero not allowed'); }",
       "separated": [
         false,
         false,
@@ -2504,7 +2504,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "if (rs2 != 0)\n { rd = rs1 / rs2; }\n else { capi_raise('Division by zero not allowed'); }\n",
+      "definition": "if (rs2 != 0)\n { rd = rs1 / rs2; }\n else { capi_raise('Division by zero not allowed'); }",
       "separated": [
         false,
         false,
@@ -3629,7 +3629,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = rs1;",
+      "definition": "rd = capi_uint2float32(rs1);",
       "separated": [
         false,
         false,
@@ -3684,7 +3684,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = rs1;",
+      "definition": "rd = capi_float322uint(rs1);",
       "separated": [
         false,
         false,
@@ -5377,7 +5377,7 @@
           "valueField": "110"
         }
       ],
-      "definition": "rd = rs1 | inm;\n",
+      "definition": "rd = rs1 | inm;",
       "separated": [
         false,
         false,
@@ -5418,7 +5418,7 @@
           "valueField": "010"
         }
       ],
-      "definition": "rd = capi_get_clk_cycles();\n",
+      "definition": "rd = capi_get_clk_cycles();",
       "help": ""
     },
     {
@@ -6412,7 +6412,7 @@
           "valueField": "100"
         }
       ],
-      "definition": "rd = rs1 ^ inm;\n",
+      "definition": "rd = rs1 ^ inm;",
       "separated": [
         false,
         false,
@@ -6830,7 +6830,7 @@
           "type": "inm-unsigned"
         }
       ],
-      "definition": "no_ret_op{tmp=Field.2.(31,0).int - reg.pc;\ntmp_hi='0x'+(((tmp&0xFFFFF000)>>12) + ((tmp&0x00000400)>>11)).toString(16);\ntmp_low='0x'+(tmp&0x00000FFF).toString(16)};\nauipc rd op{tmp_hi};\naddi rd rd op{tmp_low};\n"
+      "definition": "no_ret_op{tmp=Field.2.(31,0).int - reg.pc;\ntmp_hi='0x'+(((tmp&0xFFFFF000)>>12) + ((tmp&0x00000400)>>11)).toString(16);\ntmp_low='0x'+(tmp&0x00000FFF).toString(16)};\nauipc rd op{tmp_hi};\naddi rd rd op{tmp_low};"
     },
     {
       "name": "li",
