@@ -377,11 +377,17 @@ function execute_instruction ( )
 
           re = new RegExp( "(?:\\W|^)(((" + clean_aliases +") *=)[^=])", "g");
           if (auxDef.search(re) != -1){
+            re = new RegExp("(" + clean_aliases + ")");
+            var reg_name = re.exec(auxDef)[0];
+            clean_name = clean_string(reg_name, 'reg_');
             writings_description = writings_description+"\nwriteRegister("+ clean_name +", "+i+", "+j+", \""+ signatureParts[i] + "\");";
           }
 
           re = new RegExp("([^a-zA-Z0-9])(?:" + clean_aliases + ")");
           if (auxDef.search(re) != -1){
+            re = new RegExp("(" + clean_aliases + ")");
+            var reg_name = re.exec(auxDef)[0];
+            clean_name = clean_string(reg_name, 'reg_');
             readings_description = readings_description + "var " + clean_name + "      = readRegister("+i+" ,"+j+", \""+ signatureParts[i] + "\");\n"
             readings_description = readings_description + "var " + clean_name + "_name = '" + clean_name + "';\n";
           }
