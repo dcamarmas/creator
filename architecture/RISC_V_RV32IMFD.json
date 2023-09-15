@@ -6778,7 +6778,7 @@
           "type": "offset_words"
         }
       ],
-      "definition": "jal x0 off;"
+      "definition": "beq zero zero off;"
     },
     {
       "name": "jalr",
