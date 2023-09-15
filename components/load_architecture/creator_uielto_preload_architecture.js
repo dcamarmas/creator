@@ -80,7 +80,7 @@
                     if (typeof(Storage) !== "undefined"){
                       var e = null;
 
-                      if(localStorage.getItem("conf_default_architecture") != null){
+                      if(localStorage.getItem("conf_default_architecture") != null && localStorage.getItem("conf_default_architecture") != "none" ){
                         var default_architecture = localStorage.getItem("conf_default_architecture");
 
                         for (var i = 0; i < architecture_available.length; i++)
