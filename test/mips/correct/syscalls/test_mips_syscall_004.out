@@ -1,6 +1,8 @@
 
+First String
+Second Stringa
+a
 
- Error found.
- undefined
-cr[PC]:0x14; ir[1,at]:0x200000; ir[2,v0]:0x4; ir[4,a0]:0x200000; keyboard[0x0]:''; display[0x0]:''; 
+
+cr[PC]:0x40; ir[at,1]:0x20001a; ir[v0,2]:0xb; ir[a0,4]:0xa; keyboard[0x0]:''; display[0x0]:'First%20StringSecond%20Stringaa%0A'; 
 
