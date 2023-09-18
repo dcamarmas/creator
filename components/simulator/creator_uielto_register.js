@@ -82,12 +82,15 @@
                             ret = hex2float("0x"+(((register.value).toString(16)).padStart(8, "0")));
                           }
                           else {
-                            if (architecture.components[this._props.component.index].double_precision === false) {
+                            //TODO
+                            /*if (architecture.components[this._props.component.index].double_precision === false) {
                               ret = bi_BigIntTofloat(register.value);
                             }
                             else{
                               ret = bi_BigIntTodouble(register.value);
-                            }
+                            }*/
+
+                            ret = bi_BigIntTofloat(register.value);
                           }
                           break;
 
