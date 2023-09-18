@@ -122,6 +122,14 @@
                       
                     },
 
+                    show_value_truncate ( register ) {
+                      var ret = this.show_value(register).toString();
+                      if (ret.length > 8){
+                        ret = ret.slice(0,8) + "...";
+                      }
+                      return ret;
+                    },
+
                     reg_name (register){
                       switch(this.name_representation){
                         case "logical":
@@ -145,7 +153,7 @@
                     '           onclick="creator_ga(\'data\', \'data.view\', \'data.view.registers_details\');">' +
                     '   <span class="text-truncate">{{reg_name(register)}}</span> ' +
                     '   <b-badge class="regValue registerValue"> ' +
-                    '     {{show_value(register)}}' +
+                    '     {{show_value_truncate(register)}}' +
                     '   </b-badge>' +
                     ' </b-button>' +
                     ' ' +
