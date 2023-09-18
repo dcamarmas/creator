@@ -6735,6 +6735,7 @@ function binaryStringToInt( b ) {
  */
 
 var execution_index     = 0;
+var execution_mode      = 0; // 0: instruction by instruction, 1: run program
 var run_program         = 0; // 0: stopped, 1: running, 2: stopped-by-breakpoint, 3: stopped-by-mutex-read
 var execution_init      = 1;
 var instructions_packed = 100;
