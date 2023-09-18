@@ -423,6 +423,10 @@
                           }
                           else
                           {
+                            if (run_program == 2) {
+                              run_program = 1;
+                            }
+
                             ret = execute_instruction();
 
                             if (typeof ret === "undefined") {
