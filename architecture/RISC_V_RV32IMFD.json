@@ -613,7 +613,8 @@
           "default_value": 0.0,
           "properties": [
             "read",
-            "write"
+            "write",
+            "saved"
           ]
         },
         {
@@ -626,7 +627,8 @@
           "default_value": 0.0,
           "properties": [
             "read",
-            "write"
+            "write",
+            "saved"
           ]
         },
         {
@@ -743,7 +745,8 @@
           "default_value": 0.0,
           "properties": [
             "read",
-            "write"
+            "write",
+            "saved"
           ]
         },
         {
@@ -756,7 +759,8 @@
           "default_value": 0.0,
           "properties": [
             "read",
-            "write"
+            "write",
+            "saved"
           ]
         },
         {
@@ -769,7 +773,8 @@
           "default_value": 0.0,
           "properties": [
             "read",
-            "write"
+            "write",
+            "saved"
           ]
         },
         {
@@ -782,7 +787,8 @@
           "default_value": 0.0,
           "properties": [
             "read",
-            "write"
+            "write",
+            "saved"
           ]
         },
         {
@@ -795,7 +801,8 @@
           "default_value": 0.0,
           "properties": [
             "read",
-            "write"
+            "write",
+            "saved"
           ]
         },
         {
@@ -808,7 +815,8 @@
           "default_value": 0.0,
           "properties": [
             "read",
-            "write"
+            "write",
+            "saved"
           ]
         },
         {
@@ -821,7 +829,8 @@
           "default_value": 0.0,
           "properties": [
             "read",
-            "write"
+            "write",
+            "saved"
           ]
         },
         {
@@ -834,7 +843,8 @@
           "default_value": 0.0,
           "properties": [
             "read",
-            "write"
+            "write",
+            "saved"
           ]
         },
         {
@@ -847,7 +857,8 @@
           "default_value": 0.0,
           "properties": [
             "read",
-            "write"
+            "write",
+            "saved"
           ]
         },
         {
@@ -860,7 +871,8 @@
           "default_value": 0.0,
           "properties": [
             "read",
-            "write"
+            "write",
+            "saved"
           ]
         },
         {
