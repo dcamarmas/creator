@@ -2468,7 +2468,7 @@
       "signature": "fdiv.s,SFP-Reg,SFP-Reg,SFP-Reg",
       "signatureRaw": "fdiv.s rd rs1 rs2",
       "co": "1010011",
-      "cop": "0001000",
+      "cop": "0001100",
       "nwords": 1,
       "clk_cycles": 1,
       "fields": [
@@ -2483,7 +2483,7 @@
           "type": "cop",
           "startbit": 31,
           "stopbit": 25,
-          "valueField": "0001000"
+          "valueField": "0001100"
         },
         {
           "name": "rs2",
