@@ -339,6 +339,8 @@
                         // Google Analytics
                         creator_ga('execute', 'execute.instruction', 'execute.instruction');
 
+                        execution_mode = 0;
+
                         var ret = execute_instruction();
 
                         if (typeof ret === "undefined") {
@@ -362,6 +364,8 @@
 
                         // Google Analytics
                         creator_ga('execute', 'execute.run', 'execute.run');
+
+                        execution_mode = 1;
 
                         if (run_program == 0) {
                           run_program = 1;
@@ -423,6 +427,10 @@
                           }
                           else
                           {
+                            if (run_program == 2) {
+                              run_program = 1;
+                            }
+
                             ret = execute_instruction();
 
                             if (typeof ret === "undefined") {

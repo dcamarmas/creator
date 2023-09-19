@@ -77,17 +77,21 @@
                           }
                           break;
 
-                        case "ieee":
+                        case "ieee32":
                           if (architecture.components[this._props.component.index].type == "ctrl_registers" || architecture.components[this._props.component.index].type == "int_registers") {
                             ret = hex2float("0x"+(((register.value).toString(16)).padStart(8, "0")));
                           }
                           else {
-                            if (architecture.components[this._props.component.index].double_precision === false) {
-                              ret = bi_BigIntTofloat(register.value);
-                            }
-                            else{
-                              ret = bi_BigIntTodouble(register.value);
-                            }
+                            ret = bi_BigIntTofloat(register.value);
+                          }
+                          break;
+
+                        case "ieee64":
+                          if (architecture.components[this._props.component.index].type == "ctrl_registers" || architecture.components[this._props.component.index].type == "int_registers") {
+                            ret = hex2double("0x"+(((register.value).toString(16)).padStart(16, "0")));
+                          }
+                          else {
+                            ret = bi_BigIntTodouble(register.value);
                           }
                           break;
 
@@ -119,6 +123,14 @@
                       
                     },
 
+                    show_value_truncate ( register ) {
+                      var ret = this.show_value(register).toString();
+                      if (ret.length > 8){
+                        ret = ret.slice(0,8) + "...";
+                      }
+                      return ret;
+                    },
+
                     reg_name (register){
                       switch(this.name_representation){
                         case "logical":
@@ -127,8 +139,8 @@
                           if (typeof register.name[1] === "undefined"){
                             return register.name[0];
                           }
-                          
-                          return register.name[1];
+
+                          return register.name.slice(1,register.name.length).join(' | ');
                         case "all":
                           return register.name.join(' | ');
                       }
@@ -142,7 +154,7 @@
                     '           onclick="creator_ga(\'data\', \'data.view\', \'data.view.registers_details\');">' +
                     '   <span class="text-truncate">{{reg_name(register)}}</span> ' +
                     '   <b-badge class="regValue registerValue"> ' +
-                    '     {{show_value(register)}}' +
+                    '     {{show_value_truncate(register)}}' +
                     '   </b-badge>' +
                     ' </b-button>' +
                     ' ' +

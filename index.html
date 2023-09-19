@@ -114,6 +114,7 @@
 
           <!-- Configuration modal -->
           <form-configuration id="configuration"
+                              :default_architecture="default_architecture"
                               :stack_total_list="stack_total_list" 
                               :autoscroll="autoscroll"
                               :instruction_help_size="instruction_help_size"
@@ -206,7 +207,7 @@
               </delete-architecture>
 
               <!-- Backup modal -->
-              <uielto-backup id="copy" :backup_date="backup_date"></uielto-backup>
+              <uielto-backup id="copy"></uielto-backup>
 
             </b-col>
           </b-row>

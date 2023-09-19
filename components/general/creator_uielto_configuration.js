@@ -26,6 +26,7 @@
 
     props:      {
                   id:                     { type: String,  required: true },
+                  default_architecture:   { type: String,  required: true },
                   stack_total_list:       { type: Number,  required: true },
                   autoscroll:             { type: Boolean, required: true },
                   notification_time:      { type: Number,  required: true },
@@ -36,6 +37,11 @@
 
     data:       function () {
                   return {
+                    architectures = [
+                                      { text: 'None',  value: 'none' },
+                                      { text: 'RISC-V (RV32IMFD)',  value: 'RISC-V (RV32IMFD)' },
+                                      { text: 'MIPS-32',            value: 'MIPS-32' },
+                                    ]
 
                   }
                 },
@@ -44,6 +50,10 @@
                   //Loads the configuration values from cache
                   get_configuration()
                   {
+                    if(localStorage.getItem("conf_default_architecture") != null){
+                      app._data.default_architecture = localStorage.getItem("conf_default_architecture");
+                    }
+
                     if(localStorage.getItem("conf_stack_total_list") != null){
                       app._data.stack_total_list = parseInt(localStorage.getItem("conf_stack_total_list"));
                     }
@@ -60,6 +70,22 @@
                       app._data.instruction_help_size = parseInt(localStorage.getItem("conf_instruction_help_size"));
                     }
                   },
+
+
+                  //Debug Mode
+                  change_default_architecture()
+                  {
+                    
+                    this._props.default_architecture = this.default_architecture;
+                    app._data.default_architecture   = this._props.default_architecture; 
+
+                    localStorage.setItem("conf_default_architecture", this._props.default_architecture);
+                
+                    //Google Analytics
+                    creator_ga('configuration', 'configuration.default_architecture', 'configuration.default_architecture.' + this._props.default_architecture);
+                  },
+
+
 
                   //Verify if dark mode was activated from cache
                   get_dark_mode()
@@ -229,7 +255,7 @@
                   //Debug Mode
                   change_debug_mode()
                   {
-                    this._props.c_debug= !this._props.c_debug;
+                    this._props.c_debug = !this._props.c_debug;
                     app._data.c_debug = this._props.c_debug; 
                 
                     //Google Analytics
@@ -242,6 +268,16 @@
                   '           hide-footer>' +
                   ' ' +
                   '   <b-list-group>' +
+                  '     <b-list-group-item class="justify-content-between align-items-center m-1">' +
+                  '       <label for="range-5">Default Architecture:</label>' +
+                  '         <b-form-select v-model="default_architecture" ' +
+                  '                        :options="architectures" ' +
+                  '                        size="sm"' +
+                  '                        @change="change_default_architecture" ' +
+                  '                        title="Default Architecture">' +
+                  '         </b-form-select>' +
+                  '     </b-list-group-item>' +
+                  ' ' +
                   '     <b-list-group-item class="justify-content-between align-items-center m-1">' +
                   '       <label for="range-1">Maximum stack values listed:</label>' +
                   '       <b-input-group>' +
@@ -261,17 +297,6 @@
                   '           <b-btn variant="outline-secondary" @click="change_stack_max_list(5)">+</b-btn>' +
                   '         </b-input-group-append>' +
                   '       </b-input-group>' +
-                  '     </b-list-group-item>' +
-                  ' ' +
-                  '     <b-list-group-item class="justify-content-between align-items-center m-1">' +
-                  '       <label for="range-2">Execution Autoscroll:</label>' +
-                  '       <b-form-checkbox id="range-2"' +
-                  '                        v-model="autoscroll" ' +
-                  '                        name="check-button" ' +
-                  '                        switch ' +
-                  '                        size="lg" ' +
-                  '                        @change="change_autoscroll">' +
-                  '       </b-form-checkbox>' +
                   '     </b-list-group-item>' +
                   ' ' +
                   '     <b-list-group-item class="justify-content-between align-items-center m-1">' +
@@ -314,6 +339,17 @@
                   '           <b-btn variant="outline-secondary" @click="change_instruction_help_size(2)">+</b-btn>' +
                   '         </b-input-group-append>' +
                   '       </b-input-group>' +
+                  '     </b-list-group-item>' +
+                  ' ' +
+                  '     <b-list-group-item class="justify-content-between align-items-center m-1">' +
+                  '       <label for="range-2">Execution Autoscroll:</label>' +
+                  '       <b-form-checkbox id="range-2"' +
+                  '                        v-model="autoscroll" ' +
+                  '                        name="check-button" ' +
+                  '                        switch ' +
+                  '                        size="lg" ' +
+                  '                        @change="change_autoscroll">' +
+                  '       </b-form-checkbox>' +
                   '     </b-list-group-item>' +
                   ' ' +
                   /*'     <b-list-group-item class="justify-content-between align-items-center m-1">' +

@@ -10,7 +10,7 @@
     },
     {
       "name": "Description",
-      "value": "RISC-V is an instruction set architecture (ISA) is based on the RISC type and its hardware is free. This architecture was created in 2010 at the University of California, Berkeley."
+      "value": "RISC-V is an instruction set architecture (ISA) based on the RISC type and its hardware is free. This architecture was created in 2010 at the University of California, Berkeley."
     },
     {
       "name": "Data Format",
@@ -61,8 +61,8 @@
       "elements": [
         {
           "name": [
-            "zero",
-            "x0"
+            "x0",
+            "zero"
           ],
           "nbits": "32",
           "value": 0,
@@ -74,8 +74,8 @@
         },
         {
           "name": [
-            "ra",
-            "x1"
+            "x1",
+            "ra"
           ],
           "nbits": "32",
           "value": 4294967295,
@@ -87,8 +87,8 @@
         },
         {
           "name": [
-            "sp",
-            "x2"
+            "x2",
+            "sp"
           ],
           "nbits": "32",
           "value": 268435452,
@@ -101,8 +101,8 @@
         },
         {
           "name": [
-            "gp",
-            "x3"
+            "x3",
+            "gp"
           ],
           "nbits": "32",
           "value": 0,
@@ -115,8 +115,8 @@
         },
         {
           "name": [
-            "tp",
-            "x4"
+            "x4",
+            "tp"
           ],
           "nbits": "32",
           "value": 0,
@@ -128,8 +128,8 @@
         },
         {
           "name": [
-            "t0",
-            "x5"
+            "x5",
+            "t0"
           ],
           "nbits": "32",
           "value": 0,
@@ -141,8 +141,8 @@
         },
         {
           "name": [
-            "t1",
-            "x6"
+            "x6",
+            "t1"
           ],
           "nbits": "32",
           "value": 0,
@@ -154,8 +154,8 @@
         },
         {
           "name": [
-            "t2",
-            "x7"
+            "x7",
+            "t2"
           ],
           "nbits": "32",
           "value": 0,
@@ -167,9 +167,9 @@
         },
         {
           "name": [
+            "x8",
             "fp",
-            "s0",
-            "x8"
+            "s0"
           ],
           "nbits": "32",
           "value": 0,
@@ -183,8 +183,8 @@
         },
         {
           "name": [
-            "s1",
-            "x9"
+            "x9",
+            "s1"
           ],
           "nbits": "32",
           "value": 0,
@@ -197,8 +197,8 @@
         },
         {
           "name": [
-            "a0",
-            "x10"
+            "x10",
+            "a0"
           ],
           "nbits": "32",
           "value": 0,
@@ -210,8 +210,8 @@
         },
         {
           "name": [
-            "a1",
-            "x11"
+            "x11",
+            "a1"
           ],
           "nbits": "32",
           "value": 0,
@@ -223,8 +223,8 @@
         },
         {
           "name": [
-            "a2",
-            "x12"
+            "x12",
+            "a2"
           ],
           "nbits": "32",
           "value": 0,
@@ -236,8 +236,8 @@
         },
         {
           "name": [
-            "a3",
-            "x13"
+            "x13",
+            "a3"
           ],
           "nbits": "32",
           "value": 0,
@@ -249,8 +249,8 @@
         },
         {
           "name": [
-            "a4",
-            "x14"
+            "x14",
+            "a4"
           ],
           "nbits": "32",
           "value": 0,
@@ -262,8 +262,8 @@
         },
         {
           "name": [
-            "a5",
-            "x15"
+            "x15",
+            "a5"
           ],
           "nbits": "32",
           "value": 0,
@@ -275,8 +275,8 @@
         },
         {
           "name": [
-            "a6",
-            "x16"
+            "x16",
+            "a6"
           ],
           "nbits": "32",
           "value": 0,
@@ -288,8 +288,8 @@
         },
         {
           "name": [
-            "a7",
-            "x17"
+            "x17",
+            "a7"
           ],
           "nbits": "32",
           "value": 0,
@@ -301,8 +301,8 @@
         },
         {
           "name": [
-            "s2",
-            "x18"
+            "x18",
+            "s2"
           ],
           "nbits": "32",
           "value": 0,
@@ -315,8 +315,8 @@
         },
         {
           "name": [
-            "s3",
-            "x19"
+            "x19",
+            "s3"
           ],
           "nbits": "32",
           "value": 0,
@@ -329,8 +329,8 @@
         },
         {
           "name": [
-            "s4",
-            "x20"
+            "x20",
+            "s4"
           ],
           "nbits": "32",
           "value": 0,
@@ -343,8 +343,8 @@
         },
         {
           "name": [
-            "s5",
-            "x21"
+            "x21",
+            "s5"
           ],
           "nbits": "32",
           "value": 0,
@@ -357,8 +357,8 @@
         },
         {
           "name": [
-            "s6",
-            "x22"
+            "x22",
+            "s6"
           ],
           "nbits": "32",
           "value": 0,
@@ -371,8 +371,8 @@
         },
         {
           "name": [
-            "s7",
-            "x23"
+            "x23",
+            "s7"
           ],
           "nbits": "32",
           "value": 0,
@@ -385,8 +385,8 @@
         },
         {
           "name": [
-            "s8",
-            "x24"
+            "x24",
+            "s8"
           ],
           "nbits": "32",
           "value": 0,
@@ -399,8 +399,8 @@
         },
         {
           "name": [
-            "s9",
-            "x25"
+            "x25",
+            "s9"
           ],
           "nbits": "32",
           "value": 0,
@@ -413,8 +413,8 @@
         },
         {
           "name": [
-            "s10",
-            "x26"
+            "x26",
+            "s10"
           ],
           "nbits": "32",
           "value": 0,
@@ -427,8 +427,8 @@
         },
         {
           "name": [
-            "s11",
-            "x27"
+            "x27",
+            "s11"
           ],
           "nbits": "32",
           "value": 0,
@@ -441,8 +441,8 @@
         },
         {
           "name": [
-            "t3",
-            "x28"
+            "x28",
+            "t3"
           ],
           "nbits": "32",
           "value": 0,
@@ -454,8 +454,8 @@
         },
         {
           "name": [
-            "t4",
-            "x29"
+            "x29",
+            "t4"
           ],
           "nbits": "32",
           "value": 0,
@@ -467,8 +467,8 @@
         },
         {
           "name": [
-            "t5",
-            "x30"
+            "x30",
+            "t5"
           ],
           "nbits": "32",
           "value": 0,
@@ -480,8 +480,8 @@
         },
         {
           "name": [
-            "t6",
-            "x31"
+            "x31",
+            "t6"
           ],
           "nbits": "32",
           "value": 0,
@@ -501,8 +501,8 @@
       "elements": [
         {
           "name": [
-            "ft0",
-            "f0"
+            "f0",
+            "ft0"
           ],
           "nbits": "64",
           "value": 0.0,
@@ -514,8 +514,8 @@
         },
         {
           "name": [
-            "ft1",
-            "f1"
+            "f1",
+            "ft1"
           ],
           "nbits": "64",
           "value": 0.0,
@@ -527,8 +527,8 @@
         },
         {
           "name": [
-            "ft2",
-            "f2"
+            "f2",
+            "ft2"
           ],
           "nbits": "64",
           "value": 0.0,
@@ -540,8 +540,8 @@
         },
         {
           "name": [
-            "ft3",
-            "f3"
+            "f3",
+            "ft3"
           ],
           "nbits": "64",
           "value": 0.0,
@@ -553,8 +553,8 @@
         },
         {
           "name": [
-            "ft4",
-            "f4"
+            "f4",
+            "ft4"
           ],
           "nbits": "64",
           "value": 0.0,
@@ -566,8 +566,8 @@
         },
         {
           "name": [
-            "ft5",
-            "f5"
+            "f5",
+            "ft5"
           ],
           "nbits": "64",
           "value": 0.0,
@@ -579,8 +579,8 @@
         },
         {
           "name": [
-            "ft6",
-            "f6"
+            "f6",
+            "ft6"
           ],
           "nbits": "64",
           "value": 0.0,
@@ -592,8 +592,8 @@
         },
         {
           "name": [
-            "ft7",
-            "f7"
+            "f7",
+            "ft7"
           ],
           "nbits": "64",
           "value": 0.0,
@@ -605,8 +605,36 @@
         },
         {
           "name": [
-            "fs0",
-            "f8"
+            "f8",
+            "fs0"
+          ],
+          "nbits": "64",
+          "value": 0.0,
+          "default_value": 0.0,
+          "properties": [
+            "read",
+            "write",
+            "saved"
+          ]
+        },
+        {
+          "name": [
+            "f9",
+            "fs1"
+          ],
+          "nbits": "64",
+          "value": 0.0,
+          "default_value": 0.0,
+          "properties": [
+            "read",
+            "write",
+            "saved"
+          ]
+        },
+        {
+          "name": [
+            "f10",
+            "fa0"
           ],
           "nbits": "64",
           "value": 0.0,
@@ -618,8 +646,8 @@
         },
         {
           "name": [
-            "fs1",
-            "f9"
+            "f11",
+            "fa1"
           ],
           "nbits": "64",
           "value": 0.0,
@@ -631,8 +659,8 @@
         },
         {
           "name": [
-            "fa0",
-            "f10"
+            "f12",
+            "fa2"
           ],
           "nbits": "64",
           "value": 0.0,
@@ -644,8 +672,8 @@
         },
         {
           "name": [
-            "fa1",
-            "f11"
+            "f13",
+            "fa3"
           ],
           "nbits": "64",
           "value": 0.0,
@@ -657,8 +685,8 @@
         },
         {
           "name": [
-            "fa2",
-            "f12"
+            "f14",
+            "fa4"
           ],
           "nbits": "64",
           "value": 0.0,
@@ -670,8 +698,8 @@
         },
         {
           "name": [
-            "fa3",
-            "f13"
+            "f15",
+            "fa5"
           ],
           "nbits": "64",
           "value": 0.0,
@@ -683,8 +711,8 @@
         },
         {
           "name": [
-            "fa4",
-            "f14"
+            "f16",
+            "fa6"
           ],
           "nbits": "64",
           "value": 0.0,
@@ -696,8 +724,8 @@
         },
         {
           "name": [
-            "fa5",
-            "f15"
+            "f17",
+            "fa7"
           ],
           "nbits": "64",
           "value": 0.0,
@@ -709,8 +737,148 @@
         },
         {
           "name": [
-            "fa6",
-            "f16"
+            "f18",
+            "fs2"
+          ],
+          "nbits": "64",
+          "value": 0.0,
+          "default_value": 0.0,
+          "properties": [
+            "read",
+            "write",
+            "saved"
+          ]
+        },
+        {
+          "name": [
+            "f19",
+            "fs3"
+          ],
+          "nbits": "64",
+          "value": 0.0,
+          "default_value": 0.0,
+          "properties": [
+            "read",
+            "write",
+            "saved"
+          ]
+        },
+        {
+          "name": [
+            "f20",
+            "fs4"
+          ],
+          "nbits": "64",
+          "value": 0.0,
+          "default_value": 0.0,
+          "properties": [
+            "read",
+            "write",
+            "saved"
+          ]
+        },
+        {
+          "name": [
+            "f21",
+            "fs5"
+          ],
+          "nbits": "64",
+          "value": 0.0,
+          "default_value": 0.0,
+          "properties": [
+            "read",
+            "write",
+            "saved"
+          ]
+        },
+        {
+          "name": [
+            "f22",
+            "fs6"
+          ],
+          "nbits": "64",
+          "value": 0.0,
+          "default_value": 0.0,
+          "properties": [
+            "read",
+            "write",
+            "saved"
+          ]
+        },
+        {
+          "name": [
+            "f23",
+            "fs7"
+          ],
+          "nbits": "64",
+          "value": 0.0,
+          "default_value": 0.0,
+          "properties": [
+            "read",
+            "write",
+            "saved"
+          ]
+        },
+        {
+          "name": [
+            "f24",
+            "fs8"
+          ],
+          "nbits": "64",
+          "value": 0.0,
+          "default_value": 0.0,
+          "properties": [
+            "read",
+            "write",
+            "saved"
+          ]
+        },
+        {
+          "name": [
+            "f25",
+            "fs9"
+          ],
+          "nbits": "64",
+          "value": 0.0,
+          "default_value": 0.0,
+          "properties": [
+            "read",
+            "write",
+            "saved"
+          ]
+        },
+        {
+          "name": [
+            "f26",
+            "fs10"
+          ],
+          "nbits": "64",
+          "value": 0.0,
+          "default_value": 0.0,
+          "properties": [
+            "read",
+            "write",
+            "saved"
+          ]
+        },
+        {
+          "name": [
+            "f27",
+            "fs11"
+          ],
+          "nbits": "64",
+          "value": 0.0,
+          "default_value": 0.0,
+          "properties": [
+            "read",
+            "write",
+            "saved"
+          ]
+        },
+        {
+          "name": [
+            "f28",
+            "ft8"
           ],
           "nbits": "64",
           "value": 0.0,
@@ -722,8 +890,8 @@
         },
         {
           "name": [
-            "fa7",
-            "f17"
+            "f29",
+            "ft9"
           ],
           "nbits": "64",
           "value": 0.0,
@@ -735,8 +903,8 @@
         },
         {
           "name": [
-            "fs2",
-            "f18"
+            "f30",
+            "ft10"
           ],
           "nbits": "64",
           "value": 0.0,
@@ -748,164 +916,8 @@
         },
         {
           "name": [
-            "fs3",
-            "f19"
-          ],
-          "nbits": "64",
-          "value": 0.0,
-          "default_value": 0.0,
-          "properties": [
-            "read",
-            "write"
-          ]
-        },
-        {
-          "name": [
-            "fs4",
-            "f20"
-          ],
-          "nbits": "64",
-          "value": 0.0,
-          "default_value": 0.0,
-          "properties": [
-            "read",
-            "write"
-          ]
-        },
-        {
-          "name": [
-            "fs5",
-            "f21"
-          ],
-          "nbits": "64",
-          "value": 0.0,
-          "default_value": 0.0,
-          "properties": [
-            "read",
-            "write"
-          ]
-        },
-        {
-          "name": [
-            "fs6",
-            "f22"
-          ],
-          "nbits": "64",
-          "value": 0.0,
-          "default_value": 0.0,
-          "properties": [
-            "read",
-            "write"
-          ]
-        },
-        {
-          "name": [
-            "fs7",
-            "f23"
-          ],
-          "nbits": "64",
-          "value": 0.0,
-          "default_value": 0.0,
-          "properties": [
-            "read",
-            "write"
-          ]
-        },
-        {
-          "name": [
-            "fs8",
-            "f24"
-          ],
-          "nbits": "64",
-          "value": 0.0,
-          "default_value": 0.0,
-          "properties": [
-            "read",
-            "write"
-          ]
-        },
-        {
-          "name": [
-            "fs9",
-            "f25"
-          ],
-          "nbits": "64",
-          "value": 0.0,
-          "default_value": 0.0,
-          "properties": [
-            "read",
-            "write"
-          ]
-        },
-        {
-          "name": [
-            "fs10",
-            "f26"
-          ],
-          "nbits": "64",
-          "value": 0.0,
-          "default_value": 0.0,
-          "properties": [
-            "read",
-            "write"
-          ]
-        },
-        {
-          "name": [
-            "fs11",
-            "f27"
-          ],
-          "nbits": "64",
-          "value": 0.0,
-          "default_value": 0.0,
-          "properties": [
-            "read",
-            "write"
-          ]
-        },
-        {
-          "name": [
-            "ft8",
-            "f28"
-          ],
-          "nbits": "64",
-          "value": 0.0,
-          "default_value": 0.0,
-          "properties": [
-            "read",
-            "write"
-          ]
-        },
-        {
-          "name": [
-            "ft9",
-            "f29"
-          ],
-          "nbits": "64",
-          "value": 0.0,
-          "default_value": 0.0,
-          "properties": [
-            "read",
-            "write"
-          ]
-        },
-        {
-          "name": [
-            "ft10",
-            "f30"
-          ],
-          "nbits": "64",
-          "value": 0.0,
-          "default_value": 0.0,
-          "properties": [
-            "read",
-            "write"
-          ]
-        },
-        {
-          "name": [
-            "ft11",
-            "f31"
+            "f31",
+            "ft11"
           ],
           "nbits": "64",
           "value": 0.0,
@@ -1023,7 +1035,7 @@
           "valueField": "000"
         }
       ],
-      "definition": "rd = rs1 + inm;\n",
+      "definition": "rd = rs1 + inm;",
       "separated": [
         false,
         false,
@@ -1136,7 +1148,7 @@
           "valueField": "111"
         }
       ],
-      "definition": "rd = rs1 & capi_int2uint(inm);\n",
+      "definition": "rd = rs1 & capi_int2uint(inm);",
       "separated": [
         false,
         false,
@@ -1588,7 +1600,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "if (rs2 != 0)\n { rd = (rs1 >> 0) / (rs2 >> 0); }\n else { capi_raise('Division by zero not allowed'); }\n",
+      "definition": "if (rs2 != 0)\n { rd = (rs1 >> 0) / (rs2 >> 0); }\n else { capi_raise('Division by zero not allowed'); }",
       "separated": [
         false,
         false,
@@ -2451,7 +2463,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "if (rs2 != 0)\n { rd = rs1 / rs2; }\n else { capi_raise('Division by zero not allowed'); }\n",
+      "definition": "if (rs2 != 0)\n { rd = rs1 / rs2; }\n else { capi_raise('Division by zero not allowed'); }",
       "separated": [
         false,
         false,
@@ -2468,7 +2480,7 @@
       "signature": "fdiv.s,SFP-Reg,SFP-Reg,SFP-Reg",
       "signatureRaw": "fdiv.s rd rs1 rs2",
       "co": "1010011",
-      "cop": "0001000",
+      "cop": "0001100",
       "nwords": 1,
       "clk_cycles": 1,
       "fields": [
@@ -2483,7 +2495,7 @@
           "type": "cop",
           "startbit": 31,
           "stopbit": 25,
-          "valueField": "0001000"
+          "valueField": "0001100"
         },
         {
           "name": "rs2",
@@ -2504,7 +2516,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "if (rs2 != 0)\n { rd = rs1 / rs2; }\n else { capi_raise('Division by zero not allowed'); }\n",
+      "definition": "if (rs2 != 0)\n { rd = rs1 / rs2; }\n else { capi_raise('Division by zero not allowed'); }",
       "separated": [
         false,
         false,
@@ -3629,7 +3641,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = rs1;",
+      "definition": "rd = capi_uint2float32(rs1);",
       "separated": [
         false,
         false,
@@ -3684,7 +3696,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = rs1;",
+      "definition": "rd = capi_float322uint(rs1);",
       "separated": [
         false,
         false,
@@ -5377,7 +5389,7 @@
           "valueField": "110"
         }
       ],
-      "definition": "rd = rs1 | inm;\n",
+      "definition": "rd = rs1 | inm;",
       "separated": [
         false,
         false,
@@ -5418,7 +5430,7 @@
           "valueField": "010"
         }
       ],
-      "definition": "rd = capi_get_clk_cycles();\n",
+      "definition": "rd = capi_get_clk_cycles();",
       "help": ""
     },
     {
@@ -6412,7 +6424,7 @@
           "valueField": "100"
         }
       ],
-      "definition": "rd = rs1 ^ inm;\n",
+      "definition": "rd = rs1 ^ inm;",
       "separated": [
         false,
         false,
@@ -6778,7 +6790,7 @@
           "type": "offset_words"
         }
       ],
-      "definition": "jal x0 off;"
+      "definition": "beq zero zero off;"
     },
     {
       "name": "jalr",
@@ -6830,7 +6842,7 @@
           "type": "inm-unsigned"
         }
       ],
-      "definition": "no_ret_op{tmp=Field.2.(31,0).int - reg.pc;\ntmp_hi='0x'+(((tmp&0xFFFFF000)>>12) + ((tmp&0x00000400)>>11)).toString(16);\ntmp_low='0x'+(tmp&0x00000FFF).toString(16)};\nauipc rd op{tmp_hi};\naddi rd rd op{tmp_low};\n"
+      "definition": "no_ret_op{tmp=Field.2.(31,0).int - reg.pc;\ntmp_hi='0x'+(((tmp&0xFFFFF000)>>12) + ((tmp&0x00000400)>>11)).toString(16);\ntmp_low='0x'+(tmp&0x00000FFF).toString(16)};\nauipc rd op{tmp_hi};\naddi rd rd op{tmp_low};"
     },
     {
       "name": "li",
