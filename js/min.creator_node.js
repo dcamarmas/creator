@@ -3421,6 +3421,9 @@ function assembly_compiler()
 
         if(update_binary.instructions_binary != null){
           for(var i = 0; i < update_binary.instructions_binary.length; i++){
+
+            pc=pc+(architecture.instructions[i].nwords*4); //PRUEBA
+            
             instructions.push(update_binary.instructions_binary[i]);
             if(i === 0){
               instructions[instructions.length-1].hide = false;
@@ -6732,6 +6735,7 @@ function binaryStringToInt( b ) {
  */
 
 var execution_index     = 0;
+var execution_mode      = 0; // 0: instruction by instruction, 1: run program
 var run_program         = 0; // 0: stopped, 1: running, 2: stopped-by-breakpoint, 3: stopped-by-mutex-read
 var execution_init      = 1;
 var instructions_packed = 100;
@@ -7082,11 +7086,17 @@ function execute_instruction ( )
 
           re = new RegExp( "(?:\\W|^)(((" + clean_aliases +") *=)[^=])", "g");
           if (auxDef.search(re) != -1){
+            re = new RegExp("(" + clean_aliases + ")");
+            var reg_name = re.exec(auxDef)[0];
+            clean_name = clean_string(reg_name, 'reg_');
             writings_description = writings_description+"\nwriteRegister("+ clean_name +", "+i+", "+j+", \""+ signatureParts[i] + "\");";
           }
 
           re = new RegExp("([^a-zA-Z0-9])(?:" + clean_aliases + ")");
           if (auxDef.search(re) != -1){
+            re = new RegExp("(" + clean_aliases + ")");
+            var reg_name = re.exec(auxDef)[0];
+            clean_name = clean_string(reg_name, 'reg_');
             readings_description = readings_description + "var " + clean_name + "      = readRegister("+i+" ,"+j+", \""+ signatureParts[i] + "\");\n"
             readings_description = readings_description + "var " + clean_name + "_name = '" + clean_name + "';\n";
           }

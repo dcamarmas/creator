@@ -16,7 +16,7 @@ main:
     la x5, a
     la x6, b
     la x7, c
-    la x8, d
+    la x28, d
     
     fld   f0,  0(x5)
     fld   f2,  0(x6)
@@ -25,11 +25,11 @@ main:
     fsub.d f4,  f10, f0
     fdiv.d f12, f10, f2
     
-    fsd  f0,  0(x8)
-    addi x8, x8, 8
-    fsd  f4,  0(x8)
-    addi x8, x8, 8
-    fsd  f12, 0(x8)
+    fsd  f0,  0(x28)
+    addi x28, x28, 8
+    fsd  f4,  0(x28)
+    addi x28, x28, 8
+    fsd  f12, 0(x28)
 
     #return 
     jr ra

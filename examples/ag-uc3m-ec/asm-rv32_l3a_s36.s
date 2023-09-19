@@ -16,7 +16,7 @@
        # li   t0, -1
        # mul  t4, t4, t0              
 
-       addi  t4 t2 -10
-       mul   t4 t4 t1
-       add   t4 t4 t3
-       add   t4 x0 t4
+       addi  t4, t2, -10
+       mul   t4, t4, t1
+       add   t4, t4, t3
+       add   t4, x0, t4

@@ -395,6 +395,9 @@ function assembly_compiler()
 
         if(update_binary.instructions_binary != null){
           for(var i = 0; i < update_binary.instructions_binary.length; i++){
+
+            pc=pc+(architecture.instructions[i].nwords*4); //PRUEBA
+            
             instructions.push(update_binary.instructions_binary[i]);
             if(i === 0){
               instructions[instructions.length-1].hide = false;

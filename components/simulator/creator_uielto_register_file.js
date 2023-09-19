@@ -34,10 +34,11 @@
                   //Register value representation
                   reg_representation: "hex",
                   reg_representation_options: [
-                    { text: 'Signed',   value: 'signed' },
-                    { text: 'Unsig.',   value: 'unsigned' },
-                    { text: 'IEEE 754', value: 'ieee'},
-                    { text: 'Hex.',     value: 'hex' }
+                    { text: 'Signed',           value: 'signed' },
+                    { text: 'Unsig.',           value: 'unsigned' },
+                    { text: 'IEEE 754 (32)', value: 'ieee32'},
+                    { text: 'IEEE 754 (64)', value: 'ieee64'},
+                    { text: 'Hex.',             value: 'hex' }
                   ],
 
                   //Register name representation
@@ -57,7 +58,7 @@
   template:   ' <div>' +
               '   <b-container fluid align-h="between" class="mx-0 my-3 px-2">' +
               '     <b-row cols-xl="2" cols-lg="1" cols-md="2" cols-sm="1" cols-xs="1" cols="1">' +
-              '       <b-col align-h="start" class="px-2 col">' +
+              '       <b-col cols="12" xl="7" md="7" align-h="start" class="px-2 col">' +
               '         <div class="border m-1 py-1 px-2">' +
               '           <b-badge variant="light" class="h6 groupLabelling border mx-2 my-0">Register value representation</b-badge>' +
               '           <b-form-group class="mb-2" v-slot="{ ariaDescribedby }">' +
@@ -76,7 +77,7 @@
               '         </div >' +
               '       </b-col>' +
               ' ' +
-              '       <b-col align-h="end" class="px-2 col">' +
+              '       <b-col cols="12" xl="5" md="5" align-h="end" class="px-2 col">' +
               '         <div class="border m-1 py-1 px-2">' +
               '           <b-badge variant="light" class="h6 groupLabelling border mx-2 my-0">Register name representation</b-badge>' +
               '           <b-form-group class="mb-2" v-slot="{ ariaDescribedby }">' +
