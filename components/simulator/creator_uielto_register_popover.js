@@ -130,12 +130,7 @@
                         ret = hex2float("0x"+(((register.value).toString(16)).padStart(8, "0")));
                       }
                       else {
-                        if (architecture.components[this._props.component.index].double_precision === false) {
-                          ret = bi_BigIntTofloat(register.value);
-                        }
-                        else{
-                          ret = bi_BigIntTofloat(register.value);
-                        }
+                        ret = bi_BigIntTofloat(register.value);
                       }
                       break;
 
@@ -144,12 +139,7 @@
                         ret = hex2double("0x"+(((register.value).toString(16)).padStart(16, "0")));
                       }
                       else {
-                        if (architecture.components[this._props.component.index].double_precision === false) {
-                          ret = bi_BigIntTodouble(register.value);
-                        }
-                        else{
-                          ret = bi_BigIntTodouble(register.value);
-                        }
+                        ret = bi_BigIntTodouble(register.value);
                       }
                       break;
                   }
@@ -283,7 +273,7 @@ template:     '<b-popover :target="target" ' +
               '        </td>' +
               '      </tr>' +
 
-              '      <tr v-if="architecture.components[component.index].double_precision_type != \'linked\' && architecture.components[component.index].double_precision == true">' +
+              '      <tr>' +
               '        <td>IEEE 754 (64 bits)</td>' +
               '        <td>' +
               '          <b-badge class="registerPopover">' +

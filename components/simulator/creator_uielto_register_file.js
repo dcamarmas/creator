@@ -34,10 +34,11 @@
                   //Register value representation
                   reg_representation: "hex",
                   reg_representation_options: [
-                    { text: 'Signed',   value: 'signed' },
-                    { text: 'Unsig.',   value: 'unsigned' },
-                    { text: 'IEEE 754', value: 'ieee'},
-                    { text: 'Hex.',     value: 'hex' }
+                    { text: 'Signed',           value: 'signed' },
+                    { text: 'Unsig.',           value: 'unsigned' },
+                    { text: 'IEEE 754 32 bits', value: 'ieee32'},
+                    { text: 'IEEE 754 64 bits', value: 'ieee64'},
+                    { text: 'Hex.',             value: 'hex' }
                   ],
 
                   //Register name representation
