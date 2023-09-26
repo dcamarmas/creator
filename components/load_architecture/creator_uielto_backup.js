@@ -73,6 +73,7 @@
                     {
                       if(app._data.arch_available[i].name === app._data.architecture_name)
                       {
+                        app._data.architecture_guide=app._data.arch_available[i].guide;
                         uielto_preload_architecture.methods.load_examples_available(app._data.arch_available[i].examples[0]);
                       }
                     }
