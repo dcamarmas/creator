@@ -33,7 +33,8 @@
                     //Show modal
                     show_modal: false,
 
-                    backup_date: localStorage.getItem("backup_date")
+                    backup_date:      localStorage.getItem("backup_date"),
+                    backup_arch_name: localStorage.getItem("backup_arch_name")
                   }
                 },
 
@@ -53,8 +54,8 @@
                     //Load architecture from cache
                     var aux_architecture = JSON.parse(localStorage.getItem("backup_arch"));
                     architecture = register_value_deserialize(aux_architecture);
-                    app._data.architecture_name = localStorage.getItem("backup_arch_name"); 
-                    app._data.architecture = architecture;
+                    app._data.architecture_name = localStorage.getItem("backup_arch_name");
+                    Object.assign(app._data.architecture, architecture);
 
                     //Generate architecture hash table
                     architecture_hash = [];
@@ -73,6 +74,7 @@
                     {
                       if(app._data.arch_available[i].name === app._data.architecture_name)
                       {
+                        app._data.architecture_guide=app._data.arch_available[i].guide;
                         uielto_preload_architecture.methods.load_examples_available(app._data.arch_available[i].examples[0]);
                       }
                     }
@@ -86,6 +88,8 @@
                     uielto_data_view_selector.methods.change_data_view('int_registers');
                     
                     show_notification('The backup has been loaded correctly', 'success') ;
+
+                    this.show_modal=false;
                   },
 
                   //Delete backup on cache
@@ -106,7 +110,7 @@
                 '         hide-header' +
                 '         size="sm" centered>' +
                 '  <span class="h6">' +
-                '    A backup is available' +
+                '    A {{backup_arch_name}} backup is available.' +
                 '  </span>' +
                 '  <br>' +
                 '  <span class="h6">' +

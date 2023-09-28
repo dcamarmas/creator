@@ -539,7 +539,7 @@
             '            size="sm"' +
             '            variant="outline-secondary"' +
             '            @click="change_UI_mode(\'architecture\')">' +
-            '  <b-dropdown-item v-for="item in arch_available" @click="load_arch_select(item)">{{item.name}}</b-dropdown-item>' +
+            '  <b-dropdown-item v-for="item in arch_available" v-if="item.name != \'New Architecture\'" @click="load_arch_select(item)">{{item.name}}</b-dropdown-item>' +
             '</b-dropdown>'
   }
 
