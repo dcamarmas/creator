@@ -145,8 +145,8 @@
               '                  :pressed="get_pressed(\'clk_cycles\')"' +
               '                  variant="outline-secondary"' +
               '                  @click="change_data_view(\'clk_cycles\')">' +
-              '          <span class=" fas fa-bolt"></span>' +
-              '          Energy (CLK Cyles)' +
+              '          <span class="fa-regular fa-clock"></span>' +
+              '          CLK Cyles' +
               '        </b-button>' +
               '        ' +
               '      </b-button-group>' +
