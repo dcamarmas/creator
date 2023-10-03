@@ -2044,7 +2044,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "ra = PC;\n if (capi_uint2int(rs) >= 0)\n { PC = PC + ((off << 16) >> 14)\n capi_callconv_begin(reg0); capi_drawstack_begin(reg0); }"
+      "definition": "ra = PC;\n if (capi_uint2int(rs) >= 0)\n { PC = PC + ((off << 16) >> 14)\n capi_callconv_begin(rs); capi_drawstack_begin(rs); }"
     },
     {
       "name": "bgtz",
