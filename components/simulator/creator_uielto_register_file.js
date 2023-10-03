@@ -31,14 +31,19 @@
 
   data:       function () {
                 return {
+                  local_data_mode: "int_registers",
+
                   //Register value representation
-                  reg_representation: "hex",
-                  reg_representation_options: [
-                    { text: 'Signed',           value: 'signed' },
-                    { text: 'Unsig.',           value: 'unsigned' },
-                    { text: 'IEEE 754 (32)', value: 'ieee32'},
-                    { text: 'IEEE 754 (64)', value: 'ieee64'},
-                    { text: 'Hex.',             value: 'hex' }
+                  reg_representation: "signed",
+                  reg_representation_options_int: [
+                    { text: 'Signed',       value: 'signed' },
+                    { text: 'Unsigned',     value: 'unsigned' },
+                    { text: 'Hex',          value: 'hex' }
+                  ],
+
+                  reg_representation_options_fp: [
+                    { text: 'IEEE 754 (32 bits)', value: 'ieee32'},
+                    { text: 'IEEE 754 (64 bits)', value: 'ieee64'},
                   ],
 
                   //Register name representation
@@ -52,13 +57,28 @@
               },
 
   methods:    {
-              
+                mk_reg_representation_options(){
+                  if (this._props.data_mode == 'int_registers' || this._props.data_mode == 'ctrl_registers'){
+                    if (this._props.data_mode != this.local_data_mode) {
+                      this.reg_representation = "signed";
+                      this.local_data_mode = this._props.data_mode;
+                    }
+                    return this.reg_representation_options_int;
+                  }
+                  else{
+                    if (this._props.data_mode != this.local_data_mode) {
+                      this.reg_representation = "ieee32";
+                      this.local_data_mode = this._props.data_mode;
+                    }
+                    return this.reg_representation_options_fp;
+                  }
+                },
               },
 
   template:   ' <div>' +
               '   <b-container fluid align-h="between" class="mx-0 my-3 px-2">' +
               '     <b-row cols-xl="2" cols-lg="1" cols-md="2" cols-sm="1" cols-xs="1" cols="1">' +
-              '       <b-col cols="12" xl="7" md="7" align-h="start" class="px-2 col">' +
+              '       <b-col cols="12" xl="6" md="6" align-h="start" class="px-2 col">' +
               '         <div class="border m-1 py-1 px-2">' +
               '           <b-badge variant="light" class="h6 groupLabelling border mx-2 my-0">Register value representation</b-badge>' +
               '           <b-form-group class="mb-2" v-slot="{ ariaDescribedby }">' +
@@ -66,7 +86,7 @@
               '               id="btn-radios-1"' +
               '               class="w-100"' +
               '               v-model="reg_representation"' +
-              '               :options="reg_representation_options"' +
+              '               :options="mk_reg_representation_options()"' +
               '               button-variant="outline-secondary"' +
               '               size="sm"' +
               '               :aria-describedby="ariaDescribedby"' +
@@ -77,7 +97,7 @@
               '         </div >' +
               '       </b-col>' +
               ' ' +
-              '       <b-col cols="12" xl="5" md="5" align-h="end" class="px-2 col">' +
+              '       <b-col cols="12" xl="6" md="6" align-h="end" class="px-2 col">' +
               '         <div class="border m-1 py-1 px-2">' +
               '           <b-badge variant="light" class="h6 groupLabelling border mx-2 my-0">Register name representation</b-badge>' +
               '           <b-form-group class="mb-2" v-slot="{ ariaDescribedby }">' +
