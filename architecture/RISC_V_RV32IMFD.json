@@ -1969,7 +1969,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = parseFloat(rs1);",
+      "definition": "rd = capi_uint2int(rs1);",
       "separated": [
         false,
         false,
@@ -2134,7 +2134,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = rs1;",
+      "definition": "rd = capi_uint2int(rs1);",
       "separated": [
         false,
         false,
