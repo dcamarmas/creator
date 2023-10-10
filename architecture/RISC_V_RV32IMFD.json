@@ -3494,15 +3494,15 @@
       "name": "fmul.d",
       "type": "Arithmetic floating point",
       "signature_definition": "F0 F4 F3 F2",
-      "signature": "FMUL.D,DFP-Reg,DFP-Reg,DFP-Reg",
-      "signatureRaw": "FMUL.D rd rs1 rs2",
+      "signature": "fmul.d,DFP-Reg,DFP-Reg,DFP-Reg",
+      "signatureRaw": "fmul.d rd rs1 rs2",
       "co": "1010011",
       "cop": "0001001",
       "nwords": 1,
       "clk_cycles": 1,
       "fields": [
         {
-          "name": "FMUL.D",
+          "name": "fmul.d",
           "type": "co",
           "startbit": 6,
           "stopbit": 0
@@ -5091,7 +5091,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = rs1 * rs2;",
+      "definition": "rd = capi_uint2int(rs1) * capi_uint2int(rs2);",
       "separated": [
         false,
         false,
