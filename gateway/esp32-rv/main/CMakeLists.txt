@@ -1,2 +1,10 @@
-idf_component_register(SRCS  "program.s" "creator-esp.c" "ecall.s"
-                    INCLUDE_DIRS "")
+idf_component_register(
+   SRCS
+      "program.s"
+      "creator-esp.c"
+      "ecall.s"
+      "io.s" 
+      "creator.s"
+      "rdcycle.s"
+   INCLUDE_DIRS
+      "..")
