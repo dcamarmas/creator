@@ -3639,6 +3639,13 @@ function assembly_compiler()
                   var bin  = parseInt(addr, 16).toString(2);
                   var startbit = pending_instructions[i].startBit;
                   var stopbit  = pending_instructions[i].stopBit;
+                  var fieldsLength = startbit - stopbit + 1;
+
+                  //Error
+                  if (bin.length > fieldsLength) {
+                    nEnters=pending_instructions[i].line;
+                    return packCompileError('m8', signatureRawParts[j], 'error', "danger") ;
+                  }
 
                   instructionParts[j] = addr;
                   var newInstruction  = "";
@@ -3664,7 +3671,6 @@ function assembly_compiler()
                     if (aux == instructions[w].Address)
                     {
                       instructions[w].loaded = newInstruction;
-                      var fieldsLength = startbit - stopbit + 1;
                       console_log(w)
                       console_log(numBinaries)
                       console_log(w - numBinaries)
@@ -3685,6 +3691,14 @@ function assembly_compiler()
                 var bin  = parseInt(addr, 16).toString(2);
                 var startbit = pending_instructions[i].startBit;
                 var stopbit  = pending_instructions[i].stopBit;
+                var fieldsLength = startbit - stopbit + 1;
+
+                //Error
+                if (bin.length > fieldsLength) {
+                  nEnters=pending_instructions[i].line;
+                  return packCompileError('m8', instructionParts[j], 'error', "danger") ;
+                }
+
 
                 instructionParts[j] = "0x" + addr.toString(16);
                 var newInstruction = "";
