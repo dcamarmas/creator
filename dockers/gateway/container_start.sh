@@ -61,10 +61,10 @@ intro
 check_opts
 info
 
-docker container stop $(docker container ls -q --filter name=creator_gateway)
-docker container rm creator_gateway
+docker container stop $(docker container ls -q --filter name=creatorsim/creator_gateway)
+docker container rm creatorsim/creator_gateway
 
-docker build -t creator_gateway . --build-arg TARGET_BOARD=${TARGET_BOARD}
-docker run --init -it --device=${TARGET_PORT} -p 8080:8080 --name creator_gateway creator_gateway
+docker build -t creatorsim/creator_gateway . --build-arg TARGET_BOARD=${TARGET_BOARD}
+docker run --init -it --device=${TARGET_PORT} -p 8080:8080 --name creatorsim/creator_gateway creatorsim/creator_gateway
 
 echo " Done."
