@@ -1,8 +1,32 @@
 #!/bin/bash
-set -x
 
-docker container stop $(docker container ls -q --filter name=creatorsim/creator_cl)
-docker container rm creatorsim/creator_cl
 
-docker build -t creatorsim/creator_cl .
-docker run --init -it --name creatorsim/creator_cl creatorsim/creator_cl
+#
+# Auxiliar functions
+#
+
+intro() {
+   echo ""
+   echo " CREATOR Command Line"
+   echo " --------------------"
+   echo ""
+}
+
+
+#
+# Main
+#
+
+intro
+
+docker pull creatorsim/creator_cl
+
+if [[ -n $(docker container ls -q --filter name=creator_cl) ]]; then
+   docker container stop $(docker container ls -q --filter name=creator_cl)
+fi
+
+docker container rm creator_cl
+
+docker run --init -it --name creator_cl creatorsim/creator_cl
+
+echo " Done."
