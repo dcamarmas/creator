@@ -28,5 +28,15 @@ RUN git clone https://github.com/creatorsim/creator.git && \
     npm install terser jshint colors yargs readline-sync
 
 
+#Create workdir
+RUN mkdir -p /creator_workdir && \
+    cd       /creator_workdir && \
+    ln -s    /creator/creator.sh creator.sh && \
+    ln -s    /creator/architecture architecture && \
+    ln -s    /creator/examples examples && \
+    touch    assembly.s
+
+WORKDIR /creator_workdir
+
 #Run bash
 ENTRYPOINT ["bash"]
