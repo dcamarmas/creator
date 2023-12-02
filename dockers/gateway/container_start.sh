@@ -58,13 +58,20 @@ get_opts() {
 # Check arguments, and print it
 get_opts $@
 intro
-check_opts
 info
 
-docker container stop $(docker container ls -q --filter name=creatorsim/creator_gateway)
-docker container rm creatorsim/creator_gateway
+docker pull creatorsim/creator_gateway
 
-docker build -t creatorsim/creator_gateway . --build-arg TARGET_BOARD=${TARGET_BOARD}
-docker run --init -it --device=${TARGET_PORT} -p 8080:8080 --name creatorsim/creator_gateway creatorsim/creator_gateway
+if [[ -n $(docker container ls -q --filter name=creator_gateway) ]]; then
+   docker container stop $(docker container ls -q --filter name=creator_gateway)
+fi
+
+docker container rm creator_gateway
+
+if [ $# -ne 0 ]; then
+   docker build -t creatorsim/creator_gateway . --build-arg TARGET_BOARD=${TARGET_BOARD}
+fi
+
+docker run --init -it --device=${TARGET_PORT} -p 8080:8080 --name creator_gateway creatorsim/creator_gateway
 
 echo " Done."
