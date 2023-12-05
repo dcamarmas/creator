@@ -39,4 +39,4 @@ RUN mkdir -p /creator_workdir && \
 WORKDIR /creator_workdir
 
 #Run bash
-ENTRYPOINT ["bash"]
+CMD ["/usr/bin/sleep","infinity"]
