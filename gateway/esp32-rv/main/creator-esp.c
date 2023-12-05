@@ -39,6 +39,10 @@ void _creator_random_array (void * arr, size_t siz) {
   return esp_fill_random(arr, siz);
 }
 
+int _rdcycle () {
+	return esp_cpu_get_cycle_count();
+}
+
 void app_main(void)
 {
   /////////// para leer del monitor
