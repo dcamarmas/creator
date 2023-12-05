@@ -27,6 +27,6 @@ fi
 
 docker container rm creator_cl
 
-docker run --init -it --name creator_cl creatorsim/creator_cl
+docker run -it --name creator_cl creatorsim/creator_cl /bin/bash
 
 echo " Done."
