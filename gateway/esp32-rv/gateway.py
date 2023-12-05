@@ -57,10 +57,11 @@ def creator_build(file_in, file_out):
                     fout.write("sw ra, 4(sp)\n")
                     fout.write("sw a0, 0(sp)\n")
 
-                    fout.write("jal _esp_cpu_get_cycle_count\n")
+                    fout.write("jal ra, _rdcycle\n")
                     fout.write("mv "+ data[1] +", a0\n")
 
-                    fout.write("lw a0, 0(sp)\n")
+                    if data[1] != "a0":
+                        fout.write("lw a0, 0(sp)\n")
                     fout.write("lw ra, 4(sp)\n")
                     fout.write("addi sp, sp, 8\n")
                     fout.write("####################\n")

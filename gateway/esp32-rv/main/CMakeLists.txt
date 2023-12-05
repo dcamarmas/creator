@@ -5,6 +5,5 @@ idf_component_register(
       "ecall.s"
       "io.s" 
       "creator.s"
-      "rdcycle.s"
    INCLUDE_DIRS
       "..")
