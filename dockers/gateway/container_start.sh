@@ -72,6 +72,6 @@ if [ $# -ne 0 ]; then
    docker build -t creatorsim/creator_gateway . --build-arg TARGET_BOARD=${TARGET_BOARD}
 fi
 
-docker run --init -it --device=${TARGET_PORT} -p 8080:8080 --name creator_gateway creatorsim/creator_gateway
+docker run --init -it --device=${TARGET_PORT} -p 8080:8080 --name creator_gateway creatorsim/creator_gateway /bin/bash
 
 echo " Done."
