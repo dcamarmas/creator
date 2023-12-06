@@ -66,4 +66,4 @@ RUN mv /creator/gateway/${TARGET_BOARD}.zip . && \
 
 #Run web service
 COPY start_gateway.sh .
-ENTRYPOINT ["./start_gateway.sh"]
+CMD ["/usr/bin/sleep","infinity"]
