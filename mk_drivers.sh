@@ -22,6 +22,19 @@ zip -9rq esp32s2.zip esp32s2/
 zip -9rq esp32s3.zip esp32s3/
 cd ..
 
+echo "  Generating:"
+echo "  * Gateway docker..."
+echo ""
+
+cd dockers
+
+#Build gateway docker
+cd gateway
+docker container stop $(docker container ls -q --filter name=creatorsim/creator_gateway)
+docker container rm creatorsim/creator_gateway
+docker build --no-cache -t creatorsim/creator_gateway .
+cd ..
+
 
 # the end
 echo ""
