@@ -188,7 +188,7 @@
                     '     <b-tab title="Prerequisites">' +
                     ' ' +
                     '       <b-tabs content-class="mt-3">' +
-                    '         <b-tab title="Windows" active>' +
+                    '         <b-tab title="Docker Windows" active>' +
                     '           <b-container fluid align-h="center" class="mx-0 px-0">' +
                     '             <b-row cols="1" align-h="center">' +
                     '               <b-col class="pt-2">' +
@@ -307,7 +307,7 @@
                     '           </b-container>' +
                     '         </b-tab>' +
                     ' ' +
-                    '         <b-tab title="Linux/MacOS">' +
+                    '         <b-tab title="Docker Linux/MacOS">' +
                     '           <b-container fluid align-h="center" class="mx-0 px-0">' +
                     '             <b-row cols="1" align-h="center">' +
                     '               <b-col class="pt-2">' +
@@ -368,6 +368,83 @@
                     '                     <b-col md="12">' +
                     '                       <b-card-text style="text-align: left;margin:2%;">' +
                     '                         <code>./start_gateway.sh</code>' +
+                    '                       </b-card-text>' +
+                    '                     </b-col>' +
+                    '                   </b-row>' +
+                    '                 </b-card>' +
+                    '               </b-col>' +
+                    '             </b-row>' +
+                    '           </b-container>' +
+                    '         </b-tab>' +
+                    ' ' +
+                    '         <b-tab title="Native">' +
+                    '           <b-container fluid align-h="center" class="mx-0 px-0">' +
+                    '             <b-row cols="1" align-h="center">' +
+                    '               <b-col class="pt-2">' +
+                    '                 <label for="range-6">(2) Install the ESP32 Software (only the first time):</label>' +
+                    '                 <b-card class="text-center">' +
+                    '                   <b-row no-gutters>' +
+                    '                     <b-col md="12">' +
+                    '                       <b-card-text style="text-align: left;margin:2%;">' +
+                    '                         <span>Follow the instructions from: <a href="https://docs.espressif.com/projects/esp-idf/en/latest/esp32/" target="_blank">https://docs.espressif.com/projects/esp-idf/en/latest/esp32/</a></span>' +
+                    '                       </b-card-text>' +
+                    '                     </b-col>' +
+                    '                   </b-row>' +
+                    '                 </b-card>' +
+                    '               </b-col>' +
+                    '             </b-row>' +
+                    '           </b-container>' +
+                    ' ' +
+                    '           <b-container fluid align-h="center" class="mx-0 px-0">' +
+                    '             <b-row cols="1" align-h="center">' +
+                    '               <b-col class="pt-2">' +
+                    '                 <label for="range-6">(3) Install python3 packages:</label>' +
+                    '                 <b-card class="text-center">' +
+                    '                   <b-row no-gutters>' +
+                    '                     <b-col md="12">' +
+                    '                       <b-card-text style="text-align: left;margin:2%;">' +
+                    '                         <code>pip3 install flask flask_cors</code>' +
+                    '                       </b-card-text>' +
+                    '                     </b-col>' +
+                    '                   </b-row>' +
+                    '                 </b-card>' +
+                    '               </b-col>' +
+                    '             </b-row>' +
+                    '           </b-container>' +
+                    ' ' +
+                    '           <b-container fluid align-h="center" class="mx-0 px-0">' +
+                    '             <b-row cols="1" align-h="center">' +
+                    '               <b-col class="pt-2">' +
+                    '                 <label for="range-6">(4) Download the driver:</label>' +
+                    '                 <b-button class="btn btn-sm btn-block" variant="outline-primary" @click="download_driver"><span class="fas fa-download"></span> Download Driver</b-button>' +
+                    '               </b-col>' +
+                    '             </b-row>' +
+                    '           </b-container>' +
+                    ' ' +
+                    '           <b-container fluid align-h="center" class="mx-0 px-0">' +
+                    '             <b-row cols="1" align-h="center">' +
+                    '               <b-col class="pt-2">' +
+                    '                 <label for="range-6">(5) Run driver:</label>' +
+                    '                 <b-card class="text-center">' +
+                    '                   <b-row no-gutters>' +
+                    '                     <b-col md="12">' +
+                    '                       <b-card-text style="text-align: justify;margin:2%;">' +
+                    '                         <span>Load the environment variable for your board with:</span>' +
+                    '                         <br>' +
+                    '                         <code>. $HOME/esp/esp-idf/export.sh</code>' +
+                    '                         <br>' +
+                    '                         <br>' +
+                    '                         <span>Unzip the driver.zip file and change into the driver directory associated to your board with "cd <board>", for example:</span>' +
+                    '                         <br>' +
+                    '                         <code>unzip driver.zip</code>' +
+                    '                         <br>' +
+                    '                         <code>cd &lt;board&gt;</code>' +
+                    '                         <br>' +
+                    '                         <br>' +
+                    '                         <span>Execute the gateway web service:</span>' +
+                    '                         <br>' +
+                    '                         <code>python3 gateway.py</code>' +
+                    '                         <br>' +
                     '                       </b-card-text>' +
                     '                     </b-col>' +
                     '                   </b-row>' +
