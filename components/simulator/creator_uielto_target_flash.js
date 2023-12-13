@@ -42,7 +42,7 @@
                                         //{ text: 'ESP32-S3 (MIPS-32)', value: 'esp32s3' },
                                         ],
 
-                        /*target_ports  = { Win: 'COM1', Mac: '/dev/cu.usbserial-210', Linux: '/dev/ttyUSB0' },
+                        /*target_ports  = { Win: 'rfc2217://host.docker.internal:4000?ign_set_control', Mac: '/dev/cu.usbserial-210', Linux: '/dev/ttyUSB0' },
 
                         target_board  = "esp32c3",
                         target_port   = this.get_target_port(),
@@ -186,82 +186,276 @@
                     ' ' +
                     '   <b-tabs content-class="mt-3">' +
                     '     <b-tab title="Prerequisites">' +
-                    '       <b-container fluid align-h="center" class="mx-0 px-0">' +
-                    '         <b-row cols="1" align-h="center">' +
-                    '           <b-col class="pt-2">' +
-                    '             <label for="range-6">(2) Install the ESP32 Software (only the first time):</label>' +
-                    '             <b-card class="text-center">' +
-                    '               <b-row no-gutters>' +
-                    '                 <b-col md="12">' +
-                    '                   <b-card-text style="text-align: left;margin:2%;">' +
-                    '                     <span>Follow the instructions from: <a href="https://docs.espressif.com/projects/esp-idf/en/latest/esp32/" target="_blank">https://docs.espressif.com/projects/esp-idf/en/latest/esp32/</a></span>' +
-                    '                   </b-card-text>' +
-                    '                 </b-col>' +
-                    '               </b-row>' +
-                    '             </b-card>' +
-                    '           </b-col>' +
-                    '         </b-row>' +
-                    '       </b-container>' +
                     ' ' +
-                    '       <b-container fluid align-h="center" class="mx-0 px-0">' +
-                    '         <b-row cols="1" align-h="center">' +
-                    '           <b-col class="pt-2">' +
-                    '             <label for="range-6">(3) Install python3 packages:</label>' +
-                    '             <b-card class="text-center">' +
-                    '               <b-row no-gutters>' +
-                    '                 <b-col md="12">' +
-                    '                   <b-card-text style="text-align: left;margin:2%;">' +
-                    '                     <code>pip3 install flask flask_cors</code>' +
-                    '                   </b-card-text>' +
-                    '                 </b-col>' +
-                    '               </b-row>' +
-                    '             </b-card>' +
-                    '           </b-col>' +
-                    '         </b-row>' +
-                    '       </b-container>' +
+                    '       <b-tabs content-class="mt-3">' +
+                    '         <b-tab title="Docker Windows" active>' +
+                    '           <b-container fluid align-h="center" class="mx-0 px-0">' +
+                    '             <b-row cols="1" align-h="center">' +
+                    '               <b-col class="pt-2">' +
+                    '                 <label for="range-6">(2) Install Docker Desktop (only the first time):</label>' +
+                    '                 <b-card class="text-center">' +
+                    '                   <b-row no-gutters>' +
+                    '                     <b-col md="12">' +
+                    '                       <b-card-text style="text-align: left;margin:2%;">' +
+                    '                         <span>Follow the instructions from: <a href="https://docs.docker.com/desktop/install/windows-install/" target="_blank">https://docs.docker.com/desktop/install/windows-install/</a></span>' +
+                    '                       </b-card-text>' +
+                    '                     </b-col>' +
+                    '                   </b-row>' +
+                    '                 </b-card>' +
+                    '               </b-col>' +
+                    '             </b-row>' +
+                    '           </b-container>' +
                     ' ' +
-                    '       <b-container fluid align-h="center" class="mx-0 px-0">' +
-                    '         <b-row cols="1" align-h="center">' +
-                    '           <b-col class="pt-2">' +
-                    '             <label for="range-6">(4) Download the driver:</label>' +
-                    '             <b-button class="btn btn-sm btn-block" variant="outline-primary" @click="download_driver"><span class="fas fa-download"></span> Download Driver</b-button>' +
-                    '           </b-col>' +
-                    '         </b-row>' +
-                    '       </b-container>' +
+                    '           <b-container fluid align-h="center" class="mx-0 px-0">' +
+                    '             <b-row cols="1" align-h="center">' +
+                    '               <b-col class="pt-2">' +
+                    '                 <label for="range-6">(3) Download esptool (only the first time):</label>' +
+                    '                 <b-card class="text-center">' +
+                    '                   <b-row no-gutters>' +
+                    '                     <b-col md="12">' +
+                    '                       <b-card-text style="text-align: left;margin:2%;">' +
+                    '                         <span>Download from: <a href="https://github.com/espressif/esptool/reles" target="_blank">https://github.com/espressif/esptool/releases</a></span>' +
+                    '                       </b-card-text>' +
+                    '                     </b-col>' +
+                    '                   </b-row>' +
+                    '                 </b-card>' +
+                    '               </b-col>' +
+                    '             </b-row>' +
+                    '           </b-container>' +
                     ' ' +
-                    '       <b-container fluid align-h="center" class="mx-0 px-0">' +
-                    '         <b-row cols="1" align-h="center">' +
-                    '           <b-col class="pt-2">' +
-                    '             <label for="range-6">(5) Run driver:</label>' +
-                    '             <b-card class="text-center">' +
-                    '               <b-row no-gutters>' +
-                    '                 <b-col md="12">' +
-                    '                   <b-card-text style="text-align: justify;margin:2%;">' +
-                    '                     <span>Load the environment variable for your board with:</span>' +
-                    '                     <br>' +
-                    '                     <code>. $HOME/esp/esp-idf/export.sh</code>' +
-                    '                     <br>' +
-                    '                     <br>' +
-                    '                     <span>Unzip the driver.zip file and change into the driver directory associated to your board with "cd <board>", for example:</span>' +
-                    '                     <br>' +
-                    '                     <code>unzip driver.zip</code>' +
-                    '                     <br>' +
-                    '                     <code>cd &lt;board&gt;</code>' +
-                    '                     <br>' +
-                    '                     <br>' +
-                    '                     <span>Execute the gateway web service:</span>' +
-                    '                     <br>' +
-                    '                     <code>python3 gateway.py</code>' +
-                    '                     <br>' +
-                    '                   </b-card-text>' +
-                    '                 </b-col>' +
-                    '               </b-row>' +
-                    '             </b-card>' +
-                    '           </b-col>' +
-                    '         </b-row>' +
-                    '       </b-container>' +
+                    '           <b-container fluid align-h="center" class="mx-0 px-0">' +
+                    '             <b-row cols="1" align-h="center">' +
+                    '               <b-col class="pt-2">' +
+                    '                 <label for="range-6">(4) Pull creator_gateway image in Docker Desktop:</label>' +
+                    '                 <b-card class="text-center">' +
+                    '                   <b-row no-gutters>' +
+                    '                     <b-col md="12">' +
+                    '                       <b-card-text style="text-align: left;margin:2%;">' +
+                    '                         <ol style="margin:3%;">' +
+                    '                           <li>Search for "creatorsim/creator_gateway" in the Docker Desktop browser</li>' +
+                    '                           <li>Click the "Pull" button</li>' +
+                    '                         </ol>' +
+                    '                       </b-card-text>' +
+                    '                     </b-col>' +
+                    '                   </b-row>' +
+                    '                 </b-card>' +
+                    '               </b-col>' +
+                    '             </b-row>' +
+                    '           </b-container>' +
+                    ' ' +
+                    '           <b-container fluid align-h="center" class="mx-0 px-0">' +
+                    '             <b-row cols="1" align-h="center">' +
+                    '               <b-col class="pt-2">' +
+                    '                 <label for="range-6">(5) Run creator_gateway image:</label>' +
+                    '                 <b-card class="text-center">' +
+                    '                   <b-row no-gutters>' +
+                    '                     <b-col md="12">' +
+                    '                       <b-card-text style="text-align: left;margin:2%;">' +
+                    '                         <ol style="margin:3%;">' +
+                    '                           <li>Click the "Run" button</li>' +
+                    '                           <li>Click the "Optional settings" button</li>' +
+                    '                           <li>Set the Host port to 8080</li>' +
+                    '                           <li>Click the "Run" button</li>' +
+                    '                         </ol>' +
+                    '                       </b-card-text>' +
+                    '                     </b-col>' +
+                    '                   </b-row>' +
+                    '                 </b-card>' +
+                    '               </b-col>' +
+                    '             </b-row>' +
+                    '           </b-container>' +
+                    ' ' +
+                    '           <b-container fluid align-h="center" class="mx-0 px-0">' +
+                    '             <b-row cols="1" align-h="center">' +
+                    '               <b-col class="pt-2">' +
+                    '                 <label for="range-6">(6) Run start_gateway script in the container bash:</label>' +
+                    '                 <b-card class="text-center">' +
+                    '                   <b-row no-gutters>' +
+                    '                     <b-col md="12">' +
+                    '                       <b-card-text style="text-align: left;margin:2%;">' +
+                    '                         <ol style="margin:3%;">' +
+                    '                           <li>Click the "Exec" button</li>' +
+                    '                           <li>Execute <code>./start_gateway.sh</code>' +
+                    '                         </ol>' +
+                    '                       </b-card-text>' +
+                    '                     </b-col>' +
+                    '                   </b-row>' +
+                    '                 </b-card>' +
+                    '               </b-col>' +
+                    '             </b-row>' +
+                    '           </b-container>' +
+                    ' ' +
+                    '           <b-container fluid align-h="center" class="mx-0 px-0">' +
+                    '             <b-row cols="1" align-h="center">' +
+                    '               <b-col class="pt-2">' +
+                    '                 <label for="range-6">(7) Run esp_rfc2217_server in windows cmd:</label>' +
+                    '                 <b-card class="text-center">' +
+                    '                   <b-row no-gutters>' +
+                    '                     <b-col md="12">' +
+                    '                       <b-card-text style="text-align: left;margin:2%;">' +
+                    '                         <ol style="margin:3%;">' +
+                    '                           <li>Execute the windows cmd in the esptool path</li>' +
+                    '                           <li>Execute <code>esp_rfc2217_server -v -p 4000 <target_port></code>' +
+                    '                         </ol>' +
+                    '                         <span>For more information: <a href="https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/tools/idf-docker-image.html#using-remote-serial-port" target="_blank">https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/tools/idf-docker-image.html#using-remote-serial-port</a></span>' +
+                    '                       </b-card-text>' +
+                    '                     </b-col>' +
+                    '                   </b-row>' +
+                    '                 </b-card>' +
+                    '               </b-col>' +
+                    '             </b-row>' +
+                    '           </b-container>' +
+                    '         </b-tab>' +
+                    ' ' +
+                    '         <b-tab title="Docker Linux/MacOS">' +
+                    '           <b-container fluid align-h="center" class="mx-0 px-0">' +
+                    '             <b-row cols="1" align-h="center">' +
+                    '               <b-col class="pt-2">' +
+                    '                 <label for="range-6">(2) Install Docker Engine (only the first time):</label>' +
+                    '                 <b-card class="text-center">' +
+                    '                   <b-row no-gutters>' +
+                    '                     <b-col md="12">' +
+                    '                       <b-card-text style="text-align: left;margin:2%;">' +
+                    '                         <span>Follow the instructions from: <a href="https://docs.docker.com/engine/install/" target="_blank">https://docs.docker.com/engine/install/</a></span>' +
+                    '                       </b-card-text>' +
+                    '                     </b-col>' +
+                    '                   </b-row>' +
+                    '                 </b-card>' +
+                    '               </b-col>' +
+                    '             </b-row>' +
+                    '           </b-container>' +
+                    ' ' +
+                    '           <b-container fluid align-h="center" class="mx-0 px-0">' +
+                    '             <b-row cols="1" align-h="center">' +
+                    '               <b-col class="pt-2">' +
+                    '                 <label for="range-6">(3) Pull creator_gateway image:</label>' +
+                    '                 <b-card class="text-center">' +
+                    '                   <b-row no-gutters>' +
+                    '                     <b-col md="12">' +
+                    '                       <b-card-text style="text-align: left;margin:2%;">' +
+                    '                         <code>docker pull creatorsim/creator_gateway</code>' +
+                    '                       </b-card-text>' +
+                    '                     </b-col>' +
+                    '                   </b-row>' +
+                    '                 </b-card>' +
+                    '               </b-col>' +
+                    '             </b-row>' +
+                    '           </b-container>' +
+                    ' ' +
+                    '           <b-container fluid align-h="center" class="mx-0 px-0">' +
+                    '             <b-row cols="1" align-h="center">' +
+                    '               <b-col class="pt-2">' +
+                    '                 <label for="range-6">(4) Run creator_gateway image:</label>' +
+                    '                 <b-card class="text-center">' +
+                    '                   <b-row no-gutters>' +
+                    '                     <b-col md="12">' +
+                    '                       <b-card-text style="text-align: left;margin:2%;">' +
+                    '                         <code>docker run --init -it --device=<target_port> -p 8080:8080 --name creator_gateway creatorsim/creator_gateway /bin/bash</code>' +
+                    '                       </b-card-text>' +
+                    '                     </b-col>' +
+                    '                   </b-row>' +
+                    '                 </b-card>' +
+                    '               </b-col>' +
+                    '             </b-row>' +
+                    '           </b-container>' +
+                    ' ' +
+                    '           <b-container fluid align-h="center" class="mx-0 px-0">' +
+                    '             <b-row cols="1" align-h="center">' +
+                    '               <b-col class="pt-2">' +
+                    '                 <label for="range-6">(5) Run start_gateway script in the container bash:</label>' +
+                    '                 <b-card class="text-center">' +
+                    '                   <b-row no-gutters>' +
+                    '                     <b-col md="12">' +
+                    '                       <b-card-text style="text-align: left;margin:2%;">' +
+                    '                         <code>./start_gateway.sh</code>' +
+                    '                       </b-card-text>' +
+                    '                     </b-col>' +
+                    '                   </b-row>' +
+                    '                 </b-card>' +
+                    '               </b-col>' +
+                    '             </b-row>' +
+                    '           </b-container>' +
+                    '         </b-tab>' +
+                    ' ' +
+                    '         <b-tab title="Native">' +
+                    '           <b-container fluid align-h="center" class="mx-0 px-0">' +
+                    '             <b-row cols="1" align-h="center">' +
+                    '               <b-col class="pt-2">' +
+                    '                 <label for="range-6">(2) Install the ESP32 Software (only the first time):</label>' +
+                    '                 <b-card class="text-center">' +
+                    '                   <b-row no-gutters>' +
+                    '                     <b-col md="12">' +
+                    '                       <b-card-text style="text-align: left;margin:2%;">' +
+                    '                         <span>Follow the instructions from: <a href="https://docs.espressif.com/projects/esp-idf/en/latest/esp32/" target="_blank">https://docs.espressif.com/projects/esp-idf/en/latest/esp32/</a></span>' +
+                    '                       </b-card-text>' +
+                    '                     </b-col>' +
+                    '                   </b-row>' +
+                    '                 </b-card>' +
+                    '               </b-col>' +
+                    '             </b-row>' +
+                    '           </b-container>' +
+                    ' ' +
+                    '           <b-container fluid align-h="center" class="mx-0 px-0">' +
+                    '             <b-row cols="1" align-h="center">' +
+                    '               <b-col class="pt-2">' +
+                    '                 <label for="range-6">(3) Install python3 packages:</label>' +
+                    '                 <b-card class="text-center">' +
+                    '                   <b-row no-gutters>' +
+                    '                     <b-col md="12">' +
+                    '                       <b-card-text style="text-align: left;margin:2%;">' +
+                    '                         <code>pip3 install flask flask_cors</code>' +
+                    '                       </b-card-text>' +
+                    '                     </b-col>' +
+                    '                   </b-row>' +
+                    '                 </b-card>' +
+                    '               </b-col>' +
+                    '             </b-row>' +
+                    '           </b-container>' +
+                    ' ' +
+                    '           <b-container fluid align-h="center" class="mx-0 px-0">' +
+                    '             <b-row cols="1" align-h="center">' +
+                    '               <b-col class="pt-2">' +
+                    '                 <label for="range-6">(4) Download the driver:</label>' +
+                    '                 <b-button class="btn btn-sm btn-block" variant="outline-primary" @click="download_driver"><span class="fas fa-download"></span> Download Driver</b-button>' +
+                    '               </b-col>' +
+                    '             </b-row>' +
+                    '           </b-container>' +
+                    ' ' +
+                    '           <b-container fluid align-h="center" class="mx-0 px-0">' +
+                    '             <b-row cols="1" align-h="center">' +
+                    '               <b-col class="pt-2">' +
+                    '                 <label for="range-6">(5) Run driver:</label>' +
+                    '                 <b-card class="text-center">' +
+                    '                   <b-row no-gutters>' +
+                    '                     <b-col md="12">' +
+                    '                       <b-card-text style="text-align: justify;margin:2%;">' +
+                    '                         <span>Load the environment variable for your board with:</span>' +
+                    '                         <br>' +
+                    '                         <code>. $HOME/esp/esp-idf/export.sh</code>' +
+                    '                         <br>' +
+                    '                         <br>' +
+                    '                         <span>Unzip the driver.zip file and change into the driver directory associated to your board with "cd <board>", for example:</span>' +
+                    '                         <br>' +
+                    '                         <code>unzip driver.zip</code>' +
+                    '                         <br>' +
+                    '                         <code>cd &lt;board&gt;</code>' +
+                    '                         <br>' +
+                    '                         <br>' +
+                    '                         <span>Execute the gateway web service:</span>' +
+                    '                         <br>' +
+                    '                         <code>python3 gateway.py</code>' +
+                    '                         <br>' +
+                    '                       </b-card-text>' +
+                    '                     </b-col>' +
+                    '                   </b-row>' +
+                    '                 </b-card>' +
+                    '               </b-col>' +
+                    '             </b-row>' +
+                    '           </b-container>' +
+                    '         </b-tab>' +
+                    '       </b-tabs>' +
                     '     </b-tab>' +
-                    ' '+
+                    ' ' +
                     '     <b-tab title="Run" active>' +
                     '       <b-container fluid align-h="center" class="mx-0 px-0">' +
                     '         <b-row cols="1" align-h="center">' +
