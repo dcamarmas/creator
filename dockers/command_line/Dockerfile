@@ -34,7 +34,8 @@ RUN mkdir -p /creator_workdir && \
     ln -s    /creator/creator.sh creator.sh && \
     ln -s    /creator/architecture architecture && \
     ln -s    /creator/examples examples && \
-    touch    assembly.s
+    touch    assembly.s && \
+    mkdir    shared
 
 WORKDIR /creator_workdir
 
