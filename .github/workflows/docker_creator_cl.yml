@@ -1,0 +1,24 @@
+name: creator_cl Docker Image CI
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:    
+    name: Build creator_cl Docker Image
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up QEMU        
+      uses: docker/setup-qemu-action@v1
+    - name: Set up Docker Buildx        
+      uses: docker/setup-buildx-action@v1
+    - name: Login to GitHub Package Registry        
+      run: echo "${{ secrets.GH_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+    - name: Build & Push Docker image
+      run: docker buildx build -t ghcr.io/${{ github.repository_owner }}/creator_cl -f ./dockers/command_line/Dockerfile  --push --platform=linux/arm64,linux/amd64 .
