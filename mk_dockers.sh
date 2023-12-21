@@ -19,7 +19,8 @@ cd dockers
 cd gateway
 docker container stop $(docker container ls -q --filter name=creatorsim/creator_gateway)
 docker container rm creatorsim/creator_gateway
-docker build --no-cache -t creatorsim/creator_gateway .
+#docker build --no-cache -t creatorsim/creator_gateway .
+ docker buildx build --no-cache --platform linux/amd64,linux/arm64,linux/arm/v7 -t creatorsim/creator_gateway .
 cd ..
 
 #Build command line docker
