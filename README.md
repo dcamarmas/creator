@@ -6,7 +6,7 @@
 
 ## CREATOR project
 
-![example workflow](https://github.com/creatorsim/creator/actions/workflows/node.js.yml/badge.svg)
+![example workflow](https://github.com/creatorsim/creator/actions/workflows/creator_workflow.yml/badge.svg)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/84668451decf487bbc85b13129f0ebb5)](https://www.codacy.com/gh/creatorsim/creator/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=creatorsim/creator&amp;utm_campaign=Badge_Grade)
 [![Generic badge](https://img.shields.io/badge/achecker-WCAG%202.0%20(Level%20AAA)-green.svg)](https://shields.io/)
 
