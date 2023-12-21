@@ -18,7 +18,6 @@ RUN apt update && apt-get install -y \
         vim \
         aha \
         7zip \
-        rar \
         unrar \
         zip \
         unzip
