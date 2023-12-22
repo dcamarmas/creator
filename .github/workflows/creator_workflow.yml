@@ -46,7 +46,7 @@ jobs:
     - name: Login to GitHub Package Registry        
       run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
     - name: Build & Push Docker image
-      run: cd ./dockers/command_line/ && docker buildx build -t ghcr.io/${{ github.repository_owner }}/creator_cl -f ./Dockerfile  --push --platform=linux/arm64,linux/amd64 .
+      run: cd ./dockers/command_line/ && docker buildx build -t ghcr.io/${{ github.repository_owner }}/creator_cl:${GITHUB_SHA} -t ghcr.io/${{ github.repository_owner }}/creator_cl  -f ./Dockerfile  --push --platform=linux/amd64,linux/arm64,linux/arm/v7 .
 
   push-creator-cl:    
     name: Push creator_cl Docker Image
@@ -62,13 +62,9 @@ jobs:
       run: docker login -u creatorsim -p ${DH_TOKEN}
     - name: Re-tag & Push Docker Image to Docker Hub        
       run: |          
-        # make config.json avaiable to regclient in docker container
         chmod +r $HOME/.docker/config.json
-        # Run regclient in docker image
-        docker container run --rm --network host \
-          -v regctl-conf:/home/appuser/.regctl/ \            
-          -v $HOME/.docker/config.json:/home/appuser/.docker/config.json \            
-          regclient/regctl:v0.3.9 image copy ghcr.io/${{ github.repository_owner }}/creator_cl docker.io/creatorsim/creator_cl
+        docker container run --rm --network host -v regctl-conf:/home/appuser/.regctl/ -v $HOME/.docker/config.json:/home/appuser/.docker/config.json regclient/regctl:v0.3.9 image copy ghcr.io/${{ github.repository_owner }}/creator_cl:${GITHUB_SHA}  docker.io/creatorsim/creator_cl:${GITHUB_SHA}
+        docker container run --rm --network host -v regctl-conf:/home/appuser/.regctl/ -v $HOME/.docker/config.json:/home/appuser/.docker/config.json regclient/regctl:v0.3.9 image copy ghcr.io/${{ github.repository_owner }}/creator_cl docker.io/creatorsim/creator_cl
         
   build-creator-gateway:    
     name: Build creator_gateway Docker Image
@@ -86,4 +82,23 @@ jobs:
     - name: Login to GitHub Package Registry        
       run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
     - name: Build & Push Docker image
-      run: cd ./dockers/gateway/ && docker buildx build -t ghcr.io/${{ github.repository_owner }}/creator_gateway -f ./Dockerfile  --push --platform=linux/arm64,linux/amd64 .
+      run: cd ./dockers/gateway/ && docker buildx build -t ghcr.io/${{ github.repository_owner }}/creator_gateway:${GITHUB_SHA} -t ghcr.io/${{ github.repository_owner }}/creator_gateway -f ./Dockerfile  --push --platform=linux/amd64,linux/arm64,linux/arm/v7 .
+
+  push-creator-gateway:    
+    name: Push creator_gateway Docker Image
+    needs: build-creator-gateway
+    if: github.event_name != 'pull_request' && github.repository_owner == 'creatorsim'
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Login to Docker Hub        
+      env:          
+        DH_TOKEN: ${{ secrets.DOCKER_HUB_PASSWORD }}               
+      run: docker login -u creatorsim -p ${DH_TOKEN}
+    - name: Re-tag & Push Docker Image to Docker Hub        
+      run: |          
+        chmod +r $HOME/.docker/config.json
+        docker container run --rm --network host -v regctl-conf:/home/appuser/.regctl/ -v $HOME/.docker/config.json:/home/appuser/.docker/config.json regclient/regctl:v0.3.9 image copy ghcr.io/${{ github.repository_owner }}/creator_gateway:${GITHUB_SHA}  docker.io/creatorsim/creator_gateway:${GITHUB_SHA}
+        docker container run --rm --network host -v regctl-conf:/home/appuser/.regctl/ -v $HOME/.docker/config.json:/home/appuser/.docker/config.json regclient/regctl:v0.3.9 image copy ghcr.io/${{ github.repository_owner }}/creator_gateway docker.io/creatorsim/creator_gateway
+
