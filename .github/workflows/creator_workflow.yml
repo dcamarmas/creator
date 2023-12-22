@@ -65,7 +65,7 @@ jobs:
         # make config.json avaiable to regclient in docker container
         chmod +r $HOME/.docker/config.json
         # Run regclient in docker image
-        docker container run --rm --net host \
+        docker container run --rm --network host \
           -v regctl-conf:/home/appuser/.regctl/ \            
           -v $HOME/.docker/config.json:/home/appuser/.docker/config.json \            
           regclient/regctl:v0.3.9 image copy ghcr.io/${{ github.repository_owner }}/creator_cl docker.io/creatorsim/creator_cl
