@@ -214,7 +214,7 @@
                     '                   <b-row no-gutters>' +
                     '                     <b-col md="12">' +
                     '                       <b-card-text style="text-align: left;margin:2%;">' +
-                    '                         <span>Download from: <a href="https://github.com/espressif/esptool/reles" target="_blank">https://github.com/espressif/esptool/releases</a></span>' +
+                    '                         <span>Download from: <a href="https://github.com/espressif/esptool/releases" target="_blank">https://github.com/espressif/esptool/releases</a></span>' +
                     '                       </b-card-text>' +
                     '                     </b-col>' +
                     '                   </b-row>' +
@@ -295,7 +295,7 @@
                     '                       <b-card-text style="text-align: left;margin:2%;">' +
                     '                         <ol style="margin:3%;">' +
                     '                           <li>Execute the windows cmd in the esptool path</li>' +
-                    '                           <li>Execute <code>esp_rfc2217_server -v -p 4000 <target_port></code>' +
+                    '                           <li>Execute <code>esp_rfc2217_server -v -p 4000 &lt;target_port&gt;</code>' +
                     '                         </ol>' +
                     '                         <span>For more information: <a href="https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/tools/idf-docker-image.html#using-remote-serial-port" target="_blank">https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/tools/idf-docker-image.html#using-remote-serial-port</a></span>' +
                     '                       </b-card-text>' +
@@ -350,7 +350,7 @@
                     '                   <b-row no-gutters>' +
                     '                     <b-col md="12">' +
                     '                       <b-card-text style="text-align: left;margin:2%;">' +
-                    '                         <code>docker run --init -it --device=<target_port> -p 8080:8080 --name creator_gateway creatorsim/creator_gateway /bin/bash</code>' +
+                    '                         <code>docker run --init -it --device=&lt;target_port&gt; -p 8080:8080 --name creator_gateway creatorsim/creator_gateway /bin/bash</code>' +
                     '                       </b-card-text>' +
                     '                     </b-col>' +
                     '                   </b-row>' +
@@ -434,7 +434,7 @@
                     '                         <code>. $HOME/esp/esp-idf/export.sh</code>' +
                     '                         <br>' +
                     '                         <br>' +
-                    '                         <span>Unzip the driver.zip file and change into the driver directory associated to your board with "cd <board>", for example:</span>' +
+                    '                         <span>Unzip the driver.zip file and change into the driver directory associated to your board with "cd &lt;board&gt;", for example:</span>' +
                     '                         <br>' +
                     '                         <code>unzip driver.zip</code>' +
                     '                         <br>' +
