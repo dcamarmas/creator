@@ -46,7 +46,7 @@ jobs:
     - name: Login to GitHub Package Registry        
       run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
     - name: Build & Push Docker image
-      run: cd ./dockers/command_line/ && docker buildx build -t ghcr.io/${{ github.repository_owner }}/creator_cl:${GITHUB_SHA}  -f ./Dockerfile  --push --platform=linux/arm64,linux/amd64 .
+      run: cd ./dockers/command_line/ && docker buildx build -t ghcr.io/${{ github.repository_owner }}/creator_cl:${GITHUB_SHA}  -f ./Dockerfile  --push --platform=linux/amd64,linux/arm64,linux/arm/v7 .
 
   push-creator-cl:    
     name: Push creator_cl Docker Image
@@ -83,7 +83,7 @@ jobs:
     - name: Login to GitHub Package Registry        
       run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
     - name: Build & Push Docker image
-      run: cd ./dockers/gateway/ && docker buildx build -t ghcr.io/${{ github.repository_owner }}/creator_gateway -f ./Dockerfile  --push --platform=linux/arm64,linux/amd64 .
+      run: cd ./dockers/gateway/ && docker buildx build -t ghcr.io/${{ github.repository_owner }}/creator_gateway -f ./Dockerfile  --push --platform=linux/amd64,linux/arm64,linux/arm/v7 .
 
   push-creator-gateway:    
     name: Push creator_gateway Docker Image
