@@ -43,6 +43,20 @@
 ## ChangeLog
 
 <details open>
+<summary>:atom: 4.0.x:</summary>
+
+  - [x] New functionality:
+     * Integration with real hardware based on RISC-V (ESP32)
+     * Possibility to choose the default working architecture
+  - [x] User Interface:
+     * Improved register file visualization
+     * Performance improvements (e.g. program execution, data segment loading, etc.)
+     * Updating external dependencies (fontawesome v6.2.1, jquery v3.6.3, lodash v4.17.15, and Apexchart)
+     * Several minor bug fixed
+
+</details>
+
+<details>
 <summary>:atom: 3.2.x:</summary>
 
   - [x] User Interface:
