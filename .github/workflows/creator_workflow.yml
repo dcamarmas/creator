@@ -32,6 +32,9 @@ jobs:
         swap-storage: true
         
   creator-checker:
+    name: Execute CREATOR Checker
+    needs: free-disk-space
+  
     runs-on: ubuntu-latest
 
     strategy:
