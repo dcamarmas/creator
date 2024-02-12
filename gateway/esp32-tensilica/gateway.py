@@ -2,7 +2,7 @@
 
 
 #
-#  Copyright 2022-2023 Felix Garcia Carballeira, Diego Carmarmas Alonso, Alejandro Calderon Mateos
+#  Copyright 2022-2024 Felix Garcia Carballeira, Diego Carmarmas Alonso, Alejandro Calderon Mateos
 #
 #  This file is part of CREATOR.
 #
