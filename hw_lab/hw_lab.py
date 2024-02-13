@@ -31,21 +31,27 @@ import subprocess, os, signal, sys, json, threading, time, requests
 ## Queues ##
 
 # Queue variables
-queue_incoming = {'queue': [], 'size': 0}
-queue_outgoing = {'queue': [], 'size': 0}
+queue_incoming = {'queue': [], 'lock': None, 'size': 0}
+queue_outgoing = {'queue': [], 'lock': None, 'size': 0}
 
 
 # Queue functions
 def enqueue_request (queue, request):
   global request_id
 
+  queue['lock'].acquire()
+
   queue['queue'].append(request)
   queue['size'] = queue['size'] + 1
+
+  queue['lock'].release()
 
   return request_id
 
 def dequeue_request (queue, target_board):
   request = None
+
+  queue['lock'].acquire()
 
   for index, item in enumerate(queue['queue']):
     if item['target_board'] == target_board:
@@ -53,10 +59,14 @@ def dequeue_request (queue, target_board):
       del queue['queue'][index]
       queue['size'] = queue['size'] - 1
 
+  queue['lock'].release()
+
   return request
 
 def dequeue_request_byid (queue, request_id):
   request = None
+
+  queue['lock'].acquire()
 
   for index, item in enumerate(queue['queue']):
     if item['request_id'] == request_id:
@@ -64,13 +74,20 @@ def dequeue_request_byid (queue, request_id):
       del queue['queue'][index]
       queue['size'] = queue['size'] - 1
 
+  queue['lock'].release()
+
   return request
 
 def delete_request (queue, request_id):
+  queue['lock'].acquire()
+
   for index, item in enumerate(queue['queue']):
     if item['request_id'] == request_id:
       del queue['queue'][index]
+      queue['lock'].release()
       return 0
+
+  queue['lock'].release()
   return -1
 
 def position_request (queue, request_id):
@@ -88,7 +105,11 @@ def worker(item):
   global deployment, queue_incoming, queue_outgoing
 
   while 1:
+
+    print("IN before " + str(queue_incoming))
     ret = dequeue_request (queue_incoming, deployment[item]['target_board'])
+    print("IN after " + str(queue_incoming))
+
 
     if ret == None:
       time.sleep(20)
@@ -102,13 +123,17 @@ def worker(item):
 
 
       ###################
-      ret["status"] = 'todo'
+      print("running " + str(ret))
       time.sleep(3)
+      ret["status"] = 'Completed'
       ###################
 
 
       deployment[item]['status'] = 'free'
+
+      print("OUT before " + str(queue_outgoing))
       enqueue_request (queue_outgoing, ret)
+      print("OUT after " + str(queue_outgoing))
 
 
 
@@ -147,9 +172,12 @@ deployment_file.close()
 
 
 # (3) Queue management
+queue_incoming['lock'] = threading.Lock()
+queue_outgoing['lock'] = threading.Lock()
+
 for index, item in enumerate(deployment):
   deployment[item]['status'] = 'free'
-
+  print("launch")
   t = threading.Thread(target=worker, name='Daemon', args=(item,))
   t.start()
 
@@ -206,7 +234,7 @@ def post_delete():
 
   try:
     req_data = request.get_json()
-    req_id   = req_data['req_id']
+    req_id   = str(req_data['req_id'])
     req_data['status'] = ''
 
     req_data['status'] = delete_request (queue_incoming, req_id)
@@ -224,7 +252,7 @@ def post_position():
 
   try:
     req_data = request.get_json()
-    req_id   = req_data['req_id']
+    req_id   = str(req_data['req_id'])
     req_data['status'] = ''
 
     req_data['status'] = position_request (queue_incoming, req_id)
@@ -242,7 +270,7 @@ def post_status():
 
   try:
     req_data = request.get_json()
-    req_id   = req_data['req_id']
+    req_id   = str(req_data['req_id'])
     req_data['status'] = ''
 
     ret = dequeue_request_byid (queue_outgoing, req_id)
