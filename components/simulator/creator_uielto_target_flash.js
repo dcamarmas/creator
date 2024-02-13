@@ -22,7 +22,7 @@
 
   /* jshint esversion: 6 */
 
-  var this_display = null;
+  var this_env = null;
 
   var uielto_flash = {
         props:      {
@@ -36,17 +36,24 @@
 
         data:       function () {
                       return {
+
+                        //
+                        //Remote lab
+                        //
+
                         remote_labs = [
-                                        { text: 'UC3M Lab',  value: 'uc3m',  url: 'http://10.119.4.139:5000' },
-                                        { text: 'Other...',  value: 'other', url: '' },
+                                        { text: 'Please select an option', value: "",      disabled: true },
+                                        { text: 'UC3M Lab',                value: 'uc3m',  url: 'http://10.119.4.139:5000' },
+                                        { text: 'Other...',                value: 'other', url: '' },
                                       ],
 
                         remote_target_boards =  [
-                                                  { text: 'ESP32-C2 (RISC-V)',  value: 'esp32c2' },
-                                                  { text: 'ESP32-C3 (RISC-V)',  value: 'esp32c3' },
-                                                  { text: 'ESP32-H2 (RISC-V)',  value: 'esp32h2' },
-                                                //{ text: 'ESP32-S2 (MIPS-32)', value: 'esp32s2' },
-                                                //{ text: 'ESP32-S3 (MIPS-32)', value: 'esp32s3' },
+                                                  { text: 'Please select an option', value: "", disabled: true },
+                                                  { text: 'ESP32-C2 (RISC-V)',       value: 'esp32c2' },
+                                                  { text: 'ESP32-C3 (RISC-V)',       value: 'esp32c3' },
+                                                  { text: 'ESP32-H2 (RISC-V)',       value: 'esp32h2' },
+                                                //{ text: 'ESP32-S2 (MIPS-32)',      value: 'esp32s2' },
+                                                //{ text: 'ESP32-S3 (MIPS-32)',      value: 'esp32s3' },
                                                 ],
 
                         /*
@@ -55,24 +62,24 @@
                         */
 
                         request_id = -1,
-                        position = 0,
+                        position = "",
 
-                        get_url = false,
                         boards  = false,
                         enqueue = false,
+                        status  = false,
 
 
-
-                        ////////////////////////////////////////////////////////////////////////////////////
-
-
+                        //
+                        //Local Device
+                        //
 
                         target_boards = [
-                                          { text: 'ESP32-C2 (RISC-V)',  value: 'esp32c2' },
-                                          { text: 'ESP32-C3 (RISC-V)',  value: 'esp32c3' },
-                                          { text: 'ESP32-H2 (RISC-V)',  value: 'esp32h2' },
-                                        //{ text: 'ESP32-S2 (MIPS-32)', value: 'esp32s2' },
-                                        //{ text: 'ESP32-S3 (MIPS-32)', value: 'esp32s3' },
+                                          { text: 'Please select an option', value: "", disabled: true },
+                                          { text: 'ESP32-C2 (RISC-V)',       value: 'esp32c2' },
+                                          { text: 'ESP32-C3 (RISC-V)',       value: 'esp32c3' },
+                                          { text: 'ESP32-H2 (RISC-V)',       value: 'esp32h2' },
+                                        //{ text: 'ESP32-S2 (MIPS-32)',      value: 'esp32s2' },
+                                        //{ text: 'ESP32-S3 (MIPS-32)',      value: 'esp32s3' },
                                         ],
 
                         /*
@@ -91,19 +98,21 @@
                     },
 
         methods:    {
+
+                      //
+                      //Remote lab
+                      //
+
                       get_lab_url()
                       {
                         this.save();
 
                         if (this.remote_lab == "other")
                         {
-                          this.get_url = true;
                           this.boards  = false;
                         }
                         else
                         {
-                          this.get_url = false;
-
                           for (var i = 0; i < remote_labs.length; i++)
                           {
                             if (remote_labs[i]['value'] == this.remote_lab)
@@ -141,22 +150,57 @@
                         }
 
                         this.enqueue = true;
+                        this.status  = true;
 
                         var earg =  {
                                       target_board: this.target_board,
                                       assembly:     code_assembly
                                     } ;
 
-                        this_display = this;
+                        this_env = this;
                         hw_lab_enqueue(this.lab_url + "/enqueue", earg).then( function(data)  { 
-                                                                                                this_display.display += data; 
-                                                                                                var monitor = document.getElementById('textarea_display'); 
-                                                                                                monitor.scrollTop = monitor.scrollHeight;
-                                                                                                this_display.request_id = data;
+                                                                                                this_env.request_id = data;
+                                                                                                this_env.position = "";
+                                                                                                this_env.check_status();
                                                                                               } ) ;
 
                         //Google Analytics
                         creator_ga('simulator', 'simulator.enqueue', 'simulator.enqueue');
+                      },
+
+                      check_status()
+                      {
+                        if (this.position != "Completed")
+                        {
+                          this.get_status();
+                          setTimeout(this.check_status,10000);
+                        }
+                      },
+
+                      get_status ()
+                      {
+                        this.save();
+
+                        var parg =  {
+                                      req_id: this.request_id
+                                    } ;
+
+                        this_env = this;
+                        hw_lab_status(this.lab_url + "/status", parg).then( function(data)  { 
+                                                                                              if (data == "Completed") {
+                                                                                                this_env.enqueue = false;
+                                                                                              }
+                                                                                              if (data != "-1") {
+                                                                                                if (!isNaN(data)) {
+                                                                                                  this_env.position = "Queue position: " + data;
+                                                                                                }
+                                                                                                else{
+                                                                                                  this_env.position = data;
+                                                                                                }
+                                                                                              }
+                                                                                            } ) ;
+                        //Google Analytics
+                        creator_ga('simulator', 'simulator.position', 'simulator.position');
                       },
 
                       do_cancel ()
@@ -169,51 +213,20 @@
                                       req_id: this.request_id
                                     } ;
 
-                        this_display = this;
+                        this_env = this;
                         hw_lab_cancel(this.lab_url + "/delete", carg).then( function(data)  { 
-                                                                                              this_display.display += data; 
-                                                                                              var monitor = document.getElementById('textarea_display'); 
-                                                                                              monitor.scrollTop = monitor.scrollHeight;
+                                                                                              this_env.enqueue = false;
+                                                                                              this_env.position = "Canceled"
                                                                                             } ) ;
 
                         //Google Analytics
                         creator_ga('simulator', 'simulator.cancel', 'simulator.cancel');
                       },
 
-                      do_position ()
-                      {
-                        this.save();
 
-                        var parg =  {
-                                      req_id: this.request_id
-                                    } ;
-
-                        hw_lab_enqueue(this.lab_url + "/position", parg).then( function(data)  { 
-                                                                                                this_display.display += data; 
-                                                                                                var monitor = document.getElementById('textarea_display'); 
-                                                                                                monitor.scrollTop = monitor.scrollHeight;
-                                                                                                this_display.position = data;
-                                                                                              } ) ;
-                        //Google Analytics
-                        creator_ga('simulator', 'simulator.enqueue', 'simulator.enqueue');
-                      },
-
-                      get_status()
-                      {
-                        this.save();
-
-                        //TODO
-                        return                       
-                      },
-
-
-
-
-
-
-
-
-                      ///////////////////////////////////////////////////////////////////////////////////
+                      //
+                      //Local device
+                      //
 
                       /*get_target_port()
                       {
@@ -254,10 +267,10 @@
                                       assembly:     code_assembly,
                                     } ;
 
-                        this_display = this;
+                        this_env = this;
                         gateway_remote_flash(this.flash_url + "/flash", farg).then( function(data)  { 
-                                      				                                                        this_display.display += data; 
-                                      				                                                        this_display.flashing = false; 
+                                      				                                                        this_env.display += data; 
+                                      				                                                        this_env.flashing = false; 
                                       				                                                        var monitor = document.getElementById('textarea_display'); 
                                       				                                                        monitor.scrollTop = monitor.scrollHeight;
                                                                                                       show_notification(data, 'danger') ;
@@ -279,10 +292,10 @@
                                       assembly:     code_assembly,
                                     } ;
 
-                        this_display = this;
+                        this_env = this;
                         gateway_remote_monitor(this.flash_url + "/monitor", farg).then( function(data)  { 
-                                                                                                          this_display.display += data; 
-                                                                                                          this_display.running = false; 
+                                                                                                          this_env.display += data; 
+                                                                                                          this_env.running = false; 
                                                                                                           var monitor = document.getElementById('textarea_display'); 
                                                                                                           monitor.scrollTop = monitor.scrollHeight;
                                                                                                           show_notification(data, 'danger') ;
@@ -298,10 +311,10 @@
                         
                         this.flashing = false;
 
-                        this_display = this;
+                        this_env = this;
                         gateway_remote_stop_flash(this.flash_url + "/stop").then( function(data)  { 
-                                      				                                                      this_display.display += data; 
-                                      				                                                      this_display.flashing = false; 
+                                      				                                                      this_env.display += data; 
+                                      				                                                      this_env.flashing = false; 
                                       				                                                      var monitor = document.getElementById('textarea_display'); 
                                       				                                                      monitor.scrollTop = monitor.scrollHeight;
                                                                                                     show_notification(data, 'danger') ;
@@ -311,7 +324,9 @@
                         creator_ga('simulator', 'simulator.stop_flash', 'simulator.stop_flash');
                       },
 
-                      /////////////////////////////////////////////////////////////////////////
+                      //
+                      //General
+                      //
 
                       save( )
                       {
@@ -351,7 +366,7 @@
                     '       </b-container>' +
                     '       <br>' +
                     ' ' +
-                    '       <b-container fluid align-h="center" class="mx-0 px-0" v-if="get_url">' +
+                    '       <b-container fluid align-h="center" class="mx-0 px-0" v-if="remote_lab == \'other\'">' +
                     '         <b-row cols="1" align-h="center">' +
                     '           <b-col class="pt-2">' +
                     '             <label for="range-6">(1a) Remote lab URL:</label>' +
@@ -365,7 +380,7 @@
                     '           </b-col>' +
                     '         </b-row>' +
                     '       </b-container>' +
-                    '       <br v-if="get_url">' +
+                    '       <br v-if="remote_lab == \'other\'">' +
                     ' ' +
                     '       <b-container fluid align-h="center" class="mx-0 px-0" v-if="boards">' +
                     '         <b-row cols="1" align-h="center">' +
@@ -381,10 +396,10 @@
                     '       </b-container>' +
                     '       <br>' +
                     ' ' +
-                    '       <b-container fluid align-h="center" class="mx-0 px-0" v-if="enqueue">' +
+                    '       <b-container fluid align-h="center" class="mx-0 px-0" v-if="status">' +
                     '         <b-row cols="1" align-h="center">' +
                     '           <b-col class="pt-2">' +
-                    '             <span>Queue position: {{position}}</span>' +
+                    '             <span>Program status: {{position}}</span>' +
                     '           </b-col>' +
                     '         </b-row>' +
                     '       </b-container>' +
@@ -394,15 +409,15 @@
                     '         <b-row cols="2" align-h="center">' +
                     '           <b-col class="pt-2">' +
                     '             <b-button class="btn btn-sm btn-block" variant="primary" @click="do_enqueue" v-if="!enqueue">' +
-                    '               <span class="fas fa-paper-plane"></span> Enqueue' +
+                    '               <span class="fas fa-paper-plane"></span> Send program' +
                     '             </b-button>' +
                     '             <b-button class="btn btn-sm btn-block" variant="danger" @click="do_cancel" v-if="enqueue">' +
-                    '               <span class="fas fa-ban"></span> Cancel' +
+                    '               <span class="fas fa-ban"></span> Cancel program' +
                     '             </b-button>' +
                     '           </b-col>' +
                     '           <b-col class="pt-2">' +
                     '             <b-button class="btn btn-sm btn-block" variant="primary" @click="get_status">' +
-                    '              <span class="fas fa-chart-column"></span> Lab status' +
+                    '              <span class="fas fa-chart-column"></span> Program status' +
                     '             </b-button>' +
                     '           </b-col>' +
                     '         </b-row>' +
@@ -800,12 +815,8 @@
 
   Vue.component('flash', uielto_flash)
 
-
-
-
-
   //
-  // Web service functions
+  // Remote Lab web service functions
   //
 
   async function hw_lab_get_boards ( lab_url )
@@ -897,7 +908,65 @@
     }
   }
 
-  //////////////////////////////////////////////////////////////////////////
+  async function hw_lab_position ( lab_url, position_args )
+  {
+    var fetch_args =  {
+                        method:   'POST',
+                        headers:  {
+                                    'Content-type': 'application/json',
+                                    'Accept':       'application/json'
+                                  },
+                        body:     JSON.stringify(position_args)
+                      } ;
+
+    try
+    {
+      var res  = await fetch(lab_url, fetch_args) ;
+      var jres = await res.json();
+
+      return jres.status;
+    }
+    catch (err)
+    {
+      if (err.toString() == "TypeError: Failed to fetch") {
+        return "Please, execute 'python3 gateway.py' and connect your board first\n";
+      }
+
+      return err.toString() + "\n";
+    }
+  }
+
+  async function hw_lab_status ( lab_url, status_args )
+  {
+    var fetch_args =  {
+                        method:   'POST',
+                        headers:  {
+                                    'Content-type': 'application/json',
+                                    'Accept':       'application/json'
+                                  },
+                        body:     JSON.stringify(status_args)
+                      } ;
+
+    try
+    {
+      var res  = await fetch(lab_url, fetch_args) ;
+      var jres = await res.json();
+
+      return jres.status;
+    }
+    catch (err)
+    {
+      if (err.toString() == "TypeError: Failed to fetch") {
+        return "Please, execute 'python3 gateway.py' and connect your board first\n";
+      }
+
+      return err.toString() + "\n";
+    }
+  }
+
+  //
+  // Local device web service functions
+  //
 
   async function gateway_remote_flash ( flash_url, flash_args )
   {
@@ -982,4 +1051,3 @@
       return err.toString() + "\n";
     }
   }
-
