@@ -36,7 +36,9 @@ RUN git clone https://github.com/creatorsim/creator.git && \
     cd creator && \
     npm install terser jshint colors yargs readline-sync
 
+RUN ln -s /creator/hw_lab/deployment.json deployment.json
 
-#Run web service./
+
+#Run web service
 COPY start_hw_lab.sh .
 CMD ["/usr/bin/sleep","infinity"]
