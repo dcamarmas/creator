@@ -130,8 +130,25 @@
                         if (this.lab_url != "")
                         {
                           this.save();
-                          ret = hw_lab_get_boards(this.lab_url + "/target_boards");
-                          this.boards = true;
+
+                          this_env = this;
+                          hw_lab_get_boards(this.lab_url + "/target_boards").then( function(data) { 
+                                                                                                    if (data != "-1") 
+                                                                                                    {
+                                                                                                      available_boards = JSON.parse(data);
+
+                                                                                                      for (var i = 1; i < this_env.remote_target_boards.length; i++)
+                                                                                                      {
+                                                                                                        if (!available_boards.includes(this_env.remote_target_boards[i]['value']))
+                                                                                                        {
+                                                                                                          this_env.remote_target_boards.splice(i,1);
+                                                                                                          i--;
+                                                                                                        }
+                                                                                                      }
+
+                                                                                                      this_env.boards = true;
+                                                                                                    }
+                                                                                                  } ) ;
                         }
                         else
                         {
@@ -149,9 +166,6 @@
                           return;
                         }
 
-                        this.enqueue = true;
-                        this.status  = true;
-
                         var earg =  {
                                       target_board: this.target_board,
                                       assembly:     code_assembly
@@ -159,9 +173,14 @@
 
                         this_env = this;
                         hw_lab_enqueue(this.lab_url + "/enqueue", earg).then( function(data)  { 
-                                                                                                this_env.request_id = data;
-                                                                                                this_env.position = "";
-                                                                                                this_env.check_status();
+                                                                                                if (data != "-1") 
+                                                                                                {
+                                                                                                  this_env.request_id = data;
+                                                                                                  this_env.enqueue = true;
+                                                                                                  this_env.status  = true;
+                                                                                                  this_env.position = "";
+                                                                                                  this_env.check_status();
+                                                                                                }
                                                                                               } ) ;
 
                         //Google Analytics
@@ -170,7 +189,7 @@
 
                       check_status()
                       {
-                        if (this.position != "Completed")
+                        if (this.position != "Completed" && this.position != "Error")
                         {
                           this.get_status();
                           setTimeout(this.check_status,10000);
@@ -191,10 +210,14 @@
                                                                                                 this_env.enqueue = false;
                                                                                               }
                                                                                               if (data != "-1") {
-                                                                                                if (!isNaN(data)) {
+                                                                                                if (data == "-2") {
+                                                                                                  this_env.position = "Error";
+                                                                                                  this_env.enqueue = false;
+                                                                                                }
+                                                                                                else if (!isNaN(data)) {
                                                                                                   this_env.position = "Queue position: " + data;
                                                                                                 }
-                                                                                                else{
+                                                                                                else {
                                                                                                   this_env.position = data;
                                                                                                 }
                                                                                               }
@@ -207,16 +230,17 @@
                       {
                         this.save();
 
-                        this.enqueue = false;
-
                         var carg =  {
                                       req_id: this.request_id
                                     } ;
 
                         this_env = this;
                         hw_lab_cancel(this.lab_url + "/delete", carg).then( function(data)  { 
-                                                                                              this_env.enqueue = false;
-                                                                                              this_env.position = "Canceled"
+                                                                                              if (data != "-1") 
+                                                                                              {
+                                                                                                this_env.enqueue = false;
+                                                                                                this_env.position = "Canceled"
+                                                                                              }
                                                                                             } ) ;
 
                         //Google Analytics
@@ -405,19 +429,21 @@
                     '       </b-container>' +
                     '       <br>' +
                     ' ' +
-                    '       <b-container fluid align-h="center" class="mx-0 px-0" v-if="boards">' +
-                    '         <b-row cols="2" align-h="center">' +
+                    '       <b-container fluid align-h="center" class="mx-0 px-0" v-if="target_board !=\'\' && !enqueue">' +
+                    '         <b-row cols="1" align-h="center">' +
                     '           <b-col class="pt-2">' +
-                    '             <b-button class="btn btn-sm btn-block" variant="primary" @click="do_enqueue" v-if="!enqueue">' +
+                    '             <b-button class="btn btn-sm btn-block" variant="primary" @click="do_enqueue">' +
                     '               <span class="fas fa-paper-plane"></span> Send program' +
                     '             </b-button>' +
-                    '             <b-button class="btn btn-sm btn-block" variant="danger" @click="do_cancel" v-if="enqueue">' +
-                    '               <span class="fas fa-ban"></span> Cancel program' +
-                    '             </b-button>' +
                     '           </b-col>' +
+                    '         </b-row>' +
+                    '       </b-container>' +
+                    ' ' +
+                    '       <b-container fluid align-h="center" class="mx-0 px-0" v-if="target_board !=\'\' && enqueue">' +
+                    '         <b-row cols="1" align-h="center">' +
                     '           <b-col class="pt-2">' +
-                    '             <b-button class="btn btn-sm btn-block" variant="primary" @click="get_status">' +
-                    '              <span class="fas fa-chart-column"></span> Program status' +
+                    '             <b-button class="btn btn-sm btn-block" variant="danger" @click="do_cancel">' +
+                    '               <span class="fas fa-ban"></span> Cancel program' +
                     '             </b-button>' +
                     '           </b-col>' +
                     '         </b-row>' +
@@ -828,24 +854,15 @@
     try
     {
       var res  = await fetch(lab_url, fetch_args) ;
-      var target_boards = await res.text();
 
-      for (var i = 0; i < this.remote_target_boards.length; i++)
-      {
-        if (!target_boards.includes(this.remote_target_boards[i]['value']))
-        {
-          this.remote_target_boards.splice(i,1);
-        }
-      }
-
-      var jres = await res.json();
-
-      return jres.status;
+      return await res.text();
     }
     catch (err)
     {
-      if (err.toString() == "TypeError: Failed to fetch") {
-        return "Please, execute 'python3 hw_lab.py' and connect your board first\n";
+      if (err.toString() == "TypeError: Failed to fetch") 
+      {
+        show_notification("Error connecting to the lab", 'danger') ;
+        return "-1";
       }
 
       return err.toString() + "\n";
@@ -872,8 +889,10 @@
     }
     catch (err)
     {
-      if (err.toString() == "TypeError: Failed to fetch") {
-        return "Please, execute 'python3 gateway.py' and connect your board first\n";
+      if (err.toString() == "TypeError: Failed to fetch") 
+      {
+        show_notification("Error connecting to the lab", 'danger') ;
+        return "-1";
       }
 
       return err.toString() + "\n";
@@ -900,8 +919,10 @@
     }
     catch (err)
     {
-      if (err.toString() == "TypeError: Failed to fetch") {
-        return "Please, execute 'python3 gateway.py' and connect your board first\n";
+      if (err.toString() == "TypeError: Failed to fetch")
+      {
+        show_notification("Error connecting to the lab", 'danger') ;
+        return "-1";
       }
 
       return err.toString() + "\n";
@@ -928,8 +949,10 @@
     }
     catch (err)
     {
-      if (err.toString() == "TypeError: Failed to fetch") {
-        return "Please, execute 'python3 gateway.py' and connect your board first\n";
+      if (err.toString() == "TypeError: Failed to fetch")
+      {
+        show_notification("Error connecting to the lab", 'danger') ;
+        return "-1";
       }
 
       return err.toString() + "\n";
@@ -956,8 +979,10 @@
     }
     catch (err)
     {
-      if (err.toString() == "TypeError: Failed to fetch") {
-        return "Please, execute 'python3 gateway.py' and connect your board first\n";
+      if (err.toString() == "TypeError: Failed to fetch")
+      {
+        show_notification("Error connecting to the lab", 'danger') ;
+        return "-2";
       }
 
       return err.toString() + "\n";

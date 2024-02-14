@@ -151,7 +151,7 @@ request_id = 0
 
 # (1) Check params
 if len(sys.argv) < 2:
-  print("Use: python3 gateway_queue.py <deployment_file> [port]");
+  print("Use: python3 hw_lab.py <deployment_file> [port]");
   exit(-1)
 
 port = 5000
@@ -191,7 +191,7 @@ app  = Flask(__name__)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
-# (4a) GET / -> send gateway_queue.html
+# (4a) GET / -> send hw_lab.html
 @app.route("/", methods=["GET"])
 @cross_origin()
 def get_status():
