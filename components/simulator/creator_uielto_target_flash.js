@@ -149,9 +149,6 @@
                           return;
                         }
 
-                        this.enqueue = true;
-                        this.status  = true;
-
                         var earg =  {
                                       target_board: this.target_board,
                                       assembly:     code_assembly
@@ -159,9 +156,14 @@
 
                         this_env = this;
                         hw_lab_enqueue(this.lab_url + "/enqueue", earg).then( function(data)  { 
-                                                                                                this_env.request_id = data;
-                                                                                                this_env.position = "";
-                                                                                                this_env.check_status();
+                                                                                                if (!isNaN(data)) 
+                                                                                                {
+                                                                                                  this_env.request_id = data;
+                                                                                                  this_env.enqueue = true;
+                                                                                                  this_env.status  = true;
+                                                                                                  this_env.position = "";
+                                                                                                  this_env.check_status();
+                                                                                                }
                                                                                               } ) ;
 
                         //Google Analytics
@@ -207,16 +209,17 @@
                       {
                         this.save();
 
-                        this.enqueue = false;
-
                         var carg =  {
                                       req_id: this.request_id
                                     } ;
 
                         this_env = this;
                         hw_lab_cancel(this.lab_url + "/delete", carg).then( function(data)  { 
-                                                                                              this_env.enqueue = false;
-                                                                                              this_env.position = "Canceled"
+                                                                                              if (!isNaN(data)) 
+                                                                                              {
+                                                                                                this_env.enqueue = false;
+                                                                                                this_env.position = "Canceled"
+                                                                                              }
                                                                                             } ) ;
 
                         //Google Analytics
@@ -405,19 +408,21 @@
                     '       </b-container>' +
                     '       <br>' +
                     ' ' +
-                    '       <b-container fluid align-h="center" class="mx-0 px-0" v-if="boards">' +
-                    '         <b-row cols="2" align-h="center">' +
+                    '       <b-container fluid align-h="center" class="mx-0 px-0" v-if="boards && !enqueue">' +
+                    '         <b-row cols="1" align-h="center">' +
                     '           <b-col class="pt-2">' +
-                    '             <b-button class="btn btn-sm btn-block" variant="primary" @click="do_enqueue" v-if="!enqueue">' +
+                    '             <b-button class="btn btn-sm btn-block" variant="primary" @click="do_enqueue">' +
                     '               <span class="fas fa-paper-plane"></span> Send program' +
                     '             </b-button>' +
-                    '             <b-button class="btn btn-sm btn-block" variant="danger" @click="do_cancel" v-if="enqueue">' +
-                    '               <span class="fas fa-ban"></span> Cancel program' +
-                    '             </b-button>' +
                     '           </b-col>' +
+                    '         </b-row>' +
+                    '       </b-container>' +
+                    ' ' +
+                    '       <b-container fluid align-h="center" class="mx-0 px-0" v-if="boards && enqueue">' +
+                    '         <b-row cols="1" align-h="center">' +
                     '           <b-col class="pt-2">' +
-                    '             <b-button class="btn btn-sm btn-block" variant="primary" @click="get_status">' +
-                    '              <span class="fas fa-chart-column"></span> Program status' +
+                    '             <b-button class="btn btn-sm btn-block" variant="danger" @click="do_cancel">' +
+                    '               <span class="fas fa-ban"></span> Cancel program' +
                     '             </b-button>' +
                     '           </b-col>' +
                     '         </b-row>' +
@@ -845,7 +850,7 @@
     catch (err)
     {
       if (err.toString() == "TypeError: Failed to fetch") {
-        return "Please, execute 'python3 hw_lab.py' and connect your board first\n";
+        return "Error connecting to the lab\n";
       }
 
       return err.toString() + "\n";
@@ -873,7 +878,7 @@
     catch (err)
     {
       if (err.toString() == "TypeError: Failed to fetch") {
-        return "Please, execute 'python3 gateway.py' and connect your board first\n";
+        return "Error connecting to the lab\n";
       }
 
       return err.toString() + "\n";
@@ -901,7 +906,7 @@
     catch (err)
     {
       if (err.toString() == "TypeError: Failed to fetch") {
-        return "Please, execute 'python3 gateway.py' and connect your board first\n";
+        return "Error connecting to the lab\n";
       }
 
       return err.toString() + "\n";
@@ -929,7 +934,7 @@
     catch (err)
     {
       if (err.toString() == "TypeError: Failed to fetch") {
-        return "Please, execute 'python3 gateway.py' and connect your board first\n";
+        return "Error connecting to the lab\n";
       }
 
       return err.toString() + "\n";
@@ -957,7 +962,7 @@
     catch (err)
     {
       if (err.toString() == "TypeError: Failed to fetch") {
-        return "Please, execute 'python3 gateway.py' and connect your board first\n";
+        return "Error connecting to the lab\n";
       }
 
       return err.toString() + "\n";
