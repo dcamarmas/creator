@@ -28,7 +28,7 @@ RUN apt update && apt-get install -y \
         python3-pip \
         python3-venv
 
-RUN pip3 --no-cache install flask flask_cors request
+RUN pip3 --no-cache install flask flask_cors requests
 
 
 #Download CREATOR
