@@ -330,11 +330,11 @@
 
                       save( )
                       {
-                        app._data.remote_lab = this._props.remote_lab;
-                        app._data.lab_url = this._props.lab_url;
+                        app._data.remote_lab   = this._props.remote_lab;
+                        app._data.lab_url      = this._props.lab_url;
                         app._data.target_board = this._props.target_board;
-                        app._data.target_port = this._props.target_port;
-                        app._data.flash_url = this._props.flash_url;
+                        app._data.target_port  = this._props.target_port;
+                        app._data.flash_url    = this._props.flash_url;
                       },
 
                       clean( )
