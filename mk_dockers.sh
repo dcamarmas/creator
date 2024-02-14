@@ -23,6 +23,14 @@ docker container rm creatorsim/creator_gateway
  docker buildx build --no-cache --platform linux/amd64,linux/arm64,linux/arm/v7 -t creatorsim/creator_gateway .
 cd ..
 
+#Build hw_lab docker
+cd hw_lab
+docker container stop $(docker container ls -q --filter name=creatorsim/creator_hw_lab)
+docker container rm creatorsim/creator_hw_lab
+#docker build --no-cache -t creatorsim/creator_hw_lab .
+ docker buildx build --no-cache --platform linux/amd64,linux/arm64,linux/arm/v7 -t creatorsim/creator_hw_lab .
+cd ..
+
 #Build command line docker
 cd command_line
 docker container stop $(docker container ls -q --filter name=creatorsim/creator_cl)
