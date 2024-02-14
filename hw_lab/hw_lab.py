@@ -55,9 +55,13 @@ def dequeue_request (queue, target_board):
 
   for index, item in enumerate(queue['queue']):
     if item['target_board'] == target_board:
+
       request = queue['queue'][index]
       del queue['queue'][index]
       queue['size'] = queue['size'] - 1
+
+      queue['lock'].release()
+      return request
 
   queue['lock'].release()
 
@@ -70,9 +74,13 @@ def dequeue_request_byid (queue, request_id):
 
   for index, item in enumerate(queue['queue']):
     if item['request_id'] == request_id:
+
       request = queue['queue'][index]
       del queue['queue'][index]
       queue['size'] = queue['size'] - 1
+
+      queue['lock'].release()
+      return request
 
   queue['lock'].release()
 
@@ -83,17 +91,21 @@ def delete_request (queue, request_id):
 
   for index, item in enumerate(queue['queue']):
     if item['request_id'] == request_id:
+
       del queue['queue'][index]
+
       queue['lock'].release()
       return 0
 
   queue['lock'].release()
+
   return -1
 
 def position_request (queue, request_id):
   for index, item in enumerate(queue['queue']):
     if item['request_id'] == request_id:
       return index + 1
+
   return -1
 
 
@@ -106,10 +118,7 @@ def worker(item):
 
   while 1:
 
-    print("IN before " + str(queue_incoming))
     ret = dequeue_request (queue_incoming, deployment[item]['target_board'])
-    print("IN after " + str(queue_incoming))
-
 
     if ret == None:
       time.sleep(20)
@@ -123,17 +132,13 @@ def worker(item):
 
 
       ###################
-      print("running " + str(ret))
       time.sleep(3)
       ret["status"] = 'Completed'
       ###################
 
 
       deployment[item]['status'] = 'free'
-
-      print("OUT before " + str(queue_outgoing))
       enqueue_request (queue_outgoing, ret)
-      print("OUT after " + str(queue_outgoing))
 
 
 
@@ -177,7 +182,6 @@ queue_outgoing['lock'] = threading.Lock()
 
 for index, item in enumerate(deployment):
   deployment[item]['status'] = 'free'
-  print("launch")
   t = threading.Thread(target=worker, name='Daemon', args=(item,))
   t.start()
 
@@ -199,10 +203,12 @@ def get_status():
 @cross_origin()
 def get_target_boards():
   target_boards = []
+
   for index, item in enumerate(deployment):
     val = deployment[item]
     if not val['target_board'] in target_boards:
       target_boards.append(val['target_board'])
+
   return json.dumps(target_boards)
 
 # (4c) POST /enqueue -> enqueue
@@ -286,4 +292,4 @@ def post_status():
   return jsonify(req_data)
 
 # Run
-app.run(host='0.0.0.0', port=port, debug=True)
+app.run(host='0.0.0.0', port=port, use_reloader=False, debug=True)
