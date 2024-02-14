@@ -133,10 +133,10 @@ def creator_build(file_in, file_out):
         return -1
 
 def do_cmd(req_data, cmd_array):
-        result   = subprocess.run(cmd_array, capture_output=False, timeout=60)
+        result = subprocess.run(cmd_array, capture_output=False, timeout=60)
 
-        #if result.stdout != None:
-        #    req_data['status'] += result.stdout.decode('utf-8') + '\n'
+        if result.stdout != None:
+            req_data['status'] += result.stdout.decode('utf-8') + '\n'
         if result.returncode != None:
             req_data['error']   = result.returncode
 
