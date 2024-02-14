@@ -322,7 +322,7 @@
                                                                                                           this_env.running = false; 
                                                                                                           var monitor = document.getElementById('textarea_display'); 
                                                                                                           monitor.scrollTop = monitor.scrollHeight;
-                                                                                                          show_notification(data, 'danger') ;
+                                                                                                          //show_notification(data, 'danger') ;
                                                                                                         } ) ;
 
                         //Google Analytics
@@ -795,7 +795,7 @@
                     '               </b-col>' +*/
                     '             </b-row>' +
                     '           </b-container>' +
-                    ' ' +
+                    /*' ' +
                     '           <b-container fluid align-h="center" class="mx-0 px-0">' +
                     '             <b-row cols="1" align-h="center">' +
                     '               <b-col class="pt-2">' +
@@ -804,7 +804,7 @@
                     '             </b-row>' +
                     '           </b-container>' +
                     ' ' +
-                    /*'           <b-container fluid align-h="center" class="mx-0 px-0">' +
+                    '           <b-container fluid align-h="center" class="mx-0 px-0">' +
                     '             <b-row cols="1" align-h="center">' +
                     '               <b-col class="pt-2">' +
                     '                 <label for="range-6">Monitor:</label>' +
