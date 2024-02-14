@@ -257,4 +257,4 @@ def post_stop_flash():
 
 
 # Run
-app.run(host='0.0.0.0', port=8080, debug=True)
+app.run(host='0.0.0.0', port=8080, use_reloader=False, debug=True)
