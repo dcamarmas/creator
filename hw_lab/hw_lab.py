@@ -291,5 +291,16 @@ def post_status():
 
   return jsonify(req_data)
 
+# (4g) GET /result -> send execution result
+@app.route("/result", methods=["GET"])
+@cross_origin()
+def get_result():
+  try:
+    return send_file('deployment.json', as_attachment=True) #TODO
+  except Exception as e:
+    return str(e)
+
+
+
 # Run
 app.run(host='0.0.0.0', port=port, use_reloader=False, debug=True)
