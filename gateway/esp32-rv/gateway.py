@@ -133,7 +133,24 @@ def creator_build(file_in, file_out):
         return -1
 
 def do_cmd(req_data, cmd_array):
-        result = subprocess.run(cmd_array, capture_output=False, timeout=60)
+        try:
+            result = subprocess.run(cmd_array, capture_output=False, timeout=60)
+        except:
+            pass
+
+        if result.stdout != None:
+            req_data['status'] += result.stdout.decode('utf-8') + '\n'
+        if result.returncode != None:
+            req_data['error']   = result.returncode
+
+        return req_data['error']
+
+
+def do_cmd_output(req_data, cmd_array):
+        try:
+            result = subprocess.run(cmd_array, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=20)
+        except:
+            pass
 
         if result.stdout != None:
             req_data['status'] += result.stdout.decode('utf-8') + '\n'
@@ -193,6 +210,46 @@ def do_monitor_request(request):
         return jsonify(req_data)
 
 
+# (2) Flasing assembly program into target board
+def do_job_request(request):
+        try:
+            req_data = request.get_json()
+            target_device      = req_data['target_port']
+            target_board       = req_data['target_board']
+            asm_code           = req_data['assembly']
+            req_data['status'] = ''
+
+            # create temporal assembly file
+            text_file = open("tmp_assembly.s", "w")
+            ret = text_file.write(asm_code)
+            text_file.close()
+
+            # transform th temporal assembly file
+            error = creator_build('tmp_assembly.s', "main/program.s");
+            if error != 0:
+                    req_data['status'] += 'Error adapting assembly file...\n'
+
+            # flashing steps...
+            if error == 0:
+                error = do_cmd_output(req_data, ['idf.py',  'fullclean'])
+            if error == 0:
+                error = do_cmd_output(req_data, ['idf.py',  'set-target', target_board])
+            if error == 0:
+                error = do_cmd_output(req_data, ['idf.py', 'build'])
+            if error == 0:
+                error = do_cmd_output(req_data, ['idf.py', '-p', target_device, 'flash'])
+            if error == 0:
+                error = do_cmd_output(req_data, ['./gateway_monitor.sh', target_device, '5'])
+                error = do_cmd_output(req_data, ['cat', 'monitor_output.txt'])
+
+            print(req_data['status'])
+
+        except Exception as e:
+            req_data['status'] += str(e) + '\n'
+
+        return jsonify(req_data)
+
+
 # (4) Stop flashing
 def do_stop_flash_request(request):
         try:
@@ -234,7 +291,13 @@ def post_flash():
 def post_monitor():
     return do_monitor_request(request)
 
-# (4) POST /stop -> cancel
+# (4) POST /job -> flash + monitor
+@app.route("/job", methods=["POST"])
+@cross_origin()
+def post_job():
+    return do_job_request(request)
+
+# (5) POST /stop -> cancel
 @app.route("/stop", methods=["POST"])
 @cross_origin()
 def post_stop_flash():
