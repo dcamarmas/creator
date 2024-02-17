@@ -67,6 +67,7 @@
                         boards  = false,
                         enqueue = false,
                         status  = false,
+                        result  = false,
 
 
                         //
@@ -178,6 +179,7 @@
                                                                                                   this_env.request_id = data;
                                                                                                   this_env.enqueue = true;
                                                                                                   this_env.status  = true;
+                                                                                                  this_env.result  = false;
                                                                                                   this_env.position = "";
                                                                                                   this_env.check_status();
                                                                                                 }
@@ -208,6 +210,7 @@
                         hw_lab_status(this.lab_url + "/status", parg).then( function(data)  { 
                                                                                               if (data == "Completed") {
                                                                                                 this_env.enqueue = false;
+                                                                                                this_env.result  = true;
                                                                                               }
                                                                                               if (data != "-1") {
                                                                                                 if (data == "-2") {
@@ -245,6 +248,16 @@
 
                         //Google Analytics
                         creator_ga('simulator', 'simulator.cancel', 'simulator.cancel');
+                      },
+
+                      get_result ()
+                      {
+                        this.save();
+
+                        window.open(this.lab_url + "/result?req_id=" + this.request_id);
+
+                        //Google Analytics
+                        creator_ga('simulator', 'simulator.result', 'simulator.result');
                       },
 
 
@@ -423,11 +436,21 @@
                     '       <b-container fluid align-h="center" class="mx-0 px-0" v-if="status">' +
                     '         <b-row cols="1" align-h="center">' +
                     '           <b-col class="pt-2">' +
-                    '             <span>Program status: {{position}}</span>' +
+                    '             <span>Program status: <b>{{position}}</b></span>' +
                     '           </b-col>' +
                     '         </b-row>' +
                     '       </b-container>' +
                     '       <br>' +
+                    ' ' +
+                    '       <b-container fluid align-h="center" class="mx-0 px-0" v-if="target_board !=\'\' && result">' +
+                    '         <b-row cols="1" align-h="center">' +
+                    '           <b-col class="pt-2">' +
+                    '             <b-button class="btn btn-sm btn-block" variant="primary" @click="get_result">' +
+                    '               <span class="fas fa-download"></span> Download Result' +
+                    '             </b-button>' +
+                    '           </b-col>' +
+                    '         </b-row>' +
+                    '       </b-container>' +
                     ' ' +
                     '       <b-container fluid align-h="center" class="mx-0 px-0" v-if="target_board !=\'\' && !enqueue">' +
                     '         <b-row cols="1" align-h="center">' +
@@ -861,7 +884,7 @@
     {
       if (err.toString() == "TypeError: Failed to fetch") 
       {
-        show_notification("Error connecting to the lab", 'danger') ;
+        show_notification("Lab not available at the moment. Please, try again later.", 'danger') ;
         return "-1";
       }
 
@@ -891,7 +914,7 @@
     {
       if (err.toString() == "TypeError: Failed to fetch") 
       {
-        show_notification("Error connecting to the lab", 'danger') ;
+        show_notification("Lab not available at the moment. Please, try again later.", 'danger') ;
         return "-1";
       }
 
@@ -921,7 +944,7 @@
     {
       if (err.toString() == "TypeError: Failed to fetch")
       {
-        show_notification("Error connecting to the lab", 'danger') ;
+        show_notification("Lab not available at the moment. Please, try again later.", 'danger') ;
         return "-1";
       }
 
@@ -951,7 +974,7 @@
     {
       if (err.toString() == "TypeError: Failed to fetch")
       {
-        show_notification("Error connecting to the lab", 'danger') ;
+        show_notification("Lab not available at the moment. Please, try again later.", 'danger') ;
         return "-1";
       }
 
@@ -981,7 +1004,7 @@
     {
       if (err.toString() == "TypeError: Failed to fetch")
       {
-        show_notification("Error connecting to the lab", 'danger') ;
+        show_notification("Lab not available at the moment. Please, try again later.", 'danger') ;
         return "-2";
       }
 
