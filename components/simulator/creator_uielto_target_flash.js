@@ -67,6 +67,7 @@
                         boards  = false,
                         enqueue = false,
                         status  = false,
+                        result  = false,
 
 
                         //
@@ -92,8 +93,6 @@
 
                         flashing = false,
                         running  = false,
-
-                        display = "",
                       }
                     },
 
@@ -130,8 +129,25 @@
                         if (this.lab_url != "")
                         {
                           this.save();
-                          ret = hw_lab_get_boards(this.lab_url + "/target_boards");
-                          this.boards = true;
+
+                          this_env = this;
+                          hw_lab_get_boards(this.lab_url + "/target_boards").then( function(data) { 
+                                                                                                    if (data != "-1") 
+                                                                                                    {
+                                                                                                      available_boards = JSON.parse(data);
+
+                                                                                                      for (var i = 1; i < this_env.remote_target_boards.length; i++)
+                                                                                                      {
+                                                                                                        if (!available_boards.includes(this_env.remote_target_boards[i]['value']))
+                                                                                                        {
+                                                                                                          this_env.remote_target_boards.splice(i,1);
+                                                                                                          i--;
+                                                                                                        }
+                                                                                                      }
+
+                                                                                                      this_env.boards = true;
+                                                                                                    }
+                                                                                                  } ) ;
                         }
                         else
                         {
@@ -149,9 +165,6 @@
                           return;
                         }
 
-                        this.enqueue = true;
-                        this.status  = true;
-
                         var earg =  {
                                       target_board: this.target_board,
                                       assembly:     code_assembly
@@ -159,9 +172,15 @@
 
                         this_env = this;
                         hw_lab_enqueue(this.lab_url + "/enqueue", earg).then( function(data)  { 
-                                                                                                this_env.request_id = data;
-                                                                                                this_env.position = "";
-                                                                                                this_env.check_status();
+                                                                                                if (data != "-1") 
+                                                                                                {
+                                                                                                  this_env.request_id = data;
+                                                                                                  this_env.enqueue = true;
+                                                                                                  this_env.status  = true;
+                                                                                                  this_env.result  = false;
+                                                                                                  this_env.position = "";
+                                                                                                  this_env.check_status();
+                                                                                                }
                                                                                               } ) ;
 
                         //Google Analytics
@@ -170,7 +189,7 @@
 
                       check_status()
                       {
-                        if (this.position != "Completed")
+                        if (this.position != "Completed" && this.position != "Error")
                         {
                           this.get_status();
                           setTimeout(this.check_status,10000);
@@ -189,12 +208,17 @@
                         hw_lab_status(this.lab_url + "/status", parg).then( function(data)  { 
                                                                                               if (data == "Completed") {
                                                                                                 this_env.enqueue = false;
+                                                                                                this_env.result  = true;
                                                                                               }
                                                                                               if (data != "-1") {
-                                                                                                if (!isNaN(data)) {
+                                                                                                if (data == "-2") {
+                                                                                                  this_env.position = "Error";
+                                                                                                  this_env.enqueue = false;
+                                                                                                }
+                                                                                                else if (!isNaN(data)) {
                                                                                                   this_env.position = "Queue position: " + data;
                                                                                                 }
-                                                                                                else{
+                                                                                                else {
                                                                                                   this_env.position = data;
                                                                                                 }
                                                                                               }
@@ -207,20 +231,31 @@
                       {
                         this.save();
 
-                        this.enqueue = false;
-
                         var carg =  {
                                       req_id: this.request_id
                                     } ;
 
                         this_env = this;
                         hw_lab_cancel(this.lab_url + "/delete", carg).then( function(data)  { 
-                                                                                              this_env.enqueue = false;
-                                                                                              this_env.position = "Canceled"
+                                                                                              if (data != "-1") 
+                                                                                              {
+                                                                                                this_env.enqueue = false;
+                                                                                                this_env.position = "Canceled"
+                                                                                              }
                                                                                             } ) ;
 
                         //Google Analytics
                         creator_ga('simulator', 'simulator.cancel', 'simulator.cancel');
+                      },
+
+                      get_result ()
+                      {
+                        this.save();
+
+                        window.open(this.lab_url + "/result?req_id=" + this.request_id);
+
+                        //Google Analytics
+                        creator_ga('simulator', 'simulator.result', 'simulator.result');
                       },
 
 
@@ -269,10 +304,7 @@
 
                         this_env = this;
                         gateway_remote_flash(this.flash_url + "/flash", farg).then( function(data)  { 
-                                      				                                                        this_env.display += data; 
                                       				                                                        this_env.flashing = false; 
-                                      				                                                        var monitor = document.getElementById('textarea_display'); 
-                                      				                                                        monitor.scrollTop = monitor.scrollHeight;
                                                                                                       show_notification(data, 'danger') ;
                                       			                                                        } ) ;
 
@@ -294,34 +326,12 @@
 
                         this_env = this;
                         gateway_remote_monitor(this.flash_url + "/monitor", farg).then( function(data)  { 
-                                                                                                          this_env.display += data; 
                                                                                                           this_env.running = false; 
-                                                                                                          var monitor = document.getElementById('textarea_display'); 
-                                                                                                          monitor.scrollTop = monitor.scrollHeight;
-                                                                                                          show_notification(data, 'danger') ;
+                                                                                                          //show_notification(data, 'danger') ;
                                                                                                         } ) ;
 
                         //Google Analytics
                         creator_ga('simulator', 'simulator.monitor', 'simulator.monitor');
-                      },
-
-                      do_stop_flash( )
-                      {
-                        this.save();
-                        
-                        this.flashing = false;
-
-                        this_env = this;
-                        gateway_remote_stop_flash(this.flash_url + "/stop").then( function(data)  { 
-                                      				                                                      this_env.display += data; 
-                                      				                                                      this_env.flashing = false; 
-                                      				                                                      var monitor = document.getElementById('textarea_display'); 
-                                      				                                                      monitor.scrollTop = monitor.scrollHeight;
-                                                                                                    show_notification(data, 'danger') ;
-                                      			                                                      } ) ;
-
-                        //Google Analytics
-                        creator_ga('simulator', 'simulator.stop_flash', 'simulator.stop_flash');
                       },
 
                       //
@@ -335,12 +345,7 @@
                         app._data.target_board = this._props.target_board;
                         app._data.target_port  = this._props.target_port;
                         app._data.flash_url    = this._props.flash_url;
-                      },
-
-                      clean( )
-                      {
-                        this.display = "";
-                      },
+                      }
                     },
 
       template:     ' <b-modal :id="id"' +
@@ -399,25 +404,37 @@
                     '       <b-container fluid align-h="center" class="mx-0 px-0" v-if="status">' +
                     '         <b-row cols="1" align-h="center">' +
                     '           <b-col class="pt-2">' +
-                    '             <span>Program status: {{position}}</span>' +
+                    '             <span>Program status: <b>{{position}}</b></span>' +
+                    '           </b-col>' +
+                    '         </b-row>' +
+                    '       </b-container>' +
+                    ' ' +
+                    '       <b-container fluid align-h="center" class="mx-0 px-0" v-if="target_board !=\'\' && result">' +
+                    '         <b-row cols="1" align-h="center">' +
+                    '           <b-col class="pt-2">' +
+                    '             <b-button class="btn btn-sm btn-block" variant="primary" @click="get_result">' +
+                    '               <span class="fas fa-download"></span> Download Result' +
+                    '             </b-button>' +
                     '           </b-col>' +
                     '         </b-row>' +
                     '       </b-container>' +
                     '       <br>' +
                     ' ' +
-                    '       <b-container fluid align-h="center" class="mx-0 px-0" v-if="boards">' +
-                    '         <b-row cols="2" align-h="center">' +
+                    '       <b-container fluid align-h="center" class="mx-0 px-0" v-if="target_board !=\'\' && !enqueue">' +
+                    '         <b-row cols="1" align-h="center">' +
                     '           <b-col class="pt-2">' +
-                    '             <b-button class="btn btn-sm btn-block" variant="primary" @click="do_enqueue" v-if="!enqueue">' +
+                    '             <b-button class="btn btn-sm btn-block" variant="primary" @click="do_enqueue">' +
                     '               <span class="fas fa-paper-plane"></span> Send program' +
                     '             </b-button>' +
-                    '             <b-button class="btn btn-sm btn-block" variant="danger" @click="do_cancel" v-if="enqueue">' +
-                    '               <span class="fas fa-ban"></span> Cancel program' +
-                    '             </b-button>' +
                     '           </b-col>' +
+                    '         </b-row>' +
+                    '       </b-container>' +
+                    ' ' +
+                    '       <b-container fluid align-h="center" class="mx-0 px-0" v-if="target_board !=\'\' && enqueue">' +
+                    '         <b-row cols="1" align-h="center">' +
                     '           <b-col class="pt-2">' +
-                    '             <b-button class="btn btn-sm btn-block" variant="primary" @click="get_status">' +
-                    '              <span class="fas fa-chart-column"></span> Program status' +
+                    '             <b-button class="btn btn-sm btn-block" variant="danger" @click="do_cancel">' +
+                    '               <span class="fas fa-ban"></span> Cancel program' +
                     '             </b-button>' +
                     '           </b-col>' +
                     '         </b-row>' +
@@ -443,7 +460,7 @@
                     '       </b-container>' +
                     '       <br>' +
                     ' ' +
-                    '       <b-tabs content-class="mt-3">' +
+                    '       <b-tabs content-class="mt-3" v-if="target_board !=\'\'">' +
                     '         <b-tab title="Prerequisites">' +
                     ' ' +
                     '           <b-tabs content-class="mt-3">' +
@@ -762,47 +779,8 @@
                     '                   <b-spinner small v-if="running"></b-spinner>' +
                     '                 </b-button>' +
                     '               </b-col>' +
-                    /*'               <b-col class="pt-2">' +
-                    '                 <b-button class="btn btn-sm btn-block" variant="outline-danger" @click="do_stop_flash" :disabled="!flashing">' +
-                    '                   <span><span class="fas fa-stop"></span> Stop</span>' +
-                    '                 </b-button>' +
-                    '               </b-col>' +*/
                     '             </b-row>' +
                     '           </b-container>' +
-                    ' ' +
-                    '           <b-container fluid align-h="center" class="mx-0 px-0">' +
-                    '             <b-row cols="1" align-h="center">' +
-                    '               <b-col class="pt-2">' +
-                    '                 <span>To stop the program execution press ctrl + ] in the terminal</span>' +
-                    '               </b-col>' +
-                    '             </b-row>' +
-                    '           </b-container>' +
-                    ' ' +
-                    /*'           <b-container fluid align-h="center" class="mx-0 px-0">' +
-                    '             <b-row cols="1" align-h="center">' +
-                    '               <b-col class="pt-2">' +
-                    '                 <label for="range-6">Monitor:</label>' +
-                    '                 <b-form-textarea  id="textarea_display" ' +
-                    '                                   size="sm"' +
-                    '                                   v-model="display" ' +
-                    '                                   rows="8" ' +
-                    '                                   disabled ' +
-                    '                                   no-resize ' +
-                    '                                   title="Display">' +
-                    '                 </b-form-textarea>' +
-                    '               </b-col>' +
-                    '             </b-row>' +
-                    '           </b-container>' +
-                    ' ' +
-                    '           <b-container fluid align-h="center" class="mx-0 px-0">' +
-                    '             <b-row cols="1" align-h="center">' +
-                    '               <b-col class="pt-2">' +
-                    '                 <b-button class="btn btn-sm btn-block" variant="outline-secondary" @click="clean">' +
-                    '                   <span><span class="fas fa-broom"></span> Clean</span>' +
-                    '                 </b-button>' +
-                    '               </b-col>' +
-                    '             </b-row>' +
-                    '           </b-container>' +*/
                     '         </b-tab>' +
                     '       </b-tabs>' +
                     ' ' +
@@ -828,24 +806,15 @@
     try
     {
       var res  = await fetch(lab_url, fetch_args) ;
-      var target_boards = await res.text();
 
-      for (var i = 0; i < this.remote_target_boards.length; i++)
-      {
-        if (!target_boards.includes(this.remote_target_boards[i]['value']))
-        {
-          this.remote_target_boards.splice(i,1);
-        }
-      }
-
-      var jres = await res.json();
-
-      return jres.status;
+      return await res.text();
     }
     catch (err)
     {
-      if (err.toString() == "TypeError: Failed to fetch") {
-        return "Please, execute 'python3 hw_lab.py' and connect your board first\n";
+      if (err.toString() == "TypeError: Failed to fetch") 
+      {
+        show_notification("Lab not available at the moment. Please, try again later.", 'danger') ;
+        return "-1";
       }
 
       return err.toString() + "\n";
@@ -872,8 +841,10 @@
     }
     catch (err)
     {
-      if (err.toString() == "TypeError: Failed to fetch") {
-        return "Please, execute 'python3 gateway.py' and connect your board first\n";
+      if (err.toString() == "TypeError: Failed to fetch") 
+      {
+        show_notification("Lab not available at the moment. Please, try again later.", 'danger') ;
+        return "-1";
       }
 
       return err.toString() + "\n";
@@ -900,8 +871,10 @@
     }
     catch (err)
     {
-      if (err.toString() == "TypeError: Failed to fetch") {
-        return "Please, execute 'python3 gateway.py' and connect your board first\n";
+      if (err.toString() == "TypeError: Failed to fetch")
+      {
+        show_notification("Lab not available at the moment. Please, try again later.", 'danger') ;
+        return "-1";
       }
 
       return err.toString() + "\n";
@@ -928,8 +901,10 @@
     }
     catch (err)
     {
-      if (err.toString() == "TypeError: Failed to fetch") {
-        return "Please, execute 'python3 gateway.py' and connect your board first\n";
+      if (err.toString() == "TypeError: Failed to fetch")
+      {
+        show_notification("Lab not available at the moment. Please, try again later.", 'danger') ;
+        return "-1";
       }
 
       return err.toString() + "\n";
@@ -956,8 +931,10 @@
     }
     catch (err)
     {
-      if (err.toString() == "TypeError: Failed to fetch") {
-        return "Please, execute 'python3 gateway.py' and connect your board first\n";
+      if (err.toString() == "TypeError: Failed to fetch")
+      {
+        show_notification("Lab not available at the moment. Please, try again later.", 'danger') ;
+        return "-2";
       }
 
       return err.toString() + "\n";
@@ -989,7 +966,7 @@
     catch (err)
     {
       if (err.toString() == "TypeError: Failed to fetch") {
-        return "Please, execute 'python3 gateway.py' and connect your board first\n";
+        return "Gateway not available at the moment. Please, execute 'python3 gateway.py' and connect your board first\n";
       }
 
       return err.toString() + "\n";
@@ -1017,35 +994,7 @@
     catch (err)
     {
       if (err.toString() == "TypeError: Failed to fetch") {
-        return "Please, execute 'python3 gateway.py' and connect your board first\n";
-      }
-
-      return err.toString() + "\n";
-    }
-  }
-
-  async function gateway_remote_stop_flash ( flash_url )
-  {
-    var fetch_args =  {
-                        method:   'POST',
-                        headers:  {
-                                    'Content-type': 'application/json',
-                                    'Accept':       'application/json'
-                                  },
-                        body:     JSON.stringify({})
-                      } ;
-
-    try
-    {
-      var res  = await fetch(flash_url, fetch_args) ;
-      var jres = await res.json();
-
-      return jres.status;
-    }
-    catch (err)
-    {
-      if (err.toString() == "TypeError: Failed to fetch") {
-        return "Please, execute 'python3 gateway.py' and connect your board first\n";
+        return "Gateway not available at the moment. Please, execute 'python3 gateway.py' and connect your board first\n";
       }
 
       return err.toString() + "\n";

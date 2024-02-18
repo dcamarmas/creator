@@ -3,18 +3,6 @@
   {
     "target_board": "esp32c3",
     "target_port": "/dev/ttyUSB0",
-    "target_url": "http://localhost:8080"
-  },
-  "target_2":
-  {
-    "target_board": "esp32c3",
-    "target_port": "/dev/ttyUSB0",
-    "target_url": "http://localhost:8080"
-  },
-  "target_3":
-  {
-    "target_board": "esp32c3",
-    "target_port": "/dev/ttyUSB0",
-    "target_url": "http://localhost:8080"
+    "target_url": "http://10.119.4.59:8080"
   }
 }
