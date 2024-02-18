@@ -126,16 +126,17 @@ def worker(item):
       deployment[item]['status'] = 'busy'
 
       # Sent to the target post
-      #url = deployment[item]['target_url']
-      #msg = {'target_port': ret['target_port'], 'target_board': ret['target_board'], 'assembly': ret['asm_code']}
-      #ret["status"] = requests.post(url, json = mgs)
+      url = deployment[item]['target_url']  + "/job"
+      msg = {'target_port': deployment[item]['target_port'], 'target_board': ret['target_board'], 'assembly': ret['asm_code']}
 
+      res = requests.post(url, json = msg)
+      jres = res.json()
 
-      ###################
-      time.sleep(3)
+      file = open("results/" + ret['request_id'] + ".txt", "w")
+      file.write(jres['status'])
+      file.close()
+
       ret["status"] = 'Completed'
-      ###################
-
 
       deployment[item]['status'] = 'free'
       enqueue_request (queue_outgoing, ret)
@@ -151,7 +152,7 @@ request_id = 0
 
 # (1) Check params
 if len(sys.argv) < 2:
-  print("Use: python3 gateway_queue.py <deployment_file> [port]");
+  print("Use: python3 hw_lab.py <deployment_file> [port]");
   exit(-1)
 
 port = 5000
@@ -176,7 +177,14 @@ except Exception as e:
 deployment_file.close()
 
 
-# (3) Queue management
+# (3)Create result directory
+try:
+  os.mkdir('results')
+except Exception as e:
+  pass
+
+
+# (4) Queue management
 queue_incoming['lock'] = threading.Lock()
 queue_outgoing['lock'] = threading.Lock()
 
@@ -186,19 +194,19 @@ for index, item in enumerate(deployment):
   t.start()
 
 
-# (4) Setup flask and cors:
+# (5) Setup flask and cors:
 app  = Flask(__name__)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
-# (4a) GET / -> send gateway_queue.html
+# (5a) GET / -> send hw_lab.html
 @app.route("/", methods=["GET"])
 @cross_origin()
 def get_status():
   ret = { 'incoming': queue_incoming, 'outgoing': queue_outgoing }
   return json.dumps(ret)
 
-# (4b) GET /targets -> send available targets
+# (5b) GET /targets -> send available targets
 @app.route("/target_boards", methods=["GET"])
 @cross_origin()
 def get_target_boards():
@@ -211,7 +219,7 @@ def get_target_boards():
 
   return json.dumps(target_boards)
 
-# (4c) POST /enqueue -> enqueue
+# (5c) POST /enqueue -> enqueue
 @app.route("/enqueue", methods=["POST"])
 @cross_origin()
 def post_enqueue():
@@ -232,7 +240,7 @@ def post_enqueue():
 
   return jsonify(req_data)
 
-# (4d) POST /delete -> delete
+# (5d) POST /delete -> delete
 @app.route("/delete", methods=["POST"])
 @cross_origin()
 def post_delete():
@@ -250,7 +258,7 @@ def post_delete():
 
   return jsonify(req_data)
 
-# (4e) POST /position -> position
+# (5e) POST /position -> position
 @app.route("/position", methods=["POST"])
 @cross_origin()
 def post_position():
@@ -268,7 +276,7 @@ def post_position():
 
   return jsonify(req_data)
 
-# (4f) POST /status -> status
+# (5f) POST /status -> status
 @app.route("/status", methods=["POST"])
 @cross_origin()
 def post_status():
@@ -290,6 +298,18 @@ def post_status():
     req_data['status'] += str(e) + '\n'
 
   return jsonify(req_data)
+
+# (5g) GET /result -> send execution result
+@app.route("/result", methods=["GET"])
+@cross_origin()
+def get_result():
+  try:
+    req_id = request.args.get('req_id')
+    return send_file("results/" + req_id + ".txt", as_attachment=True)
+  except Exception as e:
+    return str(e)
+
+
 
 # Run
 app.run(host='0.0.0.0', port=port, use_reloader=False, debug=True)
