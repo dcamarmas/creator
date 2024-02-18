@@ -93,8 +93,6 @@
 
                         flashing = false,
                         running  = false,
-
-                        display = "",
                       }
                     },
 
@@ -306,10 +304,7 @@
 
                         this_env = this;
                         gateway_remote_flash(this.flash_url + "/flash", farg).then( function(data)  { 
-                                      				                                                        this_env.display += data; 
                                       				                                                        this_env.flashing = false; 
-                                      				                                                        var monitor = document.getElementById('textarea_display'); 
-                                      				                                                        monitor.scrollTop = monitor.scrollHeight;
                                                                                                       show_notification(data, 'danger') ;
                                       			                                                        } ) ;
 
@@ -331,34 +326,12 @@
 
                         this_env = this;
                         gateway_remote_monitor(this.flash_url + "/monitor", farg).then( function(data)  { 
-                                                                                                          this_env.display += data; 
                                                                                                           this_env.running = false; 
-                                                                                                          var monitor = document.getElementById('textarea_display'); 
-                                                                                                          monitor.scrollTop = monitor.scrollHeight;
                                                                                                           //show_notification(data, 'danger') ;
                                                                                                         } ) ;
 
                         //Google Analytics
                         creator_ga('simulator', 'simulator.monitor', 'simulator.monitor');
-                      },
-
-                      do_stop_flash( )
-                      {
-                        this.save();
-                        
-                        this.flashing = false;
-
-                        this_env = this;
-                        gateway_remote_stop_flash(this.flash_url + "/stop").then( function(data)  { 
-                                      				                                                      this_env.display += data; 
-                                      				                                                      this_env.flashing = false; 
-                                      				                                                      var monitor = document.getElementById('textarea_display'); 
-                                      				                                                      monitor.scrollTop = monitor.scrollHeight;
-                                                                                                    show_notification(data, 'danger') ;
-                                      			                                                      } ) ;
-
-                        //Google Analytics
-                        creator_ga('simulator', 'simulator.stop_flash', 'simulator.stop_flash');
                       },
 
                       //
@@ -372,12 +345,7 @@
                         app._data.target_board = this._props.target_board;
                         app._data.target_port  = this._props.target_port;
                         app._data.flash_url    = this._props.flash_url;
-                      },
-
-                      clean( )
-                      {
-                        this.display = "";
-                      },
+                      }
                     },
 
       template:     ' <b-modal :id="id"' +
@@ -440,7 +408,6 @@
                     '           </b-col>' +
                     '         </b-row>' +
                     '       </b-container>' +
-                    '       <br>' +
                     ' ' +
                     '       <b-container fluid align-h="center" class="mx-0 px-0" v-if="target_board !=\'\' && result">' +
                     '         <b-row cols="1" align-h="center">' +
@@ -451,6 +418,7 @@
                     '           </b-col>' +
                     '         </b-row>' +
                     '       </b-container>' +
+                    '       <br>' +
                     ' ' +
                     '       <b-container fluid align-h="center" class="mx-0 px-0" v-if="target_board !=\'\' && !enqueue">' +
                     '         <b-row cols="1" align-h="center">' +
@@ -492,7 +460,7 @@
                     '       </b-container>' +
                     '       <br>' +
                     ' ' +
-                    '       <b-tabs content-class="mt-3">' +
+                    '       <b-tabs content-class="mt-3" v-if="target_board !=\'\'">' +
                     '         <b-tab title="Prerequisites">' +
                     ' ' +
                     '           <b-tabs content-class="mt-3">' +
@@ -811,47 +779,8 @@
                     '                   <b-spinner small v-if="running"></b-spinner>' +
                     '                 </b-button>' +
                     '               </b-col>' +
-                    /*'               <b-col class="pt-2">' +
-                    '                 <b-button class="btn btn-sm btn-block" variant="outline-danger" @click="do_stop_flash" :disabled="!flashing">' +
-                    '                   <span><span class="fas fa-stop"></span> Stop</span>' +
-                    '                 </b-button>' +
-                    '               </b-col>' +*/
                     '             </b-row>' +
                     '           </b-container>' +
-                    /*' ' +
-                    '           <b-container fluid align-h="center" class="mx-0 px-0">' +
-                    '             <b-row cols="1" align-h="center">' +
-                    '               <b-col class="pt-2">' +
-                    '                 <span>To stop the program execution press ctrl + ] in the terminal</span>' +
-                    '               </b-col>' +
-                    '             </b-row>' +
-                    '           </b-container>' +
-                    ' ' +
-                    '           <b-container fluid align-h="center" class="mx-0 px-0">' +
-                    '             <b-row cols="1" align-h="center">' +
-                    '               <b-col class="pt-2">' +
-                    '                 <label for="range-6">Monitor:</label>' +
-                    '                 <b-form-textarea  id="textarea_display" ' +
-                    '                                   size="sm"' +
-                    '                                   v-model="display" ' +
-                    '                                   rows="8" ' +
-                    '                                   disabled ' +
-                    '                                   no-resize ' +
-                    '                                   title="Display">' +
-                    '                 </b-form-textarea>' +
-                    '               </b-col>' +
-                    '             </b-row>' +
-                    '           </b-container>' +
-                    ' ' +
-                    '           <b-container fluid align-h="center" class="mx-0 px-0">' +
-                    '             <b-row cols="1" align-h="center">' +
-                    '               <b-col class="pt-2">' +
-                    '                 <b-button class="btn btn-sm btn-block" variant="outline-secondary" @click="clean">' +
-                    '                   <span><span class="fas fa-broom"></span> Clean</span>' +
-                    '                 </b-button>' +
-                    '               </b-col>' +
-                    '             </b-row>' +
-                    '           </b-container>' +*/
                     '         </b-tab>' +
                     '       </b-tabs>' +
                     ' ' +
@@ -1037,7 +966,7 @@
     catch (err)
     {
       if (err.toString() == "TypeError: Failed to fetch") {
-        return "Please, execute 'python3 gateway.py' and connect your board first\n";
+        return "Gateway not available at the moment. Please, execute 'python3 gateway.py' and connect your board first\n";
       }
 
       return err.toString() + "\n";
@@ -1065,35 +994,7 @@
     catch (err)
     {
       if (err.toString() == "TypeError: Failed to fetch") {
-        return "Please, execute 'python3 gateway.py' and connect your board first\n";
-      }
-
-      return err.toString() + "\n";
-    }
-  }
-
-  async function gateway_remote_stop_flash ( flash_url )
-  {
-    var fetch_args =  {
-                        method:   'POST',
-                        headers:  {
-                                    'Content-type': 'application/json',
-                                    'Accept':       'application/json'
-                                  },
-                        body:     JSON.stringify({})
-                      } ;
-
-    try
-    {
-      var res  = await fetch(flash_url, fetch_args) ;
-      var jres = await res.json();
-
-      return jres.status;
-    }
-    catch (err)
-    {
-      if (err.toString() == "TypeError: Failed to fetch") {
-        return "Please, execute 'python3 gateway.py' and connect your board first\n";
+        return "Gateway not available at the moment. Please, execute 'python3 gateway.py' and connect your board first\n";
       }
 
       return err.toString() + "\n";
