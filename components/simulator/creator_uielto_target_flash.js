@@ -27,8 +27,8 @@
   var uielto_flash = {
         props:      {
                       id:             { type: String, required: true },
-                      remote_lab:     { type: String, required: true },
                       lab_url:        { type: String, required: true },
+                      result_email:   { type: String, required: true },
                       target_board:   { type: String, required: true },
                       target_port:    { type: String, required: true },
                       flash_url:      { type: String, required: true }
@@ -38,14 +38,8 @@
                       return {
 
                         //
-                        //Remote lab
+                        //Remote Device
                         //
-
-                        remote_labs = [
-                                        { text: 'Please select an option', value: "",      disabled: true },
-                                        { text: 'UC3M Lab',                value: 'uc3m',  url: 'http://10.119.4.139:5000' },
-                                        { text: 'Other...',                value: 'other', url: '' },
-                                      ],
 
                         remote_target_boards =  [
                                                   { text: 'Please select an option', value: "", disabled: true },
@@ -57,7 +51,6 @@
                                                 ],
 
                         /*
-                        remote_lab = "",
                         lab_url = "",
                         */
 
@@ -67,7 +60,6 @@
                         boards  = false,
                         enqueue = false,
                         status  = false,
-                        result  = false,
 
 
                         //
@@ -99,30 +91,8 @@
         methods:    {
 
                       //
-                      //Remote lab
+                      //Remote Device
                       //
-
-                      get_lab_url()
-                      {
-                        this.save();
-
-                        if (this.remote_lab == "other")
-                        {
-                          this.boards  = false;
-                        }
-                        else
-                        {
-                          for (var i = 0; i < remote_labs.length; i++)
-                          {
-                            if (remote_labs[i]['value'] == this.remote_lab)
-                            {
-                              this.lab_url = remote_labs[i]['url'];
-                            }
-                          }
-
-                          this.get_boards();
-                        }
-                      },
 
                       get_boards()
                       {
@@ -131,7 +101,7 @@
                           this.save();
 
                           this_env = this;
-                          hw_lab_get_boards(this.lab_url + "/target_boards").then( function(data) { 
+                          remote_lab_get_boards(this.lab_url + "/target_boards").then( function(data) { 
                                                                                                     if (data != "-1") 
                                                                                                     {
                                                                                                       available_boards = JSON.parse(data);
@@ -165,19 +135,25 @@
                           return;
                         }
 
+                        if(this.result_email == "")
+                        {
+                          show_notification("Please, enter your E-mail", 'danger');
+                          return;
+                        }
+
                         var earg =  {
                                       target_board: this.target_board,
+                                      result_email: this.result_email,
                                       assembly:     code_assembly
-                                    } ;
+                                    };
 
                         this_env = this;
-                        hw_lab_enqueue(this.lab_url + "/enqueue", earg).then( function(data)  { 
+                        remote_lab_enqueue(this.lab_url + "/enqueue", earg).then( function(data)  { 
                                                                                                 if (data != "-1") 
                                                                                                 {
                                                                                                   this_env.request_id = data;
                                                                                                   this_env.enqueue = true;
                                                                                                   this_env.status  = true;
-                                                                                                  this_env.result  = false;
                                                                                                   this_env.position = "";
                                                                                                   this_env.check_status();
                                                                                                 }
@@ -192,7 +168,7 @@
                         if (this.position != "Completed" && this.position != "Error")
                         {
                           this.get_status();
-                          setTimeout(this.check_status,10000);
+                          setTimeout(this.check_status,20000);
                         }
                       },
 
@@ -205,13 +181,14 @@
                                     } ;
 
                         this_env = this;
-                        hw_lab_status(this.lab_url + "/status", parg).then( function(data)  { 
+                        remote_lab_status(this.lab_url + "/status", parg).then( function(data)  { 
                                                                                               if (data == "Completed") {
                                                                                                 this_env.enqueue = false;
-                                                                                                this_env.result  = true;
                                                                                               }
-                                                                                              if (data != "-1") {
-                                                                                                if (data == "-2") {
+                                                                                              if (data != "-1")
+                                                                                              {
+                                                                                                if (data == "-2")
+                                                                                                {
                                                                                                   this_env.position = "Error";
                                                                                                   this_env.enqueue = false;
                                                                                                 }
@@ -236,7 +213,7 @@
                                     } ;
 
                         this_env = this;
-                        hw_lab_cancel(this.lab_url + "/delete", carg).then( function(data)  { 
+                        remote_lab_cancel(this.lab_url + "/delete", carg).then( function(data)  { 
                                                                                               if (data != "-1") 
                                                                                               {
                                                                                                 this_env.enqueue = false;
@@ -246,16 +223,6 @@
 
                         //Google Analytics
                         creator_ga('simulator', 'simulator.cancel', 'simulator.cancel');
-                      },
-
-                      get_result ()
-                      {
-                        this.save();
-
-                        window.open(this.lab_url + "/result?req_id=" + this.request_id);
-
-                        //Google Analytics
-                        creator_ga('simulator', 'simulator.result', 'simulator.result');
                       },
 
 
@@ -340,8 +307,8 @@
 
                       save( )
                       {
-                        app._data.remote_lab   = this._props.remote_lab;
                         app._data.lab_url      = this._props.lab_url;
+                        app._data.result_email = this._props.result_email;
                         app._data.target_board = this._props.target_board;
                         app._data.target_port  = this._props.target_port;
                         app._data.flash_url    = this._props.flash_url;
@@ -354,38 +321,33 @@
                     '          @hidden="save">' +
                     ' ' +
                     '   <b-tabs content-class="mt-3">' +
-                    '     <b-tab title="Remote Lab">' +
+                    '     <b-tab title="Remote Device">' +
                     ' ' +
                     '       <b-container fluid align-h="center" class="mx-0 px-0">' +
                     '         <b-row cols="1" align-h="center">' +
                     '           <b-col class="pt-2">' +
-                    '             <label for="range-6">(1) Select remote lab:</label>' +
-                    '             <b-form-select v-model="remote_lab" ' +
-                    '                            :options="remote_labs" ' +
-                    '                            @change="get_lab_url" ' +
-                    '                            size="sm"' +
-                    '                            title="Remote labs">' +
-                    '             </b-form-select>' +
+                    '             <label for="range-6">(1) Remote Device URL:</label>' +
+                    '             <b-form-input type="text" ' +
+                    '                           v-model="lab_url" ' +
+                    '                           placeholder="Enter remote device URL" ' +
+                    '                           size="sm" ' +
+                    '                           title="Remote remote device URL">' +
+                    '             </b-form-input>' +
                     '           </b-col>' +
                     '         </b-row>' +
                     '       </b-container>' +
                     '       <br>' +
                     ' ' +
-                    '       <b-container fluid align-h="center" class="mx-0 px-0" v-if="remote_lab == \'other\'">' +
+                    '       <b-container fluid align-h="center" class="mx-0 px-0" v-if="!boards">' +
                     '         <b-row cols="1" align-h="center">' +
                     '           <b-col class="pt-2">' +
-                    '             <label for="range-6">(1a) Remote lab URL:</label>' +
-                    '             <b-form-input type="text" ' +
-                    '                           v-model="lab_url" ' +
-                    '                           placeholder="Enter lab URL" ' +
-                    '                           @change="get_boards" ' +
-                    '                           size="sm" ' +
-                    '                           title="Remote lab URL">' +
-                    '             </b-form-input>' +
+                    '             <b-button class="btn btn-sm btn-block" variant="primary" @click="get_boards">' +
+                    '               <span class="fas fa-link"></span> Connect' +
+                    '             </b-button>' +
                     '           </b-col>' +
                     '         </b-row>' +
                     '       </b-container>' +
-                    '       <br v-if="remote_lab == \'other\'">' +
+                    '       <br v-if="!boards">' +
                     ' ' +
                     '       <b-container fluid align-h="center" class="mx-0 px-0" v-if="boards">' +
                     '         <b-row cols="1" align-h="center">' +
@@ -401,31 +363,25 @@
                     '       </b-container>' +
                     '       <br>' +
                     ' ' +
-                    '       <b-container fluid align-h="center" class="mx-0 px-0" v-if="status">' +
+                    '       <b-container fluid align-h="center" class="mx-0 px-0" v-if="boards">' +
                     '         <b-row cols="1" align-h="center">' +
                     '           <b-col class="pt-2">' +
-                    '             <span>Program status: <b>{{position}}</b></span>' +
-                    '           </b-col>' +
-                    '         </b-row>' +
-                    '       </b-container>' +
-                    ' ' +
-                    '       <b-container fluid align-h="center" class="mx-0 px-0" v-if="target_board !=\'\' && result">' +
-                    '         <b-row cols="1" align-h="center">' +
-                    '           <b-col class="pt-2">' +
-                    '             <b-button class="btn btn-sm btn-block" variant="primary" @click="get_result">' +
-                    '               <span class="fas fa-download"></span> Download Result' +
-                    '             </b-button>' +
+                    '             <label for="range-6">(3) E-mail to receive the execution results:</label>' +
+                    '             <b-form-input type="text" ' +
+                    '                           v-model="result_email" ' +
+                    '                           placeholder="Enter E-mail" ' +
+                    '                           size="sm" ' +
+                    '                           title="Result E-mail">' +
+                    '             </b-form-input>' +
                     '           </b-col>' +
                     '         </b-row>' +
                     '       </b-container>' +
                     '       <br>' +
                     ' ' +
-                    '       <b-container fluid align-h="center" class="mx-0 px-0" v-if="target_board !=\'\' && !enqueue">' +
+                    '       <b-container fluid align-h="center" class="mx-0 px-0" v-if="status">' +
                     '         <b-row cols="1" align-h="center">' +
                     '           <b-col class="pt-2">' +
-                    '             <b-button class="btn btn-sm btn-block" variant="primary" @click="do_enqueue">' +
-                    '               <span class="fas fa-paper-plane"></span> Send program' +
-                    '             </b-button>' +
+                    '             <span>Last program status: <b>{{position}}</b></span>' +
                     '           </b-col>' +
                     '         </b-row>' +
                     '       </b-container>' +
@@ -434,7 +390,18 @@
                     '         <b-row cols="1" align-h="center">' +
                     '           <b-col class="pt-2">' +
                     '             <b-button class="btn btn-sm btn-block" variant="danger" @click="do_cancel">' +
-                    '               <span class="fas fa-ban"></span> Cancel program' +
+                    '               <span class="fas fa-ban"></span> Cancel last program' +
+                    '             </b-button>' +
+                    '           </b-col>' +
+                    '         </b-row>' +
+                    '       </b-container>' +
+                    '       <br>' +
+                    ' ' +
+                    '       <b-container fluid align-h="center" class="mx-0 px-0" v-if="target_board !=\'\'">' +
+                    '         <b-row cols="1" align-h="center">' +
+                    '           <b-col class="pt-2">' +
+                    '             <b-button class="btn btn-sm btn-block" variant="primary" @click="do_enqueue">' +
+                    '               <span class="fas fa-paper-plane"></span> Send program' +
                     '             </b-button>' +
                     '           </b-col>' +
                     '         </b-row>' +
@@ -444,7 +411,7 @@
                     ' ' +
                     ' ' +
                     ' ' +
-                    '     <b-tab title="Device">' +
+                    '     <b-tab title="Local Device">' +
                     ' ' +
                     '       <b-container fluid align-h="center" class="mx-0 px-0">' +
                     '         <b-row cols="1" align-h="center">' +
@@ -794,10 +761,10 @@
   Vue.component('flash', uielto_flash)
 
   //
-  // Remote Lab web service functions
+  // Remote Device web service functions
   //
 
-  async function hw_lab_get_boards ( lab_url )
+  async function remote_lab_get_boards ( lab_url )
   {
     var fetch_args =  {
                         method:   'GET'
@@ -813,7 +780,7 @@
     {
       if (err.toString() == "TypeError: Failed to fetch") 
       {
-        show_notification("Lab not available at the moment. Please, try again later.", 'danger') ;
+        show_notification("Remote device not available at the moment. Please, try again later.", 'danger') ;
         return "-1";
       }
 
@@ -821,7 +788,7 @@
     }
   }
 
-  async function hw_lab_enqueue ( lab_url, enqueue_args )
+  async function remote_lab_enqueue ( lab_url, enqueue_args )
   {
     var fetch_args =  {
                         method:   'POST',
@@ -843,7 +810,7 @@
     {
       if (err.toString() == "TypeError: Failed to fetch") 
       {
-        show_notification("Lab not available at the moment. Please, try again later.", 'danger') ;
+        show_notification("Remote device not available at the moment. Please, try again later.", 'danger') ;
         return "-1";
       }
 
@@ -851,7 +818,7 @@
     }
   }
 
-  async function hw_lab_cancel ( lab_url, cancel_args )
+  async function remote_lab_cancel ( lab_url, cancel_args )
   {
     var fetch_args =  {
                         method:   'POST',
@@ -873,7 +840,7 @@
     {
       if (err.toString() == "TypeError: Failed to fetch")
       {
-        show_notification("Lab not available at the moment. Please, try again later.", 'danger') ;
+        show_notification("Remote device not available at the moment. Please, try again later.", 'danger') ;
         return "-1";
       }
 
@@ -881,7 +848,7 @@
     }
   }
 
-  async function hw_lab_position ( lab_url, position_args )
+  async function remote_lab_position ( lab_url, position_args )
   {
     var fetch_args =  {
                         method:   'POST',
@@ -903,7 +870,7 @@
     {
       if (err.toString() == "TypeError: Failed to fetch")
       {
-        show_notification("Lab not available at the moment. Please, try again later.", 'danger') ;
+        show_notification("Remote device not available at the moment. Please, try again later.", 'danger') ;
         return "-1";
       }
 
@@ -911,7 +878,7 @@
     }
   }
 
-  async function hw_lab_status ( lab_url, status_args )
+  async function remote_lab_status ( lab_url, status_args )
   {
     var fetch_args =  {
                         method:   'POST',
@@ -933,7 +900,7 @@
     {
       if (err.toString() == "TypeError: Failed to fetch")
       {
-        show_notification("Lab not available at the moment. Please, try again later.", 'danger') ;
+        show_notification("Remote device not available at the moment. Please, try again later.", 'danger') ;
         return "-2";
       }
 
