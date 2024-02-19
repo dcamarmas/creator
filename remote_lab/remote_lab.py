@@ -144,8 +144,8 @@ def worker(item):
       email = EmailMessage()
       email["From"] = sender
       email["To"] = receivers
-      email["Subject"] = "[CREATOR] Remote device " + ret['request_id'] + " results"
-      message = "Remote device " + ret['request_id'] + " has been successfully completed, the execution results are attached. \n\nSincerely,\nCREATOR Team\n\nhttps://creatorsim.github.io/"
+      email["Subject"] = "[CREATOR] Remote device results"
+      message = "Remote device ID=" + ret['request_id'] + " has been successfully completed, the execution results are attached. \n\nSincerely,\nCREATOR Team\n\nhttps://creatorsim.github.io/"
       email.set_content(message, subtype="plain")
 
       with open("results/" + ret['request_id'] + ".txt", "rb") as f:
@@ -178,7 +178,7 @@ request_id = 0
 
 # (1) Check params
 if len(sys.argv) < 2:
-  print("Use: python3 hw_lab.py <deployment_file> [port]");
+  print("Use: python3 remote_lab.py <deployment_file> [port]");
   exit(-1)
 
 port = 5000
@@ -229,7 +229,7 @@ app  = Flask(__name__)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
-# (5a) GET / -> send hw_lab.html
+# (5a) GET / -> send remote_lab.html
 @app.route("/", methods=["GET"])
 @cross_origin()
 def get_status():
