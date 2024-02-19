@@ -125,7 +125,7 @@ jobs:
         docker container run --rm --network host -v regctl-conf:/home/appuser/.regctl/ -v $HOME/.docker/config.json:/home/appuser/.docker/config.json regclient/regctl:v0.3.9 image copy ghcr.io/${{ github.repository_owner }}/creator_gateway docker.io/creatorsim/creator_gateway
 
   build-creator-hw-lab:    
-    name: Build creator_hw_lab Docker Image
+    name: Build creator_remote_lab Docker Image
     needs: creator-checker
     if: github.event_name != 'pull_request'
 
@@ -150,10 +150,10 @@ jobs:
     - name: Login to GitHub Package Registry        
       run:  echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
     - name: Build & Push Docker image
-      run:  cd ./dockers/hw_lab/ && docker buildx build -t ghcr.io/${{ github.repository_owner }}/creator_hw_lab:${GITHUB_SHA} -t ghcr.io/${{ github.repository_owner }}/creator_hw_lab -f ./Dockerfile  --push --platform=linux/amd64,linux/arm64,linux/arm/v7 .
+      run:  cd ./dockers/remote_lab/ && docker buildx build -t ghcr.io/${{ github.repository_owner }}/creator_remote_lab:${GITHUB_SHA} -t ghcr.io/${{ github.repository_owner }}/creator_remote_lab -f ./Dockerfile  --push --platform=linux/amd64,linux/arm64,linux/arm/v7 .
 
   push-creator-hw-lab:    
-    name: Push creator_hw_lab Docker Image
+    name: Push creator_remote_lab Docker Image
     needs: build-creator-hw-lab
     if: github.event_name != 'pull_request' && github.repository_owner == 'creatorsim'
 
@@ -167,5 +167,5 @@ jobs:
     - name: Re-tag & Push Docker Image to Docker Hub        
       run: |          
         chmod +r $HOME/.docker/config.json
-        docker container run --rm --network host -v regctl-conf:/home/appuser/.regctl/ -v $HOME/.docker/config.json:/home/appuser/.docker/config.json regclient/regctl:v0.3.9 image copy ghcr.io/${{ github.repository_owner }}/creator_hw_lab:${GITHUB_SHA}  docker.io/creatorsim/creator_hw_lab:${GITHUB_SHA}
-        docker container run --rm --network host -v regctl-conf:/home/appuser/.regctl/ -v $HOME/.docker/config.json:/home/appuser/.docker/config.json regclient/regctl:v0.3.9 image copy ghcr.io/${{ github.repository_owner }}/creator_hw_lab docker.io/creatorsim/creator_hw_lab
+        docker container run --rm --network host -v regctl-conf:/home/appuser/.regctl/ -v $HOME/.docker/config.json:/home/appuser/.docker/config.json regclient/regctl:v0.3.9 image copy ghcr.io/${{ github.repository_owner }}/creator_remote_lab:${GITHUB_SHA}  docker.io/creatorsim/creator_remote_lab:${GITHUB_SHA}
+        docker container run --rm --network host -v regctl-conf:/home/appuser/.regctl/ -v $HOME/.docker/config.json:/home/appuser/.docker/config.json regclient/regctl:v0.3.9 image copy ghcr.io/${{ github.repository_owner }}/creator_remote_lab docker.io/creatorsim/creator_remote_lab
