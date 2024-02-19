@@ -6,6 +6,7 @@ fi
 
 {
   sleep $2
+  pkill -f $1
   kill -9 $$
 } &
 
