@@ -343,6 +343,7 @@ try
       //
 
       lab_url: "",
+      result_email: "",
       target_ports: { Win: 'rfc2217://host.docker.internal:4000?ign_set_control', Mac: '/dev/cu.usbserial-210', Linux: '/dev/ttyUSB0' }, //TODO: include into flash component - modal info
       target_board: "", //TODO: include into flash component - modal info
       target_port: "", //TODO: include into flash component - modal info

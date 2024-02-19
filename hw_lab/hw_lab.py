@@ -23,7 +23,9 @@
 
 from flask import Flask, request, jsonify, send_file, Response
 from flask_cors import CORS, cross_origin
-import subprocess, os, signal, sys, json, threading, time, requests
+from getpass import getpass
+from email.message import EmailMessage
+import subprocess, os, signal, sys, json, threading, time, requests, smtplib
 
 
 
@@ -136,9 +138,33 @@ def worker(item):
       file.write(jres['status'])
       file.close()
 
-      ret["status"] = 'Completed'
+      # Sent email with the results
+      receivers = ret['result_email']
 
+      email = EmailMessage()
+      email["From"] = sender
+      email["To"] = receivers
+      email["Subject"] = "[CREATOR] Remote device " + ret['request_id'] + " results"
+      message = "Remote device " + ret['request_id'] + " has been successfully completed, the execution results are attached. \n\nSincerely,\nCREATOR Team\n\nhttps://creatorsim.github.io/"
+      email.set_content(message, subtype="plain")
+
+      with open("results/" + ret['request_id'] + ".txt", "rb") as f:
+        email.add_attachment(
+            f.read(),
+            filename="remote_device_" + ret['request_id'] + ".txt",
+            maintype="text",
+            subtype="txt"
+        )
+
+      smtpObj = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+      smtpObj.login(sender, password)
+      smtpObj.sendmail(sender, receivers, email.as_string())
+      smtpObj.quit()
+
+
+      ret["status"] = 'Completed'
       deployment[item]['status'] = 'free'
+
       enqueue_request (queue_outgoing, ret)
 
 
@@ -161,6 +187,10 @@ if len(sys.argv) == 3:
 
 
 # (2) Get Deployment configuration
+print("Enter E-mail:")
+sender = input()
+password = getpass()
+
 try:
   deployment_file = open(sys.argv[1], 'r')
 except Exception as e:
@@ -228,10 +258,11 @@ def post_enqueue():
   try:
     req_data = request.get_json()
     target_board       = req_data['target_board']
+    result_email       = req_data['result_email']
     asm_code           = req_data['assembly']
     req_data['status'] = ''
 
-    new_request = { "request_id": str(request_id), "target_board": target_board, "asm_code": asm_code }
+    new_request = { "request_id": str(request_id), "result_email": result_email, "target_board": target_board, "asm_code": asm_code }
     req_data['status'] = enqueue_request (queue_incoming, new_request)
     request_id = request_id + 1
 
@@ -298,16 +329,6 @@ def post_status():
     req_data['status'] += str(e) + '\n'
 
   return jsonify(req_data)
-
-# (5g) GET /result -> send execution result
-@app.route("/result", methods=["GET"])
-@cross_origin()
-def get_result():
-  try:
-    req_id = request.args.get('req_id')
-    return send_file("results/" + req_id + ".txt", as_attachment=True)
-  except Exception as e:
-    return str(e)
 
 
 

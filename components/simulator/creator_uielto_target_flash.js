@@ -28,6 +28,7 @@
         props:      {
                       id:             { type: String, required: true },
                       lab_url:        { type: String, required: true },
+                      result_email:   { type: String, required: true },
                       target_board:   { type: String, required: true },
                       target_port:    { type: String, required: true },
                       flash_url:      { type: String, required: true }
@@ -37,7 +38,7 @@
                       return {
 
                         //
-                        //Remote lab
+                        //Remote Device
                         //
 
                         remote_target_boards =  [
@@ -59,7 +60,6 @@
                         boards  = false,
                         enqueue = false,
                         status  = false,
-                        result  = false,
 
 
                         //
@@ -91,7 +91,7 @@
         methods:    {
 
                       //
-                      //Remote lab
+                      //Remote Device
                       //
 
                       get_boards()
@@ -135,10 +135,17 @@
                           return;
                         }
 
+                        if(this.result_email == "")
+                        {
+                          show_notification("Please, enter your E-mail", 'danger');
+                          return;
+                        }
+
                         var earg =  {
                                       target_board: this.target_board,
+                                      result_email: this.result_email,
                                       assembly:     code_assembly
-                                    } ;
+                                    };
 
                         this_env = this;
                         hw_lab_enqueue(this.lab_url + "/enqueue", earg).then( function(data)  { 
@@ -147,7 +154,6 @@
                                                                                                   this_env.request_id = data;
                                                                                                   this_env.enqueue = true;
                                                                                                   this_env.status  = true;
-                                                                                                  this_env.result  = false;
                                                                                                   this_env.position = "";
                                                                                                   this_env.check_status();
                                                                                                 }
@@ -162,7 +168,7 @@
                         if (this.position != "Completed" && this.position != "Error")
                         {
                           this.get_status();
-                          setTimeout(this.check_status,10000);
+                          setTimeout(this.check_status,20000);
                         }
                       },
 
@@ -178,10 +184,11 @@
                         hw_lab_status(this.lab_url + "/status", parg).then( function(data)  { 
                                                                                               if (data == "Completed") {
                                                                                                 this_env.enqueue = false;
-                                                                                                this_env.result  = true;
                                                                                               }
-                                                                                              if (data != "-1") {
-                                                                                                if (data == "-2") {
+                                                                                              if (data != "-1")
+                                                                                              {
+                                                                                                if (data == "-2")
+                                                                                                {
                                                                                                   this_env.position = "Error";
                                                                                                   this_env.enqueue = false;
                                                                                                 }
@@ -216,16 +223,6 @@
 
                         //Google Analytics
                         creator_ga('simulator', 'simulator.cancel', 'simulator.cancel');
-                      },
-
-                      get_result ()
-                      {
-                        this.save();
-
-                        window.open(this.lab_url + "/result?req_id=" + this.request_id);
-
-                        //Google Analytics
-                        creator_ga('simulator', 'simulator.result', 'simulator.result');
                       },
 
 
@@ -311,6 +308,7 @@
                       save( )
                       {
                         app._data.lab_url      = this._props.lab_url;
+                        app._data.result_email = this._props.result_email;
                         app._data.target_board = this._props.target_board;
                         app._data.target_port  = this._props.target_port;
                         app._data.flash_url    = this._props.flash_url;
@@ -323,17 +321,17 @@
                     '          @hidden="save">' +
                     ' ' +
                     '   <b-tabs content-class="mt-3">' +
-                    '     <b-tab title="Remote Lab">' +
+                    '     <b-tab title="Remote Device">' +
                     ' ' +
                     '       <b-container fluid align-h="center" class="mx-0 px-0">' +
                     '         <b-row cols="1" align-h="center">' +
                     '           <b-col class="pt-2">' +
-                    '             <label for="range-6">(1) Remote lab URL:</label>' +
+                    '             <label for="range-6">(1) Remote Device URL:</label>' +
                     '             <b-form-input type="text" ' +
                     '                           v-model="lab_url" ' +
-                    '                           placeholder="Enter lab URL" ' +
+                    '                           placeholder="Enter remote device URL" ' +
                     '                           size="sm" ' +
-                    '                           title="Remote lab URL">' +
+                    '                           title="Remote remote device URL">' +
                     '             </b-form-input>' +
                     '           </b-col>' +
                     '         </b-row>' +
@@ -365,31 +363,25 @@
                     '       </b-container>' +
                     '       <br>' +
                     ' ' +
-                    '       <b-container fluid align-h="center" class="mx-0 px-0" v-if="status">' +
+                    '       <b-container fluid align-h="center" class="mx-0 px-0" v-if="boards">' +
                     '         <b-row cols="1" align-h="center">' +
                     '           <b-col class="pt-2">' +
-                    '             <span>Program status: <b>{{position}}</b></span>' +
-                    '           </b-col>' +
-                    '         </b-row>' +
-                    '       </b-container>' +
-                    ' ' +
-                    '       <b-container fluid align-h="center" class="mx-0 px-0" v-if="target_board !=\'\' && result">' +
-                    '         <b-row cols="1" align-h="center">' +
-                    '           <b-col class="pt-2">' +
-                    '             <b-button class="btn btn-sm btn-block" variant="primary" @click="get_result">' +
-                    '               <span class="fas fa-download"></span> Download Result' +
-                    '             </b-button>' +
+                    '             <label for="range-6">(3) E-mail to receive the execution results:</label>' +
+                    '             <b-form-input type="text" ' +
+                    '                           v-model="result_email" ' +
+                    '                           placeholder="Enter E-mail" ' +
+                    '                           size="sm" ' +
+                    '                           title="Result E-mail">' +
+                    '             </b-form-input>' +
                     '           </b-col>' +
                     '         </b-row>' +
                     '       </b-container>' +
                     '       <br>' +
                     ' ' +
-                    '       <b-container fluid align-h="center" class="mx-0 px-0" v-if="target_board !=\'\' && !enqueue">' +
+                    '       <b-container fluid align-h="center" class="mx-0 px-0" v-if="status">' +
                     '         <b-row cols="1" align-h="center">' +
                     '           <b-col class="pt-2">' +
-                    '             <b-button class="btn btn-sm btn-block" variant="primary" @click="do_enqueue">' +
-                    '               <span class="fas fa-paper-plane"></span> Send program' +
-                    '             </b-button>' +
+                    '             <span>Last program status: <b>{{position}}</b></span>' +
                     '           </b-col>' +
                     '         </b-row>' +
                     '       </b-container>' +
@@ -398,7 +390,18 @@
                     '         <b-row cols="1" align-h="center">' +
                     '           <b-col class="pt-2">' +
                     '             <b-button class="btn btn-sm btn-block" variant="danger" @click="do_cancel">' +
-                    '               <span class="fas fa-ban"></span> Cancel program' +
+                    '               <span class="fas fa-ban"></span> Cancel last program' +
+                    '             </b-button>' +
+                    '           </b-col>' +
+                    '         </b-row>' +
+                    '       </b-container>' +
+                    '       <br>' +
+                    ' ' +
+                    '       <b-container fluid align-h="center" class="mx-0 px-0" v-if="target_board !=\'\'">' +
+                    '         <b-row cols="1" align-h="center">' +
+                    '           <b-col class="pt-2">' +
+                    '             <b-button class="btn btn-sm btn-block" variant="primary" @click="do_enqueue">' +
+                    '               <span class="fas fa-paper-plane"></span> Send program' +
                     '             </b-button>' +
                     '           </b-col>' +
                     '         </b-row>' +
@@ -758,7 +761,7 @@
   Vue.component('flash', uielto_flash)
 
   //
-  // Remote Lab web service functions
+  // Remote Device web service functions
   //
 
   async function hw_lab_get_boards ( lab_url )
