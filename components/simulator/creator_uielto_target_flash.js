@@ -27,7 +27,6 @@
   var uielto_flash = {
         props:      {
                       id:             { type: String, required: true },
-                      remote_lab:     { type: String, required: true },
                       lab_url:        { type: String, required: true },
                       target_board:   { type: String, required: true },
                       target_port:    { type: String, required: true },
@@ -41,12 +40,6 @@
                         //Remote lab
                         //
 
-                        remote_labs = [
-                                        { text: 'Please select an option', value: "",      disabled: true },
-                                        { text: 'UC3M Lab',                value: 'uc3m',  url: 'http://10.119.4.139:5000' },
-                                        { text: 'Other...',                value: 'other', url: '' },
-                                      ],
-
                         remote_target_boards =  [
                                                   { text: 'Please select an option', value: "", disabled: true },
                                                   { text: 'ESP32-C2 (RISC-V)',       value: 'esp32c2' },
@@ -57,7 +50,6 @@
                                                 ],
 
                         /*
-                        remote_lab = "",
                         lab_url = "",
                         */
 
@@ -101,28 +93,6 @@
                       //
                       //Remote lab
                       //
-
-                      get_lab_url()
-                      {
-                        this.save();
-
-                        if (this.remote_lab == "other")
-                        {
-                          this.boards  = false;
-                        }
-                        else
-                        {
-                          for (var i = 0; i < remote_labs.length; i++)
-                          {
-                            if (remote_labs[i]['value'] == this.remote_lab)
-                            {
-                              this.lab_url = remote_labs[i]['url'];
-                            }
-                          }
-
-                          this.get_boards();
-                        }
-                      },
 
                       get_boards()
                       {
@@ -340,7 +310,6 @@
 
                       save( )
                       {
-                        app._data.remote_lab   = this._props.remote_lab;
                         app._data.lab_url      = this._props.lab_url;
                         app._data.target_board = this._props.target_board;
                         app._data.target_port  = this._props.target_port;
@@ -359,33 +328,28 @@
                     '       <b-container fluid align-h="center" class="mx-0 px-0">' +
                     '         <b-row cols="1" align-h="center">' +
                     '           <b-col class="pt-2">' +
-                    '             <label for="range-6">(1) Select remote lab:</label>' +
-                    '             <b-form-select v-model="remote_lab" ' +
-                    '                            :options="remote_labs" ' +
-                    '                            @change="get_lab_url" ' +
-                    '                            size="sm"' +
-                    '                            title="Remote labs">' +
-                    '             </b-form-select>' +
-                    '           </b-col>' +
-                    '         </b-row>' +
-                    '       </b-container>' +
-                    '       <br>' +
-                    ' ' +
-                    '       <b-container fluid align-h="center" class="mx-0 px-0" v-if="remote_lab == \'other\'">' +
-                    '         <b-row cols="1" align-h="center">' +
-                    '           <b-col class="pt-2">' +
-                    '             <label for="range-6">(1a) Remote lab URL:</label>' +
+                    '             <label for="range-6">(1) Remote lab URL:</label>' +
                     '             <b-form-input type="text" ' +
                     '                           v-model="lab_url" ' +
                     '                           placeholder="Enter lab URL" ' +
-                    '                           @change="get_boards" ' +
                     '                           size="sm" ' +
                     '                           title="Remote lab URL">' +
                     '             </b-form-input>' +
                     '           </b-col>' +
                     '         </b-row>' +
                     '       </b-container>' +
-                    '       <br v-if="remote_lab == \'other\'">' +
+                    '       <br>' +
+                    ' ' +
+                    '       <b-container fluid align-h="center" class="mx-0 px-0" v-if="!boards">' +
+                    '         <b-row cols="1" align-h="center">' +
+                    '           <b-col class="pt-2">' +
+                    '             <b-button class="btn btn-sm btn-block" variant="primary" @click="get_boards">' +
+                    '               <span class="fas fa-link"></span> Connect' +
+                    '             </b-button>' +
+                    '           </b-col>' +
+                    '         </b-row>' +
+                    '       </b-container>' +
+                    '       <br v-if="!boards">' +
                     ' ' +
                     '       <b-container fluid align-h="center" class="mx-0 px-0" v-if="boards">' +
                     '         <b-row cols="1" align-h="center">' +
@@ -444,7 +408,7 @@
                     ' ' +
                     ' ' +
                     ' ' +
-                    '     <b-tab title="Device">' +
+                    '     <b-tab title="Local Device">' +
                     ' ' +
                     '       <b-container fluid align-h="center" class="mx-0 px-0">' +
                     '         <b-row cols="1" align-h="center">' +
