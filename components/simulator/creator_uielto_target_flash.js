@@ -101,7 +101,7 @@
                           this.save();
 
                           this_env = this;
-                          hw_lab_get_boards(this.lab_url + "/target_boards").then( function(data) { 
+                          remote_lab_get_boards(this.lab_url + "/target_boards").then( function(data) { 
                                                                                                     if (data != "-1") 
                                                                                                     {
                                                                                                       available_boards = JSON.parse(data);
@@ -148,7 +148,7 @@
                                     };
 
                         this_env = this;
-                        hw_lab_enqueue(this.lab_url + "/enqueue", earg).then( function(data)  { 
+                        remote_lab_enqueue(this.lab_url + "/enqueue", earg).then( function(data)  { 
                                                                                                 if (data != "-1") 
                                                                                                 {
                                                                                                   this_env.request_id = data;
@@ -181,7 +181,7 @@
                                     } ;
 
                         this_env = this;
-                        hw_lab_status(this.lab_url + "/status", parg).then( function(data)  { 
+                        remote_lab_status(this.lab_url + "/status", parg).then( function(data)  { 
                                                                                               if (data == "Completed") {
                                                                                                 this_env.enqueue = false;
                                                                                               }
@@ -213,7 +213,7 @@
                                     } ;
 
                         this_env = this;
-                        hw_lab_cancel(this.lab_url + "/delete", carg).then( function(data)  { 
+                        remote_lab_cancel(this.lab_url + "/delete", carg).then( function(data)  { 
                                                                                               if (data != "-1") 
                                                                                               {
                                                                                                 this_env.enqueue = false;
@@ -764,7 +764,7 @@
   // Remote Device web service functions
   //
 
-  async function hw_lab_get_boards ( lab_url )
+  async function remote_lab_get_boards ( lab_url )
   {
     var fetch_args =  {
                         method:   'GET'
@@ -780,7 +780,7 @@
     {
       if (err.toString() == "TypeError: Failed to fetch") 
       {
-        show_notification("Lab not available at the moment. Please, try again later.", 'danger') ;
+        show_notification("Remote device not available at the moment. Please, try again later.", 'danger') ;
         return "-1";
       }
 
@@ -788,7 +788,7 @@
     }
   }
 
-  async function hw_lab_enqueue ( lab_url, enqueue_args )
+  async function remote_lab_enqueue ( lab_url, enqueue_args )
   {
     var fetch_args =  {
                         method:   'POST',
@@ -810,7 +810,7 @@
     {
       if (err.toString() == "TypeError: Failed to fetch") 
       {
-        show_notification("Lab not available at the moment. Please, try again later.", 'danger') ;
+        show_notification("Remote device not available at the moment. Please, try again later.", 'danger') ;
         return "-1";
       }
 
@@ -818,7 +818,7 @@
     }
   }
 
-  async function hw_lab_cancel ( lab_url, cancel_args )
+  async function remote_lab_cancel ( lab_url, cancel_args )
   {
     var fetch_args =  {
                         method:   'POST',
@@ -840,7 +840,7 @@
     {
       if (err.toString() == "TypeError: Failed to fetch")
       {
-        show_notification("Lab not available at the moment. Please, try again later.", 'danger') ;
+        show_notification("Remote device not available at the moment. Please, try again later.", 'danger') ;
         return "-1";
       }
 
@@ -848,7 +848,7 @@
     }
   }
 
-  async function hw_lab_position ( lab_url, position_args )
+  async function remote_lab_position ( lab_url, position_args )
   {
     var fetch_args =  {
                         method:   'POST',
@@ -870,7 +870,7 @@
     {
       if (err.toString() == "TypeError: Failed to fetch")
       {
-        show_notification("Lab not available at the moment. Please, try again later.", 'danger') ;
+        show_notification("Remote device not available at the moment. Please, try again later.", 'danger') ;
         return "-1";
       }
 
@@ -878,7 +878,7 @@
     }
   }
 
-  async function hw_lab_status ( lab_url, status_args )
+  async function remote_lab_status ( lab_url, status_args )
   {
     var fetch_args =  {
                         method:   'POST',
@@ -900,7 +900,7 @@
     {
       if (err.toString() == "TypeError: Failed to fetch")
       {
-        show_notification("Lab not available at the moment. Please, try again later.", 'danger') ;
+        show_notification("Remote device not available at the moment. Please, try again later.", 'danger') ;
         return "-2";
       }
 
