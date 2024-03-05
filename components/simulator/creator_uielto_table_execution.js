@@ -79,8 +79,8 @@
               ' ' +
               '       <b-table id="inst_table" ' +
               '                sticky-header ' +
-              '                striped ' +
-              '                small ' +
+              //'                striped ' +
+              //'                small ' +
               '                hover ' +
               '                :items="instructions" ' +
               '                :fields="archInstructions" ' +

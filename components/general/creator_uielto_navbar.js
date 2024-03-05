@@ -51,7 +51,7 @@
                 '       <b-container fluid align-h="center" class="mx-0 px-0">' +
                 '         <b-row cols="2" align-h="center">' +
                 '           <b-col class="headerText col-auto my-0 py-0 pr-1 text-uppercase">' +
-                '             <h1>Creator <b-badge pill variant="secondary">{{version}}</b-badge></h1>' +
+                '             <h1>Creator <b-badge pill variant="dark">{{version}}</b-badge></h1>' +
                 '           </b-col>' +
                 '' +
                 '           <b-col class="headerText col-auto my-0 p-0 ml-2">' +
@@ -73,7 +73,7 @@
                 '     <b-collapse is-nav id="nav_collapse">' +
                 '       <b-navbar-nav class="ml-auto">' +
                 '         <b-nav-item class="mb-0 pb-0 p-0">' +
-                '           <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground h-100"' +
+                '           <b-button class="btn btn-outline-dark btn-sm btn-block buttonBackground h-100"' +
                 '                     v-b-modal.about>' +
                 '             <span class="fas fa-address-card"></span> ' +
                 '             About us' +

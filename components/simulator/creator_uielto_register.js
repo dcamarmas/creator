@@ -114,8 +114,8 @@
                       {
                         ret = ret.toString();
 
-                        if (ret.length > 10) {
-                          return ret.slice(0, 8) + "...";
+                        if (ret.length > 3) {
+                          return ret.slice(0, 3) + "...";
                         }
                       }
 
@@ -125,8 +125,8 @@
 
                     show_value_truncate ( register ) {
                       var ret = this.show_value(register).toString();
-                      if (ret.length > 8){
-                        ret = ret.slice(0,8) + "...";
+                      if (ret.length > 3){
+                        ret = ret.slice(0,3) + "...";
                       }
                       return ret;
                     },
@@ -149,7 +149,7 @@
         },
 
         template:   '<div>' +
-                    ' <b-button class="btn btn-outline-secondary btn-sm registers w-100 h-100" ' +
+                    ' <b-button class="btn btn-outline-dark btn-sm registers w-100 h-100" ' +
                     '           :id="popover_id(register.name)" ' +
                     '           onclick="creator_ga(\'data\', \'data.view\', \'data.view.registers_details\');">' +
                     '   <span class="text-truncate">{{reg_name(register)}}</span> ' +

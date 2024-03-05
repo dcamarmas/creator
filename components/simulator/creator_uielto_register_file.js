@@ -87,7 +87,7 @@
               '               class="w-100"' +
               '               v-model="reg_representation"' +
               '               :options="mk_reg_representation_options()"' +
-              '               button-variant="outline-secondary"' +
+              '               button-variant="outline-dark"' +
               '               size="sm"' +
               '               :aria-describedby="ariaDescribedby"' +
               '               name="radios-btn-default"' +
@@ -106,7 +106,7 @@
               '               class="w-100"' +
               '               v-model="reg_name_representation"' +
               '               :options="reg_name_representation_options"' +
-              '               button-variant="outline-secondary"' +
+              '               button-variant="outline-dark"' +
               '               size="sm"' +
               '               :aria-describedby="ariaDescribedby"' +
               '               name="radios-btn-default"' +

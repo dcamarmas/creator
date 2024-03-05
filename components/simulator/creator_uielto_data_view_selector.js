@@ -65,11 +65,11 @@
                   if (button == "registers") {
                     if (app._data.data_mode == "int_registers" || app._data.data_mode == "fp_registers")
                     {
-                      return "secondary";
+                      return "dark";
                     }
                     else
                     {
-                      return "outline-secondary";
+                      return "outline-dark";
                     }
                   }
 
@@ -106,7 +106,7 @@
               '                  :id="item.value"' +
               '                  size="sm"' +
               '                  :pressed="get_pressed(item.value)"' +
-              '                  variant="outline-secondary"' +
+              '                  variant="outline-dark"' +
               '                  @click="change_data_view(item.value)">' +
               '          {{item.text}}' +
               '        </b-button>' +
@@ -125,7 +125,7 @@
               '        <b-button id="memory_btn"' +
               '                  size="sm"' +
               '                  :pressed="get_pressed(\'memory\')"' +
-              '                  variant="outline-secondary"' +
+              '                  variant="outline-dark"' +
               '                  @click="change_data_view(\'memory\')">' +
               '          <span class="fas fa-memory"></span>' +
               '          Memory' +
@@ -134,7 +134,7 @@
               '        <b-button id="stats_btn"' +
               '                  size="sm"' +
               '                  :pressed="get_pressed(\'stats\')"' +
-              '                  variant="outline-secondary"' +
+              '                  variant="outline-dark"' +
               '                  @click="change_data_view(\'stats\')">' +
               '          <span class=" fas fa-chart-bar"></span>' +
               '          Stats' +
@@ -143,7 +143,7 @@
               '        <b-button id="stats_btn"' +
               '                  size="sm"' +
               '                  :pressed="get_pressed(\'clk_cycles\')"' +
-              '                  variant="outline-secondary"' +
+              '                  variant="outline-dark"' +
               '                  @click="change_data_view(\'clk_cycles\')">' +
               '          <span class="fa-regular fa-clock"></span>' +
               '          CLK Cyles' +

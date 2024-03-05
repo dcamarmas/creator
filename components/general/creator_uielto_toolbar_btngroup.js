@@ -537,14 +537,14 @@
             '            right' +
             '            text="Architecture"' +
             '            size="sm"' +
-            '            variant="outline-secondary"' +
+            '            variant="outline-dark"' +
             '            @click="change_UI_mode(\'architecture\')">' +
             '  <b-dropdown-item v-for="item in arch_available" v-if="item.available == 1" @click="load_arch_select(item)">{{item.name}}</b-dropdown-item>' +
             '</b-dropdown>'
   }
 
   function button_assembly(){
-    return  '<b-button v-if="item==\'btn_assembly\'" class="btn btn-block btn-outline-secondary menuGroup btn-sm assembly_btn h-100 text-truncate"' +
+    return  '<b-button v-if="item==\'btn_assembly\'" class="btn btn-block btn-outline-dark menuGroup btn-sm assembly_btn h-100 text-truncate"' +
             '          id="assembly_btn_sim"' +
             '          @click="change_UI_mode(\'assembly\')">' +
             '  <span class="fas fa-hashtag"></span>' +
@@ -553,7 +553,7 @@
   }
 
   function button_simulator(){
-    return  '<b-button v-if="item==\'btn_simulator\'" class="btn btn-block btn-outline-secondary menuGroup btn-sm simulator_btn btn_arch h-100"' +
+    return  '<b-button v-if="item==\'btn_simulator\'" class="btn btn-block btn-outline-dark menuGroup btn-sm simulator_btn btn_arch h-100"' +
             '          id="sim_btn_arch"' +
             '          @click="change_UI_mode(\'simulator\')">' +
             '  <span class="fas fa-cogs"></span>' +
@@ -562,7 +562,7 @@
   }
 
   function button_save_architecture(){
-    return  '<b-button v-if="item==\'btn_save_architecture\'" class="btn btn-block btn-outline-secondary menuGroup btn-sm h-100" ' +
+    return  '<b-button v-if="item==\'btn_save_architecture\'" class="btn btn-block btn-outline-dark menuGroup btn-sm h-100" ' +
             '          id="save_btn_arch" ' +
             '          v-b-modal.save_architecture> ' +
             '  <span class="fas fa-download"></span> ' +
@@ -571,11 +571,11 @@
   }
 
   function dropdown_assembly_file(){
-    return  '<b-dropdown v-if="item==\'dropdown_assembly_file\'" right ' +
+    return  '<b-dropdown active="true" v-if="item==\'dropdown_assembly_file\'" right ' +
             '            text="File" ' +
             '            size="sm" ' +
             '            class="btn btn-block  menuGroup btn-sm p-0" ' +
-            '            variant="outline-secondary">' +
+            '            variant="outline-dark">' +
             '  <b-dropdown-item @click="new_assembly">' +
             '    <span class="fas fa-file"></span> ' +
             '    New' +
@@ -600,7 +600,7 @@
   }
 
   function button_compile(){
-    return  '<b-button v-if="item==\'btn_compile\'" class="btn btn-block btn-outline-secondary actionsGroup btn-sm h-100" ' +
+    return  '<b-button v-if="item==\'btn_compile\'" class="btn btn-block btn-outline-dark menuGroup btn-sm h-100" ' +
             '          id="compile_assembly" ' +
             '          @click="assembly_compiler()">' +
             '  <span class="fas fa-sign-in-alt"></span>' +
@@ -610,7 +610,7 @@
   }
 
   function dropdown_library(){
-    return  '<b-dropdown v-if="item==\'dropdown_library\'" right text="Library" size="sm" class="btn btn-block menuGroup btn-sm p-0" variant="outline-secondary">' +
+    return  '<b-dropdown active="true" v-if="item==\'dropdown_library\'" right text="Library" size="sm" class="btn btn-block menuGroup btn-sm p-0" variant="outline-dark">' +
             '  <b-dropdown-item v-b-modal.save_binary>' +
             '    <span class="fas fa-plus-square"></span>' +
             '    Create' +
@@ -629,7 +629,7 @@
   function button_reset(){
     return  '<b-button v-if="item==\'btn_reset\'" @click="reset(true)" ' +
             '          :disabled="reset_disable"' +
-            '          class="btn btn-block btn-outline-secondary actionsGroup btn-sm h-100 mr-1 text-truncate">' +
+            '          class="btn btn-block btn-outline-dark actionsGroup btn-sm h-100 mr-1 text-truncate">' +
             '  <span class="fas fa-power-off"></span>' +
             '  Reset' +
             '</b-button>'
@@ -638,7 +638,7 @@
   function button_instruction(){
     return  '<b-button v-if="item==\'btn_instruction\'" accesskey="a" ' +
             '          :disabled="instruction_disable"' +
-            '          class="btn btn-block btn-outline-secondary actionsGroup btn-sm h-100 mr-1 text-truncate" ' +
+            '          class="btn btn-block btn-outline-dark actionsGroup btn-sm h-100 mr-1 text-truncate" ' +
             '          @click="execute_instruction" id="inst">' +
             '  <span class="fas fa-fast-forward"></span>' +
             '  Inst.' +
@@ -649,7 +649,7 @@
   }
 
   function button_run(){
-    return  '<b-button v-if="item==\'btn_run\'" class="btn btn-block btn-outline-secondary actionsGroup btn-sm h-100 mr-1" ' +
+    return  '<b-button v-if="item==\'btn_run\'" class="btn btn-block btn-outline-dark actionsGroup btn-sm h-100 mr-1 text-truncate" ' +
             '          @click="execute_program" ' +
             '          :disabled="run_disable"' +
             '          id="playExecution">' +
@@ -659,7 +659,7 @@
   }
 
   function button_flash(){
-    return  '<b-button v-if="item==\'btn_flash\'" class="btn btn-block btn-outline-secondary actionsGroup btn-sm h-100 mr-1" ' +
+    return  '<b-button v-if="item==\'btn_flash\'" class="btn btn-block btn-outline-dark actionsGroup btn-sm h-100 mr-1 text-truncate" ' +
             '          v-b-modal.flash ' +
             '          :disabled="run_disable">' +
             '  <span class="fa-brands fa-usb"></span>' +
@@ -668,7 +668,7 @@
   }
 
   function button_stop(){
-    return  '<b-button v-if="item==\'btn_stop\'" class="btn btn-block btn-outline-secondary actionsGroup btn-sm h-100 text-truncate" ' +
+    return  '<b-button v-if="item==\'btn_stop\'" class="btn btn-block btn-outline-dark actionsGroup btn-sm h-100 text-truncate" ' +
             '          @click="stop_execution" ' +
             '          :disabled="stop_disable"' +
             '          id="stop_execution">' +
@@ -678,7 +678,7 @@
   }
 
   function button_examples(){
-    return  '<b-button v-if="item==\'btn_examples\'" class="btn btn-block btn-outline-secondary menuGroup btn-sm h-100 mr-1 text-truncate"' +
+    return  '<b-button v-if="item==\'btn_examples\'" class="btn btn-block btn-outline-dark menuGroup btn-sm h-100 mr-1 text-truncate"' +
             '          v-b-modal.examples2>' +
             '  <span class="fas fa-file-alt"></span>' +
             '  Examples' +
@@ -686,7 +686,7 @@
   }
 
   function button_calculator(){
-    return  '<b-button v-if="item==\'btn_calculator\'" class="btn btn-block btn-outline-secondary menuGroup btn-sm h-100 text-truncate"' +
+    return  '<b-button v-if="item==\'btn_calculator\'" class="btn btn-block btn-outline-dark menuGroup btn-sm h-100 text-truncate"' +
             '          v-b-modal.calculator>' +
             '  <span class="fas fa-calculator"></span>' +
             '  Calculator' +
@@ -694,7 +694,7 @@
   }
 
   function button_configuration(){
-    return  '<b-button v-if="item==\'btn_configuration\'" class="btn btn-block btn-outline-secondary menuGroup btn-sm h-100 mr-1 text-truncate" ' +
+    return  '<b-button v-if="item==\'btn_configuration\'" class="btn btn-block btn-outline-dark menuGroup btn-sm h-100 mr-1 text-truncate" ' +
             '          id="conf_btn_sim" ' +
             '          v-b-modal.configuration>' +
             '  <span class="fa fa-cogs"></span>' +
@@ -703,7 +703,7 @@
   }
 
   function button_information(){
-    return  '<b-button v-if="item==\'btn_information\'" class="btn btn-block btn-outline-secondary btn-sm h-100 infoButton text-truncate"' +
+    return  '<b-button v-if="item==\'btn_information\'" class="btn btn-block btn-outline-dark btn-sm h-100 infoButton text-truncate"' +
             '          id="info">' +
             '  <span class="fas fa-info-circle"></span> ' +
             '  Info' +

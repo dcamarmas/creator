@@ -31,7 +31,7 @@
     data:       function () {
                   return {
                     //Instructions table fields
-                    instructions_fields: ['name', 'co', 'cop', 'nwords', 'signatureRaw', 'properties', 'clk_cycles', 'fields', 'definition', 'actions'],
+                    instructions_fields: ['name', 'co', 'cop', 'nwords', 'signatureRaw', 'clk_cycles', 'fields', 'definition', 'actions'],
                   }
                 },
 
@@ -71,7 +71,7 @@
                 '  <br>' +
                 '  <span class="h6">Instruction set:</span>' +
                 '  <br>' +
-                '  <b-button class="btn btn-outline-secondary btn-sm buttonBackground h-100" ' +
+                '  <b-button class="btn btn-outline-dark btn-sm buttonBackground h-100" ' +
                 '            id="newInstructionBtn" ' +
                 '            v-b-modal.new_instructions> ' +
                 '    <span class="fas fa-plus-circle"></span>' +
@@ -115,14 +115,14 @@
                 '' +
                 '      <template v-slot:cell(fields)="row">' +
                 '        <b-button @click.stop="view_instructions_modal(row.item.name, row.index, $event.target)" ' +
-                '                  class="btn btn-outline-secondary btn-sm buttonBackground h-100">' +
+                '                  class="btn btn-outline-dark btn-sm buttonBackground h-100">' +
                 '          View Fields' +
                 '        </b-button>' +
                 '      </template>' +
                 '' +
                 '      <template v-slot:cell(definition)="row">' +
                 '        <b-form-textarea v-model="row.item.definition" ' +
-                '                         disabled ' +
+                //'                         disabled ' +
                 '                         no-resize ' +
                 '                         rows="1" ' +
                 '                         max-rows="4"' +
@@ -132,7 +132,7 @@
                 '' +
                 '      <template v-slot:cell(actions)="row">' +
                 '        <b-button @click.stop="edit_instructions_modal(row.item.name, row.index, $event.target)" ' +
-                '                  class="btn btn-outline-secondary btn-sm buttonBackground h-100">' +
+                '                  class="btn btn-outline-dark btn-sm buttonBackground h-100">' +
                 '          <span class="far fa-edit"></span>' +
                 '          Edit' +
                 '        </b-button>' +
