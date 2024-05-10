@@ -278,8 +278,8 @@
                       //New field
                       var new_field = { name: this.instruction.fields[i].name, 
                                         type: this.instruction.fields[i].type,
-                                        startbit: this.instruction.fields[i].startbit,
-                                        stopbit: this.instruction.fields[i].stopbit,
+                                        startbit: parseInt(this.instruction.fields[i].startbit),
+                                        stopbit: parseInt(this.instruction.fields[i].stopbit),
                                         field_value: this.instruction.fields[i].valueField
                                       };
 
