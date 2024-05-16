@@ -219,6 +219,12 @@
                     //Generate new signature
                     this.generate_signature();
 
+                    for (var i = 0; i < this._props.instruction.fields.length; i++)
+                    {
+                      this._props.instruction.fields[i].startbit = parseInt(this._props.instruction.fields[i].startbit);
+                      this._props.instruction.fields[i].stopbit  = parseInt(this._props.instruction.fields[i].stopbit);
+                    }
+
                     Object.assign(architecture.instructions[this._props.index], this._props.instruction);
 
                     show_notification('The instruction has been modified, please check the definition of the pseudoinstructions', 'info') ;
