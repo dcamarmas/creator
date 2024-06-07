@@ -1813,6 +1813,8 @@ function data_segment_compiler()
                   align = 1;
 
                   console_log("space Terminado");
+
+                  j=0;
                   break;
 
                 case "align":
@@ -1845,6 +1847,8 @@ function data_segment_compiler()
                   console_log("token: " + token);
 
                   console_log("align Terminado");
+                  
+                  j=0;
                   break;
 
                 default:
