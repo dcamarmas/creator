@@ -208,11 +208,11 @@ function wsasm_expand_options ( base_options )
 //  (1/3) Prepare context for compiling and loading   (see README_ng.md for more information)
 //
 //  Auxiliar function tree for wsasm_prepare_context ( CU_data, asm_source )
-//   * wsasm_prepare_context_firmware           ( context, CU_data )
-//   * wsasm_prepare_context_pseudoinstructions ( context, CU_data )
+//   * crasm_prepare_context_firmware           ( context, CU_data )
+//   * crasm_prepare_context_pseudoinstructions ( context, CU_data )
 //
 
-function wsasm_prepare_oc ( elto, aux )
+function crasm_prepare_oc ( elto, aux )
 {
 	elto.oc = {
                      value:         '',    // "begin {...}" has no 'co/oc' field
@@ -222,11 +222,7 @@ function wsasm_prepare_oc ( elto, aux )
 
         // set elto.oc.value
 	if (typeof aux.co !== "undefined") {
-	     elto.oc.value = aux.co ;             // AUX.co
-        }
-	else
-        if (typeof aux.oc !== "undefined") {
-	     elto.oc.value = aux.oc ;             // AUX.oc
+	     elto.oc.value = aux.co ;
         }
 
         // IF empty 'oc' -> return default elto...
@@ -234,32 +230,28 @@ function wsasm_prepare_oc ( elto, aux )
             return elto ;
         }
 
-        // copy start/stop from ir.default_eltos by default
-        var xr_info = simhw_sim_ctrlStates_get() ;
-	elto.oc.asm_start_bit[0] = parseInt(xr_info.ir.default_eltos.oc.begin) ;
-	elto.oc.asm_stop_bit [0] = parseInt(xr_info.ir.default_eltos.oc.end) ;
-        elto.oc.asm_n_bits       = elto.oc.asm_stop_bit[0] - elto.oc.asm_start_bit[0] + 1 ;
-
-        // IF firmware v1 -> return elto...
-	if (typeof aux.fields_all == "undefined") {   // AUX.fields_all
+        // IF NO fields -> return elto...
+	if (typeof aux.fields == "undefined") {
             return elto ;
         }
 
-        // IF firmware v2 with start/stop bit -> copy + return elto
-        for (let k=0; k<aux.fields_all.length; k++)
+        // IF start/stop bit in fields[i].co -> copy + return elto
+	let m = 0 ;
+        for (let k=0; k<aux.fields.length; k++)
         {
-	     if (typeof aux.fields_all[k].type == "undefined") {
+	     if (typeof aux.fields[k].type == "undefined") {
                  continue ;
              }
-	     if (aux.fields_all[k].type != "oc") {
+	     if (aux.fields[k].type != "co") {
                  continue ;
              }
 
              // copy start/stop bits...
-	     for (let m=0; m<aux.fields_all[k].bits_start.length; m++) {
-	    	  elto.oc.asm_start_bit[m] = parseInt(aux.fields_all[k].bits_start[m]) ;
-                  elto.oc.asm_stop_bit [m] = parseInt(aux.fields_all[k].bits_stop[m]) ;
-	     }
+	     elto.oc.asm_start_bit[m] = parseInt(aux.fields[k].bits_start) ;
+             elto.oc.asm_stop_bit [m] = parseInt(aux.fields[k].bits_stop) ;
+	     m = m + 1 ;
+
+             elto.oc.value = elto.oc.value + aux.fields[k].valueField ;
 
              // translate bit to index...
              elto.oc.asm_n_bits = wsasm_order2index_startstop(elto.oc.asm_start_bit, elto.oc.asm_stop_bit) ;
@@ -268,7 +260,7 @@ function wsasm_prepare_oc ( elto, aux )
         return elto ;
 }
 
-function wsasm_prepare_eoc ( elto, aux )
+function crasm_prepare_eoc ( elto, aux )
 {
 	elto.eoc = {
                       value:         '',    // "begin {...}" has no 'cop/eoc' field
@@ -278,17 +270,8 @@ function wsasm_prepare_eoc ( elto, aux )
 
         // elto.eoc.value
 	if (typeof aux.cop !== "undefined") {
-	     elto.eoc.value = aux.cop ;              // AUX.cop
+	     elto.eoc.value = aux.cop ;
         }
-	else if (typeof aux.eoc !== "undefined") {
-	     elto.eoc.value = aux.eoc ;              // AUX.eoc
-        }
-
-        // copy start/stop from ir.default_eltos by default
-        var xr_info = simhw_sim_ctrlStates_get() ;
-	elto.eoc.asm_start_bit[0] = parseInt(xr_info.ir.default_eltos.eoc.begin) ;
-	elto.eoc.asm_stop_bit [0] = parseInt(xr_info.ir.default_eltos.eoc.end) ;
-        elto.eoc.asm_n_bits       = elto.eoc.asm_stop_bit[0] - elto.eoc.asm_start_bit[0] + 1 ;
 
         // IF empty 'eoc' -> return elto...
         if (0 == elto.eoc.value.length) {
@@ -297,26 +280,28 @@ function wsasm_prepare_eoc ( elto, aux )
             return elto ;
         }
 
-        // IF firmware v1 -> return elto...
-	if (typeof aux.fields_all == "undefined") {   // AUX.fields_all
+        // IF NO fields -> return elto...
+	if (typeof aux.fields == "undefined") {
             return elto ;
         }
 
-        // IF firmware v2 with start/stop bit -> copy + return elto
-        for (let k=0; k<aux.fields_all.length; k++)
+        // IF start/stop bit in fields[i].co -> copy + return elto
+	let m = 0 ;
+        for (let k=0; k<aux.fields.length; k++)
         {
-	     if (typeof aux.fields_all[k].type == "undefined") {
+	     if (typeof aux.fields[k].type == "undefined") {
                  continue ;
              }
-	     if (aux.fields_all[k].type != "eoc") {
+	     if (aux.fields[k].type != "cop") {
                  continue ;
              }
 
              // copy start/stop bits...
-	     for (let m=0; m<aux.fields_all[k].bits_start.length; m++) {
-	    	  elto.eoc.asm_start_bit[m] = parseInt(aux.fields_all[k].bits_start[m]) ;
-                  elto.eoc.asm_stop_bit [m] = parseInt(aux.fields_all[k].bits_stop[m]) ;
-	     }
+	     elto.eoc.asm_start_bit[m] = parseInt(aux.fields[k].bits_start) ;
+             elto.eoc.asm_stop_bit [m] = parseInt(aux.fields[k].bits_stop) ;
+	     m = m + 1 ;
+
+             elto.eoc.value = elto.eoc.value + aux.fields[k].valueField ;
 
              // translate bit to index...
              elto.eoc.asm_n_bits = wsasm_order2index_startstop(elto.eoc.asm_start_bit, elto.eoc.asm_stop_bit) ;
@@ -325,7 +310,8 @@ function wsasm_prepare_eoc ( elto, aux )
         return elto ;
 }
 
-function wsasm_prepare_context_firmware ( context, CU_data )
+
+function crasm_prepare_context_firmware ( context, CU_data )
 {
            let elto = null ;
 	   let aux  = null ;
@@ -336,10 +322,10 @@ function wsasm_prepare_context_firmware ( context, CU_data )
            let w_index   = 0 ;
            let n_bits    = 0 ;
 
-	   // Fill firmware
-	   for (let i=0; i<CU_data.firmware.length; i++)
+	   // Fill 'firmware'
+	   for (let i=0; i<CU_data.instructions.length; i++)
            {
-		aux = CU_data.firmware[i];
+		aux = CU_data.instructions[i];
 
 	   	if (typeof context.firmware[aux.name] === "undefined") {
 	   	    context.firmware[aux.name] = [] ;
@@ -348,67 +334,44 @@ function wsasm_prepare_context_firmware ( context, CU_data )
                 // elto: initial fields...
                 elto = {} ;
 
-                elto.name                = aux.name ;               // AUX.name
+                elto.name                = aux.name ;
 		elto.isPseudoinstruction = false ;
-		elto.nwords              = parseInt(aux.nwords) ;   // AUX.nwords
+		elto.nwords              = parseInt(aux.nwords) ;
 		elto.oc                  = {} ;  // computed later
 		elto.eoc                 = {} ;  // computed later
 		elto.fields              = [] ;  // computed later
-		elto.signature           = aux.signature ;          // AUX.signature
+		elto.signature           = aux.signature ;          // TODO: AUX.signature
 		elto.signature_type_str  = aux.name ;
 		elto.signature_type_arr  = '' ;  // computed later
 		elto.signature_size_str  = '' ;  // computed later
 		elto.signature_size_arr  = [] ;  // computed later
 
-		if (typeof aux.signatureUser !== "undefined") {     // AUX.signatureUser
+		if (typeof aux.signatureUser !== "undefined") {     // TODO: AUX.signatureUser
                     elto.signature_type_str = aux.signatureUser ;
                 }
 
                 // tooltip with details...
-		elto["mc-start"] = aux["mc-start"] ;                // AUX.mc-start
-		elto.microcode   = aux.microcode ;                  // AUX.microcode
-		elto.help        = aux.help ;                       // AUX.help
+		elto["mc-start"] = 0 ;
+		elto.microcode   = [] ;
+		elto.help        = aux.help ;
 
                 // fields: oc + eoc
-                wsasm_prepare_oc(elto, aux) ;
-                wsasm_prepare_eoc(elto, aux) ;
+                crasm_prepare_oc (elto, aux) ;
+                crasm_prepare_eoc(elto, aux) ;
 
                 // fields...
 		if (typeof aux.fields !== "undefined") {
-                    elto.fields = aux.fields ;                      // AUX.fields
+                    elto.fields = aux.fields ;
                 }
 
 		elto.signature_size_arr.push(elto.oc.value.length) ;
                 for (let j=0; j<elto.fields.length; j++)
                 {
                      // initial values...
-                     start_bit = [] ;
-                     stop_bit  = [] ;
-                     if (1 == CU_data.version)
-                     {
-                         start_bit[0] = parseInt(elto.fields[j].startbit) ;
-                         stop_bit[0]  = parseInt(elto.fields[j].stopbit) ;
-                     }
-                     else // (2 == CU_data.version)
-                     {
-                         if ("forwards" == context.options.field_multipart_order)
-                         {
-				 for (let m=0; m<elto.fields[j].bits_start.length; m++)
-				 {
-				      start_bit[m] = parseInt(elto.fields[j].bits_start[m]) ;
-	                              stop_bit[m]  = parseInt(elto.fields[j].bits_stop[m]) ;
-				 }
-                         }
-                         else // "backwards"
-                         {
-				 for (let m=0; m<elto.fields[j].bits_start.length; m++)
-				 {
-                                      om = elto.fields[j].bits_start.length - 1 - m ;
-				      start_bit[m] = parseInt(elto.fields[j].bits_start[om]) ;
-	                              stop_bit[m]  = parseInt(elto.fields[j].bits_stop[om]) ;
-				 }
-                         }
-                     }
+                     start_bit    = [] ;
+                     stop_bit     = [] ;
+                     start_bit[0] = parseInt(elto.fields[j].startbit) ;
+                     stop_bit[0]  = parseInt(elto.fields[j].stopbit) ;
 
                      // translate from startbit/stop_bit to asm_start_bit/asm_stop_bit...
                      n_bits = wsasm_order2index_startstop(start_bit, stop_bit) ;
@@ -434,39 +397,40 @@ function wsasm_prepare_context_firmware ( context, CU_data )
 	   return context ;
 }
 
-function wsasm_prepare_context_pseudoinstructions ( context, CU_data )
+function crasm_prepare_context_pseudoinstructions ( context, CU_data )
 {
            let elto    = null ;
 	   let initial = null ;
 	   let finish  = null ;
 
 	   // Fill pseudoinstructions
-	   for (let i=0; i<CU_data.pseudoInstructions.length; i++)
+	   for (let i=0; i<CU_data.pseudoinstructions.length; i++)
 	   {
-		initial = CU_data.pseudoInstructions[i].initial ;
-		finish  = CU_data.pseudoInstructions[i].finish ;
+		elto = CU_data.pseudoinstructions[i] ;
 
-		if (typeof context.pseudoInstructions[initial.name] === "undefined")
+		if (typeof context.pseudoInstructions[elto.name] === "undefined")
                 {
-	 	    context.pseudoInstructions[initial.name] = 0 ;
-		    if (typeof context.firmware[initial.name] === "undefined") {
-		        context.firmware[initial.name] = [] ;
+	 	    context.pseudoInstructions[elto.name] = 0 ;
+		    if (typeof context.firmware[elto.name] === "undefined") {
+		        context.firmware[elto.name] = [] ;
 		    }
 		}
 
-		context.pseudoInstructions[initial.name]++;
+		context.pseudoInstructions[elto.name]++;
 
                 // initial elto fields...
                 elto = {} ;
 
-                elto.name                = initial.name ;
-	        elto.isPseudoinstruction = true ;
-	        elto.fields              = [] ;
-	        elto.finish              = finish.signature ;
-	        elto.signature           = initial.signature ;
-	        elto.signature_type_str  = initial.signature.replace(/,/g," ") ;
+                elto.name                 = elto.name ;
+	        elto.isPseudoinstruction  = true ;
+	        elto.fields               = [] ;
+	        elto.finish               = elto.definition ;
+	        elto.signature            = elto.signature ;             // TODO: better use a canonical format (raw, def included)
+	        elto.signature_type_str   = elto.signature.replace(/,/g," ") ;
+	        elto.signature_raw        = elto.signature_raw ;         // TODO: ??
+	        elto.signature_definition = elto.signature_definition ;  // TODO: ??
 
-                if (typeof initial.fields !== "undefined")  elto.fields = initial.fields ;
+                if (typeof elto.fields !== "undefined")  elto.fields = elto.fields ;
 
                 // elto: derived fields...
                 elto.signature_type_str = base_replaceAll(elto.signature_type_str, 'inm', 'imm') ;  // TODO: temporal fix
@@ -476,7 +440,7 @@ function wsasm_prepare_context_pseudoinstructions ( context, CU_data )
                 elto.signature_user     = wsasm_make_signature_user(elto, '') ;
 
                 // add elto to firmware
-                context.firmware[initial.name].push(elto) ;
+                context.firmware[elto.name].push(elto) ;
 	   }
 
 	   return context ;
@@ -2129,21 +2093,26 @@ function wsasm_prepare_context ( CU_data, options )
            context.options = wsasm_expand_options(options) ;
 
 	   // Fill register names
-	   for (i=0; i<CU_data.registers.length; i++)
-	   {
-		if (typeof CU_data.registers[i] === 'undefined') {
-                    continue ;
-                }
-		for (var j=0; j<CU_data.registers[i].length; j++) {
-		     context.registers[CU_data.registers[i][j]] = i ;
-                }
-	   }
+           for (i=0; i<CU_data.components.length; i++)
+           {
+               if ("int_registers" == CU_data.components[i].type)
+               {
+                   for (i=0; i<CU_data.components[i].elements.length; i++)
+                   {
+                       for (var j=0; j<CU_data.components[i].elements.name.length; j++) {
+                            context.registers[CU_data.components[i].elements.name[j]] = i ;
+                       }
+                   }
+               }
+
+	       // TODO: fp_registers
+           }
 
 	   // Fill firmware
-           context = wsasm_prepare_context_firmware(context, CU_data) ;
+           context = crasm_prepare_context_firmware(context, CU_data) ;
 
 	   // Fill pseudoinstructions
-           context = wsasm_prepare_context_pseudoinstructions(context, CU_data) ;
+           context = crasm_prepare_context_pseudoinstructions(context, CU_data) ;
 
            // return context
 	   return context ;
