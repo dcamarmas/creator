@@ -25,6 +25,53 @@
 // General auxiliar functions
 //
 
+	function base_replaceAll ( base_str, match, replacement )
+	{
+	    // ES12+
+	    if (typeof base_str.replaceAll != "undefined") {
+		return base_str.replaceAll(match, replacement) ;
+	    }
+
+	    // older javascript engines
+	    return base_str.replace(new RegExp(base_escapeRegExp(match), 'g'), ()=>replacement);
+	}
+
+        function decimal2binary ( number, size )
+        {
+                var num_base2        = number.toString(2) ;
+                var num_base2_length = num_base2.length ;
+
+                if (num_base2_length > WORD_LENGTH) {
+                    return [num_base2, size-num_base2_length, num_base2_length] ;
+                }
+
+                num_base2        = (number >>> 0).toString(2) ;
+                num_base2_length = num_base2.length ;
+                if (number >= 0) {
+                    return [num_base2, size-num_base2_length, num_base2_length] ;
+                }
+
+                num_base2        = "1" + num_base2.replace(/^[1]+/g, "") ;
+                num_base2_length = num_base2.length ;
+                if (num_base2_length > size) {
+                    return [num_base2, size-num_base2_length, num_base2_length] ;
+                }
+
+                num_base2 = "1".repeat(size - num_base2.length) + num_base2 ;
+                return [num_base2, size-num_base2.length, num_base2_length] ;
+        }
+
+        function float2binary ( f, size )
+        {
+                var buf   = new ArrayBuffer(8) ;
+                var float = new Float32Array(buf) ;
+                var uint  = new Uint32Array(buf) ;
+
+                float[0] = f ;
+                return decimal2binary(uint[0], size) ;
+        }
+
+
 // Management of JSON object (see README_ng.md for more information)
 function wsasm_new_objElto ( base_elto )
 {
@@ -406,29 +453,29 @@ function crasm_prepare_context_pseudoinstructions ( context, CU_data )
 	   // Fill pseudoinstructions
 	   for (let i=0; i<CU_data.pseudoinstructions.length; i++)
 	   {
-		elto = CU_data.pseudoinstructions[i] ;
+		elto_i = CU_data.pseudoinstructions[i] ;
 
-		if (typeof context.pseudoInstructions[elto.name] === "undefined")
+		if (typeof context.pseudoInstructions[elto_i.name] === "undefined")
                 {
-	 	    context.pseudoInstructions[elto.name] = 0 ;
-		    if (typeof context.firmware[elto.name] === "undefined") {
-		        context.firmware[elto.name] = [] ;
+	 	    context.pseudoInstructions[elto_i.name] = 0 ;
+		    if (typeof context.firmware[elto_i.name] === "undefined") {
+		        context.firmware[elto_i.name] = [] ;
 		    }
 		}
 
-		context.pseudoInstructions[elto.name]++;
+		context.pseudoInstructions[elto_i.name]++;
 
                 // initial elto fields...
                 elto = {} ;
 
-                elto.name                 = elto.name ;
+                elto.name                 = elto_i.name ;
 	        elto.isPseudoinstruction  = true ;
 	        elto.fields               = [] ;
-	        elto.finish               = elto.definition ;
-	        elto.signature            = elto.signature ;             // TODO: better use a canonical format (raw, def included)
-	        elto.signature_type_str   = elto.signature.replace(/,/g," ") ;
-	        elto.signature_raw        = elto.signature_raw ;         // TODO: ??
-	        elto.signature_definition = elto.signature_definition ;  // TODO: ??
+	        elto.finish               = elto_i.definition ;
+	        elto.signature            = elto_i.signature ;             // TODO: better use a canonical format (raw, def included)
+	        elto.signature_type_str   = elto_i.signature.replace(/,/g," ") ;
+	        elto.signature_raw        = elto_i.signature_raw ;         // TODO: ??
+	        elto.signature_definition = elto_i.signature_definition ;  // TODO: ??
 
                 if (typeof elto.fields !== "undefined")  elto.fields = elto.fields ;
 
@@ -440,7 +487,7 @@ function crasm_prepare_context_pseudoinstructions ( context, CU_data )
                 elto.signature_user     = wsasm_make_signature_user(elto, '') ;
 
                 // add elto to firmware
-                context.firmware[elto.name].push(elto) ;
+                context.firmware[elto_i.name].push(elto) ;
 	   }
 
 	   return context ;
@@ -1346,8 +1393,7 @@ function wsasm_src2obj_text ( context, ret )
            var elto      = null ;
            var candidate = null ;
 
-           var xr_info = simhw_sim_ctrlStates_get() ;
-	   var oc_size = parseInt(xr_info.ir.default_eltos.oc.length) ;
+	   var oc_size = 7 ; // TODO: number of bits for oc field
 
 	   //
 	   //  *.text*   |  *.text*
@@ -1992,10 +2038,10 @@ function wsasm_prepare_context ( CU_data, options )
            {
                if ("int_registers" == CU_data.components[i].type)
                {
-                   for (i=0; i<CU_data.components[i].elements.length; i++)
+                   for (var j=0; j<CU_data.components[i].elements.length; j++)
                    {
-                       for (var j=0; j<CU_data.components[i].elements.name.length; j++) {
-                            context.registers[CU_data.components[i].elements.name[j]] = i ;
+                       for (var k=0; k<CU_data.components[i].elements[j].name.length; k++) {
+                            context.registers[CU_data.components[i].elements[j].name[k]] = j ;
                        }
                    }
                }
@@ -2099,7 +2145,8 @@ function crasm_obj2mem  ( ret )
 	 var gen_address = 0 ;
          var label = null ;
 
-         ret.mp = {} ;  // TIP: memory will be in creator_memory
+         ret.error = null ;
+         ret.mp    = {} ;  // TIP: memory will be in creator_memory
          for (let i=0; i<ret.obj.length; i++)
          {
               // (1) detect new seg_name...
