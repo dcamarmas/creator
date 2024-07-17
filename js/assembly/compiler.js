@@ -2097,7 +2097,7 @@ function crasm_obj2mem  ( ret )
          var word_2 = 0 ;
 
 	 var gen_address = 0 ;
-         var label = null;
+         var label = null ;
 
          ret.mp = {} ;  // TIP: memory will be in creator_memory
          for (let i=0; i<ret.obj.length; i++)
@@ -2138,6 +2138,8 @@ function crasm_obj2mem  ( ret )
                   continue ; // skip align, already memory filled if needed
               }
 
+              label = null ; // TODO: get label from...
+
               // (3) instructions and data...
               if ('instruction' == ret.obj[i].datatype)
               {
@@ -2163,7 +2165,8 @@ function crasm_obj2mem  ( ret )
                                                          // ...track_source.push(...ret.obj[i].track_source) ;
                                                          // ...track_source.push(...ret.obj[i].source) ;
                     if (r.msg != "") {
-                        return packCompileError(r.msg, "", 'error', "danger") ;
+                        ret.error = r.msg ;
+			return ret ;
                     }
 
 	            gen_address = r.gen_address ;
@@ -2238,6 +2241,20 @@ function wsasm_src2mem ( datosCU, asm_source, options )
                      "Please review your assembly code and try another way to write your algorithm.<br>" +
                      "<br>" +
                      e.toString() ;
+     }
+
+     return ret ;
+}
+
+function crasm_compile ( code )
+{
+     var ret = {
+                  error: ''
+               } ;
+
+     ret = wsasm_src2mem(architecture, code, {}) ;
+     if (ret.error != null) {
+         return packCompileError(ret.error, "", 'error', "danger") ;
      }
 
      return ret ;
