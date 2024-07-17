@@ -113,6 +113,12 @@ cat js/creator_bigint.js \
     components/simulator/creator_uielto_monitor.js \
     components/simulator/creator_uielto_keyboard.js \
     \
+    js/assembly/datatypes.js \
+    js/assembly/memory_segments.js \
+    js/assembly/directives.js \
+    js/assembly/lexical.js \
+    js/assembly/compiler.js \
+    \
     js/creator_ui.js \
     js/app.js > js/creator_web.js
 terser -o js/min.creator_web.js js/creator_web.js
