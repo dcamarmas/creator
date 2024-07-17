@@ -228,10 +228,8 @@ function asm_langError ( context, msgError )
         }
         context.error += "\n...\n" +
                          "</pre>" +
-                         "(*) " + i18n_get_TagFor('compiler', 'PROBLEM AROUND LINE') + " " +
+                         "(*) " + 'PROBLEM AROUND LINE' + " " +
 			 context.line + ": <br>" + msgError + ".<br>" ;
-
-        simcore_ga('compile', 'compile.error', 'compile.error.' + msgError) ;
 
         return context;
 }

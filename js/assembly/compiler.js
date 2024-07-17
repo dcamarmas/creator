@@ -71,6 +71,47 @@
                 return decimal2binary(uint[0], size) ;
         }
 
+        control_sequences = {
+                        'b':  '\b',
+                        'f':  '\f',
+                        'n':  '\n',
+                        'r':  '\r',
+                        't':  '\t',
+                        'v':  '\v',
+                        'a':  String.fromCharCode(0x0007),
+                        "'":  '\'',
+                        "\"": '\"',
+                        '0':  '\0'
+                     } ;
+
+	function treatControlSequences ( possible_value )
+	{
+		var ret = {} ;
+		ret.string = "" ;
+		ret.error  = false ;
+
+		for (var i=0; i<possible_value.length; i++)
+		{
+			if ("\\" != possible_value[i]) {
+			    ret.string = ret.string + possible_value[i] ;
+			    continue ;
+			}
+
+			i++ ;
+
+			if (control_sequences[possible_value[i]] === "undefined") {
+			    ret.string = "Unknown escape char" +
+					 " '\\" + possible_value[i] + "'" ;
+			    ret.error  = true ;
+			    return ret ;
+			}
+
+			ret.string = ret.string + control_sequences[possible_value[i]] ;
+		}
+
+		return ret ;
+	}
+
 
 // Management of JSON object (see README_ng.md for more information)
 function wsasm_new_objElto ( base_elto )
@@ -387,11 +428,15 @@ function crasm_prepare_context_firmware ( context, CU_data )
 		elto.oc                  = {} ;  // computed later
 		elto.eoc                 = {} ;  // computed later
 		elto.fields              = [] ;  // computed later
-		elto.signature           = aux.signature ;          // TODO: AUX.signature
 		elto.signature_type_str  = aux.name ;
 		elto.signature_type_arr  = '' ;  // computed later
 		elto.signature_size_str  = '' ;  // computed later
 		elto.signature_size_arr  = [] ;  // computed later
+
+		// TODO: aux.signature -> signature
+		elto.signature = aux.signature ;
+                elto.signature = base_replaceAll(elto.signature, 'INT-Reg',      'reg') ;  // TODO: temporal fix
+                elto.signature = base_replaceAll(elto.signature, 'imm-unsigned', 'imm') ;  // TODO: temporal fix
 
 		if (typeof aux.signatureUser !== "undefined") {     // TODO: AUX.signatureUser
                     elto.signature_type_str = aux.signatureUser ;
@@ -432,7 +477,6 @@ function crasm_prepare_context_firmware ( context, CU_data )
                 }
 
                 // elto: derived fields...
-                elto.signature_type_str = base_replaceAll(elto.signature_type_str, 'inm', 'imm') ;  // TODO: temporal fix
 		elto.signature_size_str = elto.signature_size_arr.join(' ') ;
 		elto.signature_type_arr = elto.signature_type_str.split(' ') ;
                 elto.signature_user     = wsasm_make_signature_user(elto, '') ;
@@ -2301,7 +2345,7 @@ function crasm_compile ( code )
 
      ret = wsasm_src2mem(architecture, code, {}) ;
      if (ret.error != null) {
-         return packCompileError(ret.error, "", 'error', "danger") ;
+         return packCompileError("m0", ret.error, 'error', "danger") ;
      }
 
      return ret ;
