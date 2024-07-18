@@ -429,14 +429,17 @@ function crasm_prepare_context_firmware ( context, CU_data )
 		elto.eoc                 = {} ;  // computed later
 		elto.fields              = [] ;  // computed later
 		elto.signature_type_str  = aux.name ;
-		elto.signature_type_arr  = '' ;  // computed later
+		elto.signature_type_arr  = [] ;  // computed later
 		elto.signature_size_str  = '' ;  // computed later
 		elto.signature_size_arr  = [] ;  // computed later
 
 		// TODO: aux.signature -> signature
 		elto.signature = aux.signature ;
                 elto.signature = base_replaceAll(elto.signature, 'INT-Reg',      'reg') ;  // TODO: temporal fix
+                elto.signature = base_replaceAll(elto.signature, 'SFP-Reg',      'reg') ;  // TODO: temporal fix
+                elto.signature = base_replaceAll(elto.signature, 'DFP-Reg',      'reg') ;  // TODO: temporal fix
                 elto.signature = base_replaceAll(elto.signature, 'imm-unsigned', 'imm') ;  // TODO: temporal fix
+                elto.signature = base_replaceAll(elto.signature, 'imm-signed',   'imm') ;  // TODO: temporal fix
 
 		if (typeof aux.signatureUser !== "undefined") {     // TODO: AUX.signatureUser
                     elto.signature_type_str = aux.signatureUser ;
@@ -453,25 +456,33 @@ function crasm_prepare_context_firmware ( context, CU_data )
 
                 // fields...
 		if (typeof aux.fields !== "undefined") {
-                    elto.fields = aux.fields ;
+                    elto.fields_encoding = aux.fields ; // AUX.fields is not matching instruction fields but encoding fields
                 }
 
 		elto.signature_size_arr.push(elto.oc.value.length) ;
-                for (let j=0; j<elto.fields.length; j++)
+		let k = 0 ;
+                for (let j=0; j<elto.fields_encoding.length; j++)
                 {
+		     // skip co/cop fields for matching fields...
+                     if (["co", "cop"].includes(elto.fields_encoding[j].type)) {
+			 continue ;
+		     }
+
                      // initial values...
                      start_bit    = [] ;
                      stop_bit     = [] ;
-                     start_bit[0] = parseInt(elto.fields[j].startbit) ;
-                     stop_bit[0]  = parseInt(elto.fields[j].stopbit) ;
+                     start_bit[0] = parseInt(elto.fields_encoding[j].startbit) ;
+                     stop_bit[0]  = parseInt(elto.fields_encoding[j].stopbit) ;
 
                      // translate from startbit/stop_bit to asm_start_bit/asm_stop_bit...
                      n_bits = wsasm_order2index_startstop(start_bit, stop_bit) ;
 
                      // copy back the computed values
-                     elto.fields[j].asm_start_bit = start_bit ;
-                     elto.fields[j].asm_stop_bit  = stop_bit ;
-                     elto.fields[j].asm_n_bits    = n_bits ;
+		     elto.fields[k] = elto.fields_encoding[j] ;
+                     elto.fields[k].asm_start_bit = start_bit ;
+                     elto.fields[k].asm_stop_bit  = stop_bit ;
+                     elto.fields[k].asm_n_bits    = n_bits ;
+		     k++ ;
 
 		     elto.signature_size_arr.push(n_bits) ;
                 }
