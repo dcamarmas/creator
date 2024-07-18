@@ -2274,13 +2274,12 @@ function crasm_obj2mem  ( ret )
                     n_bytes  = ret.obj[i].binary.length / BYTE_LENGTH ;
                     valuebin = ret.obj[i].binary ;
 		    valuehex = parseInt(valuebin, 2) ;
-		 // valuehex = valuehex.toString(16) ;
-                 // valuehex = valuehex.padStart(2*WORD_BYTES, '0') ;
+		    valuehex = valuehex.toString(16) ;
+                    valuehex = valuehex.padStart(2*WORD_BYTES, '0') ;
+		    addrhex  = parseInt(gen_address, 16) ;
 
-                    var r = main_memory_storedata(gen_address, valuehex, n_bytes,
-			                          label,       valuehex, valuehex, "instruction") ;
-                                                  // ...track_source.push(...ret.obj[i].track_source) ;
-                                                  // ...track_source.push(...ret.obj[i].source) ;
+                    var r = main_memory_storedata(addrhex, valuehex, n_bytes,
+			                          label, ret.obj[i].source, valuehex, "instruction") ;
 	            gen_address = "0x" + r.toString(16) ;
               }
               else if (wsasm_has_datatype_attr(ret.obj[i].datatype, "numeric"))
@@ -2288,11 +2287,10 @@ function crasm_obj2mem  ( ret )
                     n_bytes  = wsasm_get_datatype_size(ret.obj[i].datatype) ;
                     valuebin = ret.obj[i].value.padStart(n_bytes*BYTE_LENGTH, '0') ;
 		    valuehex = parseInt(valuebin, 2) ;
+		    addrhex  = parseInt(gen_address, 16) ;
 
-		    var r = creator_memory_data_compiler(gen_address, valuehex, n_bytes,
-			                                 label,       valuehex, ret.obj[i].datatype) ;
-                                                         // ...track_source.push(...ret.obj[i].track_source) ;
-                                                         // ...track_source.push(...ret.obj[i].source) ;
+		    var r = creator_memory_data_compiler(addrhex, valuehex, n_bytes,
+			                                 label,   valuehex, ret.obj[i].datatype) ;
                     if (r.msg != "") {
                         ret.error = r.msg ;
 			return ret ;
@@ -2306,15 +2304,15 @@ function crasm_obj2mem  ( ret )
                     for (let j=0; j<ret.obj[i].value.length; j++) {
                          valueascii = valueascii + String.fromCharCode(ret.obj[i].value[j]) ;
                     }
+		    addrhex = parseInt(gen_address, 16) ;
 
-		    gen_address = creator_memory_storestring(valueascii, valueascii.length, gen_address,
+		    gen_address = creator_memory_storestring(valueascii, valueascii.length, addrhex,
 			                                     label, "ascii", null);
-                                                         // ...track_source.push(...ret.obj[i].track_source) ;
-                                                         // ...track_source.push(...ret.obj[i].source) ;
               }
               else if (wsasm_has_datatype_attr(ret.obj[i].datatype, "space"))
               {
-		    gen_address = creator_memory_zerofill(gen_address, ret.obj[i].byte_size) ;
+		    addrhex = parseInt(gen_address, 16) ;
+		    gen_address = creator_memory_zerofill(addrhex, ret.obj[i].byte_size) ;
               }
 
               // keep last assigned address
