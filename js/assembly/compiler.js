@@ -435,15 +435,21 @@ function crasm_prepare_context_firmware ( context, CU_data )
 
 		// TODO: aux.signature -> signature
 		elto.signature = aux.signature ;
-                elto.signature = base_replaceAll(elto.signature, 'INT-Reg',      'reg') ;  // TODO: temporal fix
-                elto.signature = base_replaceAll(elto.signature, 'SFP-Reg',      'reg') ;  // TODO: temporal fix
-                elto.signature = base_replaceAll(elto.signature, 'DFP-Reg',      'reg') ;  // TODO: temporal fix
-                elto.signature = base_replaceAll(elto.signature, 'imm-unsigned', 'imm') ;  // TODO: temporal fix
-                elto.signature = base_replaceAll(elto.signature, 'imm-signed',   'imm') ;  // TODO: temporal fix
 
-		if (typeof aux.signatureUser !== "undefined") {     // TODO: AUX.signatureUser
-                    elto.signature_type_str = aux.signatureUser ;
-                }
+		// TODO: AUX.signatureUser from elto.signature
+		if (typeof aux.signatureUser !== "undefined")
+                     elto.signature_type_str = aux.signatureUser ;
+		else elto.signature_type_str = base_replaceAll(elto.signature, ',', ' ') ;
+
+		// <TODO: temporal fix>
+                elto.signature_type_str = base_replaceAll(elto.signature_type_str, 'INT-Reg',      'reg') ;
+                elto.signature_type_str = base_replaceAll(elto.signature_type_str, 'SFP-Reg',      'reg') ;
+                elto.signature_type_str = base_replaceAll(elto.signature_type_str, 'DFP-Reg',      'reg') ;
+                elto.signature_type_str = base_replaceAll(elto.signature_type_str, 'inm',          'imm') ;
+                elto.signature_type_str = base_replaceAll(elto.signature_type_str, 'imm-unsigned', 'imm') ;
+                elto.signature_type_str = base_replaceAll(elto.signature_type_str, 'imm-signed',   'imm') ;
+                elto.signature_type_str = base_replaceAll(elto.signature_type_str, 'offset_words', 'imm') ;
+		// </TODO: temporal fix>
 
                 // tooltip with details...
 		elto["mc-start"] = 0 ;
@@ -532,10 +538,22 @@ function crasm_prepare_context_pseudoinstructions ( context, CU_data )
 	        elto.signature_raw        = elto_i.signature_raw ;         // TODO: ??
 	        elto.signature_definition = elto_i.signature_definition ;  // TODO: ??
 
-                if (typeof elto.fields !== "undefined")  elto.fields = elto.fields ;
+                if (typeof elto.fields !== "undefined") {
+		    elto.fields = elto.fields ;  // TODO: check fields are matching fields (without co/cop) and not encoding fields (with co/cop)
+		}
 
                 // elto: derived fields...
-                elto.signature_type_str = base_replaceAll(elto.signature_type_str, 'inm', 'imm') ;  // TODO: temporal fix
+
+		// <TODO: temporal fix>
+                elto.signature_type_str = base_replaceAll(elto.signature_type_str, 'INT-Reg',      'reg') ;
+                elto.signature_type_str = base_replaceAll(elto.signature_type_str, 'SFP-Reg',      'reg') ;
+                elto.signature_type_str = base_replaceAll(elto.signature_type_str, 'DFP-Reg',      'reg') ;
+                elto.signature_type_str = base_replaceAll(elto.signature_type_str, 'inm',          'imm') ;
+                elto.signature_type_str = base_replaceAll(elto.signature_type_str, 'imm-unsigned', 'imm') ;
+                elto.signature_type_str = base_replaceAll(elto.signature_type_str, 'imm-signed',   'imm') ;
+                elto.signature_type_str = base_replaceAll(elto.signature_type_str, 'offset_words', 'imm') ;
+		// </TODO: temporal fix>
+
 	        elto.signature_type_arr = elto.signature_type_str.split(' ') ;
 		elto.signature_size_arr = Array(elto.signature_type_arr.length).fill(WORD_BYTES*BYTE_LENGTH);
 		elto.signature_size_str = elto.signature_size_arr.join(' ') ;
