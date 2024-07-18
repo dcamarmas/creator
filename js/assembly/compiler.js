@@ -2208,6 +2208,7 @@ function wsasm_src2obj ( context )
 	   return ret;
 }
 
+var align = 1 ; // TODO
 function crasm_obj2mem  ( ret )
 {
          var n_bytes   = 0 ;
@@ -2259,6 +2260,7 @@ function crasm_obj2mem  ( ret )
 
               // (2) if .align X then address of next elto must be multiple of 2^X
               if (wsasm_has_datatype_attr(ret.obj[i].datatype, "align")) {
+		  align = Math.pow(2, parseInt(ret.obj[i].value)) ; // TODO
                   continue ; // skip align, already memory filled if needed
               }
 
@@ -2272,8 +2274,8 @@ function crasm_obj2mem  ( ret )
                     n_bytes  = ret.obj[i].binary.length / BYTE_LENGTH ;
                     valuebin = ret.obj[i].binary ;
 		    valuehex = parseInt(valuebin, 2) ;
-		    valuehex = valuehex.toString(16) ;
-                    valuebin = valuehex.padStart(2*WORD_BYTES, '0') ;
+		 // valuehex = valuehex.toString(16) ;
+                 // valuehex = valuehex.padStart(2*WORD_BYTES, '0') ;
 
                     var r = main_memory_storedata(gen_address, valuehex, n_bytes,
 			                          label,       valuehex, valuehex, "instruction") ;
@@ -2285,9 +2287,10 @@ function crasm_obj2mem  ( ret )
               {
                     n_bytes  = wsasm_get_datatype_size(ret.obj[i].datatype) ;
                     valuebin = ret.obj[i].value.padStart(n_bytes*BYTE_LENGTH, '0') ;
+		    valuehex = parseInt(valuebin, 2) ;
 
-		    var r = creator_memory_data_compiler(gen_address, parseInt(valuebin, 2), n_bytes,
-			                                 label,       parseInt(valuebin, 2), ret.obj[i].datatype) ;
+		    var r = creator_memory_data_compiler(gen_address, valuehex, n_bytes,
+			                                 label,       valuehex, ret.obj[i].datatype) ;
                                                          // ...track_source.push(...ret.obj[i].track_source) ;
                                                          // ...track_source.push(...ret.obj[i].source) ;
                     if (r.msg != "") {
