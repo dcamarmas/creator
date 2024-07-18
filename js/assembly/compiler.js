@@ -2179,10 +2179,14 @@ function wsasm_src2obj ( context )
 	   }
 
            // pass 2: replace pseudo-instructions
+// <TODO: resolv pseudoinstructions>
+/*
            ret = wsasm_resolve_pseudo(context, ret) ;
 	   if (ret.error != null) {
 	       return ret;
 	   }
+*/
+// </TODO: resolv pseudoinstructions>
 
 	   // pass 3: resolve all labels (translate into addresses)
            ret = wsasm_resolve_labels(context, ret) ;
@@ -2258,7 +2262,9 @@ function crasm_obj2mem  ( ret )
                   continue ; // skip align, already memory filled if needed
               }
 
-              label = null ; // TODO: get label from...
+                  label = null ;
+	      if (typeof  ret.hash_labels_asm_rev[gen_address] != "undefined")
+	          label = ret.hash_labels_asm_rev[gen_address] ;
 
               // (3) instructions and data...
               if ('instruction' == ret.obj[i].datatype)
@@ -2267,13 +2273,13 @@ function crasm_obj2mem  ( ret )
                     valuebin = ret.obj[i].binary ;
 		    valuehex = parseInt(valuebin, 2) ;
 		    valuehex = valuehex.toString(16) ;
+                    valuebin = valuehex.padStart(2*WORD_BYTES, '0') ;
 
-                    gen_address = main_memory_storedata(gen_address, valuehex, n_bytes,
-			                                label,       valuehex, valuehex, "instruction") ;
-                                                         // ...track_source.push(...ret.obj[i].track_source) ;
-                                                         // ...track_source.push(...ret.obj[i].source) ;
-
-                    label = null;
+                    var r = main_memory_storedata(gen_address, valuehex, n_bytes,
+			                          label,       valuehex, valuehex, "instruction") ;
+                                                  // ...track_source.push(...ret.obj[i].track_source) ;
+                                                  // ...track_source.push(...ret.obj[i].source) ;
+	            gen_address = "0x" + r.toString(16) ;
               }
               else if (wsasm_has_datatype_attr(ret.obj[i].datatype, "numeric"))
               {
@@ -2289,8 +2295,7 @@ function crasm_obj2mem  ( ret )
 			return ret ;
                     }
 
-	            gen_address = r.gen_address ;
-                    label = null;
+	            gen_address = "0x" + r.data_address.toString(16) ;
               }
               else if (wsasm_has_datatype_attr(ret.obj[i].datatype, "string"))
               {
@@ -2303,7 +2308,6 @@ function crasm_obj2mem  ( ret )
 			                                     label, "ascii", null);
                                                          // ...track_source.push(...ret.obj[i].track_source) ;
                                                          // ...track_source.push(...ret.obj[i].source) ;
-                    label = null;
               }
               else if (wsasm_has_datatype_attr(ret.obj[i].datatype, "space"))
               {
