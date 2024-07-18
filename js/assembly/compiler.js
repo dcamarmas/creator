@@ -2288,9 +2288,10 @@ function crasm_obj2mem  ( ret )
                     valuebin = ret.obj[i].value.padStart(n_bytes*BYTE_LENGTH, '0') ;
 		    valuehex = parseInt(valuebin, 2) ;
 		    addrhex  = parseInt(gen_address, 16) ;
+		    dtype    = base_replaceAll(ret.obj[i].datatype, '.', '') ; // ".word" -> "word"
 
 		    var r = creator_memory_data_compiler(addrhex, valuehex, n_bytes,
-			                                 label,   valuehex, ret.obj[i].datatype) ;
+			                                 label,   valuehex, dtype) ;
                     if (r.msg != "") {
                         ret.error = r.msg ;
 			return ret ;
@@ -2371,16 +2372,28 @@ function wsasm_src2mem ( datosCU, asm_source, options )
      return ret ;
 }
 
-function crasm_compile ( code )
+function crasm_compile ( )
 {
      var ret = {
                   error: ''
                } ;
 
-     ret = wsasm_src2mem(architecture, code, {}) ;
+     // <TODO: for debugging>
+     code_assembly = textarea_assembly_editor.getValue();
+     // </TODO: for debugging>
+
+     // clear main_memory...
+     creator_memory_clear() ;
+
+     // compile and load into main_memory...
+     ret = wsasm_src2mem(architecture, code_assembly, {}) ;
      if (ret.error != null) {
          return packCompileError("m0", ret.error, 'error', "danger") ;
      }
+
+     // <TODO: for debugging>
+     main_memory.forEach((element) => console.log(element)) ;
+     // </TODO: for debugging>
 
      return ret ;
 }
