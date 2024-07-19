@@ -113,11 +113,15 @@ cat js/creator_bigint.js \
     components/simulator/creator_uielto_monitor.js \
     components/simulator/creator_uielto_keyboard.js \
     \
-    js/assembly/datatypes.js \
-    js/assembly/memory_segments.js \
-    js/assembly/directives.js \
-    js/assembly/lexical.js \
-    js/assembly/compiler.js \
+    js/assembler/base.js \
+    js/assembler/memory_segments.js \
+    js/assembler/datatypes.js \
+    js/assembler/directives.js \
+    js/assembler/lexical.js \
+    js/assembler/compiler1_prepare_creator.js \
+    js/assembler/compiler2_asm_obj.js \
+    js/assembler/compiler3_obj2mem_creator.js \
+    js/assembler/compiler.js \
     \
     js/creator_ui.js \
     js/app.js > js/creator_web.js
