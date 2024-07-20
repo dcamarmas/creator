@@ -63,6 +63,9 @@ function crasm_prepare_oc ( elto, aux )
 	     if (aux.fields[k].type != "co") {
                  continue ;
              }
+             if (typeof aux.fields[k].valueField == "undefined") {
+                 continue ;
+             }
 
              // copy start/stop bits...
 	     elto.oc.asm_start_bit[m] = parseInt(aux.fields[k].bits_start) ;
@@ -265,7 +268,7 @@ function crasm_prepare_context_pseudoinstructions ( context, CU_data )
 	        elto.finish               = elto_i.definition ;
 	        elto.signature            = elto_i.signature ;             // TODO: better use a canonical format (raw, def included)
 	        elto.signature_type_str   = elto_i.signature.replace(/,/g," ") ;
-	        elto.signature_raw        = elto_i.signature_raw ;         // TODO: ??
+	        elto.signature_raw        = elto_i.signatureRaw ;          // TODO: ??
 	        elto.signature_definition = elto_i.signature_definition ;  // TODO: ??
 
                 if (typeof elto.fields !== "undefined") {

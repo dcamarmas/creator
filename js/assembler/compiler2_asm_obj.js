@@ -112,7 +112,7 @@ function wsasm_get_similar_candidates ( context, elto )
 	     msg = elto.source + ' (part of pseudoinstruction "' + elto.associated_pseudo.source + '")' ;
          }
 
-         msg = 'Remember format used' +
+         msg = 'Remember format used ' +
 	       "'" + msg + "': <br>" +
 	       "<span class='m-2'>\u2718</span> " +
 	       elto.value.signature_user + "<br>" ;
@@ -897,8 +897,8 @@ function wsasm_src2obj_text_ops_getAtom ( context, pseudo_context )
 	 if (pseudo_context != null)
          {
              // if (end-of-file) -> return ''
-	     if (pseudo_context.index >= pseudo_context.parts.length) {
-	         return '' ; // return empty string
+	     if ( (pseudo_context.index+1) >= pseudo_context.parts.length) {
+	           return '' ; // return empty string
              }
 
 	     pseudo_context.index++ ;
@@ -1099,8 +1099,7 @@ function wsasm_src2obj_text ( context, ret )
            var acc_cmt = "" ;
            var elto      = null ;
            var candidate = null ;
-
-	   var oc_size = 7 ; // TODO: number of bits for oc field
+	   var oc_size   = 1 ;
 
 	   //
 	   //  *.text*   |  *.text*
@@ -1203,8 +1202,15 @@ function wsasm_src2obj_text ( context, ret )
                    elto.byte_size = WORD_BYTES ;
 		   elto.value     = {} ;
 
+                   if (typeof context.firmware[possible_inst] != "undefined")
+                        elto.firm_reference = context.firmware[possible_inst] ;
+                   else elto.firm_reference = [] ;
+
+                   if ( (elto.firm_reference.length > 0) && (typeof elto.firm_reference[0].oc != "undefined") )
+                        oc_size = elto.firm_reference[0].oc.value.length ;
+                   else oc_size = 6 ; // TODO: number of bits for oc field
+
 		   elto.value.instruction        = possible_inst ;
-                   elto.firm_reference           = context.firmware[possible_inst] ;
 		   elto.value.fields             = [] ;
 		   elto.value.signature_type_arr = [ possible_inst ] ;
 		   elto.value.signature_size_arr = [ oc_size ] ;
@@ -1242,7 +1248,8 @@ function wsasm_src2obj_text ( context, ret )
 		   if (candidate.isPseudoinstruction == false)
                    {
 		        elto.datatype = "instruction" ;
-		        elto.value.signature_size_arr.unshift(elto.firm_reference[0].oc.length) ; // push at the beginning
+		     // elto.value.signature_size_arr.unshift(elto.firm_reference[0].oc.length) ;       // TODO: wepsim
+		        elto.value.signature_size_arr.unshift(elto.firm_reference[0].oc.value.length) ; // TODO: creator
 
 			// Fill initial binary with the initial candidate...
 			elto.binary = wsasm_encode_instruction(context, ret, elto, candidate) ;
@@ -1342,6 +1349,7 @@ function wsasm_resolve_pseudo ( context, ret )
 
               pseudo_values   = pseudo_elto.source.trim().split(' ') ;
               pseudo_replaced = pseudo_elto_candidate.finish ;
+              pseudo_replaced = base_replaceAll(pseudo_replaced, ';', '') ;
               for (let k=0; k<(pseudo_values.length-1); k++)
 	      {
                    pseudo_value_k = base_replaceAll(pseudo_values[k+1], '(', '') ;
@@ -1349,11 +1357,12 @@ function wsasm_resolve_pseudo ( context, ret )
 
                    pseudo_replaced = base_replaceAll(pseudo_replaced, pseudo_elto_candidate.fields[k].name, pseudo_value_k) ;
               }
+
               // example pseudo_replaced: "lui rd , sel ( 31 , 12 , label ) addu rd , rd , sel ( 11 , 0 , label ) "
-              pseudo_context.parts = pseudo_replaced.split(' ') ;
+              pseudo_context.parts = pseudo_replaced.replace('(',' ( ').replace(')',' )').replace('  ',' ').split(' ') ;
               pseudo_context.index = 0 ;
 
-              while (pseudo_context.index < pseudo_context.parts.length)
+              while (pseudo_context.index < (pseudo_context.parts.length-1))
               {
 	         possible_inst = pseudo_context.parts[pseudo_context.index] ;
 
@@ -1364,7 +1373,6 @@ function wsasm_resolve_pseudo ( context, ret )
                  }
 
                  elto = wsasm_new_objElto(pseudo_elto) ;
-                 elto.firm_reference    = context.firmware[possible_inst] ;
                  elto.associated_pseudo = pseudo_elto ;
 	         elto.datatype          = "instruction" ;
                  elto.binary            = '' ;
@@ -1375,6 +1383,10 @@ function wsasm_resolve_pseudo ( context, ret )
 	         elto.value.signature_type_arr = [ possible_inst ] ;
 		 elto.value.signature_size_arr = [] ;
                  elto.associated_context       = pseudo_elto.associated_context ;
+
+                 if (typeof context.firmware[possible_inst] != "undefined")
+                        elto.firm_reference = context.firmware[possible_inst] ;
+                   else elto.firm_reference = [] ;
 
                  // Match fields of the pseudoinstruction...
                  ret1 = wsasm_src2obj_text_elto_fields(context, ret, elto, pseudo_context) ;
