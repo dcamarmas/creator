@@ -78,7 +78,10 @@ function crasm_compile ( )
                } ;
 
      // get assembly code from textarea...
-     code_assembly = textarea_assembly_editor.getValue();
+     code_assembly = '' ;
+     if (typeof textarea_assembly_editor != "undefined") {
+             code_assembly = textarea_assembly_editor.getValue();
+     }
 
      // clear main_memory...
      creator_memory_clear() ;
