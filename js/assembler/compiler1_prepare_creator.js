@@ -385,7 +385,17 @@ function crasm_prepare_context ( CU_data, options )
                    }
                }
 
-	       // TODO: fp_registers
+               if ("fp_registers" == CU_data.components[i].type)
+               {
+                   for (var j=0; j<CU_data.components[i].elements.length; j++)
+                   {
+                       for (var k=0; k<CU_data.components[i].elements[j].name.length; k++) {
+                            context.registers[CU_data.components[i].elements[j].name[k]] = j ;
+                       }
+                   }
+               }
+
+	       // TODO: other types of registers, and double-register naming...
            }
 
 	   // Fill firmware
