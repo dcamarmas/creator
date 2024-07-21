@@ -166,6 +166,12 @@ function crasm_prepare_context_firmware ( context, CU_data )
 		elto.signature_size_str  = '' ;  // computed later
 		elto.signature_size_arr  = [] ;  // computed later
 
+                // From "F0 F4 F3 F2" to [ 0, 4, 3, 2 ] ...
+	        elto.signature_definition = aux.signature_definition.replaceAll('F','').split(' ') ;
+                for (var m=0; m<elto.signature_definition.length; m++) {
+                     elto.signature_definition[m] = parseInt(elto.signature_definition[m]) ;
+                }
+
 		// TODO: aux.signature -> signature
 		elto.signature = aux.signature ;
 
@@ -173,16 +179,6 @@ function crasm_prepare_context_firmware ( context, CU_data )
 		if (typeof aux.signatureUser !== "undefined")
                      elto.signature_type_str = aux.signatureUser ;
 		else elto.signature_type_str = base_replaceAll(elto.signature, ',', ' ') ;
-
-		// <TODO: temporal fix>
-                elto.signature_type_str = base_replaceAll(elto.signature_type_str, 'INT-Reg',      'reg') ;
-                elto.signature_type_str = base_replaceAll(elto.signature_type_str, 'SFP-Reg',      'reg') ;
-                elto.signature_type_str = base_replaceAll(elto.signature_type_str, 'DFP-Reg',      'reg') ;
-                elto.signature_type_str = base_replaceAll(elto.signature_type_str, 'inm',          'imm') ;
-                elto.signature_type_str = base_replaceAll(elto.signature_type_str, 'imm-unsigned', 'imm') ;
-                elto.signature_type_str = base_replaceAll(elto.signature_type_str, 'imm-signed',   'imm') ;
-                elto.signature_type_str = base_replaceAll(elto.signature_type_str, 'offset_words', 'imm') ;
-		// </TODO: temporal fix>
 
                 // tooltip with details...
 		elto["mc-start"] = 0 ;
@@ -200,12 +196,17 @@ function crasm_prepare_context_firmware ( context, CU_data )
 
 		elto.signature_size_arr.push(elto.oc.value.length) ;
 		let k = 0 ;
+                let s = 0 ;
                 for (let j=0; j<elto.fields_encoding.length; j++)
                 {
 		     // skip co/cop fields for matching fields...
                      if (["co", "cop"].includes(elto.fields_encoding[j].type)) {
+                         s++ ;
 			 continue ;
 		     }
+
+                     // translate from index to Fx...
+		     k = elto.signature_definition[j-(s-1)] - s ;
 
                      // initial values...
                      start_bit    = [] ;
@@ -221,10 +222,23 @@ function crasm_prepare_context_firmware ( context, CU_data )
                      elto.fields[k].asm_start_bit = start_bit ;
                      elto.fields[k].asm_stop_bit  = stop_bit ;
                      elto.fields[k].asm_n_bits    = n_bits ;
-		     k++ ;
+
+                     if (elto.fields_encoding[j].type == "offset_words") {
+                         elto.fields[k].address_type  = "rel" ;
+                     }
 
 		     elto.signature_size_arr.push(n_bits) ;
                 }
+
+		// <TODO: temporal fix>
+                elto.signature_type_str = base_replaceAll(elto.signature_type_str, 'INT-Reg',      'reg') ;
+                elto.signature_type_str = base_replaceAll(elto.signature_type_str, 'SFP-Reg',      'reg') ;
+                elto.signature_type_str = base_replaceAll(elto.signature_type_str, 'DFP-Reg',      'reg') ;
+                elto.signature_type_str = base_replaceAll(elto.signature_type_str, 'inm',          'imm') ;
+                elto.signature_type_str = base_replaceAll(elto.signature_type_str, 'imm-unsigned', 'imm') ;
+                elto.signature_type_str = base_replaceAll(elto.signature_type_str, 'imm-signed',   'imm') ;
+                elto.signature_type_str = base_replaceAll(elto.signature_type_str, 'offset_words', 'imm') ;
+		// </TODO: temporal fix>
 
                 // elto: derived fields...
 		elto.signature_size_str = elto.signature_size_arr.join(' ') ;
@@ -272,7 +286,8 @@ function crasm_prepare_context_pseudoinstructions ( context, CU_data )
 	        elto.signature_definition = elto_i.signature_definition ;  // TODO: ??
 
                 if (typeof elto.fields !== "undefined") {
-		    elto.fields = elto.fields ;  // TODO: check fields are matching fields (without co/cop) and not encoding fields (with co/cop)
+		    elto.fields = elto.fields ;  // TODO: check fields are matching fields (without co/cop) 
+                                                 //       and not encoding fields (with co/cop)
 		}
 
                 // elto: derived fields...

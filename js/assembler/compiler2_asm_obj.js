@@ -705,7 +705,7 @@ function wsasm_encode_instruction ( context, ret, elto, candidate )
                                           } ;
                               elto.pending.push(pinfo) ;
 
-                              if (["address", "(address)"].includes(elto.value.signature_type_arr[j+1]))
+                              if (["address", "(address)", "inm", "imm"].includes(elto.value.signature_type_arr[j+1]))
                               {
                                    if (   (typeof candidate.fields[j].address_type != "undefined") &&
                                         ("abs" != candidate.fields[j].address_type) )
@@ -1249,7 +1249,6 @@ function wsasm_src2obj_text ( context, ret )
                    {
 		        elto.datatype = "instruction" ;
 		     // elto.value.signature_size_arr.unshift(elto.firm_reference[0].oc.length) ;       // TODO: wepsim
-		        elto.value.signature_size_arr.unshift(elto.firm_reference[0].oc.value.length) ; // TODO: creator
 
 			// Fill initial binary with the initial candidate...
 			elto.binary = wsasm_encode_instruction(context, ret, elto, candidate) ;
