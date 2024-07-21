@@ -67,7 +67,7 @@ function crasm_obj2mem  ( ret )
               {
                    word_1 = ret.obj[i].elto_ptr - (ret.obj[i-1].elto_ptr + ret.obj[i-1].byte_size) ;
                    if (word_1 > 0) {
-		       gen_address = creator_memory_zerofill(gen_address, word_1) ;
+		       gen_address = creator_memory_zerofill(parseInt(gen_address), word_1) ;
                    }
               }
 

@@ -206,10 +206,6 @@ function crasm_prepare_context_firmware ( context, CU_data )
                     elto.fields_encoding = aux.fields ; // AUX.fields is not matching instruction fields but encoding fields
                 }
 
-if (elto.name == "mul") {
-console.log("mul");
-}
-
 		elto.signature_size_arr.push(elto.oc.value.length) ;
 
 		let k = 0 ;
