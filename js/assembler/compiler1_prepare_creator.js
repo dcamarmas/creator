@@ -142,6 +142,7 @@ function crasm_prepare_context_firmware ( context, CU_data )
            let w_n_bits  = 0 ;
            let w_index   = 0 ;
            let n_bits    = 0 ;
+	   let sigraw_split = [] ;
 
 	   // Fill 'firmware'
 	   for (let i=0; i<CU_data.instructions.length; i++)
@@ -155,25 +156,36 @@ function crasm_prepare_context_firmware ( context, CU_data )
                 // elto: initial fields...
                 elto = {} ;
 
-                elto.name                = aux.name ;
-		elto.isPseudoinstruction = false ;
-		elto.nwords              = parseInt(aux.nwords) ;
-		elto.oc                  = {} ;  // computed later
-		elto.eoc                 = {} ;  // computed later
-		elto.fields              = [] ;  // computed later
-		elto.signature_type_str  = aux.name ;
-		elto.signature_type_arr  = [] ;  // computed later
-		elto.signature_size_str  = '' ;  // computed later
-		elto.signature_size_arr  = [] ;  // computed later
+                elto.name                 = aux.name ;
+		elto.isPseudoinstruction  = false ;
+		elto.nwords               = parseInt(aux.nwords) ;
+		elto.oc                   = {} ;  // computed later
+		elto.eoc                  = {} ;  // computed later
+		elto.fields               = [] ;  // computed later
+		elto.signature_type_str   = aux.name ;
+		elto.signature_type_arr   = [] ;  // computed later
+		elto.signature_size_str   = '' ;  // computed later
+		elto.signature_size_arr   = [] ;  // computed later
+	        elto.signature_raw        = aux.signatureRaw ;
+		elto.signature            = aux.signature ; // TODO: aux.signature -> signature+
 
-                // From "F0 F4 F3 F2" to [ 0, 4, 3, 2 ] ...
-	        elto.signature_definition = aux.signature_definition.replaceAll('F','').split(' ') ;
-                for (var m=0; m<elto.signature_definition.length; m++) {
-                     elto.signature_definition[m] = parseInt(elto.signature_definition[m]) ;
+                // Find fields (co, cop, rs2, rs1, cop2, rd) in signature_raw ("mul rd rs1 rs2")
+	        elto.signature_definition = [] ;
+                sigraw_split = elto.signature_raw.split(' ') ;
+                for (var m=0; m<aux.fields.length; m++)
+                {
+		     // skip co/cop fields for matching fields...
+                     if (["co", "cop"].includes(aux.fields[m].type)) {
+			 continue ;
+		     }
+
+                     for (var n=1; n<sigraw_split.length; n++)
+                     {
+                          if (sigraw_split[n] == aux.fields[m].name) {
+	                      elto.signature_definition[m] = n - 1 ;
+                          }
+		     }
                 }
-
-		// TODO: aux.signature -> signature
-		elto.signature = aux.signature ;
 
 		// TODO: AUX.signatureUser from elto.signature
 		if (typeof aux.signatureUser !== "undefined")
@@ -194,19 +206,22 @@ function crasm_prepare_context_firmware ( context, CU_data )
                     elto.fields_encoding = aux.fields ; // AUX.fields is not matching instruction fields but encoding fields
                 }
 
+if (elto.name == "mul") {
+console.log("mul");
+}
+
 		elto.signature_size_arr.push(elto.oc.value.length) ;
+
 		let k = 0 ;
-                let s = 0 ;
                 for (let j=0; j<elto.fields_encoding.length; j++)
                 {
 		     // skip co/cop fields for matching fields...
                      if (["co", "cop"].includes(elto.fields_encoding[j].type)) {
-                         s++ ;
 			 continue ;
 		     }
 
                      // translate from index to Fx...
-		     k = elto.signature_definition[j-(s-1)] - s ;
+		     k = elto.signature_definition[j] ;
 
                      // initial values...
                      start_bit    = [] ;
