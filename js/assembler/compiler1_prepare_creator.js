@@ -149,14 +149,10 @@ function crasm_prepare_context_firmware ( context, CU_data )
            {
 		aux = CU_data.instructions[i];
 
-	   	if (typeof context.firmware[aux.name] === "undefined") {
-	   	    context.firmware[aux.name] = [] ;
-		}
-
                 // elto: initial fields...
                 elto = {} ;
 
-                elto.name                 = aux.name ;
+                elto.name                 = aux.name.toLowerCase() ;
 		elto.isPseudoinstruction  = false ;
 		elto.nwords               = parseInt(aux.nwords) ;
 		elto.oc                   = {} ;  // computed later
@@ -257,7 +253,11 @@ function crasm_prepare_context_firmware ( context, CU_data )
                 elto.signature_user     = wsasm_make_signature_user(elto, '') ;
 
                 // add elto to firmware
-	   	context.firmware[aux.name].push(elto) ;
+	   	if (typeof context.firmware[elto.name] === "undefined") {
+	   	    context.firmware[elto.name] = [] ;
+		}
+
+	   	context.firmware[elto.name].push(elto) ;
 	   }
 
 	   return context ;
