@@ -80,7 +80,7 @@ function crasm_compile ( )
      // get assembly code from textarea...
      code_assembly = '' ;
      if (typeof textarea_assembly_editor != "undefined") {
-             code_assembly = textarea_assembly_editor.getValue();
+         code_assembly = textarea_assembly_editor.getValue();
      }
 
      // clear main_memory...
@@ -96,6 +96,136 @@ function crasm_compile ( )
      main_memory.forEach((element) => console.log(element)) ;
 
      return ret ;
+}
+
+
+function crasm_compile_ui ( )
+{
+     var ret = {
+             errorcode: "",
+             token: "",
+             type: "",
+             update: "",
+             status: "ok"
+         } ;
+
+     /* Google Analytics */
+     creator_ga('compile', 'compile.assembly');
+       
+     instructions = [];
+     instructions_tag = [];
+     tag_instructions = {};
+     pending_instructions = [];
+     pending_tags = [];
+     data_tag = [];
+     instructions_binary =[];
+     creator_memory_clear() ;
+     extern = [];
+     data = [];
+     i = 0;
+
+     /* Allocation of memory addresses */
+     architecture.memory_layout[4].value = backup_stack_address;
+     architecture.memory_layout[3].value = backup_data_address;
+     data_address  = parseInt(architecture.memory_layout[2].value);
+     stack_address = parseInt(architecture.memory_layout[4].value);
+
+     for (i = 0; i < architecture.components.length; i++)
+     {
+          for (var j = 0; j < architecture.components[i].elements.length; j++)
+          {
+            if (architecture.components[i].elements[j].properties.includes("program_counter"))
+            {
+              architecture.components[i].elements[j].value          = bi_intToBigInt(address,10) ;
+              architecture.components[i].elements[j].default_value  = bi_intToBigInt(address,10) ;
+            }
+            if (architecture.components[i].elements[j].properties.includes("stack_pointer"))
+            {
+              architecture.components[i].elements[j].value         = bi_intToBigInt(stack_address,10) ;
+              architecture.components[i].elements[j].default_value = bi_intToBigInt(stack_address,10) ;
+            }
+          }
+     }
+
+     /*
+     architecture.components[1].elements[29].value = bi_intToBigInt(stack_address,10) ;
+     architecture.components[0].elements[0].value  = bi_intToBigInt(address,10) ;
+     architecture.components[1].elements[29].default_value = bi_intToBigInt(stack_address,10) ;
+     architecture.components[0].elements[0].default_value  = bi_intToBigInt(address,10) ;
+     */
+
+     /* Reset stats */
+     totalStats = 0;
+     for (i = 0; i < stats.length; i++){
+          stats[i].percentage = 0;
+          stats[i].number_instructions = 0;
+          stats_value[i] = 0;
+     }
+
+
+     /* Enter the compilated instructions in the text segment */
+     code_assembly = '' ;
+     if (typeof textarea_assembly_editor != "undefined") {
+         code_assembly = textarea_assembly_editor.getValue();
+     }
+
+     creator_memory_clear() ;
+
+     ret = crasm_src2mem(architecture, code_assembly, {}) ;
+     if (ret.error != null) {
+         return packCompileError("m0", ret.error, 'error', "danger") ;
+     }
+
+
+     /* Save binary */
+     for (var i=0; i<ret.obj.length; i++)
+     {
+          if (ret.obj[i].datatype != "instruction") {
+              continue ;
+          }
+
+          instructions.push({ Break:       null,
+                              Address:     "0x" + ret.obj[i].elto_ptr.toString(16),
+                              Label:       ret.obj[i].labels.join(' '),
+                              loaded:      ret.obj[i].source,                 // TODO: pseudo vs instruction...
+                              user:        ret.obj[i].track_source.join(' '), // TODO: pseudo vs instruction...
+                              _rowVariant: '',
+                              visible:     true,
+                              hide:        false});
+
+          instructions_binary.push({ Break:       null,
+                                     Address:     "0x" + ret.obj[i].elto_ptr.toString(16),
+                                     Label:       ret.obj[i].labels.join(' '),
+                                     loaded:      ret.obj[i].binary,
+                                     user:        null,
+                                     _rowVariant: '',
+                                     visible:     false});
+     }
+
+     /* Save tags */
+     for (let key in ret.labels_asm)
+     {
+          instructions_tag.push({
+                                   tag:  key,
+                                   addr: parseInt(ret.labels_asm[key], 16)
+                                });
+     }
+
+     if (typeof app != "undefined") {
+         app._data.instructions = instructions;
+     }
+
+     /* Initialize stack */
+     writeMemory("00", parseInt(stack_address), "word") ;
+
+     address       = parseInt(architecture.memory_layout[0].value);
+     data_address  = parseInt(architecture.memory_layout[2].value);
+     stack_address = parseInt(architecture.memory_layout[4].value);
+
+     // save current value as default values for reset()...
+     creator_memory_prereset() ;
+
+     return ret;
 }
 
 
