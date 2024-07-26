@@ -32,6 +32,31 @@
 ![Safari](https://img.shields.io/badge/Safari-000000?style=for-the-badge&logo=Safari&logoColor=white)
 
 
+## Publications
+
+<details>
+<summary>:newspaper: CREATOR: An Educational Integrated Development Environment for RISC-V Programming</summary>
+
+  * Journal paper: IEEE Access
+  * Authors: Diego Camarmas-Alonso, Félix García-Carballeira, Alejandro Calderón-Mateos, Elías Del-Pozo-Puñal
+  * [:link: Open publication](https://doi.org/10.1109/ACCESS.2024.3406935)
+  ```bash
+  @ARTICLE{10540579,
+  author={Camarmas-Alonso, Diego and Garcia-Carballeira, Felix and Calderon-Mateos, Alejandro and Del-Pozo-Puñal, Elias},
+  journal={IEEE Access},
+  title={CREATOR: An Educational Integrated Development Environment for RISC-V Programming},
+  year={2024},
+  volume={},
+  number={}, 
+  pages={1-1},
+  doi={10.1109/ACCESS.2024.3406935}}
+  ```
+  
+  
+
+</details>
+
+
 ## Authors
   * :technologist: Diego Camarmas Alonso (Main Coordinator)
   * :technologist: Félix García Carballeira 
