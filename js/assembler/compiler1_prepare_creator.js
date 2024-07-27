@@ -297,7 +297,7 @@ function crasm_prepare_context_pseudoinstructions ( context, CU_data )
 	        elto.signature_definition = elto_i.signature_definition ;  // TODO: ??
 
                 if (typeof elto.fields !== "undefined") {
-		    elto.fields = elto.fields ;  // TODO: check fields are matching fields (without co/cop) 
+		    elto.fields = elto.fields ;  // TODO: check fields are matching fields (without co/cop)
                                                  //       and not encoding fields (with co/cop)
 		}
 

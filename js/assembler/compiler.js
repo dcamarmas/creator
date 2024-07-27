@@ -87,6 +87,9 @@ function crasm_clear_and_compile ( )
 
      /* clear memory content */
      creator_memory_clear() ;
+     if (typeof app != "undefined") {
+         app._data.instructions = [] ;
+     }
 
      /* compile and load */
      ret = crasm_compile() ;
@@ -106,14 +109,10 @@ function crasm_compile ( )
 
      instructions     = [] ;
      instructions_tag = [] ;
-     elto_inst     = {} ;
+     elto_inst        = {} ;
      tag_instructions = {} ;
-     pending_instructions = [] ;
-     pending_tags = [] ;
-     data_tag     = [] ;
-     extern = [] ;
-     data   = [] ;
      i = 0;
+     j = 0;
 
      /* Google Analytics */
      creator_ga('compile', 'compile.binary');
@@ -126,18 +125,18 @@ function crasm_compile ( )
 
      for (i = 0; i < architecture.components.length; i++)
      {
-          for (var j = 0; j < architecture.components[i].elements.length; j++)
+          for (j = 0; j < architecture.components[i].elements.length; j++)
           {
-            if (architecture.components[i].elements[j].properties.includes("program_counter"))
-            {
-                architecture.components[i].elements[j].value          = bi_intToBigInt(address,10) ;
-                architecture.components[i].elements[j].default_value  = bi_intToBigInt(address,10) ;
-            }
-            if (architecture.components[i].elements[j].properties.includes("stack_pointer"))
-            {
-              architecture.components[i].elements[j].value         = bi_intToBigInt(stack_address,10) ;
-              architecture.components[i].elements[j].default_value = bi_intToBigInt(stack_address,10) ;
-            }
+               if (architecture.components[i].elements[j].properties.includes("program_counter"))
+               {
+                   architecture.components[i].elements[j].value          = bi_intToBigInt(address, 10) ;
+                   architecture.components[i].elements[j].default_value  = bi_intToBigInt(address, 10) ;
+               }
+               if (architecture.components[i].elements[j].properties.includes("stack_pointer"))
+               {
+                   architecture.components[i].elements[j].value         = bi_intToBigInt(stack_address, 10) ;
+                   architecture.components[i].elements[j].default_value = bi_intToBigInt(stack_address, 10) ;
+               }
           }
      }
 
@@ -150,12 +149,12 @@ function crasm_compile ( )
 
      /* Reset stats */
      totalStats = 0;
-     for (i = 0; i < stats.length; i++){
+     for (i = 0; i < stats.length; i++)
+     {
           stats[i].percentage = 0;
           stats[i].number_instructions = 0;
           stats_value[i] = 0;
      }
-
 
      /* Enter the compilated instructions in the text segment */
      code_assembly = '' ;

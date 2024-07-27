@@ -112,4 +112,9 @@
 		return ret ;
 	}
 
+	function i18n_get_TagFor ( from_elto, base_msg )
+	{
+		return base_msg.toLowerCase() ;
+	}
+
 
