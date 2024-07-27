@@ -173,33 +173,6 @@ function wsasm_order2index_startstop ( start_bit, stop_bit )
      return n_bits ;
 }
 
-function wsasm_mk_default_options ( )
-{
-           var options = {} ;
-
-           // Initialize default options...
-	   options.field_multipart_order = "backwards" ; // "backwards" | "forwards" ;
-	   options.mandatory_comma       = false ; // false | true
-           options.instruction_comma     = true  ; // true  | false
-
-           return options ;
-}
-
-function wsasm_expand_options ( base_options )
-{
-           var options = wsasm_mk_default_options() ;
-
-           // Replace default options if exits in base_options
-           for (var key in options)
-           {
-                if (typeof base_options[key] !== "undefined") {
-                    options[key] = base_options[key] ;
-                }
-           }
-
-           return options ;
-}
-
 
 //
 //  (2/3) Compile assembly to JSON object
@@ -1603,8 +1576,9 @@ function wsasm_resolve_labels ( context, ret )
                       value = parseInt(value, 2) ;
                       value = (value >>> 0) - (elto.elto_ptr + WORD_BYTES) ;
 
-                      // TODO: if (rel + cfg.rel...by_words) -> value / WORD_BYTES;
-                      // TODO: else -> value = value;  // rel...by-bytes, as right now is
+                      if ("word" == context.options.relative_offset_unit) {
+                          value = value / WORD_BYTES ;
+                      }
 
                       if (value < 0)
                       {
