@@ -121,6 +121,7 @@ cat js/creator_bigint.js \
     js/assembler/compiler1_prepare_creator.js \
     js/assembler/compiler2_asm_obj.js \
     js/assembler/compiler3_obj2mem_creator.js \
+    js/assembler/compiler_options.js \
     js/assembler/compiler.js \
     \
     js/creator_ui.js \
