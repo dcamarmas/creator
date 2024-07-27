@@ -22,6 +22,10 @@
 /* jshint esversion: 9 */
 
 
+//
+// Auxiliar function(s)
+//
+
 function crasm_src2mem ( datosCU, asm_source, options )
 {
      var context = null ;
@@ -68,38 +72,10 @@ function crasm_src2mem ( datosCU, asm_source, options )
 
 
 //
-// TODO: next functions is for debugging at the javascript console
+// API functions
 //
 
-function crasm_compile ( )
-{
-     var ret = {
-                  error: ''
-               } ;
-
-     // get assembly code from textarea...
-     code_assembly = '' ;
-     if (typeof textarea_assembly_editor != "undefined") {
-         code_assembly = textarea_assembly_editor.getValue();
-     }
-
-     // clear main_memory...
-     creator_memory_clear() ;
-
-     // compile and load into main_memory...
-     ret = crasm_src2mem(architecture, code_assembly, {}) ;
-     if (ret.error != null) {
-         return packCompileError("m0", ret.error, 'error', "danger") ;
-     }
-
-     // print memory elements at the javascript console
-     main_memory.forEach((element) => console.log(element)) ;
-
-     return ret ;
-}
-
-
-function crasm_compile_ui ( )
+function crasm_clear_and_compile ( )
 {
      var ret = {
              errorcode: "",
@@ -109,20 +85,38 @@ function crasm_compile_ui ( )
              status: "ok"
          } ;
 
-     /* Google Analytics */
-     creator_ga('compile', 'compile.assembly');
-       
-     instructions = [];
-     instructions_tag = [];
-     tag_instructions = {};
-     pending_instructions = [];
-     pending_tags = [];
-     data_tag = [];
-     instructions_binary =[];
+     /* clear memory content */
      creator_memory_clear() ;
-     extern = [];
-     data = [];
+
+     /* compile and load */
+     ret = crasm_compile() ;
+
+     return ret;
+}
+
+function crasm_compile ( )
+{
+     var ret = {
+             errorcode: "",
+             token: "",
+             type: "",
+             update: "",
+             status: "ok"
+         } ;
+
+     instructions     = [] ;
+     instructions_tag = [] ;
+     elto_inst     = {} ;
+     tag_instructions = {} ;
+     pending_instructions = [] ;
+     pending_tags = [] ;
+     data_tag     = [] ;
+     extern = [] ;
+     data   = [] ;
      i = 0;
+
+     /* Google Analytics */
+     creator_ga('compile', 'compile.binary');
 
      /* Allocation of memory addresses */
      architecture.memory_layout[4].value = backup_stack_address;
@@ -136,8 +130,8 @@ function crasm_compile_ui ( )
           {
             if (architecture.components[i].elements[j].properties.includes("program_counter"))
             {
-              architecture.components[i].elements[j].value          = bi_intToBigInt(address,10) ;
-              architecture.components[i].elements[j].default_value  = bi_intToBigInt(address,10) ;
+                architecture.components[i].elements[j].value          = bi_intToBigInt(address,10) ;
+                architecture.components[i].elements[j].default_value  = bi_intToBigInt(address,10) ;
             }
             if (architecture.components[i].elements[j].properties.includes("stack_pointer"))
             {
@@ -169,37 +163,38 @@ function crasm_compile_ui ( )
          code_assembly = textarea_assembly_editor.getValue();
      }
 
-     creator_memory_clear() ;
-
      ret = crasm_src2mem(architecture, code_assembly, {}) ;
      if (ret.error != null) {
          return packCompileError("m0", ret.error, 'error', "danger") ;
      }
 
+     // <DEBUG>: print memory elements at the javascript console
+     main_memory.forEach((element) => console.log(element)) ;
+     // </DEBUG>
 
      /* Save binary */
+     if (typeof app != "undefined") {
+         instructions = app._data.instructions ;
+     }
+
      for (var i=0; i<ret.obj.length; i++)
      {
           if (ret.obj[i].datatype != "instruction") {
               continue ;
           }
 
-          instructions.push({ Break:       null,
-                              Address:     "0x" + ret.obj[i].elto_ptr.toString(16),
-                              Label:       ret.obj[i].labels.join(' '),
-                              loaded:      ret.obj[i].source,                 // TODO: pseudo vs instruction...
-                              user:        ret.obj[i].track_source.join(' '), // TODO: pseudo vs instruction...
-                              _rowVariant: '',
-                              visible:     true,
-                              hide:        false});
+          elto_inst  = {
+                          Break:       null,
+                          Address:     "0x" + ret.obj[i].elto_ptr.toString(16),
+                          Label:       ret.obj[i].labels.join(' '),
+                          loaded:      ret.obj[i].source_bin,             // TODO: pseudo vs instruction...
+                          user:        ret.obj[i].track_source.join(' '), // TODO: pseudo vs instruction...
+                          _rowVariant: '',
+                          visible:     true,
+                          hide:        false
+                       } ;
 
-          instructions_binary.push({ Break:       null,
-                                     Address:     "0x" + ret.obj[i].elto_ptr.toString(16),
-                                     Label:       ret.obj[i].labels.join(' '),
-                                     loaded:      ret.obj[i].binary,
-                                     user:        null,
-                                     _rowVariant: '',
-                                     visible:     false});
+          instructions.push(elto_inst);
      }
 
      /* Save tags */
@@ -211,21 +206,20 @@ function crasm_compile_ui ( )
                                 });
      }
 
-     if (typeof app != "undefined") {
-         app._data.instructions = instructions;
-     }
-
      /* Initialize stack */
      writeMemory("00", parseInt(stack_address), "word") ;
 
-     address       = parseInt(architecture.memory_layout[0].value);
-     data_address  = parseInt(architecture.memory_layout[2].value);
-     stack_address = parseInt(architecture.memory_layout[4].value);
+     address       = parseInt(architecture.memory_layout[0].value) ;
+     data_address  = parseInt(architecture.memory_layout[2].value) ;
+     stack_address = parseInt(architecture.memory_layout[4].value) ;
 
      // save current value as default values for reset()...
      creator_memory_prereset() ;
 
      return ret;
 }
+
+
+
 
 
