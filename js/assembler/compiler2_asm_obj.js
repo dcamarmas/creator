@@ -384,6 +384,7 @@ function wsasm_src2obj_data ( context, ret )
 						         start_bit:    [ 0 ],
 						         stop_bit:     [ WORD_BYTES*BYTE_LENGTH-1 ],
 						         n_bits:       WORD_BYTES*BYTE_LENGTH,
+						         value:        0,
 						         rel:          false,
 						         labelContext: asm_getLabelContext(context),
                                                          field_j:      0
@@ -699,6 +700,7 @@ function wsasm_encode_instruction ( context, ret, elto, candidate )
                                              start_bit:    start_bit,
                                              stop_bit:     stop_bit,
                                              n_bits:       n_bits,
+				             value:        0,
                                              rel:          false,
 					     labelContext: asm_getLabelContext(context),
                                              field_j:      j
@@ -1235,6 +1237,7 @@ function wsasm_src2obj_text ( context, ret )
                    }
 		   elto.comments.push(acc_cmt) ;
 		   elto.track_source.push(elto.source) ;
+                   elto.source_bin = elto.source ;
 
 		   // Find candidate from firm_reference
 		   ret = wsasm_find_instr_candidates(context, ret, elto) ;
@@ -1580,6 +1583,10 @@ function wsasm_resolve_labels ( context, ret )
                   {
                       value = parseInt(value, 2) ;
                       value = (value >>> 0) - (elto.elto_ptr + WORD_BYTES) ;
+
+                      // TODO: if (rel + rel...by_words) -> value / WORD_BYTES;
+                      // TODO: else -> value = value;  // rel...by-bytes, as right now is
+
                       if (value < 0)
                       {
                           value = (value >>> 0).toString(2);
@@ -1599,7 +1606,8 @@ function wsasm_resolve_labels ( context, ret )
                       elto.value.signature_size_arr[elto.pending[j].field_j + 1] = value.length ;
                       elto.value.signature_size_str = elto.value.signature_size_arr.join(' ') ;
 
-                      // if label.size doesn't fit the field.n_bits, try (at least) another one...
+                      // if label.size doesn't fit the field.n_bits, 
+                      // try (at least) another one... <- TODO: not to try another one but all possibilities with while(..|no more)
                       if (value.length > elto.pending[j].n_bits)
                       {
                           // Resetting pending elements in this instruction (encode_instruction will populate it again)...
@@ -1633,6 +1641,7 @@ function wsasm_resolve_labels ( context, ret )
                       }
                   }
 
+                  // checks if value fits in the n_bits at the end...
                   if (value.length > elto.pending[j].n_bits)
                   {
 	              return wsasm_eltoError(context, elto,
@@ -1649,6 +1658,15 @@ function wsasm_resolve_labels ( context, ret )
                   arr_encoded = elto.binary.split('') ;
                   wsasm_encode_field(arr_encoded, value, elto.pending[j].start_bit, elto.pending[j].stop_bit) ;
                   elto.binary = arr_encoded.join('') ;
+
+                  // update elto.pending[j].value (binary) and source_bin (integer)
+                  elto.pending[j].value = value ;
+
+                  var s = elto.source.split(' ') ;
+                    value = value.padStart(WORD_LENGTH, value[0]) ;
+                    value = parseInt(value, 2) >> 0 ;
+                  s[elto.pending[j].field_j + 1] = value ;
+                  elto.source_bin = s.join(' ') ;
 
                   // data-field -> update elto.value (is not an object as inst-field)
                   if ("field-data" == elto.pending[j].type) {
