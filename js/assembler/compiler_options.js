@@ -30,12 +30,7 @@ function wsasm_mk_default_options ( )
 	   options.field_multipart_order = "backwards" ; // "backwards" | "forwards" ;
 	   options.mandatory_comma       = false       ; // false  | true
            options.instruction_comma     = true        ; // true   | false
-// <WepSIM>
-//         options.relative_offset_unit  = "byte"      ; // "byte" | "word"
-// </WepSIM>
-// </CREATOR>
            options.relative_offset_unit  = "word"      ; // "byte" | "word"
-// </CREATOR>
 
            return options ;
 }
