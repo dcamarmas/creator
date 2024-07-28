@@ -75,7 +75,7 @@ function crasm_src2mem ( datosCU, asm_source, options )
 // API functions
 //
 
-function crasm_clear_and_compile ( )
+function crasm_compile ( )
 {
      var ret = {
              errorcode: "",
@@ -92,12 +92,12 @@ function crasm_clear_and_compile ( )
      }
 
      /* compile and load */
-     ret = crasm_compile() ;
+     ret = crasm_compile_more() ;
 
      return ret;
 }
 
-function crasm_compile ( )
+function crasm_compile_more ( )
 {
      var ret = {
              errorcode: "",
@@ -113,15 +113,24 @@ function crasm_compile ( )
      tag_instructions = {} ;
      i = 0;
      j = 0;
+     ins_loaded = "" ;
+     ins_user   = "" ;
+
 
      /* Google Analytics */
      creator_ga('compile', 'compile.binary');
 
-     /* Allocation of memory addresses */
+
+     /* Memory layout */
      architecture.memory_layout[4].value = backup_stack_address;
      architecture.memory_layout[3].value = backup_data_address;
-     data_address  = parseInt(architecture.memory_layout[2].value);
-     stack_address = parseInt(architecture.memory_layout[4].value);
+
+     sim_segments['.data'].begin  = parseInt(architecture.memory_layout[2].value) ;
+     sim_segments['.data'].end    = parseInt(architecture.memory_layout[3].value) ;
+     sim_segments['.text'].begin  = parseInt(architecture.memory_layout[0].value) ;
+     sim_segments['.text'].end    = parseInt(architecture.memory_layout[1].value) ;
+     sim_segments['.stack'].begin = parseInt(architecture.memory_layout[4].value) ;
+     sim_segments['.stack'].end   = parseInt(architecture.memory_layout[5].value) ;
 
      for (i = 0; i < architecture.components.length; i++)
      {
@@ -129,23 +138,20 @@ function crasm_compile ( )
           {
                if (architecture.components[i].elements[j].properties.includes("program_counter"))
                {
-                   architecture.components[i].elements[j].value          = bi_intToBigInt(address, 10) ;
-                   architecture.components[i].elements[j].default_value  = bi_intToBigInt(address, 10) ;
+                   architecture.components[i].elements[j].value          = bi_intToBigInt(sim_segments['.text'].begin, 10) ;
+                   architecture.components[i].elements[j].default_value  = bi_intToBigInt(sim_segments['.text'].begin, 10) ;
                }
                if (architecture.components[i].elements[j].properties.includes("stack_pointer"))
                {
-                   architecture.components[i].elements[j].value         = bi_intToBigInt(stack_address, 10) ;
-                   architecture.components[i].elements[j].default_value = bi_intToBigInt(stack_address, 10) ;
+                   architecture.components[i].elements[j].value         = bi_intToBigInt(sim_segments['.stack'].begin, 10) ;
+                   architecture.components[i].elements[j].default_value = bi_intToBigInt(sim_segments['.stack'].begin, 10) ;
                }
           }
      }
 
-     /*
-     architecture.components[1].elements[29].value = bi_intToBigInt(stack_address,10) ;
-     architecture.components[0].elements[0].value  = bi_intToBigInt(address,10) ;
-     architecture.components[1].elements[29].default_value = bi_intToBigInt(stack_address,10) ;
-     architecture.components[0].elements[0].default_value  = bi_intToBigInt(address,10) ;
-     */
+     // Initialize stack
+     writeMemory("00", parseInt(sim_segments['.stack'].begin), "word") ;
+
 
      /* Reset stats */
      totalStats = 0;
@@ -155,6 +161,7 @@ function crasm_compile ( )
           stats[i].number_instructions = 0;
           stats_value[i] = 0;
      }
+
 
      /* Enter the compilated instructions in the text segment */
      code_assembly = '' ;
@@ -171,6 +178,7 @@ function crasm_compile ( )
      main_memory.forEach((element) => console.log(element)) ;
      // </DEBUG>
 
+
      /* Save binary */
      if (typeof app != "undefined") {
          instructions = app._data.instructions ;
@@ -178,16 +186,30 @@ function crasm_compile ( )
 
      for (var i=0; i<ret.obj.length; i++)
      {
+          // skip if not instructions...
           if (ret.obj[i].datatype != "instruction") {
               continue ;
           }
 
+          // check if scrambled content...
+          if (ret.obj[i].scrambled)
+          {
+              ins_loaded = "***" ;
+              ins_user   = "***" ;
+          }
+          else
+          {
+              ins_loaded = ret.obj[i].source_bin ;             // TODO: pseudo vs instruction...
+              ins_user   = ret.obj[i].track_source.join(' ') ; // TODO: pseudo vs instruction...
+          }
+
+          // add new element for CREATOR ui...
           elto_inst  = {
                           Break:       null,
                           Address:     "0x" + ret.obj[i].elto_ptr.toString(16),
                           Label:       ret.obj[i].labels.join(' '),
-                          loaded:      ret.obj[i].source_bin,             // TODO: pseudo vs instruction...
-                          user:        ret.obj[i].track_source.join(' '), // TODO: pseudo vs instruction...
+                          loaded:      ins_loaded,
+                          user:        ins_user,
                           _rowVariant: '',
                           visible:     true,
                           hide:        false
@@ -195,6 +217,7 @@ function crasm_compile ( )
 
           instructions.push(elto_inst);
      }
+
 
      /* Save tags */
      for (let key in ret.labels_asm)
@@ -205,12 +228,6 @@ function crasm_compile ( )
                                 });
      }
 
-     /* Initialize stack */
-     writeMemory("00", parseInt(stack_address), "word") ;
-
-     address       = parseInt(architecture.memory_layout[0].value) ;
-     data_address  = parseInt(architecture.memory_layout[2].value) ;
-     stack_address = parseInt(architecture.memory_layout[4].value) ;
 
      // save current value as default values for reset()...
      creator_memory_prereset() ;
