@@ -361,18 +361,19 @@ function crasm_prepare_context ( CU_data, options )
 	   context.firmware             = {} ;     // here
 	   context.pseudoInstructions	= [];      // here
 	   context.stackRegister	= null ;
-	   context.version	        = CU_data.version ;
+	   context.metadata	        = CU_data.metadata ; // TODO: add to "architecture JSON" metadata: {version,endian,...},
 	   context.options              = {} ;     // here
-           context.endian               = 'little' ; // TODO: get from firmware
 
            // Fill the assembler configuration
            context.options = wsasm_expand_options(options) ;
-// <WepSIM>
-//         options.relative_offset_unit  = "byte"      ; // "byte" | "word"
-// </WepSIM>
-// </CREATOR>
-           options.relative_offset_unit  = "word"      ; // "byte" | "word"
-// </CREATOR>
+
+           if ( (typeof context.metadata != "undefined") && (typeof context.metadata.rel_mult != "undefined") )
+                context.options.relative_offset_mult = parseInt(context.metadata.rel_mult) ; // TODO: get from CU_data.metadata.xxxxx
+           else context.options.relative_offset_mult = WORD_BYTES ;
+
+           if ( (typeof context.metadata != "undefined") && (typeof context.metadata.endian != "undefined") )
+                context.options.endian = context.metadata.endian ;  // TODO: get from CU_data.metadata.xxxxx
+           else context.options.endian = 'little' ;
 
 	   // Fill register names
            for (i=0; i<CU_data.components.length; i++)

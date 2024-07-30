@@ -228,7 +228,7 @@ function asm_langError ( context, msgError )
         }
         context.error += "\n...\n" +
                          "</pre>" +
-                         "(*) " + 'PROBLEM AROUND LINE' + " " +
+                         "(*) " + i18n_get_TagFor('compiler', 'PROBLEM AROUND LINE') + " " +
 			 context.line + ": <br>" + msgError + ".<br>" ;
 
         return context;
