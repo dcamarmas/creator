@@ -34,13 +34,15 @@
 
    function segments_addr_within_text ( address )
    {
-	 return (((address >= sim_segments[".text"].begin ) && (address <= sim_segments[".text"].end ))    ||
+	 return (((address >= sim_segments[".text"].begin ) && (address <= sim_segments[".text"].end ))
+                  ||
 		 ((address >= sim_segments[".ktext"].begin) && (address <= sim_segments[".ktext"].end))) ;
    }
 
    function segments_addr_within_data ( address )
    {
-	 return (((address >= sim_segments[".data"].begin ) && (address <= sim_segments[".data"].end ))    ||
+	 return (((address >= sim_segments[".data"].begin ) && (address <= sim_segments[".data"].end ))
+                  ||
 		 ((address >= sim_segments[".kdata"].begin) && (address <= sim_segments[".kdata"].end))) ;
    }
 
