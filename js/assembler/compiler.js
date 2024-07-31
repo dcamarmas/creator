@@ -175,7 +175,7 @@ function crasm_compile_more ( )
      }
 
      // <DEBUG>: print memory elements at the javascript console
-     main_memory.forEach((element) => console.log(element)) ;
+     // main_memory.forEach((element) => console.log(element)) ;
      // </DEBUG>
 
 
