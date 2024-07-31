@@ -402,6 +402,8 @@ function crasm_prepare_context ( CU_data, options )
            }
 
 	   // Fill firmware
+           context.oc_size_default = 7 ; // TODO: from architecture JSON ?
+
            context = crasm_prepare_context_firmware(context, CU_data) ;
 
 	   // Fill pseudoinstructions
