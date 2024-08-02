@@ -304,6 +304,7 @@ function crasm_prepare_context_pseudoinstructions ( context, CU_data )
                 // elto: derived fields...
 
 		// <TODO: temporal fix>
+                elto.finish             = base_replaceAll(elto.finish, ';', '') ;
                 elto.signature_type_str = base_replaceAll(elto.signature_type_str, 'INT-Reg',      'reg') ;
                 elto.signature_type_str = base_replaceAll(elto.signature_type_str, 'SFP-Reg',      'reg') ;
                 elto.signature_type_str = base_replaceAll(elto.signature_type_str, 'DFP-Reg',      'reg') ;
