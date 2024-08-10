@@ -134,6 +134,19 @@ function crasm_obj2mem  ( ret )
 		    addrhex = parseInt(gen_address, 16) ;
 		    gen_address = creator_memory_zerofill(addrhex, ret.obj[i].byte_size) ;
               }
+              else if ("binary" == ret.obj[i].datatype)
+              { 
+                    n_bytes  = ret.obj[i].binary.length / BYTE_LENGTH ;
+                    valuebin = ret.obj[i].binary ;
+		    valuehex = parseInt(valuebin, 2) ;
+		    valuehex = valuehex.toString(16) ;
+                    valuehex = valuehex.padStart(2*WORD_BYTES, '0') ;
+		    addrhex  = parseInt(gen_address, 16) ;
+
+                    var r = main_memory_storedata(addrhex, valuehex, n_bytes,
+			                          label, ret.obj[i].source, valuehex, "instruction") ;
+	            gen_address = "0x" + r.toString(16) ;
+              }
 
               // keep last assigned address
               last_assig_word[seg_name] = gen_address ;

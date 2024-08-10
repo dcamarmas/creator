@@ -1,5 +1,5 @@
 /*
- *  Copyright 2015-2024 Saul Alonso Monsalve, Javier Prieto Cepeda, Felix Garcia Carballeira, Alejandro Calderon Mateos, Juan Banga Pardo, Diego Camarmas Alonso
+ *  Copyright 2015-2024 Diego Camarmas Alonso, Saul Alonso Monsalve, Javier Prieto Cepeda, Felix Garcia Carballeira, Alejandro Calderon Mateos
  *
  *  This file is part of CREATOR.
  *
@@ -93,6 +93,11 @@ function crasm_compile ( )
 
      /* compile and load */
      ret = crasm_compile_more() ;
+
+     /* if no error then reset user interface */
+     if (null == ret.error) {
+         uielto_toolbar_btngroup.methods.reset(true) ;
+     }
 
      return ret;
 }
@@ -234,8 +239,5 @@ function crasm_compile_more ( )
 
      return ret;
 }
-
-
-
 
 
