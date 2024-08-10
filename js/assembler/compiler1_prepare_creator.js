@@ -237,7 +237,7 @@ function crasm_prepare_context_firmware ( context, CU_data )
 		     elto.signature_size_arr.push(n_bits) ;
                 }
 
-		// <TODO: adaptor>
+		// <ADAPTOR>
                 elto.signature_type_str = base_replaceAll(elto.signature_type_str, 'INT-Reg',      'reg') ;
                 elto.signature_type_str = base_replaceAll(elto.signature_type_str, 'SFP-Reg',      'reg') ;
                 elto.signature_type_str = base_replaceAll(elto.signature_type_str, 'DFP-Reg',      'reg') ;
@@ -245,7 +245,7 @@ function crasm_prepare_context_firmware ( context, CU_data )
                 elto.signature_type_str = base_replaceAll(elto.signature_type_str, 'imm-unsigned', 'imm') ;
                 elto.signature_type_str = base_replaceAll(elto.signature_type_str, 'imm-signed',   'imm') ;
                 elto.signature_type_str = base_replaceAll(elto.signature_type_str, 'offset_words', 'imm') ;
-		// </TODO: adaptor>
+		// </ADAPTOR>
 
                 // elto: derived fields...
 		elto.signature_size_str = elto.signature_size_arr.join(' ') ;
@@ -303,8 +303,12 @@ function crasm_prepare_context_pseudoinstructions ( context, CU_data )
 
                 // elto: derived fields...
 
-		// <TODO: adaptor>
+		// <ADAPTOR>
                 elto.finish             = base_replaceAll(elto.finish, ';', '') ;
+                elto.finish             = base_replaceAll(elto.finish, '(', ' ( ') ;
+                elto.finish             = base_replaceAll(elto.finish, ')', ' ) ') ;
+                elto.finish             = base_replaceAll(elto.finish, '  ', ' ') ;
+
                 elto.signature_type_str = base_replaceAll(elto.signature_type_str, 'INT-Reg',      'reg') ;
                 elto.signature_type_str = base_replaceAll(elto.signature_type_str, 'SFP-Reg',      'reg') ;
                 elto.signature_type_str = base_replaceAll(elto.signature_type_str, 'DFP-Reg',      'reg') ;
@@ -312,7 +316,7 @@ function crasm_prepare_context_pseudoinstructions ( context, CU_data )
                 elto.signature_type_str = base_replaceAll(elto.signature_type_str, 'imm-unsigned', 'imm') ;
                 elto.signature_type_str = base_replaceAll(elto.signature_type_str, 'imm-signed',   'imm') ;
                 elto.signature_type_str = base_replaceAll(elto.signature_type_str, 'offset_words', 'imm') ;
-		// </TODO: adaptor>
+		// </ADAPTOR>
 
 	        elto.signature_type_arr = elto.signature_type_str.split(' ') ;
 		elto.signature_size_arr = Array(elto.signature_type_arr.length).fill(WORD_BYTES*BYTE_LENGTH);
