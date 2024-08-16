@@ -111,16 +111,20 @@ function wsasm_eltoError ( context, elto, msg )
 
 function wsasm_get_similar_candidates ( context, elto )
 {
-         var msg = elto.source ;
+         var msg   = "'" + elto.source + "'" ;
+         var s_usr = elto.value.signature_user ;
+
+         // if pseudo-instruction then associate it to the related instruction...
          if (typeof elto.associated_pseudo !== "undefined") {
-	     msg = elto.source + ' (part of pseudoinstruction "' + elto.associated_pseudo.source + '")' ;
+	     msg   = msg + ' (part of pseudoinstruction "' + elto.associated_pseudo.source + '")' ;
+             s_usr = "[" + elto.value.instruction + "] " + elto.value.signature_user ;
          }
 
-         msg = i18n_get_TagFor('compiler', 'REMEMBER FORMAT USED') +
-	       "'" + msg + "': <br>" +
-	       "<span class='m-2'>\u2718</span> " +
-	       elto.value.signature_user + "<br>" ;
+         // (1) Used element (instruction or pseudo-instruction)...
+         msg = i18n_get_TagFor('compiler', 'REMEMBER FORMAT USED') + msg + ": <br>" +
+	       "<span class='m-2'>\u2718</span> " + s_usr + "<br>" ;
 
+         // (2) Similar elements...
          msg += i18n_get_TagFor('compiler', 'NOT MATCH FORMAT') + ":<br>" ;
          for (let key in context.firmware)
          {
@@ -1395,7 +1399,6 @@ function wsasm_src2obj_text ( context, ret )
 		   if (candidate.isPseudoinstruction == false)
                    {
 		        elto.datatype = "instruction" ;
-//		        elto.value.signature_size_arr.unshift(elto.firm_reference[0].oc.length) ; // WepSIM: push at the beginning
 
 			// Fill initial binary with the initial candidate...
 			elto.binary = wsasm_encode_instruction(context, ret, elto, candidate) ;
@@ -1403,7 +1406,6 @@ function wsasm_src2obj_text ( context, ret )
 		   else
 		   {
 		       elto.datatype = "pseudoinstruction" ;
-		       elto.value.signature_size_arr.unshift(0) ; // push at the beginning
 		       elto.binary   = '' ;
 		   }
 
@@ -1576,8 +1578,10 @@ function wsasm_src2obj_binary ( context, ret )
 
 function wsasm_src2obj_helper ( context, ret )
 {
-	  ret.data_found = false;
-	  ret.text_found = false;
+	  var segname = '' ;
+
+	  ret.data_found = false ;
+	  ret.text_found = false ;
 
           //
           // .segment
@@ -1586,7 +1590,12 @@ function wsasm_src2obj_helper ( context, ret )
           asm_nextToken(context) ;
           while (wsasm_isEndOfFile(context) == false)
           {
-	       var segname = asm_getToken(context);
+	       // optional '.section'
+	       if (".section" == asm_getToken(context)) {
+	           asm_nextToken(context) ;
+	       }
+
+	       segname = asm_getToken(context);
 
                // CHECK segment name
 	       if (typeof ret.seg[segname] === "undefined")
@@ -1619,7 +1628,6 @@ function wsasm_src2obj_helper ( context, ret )
 	       // Compile .binary and check errors
 	       if ("binary" == ret.seg[segname].kindof) {
 		   ret = wsasm_src2obj_binary(context, ret);
-		   ret.text_found = false; // TIP: binary is opaque
 	       }
 
 	       if (ret.error != null) {
@@ -1927,20 +1935,21 @@ function wsasm_get_label_value ( context, ret, elto, label )
          if (sel_pcrel != '')
          {
              value = parseInt(value) ;
-             value = (value >>> 0) - (elto.elto_ptr + WORD_BYTES) ;
+             value = (value >>> 0) - (elto.elto_ptr - WORD_BYTES) ;
 
+             // 0 ... *12* ... 31
              var bit_index = sel_start ;
-             if (sel_stop < bit_index) {
+             if ((0 == bit_index) || ((WORD_BYTES*BYTE_LENGTH-1) == bit_index)) {
                  bit_index = sel_stop ;
              }
 
              // hi = offset[31:12] + offset[11]
              // lo = offset[11:0]
-             var tmp_hi = (value >>> (bit_index - 1)) ;
-             var tmp_lo = value & 0x1 ;
+             var tmp_hi = ((value >>> 0) >>> (bit_index - 1)) ;
+             var tmp_lo = tmp_hi & 0x1 ;
                  tmp_hi = (tmp_hi >>> 1) + tmp_lo ;
-                 tmp_lo = 1 << (bit_index + 1) - 1 ; // 0x00000FFF
-                 tmp_lo = value & tmp_lo ;
+                 tmp_lo = (1 << (bit_index + 1)) - 1 ; // 0x00000FFF
+                 tmp_lo = (value >>> 0) & tmp_lo ;
 
              value = (tmp_hi << bit_index) | tmp_lo ;
              value = '0x' + (value >>> 0).toString(16) ;
@@ -2185,7 +2194,7 @@ function wsasm_obj2src ( context, ret, options )
          // check params
          if (typeof ret.obj == "undefined") {
 	     return wsasm_eltoError(context, elto,
-				    i18n_get_TagFor('compiler', 'UNKNOWN 2')) ; // TODO: update error message
+				    i18n_get_TagFor('compiler', 'EMPTY OBJECT CODE')) ;
          }
 
          // prepare options...
@@ -2226,7 +2235,7 @@ function wsasm_obj2bin ( context, ret )
          // check params
          if (typeof ret.obj == "undefined") {
 	     return wsasm_eltoError(context, elto,
-				    i18n_get_TagFor('compiler', 'UNKNOWN 2')) ; // TODO: update error message
+				    i18n_get_TagFor('compiler', 'EMPTY OBJECT CODE')) ;
          }
 
          o = '\n.binary\n' ;
@@ -2242,8 +2251,8 @@ function wsasm_obj2bin ( context, ret )
               }
 
               // show address and value
-              o += "0x" + parseInt(elto.elto_ptr).toString(16) + "\t" ;
-              o += "0x" + parseInt(elto.binary,2).toString(16) + "\n" ;
+              o += "0x" + parseInt(elto.elto_ptr).toString(16).padStart(2*WORD_BYTES, '0') + "\t" ;
+              o += "0x" + parseInt(elto.binary,2).toString(16).padStart(2*WORD_BYTES, '0') + "\n" ;
          }
 
          // return alternative source
