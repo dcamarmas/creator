@@ -227,7 +227,7 @@ function main_memory_write_nbytes ( addr, value, n )
         var value_str = value.toString(16).padStart(2*n, "0") ;
         var chunks    = value_str.match(/.{1,2}/g) ;
 
-        for (var i = 0; i < chunks.length; i++) {
+        for (var i = 0; i < n; i++) {
              main_memory_write_value(addr+i, chunks[i]) ;
         }
 }
@@ -503,7 +503,10 @@ function creator_memory_value_by_type ( val, type )
                 case 'b':
                  val = val & 0xFF ;
                  if (val & 0x80)
+                 {
                          val = 0xFFFFFF00 | val ;
+                         val = (val >>> 0)
+                 }
                  break;
 
                 case 'bu':
@@ -513,7 +516,10 @@ function creator_memory_value_by_type ( val, type )
                 case 'h':
                  val = val & 0xFFFF ;
                  if (val & 0x8000)
+                 {
                          val = 0xFFFF0000 | val ;
+                         val = (val >>> 0)
+                 }
                  break;
 
                 case 'hu':
