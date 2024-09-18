@@ -1,5 +1,5 @@
 <html>
- <h1 align="center">CREATOR Remote Laboratory</h1>
+ <h1 align="center">CREATOR Remote Laboratory (RISC-V ESP32)</h1>
 </html>
 
 ## 1. To deploy CREATOR Remote Laboratory
