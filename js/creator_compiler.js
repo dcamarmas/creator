@@ -723,14 +723,6 @@ function assembly_compiler()
               }
             }
 
-
-
-
-
-
-
-
-
             if (signatureParts[j] == "offset_words")
             {
               for (var z = 0; z < instructions.length && exit === 0; z++)
@@ -742,9 +734,6 @@ function assembly_compiler()
                   var stopbit = pending_instructions[i].stopBit;
 
                   addr = ((addr - pending_instructions[i].address)/4)-1;
-                  console_log(instructionParts);
-                  console_log(addr);
-
 
                   if (startbit.length > 1 && stopbit.length)
                   {
@@ -753,10 +742,9 @@ function assembly_compiler()
                       fieldsLength = fieldsLength + startbit[s]-stopbit[s]+1;
                     }
 
-                    console_log(fieldsLength);
                     var bin = bi_intToBigInt(addr,10).toString(2);
                     bin = bin.padStart(fieldsLength, "0");
-                    console_log(bin);
+                    bin = bin.slice((bin.length - fieldsLength), bin.length);
 
                     var last_segment = 0;
                     for (var s = 0; s < startbit.length; s++)
@@ -783,7 +771,6 @@ function assembly_compiler()
                     console_log(fieldsLength);
                     var bin = bi_intToBigInt(addr,10).toString(2);
                     bin = bin.padStart(fieldsLength, "0");
-                    console_log(bin);
 
                     for (var w = 0; w < instructions.length && exit === 0; w++) {
                       var aux = "0x" + (pending_instructions[i].address).toString(16);

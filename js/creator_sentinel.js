@@ -491,7 +491,7 @@ function creator_callstack_do_transition ( doAction, indexComponent, indexElemen
         }
 
         var equal  = elto.val.register_address_write[indexComponent][indexElement].includes(address);
-        if (!equal){
+        if (equal == false){
             return
         }
     }
