@@ -475,11 +475,25 @@ function creator_callstack_do_transition ( doAction, indexComponent, indexElemen
         var elto = creator_callstack_getTop();
         if (elto.ok == false) {
             console_log('creator_callstack_do_transition: ' + elto.msg) ;
-        return '' ;
+            return '' ;
         }
 
         var equal  = elto.val.register_address_write[indexComponent][indexElement].includes(address); 
         action = (equal) ? "wm==" : "wm!=" ;
+    }
+
+    if (doAction == "rm")
+    {
+        var elto = creator_callstack_getTop();
+        if (elto.ok == false) {
+            console_log('creator_callstack_do_transition: ' + elto.msg) ;
+            return '' ;
+        }
+
+        var equal  = elto.val.register_address_write[indexComponent][indexElement].includes(address);
+        if (equal == false){
+            return
+        }
     }
 
     if ( (typeof(stack_state_transition[state])         === "undefined") ||
