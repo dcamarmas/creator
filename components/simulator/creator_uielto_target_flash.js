@@ -406,6 +406,8 @@
                     '           </b-col>' +
                     '         </b-row>' +
                     '       </b-container>' +
+                    '       <br>' +
+                    '       For Teachers, how to deploy a remote laboratory <a href="https://github.com/creatorsim/creator/blob/master/dockers/remote_lab/README.md">documentation</a>' +
                     '     </b-tab>' +
                     ' ' +
                     ' ' +
