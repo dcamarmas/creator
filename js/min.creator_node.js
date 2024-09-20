@@ -449,7 +449,7 @@ function register_value_serialize( architecture )
     if (add_dot_zero)
     {
       var aux_value = value.toString();
-      if (aux_value.indexOf(".") == -1)
+      if (aux_value.indexOf(".") == -1 && Number.isInteger(aux_value))
       {
         print_value = print_value + ".0";
       }
@@ -3769,14 +3769,6 @@ function assembly_compiler()
               }
             }
 
-
-
-
-
-
-
-
-
             if (signatureParts[j] == "offset_words")
             {
               for (var z = 0; z < instructions.length && exit === 0; z++)
@@ -3872,23 +3864,6 @@ function assembly_compiler()
                 return packCompileError('m7', instructionParts[j], "error", "danger");
               }
             }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
             if(signatureParts[j] == "offset_bytes"){
               for (var z = 0; z < instructions.length && exit === 0; z++){
