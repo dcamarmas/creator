@@ -242,6 +242,11 @@
 
                             break;
                           case 2:
+                            if ((this.calculator.decimal).indexOf(",") != -1)
+                            {
+                              this.calculator.decimal = (this.calculator.decimal).replace(",", ".");
+                            }
+
                             var float = parseFloat(this.calculator.decimal, 10);
                             var binary;
                             var hexadecimal;
