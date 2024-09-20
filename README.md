@@ -11,20 +11,25 @@
 [![Generic badge](https://img.shields.io/badge/achecker-WCAG%202.0%20(Level%20AAA)-green.svg)](https://shields.io/)
 
 |                              | URL                                             | 
-|:----------------------------:|:-----------------------------------------------| 
+|:----------------------------:|:------------------------------------------------| 
 | Creator                      | https://creatorsim.github.io/creator/           |
 | Documentation                | https://creatorsim.github.io/                   | 
+| Examples included            | :point_right: [RISC-V](docs/examples.md#point_right---risc-v) :point_right: [MIPS-32](docs/examples.md#point_right---mips) | 
+
+### Dockers for CREATOR
+
+|                              | URL                                             | 
+|:----------------------------:|:------------------------------------------------|
 | Docker Hub                   | https://hub.docker.com/repositories/creatorsim  | 
 | Dockers Documentation        | :point_right: [Gateway](dockers/gateway) :point_right: [Remote Lab](dockers/remote_lab) | 
-| Examples included            | :point_right: [RISC-V](docs/examples.md#point_right---risc-v) :point_right: [MIPS-32](docs/examples.md#point_right---mips) | 
 
 ### Source code and testing
 
 |                              | URL                                             | 
 |:----------------------------:|:------------------------------------------------| 
 | Source Code                  | https://github.com/creatorsim/creator/          | 
-| :clipboard:  Tests           | [Test Descriptions](docs/test.md)               | 
 | :microscope: Nightly build   | https://dcamarmas.github.io/creator             |
+| :clipboard:  Tests           | [Test Descriptions](docs/test.md)               | 
 
 ### Supported Internet Browser
 
@@ -167,9 +172,9 @@
 
   - [x] New functionality:
      * CREATOR Remote Lab
-     * CREATOR Dockers
+     * Dockers for CREATOR
   - [x] User Interface:
-     * Several minor bug fixed
+     * Several improvements and minor bugs fixed
 
 </details>
 
@@ -185,7 +190,7 @@
      * Improved register file visualization
      * Performance improvements (e.g. program execution, data segment loading, etc.)
      * Updating external dependencies (fontawesome v6.2.1, jquery v3.6.3, lodash v4.17.15, and Apexchart)
-     * Several minor bug fixed
+     * Several minor bugs fixed
 
 </details>
 
@@ -198,7 +203,7 @@
   - [x] Modular design:
     * Simplified pseudo-instruction forms
     * Improved memory detail panel
-    * Hardware counter updated in order to know the number of clock cycles consumed since the last reset
+    * Hardware counter updated to know the number of clock cycles consumed since the last reset
 
 </details>
 
@@ -207,9 +212,9 @@
 
   - [x] User Interface:
     * Example set added
-    * The Instruction help width can be now configure from the configuration modal
-    * Clarification on intitial CREATOR page
-    * Better responsive behaviour on different screen sizes
+    * The Instruction help width can now be configured from the configuration modal
+    * Clarification on the initial CREATOR page
+    * Better responsive behavior on different screen sizes
     * Power consumption added
   - [x] Modular design:
     * Interface based on Vue components for all UI elements in CREATOR
@@ -224,11 +229,11 @@
   - [x] Several minor RISC-V improvements
   - [x] More modular design:
     * Initial user interface based on Vue components
-    * Improved modular design on execution engine
+    * Improved modular design on the execution engine
   - [x] Improved instruction definitions:
     * New CREATOR API for instruction definitions
-    * Support for helping on check Stack Calling Conventions
-      * Checking saved registers on stack are restored
+    * Support for helping on checking Stack Calling Conventions
+      * Checking saved registers on the stack are restored
       * Colored stack
       * SP and FP pointers are shown on the memory stack detail panel
 
@@ -244,10 +249,10 @@
       * ./creator.sh -h
     * Example: creator compiles and executes the example2.txt, showing the final state:
       * ./creator.sh -a architecture/MIPS-32.json -s examples/MIPS/example2.txt
-    * Example: save final state into 'salida.txt' file:
-      * ./creator.sh -a ./architecture/MIPS-32.json -s ./examples/MIPS/example2.txt -o min > salida.txt
-    * Example: compare final state and the state saved on 'salida.txt' file:
-      * ./creator.sh -a ./architecture/MIPS-32.json -s ./examples/MIPS/example2.txt -o min -r salida.txt
+    * Example: save final state into 'output.txt' file:
+      * ./creator.sh -a ./architecture/MIPS-32.json -s ./examples/MIPS/example2.txt -o min > output.txt
+    * Example: compare the final state and the state saved on 'output.txt' file:
+      * ./creator.sh -a ./architecture/MIPS-32.json -s ./examples/MIPS/example2.txt -o min -r output.txt
   - [x] Creator now accepts three GET values:
     * Preload the MIPS architecture:
       * https://creatorsim.github.io/creator/?architecture=MIPS-32
