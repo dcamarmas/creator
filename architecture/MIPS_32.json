@@ -4471,7 +4471,7 @@
           "valueField": "010110"
         }
       ],
-      "definition": "fd = 1.0/Math.sqrt(fs);"
+      "definition": "if (fs >= 0)\n { fd = 1.0/Math.sqrt(fs); }\n else { capi_raise('Square root of a negative number is not allowed.'); }"
     },
     {
       "name": "rsqrt.s",
@@ -4519,7 +4519,7 @@
           "valueField": "010110"
         }
       ],
-      "definition": "fd = 1.0/Math.sqrt(fs);"
+      "definition": "if (fs >= 0)\n { fd = 1.0/Math.sqrt(fs); }\n else { capi_raise('Square root of a negative number is not allowed.'); }"
     },
     {
       "name": "sb",
@@ -4908,7 +4908,7 @@
           "valueField": "000100"
         }
       ],
-      "definition": "fd = Math.sqrt(fs);"
+      "definition": "if (fs >= 0)\n { fd = Math.sqrt(fs); }\n else { capi_raise('Square root of a negative number is not allowed.'); }"
     },
     {
       "name": "sqrt.s",
@@ -4956,7 +4956,7 @@
           "valueField": "000100"
         }
       ],
-      "definition": "fd = Math.sqrt(fs);"
+      "definition": "if (fs >= 0)\n { fd = Math.sqrt(fs); }\n else { capi_raise('Square root of a negative number is not allowed.'); }"
     },
     {
       "name": "sra",
