@@ -275,7 +275,7 @@
     if (add_dot_zero)
     {
       var aux_value = value.toString();
-      if (aux_value.indexOf(".") == -1)
+      if (aux_value.indexOf(".") == -1 && Number.isInteger(aux_value))
       {
         print_value = print_value + ".0";
       }
