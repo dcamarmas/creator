@@ -952,11 +952,25 @@ function creator_callstack_do_transition ( doAction, indexComponent, indexElemen
         var elto = creator_callstack_getTop();
         if (elto.ok == false) {
             console_log('creator_callstack_do_transition: ' + elto.msg) ;
-        return '' ;
+            return '' ;
         }
 
         var equal  = elto.val.register_address_write[indexComponent][indexElement].includes(address); 
         action = (equal) ? "wm==" : "wm!=" ;
+    }
+
+    if (doAction == "rm")
+    {
+        var elto = creator_callstack_getTop();
+        if (elto.ok == false) {
+            console_log('creator_callstack_do_transition: ' + elto.msg) ;
+            return '' ;
+        }
+
+        var equal  = elto.val.register_address_write[indexComponent][indexElement].includes(address);
+        if (equal == false){
+            return
+        }
     }
 
     if ( (typeof(stack_state_transition[state])         === "undefined") ||
@@ -3755,14 +3769,6 @@ function assembly_compiler()
               }
             }
 
-
-
-
-
-
-
-
-
             if (signatureParts[j] == "offset_words")
             {
               for (var z = 0; z < instructions.length && exit === 0; z++)
@@ -3774,9 +3780,6 @@ function assembly_compiler()
                   var stopbit = pending_instructions[i].stopBit;
 
                   addr = ((addr - pending_instructions[i].address)/4)-1;
-                  console_log(instructionParts);
-                  console_log(addr);
-
 
                   if (startbit.length > 1 && stopbit.length)
                   {
@@ -3785,10 +3788,9 @@ function assembly_compiler()
                       fieldsLength = fieldsLength + startbit[s]-stopbit[s]+1;
                     }
 
-                    console_log(fieldsLength);
                     var bin = bi_intToBigInt(addr,10).toString(2);
                     bin = bin.padStart(fieldsLength, "0");
-                    console_log(bin);
+                    bin = bin.slice((bin.length - fieldsLength), bin.length);
 
                     var last_segment = 0;
                     for (var s = 0; s < startbit.length; s++)
@@ -3815,7 +3817,6 @@ function assembly_compiler()
                     console_log(fieldsLength);
                     var bin = bi_intToBigInt(addr,10).toString(2);
                     bin = bin.padStart(fieldsLength, "0");
-                    console_log(bin);
 
                     for (var w = 0; w < instructions.length && exit === 0; w++) {
                       var aux = "0x" + (pending_instructions[i].address).toString(16);
@@ -5402,7 +5403,6 @@ function instruction_compiler ( instruction, userInstruction, label, line, pendi
             console_log("token: " + token);
 
             var validReg = false;
-            var regNum = 0;
 
             for(var a = 0; a < architecture.instructions[i].fields.length; a++){
               if(architecture.instructions[i].fields[a].name == signatureRawParts[j]){
@@ -5410,7 +5410,6 @@ function instruction_compiler ( instruction, userInstruction, label, line, pendi
                   for(var w = 0; w < architecture.components[z].elements.length; w++){
                     if(architecture.components[z].elements[w].name.includes(token) !== false && architecture.components[z].type == "int_registers"){ //TODO:check
                       validReg = true;
-                      regNum++;
 
                       fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
                       var reg = w;
@@ -5437,7 +5436,6 @@ function instruction_compiler ( instruction, userInstruction, label, line, pendi
                     else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg === false){
                       return packCompileError('m4', token, 'error', "danger") ;
                     }
-                    regNum++;
                   }
                 }
               }
@@ -5464,7 +5462,7 @@ function instruction_compiler ( instruction, userInstruction, label, line, pendi
                         regNum++;
 
                         fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
-                        var reg = regNum;
+                        var reg = w;
 
                         if(reg.toString(2).length > fieldsLength){
 
@@ -5493,7 +5491,7 @@ function instruction_compiler ( instruction, userInstruction, label, line, pendi
                         regNum++;
 
                         fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
-                        var reg = regNum;
+                        var reg = w;
 
                         if(reg.toString(2).length > fieldsLength){
 
@@ -5540,7 +5538,7 @@ function instruction_compiler ( instruction, userInstruction, label, line, pendi
                         regNum++;
 
                         fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
-                        var reg = regNum;
+                        var reg = w;
 
                         if(reg.toString(2).length > fieldsLength){
 
@@ -5567,7 +5565,7 @@ function instruction_compiler ( instruction, userInstruction, label, line, pendi
                         regNum++;
 
                         fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
-                        var reg = regNum;
+                        var reg = w;
 
                         if(reg.toString(2).length > fieldsLength){
 
@@ -5610,7 +5608,7 @@ function instruction_compiler ( instruction, userInstruction, label, line, pendi
                       regNum++;
 
                       fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
-                      var reg = regNum;
+                      var reg = w;
 
                       if(reg.toString(2).length > fieldsLength){
 
