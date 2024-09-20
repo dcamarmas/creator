@@ -4369,15 +4369,15 @@
       "name": "fsqrt.d",
       "type": "Arithmetic floating point",
       "signature_definition": "F0 F4 F3",
-      "signature": "FSQRT.D,DFP-Reg,DFP-Reg",
-      "signatureRaw": "FSQRT.D rd rs1",
+      "signature": "fsqrt.d,DFP-Reg,DFP-Reg",
+      "signatureRaw": "fsqrt.d rd rs1",
       "co": "1010011",
       "cop": "010110100000",
       "nwords": 1,
       "clk_cycles": 1,
       "fields": [
         {
-          "name": "FSQRT.D",
+          "name": "fsqrt.d",
           "type": "co",
           "startbit": 6,
           "stopbit": 0
@@ -4409,7 +4409,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = Math.sqrt(rs1);",
+      "definition": "if (rs1 >= 0)\n { rd = Math.sqrt(rs1); }\n else { capi_raise('Square root of a negative number is not allowed.'); }",
       "separated": [
         false,
         false,
@@ -4463,7 +4463,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = Math.sqrt(rs1);",
+      "definition": "if (rs1 >= 0)\n { rd = Math.sqrt(rs1); }\n else { capi_raise('Square root of a negative number is not allowed.'); }",
       "separated": [
         false,
         false,

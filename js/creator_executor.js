@@ -351,6 +351,30 @@ function execute_instruction ( )
           }
         }
         else{
+
+          /////////
+          if ( signatureParts[i] == "offset_words" )
+          {
+            if(instructionExecParts[i].match(/^0x/))
+            {
+              var value = parseInt(instructionExecParts[i]);
+
+              var nbits = 4 * value.toString(16).length ;               // nbits     = nbits of 0xFFC = 8 bits 
+              var value_bin = value.toString(2).padStart(nbits, '0') ;  // value_bin = '111111111100'
+              if (value_bin[0] == '1') {
+                value_bin = ''.padStart(32 - nbits, '1') + value_bin ;  // value_bin = '1111...111' + '111111111100' ; TODO: 32 -> nwords...
+              }
+              else {
+                value_bin = ''.padStart(32 - nbits, '0') + value_bin ;  // value_bin = '0000...000' + '011111111100' ; TODO: 32 -> nwords...
+              }
+              value = parseInt(value_bin, 2) >> 0 ;
+              instructionExecParts[i] = value ; // -...
+
+              console_log(instructionExecParts[i]);
+            }
+          }
+          /////////
+
           var_readings_definitions[signatureRawParts[i]] = "var " + signatureRawParts[i] + " = " + instructionExecParts[i] + ";\n";
         }
       }
