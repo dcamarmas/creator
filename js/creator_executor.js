@@ -236,8 +236,11 @@ function execute_instruction ( )
                 else{
                   bin = instructionExec.substring(((instruction_nwords*31) - instruction_fields[f].startbit), ((instruction_nwords*32) - instruction_fields[f].stopbit))
                 }
-                value = get_number_binary (bin);
 
+                // value = get_number_binary(bin) ;
+                value     = parseInt(bin, 2).toString(16) ;
+                value_len = Math.abs(instruction_fields[f].startbit - instruction_fields[f].stopbit) ;
+                value     = '0x' + value.padStart(value_len/4, '0') ;
                 break; 
 
               default:
@@ -321,7 +324,7 @@ function execute_instruction ( )
       var var_readings_definitions_name = {};
       var var_writings_definitions      = {};
 
-      //Generate all registers, values, etc. readings
+      // Generate all registers, values, etc. readings
       for (var i = 1; i < signatureRawParts.length; i++)
       {
         if (signatureParts[i] == "INT-Reg" || signatureParts[i] == "SFP-Reg" || signatureParts[i] == "DFP-Reg" || signatureParts[i] == "Ctrl-Reg")
@@ -352,23 +355,24 @@ function execute_instruction ( )
         }
         else{
 
-          /////////
+          /////////TODO: inm-signed
           if ( signatureParts[i] == "offset_words" )
           {
-            if(instructionExecParts[i].match(/^0x/))
+            if (instructionExecParts[i].startsWith("0x"))
             {
-              var value = parseInt(instructionExecParts[i]);
+              var value     = parseInt(instructionExecParts[i]);
+              var nbits     = 4 * (instructionExecParts[i].length - 2) ; // 0xFFC -> 12 bits
+              var value_bin = value.toString(2).padStart(nbits, '0') ;   // value_bin = '111111111100'
 
-              var nbits = 4 * value.toString(16).length ;               // nbits     = nbits of 0xFFC = 8 bits 
-              var value_bin = value.toString(2).padStart(nbits, '0') ;  // value_bin = '111111111100'
+              // TODO: replace 32 with bits in architecture...
               if (value_bin[0] == '1') {
-                value_bin = ''.padStart(32 - nbits, '1') + value_bin ;  // value_bin = '1111...111' + '111111111100' ; TODO: 32 -> nwords...
+                value_bin = ''.padStart(32 - nbits, '1') + value_bin ;   // value_bin = '1111...111' + '111111111100' ;
               }
               else {
-                value_bin = ''.padStart(32 - nbits, '0') + value_bin ;  // value_bin = '0000...000' + '011111111100' ; TODO: 32 -> nwords...
+                value_bin = ''.padStart(32 - nbits, '0') + value_bin ;   // value_bin = '0000...000' + '011111111100' ;
               }
               value = parseInt(value_bin, 2) >> 0 ;
-              instructionExecParts[i] = value ; // -...
+              instructionExecParts[i] = value ;
 
               console_log(instructionExecParts[i]);
             }
