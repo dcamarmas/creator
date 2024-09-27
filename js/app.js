@@ -135,79 +135,11 @@ try
       architecture_hash: architecture_hash,
 
 
-      //Edit architecture field modal
-      modal_edit_arch_field: { //TODO: include into arch_conf component - modal info
-        title: '',
-        field: '',
-        value: '',
-        index: ''
-      },
-      //Reset architecture field modal
-      modal_reset_arch_field:{ //TODO: include into arch_conf component - modal info
-        title: '',
-        index: ''
-      },
-      
-
-      //Edit register file modal
-      modal_edit_register_file: { //TODO: include into register_file component - modal info
-        title: '',
-        name: '',
-        index: null
-      },
-      //Delete register file modal
-      modal_delete_register_file:{ //TODO: include into register_file component - modal info
-        title: '',
-        index: null
-      },
-
-
-      //New register modal
-      modal_new_register:{ //TODO: include into register_file component - modal info
-        register_file_index: null,
-        type: '',
-        double_precision: '',
-        double_precision_type: '',
-        reg_id: '',
-        simple_reg: []
-      },
-      //Edit register modal
-      modal_edit_register:{ //TODO: include into register component - modal info
-        title: '',
-        register_file_index: null,
-        register_index: null,
-        type: '',
-        double_precision: '',
-        double_precision_type: '',
-        reg_id: '',
-        simple_reg: [],
-        register: {}
-      },
-      //Delete register modal
-      modal_delete_register:{ //TODO: include into register component - modal info
-        title: '',
-        register_file_index: null,
-        register_index: null
-      },
-
-
       //Instructions fields
       modal_field_instruction:{ //TODO: include into instruction component - modal info
         title: '',
         index: null,
         instruction: {}
-      },
-      //Edit instruction modal
-      modal_edit_instruction:{ //TODO: include into instruction component - modal info
-        title: '',
-        index: null,
-        instruction: {},
-        number_fields: null
-      },
-      //Delete instruction modal
-      modal_delete_instruction:{ //TODO: include into instruction component - modal info
-        title: '',
-        index: null,
       },
 
 
@@ -216,31 +148,6 @@ try
         title: '',
         index: null,
         pseudoinstruction: {}
-      },
-      //Edit pseudoinstruction modal
-      modal_edit_pseudoinstruction:{ //TODO: include into pseudoinstruction component - modal info
-        title: '',
-        index: null,
-        pseudoinstruction: {},
-        number_fields: null
-      },
-      //Delete pseudoinstruction modal
-      modal_delete_pseudoinstruction:{ //TODO: include into pseudoinstruction component - modal info
-        title: '',
-        index: null,
-      },
-
-
-      //Edit directive modal
-      modal_edit_directive:{ //TODO: include into directives component - modal info
-        title: '',
-        index: null,
-        directive: {}
-      },
-      //Delete directive modal //TODO: include into directives component - modal info
-      modal_delete_directive:{
-        title: '',
-        index: null
       },
 
       
