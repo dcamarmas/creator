@@ -27,9 +27,9 @@
   var uielto_toolbar_btngroup = {
 
         props:      {
-                      group:                        { type: Array,   required: true },
-                      browser:                      { type: String,  required: true },
-                      arch_available:               { type: Array,   required: true }
+                      group:                        { type: Array,   required: true  },
+                      browser:                      { type: String,  required: true  },
+                      arch_available:               { type: Array,   required: true  }
                     },
 
         data:       function () {
@@ -66,7 +66,7 @@
                           // fast transition <any> => <any> - "architecture"
                           app._data.creator_mode = e;
 
-                          //Assembly view
+                          //Assembly view => Start codemirror
                           if(e == "assembly")
                           {
                             setTimeout(function(){
@@ -93,7 +93,7 @@
                             textarea_assembly_editor.toTextArea();
                           }
 
-                           //Close all toast and refresh
+                          //Close all toast and refresh
                           app.$bvToast.hide()
                         }
                       },
@@ -505,6 +505,7 @@
                               button_architecture() +
                               button_assembly() +
                               button_simulator() +
+                              button_edit_architecture() +
                               button_save_architecture() +
                               dropdown_assembly_file() +
                               button_compile() +
@@ -561,12 +562,21 @@
             '</b-button>'
   }
 
+  function button_edit_architecture(){
+    return  '<b-button v-if="item==\'btn_edit_architecture\'" class="btn btn-block btn-outline-secondary menuGroup btn-sm h-100" ' +
+            '          id="edit_btn_arch" ' +
+            '          v-b-modal.edit_architecture> ' +
+            '  <span class="fa-solid fa-pen-to-square"></span> ' +
+            '  Edit Architecture' +
+            '</b-button>'
+  }
+
   function button_save_architecture(){
     return  '<b-button v-if="item==\'btn_save_architecture\'" class="btn btn-block btn-outline-secondary menuGroup btn-sm h-100" ' +
             '          id="save_btn_arch" ' +
             '          v-b-modal.save_architecture> ' +
             '  <span class="fas fa-download"></span> ' +
-            '  Save' +
+            '  Save Architecture' +
             '</b-button>'
   }
 
