@@ -232,13 +232,18 @@
 
               <!-- Navbar -->
               <uielto-toolbar id="navbar_architecture" 
-                              components="btn_assembly,btn_simulator|btn_save_architecture|btn_edit_architecture|btn_configuration,btn_information" 
+                              components="btn_assembly,btn_simulator|btn_edit_architecture|btn_save_architecture|btn_configuration,btn_information" 
                               :browser="browser"
                               :arch_available="arch_available">
               </uielto-toolbar>
 
               
               <!-- Architecture navbar modals -->
+
+              <!-- Edit architecture modal -->
+              <edit-architecture id="edit_architecture"></edit-architecture>
+
+              <!-- Save architecture modal -->
               <save-architecture id="save_architecture"></save-architecture>
 
 
