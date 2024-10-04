@@ -27,9 +27,9 @@
   var uielto_toolbar_btngroup = {
 
         props:      {
-                      group:                        { type: Array,   required: true  },
-                      browser:                      { type: String,  required: true  },
-                      arch_available:               { type: Array,   required: true  }
+                      group:                        { type: Array,   required: true },
+                      browser:                      { type: String,  required: true },
+                      arch_available:               { type: Array,   required: true }
                     },
 
         data:       function () {
