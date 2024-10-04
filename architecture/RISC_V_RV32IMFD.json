@@ -1749,9 +1749,9 @@
     {
       "name": "fclass.d",
       "type": "Arithmetic floating point",
-      "signature_definition": "F0 F5 F3 F2",
-      "signature": "fclass.d,INT-Reg,DFP-Reg,cop",
-      "signatureRaw": "fclass.d rd rs1 cop2",
+      "signature_definition": "F0 F5 F3",
+      "signature": "fclass.d,INT-Reg,DFP-Reg",
+      "signatureRaw": "fclass.d rd rs1",
       "co": "1010011",
       "cop": "111000100000001",
       "nwords": 1,
@@ -1811,16 +1811,16 @@
     {
       "name": "fclass.s",
       "type": "Arithmetic floating point",
-      "signature_definition": "F0 F4 F3 F4",
-      "signature": "fclass.s,INT-Reg,SFP-Reg,INT-Reg",
-      "signatureRaw": "fclass.s rd rs1 rd",
+      "signature_definition": "F0 F4 F3",
+      "signature": "fclass.s,INT-Reg,SFP-Reg",
+      "signatureRaw": "fclass.s rd rs1",
       "co": "1010011",
       "cop": "111000000000001",
       "nwords": 1,
       "clk_cycles": 1,
       "fields": [
         {
-          "name": "FCLASS.S",
+          "name": "fclass.s",
           "type": "co",
           "startbit": 6,
           "stopbit": 0
