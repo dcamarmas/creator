@@ -50,6 +50,7 @@ cat js/creator_bigint.js \
     components/load_architecture/creator_uielto_delete_architecture.js \
     components/load_architecture/creator_uielto_backup.js \
     \
+    components/architecture/creator_uielto_edit_architecture.js \
     components/architecture/creator_uielto_save_architecture.js \
     components/architecture/configuration/creator_uielto_arch_conf.js \
     components/architecture/memory_layout/creator_uielto_memory_layout.js \
