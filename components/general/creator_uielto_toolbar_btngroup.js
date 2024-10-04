@@ -70,7 +70,7 @@
                           if(e == "assembly")
                           {
                             setTimeout(function(){
-                              codemirrorStart();
+                              assembly_codemirror_start();
                               if (codemirrorHistory != null ){
                                 textarea_assembly_editor.setHistory(codemirrorHistory);
                                 textarea_assembly_editor.undo();
