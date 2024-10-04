@@ -150,6 +150,9 @@ try
         pseudoinstruction: {}
       },
 
+      //Architecture edit code
+      arch_code: "",
+
       
       
       /************/
@@ -432,7 +435,7 @@ try
 
 
   //Codemirror
-  function codemirrorStart(){
+  function assembly_codemirror_start(){
     var editor_cfg = {
       lineNumbers: true,
       autoRefresh:true
@@ -451,6 +454,22 @@ try
         'Ctrl-M': function(cm) { cm.execCommand('toggleComment'); }
       } ;
       textarea_assembly_editor.addKeyMap(map);
+    }
+  }
+
+  function architecture_codemirror_start(){
+    var editor_cfg = {
+      lineNumbers: true,
+      autoRefresh:true
+    };
+
+    var textarea_arch_obj = document.getElementById("textarea_architecture");
+
+    if (textarea_arch_obj != null) {
+      textarea_arch_editor = CodeMirror.fromTextArea(textarea_arch_obj, editor_cfg);
+      textarea_arch_editor.setOption('keyMap', 'sublime') ; // vim -> 'vim', 'emacs', 'sublime', ...
+      textarea_arch_editor.setValue(app._data.arch_code);
+      textarea_arch_editor.setSize("auto", "70vh");
     }
   }
 
