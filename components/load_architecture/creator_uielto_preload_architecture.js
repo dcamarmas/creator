@@ -200,7 +200,7 @@
                     //Reset execution
                     instructions = [];
                     app._data.instructions = instructions;
-                    creator_memory_clear() ;
+                    creator_memory_clear();
 
                     //Refresh UI
                     uielto_toolbar_btngroup.methods.change_UI_mode('simulator');
