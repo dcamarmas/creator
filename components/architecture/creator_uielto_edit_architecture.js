@@ -41,11 +41,13 @@
                   {
                     setTimeout(function(){
                       architecture_codemirror_start();
+                      
                       if (codemirrorHistory != null ){
                         textarea_arch_editor.setHistory(codemirrorHistory);
                         textarea_arch_editor.undo();
                       }
-                      textarea_arch_editor.setValue(arch_code);
+
+                      textarea_arch_editor.setValue(app._data.arch_code);
                     },50);
                   },
                   
