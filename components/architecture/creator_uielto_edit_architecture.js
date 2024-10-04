@@ -66,7 +66,13 @@
                     app._data.arch_code = textarea_arch_editor.getValue();
                     arch_code = textarea_arch_editor.getValue();
 
-                    var aux_architecture = JSON.parse(app._data.arch_code);
+                    try {
+                      var aux_architecture = JSON.parse(app._data.arch_code);
+                    }
+                    catch (e) {
+                      show_notification('Architecture not edited. JSON format is incorrect', 'danger');
+                      return;
+                    }
 
                     //Load architecture
                     architecture = register_value_deserialize(aux_architecture);
@@ -90,6 +96,8 @@
                     instructions = [];
                     app._data.instructions = instructions;
                     creator_memory_clear();
+
+                    show_notification('Architecture edited correctly', 'success');
                   }
 
                 },
