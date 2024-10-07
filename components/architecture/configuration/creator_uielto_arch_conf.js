@@ -31,39 +31,15 @@
     data:       function () {
                   return {
                     //Architecture configuration table fields
-                    arch_fields: ['field', 'value', 'actions']
+                    arch_fields: ['field', 'value']
                   }
                 },
 
     methods:    {
-                  //Show edit architecture field modal
-                  edit_arch_field_modal(field, index, button)
-                  {
-                    app._data.modal_edit_arch_field.title = "Edit " + field; 
-                    app._data.modal_edit_arch_field.field = field; 
-                    app._data.modal_edit_arch_field.value = this._props.arch_conf[index].value; 
-                    app._data.modal_edit_arch_field.index = index; 
-
-                    this.$root.$emit('bv::show::modal', 'edit_arch_field', button);
-                  },
-
-                  //Show reset architecture field modal
-                  reset_arch_field_modal(field, index, button)
-                  {
-                    app._data.modal_reset_arch_field.title = "Reset " + field; 
-                    app._data.modal_reset_arch_field.index = index; 
-                    
-                    this.$root.$emit('bv::show::modal', 'reset_arch_field', button);
-                  }
                   
                 },
 
     template:   '<div class="col-lg-12 col-sm-12 row memoryLayoutDiv mx-0 px-0">' +
-                '' +
-                '  <div class="col-lg-12 col-sm-12">' +
-                '    <span class="h6">Architecture general information:</span>' +
-                '    <br>' +
-                '  </div>' +
                 '' +
                 '  <div class="col-lg-3 col-sm-12 "></div>' +
                 '' +
@@ -96,19 +72,6 @@
                 '        <span v-if="row.item.value == \'1\'">' +
                 '          Enabled' +
                 '        </span>' +
-                '      </template>' +
-                '' +
-                '      <template v-slot:cell(actions)="row">' +
-                '        <b-button @click.stop="edit_arch_field_modal(row.item.name, row.index, $event.target)" ' +
-                '                  class="btn btn-outline-secondary btn-sm buttonBackground h-100">' +
-                '          <span class="far fa-edit"></span>' +
-                '          Edit' +
-                '        </b-button>' +
-                '        <b-button @click.stop="reset_arch_field_modal(row.item.name, row.index, $event.target)" ' +
-                '                  class="btn btn-outline-danger btn-sm buttonBackground h-100">' +
-                '          <span class="far fa-trash-alt"></span>' +
-                '          Reset' +
-                '        </b-button> ' +
                 '      </template>' +
                 '    </b-table>' +
                 '  </div> ' +
