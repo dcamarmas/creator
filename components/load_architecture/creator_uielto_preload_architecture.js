@@ -175,9 +175,10 @@
                     architecture = register_value_deserialize(aux_architecture);
                     architecture_json = e.file;
                     uielto_preload_architecture.data.architecture_name = architecture.arch_conf[0].value;
-                    app._data.architecture = architecture; 
+                    app._data.architecture = architecture;
                     app._data.architecture_name = architecture.arch_conf[0].value;
                     app._data.architecture_guide = e.guide;
+                    app._data.arch_code = JSON.stringify(register_value_serialize(cfg), null, 2);
 
                     //Generate architecture hash table
                     architecture_hash = [];
@@ -199,7 +200,7 @@
                     //Reset execution
                     instructions = [];
                     app._data.instructions = instructions;
-                    creator_memory_clear() ;
+                    creator_memory_clear();
 
                     //Refresh UI
                     uielto_toolbar_btngroup.methods.change_UI_mode('simulator');
