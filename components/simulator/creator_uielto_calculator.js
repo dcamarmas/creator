@@ -429,10 +429,10 @@
                     '         <span class="fas fa-long-arrow-alt-down p-1"></span>' +
                     '         <br>' +
                     '         <span class="h5" v-if="calculator.bits == 32">' +
-                    '           2<sup>{{calculator.exponentDec}}-127</sup>   * ' +
+                    '           2<sup v-if="calculator.exponent == \'\' || calculator.exponent != 0">{{calculator.exponentDec}}-127</sup><sup v-if="calculator.exponent != \'\' && calculator.exponent == 0 && calculator.mantissa != 0">{{calculator.exponentDec}}-126</sup>   * ' +
                     '         </span>' +
                     '         <span class="h5" v-if="calculator.bits == 64">' +
-                    '           2<sup>{{calculator.exponentDec}}-1023</sup>   * ' +
+                    '           2<sup v-if="calculator.exponent == \'\' || calculator.exponent != 0">{{calculator.exponentDec}}-1023</sup><sup v-if="calculator.exponent != \'\' && calculator.exponent == 0 && calculator.mantissa != 0">{{calculator.exponentDec}}-1022</sup>   * ' +
                     '         </span>' +
                     '       </b-col>' +
                     '       <b-col lg="4" cols="6" class="p-1">' +
