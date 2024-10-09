@@ -1,5 +1,5 @@
 /*
- *  Copyright 2015-2024 Felix Garcia Carballeira, Alejandro Calderon Mateos, Javier Prieto Cepeda, Saul Alonso Monsalve, Diego Camarmas Alonso
+ *  Copyright 2015-2025 Felix Garcia Carballeira, Alejandro Calderon Mateos, Javier Prieto Cepeda, Saul Alonso Monsalve, Diego Camarmas Alonso
  *
  *  This file is part of CREATOR.
  *
@@ -191,7 +191,7 @@ function asm_isToken_arr ( context, arr )
  *  Error handler
  */
 
-function asm_langError ( context, msgError )
+function asm_langError ( context, msgError, msgOrigin )
 {
         // detect lines
 	var line2 = 0 ;
@@ -230,6 +230,8 @@ function asm_langError ( context, msgError )
                          "</pre>" +
                          "(*) " + i18n_get_TagFor('compiler', 'PROBLEM AROUND LINE') + " " +
 			 context.line + ": <br>" + msgError + ".<br>" ;
+
+        simcore_ga('cc', 'cc.err', 'cc.err.' + msgOrigin) ;
 
         return context;
 }
