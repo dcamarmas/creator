@@ -47,7 +47,7 @@
   2. Run the Docker container
 
      ```
-     docker run --init -it --name creator_gremote_lab creatorsim/creator_remote_lab /bin/bash
+     docker run --init -it -p 5000:5000--name creator_gremote_lab creatorsim/creator_remote_lab /bin/bash
      ```
  
   3. Create the configuration file. This configuration file uses the JSON format to define three parameters for each of the device's hardware: microcontroller model, connection port, and CREATOR URL gateway.
