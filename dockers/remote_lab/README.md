@@ -47,10 +47,10 @@
   2. Run the Docker container
 
      ```
-     docker run --init -it --name creator_gremote_lab creatorsim/creator_remote_lab /bin/bash
+     docker run --init -it -p 5000:5000 --name creator_remote_lab creatorsim/creator_remote_lab /bin/bash
      ```
  
-  3. Create the configuration file. This configuration file uses the JSON format to define three parameters for each of the device's hardware: microcontroller model, connection port, and CREATOR URL gateway.
+  3. Create/edit the configuration file (deployment.json). This configuration file uses the JSON format to define three parameters for each of the device's hardware: microcontroller model, connection port, and CREATOR URL gateway.
 
      ```
      {
@@ -69,10 +69,10 @@
      }
      ```
 
-  3. The Python 3 program remote_lab.py has to be executed inside the container, passing as argument the laboratory configuration file.
+  4. Run the script start_remote_lab.sh inside the Docker container to start the remote lab service.
 
      ```
-     python3 remote_lab.py config.json
+     ./start_remote_lab.sh
      ```
   
-  4. To complete the deployment of the remote laboratory service, the credentials of the E-mail that will be used to send the results of the executions will be requested.
+  5. To complete the deployment of the remote laboratory service, the credentials of the E-mail that will be used to send the results of the executions will be requested.
