@@ -135,79 +135,11 @@ try
       architecture_hash: architecture_hash,
 
 
-      //Edit architecture field modal
-      modal_edit_arch_field: { //TODO: include into arch_conf component - modal info
-        title: '',
-        field: '',
-        value: '',
-        index: ''
-      },
-      //Reset architecture field modal
-      modal_reset_arch_field:{ //TODO: include into arch_conf component - modal info
-        title: '',
-        index: ''
-      },
-      
-
-      //Edit register file modal
-      modal_edit_register_file: { //TODO: include into register_file component - modal info
-        title: '',
-        name: '',
-        index: null
-      },
-      //Delete register file modal
-      modal_delete_register_file:{ //TODO: include into register_file component - modal info
-        title: '',
-        index: null
-      },
-
-
-      //New register modal
-      modal_new_register:{ //TODO: include into register_file component - modal info
-        register_file_index: null,
-        type: '',
-        double_precision: '',
-        double_precision_type: '',
-        reg_id: '',
-        simple_reg: []
-      },
-      //Edit register modal
-      modal_edit_register:{ //TODO: include into register component - modal info
-        title: '',
-        register_file_index: null,
-        register_index: null,
-        type: '',
-        double_precision: '',
-        double_precision_type: '',
-        reg_id: '',
-        simple_reg: [],
-        register: {}
-      },
-      //Delete register modal
-      modal_delete_register:{ //TODO: include into register component - modal info
-        title: '',
-        register_file_index: null,
-        register_index: null
-      },
-
-
       //Instructions fields
       modal_field_instruction:{ //TODO: include into instruction component - modal info
         title: '',
         index: null,
         instruction: {}
-      },
-      //Edit instruction modal
-      modal_edit_instruction:{ //TODO: include into instruction component - modal info
-        title: '',
-        index: null,
-        instruction: {},
-        number_fields: null
-      },
-      //Delete instruction modal
-      modal_delete_instruction:{ //TODO: include into instruction component - modal info
-        title: '',
-        index: null,
       },
 
 
@@ -217,31 +149,9 @@ try
         index: null,
         pseudoinstruction: {}
       },
-      //Edit pseudoinstruction modal
-      modal_edit_pseudoinstruction:{ //TODO: include into pseudoinstruction component - modal info
-        title: '',
-        index: null,
-        pseudoinstruction: {},
-        number_fields: null
-      },
-      //Delete pseudoinstruction modal
-      modal_delete_pseudoinstruction:{ //TODO: include into pseudoinstruction component - modal info
-        title: '',
-        index: null,
-      },
 
-
-      //Edit directive modal
-      modal_edit_directive:{ //TODO: include into directives component - modal info
-        title: '',
-        index: null,
-        directive: {}
-      },
-      //Delete directive modal //TODO: include into directives component - modal info
-      modal_delete_directive:{
-        title: '',
-        index: null
-      },
+      //Architecture edit code
+      arch_code: "",
 
       
       
@@ -525,7 +435,7 @@ try
 
 
   //Codemirror
-  function codemirrorStart(){
+  function assembly_codemirror_start(){
     var editor_cfg = {
       lineNumbers: true,
       autoRefresh:true
@@ -544,6 +454,22 @@ try
         'Ctrl-M': function(cm) { cm.execCommand('toggleComment'); }
       } ;
       textarea_assembly_editor.addKeyMap(map);
+    }
+  }
+
+  function architecture_codemirror_start(){
+    var editor_cfg = {
+      lineNumbers: true,
+      autoRefresh:true
+    };
+
+    var textarea_arch_obj = document.getElementById("textarea_architecture");
+
+    if (textarea_arch_obj != null) {
+      textarea_arch_editor = CodeMirror.fromTextArea(textarea_arch_obj, editor_cfg);
+      textarea_arch_editor.setOption('keyMap', 'sublime') ; // vim -> 'vim', 'emacs', 'sublime', ...
+      textarea_arch_editor.setValue(app._data.arch_code);
+      textarea_arch_editor.setSize("auto", "70vh");
     }
   }
 
