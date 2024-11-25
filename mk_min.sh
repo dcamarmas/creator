@@ -50,39 +50,17 @@ cat js/creator_bigint.js \
     components/load_architecture/creator_uielto_delete_architecture.js \
     components/load_architecture/creator_uielto_backup.js \
     \
+    components/architecture/creator_uielto_edit_architecture.js \
     components/architecture/creator_uielto_save_architecture.js \
     components/architecture/configuration/creator_uielto_arch_conf.js \
-    components/architecture/configuration/creator_uielto_arch_conf_edit.js \
-    components/architecture/configuration/creator_uielto_arch_conf_reset.js \
     components/architecture/memory_layout/creator_uielto_memory_layout.js \
-    components/architecture/memory_layout/creator_uielto_memory_layout_edit.js \
-    components/architecture/memory_layout/creator_uielto_memory_layout_reset.js \
     components/architecture/register_file/creator_uielto_register_file.js \
-    components/architecture/register_file/creator_uielto_register_file_new.js \
-    components/architecture/register_file/creator_uielto_register_file_reset.js \
-    components/architecture/register_file/creator_uielto_register_file_edit.js \
-    components/architecture/register_file/creator_uielto_register_file_delete.js \
     components/architecture/registers/creator_uielto_registers.js \
-    components/architecture/registers/creator_uielto_registers_new.js \
-    components/architecture/registers/creator_uielto_registers_edit.js \
-    components/architecture/registers/creator_uielto_registers_delete.js \
     components/architecture/instructions/creator_uielto_instructions.js \
     components/architecture/instructions/creator_uielto_instructions_fields.js \
-    components/architecture/instructions/creator_uielto_instructions_new.js \
-    components/architecture/instructions/creator_uielto_instructions_reset.js \
-    components/architecture/instructions/creator_uielto_instructions_edit.js \
-    components/architecture/instructions/creator_uielto_instructions_delete.js \
     components/architecture/pseudoinstructions/creator_uielto_pseudoinstructions.js \
     components/architecture/pseudoinstructions/creator_uielto_pseudoinstructions_fields.js \
-    components/architecture/pseudoinstructions/creator_uielto_pseudoinstructions_new.js \
-    components/architecture/pseudoinstructions/creator_uielto_pseudoinstructions_reset.js \
-    components/architecture/pseudoinstructions/creator_uielto_pseudoinstructions_edit.js \
-    components/architecture/pseudoinstructions/creator_uielto_pseudoinstructions_delete.js \
     components/architecture/directives/creator_uielto_directives.js \
-    components/architecture/directives/creator_uielto_directives_new.js \
-    components/architecture/directives/creator_uielto_directives_reset.js \
-    components/architecture/directives/creator_uielto_directives_edit.js \
-    components/architecture/directives/creator_uielto_directives_delete.js \
     \
     components/assembly/creator_uielto_load_assembly.js \
     components/assembly/creator_uielto_save_assembly.js \
