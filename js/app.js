@@ -426,13 +426,6 @@ try
     document.body.removeChild(event.target);
   }
 
-  /*console.log*/
-  function console_log(m){
-    if(app._data.c_debug){
-      console.log(m);
-    }
-  }
-
 
   //Codemirror
   function assembly_codemirror_start(){

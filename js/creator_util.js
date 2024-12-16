@@ -301,3 +301,15 @@
     return value2;
   }
 
+
+  /* 
+   *  Debug
+   */
+
+  var creator_debug = false ;
+  
+  function console_log(m){
+    if(app._data.c_debug || creator_debug){
+      console.log(m);
+    }
+  }
