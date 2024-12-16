@@ -159,20 +159,6 @@ function load_arch_select ( cfg ) //TODO: repeated?
 
 
 //
-// console_log
-//
-
-var creator_debug = false ;
-
-function console_log ( msg )
-{
-  if (creator_debug) {
-      console_log(msg) ;
-  }
-}
-
-
-//
 // Compiler
 //
 

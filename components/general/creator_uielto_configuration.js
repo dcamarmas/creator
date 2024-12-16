@@ -72,7 +72,7 @@
                   },
 
 
-                  //Debug Mode
+                  //Default Architecture
                   change_default_architecture()
                   {
                     
@@ -256,7 +256,8 @@
                   change_debug_mode()
                   {
                     this._props.c_debug = !this._props.c_debug;
-                    app._data.c_debug = this._props.c_debug; 
+                    app._data.c_debug = this._props.c_debug;
+                    creator_debug = !creator_debug;
                 
                     //Google Analytics
                     creator_ga('configuration', 'configuration.debug_mode', 'configuration.debug_mode.' + this._props.c_debug);

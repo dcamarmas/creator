@@ -35,37 +35,10 @@
                 },
 
     methods:    {
-                  //Show edit memory layout modal
-                  edit_memory_layout_modal(button)
-                  {
-                    app.$refs.memory_layout_edit.memory_layout = structuredClone(this._props.memory_layout);
-                    
-                    this.$root.$emit('bv::show::modal', 'memory_layout_edit', button);
-                  }
+
                 },
 
     template:   '<div class="col-lg-12 col-sm-12 row memoryLayoutDiv  mx-0 px-0">' +
-                '' +
-                '  <div class="col-lg-12 col-sm-12">' +
-                '    <span class="h6">Memory layout:</span>' +
-                '    <div class="col-lg-12 col-sm-12 row">' +
-                '      <div class="compMenu">' +
-                '        <b-button class="btn btn-outline-secondary btn-sm buttonBackground h-100 w-100" ' +
-                '                  @click.stop="edit_memory_layout_modal($event.target)">' +
-                '          <span class="fas fa-exchange-alt"></span> ' +
-                '          Change Memory Layout' +
-                '        </b-button>' +
-                '      </div>' +
-                '      <div class="compMenu">' +
-                '        <b-button class="btn btn-outline-danger btn-sm buttonBackground h-100 w-100" ' +
-                '                  v-b-modal.reset_memory_layout> ' +
-                '          <span class="fas fa-power-off"></span>' +
-                '          Reset Memory Layout' +
-                '        </b-button>' +
-                '      </div>' +
-                '    </div>' +
-                '    <br>' +
-                '  </div>' +
                 '' +
                 '  <div class="col-lg-3 col-sm-12 "></div>' +
                 '' +
