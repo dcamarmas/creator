@@ -31,7 +31,7 @@
         data:       function () {
                       return {
                         //Pseudoinstructions table fields
-                        pseudoinstructions_fields: ['name', 'nwords', 'signatureRaw', 'fields', 'definition', 'actions'],
+                        pseudoinstructions_fields: ['name', 'nwords', 'signatureRaw', 'fields', 'definition'],
                       }
                     },
 
@@ -45,47 +45,9 @@
 
                         this.$root.$emit('bv::show::modal', 'fields_pseudoinstructions', button);
                       },
-
-                      //Show edit pseudoinstruction modal
-                      edit_pseudoinstruction_modal(name, index, button)
-                      {
-                        app._data.modal_edit_pseudoinstruction.title               = "Edit  " + name;
-                        app._data.modal_edit_pseudoinstruction.index               = index;
-                        app._data.modal_edit_pseudoinstruction.pseudoinstruction = structuredClone(architecture.pseudoinstructions[index]);
-
-                        app._data.modal_edit_pseudoinstruction.number_fields       = app._data.modal_edit_pseudoinstruction.pseudoinstruction.fields.length;
-
-                        this.$root.$emit('bv::show::modal', 'edit_pseudoinstructions', button);
-                      },
-
-                      //Show delete pseudoinstruction modal
-                      delete_pseudoinstruction_modal(name, index, button)
-                      {
-                        app._data.modal_delete_pseudoinstruction.title = "Delete " + name;
-                        app._data.modal_delete_pseudoinstruction.index = index;
-
-                        this.$root.$emit('bv::show::modal', 'delete_pseudoinstructions', button);
-                      },
                     },
 
         template:   '<div>' +
-                    '  <br>' +
-                    '  <span class="h6">Pseudoinstructions set:</span>' +
-                    '  <br>' +
-                    '  <b-button class="btn btn-outline-secondary btn-sm buttonBackground h-100" ' +
-                    '            id="newPseudoinstructionsBtn" ' +
-                    '            v-b-modal.new_pseudoinstructions> ' +
-                    '    <span class="fas fa-plus-circle"></span> ' +
-                    '    New Pseudoinstructions' +
-                    '  </b-button>' +
-                    '' +
-                    '  <b-button class="btn btn-outline-danger btn-sm buttonBackground h-100" ' +
-                    '            id="resetPseudoinstructions"' +
-                    '            v-b-modal.reset_pseudoinstructions> ' +
-                    '    <span class="fas fa-power-off"></span> ' +
-                    '    Reset Pseudoinstructions' +
-                    '  </b-button>' +
-                    '' +
                     '  <!-- Pseudoinstruction set table -->' +
                     '  <div class="col-lg-12 col-sm-12 mt-3">' +
                     '    <b-table small ' +
@@ -122,19 +84,6 @@
                     '                         max-rows="4"' +
                     '                         title="Pseudoinstruction Definition">' +
                     '        </b-form-textarea>' +
-                    '      </template>' +
-                    '' +
-                    '      <template v-slot:cell(actions)="row">' +
-                    '        <b-button @click.stop="edit_pseudoinstruction_modal(row.item.name, row.index, $event.target)" ' +
-                    '                  class="btn btn-outline-secondary btn-sm buttonBackground h-100">' +
-                    '          <span class="far fa-edit"></span>' +
-                    '          Edit' +
-                    '        </b-button>' +
-                    '        <b-button @click.stop="delete_pseudoinstruction_modal(row.item.name, row.index, $event.target)"' +
-                    '                  class="btn btn-outline-danger btn-sm buttonBackground h-100">' +
-                    '          <span class="far fa-trash-alt"></span>' +
-                    '          Delete' +
-                    '        </b-button> ' +
                     '      </template>' +
                     '    </b-table>' +
                     '  </div>' +

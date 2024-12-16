@@ -232,13 +232,20 @@
 
               <!-- Navbar -->
               <uielto-toolbar id="navbar_architecture" 
-                              components="btn_assembly,btn_simulator|btn_save_architecture||btn_configuration,btn_information" 
+                              components="btn_assembly,btn_simulator|btn_edit_architecture,btn_save_architecture||btn_configuration,btn_information" 
                               :browser="browser"
                               :arch_available="arch_available">
               </uielto-toolbar>
 
               
               <!-- Architecture navbar modals -->
+
+              <!-- Edit architecture modal -->
+              <edit-architecture id="edit_architecture"
+                                 :arch_code="arch_code">
+              </edit-architecture>
+
+              <!-- Save architecture modal -->
               <save-architecture id="save_architecture"></save-architecture>
 
 
@@ -253,111 +260,19 @@
 
                       <!-- Architecture configuration -->
                       <b-tab title="Architecture Info" active>
-                        
                         <arch-conf :arch_conf="architecture.arch_conf"></arch-conf>
-
-                        <!-- Architecture configuration modals -->
-
-                        <!-- Edit Architecture configuration -->
-                        <arch-conf-edit id="edit_arch_field"
-                                        :title="modal_edit_arch_field.title"
-                                        :arch_field="modal_edit_arch_field.field"
-                                        :arch_field_value="modal_edit_arch_field.value"
-                                        :arch_field_index="modal_edit_arch_field.index">
-                        </arch-conf-edit>
-
-                        <!-- Reset Architecture configuration -->
-                        <arch-conf-reset  id="reset_arch_field"
-                                          :title="modal_reset_arch_field.title"
-                                          :arch_field_index="modal_reset_arch_field.index"
-                                          :architecture_name="architecture_name">
-                        </arch-conf-reset>
-
                       </b-tab>
 
 
                       <!-- Memory layout -->
                       <b-tab title="Memory Layout">
-                        
                         <memory-layout  :memory_layout="architecture.memory_layout"></memory-layout>
-
-                        <!-- Memory layout modals -->
-
-                        <!-- Edit memory layout -->
-                        <memory-layout-edit id="memory_layout_edit"
-                                            ref="memory_layout_edit">
-                        </memory-layout-edit>
-
-                        <!-- Reset memory layout -->
-                        <memory-layout-reset id="reset_memory_layout"
-                                             :architecture_name="architecture_name">
-                        </memory-layout-reset>
-
                       </b-tab>
 
 
                       <!-- Register File -->
                       <b-tab title="Register File">
-
                         <register-file-arch :register_file="architecture.components"></register-file-arch>
-
-                        <!-- Register File modals -->
-
-                        <!-- New register file form-->
-                        <register-file-new id="new_register_file"></register-file-new>
-
-                        <!-- Reset Register File -->
-                        <register-file-reset  id="reset_register_file"
-                                              :architecture_name="architecture_name">
-                        </register-file-reset>
-
-                        <!-- Register File edit form-->
-                        <register-file-edit id="edit_register_file"
-                                            :title="modal_edit_register_file.title"
-                                            :name="modal_edit_register_file.name"
-                                            :index="modal_edit_register_file.index">
-                        </register-file-edit>
-
-                        <!-- Delete Register File -->
-                        <register-file-delete id="delete_register_file"
-                                              :title="modal_delete_register_file.title"
-                                              :index="modal_delete_register_file.index">
-                        </register-file-delete>
-
-
-                        <!-- Registers modals -->
-
-                        <!-- New register -->
-                        <registers-new  id="new_register"
-                                        :register_file_index="modal_new_register.register_file_index"
-                                        :type="modal_new_register.type"
-                                        :double_precision="modal_new_register.double_precision"
-                                        :double_precision_type="modal_new_register.double_precision_type"
-                                        :reg_id="modal_new_register.reg_id"
-                                        :simple_reg="modal_new_register.simple_reg">
-                                      
-                        </registers-new>
-
-                        <!-- Edit register -->
-                        <registers-edit id="edit_register"
-                                        :title="modal_edit_register.title"
-                                        :register_file_index="modal_edit_register.register_file_index"
-                                        :register_index="modal_edit_register.register_index"
-                                        :type="modal_edit_register.type"
-                                        :double_precision="modal_edit_register.double_precision"
-                                        :double_precision_type="modal_edit_register.double_precision_type"
-                                        :reg_id="modal_edit_register.reg_id"
-                                        :simple_reg="modal_edit_register.simple_reg"
-                                        :register="modal_edit_register.register">
-                        </registers-edit>
-
-                        <!-- Delete register -->
-                        <registers-delete  id="delete_register"
-                                          :title="modal_delete_register.title"
-                                          :register_file_index="modal_delete_register.register_file_index"
-                                          :register_index="modal_delete_register.register_index">
-                        </registers-delete>
-
                       </b-tab>
 
 
@@ -374,28 +289,6 @@
                                               :index="modal_field_instruction.index"
                                               :instruction="modal_field_instruction.instruction">
                         </instructions-fields>
-
-                        <!-- New Intruction -->
-                        <instructions-new id="new_instructions"></instructions-new>
-
-                        <!-- Reset Intructions -->
-                        <instructions-reset id="reset_instructions"
-                                            :architecture_name="architecture_name">
-                        </instructions-reset>
-
-                        <!-- Edit Intructions -->
-                        <instructions-edit  id="edit_instructions"
-                                            :title="modal_edit_instruction.title"
-                                            :index="modal_edit_instruction.index"
-                                            :instruction="modal_edit_instruction.instruction"
-                                            :number_fields="modal_edit_instruction.number_fields">
-                        </instructions-edit>
-
-                        <!-- Delete instruction -->
-                        <instructions-delete  id="delete_instructions"
-                                              :title="modal_delete_instruction.title"
-                                              :index="modal_delete_instruction.index">
-                        </instructions-delete>
 
                       </b-tab>
 
@@ -414,60 +307,14 @@
                                                     :pseudoinstruction="modal_field_pseudoinstruction.pseudoinstruction">
                         </pseudoinstructions-fields>
 
-                        <!-- New Pseudontruction -->
-                        <pseudoinstructions-new id="new_pseudoinstructions"></pseudoinstructions-new>
-
-                        <!-- Reset Pseudointructions -->
-                        <pseudoinstructions-reset id="reset_pseudoinstructions"
-                                                  :architecture_name="architecture_name">
-                        </pseudoinstructions-reset>
-
-                        <!-- Edit Pseudointructions -->
-                        <pseudoinstructions-edit  id="edit_pseudoinstructions"
-                                                  :title="modal_edit_pseudoinstruction.title"
-                                                  :index="modal_edit_pseudoinstruction.index"
-                                                  :pseudoinstruction="modal_edit_pseudoinstruction.pseudoinstruction"
-                                                  :number_fields="modal_edit_pseudoinstruction.number_fields">
-                        </pseudoinstructions-edit>
-
-                        <!-- Delete Pseudoinstruction -->
-                        <pseudoinstructions-delete  id="delete_pseudoinstructions"
-                                                    :title="modal_delete_pseudoinstruction.title"
-                                                    :index="modal_delete_pseudoinstruction.index">
-                        </pseudoinstructions-delete>
-
                       </b-tab>
 
 
                       <!-- Directives definition -->
                       <b-tab title="Directives">
-
                         <directives :directives="architecture.directives"></directives>
-
-                        <!-- Directives modals -->
-
-                        <!-- New directive -->
-                        <directives-new id="new_directive"></directives-new>
-
-                        <!-- Reset directives -->
-                        <directives-reset id="reset_directives"
-                                          :architecture_name="architecture_name">
-                        </directives-reset>
-
-                        <!-- Edit directive -->
-                        <directives-edit  id="edit_directive"
-                                          :title="modal_edit_directive.title"
-                                          :index="modal_edit_directive.index"
-                                          :directive="modal_edit_directive.directive">
-                        </directives-edit>
-
-                        <!-- Delete directive -->
-                        <directives-delete  id="delete_directive"
-                                            :title="modal_delete_directive.title"
-                                            :index="modal_delete_directive.index">
-                        </directives-delete>
-
                       </b-tab>
+                      
                     </b-tabs>
 
                   </b-col>
