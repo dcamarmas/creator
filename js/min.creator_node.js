@@ -483,7 +483,7 @@ function register_value_serialize( architecture )
   var creator_debug = false ;
   
   function console_log(m){
-    if(app._data.c_debug || creator_debug){
+    if(creator_debug){
       console.log(m);
     }
   }
