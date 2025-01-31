@@ -41,6 +41,16 @@
 
 ## Publications
 
+### 2025
+
+<details>
+<summary>:newspaper: CREATOR: un entorno de desarrollo integrado para la docencia y la investigación en procesadores RISC-V</summary>
+
+  * Seminar: CAPAP-H
+  * Authors: Diego Camarmas-Alonso
+  * [:link: Open publication](https://creatorsim.github.io/content/publications/creator_capap_h_2025.pdf)
+</details>
+
 ### 2024
 
 <details>
@@ -115,7 +125,7 @@
 
   * Seminar: CAPAP-H
   * Authors: Félix García-Carballeira
-  * [:link: Open publication](https://creatorsim.github.io/content/publications/creator_capap_h.pdf)
+  * [:link: Open publication](https://creatorsim.github.io/content/publications/creator_capap_h_2023.pdf)
 </details>
 
 ### 2021
