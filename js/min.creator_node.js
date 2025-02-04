@@ -2352,6 +2352,15 @@ function main_memory_read_nbytes ( addr, n )
         return value;
 }
 
+function main_memory_read_all_bytes ()
+{
+  var value = "" ;
+  for (var i = 0; i < architecture.memory_layout[5].value; i++) {
+    value = value + "\n" + main_memory_read_value(i);
+  }
+      return value;
+}
+
 function main_memory_write_nbytes ( addr, value, n )
 {
         var value_str = value.toString(16).padStart(2*n, "0") ;
@@ -7801,7 +7810,7 @@ function assembly_compile ( code )
              break;
     }
     
-    return ret ;
+    return ret;
 }
 
 // execution
@@ -8052,7 +8061,7 @@ module.exports.load_library      = load_library ;
 
 module.exports.assembly_compile  = assembly_compile ;
 module.exports.execute_program   = execute_program ;
-
+module.exports.main_memory_read_all_bytes = main_memory_read_all_bytes ;
 module.exports.get_state         = get_state ;
 module.exports.compare_states    = compare_states ;
 

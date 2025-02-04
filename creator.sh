@@ -161,9 +161,7 @@
        {
            hdr = 'FileName' ;
 	         show_result(output_format, file_names[i], file_names[i], '', true) ;
-
            ret = one_file(argv.architecture, argv.library, file_names[i], limit_n_ins, argv.result) ;
-
            // info: show possible errors
            for (var j=0; j<ret.stages.length; j++)
            {
@@ -358,7 +356,9 @@
                                      msg1 += ":\n" + ret.msg ;
                throw msg1 ;
            }
-
+            var compilation_output = creator.main_memory_read_all_bytes();
+            compilation_output = compilation_output.substring(1);
+            var comp_file_out = fs.writeFileSync('compilation_output.hex', compilation_output, 'utf8');
            ret1.Compile = { 'status': 'ok', 'msg': "Code '" + argv.s + "' compiled successfully." } ;
        }
        catch (e)
