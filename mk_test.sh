@@ -6,7 +6,7 @@
 #
 
 echo " MIPS examples:"
-MIPS_TEST="002 003 004 005 006 007 008 011 012"
+MIPS_TEST="001 002 003 004 005 006 007 008 011 012"
 for I in $MIPS_TEST;
 do
   echo " * ./test/mips/correct/examples/test_mips_example_$I..."
@@ -68,7 +68,7 @@ done
 #
 
 echo " RISC-V examples:"
-RV_TEST="002 003 004 005 006 007 008 011 012"
+RV_TEST="001 002 003 004 005 006 007 008 011 012"
 for I in $RV_TEST;
 do
   echo " * ./test/riscv/correct/examples/test_riscv_example_$I... "
