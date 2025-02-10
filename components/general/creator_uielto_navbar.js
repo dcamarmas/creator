@@ -95,7 +95,7 @@
                 '           <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground h-100"' +
                 '                     v-b-modal.institutions>' +
                 '             <span class="fa-solid fa-building-columns"></span> ' +
-                '             They Use CREATOR' +
+                '             Community' +
                 '           </b-button>' +
                 '         </b-nav-item>' +
                 ' ' +
