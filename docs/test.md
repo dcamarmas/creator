@@ -16,7 +16,7 @@
 
       | Test Name              | Description               | In use                   |
       |:----------------------:|:-------------------------:|:------------------------:|
-      | test_riscv_example_001 | Data Storage              | :heavy_multiplication_x: |
+      | test_riscv_example_001 | Data Storage              | :white_check_mark:       |
       | test_riscv_example_002 | ALU operations            | :white_check_mark:       |
       | test_riscv_example_003 | Store/Load Data in Memory | :white_check_mark:       |
       | test_riscv_example_004 | FPU operations            | :white_check_mark:       |
@@ -246,7 +246,7 @@
 
       | Test Name             | Description               | In use                   |
       |:---------------------:|:-------------------------:|:------------------------:|
-      | test_mips_example_001 | Data Storage              | :heavy_multiplication_x: |
+      | test_mips_example_001 | Data Storage              | :white_check_mark:       |
       | test_mips_example_002 | ALU operations            | :white_check_mark:       |
       | test_mips_example_003 | Store/Load Data in Memory | :white_check_mark:       |
       | test_mips_example_004 | FPU operations            | :white_check_mark:       |
