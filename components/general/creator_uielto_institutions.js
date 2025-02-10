@@ -34,7 +34,27 @@
                 '           hide-footer' +
                 '           size="xl">' +
                 ' ' +
-                
+                '   <b-container fluid align-h="center" class="mx-0 px-0"> ' +
+                '     <b-row cols="3 text-center" align-v="center"> ' +
+                '       <b-col cols="4"> ' +
+                '         <a target="_blank" href=\'https://www.uc3m.es/\'>' +
+                '           <img alt="Universidad Carlos III de Madrid Logo" class="p-0" style="width: 100%" src="./images/institutions/uc3m.jpg"> ' +
+                '         </a>' +
+                '       </b-col> ' +
+                ' ' +
+                '       <b-col cols="4"> ' +
+                '         <a target="_blank" href=\'https://www.uclm.es/\'>' +
+                '           <img alt="Universidad de Castilla La - Mancha Logo" class="p-0" style="width: 55%" src="./images/institutions/uclm.png"> ' +
+                '         </a>' +
+                '       </b-col> ' +
+                ' ' +
+                '       <b-col cols="4"> ' +
+                '         <a target="_blank" href=\'https://www.unileon.es/\'>' +
+                '           <img alt="Universidad de Leon Logo" class="p-0" style="width: 75%" src="./images/institutions/unileon.png"> ' +
+                '         </a>' +
+                '       </b-col> ' +
+                '     </b-row> ' +
+                '   </b-container> ' +
                 ' ' +
                 ' </b-modal>'
   }
