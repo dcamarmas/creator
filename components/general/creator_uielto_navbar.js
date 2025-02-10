@@ -72,22 +72,20 @@
                 '   <b-navbar-toggle target="nav_collapse" aria-label="Open/Close more information"></b-navbar-toggle>' +
                 '     <b-collapse is-nav id="nav_collapse">' +
                 '       <b-navbar-nav class="ml-auto">' +
-
-
                 ' ' +
-                '         <b-nav-item class="mb-0 pb-0 p-0">' +
-                '           <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground h-100"' +
-                '             href=\'https://docs.google.com/forms/d/e/1FAIpQLSdFbdy5istZbq2CErZs0cTV85Ur8aXiIlxvseLMhPgs0vHnlQ/viewform?usp=header\' ' +
-                '             target="_blank">' +
+                '         <b-nav-item class="mb-0 pb-0 p-0"' +
+                '           href=\'https://docs.google.com/forms/d/e/1FAIpQLSdFbdy5istZbq2CErZs0cTV85Ur8aXiIlxvseLMhPgs0vHnlQ/viewform?usp=header\' ' +
+                '           target="_blank">' +
+                '           <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground h-100">' +
                 '             <span class="fa-solid fa-rectangle-list"></span> ' +
                 '             Feedback' +
                 '           </b-button>' +
                 '         </b-nav-item>' +
                 ' ' +
-                '         <b-nav-item class="mb-0 pb-0 p-0">' +
-                '           <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground h-100"' +
-                '             href=\'https://docs.google.com/forms/d/e/1FAIpQLSfSclv1rKqBt5aIIP3jfTGbdu8m_vIgEAaiqpI2dGDcQFSg8g/viewform?usp=header\' ' +
-                '             target="_blank">' +
+                '         <b-nav-item class="mb-0 pb-0 p-0"' +
+                '           href=\'https://docs.google.com/forms/d/e/1FAIpQLSfSclv1rKqBt5aIIP3jfTGbdu8m_vIgEAaiqpI2dGDcQFSg8g/viewform?usp=header\' ' +
+                '           target="_blank">' +
+                '           <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground h-100">' +
                 '             <span class="fa-solid fa-lightbulb"></span> ' +
                 '             Suggestions' +
                 '           </b-button>' +
@@ -95,16 +93,12 @@
                 ' ' +
                 '         <b-nav-item class="mb-0 pb-0 p-0">' +
                 '           <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground h-100"' +
-                '                     v-b-modal.about>' +
+                '                     v-b-modal.institutions>' +
                 '             <span class="fa-solid fa-building-columns"></span> ' +
                 '             They Use CREATOR' +
                 '           </b-button>' +
                 '         </b-nav-item>' +
                 ' ' +
-
-
-
-
                 '         <b-nav-item class="mb-0 pb-0 p-0">' +
                 '           <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground h-100"' +
                 '                     v-b-modal.about>' +
