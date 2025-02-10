@@ -73,10 +73,6 @@
                 '   </b-card-group>' +
                 ' ' +
                 '   <b-list-group class="my-3">' +
-                '     <b-list-group-item style="text-align: center;"><a target="_blank" href="https://docs.google.com/forms/d/e/1FAIpQLSdFbdy5istZbq2CErZs0cTV85Ur8aXiIlxvseLMhPgs0vHnlQ/viewform?usp=dialog"></span><span class="fa-solid fa-square-check"></span> CREATOR Feedback Form</a></b-list-group-item>' +
-                '   </b-list-group>' +
-                ' ' +
-                '   <b-list-group class="my-3">' +
                 '     <b-list-group-item style="text-align: center;"><a href="mailto: creator.arcos.inf.uc3m.es@gmail.com"><span class="fa-solid fa-envelope"></span> creator.arcos.inf.uc3m.es@gmail.com</a></b-list-group-item>' +
                 '   </b-list-group>' +
                 ' ' +
