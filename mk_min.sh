@@ -39,6 +39,7 @@ cat js/creator_bigint.js \
     components/general/creator_uielto_toolbar_btngroup.js \
     components/general/creator_uielto_configuration.js \
     components/general/creator_uielto_info.js \
+    components/general/creator_uielto_institutions.js \
     components/general/creator_uielto_about.js \
     components/general/creator_uielto_author.js \
     components/general/creator_uielto_notifications.js \
