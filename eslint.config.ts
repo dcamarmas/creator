@@ -33,6 +33,7 @@ export default defineConfigWithVueTs(
           },
         },
       ],
+      '@typescript-eslint/no-unused-vars': "warn",
     },
   },
 )

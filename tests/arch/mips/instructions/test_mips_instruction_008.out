@@ -1,0 +1,12 @@
+
+
+Error at line 8 (li $rd val):
+Incorrect instruction syntax for 'li $rd val'
+
+  7     main:
+->8       li  x5, 361
+  9       li  x6, 2
+
+Not executed
+keyboard[0x0]:''; display[0x0]:''; 
+

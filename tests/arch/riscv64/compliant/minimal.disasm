@@ -1,0 +1,18 @@
+
+minimal.elf:     file format elf64-littleriscv
+
+
+Disassembly of section .text:
+
+0000000080000000 <_start>:
+    80000000:	00100093          	li	ra,1
+    80000004:	00000513          	li	a0,0
+    80000008:	0040006f          	j	8000000c <tohost_exit>
+
+000000008000000c <tohost_exit>:
+    8000000c:	00151513          	slli	a0,a0,0x1
+    80000010:	00156513          	ori	a0,a0,1
+    80000014:	00001297          	auipc	t0,0x1
+    80000018:	fec28293          	addi	t0,t0,-20 # 80001000 <tohost>
+    8000001c:	00a2a023          	sw	a0,0(t0)
+    80000020:	0000006f          	j	80000020 <tohost_exit+0x14>

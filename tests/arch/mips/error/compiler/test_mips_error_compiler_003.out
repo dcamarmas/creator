@@ -1,0 +1,11 @@
+
+
+Error at line 12 (add $reg3 $reg2 $reg1):
+Incorrect instruction syntax for 'add $reg3 $reg2 $reg1'
+
+  11 main:
+->12    add 25, $t1, 12
+
+Not executed
+keyboard[0x0]:''; display[0x0]:''; 
+

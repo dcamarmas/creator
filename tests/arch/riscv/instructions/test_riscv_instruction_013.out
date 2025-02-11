@@ -1,0 +1,12 @@
+
+
+Error at line 28 (lw rd inm (rs1)):
+Incorrect instruction syntax for 'lw rd inm (rs1)'
+
+  27     
+->28     lb x10, 0(x6)	  # Memory[x6] -> x10
+  29     lb x11, b1		  # Memory[b1] -> x11
+
+Not executed
+keyboard[0x0]:''; display[0x0]:''; 
+

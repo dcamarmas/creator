@@ -1,0 +1,7 @@
+
+Segmentation fault. You tried to write in the text segment
+
+ Error found.
+ The program has finished with errors
+cr[PC]:0x8; ir[8,t0]:0xa; memory[0x3]:0x0a; memory[0x1]:0x00; memory[0x0]:0x00; keyboard[0x0]:''; display[0x0]:''; 
+

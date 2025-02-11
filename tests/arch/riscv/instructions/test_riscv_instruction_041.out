@@ -1,0 +1,12 @@
+
+
+Error at line 14 (remu):
+Instruction 'remu' not found
+
+  13 
+->14     remu x9, x7, x5
+  15     remu x10, x6, x5
+
+Not executed
+keyboard[0x0]:''; display[0x0]:''; 
+
