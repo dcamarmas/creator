@@ -1,0 +1,11 @@
+
+
+Error at line 11 (mains):
+Tag 'mains' is not valid
+
+  10    li $t0, 10
+->11     j mains
+
+Not executed
+keyboard[0x0]:''; display[0x0]:''; 
+

@@ -1,0 +1,12 @@
+
+
+Error at line 11 (11):
+Syntax error near line: 11
+
+  10       li  $t2, 0xAAB
+->11       bnez $t0, $t2, jump1
+  12       bnez $t0, $t1, jump1
+
+Not executed
+keyboard[0x0]:''; display[0x0]:''; 
+

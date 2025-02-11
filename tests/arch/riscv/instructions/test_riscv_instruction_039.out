@@ -1,0 +1,12 @@
+
+
+Error at line 14 (divu):
+Instruction 'divu' not found
+
+  13 
+->14     divu x9, x7, x5
+  15     divu x10, x6, x5
+
+Not executed
+keyboard[0x0]:''; display[0x0]:''; 
+

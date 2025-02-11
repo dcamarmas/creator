@@ -5,17 +5,29 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "run-p type-check \"build-only {@}\" --",
-    "preview": "vite preview",
+    "build:web": "run-p type-check \"build-only {@}\" --",
+    "build:node": "bun build ./src/cli/creator.mjs --outdir ./dist/cli --target node",
     "build-only": "vite build",
     "type-check": "vue-tsc --build",
     "lint": "eslint . --fix",
-    "format": "prettier --write src/"
+    "format": "prettier --write src/",
+    "simtest": "python ./tests/arch_tests.py"
   },
   "dependencies": {
     "@codemirror/lang-javascript": "^6.2.2",
+    "chai": "^5.1.2",
     "codemirror": "^6.0.1",
-    "vue": "^3.5.13"
+    "colors": "^1.4.0",
+    "esbuild": "^0.25.0",
+    "jshint": "^2.13.6",
+    "mocha": "^11.1.0",
+    "nyc": "^17.1.0",
+    "readline-sync": "^1.4.10",
+    "source-map-support": "^0.5.21",
+    "terser": "^5.38.0",
+    "vite-node": "^3.0.5",
+    "vue": "^3.5.13",
+    "yargs": "^17.7.2"
   },
   "devDependencies": {
     "@tsconfig/node22": "^22.0.0",
@@ -32,6 +44,10 @@
     "typescript": "~5.7.3",
     "vite": "^6.0.11",
     "vite-plugin-vue-devtools": "^7.7.0",
-    "vue-tsc": "^2.2.0"
+    "vue-tsc": "^2.2.0",
+    "globals": "^15.14.0"
+  },
+  "bin": {
+    "creator": "./dist/cli/creator.js"
   }
 }

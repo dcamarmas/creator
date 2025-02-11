@@ -1,0 +1,67 @@
+/*
+ *  Copyright 2018-2025 Felix Garcia Carballeira, Alejandro Calderon Mateos, Diego Camarmas Alonso
+ *
+ *  This file is part of CREATOR.
+ *
+ *  CREATOR is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Lesser General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  CREATOR is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+'use strict';
+import { architecture } from '../core.mjs';
+import { crex_show_notification } from '../executor/executor.mjs';
+import { tag_instructions } from '../compiler/compiler.mjs';
+import { creator_callstack_enter, creator_callstack_leave } from '../sentinel/sentinel.mjs';
+import { creator_ga } from '../utils/creator_ga.mjs';
+
+export let CAPI_CHECK_STACK = {
+  callconv_begin: function (addr) {
+    var function_name = "";
+
+    // 1) Passing Convection enable?
+    if (architecture.arch_conf[6].value === 0) {
+      return;
+    }
+
+    // 2) get function name
+    if (typeof architecture.components[0] !== "undefined") {
+      if (typeof tag_instructions[addr] === "undefined")
+        function_name = "0x" + parseInt(addr).toString(16);
+      else function_name = tag_instructions[addr];
+    }
+
+    // 3) callstack_enter
+    creator_callstack_enter(function_name);
+  },
+  callconv_end: function() {
+    // 1) Passing Convection enable?
+    if (architecture.arch_conf[6].value === 0) {
+      return;
+    }
+
+    // 2) Callstack_leave
+    var ret = creator_callstack_leave();
+
+    // 3) If everything is ok, just return 
+    if (ret.ok) {
+      return;
+    }
+
+    // 4) Othewise report some warning...
+    // Google Analytics
+    creator_ga('execute', 'execute.exception', 'execute.exception.protection_jrra' + ret.msg);
+
+    // User notification
+    crex_show_notification(ret.msg, 'danger');
+  }
+};

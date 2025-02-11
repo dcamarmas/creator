@@ -1,0 +1,102 @@
+{
+  "instructions_binary": [
+    {
+      "Break": null,
+      "Address": "0x0",
+      "Label": "max",
+      "loaded": "00000000100001010000100000101010",
+      "user": null,
+      "_rowVariant": "",
+      "visible": false,
+      "globl": true
+    },
+    {
+      "Break": null,
+      "Address": "0x4",
+      "Label": "",
+      "loaded": "00010000001000000000000000000001",
+      "user": null,
+      "_rowVariant": "",
+      "visible": false
+    },
+    {
+      "Break": null,
+      "Address": "0x8",
+      "Label": "",
+      "loaded": "00000000101000000010000000100000",
+      "user": null,
+      "_rowVariant": "",
+      "visible": false
+    },
+    {
+      "Break": null,
+      "Address": "0xc",
+      "Label": "bigger_symbol",
+      "loaded": "00000011111000000000000000001000",
+      "user": null,
+      "_rowVariant": "",
+      "visible": false,
+      "globl": false
+    },
+    {
+      "Break": null,
+      "Address": "0x10",
+      "Label": "min",
+      "loaded": "00000000101001000000100000101010",
+      "user": null,
+      "_rowVariant": "",
+      "visible": false,
+      "globl": true
+    },
+    {
+      "Break": null,
+      "Address": "0x14",
+      "Label": "",
+      "loaded": "00010000001000000000000000000001",
+      "user": null,
+      "_rowVariant": "",
+      "visible": false
+    },
+    {
+      "Break": null,
+      "Address": "0x18",
+      "Label": "",
+      "loaded": "00000000101000000010000000100000",
+      "user": null,
+      "_rowVariant": "",
+      "visible": false
+    },
+    {
+      "Break": null,
+      "Address": "0x1c",
+      "Label": "minor_symbol",
+      "loaded": "00000011111000000000000000001000",
+      "user": null,
+      "_rowVariant": "",
+      "visible": false,
+      "globl": false
+    }
+  ],
+  "instructions_tag": [
+    {
+      "tag": "max",
+      "addr": 0,
+      "globl": true
+    },
+    {
+      "tag": "bigger_symbol",
+      "addr": 12,
+      "globl": false
+    },
+    {
+      "tag": "min",
+      "addr": 16,
+      "globl": true
+    },
+    {
+      "tag": "minor_symbol",
+      "addr": 28,
+      "globl": false
+    }
+  ]
+}
