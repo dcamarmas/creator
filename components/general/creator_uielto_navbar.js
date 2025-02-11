@@ -77,7 +77,7 @@
                 '           href=\'https://docs.google.com/forms/d/e/1FAIpQLSdFbdy5istZbq2CErZs0cTV85Ur8aXiIlxvseLMhPgs0vHnlQ/viewform?usp=header\' ' +
                 '           target="_blank">' +
                 '           <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground h-100">' +
-                '             <span class="fa-solid fa-rectangle-list"></span> ' +
+                '             <span class="fa-solid fa-star"></span> ' +
                 '             Feedback' +
                 '           </b-button>' +
                 '         </b-nav-item>' +
@@ -103,7 +103,7 @@
                 '           <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground h-100"' +
                 '                     v-b-modal.about>' +
                 '             <span class="fas fa-address-card"></span> ' +
-                '             About Us' +
+                '             About us' +
                 '           </b-button>' +
                 '         </b-nav-item>' +
                 ' ' +

@@ -58,7 +58,7 @@
 
                 '       <b-col cols="12"> ' +
                 '         <b-list-group class="my-3"> ' +
-                '           <b-list-group-item style="text-align: center;">If you want to appear in this list please contact us: <a href="mailto: creator.arcos.inf.uc3m.es@gmail.com">creator.arcos.inf.uc3m.es@gmail.com</a></b-list-group-item> ' +
+                '           <b-list-group-item style="text-align: center;">If you want to appear in this list, please contact us: <a href="mailto: creator.arcos.inf.uc3m.es@gmail.com">creator.arcos.inf.uc3m.es@gmail.com</a></b-list-group-item> ' +
                 '         </b-list-group> ' +
                 '       </b-col> ' +
 
