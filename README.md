@@ -39,3 +39,15 @@ bun run build
 ```sh
 bun lint
 ```
+
+### Run Unit Tests
+
+```sh
+mocha test
+```
+
+### Run Architecture Tests (for RISC-V)
+
+```sh
+bun run simtest -- --arch riscv
+```
