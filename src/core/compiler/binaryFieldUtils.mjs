@@ -17,8 +17,8 @@
  *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-'use strict'
-import { console_log } from '../utils/creator_logger.mjs'
+"use strict";
+import { console_log } from "../utils/creator_logger.mjs";
 
 /**
  * method in charge of return the length of the value. The most use are whene the field are fragment
@@ -28,58 +28,45 @@ import { console_log } from '../utils/creator_logger.mjs'
 
 export function getFieldLength(separated, startbit, stopbit, a) {
     if (startbit == stopbit)
-        console_log(
-            'Warning: startbit equal to stopBit, please check the achitecture definitions'
-        )
-    let fieldsLength
-    if (!separated || !separated[a]) fieldsLength = startbit - stopbit + 1
-    else
-        fieldsLength = startbit
-            .map((b, i) => b - stopbit[i] + 1)
-            .reduce((old, newV) => old + newV)
-    return fieldsLength
+        console_log("Warning: startbit equal to stopBit, please check the achitecture definitions");
+    let fieldsLength;
+    if (!separated || !separated[a]) fieldsLength = startbit - stopbit + 1;
+    else fieldsLength = startbit.map((b, i) => b - stopbit[i] + 1).reduce((old, newV) => old + newV);
+    return fieldsLength;
 }
 /**
  * method in charge of return the binary instruction after add the inmediate value of the instruction
  * @return {string} the new binary update
  */
 
-export function generateBinary(
-    separated,
-    startbit,
-    stopbit,
-    binary,
-    inm,
-    fieldsLength,
-    a
-) {
+export function generateBinary(separated, startbit, stopbit, binary, inm, fieldsLength, a) {
     if (!separated || !separated[a]) {
         binary =
             binary.substring(0, binary.length - (startbit + 1)) +
-            inm.padStart(fieldsLength, '0') +
-            binary.substring(binary.length - stopbit, binary.length)
+            inm.padStart(fieldsLength, "0") +
+            binary.substring(binary.length - stopbit, binary.length);
     } else {
         // check if the value fit on the first segment
-        let myInm = inm
+        let myInm = inm;
         for (let i = startbit.length - 1; i >= 0; i--) {
             let sb = startbit[i],
                 stb = stopbit[i],
-                diff = sb - stb + 1
+                diff = sb - stb + 1;
             if (myInm.length <= diff) {
                 binary =
                     binary.substring(0, binary.length - (sb + 1)) +
-                    myInm.padStart(diff, '0') +
-                    binary.substring(binary.length - stb, binary.length)
-                break
+                    myInm.padStart(diff, "0") +
+                    binary.substring(binary.length - stb, binary.length);
+                break;
             } else {
-                let tmpinm = inm.substring(myInm.length - diff, myInm.length)
+                let tmpinm = inm.substring(myInm.length - diff, myInm.length);
                 binary =
                     binary.substring(0, binary.length - (sb + 1)) +
-                    tmpinm.padStart(diff, '0') +
-                    binary.substring(binary.length - stb, binary.length)
-                myInm = myInm.substring(0, myInm.length - diff)
+                    tmpinm.padStart(diff, "0") +
+                    binary.substring(binary.length - stb, binary.length);
+                myInm = myInm.substring(0, myInm.length - diff);
             }
         }
     }
-    return binary
+    return binary;
 }

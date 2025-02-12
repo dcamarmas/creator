@@ -17,233 +17,244 @@
  *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-'use strict';
-import { status } from '../core.mjs';
-import { creator_executor_exit, packExecute, display_print, keyboard_read, kbd_read_int, kbd_read_float, kbd_read_double, kbd_read_char, kbd_read_string, total_clk_cycles } from '../executor/executor.mjs';
-import { readMemory } from '../memory/memoryOperations.mjs';
-import { creator_memory_alloc } from '../memory/memoryManager.mjs';
-import { crex_findReg } from '../register/registerLookup.mjs';
-import { readRegister, writeRegister } from '../register/registerOperations.mjs';
-import { full_print, float2bin, double2bin } from '../utils/utils.mjs';
-import { creator_ga } from '../utils/creator_ga.mjs';
+"use strict";
+import { status } from "../core.mjs";
+import {
+    creator_executor_exit,
+    packExecute,
+    display_print,
+    keyboard_read,
+    kbd_read_int,
+    kbd_read_float,
+    kbd_read_double,
+    kbd_read_char,
+    kbd_read_string,
+    total_clk_cycles,
+} from "../executor/executor.mjs";
+import { readMemory } from "../memory/memoryOperations.mjs";
+import { creator_memory_alloc } from "../memory/memoryManager.mjs";
+import { crex_findReg } from "../register/registerLookup.mjs";
+import { readRegister, writeRegister } from "../register/registerOperations.mjs";
+import { full_print, float2bin, double2bin } from "../utils/utils.mjs";
+import { creator_ga } from "../utils/creator_ga.mjs";
 export const CAPI_SYSCALL = {
-  exit: function() {
-    creator_ga('execute', 'execute.syscall', 'execute.syscall.exit');
-    return creator_executor_exit(false);
-  },
+    exit: function () {
+        creator_ga("execute", "execute.syscall", "execute.syscall.exit");
+        return creator_executor_exit(false);
+    },
 
-  print_int: function(value1) {
-    creator_ga('execute', 'execute.syscall', 'execute.syscall.print_int');
-    
-    var ret1 = crex_findReg(value1);
-    if (ret1.match === 0) {
-      throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null); 
-    }
+    print_int: function (value1) {
+        creator_ga("execute", "execute.syscall", "execute.syscall.print_int");
 
-    var value = readRegister(ret1.indexComp, ret1.indexElem);
-    var val_int = parseInt(value.toString()) >> 0;
+        var ret1 = crex_findReg(value1);
+        if (ret1.match === 0) {
+            throw packExecute(true, "capi_syscall: register " + value1 + " not found", "danger", null);
+        }
 
-    display_print(full_print(val_int, null, false));
-  },
-  
-  print_float: function ( value1 ){
-    /* Google Analytics */
-    creator_ga('execute', 'execute.syscall', 'execute.syscall.print_float');
-  
-    /* Get register id */
-    var ret1 = crex_findReg(value1) ;
-    if (ret1.match == 0) {
-      throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
-    }
-  
-    /* Print float */
-    var value = readRegister(ret1.indexComp, ret1.indexElem, "SFP-Reg");
-    var bin = float2bin(value);
-  
-    display_print(full_print(value, bin, true));
-  },
-  
-  print_double: function (value1) {
-    /* Google Analytics */
-    creator_ga('execute', 'execute.syscall', 'execute.syscall.print_double');
+        var value = readRegister(ret1.indexComp, ret1.indexElem);
+        var val_int = parseInt(value.toString()) >> 0;
 
-    /* Get register id */
-    var ret1 = crex_findReg(value1);
-    if (ret1.match == 0) {
-      throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
-    }
+        display_print(full_print(val_int, null, false));
+    },
 
-    /* Print double */
-    var value = readRegister(ret1.indexComp, ret1.indexElem, "DFP-Reg");
-    var bin = double2bin(value);
+    print_float: function (value1) {
+        /* Google Analytics */
+        creator_ga("execute", "execute.syscall", "execute.syscall.print_float");
 
-    display_print(full_print(value, bin, true));
-  },
-  print_char: function(value1) {
-    /* Google Analytics */
-    creator_ga('execute', 'execute.syscall', 'execute.syscall.print_char');
+        /* Get register id */
+        var ret1 = crex_findReg(value1);
+        if (ret1.match == 0) {
+            throw packExecute(true, "capi_syscall: register " + value1 + " not found", "danger", null);
+        }
 
-    /* Get register id */
-    var ret1 = crex_findReg(value1);
-    if (ret1.match == 0) {
-      throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
-    }
+        /* Print float */
+        var value = readRegister(ret1.indexComp, ret1.indexElem, "SFP-Reg");
+        var bin = float2bin(value);
 
-    /* Print char */
-    var aux = readRegister(ret1.indexComp, ret1.indexElem);
-    var aux2 = aux.toString(16);
-    var length = aux2.length;
+        display_print(full_print(value, bin, true));
+    },
 
-    var value = aux2.substring(length - 2, length);
-    value = String.fromCharCode(parseInt(value, 16));
+    print_double: function (value1) {
+        /* Google Analytics */
+        creator_ga("execute", "execute.syscall", "execute.syscall.print_double");
 
-    display_print(value);
-  },
-  print_string: function (value1) {
-    /* Google Analytics */
-    creator_ga('execute', 'execute.syscall', 'execute.syscall.print_string');
+        /* Get register id */
+        var ret1 = crex_findReg(value1);
+        if (ret1.match == 0) {
+            throw packExecute(true, "capi_syscall: register " + value1 + " not found", "danger", null);
+        }
 
-    /* Get register id */
-    var ret1 = crex_findReg(value1);
-    if (ret1.match == 0) {
-      throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
-    }
+        /* Print double */
+        var value = readRegister(ret1.indexComp, ret1.indexElem, "DFP-Reg");
+        var bin = double2bin(value);
 
-    /* Print string */
-    var addr = readRegister(ret1.indexComp, ret1.indexElem);
-    var msg = readMemory(parseInt(addr), "string");
-    display_print(msg);
-  },
+        display_print(full_print(value, bin, true));
+    },
+    print_char: function (value1) {
+        /* Google Analytics */
+        creator_ga("execute", "execute.syscall", "execute.syscall.print_char");
 
-  read_int: function(value1) {
-    /* Google Analytics */
-    creator_ga('execute', 'execute.syscall', 'execute.syscall.read_int');
+        /* Get register id */
+        var ret1 = crex_findReg(value1);
+        if (ret1.match == 0) {
+            throw packExecute(true, "capi_syscall: register " + value1 + " not found", "danger", null);
+        }
 
-    /* Get register id */
-    var ret1 = crex_findReg(value1);
-    if (ret1.match == 0) {
-      throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
-    }
+        /* Print char */
+        var aux = readRegister(ret1.indexComp, ret1.indexElem);
+        var aux2 = aux.toString(16);
+        var length = aux2.length;
 
-    /* Read integer */
-    if (typeof document != "undefined") {
-      document.getElementById('enter_keyboard').scrollIntoView();
-    }
+        var value = aux2.substring(length - 2, length);
+        value = String.fromCharCode(parseInt(value, 16));
 
-    status.run_program = 3;
-    return keyboard_read(kbd_read_int, ret1);
-  },
+        display_print(value);
+    },
+    print_string: function (value1) {
+        /* Google Analytics */
+        creator_ga("execute", "execute.syscall", "execute.syscall.print_string");
 
-  read_float: function(value1) {
-    /* Google Analytics */
-    creator_ga('execute', 'execute.syscall', 'execute.syscall.read_float');
+        /* Get register id */
+        var ret1 = crex_findReg(value1);
+        if (ret1.match == 0) {
+            throw packExecute(true, "capi_syscall: register " + value1 + " not found", "danger", null);
+        }
 
-    /* Get register id */
-    var ret1 = crex_findReg(value1);
-    if (ret1.match == 0) {
-      throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
-    }
+        /* Print string */
+        var addr = readRegister(ret1.indexComp, ret1.indexElem);
+        var msg = readMemory(parseInt(addr), "string");
+        display_print(msg);
+    },
 
-    if (typeof document != "undefined") {
-      document.getElementById('enter_keyboard').scrollIntoView();
-    }
+    read_int: function (value1) {
+        /* Google Analytics */
+        creator_ga("execute", "execute.syscall", "execute.syscall.read_int");
 
-    status.run_program = 3;
-    return keyboard_read(kbd_read_float, ret1);
-  },
+        /* Get register id */
+        var ret1 = crex_findReg(value1);
+        if (ret1.match == 0) {
+            throw packExecute(true, "capi_syscall: register " + value1 + " not found", "danger", null);
+        }
 
-  read_double: function(value1) {
-    /* Google Analytics */
-    creator_ga('execute', 'execute.syscall', 'execute.syscall.read_double');
+        /* Read integer */
+        if (typeof document != "undefined") {
+            document.getElementById("enter_keyboard").scrollIntoView();
+        }
 
-    /* Get register id */
-    var ret1 = crex_findReg(value1);
-    if (ret1.match == 0) {
-      throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
-    }
+        status.run_program = 3;
+        return keyboard_read(kbd_read_int, ret1);
+    },
 
-    if (typeof document != "undefined") {
-      document.getElementById('enter_keyboard').scrollIntoView();
-    }
+    read_float: function (value1) {
+        /* Google Analytics */
+        creator_ga("execute", "execute.syscall", "execute.syscall.read_float");
 
-    status.run_program = 3;
-    return keyboard_read(kbd_read_double, ret1);
-  },
+        /* Get register id */
+        var ret1 = crex_findReg(value1);
+        if (ret1.match == 0) {
+            throw packExecute(true, "capi_syscall: register " + value1 + " not found", "danger", null);
+        }
 
-  read_char: function(value1) {
-    /* Google Analytics */
-    creator_ga('execute', 'execute.syscall', 'execute.syscall.read_char');
+        if (typeof document != "undefined") {
+            document.getElementById("enter_keyboard").scrollIntoView();
+        }
 
-    /* Get register id */
-    var ret1 = crex_findReg(value1);
-    if (ret1.match == 0) {
-      throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
-    }
+        status.run_program = 3;
+        return keyboard_read(kbd_read_float, ret1);
+    },
 
-    if (typeof document != "undefined") {
-      document.getElementById('enter_keyboard').scrollIntoView();
-    }
+    read_double: function (value1) {
+        /* Google Analytics */
+        creator_ga("execute", "execute.syscall", "execute.syscall.read_double");
 
-    status.run_program = 3;
-    return keyboard_read(kbd_read_char, ret1);
-  },
+        /* Get register id */
+        var ret1 = crex_findReg(value1);
+        if (ret1.match == 0) {
+            throw packExecute(true, "capi_syscall: register " + value1 + " not found", "danger", null);
+        }
 
-  read_string: function(value1, value2) {
-    /* Google Analytics */
-    creator_ga('execute', 'execute.syscall', 'execute.syscall.read_string');
+        if (typeof document != "undefined") {
+            document.getElementById("enter_keyboard").scrollIntoView();
+        }
 
-    /* Get register id */
-    var ret1 = crex_findReg(value1);
-    if (ret1.match === 0) {
-      throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
-    }
+        status.run_program = 3;
+        return keyboard_read(kbd_read_double, ret1);
+    },
 
-    var ret2 = crex_findReg(value2);
-    if (ret2.match === 0) {
-      throw packExecute(true, "capi_syscall: register " + value2 + " not found", 'danger', null);
-    }
+    read_char: function (value1) {
+        /* Google Analytics */
+        creator_ga("execute", "execute.syscall", "execute.syscall.read_char");
 
-    /* Read string */
-    if (typeof document != "undefined") {
-      document.getElementById('enter_keyboard').scrollIntoView();
-    }
+        /* Get register id */
+        var ret1 = crex_findReg(value1);
+        if (ret1.match == 0) {
+            throw packExecute(true, "capi_syscall: register " + value1 + " not found", "danger", null);
+        }
 
-    ret1.indexComp2 = ret2.indexComp;
-    ret1.indexElem2 = ret2.indexElem;
+        if (typeof document != "undefined") {
+            document.getElementById("enter_keyboard").scrollIntoView();
+        }
 
-    status.run_program = 3;
-    return keyboard_read(kbd_read_string, ret1);
-  },
+        status.run_program = 3;
+        return keyboard_read(kbd_read_char, ret1);
+    },
 
-  sbrk: function(value1, value2) {
-    /* Google Analytics */
-    creator_ga('execute', 'execute.syscall', 'execute.syscall.sbrk');
+    read_string: function (value1, value2) {
+        /* Google Analytics */
+        creator_ga("execute", "execute.syscall", "execute.syscall.read_string");
 
-    /* Get register id */
-    var ret1 = crex_findReg(value1);
-    if (ret1.match === 0) {
-      throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
-    }
+        /* Get register id */
+        var ret1 = crex_findReg(value1);
+        if (ret1.match === 0) {
+            throw packExecute(true, "capi_syscall: register " + value1 + " not found", "danger", null);
+        }
 
-    var ret2 = crex_findReg(value2);
-    if (ret2.match === 0) {
-      throw packExecute(true, "capi_syscall: register " + value2 + " not found", 'danger', null);
-    }
+        var ret2 = crex_findReg(value2);
+        if (ret2.match === 0) {
+            throw packExecute(true, "capi_syscall: register " + value2 + " not found", "danger", null);
+        }
 
-    /* Request more memory */
-    var new_size = parseInt(readRegister(ret1.indexComp, ret1.indexElem));
-    if (new_size < 0) {
-      throw packExecute(true, "capi_syscall: negative size", 'danger', null);
-    }
+        /* Read string */
+        if (typeof document != "undefined") {
+            document.getElementById("enter_keyboard").scrollIntoView();
+        }
 
-    var new_addr = creator_memory_alloc(new_size);
-    writeRegister(new_addr, ret2.indexComp, ret2.indexElem);
-  },
+        ret1.indexComp2 = ret2.indexComp;
+        ret1.indexElem2 = ret2.indexElem;
 
-  get_clk_cycles: function() {
-    /* Google Analytics */
-    creator_ga('execute', 'execute.syscall', 'execute.syscall.get_clk_cycles');
+        status.run_program = 3;
+        return keyboard_read(kbd_read_string, ret1);
+    },
 
-    return total_clk_cycles;
-  }
+    sbrk: function (value1, value2) {
+        /* Google Analytics */
+        creator_ga("execute", "execute.syscall", "execute.syscall.sbrk");
+
+        /* Get register id */
+        var ret1 = crex_findReg(value1);
+        if (ret1.match === 0) {
+            throw packExecute(true, "capi_syscall: register " + value1 + " not found", "danger", null);
+        }
+
+        var ret2 = crex_findReg(value2);
+        if (ret2.match === 0) {
+            throw packExecute(true, "capi_syscall: register " + value2 + " not found", "danger", null);
+        }
+
+        /* Request more memory */
+        var new_size = parseInt(readRegister(ret1.indexComp, ret1.indexElem));
+        if (new_size < 0) {
+            throw packExecute(true, "capi_syscall: negative size", "danger", null);
+        }
+
+        var new_addr = creator_memory_alloc(new_size);
+        writeRegister(new_addr, ret2.indexComp, ret2.indexElem);
+    },
+
+    get_clk_cycles: function () {
+        /* Google Analytics */
+        creator_ga("execute", "execute.syscall", "execute.syscall.get_clk_cycles");
+
+        return total_clk_cycles;
+    },
 };

@@ -17,8 +17,8 @@
  *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-'use strict'
-import { architecture, app } from '../core.mjs'
+"use strict";
+import { architecture, app } from "../core.mjs";
 
 /*
  * Data Structure
@@ -26,7 +26,7 @@ import { architecture, app } from '../core.mjs'
 /*
  *  track_stack_names = [ "PC=xxx", "main" ] ;
  */
-var track_stack_names = []
+var track_stack_names = [];
 /*
  *  track_stack_limits = [
  *		               {
@@ -39,7 +39,7 @@ var track_stack_names = []
  *		               ...
  *                      ] ;
  */
-var track_stack_limits = []
+var track_stack_limits = [];
 /*
  * Public API
  */
@@ -50,15 +50,15 @@ var track_stack_limits = []
 function track_stack_create() {
     var ret = {
         ok: true,
-        msg: '',
-    }
+        msg: "",
+    };
 
     // initialize array
-    track_stack_names = []
-    track_stack_limits = []
-    track_stack_enter('main')
+    track_stack_names = [];
+    track_stack_limits = [];
+    track_stack_enter("main");
 
-    return ret
+    return ret;
 }
 //
 // "jal X, ..." -> add new element (at the end)
@@ -67,11 +67,11 @@ function track_stack_create() {
 export function track_stack_enter(function_name) {
     var ret = {
         ok: true,
-        msg: '',
-    }
+        msg: "",
+    };
 
     // 1.- caller name
-    track_stack_names.push(function_name)
+    track_stack_names.push(function_name);
 
     // 2.- new call element
     var new_elto = {
@@ -80,23 +80,21 @@ export function track_stack_enter(function_name) {
         end_caller: track_stack_getTop().val.end_callee, // llamante: FFFFFFF0, FFFFFF00
         begin_callee: architecture.memory_layout[4].value, // llamado:  FFFFFFF0, FFFFFF00
         end_callee: architecture.memory_layout[4].value, // llamado:  FFFFFFF0, FFFFFF00
-    }
+    };
 
-    track_stack_limits.push(new_elto)
+    track_stack_limits.push(new_elto);
 
     // 3.- update UI
-    if (typeof window !== 'undefined') {
-        app._data.callee_subrutine =
-            track_stack_names[track_stack_names.length - 1]
-        app._data.caller_subrutine =
-            track_stack_names[track_stack_names.length - 2]
-        app._data.begin_caller = new_elto.begin_caller
-        app._data.end_caller = new_elto.end_caller
-        app._data.begin_callee = new_elto.begin_callee
-        app._data.end_callee = new_elto.end_callee
+    if (typeof window !== "undefined") {
+        app._data.callee_subrutine = track_stack_names[track_stack_names.length - 1];
+        app._data.caller_subrutine = track_stack_names[track_stack_names.length - 2];
+        app._data.begin_caller = new_elto.begin_caller;
+        app._data.end_caller = new_elto.end_caller;
+        app._data.begin_callee = new_elto.begin_callee;
+        app._data.end_callee = new_elto.end_callee;
     }
 
-    return ret
+    return ret;
 }
 //
 // "jr ra, ..." -> remove last element
@@ -105,35 +103,33 @@ export function track_stack_enter(function_name) {
 export function track_stack_leave() {
     var ret = {
         ok: true,
-        msg: '',
-    }
+        msg: "",
+    };
 
     // check params
     if (0 === track_stack_limits.length) {
-        ret.msg = 'track_stack_Leave: empty track_stack_limits !!.\n'
-        return ret
+        ret.msg = "track_stack_Leave: empty track_stack_limits !!.\n";
+        return ret;
     }
 
     // pop both stacks
-    track_stack_limits.pop()
+    track_stack_limits.pop();
     if (track_stack_names.length > 0) {
-        track_stack_names.pop()
+        track_stack_names.pop();
     }
 
     // draw stack zones
-    var elto_top = track_stack_getTop()
-    if (typeof window !== 'undefined' && elto_top.val != null) {
-        app._data.callee_subrutine =
-            track_stack_names[track_stack_names.length - 1]
-        app._data.caller_subrutine =
-            track_stack_names[track_stack_names.length - 2]
-        app._data.begin_caller = elto_top.val.begin_caller // llamante: FFFFFFFC, FFFFFFF0, FFFFFF00
-        app._data.end_caller = elto_top.val.end_caller // llamante: FFFFFFF0, FFFFFF00, FFFFF000
-        app._data.begin_callee = elto_top.val.begin_callee // llamado:  FFFFFFF0, FFFFFF00, FFFFF000
-        app._data.end_callee = elto_top.val.end_callee // llamado:  FFFFFFF0, FFFFFF00, FFFFF000
+    var elto_top = track_stack_getTop();
+    if (typeof window !== "undefined" && elto_top.val != null) {
+        app._data.callee_subrutine = track_stack_names[track_stack_names.length - 1];
+        app._data.caller_subrutine = track_stack_names[track_stack_names.length - 2];
+        app._data.begin_caller = elto_top.val.begin_caller; // llamante: FFFFFFFC, FFFFFFF0, FFFFFF00
+        app._data.end_caller = elto_top.val.end_caller; // llamante: FFFFFFF0, FFFFFF00, FFFFF000
+        app._data.begin_callee = elto_top.val.begin_callee; // llamado:  FFFFFFF0, FFFFFF00, FFFFF000
+        app._data.end_callee = elto_top.val.end_callee; // llamado:  FFFFFFF0, FFFFFF00, FFFFF000
     }
 
-    return ret
+    return ret;
 }
 //
 // Get the last element
@@ -148,23 +144,23 @@ function track_stack_getTop() {
             begin_callee: architecture.memory_layout[4].value,
             end_callee: architecture.memory_layout[4].value,
         },
-        msg: '',
-    }
+        msg: "",
+    };
 
     // check params
     if (0 === track_stack_limits.length) {
-        ret.ok = false
-        ret.msg = 'track_stack_getTop: empty track_stack_limits !!.\n'
-        return ret
+        ret.ok = false;
+        ret.msg = "track_stack_getTop: empty track_stack_limits !!.\n";
+        return ret;
     }
 
     // return the last element in the array
-    ret.val = track_stack_limits[track_stack_limits.length - 1]
-    if (typeof ret.val.begin_caller === 'undefined') {
-        ret.val.begin_caller = architecture.memory_layout[4].value
+    ret.val = track_stack_limits[track_stack_limits.length - 1];
+    if (typeof ret.val.begin_caller === "undefined") {
+        ret.val.begin_caller = architecture.memory_layout[4].value;
     }
 
-    return ret
+    return ret;
 }
 //
 // Let programmers to modify some arbitrary field.
@@ -173,43 +169,43 @@ function track_stack_getTop() {
 function track_stack_setTop(field, indexComponent, indexElement, value) {
     var ret = {
         ok: true,
-        msg: '',
-    }
+        msg: "",
+    };
 
     // check params
     if (0 === track_stack_limits.length) {
-        ret.ok = false
-        ret.msg = 'track_stack_getTop: empty track_stack_limits !!.\n'
-        return ret
+        ret.ok = false;
+        ret.msg = "track_stack_getTop: empty track_stack_limits !!.\n";
+        return ret;
     }
 
     // set field value
-    var elto = track_stack_limits[track_stack_limits.length - 1]
-    if (typeof elto.length !== 'undefined') {
-        elto[field][indexComponent][indexElement] = value
-        return ret
+    var elto = track_stack_limits[track_stack_limits.length - 1];
+    if (typeof elto.length !== "undefined") {
+        elto[field][indexComponent][indexElement] = value;
+        return ret;
     }
 
-    elto[field] = value
-    return ret
+    elto[field] = value;
+    return ret;
 }
 //
 // Updates the .end_callee field of the top stack element
 // Example: track_stack_setsp("0xFFFFFFF0") ;
 //
 export function track_stack_setsp(value) {
-    if (typeof window !== 'undefined') {
-        app._data.end_callee = value // llamado:  FFFFFFF0, FFFFFF00, FFFFF000
+    if (typeof window !== "undefined") {
+        app._data.end_callee = value; // llamado:  FFFFFFF0, FFFFFF00, FFFFF000
     }
 
     // check params
     if (0 === track_stack_limits.length) {
-        return
+        return;
     }
 
     // return the last element in the array
-    var elto = track_stack_limits[track_stack_limits.length - 1]
-    elto.end_callee = value
+    var elto = track_stack_limits[track_stack_limits.length - 1];
+    elto.end_callee = value;
 }
 //
 // Reset
@@ -218,25 +214,24 @@ export function track_stack_setsp(value) {
 export function track_stack_reset() {
     var ret = {
         ok: true,
-        msg: '',
-    }
+        msg: "",
+    };
 
     // initialize stack_call
-    track_stack_names = []
-    track_stack_limits = []
-    track_stack_enter('main')
+    track_stack_names = [];
+    track_stack_limits = [];
+    track_stack_enter("main");
 
     // draw new limits
-    if (typeof window !== 'undefined') {
-        app._data.track_stack_names = track_stack_names
-        app._data.callee_subrutine =
-            track_stack_names[track_stack_names.length - 1]
-        app._data.caller_subrutine = ''
-        app._data.begin_caller = architecture.memory_layout[4].value
-        app._data.end_caller = architecture.memory_layout[4].value
-        app._data.begin_callee = architecture.memory_layout[4].value
-        app._data.end_callee = architecture.memory_layout[4].value
+    if (typeof window !== "undefined") {
+        app._data.track_stack_names = track_stack_names;
+        app._data.callee_subrutine = track_stack_names[track_stack_names.length - 1];
+        app._data.caller_subrutine = "";
+        app._data.begin_caller = architecture.memory_layout[4].value;
+        app._data.end_caller = architecture.memory_layout[4].value;
+        app._data.begin_callee = architecture.memory_layout[4].value;
+        app._data.end_callee = architecture.memory_layout[4].value;
     }
 
-    return ret
+    return ret;
 }

@@ -17,10 +17,10 @@
  *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-'use strict';
-import { architecture } from '../core.mjs';
-import { address } from '../compiler/compiler.mjs';
-import { console_log } from '../utils/creator_logger.mjs';
+"use strict";
+import { architecture } from "../core.mjs";
+import { address } from "../compiler/compiler.mjs";
+import { console_log } from "../utils/creator_logger.mjs";
 
 /*
  * Data Structure
@@ -71,14 +71,14 @@ var stack_call_names = [];
  *
  */
 var stack_state_transition = [
-  { "wm==": 1, "wm!=": 1, "rm": 2, "wr": 40, "rr": 0, "end": 3 },
-  { "wm==": 1, "wm!=": 7, "rm": 6, "wr": 5, "rr": 1, "end": 40 },
-  { "wm==": 1, "wm!=": 1, "rm": 2, "wr": 45, "rr": 2, "end": 3 },
-  { "wm==": -1, "wm!=": -1, "rm": -1, "wr": -1, "rr": -1, "end": -1 },
-  { "wm==": -1, "wm!=": -1, "rm": -1, "wr": -1, "rr": -1, "end": -1 },
-  { "wm==": 44, "wm!=": 5, "rm": 6, "wr": 5, "rr": 5, "end": 43 },
-  { "wm==": 44, "wm!=": 6, "rm": 6, "wr": 0, "rr": 6, "end": 43 },
-  { "wm==": 7, "wm!=": 7, "rm": 6, "wr": 5, "rr": 7, "end": 42 }
+    { "wm==": 1, "wm!=": 1, rm: 2, wr: 40, rr: 0, end: 3 },
+    { "wm==": 1, "wm!=": 7, rm: 6, wr: 5, rr: 1, end: 40 },
+    { "wm==": 1, "wm!=": 1, rm: 2, wr: 45, rr: 2, end: 3 },
+    { "wm==": -1, "wm!=": -1, rm: -1, wr: -1, rr: -1, end: -1 },
+    { "wm==": -1, "wm!=": -1, rm: -1, wr: -1, rr: -1, end: -1 },
+    { "wm==": 44, "wm!=": 5, rm: 6, wr: 5, rr: 5, end: 43 },
+    { "wm==": 44, "wm!=": 6, rm: 6, wr: 0, rr: 6, end: 43 },
+    { "wm==": 7, "wm!=": 7, rm: 6, wr: 5, rr: 7, end: 42 },
 ];
 var stack_call_register = [];
 /*
@@ -89,372 +89,398 @@ var stack_call_register = [];
 // Example: creator_callstack_create() ;
 //
 function creator_callstack_create() {
-  var ret = {
-    ok: true,
-    msg: ""
-  };
+    var ret = {
+        ok: true,
+        msg: "",
+    };
 
-  // initialize stack_call
-  stack_call_names = [];
-  stack_call_register = [];
-  creator_callstack_enter("main");
+    // initialize stack_call
+    stack_call_names = [];
+    stack_call_register = [];
+    creator_callstack_enter("main");
 
-  return ret;
+    return ret;
 }
 //
 // "jal X, ..." -> add new element (at the end)
 // Example: creator_callstack_Enter("main")
 //
 export function creator_callstack_enter(function_name) {
-  var ret = {
-    ok: true,
-    msg: ""
-  };
+    var ret = {
+        ok: true,
+        msg: "",
+    };
 
-  // 1.- caller name
-  stack_call_names.push(function_name);
+    // 1.- caller name
+    stack_call_names.push(function_name);
 
-  // 2.- caller element
-  var arr_sm = [];
-  var arr_write = [];
-  var arr_read = [];
-  var arr_value = [];
-  var arr_size_write = [];
-  var arr_size_read = [];
+    // 2.- caller element
+    var arr_sm = [];
+    var arr_write = [];
+    var arr_read = [];
+    var arr_value = [];
+    var arr_size_write = [];
+    var arr_size_read = [];
 
-  for (var i = 0; i < architecture.components.length; i++) {
-    arr_sm.push([]);
-    arr_write.push([]);
-    arr_read.push([]);
-    arr_value.push([]);
-    arr_size_write.push([]);
-    arr_size_read.push([]);
+    for (var i = 0; i < architecture.components.length; i++) {
+        arr_sm.push([]);
+        arr_write.push([]);
+        arr_read.push([]);
+        arr_value.push([]);
+        arr_size_write.push([]);
+        arr_size_read.push([]);
 
-    for (var j = 0; j < architecture.components[i].elements.length; j++) {
-      arr_sm[i].push(0);
-      arr_write[i].push([]);
-      arr_read[i].push([]);
-      arr_size_write[i].push([]);
-      arr_size_read[i].push([]);
-      arr_value[i].push(architecture.components[i].elements[j].value);
+        for (var j = 0; j < architecture.components[i].elements.length; j++) {
+            arr_sm[i].push(0);
+            arr_write[i].push([]);
+            arr_read[i].push([]);
+            arr_size_write[i].push([]);
+            arr_size_read[i].push([]);
+            arr_value[i].push(architecture.components[i].elements[j].value);
+        }
     }
-  }
 
-  var new_elto = {
-    function_name: function_name,
-    enter_stack_pointer: architecture.memory_layout[4].value,
-    register_sm: arr_sm,
-    register_value: arr_value,
-    register_size_write: arr_size_write,
-    register_size_read: arr_size_read,
-    register_address_write: arr_write,
-    register_address_read: arr_read
-  };
+    var new_elto = {
+        function_name: function_name,
+        enter_stack_pointer: architecture.memory_layout[4].value,
+        register_sm: arr_sm,
+        register_value: arr_value,
+        register_size_write: arr_size_write,
+        register_size_read: arr_size_read,
+        register_address_write: arr_write,
+        register_address_read: arr_read,
+    };
 
-  stack_call_register.push(new_elto);
+    stack_call_register.push(new_elto);
 
-  // return ok
-  return ret;
+    // return ok
+    return ret;
 }
 //
 // "jr ra, ..." -> remove last element
 // Example: creator_callstack_Leave() ;
 //
 export function creator_callstack_leave() {
-  var ret = {
-    ok: true,
-    msg: ""
-  };
+    var ret = {
+        ok: true,
+        msg: "",
+    };
 
-  // check params
-  if (0 === stack_call_register.length) {
-    ret.msg = "creator_callstack_Leave: empty stack_call_register !!.\n";
+    // check params
+    if (0 === stack_call_register.length) {
+        ret.msg = "creator_callstack_Leave: empty stack_call_register !!.\n";
+        return ret;
+    }
+
+    // get stack top element
+    var last_elto = stack_call_register[stack_call_register.length - 1];
+
+    //check sp that points to corresponding address
+    if (ret.ok) {
+        if (architecture.memory_layout[4].value != last_elto.enter_stack_pointer) {
+            ret.ok = false;
+            ret.msg = "Stack memory has not been released successfully";
+        }
+    }
+
+    // check values (check currrent state)
+    if (ret.ok) {
+        for (var i = 0; i < architecture.components.length; i++) {
+            for (var j = 0; j < architecture.components[i].elements.length; j++) {
+                if (
+                    last_elto.register_value[i][j] != architecture.components[i].elements[j].value &&
+                    architecture.components[i].elements[j].properties.includes("saved")
+                ) {
+                    ret.ok = false;
+                    ret.msg = "Possible failure in the parameter passing convention";
+                    break;
+                }
+            }
+        }
+    }
+
+    //Check state
+    if (ret.ok) {
+        for (let i = 0; i < architecture.components.length; i++) {
+            for (let j = 0; j < architecture.components[i].elements.length; j++) {
+                creator_callstack_do_transition("end", i, j, null);
+
+                last_elto = stack_call_register[stack_call_register.length - 1];
+
+                /////////////////////////// TEMPORAL SOLUTION ///////////////////////////////////////////////////////////////////
+                //last_index_write = last_elto.register_address_write[i][j].length -1;
+                const last_index_read = last_elto.register_address_read[i][j].length - 1;
+
+                if (
+                    last_elto.register_address_write[i][j][0] ==
+                        last_elto.register_address_read[i][j][last_index_read] &&
+                    last_elto.register_sm[i][j] === 45 &&
+                    architecture.components[i].elements[j].properties.includes("saved") // ...but should be saved
+                ) {
+                    break;
+                }
+
+                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                else if (
+                    last_elto.register_sm[i][j] !== 3 &&
+                    architecture.components[i].elements[j].properties.includes("saved") // ...but should be saved
+                ) {
+                    ret.ok = false;
+                    ret.msg = "Possible failure in the parameter passing convention";
+                    break;
+                }
+            }
+        }
+    }
+
+    //Check address
+    if (ret.ok) {
+        for (let i = 0; i < architecture.components.length; i++) {
+            for (let j = 0; j < architecture.components[i].elements.length; j++) {
+                //last_index_write = last_elto.register_address_write[i][j].length -1;
+                const last_index_read = last_elto.register_address_read[i][j].length - 1;
+
+                if (
+                    last_elto.register_address_write[i][j][0] !=
+                        last_elto.register_address_read[i][j][last_index_read] &&
+                    architecture.components[i].elements[j].properties.includes("saved") // ...but should be saved
+                ) {
+                    ret.ok = false;
+                    ret.msg = "Possible failure in the parameter passing convention";
+                    break;
+                }
+            }
+        }
+    }
+
+    //Check size
+    if (ret.ok) {
+        for (let i = 0; i < architecture.components.length; i++) {
+            for (let j = 0; j < architecture.components[i].elements.length; j++) {
+                //last_index_write = last_elto.register_size_write[i][j].length -1;
+                const last_index_read = last_elto.register_size_read[i][j].length - 1;
+
+                if (
+                    last_elto.register_size_write[i][j][0] != last_elto.register_size_read[i][j][last_index_read] &&
+                    architecture.components[i].elements[j].properties.includes("saved") // ...but should be saved
+                ) {
+                    ret.ok = false;
+                    ret.msg = "Possible failure in the parameter passing convention";
+                    break;
+                }
+            }
+        }
+    }
+
+    // pop stack
+    stack_call_register.pop();
+    if (stack_call_names.length > 0) {
+        stack_call_names.pop();
+    }
+
+    // return ok
     return ret;
-  }
-
-  // get stack top element
-  var last_elto = stack_call_register[stack_call_register.length - 1];
-
-  //check sp that points to corresponding address
-  if (ret.ok) {
-    if (architecture.memory_layout[4].value != last_elto.enter_stack_pointer) {
-      ret.ok = false;
-      ret.msg = "Stack memory has not been released successfully";
-    }
-  }
-
-  // check values (check currrent state)
-  if (ret.ok) {
-    for (var i = 0; i < architecture.components.length; i++) {
-      for (var j = 0; j < architecture.components[i].elements.length; j++) {
-        if ((last_elto.register_value[i][j] != architecture.components[i].elements[j].value) &&
-          (architecture.components[i].elements[j].properties.includes("saved"))) {
-          ret.ok = false;
-          ret.msg = "Possible failure in the parameter passing convention";
-          break;
-        }
-      }
-    }
-  }
-
-  //Check state
-  if (ret.ok) {
-    for (let i = 0; i < architecture.components.length; i++) {
-      for (let j = 0; j < architecture.components[i].elements.length; j++) {
-        creator_callstack_do_transition("end", i, j, null);
-
-        last_elto = stack_call_register[stack_call_register.length - 1];
-
-        /////////////////////////// TEMPORAL SOLUTION ///////////////////////////////////////////////////////////////////
-        //last_index_write = last_elto.register_address_write[i][j].length -1;
-        const last_index_read = last_elto.register_address_read[i][j].length - 1;
-
-        if ((last_elto.register_address_write[i][j][0] == last_elto.register_address_read[i][j][last_index_read]) &&
-          (last_elto.register_sm[i][j] === 45) &&
-          (architecture.components[i].elements[j].properties.includes("saved")) // ...but should be saved
-        ) {
-          break;
-        }
-
-
-
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        else if ((last_elto.register_sm[i][j] !== 3) &&
-          (architecture.components[i].elements[j].properties.includes("saved")) // ...but should be saved
-        ) {
-          ret.ok = false;
-          ret.msg = "Possible failure in the parameter passing convention";
-          break;
-        }
-      }
-    }
-  }
-
-  //Check address
-  if (ret.ok) {
-    for (let i = 0; i < architecture.components.length; i++) {
-      for (let j = 0; j < architecture.components[i].elements.length; j++) {
-        //last_index_write = last_elto.register_address_write[i][j].length -1;
-        const last_index_read = last_elto.register_address_read[i][j].length - 1;
-
-        if ((last_elto.register_address_write[i][j][0] != last_elto.register_address_read[i][j][last_index_read]) &&
-          (architecture.components[i].elements[j].properties.includes("saved")) // ...but should be saved
-        ) {
-          ret.ok = false;
-          ret.msg = "Possible failure in the parameter passing convention";
-          break;
-        }
-      }
-    }
-  }
-
-  //Check size
-  if (ret.ok) {
-    for (let i = 0; i < architecture.components.length; i++) {
-      for (let j = 0; j < architecture.components[i].elements.length; j++) {
-        //last_index_write = last_elto.register_size_write[i][j].length -1;
-        const last_index_read = last_elto.register_size_read[i][j].length - 1;
-
-        if ((last_elto.register_size_write[i][j][0] != last_elto.register_size_read[i][j][last_index_read]) &&
-          (architecture.components[i].elements[j].properties.includes("saved")) // ...but should be saved
-        ) {
-          ret.ok = false;
-          ret.msg = "Possible failure in the parameter passing convention";
-          break;
-        }
-      }
-    }
-  }
-
-  // pop stack
-  stack_call_register.pop();
-  if (stack_call_names.length > 0) {
-    stack_call_names.pop();
-  }
-
-  // return ok
-  return ret;
 }
 //
 // Get the last element
 // Example: var elto = creator_callstack_getTop() ;
 //
 function creator_callstack_getTop() {
-  var ret = {
-    ok: true,
-    val: null,
-    msg: ""
-  };
+    var ret = {
+        ok: true,
+        val: null,
+        msg: "",
+    };
 
-  // check params
-  if (0 === stack_call_register.length) {
-    ret.ok = false;
-    ret.msg = "creator_callstack_getTop: empty stack_call_register !!.\n";
+    // check params
+    if (0 === stack_call_register.length) {
+        ret.ok = false;
+        ret.msg = "creator_callstack_getTop: empty stack_call_register !!.\n";
+        return ret;
+    }
+
+    // return the last element in the array
+    ret.val = stack_call_register[stack_call_register.length - 1];
     return ret;
-  }
-
-  // return the last element in the array
-  ret.val = stack_call_register[stack_call_register.length - 1];
-  return ret;
 }
 //
 // Let programmers to modify some arbitrary field.
 // Example: creator_callstack_getTop("function_name", 1, 2, "main") ;
 //
 function creator_callstack_setTop(field, indexComponent, indexElement, value) {
-  var ret = {
-    ok: true,
-    msg: ""
-  };
+    var ret = {
+        ok: true,
+        msg: "",
+    };
 
-  // check params
-  if (0 === stack_call_register.length) {
-    ret.ok = false;
-    ret.msg = "creator_callstack_getTop: empty stack_call_register !!.\n";
+    // check params
+    if (0 === stack_call_register.length) {
+        ret.ok = false;
+        ret.msg = "creator_callstack_getTop: empty stack_call_register !!.\n";
+        return ret;
+    }
+
+    // set field value
+    var elto = stack_call_register[stack_call_register.length - 1];
+    if (typeof elto.length !== "undefined") {
+        elto[field][indexComponent][indexElement] = value;
+        return ret;
+    }
+
+    elto[field] = value;
     return ret;
-  }
-
-  // set field value
-  var elto = stack_call_register[stack_call_register.length - 1];
-  if (typeof elto.length !== "undefined") {
-    elto[field][indexComponent][indexElement] = value;
-    return ret;
-  }
-
-  elto[field] = value;
-  return ret;
 }
 //
 // Let programmers to modify register state
 // Example: creator_callstack_setState(1, 2, 1) ;
 //
 function creator_callstack_setState(indexComponent, indexElement, newState) {
-  var elto = creator_callstack_getTop();
-  if (elto.ok === false) {
-    console_log('[STATE] Failed to set state: ' + elto.msg, "ERROR");
-    return '';
-  }
+    var elto = creator_callstack_getTop();
+    if (elto.ok === false) {
+        console_log("[STATE] Failed to set state: " + elto.msg, "ERROR");
+        return "";
+    }
 
-  elto.val.register_sm[indexComponent][indexElement] = newState;
+    elto.val.register_sm[indexComponent][indexElement] = newState;
 }
 function creator_callstack_getState(indexComponent, indexElement) {
-  var elto = creator_callstack_getTop();
-  if (elto.ok === false) {
-    console_log('[STATE] Failed to get state: ' + elto.msg, "ERROR");
-    return '';
-  }
+    var elto = creator_callstack_getTop();
+    if (elto.ok === false) {
+        console_log("[STATE] Failed to get state: " + elto.msg, "ERROR");
+        return "";
+    }
 
-  return elto.val.register_sm[indexComponent][indexElement];
+    return elto.val.register_sm[indexComponent][indexElement];
 }
 //
 // Let programmers add a new write
 // Example: creator_callstack_newWrite(1, 2, 0x12345) ;
 //
 export function creator_callstack_newWrite(indexComponent, indexElement, address, length) {
-  // Move state finite machine
-  creator_callstack_do_transition("wm", indexComponent, indexElement, address);
+    // Move state finite machine
+    creator_callstack_do_transition("wm", indexComponent, indexElement, address);
 
-  var elto = creator_callstack_getTop();
-  if (elto.ok == false) {
-    console_log('[WRITE] Failed to record new write operation: ' + elto.msg, "ERROR");
-    return '';
-  }
+    var elto = creator_callstack_getTop();
+    if (elto.ok == false) {
+        console_log("[WRITE] Failed to record new write operation: " + elto.msg, "ERROR");
+        return "";
+    }
 
-  elto.val.register_address_write[indexComponent][indexElement].push(address);
-  elto.val.register_size_write[indexComponent][indexElement].push(length);
+    elto.val.register_address_write[indexComponent][indexElement].push(address);
+    elto.val.register_size_write[indexComponent][indexElement].push(length);
 }
 //
 // Let programmers add a new read
 // Example: creator_callstack_newRead(1, 2, 0x12345) ;
 //
 export function creator_callstack_newRead(indexComponent, indexElement, address, length) {
-  var elto = creator_callstack_getTop();
-  if (elto.ok == false) {
-    console_log('[READ] Failed to record new read operation: ' + elto.msg, "ERROR");
-    return '';
-  }
+    var elto = creator_callstack_getTop();
+    if (elto.ok == false) {
+        console_log("[READ] Failed to record new read operation: " + elto.msg, "ERROR");
+        return "";
+    }
 
-  elto.val.register_address_read[indexComponent][indexElement].push(address);
-  elto.val.register_size_read[indexComponent][indexElement].push(length);
+    elto.val.register_address_read[indexComponent][indexElement].push(address);
+    elto.val.register_size_read[indexComponent][indexElement].push(length);
 
-  // Move state finite machine
-  creator_callstack_do_transition("rm", indexComponent, indexElement, address);
+    // Move state finite machine
+    creator_callstack_do_transition("rm", indexComponent, indexElement, address);
 }
 //
 // Let programmers add a new read
 // Example: creator_callstack_newRead(1, 2, 0x12345) ;
 //
 export function creator_callstack_writeRegister(indexComponent, indexElement) {
-  // Move state finite machine
-  creator_callstack_do_transition("wr", indexComponent, indexElement, address);
+    // Move state finite machine
+    creator_callstack_do_transition("wr", indexComponent, indexElement, address);
 }
 //
 // Reset
 // Example: creator_callstack_reset() ;
 //
 export function creator_callstack_reset() {
-  var ret = {
-    ok: true,
-    msg: ""
-  };
+    var ret = {
+        ok: true,
+        msg: "",
+    };
 
-  // initialize stack_call
-  stack_call_names = [];
-  stack_call_register = [];
-  creator_callstack_enter("main");
+    // initialize stack_call
+    stack_call_names = [];
+    stack_call_register = [];
+    creator_callstack_enter("main");
 
-  // return ok
-  return ret;
+    // return ok
+    return ret;
 }
 //
 // do state transition
 // Example: creator_callstack_do_transition("wm", 1, 2, 0x12345678)
 //
 function creator_callstack_do_transition(doAction, indexComponent, indexElement, address) {
-  // get current state
-  var state = creator_callstack_getState(indexComponent, indexElement);
+    // get current state
+    var state = creator_callstack_getState(indexComponent, indexElement);
 
-  // get action
-  var action = doAction;
-  if (doAction == "wm") {
-    const elto = creator_callstack_getTop();
-    if (elto.ok == false) {
-      console_log('creator_callstack_do_transition: ' + elto.msg, "ERROR");
-      return '';
+    // get action
+    var action = doAction;
+    if (doAction == "wm") {
+        const elto = creator_callstack_getTop();
+        if (elto.ok == false) {
+            console_log("creator_callstack_do_transition: " + elto.msg, "ERROR");
+            return "";
+        }
+
+        const equal = elto.val.register_address_write[indexComponent][indexElement].includes(address);
+        action = equal ? "wm==" : "wm!=";
     }
 
-    const equal = elto.val.register_address_write[indexComponent][indexElement].includes(address);
-    action = (equal) ? "wm==" : "wm!=";
-  }
+    if (doAction == "rm") {
+        const elto = creator_callstack_getTop();
+        if (elto.ok == false) {
+            console_log("creator_callstack_do_transition: " + elto.msg);
+            return "";
+        }
 
-  if (doAction == "rm") {
-    const elto = creator_callstack_getTop();
-    if (elto.ok == false) {
-      console_log('creator_callstack_do_transition: ' + elto.msg);
-      return '';
+        const equal = elto.val.register_address_write[indexComponent][indexElement].includes(address);
+        if (equal == false) {
+            return;
+        }
     }
 
-    const equal = elto.val.register_address_write[indexComponent][indexElement].includes(address);
-    if (equal == false) {
-      return;
+    if (
+        typeof stack_state_transition[state] === "undefined" ||
+        typeof stack_state_transition[state][action] === "undefined"
+    ) {
+        if (state < 40 || state < 0) {
+            console_log(
+                "[TRANSITION] Invalid state transition: State=" +
+                    state +
+                    ", Action=" +
+                    action +
+                    " (Component: " +
+                    architecture.components[indexComponent].elements[indexElement].name +
+                    ")",
+                "ERROR",
+            );
+        }
+        return;
     }
-  }
 
-  if ((typeof (stack_state_transition[state]) === "undefined") ||
-    (typeof (stack_state_transition[state][action]) === "undefined")) {
-    if (state < 40 || state < 0) {
-      console_log("[TRANSITION] Invalid state transition: State=" + state + ", Action=" + action +
-        " (Component: " + architecture.components[indexComponent].elements[indexElement].name + ")", "ERROR");
+    // get new state: transition(state, action) -> new_state
+    var new_state = stack_state_transition[state][action];
+    creator_callstack_setState(indexComponent, indexElement, new_state);
+
+    if (action != "end") {
+        console_log(
+            "[TRANSITION] " +
+                architecture.components[indexComponent].elements[indexElement].name +
+                ": State " +
+                state +
+                " → " +
+                new_state +
+                " (Action: " +
+                action +
+                ")",
+            "WARN",
+        );
     }
-    return;
-  }
-
-  // get new state: transition(state, action) -> new_state
-  var new_state = stack_state_transition[state][action];
-  creator_callstack_setState(indexComponent, indexElement, new_state);
-
-  if (action != "end") {
-    console_log("[TRANSITION] " + architecture.components[indexComponent].elements[indexElement].name +
-      ": State " + state + " → " + new_state + " (Action: " + action + ")", "WARN");
-  }
 }
