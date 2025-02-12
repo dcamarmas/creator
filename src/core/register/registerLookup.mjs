@@ -17,57 +17,57 @@
  *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-'use strict';
-import { architecture } from '../core.mjs';
+"use strict";
+import { architecture } from "../core.mjs";
 
 /*
  *  Register operations
  */
 export function crex_findReg(value1) {
-  var ret = {};
+    var ret = {};
 
-  ret.match = 0;
-  ret.indexComp = null;
-  ret.indexElem = null;
+    ret.match = 0;
+    ret.indexComp = null;
+    ret.indexElem = null;
 
-  if (value1 == "") {
-    return ret;
-  }
-
-  for (var i = 0; i < architecture.components.length; i++) {
-    for (var j = 0; j < architecture.components[i].elements.length; j++) {
-      if (architecture.components[i].elements[j].name.includes(value1) !== false) {
-        ret.match = 1;
-        ret.indexComp = i;
-        ret.indexElem = j;
-        break;
-      }
+    if (value1 == "") {
+        return ret;
     }
-  }
 
-  return ret;
+    for (var i = 0; i < architecture.components.length; i++) {
+        for (var j = 0; j < architecture.components[i].elements.length; j++) {
+            if (architecture.components[i].elements[j].name.includes(value1) !== false) {
+                ret.match = 1;
+                ret.indexComp = i;
+                ret.indexElem = j;
+                break;
+            }
+        }
+    }
+
+    return ret;
 }
 export function crex_findReg_bytag(value1) {
-  var ret = {};
+    var ret = {};
 
-  ret.match = 0;
-  ret.indexComp = null;
-  ret.indexElem = null;
+    ret.match = 0;
+    ret.indexComp = null;
+    ret.indexElem = null;
 
-  if (value1 == "") {
-    return ret;
-  }
-
-  for (var i = 0; i < architecture.components.length; i++) {
-    for (var j = 0; j < architecture.components[i].elements.length; j++) {
-      if (architecture.components[i].elements[j].properties.includes(value1) !== false) {
-        ret.match = 1;
-        ret.indexComp = i;
-        ret.indexElem = j;
-        break;
-      }
+    if (value1 == "") {
+        return ret;
     }
-  }
 
-  return ret;
+    for (var i = 0; i < architecture.components.length; i++) {
+        for (var j = 0; j < architecture.components[i].elements.length; j++) {
+            if (architecture.components[i].elements[j].properties.includes(value1) !== false) {
+                ret.match = 1;
+                ret.indexComp = i;
+                ret.indexElem = j;
+                break;
+            }
+        }
+    }
+
+    return ret;
 }
