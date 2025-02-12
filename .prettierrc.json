@@ -5,8 +5,21 @@
   "tabWidth": 4,
   "embeddedLanguageFormatting": "auto",
   "endOfLine": "lf",
-  "printWidth": 120,
+  "printWidth": 80,
   "vueIndentScriptAndStyle": false,
   "quoteProps": "as-needed",
-  "arrowParens": "avoid"
+  "arrowParens": "avoid",
+  "overrides": [
+    {
+      "files": [
+        "*.vue",
+        "*.json",
+        "*.html",
+        "*.css",
+        "eslint.config.ts",
+        ".editorconfig"
+      ],
+      "options": { "tabWidth": 2 }
+    }
+  ]
 }

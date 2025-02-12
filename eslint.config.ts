@@ -34,6 +34,8 @@ export default defineConfigWithVueTs(
         },
       ],
       '@typescript-eslint/no-unused-vars': "warn",
+      'vue/multi-word-component-names': 'warn',
+      'prefer-const': 'warn',
     },
   },
 )
