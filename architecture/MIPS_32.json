@@ -31,6 +31,10 @@
     {
       "name": "Sensitive Register Name",
       "value": "1"
+    },
+    {
+      "name": "CommentPrefix",
+      "value": "#"
     }
   ],
   "components": [
@@ -4364,7 +4368,7 @@
         },
         {
           "name": "val",
-          "type": "inm-signed",
+          "type": "inm-unsigned",
           "startbit": 15,
           "stopbit": 0
         }
@@ -5503,7 +5507,7 @@
           "type": "inm-signed"
         }
       ],
-      "definition": "if(Field.3.SIZE<=16){addi $rs $rt inm;}\nelse{lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\nadd $rs $rt $at;} "
+      "definition": "if(Field.3.SIZE<=16){addi $rs, $rt, inm;}\nelse{lui $at, Field.3.(31,16).int;\nori $at, $at, Field.3.(15,0).int;\nadd $rs, $rt, $at;}"
     },
     {
       "name": "addi",
@@ -5527,7 +5531,7 @@
           "type": "inm-signed"
         }
       ],
-      "definition": "lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\nadd $reg1 $reg2 $at;"
+      "definition": "lui $at, Field.3.(31,16).int;\nori $at, $at, Field.3.(15,0).int;\nadd $reg1, $reg2, $at;"
     },
     {
       "name": "addiu",
@@ -5551,7 +5555,7 @@
           "type": "inm-signed"
         }
       ],
-      "definition": "lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\naddu $reg1 $reg2 $at;"
+      "definition": "lui $at, Field.3.(31,16).int;\nori $at, $at, Field.3.(15,0).int;\naddu $reg1, $reg2, $at;"
     },
     {
       "name": "addu",
@@ -5575,7 +5579,7 @@
           "type": "inm-signed"
         }
       ],
-      "definition": "if(Field.3.SIZE<=16){addiu $rs $rt inm;}\nelse{lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\naddu $rs $rt $at;} "
+      "definition": "if(Field.3.SIZE<=16){addiu $rs, $rt, inm;}\nelse{lui $at, Field.3.(31,16).int;\nori $at, $at, Field.3.(15,0).int;\naddu $rs, $rt, $at;}"
     },
     {
       "name": "and",
@@ -5599,7 +5603,7 @@
           "type": "inm-signed"
         }
       ],
-      "definition": "if(Field.3.SIZE<=16){andi $rs $rt inm;}\nelse{lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\nand $rs $rt $at;} "
+      "definition": "if(Field.3.SIZE<=16){andi $rs, $rt, inm;}\nelse{lui $at, Field.3.(31,16).int;\nori $at, $at, Field.3.(15,0).int;\nand $rs, $rt, $at;}"
     },
     {
       "name": "andi",
@@ -5623,7 +5627,7 @@
           "type": "inm-signed"
         }
       ],
-      "definition": "lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\nand $rs $rt $at;"
+      "definition": "lui $at, Field.3.(31,16).int;\nori $at, $at, Field.3.(15,0).int;\nand $rs, $rt, $at;"
     },
     {
       "name": "b",
@@ -5639,7 +5643,7 @@
           "type": "inm-unsigned"
         }
       ],
-      "definition": "bgez $zero inm;"
+      "definition": "bgez $zero, inm;"
     },
     {
       "name": "bc1t",
@@ -5654,7 +5658,7 @@
           "type": "offset_words"
         }
       ],
-      "definition": "bc1t 0 off;"
+      "definition": "bc1t 0, off;"
     },
     {
       "name": "beq",
@@ -5678,7 +5682,7 @@
           "type": "offset_words"
         }
       ],
-      "definition": "ori $at $zero inm; beq $reg1 $at off;"
+      "definition": "ori $at, $zero, inm; beq $reg1, $at, off;"
     },
     {
       "name": "beqz",
@@ -5698,7 +5702,7 @@
           "type": "offset_words"
         }
       ],
-      "definition": "beq $reg1 $zero off;"
+      "definition": "beq $reg1, $zero, off;"
     },
     {
       "name": "bge",
@@ -5722,7 +5726,7 @@
           "type": "offset_words"
         }
       ],
-      "definition": "slt $at $reg1 $reg2; beq $at $zero off;"
+      "definition": "slt $at, $reg1, $reg2; beq $at, $zero, off;"
     },
     {
       "name": "bge",
@@ -5746,7 +5750,7 @@
           "type": "offset_words"
         }
       ],
-      "definition": "slti $at $reg1 inm; beq $at $zero off;"
+      "definition": "slti $at, $reg1, inm; beq $at, $zero, off;"
     },
     {
       "name": "bgeu",
@@ -5770,7 +5774,7 @@
           "type": "offset_words"
         }
       ],
-      "definition": "sltu $at $reg1 $reg2; beq $at $zero off;"
+      "definition": "sltu $at, $reg1, $reg2; beq $at, $zero, off;"
     },
     {
       "name": "bgeu",
@@ -5794,7 +5798,7 @@
           "type": "offset_words"
         }
       ],
-      "definition": "sltiu $at $reg1 inm; beq $at $zero off;"
+      "definition": "sltiu $at, $reg1, inm; beq $at, $zero, off;"
     },
     {
       "name": "bgt",
@@ -5818,7 +5822,7 @@
           "type": "offset_words"
         }
       ],
-      "definition": "slt $at $reg2 $reg1; bne $at $zero off;"
+      "definition": "slt $at, $reg2, $reg1; bne $at, $zero, off;"
     },
     {
       "name": "bgt",
@@ -5842,7 +5846,7 @@
           "type": "offset_words"
         }
       ],
-      "definition": "addi $at $zero inm; addi $at $at 1; slt $at $reg1 $at; beq $at $zero off;"
+      "definition": "addi $at, $zero, inm; addi $at, $at, 1; slt $at, $reg1, $at; beq $at, $zero, off;"
     },
     {
       "name": "bgtu",
@@ -5866,7 +5870,7 @@
           "type": "offset_words"
         }
       ],
-      "definition": "sltu $at $reg2 $reg1; bne $at $zero off;"
+      "definition": "sltu $at, $reg2, $reg1; bne $at, $zero, off;"
     },
     {
       "name": "bgtu",
@@ -5890,7 +5894,7 @@
           "type": "offset_words"
         }
       ],
-      "definition": "ori $at $zero inm; beq $at $reg1 off; sltu $at $reg1 $at;"
+      "definition": "ori $at, $zero, inm; beq $at, $reg1, off; sltu $at, $reg1, $at;"
     },
     {
       "name": "ble",
@@ -5914,7 +5918,7 @@
           "type": "offset_words"
         }
       ],
-      "definition": "slt $at $reg2 $reg1; beq $at $zero off;"
+      "definition": "slt $at, $reg2, $reg1; beq $at, $zero, off;"
     },
     {
       "name": "ble",
@@ -5938,7 +5942,7 @@
           "type": "offset_words"
         }
       ],
-      "definition": "addi $at $zero inm; addi $at $at 1; slti $at $reg1 inm; bne $at $zero off;"
+      "definition": "addi $at, $zero, inm; addi $at, $at, 1; slti $at, $reg1, inm; bne $at, $zero, off;"
     },
     {
       "name": "bleu",
@@ -5962,7 +5966,7 @@
           "type": "offset_words"
         }
       ],
-      "definition": "sltu $at $reg2 $reg1; beq $at $zero off;"
+      "definition": "sltu $at, $reg2, $reg1; beq $at, $zero, off;"
     },
     {
       "name": "bleu",
@@ -5986,7 +5990,7 @@
           "type": "offset_words"
         }
       ],
-      "definition": "ori $at $zero inm; beq $at $reg1 off; sltu $at $reg1 $at; bne $at $zero off;"
+      "definition": "ori $at, $zero, inm; beq $at, $reg1, off; sltu $at, $reg1, $at; bne $at, $zero, off;"
     },
     {
       "name": "blt",
@@ -6010,7 +6014,7 @@
           "type": "offset_words"
         }
       ],
-      "definition": "slt $at $reg1 $reg2; bne $at $zero off;"
+      "definition": "slt $at, $reg1, $reg2; bne $at, $zero, off;"
     },
     {
       "name": "blt",
@@ -6034,7 +6038,7 @@
           "type": "offset_words"
         }
       ],
-      "definition": "slti $at $reg1 inm; bne $at $zero off;"
+      "definition": "slti $at, $reg1, inm; bne $at, $zero, off;"
     },
     {
       "name": "bltu",
@@ -6058,7 +6062,7 @@
           "type": "offset_words"
         }
       ],
-      "definition": "sltu $at $reg1 $reg2; bne $at $zero off;"
+      "definition": "sltu $at, $reg1, $reg2; bne $at, $zero, off;"
     },
     {
       "name": "bltu",
@@ -6082,7 +6086,7 @@
           "type": "offset_words"
         }
       ],
-      "definition": "sltiu $at $reg1 off; bne $at $zero off;"
+      "definition": "sltiu $at, $reg1, off; bne $at, $zero, off;"
     },
     {
       "name": "bne",
@@ -6106,7 +6110,7 @@
           "type": "offset_words"
         }
       ],
-      "definition": "ori $at $zero inm; bne $reg1 $at off;"
+      "definition": "ori $at, $zero, inm; bne $reg1, $at, off;"
     },
     {
       "name": "bnez",
@@ -6126,7 +6130,7 @@
           "type": "offset_words"
         }
       ],
-      "definition": "bne $reg1 $zero off;"
+      "definition": "bne $reg1, $zero, off;"
     },
     {
       "name": "c.eq.d",
@@ -6145,7 +6149,7 @@
           "type": "DFP-Reg"
         }
       ],
-      "definition": "c.eq.d 0 $fs $ft;"
+      "definition": "c.eq.d 0, $fs, $ft;"
     },
     {
       "name": "c.eq.s",
@@ -6164,7 +6168,7 @@
           "type": "SFP-Reg"
         }
       ],
-      "definition": "c.eq.s 0 $fs $ft;"
+      "definition": "c.eq.s 0, $fs, $ft;"
     },
     {
       "name": "c.ole.d",
@@ -6183,7 +6187,7 @@
           "type": "DFP-Reg"
         }
       ],
-      "definition": "c.ole.d 0 $fs $ft;"
+      "definition": "c.ole.d 0, $fs, $ft;"
     },
     {
       "name": "c.ole.s",
@@ -6202,7 +6206,7 @@
           "type": "SFP-Reg"
         }
       ],
-      "definition": "c.ole.s 0 $fs $ft;"
+      "definition": "c.ole.s 0, $fs, $ft;"
     },
     {
       "name": "c.olt.d",
@@ -6221,7 +6225,7 @@
           "type": "DFP-Reg"
         }
       ],
-      "definition": "c.olt.d 0 $fs $ft;"
+      "definition": "c.olt.d 0, $fs, $ft;"
     },
     {
       "name": "c.olt.s",
@@ -6240,7 +6244,7 @@
           "type": "SFP-Reg"
         }
       ],
-      "definition": "c.olt.s 0 $fs $ft;"
+      "definition": "c.olt.s 0, $fs, $ft;"
     },
     {
       "name": "jalr",
@@ -6256,7 +6260,7 @@
           "type": "INT-Reg"
         }
       ],
-      "definition": "jalr $rs $ra;"
+      "definition": "jalr $rs, $ra;"
     },
     {
       "name": "l.d",
@@ -6276,7 +6280,7 @@
           "type": "INT-Reg"
         }
       ],
-      "definition": "ldc1 $reg1 0 ($reg2);"
+      "definition": "ldc1 $reg1, 0($reg2);"
     },
     {
       "name": "l.d",
@@ -6300,7 +6304,7 @@
           "type": "inm-signed"
         }
       ],
-      "definition": "ldc1 $reg1 inm ($reg2);"
+      "definition": "ldc1 $reg1, inm($reg2);"
     },
     {
       "name": "l.s",
@@ -6320,7 +6324,7 @@
           "type": "INT-Reg"
         }
       ],
-      "definition": "lwc1 $rs 0 ($rt);"
+      "definition": "lwc1 $rs, 0($rt);"
     },
     {
       "name": "l.s",
@@ -6344,7 +6348,7 @@
           "type": "inm-signed"
         }
       ],
-      "definition": "lwc1 $rs off ($rt);"
+      "definition": "lwc1 $rs, off($rt);"
     },
     {
       "name": "la",
@@ -6364,7 +6368,7 @@
           "type": "inm-signed"
         }
       ],
-      "definition": "if(Field.2.SIZE<=16){addi $rd $zero addr;}\nelse{lui $at Field.2.(31,16).int;\nori $at $at Field.2.(15,0).int;\nadd $rd $zero $at;}"
+      "definition": "if(Field.2.SIZE<=16){addi $rd, $zero, addr;}\nelse{lui $at, Field.2.(31,16).int;\nori $at, $at, Field.2.(15,0).int;\nadd $rd, $zero, $at;}"
     },
     {
       "name": "lb",
@@ -6384,7 +6388,7 @@
           "type": "INT-Reg"
         }
       ],
-      "definition": "lb $reg1 0 ($reg2);"
+      "definition": "lb $reg1, 0($reg2);"
     },
     {
       "name": "lb",
@@ -6404,7 +6408,7 @@
           "type": "inm-signed"
         }
       ],
-      "definition": "if(Field.2.SIZE<=16){lb $rd addr ($zero);}\nelse{lui $at Field.2.(31,16).int;\nori $at $at Field.2.(15,0).int;\nlb $rd 0 ($at);}"
+      "definition": "if(Field.2.SIZE<=16){lb $rd, addr($zero);}\nelse{lui $at, Field.2.(31,16).int;\nori $at, $at, Field.2.(15,0).int;\nlb $rd, 0($at);}"
     },
     {
       "name": "lbu",
@@ -6424,7 +6428,7 @@
           "type": "INT-Reg"
         }
       ],
-      "definition": "lbu $reg1 0 ($reg2);"
+      "definition": "lbu $reg1, 0($reg2);"
     },
     {
       "name": "lbu",
@@ -6444,7 +6448,7 @@
           "type": "inm-signed"
         }
       ],
-      "definition": "if(Field.2.SIZE<=16){lbu $rd addr ($zero);}\nelse{lui $at Field.2.(31,16).int;\nori $at $at Field.2.(15,0).int;\nlbu $rd 0 ($at);}"
+      "definition": "if(Field.2.SIZE<=16){lbu $rd, addr($zero);}\nelse{lui $at, Field.2.(31,16).int;\nori $at, $at, Field.2.(15,0).int;\nlbu $rd, 0($at);}"
     },
     {
       "name": "lh",
@@ -6464,7 +6468,7 @@
           "type": "INT-Reg"
         }
       ],
-      "definition": "lh $reg1 0 ($reg2);"
+      "definition": "lh $reg1, 0($reg2);"
     },
     {
       "name": "lh",
@@ -6484,7 +6488,7 @@
           "type": "inm-signed"
         }
       ],
-      "definition": "if(Field.2.SIZE<=16){lh $rd addr ($zero);}\nelse{lui $at Field.2.(31,16).int;\nori $at $at Field.2.(15,0).int;\nlh $rd 0 ($at);}"
+      "definition": "if(Field.2.SIZE<=16){lh $rd, addr($zero);}\nelse{lui $at, Field.2.(31,16).int;\nori $at, $at, Field.2.(15,0).int;\nlh $rd, 0($at);}"
     },
     {
       "name": "lhu",
@@ -6504,7 +6508,7 @@
           "type": "INT-Reg"
         }
       ],
-      "definition": "lhu $reg1 0 ($reg2);"
+      "definition": "lhu $reg1, 0($reg2);"
     },
     {
       "name": "lhu",
@@ -6524,7 +6528,7 @@
           "type": "inm-signed"
         }
       ],
-      "definition": "if(Field.2.SIZE<=16){lhu $rd addr ($zero);}\nelse{lui $at Field.2.(31,16).int;\nori $at $at Field.2.(15,0).int;\nlhu $rd 0 ($at);}"
+      "definition": "if(Field.2.SIZE<=16){lhu $rd, addr($zero);}\nelse{lui $at, Field.2.(31,16).int;\nori $at, $at, Field.2.(15,0).int;\nlhu $rd, 0($at);}"
     },
     {
       "name": "li",
@@ -6544,7 +6548,7 @@
           "type": "inm-signed"
         }
       ],
-      "definition": "if(Field.2.SIZE<=16){addi $rd $zero val;}\nelse{lui $at Field.2.(31,16).int;\nori $at $at Field.2.(15,0).int;\nadd $rd $zero $at;}"
+      "definition": "if(Field.2.SIZE<=16){addi $rd, $zero, val;}\nelse{lui $at, Field.2.(31,16).int;\nori $at, $at, Field.2.(15,0).int;\nadd $rd, $zero, $at;}"
     },
     {
       "name": "li.d",
@@ -6564,7 +6568,7 @@
           "type": "inm-signed"
         }
       ],
-      "definition": "lui $at Field.2.(31,16).double;\nori $at $at Field.2.(15,0).double;\nmtc1 $at $aliasDouble(rd;1);\nlui $at Field.2.(63,48).double;\nori $at $at Field.2.(47,32).double;\nmtc1 $at $aliasDouble(rd;0);"
+      "definition": "lui $at, Field.2.(31,16).double;\nori $at, $at, Field.2.(15,0).double;\nmtc1 $at, $aliasDouble(rd;1);\nlui $at, Field.2.(63,48).double;\nori $at, $at, Field.2.(47,32).double;\nmtc1 $at, $aliasDouble(rd;0);"
     },
     {
       "name": "li.s",
@@ -6584,7 +6588,7 @@
           "type": "inm-signed"
         }
       ],
-      "definition": "lui $at Field.2.(31,16).float;\nori $at $at Field.2.(15,0).float;\nmtc1 $at $rd;"
+      "definition": "lui $at, Field.2.(31,16).float;\nori $at, $at, Field.2.(15,0).float;\nmtc1 $at, $rd;"
     },
     {
       "name": "lw",
@@ -6604,7 +6608,7 @@
           "type": "INT-Reg"
         }
       ],
-      "definition": "lw $reg1 0 ($reg2);"
+      "definition": "lw $reg1, 0($reg2);"
     },
     {
       "name": "lw",
@@ -6624,7 +6628,7 @@
           "type": "inm-signed"
         }
       ],
-      "definition": "if(Field.2.SIZE<=16){lw $rd addr ($zero);}\nelse{lui $at Field.2.(31,16).int;\nori $at $at Field.2.(15,0).int;\nlw $rd 0 ($at);}"
+      "definition": "if(Field.2.SIZE<=16){lw $rd, addr($zero);}\nelse{lui $at, Field.2.(31,16).int;\nori $at, $at, Field.2.(15,0).int;\nlw $rd, 0($at);}"
     },
     {
       "name": "move",
@@ -6644,7 +6648,7 @@
           "type": "INT-Reg"
         }
       ],
-      "definition": "add $reg1 $zero $reg2;"
+      "definition": "add $reg1, $zero, $reg2;"
     },
     {
       "name": "mul",
@@ -6668,7 +6672,7 @@
           "type": "inm-signed"
         }
       ],
-      "definition": "if(Field.3.SIZE<=16){addi $at $zero inm; mul $rs $rt $at;}\nelse{lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\nmul $rs $rt $at;} "
+      "definition": "if(Field.3.SIZE<=16){addi $at, $zero, inm; mul $rs, $rt, $at;}\nelse{lui $at, Field.3.(31,16).int;\nori $at, $at, Field.3.(15,0).int;\nmul $rs, $rt, $at;}"
     },
     {
       "name": "nor",
@@ -6692,7 +6696,7 @@
           "type": "inm-signed"
         }
       ],
-      "definition": "if(Field.3.SIZE<=16){addi $at $zero inm; nor $rs $rt $at;}\nelse{lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\nnor $rs $rt $at;} "
+      "definition": "if(Field.3.SIZE<=16){addi $at, $zero, inm; nor $rs, $rt, $at;}\nelse{lui $at, Field.3.(31,16).int;\nori $at, $at, Field.3.(15,0).int;\nnor $rs, $rt, $at;}"
     },
     {
       "name": "or",
@@ -6716,7 +6720,7 @@
           "type": "inm-signed"
         }
       ],
-      "definition": "if(Field.3.SIZE<=16){ori $rs $rt inm;}\nelse{lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\nor $rs $rt $at;} "
+      "definition": "if(Field.3.SIZE<=16){ori $rs, $rt, inm;}\nelse{lui $at, Field.3.(31,16).int;\nori $at, $at, Field.3.(15,0).int;\nor $rs, $rt, $at;}"
     },
     {
       "name": "ori",
@@ -6740,7 +6744,7 @@
           "type": "inm-signed"
         }
       ],
-      "definition": "lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\nor $rs $rt $at;"
+      "definition": "lui $at, Field.3.(31,16).int;\nori $at, $at, Field.3.(15,0).int;\nor $rs, $rt, $at;"
     },
     {
       "name": "rem",
@@ -6764,7 +6768,7 @@
           "type": "INT-Reg"
         }
       ],
-      "definition": "div $reg2 $reg3; mfhi $reg1;"
+      "definition": "div $reg2, $reg3; mfhi $reg1;"
     },
     {
       "name": "rol",
@@ -6787,7 +6791,7 @@
           "type": "inm-unsigned"
         }
       ],
-      "definition": "srl $at $reg2 op{32-(val)};sll $reg1 $reg2 val;or $reg1 $reg1 $at;"
+      "definition": "srl $at, $reg2, op{32-(val)};sll $reg1, $reg2, val;or $reg1, $reg1, $at;"
     },
     {
       "name": "ror",
@@ -6810,7 +6814,7 @@
           "type": "inm-unsigned"
         }
       ],
-      "definition": "sll $at $reg2 op{32-(val)};srl $reg1 $reg2 val;or $reg1 $reg1 $at;"
+      "definition": "sll $at, $reg2, op{32-(val)};srl $reg1, $reg2, val;or $reg1, $reg1, $at;"
     },
     {
       "name": "s.d",
@@ -6830,7 +6834,7 @@
           "type": "INT-Reg"
         }
       ],
-      "definition": "sdc1 $rs 0 ($rt);"
+      "definition": "sdc1 $rs, 0($rt);"
     },
     {
       "name": "s.d",
@@ -6854,7 +6858,7 @@
           "type": "inm-signed"
         }
       ],
-      "definition": "sdc1 $rs off ($rt);"
+      "definition": "sdc1 $rs, off($rt);"
     },
     {
       "name": "s.s",
@@ -6874,7 +6878,7 @@
           "type": "INT-Reg"
         }
       ],
-      "definition": "swc1 $rs 0 ($rt);"
+      "definition": "swc1 $rs, 0($rt);"
     },
     {
       "name": "s.s",
@@ -6898,7 +6902,7 @@
           "type": "inm-signed"
         }
       ],
-      "definition": "swc1 $rs off ($rt);"
+      "definition": "swc1 $rs, off($rt);"
     },
     {
       "name": "sb",
@@ -6918,7 +6922,7 @@
           "type": "INT-Reg"
         }
       ],
-      "definition": "sb $reg1 0 ($reg2);"
+      "definition": "sb $reg1, 0($reg2);"
     },
     {
       "name": "sb",
@@ -6938,7 +6942,7 @@
           "type": "inm-signed"
         }
       ],
-      "definition": "if(Field.2.SIZE<=16){sb $rd addr ($zero);}\nelse{lui $at Field.2.(31,16).int;\nori $at $at Field.2.(15,0).int;\nsb $rd 0 ($at);}"
+      "definition": "if(Field.2.SIZE<=16){sb $rd, addr($zero);}\nelse{lui $at, Field.2.(31,16).int;\nori $at, $at, Field.2.(15,0).int;\nsb $rd, 0($at);}"
     },
     {
       "name": "sh",
@@ -6958,7 +6962,7 @@
           "type": "INT-Reg"
         }
       ],
-      "definition": "sh $reg1 0 ($reg2);"
+      "definition": "sh $reg1, 0($reg2);"
     },
     {
       "name": "sh",
@@ -6978,7 +6982,7 @@
           "type": "inm-signed"
         }
       ],
-      "definition": "if(Field.2.SIZE<=16){sh $rd addr ($zero);}\nelse{lui $at Field.2.(31,16).int;\nori $at $at Field.2.(15,0).int;\nsh $rd 0 ($at);}"
+      "definition": "if(Field.2.SIZE<=16){sh $rd, addr($zero);}\nelse{lui $at, Field.2.(31,16).int;\nori $at, $at, Field.2.(15,0).int;\nsh $rd, 0($at);}"
     },
     {
       "name": "sub",
@@ -7002,7 +7006,7 @@
           "type": "inm-signed"
         }
       ],
-      "definition": "if(Field.3.SIZE<=16){addi $at $zero inm; sub $rs $rt $at;}\nelse{lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\nsub $rs $rt $at;} "
+      "definition": "if(Field.3.SIZE<=16){addi $at, $zero, inm; sub $rs, $rt, $at;}\nelse{lui $at, Field.3.(31,16).int;\nori $at, $at, Field.3.(15,0).int;\nsub $rs, $rt, $at;}"
     },
     {
       "name": "subu",
@@ -7026,7 +7030,7 @@
           "type": "inm-signed"
         }
       ],
-      "definition": "if(Field.3.SIZE<=16){addi $at $zero inm; subu $rs $rt $at;}\nelse{lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\nsubu $rs $rt $at;} "
+      "definition": "if(Field.3.SIZE<=16){addi $at, $zero, inm; subu $rs, $rt, $at;}\nelse{lui $at, Field.3.(31,16).int;\nori $at, $at, Field.3.(15,0).int;\nsubu $rs, $rt, $at;}"
     },
     {
       "name": "sw",
@@ -7046,7 +7050,7 @@
           "type": "INT-Reg"
         }
       ],
-      "definition": "sw $reg1 0 ($reg2);"
+      "definition": "sw $reg1, 0($reg2);"
     },
     {
       "name": "sw",
@@ -7066,7 +7070,7 @@
           "type": "inm-signed"
         }
       ],
-      "definition": "if(Field.2.SIZE<=16){sw $rd addr ($zero);}\nelse{lui $at Field.2.(31,16).int;\nori $at $at Field.2.(15,0).int;\nsw $rd 0 ($at);}"
+      "definition": "if(Field.2.SIZE<=16){sw $rd, addr($zero);}\nelse{lui $at, Field.2.(31,16).int;\nori $at, $at, Field.2.(15,0).int;\nsw $rd, 0($at);}"
     },
     {
       "name": "xor",
@@ -7090,7 +7094,7 @@
           "type": "inm-signed"
         }
       ],
-      "definition": "if(Field.3.SIZE<=16){xori $rs $rt inm;}\nelse{lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\nxor $rs $rt $at;} "
+      "definition": "if(Field.3.SIZE<=16){xori $rs, $rt, inm;}\nelse{lui $at, Field.3.(31,16).int;\nori $at, $at, Field.3.(15,0).int;\nxor $rs, $rt, $at;}"
     },
     {
       "name": "xori",
@@ -7114,7 +7118,7 @@
           "type": "inm-signed"
         }
       ],
-      "definition": "lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\nxor $rs $rt $at;"
+      "definition": "lui $at, Field.3.(31,16).int;\nori $at, $at, Field.3.(15,0).int;\nxor $rs, $rt, $at;"
     }
   ],
   "directives": [
