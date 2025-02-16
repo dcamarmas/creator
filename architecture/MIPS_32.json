@@ -6284,7 +6284,7 @@
     },
     {
       "name": "l.d",
-      "signature_definition": "l.d $F0 F1 ($F2)",
+      "signature_definition": "l.d $F0 F2 ($F1)",
       "signature": "l.d,$DFP-Reg,inm-signed,($INT-Reg)",
       "signatureRaw": "l.d $reg1 inm ($reg2)",
       "help": "",
@@ -6548,7 +6548,7 @@
           "type": "inm-signed"
         }
       ],
-      "definition": "if(Field.2.SIZE<=16){addi $rd, $zero, val;}\nelse{lui $at, Field.2.(31,16).int;\nori $at, $at, Field.2.(15,0).int;\nadd $rd, $zero, $at;}"
+      "definition": "no_ret_op{tmp=Field.2.(31,0).int;\ntmp -= tmp>=2**31? 2**32 : 0;\ntmp_low=tmp&0x0000FFFF;\ntmp_hi=tmp>>16};\nif(tmp_hi === 0){addi $rd, $zero, op{tmp_low};}\nelse{lui $at, op{tmp_hi};\nori $at, $at, op{tmp_low};\nadd $rd, $zero, $at;}"
     },
     {
       "name": "li.d",
@@ -6568,7 +6568,7 @@
           "type": "inm-signed"
         }
       ],
-      "definition": "lui $at, Field.2.(31,16).double;\nori $at, $at, Field.2.(15,0).double;\nmtc1 $at, $aliasDouble(rd;1);\nlui $at, Field.2.(63,48).double;\nori $at, $at, Field.2.(47,32).double;\nmtc1 $at, $aliasDouble(rd;0);"
+      "definition": "no_ret_op{tmp0=Field.2.(63,32).double;\ntmp0 -= tmp0>=2**31? 2**32 : 0;\ntmp_low0=tmp0&0x0000FFFF;\ntmp_hi0=tmp0>>16;\ntmp1=Field.2.(31,0).double;\ntmp1 -= tmp1>=2**31? 2**32 : 0;\ntmp_low1=tmp1&0x0000FFFF;\ntmp_hi1=tmp1>>16};\nlui $at, op{tmp_hi1};\nori $at, $at, op{tmp_low1};\nmtc1 $at, $aliasDouble(rd;1);\nlui $at, op{tmp_hi0};\nori $at, $at, op{tmp_low0};\nmtc1 $at, $aliasDouble(rd;0);"
     },
     {
       "name": "li.s",
@@ -6588,7 +6588,7 @@
           "type": "inm-signed"
         }
       ],
-      "definition": "lui $at, Field.2.(31,16).float;\nori $at, $at, Field.2.(15,0).float;\nmtc1 $at, $rd;"
+      "definition": "no_ret_op{tmp=Field.2.(31,0).float;\ntmp -= tmp>=2**31? 2**32 : 0;\ntmp_low=tmp&0x0000FFFF;\ntmp_hi=tmp>>16};\nlui $at, op{tmp_hi};\nori $at, $at, op{tmp_low};\nmtc1 $at, $rd;"
     },
     {
       "name": "lw",

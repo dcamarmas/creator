@@ -15,7 +15,7 @@
            li   $a3, 12
            addu $sp, $sp, -8
            li   $t0, 6
-           sw   $t0, ($sp)
+           sw   $t0  ($sp)
            li   $t0, 7
            sw   $t0, 4($sp)
            jal f
@@ -34,7 +34,7 @@
         f: 
            # crear "stack frame"
            addu $sp, $sp, -4
-           sw   $fp, ($sp)
+           sw   $fp  ($sp)
            move $fp, $sp
            addu $sp, $sp, -16
 
@@ -54,7 +54,7 @@
            addi $t2, $t2, -16  # desplaz.
            li   $t3, 3
     bucle: bgt  $t1, $t3, fin
-           sw   $t0, ($t2)
+           sw   $t0  ($t2)
            addi $t2, $t2, 4
            addi $t1, $t1, 1
            b bucle
@@ -62,7 +62,7 @@
            lw   $v0, -12($fp)
 
            # finalizar "stack frame"
-           lw   $fp,    ($fp)
+           lw   $fp     ($fp)
            addu $sp, $sp, 20
 
            # return $v0

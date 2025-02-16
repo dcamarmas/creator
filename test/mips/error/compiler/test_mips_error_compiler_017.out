@@ -1,11 +1,14 @@
 
 
-Error at line 8:
-The string of characters must end with "
-
-  7  	.align 2
-->8     example:	.ascii "hello world
-  9 
+Error: found end of input but expected "\""
+   ╭─[assembly:9:2]
+   │
+ 9 │ 
+   │  │ 
+   │  ╰─ Unexpected input
+   │  │ 
+   │  ╰─ while parsing this token
+───╯
 
 Not executed
 keyboard[0x0]:''; display[0x0]:''; 
