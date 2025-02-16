@@ -266,27 +266,29 @@ function assembly_compiler(library)
                             size,
                             data.labels()[0],
                             data.value(true),
-                            data.type()
+                            data.type(),
+                            true,
                         );
                         break;
                     case wasm.DataCategoryJS.String:
                         creator_memory_storestring(
                             data.value(false),
-                            size,
-                            addr,
+                            size, addr,
                             data.labels()[0],
-                            data.type()
+                            data.type(),
+                            true,
                         );
                         break;
                     case wasm.DataCategoryJS.Space:
                         creator_memory_storestring(
                             size, size, addr,
                             data.labels()[0],
-                            data.type()
+                            data.type(),
+                            true,
                         );
                         break;
                     case wasm.DataCategoryJS.Padding:
-                        creator_memory_zerofill(addr, size);
+                        main_memory_zerofill(addr, size);
                         break;
                 }
             }
@@ -309,7 +311,7 @@ function assembly_compiler(library)
           const label   = instruction.Label;
           const hide    = instruction.hide;
 
-          creator_insert_instruction(auxAddr, "********", "********", hide, hex, "**", label);
+          creator_insert_instruction(auxAddr, "********", "********", hide, hex, "**", label, true);
         }
 
         /* Enter the compilated instructions in the text segment */
@@ -318,7 +320,7 @@ function assembly_compiler(library)
           const hex = bin2hex(instruction.binary);
           const auxAddr = parseInt(instruction.Address, 16);
           const label = instruction.Label;
-          creator_insert_instruction(auxAddr, instruction.loaded, instruction.loaded, false, hex, "00", label);
+          creator_insert_instruction(auxAddr, instruction.loaded, instruction.loaded, false, hex, "00", label, true);
         }
 
         /*Save binary*/
