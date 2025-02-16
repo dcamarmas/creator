@@ -1,10 +1,12 @@
 
 
-Error at line 12 (s50):
-Register 's50' not found
-
-  11 main:
-->12 	add t0, t1, s50
+[E05] Error: Register `s50` isn't defined in bank type Integer
+    ╭─[assembly:12:14]
+    │
+ 12 │     add t0, t1, s50
+    │                 ─┬─  
+    │                  ╰─── Unknown register
+────╯
 
 Not executed
 keyboard[0x0]:''; display[0x0]:''; 

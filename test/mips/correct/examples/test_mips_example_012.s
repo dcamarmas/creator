@@ -31,7 +31,7 @@ factorial:
 
            # if ($a < 2):
            #     return 1
-           bge  $a0 2, b_else
+           bge  $a0, 2, b_else
            li   $v0, 1 
            b   b_efs
            # else:
