@@ -3459,7 +3459,7 @@
       "nwords": 1,
       "clk_cycles": 1,
       "signature_definition": "F0 $F1 F2",
-      "signature": "lui,$INT-Reg,inm-signed",
+      "signature": "lui,$INT-Reg,inm-unsigned",
       "signatureRaw": "lui $reg1 val",
       "fields": [
         {
@@ -3476,7 +3476,7 @@
         },
         {
           "name": "val",
-          "type": "inm-signed",
+          "type": "inm-unsigned",
           "startbit": 15,
           "stopbit": 0
         }
@@ -6548,7 +6548,7 @@
           "type": "inm-signed"
         }
       ],
-      "definition": "no_ret_op{tmp=Field.2.(31,0).int;\ntmp -= tmp>=2**31? 2**32 : 0;\ntmp_low=tmp&0x0000FFFF;\ntmp_hi=tmp>>16};\nif(tmp_hi === 0){addi $rd, $zero, op{tmp_low};}\nelse{lui $at, op{tmp_hi};\nori $at, $at, op{tmp_low};\nadd $rd, $zero, $at;}"
+      "definition": "no_ret_op{tmp=Field.2.(31,0).int;\ntmp_low=tmp&0x0000FFFF;\ntmp_hi=tmp>>>16};\nif(tmp_hi === 0){addi $rd, $zero, op{tmp_low};}\nelse{lui $at, op{tmp_hi};\nori $at, $at, op{tmp_low};\nadd $rd, $zero, $at;}"
     },
     {
       "name": "li.d",
@@ -6568,7 +6568,7 @@
           "type": "inm-signed"
         }
       ],
-      "definition": "no_ret_op{tmp0=Field.2.(63,32).double;\ntmp0 -= tmp0>=2**31? 2**32 : 0;\ntmp_low0=tmp0&0x0000FFFF;\ntmp_hi0=tmp0>>16;\ntmp1=Field.2.(31,0).double;\ntmp1 -= tmp1>=2**31? 2**32 : 0;\ntmp_low1=tmp1&0x0000FFFF;\ntmp_hi1=tmp1>>16};\nlui $at, op{tmp_hi1};\nori $at, $at, op{tmp_low1};\nmtc1 $at, $aliasDouble(rd;1);\nlui $at, op{tmp_hi0};\nori $at, $at, op{tmp_low0};\nmtc1 $at, $aliasDouble(rd;0);"
+      "definition": "no_ret_op{tmp0=Field.2.(63,32).double;\ntmp_low0=tmp0&0x0000FFFF;\ntmp_hi0=tmp0>>>16;\ntmp1=Field.2.(31,0).double;\ntmp_low1=tmp1&0x0000FFFF;\ntmp_hi1=tmp1>>>16};\nlui $at, op{tmp_hi1};\nori $at, $at, op{tmp_low1};\nmtc1 $at, $aliasDouble(rd;1);\nlui $at, op{tmp_hi0};\nori $at, $at, op{tmp_low0};\nmtc1 $at, $aliasDouble(rd;0);"
     },
     {
       "name": "li.s",
@@ -6588,7 +6588,7 @@
           "type": "inm-signed"
         }
       ],
-      "definition": "no_ret_op{tmp=Field.2.(31,0).float;\ntmp -= tmp>=2**31? 2**32 : 0;\ntmp_low=tmp&0x0000FFFF;\ntmp_hi=tmp>>16};\nlui $at, op{tmp_hi};\nori $at, $at, op{tmp_low};\nmtc1 $at, $rd;"
+      "definition": "no_ret_op{tmp=Field.2.(31,0).float;\ntmp_low=tmp&0x0000FFFF;\ntmp_hi=tmp>>>16};\nlui $at, op{tmp_hi};\nori $at, $at, op{tmp_low};\nmtc1 $at, $rd;"
     },
     {
       "name": "lw",
