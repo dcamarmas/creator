@@ -5018,7 +5018,7 @@
       "name": "lui",
       "type": "Arithmetic integer",
       "signature_definition": "F0 F2 F1",
-      "signature": "lui,INT-Reg,inm-signed",
+      "signature": "lui,INT-Reg,inm-unsigned",
       "signatureRaw": "lui rd inm",
       "co": "0110111",
       "cop": "",
@@ -5033,7 +5033,7 @@
         },
         {
           "name": "inm",
-          "type": "inm-signed",
+          "type": "inm-unsigned",
           "startbit": 31,
           "stopbit": 12
         },
@@ -6988,7 +6988,7 @@
           "type": "inm-signed"
         }
       ],
-      "definition": "no_ret_op{tmp=Field.2.(31,0).int;\ntmp -= tmp>=2**31? 2**32 : 0;\ntmp_low=tmp&0x00000FFF;\ntmp_low-=tmp_low>0x7FF? 0x1000 : 0;\ntmp_hi=(tmp - tmp_low)>>12};\nif(tmp_hi === 0){addi rd, x0, op{tmp_low};}\nelse{lui rd, op{tmp_hi};\naddi rd, rd, op{tmp_low};}"
+      "definition": "no_ret_op{tmp=Field.2.(31,0).int;\ntmp_low=tmp&0x00000FFF;\ntmp_low-=tmp_low>0x7FF? 0x1000 : 0;\ntmp_hi=(tmp - tmp_low)>>>12};\nif(tmp_hi === 0){addi rd, x0, op{tmp_low};}\nelse{lui rd, op{tmp_hi};\naddi rd, rd, op{tmp_low};}"
     },
     {
       "name": "mv",
