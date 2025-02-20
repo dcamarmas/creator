@@ -15,6 +15,6 @@ while1:
         add $v0, $v0, $t0
         add $t0, $t0, 1
         b while1
-  fin1: # ...
+  fin1: nop # ...
 
 
