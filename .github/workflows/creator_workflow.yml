@@ -19,8 +19,8 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  creator-checker:
-    name: Execute CREATOR Checker
+  creator-min:
+    name: Make CREATOR Min Files
   
     runs-on: ubuntu-latest
 
@@ -34,19 +34,28 @@ jobs:
       - name: Build static files
         id: build
         run: ./mk_min.sh
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-      - name: Install dependencies
-        run: npm ci
-      - run: npm run build --if-present
-      - run: npm run test-creator-node
-      - name: Upload static files as artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: '.'
+
+  creator-checker:
+    name: Execute CREATOR Checker
+    needs: creator-min
+    
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [20.x]
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+    - name: Install dependencies
+      run: npm ci
+    - run: npm run build --if-present
+    - run: npm run test-creator-node
     
   deploy-pages:
     name: Deploy CREATOR to GitHub Pages
