@@ -1,6 +1,6 @@
 
 /*
- *  Copyright 2018-2024 Felix Garcia Carballeira, Alejandro Calderon Mateos, Diego Camarmas Alonso
+ *  Copyright 2018-2025 Felix Garcia Carballeira, Alejandro Calderon Mateos, Diego Camarmas Alonso
  *
  *  This file is part of CREATOR.
  *
@@ -424,13 +424,6 @@ try
   /*Stop the transmission of events to children*/
   function destroyClickedElement(event) {
     document.body.removeChild(event.target);
-  }
-
-  /*console.log*/
-  function console_log(m){
-    if(app._data.c_debug){
-      console.log(m);
-    }
   }
 
 

@@ -1,6 +1,6 @@
 
 /*
- *  Copyright 2018-2024 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
+ *  Copyright 2018-2025 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
  *  This file is part of CREATOR.
  *
@@ -155,20 +155,6 @@ function load_arch_select ( cfg ) //TODO: repeated?
       ret.token = "The selected architecture has been loaded correctly";
       ret.type  = "success";
       return ret;
-}
-
-
-//
-// console_log
-//
-
-var creator_debug = false ;
-
-function console_log ( msg )
-{
-  if (creator_debug) {
-      console_log(msg) ;
-  }
 }
 
 

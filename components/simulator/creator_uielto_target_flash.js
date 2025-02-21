@@ -1,6 +1,6 @@
 
 /*
- *  Copyright 2018-2024 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
+ *  Copyright 2018-2025 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
  *  file is part of CREATOR.
  *
@@ -321,98 +321,6 @@
                     '          @hidden="save">' +
                     ' ' +
                     '   <b-tabs content-class="mt-3">' +
-                    '     <b-tab title="Remote Device">' +
-                    ' ' +
-                    '       <b-container fluid align-h="center" class="mx-0 px-0">' +
-                    '         <b-row cols="1" align-h="center">' +
-                    '           <b-col class="pt-2">' +
-                    '             <label for="range-6">(1) Remote Device URL:</label>' +
-                    '             <b-form-input type="text" ' +
-                    '                           v-model="lab_url" ' +
-                    '                           placeholder="Enter remote device URL" ' +
-                    '                           size="sm" ' +
-                    '                           title="Remote remote device URL">' +
-                    '             </b-form-input>' +
-                    '           </b-col>' +
-                    '         </b-row>' +
-                    '       </b-container>' +
-                    '       <br>' +
-                    ' ' +
-                    '       <b-container fluid align-h="center" class="mx-0 px-0" v-if="!boards">' +
-                    '         <b-row cols="1" align-h="center">' +
-                    '           <b-col class="pt-2">' +
-                    '             <b-button class="btn btn-sm btn-block" variant="primary" @click="get_boards">' +
-                    '               <span class="fas fa-link"></span> Connect' +
-                    '             </b-button>' +
-                    '           </b-col>' +
-                    '         </b-row>' +
-                    '       </b-container>' +
-                    '       <br v-if="!boards">' +
-                    ' ' +
-                    '       <b-container fluid align-h="center" class="mx-0 px-0" v-if="boards">' +
-                    '         <b-row cols="1" align-h="center">' +
-                    '           <b-col class="pt-2">' +
-                    '             <label for="range-6">(2) Select Target Board:</label>' +
-                    '             <b-form-select v-model="target_board" ' +
-                    '                            :options="remote_target_boards" ' +
-                    '                            size="sm"' +
-                    '                            title="Target board">' +
-                    '             </b-form-select>' +
-                    '           </b-col>' +
-                    '         </b-row>' +
-                    '       </b-container>' +
-                    '       <br>' +
-                    ' ' +
-                    '       <b-container fluid align-h="center" class="mx-0 px-0" v-if="boards">' +
-                    '         <b-row cols="1" align-h="center">' +
-                    '           <b-col class="pt-2">' +
-                    '             <label for="range-6">(3) E-mail to receive the execution results:</label>' +
-                    '             <b-form-input type="text" ' +
-                    '                           v-model="result_email" ' +
-                    '                           placeholder="Enter E-mail" ' +
-                    '                           size="sm" ' +
-                    '                           title="Result E-mail">' +
-                    '             </b-form-input>' +
-                    '           </b-col>' +
-                    '         </b-row>' +
-                    '       </b-container>' +
-                    '       <br>' +
-                    ' ' +
-                    '       <b-container fluid align-h="center" class="mx-0 px-0" v-if="status">' +
-                    '         <b-row cols="1" align-h="center">' +
-                    '           <b-col class="pt-2">' +
-                    '             <span>Last program status: <b>{{position}}</b></span>' +
-                    '           </b-col>' +
-                    '         </b-row>' +
-                    '       </b-container>' +
-                    ' ' +
-                    '       <b-container fluid align-h="center" class="mx-0 px-0" v-if="target_board !=\'\' && enqueue">' +
-                    '         <b-row cols="1" align-h="center">' +
-                    '           <b-col class="pt-2">' +
-                    '             <b-button class="btn btn-sm btn-block" variant="danger" @click="do_cancel">' +
-                    '               <span class="fas fa-ban"></span> Cancel last program' +
-                    '             </b-button>' +
-                    '           </b-col>' +
-                    '         </b-row>' +
-                    '       </b-container>' +
-                    '       <br>' +
-                    ' ' +
-                    '       <b-container fluid align-h="center" class="mx-0 px-0" v-if="target_board !=\'\'">' +
-                    '         <b-row cols="1" align-h="center">' +
-                    '           <b-col class="pt-2">' +
-                    '             <b-button class="btn btn-sm btn-block" variant="primary" @click="do_enqueue">' +
-                    '               <span class="fas fa-paper-plane"></span> Send program' +
-                    '             </b-button>' +
-                    '           </b-col>' +
-                    '         </b-row>' +
-                    '       </b-container>' +
-                    '       <br>' +
-                    '       For Teachers, how to deploy a remote laboratory <a href="https://github.com/creatorsim/creator/blob/master/dockers/remote_lab/README.md">documentation</a>' +
-                    '     </b-tab>' +
-                    ' ' +
-                    ' ' +
-                    ' ' +
-                    ' ' +
                     '     <b-tab title="Local Device">' +
                     ' ' +
                     '       <b-container fluid align-h="center" class="mx-0 px-0">' +
@@ -753,6 +661,98 @@
                     '         </b-tab>' +
                     '       </b-tabs>' +
                     ' ' +
+                    '     </b-tab>' +
+                    ' ' +
+                    ' ' +
+                    ' ' +
+                    ' ' +
+                    '     <b-tab title="Remote Device">' +
+                    ' ' +
+                    '       <b-container fluid align-h="center" class="mx-0 px-0">' +
+                    '         <b-row cols="1" align-h="center">' +
+                    '           <b-col class="pt-2">' +
+                    '             <label for="range-6">(1) Remote Device URL:</label>' +
+                    '             <b-form-input type="text" ' +
+                    '                           v-model="lab_url" ' +
+                    '                           placeholder="Enter remote device URL" ' +
+                    '                           size="sm" ' +
+                    '                           title="Remote remote device URL">' +
+                    '             </b-form-input>' +
+                    '           </b-col>' +
+                    '         </b-row>' +
+                    '       </b-container>' +
+                    '       <br>' +
+                    ' ' +
+                    '       <b-container fluid align-h="center" class="mx-0 px-0" v-if="!boards">' +
+                    '         <b-row cols="1" align-h="center">' +
+                    '           <b-col class="pt-2">' +
+                    '             <b-button class="btn btn-sm btn-block" variant="primary" @click="get_boards">' +
+                    '               <span class="fas fa-link"></span> Connect' +
+                    '             </b-button>' +
+                    '           </b-col>' +
+                    '         </b-row>' +
+                    '       </b-container>' +
+                    '       <br v-if="!boards">' +
+                    ' ' +
+                    '       <b-container fluid align-h="center" class="mx-0 px-0" v-if="boards">' +
+                    '         <b-row cols="1" align-h="center">' +
+                    '           <b-col class="pt-2">' +
+                    '             <label for="range-6">(2) Select Target Board:</label>' +
+                    '             <b-form-select v-model="target_board" ' +
+                    '                            :options="remote_target_boards" ' +
+                    '                            size="sm"' +
+                    '                            title="Target board">' +
+                    '             </b-form-select>' +
+                    '           </b-col>' +
+                    '         </b-row>' +
+                    '       </b-container>' +
+                    '       <br>' +
+                    ' ' +
+                    '       <b-container fluid align-h="center" class="mx-0 px-0" v-if="boards">' +
+                    '         <b-row cols="1" align-h="center">' +
+                    '           <b-col class="pt-2">' +
+                    '             <label for="range-6">(3) E-mail to receive the execution results:</label>' +
+                    '             <b-form-input type="text" ' +
+                    '                           v-model="result_email" ' +
+                    '                           placeholder="Enter E-mail" ' +
+                    '                           size="sm" ' +
+                    '                           title="Result E-mail">' +
+                    '             </b-form-input>' +
+                    '           </b-col>' +
+                    '         </b-row>' +
+                    '       </b-container>' +
+                    '       <br>' +
+                    ' ' +
+                    '       <b-container fluid align-h="center" class="mx-0 px-0" v-if="status">' +
+                    '         <b-row cols="1" align-h="center">' +
+                    '           <b-col class="pt-2">' +
+                    '             <span>Last program status: <b>{{position}}</b></span>' +
+                    '           </b-col>' +
+                    '         </b-row>' +
+                    '       </b-container>' +
+                    ' ' +
+                    '       <b-container fluid align-h="center" class="mx-0 px-0" v-if="target_board !=\'\' && enqueue">' +
+                    '         <b-row cols="1" align-h="center">' +
+                    '           <b-col class="pt-2">' +
+                    '             <b-button class="btn btn-sm btn-block" variant="danger" @click="do_cancel">' +
+                    '               <span class="fas fa-ban"></span> Cancel last program' +
+                    '             </b-button>' +
+                    '           </b-col>' +
+                    '         </b-row>' +
+                    '       </b-container>' +
+                    '       <br>' +
+                    ' ' +
+                    '       <b-container fluid align-h="center" class="mx-0 px-0" v-if="target_board !=\'\'">' +
+                    '         <b-row cols="1" align-h="center">' +
+                    '           <b-col class="pt-2">' +
+                    '             <b-button class="btn btn-sm btn-block" variant="primary" @click="do_enqueue">' +
+                    '               <span class="fas fa-paper-plane"></span> Send program' +
+                    '             </b-button>' +
+                    '           </b-col>' +
+                    '         </b-row>' +
+                    '       </b-container>' +
+                    '       <br>' +
+                    '       For Teachers, how to deploy a remote laboratory <a href="https://github.com/creatorsim/creator/blob/master/dockers/remote_lab/README.md">documentation</a>' +
                     '     </b-tab>' +
                     '   </b-tabs>' +
                     ' ' +
