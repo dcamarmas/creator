@@ -39,9 +39,7 @@
                       //Save a binary in a local file
                       library_save ()
                       {
-                        if (assembly_compiler() == -1) {
-                          return;
-                        }
+                        uielto_toolbar_btngroup.methods.assembly_compiler(undefined, true) ;
 
                         promise.then((message) => 
                         {
@@ -52,15 +50,6 @@
                           if (creator_memory_is_segment_empty(memory_hash[0]) === false) {
                             show_notification('You can not enter data in a library', 'danger') ;
                             return;
-                          }
-
-                          for (var i = 0; i < instructions_binary.length; i++)
-                          {
-                            console_log(instructions_binary[i].Label)
-                            if (instructions_binary[i].Label == "main_symbol") {
-                              show_notification('You can not use the "main" tag in a library', 'danger') ;
-                              return;
-                            }
                           }
 
                           var aux = {instructions_binary: instructions_binary, instructions_tag: instructions_tag};
