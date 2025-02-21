@@ -47,7 +47,7 @@ rellenar: # $a0 <- primero parámetro => A
             mul  $t3, $t3, 4   # * 4
             add  $t3, $a0, $t3 # matriz + (i*N+j)...
             # matriz[i][j] = 0
-            sw $zero, ($t3) # memoria[$t3] = 0
+            sw $zero  ($t3) # memoria[$t3] = 0
            #
          addi $t1, $t1, 1
          b for2

@@ -9,8 +9,8 @@
       li  x6, 881
       li  x7, 5
       li  x8, 543
-      bgt x6, x5 jump1
-      bgt x5, x8 jump1
+      bgt x6, x5, jump1
+      bgt x5, x8, jump1
 
     jump2:
       li t3, 34

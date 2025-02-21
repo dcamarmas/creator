@@ -120,7 +120,7 @@
                       },
 
                       //Compile assembly code
-                      assembly_compiler(code)
+                      assembly_compiler(code, library)
                       {
                         //Change buttons status
                         this_compiling = this;
@@ -136,7 +136,7 @@
                             else{
                                 code_assembly = textarea_assembly_editor.getValue();
                             }
-                            var ret = assembly_compiler() ;
+                            var ret = assembly_compiler(library) ;
 
                             //Update/reset
                             app._data.totalStats   = 0;
@@ -168,8 +168,8 @@
                             switch (ret.type)
                             {
                               case "error":
-                                   uielto_toolbar_btngroup.methods.compile_error(ret.msg, ret.token, ret.line) ;
-                                   break;
+                                   uielto_toolbar_btngroup.methods.compile_error(ret.msg) ;
+                                   return;
 
                               case "warning":
                                    show_notification(ret.token, ret.bgcolor) ;
@@ -191,36 +191,13 @@
                       },
 
                       //Show error message in the compilation
-                      compile_error(msg, token, line)
+                      compile_error(msg)
                       {
                         var code_assembly_segment = code_assembly.split('\n');
                         uielto_toolbar_btngroup.methods.change_UI_mode('assembly');
 
                         setTimeout(function() {
                           app.$root.$emit('bv::show::modal', 'modalAssemblyError') ;
-
-                          // line 1
-                          app.modalAssemblyError.line1 = "" ;
-                          app.modalAssemblyError.code1 = "" ;
-                          if (line > 0) 
-                          {
-                            app.modalAssemblyError.line1 = line ;
-                            app.modalAssemblyError.code1 = code_assembly_segment[line - 1] ;
-                          }
-
-                          // line 2
-                          app.modalAssemblyError.line2 = line + 1 ;
-                          app.modalAssemblyError.code2 = code_assembly_segment[line] ;
-
-                          // line 3
-                          app.modalAssemblyError.line3 = "" ;
-                          app.modalAssemblyError.code3 = ""  ;
-                          if (line < code_assembly_segment.length - 1) 
-                          {
-                            app.modalAssemblyError.line3 = line + 2 ;
-                            app.modalAssemblyError.code3 = code_assembly_segment[line + 1] ;
-                          }
-
                           app.modalAssemblyError.error = msg ;
                         },75);
                       },
