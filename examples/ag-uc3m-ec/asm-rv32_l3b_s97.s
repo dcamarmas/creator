@@ -41,7 +41,7 @@ buc1: beq  x0, t1, fin1
       lbu  t1, 0(t0)
       j buc1   # beq  x0, x0, buc1
 
-fin1: li a7 1
+fin1: li a7, 1
       ecall
       # ...
 
