@@ -10,12 +10,9 @@ RUN apt update && apt-get install -y \
         sudo \
         wget \
         curl \
-        lynx \
         git \
         vim \
-        aha \
         7zip \
-        unrar \
         zip \
         unzip
 
