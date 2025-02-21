@@ -6,7 +6,7 @@
 .data
     a: .double 34.544
     b: .double 11.443
-    c: .double 0x7544FFB
+    c: .doubleword 0x7544FFB
 
     d: .space 24
 
