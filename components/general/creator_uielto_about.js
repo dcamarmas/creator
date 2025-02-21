@@ -1,6 +1,6 @@
 
 /*
- *  Copyright 2018-2024 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
+ *  Copyright 2018-2025 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
  *  This file is part of CREATOR.
  *
@@ -72,8 +72,8 @@
                 '' +
                 '   </b-card-group>' +
                 ' ' +
-                '   <b-list-group>' +
-                '     <b-list-group-item style="text-align: center;">Contact us: <a href="mailto: creator.arcos.inf.uc3m.es@gmail.com">creator.arcos.inf.uc3m.es@gmail.com</a></b-list-group-item>' +
+                '   <b-list-group class="my-3">' +
+                '     <b-list-group-item style="text-align: center;"><a href="mailto: creator.arcos.inf.uc3m.es@gmail.com"><span class="fa-solid fa-envelope"></span> creator.arcos.inf.uc3m.es@gmail.com</a></b-list-group-item>' +
                 '   </b-list-group>' +
                 ' ' +
                 '   <b-list-group>' +
