@@ -12,13 +12,16 @@ RUN apt update && apt-get install -y \
         curl \
         lynx \
         git \
-        npm \
         vim \
         aha \
         7zip \
         unrar \
         zip \
         unzip
+
+RUN apt update && apt-get install -y \
+        nodejs \
+        npm
 
 
 #Download CREATOR
