@@ -50,8 +50,8 @@
                 '' +
                 '       <b-container fluid align-h="center" class="mx-0 px-0">' +
                 '         <b-row cols="2" align-h="center">' +
-                '           <b-col class="headerText col-auto my-0 py-0 pr-1 text-uppercase">' +
-                '             <h1>Creator <b-badge pill variant="secondary">{{version}}</b-badge></h1>' +
+                '           <b-col class="headerText col-auto my-0 py-0 pr-1">' +
+                '             <h1>CREATOR <b-badge pill variant="secondary">{{version}}</b-badge></h1>' +
                 '           </b-col>' +
                 '' +
                 '           <b-col class="headerText col-auto my-0 p-0 ml-2">' +
