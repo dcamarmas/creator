@@ -21,12 +21,15 @@
 import { architecture } from "../core.mjs";
 import { crex_show_notification } from "../executor/executor.mjs";
 import { tag_instructions } from "../compiler/compiler.mjs";
-import { creator_callstack_enter, creator_callstack_leave } from "../sentinel/sentinel.mjs";
+import {
+    creator_callstack_enter,
+    creator_callstack_leave,
+} from "../sentinel/sentinel.mjs";
 import { creator_ga } from "../utils/creator_ga.mjs";
 
-export let CAPI_CHECK_STACK = {
+export const CAPI_CHECK_STACK = {
     callconv_begin: function (addr) {
-        var function_name = "";
+        let function_name = "";
 
         // 1) Passing Convection enable?
         if (architecture.arch_conf[6].value === 0) {
@@ -35,7 +38,8 @@ export let CAPI_CHECK_STACK = {
 
         // 2) get function name
         if (typeof architecture.components[0] !== "undefined") {
-            if (typeof tag_instructions[addr] === "undefined") function_name = "0x" + parseInt(addr).toString(16);
+            if (typeof tag_instructions[addr] === "undefined")
+                function_name = "0x" + parseInt(addr).toString(16);
             else function_name = tag_instructions[addr];
         }
 
@@ -49,7 +53,7 @@ export let CAPI_CHECK_STACK = {
         }
 
         // 2) Callstack_leave
-        var ret = creator_callstack_leave();
+        const ret = creator_callstack_leave();
 
         // 3) If everything is ok, just return
         if (ret.ok) {
@@ -58,7 +62,11 @@ export let CAPI_CHECK_STACK = {
 
         // 4) Othewise report some warning...
         // Google Analytics
-        creator_ga("execute", "execute.exception", "execute.exception.protection_jrra" + ret.msg);
+        creator_ga(
+            "execute",
+            "execute.exception",
+            "execute.exception.protection_jrra" + ret.msg,
+        );
 
         // User notification
         crex_show_notification(ret.msg, "danger");

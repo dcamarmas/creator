@@ -21,7 +21,11 @@
 
 import { initCAPI } from "./capi/initCAPI.mjs";
 
-import { bi_BigIntTofloat, bi_BigIntTodouble, register_value_deserialize } from "./utils/bigint.mjs";
+import {
+    bi_BigIntTofloat,
+    bi_BigIntTodouble,
+    register_value_deserialize,
+} from "./utils/bigint.mjs";
 import { float2bin, double2bin, bin2hex, hex2double } from "./utils/utils.mjs";
 
 import { logger } from "./utils/creator_logger.mjs";
@@ -32,11 +36,12 @@ import {
     main_memory_read_value,
     main_memory_read_default_value,
 } from "./memory/memoryCore.mjs";
+import * as wasm from "./compiler/deno/creator_compiler.js";
 
-export var code_assembly = "";
-export var update_binary = "";
-export var backup_stack_address;
-export var backup_data_address;
+export let code_assembly = "";
+export let update_binary = "";
+export let backup_stack_address;
+export let backup_data_address;
 
 export let architecture_hash = [];
 export let architecture = {
@@ -48,9 +53,9 @@ export let architecture = {
 };
 
 export let app;
-let word_size_bits = 32; // TODO: load from architecture
-export let word_size_bytes = word_size_bits / 8; // TODO: load from architecture
-export let register_size_bits = 32;
+const word_size_bits = 32; // TODO: load from architecture
+export const word_size_bytes = word_size_bits / 8; // TODO: load from architecture
+export const register_size_bits = 32;
 
 export const status = {
     execution_init: 1,
@@ -58,10 +63,11 @@ export const status = {
     run_program: 0,
     keyboard: "",
     display: "",
+    execution_index: 0,
 };
 
-export var stats_value = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-export var stats = [
+export const stats_value = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+export const stats = [
     {
         type: "Arithmetic floating point",
         number_instructions: 0,
@@ -94,6 +100,8 @@ export var stats = [
     },
 ];
 
+export let arch;
+
 // TODO: Make sure these variables are all needed
 // let architecture_available = []
 // let load_architectures_available = []
@@ -121,7 +129,7 @@ export function set_debug(enable_debug) {
 
 // load components
 export function load_arch_select(cfg) {
-    var ret = {
+    const ret = {
         errorcode: "",
         token: "",
         type: "",
@@ -129,7 +137,7 @@ export function load_arch_select(cfg) {
         status: "ok",
     };
 
-    var auxArchitecture = cfg;
+    const auxArchitecture = cfg;
     architecture = register_value_deserialize(auxArchitecture);
 
     architecture_hash = [];
@@ -149,16 +157,15 @@ export function load_arch_select(cfg) {
 }
 
 export function load_architecture(arch_str) {
-    var ret = {};
-
-    let arch_obj = JSON.parse(arch_str);
-    ret = load_arch_select(arch_obj);
+    arch = wasm.ArchitectureJS.from_json(arch_str);
+    const arch_obj = JSON.parse(arch_str);
+    const ret = load_arch_select(arch_obj);
 
     return ret;
 }
 
 export function load_library(lib_str) {
-    var ret = {
+    const ret = {
         status: "ok",
         msg: "",
     };
@@ -171,19 +178,14 @@ export function load_library(lib_str) {
 
 // compilation
 
-export function assembly_compile(code) {
-    var ret = {};
+export function assembly_compile(code, enable_color) {
+    let ret = {};
 
     code_assembly = code;
-    ret = assembly_compiler();
+    let color = enable_color ? wasm.Color.ANSI : wasm.Color.NoColor;
+    ret = assembly_compiler(false, color);
     switch (ret.status) {
         case "error":
-            var code_assembly_segment = code_assembly.split("\n");
-            ret.msg += "\n\n";
-            if (ret.line > 0) ret.msg += "  " + (ret.line + 0) + " " + code_assembly_segment[ret.line - 1] + "\n";
-            ret.msg += "->" + (ret.line + 1) + " " + code_assembly_segment[ret.line] + "\n";
-            if (ret.line < code_assembly_segment.length - 1)
-                ret.msg += "  " + (ret.line + 2) + " " + code_assembly_segment[ret.line + 1] + "\n";
             break;
 
         case "warning":
@@ -205,7 +207,7 @@ export function assembly_compile(code) {
 // execution
 
 export function execute_program(limit_n_instructions) {
-    var ret = {};
+    let ret;
     ret = executeProgramOneShot(limit_n_instructions);
     if (ret.error === true) {
         ret.status = "ko";
@@ -218,22 +220,23 @@ export function execute_program(limit_n_instructions) {
 
 // state management
 
+// eslint-disable-next-line max-lines-per-function
 export function get_state() {
-    var ret = {
+    const ret = {
         status: "ok",
         msg: "",
     };
 
-    var c_name = "";
-    var e_name = "";
-    var elto_value = null;
-    var elto_dvalue = null;
-    var elto_string = null;
+    let c_name;
+    let e_name;
+    let elto_value;
+    let elto_dvalue;
+    let elto_string;
 
     // dump registers
-    for (var i = 0; i < architecture.components.length; i++) {
+    for (let i = 0; i < architecture.components.length; i++) {
         c_name = architecture.components[i].name;
-        if (typeof c_name == "undefined") {
+        if (typeof c_name === "undefined") {
             return ret;
         }
         c_name = c_name
@@ -242,7 +245,7 @@ export function get_state() {
             .join("")
             .toLowerCase();
 
-        for (var j = 0; j < architecture.components[i].elements.length; j++) {
+        for (let j = 0; j < architecture.components[i].elements.length; j++) {
             // get value
             e_name = architecture.components[i].elements[j].name;
             elto_value = architecture.components[i].elements[j].value;
@@ -252,18 +255,27 @@ export function get_state() {
                 architecture.components[i].double_precision === true &&
                 architecture.components[i].double_precision_type == "linked"
             ) {
-                var aux_value;
-                var aux_sim1;
-                var aux_sim2;
+                let aux_value;
+                let aux_sim1;
+                let aux_sim2;
 
-                for (var a = 0; a < architecture_hash.length; a++) {
-                    for (var b = 0; b < architecture.components[a].elements.length; b++) {
+                for (let a = 0; a < architecture_hash.length; a++) {
+                    for (
+                        let b = 0;
+                        b < architecture.components[a].elements.length;
+                        b++
+                    ) {
                         if (
                             architecture.components[a].elements[b].name ==
                             architecture.components[i].elements[j].simple_reg[0]
                         ) {
                             aux_sim1 = bin2hex(
-                                float2bin(bi_BigIntTofloat(architecture.components[a].elements[b].default_value)),
+                                float2bin(
+                                    bi_BigIntTofloat(
+                                        architecture.components[a].elements[b]
+                                            .default_value,
+                                    ),
+                                ),
                             );
                         }
                         if (
@@ -271,7 +283,12 @@ export function get_state() {
                             architecture.components[i].elements[j].simple_reg[1]
                         ) {
                             aux_sim2 = bin2hex(
-                                float2bin(bi_BigIntTofloat(architecture.components[a].elements[b].default_value)),
+                                float2bin(
+                                    bi_BigIntTofloat(
+                                        architecture.components[a].elements[b]
+                                            .default_value,
+                                    ),
+                                ),
                             );
                         }
                     }
@@ -280,11 +297,12 @@ export function get_state() {
                 aux_value = aux_sim1 + aux_sim2;
                 elto_dvalue = hex2double("0x" + aux_value);
             } else {
-                elto_dvalue = architecture.components[i].elements[j].default_value;
+                elto_dvalue =
+                    architecture.components[i].elements[j].default_value;
             }
 
             // skip default results
-            if (typeof elto_dvalue == "undefined") {
+            if (typeof elto_dvalue === "undefined") {
                 continue;
             }
             if (elto_value == elto_dvalue) {
@@ -295,19 +313,23 @@ export function get_state() {
             elto_string = "0x" + elto_value.toString(16);
             if (architecture.components[i].type == "fp_registers") {
                 if (architecture.components[i].double_precision === false) {
-                    elto_string = "0x" + bin2hex(float2bin(bi_BigIntTofloat(elto_value)));
+                    elto_string =
+                        "0x" + bin2hex(float2bin(bi_BigIntTofloat(elto_value)));
                 }
                 if (architecture.components[i].double_precision === true) {
-                    elto_string = "0x" + bin2hex(double2bin(bi_BigIntTodouble(elto_value)));
+                    elto_string =
+                        "0x" +
+                        bin2hex(double2bin(bi_BigIntTodouble(elto_value)));
                 }
             }
 
-            ret.msg = ret.msg + c_name + "[" + e_name + "]:" + elto_string + "; ";
+            ret.msg =
+                ret.msg + c_name + "[" + e_name + "]:" + elto_string + "; ";
         }
     }
 
     // dump memory
-    var addrs = main_memory_get_addresses();
+    const addrs = main_memory_get_addresses();
     for (let i = 0; i < addrs.length; i++) {
         if (addrs[i] >= parseInt(architecture.memory_layout[3].value)) {
             continue;
@@ -317,28 +339,45 @@ export function get_state() {
         elto_dvalue = main_memory_read_default_value(addrs[i]);
 
         if (elto_value != elto_dvalue) {
-            let addr_string = "0x" + parseInt(addrs[i]).toString(16);
+            const addr_string = "0x" + parseInt(addrs[i]).toString(16);
             elto_string = "0x" + elto_value;
-            ret.msg = ret.msg + "memory[" + addr_string + "]" + ":" + elto_string + "; ";
+            ret.msg =
+                ret.msg +
+                "memory[" +
+                addr_string +
+                "]" +
+                ":" +
+                elto_string +
+                "; ";
         }
     }
 
     // dump keyboard
-    ret.msg = ret.msg + "keyboard[0x0]" + ":'" + encodeURIComponent(status.keyboard) + "'; ";
+    ret.msg =
+        ret.msg +
+        "keyboard[0x0]" +
+        ":'" +
+        encodeURIComponent(status.keyboard) +
+        "'; ";
 
     // dump display
-    ret.msg = ret.msg + "display[0x0]" + ":'" + encodeURIComponent(status.display) + "'; ";
+    ret.msg =
+        ret.msg +
+        "display[0x0]" +
+        ":'" +
+        encodeURIComponent(status.display) +
+        "'; ";
 
     return ret;
 }
 
 export function compare_states(ref_state, alt_state) {
-    var ret = {
+    const ret = {
         status: "ok",
         msg: "",
     };
 
-    let ref_state_arr = ref_state
+    const ref_state_arr = ref_state
         .split("\n")
         .map(function (s) {
             return s.replace(/^\s*|\s*$/g, "");
@@ -346,10 +385,11 @@ export function compare_states(ref_state, alt_state) {
         .filter(function (x) {
             return x;
         });
-    if (ref_state_arr.length > 0) ref_state = ref_state_arr[ref_state_arr.length - 1];
+    if (ref_state_arr.length > 0)
+        ref_state = ref_state_arr[ref_state_arr.length - 1];
     else ref_state = "";
 
-    let alt_state_arr = alt_state
+    const alt_state_arr = alt_state
         .split("\n")
         .map(function (s) {
             return s.replace(/^\s*|\s*$/g, "");
@@ -357,7 +397,8 @@ export function compare_states(ref_state, alt_state) {
         .filter(function (x) {
             return x;
         });
-    if (alt_state_arr.length > 0) alt_state = alt_state_arr[alt_state_arr.length - 1];
+    if (alt_state_arr.length > 0)
+        alt_state = alt_state_arr[alt_state_arr.length - 1];
     else alt_state = "";
 
     // 1) check equals
@@ -367,10 +408,10 @@ export function compare_states(ref_state, alt_state) {
     }
 
     // 2) check m_alt included within m_ref
-    var m_ref = {};
+    const m_ref = {};
     if (ref_state.includes(";")) {
         ref_state.split(";").map(function (i) {
-            var parts = i.split(":");
+            const parts = i.split(":");
             if (parts.length !== 2) {
                 return;
             }
@@ -379,10 +420,10 @@ export function compare_states(ref_state, alt_state) {
         });
     }
 
-    var m_alt = {};
+    const m_alt = {};
     if (alt_state.includes(";")) {
         alt_state.split(";").map(function (i) {
-            var parts = i.split(":");
+            const parts = i.split(":");
             if (parts.length != 2) {
                 return;
             }
@@ -392,10 +433,13 @@ export function compare_states(ref_state, alt_state) {
     }
 
     ret.msg = "Different: ";
-    for (var elto in m_ref) {
+    for (const elto in m_ref) {
         if (m_alt[elto] != m_ref[elto]) {
-            if (typeof m_alt[elto] === "undefined") ret.msg += elto + "=" + m_ref[elto] + " is not available. ";
-            else ret.msg += elto + "=" + m_ref[elto] + " is =" + m_alt[elto] + ". ";
+            if (typeof m_alt[elto] === "undefined")
+                ret.msg += elto + "=" + m_ref[elto] + " is not available. ";
+            else
+                ret.msg +=
+                    elto + "=" + m_ref[elto] + " is =" + m_alt[elto] + ". ";
 
             ret.status = "ko";
         }
@@ -412,12 +456,12 @@ export function compare_states(ref_state, alt_state) {
 // help
 
 export function help_instructions() {
-    var o = "";
-    var m = null;
+    let o = "";
+    let m;
 
     // describe instructions
     o += "name;\t\tsignature;\t\twords;\t\ttype\n";
-    for (var i = 0; i < architecture.instructions.length; i++) {
+    for (let i = 0; i < architecture.instructions.length; i++) {
         m = architecture.instructions[i];
 
         o += m.name + ";\t" + (m.name.length < 7 ? "\t" : "");
@@ -430,12 +474,12 @@ export function help_instructions() {
 }
 
 export function help_pseudoins() {
-    var o = "";
-    var m = null;
+    let o = "";
+    let m;
 
     // describe pseudoinstructions
     o += "name;\t\tsignature;\t\twords\n";
-    for (var i = 0; i < architecture.pseudoinstructions.length; i++) {
+    for (let i = 0; i < architecture.pseudoinstructions.length; i++) {
         m = architecture.pseudoinstructions[i];
 
         o += m.name + ";\t" + (m.name.length < 7 ? "\t" : "");

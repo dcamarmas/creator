@@ -1,18 +1,18 @@
 <script>
-import { foo, baz } from './stuff/mystuff.mjs'
-import { bar } from './stuff/mycoolstuff.mts'
+import { foo, baz } from "./stuff/mystuff.mjs";
+import { bar } from "./stuff/mycoolstuff.mts";
 
 export default {
-  name: 'app',
+  name: "app",
   data() {
-    return { baz: baz }
+    return { baz: baz };
   },
   methods: {
     call() {
-      return foo() + bar()
+      return foo() + bar();
     },
   },
-}
+};
 </script>
 
 <template>

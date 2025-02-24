@@ -24,7 +24,7 @@ import { architecture } from "../core.mjs";
  *  Register operations
  */
 export function crex_findReg(value1) {
-    var ret = {};
+    const ret = {};
 
     ret.match = 0;
     ret.indexComp = null;
@@ -34,9 +34,12 @@ export function crex_findReg(value1) {
         return ret;
     }
 
-    for (var i = 0; i < architecture.components.length; i++) {
-        for (var j = 0; j < architecture.components[i].elements.length; j++) {
-            if (architecture.components[i].elements[j].name.includes(value1) !== false) {
+    for (let i = 0; i < architecture.components.length; i++) {
+        for (let j = 0; j < architecture.components[i].elements.length; j++) {
+            if (
+                architecture.components[i].elements[j].name.includes(value1) !==
+                false
+            ) {
                 ret.match = 1;
                 ret.indexComp = i;
                 ret.indexElem = j;
@@ -48,7 +51,7 @@ export function crex_findReg(value1) {
     return ret;
 }
 export function crex_findReg_bytag(value1) {
-    var ret = {};
+    const ret = {};
 
     ret.match = 0;
     ret.indexComp = null;
@@ -58,9 +61,13 @@ export function crex_findReg_bytag(value1) {
         return ret;
     }
 
-    for (var i = 0; i < architecture.components.length; i++) {
-        for (var j = 0; j < architecture.components[i].elements.length; j++) {
-            if (architecture.components[i].elements[j].properties.includes(value1) !== false) {
+    for (let i = 0; i < architecture.components.length; i++) {
+        for (let j = 0; j < architecture.components[i].elements.length; j++) {
+            if (
+                architecture.components[i].elements[j].properties.includes(
+                    value1,
+                ) !== false
+            ) {
                 ret.match = 1;
                 ret.indexComp = i;
                 ret.indexElem = j;

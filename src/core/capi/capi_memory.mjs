@@ -24,7 +24,10 @@ import { writeMemory, readMemory } from "../memory/memoryOperations.mjs";
 import { creator_memory_value_by_type } from "../memory/memoryManager.mjs";
 import { capi_bad_align, capi_raise } from "./capi_validation.mjs";
 import { crex_findReg } from "../register/registerLookup.mjs";
-import { creator_callstack_newWrite, creator_callstack_newRead } from "../sentinel/sentinel.mjs";
+import {
+    creator_callstack_newWrite,
+    creator_callstack_newRead,
+} from "../sentinel/sentinel.mjs";
 
 /*
  *  CREATOR instruction description API:
@@ -39,75 +42,87 @@ import { creator_callstack_newWrite, creator_callstack_newRead } from "../sentin
 export const CAPI_MEMORY = {
     mem_write: function (addr, value, type, reg_name) {
         // Implementation of capi_mem_write
-        var size = 1;
+        const size = 1;
 
         if (capi_bad_align(addr, type)) {
             capi_raise("The memory must be align");
             creator_executor_exit(true);
         }
 
-        var addr_16 = parseInt(addr, 16);
+        const addr_16 = parseInt(addr, 16);
         if (
             addr_16 >= parseInt(architecture.memory_layout[0].value) &&
             addr_16 <= parseInt(architecture.memory_layout[1].value)
         ) {
-            capi_raise("Segmentation fault. You tried to write in the text segment");
+            capi_raise(
+                "Segmentation fault. You tried to write in the text segment",
+            );
             creator_executor_exit(true);
         }
 
         try {
             writeMemory(value, addr, type);
         } catch (e) {
-            capi_raise("Invalid memory access to address '0x" + addr.toString(16) + "'");
+            capi_raise(
+                "Invalid memory access to address '0x" +
+                    addr.toString(16) +
+                    "'",
+            );
             creator_executor_exit(true);
         }
 
-        var ret = crex_findReg(reg_name);
+        const ret = crex_findReg(reg_name);
         if (ret.match === 0) {
             return;
         }
 
-        var i = ret.indexComp;
-        var j = ret.indexElem;
+        const i = ret.indexComp;
+        const j = ret.indexElem;
 
         creator_callstack_newWrite(i, j, addr, type);
     },
 
     mem_read: function (addr, type, reg_name) {
         // Implementation of capi_mem_read
-        var size = 1;
-        var val = 0x0;
+        const size = 1;
+        let val = 0x0;
 
         if (capi_bad_align(addr, type)) {
             capi_raise("The memory must be align");
             creator_executor_exit(true);
         }
 
-        var addr_16 = parseInt(addr, 16);
+        const addr_16 = parseInt(addr, 16);
         if (
             addr_16 >= parseInt(architecture.memory_layout[0].value) &&
             addr_16 <= parseInt(architecture.memory_layout[1].value)
         ) {
-            capi_raise("Segmentation fault. You tried to read in the text segment");
+            capi_raise(
+                "Segmentation fault. You tried to read in the text segment",
+            );
             creator_executor_exit(true);
         }
 
         try {
             val = readMemory(addr, type);
         } catch (e) {
-            capi_raise("Invalid memory access to address '0x" + addr.toString(16) + "'");
+            capi_raise(
+                "Invalid memory access to address '0x" +
+                    addr.toString(16) +
+                    "'",
+            );
             creator_executor_exit(true);
         }
 
-        var ret = creator_memory_value_by_type(val, type);
+        const ret = creator_memory_value_by_type(val, type);
 
-        var find_ret = crex_findReg(reg_name);
+        const find_ret = crex_findReg(reg_name);
         if (find_ret.match === 0) {
             return ret;
         }
 
-        var i = find_ret.indexComp;
-        var j = find_ret.indexElem;
+        const i = find_ret.indexComp;
+        const j = find_ret.indexElem;
 
         creator_callstack_newRead(i, j, addr, type);
 

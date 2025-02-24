@@ -1,3 +1,22 @@
+/*
+ *  Copyright 2018-2025 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos, Jorge Ramos Santana
+ *
+ *  This file is part of CREATOR.
+ *
+ *  CREATOR is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Lesser General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  CREATOR is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 "use strict";
 
 export const LOG_LEVELS = {
@@ -51,7 +70,7 @@ class Logger {
      * @private
      * @returns {string}
      */
-    #extractCaller() {
+    static #extractCaller() {
         try {
             const stack = new Error().stack.split("\n");
             for (let i = 1; i < stack.length; i++) {
@@ -60,7 +79,9 @@ class Logger {
                 if (line.includes("creator_logger.mjs")) {
                     continue;
                 }
-                const match = line.match(/\((.+):(\d+):(\d+)\)/) || line.match(/at (.+):(\d+):(\d+)/);
+                const match =
+                    line.match(/\((.+):(\d+):(\d+)\)/) ||
+                    line.match(/at (.+):(\d+):(\d+)/);
                 if (match) {
                     return `${match[1]}:${match[2]}:${match[3]}`;
                 }
@@ -79,7 +100,7 @@ class Logger {
     #log(message, level) {
         if (!this.enabled || LOG_LEVELS[level] > this.level) return;
 
-        const caller = this.#extractCaller();
+        const caller = Logger.#extractCaller();
         const prefix = `${COLORS[level]}[${level}]${caller ? " " + caller : ""}${COLORS.RESET}`;
 
         console.log(prefix);

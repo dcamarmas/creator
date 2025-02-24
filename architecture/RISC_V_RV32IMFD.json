@@ -31,6 +31,10 @@
     {
       "name": "Sensitive Register Name",
       "value": "1"
+    },
+    {
+      "name": "CommentPrefix",
+      "value": "#"
     }
   ],
   "components": [
@@ -40,17 +44,11 @@
       "double_precision": false,
       "elements": [
         {
-          "name": [
-            "PC"
-          ],
+          "name": ["PC"],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
-          "properties": [
-            "read",
-            "write",
-            "program_counter"
-          ]
+          "value": 0,
+          "default_value": 0,
+          "properties": ["read", "write", "program_counter"]
         }
       ]
     },
@@ -60,436 +58,228 @@
       "double_precision": false,
       "elements": [
         {
-          "name": [
-            "x0",
-            "zero"
-          ],
+          "name": ["x0", "zero"],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
-          "properties": [
-            "read",
-            "ignore_write"
-          ]
+          "value": 0,
+          "default_value": 0,
+          "properties": ["read", "ignore_write"]
         },
         {
-          "name": [
-            "x1",
-            "ra"
-          ],
+          "name": ["x1", "ra"],
           "nbits": "32",
-          "value": "4294967295",
-          "default_value": "4294967295",
-          "properties": [
-            "read",
-            "write"
-          ]
+          "value": 4294967295,
+          "default_value": 4294967295,
+          "properties": ["read", "write"]
         },
         {
-          "name": [
-            "x2",
-            "sp"
-          ],
+          "name": ["x2", "sp"],
           "nbits": "32",
-          "value": "268435453",
-          "default_value": "268435453",
-          "properties": [
-            "read",
-            "write",
-            "stack_pointer"
-          ]
+          "value": 268435452,
+          "default_value": 268435452,
+          "properties": ["read", "write", "stack_pointer"]
         },
         {
-          "name": [
-            "x3",
-            "gp"
-          ],
+          "name": ["x3", "gp"],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
-          "properties": [
-            "read",
-            "write",
-            "global_pointer"
-          ]
+          "value": 0,
+          "default_value": 0,
+          "properties": ["read", "write", "global_pointer"]
         },
         {
-          "name": [
-            "x4",
-            "tp"
-          ],
+          "name": ["x4", "tp"],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
-          "properties": [
-            "read",
-            "write"
-          ]
+          "value": 0,
+          "default_value": 0,
+          "properties": ["read", "write"]
         },
         {
-          "name": [
-            "x5",
-            "t0"
-          ],
+          "name": ["x5", "t0"],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
-          "properties": [
-            "read",
-            "write"
-          ]
+          "value": 0,
+          "default_value": 0,
+          "properties": ["read", "write"]
         },
         {
-          "name": [
-            "x6",
-            "t1"
-          ],
+          "name": ["x6", "t1"],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
-          "properties": [
-            "read",
-            "write"
-          ]
+          "value": 0,
+          "default_value": 0,
+          "properties": ["read", "write"]
         },
         {
-          "name": [
-            "x7",
-            "t2"
-          ],
+          "name": ["x7", "t2"],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
-          "properties": [
-            "read",
-            "write"
-          ]
+          "value": 0,
+          "default_value": 0,
+          "properties": ["read", "write"]
         },
         {
-          "name": [
-            "x8",
-            "fp",
-            "s0"
-          ],
+          "name": ["x8", "fp", "s0"],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
-          "properties": [
-            "read",
-            "write",
-            "frame_pointer",
-            "saved"
-          ]
+          "value": 0,
+          "default_value": 0,
+          "properties": ["read", "write", "frame_pointer", "saved"]
         },
         {
-          "name": [
-            "x9",
-            "s1"
-          ],
+          "name": ["x9", "s1"],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
-          "properties": [
-            "read",
-            "write",
-            "saved"
-          ]
+          "value": 0,
+          "default_value": 0,
+          "properties": ["read", "write", "saved"]
         },
         {
-          "name": [
-            "x10",
-            "a0"
-          ],
+          "name": ["x10", "a0"],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
-          "properties": [
-            "read",
-            "write"
-          ]
+          "value": 0,
+          "default_value": 0,
+          "properties": ["read", "write"]
         },
         {
-          "name": [
-            "x11",
-            "a1"
-          ],
+          "name": ["x11", "a1"],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
-          "properties": [
-            "read",
-            "write"
-          ]
+          "value": 0,
+          "default_value": 0,
+          "properties": ["read", "write"]
         },
         {
-          "name": [
-            "x12",
-            "a2"
-          ],
+          "name": ["x12", "a2"],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
-          "properties": [
-            "read",
-            "write"
-          ]
+          "value": 0,
+          "default_value": 0,
+          "properties": ["read", "write"]
         },
         {
-          "name": [
-            "x13",
-            "a3"
-          ],
+          "name": ["x13", "a3"],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
-          "properties": [
-            "read",
-            "write"
-          ]
+          "value": 0,
+          "default_value": 0,
+          "properties": ["read", "write"]
         },
         {
-          "name": [
-            "x14",
-            "a4"
-          ],
+          "name": ["x14", "a4"],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
-          "properties": [
-            "read",
-            "write"
-          ]
+          "value": 0,
+          "default_value": 0,
+          "properties": ["read", "write"]
         },
         {
-          "name": [
-            "x15",
-            "a5"
-          ],
+          "name": ["x15", "a5"],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
-          "properties": [
-            "read",
-            "write"
-          ]
+          "value": 0,
+          "default_value": 0,
+          "properties": ["read", "write"]
         },
         {
-          "name": [
-            "x16",
-            "a6"
-          ],
+          "name": ["x16", "a6"],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
-          "properties": [
-            "read",
-            "write"
-          ]
+          "value": 0,
+          "default_value": 0,
+          "properties": ["read", "write"]
         },
         {
-          "name": [
-            "x17",
-            "a7"
-          ],
+          "name": ["x17", "a7"],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
-          "properties": [
-            "read",
-            "write"
-          ]
+          "value": 0,
+          "default_value": 0,
+          "properties": ["read", "write"]
         },
         {
-          "name": [
-            "x18",
-            "s2"
-          ],
+          "name": ["x18", "s2"],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
-          "properties": [
-            "read",
-            "write",
-            "saved"
-          ]
+          "value": 0,
+          "default_value": 0,
+          "properties": ["read", "write", "saved"]
         },
         {
-          "name": [
-            "x19",
-            "s3"
-          ],
+          "name": ["x19", "s3"],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
-          "properties": [
-            "read",
-            "write",
-            "saved"
-          ]
+          "value": 0,
+          "default_value": 0,
+          "properties": ["read", "write", "saved"]
         },
         {
-          "name": [
-            "x20",
-            "s4"
-          ],
+          "name": ["x20", "s4"],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
-          "properties": [
-            "read",
-            "write",
-            "saved"
-          ]
+          "value": 0,
+          "default_value": 0,
+          "properties": ["read", "write", "saved"]
         },
         {
-          "name": [
-            "x21",
-            "s5"
-          ],
+          "name": ["x21", "s5"],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
-          "properties": [
-            "read",
-            "write",
-            "saved"
-          ]
+          "value": 0,
+          "default_value": 0,
+          "properties": ["read", "write", "saved"]
         },
         {
-          "name": [
-            "x22",
-            "s6"
-          ],
+          "name": ["x22", "s6"],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
-          "properties": [
-            "read",
-            "write",
-            "saved"
-          ]
+          "value": 0,
+          "default_value": 0,
+          "properties": ["read", "write", "saved"]
         },
         {
-          "name": [
-            "x23",
-            "s7"
-          ],
+          "name": ["x23", "s7"],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
-          "properties": [
-            "read",
-            "write",
-            "saved"
-          ]
+          "value": 0,
+          "default_value": 0,
+          "properties": ["read", "write", "saved"]
         },
         {
-          "name": [
-            "x24",
-            "s8"
-          ],
+          "name": ["x24", "s8"],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
-          "properties": [
-            "read",
-            "write",
-            "saved"
-          ]
+          "value": 0,
+          "default_value": 0,
+          "properties": ["read", "write", "saved"]
         },
         {
-          "name": [
-            "x25",
-            "s9"
-          ],
+          "name": ["x25", "s9"],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
-          "properties": [
-            "read",
-            "write",
-            "saved"
-          ]
+          "value": 0,
+          "default_value": 0,
+          "properties": ["read", "write", "saved"]
         },
         {
-          "name": [
-            "x26",
-            "s10"
-          ],
+          "name": ["x26", "s10"],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
-          "properties": [
-            "read",
-            "write",
-            "saved"
-          ]
+          "value": 0,
+          "default_value": 0,
+          "properties": ["read", "write", "saved"]
         },
         {
-          "name": [
-            "x27",
-            "s11"
-          ],
+          "name": ["x27", "s11"],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
-          "properties": [
-            "read",
-            "write",
-            "saved"
-          ]
+          "value": 0,
+          "default_value": 0,
+          "properties": ["read", "write", "saved"]
         },
         {
-          "name": [
-            "x28",
-            "t3"
-          ],
+          "name": ["x28", "t3"],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
-          "properties": [
-            "read",
-            "write"
-          ]
+          "value": 0,
+          "default_value": 0,
+          "properties": ["read", "write"]
         },
         {
-          "name": [
-            "x29",
-            "t4"
-          ],
+          "name": ["x29", "t4"],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
-          "properties": [
-            "read",
-            "write"
-          ]
+          "value": 0,
+          "default_value": 0,
+          "properties": ["read", "write"]
         },
         {
-          "name": [
-            "x30",
-            "t5"
-          ],
+          "name": ["x30", "t5"],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
-          "properties": [
-            "read",
-            "write"
-          ]
+          "value": 0,
+          "default_value": 0,
+          "properties": ["read", "write"]
         },
         {
-          "name": [
-            "x31",
-            "t6"
-          ],
+          "name": ["x31", "t6"],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
-          "properties": [
-            "read",
-            "write"
-          ]
+          "value": 0,
+          "default_value": 0,
+          "properties": ["read", "write"]
         }
       ]
     },
@@ -500,437 +290,233 @@
       "double_precision_type": "extended",
       "elements": [
         {
-          "name": [
-            "f0",
-            "ft0"
-          ],
+          "name": ["f0", "ft0"],
           "nbits": "64",
           "value": 0.0,
           "default_value": 0.0,
-          "properties": [
-            "read",
-            "write"
-          ]
+          "properties": ["read", "write"]
         },
         {
-          "name": [
-            "f1",
-            "ft1"
-          ],
+          "name": ["f1", "ft1"],
           "nbits": "64",
           "value": 0.0,
           "default_value": 0.0,
-          "properties": [
-            "read",
-            "write"
-          ]
+          "properties": ["read", "write"]
         },
         {
-          "name": [
-            "f2",
-            "ft2"
-          ],
+          "name": ["f2", "ft2"],
           "nbits": "64",
           "value": 0.0,
           "default_value": 0.0,
-          "properties": [
-            "read",
-            "write"
-          ]
+          "properties": ["read", "write"]
         },
         {
-          "name": [
-            "f3",
-            "ft3"
-          ],
+          "name": ["f3", "ft3"],
           "nbits": "64",
           "value": 0.0,
           "default_value": 0.0,
-          "properties": [
-            "read",
-            "write"
-          ]
+          "properties": ["read", "write"]
         },
         {
-          "name": [
-            "f4",
-            "ft4"
-          ],
+          "name": ["f4", "ft4"],
           "nbits": "64",
           "value": 0.0,
           "default_value": 0.0,
-          "properties": [
-            "read",
-            "write"
-          ]
+          "properties": ["read", "write"]
         },
         {
-          "name": [
-            "f5",
-            "ft5"
-          ],
+          "name": ["f5", "ft5"],
           "nbits": "64",
           "value": 0.0,
           "default_value": 0.0,
-          "properties": [
-            "read",
-            "write"
-          ]
+          "properties": ["read", "write"]
         },
         {
-          "name": [
-            "f6",
-            "ft6"
-          ],
+          "name": ["f6", "ft6"],
           "nbits": "64",
           "value": 0.0,
           "default_value": 0.0,
-          "properties": [
-            "read",
-            "write"
-          ]
+          "properties": ["read", "write"]
         },
         {
-          "name": [
-            "f7",
-            "ft7"
-          ],
+          "name": ["f7", "ft7"],
           "nbits": "64",
           "value": 0.0,
           "default_value": 0.0,
-          "properties": [
-            "read",
-            "write"
-          ]
+          "properties": ["read", "write"]
         },
         {
-          "name": [
-            "f8",
-            "fs0"
-          ],
+          "name": ["f8", "fs0"],
           "nbits": "64",
           "value": 0.0,
           "default_value": 0.0,
-          "properties": [
-            "read",
-            "write",
-            "saved"
-          ]
+          "properties": ["read", "write", "saved"]
         },
         {
-          "name": [
-            "f9",
-            "fs1"
-          ],
+          "name": ["f9", "fs1"],
           "nbits": "64",
           "value": 0.0,
           "default_value": 0.0,
-          "properties": [
-            "read",
-            "write",
-            "saved"
-          ]
+          "properties": ["read", "write", "saved"]
         },
         {
-          "name": [
-            "f10",
-            "fa0"
-          ],
+          "name": ["f10", "fa0"],
           "nbits": "64",
           "value": 0.0,
           "default_value": 0.0,
-          "properties": [
-            "read",
-            "write"
-          ]
+          "properties": ["read", "write"]
         },
         {
-          "name": [
-            "f11",
-            "fa1"
-          ],
+          "name": ["f11", "fa1"],
           "nbits": "64",
           "value": 0.0,
           "default_value": 0.0,
-          "properties": [
-            "read",
-            "write"
-          ]
+          "properties": ["read", "write"]
         },
         {
-          "name": [
-            "f12",
-            "fa2"
-          ],
+          "name": ["f12", "fa2"],
           "nbits": "64",
           "value": 0.0,
           "default_value": 0.0,
-          "properties": [
-            "read",
-            "write"
-          ]
+          "properties": ["read", "write"]
         },
         {
-          "name": [
-            "f13",
-            "fa3"
-          ],
+          "name": ["f13", "fa3"],
           "nbits": "64",
           "value": 0.0,
           "default_value": 0.0,
-          "properties": [
-            "read",
-            "write"
-          ]
+          "properties": ["read", "write"]
         },
         {
-          "name": [
-            "f14",
-            "fa4"
-          ],
+          "name": ["f14", "fa4"],
           "nbits": "64",
           "value": 0.0,
           "default_value": 0.0,
-          "properties": [
-            "read",
-            "write"
-          ]
+          "properties": ["read", "write"]
         },
         {
-          "name": [
-            "f15",
-            "fa5"
-          ],
+          "name": ["f15", "fa5"],
           "nbits": "64",
           "value": 0.0,
           "default_value": 0.0,
-          "properties": [
-            "read",
-            "write"
-          ]
+          "properties": ["read", "write"]
         },
         {
-          "name": [
-            "f16",
-            "fa6"
-          ],
+          "name": ["f16", "fa6"],
           "nbits": "64",
           "value": 0.0,
           "default_value": 0.0,
-          "properties": [
-            "read",
-            "write"
-          ]
+          "properties": ["read", "write"]
         },
         {
-          "name": [
-            "f17",
-            "fa7"
-          ],
+          "name": ["f17", "fa7"],
           "nbits": "64",
           "value": 0.0,
           "default_value": 0.0,
-          "properties": [
-            "read",
-            "write"
-          ]
+          "properties": ["read", "write"]
         },
         {
-          "name": [
-            "f18",
-            "fs2"
-          ],
+          "name": ["f18", "fs2"],
           "nbits": "64",
           "value": 0.0,
           "default_value": 0.0,
-          "properties": [
-            "read",
-            "write",
-            "saved"
-          ]
+          "properties": ["read", "write", "saved"]
         },
         {
-          "name": [
-            "f19",
-            "fs3"
-          ],
+          "name": ["f19", "fs3"],
           "nbits": "64",
           "value": 0.0,
           "default_value": 0.0,
-          "properties": [
-            "read",
-            "write",
-            "saved"
-          ]
+          "properties": ["read", "write", "saved"]
         },
         {
-          "name": [
-            "f20",
-            "fs4"
-          ],
+          "name": ["f20", "fs4"],
           "nbits": "64",
           "value": 0.0,
           "default_value": 0.0,
-          "properties": [
-            "read",
-            "write",
-            "saved"
-          ]
+          "properties": ["read", "write", "saved"]
         },
         {
-          "name": [
-            "f21",
-            "fs5"
-          ],
+          "name": ["f21", "fs5"],
           "nbits": "64",
           "value": 0.0,
           "default_value": 0.0,
-          "properties": [
-            "read",
-            "write",
-            "saved"
-          ]
+          "properties": ["read", "write", "saved"]
         },
         {
-          "name": [
-            "f22",
-            "fs6"
-          ],
+          "name": ["f22", "fs6"],
           "nbits": "64",
           "value": 0.0,
           "default_value": 0.0,
-          "properties": [
-            "read",
-            "write",
-            "saved"
-          ]
+          "properties": ["read", "write", "saved"]
         },
         {
-          "name": [
-            "f23",
-            "fs7"
-          ],
+          "name": ["f23", "fs7"],
           "nbits": "64",
           "value": 0.0,
           "default_value": 0.0,
-          "properties": [
-            "read",
-            "write",
-            "saved"
-          ]
+          "properties": ["read", "write", "saved"]
         },
         {
-          "name": [
-            "f24",
-            "fs8"
-          ],
+          "name": ["f24", "fs8"],
           "nbits": "64",
           "value": 0.0,
           "default_value": 0.0,
-          "properties": [
-            "read",
-            "write",
-            "saved"
-          ]
+          "properties": ["read", "write", "saved"]
         },
         {
-          "name": [
-            "f25",
-            "fs9"
-          ],
+          "name": ["f25", "fs9"],
           "nbits": "64",
           "value": 0.0,
           "default_value": 0.0,
-          "properties": [
-            "read",
-            "write",
-            "saved"
-          ]
+          "properties": ["read", "write", "saved"]
         },
         {
-          "name": [
-            "f26",
-            "fs10"
-          ],
+          "name": ["f26", "fs10"],
           "nbits": "64",
           "value": 0.0,
           "default_value": 0.0,
-          "properties": [
-            "read",
-            "write",
-            "saved"
-          ]
+          "properties": ["read", "write", "saved"]
         },
         {
-          "name": [
-            "f27",
-            "fs11"
-          ],
+          "name": ["f27", "fs11"],
           "nbits": "64",
           "value": 0.0,
           "default_value": 0.0,
-          "properties": [
-            "read",
-            "write",
-            "saved"
-          ]
+          "properties": ["read", "write", "saved"]
         },
         {
-          "name": [
-            "f28",
-            "ft8"
-          ],
+          "name": ["f28", "ft8"],
           "nbits": "64",
           "value": 0.0,
           "default_value": 0.0,
-          "properties": [
-            "read",
-            "write"
-          ]
+          "properties": ["read", "write"]
         },
         {
-          "name": [
-            "f29",
-            "ft9"
-          ],
+          "name": ["f29", "ft9"],
           "nbits": "64",
           "value": 0.0,
           "default_value": 0.0,
-          "properties": [
-            "read",
-            "write"
-          ]
+          "properties": ["read", "write"]
         },
         {
-          "name": [
-            "f30",
-            "ft10"
-          ],
+          "name": ["f30", "ft10"],
           "nbits": "64",
           "value": 0.0,
           "default_value": 0.0,
-          "properties": [
-            "read",
-            "write"
-          ]
+          "properties": ["read", "write"]
         },
         {
-          "name": [
-            "f31",
-            "ft11"
-          ],
+          "name": ["f31", "ft11"],
           "nbits": "64",
           "value": 0.0,
           "default_value": 0.0,
-          "properties": [
-            "read",
-            "write"
-          ]
+          "properties": ["read", "write"]
         }
       ]
     }
   ],
-  "instructions":[
+  "instructions": [
     {
       "name": "add",
       "type": "Arithmetic integer",
@@ -982,14 +568,7 @@
         }
       ],
       "definition": "rd = rs2 + rs1",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false, false],
       "help": ""
     },
     {
@@ -1030,18 +609,13 @@
         {
           "name": "cop",
           "type": "cop",
-          "startbit": "14",
-          "stopbit": "12",
+          "startbit": 14,
+          "stopbit": 12,
           "valueField": "000"
         }
       ],
       "definition": "rd = rs1 + inm;",
-      "separated": [
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false],
       "help": ""
     },
     {
@@ -1095,14 +669,7 @@
         }
       ],
       "definition": "rd = rs1 & rs2;",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false, false],
       "help": ""
     },
     {
@@ -1149,13 +716,7 @@
         }
       ],
       "definition": "rd = rs1 & capi_int2uint(inm);",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false],
       "help": ""
     },
     {
@@ -1189,11 +750,7 @@
         }
       ],
       "definition": "rd = PC + (inm << 12n);",
-      "separated": [
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false],
       "help": ""
     },
     {
@@ -1223,14 +780,8 @@
         {
           "name": "inm",
           "type": "offset_words",
-          "startbit": [
-            31,
-            11
-          ],
-          "stopbit": [
-            25,
-            7
-          ]
+          "startbit": [31, 11],
+          "stopbit": [25, 7]
         },
         {
           "name": "rs2",
@@ -1246,13 +797,7 @@
         }
       ],
       "definition": "if (rs1 === rs2)\n PC = PC + ((inm << 16n) >> 14n); ",
-      "separated": [
-        false,
-        false,
-        true,
-        false,
-        false
-      ],
+      "separated": [false, false, true, false, false],
       "help": ""
     },
     {
@@ -1275,14 +820,10 @@
         {
           "name": "inm",
           "type": "offset_words",
-          "startbit": [
-            31,
-            11
-          ],
-          "stopbit": [
-            25,
-            7
-          ]
+          "startbit": [31, 11],
+          "stopbit": [25, 7],
+          "bits_order": [31, 7, 30, 29, 28, 27, 26, 25, 11, 10, 9, 8],
+          "padding": "1"
         },
         {
           "name": "rs2",
@@ -1305,13 +846,7 @@
         }
       ],
       "definition": "if (capi_uint2int(rs1) >= capi_uint2int(rs2))\n PC = PC + ((inm << 16n) >> 14n);",
-      "separated": [
-        false,
-        true,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, true, false, false, false],
       "help": ""
     },
     {
@@ -1334,14 +869,8 @@
         {
           "name": "inm",
           "type": "offset_words",
-          "startbit": [
-            31,
-            11
-          ],
-          "stopbit": [
-            25,
-            7
-          ]
+          "startbit": [31, 11],
+          "stopbit": [25, 7]
         },
         {
           "name": "rs2",
@@ -1364,13 +893,7 @@
         }
       ],
       "definition": "if (capi_int2uint(rs1) > capi_int2uint(rs2))\n PC = PC + ((inm << 16n) >> 14n);",
-      "separated": [
-        false,
-        true,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, true, false, false, false],
       "help": ""
     },
     {
@@ -1393,14 +916,8 @@
         {
           "name": "inm",
           "type": "offset_words",
-          "startbit": [
-            31,
-            11
-          ],
-          "stopbit": [
-            25,
-            7
-          ]
+          "startbit": [31, 11],
+          "stopbit": [25, 7]
         },
         {
           "name": "rs2",
@@ -1423,13 +940,7 @@
         }
       ],
       "definition": "if (capi_uint2int(rs1) < capi_uint2int(rs2))\n PC = PC + ((inm << 16n) >> 14n);",
-      "separated": [
-        false,
-        true,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, true, false, false, false],
       "help": ""
     },
     {
@@ -1452,14 +963,8 @@
         {
           "name": "inm",
           "type": "offset_words",
-          "startbit": [
-            31,
-            11
-          ],
-          "stopbit": [
-            25,
-            7
-          ]
+          "startbit": [31, 11],
+          "stopbit": [25, 7]
         },
         {
           "name": "rs2",
@@ -1482,13 +987,7 @@
         }
       ],
       "definition": "if (capi_int2uint(rs1) < capi_int2uint(rs2))\n PC = PC + ((inm << 16n) >> 14n);",
-      "separated": [
-        false,
-        true,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, true, false, false, false],
       "help": ""
     },
     {
@@ -1511,14 +1010,8 @@
         {
           "name": "inm",
           "type": "offset_words",
-          "startbit": [
-            31,
-            11
-          ],
-          "stopbit": [
-            25,
-            7
-          ]
+          "startbit": [31, 11],
+          "stopbit": [25, 7]
         },
         {
           "name": "rs2",
@@ -1541,13 +1034,7 @@
         }
       ],
       "definition": "if (rs1 !== rs2)\n PC = PC + ((inm << 16n) >> 14n);",
-      "separated": [
-        false,
-        true,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, true, false, false, false],
       "help": ""
     },
     {
@@ -1601,14 +1088,61 @@
         }
       ],
       "definition": "if (rs2 != 0)\n { rd = BigInt.asIntN(32, (BigInt.asIntN(32, BigInt(rs1)) / BigInt.asIntN(32, BigInt(rs2)))); }\n else { capi_raise('Division by zero not allowed'); }",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
+      "separated": [false, false, false, false, false, false],
+      "help": ""
+    },
+    {
+      "name": "divu",
+      "type": "Arithmetic integer",
+      "signature_definition": "F0 F5 F3 F2",
+      "signature": "divu,INT-Reg,INT-Reg,INT-Reg",
+      "signatureRaw": "divu rd rs1 rs2",
+      "co": "0110011",
+      "cop": "0000001101",
+      "nwords": 1,
+      "clk_cycles": 1,
+      "fields": [
+        {
+          "name": "divu",
+          "type": "co",
+          "startbit": 6,
+          "stopbit": 0
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 31,
+          "stopbit": 25,
+          "valueField": "0000001"
+        },
+        {
+          "name": "rs2",
+          "type": "INT-Reg",
+          "startbit": 24,
+          "stopbit": 20
+        },
+        {
+          "name": "rs1",
+          "type": "INT-Reg",
+          "startbit": 19,
+          "stopbit": 15
+        },
+        {
+          "name": "cop2",
+          "type": "cop",
+          "startbit": 14,
+          "stopbit": 12,
+          "valueField": "101"
+        },
+        {
+          "name": "rd",
+          "type": "INT-Reg",
+          "startbit": 11,
+          "stopbit": 7
+        }
       ],
+      "definition": "if (rs2 != 0)\n { rd = BigInt.asIntN(32, (BigInt.asUintN(32, BigInt(rs1)) / BigInt.asUintN(32, BigInt(rs2)))); }\n else { capi_raise('Division by zero not allowed'); }",
+      "separated": [false, false, false, false, false, false],
       "help": ""
     },
     {
@@ -1683,13 +1217,7 @@
         }
       ],
       "definition": "rd = rs1 + rs2;",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false],
       "help": ""
     },
     {
@@ -1736,14 +1264,7 @@
         }
       ],
       "definition": "rd = rs2 + rs1;",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false, false],
       "help": ""
     },
     {
@@ -1798,14 +1319,7 @@
         }
       ],
       "definition": "let a = capi_float2bin(rs1);\nrd=capi_check_ieee(parseInt(a[0]), parseInt(a.slice(1,12), 2), parseInt(a.slice(13), 2));",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false, false],
       "help": ""
     },
     {
@@ -1860,14 +1374,7 @@
         }
       ],
       "definition": "let a = capi_float2bin(rs1);\nrd=capi_check_ieee(parseInt(a[0]), parseInt(a.slice(1,9), 2), parseInt(a.slice(10), 2));",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false, false],
       "help": ""
     },
     {
@@ -1915,14 +1422,7 @@
         }
       ],
       "definition": "rd = rs1;",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false, false],
       "help": ""
     },
     {
@@ -1970,14 +1470,7 @@
         }
       ],
       "definition": "rd = capi_uint2int(rs1);",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false, false],
       "help": ""
     },
     {
@@ -2025,14 +1518,7 @@
         }
       ],
       "definition": "rd = capi_int2uint(parseFloat(rs1));",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false, false],
       "help": ""
     },
     {
@@ -2080,14 +1566,7 @@
         }
       ],
       "definition": "rd = rs1;",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false, false],
       "help": ""
     },
     {
@@ -2135,14 +1614,7 @@
         }
       ],
       "definition": "rd = capi_uint2int(rs1);",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false, false],
       "help": ""
     },
     {
@@ -2190,14 +1662,7 @@
         }
       ],
       "definition": "rd = capi_int2uint(rs1);",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false, false],
       "help": ""
     },
     {
@@ -2245,14 +1710,7 @@
         }
       ],
       "definition": "rd = parseInt(rs1);",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false, false],
       "help": ""
     },
     {
@@ -2300,14 +1758,7 @@
         }
       ],
       "definition": "rd = parseInt(rs1);",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false, false],
       "help": ""
     },
     {
@@ -2355,14 +1806,7 @@
         }
       ],
       "definition": "rd = capi_int2uint(parseInt(rs1));",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false, false],
       "help": ""
     },
     {
@@ -2410,14 +1854,7 @@
         }
       ],
       "definition": "rd = capi_int2uint(parseInt(rs1));",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false, false],
       "help": ""
     },
     {
@@ -2464,13 +1901,7 @@
         }
       ],
       "definition": "if (rs2 != 0)\n { rd = rs1 / rs2; }\n else { capi_raise('Division by zero not allowed'); }",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false],
       "help": ""
     },
     {
@@ -2517,14 +1948,7 @@
         }
       ],
       "definition": "if (rs2 != 0)\n { rd = rs1 / rs2; }\n else { capi_raise('Division by zero not allowed'); }",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false, false],
       "help": ""
     },
     {
@@ -2578,14 +2002,7 @@
         }
       ],
       "definition": "rd = (rs1 == rs2) ? 1 : 0;",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false, false],
       "help": ""
     },
     {
@@ -2640,21 +2057,14 @@
         }
       ],
       "definition": "rd = (rs1 === rs2) ? 1 : 0;",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false, false],
       "help": ""
     },
     {
       "name": "fld",
       "type": "Memory access",
       "signature_definition": "F0 F4 F1 (F2)",
-      "signature": "fld,DFP-Reg,inm-unsigned,(INT-Reg)",
+      "signature": "fld,DFP-Reg,inm-signed,(INT-Reg)",
       "signatureRaw": "fld rd inm (rs1)",
       "co": "0000111",
       "cop": "011",
@@ -2669,7 +2079,7 @@
         },
         {
           "name": "inm",
-          "type": "inm-unsigned",
+          "type": "inm-signed",
           "startbit": 31,
           "stopbit": 20
         },
@@ -2694,13 +2104,7 @@
         }
       ],
       "definition": " var isnotalign = capi_bad_align(rs1+inm, 'd');\n if (isnotalign) { capi_raise('The memory must be align'); }\n var val1 = capi_mem_read(rs1+inm, 'w', rd_name);\n var val2 = capi_mem_read(rs1+inm+4n, 'w', rd_name);\n var buf = new ArrayBuffer(8);\n var arr = (new Uint32Array(buf));\n arr[1] = Number(val1);\n arr[0] = Number(val2);\n rd = (new Float64Array(buf))[0];",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false],
       "help": ""
     },
     {
@@ -2754,14 +2158,7 @@
         }
       ],
       "definition": "rd = (rs1 <= rs2) ? 1 : 0;",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false, false],
       "help": ""
     },
     {
@@ -2816,14 +2213,7 @@
         }
       ],
       "definition": "rd = (rs1 <= rs2) ? 1 : 0;",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false, false],
       "help": ""
     },
     {
@@ -2877,14 +2267,7 @@
         }
       ],
       "definition": "rd = (rs1 < rs2) ? 1 : 0;",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false, false],
       "help": ""
     },
     {
@@ -2939,21 +2322,14 @@
         }
       ],
       "definition": "rd = (rs1 < rs2) ? 1 : 0;",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false, false],
       "help": ""
     },
     {
       "name": "flw",
       "type": "Memory access",
       "signature_definition": "F0 F4 F1 (F2)",
-      "signature": "flw,SFP-Reg,inm-unsigned,(INT-Reg)",
+      "signature": "flw,SFP-Reg,inm-signed,(INT-Reg)",
       "signatureRaw": "flw rd inm (rs2)",
       "co": "0000111",
       "cop": "010",
@@ -2968,7 +2344,7 @@
         },
         {
           "name": "inm",
-          "type": "inm-unsigned",
+          "type": "inm-signed",
           "startbit": 31,
           "stopbit": 20
         },
@@ -2993,13 +2369,7 @@
         }
       ],
       "definition": "rd = capi_mem_read(rs2+inm, 'w', rd_name);\n rd = capi_uint2float32(rd);",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false],
       "help": ""
     },
     {
@@ -3052,14 +2422,7 @@
         }
       ],
       "definition": "rd = rs1 * rs2 + rs3;",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false, false],
       "help": ""
     },
     {
@@ -3112,14 +2475,7 @@
         }
       ],
       "definition": "rd = rs1 * rs2 + rs3;",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false, false],
       "help": ""
     },
     {
@@ -3174,14 +2530,7 @@
         }
       ],
       "definition": "rd = Math.max(rs1, rs2);",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false, false],
       "help": ""
     },
     {
@@ -3236,14 +2585,7 @@
         }
       ],
       "definition": "rd = Math.max(rs1, rs2);",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false, false],
       "help": ""
     },
     {
@@ -3298,14 +2640,7 @@
         }
       ],
       "definition": "rd = Math.min(rs1, rs2);",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false, false],
       "help": ""
     },
     {
@@ -3360,14 +2695,7 @@
         }
       ],
       "definition": "rd = Math.min(rs1, rs2);",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false, false],
       "help": ""
     },
     {
@@ -3420,14 +2748,7 @@
         }
       ],
       "definition": "rd = rs1 * rs2 - rs3;",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false, false],
       "help": ""
     },
     {
@@ -3480,14 +2801,7 @@
         }
       ],
       "definition": "rd = rs1 * rs2 - rs3;",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false, false],
       "help": ""
     },
     {
@@ -3534,13 +2848,7 @@
         }
       ],
       "definition": "rd = rs1 * rs2;",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false],
       "help": ""
     },
     {
@@ -3587,14 +2895,7 @@
         }
       ],
       "definition": "rd = rs2 * rs1;",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false, false],
       "help": ""
     },
     {
@@ -3642,14 +2943,7 @@
         }
       ],
       "definition": "rd = capi_uint2float32(rs1);",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false, false],
       "help": ""
     },
     {
@@ -3697,14 +2991,7 @@
         }
       ],
       "definition": "rd = capi_float322uint(rs1);",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false, false],
       "help": ""
     },
     {
@@ -3757,14 +3044,7 @@
         }
       ],
       "definition": "rd = -rs1 * rs2 - rs3;",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false, false],
       "help": ""
     },
     {
@@ -3817,14 +3097,7 @@
         }
       ],
       "definition": "rd = -rs1 * rs2 - rs3;",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false, false],
       "help": ""
     },
     {
@@ -3877,14 +3150,7 @@
         }
       ],
       "definition": "rd = -rs1 * rs2 + rs3;",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false, false],
       "help": ""
     },
     {
@@ -3937,21 +3203,14 @@
         }
       ],
       "definition": "rd = -rs1 * rs2 + rs3;",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false, false],
       "help": ""
     },
     {
       "name": "fsd",
       "type": "Memory access",
       "signature_definition": "F0 F2 F3 (F1)",
-      "signature": "fsd,DFP-Reg,inm-unsigned,(INT-Reg)",
+      "signature": "fsd,DFP-Reg,inm-signed,(INT-Reg)",
       "signatureRaw": "fsd ft off (base)",
       "co": "0100111",
       "cop": "011",
@@ -3978,19 +3237,13 @@
         },
         {
           "name": "off",
-          "type": "inm-unsigned",
+          "type": "inm-signed",
           "startbit": 15,
           "stopbit": 0
         }
       ],
       "definition": "var val = capi_split_double(ft, 0);\n capi_mem_write(base+off, val, 'w', ft_name);\n val = capi_split_double(ft, 1);\n capi_mem_write(base+off+4n, val, 'w', ft_name);",
-      "separated": [
-        false,
-        true,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, true, false, false, false],
       "help": ""
     },
     {
@@ -4045,14 +3298,7 @@
         }
       ],
       "definition": "rd = (rs2 > 0) ? Math.abs(rs1) : -Math.abs(rs1);",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false, false],
       "help": ""
     },
     {
@@ -4107,14 +3353,7 @@
         }
       ],
       "definition": "rd = (rs2 >= 0) ? Math.abs(rs1) : -Math.abs(rs1);",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false, false],
       "help": ""
     },
     {
@@ -4169,14 +3408,7 @@
         }
       ],
       "definition": "rd = (rs2 > 0) ? -Math.abs(rs1) : +Math.abs(rs1);",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false, false],
       "help": ""
     },
     {
@@ -4231,14 +3463,7 @@
         }
       ],
       "definition": "rd = (rs2 <= 0) ? Math.abs(rs1) : -Math.abs(rs1);",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false, false],
       "help": ""
     },
     {
@@ -4293,14 +3518,7 @@
         }
       ],
       "definition": "let a = rs1<0; let b = rs2<0;\nrd = (a^b) ? -Math.abs(rs1) : Math.abs(rs1);",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false, false],
       "help": ""
     },
     {
@@ -4355,14 +3573,7 @@
         }
       ],
       "definition": "let a = rs1<0; let b = rs2<0;\nrd = (a^b) ? -Math.abs(rs1) : Math.abs(rs1);",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false, false],
       "help": ""
     },
     {
@@ -4410,13 +3621,7 @@
         }
       ],
       "definition": "if (rs1 >= 0)\n { rd = Math.sqrt(rs1); }\n else { capi_raise('Square root of a negative number is not allowed.'); }",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false],
       "help": ""
     },
     {
@@ -4464,14 +3669,7 @@
         }
       ],
       "definition": "if (rs1 >= 0)\n { rd = Math.sqrt(rs1); }\n else { capi_raise('Square root of a negative number is not allowed.'); }",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false, false],
       "help": ""
     },
     {
@@ -4518,13 +3716,7 @@
         }
       ],
       "definition": "rd = rs1 - rs2;",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false],
       "help": ""
     },
     {
@@ -4571,21 +3763,14 @@
         }
       ],
       "definition": "rd = rs1 - rs2;",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false, false],
       "help": ""
     },
     {
       "name": "fsw",
       "type": "Memory access",
       "signature_definition": "F0 F3 F1 (F2)",
-      "signature": "fsw,SFP-Reg,inm-unsigned,(INT-Reg)",
+      "signature": "fsw,SFP-Reg,inm-signed,(INT-Reg)",
       "signatureRaw": "fsw rs1 inm (rs2)",
       "co": "0100111",
       "cop": "010",
@@ -4600,15 +3785,9 @@
         },
         {
           "name": "inm",
-          "type": "inm-unsigned",
-          "startbit": [
-            31,
-            11
-          ],
-          "stopbit": [
-            25,
-            7
-          ]
+          "type": "inm-signed",
+          "startbit": [31, 11],
+          "stopbit": [25, 7]
         },
         {
           "name": "rs2",
@@ -4632,13 +3811,7 @@
         }
       ],
       "definition": "var val1 = capi_float322uint(rs1);\n capi_mem_write(rs2+inm, val1, 'w', rs1_name);",
-      "separated": [
-        false,
-        true,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, true, false, false, false],
       "help": ""
     },
     {
@@ -4650,9 +3823,7 @@
       "co": "1101111",
       "cop": "",
       "help": "",
-      "properties": [
-        "enter_subrutine"
-      ],
+      "properties": ["enter_subrutine"],
       "nwords": 1,
       "clk_cycles": 1,
       "fields": [
@@ -4676,11 +3847,7 @@
         }
       ],
       "definition": "rd = PC;\n PC = inm;\n capi_callconv_begin(inm); capi_drawstack_begin(inm);",
-      "separated": [
-        false,
-        false,
-        false
-      ]
+      "separated": [false, false, false]
     },
     {
       "name": "jalr",
@@ -4691,9 +3858,7 @@
       "co": "1100111",
       "cop": "000",
       "help": "",
-      "properties": [
-        "exit_subrutine"
-      ],
+      "properties": ["exit_subrutine"],
       "nwords": 1,
       "clk_cycles": 1,
       "fields": [
@@ -4730,23 +3895,17 @@
         }
       ],
       "definition": "rd = PC;\n PC = (rs1+inm)&~1n;\n capi_callconv_end(); capi_drawstack_end(PC);",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false
-      ]
+      "separated": [false, false, false, false, false]
     },
     {
       "name": "lb",
       "type": "Memory access",
       "signature_definition": "F0 F3 F1 (F2)",
-      "signature": "lb,INT-Reg,inm-unsigned,(INT-Reg)",
+      "signature": "lb,INT-Reg,inm-signed,(INT-Reg)",
       "signatureRaw": "lb rd inm (rs1)",
       "co": "0000011",
       "cop": "000",
-      "nwords": "1",
+      "nwords": 1,
       "fields": [
         {
           "name": "lb",
@@ -4756,7 +3915,7 @@
         },
         {
           "name": "inm",
-          "type": "inm-unsigned",
+          "type": "inm-signed",
           "startbit": 31,
           "stopbit": 20
         },
@@ -4781,20 +3940,14 @@
         }
       ],
       "definition": "rd = capi_mem_read(inm+rs1, 'b', rd_name);",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false],
       "help": ""
     },
     {
       "name": "lbu",
       "type": "Memory access",
       "signature_definition": "F0 F3 F1 (F2)",
-      "signature": "lbu,INT-Reg,inm-unsigned,(INT-Reg)",
+      "signature": "lbu,INT-Reg,inm-signed,(INT-Reg)",
       "signatureRaw": "lbu rd inm (rs1)",
       "co": "0000011",
       "cop": "100",
@@ -4809,7 +3962,7 @@
         },
         {
           "name": "inm",
-          "type": "inm-unsigned",
+          "type": "inm-signed",
           "startbit": 31,
           "stopbit": 20
         },
@@ -4834,20 +3987,14 @@
         }
       ],
       "definition": "var addr = capi_int2uint(rs1)+inm;\n rd = capi_mem_read(addr, 'bu', rd_name);\n rd = capi_int2uint(rd);",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false],
       "help": ""
     },
     {
       "name": "lh",
       "type": "Memory access",
       "signature_definition": "F0 F3 F1 (F2)",
-      "signature": "lh,INT-Reg,inm-unsigned,(INT-Reg)",
+      "signature": "lh,INT-Reg,inm-signed,(INT-Reg)",
       "signatureRaw": "lh rd inm (rs1)",
       "co": "0000011",
       "cop": "001",
@@ -4862,7 +4009,7 @@
         },
         {
           "name": "inm",
-          "type": "inm-unsigned",
+          "type": "inm-signed",
           "startbit": 31,
           "stopbit": 20
         },
@@ -4887,20 +4034,14 @@
         }
       ],
       "definition": "rd = capi_mem_read(inm+rs1, 'h', rd_name);",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false],
       "help": ""
     },
     {
       "name": "lhu",
       "type": "Memory access",
       "signature_definition": "F0 F3 F1 (F2)",
-      "signature": "lhu,INT-Reg,inm-unsigned,(INT-Reg)",
+      "signature": "lhu,INT-Reg,inm-signed,(INT-Reg)",
       "signatureRaw": "lhu rd inm (rs1)",
       "co": "0000011",
       "cop": "101",
@@ -4915,7 +4056,7 @@
         },
         {
           "name": "inm",
-          "type": "inm-unsigned",
+          "type": "inm-signed",
           "startbit": 31,
           "stopbit": 20
         },
@@ -4940,20 +4081,14 @@
         }
       ],
       "definition": "var addr = capi_int2uint(rs1)+inm;\n rd = capi_mem_read(addr, 'hu', rd_name);\n rd = capi_int2uint(rd);",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false],
       "help": ""
     },
     {
       "name": "lui",
       "type": "Arithmetic integer",
       "signature_definition": "F0 F2 F1",
-      "signature": "lui,INT-Reg,inm-signed",
+      "signature": "lui,INT-Reg,inm-unsigned",
       "signatureRaw": "lui rd inm",
       "co": "0110111",
       "cop": "",
@@ -4968,7 +4103,7 @@
         },
         {
           "name": "inm",
-          "type": "inm-signed",
+          "type": "inm-unsigned",
           "startbit": 31,
           "stopbit": 12
         },
@@ -4980,19 +4115,14 @@
         }
       ],
       "definition": "rd = inm << 12n;",
-      "separated": [
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false],
       "help": ""
     },
     {
       "name": "lw",
       "type": "Memory access",
       "signature_definition": "F0 F3 F1 (F2)",
-      "signature": "lw,INT-Reg,inm-unsigned,(INT-Reg)",
+      "signature": "lw,INT-Reg,inm-signed,(INT-Reg)",
       "signatureRaw": "lw rd inm (rs1)",
       "co": "0000011",
       "cop": "010",
@@ -5007,7 +4137,7 @@
         },
         {
           "name": "inm",
-          "type": "inm-unsigned",
+          "type": "inm-signed",
           "startbit": 31,
           "stopbit": 20
         },
@@ -5032,13 +4162,7 @@
         }
       ],
       "definition": "var addr = capi_int2uint(rs1)+inm;\n rd = capi_mem_read(addr, 'w', rd_name);",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false],
       "help": ""
     },
     {
@@ -5092,14 +4216,7 @@
         }
       ],
       "definition": "rd = capi_uint2int(rs1) * capi_uint2int(rs2);",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false, false],
       "help": ""
     },
     {
@@ -5153,14 +4270,7 @@
         }
       ],
       "definition": "rd = BigInt.asIntN(32, (BigInt.asIntN(64, BigInt.asIntN(32, BigInt(rs1)) * BigInt.asIntN(32, BigInt(rs2))) >> 32n))",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false, false],
       "help": ""
     },
     {
@@ -5214,14 +4324,7 @@
         }
       ],
       "definition": "rd = BigInt.asIntN(32, (BigInt.asIntN(64, BigInt.asIntN(32, BigInt(rs1)) * BigInt.asUintN(32, BigInt(rs2))) >> 32n))",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false, false],
       "help": ""
     },
     {
@@ -5275,14 +4378,7 @@
         }
       ],
       "definition": "rd = BigInt.asIntN(32, (BigInt.asUintN(64, BigInt.asUintN(32, BigInt(rs1)) * BigInt.asUintN(32, BigInt(rs2))) >> 32n));",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false, false],
       "help": ""
     },
     {
@@ -5336,14 +4432,7 @@
         }
       ],
       "definition": "rd = rs1 | rs2;",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false, false],
       "help": ""
     },
     {
@@ -5390,13 +4479,7 @@
         }
       ],
       "definition": "rd = rs1 | inm;",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false],
       "help": ""
     },
     {
@@ -5484,21 +4567,68 @@
         }
       ],
       "definition": "rd = rs1 % rs2;",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
+      "separated": [false, false, false, false, false, false],
+      "help": ""
+    },
+    {
+      "name": "remu",
+      "type": "Arithmetic integer",
+      "signature_definition": "F0 F5 F3 F2",
+      "signature": "remu,INT-Reg,INT-Reg,INT-Reg",
+      "signatureRaw": "remu rd rs1 rs2",
+      "co": "0110011",
+      "cop": "0000001110",
+      "nwords": 1,
+      "clk_cycles": 1,
+      "fields": [
+        {
+          "name": "remu",
+          "type": "co",
+          "startbit": 6,
+          "stopbit": 0
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 31,
+          "stopbit": 25,
+          "valueField": "0000001"
+        },
+        {
+          "name": "rs2",
+          "type": "INT-Reg",
+          "startbit": 24,
+          "stopbit": 20
+        },
+        {
+          "name": "rs1",
+          "type": "INT-Reg",
+          "startbit": 19,
+          "stopbit": 15
+        },
+        {
+          "name": "cop2",
+          "type": "cop",
+          "startbit": 14,
+          "stopbit": 12,
+          "valueField": "110"
+        },
+        {
+          "name": "rd",
+          "type": "INT-Reg",
+          "startbit": 11,
+          "stopbit": 7
+        }
       ],
+      "definition": "rd = rs1 % rs2;",
+      "separated": [false, false, false, false, false, false],
       "help": ""
     },
     {
       "name": "sb",
       "type": "Memory access",
       "signature_definition": "F0 F2 F1 (F3)",
-      "signature": "sb,INT-Reg,inm-unsigned,(INT-Reg)",
+      "signature": "sb,INT-Reg,inm-signed,(INT-Reg)",
       "signatureRaw": "sb rs2 inm (rs1)",
       "co": "0100011",
       "cop": "000",
@@ -5513,15 +4643,9 @@
         },
         {
           "name": "inm",
-          "type": "inm-unsigned",
-          "startbit": [
-            31,
-            11
-          ],
-          "stopbit": [
-            25,
-            7
-          ]
+          "type": "inm-signed",
+          "startbit": [31, 11],
+          "stopbit": [25, 7]
         },
         {
           "name": "rs2",
@@ -5544,20 +4668,14 @@
         }
       ],
       "definition": "capi_mem_write(rs1+inm, rs2, 'b', rs2_name);",
-      "separated": [
-        false,
-        true,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, true, false, false, false],
       "help": ""
     },
     {
       "name": "sh",
       "type": "Memory access",
       "signature_definition": "F0 F2 F1 (F3)",
-      "signature": "sh,INT-Reg,inm-unsigned,(INT-Reg)",
+      "signature": "sh,INT-Reg,inm-signed,(INT-Reg)",
       "signatureRaw": "sh rs2 inm (rs1)",
       "co": "0100011",
       "cop": "001",
@@ -5572,15 +4690,9 @@
         },
         {
           "name": "inm",
-          "type": "inm-signeinm-unsigned",
-          "startbit": [
-            31,
-            11
-          ],
-          "stopbit": [
-            25,
-            7
-          ]
+          "type": "inm-signed",
+          "startbit": [31, 11],
+          "stopbit": [25, 7]
         },
         {
           "name": "rs2",
@@ -5603,13 +4715,7 @@
         }
       ],
       "definition": "capi_mem_write(inm+rs1, rs2, 'h', rs2_name);",
-      "separated": [
-        false,
-        true,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, true, false, false, false],
       "help": ""
     },
     {
@@ -5657,19 +4763,13 @@
         {
           "name": "cop2",
           "type": "cop",
-          "startbit": "14",
-          "stopbit": "12",
+          "startbit": 14,
+          "stopbit": 12,
           "valueField": "001"
         }
       ],
       "definition": "const shiftAmount = rs2 & 0x1Fn; rd = (rs1 << shiftAmount) & 0xFFFFFFFFn;",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false],
       "help": ""
     },
     {
@@ -5723,14 +4823,7 @@
         }
       ],
       "definition": "if (shamt > 0) {rd = capi_int2uint(rs1 << shamt);}",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false, false],
       "help": ""
     },
     {
@@ -5778,19 +4871,13 @@
         {
           "name": "cop2",
           "type": "cop",
-          "startbit": "14",
-          "stopbit": "12",
+          "startbit": 14,
+          "stopbit": 12,
           "valueField": "010"
         }
       ],
       "definition": "rd = (capi_uint2int(rs1) < capi_uint2int(rs2)) ? 1 : 0;",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false],
       "help": ""
     },
     {
@@ -5831,18 +4918,13 @@
         {
           "name": "cop",
           "type": "cop",
-          "startbit": "14",
-          "stopbit": "12",
+          "startbit": 14,
+          "stopbit": 12,
           "valueField": "010"
         }
       ],
       "definition": "rd = (capi_uint2int(rs1) < capi_uint2int(inm)) ? 1 : 0;",
-      "separated": [
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false],
       "help": ""
     },
     {
@@ -5883,18 +4965,13 @@
         {
           "name": "cop",
           "type": "cop",
-          "startbit": "14",
-          "stopbit": "12",
+          "startbit": 14,
+          "stopbit": 12,
           "valueField": "011"
         }
       ],
       "definition": "rd = (capi_int2uint(rs1) < capi_int2uint(inm)) ? 1 : 0;",
-      "separated": [
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false],
       "help": ""
     },
     {
@@ -5942,19 +5019,13 @@
         {
           "name": "cop2",
           "type": "cop",
-          "startbit": "14",
-          "stopbit": "12",
+          "startbit": 14,
+          "stopbit": 12,
           "valueField": "011"
         }
       ],
       "definition": "rd = ((rs1 & 0xFFFFFFFFn) < (rs2 & 0xFFFFFFFFn)) ? 1n : 0n;",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false],
       "help": ""
     },
     {
@@ -6008,14 +5079,7 @@
         }
       ],
       "definition": "const temp = BigInt.asIntN(32, BigInt(rs1)) >> BigInt(rs2); rd = capi_int2uint(temp)",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false, false],
       "help": ""
     },
     {
@@ -6069,14 +5133,7 @@
         }
       ],
       "definition": "if (shamt > 0) {rd = capi_int2uint(rs1 >> shamt);}",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false, false],
       "help": ""
     },
     {
@@ -6130,14 +5187,7 @@
         }
       ],
       "definition": "const shiftAmount = rs2 & 0x1Fn; rd = (rs1 >> shiftAmount) & 0xFFFFFFFFn;",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false, false],
       "help": ""
     },
     {
@@ -6191,14 +5241,7 @@
         }
       ],
       "definition": "if (shamt > 0) {rd = (rs1 >> shamt);}",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false, false],
       "help": ""
     },
     {
@@ -6252,21 +5295,14 @@
         }
       ],
       "definition": "rd = rs1 - rs2;",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false, false],
       "help": ""
     },
     {
       "name": "sw",
       "type": "Memory access",
       "signature_definition": "F0 F2 F1 (F3)",
-      "signature": "sw,INT-Reg,inm-unsigned,(INT-Reg)",
+      "signature": "sw,INT-Reg,inm-signed,(INT-Reg)",
       "signatureRaw": "sw rs2 inm (rs1)",
       "co": "0100011",
       "cop": "010",
@@ -6281,15 +5317,9 @@
         },
         {
           "name": "inm",
-          "type": "inm-unsigned",
-          "startbit": [
-            31,
-            11
-          ],
-          "stopbit": [
-            25,
-            7
-          ]
+          "type": "inm-signed",
+          "startbit": [31, 11],
+          "stopbit": [25, 7]
         },
         {
           "name": "rs2",
@@ -6312,13 +5342,7 @@
         }
       ],
       "definition": "capi_mem_write(inm+rs1, rs2, 'w', rs2_name);",
-      "separated": [
-        false,
-        true,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, true, false, false, false],
       "help": ""
     },
     {
@@ -6366,19 +5390,13 @@
         {
           "name": "cop2",
           "type": "cop",
-          "startbit": "14",
-          "stopbit": "12",
+          "startbit": 14,
+          "stopbit": 12,
           "valueField": "100"
         }
       ],
       "definition": "rd = (rs1 ^ rs2);",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false],
       "help": ""
     },
     {
@@ -6425,13 +5443,7 @@
         }
       ],
       "definition": "rd = rs1 ^ inm;",
-      "separated": [
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "separated": [false, false, false, false, false],
       "help": ""
     }
   ],
@@ -6454,7 +5466,7 @@
           "type": "offset_words"
         }
       ],
-      "definition": "beq reg1 x0 off;"
+      "definition": "beq reg1, x0, off;"
     },
     {
       "name": "bgez",
@@ -6498,7 +5510,7 @@
           "type": "offset_words"
         }
       ],
-      "definition": "blt reg2 reg1 off;"
+      "definition": "blt reg2, reg1, off;"
     },
     {
       "name": "bgtu",
@@ -6522,7 +5534,7 @@
           "type": "offset_words"
         }
       ],
-      "definition": "bltu reg2 reg1 off;"
+      "definition": "bltu reg2, reg1, off;"
     },
     {
       "name": "bgtz",
@@ -6542,7 +5554,7 @@
           "type": "offset_words"
         }
       ],
-      "definition": "blt x0 reg1 off;"
+      "definition": "blt x0, reg1, off;"
     },
     {
       "name": "ble",
@@ -6566,7 +5578,7 @@
           "type": "offset_words"
         }
       ],
-      "definition": "bge reg2 reg1 off;"
+      "definition": "bge reg2, reg1, off;"
     },
     {
       "name": "bleu",
@@ -6590,7 +5602,7 @@
           "type": "offset_words"
         }
       ],
-      "definition": "bgeu reg2 reg1 off;"
+      "definition": "bgeu reg2, reg1, off;"
     },
     {
       "name": "blez",
@@ -6610,7 +5622,7 @@
           "type": "offset_words"
         }
       ],
-      "definition": "bge x0 reg1 off;"
+      "definition": "bge x0, reg1, off;"
     },
     {
       "name": "bltz",
@@ -6634,7 +5646,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "blt reg1 x0 off;"
+      "definition": "blt reg1, x0, off;"
     },
     {
       "name": "bnez",
@@ -6654,7 +5666,7 @@
           "type": "offset_words"
         }
       ],
-      "definition": "bne reg1 x0 off;"
+      "definition": "bne reg1, x0, off;"
     },
     {
       "name": "fabs.d",
@@ -6674,7 +5686,7 @@
           "type": "DFP-Reg"
         }
       ],
-      "definition": "fsgnjx.d reg1 reg2 reg2;"
+      "definition": "fsgnjx.d reg1, reg2, reg2;"
     },
     {
       "name": "fabs.s",
@@ -6694,7 +5706,7 @@
           "type": "SFP-Reg"
         }
       ],
-      "definition": "fsgnjx.s reg1 reg2 reg2;"
+      "definition": "fsgnjx.s reg1, reg2, reg2;"
     },
     {
       "name": "fmv.d",
@@ -6714,7 +5726,7 @@
           "type": "DFP-Reg"
         }
       ],
-      "definition": "fsgnj.d reg1 reg2 reg2;"
+      "definition": "fsgnj.d reg1, reg2, reg2;"
     },
     {
       "name": "fmv.s",
@@ -6734,7 +5746,7 @@
           "type": "SFP-Reg"
         }
       ],
-      "definition": "fsgnj.s reg1 reg2 reg2;"
+      "definition": "fsgnj.s reg1, reg2, reg2;"
     },
     {
       "name": "fneg.d",
@@ -6754,7 +5766,7 @@
           "type": "DFP-Reg"
         }
       ],
-      "definition": "fsgnjn.d reg1 reg2 reg2;"
+      "definition": "fsgnjn.d reg1, reg2, reg2;"
     },
     {
       "name": "fneg.s",
@@ -6774,7 +5786,7 @@
           "type": "SFP-Reg"
         }
       ],
-      "definition": "fsgnjn.s reg1 reg2 reg2;"
+      "definition": "fsgnjn.s reg1, reg2, reg2;"
     },
     {
       "name": "j",
@@ -6790,7 +5802,7 @@
           "type": "offset_words"
         }
       ],
-      "definition": "beq zero zero off;"
+      "definition": "beq zero, zero, off;"
     },
     {
       "name": "jalr",
@@ -6806,7 +5818,7 @@
           "type": "INT-Reg"
         }
       ],
-      "definition": "jalr x1 0 (rs);"
+      "definition": "jalr x1, 0(rs);"
     },
     {
       "name": "jr",
@@ -6822,7 +5834,7 @@
           "type": "INT-Reg"
         }
       ],
-      "definition": "jalr x0 0 (rs);"
+      "definition": "jalr x0, 0(rs);"
     },
     {
       "name": "la",
@@ -6842,7 +5854,7 @@
           "type": "inm-unsigned"
         }
       ],
-      "definition": "no_ret_op{var tmp=Field.2.(31,0).int - reg.pc;\nvar tmp_hi='0x'+(((tmp&0xFFFFF000)>>12) + ((tmp&0x00000400)>>11)).toString(16);\nvar tmp_low='0x'+(tmp&0x00000FFF).toString(16)};\nauipc rd op{tmp_hi};\naddi rd rd op{tmp_low};"
+      "definition": "no_ret_op{tmp=Field.2.(31,0).int - reg.pc;\ntmp -= tmp>=2**31? 2**32 : 0;\ntmp_low=tmp&0x00000FFF;\ntmp_low=tmp_low>0x7FF? tmp_low - 0x1000 : tmp_low;\ntmp_hi=(tmp - tmp_low)>>12};\nauipc rd, op{tmp_hi};\naddi rd, rd, op{tmp_low};"
     },
     {
       "name": "li",
@@ -6862,7 +5874,27 @@
           "type": "inm-signed"
         }
       ],
-      "definition": "if(Field.2.SIZE<=12){addi rd x0 val;}\nelse{lui rd 0;\nlui rd Field.2.(31,12).int;\naddi rd rd op{'0x'+(Field.2.(11,0).int ).toString(16)};}"
+      "definition": "no_ret_op{tmp=Field.2.(31,0).int;\ntmp -= tmp>=2**31? 2**32 : 0;\ntmp_low=tmp&0x00000FFF;\ntmp_low-=tmp_low>0x7FF? 0x1000 : 0;\ntmp_hi=(tmp - tmp_low)>>12;\ntmp_hi&=0xFFFFF};\nif(tmp_hi === 0){addi rd, x0, op{tmp_low};}\nelse{lui rd, op{tmp_hi};\naddi rd, rd, op{tmp_low};}"
+    },
+    {
+      "name": "lw",
+      "signature_definition": "lw F0 F1",
+      "signature": "lw,INT-Reg,inm-unsigned",
+      "signatureRaw": "lw rd addr",
+      "help": "",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "rd",
+          "type": "INT-Reg"
+        },
+        {
+          "name": "addr",
+          "type": "inm-unsigned"
+        }
+      ],
+      "definition": "rd = capi_mem_read(addr, 'w', rd_name);"
     },
     {
       "name": "mv",
@@ -6882,7 +5914,7 @@
           "type": "INT-Reg"
         }
       ],
-      "definition": "addi reg1 reg2 0;"
+      "definition": "addi reg1, reg2, 0;"
     },
     {
       "name": "neg",
@@ -6902,7 +5934,7 @@
           "type": "INT-Reg"
         }
       ],
-      "definition": "sub reg1 x0 reg2;"
+      "definition": "sub reg1, x0, reg2;"
     },
     {
       "name": "nop",
@@ -6913,7 +5945,7 @@
       "properties": [],
       "nwords": 1,
       "fields": [],
-      "definition": "addi x0 x0 0;"
+      "definition": "addi x0, x0, 0;"
     },
     {
       "name": "not",
@@ -6933,7 +5965,7 @@
           "type": "INT-Reg"
         }
       ],
-      "definition": "xori reg1 reg2 -1;"
+      "definition": "xori reg1, reg2, -1;"
     },
     {
       "name": "ret",
@@ -6944,7 +5976,7 @@
       "properties": [],
       "nwords": 1,
       "fields": [],
-      "definition": "jalr x0 0 (x1);"
+      "definition": "jalr x0, 0(x1);"
     },
     {
       "name": "seqz",
@@ -6964,7 +5996,7 @@
           "type": "INT-Reg"
         }
       ],
-      "definition": "sltiu reg1 reg2 1;"
+      "definition": "sltiu reg1, reg2, 1;"
     },
     {
       "name": "sgtz",
@@ -6984,7 +6016,7 @@
           "type": "INT-Reg"
         }
       ],
-      "definition": "slt reg1 x0 reg2;"
+      "definition": "slt reg1, x0, reg2;"
     },
     {
       "name": "sltz",
@@ -7004,7 +6036,7 @@
           "type": "INT-Reg"
         }
       ],
-      "definition": "slt reg1 reg2 x0;"
+      "definition": "slt reg1, reg2, x0;"
     },
     {
       "name": "snez",
@@ -7024,7 +6056,7 @@
           "type": "INT-Reg"
         }
       ],
-      "definition": "sltu reg1 x0 reg2;"
+      "definition": "sltu reg1, x0, reg2;"
     },
     {
       "name": "zext.b",
@@ -7044,7 +6076,7 @@
           "type": "INT-Reg"
         }
       ],
-      "definition": "andi reg1 reg2 255;"
+      "definition": "andi reg1, reg2, 255;"
     }
   ],
   "directives": [
@@ -7066,7 +6098,12 @@
     {
       "name": ".zero",
       "action": "space",
-      "size": "1"
+      "size": 1
+    },
+    {
+      "name": ".space",
+      "action": "space",
+      "size": 1
     },
     {
       "name": ".align",
@@ -7089,34 +6126,44 @@
       "size": null
     },
     {
+      "name": ".asciz",
+      "action": "ascii_null_end",
+      "size": null
+    },
+    {
+      "name": ".ascii",
+      "action": "ascii_not_null_end",
+      "size": null
+    },
+    {
       "name": ".byte",
       "action": "byte",
-      "size": "1"
+      "size": 1
     },
     {
       "name": ".half",
       "action": "half_word",
-      "size": "2"
+      "size": 2
     },
     {
       "name": ".word",
       "action": "word",
-      "size": "4"
+      "size": 4
     },
     {
       "name": ".dword",
       "action": "double_word",
-      "size": "8"
+      "size": 8
     },
     {
       "name": ".float",
       "action": "float",
-      "size": "4"
+      "size": 4
     },
     {
       "name": ".double",
       "action": "double",
-      "size": "8"
+      "size": 8
     }
   ],
   "memory_layout": [

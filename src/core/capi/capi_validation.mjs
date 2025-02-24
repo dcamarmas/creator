@@ -31,15 +31,18 @@ export function capi_raise(msg) {
 }
 
 export function capi_arithmetic_overflow(op1, op2, res_u) {
-    let op1_u = capi_uint2int(op1);
-    let op2_u = capi_uint2int(op2);
+    const op1_u = capi_uint2int(op1);
+    const op2_u = capi_uint2int(op2);
     res_u = capi_uint2int(res_u);
 
-    return (op1_u > 0 && op2_u > 0 && res_u < 0) || (op1_u < 0 && op2_u < 0 && res_u > 0);
+    return (
+        (op1_u > 0 && op2_u > 0 && res_u < 0) ||
+        (op1_u < 0 && op2_u < 0 && res_u > 0)
+    );
 }
 
 export function capi_bad_align(addr, type) {
-    let size = creator_memory_type2size(type);
+    const size = creator_memory_type2size(type);
     return addr % size !== 0n;
 }
 

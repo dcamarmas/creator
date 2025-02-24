@@ -18,10 +18,7 @@
  *
  */
 "use strict";
-/*
- * Google Analytics
- */
-var is_ga_initialize = false;
+const is_ga_initialize = false;
 export function creator_ga(category, action, label) {
     if (typeof gtag !== "undefined") {
         gtag("event", label, {

@@ -26,7 +26,7 @@ import { architecture, app } from "../core.mjs";
 /*
  *  track_stack_names = [ "PC=xxx", "main" ] ;
  */
-var track_stack_names = [];
+let track_stack_names = [];
 /*
  *  track_stack_limits = [
  *		               {
@@ -39,7 +39,7 @@ var track_stack_names = [];
  *		               ...
  *                      ] ;
  */
-var track_stack_limits = [];
+let track_stack_limits = [];
 /*
  * Public API
  */
@@ -48,7 +48,7 @@ var track_stack_limits = [];
 // Example: track_stack_create() ;
 //
 function track_stack_create() {
-    var ret = {
+    const ret = {
         ok: true,
         msg: "",
     };
@@ -65,7 +65,7 @@ function track_stack_create() {
 // Example: track_stack_Enter("main")
 //
 export function track_stack_enter(function_name) {
-    var ret = {
+    const ret = {
         ok: true,
         msg: "",
     };
@@ -74,7 +74,7 @@ export function track_stack_enter(function_name) {
     track_stack_names.push(function_name);
 
     // 2.- new call element
-    var new_elto = {
+    const new_elto = {
         function_name: function_name,
         begin_caller: track_stack_getTop().val.begin_callee, // llamante: FFFFFFFC, FFFFFFF0
         end_caller: track_stack_getTop().val.end_callee, // llamante: FFFFFFF0, FFFFFF00
@@ -86,8 +86,10 @@ export function track_stack_enter(function_name) {
 
     // 3.- update UI
     if (typeof window !== "undefined") {
-        app._data.callee_subrutine = track_stack_names[track_stack_names.length - 1];
-        app._data.caller_subrutine = track_stack_names[track_stack_names.length - 2];
+        app._data.callee_subrutine =
+            track_stack_names[track_stack_names.length - 1];
+        app._data.caller_subrutine =
+            track_stack_names[track_stack_names.length - 2];
         app._data.begin_caller = new_elto.begin_caller;
         app._data.end_caller = new_elto.end_caller;
         app._data.begin_callee = new_elto.begin_callee;
@@ -101,13 +103,13 @@ export function track_stack_enter(function_name) {
 // Example: track_stack_Leave() ;
 //
 export function track_stack_leave() {
-    var ret = {
+    const ret = {
         ok: true,
         msg: "",
     };
 
     // check params
-    if (0 === track_stack_limits.length) {
+    if (track_stack_limits.length === 0) {
         ret.msg = "track_stack_Leave: empty track_stack_limits !!.\n";
         return ret;
     }
@@ -119,10 +121,12 @@ export function track_stack_leave() {
     }
 
     // draw stack zones
-    var elto_top = track_stack_getTop();
+    const elto_top = track_stack_getTop();
     if (typeof window !== "undefined" && elto_top.val != null) {
-        app._data.callee_subrutine = track_stack_names[track_stack_names.length - 1];
-        app._data.caller_subrutine = track_stack_names[track_stack_names.length - 2];
+        app._data.callee_subrutine =
+            track_stack_names[track_stack_names.length - 1];
+        app._data.caller_subrutine =
+            track_stack_names[track_stack_names.length - 2];
         app._data.begin_caller = elto_top.val.begin_caller; // llamante: FFFFFFFC, FFFFFFF0, FFFFFF00
         app._data.end_caller = elto_top.val.end_caller; // llamante: FFFFFFF0, FFFFFF00, FFFFF000
         app._data.begin_callee = elto_top.val.begin_callee; // llamado:  FFFFFFF0, FFFFFF00, FFFFF000
@@ -136,7 +140,7 @@ export function track_stack_leave() {
 // Example: var elto = track_stack_getTop() ;
 //
 function track_stack_getTop() {
-    var ret = {
+    const ret = {
         ok: true,
         val: {
             begin_caller: architecture.memory_layout[4].value,
@@ -148,7 +152,7 @@ function track_stack_getTop() {
     };
 
     // check params
-    if (0 === track_stack_limits.length) {
+    if (track_stack_limits.length === 0) {
         ret.ok = false;
         ret.msg = "track_stack_getTop: empty track_stack_limits !!.\n";
         return ret;
@@ -167,20 +171,20 @@ function track_stack_getTop() {
 // Example: track_stack_getTop("function_name", 1, 2, "main") ;
 //
 function track_stack_setTop(field, indexComponent, indexElement, value) {
-    var ret = {
+    const ret = {
         ok: true,
         msg: "",
     };
 
     // check params
-    if (0 === track_stack_limits.length) {
+    if (track_stack_limits.length === 0) {
         ret.ok = false;
         ret.msg = "track_stack_getTop: empty track_stack_limits !!.\n";
         return ret;
     }
 
     // set field value
-    var elto = track_stack_limits[track_stack_limits.length - 1];
+    const elto = track_stack_limits[track_stack_limits.length - 1];
     if (typeof elto.length !== "undefined") {
         elto[field][indexComponent][indexElement] = value;
         return ret;
@@ -199,12 +203,12 @@ export function track_stack_setsp(value) {
     }
 
     // check params
-    if (0 === track_stack_limits.length) {
+    if (track_stack_limits.length === 0) {
         return;
     }
 
     // return the last element in the array
-    var elto = track_stack_limits[track_stack_limits.length - 1];
+    const elto = track_stack_limits[track_stack_limits.length - 1];
     elto.end_callee = value;
 }
 //
@@ -212,7 +216,7 @@ export function track_stack_setsp(value) {
 // Example: track_stack_reset() ;
 //
 export function track_stack_reset() {
-    var ret = {
+    const ret = {
         ok: true,
         msg: "",
     };
@@ -225,7 +229,8 @@ export function track_stack_reset() {
     // draw new limits
     if (typeof window !== "undefined") {
         app._data.track_stack_names = track_stack_names;
-        app._data.callee_subrutine = track_stack_names[track_stack_names.length - 1];
+        app._data.callee_subrutine =
+            track_stack_names[track_stack_names.length - 1];
         app._data.caller_subrutine = "";
         app._data.begin_caller = architecture.memory_layout[4].value;
         app._data.end_caller = architecture.memory_layout[4].value;
