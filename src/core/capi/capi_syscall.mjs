@@ -22,6 +22,9 @@ import { status } from "../core.mjs";
 import {
     creator_executor_exit,
     packExecute,
+    total_clk_cycles,
+} from "../executor/executor.mjs";
+import {
     display_print,
     keyboard_read,
     kbd_read_int,
@@ -29,14 +32,17 @@ import {
     kbd_read_double,
     kbd_read_char,
     kbd_read_string,
-    total_clk_cycles,
-} from "../executor/executor.mjs";
+} from "../executor/IO.mjs";
 import { readMemory } from "../memory/memoryOperations.mjs";
 import { creator_memory_alloc } from "../memory/memoryManager.mjs";
 import { crex_findReg } from "../register/registerLookup.mjs";
-import { readRegister, writeRegister } from "../register/registerOperations.mjs";
+import {
+    readRegister,
+    writeRegister,
+} from "../register/registerOperations.mjs";
 import { full_print, float2bin, double2bin } from "../utils/utils.mjs";
 import { creator_ga } from "../utils/creator_ga.mjs";
+
 export const CAPI_SYSCALL = {
     exit: function () {
         creator_ga("execute", "execute.syscall", "execute.syscall.exit");
@@ -46,13 +52,18 @@ export const CAPI_SYSCALL = {
     print_int: function (value1) {
         creator_ga("execute", "execute.syscall", "execute.syscall.print_int");
 
-        var ret1 = crex_findReg(value1);
+        const ret1 = crex_findReg(value1);
         if (ret1.match === 0) {
-            throw packExecute(true, "capi_syscall: register " + value1 + " not found", "danger", null);
+            throw packExecute(
+                true,
+                "capi_syscall: register " + value1 + " not found",
+                "danger",
+                null,
+            );
         }
 
-        var value = readRegister(ret1.indexComp, ret1.indexElem);
-        var val_int = parseInt(value.toString()) >> 0;
+        const value = readRegister(ret1.indexComp, ret1.indexElem);
+        const val_int = parseInt(value.toString()) >> 0;
 
         display_print(full_print(val_int, null, false));
     },
@@ -62,31 +73,45 @@ export const CAPI_SYSCALL = {
         creator_ga("execute", "execute.syscall", "execute.syscall.print_float");
 
         /* Get register id */
-        var ret1 = crex_findReg(value1);
+        const ret1 = crex_findReg(value1);
         if (ret1.match == 0) {
-            throw packExecute(true, "capi_syscall: register " + value1 + " not found", "danger", null);
+            throw packExecute(
+                true,
+                "capi_syscall: register " + value1 + " not found",
+                "danger",
+                null,
+            );
         }
 
         /* Print float */
-        var value = readRegister(ret1.indexComp, ret1.indexElem, "SFP-Reg");
-        var bin = float2bin(value);
+        const value = readRegister(ret1.indexComp, ret1.indexElem, "SFP-Reg");
+        const bin = float2bin(value);
 
         display_print(full_print(value, bin, true));
     },
 
     print_double: function (value1) {
         /* Google Analytics */
-        creator_ga("execute", "execute.syscall", "execute.syscall.print_double");
+        creator_ga(
+            "execute",
+            "execute.syscall",
+            "execute.syscall.print_double",
+        );
 
         /* Get register id */
-        var ret1 = crex_findReg(value1);
+        const ret1 = crex_findReg(value1);
         if (ret1.match == 0) {
-            throw packExecute(true, "capi_syscall: register " + value1 + " not found", "danger", null);
+            throw packExecute(
+                true,
+                "capi_syscall: register " + value1 + " not found",
+                "danger",
+                null,
+            );
         }
 
         /* Print double */
-        var value = readRegister(ret1.indexComp, ret1.indexElem, "DFP-Reg");
-        var bin = double2bin(value);
+        const value = readRegister(ret1.indexComp, ret1.indexElem, "DFP-Reg");
+        const bin = double2bin(value);
 
         display_print(full_print(value, bin, true));
     },
@@ -95,34 +120,48 @@ export const CAPI_SYSCALL = {
         creator_ga("execute", "execute.syscall", "execute.syscall.print_char");
 
         /* Get register id */
-        var ret1 = crex_findReg(value1);
+        const ret1 = crex_findReg(value1);
         if (ret1.match == 0) {
-            throw packExecute(true, "capi_syscall: register " + value1 + " not found", "danger", null);
+            throw packExecute(
+                true,
+                "capi_syscall: register " + value1 + " not found",
+                "danger",
+                null,
+            );
         }
 
         /* Print char */
-        var aux = readRegister(ret1.indexComp, ret1.indexElem);
-        var aux2 = aux.toString(16);
-        var length = aux2.length;
+        const aux = readRegister(ret1.indexComp, ret1.indexElem);
+        const aux2 = aux.toString(16);
+        const length = aux2.length;
 
-        var value = aux2.substring(length - 2, length);
+        let value = aux2.substring(length - 2, length);
         value = String.fromCharCode(parseInt(value, 16));
 
         display_print(value);
     },
     print_string: function (value1) {
         /* Google Analytics */
-        creator_ga("execute", "execute.syscall", "execute.syscall.print_string");
+        creator_ga(
+            "execute",
+            "execute.syscall",
+            "execute.syscall.print_string",
+        );
 
         /* Get register id */
-        var ret1 = crex_findReg(value1);
+        const ret1 = crex_findReg(value1);
         if (ret1.match == 0) {
-            throw packExecute(true, "capi_syscall: register " + value1 + " not found", "danger", null);
+            throw packExecute(
+                true,
+                "capi_syscall: register " + value1 + " not found",
+                "danger",
+                null,
+            );
         }
 
         /* Print string */
-        var addr = readRegister(ret1.indexComp, ret1.indexElem);
-        var msg = readMemory(parseInt(addr), "string");
+        const addr = readRegister(ret1.indexComp, ret1.indexElem);
+        const msg = readMemory(parseInt(addr), "string");
         display_print(msg);
     },
 
@@ -131,13 +170,18 @@ export const CAPI_SYSCALL = {
         creator_ga("execute", "execute.syscall", "execute.syscall.read_int");
 
         /* Get register id */
-        var ret1 = crex_findReg(value1);
+        const ret1 = crex_findReg(value1);
         if (ret1.match == 0) {
-            throw packExecute(true, "capi_syscall: register " + value1 + " not found", "danger", null);
+            throw packExecute(
+                true,
+                "capi_syscall: register " + value1 + " not found",
+                "danger",
+                null,
+            );
         }
 
         /* Read integer */
-        if (typeof document != "undefined") {
+        if (typeof document !== "undefined") {
             document.getElementById("enter_keyboard").scrollIntoView();
         }
 
@@ -150,12 +194,17 @@ export const CAPI_SYSCALL = {
         creator_ga("execute", "execute.syscall", "execute.syscall.read_float");
 
         /* Get register id */
-        var ret1 = crex_findReg(value1);
+        const ret1 = crex_findReg(value1);
         if (ret1.match == 0) {
-            throw packExecute(true, "capi_syscall: register " + value1 + " not found", "danger", null);
+            throw packExecute(
+                true,
+                "capi_syscall: register " + value1 + " not found",
+                "danger",
+                null,
+            );
         }
 
-        if (typeof document != "undefined") {
+        if (typeof document !== "undefined") {
             document.getElementById("enter_keyboard").scrollIntoView();
         }
 
@@ -168,12 +217,17 @@ export const CAPI_SYSCALL = {
         creator_ga("execute", "execute.syscall", "execute.syscall.read_double");
 
         /* Get register id */
-        var ret1 = crex_findReg(value1);
+        const ret1 = crex_findReg(value1);
         if (ret1.match == 0) {
-            throw packExecute(true, "capi_syscall: register " + value1 + " not found", "danger", null);
+            throw packExecute(
+                true,
+                "capi_syscall: register " + value1 + " not found",
+                "danger",
+                null,
+            );
         }
 
-        if (typeof document != "undefined") {
+        if (typeof document !== "undefined") {
             document.getElementById("enter_keyboard").scrollIntoView();
         }
 
@@ -186,12 +240,17 @@ export const CAPI_SYSCALL = {
         creator_ga("execute", "execute.syscall", "execute.syscall.read_char");
 
         /* Get register id */
-        var ret1 = crex_findReg(value1);
+        const ret1 = crex_findReg(value1);
         if (ret1.match == 0) {
-            throw packExecute(true, "capi_syscall: register " + value1 + " not found", "danger", null);
+            throw packExecute(
+                true,
+                "capi_syscall: register " + value1 + " not found",
+                "danger",
+                null,
+            );
         }
 
-        if (typeof document != "undefined") {
+        if (typeof document !== "undefined") {
             document.getElementById("enter_keyboard").scrollIntoView();
         }
 
@@ -204,18 +263,28 @@ export const CAPI_SYSCALL = {
         creator_ga("execute", "execute.syscall", "execute.syscall.read_string");
 
         /* Get register id */
-        var ret1 = crex_findReg(value1);
+        const ret1 = crex_findReg(value1);
         if (ret1.match === 0) {
-            throw packExecute(true, "capi_syscall: register " + value1 + " not found", "danger", null);
+            throw packExecute(
+                true,
+                "capi_syscall: register " + value1 + " not found",
+                "danger",
+                null,
+            );
         }
 
-        var ret2 = crex_findReg(value2);
+        const ret2 = crex_findReg(value2);
         if (ret2.match === 0) {
-            throw packExecute(true, "capi_syscall: register " + value2 + " not found", "danger", null);
+            throw packExecute(
+                true,
+                "capi_syscall: register " + value2 + " not found",
+                "danger",
+                null,
+            );
         }
 
         /* Read string */
-        if (typeof document != "undefined") {
+        if (typeof document !== "undefined") {
             document.getElementById("enter_keyboard").scrollIntoView();
         }
 
@@ -231,29 +300,48 @@ export const CAPI_SYSCALL = {
         creator_ga("execute", "execute.syscall", "execute.syscall.sbrk");
 
         /* Get register id */
-        var ret1 = crex_findReg(value1);
+        const ret1 = crex_findReg(value1);
         if (ret1.match === 0) {
-            throw packExecute(true, "capi_syscall: register " + value1 + " not found", "danger", null);
+            throw packExecute(
+                true,
+                "capi_syscall: register " + value1 + " not found",
+                "danger",
+                null,
+            );
         }
 
-        var ret2 = crex_findReg(value2);
+        const ret2 = crex_findReg(value2);
         if (ret2.match === 0) {
-            throw packExecute(true, "capi_syscall: register " + value2 + " not found", "danger", null);
+            throw packExecute(
+                true,
+                "capi_syscall: register " + value2 + " not found",
+                "danger",
+                null,
+            );
         }
 
         /* Request more memory */
-        var new_size = parseInt(readRegister(ret1.indexComp, ret1.indexElem));
+        const new_size = parseInt(readRegister(ret1.indexComp, ret1.indexElem));
         if (new_size < 0) {
-            throw packExecute(true, "capi_syscall: negative size", "danger", null);
+            throw packExecute(
+                true,
+                "capi_syscall: negative size",
+                "danger",
+                null,
+            );
         }
 
-        var new_addr = creator_memory_alloc(new_size);
+        const new_addr = creator_memory_alloc(new_size);
         writeRegister(new_addr, ret2.indexComp, ret2.indexElem);
     },
 
     get_clk_cycles: function () {
         /* Google Analytics */
-        creator_ga("execute", "execute.syscall", "execute.syscall.get_clk_cycles");
+        creator_ga(
+            "execute",
+            "execute.syscall",
+            "execute.syscall.get_clk_cycles",
+        );
 
         return total_clk_cycles;
     },

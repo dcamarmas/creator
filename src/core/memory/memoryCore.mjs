@@ -42,8 +42,8 @@ export let main_memory_datatypes = {};
 
 export function main_memory_get_addresses() {
     return Object.keys(main_memory).sort(function (a, b) {
-        let ia = parseInt(a);
-        let ib = parseInt(b);
+        const ia = parseInt(a);
+        const ib = parseInt(b);
         if (ia > ib) return -1;
         if (ib > ia) return 1;
         return 0;
@@ -52,8 +52,8 @@ export function main_memory_get_addresses() {
 
 export function main_memory_datatype_get_addresses() {
     return Object.keys(main_memory_datatypes).sort(function (a, b) {
-        let ia = parseInt(a);
-        let ib = parseInt(b);
+        const ia = parseInt(a);
+        const ib = parseInt(b);
         if (ia > ib) return -1;
         if (ib > ia) return 1;
         return 0;
@@ -72,7 +72,7 @@ function main_memory_packs_forav(addr, value) {
     };
 }
 function main_memory_datatypes_packs_foravt(addr, value, type, size) {
-    var default_value = "00";
+    let default_value = "00";
 
     if (typeof main_memory_datatypes[addr] !== "undefined") {
         default_value = main_memory_datatypes[addr].default_value;
@@ -89,10 +89,10 @@ function main_memory_datatypes_packs_foravt(addr, value, type, size) {
 // reset (set to defaults) and clear (remove all values)
 
 export function main_memory_reset() {
-    var i = 0;
+    let i = 0;
 
     // reset memory
-    var addrs = main_memory_get_addresses();
+    let addrs = main_memory_get_addresses();
     for (i = 0; i < addrs.length; i++) {
         main_memory[addrs[i]].bin = main_memory[addrs[i]].def_bin;
     }
@@ -100,7 +100,8 @@ export function main_memory_reset() {
     // reset datatypes
     addrs = main_memory_datatype_get_addresses();
     for (i = 0; i < addrs.length; i++) {
-        main_memory_datatypes[addrs[i]].value = main_memory_datatypes[addrs[i]].default;
+        main_memory_datatypes[addrs[i]].value =
+            main_memory_datatypes[addrs[i]].default;
     }
 }
 
@@ -123,7 +124,7 @@ function main_memory_write(addr, value) {
 }
 
 export function main_memory_zerofill(addr, size) {
-    var base = {
+    const base = {
         addr: 0,
         bin: "00",
         def_bin: "00",
@@ -134,7 +135,7 @@ export function main_memory_zerofill(addr, size) {
     };
 
     // Thanks for this line to Gonzalo Juarez Tello :-)
-    var value = Array(size)
+    const value = Array(size)
         .fill(base)
         .map((x, i) => {
             return { ...x, addr: addr + i };
@@ -149,14 +150,14 @@ export function main_memory_read_value(addr) {
 }
 function main_memory_write_value(addr, value) {
     // main_memory_write_value ( addr: integer,  value: string (hexadecimal) )
-    var value_obj = main_memory_read(addr);
+    const value_obj = main_memory_read(addr);
     value_obj.bin = value;
     main_memory_write(addr, value_obj);
 }
 
 export function main_memory_write_tag(addr, tag) {
     // main_memory_write_tag ( addr: integer,  tag: string )
-    var value_obj = main_memory_read(addr);
+    const value_obj = main_memory_read(addr);
     value_obj.tag = tag;
     main_memory_write(addr, value_obj);
 }
@@ -166,28 +167,28 @@ export function main_memory_read_default_value(addr) {
 //// Read/write nbytes
 function main_memory_read_nbytes(addr, n) {
     addr = BigInt(addr);
-    var value = "";
-    for (var i = 0n; i < BigInt(n); i++) {
-        value = value + main_memory_read_value(addr + i);
+    let value = "";
+    for (let i = 0n; i < BigInt(n); i++) {
+        value += main_memory_read_value(addr + i);
     }
 
     return value;
 }
 function main_memory_write_nbytes(addr, value, n) {
-    var value_str = value.toString(16).padStart(2 * n, "0");
-    var chunks = value_str.match(/.{1,2}/g);
+    const value_str = value.toString(16).padStart(2 * n, "0");
+    const chunks = value_str.match(/.{1,2}/g);
 
-    for (var i = 0n; i < BigInt(n); i++) {
+    for (let i = 0n; i < BigInt(n); i++) {
         main_memory_write_value(BigInt(addr) + i, chunks[i]);
     }
 }
 //// Read/write (3/3): DATAtype level (byte, ..., integer, space, ...)
-var string_length_limit = 4 * 1024;
+const string_length_limit = 4 * 1024;
 function create_memory_read_string(addr) {
-    var ch = "";
-    var ret_msg = "";
+    let ch = "";
+    let ret_msg = "";
 
-    for (var i = 0; i < string_length_limit; i++) {
+    for (let i = 0; i < string_length_limit; i++) {
         ch = main_memory_read_value(addr + i);
         if (ch == "00") {
             return ret_msg;
@@ -196,11 +197,16 @@ function create_memory_read_string(addr) {
         ret_msg += String.fromCharCode(parseInt(ch, 16));
     }
 
-    return ret_msg + "... (string length greater than " + string_length_limit + " chars)";
+    return (
+        ret_msg +
+        "... (string length greater than " +
+        string_length_limit +
+        " chars)"
+    );
 }
 
 export function main_memory_read_bydatatype(addr, type) {
-    var ret = 0n;
+    let ret = 0n;
 
     switch (type) {
         case "b":
@@ -213,7 +219,9 @@ export function main_memory_read_bydatatype(addr, type) {
         case "hu":
         case "half":
         case "half_word":
-            ret = BigInt("0x" + main_memory_read_nbytes(addr, word_size_bytes / 2));
+            ret = BigInt(
+                "0x" + main_memory_read_nbytes(addr, word_size_bytes / 2),
+            );
             break;
 
         case "w":
@@ -237,7 +245,7 @@ export function main_memory_read_bydatatype(addr, type) {
         case "c":
         case "cu":
         case "char": {
-            let ch = main_memory_read_value(addr);
+            const ch = main_memory_read_value(addr);
             ret = String.fromCharCode(Number(BigInt("0x" + ch)));
             break;
         }
@@ -261,10 +269,10 @@ export function main_memory_read_bydatatype(addr, type) {
     return ret;
 }
 function main_memory_datatypes_update(addr) {
-    var data = main_memory_read(addr);
-    var data_type = data.data_type;
+    const data = main_memory_read(addr);
+    const data_type = data.data_type;
     if (data_type != null) {
-        var new_value = main_memory_read_bydatatype(addr, data_type.type);
+        const new_value = main_memory_read_bydatatype(addr, data_type.type);
         data_type.value = new_value;
         return true;
     }
@@ -272,35 +280,44 @@ function main_memory_datatypes_update(addr) {
     return false;
 }
 function main_memory_datatypes_update_or_create(addr, value_human, size, type) {
-    var addr_i;
+    let addr_i;
 
     // get main-memory entry for the associated byte at addr
     let data = main_memory_read(addr);
 
     // get associated datatype to this main-memory entry
-    var data_type = data.data_type;
+    let data_type = data.data_type;
 
     // if not associated datatype, make on... otherwise update it
     if (data_type == null) {
-        data_type = main_memory_datatypes_packs_foravt(addr, value_human, type, size);
+        data_type = main_memory_datatypes_packs_foravt(
+            addr,
+            value_human,
+            type,
+            size,
+        );
         main_memory_datatypes[addr] = data_type;
     } else {
-        var new_value = main_memory_read_bydatatype(data_type.address, data_type.type);
+        const new_value = main_memory_read_bydatatype(
+            data_type.address,
+            data_type.type,
+        );
         data_type.value = new_value;
     }
 
     // update main-memory referencies...
     data = null;
-    for (var i = 0n; i < BigInt(size); i++) {
+    for (let i = 0n; i < BigInt(size); i++) {
         data = main_memory_read(BigInt(addr) + i);
         data.data_type = data_type;
         main_memory_write(BigInt(addr) + i, data);
     }
 }
 
+// eslint-disable-next-line max-lines-per-function
 export function main_memory_write_bydatatype(addr, value, type, value_human) {
-    var ret = 0x0;
-    var size = 0;
+    let ret = 0x0;
+    let size = 0;
     let convertedValue;
 
     // store byte to byte...
@@ -310,7 +327,12 @@ export function main_memory_write_bydatatype(addr, value, type, value_human) {
             size = 1;
             convertedValue = creator_memory_value_by_type(value, "bu");
             ret = main_memory_write_nbytes(addr, convertedValue, size, type);
-            main_memory_datatypes_update_or_create(addr, value_human, size, type);
+            main_memory_datatypes_update_or_create(
+                addr,
+                value_human,
+                size,
+                type,
+            );
             break;
 
         case "h":
@@ -319,7 +341,12 @@ export function main_memory_write_bydatatype(addr, value, type, value_human) {
             size = word_size_bytes / 2;
             convertedValue = creator_memory_value_by_type(value, "hu");
             ret = main_memory_write_nbytes(addr, convertedValue, size, type);
-            main_memory_datatypes_update_or_create(addr, value_human, size, type);
+            main_memory_datatypes_update_or_create(
+                addr,
+                value_human,
+                size,
+                type,
+            );
             break;
 
         case "w":
@@ -329,7 +356,12 @@ export function main_memory_write_bydatatype(addr, value, type, value_human) {
             size = word_size_bytes;
             convertedValue = creator_memory_value_by_type(value, "wu");
             ret = main_memory_write_nbytes(addr, convertedValue, size, type);
-            main_memory_datatypes_update_or_create(addr, value_human, size, type);
+            main_memory_datatypes_update_or_create(
+                addr,
+                value_human,
+                size,
+                type,
+            );
             break;
 
         case "d":
@@ -337,7 +369,12 @@ export function main_memory_write_bydatatype(addr, value, type, value_human) {
         case "double_word":
             size = word_size_bytes * 2;
             ret = main_memory_write_nbytes(addr, value, size, type);
-            main_memory_datatypes_update_or_create(addr, value_human, size, type);
+            main_memory_datatypes_update_or_create(
+                addr,
+                value_human,
+                size,
+                type,
+            );
             break;
 
         case "string":
@@ -347,17 +384,27 @@ export function main_memory_write_bydatatype(addr, value, type, value_human) {
         case "ascii":
             var ch = 0;
             var ch_h = "";
-            for (var i = 0; i < value.length; i++) {
+            for (let i = 0; i < value.length; i++) {
                 ch = value.charCodeAt(i);
                 ch_h = value.charAt(i);
                 main_memory_write_nbytes(addr + i, ch.toString(16), 1, type);
-                main_memory_datatypes_update_or_create(addr + i, ch_h, 1, "char");
+                main_memory_datatypes_update_or_create(
+                    addr + i,
+                    ch_h,
+                    1,
+                    "char",
+                );
                 size++;
             }
 
             if (type != "ascii" && type != "ascii_not_null_end") {
                 main_memory_write_nbytes(addr + value.length, "00", 1, type);
-                main_memory_datatypes_update_or_create(addr + value.length, "0", 1, "char");
+                main_memory_datatypes_update_or_create(
+                    addr + value.length,
+                    "0",
+                    1,
+                    "char",
+                );
                 size++;
             }
             break;
@@ -367,13 +414,23 @@ export function main_memory_write_bydatatype(addr, value, type, value_human) {
                 main_memory_write_nbytes(addr + i, "00", 1, type);
                 size++;
             }
-            main_memory_datatypes_update_or_create(addr, value_human, size, type);
+            main_memory_datatypes_update_or_create(
+                addr,
+                value_human,
+                size,
+                type,
+            );
             break;
 
         case "instruction":
             size = Math.ceil(value.toString().length / 2);
             ret = main_memory_write_nbytes(addr, value, size, type);
-            main_memory_datatypes_update_or_create(addr, value_human, size, type);
+            main_memory_datatypes_update_or_create(
+                addr,
+                value_human,
+                size,
+                type,
+            );
             break;
     }
 

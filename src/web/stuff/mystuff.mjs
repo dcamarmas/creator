@@ -1,5 +1,5 @@
 export function foo() {
-  return 'foo'
+    return "foo";
 }
 
-export const baz = 'baz'
+export const baz = "baz";

@@ -38,7 +38,7 @@ export function capi_uint2int(value) {
 
 export const CAPI_FP = {
     split_double: function (reg, index) {
-        var value = bin2hex(double2bin(reg));
+        const value = bin2hex(double2bin(reg));
         console_log(value);
         if (index === 0) {
             return value.substring(0, 8);
@@ -46,6 +46,7 @@ export const CAPI_FP = {
         if (index === 1) {
             return value.substring(8, 16);
         }
+        return null;
     },
 
     uint2float32: function (value) {

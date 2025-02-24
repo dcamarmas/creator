@@ -11,13 +11,14 @@
     "type-check": "vue-tsc --build",
     "lint": "eslint . --fix",
     "format": "prettier --write src/",
-    "simtest": "python ./tests/arch_tests.py"
+    "simtest": "python ./tests/arch_tests.py",
+    "test": "deno test --allow-read --unstable-node-globals --coverage"
   },
   "dependencies": {
     "@codemirror/lang-javascript": "^6.2.2",
     "chai": "^5.1.2",
     "codemirror": "^6.0.1",
-    "colors": "^1.4.0",
+    "colors.ts": "^1.0.20",
     "esbuild": "^0.25.0",
     "jshint": "^2.13.6",
     "mocha": "^11.1.0",
@@ -31,23 +32,22 @@
   },
   "devDependencies": {
     "@tsconfig/node22": "^22.0.0",
-    "@types/node": "^22.10.7",
+    "@types/colors": "^1.1.3",
+    "@types/node": "^22.13.2",
+    "@types/yargs": "^17.0.33",
     "@vitejs/plugin-vue": "^5.2.1",
     "@vue/eslint-config-prettier": "^10.1.0",
     "@vue/eslint-config-typescript": "^14.3.0",
     "@vue/tsconfig": "^0.7.0",
     "eslint": "^9.18.0",
     "eslint-plugin-vue": "^9.32.0",
+    "globals": "^15.14.0",
     "jiti": "^2.4.2",
     "npm-run-all2": "^7.0.2",
     "prettier": "^3.4.2",
     "typescript": "~5.7.3",
     "vite": "^6.0.11",
     "vite-plugin-vue-devtools": "^7.7.0",
-    "vue-tsc": "^2.2.0",
-    "globals": "^15.14.0"
-  },
-  "bin": {
-    "creator": "./dist/cli/creator.js"
+    "vue-tsc": "^2.2.0"
   }
 }
