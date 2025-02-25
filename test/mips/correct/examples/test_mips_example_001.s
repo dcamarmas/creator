@@ -22,7 +22,7 @@
    main:
             
       # print byte value 
-      la $a0, byte
+first:la $a0, byte
       lb $a0, 0($a0)
       li $v0, 1
       syscall
