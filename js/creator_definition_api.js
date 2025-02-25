@@ -424,9 +424,9 @@ function capi_callconv_begin ( addr )
 	// 2) get function name
 	if (typeof architecture.components[0] !== "undefined")
 	{
-		if (typeof tag_instructions[addr] === "undefined")
+		if ((addr_label[addr] ?? []).length === 0)
 			 function_name = "0x" + parseInt(addr).toString(16) ;
-		else function_name = tag_instructions[addr] ;
+		else function_name = addr_label[addr].join(" | ") ;
 	}
 
 	// 3) callstack_enter
@@ -469,9 +469,9 @@ function capi_drawstack_begin ( addr )
 	// 1.- get function name
 	if (typeof architecture.components[0] !== "undefined")
 	{
-		if (typeof tag_instructions[addr] == "undefined")
+		if ((addr_label[addr] ?? []).length === 0)
 			 function_name = "0x" + parseInt(addr).toString(16) ;
-		else function_name = tag_instructions[addr] ;
+		else function_name = addr_label[addr].join(" | ") ;
 	}
 
 	// 2.- callstack_enter
