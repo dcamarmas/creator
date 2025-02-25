@@ -25,5 +25,5 @@ while:
          addi t0, t0, 1
          j while
 
-fin:     # ...
+fin:     nop # ...
 

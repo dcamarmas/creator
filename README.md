@@ -168,11 +168,15 @@
 
 
 ## Authors
-  * :technologist: Diego Camarmas Alonso (Main Coordinator)
+  * :technologist: Diego Camarmas Alonso
   * :technologist: Félix García Carballeira 
   * :technologist: Alejandro Calderón Mateos
-  * :technologist: Elías Del Pozo Puñal (Beta Tester)
+    
+### Contributors
+  * :technologist: Elías Del Pozo Puñal (Beta tester)
   * :technologist: Lucas Elvira Martín (RISC-V and several improvements)
+  * :technologist: José Antonio Verde Jiménez (Real hardware integration)
+  * :technologist: Álvaro Guerrero Espinosa (New compiler)
 
 
 ## ChangeLog
