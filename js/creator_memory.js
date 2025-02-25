@@ -408,20 +408,22 @@ function main_memory_write_bydatatype ( addr, value, type, value_human )
                 case 'asciiz':
                 case 'ascii_not_null_end':
                 case 'ascii':
-                     var ch   = 0 ;
-                     var ch_h = '';
-                     for (var i=0; i<value.length; i++) {
-                          ch = value.charCodeAt(i);
-                          ch_h = value.charAt(i);
-                          main_memory_write_nbytes(addr+i, ch.toString(16), 1, type) ;
-                          main_memory_datatypes_update_or_create(addr+i, ch_h, 1, 'char');
-                          size++ ;
+                     bytes = new Uint8Array(4);
+                     encoder = new TextEncoder;
+                     for (const ch_h of value) {
+                          const n = encoder.encodeInto(ch_h, bytes).written;
+                          ch = ""
+                          for (let i = 0; i < n; i++) {
+                              ch += bytes[i].toString(16).padStart(2, "0");
+                          }
+                          main_memory_write_nbytes(addr, ch, n, type) ;
+                          main_memory_datatypes_update_or_create(addr, ch_h, n, 'char');
+                          addr += n
                      }
 
                      if ( (type != 'ascii') && (type != 'ascii_not_null_end') ) {
-                           main_memory_write_nbytes(addr+value.length, "00", 1, type) ;
-                           main_memory_datatypes_update_or_create(addr+value.length, "0", 1, 'char');
-                           size++ ;
+                           main_memory_write_nbytes(addr, "00", 1, type) ;
+                           main_memory_datatypes_update_or_create(addr, "0", 1, 'char');
                      }
                      break;
 
