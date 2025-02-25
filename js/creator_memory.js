@@ -113,18 +113,14 @@ function main_memory_datatypes_packs_foravt ( addr, value, type, size )
 
 function main_memory_reset ( )
 {
-        var i = 0;
-
         // reset memory
-        var addrs = main_memory_get_addresses() ;
-        for (i=0; i<addrs.length; i++) {
-             main_memory[addrs[i]].bin = main_memory[addrs[i]].def_bin ;
+        for (const [_, entry] of Object.entries(main_memory)) {
+             entry.bin = entry.def_bin ;
         }
 
         // reset datatypes
-        addrs = main_memory_datatype_get_addresses() ;
-        for (i=0; i<addrs.length; i++) {
-             main_memory_datatypes[addrs[i]].value = main_memory_datatypes[addrs[i]].default ;
+        for (const [_, entry] of Object.entries(main_memory_datatypes)) {
+             entry.value = entry.default ;
         }
 }
 
@@ -444,9 +440,6 @@ function main_memory_write_bydatatype ( addr, value, type, value_human )
                      break;
         }
 
-        // update view
-        creator_memory_updateall();
-
         return ret ;
 }
 
@@ -558,18 +551,14 @@ function creator_memory_alignelto ( new_addr, new_size )
 
 function creator_memory_prereset ( )
 {
-        var i = 0;
-
         // prereset main memory
-        var addrs = main_memory_get_addresses() ;
-        for (i=0; i<addrs.length; i++) {
-             main_memory[addrs[i]].def_bin = main_memory[addrs[i]].bin ;
+        for (const [_, entry] of Object.entries(main_memory)) {
+             entry.def_bin = entry.bin ;
         }
 
         // prereset datatypes
-        addrs = main_memory_datatype_get_addresses() ;
-        for (i=0; i<addrs.length; i++) {
-             main_memory_datatypes[addrs[i]].default = main_memory_datatypes[addrs[i]].value ;
+        for (const [_, entry] of Object.entries(main_memory_datatypes)) {
+             entry.default = entry.value ;
         }
 }
 
@@ -628,15 +617,19 @@ function creator_memory_alloc ( new_size )
         return algn.new_addr ;
 }
 
-function main_memory_storedata ( data_address, value, size, dataLabel, value_human, DefValue, type )
+function main_memory_storedata ( data_address, value, size, dataLabel, value_human, DefValue, type, skip_update_ui)
 {
         var algn = creator_memory_alignelto(data_address, size) ;
 
         main_memory_write_bydatatype(algn.new_addr, value, type, value_human) ;
-        creator_memory_zerofill((algn.new_addr + size), (algn.new_size - size)) ;
+        main_memory_zerofill((algn.new_addr + size), (algn.new_size - size)) ;
 
         if (dataLabel != '') {
             main_memory_write_tag(algn.new_addr, dataLabel) ;
+        }
+
+        if (skip_update_ui !== true) {
+            creator_memory_updateall();
         }
 
         return parseInt(algn.new_addr) + parseInt(size) ;
@@ -879,7 +872,7 @@ function creator_memory_is_segment_empty ( segment_name )
 }
 
 
-function creator_memory_data_compiler ( data_address, value, size, dataLabel, DefValue, type )
+function creator_memory_data_compiler ( data_address, value, size, dataLabel, DefValue, type, skip_update_ui)
 {
         var ret = {
                      msg: '',
@@ -905,23 +898,23 @@ function creator_memory_data_compiler ( data_address, value, size, dataLabel, De
         }
 
         ret.msg = '' ;
-        ret.data_address = main_memory_storedata(data_address, value, size, dataLabel, DefValue, DefValue, type) ;
+        ret.data_address = main_memory_storedata(data_address, value, size, dataLabel, DefValue, DefValue, type, skip_update_ui) ;
 
         return ret ;
 }
 
-function creator_insert_instruction ( auxAddr, value, def_value, hide, hex, fill_hex, label )
+function creator_insert_instruction ( auxAddr, value, def_value, hide, hex, fill_hex, label, skip_update_ui)
 {
         var size = Math.ceil(hex.toString().length / 2) ;
-        return main_memory_storedata(auxAddr, hex, size, label, def_value, def_value, "instruction") ;
+        return main_memory_storedata(auxAddr, hex, size, label, def_value, def_value, "instruction", skip_update_ui) ;
 }
 
-function creator_memory_storestring ( string, string_length, data_address, label, type, align )
+function creator_memory_storestring ( string, string_length, data_address, label, type, skip_update_ui)
 {
         if (label != null) {
             data_tag.push({tag: label, addr: data_address});
         }
 
-        return main_memory_storedata(data_address, string, string_length, label, string, string, type);
+        return main_memory_storedata(data_address, string, string_length, label, string, string, type, skip_update_ui);
 }
 

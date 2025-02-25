@@ -52,7 +52,13 @@
                   load_copy()
                   {
                     //Load architecture from cache
-                    var aux_architecture = JSON.parse(localStorage.getItem("backup_arch"));
+                    const arch_json = localStorage.getItem("backup_arch")
+                    var aux_architecture = JSON.parse(arch_json);
+                    try {
+                      arch = wasm.ArchitectureJS.from_json(arch_json);
+                    } catch (error) {
+                      console_log("Error loading architecture: " + error);
+                    }
                     architecture = register_value_deserialize(aux_architecture);
                     app._data.architecture_name = localStorage.getItem("backup_arch_name");
                     Object.assign(app._data.architecture, architecture);
