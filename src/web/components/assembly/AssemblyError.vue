@@ -28,7 +28,7 @@ export default {
 </script>
 
 <template>
-  <b-modal :id="id" title="Assembly Code Error" :ref="reff" hide-footer size="lg">
+  <b-modal :id="id" title="Assembly Code Error" :ref="reff" no-footer size="lg">
     <span class="h6 font-weight-light">Code fragment:</span>
 
     <div class="errorAssembly">
@@ -43,19 +43,25 @@ export default {
           <b-row>
             <b-col class="px-0">&nbsp;</b-col>
             <b-col class="px-2">{{ modal_assembly_error.line1 }}</b-col>
-            <b-col class="pl-2" cols="10">{{ modal_assembly_error.code1 }}</b-col>
+            <b-col class="pl-2" cols="10">{{
+              modal_assembly_error.code1
+            }}</b-col>
           </b-row>
 
           <b-row>
             <b-col class="px-0">*</b-col>
             <b-col class="px-2">{{ modal_assembly_error.line2 }}</b-col>
-            <b-col class="pl-2" cols="10">{{ modal_assembly_error.code2 }}</b-col>
+            <b-col class="pl-2" cols="10">{{
+              modal_assembly_error.code2
+            }}</b-col>
           </b-row>
 
           <b-row>
             <b-col class="px-0">&nbsp;</b-col>
             <b-col class="px-2">{{ modal_assembly_error.line3 }}</b-col>
-            <b-col class="pl-2" cols="10">{{ modal_assembly_error.code3 }}</b-col>
+            <b-col class="pl-2" cols="10">{{
+              modal_assembly_error.code3
+            }}</b-col>
           </b-row>
 
           <b-row>

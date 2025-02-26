@@ -26,7 +26,7 @@ export default {
 </script>
 
 <template>
-  <b-modal :id="id" title="CREATOR Community" scrollable hide-footer size="xl">
+  <b-modal :id="id" title="CREATOR Community" scrollable no-footer size="xl">
     <b-container fluid align-h="center" class="mx-0 px-0">
       <b-row cols="3 text-center" align-v="center">
         <b-col cols="4">
@@ -35,7 +35,7 @@ export default {
               alt="Universidad Carlos III de Madrid Logo"
               class="p-0"
               style="width: 100%"
-              src="./images/institutions/uc3m.jpg"
+              src="@/web/assets/img/institutions/uc3m.jpg"
             />
           </a>
         </b-col>
@@ -46,7 +46,7 @@ export default {
               alt="Universidad de Castilla La - Mancha Logo"
               class="p-0"
               style="width: 55%"
-              src="./images/institutions/uclm.png"
+              src="@/web/assets/img/institutions/uclm.png"
             />
           </a>
         </b-col>
@@ -57,7 +57,7 @@ export default {
               alt="Universidad de Leon Logo"
               class="p-0"
               style="width: 75%"
-              src="./images/institutions/unileon.png"
+              src="@/web/assets/img/institutions/unileon.png"
             />
           </a>
         </b-col>

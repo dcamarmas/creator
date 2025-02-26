@@ -25,17 +25,17 @@ export default {
 
   data() {
     return {
-      uri: '',
+      uri: "",
     }
   },
 
   methods: {
     make_uri() {
       this.uri =
-        window.location.href.split('?')[0].split('#')[0] +
-        '?architecture=' +
+        window.location.href.split("?")[0].split("#")[0] +
+        "?architecture=" +
         encodeURIComponent(app._data.architecture_name) +
-        '&asm=' +
+        "&asm=" +
         encodeURIComponent(textarea_assembly_editor.getValue())
     },
 
@@ -47,7 +47,7 @@ export default {
 </script>
 
 <template>
-  <b-modal :id="id" title="URI" hide-footer class="text-center" @shown="make_uri">
+  <b-modal :id="id" title="URI" no-footer class="text-center" @shown="make_uri">
     <div class="text-center">
       <b-form-textarea v-model="uri" :rows="5"></b-form-textarea>
       <br />

@@ -40,10 +40,10 @@ bun run build
 bun lint
 ```
 
-### Run Unit Tests
+### Run Unit Tests (with [Mocha](https://mochajs.org/))
 
 ```sh
-mocha test
+bun test
 ```
 
 ### Run Architecture Tests (for RISC-V)

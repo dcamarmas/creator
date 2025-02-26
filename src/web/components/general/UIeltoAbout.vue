@@ -18,18 +18,22 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <script>
+import CardAuthor from "./CardAuthor.vue"
+// import dcamarmas from '@/web/assetsimg/author_dcamarmas.png'
+
 export default {
   props: {
     id: { type: String, required: true },
   },
+  components: { CardAuthor },
 }
 </script>
 
 <template>
-  <b-modal :id="id" title="About us" scrollable hide-footer>
+  <b-modal :id="id" title="About us" scrollable no-footer>
     <b-card-group>
       <CardAuthor
-        author_img="/creator/images/author_dcamarmas.png"
+        author_img="@/web/assets/img/author_dcamarmas.png"
         author_alt="author_dcamarmas"
         author_full_name="Diego Camarmas Alonso"
         author_href_linked="https://www.linkedin.com/in/dcamarmas"
@@ -38,7 +42,7 @@ export default {
       />
 
       <CardAuthor
-        author_img="/creator/images/author_fgarcia.png"
+        author_img="@/web/assets/img/author_fgarcia.png"
         author_alt="author_fgarcia"
         author_full_name="Félix García Carballeira"
         author_href_linked="https://es.linkedin.com/in/f%C3%A9lix-garc%C3%ADa-carballeira-4ab48a14"
@@ -47,7 +51,7 @@ export default {
       />
 
       <CardAuthor
-        author_img="/creator/images/author_acaldero.png"
+        author_img="@/web/assets/img/author_acaldero.png"
         author_alt="author_acaldero"
         author_full_name="Alejandro Calderón Mateos"
         author_href_linked="https://www.linkedin.com/in/alejandro-calderon-mateos/"
@@ -56,7 +60,7 @@ export default {
       />
 
       <CardAuthor
-        author_img="/creator/images/author_edelpozo.png"
+        author_img="@/web/assets/img/author_edelpozo.png"
         author_alt="author_edelpozo"
         author_full_name="Elías del Pozo Puñal"
         author_href_linked="https://www.linkedin.com/in/edelpozop/"
@@ -68,7 +72,8 @@ export default {
     <b-list-group class="my-3">
       <b-list-group-item style="text-align: center">
         <a href="mailto: creator.arcos.inf.uc3m.es@gmail.com">
-          <span class="fa-solid fa-envelope" /> creator.arcos.inf.uc3m.es@gmail.com
+          <span class="fa-solid fa-envelope" />
+          creator.arcos.inf.uc3m.es@gmail.com
         </a>
       </b-list-group-item>
     </b-list-group>
@@ -78,7 +83,11 @@ export default {
         <b-row align-h="center">
           <b-col cols="4">
             <a target="_blank" href="https://www.arcos.inf.uc3m.es/">
-              <img alt="ARCOS" class="p-0 headerLogo" src="./images/arcos.svg" />
+              <img
+                alt="ARCOS"
+                class="p-0 headerLogo"
+                src="@/web/assets/img/arcos.svg"
+              />
             </a>
           </b-col>
           <b-col cols="8">
@@ -86,7 +95,7 @@ export default {
               <img
                 alt="Computer Science and Engineering Departament"
                 class="p-0 headerLogo"
-                src="./images/dptoinf.png"
+                src="@/web/assets/img/dptoinf.png"
                 style="width: 90%; height: auto"
               />
             </a>

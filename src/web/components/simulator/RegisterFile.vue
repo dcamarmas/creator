@@ -18,12 +18,13 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <script>
-import Register from './Register.vue'
+import Register from "./Register.vue"
 
 export default {
   props: {
-    render: { type: Number, required: true },
+    // render: { type: Number, required: true },
     data_mode: { type: String, required: true },
+    components: { type: Object, required: true },
   },
 
   components: {
@@ -32,43 +33,46 @@ export default {
 
   data() {
     return {
-      local_data_mode: 'int_registers',
+      local_data_mode: "int_registers",
 
       //Register value representation
-      reg_representation: 'signed',
+      reg_representation: "signed",
       reg_representation_options_int: [
-        { text: 'Signed', value: 'signed' },
-        { text: 'Unsigned', value: 'unsigned' },
-        { text: 'Hex', value: 'hex' },
+        { text: "Signed", value: "signed" },
+        { text: "Unsigned", value: "unsigned" },
+        { text: "Hex", value: "hex" },
       ],
 
       reg_representation_options_fp: [
-        { text: 'IEEE 754 (32 bits)', value: 'ieee32' },
-        { text: 'IEEE 754 (64 bits)', value: 'ieee64' },
+        { text: "IEEE 754 (32 bits)", value: "ieee32" },
+        { text: "IEEE 754 (64 bits)", value: "ieee64" },
       ],
 
       //Register name representation
-      reg_name_representation: 'all',
+      reg_name_representation: "all",
       reg_name_representation_options: [
-        { text: 'Name', value: 'logical' },
-        { text: 'Alias', value: 'alias' },
-        { text: 'All', value: 'all' },
+        { text: "Name", value: "logical" },
+        { text: "Alias", value: "alias" },
+        { text: "All", value: "all" },
       ],
     }
   },
 
   methods: {
     mk_reg_representation_options() {
-      if (this._props.data_mode === 'int_registers' || this._props.data_mode === 'ctrl_registers') {
-        if (this._props.data_mode != this.local_data_mode) {
-          this.reg_representation = 'signed'
-          this.local_data_mode = this._props.data_mode
+      if (
+        this.data_mode === "int_registers" ||
+        this.data_mode === "ctrl_registers"
+      ) {
+        if (this.data_mode !== this.local_data_mode) {
+          this.reg_representation = "signed"
+          this.local_data_mode = this.data_mode
         }
         return this.reg_representation_options_int
       } else {
-        if (this._props.data_mode != this.local_data_mode) {
-          this.reg_representation = 'ieee32'
-          this.local_data_mode = this._props.data_mode
+        if (this.data_mode !== this.local_data_mode) {
+          this.reg_representation = "ieee32"
+          this.local_data_mode = this.data_mode
         }
         return this.reg_representation_options_fp
       }
@@ -80,7 +84,14 @@ export default {
 <template>
   <div>
     <b-container fluid align-h="between" class="mx-0 my-3 px-2">
-      <b-row cols-xl="2" cols-lg="1" cols-md="2" cols-sm="1" cols-xs="1" cols="1">
+      <b-row
+        cols-xl="2"
+        cols-lg="1"
+        cols-md="2"
+        cols-sm="1"
+        cols-xs="1"
+        cols="1"
+      >
         <b-col cols="12" xl="6" md="6" align-h="start" class="px-2 col">
           <div class="border m-1 py-1 px-2">
             <b-badge variant="light" class="h6 groupLabelling border mx-2 my-0">
@@ -127,15 +138,14 @@ export default {
 
     <b-container fluid align-h="center" class="mx-0 px-3 my-2">
       <b-row align-h="center" cols="1">
-        <b-col v-for="item in architecture_hash">
+        <b-col v-for="bank in components">
           <b-container
             fluid
             align-h="center"
             class="px-0 mx-0 mb-2"
             v-if="
-              data_mode == architecture.components[item.index].type ||
-              (data_mode == 'int_registers' &&
-                architecture.components[item.index].type === 'ctrl_registers')
+              data_mode === bank.type ||
+              (data_mode === 'int_registers' && bank.type === 'ctrl_registers')
             "
           >
             <b-row
@@ -149,12 +159,15 @@ export default {
             >
               <b-col
                 class="p-1 mx-0"
-                v-for="(item2, index) in architecture.components[item.index].elements"
+                v-for="(register, _index) in bank.elements"
               >
+                <!-- :render="render" -->
                 <Register
-                  :render="render"
-                  :component="item"
-                  :register="item2"
+                  :type="bank.type"
+                  :double_precision_type="
+                    bank.double_precision ? bank.double_precision_type : null
+                  "
+                  :register="register"
                   :name_representation="reg_name_representation"
                   :value_representation="reg_representation"
                 />

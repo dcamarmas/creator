@@ -29,13 +29,19 @@ export default {
   data() {
     return {
       //Allow instruction with fractioned fields
-      fragmet_data: ['inm-signed', 'inm-unsigned', 'address', 'offset_bytes', 'offset_words'],
+      fragmet_data: [
+        "inm-signed",
+        "inm-unsigned",
+        "address",
+        "offset_bytes",
+        "offset_words",
+      ],
     }
   },
 }
 </script>
 <template>
-  <b-modal :id="id" size="lg" :title="title" hide-footer>
+  <b-modal :id="id" size="lg" :title="title" no-footer>
     <b-form>
       <div id="viewFields">
         <div class="col-lg-14 col-sm-14 row">
@@ -80,7 +86,9 @@ export default {
                   </b-form-input>
                   <b-form-input
                     type="text"
-                    v-model="instruction.fields[field_index].name = instruction.name"
+                    v-model="
+                      instruction.fields[field_index].name = instruction.name
+                    "
                     required
                     size="sm"
                     v-if="field_index == 0"
@@ -111,7 +119,10 @@ export default {
                 <b-form-checkbox
                   :id="'view-fragment-' + i"
                   v-model="instruction.separated[field_index]"
-                  v-if="fragmet_data.indexOf(instruction.separated[field_index]) !== -1"
+                  v-if="
+                    fragmet_data.indexOf(instruction.separated[field_index]) !==
+                    -1
+                  "
                   class="ml-3"
                   disabled
                 >
@@ -161,7 +172,10 @@ export default {
                     required
                     size="sm"
                     disabled
-                    v-if="typeof instruction.fields[field_index].stopbit !== 'object'"
+                    v-if="
+                      typeof instruction.fields[field_index].stopbit !==
+                      'object'
+                    "
                     title="Field end bit"
                   >
                   </b-form-input>
@@ -204,7 +218,12 @@ export default {
                 <b-form-group>
                   <b-form-input
                     type="text"
-                    v-on:input="debounce('instruction.fields[field_index].valueField', $event)"
+                    v-on:input="
+                      debounce(
+                        'instruction.fields[field_index].valueField',
+                        $event,
+                      )
+                    "
                     v-model="instruction.fields[field_index].valueField"
                     required
                     size="sm"

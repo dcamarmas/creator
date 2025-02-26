@@ -1,0 +1,205 @@
+.compMenu {
+  padding: 2px;
+}
+
+.opcionsGroup {
+  background-color: white;
+}
+
+.memoryLayout {
+  width: 100%;
+  text-align: center;
+}
+
+.memoryLayoutDiv {
+  margin-top: 2%;
+  margin-bottom: 2%;
+}
+
+.memoryLayoutForm {
+  margin-bottom: 2%;
+}
+
+.fields {
+  padding: 1%;
+}
+
+.architecture-scroll-y {
+  display: block;
+  max-height: 60vh;
+  overflow-y: auto;
+  -ms-overflow-style: -ms-autohiding-scrollbar;
+}
+
+.errorAssembly {
+  padding: 3%;
+  background: #ef9a9a;
+}
+
+.fileForm {
+  background-color: white;
+  color: black;
+}
+
+.CodeMirror {
+  border: 1px solid #eee;
+  height: auto;
+  font-size: 0.85em;
+}
+
+.code-scroll-y {
+  display: block;
+  max-height: 90vh;
+  overflow-y: auto;
+  -ms-overflow-style: -ms-autohiding-scrollbar;
+}
+
+.help-scroll-y {
+  display: block;
+  max-height: 80vh;
+  overflow-y: auto;
+  -ms-overflow-style: -ms-autohiding-scrollbar;
+}
+
+.calculatorImg {
+  width: 100%;
+}
+
+.memory_table {
+  max-height: 49vh;
+  padding-left: 1vw;
+}
+
+.table-mem-wrapper-scroll-y {
+  display: block;
+  max-height: 75vh;
+  overflow-y: auto;
+  -ms-overflow-style: -ms-autohiding-scrollbar;
+}
+
+.memoryValue {
+  float: right;
+  margin-right: 2%;
+}
+
+.memoryBorder {
+  border: 1px solid gray;
+}
+
+.memoryTag {
+  float: left;
+  position: relative;
+  left: -0.7vw;
+}
+
+.binaryTag {
+  position: relative;
+  top: -9px;
+}
+
+.table-inst-wrapper-scroll-y {
+  display: block;
+  max-height: 90vh;
+  overflow-y: auto;
+  -ms-overflow-style: -ms-autohiding-scrollbar;
+}
+
+.breakPoint {
+  width: auto !important;
+  height: 4vh;
+}
+
+.keyboardButton {
+  margin-top: 5%;
+  float: right;
+}
+
+.enterIcon {
+  transform: rotate(90deg);
+}
+
+.text-blue-funny {
+  color: #00bcfe;
+}
+
+.variant-blue-funny {
+  background-color: #00bcfe;
+}
+
+.stats {
+  font-size: 0.85em;
+}
+
+#chart {
+  margin: 35px auto;
+  padding: 0;
+}
+
+.apexcharts-legend-text tspan:nth-child(1) {
+  font-weight: lighter;
+  fill: #999;
+}
+
+.apexcharts-legend-text tspan:nth-child(3) {
+  font-weight: bold;
+}
+
+@media only screen and (min-width: 2560px) {
+  .instructions_table {
+    padding-right: 1%;
+    cursor: pointer;
+    max-height: 80vh;
+  }
+  .memory_table {
+    font-size: 0.85em;
+    max-height: 70vh;
+  }
+}
+
+@media only screen and (min-width: 540px) and (max-width: 960px) {
+  .spinner {
+    display: block;
+    position: fixed;
+    z-index: 41;
+    top: 45%;
+    right: 44%;
+    background: white;
+    border: 1px solid #a9a9a9;
+    border-radius: 9px;
+    -moz-border-radius: 9px;
+    -webkit-border-radius: 9px;
+    padding: 10px;
+    opacity: 1;
+    text-align: center;
+  }
+
+  .groupLabelling {
+    float: top;
+    position: relative;
+    top: -2.3vw;
+  }
+}
+
+@media only screen and (max-width: 540px) {
+  .spinner {
+    display: block;
+    position: fixed;
+    z-index: 41;
+    top: 50%;
+    right: 39%;
+    background: white;
+    border: 1px solid #a9a9a9;
+    border-radius: 9px;
+    -moz-border-radius: 9px;
+    -webkit-border-radius: 9px;
+    padding: 10px;
+    opacity: 1;
+    text-align: center;
+  }
+
+  .groupLabelling {
+    float: top;
+    position: relative;
+    top: -3.2vw;
+  }
+}

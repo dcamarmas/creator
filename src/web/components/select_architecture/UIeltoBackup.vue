@@ -28,33 +28,20 @@ export default {
       //Show modal
       show_modal: false,
 
-      backup_date: localStorage.getItem('backup_date'),
-      backup_arch_name: localStorage.getItem('backup_arch_name'),
+      backup_date: localStorage.getItem("backup_date"),
+      backup_arch_name: localStorage.getItem("backup_arch_name"),
     }
   },
 
   methods: {
-    //Show backup modal
-    backup_modal(env) {
-      if (typeof Storage !== 'undefined') {
-        if (
-          localStorage.getItem('backup_arch') != null &&
-          localStorage.getItem('backup_asm') != null &&
-          localStorage.getItem('backup_date') != null
-        ) {
-          env.$root.$emit('bv::show::modal', 'copy')
-        }
-      }
-    },
-
     //Load backup from cache
     load_copy() {
       //Load architecture from cache
-      const aux_architecture = JSON.parse(localStorage.getItem('backup_arch'))
+      const aux_architecture = JSON.parse(localStorage.getItem("backup_arch"))
 
       load_arch_select(aux_architecture)
 
-      app._data.architecture_name = localStorage.getItem('backup_arch_name')
+      app._data.architecture_name = localStorage.getItem("backup_arch_name")
       app._data.architecture_hash = architecture_hash
       Object.assign(app._data.architecture, architecture)
 
@@ -69,24 +56,24 @@ export default {
       }
 
       //Load the last assembly code from cache
-      code_assembly = localStorage.getItem('backup_asm')
+      code_assembly = localStorage.getItem("backup_asm")
 
       //Refresh UI
       uielto_toolbar_btngroup.methods.reset(false)
-      uielto_toolbar_btngroup.methods.change_UI_mode('simulator')
-      uielto_data_view_selector.methods.change_data_view('int_registers')
+      uielto_toolbar_btngroup.methods.change_UI_mode("simulator")
+      uielto_data_view_selector.methods.change_data_view("int_registers")
 
-      show_notification('The backup has been loaded correctly', 'success')
+      show_notification("The backup has been loaded correctly", "success")
 
       this.show_modal = false
     },
 
     //Delete backup on cache
     remove_copy() {
-      localStorage.removeItem('backup_arch_name')
-      localStorage.removeItem('backup_arch')
-      localStorage.removeItem('backup_asm')
-      localStorage.removeItem('backup_date')
+      localStorage.removeItem("backup_arch_name")
+      localStorage.removeItem("backup_arch")
+      localStorage.removeItem("backup_asm")
+      localStorage.removeItem("backup_date")
 
       this.show_modal = false
     },
@@ -95,13 +82,28 @@ export default {
 </script>
 
 <template>
-  <b-modal :id="id" v-model="show_modal" hide-footer hide-header size="sm" centered>
+  <b-modal
+    :id="id"
+    v-model="show_modal"
+    no-footer
+    hide-header
+    size="sm"
+    centered
+  >
     <span class="h6"> A {{ backup_arch_name }} backup is available. </span>
     <br />
     <span class="h6"> Date: {{ backup_date }} </span>
 
     <b-container fluid align-h="center" class="mx-0 px-0">
-      <b-row cols-xl="2" cols-lg="2" cols-md="2" cols-sm="1" cols-xs="1" cols="1" align-h="center">
+      <b-row
+        cols-xl="2"
+        cols-lg="2"
+        cols-md="2"
+        cols-sm="1"
+        cols-xs="1"
+        cols="1"
+        align-h="center"
+      >
         <b-col>
           <b-button
             class="btn btn-outline-danger btn-block btn-sm buttonBackground"

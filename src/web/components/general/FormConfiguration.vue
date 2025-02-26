@@ -18,9 +18,13 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <script>
+import { creator_ga } from "@/core/utils/creator_ga.mjs"
+import { set_debug } from "@/core/core.mjs"
+
 export default {
   props: {
     id: { type: String, required: true },
+    arch_available: Array,
     default_architecture: { type: String, required: true },
     stack_total_list: { type: Number, required: true },
     autoscroll: { type: Boolean, required: true },
@@ -29,319 +33,251 @@ export default {
     dark: { type: Boolean, required: true },
     c_debug: { type: Boolean, required: true },
   },
+  emits: [
+    // parent variables that will be updated
+    "update:default_architecture",
+    "update:stack_total_list",
+    "update:autoscroll",
+    "update:notification_time",
+    "update:instruction_help_size",
+    "update:dark",
+    "update:c_debug",
+  ],
+  computed: {
+    // modifying these variables will update the corresponding parent's variables
+    // see https://vuejs.org/guide/components/v-model
+    default_architecture_value: {
+      get() {
+        return this.default_architecture
+      },
+      set(value) {
+        this.$emit("update:default_architecture", value)
 
-  data() {
-    return {
-      architectures: [
-        { text: 'None', value: 'none' },
-        { text: 'RISC-V (RV32IMFD)', value: 'RISC-V (RV32IMFD)' },
-        { text: 'MIPS-32', value: 'MIPS-32' },
-      ],
-    }
-  },
+        localStorage.setItem("conf_default_architecture", value)
 
-  methods: {
-    //Loads the configuration values from cache
-    get_configuration() {
-      if (localStorage.getItem('conf_default_architecture') != null) {
-        app._data.default_architecture = localStorage.getItem('conf_default_architecture')
-      }
-
-      if (localStorage.getItem('conf_stack_total_list') != null) {
-        app._data.stack_total_list = parseInt(localStorage.getItem('conf_stack_total_list'))
-      }
-
-      if (localStorage.getItem('conf_autoscroll') != null) {
-        app._data.autoscroll = localStorage.getItem('conf_autoscroll') === 'true'
-      }
-
-      if (localStorage.getItem('conf_notification_time') != null) {
-        app._data.notification_time = parseInt(localStorage.getItem('conf_notification_time'))
-      }
-
-      if (localStorage.getItem('conf_instruction_help_size') != null) {
-        app._data.instruction_help_size = parseInt(
-          localStorage.getItem('conf_instruction_help_size'),
+        //Google Analytics
+        creator_ga(
+          "configuration",
+          "configuration.default_architecture",
+          "configuration.default_architecture." + value,
         )
-      }
+      },
     },
+    stack_total_list_value: {
+      get() {
+        return this.stack_total_list
+      },
+      set(value) {
+        value = parseInt(value, 10)
 
-    //Default Architecture
-    change_default_architecture() {
-      this._props.default_architecture = this.default_architecture
-      app._data.default_architecture = this._props.default_architecture
+        const prev = this.stack_total_list
 
-      localStorage.setItem('conf_default_architecture', this._props.default_architecture)
-
-      //Google Analytics
-      creator_ga(
-        'configuration',
-        'configuration.default_architecture',
-        'configuration.default_architecture.' + this._props.default_architecture,
-      )
-    },
-
-    //Verify if dark mode was activated from cache
-    get_dark_mode() {
-      if (localStorage.getItem('conf_dark_mode') != null) {
-        document.getElementsByTagName('body')[0].style = localStorage.getItem('conf_dark_mode')
-        if (localStorage.getItem('conf_dark_mode') == '') {
-          app._data.dark = false
-        } else {
-          app._data.dark = true
+        // enforce limit
+        if (value < 20) {
+          value = 20
+        } else if (value > 500) {
+          value = 500
         }
-      } else {
-        const default_style = window.matchMedia('(prefers-color-scheme: dark)').matches
-        if (default_style === true) {
-          document.getElementsByTagName('body')[0].style =
-            'filter: invert(88%) hue-rotate(160deg) !important; background-color: #111 !important;'
-          app._data.dark = true
-        } else {
-          document.getElementsByTagName('body')[0].style = ''
-          app._data.dark = false
-        }
-      }
-    },
 
-    //Change the stack total list values
-    change_stack_max_list(value) {
-      const prev_stack_total_list = this._props.stack_total_list
+        this.$emit("update:stack_total_list", value)
 
-      if (value) {
-        this._props.stack_total_list = this._props.stack_total_list + value
-        if (this._props.stack_total_list < 1) {
-          this._props.stack_total_list = 20
-        }
-        if (this._props.stack_total_list > 500) {
-          this._props.stack_total_list = 500
-        }
-      } else {
-        this._props.stack_total_list = parseInt(this._props.stack_total_list)
-      }
+        localStorage.setItem("conf_stack_total_list", value)
 
-      app._data.stack_total_list = this._props.stack_total_list
-
-      localStorage.setItem('conf_stack_total_list', this._props.stack_total_list)
-
-      //Google Analytics
-      creator_ga(
-        'configuration',
-        'configuration.stack_total_list',
-        'configuration.stack_total_list.speed_' +
-          (prev_stack_total_list > this._props.stack_total_list).toString(),
-      )
-    },
-
-    //Change autoscroll mode
-    change_autoscroll() {
-      this._props.autoscroll = !this._props.autoscroll
-      localStorage.setItem('conf_autoscroll', this._props.autoscroll)
-
-      app._data.autoscroll = this._props.autoscroll
-
-      //Google Analytics
-      creator_ga(
-        'configuration',
-        'configuration.autoscroll',
-        'configuration.autoscroll.' + this._props.autoscroll,
-      )
-    },
-
-    //change the time a notification is displayed
-    change_notification_time(value) {
-      const prev_notification_time = this._props.notification_time
-
-      if (value) {
-        this._props.notification_time = this._props.notification_time + value
-        if (this._props.notification_time < 1000) {
-          this._props.notification_time = 1000
-        }
-        if (this._props.notification_time > 3500) {
-          this._props.notification_time = 3500
-        }
-      } else {
-        this._props.notification_time = parseInt(this._props.notification_time)
-      }
-
-      app._data.notification_time = this._props.notification_time
-
-      localStorage.setItem('conf_notification_time', this._props.notification_time)
-
-      //Google Analytics
-      creator_ga(
-        'configuration',
-        'configuration.notification_time',
-        'configuration.notification_time.time_' +
-          (prev_notification_time > this._props.notification_time).toString(),
-      )
-    },
-
-    //change instruction help size
-    change_instruction_help_size(value) {
-      const prev_instruction_help_size = this._props.instruction_help_size
-
-      if (value) {
-        this._props.instruction_help_size = this._props.instruction_help_size + value
-        if (this._props.instruction_help_size < 15) {
-          this._props.instruction_help_size = 15
-        }
-        if (this._props.instruction_help_size > 65) {
-          this._props.instruction_help_size = 65
-        }
-      } else {
-        this._props.instruction_help_size = parseInt(this._props.instruction_help_size)
-      }
-
-      app._data.instruction_help_size = this._props.instruction_help_size
-
-      localStorage.setItem('conf_instruction_help_size', this._props.instruction_help_size)
-
-      //Google Analytics
-      creator_ga(
-        'configuration',
-        'configuration.instruction_help_size',
-        'configuration.instruction_help_size.size_' +
-          (prev_instruction_help_size > this._props.instruction_help_size).toString(),
-      )
-    },
-
-    // //change the font size
-    // change_font_size(value) {
-    //   if (value) {
-    //     this._props.fontSize = this.fontSize + value
-    //     if (this._props.fontSize < 8) {
-    //       this._props.fontSize = 8
-    //     }
-    //     if (this._props.fontSize > 48) {
-    //       this._props.fontSize = 48
-    //     }
-    //   } else {
-    //     this._props.fontSize = parseInt(this._props.fontSize)
-    //   }
-
-    //   document.getElementsByTagName('body')[0].style.fontSize = this._props.fontSize + 'px'
-    //   //localStorage.setItem("conf_fontSize", this._props.fontSize);
-    // },
-
-    //Dark Mode
-    change_dark_mode() {
-      this._props.dark = !this._props.dark
-      if (this._props.dark) {
-        document.getElementsByTagName('body')[0].style =
-          'filter: invert(88%) hue-rotate(160deg) !important; background-color: #111 !important;'
-        localStorage.setItem(
-          'conf_dark_mode',
-          'filter: invert(88%) hue-rotate(160deg) !important; background-color: #111 !important;',
+        //Google Analytics
+        creator_ga(
+          "configuration",
+          "configuration.stack_total_list",
+          "configuration.stack_total_list.speed_" + (prev > value).toString(),
         )
-      } else {
-        document.getElementsByTagName('body')[0].style = ''
-        localStorage.setItem('conf_dark_mode', '')
-      }
-
-      app._data.dark = this._props.dark
-
-      //Google Analytics
-      creator_ga(
-        'configuration',
-        'configuration.dark_mode',
-        'configuration.dark_mode.' + this._props.dark,
-      )
+      },
     },
+    autoscroll_value: {
+      get() {
+        return this.autoscroll
+      },
+      set(value) {
+        this.$emit("update:autoscroll", value)
 
-    //Debug Mode
-    change_debug_mode() {
-      this._props.c_debug = !this._props.c_debug
-      app._data.c_debug = this._props.c_debug
-      creator_debug = !creator_debug
+        localStorage.setItem("conf_autoscroll", value)
 
-      //Google Analytics
-      creator_ga(
-        'configuration',
-        'configuration.debug_mode',
-        'configuration.debug_mode.' + this._props.c_debug,
-      )
+        //Google Analytics
+        creator_ga(
+          "configuration",
+          "configuration.autoscroll",
+          "configuration.autoscroll." + value,
+        )
+      },
+    },
+    notification_time_value: {
+      get() {
+        return this.notification_time
+      },
+      set(value) {
+        const prev = this.stack_total_list
+
+        value = parseInt(value, 10)
+
+        // enforce limit
+        if (value < 1000) {
+          value = 1000
+        } else if (value > 3500) {
+          value = 3500
+        }
+
+        this.$emit("update:notification_time", value)
+
+        localStorage.setItem("conf_notification_time", value)
+
+        //Google Analytics
+        creator_ga(
+          "configuration",
+          "configuration.notification_time",
+          "configuration.notification_time.time_" + (prev > value).toString(),
+        )
+      },
+    },
+    instruction_help_size_value: {
+      get() {
+        return this.instruction_help_size
+      },
+      set(value) {
+        const prev = this.stack_total_list
+
+        value = parseInt(value, 10)
+
+        // enforce limit
+        if (value < 15) {
+          value = 15
+        } else if (value > 65) {
+          value = 65
+        }
+
+        this.$emit("update:instruction_help_size", value)
+
+        localStorage.setItem("conf_instruction_help_size", value)
+
+        //Google Analytics
+        creator_ga(
+          "configuration",
+          "configuration.instruction_help_size",
+          "configuration.instruction_help_size.size_" +
+            (prev > value).toString(),
+        )
+      },
+    },
+    dark_value: {
+      get() {
+        return this.dark
+      },
+      set(value) {
+        // update style
+        if (value) {
+          document.getElementsByTagName("body")[0].style =
+            "filter: invert(88%) hue-rotate(160deg) !important; background-color: #111 !important;"
+        } else {
+          document.getElementsByTagName("body")[0].style = ""
+        }
+
+        this.$emit("update:dark", value)
+        localStorage.setItem("conf_dark_mode", value)
+
+        //Google Analytics
+        creator_ga(
+          "configuration",
+          "configuration.dark_mode",
+          "configuration.dark_mode." + value,
+        )
+      },
+    },
+    c_debug_value: {
+      get() {
+        return this.c_debug
+      },
+      set(value) {
+        set_debug(value)
+
+        this.$emit("update:c_debug", value)
+
+        //Google Analytics
+        creator_ga(
+          "configuration",
+          "configuration.debug_mode",
+          "configuration.debug_mode." + value,
+        )
+      },
     },
   },
 }
 </script>
 
 <template>
-  <b-modal :id="id" title="Configuration" hide-footer>
+  <b-modal :id="id" title="Configuration">
     <b-list-group>
       <b-list-group-item class="justify-content-between align-items-center m-1">
         <label for="range-5">Default Architecture:</label>
+
+        <!-- TODO: load from arch_available -->
         <b-form-select
-          v-model="default_architecture"
-          :options="architectures"
+          v-model="default_architecture_value"
           size="sm"
-          @change="change_default_architecture"
           title="Default Architecture"
-        />
+        >
+          <BFormSelectOption value="'none'">None</BFormSelectOption>
+          <BFormSelectOption value="'RISC-V (RV32IMFD)'"
+            >RISC-V (RV32IMFD)</BFormSelectOption
+          >
+          <BFormSelectOption value="'MIPS-32'">MIPS-32</BFormSelectOption>
+        </b-form-select>
       </b-list-group-item>
 
       <b-list-group-item class="justify-content-between align-items-center m-1">
         <label for="range-1">Maximum stack values listed:</label>
         <b-input-group>
-          <b-input-group-prepend>
-            <b-btn variant="outline-secondary" @click="change_stack_max_list(-5)">-</b-btn>
-          </b-input-group-prepend>
+          <!-- <b-button variant="outline-secondary" @click="stack_total_list_value -= 5">-</b-button> -->
           <b-form-input
             id="range-1"
-            v-model="stack_total_list"
-            @change="change_stack_max_list(0)"
+            v-model="stack_total_list_value"
             type="range"
             min="20"
             max="500"
             step="5"
             title="Stack max view"
           />
-          <b-input-group-append>
-            <b-btn variant="outline-secondary" @click="change_stack_max_list(5)">+</b-btn>
-          </b-input-group-append>
+          <!-- <b-button variant="outline-secondary" @click="stack_total_list_value += 5">+</b-button> -->
         </b-input-group>
       </b-list-group-item>
 
       <b-list-group-item class="justify-content-between align-items-center m-1">
         <label for="range-3">Notification Time:</label>
         <b-input-group>
-          <b-input-group-prepend>
-            <b-btn variant="outline-secondary" @click="change_notification_time(-20)">-</b-btn>
-          </b-input-group-prepend>
+          <!-- <b-button variant="outline-secondary" @click="notification_time_value -= 20">-</b-button> -->
           <b-form-input
             id="range-3"
-            v-model="notification_time"
-            @change="change_notification_time(0)"
+            v-model="notification_time_value"
             type="range"
             min="1000"
             max="3500"
             step="10"
             title="Notification Time"
           />
-          <b-input-group-append>
-            <b-btn variant="outline-secondary" @click="change_notification_time(20)">+</b-btn>
-          </b-input-group-append>
+          <!-- <b-button variant="outline-secondary" @click="notification_time_value += 20">+</b-button> -->
         </b-input-group>
       </b-list-group-item>
 
       <b-list-group-item class="justify-content-between align-items-center m-1">
         <label for="range-3">Instruction Help Size:</label>
         <b-input-group>
-          <b-input-group-prepend>
-            <b-btn variant="outline-secondary" @click="change_instruction_help_size(-2)">-</b-btn>
-          </b-input-group-prepend>
+          <!-- <b-button variant="outline-secondary" @click="instruction_help_size_value -= 2">-</b-button> -->
           <b-form-input
             id="range-3"
-            v-model="instruction_help_size"
-            @change="change_instruction_help_size(0)"
+            v-model="instruction_help_size_value"
             type="range"
             min="15"
             max="65"
             step="2"
             title="Instruction Help Size"
           />
-          <b-input-group-append>
-            <b-btn variant="outline-secondary" @click="change_instruction_help_size(2)">+</b-btn>
-          </b-input-group-append>
+          <!-- <b-button variant="outline-secondary" @click="instruction_help_size_value += 2">+</b-button> -->
         </b-input-group>
       </b-list-group-item>
 
@@ -349,35 +285,21 @@ export default {
         <label for="range-2">Execution Autoscroll:</label>
         <b-form-checkbox
           id="range-2"
-          v-model="autoscroll"
+          v-model="autoscroll_value"
           name="check-button"
           switch
           size="lg"
-          @change="change_autoscroll"
         />
       </b-list-group-item>
 
-      <b-list-group-item class="justify-content-between align-items-center m-1">
+      <!-- <b-list-group-item class="justify-content-between align-items-center m-1">
         <label for="range-4">Font Size:</label>
         <b-input-group>
-          <b-input-group-prepend>
-            <b-btn variant="outline-secondary" @click="change_font_size(-1)">-</b-btn>
-          </b-input-group-prepend>
-          <b-form-input
-            id="range-4"
-            v-model="fontSize"
-            @change="change_font_size(0)"
-            type="range"
-            min="8"
-            max="48"
-            step="1"
-            title="Font Size"
-          />
-          <b-input-group-append>
-            <b-btn variant="outline-secondary" @click="change_font_size(1)">+</b-btn>
-          </b-input-group-append>
+          <b-button variant="outline-secondary" @click="font_size_value -= 1">-</b-button>
+          <b-form-input id="range-4" v-model="fontSize" type="range" min="8" max="48" step="1" title="Font Size" />
+          <b-button variant="outline-secondary" @click="font_size_value += 1">+</b-button>
         </b-input-group>
-      </b-list-group-item>
+      </b-list-group-item> -->
 
       <b-list-group-item class="justify-content-between align-items-center m-1">
         <label for="range-5">Dark Mode:</label>
@@ -386,8 +308,7 @@ export default {
           name="check-button"
           switch
           size="lg"
-          v-model="dark"
-          @change="change_dark_mode"
+          v-model="dark_value"
         />
       </b-list-group-item>
 
@@ -395,11 +316,10 @@ export default {
         <label for="range-6">Debug:</label>
         <b-form-checkbox
           id="range-6"
-          v-model="c_debug"
+          v-model="c_debug_value"
           name="check-button"
           switch
           size="lg"
-          @change="change_debug_mode"
         />
       </b-list-group-item>
     </b-list-group>

@@ -18,6 +18,14 @@
  *
  */
 
+import { useToastController } from "bootstrap-vue-next"
+const { toast } = useToastController()
+
+import $ from "jquery"
+
+import { creator_ga } from "@/core/utils/creator_ga.mjs"
+
+
 /*Stop the transmission of events to children*/
 export function destroyClickedElement(event) {
     document.body.removeChild(event.target)
@@ -33,20 +41,21 @@ export function console_log(m) {
     }
 }
 
+export let notifications = []
+
 export function show_notification(msg, type) {
     // show notification
-    var alertMessage = msg
-    var type = type
-    app.$bvToast.toast(alertMessage, {
+    const alertMessage = msg
+    toast?.(alertMessage, {
         variant: type,
         solid: true,
         toaster: "b-toaster-top-center",
         autoHideDelay: app._data.notificationTime,
-        noAutoHide: type == "danger",
+        noAutoHide: type === "danger",
     })
 
     // add notification to the notification summary
-    var date = new Date()
+    const date = new Date()
     notifications.push({
         mess: alertMessage,
         color: type,
@@ -71,7 +80,7 @@ let loading_handler = null
 
 export function show_loading() {
     // if loading is programmed, skip
-    if (loading_handler != null) {
+    if (loading_handler !== null) {
         return
     }
 
@@ -84,7 +93,7 @@ export function show_loading() {
 
 export function hide_loading() {
     // if loading is programmed, cancel it
-    if (loading_handler != null) {
+    if (loading_handler !== null) {
         clearTimeout(loading_handler)
         loading_handler = null
     }
@@ -98,9 +107,9 @@ export function hide_loading() {
  */
 
 export function btn_glow(btn_name, post_label) {
-    if (0 == run_program) {
-        var buttonDec = "#popoverValueContent" + btn_name + post_label
-        var buttonHex = "#popoverValueContent" + btn_name
+    if (run_program === 0) {
+        const buttonDec = "#popoverValueContent" + btn_name + post_label
+        const buttonHex = "#popoverValueContent" + btn_name
 
         $(buttonDec).attr("style", "background-color:#c2c2c2;")
         $(buttonHex).attr("style", "background-color:#c2c2c2;")
@@ -110,4 +119,217 @@ export function btn_glow(btn_name, post_label) {
             $(buttonHex).attr("style", "")
         }, 500)
     }
+}
+
+//Show backup modal
+export function backup_modal(env) {
+    if (typeof Storage !== "undefined") {
+        if (
+            localStorage.getItem("backup_arch") != null &&
+            localStorage.getItem("backup_asm") != null &&
+            localStorage.getItem("backup_date") != null
+        ) {
+            env.$root.$emit("bv::show::modal", "copy")
+        }
+    }
+}
+
+export function preload_load_example(data, url) {
+    if (url == null) {
+        show_notification("The example doesn't exist", "info")
+        return
+    }
+
+    code_assembly = data
+    uielto_toolbar_btngroup.methods.assembly_compiler(code_assembly)
+
+    // show notification
+    show_notification(" The selected example has been loaded.", "success")
+
+    // Google Analytics
+    creator_ga("example", "example.loading", "example.loading." + url)
+}
+
+export function preload_find_example(example_set_available, hash) {
+    for (var i = 0; i < example_set_available.length; i++) {
+        for (
+            var j = 0;
+            j < example_available[i].length &&
+            example_set_available[i].text == hash.example_set;
+            j++
+        ) {
+            if (example_available[i][j].id === hash.example) {
+                return example_available[i][j].url
+            }
+        }
+    }
+
+    return null
+}
+
+export function preload_find_architecture(arch_availables, arch_name) {
+    for (var i = 0; i < arch_availables.length; i++) {
+        if (arch_availables[i].alias.includes(arch_name)) {
+            return arch_availables[i]
+        }
+    }
+
+    return null
+}
+
+export function preload_example_uri(asm_decoded) {
+    if (asm_decoded == null) {
+        show_notification("Assembly not valid", "info")
+        return
+    }
+
+    code_assembly = asm_decoded
+    uielto_toolbar_btngroup.methods.assembly_compiler(code_assembly)
+
+    // show notification
+    show_notification("The assembly code has been loaded.", "success")
+
+    // Google Analytics
+    creator_ga("example", "example.loading", "example.uri")
+}
+
+//
+// Preload tasks
+//
+
+export let creator_preload_tasks = [
+    // parameter: architecture
+    {
+        name: "architecture",
+        action: function (app, hash) {
+            const arch_name = hash.architecture.trim()
+            if (arch_name === "") {
+                return new Promise(function (resolve, reject) {
+                    resolve("Empty architecture.")
+                })
+            }
+
+            return $.getJSON(
+                "architecture/available_arch.json",
+                function (arch_availables) {
+                    const a_i = preload_find_architecture(
+                        arch_availables,
+                        arch_name,
+                    )
+                    uielto_preload_architecture.methods.load_arch_select(a_i)
+                    return "Architecture loaded."
+                },
+            )
+        },
+    },
+
+    // parameter: example_set
+    {
+        name: "example_set",
+        action: function (app, hash) {
+            const exa_set = hash.example_set.trim()
+            if (exa_set === "") {
+                return new Promise(function (resolve, reject) {
+                    resolve("Empty example set.")
+                })
+            }
+
+            uielto_preload_architecture.methods.load_examples_available(
+                hash.example_set,
+            )
+            return uielto_preload_architecture.data.example_loaded
+        },
+    },
+
+    // parameter: example
+    {
+        name: "example",
+        action: function (app, hash) {
+            return new Promise(function (resolve, reject) {
+                const url = preload_find_example(example_set_available, hash)
+                if (null == url) {
+                    reject("Example not found.")
+                }
+
+                $.get(url, function (data) {
+                    preload_load_example(data, url)
+                })
+
+                resolve("Example loaded.")
+            })
+        },
+    },
+
+    // parameter: asm
+    {
+        name: "asm",
+        action: function (app, hash) {
+            return new Promise(function (resolve, reject) {
+                const assembly = hash.asm.trim()
+                if (assembly === "") {
+                    return new Promise(function (resolve, reject) {
+                        resolve("Empty assembly.")
+                    })
+                }
+
+                var asm_decoded = decodeURI(assembly)
+                preload_example_uri(asm_decoded)
+
+                resolve("Assembly loaded.")
+            })
+        },
+    },
+]
+
+//
+// Preload work
+//
+
+export function creator_preload_get2hash(window_location) {
+    let hash = {}
+    let hash_field = ""
+    let uri_obj = null
+
+    // 1.- check params
+    if (typeof window_location === "undefined") {
+        return hash
+    }
+
+    // 2.- get parameters
+    const parameters = new URL(window_location).searchParams
+    for (let i = 0; i < creator_preload_tasks.length; i++) {
+        hash_field = creator_preload_tasks[i].name
+        hash[hash_field] = parameters.get(hash_field)
+
+        // overwrite null with default values
+        if (hash[hash_field] === null) {
+            hash[hash_field] = ""
+        }
+    }
+
+    return hash
+}
+
+export async function creator_preload_fromHash(app, hash) {
+    var key = ""
+    var act = function () {}
+
+    // preload tasks in order
+    var o = ""
+    for (var i = 0; i < creator_preload_tasks.length; i++) {
+        key = creator_preload_tasks[i].name
+        act = creator_preload_tasks[i].action
+
+        if (hash[key] !== "") {
+            try {
+                var v = await act(app, hash)
+                o = o + v + "<br>"
+            } catch (e) {
+                o = o + e + "<br>"
+            }
+        }
+    }
+
+    // return ok
+    return o
 }

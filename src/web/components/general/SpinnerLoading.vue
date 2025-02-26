@@ -16,6 +16,42 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
+<style lang="scss" scoped>
+.spinnerBack {
+  background: black;
+  opacity: 0.5;
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  z-index: 40;
+}
+
+.spinner {
+  display: block;
+  position: fixed;
+  z-index: 41;
+  top: 46%;
+  right: 46%;
+  background: white;
+  border: 1px solid #a9a9a9;
+  border-radius: 9px;
+  -moz-border-radius: 9px;
+  -webkit-border-radius: 9px;
+  padding: 10px;
+  opacity: 1;
+  text-align: center;
+}
+
+.spinnerBox {
+  display: inline-block;
+  opacity: 1;
+}
+
+.spinnerIcon {
+  width: 3rem;
+  height: 3rem;
+}
+</style>
 
 <template>
   <div>

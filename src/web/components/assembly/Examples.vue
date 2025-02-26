@@ -31,7 +31,7 @@ export default {
   data() {
     return {
       example_set: 0,
-      example_set_name: '',
+      example_set_name: "",
     }
   },
 
@@ -42,19 +42,28 @@ export default {
 
     /*Load a selected example*/
     load_example(url, compile) {
-      this.$root.$emit('bv::hide::modal', this._props.modal, '#closeExample')
+      this.$root.$emit("bv::hide::modal", this._props.modal, "#closeExample")
 
       $.get(url, function (data) {
         code_assembly = data
-        if (compile == 'false') {
+        if (compile == "false") {
           textarea_assembly_editor.setValue(code_assembly)
         } else {
           uielto_toolbar_btngroup.methods.assembly_compiler(code_assembly)
         }
-        show_notification(' The selected example has been loaded correctly', 'success')
+        show_notification(
+          " The selected example has been loaded correctly",
+          "success",
+        )
 
         /* Google Analytics */
-        creator_ga('send', 'event', 'example', 'example.loading', 'example.loading. url')
+        creator_ga(
+          "send",
+          "event",
+          "example",
+          "example.loading",
+          "example.loading. url",
+        )
       })
     },
 
@@ -67,7 +76,7 @@ export default {
 </script>
 
 <template>
-  <b-modal :id="id" title="Examples" :ref="reff" hide-footer scrollable>
+  <b-modal :id="id" title="Examples" :ref="reff" no-footer scrollable>
     <b-form-group
       label="Examples set available:"
       v-if="example_set_available.length > 1"
@@ -104,7 +113,10 @@ export default {
 
     <span
       class="h6"
-      v-if="example_available.length == 0 || example_available[example_set].length == 0"
+      v-if="
+        example_available.length == 0 ||
+        example_available[example_set].length == 0
+      "
     >
       There\'s no examples at the moment
     </span>

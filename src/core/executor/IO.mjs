@@ -23,7 +23,6 @@ import {
 } from "../register/registerOperations.mjs";
 import { writeMemory } from "../memory/memoryOperations.mjs";
 import process from "node:process";
-import readlineSync from "readline-sync";
 import { packExecute } from "./executor.mjs";
 import os from "node:os";
 export function display_print(info) {

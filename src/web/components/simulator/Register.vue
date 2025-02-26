@@ -18,43 +18,52 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <script>
-import PopoverRegister from './PopoverRegister.vue'
+import { creator_ga } from "@/core/utils/creator_ga.mjs"
+
+import { bi_BigIntTofloat, bi_BigIntTodouble } from "@/core/utils/bigint.mjs"
+import {
+  hex2float,
+  hex2double,
+  bin2hex,
+  float2bin,
+} from "@/core/utils/utils.mjs"
 
 export default {
   props: {
-    render: { type: Number, required: true },
-    component: { type: Object, required: true },
+    // render: { type: Number, required: true },
+    type: { type: String, required: true },
     register: { type: Object, required: true },
+    double_precision_type: { type: [String, null], required: true },
     name_representation: { type: String, required: true },
     value_representation: { type: String, required: true },
   },
 
-  components: { PopoverRegister },
-
   methods: {
     /*Popover functions*/
     popover_id(name) {
-      return 'popoverValueContent' + name[0]
+      return "popoverValueContent" + name[0]
     },
 
-    show_value(register) {
+    // TODO: move to utils
+    is_positive(value, nbits) {
+      return value.toString(2).padStart(nbits, "0").charAt(0) === "0"
+    },
+
+    // eslint-disable-next-line max-lines-per-function
+    show_value(register, representation = this.value_representation) {
       let ret = 0
 
-      switch (this.value_representation) {
-        case 'signed':
-          if (
-            architecture.components[this._props.component.index].type == 'ctrl_registers' ||
-            architecture.components[this._props.component.index].type == 'int_registers'
-          ) {
-            if (register.value.toString(2).padStart(register.nbits, '0').charAt(0) == 1) {
-              ret = parseInt(register.value.toString(10)) - 0x100000000
-            }
-            if (register.value.toString(2).padStart(register.nbits, '0').charAt(0) == 0) {
+      switch (representation) {
+        case "signed":
+          if (this.type === "ctrl_registers" || this.type === "int_registers") {
+            if (this.is_positive(register.value, register.nbits)) {
               ret = register.value.toString(10)
+            } else {
+              ret = (register.value - BigInt(2 ** register.nbits)).toString(10)
             }
           } else {
             // ret = parseInt(register.value.toString(), 10) >> 0;
-            if (architecture.components[this._props.component.index].double_precision === false) {
+            if (this.double_precision_type === null) {
               ret = float2int_v2(bi_BigIntTofloat(register.value))
             } else {
               ret = double2int_v2(bi_BigIntTodouble(register.value))
@@ -62,15 +71,12 @@ export default {
           }
           break
 
-        case 'unsigned':
-          if (
-            architecture.components[this._props.component.index].type == 'ctrl_registers' ||
-            architecture.components[this._props.component.index].type == 'int_registers'
-          ) {
-            ret = parseInt(register.value.toString(10)) >>> 0
+        case "unsigned":
+          if (this.type === "ctrl_registers" || this.type === "int_registers") {
+            ret = parseInt(register.value.toString(10), 10) >>> 0
           } else {
             //ret = parseInt(register.value.toString(), 10) >>> 0;
-            if (architecture.components[this._props.component.index].double_precision === false) {
+            if (this.double_precision_type === null) {
               ret = float2int_v2(bi_BigIntTofloat(register.value)) >>> 0
             } else {
               ret = double2int_v2(bi_BigIntTodouble(register.value)) >>> 0
@@ -78,52 +84,46 @@ export default {
           }
           break
 
-        case 'ieee32':
-          if (
-            architecture.components[this._props.component.index].type == 'ctrl_registers' ||
-            architecture.components[this._props.component.index].type == 'int_registers'
-          ) {
-            ret = hex2float('0x' + register.value.toString(16).padStart(8, '0'))
+        case "ieee32":
+          if (this.type === "ctrl_registers" || this.type === "int_registers") {
+            ret = hex2float("0x" + register.value.toString(16).padStart(8, "0"))
           } else {
             ret = bi_BigIntTofloat(register.value)
           }
           break
 
-        case 'ieee64':
-          if (
-            architecture.components[this._props.component.index].type == 'ctrl_registers' ||
-            architecture.components[this._props.component.index].type == 'int_registers'
-          ) {
-            ret = hex2double('0x' + register.value.toString(16).padStart(16, '0'))
+        case "ieee64":
+          if (this.type === "ctrl_registers" || this.type === "int_registers") {
+            ret = hex2double(
+              "0x" + register.value.toString(16).padStart(16, "0"),
+            )
           } else {
             ret = bi_BigIntTodouble(register.value)
           }
           break
 
-        case 'hex':
-          if (
-            architecture.components[this._props.component.index].type == 'ctrl_registers' ||
-            architecture.components[this._props.component.index].type == 'int_registers'
-          ) {
+        case "hex":
+          if (this.type === "ctrl_registers" || this.type === "int_registers") {
             ret = register.value
               .toString(16)
-              .padStart(register.nbits / 4, '0')
+              .padStart(register.nbits / 4, "0")
               .toUpperCase()
           } else {
-            if (architecture.components[this._props.component.index].double_precision === false) {
+            if (this.double_precision_type !== null) {
               ret = bin2hex(float2bin(bi_BigIntTofloat(register.value)))
             } else {
               ret = bin2hex(double2bin(bi_BigIntTodouble(register.value)))
             }
           }
           break
+        default:
       }
 
-      if (this._props.component.double_precision_type == 'linked') {
+      if (this.double_precision_type === "linked") {
         ret = ret.toString()
 
         if (ret.length > 10) {
-          return ret.slice(0, 8) + '...'
+          return ret.slice(0, 8) + "..."
         }
       }
 
@@ -131,48 +131,262 @@ export default {
     },
 
     show_value_truncate(register) {
-      let ret = this.show_value(register).toString()
+      let ret = this.show_value(register, this.value_representation).toString()
       if (ret.length > 8) {
-        ret = ret.slice(0, 8) + '...'
+        ret = ret.slice(0, 8) + "..."
       }
       return ret
     },
 
     reg_name(register) {
       switch (this.name_representation) {
-        case 'logical':
+        case "logical":
           return register.name[0]
-        case 'alias':
-          if (typeof register.name[1] === 'undefined') {
+        case "alias":
+          if (typeof register.name[1] === "undefined") {
             return register.name[0]
           }
 
-          return register.name.slice(1, register.name.length).join(' | ')
-        case 'all':
-          return register.name.join(' | ')
+          return register.name.slice(1, register.name.length).join(" | ")
+        case "all":
+          return register.name.join(" | ")
+
+        default:
+          return ""
       }
+    },
+
+    //Update a new register value
+    update_register(comp, elem, type, precision) {
+      // for (let i = 0; i < architecture.components[comp].elements.length; i++) {
+      //   if (type === "int_registers" || type === "ctrl_registers") {
+      //     if (
+      //       architecture.components[comp].elements[i].name === elem &&
+      //       this.newValue.match(/^0x/)
+      //     ) {
+      //       const value = this.newValue.split("x")
+      //       if (
+      //         value[1].length * 4 >
+      //         architecture.components[comp].elements[i].nbits
+      //       ) {
+      //         value[1] = value[1].substring(
+      //           (value[1].length * 4 -
+      //             architecture.components[comp].elements[i].nbits) /
+      //             4,
+      //           value[1].length,
+      //         )
+      //       }
+      //       writeRegister(parseInt(value[1], 16), comp, i, "int_registers")
+      //     } else if (
+      //       architecture.components[comp].elements[i].name === elem &&
+      //       this.newValue.match(/^(\d)+/)
+      //     ) {
+      //       writeRegister(parseInt(this.newValue, 10), comp, i, "int_registers")
+      //     } else if (
+      //       architecture.components[comp].elements[i].name === elem &&
+      //       this.newValue.match(/^-/)
+      //     ) {
+      //       writeRegister(parseInt(this.newValue, 10), comp, i, "int_registers")
+      //     }
+      //   } else if (type === "fp_registers") {
+      //     if (precision === false) {
+      //       if (
+      //         architecture.components[comp].elements[i].name === elem &&
+      //         this.newValue.match(/^0x/)
+      //       ) {
+      //         writeRegister(hex2float(this.newValue), comp, i, "SFP-Reg")
+      //       } else if (
+      //         architecture.components[comp].elements[i].name === elem &&
+      //         this.newValue.match(/^(\d)+/)
+      //       ) {
+      //         writeRegister(parseFloat(this.newValue, 10), comp, i, "SFP-Reg")
+      //       } else if (
+      //         architecture.components[comp].elements[i].name === elem &&
+      //         this.newValue.match(/^-/)
+      //       ) {
+      //         writeRegister(parseFloat(this.newValue, 10), comp, i, "SFP-Reg")
+      //       }
+      //     } else if (precision === true) {
+      //       if (
+      //         architecture.components[comp].elements[i].name === elem &&
+      //         this.newValue.match(/^0x/)
+      //       ) {
+      //         writeRegister(hex2double(this.newValue), comp, i, "DFP-Reg")
+      //       } else if (
+      //         architecture.components[comp].elements[i].name === elem &&
+      //         this.newValue.match(/^(\d)+/)
+      //       ) {
+      //         writeRegister(parseFloat(this.newValue, 10), comp, i, "DFP-Reg")
+      //       } else if (
+      //         architecture.components[comp].elements[i].name === elem &&
+      //         this.newValue.match(/^-/)
+      //       ) {
+      //         writeRegister(parseFloat(this.newValue, 10), comp, i, "DFP-Reg")
+      //       }
+      //     }
+      //   }
+      // }
+      // this.newValue = ""
+      // // Google Analytics
+      // creator_ga("data", "data.change", "data.change.register_value")
+      // creator_ga("data", "data.change", "data.change.register_value_" + elem)
+    },
+
+    get_cols() {
+      if (this.double_precision_type !== null) {
+        return 3
+      } else {
+        return 2
+      }
+    },
+    details_callback() {
+      creator_ga("data", "data.view", "data.view.registers_details")
     },
   },
 }
 </script>
 
 <template>
-  <div>
-    <b-button
-      class="btn btn-outline-secondary btn-sm registers w-100 h-100"
-      :id="popover_id(register.name)"
-      onclick="creator_ga('data', 'data.view', 'data.view.registers_details');"
-    >
-      <span class="text-truncate">{{ reg_name(register) }}</span>
-      <b-badge class="regValue registerValue">
-        {{ show_value_truncate(register) }}
-      </b-badge>
-    </b-button>
+  <b-popover :click="true" :close-on-hide="false" :delay="{ show: 0, hide: 0 }">
+    <template #target>
+      <b-button
+        class="btn btn-outline-secondary btn-sm registers w-100 h-100"
+        :id="popover_id(register.name)"
+        @click="details_callback"
+      >
+        <span class="text-truncate">{{ reg_name(register) }}</span>
+        <b-badge class="registerValue">
+          {{ show_value_truncate(register) }}
+        </b-badge>
+      </b-button>
+    </template>
 
-    <PopoverRegister
-      :target="popover_id(register.name)"
-      :component="component"
-      :register="register"
-    />
-  </div>
+    {{ register.name.join(" | ") }}
+
+    <table class="table table-bordered table-sm popoverText">
+      <tbody>
+        <tr>
+          <td>Hex.</td>
+          <td>
+            <b-badge class="registerPopover">
+              {{ show_value(register, "hex") }}
+            </b-badge>
+          </td>
+        </tr>
+        <tr>
+          <td>Binary</td>
+          <td>
+            <b-badge class="registerPopover">
+              {{ show_value(register, "bin") }}
+            </b-badge>
+          </td>
+        </tr>
+        <tr v-if="this.type !== 'fp_registers'">
+          <td>Signed</td>
+          <td>
+            <b-badge class="registerPopover">
+              {{ show_value(register, "signed") }}
+            </b-badge>
+          </td>
+        </tr>
+        <tr v-if="this.type !== 'fp_registers'">
+          <td>Unsig.</td>
+          <td>
+            <b-badge class="registerPopover">
+              {{ show_value(register, "unsigned") }}
+            </b-badge>
+          </td>
+        </tr>
+        <tr v-if="this.type !== 'fp_registers'">
+          <td>Char</td>
+          <td>
+            <b-badge class="registerPopover">
+              {{ show_value(register, "char") }}
+            </b-badge>
+          </td>
+        </tr>
+        <tr>
+          <td>IEEE 754 (32 bits)</td>
+          <td>
+            <b-badge class="registerPopover">
+              {{ show_value(register, "ieee32") }}
+            </b-badge>
+          </td>
+        </tr>
+        <tr>
+          <td>IEEE 754 (64 bits)</td>
+          <td>
+            <b-badge class="registerPopover">
+              {{ show_value(register, "ieee64") }}
+            </b-badge>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <b-container fluid align-h="center" class="mx-0">
+      <b-row align-h="center" :cols="get_cols()">
+        <!-- <b-col class="popoverFooter">
+          <b-form-input
+            v-model="newValue"
+            type="text"
+            size="sm"
+            title="New Register Value"
+            placeholder="Enter new value"
+          />
+        </b-col> -->
+
+        <!-- <b-col v-if="double_precision !== null">
+          <b-form-select v-model="precision" size="sm" block>
+            <b-form-select-option value="false"
+              >Simple Precision</b-form-select-option
+            >
+            <b-form-select-option value="true" active
+              >Double Precision</b-form-select-option
+            >
+          </b-form-select>
+        </b-col> -->
+
+        <!-- <b-col>
+          <b-button
+            class="btn btn-primary btn-sm w-100"
+            @click="
+              update_register(
+                component.index,
+                register.name,
+                architecture.components[component.index].type,
+                precision === 'true',
+              )
+            "
+          >
+            Update
+          </b-button>
+        </b-col> -->
+      </b-row>
+    </b-container>
+  </b-popover>
 </template>
+
+<style lang="scss" scoped>
+.registers {
+  background-color: #f5f5f5;
+  font-size: 1.03em;
+}
+
+.registerValue {
+  background-color: #ceecf5;
+  color: black;
+  font-family: monospace;
+  font-weight: normal;
+}
+
+.modRegister {
+  background-color: #c2c2c2;
+  font-size: 1.03em;
+}
+
+.registerPopover {
+  background-color: #ceecf5;
+  color: black;
+}
+</style>
