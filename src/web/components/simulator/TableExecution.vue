@@ -21,19 +21,19 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 export default {
   props: {
     instructions: { type: Array, required: true },
-    enter: { type: String, required: true },
+    enter: { type: [Boolean, null], required: true },
   },
 
   data() {
     return {
       /*Instrutions table fields*/
       archInstructions: [
-        'Break',
-        'Address',
-        'Label',
-        'userInstructions',
-        'loadedInstructions',
-        'tag',
+        "Break",
+        "Address",
+        "Label",
+        "userInstructions",
+        "loadedInstructions",
+        "tag",
       ],
     }
   },
@@ -51,18 +51,24 @@ export default {
     /*Enter a breakpoint*/
     breakPoint(record, index) {
       for (let i = 0; i < instructions.length; i++) {
-        if (instructions[i].Address == record.Address) {
+        if (instructions[i].Address === record.Address) {
           index = i
           break
         }
       }
 
-      if (instructions[index].Break == null) {
+      if (instructions[index].Break === null) {
         instructions[index].Break = true
         app._data.instructions[index].Break = true //TODO: vue bidirectional updates
 
         /* Google Analytics */
-        creator_ga('send', 'event', 'execute', 'execute.breakpoint', 'execute.breakpoint')
+        creator_ga(
+          "send",
+          "event",
+          "execute",
+          "execute.breakpoint",
+          "execute.breakpoint",
+        )
       } else if (instructions[index].Break === true) {
         instructions[index].Break = null
         app._data.instructions[index].Break = null //TODO: vue bidirectional updates
@@ -91,22 +97,26 @@ export default {
           primary-key="Address"
         >
           <!-- Change the title of each column -->
-          <template v-slot:head(userInstructions)="row"> User Instruction </template>
+          <template v-slot:head(userInstructions)="row">
+            User Instruction
+          </template>
 
-          <template v-slot:head(loadedInstructions)="row"> Loaded Instructions </template>
+          <template v-slot:head(loadedInstructions)="row">
+            Loaded Instructions
+          </template>
 
           <template v-slot:head(tag)="row"> &nbsp; </template>
 
           <!-- For each instruction -->
           <template v-slot:cell(Break)="row">
             <div class="break" :id="row.index">
-              <br v-if="row.item.Break == null" />
+              <br v-if="row.item.Break === null" />
               <b-img
                 alt="Break"
-                src="./images/stop_classic.gif"
+                src="@/web/assets/img/stop_classic.gif"
                 class="shadow breakPoint"
                 rounded="circle"
-                v-if="row.item.Break == true"
+                v-if="row.item.Break === true"
               />
             </div>
           </template>
@@ -120,13 +130,21 @@ export default {
           </template>
 
           <template v-slot:cell(userInstructions)="row">
-            <span class="h6" v-if="row.item.visible == true">{{ row.item.user }}</span>
-            <span class="h6" v-if="row.item.visible == false">&lt;&lt;Hidden&gt;&gt;</span>
+            <span class="h6" v-if="row.item.visible == true">
+              {{ row.item.user }}
+            </span>
+            <span class="h6" v-if="row.item.visible == false">
+              &lt;&lt;Hidden&gt;&gt;
+            </span>
           </template>
 
           <template v-slot:cell(loadedInstructions)="row">
-            <span class="h6" v-if="row.item.visible == true">{{ row.item.loaded }}</span>
-            <span class="h6" v-if="row.item.visible == false">&lt;&lt;Hidden&gt;&gt;</span>
+            <span class="h6" v-if="row.item.visible == true">
+              {{ row.item.loaded }}
+            </span>
+            <span class="h6" v-if="row.item.visible == false">
+              &lt;&lt;Hidden&gt;&gt;
+            </span>
           </template>
 
           <template v-slot:cell(tag)="row">
@@ -162,11 +180,30 @@ export default {
 
           <!-- <template slot-scope="row"> -->
           <template v-slot="row">
-            <span class="h6" v-if="row.item.visible == true">{{ row.item.loaded }}</span>
-            <span class="h6" v-if="row.item.visible == false">&lt;&lt;Hidden&gt;&gt;</span>
+            <span class="h6" v-if="row.item.visible == true">
+              {{ row.item.loaded }}
+            </span>
+            <span class="h6" v-if="row.item.visible == false">
+              &lt;&lt;Hidden&gt;&gt;
+            </span>
           </template>
         </b-table>
       </b-col>
     </b-row>
   </b-container>
 </template>
+
+<style lang="scss" scoped>
+.instructions_table {
+  font-size: 1em;
+  padding-right: 1vw;
+  cursor: pointer;
+  max-height: 61vh;
+}
+
+.executionTag {
+  float: right;
+  position: relative;
+  right: -0.7vw;
+}
+</style>

@@ -24,7 +24,7 @@ export default {
     architecture_name: { type: String, required: true },
     architecture: { type: Object, required: true },
     architecture_guide: { type: String, required: true },
-    instruction_help_size: { type: Object, required: true },
+    instruction_help_size: { type: Number, required: true },
   },
 
   data() {
@@ -33,27 +33,20 @@ export default {
       instHelpFilter: null,
 
       //Help table
-      insHelpFields: ['name'],
+      insHelpFields: ["name"],
     }
   },
 
-  methods: {
-    get_width() {
-      return this._props.instruction_help_size + 'vw'
+  computed: {
+    width() {
+      return this.instruction_help_size + "vw"
     },
   },
 }
 </script>
 
 <template>
-  <b-sidebar
-    :id="id"
-    sidebar-class="border-left border-info px-3 py-2"
-    right
-    shadow
-    title="Instruction Help"
-    :width="get_width()"
-  >
+  <b-offcanvas :id="id" placement="end" :width="width" title="Instruction Help">
     <b-form-input
       id="filter-input"
       v-model="instHelpFilter"
@@ -63,9 +56,14 @@ export default {
     />
 
     <br />
-    <a v-if="architecture_guide != ''" target="_blank" :href="architecture_guide"
-      ><span class="fas fa-file-pdf" /> {{ architecture_name }} Guide</a
+    <a
+      v-if="architecture_guide != ''"
+      target="_blank"
+      :href="architecture_guide"
     >
+      <font-awesome-icon icon="fa-solid fa-file-pdf" />
+      {{ architecture_name }} Guide
+    </a>
     <br />
 
     <b-table
@@ -83,5 +81,5 @@ export default {
         {{ row.item.help }}
       </template>
     </b-table>
-  </b-sidebar>
+  </b-offcanvas>
 </template>

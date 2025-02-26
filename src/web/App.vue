@@ -17,9 +17,41 @@ You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<!--  TODO: separate in different files -->
-
 <script>
+import { BModalOrchestrator, BToastOrchestrator } from "bootstrap-vue-next"
+// import $ from "jquery"
+
+import package_json from "/package.json" // package info
+import arch_available from "/architecture/available_arch.json" // package info
+
+import {
+  notifications,
+  backup_modal,
+  creator_preload_fromHash,
+  creator_preload_get2hash,
+} from "./utils.mjs"
+
+import {
+  architecture,
+  architecture_hash,
+  status,
+  stats,
+  stats_value,
+  total_clk_cycles,
+  clk_cycles,
+  clk_cycles_value,
+  set_debug,
+} from "@/core/core.mjs"
+
+
+import {
+  example_set_available,
+  example_available,
+  instructions,
+} from "../core/compiler/compiler.mjs"
+
+import { track_stack_names } from "../core/memory/stackTracker.mjs"
+
 import SpinnerLoading from "./components/general/SpinnerLoading.vue"
 import SupportedBrowsers from "./components/general/SupportedBrowsers.vue"
 import FormConfiguration from "./components/general/FormConfiguration.vue"
@@ -28,44 +60,46 @@ import NavbarCREATOR from "./components/general/NavbarCREATOR.vue"
 import UIeltoInstitutions from "./components/general/UIeltoInstitutions.vue"
 import UIeltoAbout from "./components/general/UIeltoAbout.vue"
 import SidebarInstructionHelp from "./components/general/SidebarInstructionHelp.vue"
-import UIeltoBackup from "./components/load_architecture/UIeltoBackup.vue"
-import UIeltoToolbar from "./components/general/UIeltoToolbar.vue"
-import PreloadArchitecture from "./components/load_architecture/PreloadArchitecture.vue"
-import LoadArchitecture from "./components/load_architecture/LoadArchitecture.vue"
-import NewArchitecture from "./components/load_architecture/NewArchitecture.vue"
-import DeleteArchitecture from "./components/load_architecture/DeleteArchitecture.vue"
+import UIeltoBackup from "./components/select_architecture/UIeltoBackup.vue"
+
+import SelectArchitecture from "./components/SelectArchitecture.vue"
+import ArchitectureView from "./components/ArchitectureView.vue"
+import SimulatorView from "./components/SimulatorView.vue"
+import AssemblyView from "./components/AssemblyView.vue"
+
 import EditArchitecture from "./components/architecture/EditArchitecture.vue"
 import SaveArchitecture from "./components/architecture/SaveArchitecture.vue"
-import ArchConf from "./components/architecture/configuration/ArchConf.vue"
-import MemoryLayout from "./components/architecture/memory_layout/MemoryLayout.vue"
-import RegisterFileArch from "./components/architecture/register_file/RegisterFileArch.vue"
-import Instructions from "./components/architecture/instructions/Instructions.vue"
-import InstructionFields from "./components/architecture/instructions/InstructionFields.vue"
-import Pseudoinstructions from "./components/architecture/pseudoinstructions/Pseudoinstructions.vue"
-import PseudoinstructionFields from "./components/architecture/pseudoinstructions/PseudoinstructionFields.vue"
-import Directives from "./components/architecture/directives/Directives.vue"
-import LoadAssembly from "./components/assembly/LoadAssembly.vue"
-import SaveAssembly from "./components/assembly/SaveAssembly.vue"
-import MakeURI from "./components/assembly/MakeURI.vue"
-import LoadLibrary from "./components/assembly/LoadLibrary.vue"
-import SaveLibrary from "./components/assembly/SaveLibrary.vue"
-import TextareaAssembly from "./components/assembly/TextareaAssembly.vue"
-import ListLibraryTags from "./components/assembly/ListLibraryTags.vue"
-import AssemblyError from "./components/assembly/AssemblyError.vue"
-import Flash from "./components/simulator/Flash.vue"
-import Examples from "./components/assembly/Examples.vue"
-import Calculator from "./components/simulator/Calculator.vue"
-import TableExecution from "./components/simulator/TableExecution.vue"
-import DataViewSelector from "./components/simulator/DataViewSelector.vue"
-import RegisterFile from "./components/simulator/RegisterFile.vue"
-import Memory from "./components/simulator/Memory.vue"
-import ClkCycles from "./components/simulator/ClkCycles.vue"
-import Monitor from "./components/simulator/Monitor.vue"
-import Keyboard from "./components/simulator/Keyboard.vue"
+// import ArchConf from "./components/architecture/configuration/ArchConf.vue"
+// import MemoryLayout from "./components/architecture/memory_layout/MemoryLayout.vue"
+// import RegisterFileArch from "./components/architecture/register_file/RegisterFileArch.vue"
+// import Instructions from "./components/architecture/instructions/Instructions.vue"
+// import InstructionFields from "./components/architecture/instructions/InstructionFields.vue"
+// import Pseudoinstructions from "./components/architecture/pseudoinstructions/Pseudoinstructions.vue"
+// import PseudoinstructionFields from "./components/architecture/pseudoinstructions/PseudoinstructionFields.vue"
+// import Directives from "./components/architecture/directives/Directives.vue"
+// import LoadAssembly from "./components/assembly/LoadAssembly.vue"
+// import SaveAssembly from "./components/assembly/SaveAssembly.vue"
+// import MakeURI from "./components/assembly/MakeURI.vue"
+// import LoadLibrary from "./components/assembly/LoadLibrary.vue"
+// import SaveLibrary from "./components/assembly/SaveLibrary.vue"
+// import TextareaAssembly from "./components/assembly/TextareaAssembly.vue"
+// import ListLibraryTags from "./components/assembly/ListLibraryTags.vue"
+// import AssemblyError from "./components/assembly/AssemblyError.vue"
+// import Flash from "./components/simulator/Flash.vue"
+// import Examples from "./components/assembly/Examples.vue"
+// import Calculator from "./components/simulator/Calculator.vue"
+// import TableExecution from "./components/simulator/TableExecution.vue"
+// import DataViewSelector from "./components/simulator/DataViewSelector.vue"
+// import RegisterFile from "./components/simulator/RegisterFile.vue"
+// import Memory from "./components/simulator/Memory.vue"
+// import ClkCycles from "./components/simulator/ClkCycles.vue"
+// import Monitor from "./components/simulator/Monitor.vue"
+// import Keyboard from "./components/simulator/Keyboard.vue"
 
 export default {
   name: "app",
   components: {
+    BToastOrchestrator,
     SpinnerLoading,
     SupportedBrowsers,
     FormConfiguration,
@@ -75,46 +109,51 @@ export default {
     UIeltoAbout,
     SidebarInstructionHelp,
     UIeltoBackup,
-    UIeltoToolbar,
-    PreloadArchitecture,
-    LoadArchitecture,
-    NewArchitecture,
-    DeleteArchitecture,
-    EditArchitecture,
-    SaveArchitecture,
-    ArchConf,
-    MemoryLayout,
-    RegisterFileArch,
-    Instructions,
-    InstructionFields,
-    Pseudoinstructions,
-    PseudoinstructionFields,
-    Directives,
-    LoadAssembly,
-    SaveAssembly,
-    MakeURI,
-    LoadLibrary,
-    SaveLibrary,
-    TextareaAssembly,
-    ListLibraryTags,
-    AssemblyError,
-    Flash,
-    Examples,
-    Calculator,
-    TableExecution,
-    DataViewSelector,
-    RegisterFile,
-    Memory,
-    ClkCycles,
-    Monitor,
-    Keyboard,
+
+    SelectArchitecture,
+    ArchitectureView,
+    SimulatorView,
+    AssemblyView,
+
+    // EditArchitecture,
+    // SaveArchitecture,
+    // ArchConf,
+    // MemoryLayout,
+    // RegisterFileArch,
+    // Instructions,
+    // InstructionFields,
+    // Pseudoinstructions,
+    // PseudoinstructionFields,
+    // Directives,
+    // LoadAssembly,
+    // SaveAssembly,
+    // MakeURI,
+    // LoadLibrary,
+    // SaveLibrary,
+    // TextareaAssembly,
+    // ListLibraryTags,
+    // AssemblyError,
+    // Flash,
+    // Examples,
+    // Calculator,
+    // TableExecution,
+    // DataViewSelector,
+    // RegisterFile,
+    // Memory,
+    // ClkCycles,
+    // Monitor,
+    // Keyboard,
   },
 
   /************
    * Vue Data *
    ************/
+  // eslint-disable-next-line max-lines-per-function
   data() {
     return {
+      first: "John",
+      last: "Doe",
+
       /********************/
       /* Global Variables */
       /********************/
@@ -127,7 +166,7 @@ export default {
       //
 
       //Version Number
-      version: "",
+      version: package_json.version,
 
       //Architecture name and guide
       architecture_name: "",
@@ -138,32 +177,38 @@ export default {
       browser: "",
 
       //Displayed notifications
-      notifications: notifications, //TODO: copy or only in app?
+      notifications, //TODO: copy or only in app?
 
       //
       // Current view
       //
 
-      creator_mode: "load_architecture",
+      creator_mode: "select_architecture",
 
       //
       // Configuration
       //
 
-      //Stack total list values
-      default_architecture: "none",
+      //Default architecture
+      default_architecture:
+        localStorage.getItem("conf_default_architecture") || "none",
 
       //Stack total list values
-      stack_total_list: 40,
+      stack_total_list:
+        parseInt(localStorage.getItem("conf_stack_total_list"), 10) || 40,
 
       //Notification speed
-      notification_time: 1500,
+      notification_time:
+        parseInt(localStorage.getItem("conf_notification_time"), 10) || 1500,
 
       // Instruction help size
-      instruction_help_size: 33,
+      instruction_help_size:
+        parseInt(localStorage.getItem("conf_instruction_help_size"), 10) || 33,
 
       //Auto Scroll
-      autoscroll: true,
+      autoscroll: (a => {
+        return a === null ? true : a === "true"
+      })(localStorage.getItem("conf_autoscroll")), // if null, set to true, else respect the value
 
       // Font size
       font_size: 15,
@@ -172,7 +217,9 @@ export default {
       c_debug: false,
 
       //Dark Mode
-      dark: false,
+      dark: (a => {
+        return a === null ? null : a === "true"
+      })(localStorage.getItem("conf_dark_mode")), // if null (no localStorage), set to null, else cast to bool
 
       /*************************/
       /* Architecture Selector */
@@ -182,21 +229,15 @@ export default {
       //Available architectures
       //
 
-      arch_available: architecture_available, //TODO: copy or only in app?
-
-      //Architectures card background
-      back_card: back_card, //TODO: copy or only in app?
-
-      //Delete architecture modal
-      modal_delete_arch_index: 0, //TODO: include into delete architecture component - modal info
+      arch_available, //TODO: copy or only in app?
 
       /****************/
       /* Architecture */
       /****************/
 
       //Load architecture
-      architecture: architecture,
-      architecture_hash: architecture_hash,
+      architecture,
+      architecture_hash,
 
       //Instructions fields
       modal_field_instruction: {
@@ -225,8 +266,8 @@ export default {
       //Available examples
       //
 
-      example_set_available: example_set_available,
-      example_available: example_available,
+      example_set_available,
+      example_available,
 
       //
       //Code error modal
@@ -254,7 +295,7 @@ export default {
       //
 
       //Instructions
-      instructions: instructions,
+      instructions,
 
       //
       //Data view
@@ -266,36 +307,36 @@ export default {
       //Memory
       //
 
-      main_memory: {},
-      main_memory_busy: false,
+      // main_memory: {},
+      // main_memory_busy: false,
 
       //Stack
-      track_stack_names: track_stack_names,
-      callee_subrutine: "",
-      caller_subrutine: "",
-      stack_pointer: 0,
-      begin_caller: 0,
-      end_caller: 0,
-      begin_callee: 0,
-      end_callee: 0,
+      track_stack_names,
+      // callee_subrutine: "",
+      // caller_subrutine: "",
+      // stack_pointer: 0,
+      // begin_caller: 0,
+      // end_caller: 0,
+      // begin_callee: 0,
+      // end_callee: 0,
 
       //
       //Stats
       //
 
-      totalStats: totalStats,
-      stats: stats,
+      totalStats: status.totalStats,
+      stats,
       //Stats Graph values
-      stats_value: stats_value,
+      stats_value,
 
       //
       //CLK Cycles
       //
 
-      total_clk_cycles: total_clk_cycles,
-      clk_cycles: clk_cycles,
+      total_clk_cycles,
+      clk_cycles,
       //CLK Cycles Graph values
-      clk_cycles_value: clk_cycles_value,
+      clk_cycles_value,
 
       //
       //Display and keyboard
@@ -326,10 +367,9 @@ export default {
    * Created vue instance *
    ************************/
   created() {
-    uielto_navbar.methods.load_num_version()
-    uielto_preload_architecture.methods.load_arch_available()
-    this.detect_os()
-    this.detect_browser()
+    // uielto_preload_architecture.methods.load_arch_available()
+    this.os = this.detect_os()
+    this.browser = this.detect_browser()
     this.get_target_port()
   },
 
@@ -337,20 +377,19 @@ export default {
    * Mounted vue instance *
    ************************/
   mounted() {
-    this.validate_browser()
-    uielto_backup.methods.backup_modal(this)
+    backup_modal(this)
 
     //Pre-load following URL params
     const url_hash = creator_preload_get2hash(window.location)
     creator_preload_fromHash(this, url_hash)
+    this.set_dark_mode()
   },
 
   /*************
    * Before UI *
    *************/
   beforeUpdate() {
-    uielto_configuration.methods.get_configuration()
-    uielto_configuration.methods.get_dark_mode()
+    // uielto_configuration.methods.get_configuration()
   },
 
   /***************
@@ -365,50 +404,51 @@ export default {
     //Detects the operating system being used
     detect_os() {
       if (navigator.userAgent.includes("Win")) {
-        this.os = "Win"
-      } else if (navigator.userAgent.includes("Mac")) {
-        this.os = "Mac"
-      } else if (navigator.userAgent.includes("X11")) {
-        this.os = "Linux"
-      } else if (navigator.userAgent.includes("Linux")) {
-        this.os = "Linux"
+        return "Win"
       }
+      if (navigator.userAgent.includes("Mac")) {
+        return "Mac"
+      }
+      if (
+        navigator.userAgent.includes("X11") ||
+        navigator.userAgent.includes("Linux")
+      ) {
+        return "Linux"
+      }
+      return null
     },
 
     //Detects the browser being used
     detect_browser() {
-      if (navigator.userAgent.includes("Mac")) {
-        // why?!?!
-        this.browser = "Mac"
-      } else if (navigator.userAgent.includes("Chrome")) {
-        this.browser = "Chrome"
-      } else if (navigator.userAgent.includes("Firefox")) {
-        this.browser = "Firefox"
-      } else if (
-        navigator.userAgent.includes("Safari") &&
-        !navigator.userAgent.includes("Chrome")
-      ) {
-        // why?!?!
-        this.browser = "Chrome"
+      if (navigator.userAgent.includes("Chrome")) {
+        return "Chrome"
       }
+      if (navigator.userAgent.includes("Firefox")) {
+        return "Firefox"
+      }
+      if (navigator.userAgent.includes("Safari")) {
+        return "Safari"
+      }
+      return null
     },
 
-    //Show modal if the browser is not permited
-    validate_browser() {
-      if (navigator.userAgent.includes("OPR")) {
-        this.$root.$emit("bv::show::modal", "modalBrowser")
-      } else if (navigator.userAgent.indexOf("MIE") > -1) {
-        this.$root.$emit("bv::show::modal", "modalBrowser")
-      } else if (navigator.userAgent.indexOf("Edge") > -1) {
-        this.$root.$emit("bv::show::modal", "modalBrowser")
-      } else if (navigator.userAgent.indexOf("Chrome") > -1) {
-        return
-      } else if (navigator.userAgent.indexOf("Safari") > -1) {
-        return
-      } else if (navigator.userAgent.indexOf("Firefox") > -1) {
-        return
+    //Verify if dark mode was activated from cache
+    set_dark_mode() {
+      if (this.dark === null) {
+        // detect prefered color scheme
+        if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+          this.dark = true
+        } else {
+          this.dark = false
+        }
+      }
+
+      // set dark mode
+      if (this.dark) {
+        document.getElementsByTagName("body")[0].style =
+          "filter: invert(88%) hue-rotate(160deg) !important; background-color: #111 !important;"
       } else {
-        this.$root.$emit("bv::show::modal", "modalBrowser")
+        document.getElementsByTagName("body")[0].style = ""
       }
     },
 
@@ -424,15 +464,12 @@ export default {
         "danger",
       )
 
-      if (execution_index != -1) {
+      if (execution_index !== -1) {
         instructions[execution_index]._rowVariant = "danger"
-        app._data.instructions[execution_index]._rowVariant = "danger"
       }
 
       /* Google Analytics */
       creator_ga("execute", "execute.exception", "execute.exception." + error)
-
-      return
     },
 
     //Get target por by SO
@@ -443,12 +480,10 @@ export default {
 };
 </script>
 
-<!-- <template>
-  <p>{{ call() + baz }}</p>
-  <div></div>
-</template> -->
-
 <template>
+  <!-- for showing toasts (notifications) from JS -->
+  <BToastOrchestrator />
+
   <!------------------------>
   <!-- General components -->
   <!------------------------>
@@ -457,22 +492,27 @@ export default {
   <SpinnerLoading id="loading" style="display: none" />
 
   <!-- Browser not supported modal -->
-  <SupportedBrowsers id="modalBrowser" />
+  <SupportedBrowsers :browser="this.browser" />
 
   <header>
     <!-- Navbar  -->
-    <NavbarCREATOR :version="version" :architecture_name="architecture_name" />
+    <NavbarCREATOR
+      :version="this.version"
+      :architecture_name="this.architecture_name"
+    />
 
     <!-- Configuration modal -->
+    <!-- TODO: for some FUCKING reason these v-models don't sync -->
     <FormConfiguration
       id="configuration"
-      :default_architecture="default_architecture"
-      :stack_total_list="stack_total_list"
-      :autoscroll="autoscroll"
-      :instruction_help_size="instruction_help_size"
-      :notification_time="notification_time"
-      :dark="dark"
-      :c_debug="c_debug"
+      v-model:arch_available="arch_available"
+      v-model:default_architecture="default_architecture"
+      v-model:stack_total_list="stack_total_list"
+      v-model:autoscroll="autoscroll"
+      v-model:instruction_help_size="instruction_help_size"
+      v-model:notification_time="notification_time"
+      v-model:dark="dark"
+      v-model:c_debug="c_debug"
     />
 
     <!-- Information modals -->
@@ -500,375 +540,188 @@ export default {
   </header>
 
   <!----------------------->
-  <!-- Load architecture -->
+  <!-- Select architecture -->
   <!----------------------->
 
-  <b-container
-    fluid
-    align-h="center"
-    id="load_menu"
-    v-if="creator_mode == 'load_architecture'"
-  >
-    <b-row>
-      <b-col>
-        <!-- Navbar -->
-        <UIeltoToolbar
-          id="navbar_load_architecture"
-          components=" | | |btn_configuration,btn_information"
-          :browser="browser"
-          :arch_available="arch_available"
-        />
-
-        <!-- Architecture menu -->
-        <b-container
-          fluid
-          align-h="center"
-          class="mx-0 px-1"
-          id="load_menu_arch"
-        >
-          <b-row>
-            <b-col>
-              <b-card-group deck>
-                <!-- Preload architecture card -->
-                <PreloadArchitecture
-                  v-for="(item, index) in arch_available"
-                  :arch_available="arch_available"
-                  :back_card="back_card"
-                  :item="item"
-                  :index="index"
-                />
-
-                <!-- Load new architecture card -->
-                <LoadArchitecture />
-
-                <!-- New architecture card -->
-                <NewArchitecture />
-              </b-card-group>
-            </b-col>
-          </b-row>
-        </b-container>
-
-        <!-- CREATOR Information -->
-        <b-container fluid align-h="center" class="mx-0 px-1" id="creator_info">
-          <b-row>
-            <b-col>
-              <b-list-group class="my-3">
-                <b-list-group-item style="text-align: center">
-                  <a href="mailto: creator.arcos.inf.uc3m.es@gmail.com">
-                    <span class="fa-solid fa-envelope" />
-                    creator.arcos.inf.uc3m.es@gmail.com
-                  </a>
-                </b-list-group-item>
-              </b-list-group>
-            </b-col>
-          </b-row>
-        </b-container>
-
-        <!-- Architecture selector modals -->
-
-        <!-- Delete architecture modal -->
-        <DeleteArchitecture
-          id="modalDeletArch"
-          :index="modal_delete_arch_index"
-        />
-      </b-col>
-    </b-row>
-  </b-container>
+  <SelectArchitecture
+    v-if="creator_mode === 'select_architecture'"
+    :arch_available="arch_available"
+    :browser="browser"
+    @select-architecture="
+      arch_name => {
+        architecture_name = arch_name
+        creator_mode = 'simulator'
+      }
+    "
+  />
 
   <!------------------>
   <!-- Architecture -->
   <!------------------>
 
-  <b-container
-    fluid
-    align-h="center"
-    id="architecture_menu"
+  <ArchitectureView
     v-if="creator_mode == 'architecture'"
-  >
-    <b-row>
-      <b-col>
-        <!-- Navbar -->
-        <UIeltoToolbar
-          id="navbar_architecture"
-          components="btn_assembly,btn_simulator|btn_edit_architecture,btn_save_architecture||btn_configuration,btn_information"
-          :browser="browser"
-          :arch_available="arch_available"
-        />
-
-        <!-- Architecture navbar modals -->
-
-        <!-- Edit architecture modal -->
-        <EditArchitecture id="edit_architecture" :arch_code="arch_code" />
-
-        <!-- Save architecture modal -->
-        <SaveArchitecture id="save_architecture" />
-
-        <!-- Architecture information -->
-        <b-container fluid align-h="center" class="mx-0 px-0">
-          <b-row>
-            <b-col class="menu" id="view_components">
-              <b-tabs>
-                <!-- Architecture configuration -->
-                <b-tab title="Architecture Info" active>
-                  <ArchConf :arch_conf="architecture.arch_conf" />
-                </b-tab>
-
-                <!-- Memory layout -->
-                <b-tab title="Memory Layout">
-                  <MemoryLayout :memory_layout="architecture.memory_layout" />
-                </b-tab>
-
-                <!-- Register File -->
-                <b-tab title="Register File">
-                  <RegisterFileArch :register_file="architecture.components" />
-                </b-tab>
-
-                <!-- Instruction definition -->
-                <b-tab title="Instructions">
-                  <Instructions :instructions="architecture.instructions" />
-
-                  <!-- Instructions modals -->
-
-                  <!-- Intruction fields-->
-                  <InstructionFields
-                    id="fields_instructions"
-                    :title="modal_field_instruction.title"
-                    :index="modal_field_instruction.index"
-                    :instruction="modal_field_instruction.instruction"
-                  />
-                </b-tab>
-
-                <!-- Pseudoinstruction definition -->
-                <b-tab title="Pseudoinstructions">
-                  <Pseudoinstructions
-                    :pseudoinstructions="architecture.pseudoinstructions"
-                  />
-
-                  <!-- Pseudoinstructions modals -->
-
-                  <!-- Pseudontruction fields -->
-                  <PseudoinstructionFields
-                    id="fields_pseudoinstructions"
-                    :title="modal_field_pseudoinstruction.title"
-                    :index="modal_field_pseudoinstruction.index"
-                    :pseudoinstruction="
-                      modal_field_pseudoinstruction.pseudoinstruction
-                    "
-                  />
-                </b-tab>
-
-                <!-- Directives definition -->
-                <b-tab title="Directives">
-                  <Directives :directives="architecture.directives" />
-                </b-tab>
-              </b-tabs>
-            </b-col>
-          </b-row>
-        </b-container>
-      </b-col>
-    </b-row>
-  </b-container>
+    :architecture_name="architecture_name"
+    :arch_available="arch_available"
+    :browser="browser"
+  />
 
   <!------------------->
   <!-- Assembly view -->
   <!------------------->
-
-  <b-container
-    fluid
-    align-h="center"
-    id="assembly"
-    v-if="creator_mode === 'assembly'"
-  >
-    <b-row>
-      <b-col>
-        <!-- Navbar -->
-        <UIeltoToolbar
-          id="navbar_assembly"
-          components="btn_architecture,btn_simulator|btn_compile|dropdown_assembly_file,dropdown_library|btn_configuration,btn_information"
-          :browser="browser"
-          :arch_available="arch_available"
-        />
-
-        <!-- Assembly navbar modals -->
-
-        <!-- Load assembly form -->
-        <LoadAssembly id="load_assembly" />
-
-        <!-- Save assembly form -->
-        <SaveAssembly id="save_assembly" />
-
-        <!-- Examples modal -->
-        <Examples
-          id="examples"
-          ref="examples"
-          :example_set_available="example_set_available"
-          :example_available="example_available"
-          compile="false"
-          modal="examples"
-        />
-
-        <!-- Get uri -->
-        <MakeURI id="make_uri" />
-
-        <!-- Load binary form -->
-        <LoadLibrary id="load_binary" />
-
-        <!-- Save binary form -->
-        <SaveLibrary id="save_binary" />
-
-        <b-container fluid align-h="center" class="mx-0 px-0">
-          <b-row cols="2">
-            <b-col cols="12" id="divAssembly">
-              <!-- Assembly textarea-->
-              <TextareaAssembly :browser="browser" />
-            </b-col>
-
-            <b-col cols="0" id="divTags" class="d-none">
-              <!-- Library tags-->
-              <ListLibraryTags
-                :instructions_tag="update_binary.instructions_tag"
-              />
-            </b-col>
-          </b-row>
-        </b-container>
-
-        <!-- Compile error modal -->
-        <AssemblyError
-          id="modalAssemblyError"
-          ref="errorAssembly"
-          :modal_assembly_error="modalAssemblyError"
-        />
-      </b-col>
-    </b-row>
-  </b-container>
+  <AssemblyView v-if="creator_mode === 'assembly'" />
 
   <!-------------------->
   <!-- Simulator view -->
   <!-------------------->
 
-  <b-container
-    fluid
-    align-h="center"
-    id="simulator"
+  <SimulatorView
     v-if="creator_mode == 'simulator'"
-  >
-    <b-row>
-      <b-col>
-        <!-- Navbar -->
-        <UIeltoToolbar
-          id="navbar_simulator"
-          components="btn_architecture,btn_assembly|btn_reset,btn_instruction,btn_run,btn_flash,btn_stop|btn_examples,btn_calculator|btn_configuration,btn_information"
-          :browser="browser"
-          :arch_available="arch_available"
-        />
-
-        <!-- Simulator navbar modals -->
-
-        <!-- Flash -->
-        <Flash
-          id="flash"
-          :lab_url="lab_url"
-          :result_email="result_email"
-          :target_board="target_board"
-          :target_port="target_port"
-          :flash_url="flash_url"
-        />
-
-        <!-- Examples modal -->
-        <Examples
-          id="examples2"
-          ref="examples2"
-          :example_set_available="example_set_available"
-          :example_available="example_available"
-          compile="true"
-          modal="examples2"
-        />
-
-        <!-- Calculator -->
-        <Calculator id="calculator" />
-
-        <b-container fluid align-h="center" class="mx-0 px-0">
-          <b-row align-h="center">
-            <!-- Execution instruction -->
-            <b-col lg="7" cols="12">
-              <TableExecution :instructions="instructions" :enter="enter" />
-            </b-col>
-
-            <!-- Execution data -->
-            <b-col lg="5" cols="12">
-              <!-- View selector -->
-              <DataViewSelector
-                :data_mode="data_mode"
-                :register_file_num="architecture.components.length"
-              />
-
-              <!-- Registers view -->
-              <RegisterFile
-                id="register_file"
-                :render="render"
-                :data_mode="data_mode"
-                v-if="
-                  data_mode == 'int_registers' || data_mode == 'fp_registers'
-                "
-              />
-
-              <!-- Memory view-->
-              <Memory
-                id="memory"
-                :main_memory="main_memory"
-                :track_stack_names="track_stack_names"
-                :callee_subrutine="callee_subrutine"
-                :caller_subrutine="caller_subrutine"
-                :stack_total_list="stack_total_list"
-                :main_memory_busy="main_memory_busy"
-                v-if="data_mode == 'memory'"
-              />
-
-              <!-- Stats view--->
-              Stats :stats="stats" :stats_value="stats_value" v-if="data_mode ==
-              'stats'" />
-
-              <!-- CLK Cycles view--->
-              <ClkCycles
-                :clk_cycles="clk_cycles"
-                :clk_cycles_value="clk_cycles_value"
-                :total_clk_cycles="total_clk_cycles"
-                v-if="data_mode == 'clk_cycles'"
-              />
-            </b-col>
-
-            <!-- Monitor & keyboard -->
-            <b-col lg="12" cols="12">
-              <b-container
-                fluid
-                align-h="center"
-                class="mx-0 px-0"
-                id="simulator"
-                v-if="creator_mode == 'simulator'"
-              >
-                <b-row
-                  cols-xl="2"
-                  cols-lg="2"
-                  cols-md="1"
-                  cols-sm="1"
-                  cols-xs="1"
-                  cols="1"
-                >
-                  <b-col>
-                    <!-- Monitor -->
-                    <Monitor :display="display" />
-                  </b-col>
-
-                  <b-col>
-                    <!-- Keyboard -->
-                    <Keyboard :keyboard="keyboard" :enter="enter" />
-                  </b-col>
-                </b-row>
-              </b-container>
-            </b-col>
-          </b-row>
-        </b-container>
-      </b-col>
-    </b-row>
-  </b-container>
+    v-model:data_mode="data_mode"
+    :architecture_name="architecture_name"
+    :arch_available="arch_available"
+    :enter="enter"
+    :browser="browser"
+    :stack_total_list="stack_total_list"
+  />
 </template>
+
+<style lang="scss" scoped>
+:deep() {
+  // applies to all sub-components
+  body {
+    background-color: #ffffff;
+    overflow-x: hidden;
+    font-size: 15px;
+    height: 100vh;
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  .flexbox {
+    display: flex;
+  }
+
+  .flexbox .stretch {
+    flex: 1;
+  }
+
+  .flexbox .normal {
+    flex: 0;
+    margin: 0 0 0 1rem;
+  }
+
+  .flexbox div input {
+    padding: 0.5em 1em;
+    width: 100%;
+  }
+
+  .flexbox div button {
+    padding: 0.5em 1em;
+    white-space: nowrap;
+  }
+
+  .contenedor {
+    display: -webkit-flex;
+    display: flex;
+    width: 100%;
+    margin: 0px;
+  }
+
+  hr {
+    height: 1px;
+    background-color: #9e9e9e;
+  }
+
+  h1 {
+    display: block;
+    font-size: 1em;
+  }
+
+  h2 {
+    display: block;
+    font-size: 1.5em;
+  }
+
+  .h5 {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    line-height: 1.2;
+    display: inline-block;
+  }
+
+  .h6 {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    line-height: 1.2;
+    display: inline-block;
+  }
+
+  .h6Sm {
+    font-size: 0.85rem;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    line-height: 1.2;
+    display: inline-block;
+  }
+
+  .noBorder {
+    border-top: 0px;
+    border-bottom: 0px;
+    border-right: 0px;
+  }
+
+  .table td {
+    vertical-align: middle;
+  }
+
+  .justify {
+    text-align: justify;
+  }
+
+  .center {
+    text-align: center;
+  }
+
+  .left {
+    text-align: left;
+  }
+
+  .popover {
+    max-width: 100%;
+  }
+
+  .infoButton {
+    background-color: #d4db17;
+  }
+
+  .buttons {
+    width: 100%;
+    margin: 0px;
+    margin-top: 1px;
+    padding: 0px;
+    font-size: 1em;
+  }
+
+  .menu {
+    width: 100%;
+    align-items: center;
+    margin: 5px;
+    margin-bottom: 10px;
+  }
+
+  .menuGroup {
+    background-color: #fafafa;
+  }
+
+  .buttonBackground {
+    background-color: white;
+  }
+}
+</style>

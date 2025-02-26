@@ -24,49 +24,27 @@ export default {
     show_instruction_help: { type: Boolean, required: true },
   },
 
-  methods: {
-    closePopover() {
-      this.$root.$emit('bv::hide::popover')
-    },
-  },
 }
 </script>
 
 <template>
   <b-popover :target="target" triggers="click blur">
-    <template v-slot:title>
-      <b-button @click="closePopover" class="close" aria-label="Close">
-        <span class="d-inline-block" aria-hidden="true">&times;</span>
-      </b-button>
-      <br />
-    </template>
-
-    <b-button
-      class="btn btn-outline-secondary btn-sm btn-block infoButton"
-      href="https://creatorsim.github.io/"
-      target="_blank"
-      onclick="creator_ga('send', 'event', 'help', 'help.general_help', 'help.general_help');"
-    >
-      <span class="fas fa-question-circle" />
+    <b-button class="btn btn-outline-secondary btn-sm btn-block infoButton" href="https://creatorsim.github.io/"
+      target="_blank" onclick="creator_ga('send', 'event', 'help', 'help.general_help', 'help.general_help');">
+      <font-awesome-icon icon="fa-question-circle" />
       Help
     </b-button>
 
-    <b-button
-      class="btn btn-outline-secondary btn-block btn-sm h-100 infoButton"
-      v-if="show_instruction_help == 'true'"
-      id="inst_ass"
-      v-b-toggle.sidebar_help
-      onclick="creator_ga('send', 'event', 'help', 'help.instruction_help', 'help.instruction_help');"
-    >
-      <span class="fas fa-book"></span>
+    <b-button class="btn btn-outline-secondary btn-block btn-sm h-100 infoButton" v-if="show_instruction_help == 'true'"
+      id="inst_ass" v-b-toggle.sidebar_help
+      onclick="creator_ga('send', 'event', 'help', 'help.instruction_help', 'help.instruction_help');">
+      <font-awesome-icon icon="fa-book" />
       Instruction Help
     </b-button>
 
-    <b-button
-      class="btn btn-outline-secondary btn-sm btn-block buttonBackground h-100"
-      v-b-modal.notifications
-    >
+    <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground h-100" v-b-modal.notifications>
       <span class="fas fa-bell" />
+      <font-awesome-icon icon="fa-bell" />
       Show Notifications
     </b-button>
   </b-popover>

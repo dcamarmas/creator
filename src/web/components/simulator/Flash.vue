@@ -36,10 +36,10 @@ export default {
       //
 
       remote_target_boards: [
-        { text: 'Please select an option', value: '', disabled: true },
-        { text: 'ESP32-C2 (RISC-V)', value: 'esp32c2' },
-        { text: 'ESP32-C3 (RISC-V)', value: 'esp32c3' },
-        { text: 'ESP32-H2 (RISC-V)', value: 'esp32h2' },
+        { text: "Please select an option", value: "", disabled: true },
+        { text: "ESP32-C2 (RISC-V)", value: "esp32c2" },
+        { text: "ESP32-C3 (RISC-V)", value: "esp32c3" },
+        { text: "ESP32-H2 (RISC-V)", value: "esp32h2" },
         //{ text: 'ESP32-S2 (MIPS-32)',      value: 'esp32s2' },
         //{ text: 'ESP32-S3 (MIPS-32)',      value: 'esp32s3' },
       ],
@@ -49,7 +49,7 @@ export default {
                       */
 
       request_id: -1,
-      position: '',
+      position: "",
 
       boards: false,
       enqueue: false,
@@ -60,10 +60,10 @@ export default {
       //
 
       target_boards: [
-        { text: 'Please select an option', value: '', disabled: true },
-        { text: 'ESP32-C2 (RISC-V)', value: 'esp32c2' },
-        { text: 'ESP32-C3 (RISC-V)', value: 'esp32c3' },
-        { text: 'ESP32-H2 (RISC-V)', value: 'esp32h2' },
+        { text: "Please select an option", value: "", disabled: true },
+        { text: "ESP32-C2 (RISC-V)", value: "esp32c2" },
+        { text: "ESP32-C3 (RISC-V)", value: "esp32c3" },
+        { text: "ESP32-H2 (RISC-V)", value: "esp32h2" },
         //{ text: 'ESP32-S2 (MIPS-32)',      value: 'esp32s2' },
         //{ text: 'ESP32-S3 (MIPS-32)',      value: 'esp32s3' },
       ],
@@ -87,24 +87,30 @@ export default {
     //
 
     get_boards() {
-      if (this.lab_url != '') {
+      if (this.lab_url != "") {
         this.save()
 
         this_env = this
-        remote_lab_get_boards(this.lab_url + '/target_boards').then(function (data) {
-          if (data != '-1') {
-            available_boards = JSON.parse(data)
+        remote_lab_get_boards(this.lab_url + "/target_boards").then(
+          function (data) {
+            if (data != "-1") {
+              available_boards = JSON.parse(data)
 
-            for (let i = 1; i < this_env.remote_target_boards.length; i++) {
-              if (!available_boards.includes(this_env.remote_target_boards[i]['value'])) {
-                this_env.remote_target_boards.splice(i, 1)
-                i--
+              for (let i = 1; i < this_env.remote_target_boards.length; i++) {
+                if (
+                  !available_boards.includes(
+                    this_env.remote_target_boards[i]["value"],
+                  )
+                ) {
+                  this_env.remote_target_boards.splice(i, 1)
+                  i--
+                }
               }
-            }
 
-            this_env.boards = true
-          }
-        })
+              this_env.boards = true
+            }
+          },
+        )
       } else {
         this.boards = false
       }
@@ -114,12 +120,12 @@ export default {
       this.save()
 
       if (instructions.length == 0) {
-        show_notification('Compile a program first', 'danger')
+        show_notification("Compile a program first", "danger")
         return
       }
 
-      if (this.result_email == '') {
-        show_notification('Please, enter your E-mail', 'danger')
+      if (this.result_email == "") {
+        show_notification("Please, enter your E-mail", "danger")
         return
       }
 
@@ -130,22 +136,22 @@ export default {
       }
 
       this_env = this
-      remote_lab_enqueue(this.lab_url + '/enqueue', earg).then(function (data) {
-        if (data != '-1') {
+      remote_lab_enqueue(this.lab_url + "/enqueue", earg).then(function (data) {
+        if (data != "-1") {
           this_env.request_id = data
           this_env.enqueue = true
           this_env.status = true
-          this_env.position = ''
+          this_env.position = ""
           this_env.check_status()
         }
       })
 
       //Google Analytics
-      creator_ga('simulator', 'simulator.enqueue', 'simulator.enqueue')
+      creator_ga("simulator", "simulator.enqueue", "simulator.enqueue")
     },
 
     check_status() {
-      if (this.position != 'Completed' && this.position != 'Error') {
+      if (this.position != "Completed" && this.position != "Error") {
         this.get_status()
         setTimeout(this.check_status, 20000)
       }
@@ -159,23 +165,23 @@ export default {
       }
 
       this_env = this
-      remote_lab_status(this.lab_url + '/status', parg).then(function (data) {
-        if (data == 'Completed') {
+      remote_lab_status(this.lab_url + "/status", parg).then(function (data) {
+        if (data == "Completed") {
           this_env.enqueue = false
         }
-        if (data != '-1') {
-          if (data == '-2') {
-            this_env.position = 'Error'
+        if (data != "-1") {
+          if (data == "-2") {
+            this_env.position = "Error"
             this_env.enqueue = false
           } else if (!isNaN(data)) {
-            this_env.position = 'Queue position: ' + data
+            this_env.position = "Queue position: " + data
           } else {
             this_env.position = data
           }
         }
       })
       //Google Analytics
-      creator_ga('simulator', 'simulator.position', 'simulator.position')
+      creator_ga("simulator", "simulator.position", "simulator.position")
     },
 
     do_cancel() {
@@ -186,15 +192,15 @@ export default {
       }
 
       this_env = this
-      remote_lab_cancel(this.lab_url + '/delete', carg).then(function (data) {
-        if (data != '-1') {
+      remote_lab_cancel(this.lab_url + "/delete", carg).then(function (data) {
+        if (data != "-1") {
           this_env.enqueue = false
-          this_env.position = 'Canceled'
+          this_env.position = "Canceled"
         }
       })
 
       //Google Analytics
-      creator_ga('simulator', 'simulator.cancel', 'simulator.cancel')
+      creator_ga("simulator", "simulator.cancel", "simulator.cancel")
     },
 
     //
@@ -208,23 +214,30 @@ export default {
 
     //Download driver
     download_driver() {
-      const link = document.createElement('a')
-      link.download = 'driver.zip'
+      const link = document.createElement("a")
+      link.download = "driver.zip"
       link.href =
-        window.location.href.split('?')[0].split('#')[0] + '/gateway/' + this.target_board + '.zip'
+        window.location.href.split("?")[0].split("#")[0] +
+        "/gateway/" +
+        this.target_board +
+        ".zip"
       document.body.appendChild(link)
       link.click()
       document.body.removeChild(link)
 
       //Google Analytics
-      creator_ga('simulator', 'simulator.download_driver', 'simulator.download_driver')
+      creator_ga(
+        "simulator",
+        "simulator.download_driver",
+        "simulator.download_driver",
+      )
     },
 
     do_flash() {
       this.save()
 
       if (instructions.length == 0) {
-        show_notification('Compile a program first', 'danger')
+        show_notification("Compile a program first", "danger")
         return
       }
 
@@ -237,13 +250,15 @@ export default {
       }
 
       this_env = this
-      gateway_remote_flash(this.flash_url + '/flash', farg).then(function (data) {
-        this_env.flashing = false
-        show_notification(data, 'danger')
-      })
+      gateway_remote_flash(this.flash_url + "/flash", farg).then(
+        function (data) {
+          this_env.flashing = false
+          show_notification(data, "danger")
+        },
+      )
 
       //Google Analytics
-      creator_ga('simulator', 'simulator.flash', 'simulator.flash')
+      creator_ga("simulator", "simulator.flash", "simulator.flash")
     },
 
     do_monitor() {
@@ -258,13 +273,15 @@ export default {
       }
 
       this_env = this
-      gateway_remote_monitor(this.flash_url + '/monitor', farg).then(function (data) {
-        this_env.running = false
-        //show_notification(data, 'danger') ;
-      })
+      gateway_remote_monitor(this.flash_url + "/monitor", farg).then(
+        function (data) {
+          this_env.running = false
+          //show_notification(data, 'danger') ;
+        },
+      )
 
       //Google Analytics
-      creator_ga('simulator', 'simulator.monitor', 'simulator.monitor')
+      creator_ga("simulator", "simulator.monitor", "simulator.monitor")
     },
 
     //
@@ -286,7 +303,7 @@ export default {
 
   async remote_lab_get_boards(lab_url) {
     const fetch_args = {
-      method: 'GET',
+      method: "GET",
     }
 
     try {
@@ -294,24 +311,24 @@ export default {
 
       return await res.text()
     } catch (err) {
-      if (err.toString() == 'TypeError: Failed to fetch') {
+      if (err.toString() == "TypeError: Failed to fetch") {
         show_notification(
-          'Remote device not available at the moment. Please, try again later.',
-          'danger',
+          "Remote device not available at the moment. Please, try again later.",
+          "danger",
         )
-        return '-1'
+        return "-1"
       }
 
-      return err.toString() + '\n'
+      return err.toString() + "\n"
     }
   },
 
   async remote_lab_enqueue(lab_url, enqueue_args) {
     const fetch_args = {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-type': 'application/json',
-        Accept: 'application/json',
+        "Content-type": "application/json",
+        Accept: "application/json",
       },
       body: JSON.stringify(enqueue_args),
     }
@@ -322,24 +339,24 @@ export default {
 
       return jres.status
     } catch (err) {
-      if (err.toString() == 'TypeError: Failed to fetch') {
+      if (err.toString() == "TypeError: Failed to fetch") {
         show_notification(
-          'Remote device not available at the moment. Please, try again later.',
-          'danger',
+          "Remote device not available at the moment. Please, try again later.",
+          "danger",
         )
-        return '-1'
+        return "-1"
       }
 
-      return err.toString() + '\n'
+      return err.toString() + "\n"
     }
   },
 
   async remote_lab_cancel(lab_url, cancel_args) {
     const fetch_args = {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-type': 'application/json',
-        Accept: 'application/json',
+        "Content-type": "application/json",
+        Accept: "application/json",
       },
       body: JSON.stringify(cancel_args),
     }
@@ -350,24 +367,24 @@ export default {
 
       return jres.status
     } catch (err) {
-      if (err.toString() == 'TypeError: Failed to fetch') {
+      if (err.toString() == "TypeError: Failed to fetch") {
         show_notification(
-          'Remote device not available at the moment. Please, try again later.',
-          'danger',
+          "Remote device not available at the moment. Please, try again later.",
+          "danger",
         )
-        return '-1'
+        return "-1"
       }
 
-      return err.toString() + '\n'
+      return err.toString() + "\n"
     }
   },
 
   async remote_lab_position(lab_url, position_args) {
     const fetch_args = {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-type': 'application/json',
-        Accept: 'application/json',
+        "Content-type": "application/json",
+        Accept: "application/json",
       },
       body: JSON.stringify(position_args),
     }
@@ -378,24 +395,24 @@ export default {
 
       return jres.status
     } catch (err) {
-      if (err.toString() == 'TypeError: Failed to fetch') {
+      if (err.toString() == "TypeError: Failed to fetch") {
         show_notification(
-          'Remote device not available at the moment. Please, try again later.',
-          'danger',
+          "Remote device not available at the moment. Please, try again later.",
+          "danger",
         )
-        return '-1'
+        return "-1"
       }
 
-      return err.toString() + '\n'
+      return err.toString() + "\n"
     }
   },
 
   async remote_lab_status(lab_url, status_args) {
     const fetch_args = {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-type': 'application/json',
-        Accept: 'application/json',
+        "Content-type": "application/json",
+        Accept: "application/json",
       },
       body: JSON.stringify(status_args),
     }
@@ -406,15 +423,15 @@ export default {
 
       return jres.status
     } catch (err) {
-      if (err.toString() == 'TypeError: Failed to fetch') {
+      if (err.toString() == "TypeError: Failed to fetch") {
         show_notification(
-          'Remote device not available at the moment. Please, try again later.',
-          'danger',
+          "Remote device not available at the moment. Please, try again later.",
+          "danger",
         )
-        return '-2'
+        return "-2"
       }
 
-      return err.toString() + '\n'
+      return err.toString() + "\n"
     }
   },
 
@@ -424,10 +441,10 @@ export default {
 
   async gateway_remote_flash(flash_url, flash_args) {
     const fetch_args = {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-type': 'application/json',
-        Accept: 'application/json',
+        "Content-type": "application/json",
+        Accept: "application/json",
       },
       body: JSON.stringify(flash_args),
     }
@@ -438,20 +455,20 @@ export default {
 
       return jres.status
     } catch (err) {
-      if (err.toString() == 'TypeError: Failed to fetch') {
+      if (err.toString() == "TypeError: Failed to fetch") {
         return "Gateway not available at the moment. Please, execute 'python3 gateway.py' and connect your board first\n"
       }
 
-      return err.toString() + '\n'
+      return err.toString() + "\n"
     }
   },
 
   async gateway_remote_monitor(flash_url, flash_args) {
     const fetch_args = {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-type': 'application/json',
-        Accept: 'application/json',
+        "Content-type": "application/json",
+        Accept: "application/json",
       },
       body: JSON.stringify(flash_args),
     }
@@ -462,18 +479,18 @@ export default {
 
       return jres.status
     } catch (err) {
-      if (err.toString() == 'TypeError: Failed to fetch') {
+      if (err.toString() == "TypeError: Failed to fetch") {
         return "Gateway not available at the moment. Please, execute 'python3 gateway.py' and connect your board first\n"
       }
 
-      return err.toString() + '\n'
+      return err.toString() + "\n"
     }
   },
 }
 </script>
 
 <template>
-  <b-modal :id="id" title="Target Board Flash" hide-footer @hidden="save">
+  <b-modal :id="id" title="Target Board Flash" no-footer @hidden="save">
     <b-tabs content-class="mt-3">
       <b-tab title="Local Device">
         <b-container fluid align-h="center" class="mx-0 px-0">
@@ -498,7 +515,10 @@ export default {
                 <b-container fluid align-h="center" class="mx-0 px-0">
                   <b-row cols="1" align-h="center">
                     <b-col class="pt-2">
-                      <label for="range-6">(2) Install Docker Desktop (only the first time):</label>
+                      <label for="range-6"
+                        >(2) Install Docker Desktop (only the first
+                        time):</label
+                      >
                       <b-card class="text-center">
                         <b-row no-gutters>
                           <b-col md="12">
@@ -523,7 +543,9 @@ export default {
                 <b-container fluid align-h="center" class="mx-0 px-0">
                   <b-row cols="1" align-h="center">
                     <b-col class="pt-2">
-                      <label for="range-6">(3) Download esptool (only the first time):</label>
+                      <label for="range-6"
+                        >(3) Download esptool (only the first time):</label
+                      >
                       <b-card class="text-center">
                         <b-row no-gutters>
                           <b-col md="12">
@@ -548,15 +570,18 @@ export default {
                 <b-container fluid align-h="center" class="mx-0 px-0">
                   <b-row cols="1" align-h="center">
                     <b-col class="pt-2">
-                      <label for="range-6">(4) Pull creator_gateway image in Docker Desktop:</label>
+                      <label for="range-6"
+                        >(4) Pull creator_gateway image in Docker
+                        Desktop:</label
+                      >
                       <b-card class="text-center">
                         <b-row no-gutters>
                           <b-col md="12">
                             <b-card-text style="text-align: left; margin: 2%">
                               <ol style="margin: 3%">
                                 <li>
-                                  Search for "creatorsim/creator_gateway" in the Docker Desktop
-                                  browser
+                                  Search for "creatorsim/creator_gateway" in the
+                                  Docker Desktop browser
                                 </li>
                                 <li>Click the "Pull" button</li>
                               </ol>
@@ -571,7 +596,9 @@ export default {
                 <b-container fluid align-h="center" class="mx-0 px-0">
                   <b-row cols="1" align-h="center">
                     <b-col class="pt-2">
-                      <label for="range-6">(5) Run creator_gateway image:</label>
+                      <label for="range-6"
+                        >(5) Run creator_gateway image:</label
+                      >
                       <b-card class="text-center">
                         <b-row no-gutters>
                           <b-col md="12">
@@ -615,16 +642,23 @@ export default {
                 <b-container fluid align-h="center" class="mx-0 px-0">
                   <b-row cols="1" align-h="center">
                     <b-col class="pt-2">
-                      <label for="range-6">(7) Run esp_rfc2217_server in windows cmd:</label>
+                      <label for="range-6"
+                        >(7) Run esp_rfc2217_server in windows cmd:</label
+                      >
                       <b-card class="text-center">
                         <b-row no-gutters>
                           <b-col md="12">
                             <b-card-text style="text-align: left; margin: 2%">
                               <ol style="margin: 3%">
-                                <li>Execute the windows cmd in the esptool path</li>
+                                <li>
+                                  Execute the windows cmd in the esptool path
+                                </li>
                                 <li>
                                   Execute
-                                  <code>esp_rfc2217_server -v -p 4000 &lt;target_port&gt;</code>
+                                  <code
+                                    >esp_rfc2217_server -v -p 4000
+                                    &lt;target_port&gt;</code
+                                  >
                                 </li>
                               </ol>
                               <span>
@@ -648,14 +682,19 @@ export default {
                 <b-container fluid align-h="center" class="mx-0 px-0">
                   <b-row cols="1" align-h="center">
                     <b-col class="pt-2">
-                      <label for="range-6">(2) Install Docker Engine (only the first time):</label>
+                      <label for="range-6"
+                        >(2) Install Docker Engine (only the first time):</label
+                      >
                       <b-card class="text-center">
                         <b-row no-gutters>
                           <b-col md="12">
                             <b-card-text style="text-align: left; margin: 2%">
                               <span>
                                 Follow the instructions from:
-                                <a href="https://docs.docker.com/engine/install/" target="_blank">
+                                <a
+                                  href="https://docs.docker.com/engine/install/"
+                                  target="_blank"
+                                >
                                   https://docs.docker.com/engine/install/
                                 </a>
                               </span>
@@ -670,12 +709,16 @@ export default {
                 <b-container fluid align-h="center" class="mx-0 px-0">
                   <b-row cols="1" align-h="center">
                     <b-col class="pt-2">
-                      <label for="range-6">(3) Pull creator_gateway image:</label>
+                      <label for="range-6"
+                        >(3) Pull creator_gateway image:</label
+                      >
                       <b-card class="text-center">
                         <b-row no-gutters>
                           <b-col md="12">
                             <b-card-text style="text-align: left; margin: 2%">
-                              <code>docker pull creatorsim/creator_gateway</code>
+                              <code
+                                >docker pull creatorsim/creator_gateway</code
+                              >
                             </b-card-text>
                           </b-col>
                         </b-row>
@@ -687,14 +730,18 @@ export default {
                 <b-container fluid align-h="center" class="mx-0 px-0">
                   <b-row cols="1" align-h="center">
                     <b-col class="pt-2">
-                      <label for="range-6">(4) Run creator_gateway image:</label>
+                      <label for="range-6"
+                        >(4) Run creator_gateway image:</label
+                      >
                       <b-card class="text-center">
                         <b-row no-gutters>
                           <b-col md="12">
                             <b-card-text style="text-align: left; margin: 2%">
                               <code>
-                                docker run --init -it --device=&lt;target_port&gt; -p 8080:8080
-                                --name creator_gateway creatorsim/creator_gateway /bin/bash
+                                docker run --init -it
+                                --device=&lt;target_port&gt; -p 8080:8080 --name
+                                creator_gateway creatorsim/creator_gateway
+                                /bin/bash
                               </code>
                             </b-card-text>
                           </b-col>
@@ -792,15 +839,21 @@ export default {
                       <b-card class="text-center">
                         <b-row no-gutters>
                           <b-col md="12">
-                            <b-card-text style="text-align: justify; margin: 2%">
-                              <span>Load the environment variable for your board with:</span>
+                            <b-card-text
+                              style="text-align: justify; margin: 2%"
+                            >
+                              <span
+                                >Load the environment variable for your board
+                                with:</span
+                              >
                               <br />
                               <code>. $HOME/esp/esp-idf/export.sh</code>
                               <br />
                               <br />
                               <span>
-                                Unzip the driver.zip file and change into the driver directory
-                                associated to your board with "cd &lt;board&gt;", for example:
+                                Unzip the driver.zip file and change into the
+                                driver directory associated to your board with
+                                "cd &lt;board&gt;", for example:
                               </span>
                               <br />
                               <code>unzip driver.zip</code>
@@ -868,7 +921,9 @@ export default {
                     :pressed="flashing"
                     :disabled="flashing || running"
                   >
-                    <span v-if="!flashing"><span class="fas fa-bolt-lightning"></span> Flash</span>
+                    <span v-if="!flashing"
+                      ><span class="fas fa-bolt-lightning"></span> Flash</span
+                    >
                     <span v-if="flashing">
                       <span class="fas fa-bolt-lightning" /> Flashing...
                     </span>
@@ -883,8 +938,12 @@ export default {
                     :pressed="running"
                     :disabled="running || flashing"
                   >
-                    <span v-if="!running"><span class="fas fa-play" /> Monitor</span>
-                    <span v-if="running"><span class="fas fa-play" /> Runing...</span>
+                    <span v-if="!running"
+                      ><span class="fas fa-play" /> Monitor</span
+                    >
+                    <span v-if="running"
+                      ><span class="fas fa-play" /> Runing...</span
+                    >
                     <b-spinner small v-if="running" />
                   </b-button>
                 </b-col>
@@ -914,7 +973,11 @@ export default {
         <b-container fluid align-h="center" class="mx-0 px-0" v-if="!boards">
           <b-row cols="1" align-h="center">
             <b-col class="pt-2">
-              <b-button class="btn btn-sm btn-block" variant="primary" @click="get_boards">
+              <b-button
+                class="btn btn-sm btn-block"
+                variant="primary"
+                @click="get_boards"
+              >
                 <span class="fas fa-link" /> Connect
               </b-button>
             </b-col>
@@ -940,7 +1003,9 @@ export default {
         <b-container fluid align-h="center" class="mx-0 px-0" v-if="boards">
           <b-row cols="1" align-h="center">
             <b-col class="pt-2">
-              <label for="range-6">(3) E-mail to receive the execution results:</label>
+              <label for="range-6"
+                >(3) E-mail to receive the execution results:</label
+              >
               <b-form-input
                 type="text"
                 v-model="result_email"
@@ -963,10 +1028,19 @@ export default {
           </b-row>
         </b-container>
 
-        <b-container fluid align-h="center" class="mx-0 px-0" v-if="target_board != '' && enqueue">
+        <b-container
+          fluid
+          align-h="center"
+          class="mx-0 px-0"
+          v-if="target_board != '' && enqueue"
+        >
           <b-row cols="1" align-h="center">
             <b-col class="pt-2">
-              <b-button class="btn btn-sm btn-block" variant="danger" @click="do_cancel">
+              <b-button
+                class="btn btn-sm btn-block"
+                variant="danger"
+                @click="do_cancel"
+              >
                 <span class="fas fa-ban" /> Cancel last program
               </b-button>
             </b-col>
@@ -974,10 +1048,19 @@ export default {
         </b-container>
         <br />
 
-        <b-container fluid align-h="center" class="mx-0 px-0" v-if="target_board != ''">
+        <b-container
+          fluid
+          align-h="center"
+          class="mx-0 px-0"
+          v-if="target_board != ''"
+        >
           <b-row cols="1" align-h="center">
             <b-col class="pt-2">
-              <b-button class="btn btn-sm btn-block" variant="primary" @click="do_enqueue">
+              <b-button
+                class="btn btn-sm btn-block"
+                variant="primary"
+                @click="do_enqueue"
+              >
                 <span class="fas fa-paper-plane" /> Send program
               </b-button>
             </b-col>
@@ -985,7 +1068,9 @@ export default {
         </b-container>
         <br />
         For Teachers, how to deploy a remote laboratory
-        <a href="https://github.com/creatorsim/creator/blob/master/dockers/remote_lab/README.md">
+        <a
+          href="https://github.com/creatorsim/creator/blob/master/dockers/remote_lab/README.md"
+        >
           documentation
         </a>
       </b-tab>

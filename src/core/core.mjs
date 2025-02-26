@@ -16,9 +16,9 @@
  *  You should have received a copy of the GNU Lesser General Public License
  *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  */
-"use strict";
+"use strict"
 
-import { initCAPI } from "./capi/initCAPI.mjs";
+import { initCAPI } from "./capi/initCAPI.mjs"
 
 import {
     bi_BigIntTodouble,
@@ -61,33 +61,49 @@ import { creator_ga } from "./utils/creator_ga.mjs";
 import { creator_callstack_reset } from "./sentinel/sentinel.mjs";
 
 // Conditional import for the WASM compiler based on the environment (web or Deno)
-let wasm;
 const isDeno = typeof Deno !== "undefined";
 const isWeb = typeof window !== "undefined" && typeof document !== "undefined";
 
+import wasm_web_init, {
+    Color as Color_web,
+    ArchitectureJS as ArchitectureJS_web,
+} from "./compiler/web/creator_compiler.js"
+import {
+    Color as Color_deno,
+    ArchitectureJS as ArchitectureJS_deno,
+} from "./compiler/deno/creator_compiler.js"
+
+let Color
+let ArchitectureJS
 if (isDeno) {
-    wasm = await import("./compiler/deno/creator_compiler.js");
+    // Deno HAS to be imported like this, as it doesn't provide a default
+    Color = Color_deno
+    ArchitectureJS = ArchitectureJS_deno
 } else if (isWeb) {
-    wasm = await import("./compiler/web/creator_compiler.js");
+    Color = Color_web
+    ArchitectureJS = ArchitectureJS_web
+    // in the web, we MUST call the default
+    wasm_web_init()
 } else {
     throw new Error(
         "Unsupported environment: neither Deno nor web browser detected",
-    );
+    )
 }
+
 
 export let code_assembly = "";
 export let update_binary = "";
 export let backup_stack_address;
 export let backup_data_address;
 
-export let architecture_hash = [];
+export let architecture_hash = []
 export let architecture = {
     arch_conf: [],
     memory_layout: [],
     components: [],
     instructions: [],
     directives: [],
-};
+}
 
 export let app;
 
@@ -144,17 +160,16 @@ export let REGISTERS;
 export let REGISTERS_BACKUP = [];
 export const register_size_bits = 64; //TODO: load from architecture
 
-// TODO: Make sure these variables are all needed
-// let architecture_available = []
-// let load_architectures_available = []
-// let load_architectures = []
-// let back_card = []
-// let memory_hash = ['data_memory', 'instructions_memory', 'stack_memory']
-// let execution_mode = 0 // 0: instruction by instruction, 1: run program
-// let instructions_packed = 100
-// let architecture_json = ''
+export let architecture_available = []
+export let load_architectures_available = []
+export let load_architectures = []
+export let back_card = []
+export let memory_hash = ['data_memory', 'instructions_memory', 'stack_memory']
+export let execution_mode = 0 // 0: instruction by instruction, 1: run program
+export let instructions_packed = 100
+export let architecture_json = ''
 
-let code_binary = "";
+let code_binary = ""
 
 initCAPI();
 let creator_debug = false;
@@ -164,12 +179,12 @@ BigInt.prototype.toJSON = function () {
 };
 
 export function set_debug(enable_debug) {
-    creator_debug = enable_debug;
+    creator_debug = enable_debug
     if (creator_debug) {
-        logger.enable();
-        logger.setLevel("DEBUG");
+        logger.enable()
+        logger.setLevel("DEBUG")
     } else {
-        logger.disable();
+        logger.disable()
     }
 }
 
@@ -181,7 +196,7 @@ function load_arch_select(cfg) {
         type: "",
         update: "",
         status: "ok",
-    };
+    }
 
     const auxArchitecture = cfg;
     architecture = register_value_deserialize(auxArchitecture);
@@ -197,15 +212,15 @@ function load_arch_select(cfg) {
         architecture_hash.push({
             name: REGISTERS[i].name,
             index: i,
-        });
+        })
     }
 
-    backup_stack_address = architecture.memory_layout[4].value;
-    backup_data_address = architecture.memory_layout[3].value;
+    backup_stack_address = architecture.memory_layout[4].value
+    backup_data_address = architecture.memory_layout[3].value
 
-    ret.token = "The selected architecture has been loaded correctly";
-    ret.type = "success";
-    return ret;
+    ret.token = "The selected architecture has been loaded correctly"
+    ret.type = "success"
+    return ret
 }
 
 /**
@@ -879,7 +894,7 @@ function prepareArchitecture(
 
     // Initialize WASM compiler if not skipped
     if (!skipCompiler) {
-        arch = wasm.ArchitectureJS.from_json(architectureJson);
+        arch = ArchitectureJS.from_json(architectureJson);
     }
 
     return architectureObj;
@@ -1016,23 +1031,23 @@ export function load_architecture(arch_str) {
     logger.warn(
         "load_architecture is deprecated, use newArchitectureLoad instead",
     );
-    arch = wasm.ArchitectureJS.from_json(arch_str);
+    arch = ArchitectureJS.from_json(arch_str);
     const arch_obj = JSON.parse(arch_str);
     const ret = load_arch_select(arch_obj);
 
-    return ret;
+    return ret
 }
 
 export function load_library(lib_str) {
     const ret = {
         status: "ok",
         msg: "",
-    };
+    }
 
-    code_binary = lib_str;
-    update_binary = JSON.parse(code_binary);
+    code_binary = lib_str
+    update_binary = JSON.parse(code_binary)
 
-    return ret;
+    return ret
 }
 
 // compilation
@@ -1041,19 +1056,19 @@ export function assembly_compile(code, enable_color) {
     let ret = {};
 
     code_assembly = code;
-    let color = enable_color ? wasm.Color.Ansi : wasm.Color.Off;
+    let color = enable_color ? Color.Ansi : Color.Off;
     ret = assembly_compiler(false, color);
     switch (ret.status) {
         case "error":
             break;
 
         case "warning":
-            ret.msg = "warning: " + ret.token;
-            break;
+            ret.msg = "warning: " + ret.token
+            break
 
         case "ok":
-            ret.msg = "Compilation completed successfully";
-            break;
+            ret.msg = "Compilation completed successfully"
+            break
 
         default:
             ret.msg = "Unknow assembly compiler code :-/";
@@ -1068,12 +1083,13 @@ export function assembly_compile(code, enable_color) {
  */
 
 export let total_clk_cycles = 0;
-const clk_cycles_value = [
+export const clk_cycles_value = [
     {
         data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     },
 ];
-const clk_cycles = [
+
+export const clk_cycles = [
     { type: "Arithmetic floating point", clk_cycles: 0, percentage: 0 },
     { type: "Arithmetic integer", clk_cycles: 0, percentage: 0 },
     { type: "Comparison", clk_cycles: 0, percentage: 0 },
@@ -1128,12 +1144,12 @@ export function execute_program(limit_n_instructions) {
     let ret;
     ret = executeProgramOneShot(limit_n_instructions);
     if (ret.error === true) {
-        ret.status = "ko";
-        return ret;
+        ret.status = "ko"
+        return ret
     }
 
-    ret.status = "ok";
-    return ret;
+    ret.status = "ok"
+    return ret
 }
 
 // state management
@@ -1233,7 +1249,7 @@ export function get_state() {
             .split(" ")
             .map(i => i.charAt(0))
             .join("")
-            .toLowerCase();
+            .toLowerCase()
 
         for (let j = 0; j < component.elements.length; j++) {
             const element = component.elements[j];
@@ -1534,7 +1550,7 @@ export function getState() {
         encodeURIComponent(status.display) +
         "'\n";
 
-    return ret;
+    return ret
 }
 
 export function snapshot(extraData) {

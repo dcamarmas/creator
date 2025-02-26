@@ -25,46 +25,78 @@ export default {
   },
 }
 </script>
+
 <template>
-  <b-popover :target="target" title="Shortcuts" triggers="hover focus" placement="bottomright">
+  <b-popover
+    :target="target"
+    title="Shortcuts"
+    triggers="hover focus"
+    placement="bottomright"
+  >
     <b-list-group>
-      <b-list-group-item class="d-flex justify-content-between align-items-center">
+      <b-list-group-item
+        class="d-flex justify-content-between align-items-center"
+      >
         Copy &nbsp;&nbsp;
-        <b-badge variant="primary" pill v-if="browser != 'Mac'"> Ctrl + c</b-badge>
+        <b-badge variant="primary" pill v-if="browser != 'Mac'">
+          Ctrl + c</b-badge
+        >
         <b-badge variant="primary" pill v-if="browser == 'Mac'"> ⌘ + c</b-badge>
       </b-list-group-item>
 
-      <b-list-group-item class="d-flex justify-content-between align-items-center">
+      <b-list-group-item
+        class="d-flex justify-content-between align-items-center"
+      >
         Cut&nbsp; &nbsp;&nbsp;
-        <b-badge variant="primary" pill v-if="browser != 'Mac'"> Ctrl + x</b-badge>
+        <b-badge variant="primary" pill v-if="browser != 'Mac'">
+          Ctrl + x</b-badge
+        >
         <b-badge variant="primary" pill v-if="browser == 'Mac'"> ⌘ + x</b-badge>
       </b-list-group-item>
 
-      <b-list-group-item class="d-flex justify-content-between align-items-center">
+      <b-list-group-item
+        class="d-flex justify-content-between align-items-center"
+      >
         Paste &nbsp;&nbsp;
-        <b-badge variant="primary" pill v-if="browser != 'Mac'"> Ctrl + v</b-badge>
+        <b-badge variant="primary" pill v-if="browser != 'Mac'">
+          Ctrl + v</b-badge
+        >
         <b-badge variant="primary" pill v-if="browser == 'Mac'"> ⌘ + v</b-badge>
       </b-list-group-item>
 
-      <b-list-group-item class="d-flex justify-content-between align-items-center">
+      <b-list-group-item
+        class="d-flex justify-content-between align-items-center"
+      >
         Select all &nbsp;&nbsp;
-        <b-badge variant="primary" pill v-if="browser != 'Mac'"> Ctrl + a</b-badge>
+        <b-badge variant="primary" pill v-if="browser != 'Mac'">
+          Ctrl + a</b-badge
+        >
         <b-badge variant="primary" pill v-if="browser == 'Mac'"> ⌘ + a</b-badge>
       </b-list-group-item>
 
-      <b-list-group-item class="d-flex justify-content-between align-items-center">
+      <b-list-group-item
+        class="d-flex justify-content-between align-items-center"
+      >
         Undo &nbsp;&nbsp;
-        <b-badge variant="primary" pill v-if="browser != 'Mac'"> Ctrl + z</b-badge>
+        <b-badge variant="primary" pill v-if="browser != 'Mac'">
+          Ctrl + z</b-badge
+        >
         <b-badge variant="primary" pill v-if="browser == 'Mac'"> ⌘ + z</b-badge>
       </b-list-group-item>
 
-      <b-list-group-item class="d-flex justify-content-between align-items-center">
+      <b-list-group-item
+        class="d-flex justify-content-between align-items-center"
+      >
         Redo &nbsp;&nbsp;
-        <b-badge variant="primary" pill v-if="browser != 'Mac'"> Ctrl + y</b-badge>
+        <b-badge variant="primary" pill v-if="browser != 'Mac'">
+          Ctrl + y</b-badge
+        >
         <b-badge variant="primary" pill v-if="browser == 'Mac'"> ⌘ + y</b-badge>
       </b-list-group-item>
 
-      <b-list-group-item class="d-flex justify-content-between align-items-center">
+      <b-list-group-item
+        class="d-flex justify-content-between align-items-center"
+      >
         Block code comment &nbsp;&nbsp;
         <b-badge variant="primary" pill> Ctrl + m</b-badge>
       </b-list-group-item>

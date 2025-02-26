@@ -17,24 +17,60 @@ You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
+<style lang="scss" scoped>
+.browserBadge {
+  background-color: transparent;
+}
+
+.broserIcon {
+  height: 50px;
+  width: auto;
+}
+</style>
+
 <script>
 export default {
   props: {
-    id: { type: String, required: true },
+    browser: String,
+  },
+  data() {
+    return {
+      modalShow: false,
+    }
+  },
+  methods: {
+    validate_browser() {
+      switch (this.browser) {
+        case "Chrome":
+        case "Firefox":
+        case "Safari":
+          return true
+
+        default:
+          return false
+      }
+    },
+  },
+  mounted() {
+    this.modalShow = !this.validate_browser()
   },
 }
 </script>
 
 <template>
-  <b-modal :id="id" title="Browser not supported" hide-footer>
-    <span class="h6">You are using an unsupported browser, please use one of the following:</span>
+  <b-modal v-model="modalShow" title="Browser not supported" no-footer>
+    <span class="h6">
+      You are using an unsupported browser, please use one of the following:
+    </span>
     <br />
     <b-list-group>
-      <b-list-group-item class="d-flex justify-content-between align-items-center">
+      <b-list-group-item
+        class="d-flex justify-content-between align-items-center"
+      >
         Google Chrome 70+
         <b-badge pill class="browserBadge">
           <b-img
-            src="./images/chrome.png"
+            src="@/web/assets/img/chrome.png"
             class="shadow broserIcon"
             rounded="circle"
             fluid
@@ -43,11 +79,13 @@ export default {
         </b-badge>
       </b-list-group-item>
 
-      <b-list-group-item class="d-flex justify-content-between align-items-center">
+      <b-list-group-item
+        class="d-flex justify-content-between align-items-center"
+      >
         Mozilla Firefox 60+
         <b-badge pill class="browserBadge">
           <b-img
-            src="./images/firefox.png"
+            src="@/web/assets/img/firefox.png"
             class="shadow broserIcon"
             rounded="circle"
             fluid
@@ -56,11 +94,13 @@ export default {
         </b-badge>
       </b-list-group-item>
 
-      <b-list-group-item class="d-flex justify-content-between align-items-center">
+      <b-list-group-item
+        class="d-flex justify-content-between align-items-center"
+      >
         Apple Safari 12+
         <b-badge pill class="browserBadge">
           <b-img
-            src="./images/safari.png"
+            src="@/web/assets/img/safari.png"
             class="shadow broserIcon"
             rounded="circle"
             fluid

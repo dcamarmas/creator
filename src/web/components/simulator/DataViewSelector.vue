@@ -18,59 +18,67 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <script>
+import { creator_ga } from "@/core/utils/creator_ga.mjs"
+
 export default {
   props: {
-    data_mode: { type: String, required: true },
+    data_mode: String,
     register_file_num: { type: Number, required: true },
+  },
+
+  computed: {
+    current_reg_type: {
+      // sync with App's data_mode
+      get() {
+        return this.data_mode
+      },
+      set(value) {
+        this.$root.data_mode = value
+
+        /* Google Analytics */
+        creator_ga("send", "event", "data", "data.view", "data.view." + value)
+      },
+    },
+    current_reg_name() {
+      switch (this.current_reg_type) {
+        case "int_registers":
+          return "INT/Ctrl Registers"
+        case "fp_registers":
+          return "FP Registers"
+
+        default:
+          return ""
+      }
+    },
   },
 
   data() {
     return {
-      current_reg_type: 'int_registers',
-      current_reg_name: 'INT Registers',
-
       reg_representation_options: [
-        { text: 'INT/Ctrl Registers', value: 'int_registers' },
-        { text: 'FP Registers', value: 'fp_registers' },
+        { text: "INT/Ctrl Registers", value: "int_registers" },
+        { text: "FP Registers", value: "fp_registers" },
       ],
     }
   },
 
   methods: {
     change_data_view(e) {
-      app._data.data_mode = e //TODO: vue bidirectional updates
-
-      if (e == 'int_registers') {
-        this.current_reg_type = 'int_registers'
-      } else if (e === 'fp_registers') {
-        this.current_reg_type = 'fp_registers'
-      }
-
-      /* Google Analytics */
-      creator_ga('send', 'event', 'data', 'data.view', 'data.view.' + app._data.data_mode)
+      this.current_reg_type = e
     },
 
     get_pressed(button) {
-      if (button == 'registers') {
-        if (app._data.data_mode === 'int_registers' || app._data.data_mode === 'fp_registers') {
-          return 'secondary'
+      if (button === "registers") {
+        if (
+          this.current_reg_type === "int_registers" ||
+          this.current_reg_type === "fp_registers"
+        ) {
+          return "secondary"
         } else {
-          return 'outline-secondary'
+          return "outline-secondary"
         }
       }
 
-      return button == app._data.data_mode
-    },
-
-    get_register_name() {
-      if (app._data.data_mode === 'int_registers') {
-        current_reg_name = 'INT/Ctrl Registers'
-      }
-      if (app._data.data_mode === 'fp_registers') {
-        current_reg_name = 'FP Registers'
-      }
-
-      return current_reg_name
+      return button === this.current_reg_type
     },
   },
 }
@@ -97,7 +105,7 @@ export default {
             split
             v-if="register_file_num > 4"
             right
-            :text="get_register_name()"
+            :text="current_reg_name"
             size="sm"
             :variant="get_pressed('registers')"
             @click="change_data_view(current_reg_type)"
@@ -117,7 +125,7 @@ export default {
             variant="outline-secondary"
             @click="change_data_view('memory')"
           >
-            <span class="fas fa-memory" />
+            <font-awesome-icon icon="fa-solid fa-memory" />
             Memory
           </b-button>
 
@@ -128,7 +136,7 @@ export default {
             variant="outline-secondary"
             @click="change_data_view('stats')"
           >
-            <span class="fas fa-chart-bar" />
+            <font-awesome-icon icon="fa-solid fa-chart-bar" />
             Stats
           </b-button>
 
@@ -139,7 +147,7 @@ export default {
             variant="outline-secondary"
             @click="change_data_view('clk_cycles')"
           >
-            <span class="fa-regular fa-clock" />
+            <font-awesome-icon icon="fa-regular fa-clock" />
             CLK Cyles
           </b-button>
         </b-button-group>

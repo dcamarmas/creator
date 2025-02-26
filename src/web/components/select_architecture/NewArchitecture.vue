@@ -18,6 +18,14 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <script>
+import { hide_loading, show_loading, show_notification } from "@/web/utils.mjs"
+import { creator_ga } from "@/core/utils/creator_ga.mjs"
+import { load_arch_select } from "@/core/core.mjs"
+import { instructions } from "@/core/compiler/compiler.mjs"
+import { creator_memory_clear } from "@/core/memory/memoryOperations.mjs"
+
+import new_arch from "/architecture/new_arch.json"
+
 export default {
   methods: {
     //Create a new architecture
@@ -25,19 +33,18 @@ export default {
       show_loading()
 
       //Read architecture JSON
-      $.getJSON('architecture/new_arch.json' + '?v=' + new Date().getTime(), function (cfg) {
-        uielto_new_architecture.methods.load_arch_select_aux(cfg)
+      this.load_arch_select_aux(new_arch)
 
-        //Refresh UI
-        hide_loading()
-        show_notification('New Architecture has been loaded correctly', 'success')
+      //Refresh UI
+      hide_loading()
+      show_notification("New Architecture has been loaded correctly", "success")
 
-        // Google Analytics
-        creator_ga('architecture', 'architecture.loading', 'architectures.loading.new_architecture')
-      }).fail(function () {
-        hide_loading()
-        show_notification('New Architecture is not currently available', 'info')
-      })
+      // Google Analytics
+      creator_ga(
+        "architecture",
+        "architecture.loading",
+        "architectures.loading.new_architecture",
+      )
     },
 
     //Load architecture in CREATOR
@@ -45,21 +52,21 @@ export default {
       //Load architecture
       load_arch_select(cfg)
 
-      architecture_json = 'new_arch'
-      uielto_preload_architecture.data.architecture_name = architecture.arch_conf[0].value
+      architecture_json = "new_arch"
+      uielto_preload_architecture.data.architecture_name =
+        architecture.arch_conf[0].value
       app._data.architecture = architecture
       app._data.architecture_name = architecture.arch_conf[0].value
-      app._data.architecture_guide = ''
+      app._data.architecture_guide = ""
       app._data.architecture_hash = architecture_hash
 
       //Reset execution
       instructions = []
-      app._data.instructions = instructions
       creator_memory_clear()
 
       //Refresh UI
-      uielto_toolbar_btngroup.methods.change_UI_mode('simulator')
-      uielto_data_view_selector.methods.change_data_view('int_registers')
+      uielto_toolbar_btngroup.methods.change_UI_mode("simulator")
+      uielto_data_view_selector.methods.change_data_view("int_registers")
       app._data.render++ //Forces vue to reload a component, similar to $forceUpdate()
     },
   },
@@ -71,7 +78,7 @@ export default {
     <b-row no-gutters @click="new_arch">
       <b-col sm="12" class="center w-100 my-2">
         <b-card-img
-          src="./images/new_icon.png"
+          src="@/web/assets/img/new_icon.png"
           alt="new icon"
           thumbnail
           fluid

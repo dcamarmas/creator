@@ -17,21 +17,42 @@ You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
+<style lang="scss" scoped>
+.header {
+  width: 100%;
+  align-items: center;
+  background-color: #eaeaea;
+  padding-top: 0pt;
+  padding-bottom: 0pt;
+}
+
+
+.headerText {
+  color: #2196f3;
+  margin: 0px;
+}
+
+.headerName {
+  color: #383d41;
+  font-size: 0.55em;
+}
+
+.headerLogo {
+  height: 5vh;
+}
+
+.buttonBackground {
+  background-color: white;
+}
+</style>
+
 <script>
+
+
 export default {
   props: {
     version: { type: String, required: true },
     architecture_name: { type: String, required: true },
-  },
-
-  methods: {
-    //Load CREATOR version from package JSON
-    load_num_version() {
-      $.getJSON("package.json", function (cfg) {
-        creator_information = cfg
-        app._data.version = cfg.version
-      })
-    },
   },
 }
 </script>
@@ -62,54 +83,37 @@ export default {
       </b-container>
     </b-navbar-brand>
 
-    <b-navbar-toggle
-      target="nav_collapse"
-      aria-label="Open/Close more information"
-    />
+    <b-navbar-toggle target="nav_collapse" aria-label="Open/Close more information" />
     <b-collapse is-nav id="nav_collapse">
       <b-navbar-nav class="ml-auto">
-        <b-nav-item
-          class="mb-0 pb-0 p-0"
+        <b-nav-item class="mb-0 pb-0 p-0"
           href="https://docs.google.com/forms/d/e/1FAIpQLSdFbdy5istZbq2CErZs0cTV85Ur8aXiIlxvseLMhPgs0vHnlQ/viewform?usp=header"
-          target="_blank"
-        >
-          <b-button
-            class="btn btn-outline-secondary btn-sm btn-block buttonBackground h-100"
-          >
-            <span class="fa-solid fa-star" />
+          target="_blank">
+          <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground h-100">
+            <font-awesome-icon icon="fa-solid fa-star" />
             Feedback
           </b-button>
         </b-nav-item>
 
-        <b-nav-item
-          class="mb-0 pb-0 p-0"
+        <b-nav-item class="mb-0 pb-0 p-0"
           href="https://docs.google.com/forms/d/e/1FAIpQLSfSclv1rKqBt5aIIP3jfTGbdu8m_vIgEAaiqpI2dGDcQFSg8g/viewform?usp=header"
-          target="_blank"
-        >
-          <b-button
-            class="btn btn-outline-secondary btn-sm btn-block buttonBackground h-100"
-          >
-            <span class="fa-solid fa-lightbulb" />
+          target="_blank">
+          <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground h-100">
+            <font-awesome-icon icon="fa-solid fa-lightbulb" />
             Suggestions
           </b-button>
         </b-nav-item>
 
         <b-nav-item class="mb-0 pb-0 p-0">
-          <b-button
-            class="btn btn-outline-secondary btn-sm btn-block buttonBackground h-100"
-            v-b-modal.institutions
-          >
-            <span class="fa-solid fa-building-columns" />
+          <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground h-100" v-b-modal.institutions>
+            <font-awesome-icon icon="fa-solid fa-building-columns" />
             Community
           </b-button>
         </b-nav-item>
 
         <b-nav-item class="mb-0 pb-0 p-0">
-          <b-button
-            class="btn btn-outline-secondary btn-sm btn-block buttonBackground h-100"
-            v-b-modal.about
-          >
-            <span class="fas fa-address-card" />
+          <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground h-100" v-b-modal.about>
+            <font-awesome-icon icon="fa-solid fa-address-card" />
             About Us
           </b-button>
         </b-nav-item>

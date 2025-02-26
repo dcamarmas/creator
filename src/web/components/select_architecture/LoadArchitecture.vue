@@ -18,15 +18,15 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <script>
-export default {
-  props: {},
+import { hide_loading, show_loading } from "@/web/utils.mjs"
 
+export default {
   data() {
     return {
       //Form inputs
-      name_arch: '',
-      description_arch: '',
-      load_arch: '',
+      name_arch: "",
+      description_arch: "",
+      load_arch: "",
 
       //Show modal
       show_modal: false,
@@ -35,6 +35,7 @@ export default {
 
   methods: {
     //Read the JSON of new architecture
+    // eslint-disable-next-line max-lines-per-function
     read_arch(e) {
       show_loading()
       e.preventDefault()
@@ -42,7 +43,7 @@ export default {
       //Verify all form fields
       if (!this.name_arch || !this.load_arch) {
         hide_loading()
-        show_notification('Please complete all fields', 'danger')
+        show_notification("Please complete all fields", "danger")
         return
       }
 
@@ -51,7 +52,7 @@ export default {
       //Read JSON and add the new architecture on CREATOR
       let file
       let reader
-      const files = document.getElementById('arch_file').files
+      const files = document.getElementById("arch_file").files
 
       //Read one or more files
       for (let i = 0; i < files.length; i++) {
@@ -63,36 +64,43 @@ export default {
             //Add the new architecture on CREATOR
             architecture_available.push({
               name: name_arch,
-              img: './images/personalized_logo.png',
-              alt: name_arch + ' logo',
-              id: 'select_conf' + name_arch,
+              img: "./images/personalized_logo.png",
+              alt: name_arch + " logo",
+              id: "select_conf" + name_arch,
               description: description_arch,
               available: 1,
             })
             load_architectures_available.push({
               name: name_arch,
-              img: './images/personalized_logo.png',
-              alt: name_arch + ' logo',
-              id: 'select_conf' + name_arch,
+              img: "./images/personalized_logo.png",
+              alt: name_arch + " logo",
+              id: "select_conf" + name_arch,
               description: description_arch,
               available: 1,
             })
             back_card.push({
-              name: architecture_available[architecture_available.length - 1].name,
-              background: 'default',
+              name: architecture_available[architecture_available.length - 1]
+                .name,
+              background: "default",
             })
-            load_architectures.push({ id: name_arch, architecture: event.currentTarget.result })
+            load_architectures.push({
+              id: name_arch,
+              architecture: event.currentTarget.result,
+            })
 
             //Refresh cache values
-            if (typeof Storage !== 'undefined') {
+            if (typeof Storage !== "undefined") {
               let auxArch = JSON.stringify(load_architectures, null, 2)
-              localStorage.setItem('load_architectures', auxArch)
+              localStorage.setItem("load_architectures", auxArch)
 
               auxArch = JSON.stringify(load_architectures_available, null, 2)
-              localStorage.setItem('load_architectures_available', auxArch)
+              localStorage.setItem("load_architectures_available", auxArch)
             }
 
-            show_notification('The selected architecture has been loaded correctly', 'success')
+            show_notification(
+              "The selected architecture has been loaded correctly",
+              "success",
+            )
             hide_loading()
           }
         })(this.name_arch, this.description_arch)
@@ -101,14 +109,14 @@ export default {
       }
 
       //Clean form
-      this.name_arch = ''
-      this.description_arch = ''
-      this.load_arch = ''
+      this.name_arch = ""
+      this.description_arch = ""
+      this.load_arch = ""
     },
 
     //Form validator
     valid(value) {
-      if (parseInt(value) !== 0) {
+      if (parseInt(value, 10) !== 0) {
         if (!value) {
           return false
         } else {
@@ -123,11 +131,15 @@ export default {
 </script>
 
 <template>
-  <b-card no-body class="overflow-hidden arch_card architectureCard" v-b-modal.load_arch>
+  <b-card
+    no-body
+    class="overflow-hidden arch_card architectureCard"
+    v-b-modal.load_arch
+  >
     <b-row no-gutters>
       <b-col sm="12" class="center w-100 my-2">
         <b-card-img
-          src="./images/load_icon.png"
+          src="@/web/assets/img/load_icon.png"
           alt="load icon"
           class="w-75 rounded-0 architectureImg"
         />
@@ -142,7 +154,12 @@ export default {
       </b-col>
     </b-row>
 
-    <b-modal id="load_arch" title="Load Architecture" v-model="show_modal" @ok="read_arch">
+    <b-modal
+      id="load_arch"
+      title="Load Architecture"
+      v-model="show_modal"
+      @ok="read_arch"
+    >
       <b-form>
         <b-form-input
           v-model="name_arch"

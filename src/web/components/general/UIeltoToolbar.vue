@@ -30,7 +30,7 @@ export default {
 
   computed: {
     components_array: function () {
-      return this._props.components.split('|')
+      return this.components.split('|')
     },
   },
   components: { ToolbarBtngroup },
@@ -40,15 +40,11 @@ export default {
 <template>
   <b-container :id="id" fluid align-h="center" class="menu my-3 mx-0 px-0">
     <b-row cols-xl="4" cols-lg="3" cols-md="3" cols-sm="2" cols-xs="1" cols="1">
-      <b-cols class="px-2 py-1" v-for="(item, index) in components_array">
-        <ToolbarBtngroup
-          :group="item.split(',')"
-          :browser="browser"
-          :arch_available="arch_available"
-        />
+      <b-col class="px-2 py-1" v-for="(item, _) in components_array">
+        <ToolbarBtngroup :group="item.split(',')" :browser="browser" :architectures="arch_available" />
 
         <div class="w-100 d-block d-sm-none"></div>
-      </b-cols>
+      </b-col>
     </b-row>
   </b-container>
 </template>

@@ -36,7 +36,18 @@ export default defineConfigWithVueTs(
           },
         },
       ],
-      "@typescript-eslint/no-unused-vars": "warn",
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        {
+          args: "all",
+          argsIgnorePattern: "^_",
+          caughtErrors: "all",
+          caughtErrorsIgnorePattern: "^_",
+          destructuredArrayIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+          ignoreRestSiblings: true,
+        },
+      ],
       "max-lines-per-function": [
         "error",
         {
@@ -45,9 +56,16 @@ export default defineConfigWithVueTs(
           skipComments: true,
         },
       ],
+      "vue/valid-v-for": "off",
+      "vue/no-unused-vars": [
+        "warn",
+        {
+          ignorePattern: "^_",
+        },
+      ],
       eqeqeq: ["error", "always"],
       "max-depth": ["error", 5],
-      "vue/multi-word-component-names": "warn",
+      "vue/multi-word-component-names": "off",
       "prefer-const": "warn",
       "no-loss-of-precision": "error",
       "no-unreachable-loop": "error",
@@ -73,7 +91,7 @@ export default defineConfigWithVueTs(
       "class-methods-use-this": "error",
       "consistent-return": "error",
       "default-case": "error",
-      "default-case-last": "error",
+      "default-case-last": "warn",
       "dot-notation": "error",
       "max-params": ["warn", 5],
       "no-div-regex": "error",

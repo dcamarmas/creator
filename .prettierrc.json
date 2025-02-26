@@ -17,6 +17,7 @@
         "*.html",
         "*.css",
         "eslint.config.ts",
+        "vite.config.ts",
         ".editorconfig"
       ],
       "options": { "tabWidth": 2 }

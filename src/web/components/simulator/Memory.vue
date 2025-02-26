@@ -18,31 +18,35 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <script>
-import MemoryTable from './MemoryTable.vue'
+import MemoryTable from "./MemoryTable.vue"
+
+import { main_memory } from "@/core/memory/memoryCore.mjs"
+import { track_stack_names } from "@/core/memory/stackTracker.mjs"
 
 export default {
   props: {
-    main_memory: { type: Array, required: true },
-    memory_segment: { type: String, required: true },
-    track_stack_names: { type: Array, required: true }, // TODO: optional
     callee_subrutine: { type: String, required: true }, // TODO: optional
     caller_subrutine: { type: String, required: true }, // TODO: optional
     stack_total_list: { type: Number, required: true },
     main_memory_busy: { type: Boolean, required: true },
+    memory_layout: { type: Object, required: true },
   },
 
   components: { MemoryTable },
 
   data() {
     return {
+      main_memory,
+      track_stack_names,
+      memory_segment: "data",
       //Memory view
-      mem_representation: 'data_memory',
+      mem_representation: "data_memory",
       mem_representation_options: [
-        { text: 'Kernel Data', value: 'kdata_memory' },
-        { text: 'Kernel Text', value: 'kinstructions_memory' },
-        { text: 'Data', value: 'data_memory' },
-        { text: 'Text', value: 'instructions_memory' },
-        { text: 'Stack', value: 'stack_memory' },
+        { text: "Kernel Data", value: "kdata_memory" },
+        { text: "Kernel Text", value: "kinstructions_memory" },
+        { text: "Data", value: "data_memory" },
+        { text: "Text", value: "instructions_memory" },
+        { text: "Stack", value: "stack_memory" },
       ],
     }
   },
@@ -87,8 +91,18 @@ export default {
           :caller_subrutine="caller_subrutine"
           :stack_total_list="stack_total_list"
           :main_memory_busy="main_memory_busy"
+          :memory_layout="memory_layout"
+          :end_calee="end_calee"
         />
       </b-col>
     </b-row>
   </b-container>
 </template>
+
+<style lang="scss" scoped>
+.groupLabelling {
+  float: top;
+  position: relative;
+  top: -0.6vw;
+}
+</style>

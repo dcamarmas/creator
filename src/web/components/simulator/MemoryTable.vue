@@ -27,12 +27,14 @@ export default {
     caller_subrutine: { type: String, required: true }, // TODO: optional
     stack_total_list: { type: Number, required: true },
     main_memory_busy: { type: Boolean, required: true },
+    memory_layout: { type: Object, required: true },
+    end_callee: { type: Number, required: true },
   },
 
-  data: function () {
+  data() {
     return {
       /*Memory table fields*/
-      memFields: ['Tag', 'Address', 'Binary', 'Value'],
+      memFields: ["Tag", "Address", "Binary", "Value"],
       row_info: null,
       selected_space_view: null,
       selected_stack_view: null,
@@ -45,9 +47,9 @@ export default {
       const addr = parseInt(row.addr_begin)
 
       if (
-        this.memory_segment == 'kinstructions_memory' &&
-        addr >= parseInt(architecture.memory_layout[0].value) &&
-        addr <= parseInt(architecture.memory_layout[1].value)
+        this.memory_segment === "kinstructions_memory" &&
+        addr >= parseInt(memory_layout[0].value, 16) &&
+        addr <= parseInt(memory_layout[1].value, 16)
       ) {
         if (row.hide === true) {
           return false
@@ -57,17 +59,17 @@ export default {
       }
 
       if (
-        this.memory_segment == 'kdata_memory' &&
-        addr >= parseInt(architecture.memory_layout[2].value) &&
-        addr <= parseInt(architecture.memory_layout[3].value)
+        this.memory_segment === "kdata_memory" &&
+        addr >= parseInt(memory_layout[2].value, 16) &&
+        addr <= parseInt(memory_layout[3].value, 16)
       ) {
         return true
       }
 
       if (
-        this.memory_segment == 'instructions_memory' &&
-        addr >= parseInt(architecture.memory_layout[4].value) &&
-        addr <= parseInt(architecture.memory_layout[5].value)
+        this.memory_segment === "instructions_memory" &&
+        addr >= parseInt(memory_layout[4].value, 16) &&
+        addr <= parseInt(memory_layout[5].value, 16)
       ) {
         if (row.hide === true) {
           return false
@@ -77,44 +79,50 @@ export default {
       }
 
       if (
-        this.memory_segment == 'data_memory' &&
-        addr >= parseInt(architecture.memory_layout[6].value) &&
-        addr <= parseInt(architecture.memory_layout[7].value)
+        this.memory_segment === "data_memory" &&
+        addr >= parseInt(memory_layout[6].value, 16) &&
+        addr <= parseInt(memory_layout[7].value, 16)
       ) {
         return true
       }
 
       if (
-        this.memory_segment == 'stack_memory' &&
-        addr > parseInt(architecture.memory_layout[7].value)
+        this.memory_segment === "stack_memory" &&
+        addr > parseInt(memory_layout[7].value, 16)
       ) {
-        return Math.abs(addr - app._data.end_callee) < this._props.stack_total_list * 4
+        return Math.abs(addr - end_callee) < this.stack_total_list * 4
       }
+
+      return false
     },
 
     // TODO: gereric and include modal
     select_data_type(record, index) {
       this.row_info = { index: index, addr: record.addr - 3, size: record.size }
 
-      if (this.memory_segment == 'instructions_memory') {
+      if (this.memory_segment === "instructions_memory") {
         return
       }
 
-      if (this.memory_segment == 'data_memory') {
+      if (this.memory_segment === "data_memory") {
         if (this.check_tag_null(record.hex)) {
           //app.$refs['space_modal'].show(); // TODO: vue bidirectional updates
-          this.$root.$emit('bv::show::modal', 'space_modal')
+          this.$root.$emit("bv::show::modal", "space_modal")
         }
       }
 
-      if (this.memory_segment == 'stack_memory') {
+      if (this.memory_segment === "stack_memory") {
         //app.$refs['stack_modal'].show(); // TODO: vue bidirectional updates
-        this.$root.$emit('bv::show::modal', 'stack_modal')
+        this.$root.$emit("bv::show::modal", "stack_modal")
       }
     },
 
     change_space_view() {
-      creator_memory_update_space_view(this.selected_space_view, memory_hash[3], this.row_info)
+      creator_memory_update_space_view(
+        this.selected_space_view,
+        memory_hash[3],
+        this.row_info,
+      )
     },
 
     hide_space_modal() {
@@ -122,7 +130,11 @@ export default {
     },
 
     change_stack_view() {
-      creator_memory_update_row_view(this.selected_stack_view, memory_hash[4], this.row_info)
+      creator_memory_update_row_view(
+        this.selected_stack_view,
+        memory_hash[4],
+        this.row_info,
+      )
     },
 
     hide_stack_modal() {
@@ -131,7 +143,7 @@ export default {
 
     check_tag_null(record) {
       for (let i = 0; i < record.length; i++) {
-        if (record[i].tag != null) {
+        if (record[i].tag !== null) {
           return true
         }
       }
@@ -141,17 +153,20 @@ export default {
 
     get_classes(row) {
       return {
-        'h6Sm                ':
-          row.item.addr >= parseInt(architecture.memory_layout[4].value) &&
+        h6Sm:
+          row.item.addr >= parseInt(architecture.memory_layout[4].value, 16) &&
           row.item.addr <= architecture.memory_layout[7].value,
-        'h6Sm text-secondary ':
+        "h6Sm text-secondary ":
           row.item.addr < app._data.end_callee &&
-          Math.abs(row.item.addr - app._data.end_callee) < this._props.stack_total_list * 4,
-        'h6Sm text-success   ':
-          row.item.addr < app._data.begin_callee && row.item.addr >= app._data.end_callee,
-        'h6Sm text-blue-funny':
-          row.item.addr < app._data.begin_caller && row.item.addr >= app._data.end_caller,
-        'h6Sm                ': row.item.addr >= app._data.begin_caller,
+          Math.abs(row.item.addr - app._data.end_callee) <
+            this._props.stack_total_list * 4,
+        "h6Sm text-success   ":
+          row.item.addr < app._data.begin_callee &&
+          row.item.addr >= app._data.end_callee,
+        "h6Sm text-blue-funny":
+          row.item.addr < app._data.begin_caller &&
+          row.item.addr >= app._data.end_caller,
+        "h6Sm                ": row.item.addr >= app._data.begin_caller,
       }
     },
   },
@@ -159,7 +174,7 @@ export default {
     main_memory_items() {
       return Object.entries(this.main_memory)
         .sort((a, b) => a[0] - b[0])
-        .map((a) => a[1])
+        .map(a => a[1])
     },
   },
 }
@@ -195,13 +210,16 @@ export default {
 
             <template v-slot:cell(Tag)="row">
               <div v-for="item in architecture_hash">
-                <div v-for="item2 in architecture.components[item.index].elements">
+                <div
+                  v-for="item2 in architecture.components[item.index].elements"
+                >
                   <b-badge
                     variant="info"
                     class="border border-info shadow memoryTag"
                     v-if="
                       item2.properties.includes('global_pointer') &&
-                      (parseInt(item2.value) & 0xfffffffc) == (row.item.addr & 0xfffffffc)
+                      (parseInt(item2.value) & 0xfffffffc) ==
+                        (row.item.addr & 0xfffffffc)
                     "
                   >
                     {{ item2.name[0] }}
@@ -210,7 +228,8 @@ export default {
                     class="fas fa-long-arrow-alt-right"
                     v-if="
                       item2.properties.includes('global_pointer') &&
-                      (parseInt(item2.value) & 0xfffffffc) == (row.item.addr & 0xfffffffc)
+                      (parseInt(item2.value) & 0xfffffffc) ==
+                        (row.item.addr & 0xfffffffc)
                     "
                   />
                   <b-badge
@@ -218,7 +237,8 @@ export default {
                     class="border border-success shadow memoryTag"
                     v-if="
                       item2.properties.includes('program_counter') &&
-                      (parseInt(item2.value) & 0xfffffffc) == (row.item.addr & 0xfffffffc)
+                      (parseInt(item2.value) & 0xfffffffc) ==
+                        (row.item.addr & 0xfffffffc)
                     "
                   >
                     {{ item2.name[0] }}
@@ -227,7 +247,8 @@ export default {
                     class="fas fa-long-arrow-alt-right"
                     v-if="
                       item2.properties.includes('program_counter') &&
-                      (parseInt(item2.value) & 0xfffffffc) == (row.item.addr & 0xfffffffc)
+                      (parseInt(item2.value) & 0xfffffffc) ==
+                        (row.item.addr & 0xfffffffc)
                     "
                   />
                   <b-badge
@@ -236,7 +257,8 @@ export default {
                     v-if="
                       (item2.properties.includes('stack_pointer') ||
                         item2.properties.includes('frame_pointer')) &&
-                      (parseInt(item2.value) & 0xfffffffc) == (row.item.addr & 0xfffffffc)
+                      (parseInt(item2.value) & 0xfffffffc) ==
+                        (row.item.addr & 0xfffffffc)
                     "
                   >
                     {{ item2.name[0] }}
@@ -246,7 +268,8 @@ export default {
                     v-if="
                       (item2.properties.includes('stack_pointer') ||
                         item2.properties.includes('frame_pointer')) &&
-                      (parseInt(item2.value) & 0xfffffffc) == (row.item.addr & 0xfffffffc)
+                      (parseInt(item2.value) & 0xfffffffc) ==
+                        (row.item.addr & 0xfffffffc)
                     "
                   />
                 </div>
@@ -288,7 +311,10 @@ export default {
 
             <template v-slot:cell(Value)="row">
               <div class="pt-3">
-                <span v-bind:class="get_classes(row)" style="white-space: pre-wrap">
+                <span
+                  v-bind:class="get_classes(row)"
+                  style="white-space: pre-wrap"
+                >
                   {{ row.item.value }}
                   <span
                     class="fas fa-eye memoryValue"
@@ -313,11 +339,15 @@ export default {
               <span class="fas fa-search-plus" id="stack_funct_popover" />
             </span>
 
-            <span class="badge badge-white border border-secondary text-secondary mx-1 col">
+            <span
+              class="badge badge-white border border-secondary text-secondary mx-1 col"
+            >
               Free <br />
               stack
             </span>
-            <span class="badge badge-white border border-secondary text-success mx-1">
+            <span
+              class="badge badge-white border border-secondary text-success mx-1"
+            >
               Callee: <br />{{ callee_subrutine }}
             </span>
             <span
@@ -333,14 +363,22 @@ export default {
             >
               <b>&bull;&bull;&bull;<br />{{ track_stack_names.length - 2 }}</b>
             </span>
-            <span class="badge badge-white border border-secondary text-dark mx-1">
+            <span
+              class="badge badge-white border border-secondary text-dark mx-1"
+            >
               System <br />stack
             </span>
 
-            <b-popover target="stack_funct_popover" triggers="hover" placement="top">
+            <b-popover
+              target="stack_funct_popover"
+              triggers="hover"
+              placement="top"
+            >
               <span>0x000...</span>
               <b-list-group class="my-2">
-                <b-list-group-item v-for="(item, index) in track_stack_names.slice().reverse()">
+                <b-list-group-item
+                  v-for="(item, index) in track_stack_names.slice().reverse()"
+                >
                   <span class="text-success" v-if="index == 0">{{ item }}</span>
                   <span class="text-info" v-if="index == 1">{{ item }}</span>
                   <span class="text-dark" v-if="index > 1">{{ item }}</span>
@@ -360,10 +398,18 @@ export default {
       @hidden="hide_space_modal"
       @ok="change_space_view"
     >
-      <b-form-radio v-model="selected_space_view" value="sig_int">Signed Integer</b-form-radio>
-      <b-form-radio v-model="selected_space_view" value="unsig_int">Unsigned Integer</b-form-radio>
-      <b-form-radio v-model="selected_space_view" value="float">Float</b-form-radio>
-      <b-form-radio v-model="selected_space_view" value="char">Char</b-form-radio>
+      <b-form-radio v-model="selected_space_view" value="sig_int"
+        >Signed Integer</b-form-radio
+      >
+      <b-form-radio v-model="selected_space_view" value="unsig_int"
+        >Unsigned Integer</b-form-radio
+      >
+      <b-form-radio v-model="selected_space_view" value="float"
+        >Float</b-form-radio
+      >
+      <b-form-radio v-model="selected_space_view" value="char"
+        >Char</b-form-radio
+      >
     </b-modal>
 
     <b-modal
@@ -373,10 +419,18 @@ export default {
       @hidden="hide_stack_modal"
       @ok="change_stack_view"
     >
-      <b-form-radio v-model="selected_stack_view" value="sig_int">Signed Integer</b-form-radio>
-      <b-form-radio v-model="selected_stack_view" value="unsig_int">Unsigned Integer</b-form-radio>
-      <b-form-radio v-model="selected_stack_view" value="float">Float</b-form-radio>
-      <b-form-radio v-model="selected_stack_view" value="char">Char</b-form-radio>
+      <b-form-radio v-model="selected_stack_view" value="sig_int"
+        >Signed Integer</b-form-radio
+      >
+      <b-form-radio v-model="selected_stack_view" value="unsig_int"
+        >Unsigned Integer</b-form-radio
+      >
+      <b-form-radio v-model="selected_stack_view" value="float"
+        >Float</b-form-radio
+      >
+      <b-form-radio v-model="selected_stack_view" value="char"
+        >Char</b-form-radio
+      >
     </b-modal>
   </div>
 </template>
