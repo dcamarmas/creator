@@ -10,25 +10,22 @@ Linker script and memory map
 
                 0x0000000080000000                . = 0x80000000
 
-.text           0x0000000080000000       0x40
+.text           0x0000000080000000       0x1c
  *(.text)
- .text          0x0000000080000000       0x40 minimal.o
+ .text          0x0000000080000000       0x1c minimal.o
                 0x0000000080000000                _start
 
-.tohost         0x0000000080001000       0x48
+.data           0x000000008000001c        0x0
+ .data          0x000000008000001c        0x0 minimal.o
+
+.bss            0x000000008000001c        0x0
+ .bss           0x000000008000001c        0x0 minimal.o
+
+.tohost
  *(.tohost)
- .tohost        0x0000000080001000       0x48 minimal.o
-                0x0000000080001000                tohost
-                0x0000000080001040                fromhost
-                0x0000000080002048                . = (. + 0x1000)
+                0x000000008000101c                . = (. + 0x1000)
 LOAD minimal.o
 OUTPUT(minimal.elf elf64-littleriscv)
-
-.data           0x0000000080002048        0x0
- .data          0x0000000080002048        0x0 minimal.o
-
-.bss            0x0000000080002048        0x0
- .bss           0x0000000080002048        0x0 minimal.o
 
 .riscv.attributes
                 0x0000000000000000       0x5f

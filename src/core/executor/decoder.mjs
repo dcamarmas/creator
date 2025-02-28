@@ -1,5 +1,6 @@
 /*
- *  Copyright 2018-2025 Felix Garcia Carballeira, Alejandro Calderon Mateos, Diego Camarmas Alonso, Jorge Ramos Santana
+ *  Copyright 2018-2025 Felix Garcia Carballeira, Alejandro Calderon Mateos, Diego Camarmas Alonso,
+ *  Jorge Ramos Santana
  *
  *  This file is part of CREATOR.
  *
@@ -18,35 +19,61 @@
  *
  */
 
-import { isNull } from "node:util";
-import { instructions } from "../compiler/compiler.mjs";
 import { architecture } from "../core.mjs";
 import { logger } from "../utils/creator_logger.mjs";
 
-function get_register_binary(type, bin) {
-    for (let i = 0; i < architecture.components.length; i++) {
-        if (architecture.components[i].type == type) {
-            for (
-                let j = 0;
-                j < architecture.components[i].elements.length;
-                j++
-            ) {
-                const len = bin.length;
-                if (j.toString(2).padStart(len, "0") == bin) {
-                    return architecture.components[i].elements[j].name[0];
-                }
+// Bit position constants
+const WORD_SIZE = 32;
+const WORD_SIZE_MINUS_1 = WORD_SIZE - 1;
+const BINARY_BASE = 2;
+const DECIMAL_BASE = 10;
+
+/**
+ * Returns the register name given its binary representation and type
+ *
+ * @param {string} type - The register type (e.g., "int_registers", "fp_registers", "ctrl_registers")
+ * @param {string} binaryValue - The binary representation of the register
+ * @returns {string|null} - The register name or null if not found
+ */
+function get_register_binary(type, binaryValue) {
+    // Find the component that matches the requested register type
+    for (const component of architecture.components) {
+        if (component.type !== type) {
+            continue;
+        }
+
+        // Find the register whose index matches the binary value
+        for (
+            let registerIndex = 0;
+            registerIndex < component.elements.length;
+            registerIndex++
+        ) {
+            const registerBinaryValue = registerIndex
+                .toString(BINARY_BASE)
+                .padStart(binaryValue.length, "0");
+
+            if (registerBinaryValue === binaryValue) {
+                return component.elements[registerIndex].name[0];
             }
         }
     }
+
     return null;
 }
 
+/**
+ * Finds the position of the operation code field (co) within the instruction fields
+ *
+ * @param {Array} fields - Array of instruction fields
+ * @returns {Object|null} - An object with startbit and stopbit properties, or null if not found
+ */
 function findCoFieldPosition(fields) {
-    for (let y = 0; y < fields.length; y++) {
-        if (fields[y].type == "co") {
+    for (const field of fields) {
+        if (field.type === "co") {
             return {
-                startbit: 31 - parseInt(fields[y].startbit, 10),
-                stopbit: 32 - parseInt(fields[y].stopbit, 10),
+                startbit:
+                    WORD_SIZE_MINUS_1 - parseInt(field.startbit, DECIMAL_BASE),
+                stopbit: WORD_SIZE - parseInt(field.stopbit, DECIMAL_BASE),
             };
         }
     }
@@ -54,24 +81,35 @@ function findCoFieldPosition(fields) {
 }
 
 function checkCopFields(instruction, instructionExecParts) {
-    let numCop = 0;
-    let numCopCorrect = 0;
+    let numCopFields = 0;
+    let numMatchingCopFields = 0;
 
-    for (let j = 0; j < instruction.fields.length; j++) {
-        if (instruction.fields[j].type == "cop") {
-            numCop++;
-            if (
-                instruction.fields[j].valueField ==
-                instructionExecParts[0].substring(
-                    instruction.nwords * 31 - instruction.fields[j].startbit,
-                    instruction.nwords * 32 - instruction.fields[j].stopbit,
-                )
-            ) {
-                numCopCorrect++;
-            }
+    for (const field of instruction.fields) {
+        if (field.type !== "cop") {
+            continue;
+        }
+
+        numCopFields++;
+
+        const fieldValue = instructionExecParts[0].substring(
+            instruction.nwords * WORD_SIZE_MINUS_1 - field.startbit,
+            instruction.nwords * WORD_SIZE - field.stopbit,
+        );
+
+        if (field.valueField === fieldValue) {
+            numMatchingCopFields++;
         }
     }
-    return numCop === numCopCorrect;
+
+    return numCopFields === numMatchingCopFields;
+}
+
+function convertToSignedValue(binaryValue) {
+    let value = parseInt(binaryValue, BINARY_BASE);
+    if (binaryValue.charAt(0) === "1") {
+        value -= Math.pow(BINARY_BASE, binaryValue.length);
+    }
+    return value;
 }
 
 // eslint-disable-next-line max-lines-per-function
@@ -88,8 +126,8 @@ function processInstructionField(field, instructionExec, instruction_nwords) {
         case "DFP-Reg":
         case "Ctrl-Reg": {
             const bin = instructionExec.substring(
-                instruction_nwords * 31 - field.startbit,
-                instruction_nwords * 32 - field.stopbit,
+                instruction_nwords * WORD_SIZE_MINUS_1 - field.startbit,
+                instruction_nwords * WORD_SIZE - field.stopbit,
             );
             let convertedType = null;
             // The register type in the instruction is different from the one in the architecture
@@ -148,13 +186,15 @@ function processInstructionField(field, instructionExec, instruction_nwords) {
 
                 if (field.bits_order) {
                     for (const bit of field.bits_order) {
-                        binaryValue += instructionExec.charAt(31 - bit);
+                        binaryValue += instructionExec.charAt(
+                            WORD_SIZE_MINUS_1 - bit,
+                        );
                     }
                     // Now, check field.padding to see if we need to add padding
                     // We need to do this to support RISC-V's B-type instructions, which
                     // actually have a 13-bit immediate encoded in 12 bits, since the LSB is always 0.
                     // Honesly, this is a bit of a hack, but its needed to support RISC-V
-                    const padding = parseInt(field.padding, 10);
+                    const padding = parseInt(field.padding, DECIMAL_BASE);
                     if (padding > 0) {
                         binaryValue += "0".repeat(padding);
                     }
@@ -163,20 +203,71 @@ function processInstructionField(field, instructionExec, instruction_nwords) {
                     // For example, the immediate in RISC-V's S-type instructions
                     for (let i = 0; i < field.startbit.length; i++) {
                         binaryValue += instructionExec.substring(
-                            instruction_nwords * 31 - field.startbit[i],
-                            instruction_nwords * 32 - field.stopbit[i],
+                            instruction_nwords * WORD_SIZE_MINUS_1 -
+                                field.startbit[i],
+                            instruction_nwords * WORD_SIZE - field.stopbit[i],
                         );
                     }
                 }
-                value = parseInt(binaryValue, 2);
+                value = parseInt(binaryValue, BINARY_BASE);
+                // Signed immediates need to be sign-extended
+                if (
+                    field.type === "inm-signed" ||
+                    field.type === "offset_words" ||
+                    field.type === "offset_bytes"
+                ) {
+                    value = convertToSignedValue(binaryValue);
+                }
             } else {
                 // Handle contiguous case
-                // For example, the immediate in RISC-V's I and U-type instructions
-                const binaryValue = instructionExec.substring(
-                    instruction_nwords * 31 - field.startbit,
-                    instruction_nwords * 32 - field.stopbit,
-                );
-                value = parseInt(binaryValue, 2);
+                // For example, the immediate in RISC-V's I and U-type instructions (and J-type instructions!)
+                let binaryValue = "";
+                if (field.bits_order) {
+                    /*
+                     *  Funny thing about RISC-V:
+                     *   J-type instructions have a contiguous immediate,
+                     *   but the bits are not in order.
+                     *
+                     *    31     30-21      20     19-12    11-7     6-0
+                     *    ┌────┬───────────┬─────┬─────────┬───────┬─────────┐
+                     *    │imm │    imm    │ imm │   imm   │  rd   │ opcode  │
+                     *    │[20]│  [10:1]   │[11] │ [19:12] │       │         │
+                     *    └──┬─┴─────┬─────┴──┬──┴────┬────┴───┬───┴────┬────┘
+                     *       │       │        │       │        │        │
+                     *       1       10       1       8        5        7    bits = 32 bits = word size
+                     *
+                     *   Notice how the immediate is contiguous, but the bits are not in order.
+                     *   In this case, the mapping would be:
+                     *   imm[20] -> 31
+                     *   imm[19:12] -> 19-12
+                     *   imm[11] -> 20
+                     *   imm[10:1] -> 30-21
+                     *
+                     *   So bits_order would be [31, 19, 18, 17, 16, 15, 14, 13, 12, 20, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21]
+                     */
+                    for (const bit of field.bits_order) {
+                        binaryValue += instructionExec.charAt(
+                            WORD_SIZE_MINUS_1 - bit,
+                        );
+                    }
+                    const padding = parseInt(field.padding, DECIMAL_BASE);
+                    if (padding > 0) {
+                        binaryValue += "0".repeat(padding);
+                    }
+                } else {
+                    binaryValue = instructionExec.substring(
+                        instruction_nwords * WORD_SIZE_MINUS_1 - field.startbit,
+                        instruction_nwords * WORD_SIZE - field.stopbit,
+                    );
+                }
+                value = parseInt(binaryValue, BINARY_BASE);
+                if (
+                    field.type === "inm-signed" ||
+                    field.type === "offset_words" ||
+                    field.type === "offset_bytes"
+                ) {
+                    value = convertToSignedValue(binaryValue);
+                }
             }
             break;
         }
@@ -184,6 +275,31 @@ function processInstructionField(field, instructionExec, instruction_nwords) {
             logger.error("Unknown field type: " + field.type);
     }
     return value;
+}
+
+/**
+ * Parse signature definition and create regex for instruction matching
+ *
+ * @param {Object} instruction - The instruction object containing signature information
+ * @returns {Object} Object containing parsed signature elements
+ */
+function parseSignatureDefinition(instruction) {
+    let signatureDef = instruction.signature_definition.replace(
+        /[.*+?^${}()|[\]\\]/g,
+        "\\$&",
+    );
+    signatureDef = signatureDef.replace(/[fF][0-9]+/g, "(.*?)");
+    const signature = instruction.signature.replace(/,/g, " ");
+    const re = new RegExp(signatureDef + "$");
+    const signatureMatch = re.exec(signature);
+    const signatureRawMatch = re.exec(instruction.signatureRaw);
+
+    return {
+        signatureDef,
+        signature,
+        signatureMatch,
+        signatureRawMatch,
+    };
 }
 
 function decodeBinaryFormat(
@@ -194,7 +310,7 @@ function decodeBinaryFormat(
     const coPosition = findCoFieldPosition(instruction.fields);
     if (
         !coPosition ||
-        instruction.co !=
+        instruction.co !==
             instructionExecParts[0].substring(
                 coPosition.startbit,
                 coPosition.stopbit,
@@ -203,7 +319,7 @@ function decodeBinaryFormat(
         return null;
     }
 
-    if (instruction.cop != null && instruction.cop != "") {
+    if (instruction.cop !== null && instruction.cop !== "") {
         if (!checkCopFields(instruction, instructionExecParts)) {
             return null;
         }
@@ -228,14 +344,15 @@ function decodeBinaryFormat(
     }
 
     // Extract signature parts from decoded instruction
-    const signatureRaw = instruction.signatureRaw;
-    const signatureRawParts = signatureRaw.split(" ");
-    const signatureParts = instruction.signature.split(",");
+    const parsedSignature = parseSignatureDefinition(instruction);
 
     return {
+        signatureDef: parsedSignature.signatureDef,
         instruction_loaded,
-        signatureParts,
-        signatureRawParts,
+        signatureParts: Array.from(parsedSignature.signatureMatch).slice(1),
+        signatureRawParts: Array.from(parsedSignature.signatureRawMatch).slice(
+            1,
+        ),
     };
 }
 
@@ -248,27 +365,19 @@ function decodeAssemblyFormat(instruction, instructionExecParts) {
         return null;
     }
 
-    let signatureDef = instruction.signature_definition.replace(
-        /[.*+?^${}()|[\]\\]/g,
-        "\\$&",
-    );
-    signatureDef = signatureDef.replace(/[fF][0-9]+/g, "(.*?)");
+    const parsedSignature = parseSignatureDefinition(instruction);
 
-    const signature = instruction.signature.replace(/,/g, " ");
-    const re = new RegExp(signatureDef + "$");
-
-    const signatureMatch = re.exec(signature);
-    const signatureRawMatch = re.exec(instruction.signatureRaw);
-
-    if (!signatureMatch || !signatureRawMatch) {
+    if (!parsedSignature.signatureMatch || !parsedSignature.signatureRawMatch) {
         return null;
     }
 
     return {
         type: instruction.type,
-        signatureDef,
-        signatureParts: Array.from(signatureMatch).slice(1),
-        signatureRawParts: Array.from(signatureRawMatch).slice(1),
+        signatureDef: parsedSignature.signatureDef,
+        signatureParts: Array.from(parsedSignature.signatureMatch).slice(1),
+        signatureRawParts: Array.from(parsedSignature.signatureRawMatch).slice(
+            1,
+        ),
         auxDef: instruction.definition,
         nwords: instruction.nwords,
     };
@@ -276,25 +385,21 @@ function decodeAssemblyFormat(instruction, instructionExecParts) {
 
 export function decode_instruction(instructionExec) {
     const instructionExecParts = instructionExec.split(" ");
-    let decodedBinary;
-    let decodedAssembly;
-
     const isBinary = /^[01]+$/.test(instructionExecParts[0]);
 
-    // Try to decode each instruction format
-    for (const instruction of architecture.instructions) {
-        if (isBinary) {
-            decodedBinary = decodeBinaryFormat(
+    // Process based on instruction type (binary or assembly)
+    if (isBinary) {
+        // Try to decode binary format
+        for (const instruction of architecture.instructions) {
+            const decodedBinary = decodeBinaryFormat(
                 instruction,
                 instructionExec,
                 instructionExecParts,
             );
             if (decodedBinary) {
-                let signatureDef = instruction.signature_definition;
-                signatureDef = signatureDef.replace(/[fF][0-9]+/g, "(.*?)");
                 return {
                     type: instruction.type,
-                    signatureDef: signatureDef,
+                    signatureDef: decodedBinary.signatureDef,
                     signatureParts: decodedBinary.signatureParts,
                     signatureRawParts: decodedBinary.signatureRawParts,
                     instructionExec: decodedBinary.instruction_loaded,
@@ -305,20 +410,22 @@ export function decode_instruction(instructionExec) {
                     binary: true,
                 };
             }
-            continue; // Skip assembly decode for binary instructions
         }
-
-        decodedAssembly = decodeAssemblyFormat(
-            instruction,
-            instructionExecParts,
-        );
-        if (decodedAssembly) {
-            return {
-                ...decodedAssembly,
-                instructionExec,
+    } else {
+        // Try to decode assembly format
+        for (const instruction of architecture.instructions) {
+            const decodedAssembly = decodeAssemblyFormat(
+                instruction,
                 instructionExecParts,
-                binary: false,
-            };
+            );
+            if (decodedAssembly) {
+                return {
+                    ...decodedAssembly,
+                    instructionExec,
+                    instructionExecParts,
+                    binary: false,
+                };
+            }
         }
     }
 

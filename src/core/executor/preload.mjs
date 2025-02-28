@@ -22,12 +22,14 @@ import { architecture } from "../core.mjs";
 import { clean_string } from "../utils/utils.mjs";
 import { console_log, logger } from "../utils/creator_logger.mjs";
 
-// These two are used in the eval, but the linter doesn't know that
+// --------------------------------------------------------------
+// These two can be used used by the eval in buildInstructionPreload, but the linter doesn't know that
 import { instructions } from "../compiler/compiler.mjs";
 import {
     readRegister,
     writeRegister,
 } from "../register/registerOperations.mjs";
+// --------------------------------------------------------------
 
 export function handleIntOrCtrlReg(
     signaturePart,
@@ -221,7 +223,13 @@ export function processRegisterOperations(auxDef, signatureParts) {
 export function handleInstructionMatch(instructionExec, signatureDef) {
     const re = new RegExp(signatureDef + "$");
     const match = re.exec(instructionExec);
-    return match ? Array.from(match).slice(1) : [];
+    let instructionExecParts = [];
+
+    for (let j = 1; j < match.length; j++) {
+        instructionExecParts.push(match[j]);
+    }
+
+    return instructionExecParts;
 }
 
 export function collectDefinitions(
@@ -340,6 +348,21 @@ export function buildInstructionPreload(
             "\n" +
             "=====================================",
     );
+
+    // Will eval:
+    // logger.debug(
+    //     "instructions[" +
+    //         execution_index +
+    //         "].preload = function(elto) { " +
+    //         "   try {\n" +
+    //         finalDef.replace(/this./g, "elto.") +
+    //         "\n" +
+    //         "   }\n" +
+    //         "   catch(e){\n" +
+    //         "     throw e;\n" +
+    //         "   }\n" +
+    //         "}; ",
+    // );
 
     // Create preload function
     eval(

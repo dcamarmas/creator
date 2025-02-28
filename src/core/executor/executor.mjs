@@ -30,10 +30,7 @@ import {
     app,
 } from "../core.mjs";
 import { creator_memory_zerofill } from "../memory/memoryManager.mjs";
-import {
-    creator_memory_reset,
-    writeMemory,
-} from "../memory/memoryOperations.mjs";
+import { creator_memory_reset } from "../memory/memoryOperations.mjs";
 import { crex_findReg_bytag } from "../register/registerLookup.mjs";
 import {
     readRegister,
@@ -189,6 +186,49 @@ function handle_interruptions(draw) {
     writeRegister(0, i_reg.indexComp, i_reg.indexElem);
 }
 
+//Get execution index by PC
+function get_execution_index(draw) {
+    const pc_reg = crex_findReg_bytag("program_counter");
+    const pc_reg_value = readRegister(pc_reg.indexComp, pc_reg.indexElem);
+    let found_index = -1;
+    // The value of the program counter is DECIMAL
+    // The value of the Address is HEXADECIMAL
+    // When calling the BigInt function, the address is converted to DECIMAL
+    for (let i = 0; i < instructions.length; i++) {
+        // Mark current instruction and update execution index if PC matches
+        const address = BigInt(instructions[i].Address);
+        if (address === pc_reg_value) {
+            status.execution_index = i;
+            found_index = i;
+
+            logger.debug(
+                `Instruction Hidden Status: ${instructions[i].hide}`,
+                "DEBUG",
+            );
+            logger.debug(
+                `Current Execution Index: ${i} of ${instructions.length}`,
+                "DEBUG",
+            );
+            logger.debug(
+                `Instruction Address: ${instructions[i].Address}`,
+                "DEBUG",
+            );
+
+            if (!instructions[i].hide) {
+                draw.info.push(i);
+            }
+        } else if (!instructions[status.execution_index].hide) {
+            draw.space.push(i);
+        }
+    }
+
+    if (found_index === -1) {
+        logger.error("Execution index not found");
+    }
+
+    return found_index;
+}
+
 // eslint-disable-next-line max-lines-per-function
 function handle_next_instruction(draw, error) {
     if (status.execution_index === -1) {
@@ -203,7 +243,9 @@ function handle_next_instruction(draw, error) {
                 pc_reg.indexComp,
                 pc_reg.indexElem,
             );
-            if (parseInt(instructions[i].Address, 16) == pc_reg_value) {
+            // We're converting to BigInt AND to DECIMAL in the same line
+            const address = BigInt(instructions[i].Address);
+            if (address === pc_reg_value) {
                 status.execution_index = i;
                 draw.success.push(status.execution_index);
                 break;
@@ -297,7 +339,7 @@ function execute_instruction() {
         }
 
         // 3.4 Get execution index by PC
-        // const exec_index = get_execution_index(draw); TODO: This is used for the UI
+        const _exec_index = get_execution_index(draw); // TODO: Return value might be used in the UI
 
         // 3.5 Handle interruptions if any
         handle_interruptions(draw);
@@ -325,6 +367,10 @@ function execute_instruction() {
                 BigInt(nwords * word_size),
             0,
             0,
+        );
+        logger.debug(
+            "PC register updated to " +
+                readRegister(pc_reg.indexComp, pc_reg.indexElem),
         );
         logger.debug("auxDef: " + auxDef);
 
@@ -502,41 +548,6 @@ export function creator_executor_exit(error) {
 /*
  * Auxiliar functions
  */
-//Get execution index by PC
-function get_execution_index(draw) {
-    const pc_reg = crex_findReg_bytag("program_counter");
-    const pc_reg_value = readRegister(pc_reg.indexComp, pc_reg.indexElem);
-    let found_index = -1;
-
-    for (let i = 0; i < instructions.length; i++) {
-        // Mark current instruction and update execution index if PC matches
-        if (parseInt(instructions[i].Address, 16) === pc_reg_value) {
-            status.execution_index = i;
-            found_index = i;
-
-            logger.debug(
-                `Instruction Hidden Status: ${instructions[i].hide}`,
-                "DEBUG",
-            );
-            logger.debug(
-                `Current Execution Index: ${i} of ${instructions.length}`,
-                "DEBUG",
-            );
-            logger.debug(
-                `Instruction Address: 0x${instructions[i].Address}`,
-                "DEBUG",
-            );
-
-            if (!instructions[i].hide) {
-                draw.info.push(i);
-            }
-        } else if (!instructions[status.execution_index].hide) {
-            draw.space.push(i);
-        }
-    }
-
-    return found_index;
-}
 
 export function crex_show_notification(msg, level) {
     if (typeof window !== "undefined") show_notification(msg, level);

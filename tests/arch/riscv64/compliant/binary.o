@@ -4,7 +4,7 @@
       "Break": null,
       "Address": "0x80000000",
       "Label": "_start",
-      "loaded": "00000000000100000000000010010011",
+      "loaded": "00001011101100000000001010010011",
       "user": null,
       "_rowVariant": "",
       "visible": true,
@@ -14,7 +14,7 @@
       "Break": null,
       "Address": "0x80000004",
       "Label": "",
-      "loaded": "00000000000000000000110001100011",
+      "loaded": "00001011101100000000001100010011",
       "user": null,
       "_rowVariant": "",
       "visible": true
@@ -23,7 +23,7 @@
       "Break": null,
       "Address": "0x80000008",
       "Label": "",
-      "loaded": "00010010001100000000001100010011",
+      "loaded": "00001011101100000000001110010011",
       "user": null,
       "_rowVariant": "",
       "visible": true
@@ -32,7 +32,7 @@
       "Break": null,
       "Address": "0x8000000c",
       "Label": "",
-      "loaded": "00000000000000000000000000010011",
+      "loaded": "00001011101100000000111000010011",
       "user": null,
       "_rowVariant": "",
       "visible": true
@@ -41,7 +41,7 @@
       "Break": null,
       "Address": "0x80000010",
       "Label": "",
-      "loaded": "00000000000000000000000000010011",
+      "loaded": "00001011101100000000111010010011",
       "user": null,
       "_rowVariant": "",
       "visible": true
@@ -50,7 +50,7 @@
       "Break": null,
       "Address": "0x80000014",
       "Label": "",
-      "loaded": "00000000000000000000000000010011",
+      "loaded": "00001011101100000000111100010011",
       "user": null,
       "_rowVariant": "",
       "visible": true
@@ -58,87 +58,6 @@
     {
       "Break": null,
       "Address": "0x80000018",
-      "Label": "",
-      "loaded": "00000000000000111001001110010011",
-      "user": null,
-      "_rowVariant": "",
-      "visible": true
-    },
-    {
-      "Break": null,
-      "Address": "0x8000001c",
-      "Label": "target",
-      "loaded": "00110010000100101000001010010011",
-      "user": null,
-      "_rowVariant": "",
-      "visible": true
-    },
-    {
-      "Break": null,
-      "Address": "0x80000020",
-      "Label": "",
-      "loaded": "00000000000000000000010100010011",
-      "user": null,
-      "_rowVariant": "",
-      "visible": true
-    },
-    {
-      "Break": null,
-      "Address": "0x80000024",
-      "Label": "",
-      "loaded": "00000000010000000000000001101111",
-      "user": null,
-      "_rowVariant": "",
-      "visible": true
-    },
-    {
-      "Break": null,
-      "Address": "0x80000028",
-      "Label": "tohost_exit",
-      "loaded": "00000000000101010001010100010011",
-      "user": null,
-      "_rowVariant": "",
-      "visible": true
-    },
-    {
-      "Break": null,
-      "Address": "0x8000002c",
-      "Label": "",
-      "loaded": "00000000000101010110010100010011",
-      "user": null,
-      "_rowVariant": "",
-      "visible": true
-    },
-    {
-      "Break": null,
-      "Address": "0x80000030",
-      "Label": "",
-      "loaded": "00000000000000000001001010010111",
-      "user": null,
-      "_rowVariant": "",
-      "visible": true
-    },
-    {
-      "Break": null,
-      "Address": "0x80000034",
-      "Label": "",
-      "loaded": "11111101000000101000001010010011",
-      "user": null,
-      "_rowVariant": "",
-      "visible": true
-    },
-    {
-      "Break": null,
-      "Address": "0x80000038",
-      "Label": "",
-      "loaded": "00000000101000101010000000100011",
-      "user": null,
-      "_rowVariant": "",
-      "visible": true
-    },
-    {
-      "Break": null,
-      "Address": "0x8000003c",
       "Label": "",
       "loaded": "00000000000000000000000001101111",
       "user": null,
@@ -155,26 +74,6 @@
     {
       "tag": "_start",
       "addr": 2147483648,
-      "globl": true
-    },
-    {
-      "tag": "target",
-      "addr": 2147483676,
-      "globl": false
-    },
-    {
-      "tag": "tohost_exit",
-      "addr": 2147483688,
-      "globl": false
-    },
-    {
-      "tag": "fromhost",
-      "addr": 2147487808,
-      "globl": true
-    },
-    {
-      "tag": "tohost",
-      "addr": 2147487744,
       "globl": true
     }
   ]
