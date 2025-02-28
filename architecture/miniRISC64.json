@@ -46,8 +46,8 @@
         {
           "name": ["PC"],
           "nbits": "64",
-          "value": "2147483648",
-          "default_value": "2147483648",
+          "value": "0",
+          "default_value": "0",
           "properties": ["read", "write", "program_counter"]
         }
       ]
@@ -1954,7 +1954,9 @@
           "name": "inm",
           "type": "offset_bytes",
           "startbit": [31, 11],
-          "stopbit": [25, 7]
+          "stopbit": [25, 7],
+          "bits_order": [31, 7, 30, 29, 28, 27, 26, 25, 11, 10, 9, 8],
+          "padding": "1"
         },
         {
           "name": "rs2",
@@ -2127,7 +2129,7 @@
   "memory_layout": [
     {
       "name": "text start",
-      "value": "0x80000000"
+      "value": "0x00000000"
     },
     {
       "name": "text end",
@@ -2143,7 +2145,7 @@
     },
     {
       "name": "stack start",
-      "value": "0x8FFFFFF0"
+      "value": "0x8FFFFFFC"
     },
     {
       "name": "stack end",

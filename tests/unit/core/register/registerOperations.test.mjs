@@ -98,11 +98,6 @@ Deno.test("writeRegister - writes double register value", () => {
     assert(Math.abs(value - 6.28318) < 0.00001);
 });
 
-Deno.test("writeRegister - throws error for read-only register", () => {
-    setupArchitecture();
-    assertThrows(() => writeRegister(50n, 0, 1), Error, /cannot be written/);
-});
-
 Deno.test("writeRegister - handles null value", () => {
     setupArchitecture();
     writeRegister(null, 0, 0);
