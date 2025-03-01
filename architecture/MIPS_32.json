@@ -1724,7 +1724,7 @@
       "name": "bc",
       "type": "Unconditional bifurcation",
       "signature_definition": "F0 F1",
-      "signature": "bc,offset_words",
+      "signature": "bc,offset_bytes",
       "signatureRaw": "bc off",
       "co": "110010",
       "cop": "",
@@ -1741,18 +1741,19 @@
         },
         {
           "name": "off",
-          "type": "offset_words",
+          "type": "offset_bytes",
           "startbit": 25,
-          "stopbit": 0
+          "stopbit": 0,
+          "padding": 2
         }
       ],
-      "definition": "PC = PC + ((off << 6) >> 4);"
+      "definition": "PC = PC - 4 + off;"
     },
     {
       "name": "bc1eqz",
       "type": "Conditional bifurcation",
       "signature_definition": "F0 $F2 F3",
-      "signature": "bc1eqz,$SFP-Reg,offset_words",
+      "signature": "bc1eqz,$SFP-Reg,offset_bytes",
       "signatureRaw": "bc1eqz $ft off",
       "co": "010001",
       "cop": "01001",
@@ -1782,18 +1783,19 @@
         },
         {
           "name": "off",
-          "type": "offset_words",
+          "type": "offset_bytes",
           "startbit": 15,
-          "stopbit": 0
+          "stopbit": 0,
+          "padding": 2
         }
       ],
-      "definition": "if (ft == 0) { PC = PC + ((off << 16) >> 14) }"
+      "definition": "if (ft == 0) { PC = PC - 4 + off }"
     },
     {
       "name": "bc1f",
       "type": "Conditional bifurcation",
       "signature_definition": "F0 F2 F3",
-      "signature": "bc1f,inm-unsigned,offset_words",
+      "signature": "bc1f,inm-unsigned,offset_bytes",
       "signatureRaw": "bc1f cc off",
       "co": "010001",
       "cop": "0100000",
@@ -1823,9 +1825,10 @@
         },
         {
           "name": "off",
-          "type": "offset_words",
+          "type": "offset_bytes",
           "startbit": 15,
-          "stopbit": 0
+          "stopbit": 0,
+          "padding": 2
         },
         {
           "name": "cop",
@@ -1835,13 +1838,13 @@
           "valueField": "00"
         }
       ],
-      "definition": "if ((FCSR & (1 << ((cc == 0 ? 0 : cc+1) + 23))) == 0) {\n    PC=PC+((off << 16) >> 14)\n}"
+      "definition": "if ((FCSR & (1 << ((cc == 0 ? 0 : cc+1) + 23))) == 0) {\n    PC=PC-4+off\n}"
     },
     {
       "name": "bc1nez",
       "type": "Conditional bifurcation",
       "signature_definition": "F0 $F2 F3",
-      "signature": "bc1nez,$SFP-Reg,offset_words",
+      "signature": "bc1nez,$SFP-Reg,offset_bytes",
       "signatureRaw": "bc1nez $ft off",
       "co": "010001",
       "cop": "01101",
@@ -1871,9 +1874,10 @@
         },
         {
           "name": "off",
-          "type": "offset_words",
+          "type": "offset_bytes",
           "startbit": 15,
-          "stopbit": 0
+          "stopbit": 0,
+          "padding": 2
         }
       ],
       "definition": "if (ft != 0) { PC = PC + ((off << 16) >> 14) }"
@@ -1882,7 +1886,7 @@
       "name": "bc1t",
       "type": "Conditional bifurcation",
       "signature_definition": "F0 F2 F4",
-      "signature": "bc1t,inm-unsigned,offset_words",
+      "signature": "bc1t,inm-unsigned,offset_bytes",
       "signatureRaw": "bc1t cc off",
       "co": "010001",
       "cop": "0100001",
@@ -1919,12 +1923,13 @@
         },
         {
           "name": "off",
-          "type": "offset_words",
+          "type": "offset_bytes",
           "startbit": 15,
-          "stopbit": 0
+          "stopbit": 0,
+          "padding": 2
         }
       ],
-      "definition": "if ((FCSR & (1 << ((cc == 0 ? 0 : cc+1) + 23))) != 0) {\n    PC=PC+((off << 16) >> 14)\n}"
+      "definition": "if ((FCSR & (1 << ((cc == 0 ? 0 : cc+1) + 23))) != 0) {\n    PC=PC-4+off\n}"
     },
     {
       "name": "beq",
@@ -1936,7 +1941,7 @@
       "nwords": 1,
       "clk_cycles": 1,
       "signature_definition": "F0 $F1 $F2 F3",
-      "signature": "beq,$INT-Reg,$INT-Reg,offset_words",
+      "signature": "beq,$INT-Reg,$INT-Reg,offset_bytes",
       "signatureRaw": "beq $reg1 $reg2 off",
       "fields": [
         {
@@ -1959,18 +1964,19 @@
         },
         {
           "name": "off",
-          "type": "offset_words",
+          "type": "offset_bytes",
           "startbit": 15,
-          "stopbit": 0
+          "stopbit": 0,
+          "padding": 2
         }
       ],
-      "definition": "if (reg1 == reg2) { PC = PC + ((off << 16) >> 14) }"
+      "definition": "if (reg1 == reg2) { PC = PC - 4 + off }"
     },
     {
       "name": "bgez",
       "type": "Conditional bifurcation",
       "signature_definition": "F0 $F1 F3",
-      "signature": "bgez,$INT-Reg,offset_words",
+      "signature": "bgez,$INT-Reg,offset_bytes",
       "signatureRaw": "bgez $rs off",
       "co": "000001",
       "cop": "00001",
@@ -2000,18 +2006,19 @@
         },
         {
           "name": "off",
-          "type": "offset_words",
+          "type": "offset_bytes",
           "startbit": 15,
-          "stopbit": 0
+          "stopbit": 0,
+          "padding": 2
         }
       ],
-      "definition": "if (capi_uint2int(rs) >= 0) { PC = PC + ((off << 16) >> 14) }"
+      "definition": "if (capi_uint2int(rs) >= 0) { PC = PC - 4 + off }"
     },
     {
       "name": "bgezal",
       "type": "Function call",
       "signature_definition": "F0 $F1 F3",
-      "signature": "bgezal,$INT-Reg,offset_words",
+      "signature": "bgezal,$INT-Reg,offset_bytes",
       "signatureRaw": "bgezal $rs off",
       "co": "000001",
       "cop": "10001",
@@ -2043,18 +2050,19 @@
         },
         {
           "name": "off",
-          "type": "offset_words",
+          "type": "offset_bytes",
           "startbit": 15,
-          "stopbit": 0
+          "stopbit": 0,
+          "padding": 2
         }
       ],
-      "definition": "ra = PC;\n if (capi_uint2int(rs) >= 0)\n { PC = PC + ((off << 16) >> 14)\n capi_callconv_begin(rs); capi_drawstack_begin(rs); }"
+      "definition": "ra = PC;\n if (capi_uint2int(rs) >= 0)\n { PC = PC - 4 + off\n capi_callconv_begin(rs); capi_drawstack_begin(rs); }"
     },
     {
       "name": "bgtz",
       "type": "Conditional bifurcation",
       "signature_definition": "F0 $F1 F2",
-      "signature": "bgtz,$INT-Reg,offset_words",
+      "signature": "bgtz,$INT-Reg,offset_bytes",
       "signatureRaw": "bgtz $rs off",
       "co": "000111",
       "cop": "",
@@ -2077,18 +2085,19 @@
         },
         {
           "name": "off",
-          "type": "offset_words",
+          "type": "offset_bytes",
           "startbit": 15,
-          "stopbit": 0
+          "stopbit": 0,
+          "padding": 2
         }
       ],
-      "definition": "if (capi_uint2int(rs) > 0)\n { PC = PC + ((off << 16) >> 14) }"
+      "definition": "if (capi_uint2int(rs) > 0)\n { PC = PC - 4 + off }"
     },
     {
       "name": "blez",
       "type": "Conditional bifurcation",
       "signature_definition": "F0 $F1 F2",
-      "signature": "blez,$INT-Reg,offset_words",
+      "signature": "blez,$INT-Reg,offset_bytes",
       "signatureRaw": "blez $rs off",
       "co": "000110",
       "cop": null,
@@ -2111,18 +2120,19 @@
         },
         {
           "name": "off",
-          "type": "offset_words",
+          "type": "offset_bytes",
           "startbit": 15,
-          "stopbit": 0
+          "stopbit": 0,
+          "padding": 2
         }
       ],
-      "definition": "if (capi_uint2int(rs) <= 0)\n { PC = PC + ((off << 16) >> 14) }"
+      "definition": "if (capi_uint2int(rs) <= 0)\n { PC = PC - 4 + off }"
     },
     {
       "name": "bltz",
       "type": "Conditional bifurcation",
       "signature_definition": "F0 $F1 F3",
-      "signature": "bltz,$INT-Reg,offset_words",
+      "signature": "bltz,$INT-Reg,offset_bytes",
       "signatureRaw": "bltz $rs off",
       "co": "000001",
       "cop": "00000",
@@ -2152,12 +2162,13 @@
         },
         {
           "name": "off",
-          "type": "offset_words",
+          "type": "offset_bytes",
           "startbit": 15,
-          "stopbit": 0
+          "stopbit": 0,
+          "padding": 2
         }
       ],
-      "definition": "if (capi_uint2int(rs) < 0)\n { PC = PC + ((off << 16) >> 14) }"
+      "definition": "if (capi_uint2int(rs) < 0)\n { PC = PC - 4 + off }"
     },
     {
       "name": "bne",
@@ -2169,7 +2180,7 @@
       "nwords": 1,
       "clk_cycles": 1,
       "signature_definition": "F0 $F1 $F2 F3",
-      "signature": "bne,$INT-Reg,$INT-Reg,offset_words",
+      "signature": "bne,$INT-Reg,$INT-Reg,offset_bytes",
       "signatureRaw": "bne $reg1 $reg2 off",
       "fields": [
         {
@@ -2192,12 +2203,13 @@
         },
         {
           "name": "off",
-          "type": "offset_words",
+          "type": "offset_bytes",
           "startbit": 15,
-          "stopbit": 0
+          "stopbit": 0,
+          "padding": 2
         }
       ],
-      "definition": "if (reg1 != reg2)\n { PC = PC + ((off << 16) >> 14) }"
+      "definition": "if (reg1 != reg2)\n { PC = PC - 4 + off }"
     },
     {
       "name": "c.eq.d",
@@ -5648,14 +5660,14 @@
     {
       "name": "bc1t",
       "signature_definition": "bc1t F0",
-      "signature": "bc1t, offset_words",
+      "signature": "bc1t, offset_bytes",
       "signatureRaw": "bc1t off",
       "help": "",
       "nwords": 1,
       "fields": [
         {
           "name": "off",
-          "type": "offset_words"
+          "type": "offset_bytes"
         }
       ],
       "definition": "bc1t 0, off;"
@@ -5663,7 +5675,7 @@
     {
       "name": "beq",
       "signature_definition": "beq $F0 F1 F2",
-      "signature": "beq,$INT-Reg,inm-unsigned,offset_words",
+      "signature": "beq,$INT-Reg,inm-unsigned,offset_bytes",
       "signatureRaw": "beq $reg1 inm off",
       "help": "",
       "properties": [],
@@ -5679,7 +5691,7 @@
         },
         {
           "name": "off",
-          "type": "offset_words"
+          "type": "offset_bytes"
         }
       ],
       "definition": "ori $at, $zero, inm; beq $reg1, $at, off;"
@@ -5687,7 +5699,7 @@
     {
       "name": "beqz",
       "signature_definition": "beqz $F0 F1",
-      "signature": "beqz,$INT-Reg,offset_words",
+      "signature": "beqz,$INT-Reg,offset_bytes",
       "signatureRaw": "beqz $reg1 off",
       "help": "",
       "properties": [],
@@ -5699,7 +5711,7 @@
         },
         {
           "name": "off",
-          "type": "offset_words"
+          "type": "offset_bytes"
         }
       ],
       "definition": "beq $reg1, $zero, off;"
@@ -5707,7 +5719,7 @@
     {
       "name": "bge",
       "signature_definition": "bge $F0 $F1 F2",
-      "signature": "bge,$INT-Reg,$INT-Reg,offset_words",
+      "signature": "bge,$INT-Reg,$INT-Reg,offset_bytes",
       "signatureRaw": "bge $reg1 $reg2 off",
       "help": "",
       "properties": [],
@@ -5723,7 +5735,7 @@
         },
         {
           "name": "off",
-          "type": "offset_words"
+          "type": "offset_bytes"
         }
       ],
       "definition": "slt $at, $reg1, $reg2; beq $at, $zero, off;"
@@ -5731,7 +5743,7 @@
     {
       "name": "bge",
       "signature_definition": "bge $F0 F1 F2",
-      "signature": "bge,$INT-Reg,inm-unsigned,offset_words",
+      "signature": "bge,$INT-Reg,inm-unsigned,offset_bytes",
       "signatureRaw": "bge $reg1 inm off",
       "help": "",
       "properties": [],
@@ -5747,7 +5759,7 @@
         },
         {
           "name": "off",
-          "type": "offset_words"
+          "type": "offset_bytes"
         }
       ],
       "definition": "slti $at, $reg1, inm; beq $at, $zero, off;"
@@ -5755,7 +5767,7 @@
     {
       "name": "bgeu",
       "signature_definition": "bgeu $F0 $F1 F2",
-      "signature": "bgeu,$INT-Reg,$INT-Reg,offset_words",
+      "signature": "bgeu,$INT-Reg,$INT-Reg,offset_bytes",
       "signatureRaw": "bgeu $reg1 $reg2 off",
       "help": "",
       "properties": [],
@@ -5771,7 +5783,7 @@
         },
         {
           "name": "off",
-          "type": "offset_words"
+          "type": "offset_bytes"
         }
       ],
       "definition": "sltu $at, $reg1, $reg2; beq $at, $zero, off;"
@@ -5779,7 +5791,7 @@
     {
       "name": "bgeu",
       "signature_definition": "bgeu $F0 F1 F2",
-      "signature": "bgeu,$INT-Reg,inm-unsigned,offset_words",
+      "signature": "bgeu,$INT-Reg,inm-unsigned,offset_bytes",
       "signatureRaw": "bgeu $reg1 inm off",
       "help": "",
       "properties": [],
@@ -5795,7 +5807,7 @@
         },
         {
           "name": "off",
-          "type": "offset_words"
+          "type": "offset_bytes"
         }
       ],
       "definition": "sltiu $at, $reg1, inm; beq $at, $zero, off;"
@@ -5803,7 +5815,7 @@
     {
       "name": "bgt",
       "signature_definition": "bgt $F0 $F1 F2",
-      "signature": "bgt,$INT-Reg,$INT-Reg,offset_words",
+      "signature": "bgt,$INT-Reg,$INT-Reg,offset_bytes",
       "signatureRaw": "bgt $reg1 $reg2 off",
       "help": "",
       "properties": [],
@@ -5819,7 +5831,7 @@
         },
         {
           "name": "off",
-          "type": "offset_words"
+          "type": "offset_bytes"
         }
       ],
       "definition": "slt $at, $reg2, $reg1; bne $at, $zero, off;"
@@ -5827,7 +5839,7 @@
     {
       "name": "bgt",
       "signature_definition": "bgt $F0 F1 F2",
-      "signature": "bgt,$INT-Reg,inm-unsigned,offset_words",
+      "signature": "bgt,$INT-Reg,inm-unsigned,offset_bytes",
       "signatureRaw": "bgt $reg1 inm off",
       "help": "",
       "properties": [],
@@ -5843,7 +5855,7 @@
         },
         {
           "name": "off",
-          "type": "offset_words"
+          "type": "offset_bytes"
         }
       ],
       "definition": "addi $at, $zero, inm; addi $at, $at, 1; slt $at, $reg1, $at; beq $at, $zero, off;"
@@ -5851,7 +5863,7 @@
     {
       "name": "bgtu",
       "signature_definition": "bgtu $F0 $F1 F2",
-      "signature": "bgtu,$INT-Reg,$INT-Reg,offset_words",
+      "signature": "bgtu,$INT-Reg,$INT-Reg,offset_bytes",
       "signatureRaw": "bgtu $reg1 $reg2 off",
       "help": "",
       "properties": [],
@@ -5867,7 +5879,7 @@
         },
         {
           "name": "off",
-          "type": "offset_words"
+          "type": "offset_bytes"
         }
       ],
       "definition": "sltu $at, $reg2, $reg1; bne $at, $zero, off;"
@@ -5875,7 +5887,7 @@
     {
       "name": "bgtu",
       "signature_definition": "bgtu $F0 F1 F2",
-      "signature": "bgtu,$INT-Reg,inm-unsigned,offset_words",
+      "signature": "bgtu,$INT-Reg,inm-unsigned,offset_bytes",
       "signatureRaw": "bgtu $reg1 inm off",
       "help": "",
       "properties": [],
@@ -5891,7 +5903,7 @@
         },
         {
           "name": "off",
-          "type": "offset_words"
+          "type": "offset_bytes"
         }
       ],
       "definition": "ori $at, $zero, inm; beq $at, $reg1, off; sltu $at, $reg1, $at;"
@@ -5899,7 +5911,7 @@
     {
       "name": "ble",
       "signature_definition": "ble $F0 $F1 F2",
-      "signature": "ble,$INT-Reg,$INT-Reg,offset_words",
+      "signature": "ble,$INT-Reg,$INT-Reg,offset_bytes",
       "signatureRaw": "ble $reg1 $reg2 off",
       "help": "",
       "properties": [],
@@ -5915,7 +5927,7 @@
         },
         {
           "name": "off",
-          "type": "offset_words"
+          "type": "offset_bytes"
         }
       ],
       "definition": "slt $at, $reg2, $reg1; beq $at, $zero, off;"
@@ -5923,7 +5935,7 @@
     {
       "name": "ble",
       "signature_definition": "ble $F0 F1 F2",
-      "signature": "ble,$INT-Reg,inm-unsigned,offset_words",
+      "signature": "ble,$INT-Reg,inm-unsigned,offset_bytes",
       "signatureRaw": "ble $reg1 inm off",
       "help": "",
       "properties": [],
@@ -5939,7 +5951,7 @@
         },
         {
           "name": "off",
-          "type": "offset_words"
+          "type": "offset_bytes"
         }
       ],
       "definition": "addi $at, $zero, inm; addi $at, $at, 1; slti $at, $reg1, inm; bne $at, $zero, off;"
@@ -5947,7 +5959,7 @@
     {
       "name": "bleu",
       "signature_definition": "bleu $F0 $F1 F2",
-      "signature": "bleu,$INT-Reg,$INT-Reg,offset_words",
+      "signature": "bleu,$INT-Reg,$INT-Reg,offset_bytes",
       "signatureRaw": "bleu $reg1 $reg2 off",
       "help": "",
       "properties": [],
@@ -5963,7 +5975,7 @@
         },
         {
           "name": "off",
-          "type": "offset_words"
+          "type": "offset_bytes"
         }
       ],
       "definition": "sltu $at, $reg2, $reg1; beq $at, $zero, off;"
@@ -5971,7 +5983,7 @@
     {
       "name": "bleu",
       "signature_definition": "bleu $F0 F1 F2",
-      "signature": "bleu,$INT-Reg,inm-unsigned,offset_words",
+      "signature": "bleu,$INT-Reg,inm-unsigned,offset_bytes",
       "signatureRaw": "bleu $reg1 inm off",
       "help": "",
       "properties": [],
@@ -5987,7 +5999,7 @@
         },
         {
           "name": "off",
-          "type": "offset_words"
+          "type": "offset_bytes"
         }
       ],
       "definition": "ori $at, $zero, inm; beq $at, $reg1, off; sltu $at, $reg1, $at; bne $at, $zero, off;"
@@ -5995,7 +6007,7 @@
     {
       "name": "blt",
       "signature_definition": "blt $F0 $F1 F2",
-      "signature": "blt,$INT-Reg,$INT-Reg,offset_words",
+      "signature": "blt,$INT-Reg,$INT-Reg,offset_bytes",
       "signatureRaw": "blt $reg1 $reg2 off",
       "help": "",
       "properties": [],
@@ -6011,7 +6023,7 @@
         },
         {
           "name": "off",
-          "type": "offset_words"
+          "type": "offset_bytes"
         }
       ],
       "definition": "slt $at, $reg1, $reg2; bne $at, $zero, off;"
@@ -6019,7 +6031,7 @@
     {
       "name": "blt",
       "signature_definition": "blt $F0 F1 F2",
-      "signature": "blt,$INT-Reg,inm-unsigned,offset_words",
+      "signature": "blt,$INT-Reg,inm-unsigned,offset_bytes",
       "signatureRaw": "blt $reg1 inm off",
       "help": "",
       "properties": [],
@@ -6035,7 +6047,7 @@
         },
         {
           "name": "off",
-          "type": "offset_words"
+          "type": "offset_bytes"
         }
       ],
       "definition": "slti $at, $reg1, inm; bne $at, $zero, off;"
@@ -6043,7 +6055,7 @@
     {
       "name": "bltu",
       "signature_definition": "bltu $F0 $F1 F2",
-      "signature": "bltu,$INT-Reg,$INT-Reg,offset_words",
+      "signature": "bltu,$INT-Reg,$INT-Reg,offset_bytes",
       "signatureRaw": "bltu $reg1 $reg2 off",
       "help": "",
       "properties": [],
@@ -6059,7 +6071,7 @@
         },
         {
           "name": "off",
-          "type": "offset_words"
+          "type": "offset_bytes"
         }
       ],
       "definition": "sltu $at, $reg1, $reg2; bne $at, $zero, off;"
@@ -6067,7 +6079,7 @@
     {
       "name": "bltu",
       "signature_definition": "bltu $F0 F1 F2",
-      "signature": "bltu,$INT-Reg,inm-unsigned,offset_words",
+      "signature": "bltu,$INT-Reg,inm-unsigned,offset_bytes",
       "signatureRaw": "bltu $reg1 inm off",
       "help": "",
       "properties": [],
@@ -6083,7 +6095,7 @@
         },
         {
           "name": "off",
-          "type": "offset_words"
+          "type": "offset_bytes"
         }
       ],
       "definition": "sltiu $at, $reg1, off; bne $at, $zero, off;"
@@ -6091,7 +6103,7 @@
     {
       "name": "bne",
       "signature_definition": "bne $F0 F1 F2",
-      "signature": "bne,$INT-Reg,inm-unsigned,offset_words",
+      "signature": "bne,$INT-Reg,inm-unsigned,offset_bytes",
       "signatureRaw": "bne $reg1 inm off",
       "help": "",
       "properties": [],
@@ -6107,7 +6119,7 @@
         },
         {
           "name": "off",
-          "type": "offset_words"
+          "type": "offset_bytes"
         }
       ],
       "definition": "ori $at, $zero, inm; bne $reg1, $at, off;"
@@ -6115,7 +6127,7 @@
     {
       "name": "bnez",
       "signature_definition": "bnez $F0 F1",
-      "signature": "bnez,$INT-Reg,offset_words",
+      "signature": "bnez,$INT-Reg,offset_bytes",
       "signatureRaw": "bnez $reg1 off",
       "help": "",
       "properties": [],
@@ -6127,7 +6139,7 @@
         },
         {
           "name": "off",
-          "type": "offset_words"
+          "type": "offset_bytes"
         }
       ],
       "definition": "bne $reg1, $zero, off;"
