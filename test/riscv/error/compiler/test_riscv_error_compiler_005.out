@@ -1,6 +1,6 @@
 
 
-[E10] Error: Field is too small to contain value `291`
+[E10] Error: Value `291` is outside of the valid range of the field
    ╭─[assembly:7:19]
    │
  7 │     a:      .byte 0x123
