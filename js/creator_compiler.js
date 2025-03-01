@@ -151,7 +151,8 @@ function assembly_compiler(library)
         const labels_json = JSON.stringify(library_labels);
 
 
-        let library_offset = 0;
+        const text_address = parseInt(architecture.memory_layout[0].value);
+        let addr = text_address;
         const library_instructions = update_binary.instructions_binary?.length ?? 0;
         for(var i = 0; i < library_instructions; i++){
           const instruction = update_binary.instructions_binary[i];
@@ -163,8 +164,9 @@ function assembly_compiler(library)
           instruction.Label = label.filter(x => x in library_labels)
           instruction.hide = !(i === 0 || instruction.Label.length > 0);
           instructions.push(instruction);
-          library_offset = parseInt(instruction.Address, 16) + Math.ceil(instruction.loaded.length / 8);
+          addr = parseInt(instruction.Address, 16) + Math.ceil(instruction.loaded.length / 8);
         }
+        library_offset = addr - text_address;
 
         /*Allocation of memory addresses*/
         architecture.memory_layout[4].value = backup_stack_address;
