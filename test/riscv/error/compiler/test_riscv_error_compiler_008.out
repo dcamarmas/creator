@@ -7,7 +7,7 @@
    │      ─────┬────  
    │           ╰────── This expression has value 305419896
    │ 
-   │ Note: Allowed range is [-2048, 2047]
+   │ Note: Allowed range is [-4096, 4095]
 ───╯
 
 Not executed

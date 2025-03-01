@@ -238,7 +238,7 @@ function execute_instruction ( )
                 }
 
                 // value = get_number_binary(bin) ;
-                value     = parseInt(bin, 2).toString(16) ;
+                value     = (parseInt(bin, 2) << architecture.instructions[i].fields[f].padding).toString(16);
                 value_len = Math.abs(instruction_fields[f].startbit - instruction_fields[f].stopbit) ;
                 value     = '0x' + value.padStart(value_len/4, '0') ;
                 break; 
