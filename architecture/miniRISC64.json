@@ -1953,10 +1953,9 @@
         {
           "name": "inm",
           "type": "offset_bytes",
-          "startbit": [31, 11],
-          "stopbit": [25, 7],
-          "bits_order": [31, 7, 30, 29, 28, 27, 26, 25, 11, 10, 9, 8],
-          "padding": "1"
+          "startbit": [31, 7, 30, 11],
+          "stopbit": [31, 7, 25, 8],
+          "padding": 1
         },
         {
           "name": "rs2",

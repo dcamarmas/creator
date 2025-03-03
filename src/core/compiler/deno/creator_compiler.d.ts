@@ -4,9 +4,9 @@
  * Method used to render colors in error messages
  */
 export enum Color {
-  HTML = 0,
-  ANSI = 1,
-  NoColor = 2,
+  Html = 0,
+  Ansi = 1,
+  Off = 2,
 }
 /**
  * General category of a compiled data element

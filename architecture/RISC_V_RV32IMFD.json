@@ -782,7 +782,7 @@
           "type": "offset_bytes",
           "startbit": [31, 7, 30, 11],
           "stopbit": [31, 7, 25, 8],
-          "padding": "1"
+          "padding": 1
         },
         {
           "name": "rs2",
@@ -797,7 +797,7 @@
           "stopbit": 15
         }
       ],
-      "definition": "if (rs1 === rs2)\n PC = PC + inm; ",
+      "definition": "if (rs1 === rs2)\n PC = PC + inm - 4n; ",
       "separated": [false, false, true, false, false],
       "help": ""
     },
@@ -823,7 +823,7 @@
           "type": "offset_bytes",
           "startbit": [31, 7, 30, 11],
           "stopbit": [31, 7, 25, 8],
-          "padding": "1"
+          "padding": 1
         },
         {
           "name": "rs2",
@@ -845,7 +845,7 @@
           "valueField": "101"
         }
       ],
-      "definition": "if (capi_uint2int(rs1) >= capi_uint2int(rs2))\n PC = PC + inm;",
+      "definition": "if (capi_uint2int(rs1) >= capi_uint2int(rs2))\n PC = PC + inm - 4n;",
       "separated": [false, true, false, false, false],
       "help": ""
     },
@@ -871,7 +871,7 @@
           "type": "offset_bytes",
           "startbit": [31, 7, 30, 11],
           "stopbit": [31, 7, 25, 8],
-          "padding": "1"
+          "padding": 1
         },
         {
           "name": "rs2",
@@ -893,7 +893,7 @@
           "valueField": "111"
         }
       ],
-      "definition": "if (capi_int2uint(rs1) > capi_int2uint(rs2))\n PC = PC + inm;",
+      "definition": "if (capi_int2uint(rs1) > capi_int2uint(rs2))\n PC = PC + inm - 4n;",
       "separated": [false, true, false, false, false],
       "help": ""
     },
@@ -919,7 +919,7 @@
           "type": "offset_bytes",
           "startbit": [31, 7, 30, 11],
           "stopbit": [31, 7, 25, 8],
-          "padding": "1"
+          "padding": 1
         },
         {
           "name": "rs2",
@@ -941,7 +941,7 @@
           "valueField": "100"
         }
       ],
-      "definition": "if (capi_uint2int(rs1) < capi_uint2int(rs2))\n PC = PC + inm;",
+      "definition": "if (capi_uint2int(rs1) < capi_uint2int(rs2))\n PC = PC + inm - 4n;",
       "separated": [false, true, false, false, false],
       "help": ""
     },
@@ -967,7 +967,7 @@
           "type": "offset_bytes",
           "startbit": [31, 7, 30, 11],
           "stopbit": [31, 7, 25, 8],
-          "padding": "1"
+          "padding": 1
         },
         {
           "name": "rs2",
@@ -989,7 +989,7 @@
           "valueField": "110"
         }
       ],
-      "definition": "if (capi_int2uint(rs1) < capi_int2uint(rs2))\n PC = PC + inm;",
+      "definition": "if (capi_int2uint(rs1) < capi_int2uint(rs2))\n PC = PC + inm - 4n;",
       "separated": [false, true, false, false, false],
       "help": ""
     },
@@ -1015,7 +1015,7 @@
           "type": "offset_bytes",
           "startbit": [31, 7, 30, 11],
           "stopbit": [31, 7, 25, 8],
-          "padding": "1"
+          "padding": 1
         },
         {
           "name": "rs2",
@@ -1037,7 +1037,7 @@
           "valueField": "001"
         }
       ],
-      "definition": "if (rs1 !== rs2)\n PC = PC + inm;",
+      "definition": "if (rs1 !== rs2)\n PC = PC + inm - 4n;",
       "separated": [false, true, false, false, false],
       "help": ""
     },
@@ -3842,7 +3842,7 @@
           "type": "offset_bytes",
           "startbit": [31, 19, 20, 30],
           "stopbit": [31, 12, 20, 21],
-          "padding": "1"
+          "padding": 1
         },
         {
           "name": "rd",
@@ -3851,7 +3851,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = PC;\n PC = PC + inm;\n capi_callconv_begin(inm); capi_drawstack_begin(inm);",
+      "definition": "rd = PC;\n PC = PC + inm - 4n;\n capi_callconv_begin(inm); capi_drawstack_begin(inm);",
       "separated": [false, false, false]
     },
     {
