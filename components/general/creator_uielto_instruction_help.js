@@ -82,4 +82,71 @@
                 '</b-sidebar'
   }
 
+
+  var uielto_creatino_help = {
+    
+    props:      {
+                  id:                       { type: String, required: true },
+                  architecture_name:        { type: String, required: true },
+                  architecture:             { type: Object, required: true },
+                  architecture_guide:       { type: String, required: true },
+                  instruction_help_size:    { type: Object, required: true }
+                   
+                },
+
+    data:       function () {
+                  return {
+                    //Help Filter
+                    instHelpFilter: null,
+
+                    //Help table
+                    insHelpFields: ['name'],
+
+                    arduinoJson: [
+                      { name: 'cr_initArduino', help: 'Starts Arduino functions' },
+                      { name: 'cr_resetArduino', help: 'Resets Arduino board' }
+                    ]
+                  }
+                },
+
+    methods:   {
+                  get_width(){
+                    return this._props.instruction_help_size + "vw"
+                  }
+                },
+
+    template:   '<b-sidebar :id="id" sidebar-class="border-left border-info px-3 py-2" right shadow' + 
+                '           title="Arduino functions Help"' +
+                '           :width="get_width()">' +
+                ' ' +
+                ' <b-form-input id="filter-input"' +
+                '               v-model="instHelpFilter"' +
+                '               type="search"' +
+                '               placeholder="Search instruction"' +
+                '               size=sm' +
+                ' ></b-form-input>' +
+                ' ' +
+                ' <br>' +
+                ' <a v-if="architecture_guide !=\'\'" target="_blank" :href="architecture_guide"><span class="fas fa-file-pdf"></span> {{architecture_name}} Guide</a>' +
+                ' <br>' +
+                ' ' +
+                ' <b-table small :items="arduinoJson" ' +
+                '                :fields="insHelpFields" ' +
+                '                class="text-left help-scroll-y my-3"' +
+                '                :filter="instHelpFilter"' +
+                '                thead-class="d-none">' +
+                ' ' +
+                '   <template v-slot:cell(name)="row">' +
+                '     <h4>{{row.item.name}}</h4>' +
+                '     <em>{{row.item.signatureRaw}}</em>' +
+                '     <br>' +
+                '     {{row.item.help}}' +
+                '   </template>' +
+                ' ' +
+                ' </b-table>' +
+                ' ' +
+                '</b-sidebar'
+  }
+
+  Vue.component('sidebar-creatino_help', uielto_creatino_help) ;
   Vue.component('sidebar-instruction-help', uielto_instruction_help) ;

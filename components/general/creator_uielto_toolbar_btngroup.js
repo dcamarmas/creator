@@ -720,5 +720,5 @@
             '</b-button>' + 
             ' ' +
             '<!-- Information popover -->' +
-            '<popover-info target="info" show_instruction_help="true"></popover-info>'
+            '<popover-info target="info" show_instruction_help="true" show_creatino_help="true"></popover-info>'
   }
