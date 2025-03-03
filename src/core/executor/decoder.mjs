@@ -112,6 +112,27 @@ function convertToSignedValue(binaryValue) {
     return value;
 }
 
+/**
+ * Computes the bits_order array from startbit and stopbit arrays
+ *
+ * @param {Array<number>} startbit - Array of starting bit positions
+ * @param {Array<number>} stopbit - Array of stopping bit positions
+ * @returns {Array<number>} - Array of bit positions in order
+ */
+function computeBitsOrder(startbit, stopbit) {
+    const bitsOrder = [];
+
+    for (let i = 0; i < startbit.length; i++) {
+        // For each range [stopbit[i], startbit[i]], add all bits in the range
+        // Note: In the architecture spec, startbit >= stopbit
+        for (let bit = startbit[i]; bit >= stopbit[i]; bit--) {
+            bitsOrder.push(bit);
+        }
+    }
+
+    return bitsOrder;
+}
+
 // eslint-disable-next-line max-lines-per-function
 function processInstructionField(field, instructionExec, instruction_nwords) {
     let value = null;
@@ -158,7 +179,7 @@ function processInstructionField(field, instructionExec, instruction_nwords) {
             if (Array.isArray(field.startbit)) {
                 let binaryValue = "";
                 /*
-                 *  bits_order maps the bits in the immediate to the bits in the instruction, in order
+                 *  startbit and stopbit map the bits in the immediate to the bits in the instruction, in order
                  *  RISC-V example (B-type instruction):
                  *
                  *  31     30-25    24-20   19-15   14-12   11-8    7      6-0
@@ -169,6 +190,9 @@ function processInstructionField(field, instructionExec, instruction_nwords) {
                  *     │      │         │       │       │      │             │
                  *     1      6         5       5       3      4       1     7    bits = 32 bits = word size
                  *
+                 *  startbit = [31, 7, 30, 11]
+                 *  stopbit = [31, 7, 25, 8]
+                 *
                  *  Notice how the immediate is all over the place, and not contiguous.
                  *
                  *  In this case, the mapping would be:
@@ -177,38 +201,34 @@ function processInstructionField(field, instructionExec, instruction_nwords) {
                  *  imm[10:5] -> 30-25
                  *  imm[4:1] -> 11-8
                  *
-                 *  So bits_order would be [31, 7, 30, 29, 28, 27, 26, 25, 11, 10, 9, 8]
+                 *  So bitsOrder would be [31, 7, 30, 29, 28, 27, 26, 25, 11, 10, 9, 8]
                  *  And padding would be 1, since the LSB is always 0
                  *  (see RISC-V spec, section 2.3 and
                  *  https://stackoverflow.com/questions/58414772/why-are-risc-v-s-b-and-u-j-instruction-types-encoded-in-this-way
                  *  for more information)
+                 *
+                 *  The above example is for RISC-V's B-type instructions, but the same
+                 *  logic applies to J-type instructions, even though the immediate is contiguous.
                  */
+                const bitsOrder = computeBitsOrder(
+                    field.startbit,
+                    field.stopbit,
+                );
 
-                if (field.bits_order) {
-                    for (const bit of field.bits_order) {
-                        binaryValue += instructionExec.charAt(
-                            WORD_SIZE_MINUS_1 - bit,
-                        );
-                    }
-                    // Now, check field.padding to see if we need to add padding
-                    // We need to do this to support RISC-V's B-type instructions, which
-                    // actually have a 13-bit immediate encoded in 12 bits, since the LSB is always 0.
-                    // Honesly, this is a bit of a hack, but its needed to support RISC-V
-                    const padding = parseInt(field.padding, DECIMAL_BASE);
-                    if (padding > 0) {
-                        binaryValue += "0".repeat(padding);
-                    }
-                } else {
-                    // This assumes that the immediate is not contiguous, but the bits are in order
-                    // For example, the immediate in RISC-V's S-type instructions
-                    for (let i = 0; i < field.startbit.length; i++) {
-                        binaryValue += instructionExec.substring(
-                            instruction_nwords * WORD_SIZE_MINUS_1 -
-                                field.startbit[i],
-                            instruction_nwords * WORD_SIZE - field.stopbit[i],
-                        );
-                    }
+                for (const bit of bitsOrder) {
+                    binaryValue += instructionExec.charAt(
+                        WORD_SIZE_MINUS_1 - bit,
+                    );
                 }
+                // Now, check field.padding to see if we need to add padding
+                // We need to do this to support RISC-V's B-type instructions, which
+                // actually have a 13-bit immediate encoded in 12 bits, since the LSB is always 0.
+                // Honesly, this is a bit of a hack, but its needed to support RISC-V
+                const padding = parseInt(field.padding, DECIMAL_BASE);
+                if (padding > 0) {
+                    binaryValue += "0".repeat(padding);
+                }
+
                 value = parseInt(binaryValue, BINARY_BASE);
                 // Signed immediates need to be sign-extended
                 if (
@@ -219,47 +239,14 @@ function processInstructionField(field, instructionExec, instruction_nwords) {
                     value = convertToSignedValue(binaryValue);
                 }
             } else {
-                // Handle contiguous case
-                // For example, the immediate in RISC-V's I and U-type instructions (and J-type instructions!)
-                let binaryValue = "";
-                if (field.bits_order) {
-                    /*
-                     *  Funny thing about RISC-V:
-                     *   J-type instructions have a contiguous immediate,
-                     *   but the bits are not in order.
-                     *
-                     *    31     30-21      20     19-12    11-7     6-0
-                     *    ┌────┬───────────┬─────┬─────────┬───────┬─────────┐
-                     *    │imm │    imm    │ imm │   imm   │  rd   │ opcode  │
-                     *    │[20]│  [10:1]   │[11] │ [19:12] │       │         │
-                     *    └──┬─┴─────┬─────┴──┬──┴────┬────┴───┬───┴────┬────┘
-                     *       │       │        │       │        │        │
-                     *       1       10       1       8        5        7    bits = 32 bits = word size
-                     *
-                     *   Notice how the immediate is contiguous, but the bits are not in order.
-                     *   In this case, the mapping would be:
-                     *   imm[20] -> 31
-                     *   imm[19:12] -> 19-12
-                     *   imm[11] -> 20
-                     *   imm[10:1] -> 30-21
-                     *
-                     *   So bits_order would be [31, 19, 18, 17, 16, 15, 14, 13, 12, 20, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21]
-                     */
-                    for (const bit of field.bits_order) {
-                        binaryValue += instructionExec.charAt(
-                            WORD_SIZE_MINUS_1 - bit,
-                        );
-                    }
-                    const padding = parseInt(field.padding, DECIMAL_BASE);
-                    if (padding > 0) {
-                        binaryValue += "0".repeat(padding);
-                    }
-                } else {
-                    binaryValue = instructionExec.substring(
-                        instruction_nwords * WORD_SIZE_MINUS_1 - field.startbit,
-                        instruction_nwords * WORD_SIZE - field.stopbit,
-                    );
-                }
+                // Handle normal case where the immediate is contiguous and ordered
+                // For example, the immediate in RISC-V's I and U-type instructions
+
+                const binaryValue = instructionExec.substring(
+                    instruction_nwords * WORD_SIZE_MINUS_1 - field.startbit,
+                    instruction_nwords * WORD_SIZE - field.stopbit,
+                );
+
                 value = parseInt(binaryValue, BINARY_BASE);
                 if (
                     field.type === "inm-signed" ||

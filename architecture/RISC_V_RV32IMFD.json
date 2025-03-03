@@ -780,9 +780,8 @@
         {
           "name": "inm",
           "type": "offset_bytes",
-          "startbit": [31, 11],
-          "stopbit": [25, 7],
-          "bits_order": [31, 7, 30, 29, 28, 27, 26, 25, 11, 10, 9, 8],
+          "startbit": [31, 7, 30, 11],
+          "stopbit": [31, 7, 25, 8],
           "padding": "1"
         },
         {
@@ -822,9 +821,8 @@
         {
           "name": "inm",
           "type": "offset_bytes",
-          "startbit": [31, 11],
-          "stopbit": [25, 7],
-          "bits_order": [31, 7, 30, 29, 28, 27, 26, 25, 11, 10, 9, 8],
+          "startbit": [31, 7, 30, 11],
+          "stopbit": [31, 7, 25, 8],
           "padding": "1"
         },
         {
@@ -871,9 +869,8 @@
         {
           "name": "inm",
           "type": "offset_bytes",
-          "startbit": [31, 11],
-          "stopbit": [25, 7],
-          "bits_order": [31, 7, 30, 29, 28, 27, 26, 25, 11, 10, 9, 8],
+          "startbit": [31, 7, 30, 11],
+          "stopbit": [31, 7, 25, 8],
           "padding": "1"
         },
         {
@@ -920,9 +917,8 @@
         {
           "name": "inm",
           "type": "offset_bytes",
-          "startbit": [31, 11],
-          "stopbit": [25, 7],
-          "bits_order": [31, 7, 30, 29, 28, 27, 26, 25, 11, 10, 9, 8],
+          "startbit": [31, 7, 30, 11],
+          "stopbit": [31, 7, 25, 8],
           "padding": "1"
         },
         {
@@ -969,9 +965,8 @@
         {
           "name": "inm",
           "type": "offset_bytes",
-          "startbit": [31, 11],
-          "stopbit": [25, 7],
-          "bits_order": [31, 7, 30, 29, 28, 27, 26, 25, 11, 10, 9, 8],
+          "startbit": [31, 7, 30, 11],
+          "stopbit": [31, 7, 25, 8],
           "padding": "1"
         },
         {
@@ -1018,9 +1013,8 @@
         {
           "name": "inm",
           "type": "offset_bytes",
-          "startbit": [31, 11],
-          "stopbit": [25, 7],
-          "bits_order": [31, 7, 30, 29, 28, 27, 26, 25, 11, 10, 9, 8],
+          "startbit": [31, 7, 30, 11],
+          "stopbit": [31, 7, 25, 8],
           "padding": "1"
         },
         {
@@ -3846,12 +3840,8 @@
         {
           "name": "inm",
           "type": "offset_bytes",
-          "startbit": 31,
-          "stopbit": 12,
-          "bits_order": [
-            31, 19, 18, 17, 16, 15, 14, 13, 12, 20, 30, 29, 28, 27, 26, 25, 24,
-            23, 22, 21
-          ],
+          "startbit": [31, 19, 20, 30],
+          "stopbit": [31, 12, 20, 21],
           "padding": "1"
         },
         {
