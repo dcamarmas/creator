@@ -1,23 +1,13 @@
-const cachedTextDecoder =
-    typeof TextDecoder !== "undefined"
-        ? new TextDecoder("utf-8", { ignoreBOM: true, fatal: true })
-        : {
-              decode: () => {
-                  throw Error("TextDecoder not available");
-              },
-          };
 
-if (typeof TextDecoder !== "undefined") {
-    cachedTextDecoder.decode();
-}
+
+const cachedTextDecoder = (typeof TextDecoder !== 'undefined' ? new TextDecoder('utf-8', { ignoreBOM: true, fatal: true }) : { decode: () => { throw Error('TextDecoder not available') } } );
+
+if (typeof TextDecoder !== 'undefined') { cachedTextDecoder.decode(); };
 
 let cachedUint8ArrayMemory0 = null;
 
 function getUint8ArrayMemory0() {
-    if (
-        cachedUint8ArrayMemory0 === null ||
-        cachedUint8ArrayMemory0.byteLength === 0
-    ) {
+    if (cachedUint8ArrayMemory0 === null || cachedUint8ArrayMemory0.byteLength === 0) {
         cachedUint8ArrayMemory0 = new Uint8Array(wasm.memory.buffer);
     }
     return cachedUint8ArrayMemory0;
@@ -25,33 +15,23 @@ function getUint8ArrayMemory0() {
 
 function getStringFromWasm0(ptr, len) {
     ptr = ptr >>> 0;
-    return cachedTextDecoder.decode(
-        getUint8ArrayMemory0().subarray(ptr, ptr + len),
-    );
+    return cachedTextDecoder.decode(getUint8ArrayMemory0().subarray(ptr, ptr + len));
 }
 
 let WASM_VECTOR_LEN = 0;
 
-const cachedTextEncoder =
-    typeof TextEncoder !== "undefined"
-        ? new TextEncoder("utf-8")
-        : {
-              encode: () => {
-                  throw Error("TextEncoder not available");
-              },
-          };
+const cachedTextEncoder = (typeof TextEncoder !== 'undefined' ? new TextEncoder('utf-8') : { encode: () => { throw Error('TextEncoder not available') } } );
 
 const encodeString = function (arg, view) {
     return cachedTextEncoder.encodeInto(arg, view);
 };
 
 function passStringToWasm0(arg, malloc, realloc) {
+
     if (realloc === undefined) {
         const buf = cachedTextEncoder.encode(arg);
         const ptr = malloc(buf.length, 1) >>> 0;
-        getUint8ArrayMemory0()
-            .subarray(ptr, ptr + buf.length)
-            .set(buf);
+        getUint8ArrayMemory0().subarray(ptr, ptr + buf.length).set(buf);
         WASM_VECTOR_LEN = buf.length;
         return ptr;
     }
@@ -65,7 +45,7 @@ function passStringToWasm0(arg, malloc, realloc) {
 
     for (; offset < len; offset++) {
         const code = arg.charCodeAt(offset);
-        if (code > 0x7f) break;
+        if (code > 0x7F) break;
         mem[ptr + offset] = code;
     }
 
@@ -73,7 +53,7 @@ function passStringToWasm0(arg, malloc, realloc) {
         if (offset !== 0) {
             arg = arg.slice(offset);
         }
-        ptr = realloc(ptr, len, (len = offset + arg.length * 3), 1) >>> 0;
+        ptr = realloc(ptr, len, len = offset + arg.length * 3, 1) >>> 0;
         const view = getUint8ArrayMemory0().subarray(ptr + offset, ptr + len);
         const ret = encodeString(arg, view);
 
@@ -92,12 +72,7 @@ function isLikeNone(x) {
 let cachedDataViewMemory0 = null;
 
 function getDataViewMemory0() {
-    if (
-        cachedDataViewMemory0 === null ||
-        cachedDataViewMemory0.buffer.detached === true ||
-        (cachedDataViewMemory0.buffer.detached === undefined &&
-            cachedDataViewMemory0.buffer !== wasm.memory.buffer)
-    ) {
+    if (cachedDataViewMemory0 === null || cachedDataViewMemory0.buffer.detached === true || (cachedDataViewMemory0.buffer.detached === undefined && cachedDataViewMemory0.buffer !== wasm.memory.buffer)) {
         cachedDataViewMemory0 = new DataView(wasm.memory.buffer);
     }
     return cachedDataViewMemory0;
@@ -106,39 +81,39 @@ function getDataViewMemory0() {
 function debugString(val) {
     // primitive types
     const type = typeof val;
-    if (type == "number" || type == "boolean" || val == null) {
-        return `${val}`;
+    if (type == 'number' || type == 'boolean' || val == null) {
+        return  `${val}`;
     }
-    if (type == "string") {
+    if (type == 'string') {
         return `"${val}"`;
     }
-    if (type == "symbol") {
+    if (type == 'symbol') {
         const description = val.description;
         if (description == null) {
-            return "Symbol";
+            return 'Symbol';
         } else {
             return `Symbol(${description})`;
         }
     }
-    if (type == "function") {
+    if (type == 'function') {
         const name = val.name;
-        if (typeof name == "string" && name.length > 0) {
+        if (typeof name == 'string' && name.length > 0) {
             return `Function(${name})`;
         } else {
-            return "Function";
+            return 'Function';
         }
     }
     // objects
     if (Array.isArray(val)) {
         const length = val.length;
-        let debug = "[";
+        let debug = '[';
         if (length > 0) {
             debug += debugString(val[0]);
         }
-        for (let i = 1; i < length; i++) {
-            debug += ", " + debugString(val[i]);
+        for(let i = 1; i < length; i++) {
+            debug += ', ' + debugString(val[i]);
         }
-        debug += "]";
+        debug += ']';
         return debug;
     }
     // Test for built-in
@@ -150,14 +125,14 @@ function debugString(val) {
         // Failed to match the standard '[object ClassName]'
         return toString.call(val);
     }
-    if (className == "Object") {
+    if (className == 'Object') {
         // we're a user defined class or Object
         // JSON.stringify avoids problems with cycles, and is generally much
         // easier than looping through ownProperties of `val`.
         try {
-            return "Object(" + JSON.stringify(val) + ")";
+            return 'Object(' + JSON.stringify(val) + ')';
         } catch (_) {
-            return "Object";
+            return 'Object';
         }
     }
     // errors
@@ -168,11 +143,7 @@ function debugString(val) {
     return className;
 }
 
-function notDefined(what) {
-    return () => {
-        throw new Error(`${what} is not defined`);
-    };
-}
+function notDefined(what) { return () => { throw new Error(`${what} is not defined`); }; }
 
 function takeFromExternrefTable0(idx) {
     const value = wasm.__wbindgen_export_2.get(idx);
@@ -218,38 +189,20 @@ function handleError(f, args) {
 /**
  * Method used to render colors in error messages
  */
-export const Color = Object.freeze({
-    HTML: 0,
-    0: "HTML",
-    ANSI: 1,
-    1: "ANSI",
-    NoColor: 2,
-    2: "NoColor",
-});
+export const Color = Object.freeze({ Html:0,"0":"Html",Ansi:1,"1":"Ansi",Off:2,"2":"Off", });
 /**
  * General category of a compiled data element
  */
-export const DataCategoryJS = Object.freeze({
-    Number: 0,
-    0: "Number",
-    String: 1,
-    1: "String",
-    Space: 2,
-    2: "Space",
-    Padding: 3,
-    3: "Padding",
-});
+export const DataCategoryJS = Object.freeze({ Number:0,"0":"Number",String:1,"1":"String",Space:2,"2":"Space",Padding:3,"3":"Padding", });
 
-const ArchitectureJSFinalization =
-    typeof FinalizationRegistry === "undefined"
-        ? { register: () => {}, unregister: () => {} }
-        : new FinalizationRegistry(ptr =>
-              wasm.__wbg_architecturejs_free(ptr >>> 0, 1),
-          );
+const ArchitectureJSFinalization = (typeof FinalizationRegistry === 'undefined')
+    ? { register: () => {}, unregister: () => {} }
+    : new FinalizationRegistry(ptr => wasm.__wbg_architecturejs_free(ptr >>> 0, 1));
 /**
  *r" Architecture definition
  */
 export class ArchitectureJS {
+
     static __wrap(ptr) {
         ptr = ptr >>> 0;
         const obj = Object.create(ArchitectureJS.prototype);
@@ -284,11 +237,7 @@ export class ArchitectureJS {
      * @returns {ArchitectureJS}
      */
     static from_json(json) {
-        const ptr0 = passStringToWasm0(
-            json,
-            wasm.__wbindgen_export_0,
-            wasm.__wbindgen_export_1,
-        );
+        const ptr0 = passStringToWasm0(json, wasm.__wbindgen_export_0, wasm.__wbindgen_export_1);
         const len0 = WASM_VECTOR_LEN;
         const ret = wasm.architecturejs_from_json(ptr0, len0);
         if (ret[2]) {
@@ -335,28 +284,11 @@ export class ArchitectureJS {
      * @returns {CompiledCodeJS}
      */
     compile(src, reserved_offset, labels, library, color) {
-        const ptr0 = passStringToWasm0(
-            src,
-            wasm.__wbindgen_export_0,
-            wasm.__wbindgen_export_1,
-        );
+        const ptr0 = passStringToWasm0(src, wasm.__wbindgen_export_0, wasm.__wbindgen_export_1);
         const len0 = WASM_VECTOR_LEN;
-        const ptr1 = passStringToWasm0(
-            labels,
-            wasm.__wbindgen_export_0,
-            wasm.__wbindgen_export_1,
-        );
+        const ptr1 = passStringToWasm0(labels, wasm.__wbindgen_export_0, wasm.__wbindgen_export_1);
         const len1 = WASM_VECTOR_LEN;
-        const ret = wasm.architecturejs_compile(
-            this.__wbg_ptr,
-            ptr0,
-            len0,
-            reserved_offset,
-            ptr1,
-            len1,
-            library,
-            color,
-        );
+        const ret = wasm.architecturejs_compile(this.__wbg_ptr, ptr0, len0, reserved_offset, ptr1, len1, library, color);
         if (ret[2]) {
             throw takeFromExternrefTable0(ret[1]);
         }
@@ -380,16 +312,14 @@ export class ArchitectureJS {
     }
 }
 
-const CompiledCodeJSFinalization =
-    typeof FinalizationRegistry === "undefined"
-        ? { register: () => {}, unregister: () => {} }
-        : new FinalizationRegistry(ptr =>
-              wasm.__wbg_compiledcodejs_free(ptr >>> 0, 1),
-          );
+const CompiledCodeJSFinalization = (typeof FinalizationRegistry === 'undefined')
+    ? { register: () => {}, unregister: () => {} }
+    : new FinalizationRegistry(ptr => wasm.__wbg_compiledcodejs_free(ptr >>> 0, 1));
 /**
  * Assembly compilation output
  */
 export class CompiledCodeJS {
+
     static __wrap(ptr) {
         ptr = ptr >>> 0;
         const obj = Object.create(CompiledCodeJS.prototype);
@@ -457,14 +387,14 @@ export class CompiledCodeJS {
     }
 }
 
-const DataJSFinalization =
-    typeof FinalizationRegistry === "undefined"
-        ? { register: () => {}, unregister: () => {} }
-        : new FinalizationRegistry(ptr => wasm.__wbg_datajs_free(ptr >>> 0, 1));
+const DataJSFinalization = (typeof FinalizationRegistry === 'undefined')
+    ? { register: () => {}, unregister: () => {} }
+    : new FinalizationRegistry(ptr => wasm.__wbg_datajs_free(ptr >>> 0, 1));
 /**
  * Compiled data wrapper
  */
 export class DataJS {
+
     static __wrap(ptr) {
         ptr = ptr >>> 0;
         const obj = Object.create(DataJS.prototype);
@@ -562,16 +492,14 @@ export class DataJS {
     }
 }
 
-const InstructionJSFinalization =
-    typeof FinalizationRegistry === "undefined"
-        ? { register: () => {}, unregister: () => {} }
-        : new FinalizationRegistry(ptr =>
-              wasm.__wbg_instructionjs_free(ptr >>> 0, 1),
-          );
+const InstructionJSFinalization = (typeof FinalizationRegistry === 'undefined')
+    ? { register: () => {}, unregister: () => {} }
+    : new FinalizationRegistry(ptr => wasm.__wbg_instructionjs_free(ptr >>> 0, 1));
 /**
  * Compiled instruction wrapper
  */
 export class InstructionJS {
+
     static __wrap(ptr) {
         ptr = ptr >>> 0;
         const obj = Object.create(InstructionJS.prototype);
@@ -612,11 +540,7 @@ export class InstructionJS {
      * @param {string} arg0
      */
     set address(arg0) {
-        const ptr0 = passStringToWasm0(
-            arg0,
-            wasm.__wbindgen_export_0,
-            wasm.__wbindgen_export_1,
-        );
+        const ptr0 = passStringToWasm0(arg0, wasm.__wbindgen_export_0, wasm.__wbindgen_export_1);
         const len0 = WASM_VECTOR_LEN;
         wasm.__wbg_set_instructionjs_address(this.__wbg_ptr, ptr0, len0);
     }
@@ -660,11 +584,7 @@ export class InstructionJS {
      * @param {string} arg0
      */
     set loaded(arg0) {
-        const ptr0 = passStringToWasm0(
-            arg0,
-            wasm.__wbindgen_export_0,
-            wasm.__wbindgen_export_1,
-        );
+        const ptr0 = passStringToWasm0(arg0, wasm.__wbindgen_export_0, wasm.__wbindgen_export_1);
         const len0 = WASM_VECTOR_LEN;
         wasm.__wbg_set_instructionjs_loaded(this.__wbg_ptr, ptr0, len0);
     }
@@ -689,11 +609,7 @@ export class InstructionJS {
      * @param {string} arg0
      */
     set binary(arg0) {
-        const ptr0 = passStringToWasm0(
-            arg0,
-            wasm.__wbindgen_export_0,
-            wasm.__wbindgen_export_1,
-        );
+        const ptr0 = passStringToWasm0(arg0, wasm.__wbindgen_export_0, wasm.__wbindgen_export_1);
         const len0 = WASM_VECTOR_LEN;
         wasm.__wbg_set_instructionjs_binary(this.__wbg_ptr, ptr0, len0);
     }
@@ -718,26 +634,20 @@ export class InstructionJS {
      * @param {string} arg0
      */
     set user(arg0) {
-        const ptr0 = passStringToWasm0(
-            arg0,
-            wasm.__wbindgen_export_0,
-            wasm.__wbindgen_export_1,
-        );
+        const ptr0 = passStringToWasm0(arg0, wasm.__wbindgen_export_0, wasm.__wbindgen_export_1);
         const len0 = WASM_VECTOR_LEN;
         wasm.__wbg_set_instructionjs_user(this.__wbg_ptr, ptr0, len0);
     }
 }
 
-const LabelJSFinalization =
-    typeof FinalizationRegistry === "undefined"
-        ? { register: () => {}, unregister: () => {} }
-        : new FinalizationRegistry(ptr =>
-              wasm.__wbg_labeljs_free(ptr >>> 0, 1),
-          );
+const LabelJSFinalization = (typeof FinalizationRegistry === 'undefined')
+    ? { register: () => {}, unregister: () => {} }
+    : new FinalizationRegistry(ptr => wasm.__wbg_labeljs_free(ptr >>> 0, 1));
 /**
  * Label table entry wrapper
  */
 export class LabelJS {
+
     static __wrap(ptr) {
         ptr = ptr >>> 0;
         const obj = Object.create(LabelJS.prototype);
@@ -778,11 +688,7 @@ export class LabelJS {
      * @param {string} arg0
      */
     set name(arg0) {
-        const ptr0 = passStringToWasm0(
-            arg0,
-            wasm.__wbindgen_export_0,
-            wasm.__wbindgen_export_1,
-        );
+        const ptr0 = passStringToWasm0(arg0, wasm.__wbindgen_export_0, wasm.__wbindgen_export_1);
         const len0 = WASM_VECTOR_LEN;
         wasm.__wbg_set_instructionjs_address(this.__wbg_ptr, ptr0, len0);
     }
@@ -820,44 +726,39 @@ export class LabelJS {
 
 const imports = {
     __wbindgen_placeholder__: {
-        __wbg_String_904d95bced5568af:
-            typeof String == "function" ? String : notDefined("String"),
-        __wbindgen_string_new: function (arg0, arg1) {
-            const ret = getStringFromWasm0(arg0, arg1);
-            return ret;
-        },
-        __wbindgen_number_new: function (arg0) {
+        __wbindgen_number_new: function(arg0) {
             const ret = arg0;
             return ret;
         },
-        __wbg_datajs_new: function (arg0) {
+        __wbg_datajs_new: function(arg0) {
             const ret = DataJS.__wrap(arg0);
             return ret;
         },
-        __wbg_instructionjs_new: function (arg0) {
-            const ret = InstructionJS.__wrap(arg0);
-            return ret;
-        },
-        __wbg_labeljs_new: function (arg0) {
+        __wbg_labeljs_new: function(arg0) {
             const ret = LabelJS.__wrap(arg0);
             return ret;
         },
-        __wbg_new_abda76e883ba8a5f: function () {
+        __wbg_instructionjs_new: function(arg0) {
+            const ret = InstructionJS.__wrap(arg0);
+            return ret;
+        },
+        __wbg_String_904d95bced5568af: typeof String == 'function' ? String : notDefined('String'),
+        __wbindgen_string_new: function(arg0, arg1) {
+            const ret = getStringFromWasm0(arg0, arg1);
+            return ret;
+        },
+        __wbg_new_abda76e883ba8a5f: function() {
             const ret = new Error();
             return ret;
         },
-        __wbg_stack_658279fe44541cf6: function (arg0, arg1) {
+        __wbg_stack_658279fe44541cf6: function(arg0, arg1) {
             const ret = arg1.stack;
-            const ptr1 = passStringToWasm0(
-                ret,
-                wasm.__wbindgen_export_0,
-                wasm.__wbindgen_export_1,
-            );
+            const ptr1 = passStringToWasm0(ret, wasm.__wbindgen_export_0, wasm.__wbindgen_export_1);
             const len1 = WASM_VECTOR_LEN;
             getDataViewMemory0().setInt32(arg0 + 4 * 1, len1, true);
             getDataViewMemory0().setInt32(arg0 + 4 * 0, ptr1, true);
         },
-        __wbg_error_f851667af71bcfc6: function (arg0, arg1) {
+        __wbg_error_f851667af71bcfc6: function(arg0, arg1) {
             let deferred0_0;
             let deferred0_1;
             try {
@@ -868,78 +769,57 @@ const imports = {
                 wasm.__wbindgen_export_4(deferred0_0, deferred0_1, 1);
             }
         },
-        __wbg_BigInt_d9b88f4c25429f16:
-            typeof BigInt == "function" ? BigInt : notDefined("BigInt"),
-        __wbindgen_lt: function (arg0, arg1) {
+        __wbg_BigInt_d9b88f4c25429f16: typeof BigInt == 'function' ? BigInt : notDefined('BigInt'),
+        __wbindgen_lt: function(arg0, arg1) {
             const ret = arg0 < arg1;
             return ret;
         },
-        __wbindgen_neg: function (arg0) {
+        __wbindgen_neg: function(arg0) {
             const ret = -arg0;
             return ret;
         },
-        __wbg_newnoargs_1ede4bf2ebbaaf43: function (arg0, arg1) {
+        __wbg_newnoargs_1ede4bf2ebbaaf43: function(arg0, arg1) {
             const ret = new Function(getStringFromWasm0(arg0, arg1));
             return ret;
         },
-        __wbg_call_a9ef466721e824f2: function () {
-            return handleError(function (arg0, arg1) {
-                const ret = arg0.call(arg1);
-                return ret;
-            }, arguments);
+        __wbg_call_a9ef466721e824f2: function() { return handleError(function (arg0, arg1) {
+            const ret = arg0.call(arg1);
+            return ret;
+        }, arguments) },
+        __wbg_eval_1bab7c4fbae3b3d6: function() { return handleError(function (arg0, arg1) {
+            const ret = eval(getStringFromWasm0(arg0, arg1));
+            return ret;
+        }, arguments) },
+        __wbg_BigInt_89e5c195bdb0619f: function() { return handleError(function (arg0) {
+            const ret = BigInt(arg0);
+            return ret;
+        }, arguments) },
+        __wbg_toString_9d7b87203a38a50b: function(arg0, arg1, arg2) {
+            const ret = arg1.toString(arg2);
+            const ptr1 = passStringToWasm0(ret, wasm.__wbindgen_export_0, wasm.__wbindgen_export_1);
+            const len1 = WASM_VECTOR_LEN;
+            getDataViewMemory0().setInt32(arg0 + 4 * 1, len1, true);
+            getDataViewMemory0().setInt32(arg0 + 4 * 0, ptr1, true);
         },
-        __wbindgen_string_get: function (arg0, arg1) {
+        __wbindgen_string_get: function(arg0, arg1) {
             const obj = arg1;
-            const ret = typeof obj === "string" ? obj : undefined;
-            var ptr1 = isLikeNone(ret)
-                ? 0
-                : passStringToWasm0(
-                      ret,
-                      wasm.__wbindgen_export_0,
-                      wasm.__wbindgen_export_1,
-                  );
+            const ret = typeof(obj) === 'string' ? obj : undefined;
+            var ptr1 = isLikeNone(ret) ? 0 : passStringToWasm0(ret, wasm.__wbindgen_export_0, wasm.__wbindgen_export_1);
             var len1 = WASM_VECTOR_LEN;
             getDataViewMemory0().setInt32(arg0 + 4 * 1, len1, true);
             getDataViewMemory0().setInt32(arg0 + 4 * 0, ptr1, true);
         },
-        __wbg_eval_1bab7c4fbae3b3d6: function () {
-            return handleError(function (arg0, arg1) {
-                const ret = eval(getStringFromWasm0(arg0, arg1));
-                return ret;
-            }, arguments);
-        },
-        __wbg_BigInt_89e5c195bdb0619f: function () {
-            return handleError(function (arg0) {
-                const ret = BigInt(arg0);
-                return ret;
-            }, arguments);
-        },
-        __wbg_toString_9d7b87203a38a50b: function (arg0, arg1, arg2) {
-            const ret = arg1.toString(arg2);
-            const ptr1 = passStringToWasm0(
-                ret,
-                wasm.__wbindgen_export_0,
-                wasm.__wbindgen_export_1,
-            );
-            const len1 = WASM_VECTOR_LEN;
-            getDataViewMemory0().setInt32(arg0 + 4 * 1, len1, true);
-            getDataViewMemory0().setInt32(arg0 + 4 * 0, ptr1, true);
-        },
-        __wbindgen_debug_string: function (arg0, arg1) {
+        __wbindgen_debug_string: function(arg0, arg1) {
             const ret = debugString(arg1);
-            const ptr1 = passStringToWasm0(
-                ret,
-                wasm.__wbindgen_export_0,
-                wasm.__wbindgen_export_1,
-            );
+            const ptr1 = passStringToWasm0(ret, wasm.__wbindgen_export_0, wasm.__wbindgen_export_1);
             const len1 = WASM_VECTOR_LEN;
             getDataViewMemory0().setInt32(arg0 + 4 * 1, len1, true);
             getDataViewMemory0().setInt32(arg0 + 4 * 0, ptr1, true);
         },
-        __wbindgen_throw: function (arg0, arg1) {
+        __wbindgen_throw: function(arg0, arg1) {
             throw new Error(getStringFromWasm0(arg0, arg1));
         },
-        __wbindgen_init_externref_table: function () {
+        __wbindgen_init_externref_table: function() {
             const table = wasm.__wbindgen_export_2;
             const offset = table.grow(4);
             table.set(0, undefined);
@@ -947,27 +827,29 @@ const imports = {
             table.set(offset + 1, null);
             table.set(offset + 2, true);
             table.set(offset + 3, false);
+            ;
         },
     },
+
 };
 
-const wasm_url = new URL("creator_compiler_bg.wasm", import.meta.url);
-let wasmCode = "";
+const wasm_url = new URL('creator_compiler_bg.wasm', import.meta.url);
+let wasmCode = '';
 switch (wasm_url.protocol) {
-    case "file:":
-        wasmCode = await Deno.readFile(wasm_url);
-        break;
-    case "https:":
-    case "http:":
-        wasmCode = await (await fetch(wasm_url)).arrayBuffer();
-        break;
+    case 'file:':
+    wasmCode = await Deno.readFile(wasm_url);
+    break
+    case 'https:':
+    case 'http:':
+    wasmCode = await (await fetch(wasm_url)).arrayBuffer();
+    break
     default:
-        throw new Error(`Unsupported protocol: ${wasm_url.protocol}`);
+    throw new Error(`Unsupported protocol: ${wasm_url.protocol}`);
 }
 
-const wasmInstance = (await WebAssembly.instantiate(wasmCode, imports))
-    .instance;
+const wasmInstance = (await WebAssembly.instantiate(wasmCode, imports)).instance;
 const wasm = wasmInstance.exports;
 export const __wasm = wasm;
 
 wasm.__wbindgen_start();
+
