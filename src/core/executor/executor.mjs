@@ -31,6 +31,7 @@ import {
 } from "../core.mjs";
 import { creator_memory_zerofill } from "../memory/memoryManager.mjs";
 import { creator_memory_reset } from "../memory/memoryOperations.mjs";
+import { main_memory_write_value } from "../memory/memoryCore.mjs"; // For debugging only
 import { crex_findReg_bytag } from "../register/registerLookup.mjs";
 import {
     readRegister,
@@ -51,6 +52,7 @@ import { logger } from "../utils/creator_logger.mjs";
 import { bin2hex, float2bin, hex2double } from "../utils/utils.mjs";
 import { decode_instruction } from "./decoder.mjs";
 import { buildInstructionPreload } from "./preload.mjs";
+import { dumpMemory } from "../core.mjs";
 
 export function packExecute(error, err_msg, err_type, draw) {
     const ret = {};

@@ -35,8 +35,10 @@ import {
     main_memory_get_addresses,
     main_memory_read_value,
     main_memory_read_default_value,
+    main_memory,
 } from "./memory/memoryCore.mjs";
 import * as wasm from "./compiler/deno/creator_compiler.js";
+import process from "node:process";
 
 export let code_assembly = "";
 export let update_binary = "";
@@ -488,4 +490,63 @@ export function help_pseudoins() {
     }
 
     return o;
+}
+
+// memory dump for debugging
+export function dumpMemory(startAddr, numBytes, bytesPerRow = 16) {
+    startAddr = BigInt(startAddr);
+    numBytes = BigInt(numBytes);
+    bytesPerRow = BigInt(bytesPerRow);
+
+    let output = "";
+    let currentAddr = startAddr;
+    const endAddr = startAddr + numBytes;
+
+    // Create header
+    output += "       ";
+    for (let i = 0n; i < bytesPerRow; i++) {
+        output += " " + i.toString(16).padStart(2, "0");
+    }
+    output += "  | ASCII\n";
+    output +=
+        "-------" +
+        "-".repeat(Number(bytesPerRow) * 3) +
+        "---" +
+        "-".repeat(Number(bytesPerRow)) +
+        "\n";
+
+    // Create rows
+    while (currentAddr < endAddr) {
+        // Address column
+        output += "0x" + currentAddr.toString(16).padStart(4, "0") + ": ";
+
+        let hexValues = "";
+        let asciiValues = "";
+
+        // Process bytes for this row
+        for (let i = 0n; i < bytesPerRow; i++) {
+            if (currentAddr + i < endAddr) {
+                const byteValue = main_memory_read_value(currentAddr + i);
+                hexValues += byteValue + " ";
+
+                // Try to convert to ASCII, use dot for non-printable chars
+                const charCode = parseInt(byteValue, 16);
+                if (charCode >= 32 && charCode <= 126) {
+                    // Printable ASCII range
+                    asciiValues += String.fromCharCode(charCode);
+                } else {
+                    asciiValues += ".";
+                }
+            } else {
+                // Padding for incomplete row
+                hexValues += "   ";
+                asciiValues += " ";
+            }
+        }
+
+        output += hexValues + "| " + asciiValues + "\n";
+        currentAddr += bytesPerRow;
+    }
+
+    return output;
 }

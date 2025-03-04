@@ -23,12 +23,13 @@ import {
     main_memory_datatype_get_addresses,
     main_memory_get_addresses,
     main_memory_write_bydatatype,
+    main_memory_datatypes,
     main_memory_write_tag,
     main_memory_zerofill,
+    main_memory,
 } from "./memoryCore.mjs";
 import { creator_memory_updateall } from "./memoryViewManager.mjs";
 import { align } from "../compiler/compiler.mjs";
-import { main_memory, main_memory_datatypes } from "./memoryCore.mjs";
 
 /********************
  * Public API (1/3) *
