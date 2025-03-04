@@ -148,7 +148,7 @@ export function main_memory_read_value(addr) {
     // main_memory_read_value  ( addr: integer )
     return main_memory_read(addr).bin;
 }
-function main_memory_write_value(addr, value) {
+export function main_memory_write_value(addr, value) {
     // main_memory_write_value ( addr: integer,  value: string (hexadecimal) )
     const value_obj = main_memory_read(addr);
     value_obj.bin = value;
