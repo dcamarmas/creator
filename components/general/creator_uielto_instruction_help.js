@@ -211,6 +211,75 @@
                 ' ' +
                 '</b-sidebar'
   }
+  var uielto_board_help = {
+    
+    props:      {
+                  id:                       { type: String, required: true },
+                  architecture_name:        { type: String, required: true },
+                  architecture:             { type: Object, required: true },
+                  architecture_guide:       { type: String, required: true },
+                  instruction_help_size:    { type: Object, required: true }
+                   
+                },
+
+    data:       function () {
+                  return {
+                    //Help Filter
+                    instHelpFilter: null,
+
+                    //Help table
+                    insHelpFields: [
+                      { key: 'image', label: 'Image' }
+                    ],
+
+                    // Image
+                    board_info: [
+                      {
+                        name: "ESP32-C3 ARCHITECTURE",
+                        image: "https://docs.espressif.com/projects/esp-idf/en/v5.0/esp32c3/_images/esp32-c3-devkitc-02-v1-pinout.png" 
+                      },
+                    ]
+                  }
+                },
+
+    methods:   {
+                  get_width(){
+                    return this._props.instruction_help_size + "vw"
+                  }
+                },
+
+    template:   '<b-sidebar :id="id" sidebar-class="border-left border-info px-3 py-2" right shadow' + 
+                '           title="Board Distribution Help"' +
+                '           :width="get_width()">' +
+                ' ' +
+                ' <br>' +
+                ' <a v-if="architecture_guide !=\'\'" target="_blank" :href="architecture_guide"><span class="fas fa-file-pdf"></span> {{architecture_name}} Guide</a>' +
+                ' <br>' +
+                ' ' +
+                ' <b-table small :items="board_info" ' +
+                '                :fields="insHelpFields" ' +
+                '                class="text-left help-scroll-y my-3"' +
+                '                :filter="instHelpFilter"' +
+                '                thead-class="d-none">' +
+                '<template #cell(image)="data">'+
+                '<div>'+
+                ' <h5 class="font-weight-bold mb-2">{{ data.item.name }}</h5>'+
+                '<img :src="data.item.image" alt="Board Image" class="img-fluid mt-2" style="max-width:300 px;"/>'+
+                '    </div>'+
+                '</template>'+
+                ' ' +
+                '   <template v-slot:cell(name)="row">' +
+                '     <h4>{{row.item.name}}</h4>' +
+                '     <em>{{row.item.signatureRaw}}</em>' +
+                '     <br>' +
+                '     {{row.item.help}}' +
+                '   </template>' +
+                ' ' +
+                ' </b-table>' +
+                ' ' +
+                '</b-sidebar'
+  }
 
   Vue.component('sidebar-creatino_help', uielto_creatino_help) ;
+  Vue.component('sidebar-board_help', uielto_board_help) ;
   Vue.component('sidebar-instruction-help', uielto_instruction_help) ;

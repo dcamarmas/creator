@@ -49,6 +49,7 @@
                                                 //{ text: 'ESP32-S2 (MIPS-32)',      value: 'esp32s2' },
                                                 //{ text: 'ESP32-S3 (MIPS-32)',      value: 'esp32s3' },
                                                 ],
+                        arduino_support: false,                        
 
                         /*
                         lab_url = "",
@@ -86,6 +87,7 @@
                         flashing  = false,
                         running   = false,
                         debugging = false,
+                        fullclean = false,
                       }
                     },
 
@@ -324,6 +326,28 @@
                         creator_ga('simulator', 'simulator.debug', 'simulator.debug');
                       },
 
+                      do_fullclean( )
+                      {
+                        this.save();
+
+                        this.fullclean = true;
+
+                        var farg =  {
+                                      target_board: this.target_board,
+                                      target_port:  this.target_port,
+                                      assembly:     code_assembly,
+                                    } ;
+
+                        this_env = this;
+                        /*gateway_remote_monitor(this.flash_url + "/debug", farg).then( function(data)  { 
+                                                                                                          this_env.debugging = false; 
+                                                                                                          //show_notification(data, 'danger') ;
+                                                                                                        } ) ;*/
+
+                        //Google Analytics
+                        creator_ga('simulator', 'simulator.fullclean', 'simulator.fullclean');
+                      },
+
                       //
                       //General
                       //
@@ -359,6 +383,11 @@
                     '         </b-row>' +
                     '       </b-container>' +
                     '       <br>' +
+                    '       <b-col v-if="target_board" class="mb-3">'+
+                    '         <b-form-checkbox v-model="arduino_support">' +
+                    '           Arduino Support'+
+                    '         </b-form-checkbox>'+
+                    '       </b-col>'+
                     ' ' +
                     '       <b-tabs content-class="mt-3" v-if="target_board !=\'\'">' +
                     '         <b-tab title="Prerequisites">' +
@@ -664,26 +693,33 @@
                     '           <br>' +
                     ' ' +
                     '           <b-container fluid align-h="center" class="mx-0 px-0">' +
-                    '             <b-row cols="3" align-h="center">' +
-                    '               <b-col class="pt-3">' +
-                    '                 <b-button class="btn btn-sm btn-block" variant="primary" @click="do_flash" :pressed="flashing" :disabled="flashing || running">' +
+                    '             <b-row cols="4" align-h="center">' +
+                    '               <b-col class="pt-4">' +
+                    '                 <b-button class="btn btn-sm btn-block" variant="primary" @click="do_flash" :pressed="flashing" :disabled="flashing || running || debugging|| fullclean">' +
                     '                   <span v-if="!flashing"><span class="fas fa-bolt-lightning"></span> Flash</span>' +
                     '                   <span v-if="flashing"><span class="fas fa-bolt-lightning"></span>  Flashing...</span>' +
                     '                   <b-spinner small v-if="flashing"></b-spinner>' +
                     '                 </b-button>' +
                     '               </b-col>' +
-                    '               <b-col class="pt-3">' +
-                    '                 <b-button class="btn btn-sm btn-block" variant="primary" @click="do_monitor" :pressed="running" :disabled="running || flashing || debugging">' +
+                    '               <b-col class="pt-4">' +
+                    '                 <b-button class="btn btn-sm btn-block" variant="primary" @click="do_monitor" :pressed="running" :disabled="running || flashing || debugging || fullclean">' +
                     '                   <span v-if="!running"><span class="fas fa-play"></span> Monitor</span>' +
-                    '                   <span v-if="running"><span class="fas fa-play"></span>  Runing...</span>' +
+                    '                   <span v-if="running"><span class="fas fa-play"></span>  Running...</span>' +
                     '                   <b-spinner small v-if="running"></b-spinner>' +
                     '                 </b-button>' +
                     '               </b-col>' +
-                    '               <b-col class="pt-3">' +
-                    '                 <b-button class="btn btn-sm btn-block" variant="primary" @click="do_debug" :pressed="debugging" :disabled="debugging || flashing || running">' +
+                    '               <b-col class="pt-4">' +
+                    '                 <b-button class="btn btn-sm btn-block" variant="primary" @click="do_debug" :pressed="debugging" :disabled="debugging || flashing || running || fullclean">' +
                     '                   <span v-if="!debugging"><span class="fas fa-bug"></span> Debug</span>' +
                     '                   <span v-if="debugging"><span class="fas fa-bug"></span>  Debugging...</span>' +
                     '                   <b-spinner small v-if="debugging"></b-spinner>' +
+                    '                 </b-button>' +
+                    '               </b-col>' +
+                    '               <b-col class="pt-4">' +
+                    '                 <b-button class="btn btn-sm btn-block" variant="danger" @click="do_fullclean" :pressed="fullclean" :disabled="fullclean || flashing || running || debugging">' +
+                    '                   <span v-if="!fullclean"><span class="fas fa-trash"></span> Clean</span>' +
+                    '                   <span v-if="fullclean"><span class="fas fa-trash"></span>  Cleaning...</span>' +
+                    '                   <b-spinner small v-if="fullclean"></b-spinner>' +
                     '                 </b-button>' +
                     '               </b-col>' +
                     '             </b-row>' +
