@@ -1,16 +1,37 @@
+/*
+ *  Copyright 2018-2025 Felix Garcia Carballeira, Alejandro Calderon Mateos, Diego Camarmas Alonso
+ *
+ *  This file is part of CREATOR.
+ *
+ *  CREATOR is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Lesser General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  CREATOR is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 "use strict";
 
 import fs from "node:fs";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { logger } from "../core/utils/creator_logger.mjs";
+import * as creator from "../core/core.mjs";
+import process from "node:process";
 
 // Define interfaces
 interface CommandLineArgs {
     debug: boolean;
     architecture: string;
     assembly: string;
-    directory: string;
+    binary: string; // Add new binary option
     library: string;
     result: string;
     describe: string;
@@ -29,14 +50,12 @@ interface ProcessResult {
     Architecture: StageResult;
     Library: StageResult;
     Compile: StageResult;
+    Binary: StageResult;
     Execute: StageResult;
     LastState: StageResult;
     stages: string[];
 }
 
-// creator
-import * as creator from "../core/core.mjs";
-import process from "node:process";
 const creator_version = JSON.parse(
     fs.readFileSync(new URL("../../package.json", import.meta.url), "utf8"),
 ).version;
@@ -63,6 +82,7 @@ const argv = yargs(hideBin(process.argv))
         welcome() +
             "\n" +
             "Usage: $0 -a <file name> -s <file name>\n" +
+            "Usage: $0 -a <file name> -b <file name>\n" + // Add binary usage
             "Usage: $0 -h",
     )
     .example([["./$0", "To show examples."]])
@@ -85,10 +105,10 @@ const argv = yargs(hideBin(process.argv))
         nargs: 1,
         default: "",
     })
-    .option("directory", {
-        alias: "d",
+    .option("binary", {
+        alias: "b",
         type: "string",
-        describe: "Assemblies directory",
+        describe: "Binary file (JSON format)",
         nargs: 1,
         default: "",
     })
@@ -116,7 +136,7 @@ const argv = yargs(hideBin(process.argv))
         type: "string",
         describe: "Maximum number of instructions to be executed",
         nargs: 1,
-        default: "1000000",
+        default: "100000",
     })
     .option("output", {
         alias: "o",
@@ -133,7 +153,7 @@ const argv = yargs(hideBin(process.argv))
     })
     .demandOption(
         [],
-        "Please provide either a config file or both architecture and assembly files.",
+        "Please provide either a config file or architecture file with assembly or binary file.",
     )
     .help("h")
     .alias("h", "help").argv as unknown as CommandLineArgs;
@@ -150,6 +170,8 @@ function help_usage(): string {
         "Usage:\n" +
         " * To compile and execute an assembly file on an architecture:\n" +
         "   ./creator.sh -a <architecture file name> -s <assembly file name>\n" +
+        " * To load and execute a binary file directly on an architecture:\n" +
+        "   ./creator.sh -a <architecture file name> -b <binary file name>\n" +
         " * Same as before but execute only 10 instructions:\n" +
         "   ./creator.sh -a <architecture file name> -s <assembly file name> --maxins 10\n" +
         "\n" +
@@ -291,6 +313,30 @@ function compileAssembly(assemblyPath: string): StageResult {
 }
 
 /**
+ * Loads and processes binary file
+ * @param {string} binaryPath - Path to binary file
+ * @returns {StageResult} Result object with status and message
+ */
+function loadBinary(binaryPath: string): StageResult {
+    try {
+        const binary = fs.readFileSync(binaryPath, "utf8");
+        const ret = creator.load_binary_file(binary);
+        if (ret.status !== "ok") {
+            throw ret.msg;
+        }
+        return {
+            status: "ok",
+            msg: `Binary file '${binaryPath}' loaded successfully.`,
+        };
+    } catch (e) {
+        if (e instanceof Error || typeof e === "string") {
+            return { status: "ko", msg: e.toString() };
+        }
+        return { status: "ko", msg: "Unknown error occurred" };
+    }
+}
+
+/**
  * Executes the compiled program
  * @param {number} limitInstructions - Maximum number of instructions to execute
  * @returns {StageResult} Result object with status and message
@@ -329,10 +375,11 @@ function compareResults(resultPath: string): StageResult | null {
 }
 
 /**
- * Processes a single assembly file through all stages
+ * Processes a single file (assembly or binary) through all stages
  * @param {string} architecturePath - Path to architecture file
  * @param {string} libraryPath - Path to library file
  * @param {string} assemblyPath - Path to assembly file
+ * @param {string} binaryPath - Path to binary file
  * @param {number} limitInstructions - Maximum number of instructions to execute
  * @param {string} resultPath - Path to result file for comparison
  * @returns {ProcessResult} Result object containing status of all stages
@@ -341,29 +388,42 @@ function one_file(
     architecturePath: string,
     libraryPath: string,
     assemblyPath: string,
+    binaryPath: string,
     limitInstructions: number,
     resultPath: string,
 ): ProcessResult {
     const result: ProcessResult = {
         Architecture: { status: "ko", msg: "Not loaded" },
-        Library: { status: "ok", msg: "Without library" },
+        Library: { status: "ko", msg: "Not loaded" },
         Compile: { status: "ko", msg: "Not compiled" },
+        Binary: { status: "ko", msg: "Not loaded" },
         Execute: { status: "ko", msg: "Not executed" },
         LastState: { status: "ko", msg: "Not equals states" },
-        stages: ["Architecture", "Library", "Compile", "Execute"],
+        stages: ["Architecture"],
     };
 
     // Load architecture
     result.Architecture = loadArchitecture(architecturePath);
     if (result.Architecture.status === "ko") return result;
 
-    // Load library if provided
-    result.Library = loadLibrary(libraryPath);
-    if (result.Library.status === "ko") return result;
+    // Check if we're in binary mode or assembly mode
+    if (binaryPath) {
+        // Binary mode - skip compilation and library
+        result.stages.push("Binary", "Execute");
+        result.Binary = loadBinary(binaryPath);
+        if (result.Binary.status === "ko") return result;
+    } else {
+        // Assembly mode - compile and optionally link
+        result.stages.push("Library", "Compile", "Execute");
 
-    // Compile assembly
-    result.Compile = compileAssembly(assemblyPath);
-    if (result.Compile.status === "ko") return result;
+        // Load library if provided
+        result.Library = loadLibrary(libraryPath);
+        if (result.Library.status === "ko") return result;
+
+        // Compile assembly
+        result.Compile = compileAssembly(assemblyPath);
+        if (result.Compile.status === "ko") return result;
+    }
 
     // Execute program
     result.Execute = executeProgram(limitInstructions);
@@ -371,7 +431,11 @@ function one_file(
 
     // Compare results if result file provided
     if (resultPath) {
-        result.LastState = compareResults(resultPath);
+        result.stages.push("LastState");
+        result.LastState = compareResults(resultPath) || {
+            status: "ko",
+            msg: "No comparison performed",
+        };
     }
 
     return result;
@@ -434,31 +498,13 @@ function handleDescribeCommand(argv: CommandLineArgs): boolean {
 function validateRequiredArgs(argv: CommandLineArgs): boolean {
     if (
         argv.architecture === "" ||
-        (argv.assembly === "" && argv.directory === "")
+        (argv.assembly === "" && argv.binary === "")
     ) {
         const usage = help_usage();
         console.log(welcome() + "\n" + usage);
         return false;
     }
     return true;
-}
-
-/**
- * Gets list of assembly files to process from command line arguments
- * @param {string} assembly - Single assembly file path
- * @param {string} directory - Directory containing assembly files
- * @returns {string[]} Array of file paths to process
- */
-function getAssemblyFiles(assembly: string, directory: string): string[] {
-    const fileNames: string[] = [];
-    if (assembly !== "") {
-        fileNames.push(assembly);
-    }
-    if (directory !== "") {
-        const files = fs.readdirSync(directory);
-        files.forEach(file => fileNames.push(directory + "/" + file));
-    }
-    return fileNames;
 }
 
 /**
@@ -518,34 +564,33 @@ function processResults(
 }
 
 /**
- * Processes all assembly files and displays results
+ * Processes an assembly or binary file and displays results
  * @param {CommandLineArgs} argv - Command line arguments
- * @param {string[]} fileNames - Array of files to process
  * @param {string} output_format - Output format type
  * @param {number} limit_n_ins - Maximum number of instructions to execute
  */
-function processFiles(
+function processFile(
     argv: CommandLineArgs,
-    fileNames: string[],
     output_format: string,
     limit_n_ins: number,
 ): void {
     let hdr = "FileName";
 
-    for (const fileName of fileNames) {
-        show_result(output_format, fileName, fileName, "", true);
+    // Display the file being processed
+    const processFile = argv.binary || argv.assembly;
+    show_result(output_format, processFile, processFile, "", true);
 
-        const ret = one_file(
-            argv.architecture,
-            argv.library,
-            fileName,
-            limit_n_ins,
-            argv.result,
-        );
+    const ret = one_file(
+        argv.architecture,
+        argv.library,
+        argv.assembly,
+        argv.binary,
+        limit_n_ins,
+        argv.result,
+    );
 
-        hdr = processStages(ret, output_format, hdr);
-        hdr = processResults(ret, argv, output_format, hdr);
-    }
+    hdr = processStages(ret, output_format, hdr);
+    hdr = processResults(ret, argv, output_format, hdr);
 
     if (output_format === "TAB") {
         console.log(hdr);
@@ -578,9 +623,8 @@ function main(argv: CommandLineArgs): number {
             console.log(welcome());
         }
 
-        // Process assembly files
-        const fileNames = getAssemblyFiles(argv.assembly, argv.directory);
-        processFiles(argv, fileNames, output_format, limit_n_ins);
+        // Process assembly file
+        processFile(argv, output_format, limit_n_ins);
 
         return 0;
     } catch (e) {

@@ -598,18 +598,19 @@
         },
         {
           "name": "inm",
-          "type": "inm-unsigned",
-          "startbit": 31,
-          "stopbit": 12
+          "type": "offset_bytes",
+          "startbit": [31, 19, 20, 30],
+          "stopbit": [31, 12, 20, 21],
+          "padding": 1
         },
         {
           "name": "rd",
           "type": "INT-Reg",
-          "startbit": 12,
+          "startbit": 11,
           "stopbit": 7
         }
       ],
-      "definition": "rd = PC;\n PC = inm;\n capi_callconv_begin(inm); capi_drawstack_begin(inm);",
+      "definition": "rd = PC;\n PC = PC + inm - 4n;\n capi_callconv_begin(inm); capi_drawstack_begin(inm);",
       "separated": [false, false, false]
     },
     {
