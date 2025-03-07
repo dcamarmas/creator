@@ -2,9 +2,9 @@
   "instructions_binary": [
     {
       "Break": null,
-      "Address": "0x80000000",
-      "Label": "_start",
-      "loaded": "00000000000100000000000010010011",
+      "Address": "0x0",
+      "Label": "main",
+      "loaded": "00000000001000000000001010010111",
       "user": null,
       "_rowVariant": "",
       "visible": true,
@@ -12,135 +12,171 @@
     },
     {
       "Break": null,
-      "Address": "0x80000004",
+      "Address": "0x4",
       "Label": "",
-      "loaded": "00000000000000000000110001100011",
+      "loaded": "00000000000000101000001010010011",
       "user": null,
       "_rowVariant": "",
       "visible": true
     },
     {
       "Break": null,
-      "Address": "0x80000008",
+      "Address": "0x8",
       "Label": "",
-      "loaded": "00010010001100000000001100010011",
+      "loaded": "00000000001000000000001100010111",
       "user": null,
       "_rowVariant": "",
       "visible": true
     },
     {
       "Break": null,
-      "Address": "0x8000000c",
+      "Address": "0xc",
       "Label": "",
-      "loaded": "00000000000000000000000000010011",
+      "loaded": "00000011100000110000001100010011",
       "user": null,
       "_rowVariant": "",
       "visible": true
     },
     {
       "Break": null,
-      "Address": "0x80000010",
+      "Address": "0x10",
       "Label": "",
-      "loaded": "00000000000000000000000000010011",
+      "loaded": "00000000010000000000001110010011",
       "user": null,
       "_rowVariant": "",
       "visible": true
     },
     {
       "Break": null,
-      "Address": "0x80000014",
+      "Address": "0x14",
       "Label": "",
-      "loaded": "00000000000000000000000000010011",
+      "loaded": "00000000010000000000111000010011",
       "user": null,
       "_rowVariant": "",
       "visible": true
     },
     {
       "Break": null,
-      "Address": "0x80000018",
+      "Address": "0x18",
       "Label": "",
-      "loaded": "00000000000000111001001110010011",
+      "loaded": "00000000000000000000111010110011",
       "user": null,
       "_rowVariant": "",
       "visible": true
     },
     {
       "Break": null,
-      "Address": "0x8000001c",
-      "Label": "target",
-      "loaded": "00110010000100101000001010010011",
-      "user": null,
-      "_rowVariant": "",
-      "visible": true
-    },
-    {
-      "Break": null,
-      "Address": "0x80000020",
+      "Address": "0x1c",
       "Label": "",
-      "loaded": "00000000000000000000010100010011",
+      "loaded": "00000000000000000000111100110011",
       "user": null,
       "_rowVariant": "",
       "visible": true
     },
     {
       "Break": null,
-      "Address": "0x80000024",
+      "Address": "0x20",
+      "Label": "loop1",
+      "loaded": "00000011110100111000011001100011",
+      "user": null,
+      "_rowVariant": "",
+      "visible": true
+    },
+    {
+      "Break": null,
+      "Address": "0x24",
+      "Label": "loop2",
+      "loaded": "00000001111011100000111001100011",
+      "user": null,
+      "_rowVariant": "",
+      "visible": true
+    },
+    {
+      "Break": null,
+      "Address": "0x28",
       "Label": "",
-      "loaded": "00000000010000000000000001101111",
+      "loaded": "00000000000000101010000000000111",
       "user": null,
       "_rowVariant": "",
       "visible": true
     },
     {
       "Break": null,
-      "Address": "0x80000028",
-      "Label": "tohost_exit",
-      "loaded": "00000000000101010001010100010011",
-      "user": null,
-      "_rowVariant": "",
-      "visible": true
-    },
-    {
-      "Break": null,
-      "Address": "0x8000002c",
+      "Address": "0x2c",
       "Label": "",
-      "loaded": "00000000000101010110010100010011",
+      "loaded": "00000000000000110010000000100111",
       "user": null,
       "_rowVariant": "",
       "visible": true
     },
     {
       "Break": null,
-      "Address": "0x80000030",
+      "Address": "0x30",
       "Label": "",
-      "loaded": "00000000000000000001001010010111",
+      "loaded": "00000000010000101000001010010011",
       "user": null,
       "_rowVariant": "",
       "visible": true
     },
     {
       "Break": null,
-      "Address": "0x80000034",
+      "Address": "0x34",
       "Label": "",
-      "loaded": "11111101000000101000001010010011",
+      "loaded": "00000000010000110000001100010011",
       "user": null,
       "_rowVariant": "",
       "visible": true
     },
     {
       "Break": null,
-      "Address": "0x80000038",
+      "Address": "0x38",
       "Label": "",
-      "loaded": "00000000101000101010000000100011",
+      "loaded": "00000000000111110000111100010011",
       "user": null,
       "_rowVariant": "",
       "visible": true
     },
     {
       "Break": null,
-      "Address": "0x8000003c",
+      "Address": "0x3c",
       "Label": "",
-      "loaded": "00000000000000000000000001101111",
+      "loaded": "11111110000000000000010011100011",
+      "user": null,
+      "_rowVariant": "",
+      "visible": true
+    },
+    {
+      "Break": null,
+      "Address": "0x40",
+      "Label": "end2",
+      "loaded": "00000000000111101000111010010011",
+      "user": null,
+      "_rowVariant": "",
+      "visible": true
+    },
+    {
+      "Break": null,
+      "Address": "0x44",
+      "Label": "",
+      "loaded": "00000000000000000000111100110011",
+      "user": null,
+      "_rowVariant": "",
+      "visible": true
+    },
+    {
+      "Break": null,
+      "Address": "0x48",
+      "Label": "",
+      "loaded": "11111100000000000000110011100011",
+      "user": null,
+      "_rowVariant": "",
+      "visible": true
+    },
+    {
+      "Break": null,
+      "Address": "0x4c",
+      "Label": "end1",
+      "loaded": "00000000000000001000000001100111",
       "user": null,
       "_rowVariant": "",
       "visible": true
@@ -148,34 +184,55 @@
   ],
   "instructions_tag": [
     {
-      "tag": "",
+      "tag": "main",
       "addr": 0,
-      "globl": false
-    },
-    {
-      "tag": "_start",
-      "addr": 2147483648,
       "globl": true
     },
     {
-      "tag": "target",
-      "addr": 2147483676,
+      "tag": "matrixA",
+      "addr": 2097152,
       "globl": false
     },
     {
-      "tag": "tohost_exit",
-      "addr": 2147483688,
+      "tag": "matrixB",
+      "addr": 2097216,
       "globl": false
     },
     {
-      "tag": "fromhost",
-      "addr": 2147487808,
-      "globl": true
+      "tag": "loop1",
+      "addr": 32,
+      "globl": false
     },
     {
-      "tag": "tohost",
-      "addr": 2147487744,
-      "globl": true
+      "tag": "end1",
+      "addr": 76,
+      "globl": false
+    },
+    {
+      "tag": "loop2",
+      "addr": 36,
+      "globl": false
+    },
+    {
+      "tag": "end2",
+      "addr": 64,
+      "globl": false
+    }
+  ],
+  "data_section": [
+    {
+      "Address": "0x200000",
+      "Label": "matrixA",
+      "Size": 64,
+      "Value": "34000000340000003400000034000000234500000043221077512120141414140000021444551122aabff01277d000000000ff23123456788765432133441124",
+      "ASCII": "...4...4...4...4..E#.\"C. !Qw........\".UD.......w#...xV4.!Ce.$.D3"
+    },
+    {
+      "Address": "0x200040",
+      "Label": "matrixB",
+      "Size": 64,
+      "Value": "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "ASCII": "................................................................"
     }
   ]
 }

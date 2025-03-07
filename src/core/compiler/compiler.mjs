@@ -30,6 +30,7 @@ import {
     backup_stack_address,
     backup_data_address,
     arch,
+    dumpMemory,
 } from "../core.mjs";
 import {
     creator_memory_prereset,
@@ -44,7 +45,7 @@ import {
 } from "../memory/memoryOperations.mjs";
 import { bi_intToBigInt } from "../utils/bigint.mjs";
 import { creator_ga } from "../utils/creator_ga.mjs";
-import { console_log } from "../utils/creator_logger.mjs";
+import { logger, console_log } from "../utils/creator_logger.mjs";
 import { bin2hex } from "../utils/utils.mjs";
 import * as wasm from "./deno/creator_compiler.js";
 import { main_memory_zerofill } from "../memory/memoryCore.mjs";
@@ -228,6 +229,8 @@ export function assembly_compiler(library, color) {
     extern = [];
     data = [];
     status.execution_init = 1;
+
+    //TODO: Here we would get the instructions from an elf file
 
     let library_offset = 0;
     const library_instructions = update_binary.instructions_binary?.length ?? 0;

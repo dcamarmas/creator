@@ -60,6 +60,93 @@ def process_section(section, symbols, section_name):
     logging.info("Section processing complete - Instructions parsed: %d", len(instructions))
     return instructions
 
+def process_data_section(section, symbols, section_name):
+    """Process a data section and extract its content with symbol information."""
+    logging.info("Processing data section: %s", section_name)
+    data_entries = []
+    
+    if not section:
+        logging.warning("Data section not found: %s", section_name)
+        return data_entries
+        
+    logging.debug("Data section details - Size: %d, Address: %s", 
+                 section['sh_size'], hex(section['sh_addr']))
+    
+    # Read data content
+    data = section.data()
+    
+    # Group data by symbols
+    addr_to_process = sorted(symbols.keys())
+    data_addresses = []
+    
+    # Add section start if not already covered by a symbol
+    if section['sh_addr'] not in symbols:
+        data_addresses.append(section['sh_addr'])
+    
+    # Add all symbol addresses in this section
+    for addr in addr_to_process:
+        # Check if symbol belongs to this section by address range instead of index
+        if (addr >= section['sh_addr'] and 
+            addr < section['sh_addr'] + section['sh_size'] and 
+            symbols[addr]['type'] != 'STT_FUNC'):
+            if addr not in data_addresses:
+                data_addresses.append(addr)
+    
+    # Sort addresses
+    data_addresses.sort()
+    
+    # Process each data block
+    for i, addr in enumerate(data_addresses):
+        start_offset = addr - section['sh_addr']
+        
+        # Determine block size
+        if i < len(data_addresses) - 1:
+            end_offset = data_addresses[i+1] - section['sh_addr']
+            block_size = end_offset - start_offset
+        else:
+            block_size = len(data) - start_offset
+        
+        if start_offset < 0 or start_offset >= len(data):
+            continue
+            
+        # Get the block data
+        block_data = data[start_offset:start_offset+block_size]
+        
+        # Process data in 4-byte chunks and correct endianness
+        hex_values = []
+        for j in range(0, len(block_data), 4):
+            chunk = block_data[j:j+4]
+            if len(chunk) == 4:
+                # Reverse the byte order for little-endian representation
+                chunk = chunk[::-1]
+            hex_values.append(chunk.hex())
+        
+        # Join all hex values into one string
+        hex_string = ''.join(hex_values)
+        
+        # Create entry
+        entry = {
+            "Address": f"0x{addr:x}",
+            "Label": symbols[addr]['name'] if addr in symbols else "",
+            "Size": block_size,
+            "Value": hex_string,
+        }
+        
+        # ASCII representation (for debugging)
+        try:
+            ascii_text = ''.join(chr(b) if 32 <= b <= 126 else '.' for b in block_data)
+            entry["ASCII"] = ascii_text
+        except:
+            entry["ASCII"] = ""
+            
+        if addr in symbols and symbols[addr]['globl']:
+            entry["globl"] = True
+            
+        data_entries.append(entry)
+    
+    logging.info("Data section processing complete - Entries parsed: %d", len(data_entries))
+    return data_entries
+
 def extract_instructions(filename):
     logging.info("Initiating instruction extraction from: %s", filename)
     with open(filename, 'rb') as f:
@@ -76,8 +163,11 @@ def extract_instructions(filename):
                             section.name, section.num_symbols())
                 for symbol in section.iter_symbols():
                     if symbol['st_info']['type'] in ['STT_FUNC', 'STT_NOTYPE', 'STT_OBJECT']:
+                        # Replace "_start" with "main" in symbol names
+                        symbol_name = "main" if symbol.name == "_start" else symbol.name
+                        
                         symbols[symbol['st_value']] = {
-                            'name': symbol.name,
+                            'name': symbol_name,
                             'size': symbol['st_size'],
                             'type': symbol['st_info']['type'],
                             'bind': symbol['st_info']['bind'],
@@ -85,12 +175,13 @@ def extract_instructions(filename):
                             'globl': symbol['st_info']['bind'] == 'STB_GLOBAL'
                         }
                         logging.debug("Processed symbol - Name: %s, Type: %s, Address: %s",
-                                    symbol.name, symbol['st_info']['type'], 
+                                    symbol_name, symbol['st_info']['type'], 
                                     hex(symbol['st_value']))
 
         # Process sections
         text_section = elf.get_section_by_name('.text')
         text_init_section = elf.get_section_by_name('.text.init')
+        data_section = elf.get_section_by_name('.data')
         
         instructions = []
         instructions.extend(process_section(text_section, symbols, '.text'))
@@ -110,10 +201,14 @@ def extract_instructions(filename):
             }
             instructions_tag.append(tag_entry)
         logging.debug("Instruction tags created: %d", len(instructions_tag))
+        
+        # Process data section
+        data_entries = process_data_section(data_section, symbols, '.data')
             
         return {
             "instructions_binary": instructions,
-            "instructions_tag": instructions_tag
+            "instructions_tag": instructions_tag,
+            "data_section": data_entries
         }
 
 def save_to_json(data, output_file):

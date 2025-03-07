@@ -1,40 +1,42 @@
-# to communicate with the host
-# check riscv-software-src/riscv-tests
-.section .tohost, "aw", @progbits
 
-.align 6
-.globl tohost
-tohost: .dword 0
+#
+# Creator (https://creatorsim.github.io/creator/)
+#
 
-.align 6
-.globl fromhost
-fromhost: .dword 0
+.section .data
+.align 4
+matrixA:  .word 0x34000000, 0x34000000, 0x34000000, 0x34000000
+          .word 0x23450000, 0x00432210, 0x77512120, 0x14141414
+          .word 0x00000214, 0x44551122, 0xAABFF012, 0x77D00000
+          .word 0x0000FF23, 0x12345678, 0x87654321, 0x33441124
+
+.align 4
+matrixB:  .word 0x0, 0x0, 0x0, 0x0
+          .word 0x0, 0x0, 0x0, 0x0
+          .word 0x0, 0x0, 0x0, 0x0
+          .word 0x0, 0x0, 0x0, 0x0
 
 .section .text
+main:
+        la   t0, matrixA
+        la   t1, matrixB
+        li   t2, 4
+        li   t3, 4
+        add  t4, zero, zero
+        add  t5, zero, zero
+    
+loop1:  beq  t2, t4, end1
+loop2:  beq  t3, t5, end2
+        flw  f0, 0(t0)
+        fsw  f0, 0(t1)
+        addi t0, t0, 4
+        addi t1, t1, 4
+        addi t5, t5, 1
+        beq  x0, x0, loop2
+end2:   addi t4, t4, 1
+        add  t5, zero, zero
+        beq  x0, x0, loop1
+end1:   
+        # return
+        jr ra
 
-.globl _start
-
-_start:
-
-        addi x1, x0, 1
-        beq x0, x0, target    # Branch if equal using local label
-        addi x6, x0, 0x123     # test value
-        addi x0, x0, 0        # NOP
-        addi x0, x0, 0        # NOP
-        addi x0, x0, 0        # NOP
-        slli x7, x7, 0       # Increment x7
-target:
-        addi x5, x5, 0x321        # Increment x5
-        # Exit with status code 0
-        li a0, 0
-        j tohost_exit
-
-# a0 exit code
-tohost_exit:
-        slli a0, a0, 1
-        ori a0, a0, 1
-
-        la t0, tohost
-        sw a0, 0(t0)
-
-        1: j 1b # wait for termination

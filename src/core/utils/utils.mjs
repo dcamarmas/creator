@@ -262,3 +262,22 @@ export function clean_string(value, prefix) {
 
     return value2;
 }
+
+/**
+ * Converts a binary string to an array of hex bytes
+ * @param {string} binary - Binary string (e.g., "00101010...")
+ * @param {boolean} littleEndian - Whether to return bytes in little endian order
+ * @returns {string[]} Array of hex bytes (e.g., ["2A", "F0", ...])
+ */
+export function binary_to_hexbytes(binary, littleEndian = false) {
+    const hexBytes = [];
+    // Process 8 bits at a time to generate hex bytes
+    for (let i = 0; i < binary.length; i += 8) {
+        const byte = binary.substr(i, 8);
+        const hexByte = parseInt(byte, 2).toString(16).padStart(2, "0");
+        hexBytes.push(hexByte);
+    }
+
+    // Return in requested endianness
+    return littleEndian ? hexBytes.reverse() : hexBytes;
+}

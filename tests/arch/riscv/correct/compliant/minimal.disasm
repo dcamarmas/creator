@@ -4,24 +4,32 @@ minimal.elf:     file format elf64-littleriscv
 
 Disassembly of section .text:
 
-0000000080000000 <_start>:
-    80000000:	00100093          	li	ra,1
-    80000004:	00000c63          	beqz	zero,8000001c <target>
-    80000008:	12300313          	li	t1,291
-    8000000c:	00000013          	nop
-    80000010:	00000013          	nop
-    80000014:	00000013          	nop
-    80000018:	00039393          	slli	t2,t2,0x0
+0000000000000000 <main>:
+   0:	00200297          	auipc	t0,0x200
+   4:	00028293          	mv	t0,t0
+   8:	00200317          	auipc	t1,0x200
+   c:	03830313          	addi	t1,t1,56 # 200040 <matrixB>
+  10:	00400393          	li	t2,4
+  14:	00400e13          	li	t3,4
+  18:	00000eb3          	add	t4,zero,zero
+  1c:	00000f33          	add	t5,zero,zero
 
-000000008000001c <target>:
-    8000001c:	32128293          	addi	t0,t0,801
-    80000020:	00000513          	li	a0,0
-    80000024:	0040006f          	j	80000028 <tohost_exit>
+0000000000000020 <loop1>:
+  20:	03d38663          	beq	t2,t4,4c <end1>
 
-0000000080000028 <tohost_exit>:
-    80000028:	00151513          	slli	a0,a0,0x1
-    8000002c:	00156513          	ori	a0,a0,1
-    80000030:	00001297          	auipc	t0,0x1
-    80000034:	fd028293          	addi	t0,t0,-48 # 80001000 <tohost>
-    80000038:	00a2a023          	sw	a0,0(t0)
-    8000003c:	0000006f          	j	8000003c <tohost_exit+0x14>
+0000000000000024 <loop2>:
+  24:	01ee0e63          	beq	t3,t5,40 <end2>
+  28:	0002a007          	flw	ft0,0(t0) # 200000 <matrixA>
+  2c:	00032027          	fsw	ft0,0(t1)
+  30:	00428293          	addi	t0,t0,4
+  34:	00430313          	addi	t1,t1,4
+  38:	001f0f13          	addi	t5,t5,1
+  3c:	fe0004e3          	beqz	zero,24 <loop2>
+
+0000000000000040 <end2>:
+  40:	001e8e93          	addi	t4,t4,1
+  44:	00000f33          	add	t5,zero,zero
+  48:	fc000ce3          	beqz	zero,20 <loop1>
+
+000000000000004c <end1>:
+  4c:	00008067          	ret

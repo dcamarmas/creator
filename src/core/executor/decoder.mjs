@@ -190,9 +190,6 @@ function processInstructionField(field, instructionExec, instruction_nwords) {
                  *     │      │         │       │       │      │             │
                  *     1      6         5       5       3      4       1     7    bits = 32 bits = word size
                  *
-                 *  startbit = [31, 7, 30, 11]
-                 *  stopbit = [31, 7, 25, 8]
-                 *
                  *  Notice how the immediate is all over the place, and not contiguous.
                  *
                  *  In this case, the mapping would be:
@@ -201,7 +198,11 @@ function processInstructionField(field, instructionExec, instruction_nwords) {
                  *  imm[10:5] -> 30-25
                  *  imm[4:1] -> 11-8
                  *
-                 *  So bitsOrder would be [31, 7, 30, 29, 28, 27, 26, 25, 11, 10, 9, 8]
+                 *  So startbit and stopbit would be:
+                 *  startbit = [31, 7, 30, 11]
+                 *  stopbit = [31, 7, 25, 8]
+                 *
+                 *  The calculated bitsOrder would be: [31, 7, 30, 29, 28, 27, 26, 25, 11, 10, 9, 8]
                  *  And padding would be 1, since the LSB is always 0
                  *  (see RISC-V spec, section 2.3 and
                  *  https://stackoverflow.com/questions/58414772/why-are-risc-v-s-b-and-u-j-instruction-types-encoded-in-this-way

@@ -29,7 +29,7 @@ import {
 import { float2bin, double2bin, bin2hex, hex2double } from "./utils/utils.mjs";
 
 import { logger } from "./utils/creator_logger.mjs";
-import { assembly_compiler } from "./compiler/compiler.mjs";
+import { assembly_compiler, instructions } from "./compiler/compiler.mjs";
 import { executeProgramOneShot } from "./executor/executor.mjs";
 import {
     main_memory_get_addresses,
@@ -38,7 +38,6 @@ import {
     main_memory,
 } from "./memory/memoryCore.mjs";
 import * as wasm from "./compiler/deno/creator_compiler.js";
-import process from "node:process";
 
 export let code_assembly = "";
 export let update_binary = "";
@@ -549,4 +548,134 @@ export function dumpMemory(startAddr, numBytes, bytesPerRow = 16) {
     }
 
     return output;
+}
+
+export function load_binary_file(bin_str) {
+    const ret = {
+        status: "ok",
+        msg: "",
+    };
+
+    try {
+        // Parse binary JSON
+        const binary_data = JSON.parse(bin_str);
+
+        // Load instructions_binary directly into instructions
+        instructions.length = 0; // Clear existing instructions
+
+        // Copy instructions from binary
+        if (
+            binary_data.instructions_binary &&
+            Array.isArray(binary_data.instructions_binary)
+        ) {
+            for (let i = 0; i < binary_data.instructions_binary.length; i++) {
+                instructions.push(binary_data.instructions_binary[i]);
+            }
+            logger.info(
+                `Loaded ${instructions.length} instructions from binary`,
+            );
+        } else {
+            logger.warning("No instructions found in binary file");
+        }
+
+        // Load instructions_tag if available
+        if (
+            binary_data.instructions_tag &&
+            Array.isArray(binary_data.instructions_tag)
+        ) {
+            // Clear existing tags and create new ones from binary data
+            // This would typically be handled by the compiler but we're bypassing it
+            logger.info(
+                `Loaded ${binary_data.instructions_tag.length} instruction tags`,
+            );
+        }
+
+        // Load instructions into memory
+        for (let i = 0; i < instructions.length; i++) {
+            const instruction = instructions[i];
+            const addr = BigInt(parseInt(instruction.Address, 16));
+
+            // Convert binary instruction to hex bytes
+            const binInstruction = instruction.loaded;
+            const hexBytes = [];
+
+            // Process 8 bits at a time to generate hex bytes
+            for (let j = 0; j < binInstruction.length; j += 8) {
+                const byte = binInstruction.substr(j, 8);
+                const hexByte = parseInt(byte, 2).toString(16).padStart(2, "0");
+                hexBytes.push(hexByte);
+            }
+
+            // Add instruction bytes to memory (little endian)
+            for (let j = 0; j < hexBytes.length; j++) {
+                const byteAddr = addr + BigInt(j);
+
+                // Create memory entry for this byte
+                main_memory[byteAddr] = {
+                    addr: byteAddr,
+                    bin: hexBytes[j],
+                    break: false,
+                    data_type: {
+                        address: byteAddr,
+                        value: "00",
+                        default: "00",
+                        type: "instruction",
+                        size: 0,
+                    },
+                    def_bin: hexBytes[j],
+                    reset: true,
+                    tag: instruction.Label || "",
+                };
+            }
+        }
+
+        // Load data section into memory
+        if (
+            binary_data.data_section &&
+            Array.isArray(binary_data.data_section)
+        ) {
+            for (let i = 0; i < binary_data.data_section.length; i++) {
+                const data_item = binary_data.data_section[i];
+                const base_addr = BigInt(parseInt(data_item.Address, 16));
+                const size = data_item.Size;
+                const hex_value = data_item.Value;
+
+                // Split hex value into bytes
+                for (let j = 0; j < hex_value.length; j += 2) {
+                    if (j / 2 >= size) break;
+
+                    const byteAddr = base_addr + BigInt(j / 2);
+                    const hexByte = hex_value.substr(j, 2);
+
+                    // Create memory entry for this byte
+                    main_memory[byteAddr] = {
+                        addr: byteAddr,
+                        bin: hexByte,
+                        break: false,
+                        data_type: {
+                            address: byteAddr,
+                            value: "00",
+                            default: "00",
+                            type: data_item.Type || "unknown",
+                            size: 0,
+                        },
+                        def_bin: hexByte,
+                        reset: true,
+                        tag: j === 0 ? data_item.Label || "" : "",
+                    };
+                }
+            }
+            logger.info(`Loaded ${binary_data.data_section.length} data items`);
+        } else {
+            logger.warning("No data section found in binary file");
+        }
+
+        ret.msg = "Binary file loaded successfully";
+    } catch (e) {
+        ret.status = "ko";
+        ret.msg = "Error loading binary file: " + e.message;
+        logger.error("Binary load error: " + e.message);
+    }
+
+    return ret;
 }

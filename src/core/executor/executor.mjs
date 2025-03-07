@@ -31,7 +31,7 @@ import {
 } from "../core.mjs";
 import { creator_memory_zerofill } from "../memory/memoryManager.mjs";
 import { creator_memory_reset } from "../memory/memoryOperations.mjs";
-import { main_memory_write_value } from "../memory/memoryCore.mjs"; // For debugging only
+import { main_memory_write_value, main_memory } from "../memory/memoryCore.mjs"; // For debugging only
 import { crex_findReg_bytag } from "../register/registerLookup.mjs";
 import {
     readRegister,
@@ -52,7 +52,8 @@ import { logger } from "../utils/creator_logger.mjs";
 import { bin2hex, float2bin, hex2double } from "../utils/utils.mjs";
 import { decode_instruction } from "./decoder.mjs";
 import { buildInstructionPreload } from "./preload.mjs";
-import { dumpMemory } from "../core.mjs";
+import { dumpMemory } from "../core.mjs"; // To use with debugger
+import { get } from "node:http";
 
 export function packExecute(error, err_msg, err_type, draw) {
     const ret = {};
@@ -63,6 +64,22 @@ export function packExecute(error, err_msg, err_type, draw) {
     ret.draw = draw;
 
     return ret;
+}
+
+export function getPC() {
+    const pc_reg = crex_findReg_bytag("program_counter");
+    const pc_address = readRegister(pc_reg.indexComp, pc_reg.indexElem);
+    return pc_address;
+}
+
+export function setPC(value) {
+    const pc_reg = crex_findReg_bytag("program_counter");
+    writeRegister(value, pc_reg.indexComp, pc_reg.indexElem);
+    logger.debug(
+        "PC register updated to " +
+            readRegister(pc_reg.indexComp, pc_reg.indexElem),
+    );
+    return null;
 }
 
 function executePreload(draw) {
@@ -171,15 +188,13 @@ function handle_interruptions(draw) {
     draw.warning.push(status.execution_index);
 
     const epc_reg = crex_findReg_bytag("exception_program_counter");
-    const pc_reg = crex_findReg_bytag("program_counter");
-    const pc_reg_value = readRegister(pc_reg.indexComp, pc_reg.indexElem);
 
     // Save current PC to EPC
     writeRegister(pc_reg_value, epc_reg.indexComp, epc_reg.indexElem);
 
     // Jump to handler
     const handler_address = 0;
-    writeRegister(handler_address, pc_reg.indexComp, pc_reg.indexElem);
+    setPC(handler_address);
 
     // Update execution index
     // get_execution_index(draw); TODO: This is used for the UI
@@ -190,8 +205,7 @@ function handle_interruptions(draw) {
 
 //Get execution index by PC
 function get_execution_index(draw) {
-    const pc_reg = crex_findReg_bytag("program_counter");
-    const pc_reg_value = readRegister(pc_reg.indexComp, pc_reg.indexElem);
+    const pc_address = getPC();
     let found_index = -1;
     // The value of the program counter is DECIMAL
     // The value of the Address is HEXADECIMAL
@@ -199,7 +213,7 @@ function get_execution_index(draw) {
     for (let i = 0; i < instructions.length; i++) {
         // Mark current instruction and update execution index if PC matches
         const address = BigInt(instructions[i].Address);
-        if (address === pc_reg_value) {
+        if (address === pc_address) {
             status.execution_index = i;
             found_index = i;
 
@@ -240,14 +254,10 @@ function handle_next_instruction(draw, error) {
 
     if (error !== 1 && status.execution_index < instructions.length) {
         for (let i = 0; i < instructions.length; i++) {
-            const pc_reg = crex_findReg_bytag("program_counter");
-            const pc_reg_value = readRegister(
-                pc_reg.indexComp,
-                pc_reg.indexElem,
-            );
+            const pc_address = getPC();
             // We're converting to BigInt AND to DECIMAL in the same line
             const address = BigInt(instructions[i].Address);
-            if (address === pc_reg_value) {
+            if (address === pc_address) {
                 status.execution_index = i;
                 draw.success.push(status.execution_index);
                 break;
@@ -299,6 +309,16 @@ function handle_next_instruction(draw, error) {
     return null;
 }
 
+function incrementProgramCounter(nwords) {
+    const arch_bits = parseInt(architecture.arch_conf[1].value, 10);
+    const word_size = arch_bits / 8;
+    const increment = BigInt(nwords * word_size);
+    const pc_address = getPC();
+    setPC(pc_address + increment);
+    logger.debug("PC register updated to " + getPC());
+    return null;
+}
+
 // eslint-disable-next-line max-lines-per-function
 function execute_instruction() {
     // 1. Prepare drawing object and local variables
@@ -310,11 +330,7 @@ function execute_instruction() {
         danger: [],
         flash: [],
     };
-
     let error = 0;
-    let pc_reg;
-    let epc_reg;
-    let pc_reg_value;
 
     // 2. Perform checks before the loop
     const pre_check_result = perform_pre_execute_checks();
@@ -340,14 +356,16 @@ function execute_instruction() {
             return init_result;
         }
 
-        // 3.4 Get execution index by PC
+        // 3.4 Get execution index by PC (status.execution_index)
         const _exec_index = get_execution_index(draw); // TODO: Return value might be used in the UI
 
         // 3.5 Handle interruptions if any
         handle_interruptions(draw);
 
-        // 3.6 Identify and prepare the instruction to be executed
+        // 3.6 Fetch instruction
         const instruction = instructions[status.execution_index].loaded;
+
+        // 3.7 Decode instruction
         const decoded = decode_instruction(instruction);
         let {
             type,
@@ -360,23 +378,10 @@ function execute_instruction() {
             nwords,
         } = decoded;
 
-        // 3.7 Increase PC register to point to the next instruction
-        pc_reg = crex_findReg_bytag("program_counter");
-        const arch_bits = parseInt(architecture.arch_conf[1].value, 10);
-        const word_size = arch_bits / 8;
-        writeRegister(
-            readRegister(pc_reg.indexComp, pc_reg.indexElem) +
-                BigInt(nwords * word_size),
-            0,
-            0,
-        );
-        logger.debug(
-            "PC register updated to " +
-                readRegister(pc_reg.indexComp, pc_reg.indexElem),
-        );
-        logger.debug("auxDef: " + auxDef);
+        // 3.8 Increase PC register to point to the next instruction
+        incrementProgramCounter(nwords);
 
-        // 3.8 Preload instruction resources if needed
+        // 3.9 Preload instruction resources if needed
         const build_preload_result = buildInstructionPreload(
             signatureDef,
             instructionExec,
@@ -391,17 +396,27 @@ function execute_instruction() {
             return build_preload_result;
         }
 
-        // 3.9 Execute preload function and handle errors
+        // 3.10 Execute preload function and handle errors
+
+        /*
+         * Depending on the architecture, the PC can point to different
+         * addresses. For example, in MIPS, the PC points to the next
+         * instruction, but in RISC-V, it points to the current instruction.
+         * As another example, in ARM, the PC points to the
+         * next instruction + 4, so we need to adapt the value of the
+         * PC that will be seen by the instruction.
+         */
+
         const preloadError = executePreload(draw, error);
         if (preloadError) {
             return preloadError;
         }
 
-        // 3.10 Update stats and clock cycles
+        // 3.11 Update stats and clock cycles
         stats_update(type);
         clk_cycles_update(type);
 
-        // 3.11 Resolve next instruction or program end
+        // 3.12 Resolve next instruction or program end
         const next_instruction_result = handle_next_instruction(draw, error);
         if (next_instruction_result !== null) {
             return next_instruction_result;
