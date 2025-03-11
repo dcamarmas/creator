@@ -339,10 +339,10 @@
                                     } ;
 
                         this_env = this;
-                        /*gateway_remote_monitor(this.flash_url + "/debug", farg).then( function(data)  { 
-                                                                                                          this_env.debugging = false; 
+                        gateway_remote_monitor(this.flash_url + "/fullclean", farg).then( function(data)  { 
+                                                                                                          this_env.fullclean = false; 
                                                                                                           //show_notification(data, 'danger') ;
-                                                                                                        } ) ;*/
+                                                                                                        } ) ;
 
                         //Google Analytics
                         creator_ga('simulator', 'simulator.fullclean', 'simulator.fullclean');

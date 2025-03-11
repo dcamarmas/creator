@@ -253,7 +253,7 @@
                 '           :width="get_width()">' +
                 ' ' +
                 ' <br>' +
-                ' <a v-if="architecture_guide !=\'\'" target="_blank" :href="architecture_guide"><span class="fas fa-file-pdf"></span> {{architecture_name}} Guide</a>' +
+                '<a target="_blank" href="https://docs.espressif.com/projects/esp-idf/en/v5.0/esp32c3/hw-reference/esp32c3/user-guide-devkitc-02.html"><span class="fas fa-globe"></span> Hardware Documentation</a>'+
                 ' <br>' +
                 ' ' +
                 ' <b-table small :items="board_info" ' +
