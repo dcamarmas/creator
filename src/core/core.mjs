@@ -31,6 +31,7 @@ import {
     float2bin,
     getHexTwosComplement,
     hex2double,
+isDeno, isWeb
 } from "./utils/utils.mjs";
 
 import { logger } from "./utils/creator_logger.mjs";
@@ -61,8 +62,6 @@ import { creator_ga } from "./utils/creator_ga.mjs";
 import { creator_callstack_reset } from "./sentinel/sentinel.mjs";
 
 // Conditional import for the WASM compiler based on the environment (web or Deno)
-const isDeno = typeof Deno !== "undefined";
-const isWeb = typeof window !== "undefined" && typeof document !== "undefined";
 
 import wasm_web_init, {
     Color as Color_web,

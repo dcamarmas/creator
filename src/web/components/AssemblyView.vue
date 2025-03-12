@@ -18,11 +18,16 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <script>
 import UIeltoToolbar from "./general/UIeltoToolbar.vue"
+import TextareaAssembly from "./assembly/TextareaAssembly.vue"
 
 export default {
-  props: {},
-  components: { UIeltoToolbar },
-  data() {},
+  props: {
+    browser: String,
+    arch_available: Array,
+    architecture_name: String,
+    assembly_code: String,
+  },
+  components: { UIeltoToolbar, TextareaAssembly },
 }
 </script>
 
@@ -36,6 +41,7 @@ export default {
           components="btn_architecture,btn_simulator|btn_compile|dropdown_assembly_file,dropdown_library|btn_configuration,btn_information"
           :browser="browser"
           :arch_available="arch_available"
+          :assembly_code="assembly_code"
         />
 
         <!-- Assembly navbar modals -->
@@ -69,8 +75,8 @@ export default {
           <b-row cols="2">
             <b-col cols="12" id="divAssembly"> -->
         <!-- Assembly textarea-->
-        <!-- <TextareaAssembly :browser="browser" />
-            </b-col>
+        <TextareaAssembly :browser="browser" />
+        <!-- </b-col>
 
             <b-col cols="0" id="divTags" class="d-none"> -->
         <!-- Library tags-->
