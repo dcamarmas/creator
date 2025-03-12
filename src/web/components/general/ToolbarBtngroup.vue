@@ -23,12 +23,14 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 </style>
 <script>
 import PopoverInfo from "./PopoverInfo.vue"
+import { assembly_compile } from "@/core/core.mjs"
 
 export default {
   props: {
     group: { type: Array, required: true },
     browser: { type: String, required: true },
     architectures: { type: Array, required: true },
+    assembly_code: String,
   },
 
   components: { PopoverInfo },
@@ -121,87 +123,88 @@ export default {
 
     //Compile assembly code
     // eslint-disable-next-line max-lines-per-function
-    assembly_compiler(code) {
+    assembly_compiler() {
       //Change buttons status
       this.compiling = true
+      assembly_compile(this.assembly_code)
+      this.compiling = false
 
-      // eslint-disable-next-line max-lines-per-function
-      promise = new Promise((resolve, _reject) => {
-        // eslint-disable-next-line max-lines-per-function
-        setTimeout(function () {
-          // Compile
-          if (typeof code !== "undefined") {
-            code_assembly = code
-          } else {
-            code_assembly = textarea_assembly_editor.getValue()
-          }
-          const ret = assembly_compiler()
+      // promise = new Promise((resolve, _reject) => {
+      //   // eslint-disable-next-line max-lines-per-function
+      //   setTimeout(function () {
+      //     // Compile
+      //     if (typeof code !== "undefined") {
+      //       code_assembly = code
+      //     } else {
+      //       code_assembly = textarea_assembly_editor.getValue()
+      //     }
+      //     const ret = assembly_compiler()
 
-          //Update/reset
-          app._data.totalStats = 0
-          app._data.instructions = instructions
-          tokenIndex = 0 //TODO: change to token_index in all files
-          uielto_toolbar_btngroup.methods.reset(true)
+      //     //Update/reset
+      //     app._data.totalStats = 0
+      //     app._data.instructions = instructions
+      //     tokenIndex = 0 //TODO: change to token_index in all files
+      //     uielto_toolbar_btngroup.methods.reset(true)
 
-          //Save a backup in the cache memory
-          if (typeof Storage !== "undefined") {
-            const aux_object = jQuery.extend(true, {}, architecture)
-            const aux_architecture = register_value_serialize(aux_object)
-            const aux_arch = JSON.stringify(aux_architecture, null, 2)
+      //     //Save a backup in the cache memory
+      //     if (typeof Storage !== "undefined") {
+      //       const aux_object = jQuery.extend(true, {}, architecture)
+      //       const aux_architecture = register_value_serialize(aux_object)
+      //       const aux_arch = JSON.stringify(aux_architecture, null, 2)
 
-            const date = new Date()
-            const auxDate =
-              date.getHours() +
-              ":" +
-              date.getMinutes() +
-              ":" +
-              date.getSeconds() +
-              " - " +
-              date.getDate() +
-              "/" +
-              (date.getMonth() + 1) +
-              "/" +
-              date.getFullYear()
+      //       const date = new Date()
+      //       const auxDate =
+      //         date.getHours() +
+      //         ":" +
+      //         date.getMinutes() +
+      //         ":" +
+      //         date.getSeconds() +
+      //         " - " +
+      //         date.getDate() +
+      //         "/" +
+      //         (date.getMonth() + 1) +
+      //         "/" +
+      //         date.getFullYear()
 
-            localStorage.setItem(
-              "backup_arch_name",
-              app._data.architecture_name,
-            )
-            localStorage.setItem("backup_arch", aux_arch)
-            localStorage.setItem("backup_asm", code_assembly)
-            localStorage.setItem("backup_date", auxDate)
-          }
+      //       localStorage.setItem(
+      //         "backup_arch_name",
+      //         app._data.architecture_name,
+      //       )
+      //       localStorage.setItem("backup_arch", aux_arch)
+      //       localStorage.setItem("backup_asm", code_assembly)
+      //       localStorage.setItem("backup_date", auxDate)
+      //     }
 
-          //show error/warning
+      //     //show error/warning
 
-          //Change buttons status
-          this.compiling = false
+      //     //Change buttons status
+      //     this.compiling = false
 
-          switch (ret.type) {
-            case "error":
-              uielto_toolbar_btngroup.methods.compile_error(
-                ret.msg,
-                ret.token,
-                ret.line,
-              )
-              break
+      //     switch (ret.type) {
+      //       case "error":
+      //         uielto_toolbar_btngroup.methods.compile_error(
+      //           ret.msg,
+      //           ret.token,
+      //           ret.line,
+      //         )
+      //         break
 
-            case "warning":
-              show_notification(ret.token, ret.bgcolor)
-              break
+      //       case "warning":
+      //         show_notification(ret.token, ret.bgcolor)
+      //         break
 
-            default:
-              show_notification("Compilation completed successfully", "success")
-              break
-          }
+      //       default:
+      //         show_notification("Compilation completed successfully", "success")
+      //         break
+      //     }
 
-          // end
-          resolve("0")
-        }, 25)
-      })
+      //     // end
+      //     resolve("0")
+      //   }, 25)
+      // })
 
       // Close all toast
-      app.$bvToast.hide()
+      // app.$bvToast.hide()
     },
 
     //Show error message in the compilation
@@ -617,7 +620,7 @@ export default {
           @click="assembly_compiler()"
         >
           <font-awesome-icon icon="fa-sign-in-alt" />
-          Compile/Linked
+          Assemble/Link
           <b-spinner small v-if="compiling" class="ml-3"></b-spinner>
         </b-button>
 

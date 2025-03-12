@@ -24,7 +24,6 @@ import {
     status,
     stats,
     stats_value,
-    app,
     code_assembly,
     update_binary,
     backup_stack_address,
@@ -47,9 +46,31 @@ import {
 import { bi_intToBigInt } from "../utils/bigint.mjs";
 import { creator_ga } from "../utils/creator_ga.mjs";
 import { logger, console_log } from "../utils/creator_logger.mjs";
-import { bin2hex } from "../utils/utils.mjs";
+import { bin2hex, isDeno, isWeb } from "../utils/utils.mjs";
 
 import { main_memory_zerofill } from "../memory/memoryCore.mjs";
+
+
+// Conditional import for the WASM compiler based on the environment (web or Deno)
+import {
+    DataCategoryJS as DataCategoryJS_web,
+} from "./web/creator_compiler.js"
+import {
+    DataCategoryJS as DataCategoryJS_deno,
+} from "./deno/creator_compiler.js"
+
+let DataCategoryJS
+if (isDeno) {
+    // Deno HAS to be imported like this, as it doesn't provide a default
+    DataCategoryJS = DataCategoryJS_deno
+} else if (isWeb) {
+    DataCategoryJS = DataCategoryJS_web
+} else {
+    throw new Error(
+        "Unsupported environment: neither Deno nor web browser detected",
+    )
+}
+
 
 let textarea_assembly_editor;
 const codemirrorHistory = null;
@@ -368,7 +389,7 @@ export function assembly_compiler(library, color) {
             const size = Number(data.size());
             const addr = Number(data.address());
             switch (data.data_category()) {
-                case wasm.DataCategoryJS.Number:
+                case DataCategoryJS.Number:
                     creator_memory_data_compiler(
                         addr,
                         data.value(false),
@@ -379,7 +400,7 @@ export function assembly_compiler(library, color) {
                         true,
                     );
                     break;
-                case wasm.DataCategoryJS.String:
+                case DataCategoryJS.String:
                     creator_memory_storestring(
                         data.value(false),
                         size,
@@ -389,7 +410,7 @@ export function assembly_compiler(library, color) {
                         true,
                     );
                     break;
-                case wasm.DataCategoryJS.Space:
+                case DataCategoryJS.Space:
                     creator_memory_storestring(
                         size,
                         size,
@@ -399,7 +420,7 @@ export function assembly_compiler(library, color) {
                         true,
                     );
                     break;
-                case wasm.DataCategoryJS.Padding:
+                case DataCategoryJS.Padding:
                     main_memory_zerofill(addr, size);
                     break;
             }
@@ -473,7 +494,7 @@ export function assembly_compiler(library, color) {
             globl: x[1].global,
         }));
 
-    if (typeof app != "undefined") app._data.instructions = instructions
+    if (typeof document !== "undefined") document.app.$data.instructions = instructions
 
     /* Initialize stack */
     writeMemory("00", parseInt(stack_address), "word")

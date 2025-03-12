@@ -1,6 +1,6 @@
 {
   "name": "creatorV",
-  "version": "V-prealpha",
+  "version": "VI-prealpha",
   "private": true,
   "type": "module",
   "scripts": {
@@ -15,12 +15,17 @@
     "test": "deno test --allow-read --unstable-node-globals --coverage"
   },
   "dependencies": {
+    "@codemirror/commands": "^6.8.0",
     "@codemirror/lang-javascript": "^6.2.2",
+    "@codemirror/legacy-modes": "^6.4.3",
+    "@codemirror/state": "^6.5.2",
+    "@codemirror/view": "^6.36.4",
     "@fortawesome/fontawesome-svg-core": "^6.7.2",
     "@fortawesome/free-brands-svg-icons": "^6.7.2",
     "@fortawesome/free-regular-svg-icons": "^6.7.2",
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@fortawesome/vue-fontawesome": "^3.0.8",
+    "@replit/codemirror-vim": "^6.2.1",
     "apexcharts": "^4.4.0",
     "bootstrap": "^5.3.3",
     "bootstrap-vue-next": "^0.26.26",

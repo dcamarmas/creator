@@ -32,13 +32,16 @@ export default {
         autoRefresh: true,
       }
 
-      const textarea_arch_obj = document.getElementById('textarea_architecture')
+      const textarea_arch_obj = document.getElementById("textarea_architecture")
 
       if (textarea_arch_obj != null) {
-        textarea_arch_editor = CodeMirror.fromTextArea(textarea_arch_obj, editor_cfg)
-        textarea_arch_editor.setOption('keyMap', 'sublime') // vim -> 'vim', 'emacs', 'sublime', ...
+        textarea_arch_editor = CodeMirror.fromTextArea(
+          textarea_arch_obj,
+          editor_cfg,
+        )
+        textarea_arch_editor.setOption("keyMap", "sublime") // vim -> 'vim', 'emacs', 'sublime', ...
         textarea_arch_editor.setValue(app._data.arch_code)
-        textarea_arch_editor.setSize('auto', '70vh')
+        textarea_arch_editor.setSize("auto", "70vh")
       }
     },
     assembly_codemirror_start() {
@@ -48,18 +51,21 @@ export default {
         autoRefresh: true,
       }
 
-      const textarea_assembly_obj = document.getElementById('textarea_assembly')
+      const textarea_assembly_obj = document.getElementById("textarea_assembly")
 
       if (textarea_assembly_obj != null) {
-        textarea_assembly_editor = CodeMirror.fromTextArea(textarea_assembly_obj, editor_cfg)
-        textarea_assembly_editor.setOption('keyMap', 'sublime') // vim -> 'vim', 'emacs', 'sublime', ...
+        textarea_assembly_editor = CodeMirror.fromTextArea(
+          textarea_assembly_obj,
+          editor_cfg,
+        )
+        textarea_assembly_editor.setOption("keyMap", "sublime") // vim -> 'vim', 'emacs', 'sublime', ...
         textarea_assembly_editor.setValue(app._data.assembly_code)
-        textarea_assembly_editor.setSize('auto', '70vh')
+        textarea_assembly_editor.setSize("auto", "70vh")
 
         // add Ctrl-m
         const map = {
-          'Ctrl-M': function (cm) {
-            cm.execCommand('toggleComment')
+          "Ctrl-M": function (cm) {
+            cm.execCommand("toggleComment")
           },
         }
         textarea_assembly_editor.addKeyMap(map)
@@ -99,13 +105,17 @@ export default {
       try {
         aux_architecture = JSON.parse(app._data.arch_code)
       } catch {
-        show_notification('Architecture not edited. JSON format is incorrect', 'danger')
+        show_notification(
+          "Architecture not edited. JSON format is incorrect",
+          "danger",
+        )
         return
       }
 
       load_arch_select(aux_architecture)
 
-      uielto_preload_architecture.data.architecture_name = architecture.arch_conf[0].value
+      uielto_preload_architecture.data.architecture_name =
+        architecture.arch_conf[0].value
       app._data.architecture = architecture
       app._data.architecture_name = architecture.arch_conf[0].value
       app._data.architecture_hash = architecture_hash
@@ -115,7 +125,7 @@ export default {
       app._data.instructions = instructions
       creator_memory_clear()
 
-      show_notification('Architecture edited correctly', 'success')
+      show_notification("Architecture edited correctly", "success")
     },
   },
 }

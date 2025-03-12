@@ -21,6 +21,10 @@
  * Representation
  */
 
+
+export const isDeno = typeof Deno !== "undefined";
+export const isWeb = typeof window !== "undefined" && typeof document !== "undefined";
+
 /**
  * Check the type of a number in IEEE 754 format.
  * @param {number} s - Sign bit (0 for positive, 1 for negative)

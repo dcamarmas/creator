@@ -41,19 +41,6 @@
   color: black;
 }
 
-.CodeMirror {
-  border: 1px solid #eee;
-  height: auto;
-  font-size: 0.85em;
-}
-
-.code-scroll-y {
-  display: block;
-  max-height: 90vh;
-  overflow-y: auto;
-  -ms-overflow-style: -ms-autohiding-scrollbar;
-}
-
 .help-scroll-y {
   display: block;
   max-height: 80vh;

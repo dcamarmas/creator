@@ -18,7 +18,7 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <script>
-import ToolbarBtngroup from './ToolbarBtngroup.vue'
+import ToolbarBtngroup from "./ToolbarBtngroup.vue"
 
 export default {
   props: {
@@ -26,11 +26,12 @@ export default {
     components: { type: String, required: true },
     browser: { type: String, required: true },
     arch_available: { type: Array, required: true },
+    assembly_code: { type: String, required: false },
   },
 
   computed: {
     components_array: function () {
-      return this.components.split('|')
+      return this.components.split("|")
     },
   },
   components: { ToolbarBtngroup },
@@ -41,7 +42,12 @@ export default {
   <b-container :id="id" fluid align-h="center" class="menu my-3 mx-0 px-0">
     <b-row cols-xl="4" cols-lg="3" cols-md="3" cols-sm="2" cols-xs="1" cols="1">
       <b-col class="px-2 py-1" v-for="(item, _) in components_array">
-        <ToolbarBtngroup :group="item.split(',')" :browser="browser" :architectures="arch_available" />
+        <ToolbarBtngroup
+          :group="item.split(',')"
+          :browser="browser"
+          :architectures="arch_available"
+          :assembly_code="assembly_code"
+        />
 
         <div class="w-100 d-block d-sm-none"></div>
       </b-col>

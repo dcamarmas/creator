@@ -48,9 +48,9 @@ import {
   example_set_available,
   example_available,
   instructions,
-} from "../core/compiler/compiler.mjs"
+} from "@/core/compiler/compiler.mjs"
 
-import { track_stack_names } from "../core/memory/stackTracker.mjs"
+import { track_stack_names } from "@/core/memory/stackTracker.mjs"
 
 import SpinnerLoading from "./components/general/SpinnerLoading.vue"
 import SupportedBrowsers from "./components/general/SupportedBrowsers.vue"
@@ -569,7 +569,13 @@ export default {
   <!------------------->
   <!-- Assembly view -->
   <!------------------->
-  <AssemblyView v-if="creator_mode === 'assembly'" />
+  <AssemblyView
+    v-if="creator_mode === 'assembly'"
+    :architecture_name="architecture_name"
+    :arch_available="arch_available"
+    :browser="browser"
+    :assembly_code="assembly_code"
+  />
 
   <!-------------------->
   <!-- Simulator view -->

@@ -86,45 +86,6 @@ export default {
       //   "architectures.loading.preload_" + architecture.name,
       // )
     },
-
-      //Synchronous JSON read
-      $.ajaxSetup({
-        async: false,
-      })
-
-      $.getJSON("architecture/" + arch.file + ".json", cfg => {
-        load_arch_select(cfg)
-
-        //Refresh UI
-        show_notification(
-          arch.name + " architecture has been loaded correctly",
-          "success",
-        )
-
-        // Google Analytics
-        creator_ga(
-          "architecture",
-          "architecture.loading",
-          "architectures.loading.preload_cache",
-        )
-      }).fail(function () {
-        show_notification(
-          arch.name + " architecture is not currently available",
-          "info",
-        )
-      })
-
-      hide_loading()
-
-      this.$emit("select-architecture", arch.name) // emit to our grandparent
-
-      // Google Analytics
-      // creator_ga(
-      //   "architecture",
-      //   "architecture.loading",
-      //   "architectures.loading.preload_" + architecture.name,
-      // )
-    },
     // //Load the available architectures
     // load_arch_available() {
     //   //Read architectures availables JSON
