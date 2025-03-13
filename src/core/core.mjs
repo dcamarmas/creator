@@ -65,6 +65,7 @@ export const status = {
     keyboard: "",
     display: "",
     execution_index: 0,
+    virtual_PC: 0n, // This is the PC the instructions see.
 };
 
 export const stats_value = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];

@@ -53,7 +53,6 @@ import { bin2hex, float2bin, hex2double } from "../utils/utils.mjs";
 import { decode_instruction } from "./decoder.mjs";
 import { buildInstructionPreload } from "./preload.mjs";
 import { dumpMemory } from "../core.mjs"; // To use with debugger
-import { get } from "node:http";
 
 export function packExecute(error, err_msg, err_type, draw) {
     const ret = {};
@@ -79,7 +78,14 @@ export function setPC(value) {
         "PC register updated to " +
             readRegister(pc_reg.indexComp, pc_reg.indexElem),
     );
+    const offset = -4n;
+    status.virtual_PC = BigInt(value + offset); // TODO: This should depend on the architecture
+    logger.debug("Virtual PC register updated to " + status.virtual_PC);
     return null;
+}
+
+export function hasVirtualPCChanged(oldVirtualPC) {
+    return oldVirtualPC !== status.virtual_PC;
 }
 
 function executePreload(draw) {
@@ -246,66 +252,92 @@ function get_execution_index(draw) {
 }
 
 // eslint-disable-next-line max-lines-per-function
-function handle_next_instruction(draw, error) {
+function updateExecutionStatus(draw, error) {
+    // Check for program termination due to error
     if (status.execution_index === -1) {
         error = 1;
         return packExecute(false, "", "info", null);
     }
 
+    // If no error occurred and we haven't reached the end of instructions
     if (error !== 1 && status.execution_index < instructions.length) {
+        // Find which instruction corresponds to the current PC value
+        const pc_address = getPC();
+        let found = false;
+
         for (let i = 0; i < instructions.length; i++) {
-            const pc_address = getPC();
-            // We're converting to BigInt AND to DECIMAL in the same line
             const address = BigInt(instructions[i].Address);
+
             if (address === pc_address) {
+                // PC matches this instruction - update execution index and mark as success
                 status.execution_index = i;
                 draw.success.push(status.execution_index);
+                found = true;
                 break;
-            } else if (
-                i == instructions.length - 1 &&
-                status.run_program === 3
-            ) {
+            }
+        }
+
+        // Handle case when PC doesn't match any instruction address
+        if (!found) {
+            draw.space.push(status.execution_index);
+
+            // Set execution index past the end to indicate completion
+            if (status.run_program === 3) {
+                // For run_program=3 (specific execution mode)
                 status.execution_index = instructions.length + 1;
-            } else if (i == instructions.length - 1) {
-                draw.space.push(status.execution_index);
+            } else {
+                // For standard execution modes
                 status.execution_index = instructions.length + 1;
             }
         }
     }
 
+    // Handle program termination conditions
+    // Case 1: Program finished in run_program=3 mode
     if (
         status.execution_index >= instructions.length &&
         status.run_program === 3
     ) {
+        // Mark all instructions as space (not active)
         for (let i = 0; i < instructions.length; i++) {
             draw.space.push(i);
         }
         draw.info = [];
+
         return packExecute(
             false,
             "The execution of the program has finished",
             "success",
             draw,
         );
-    } else if (
+    }
+    // Case 2: Program finished in standard mode
+    else if (
         status.execution_index >= instructions.length &&
-        status.run_program != 3
+        status.run_program !== 3
     ) {
+        // Mark all instructions as space (not active)
         for (let i = 0; i < instructions.length; i++) {
             draw.space.push(i);
         }
         draw.info = [];
+
+        // Set special execution index (-2) to indicate normal termination
         status.execution_index = -2;
+
         return packExecute(
             false,
             "The execution of the program has finished",
             "success",
             draw,
         );
-    } else if (error !== 1) {
+    }
+    // Case 3: Continuing execution (no error)
+    else if (error !== 1) {
         draw.success.push(status.execution_index);
     }
 
+    // Return null to continue execution
     return null;
 }
 
@@ -320,7 +352,7 @@ function incrementProgramCounter(nwords) {
 }
 
 // eslint-disable-next-line max-lines-per-function
-function execute_instruction() {
+function executeInstructions() {
     // 1. Prepare drawing object and local variables
     const draw = {
         space: [],
@@ -399,17 +431,38 @@ function execute_instruction() {
         // 3.10 Execute preload function and handle errors
 
         /*
-         * Depending on the architecture, the PC can point to different
-         * addresses. For example, in MIPS, the PC points to the next
-         * instruction, but in RISC-V, it points to the current instruction.
-         * As another example, in ARM, the PC points to the
-         * next instruction + 4, so we need to adapt the value of the
-         * PC that will be seen by the instruction.
+         *  Depending on the architecture, the PC can point to different
+         *  addresses. For example, in MIPS, the PC points to the next
+         *  instruction, but in RISC-V, it points to the current instruction.
+         *  As another example, in ARM, the PC points to the
+         *  next instruction + 4, so we need to adapt the value of the
+         *  PC that will be seen by the instruction.
+         *
+         *  We solve this by using a "virtual" PC that is used by the
+         *  instruction and the real PC that is used by the
+         *  architecture.
+         *
+         *  The virtual PC is stored in status.virtual_pc and is
+         *  updated by the instruction. The real PC is stored in
+         *  the PC register and is updated by the architecture.
          */
 
+        // 3.10.1 Store initial virtual PC before instruction execution
+        const initialVirtualPC = status.virtual_PC;
+
+        // 3.10.2 Execute instruction and handle errors
         const preloadError = executePreload(draw, error);
         if (preloadError) {
             return preloadError;
+        }
+
+        // 3.10.3 Check if PC has changed
+        if (hasVirtualPCChanged(initialVirtualPC)) {
+            // Update the real PC with the new virtual PC
+            setPC(status.virtual_PC);
+            logger.debug(
+                "Virtual PC changed, updating real PC to " + status.virtual_PC,
+            );
         }
 
         // 3.11 Update stats and clock cycles
@@ -417,7 +470,7 @@ function execute_instruction() {
         clk_cycles_update(type);
 
         // 3.12 Resolve next instruction or program end
-        const next_instruction_result = handle_next_instruction(draw, error);
+        const next_instruction_result = updateExecutionStatus(draw, error);
         if (next_instruction_result !== null) {
             return next_instruction_result;
         }
@@ -435,7 +488,7 @@ export function executeProgramOneShot(limit_n_instructions) {
 
     // execute program
     for (let i = 0; i < limit_n_instructions; i++) {
-        ret = execute_instruction();
+        ret = executeInstructions();
 
         if (ret.error === true) {
             return ret;
