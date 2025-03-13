@@ -1,7 +1,7 @@
 import re
 
 def parse_disassembly(input_text):
-    pattern = r'[\da-f]+:\s+([\da-f]{8})\s+jalr\s+(x\d+),(-?\d+)?\(?(x\d+)\)?'
+    pattern = r'[\da-f]+:\s+([\da-f]{8})\s+remu\s+(x\d+),(x\d+),(x\d+)'
     instructions = []
     
     for line in input_text.split('\n'):
@@ -9,10 +9,10 @@ def parse_disassembly(input_text):
         if match:
             binary = format(int(match.group(1), 16), '032b')
             dest_reg = match.group(2)
-            offset = match.group(3) if match.group(3) else '0'
-            src_reg = match.group(4)
+            rs1 = match.group(3)
+            rs2 = match.group(4)
             
-            instruction_str = f"jalr {dest_reg} {offset} ({src_reg})"
+            instruction_str = f"remu {dest_reg} {rs1} {rs2}"
             instructions.append((binary, instruction_str))
     
     return instructions
@@ -39,7 +39,7 @@ function decode_test(instruction, expected) {
 '''
     
     for i, (binary, assembly) in enumerate(instructions):
-        test = f'''Deno.test("decode_instruction - JALR instruction {i+1}", () =>
+        test = f'''Deno.test("decode_instruction - remu instruction {i+1}", () =>
     decode_test("{binary}", "{assembly}"),
 );
 
@@ -57,8 +57,8 @@ instructions = parse_disassembly(input_text)
 test_file_content = generate_test_file(instructions)
 
 # Write output to file
-with open('jalr_decoder.test.mjs', 'w') as f:
+with open('remu_decoder.test.mjs', 'w') as f:
     f.write(test_file_content)
 
 # Print summary
-print(f"Generated {len(instructions)} JALR instruction tests")
+print(f"Generated {len(instructions)} remu instruction tests")

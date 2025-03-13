@@ -19,8 +19,8 @@ Disassembly of section .text:
 
 0000000000000024 <loop2>:
   24:	01ee0e63          	beq	t3,t5,40 <end2>
-  28:	0002a007          	flw	ft0,0(t0) # 200000 <matrixA>
-  2c:	00032027          	fsw	ft0,0(t1)
+  28:	0002a403          	lw	s0,0(t0) # 200000 <matrixA>
+  2c:	00832023          	sw	s0,0(t1)
   30:	00428293          	addi	t0,t0,4
   34:	00430313          	addi	t1,t1,4
   38:	001f0f13          	addi	t5,t5,1

@@ -723,7 +723,7 @@
       "name": "auipc",
       "type": "Arithmetic integer",
       "signature_definition": "F0 F2 F1",
-      "signature": "auipc,INT-Reg,inm-unsigned",
+      "signature": "auipc,INT-Reg,offset_bytes",
       "signatureRaw": "auipc rd inm",
       "co": "0010111",
       "cop": "",
@@ -738,7 +738,7 @@
         },
         {
           "name": "inm",
-          "type": "inm-unsigned",
+          "type": "offset_bytes",
           "startbit": 31,
           "stopbit": 12
         },
@@ -797,7 +797,7 @@
           "stopbit": 15
         }
       ],
-      "definition": "if (rs1 === rs2)\n PC = PC + inm - 4n; ",
+      "definition": "if (rs1 === rs2)\n PC = PC + inm; ",
       "separated": [false, false, true, false, false],
       "help": ""
     },
@@ -845,7 +845,7 @@
           "valueField": "101"
         }
       ],
-      "definition": "if (capi_uint2int(rs1) >= capi_uint2int(rs2))\n PC = PC + inm - 4n;",
+      "definition": "if (capi_uint2int(rs1) >= capi_uint2int(rs2))\n PC = PC + inm;",
       "separated": [false, true, false, false, false],
       "help": ""
     },
@@ -893,7 +893,7 @@
           "valueField": "111"
         }
       ],
-      "definition": "if (capi_int2uint(rs1) > capi_int2uint(rs2))\n PC = PC + inm - 4n;",
+      "definition": "if (capi_int2uint(rs1) > capi_int2uint(rs2))\n PC = PC + inm;",
       "separated": [false, true, false, false, false],
       "help": ""
     },
@@ -941,7 +941,7 @@
           "valueField": "100"
         }
       ],
-      "definition": "if (capi_uint2int(rs1) < capi_uint2int(rs2))\n PC = PC + inm - 4n;",
+      "definition": "if (capi_uint2int(rs1) < capi_uint2int(rs2))\n PC = PC + inm;",
       "separated": [false, true, false, false, false],
       "help": ""
     },
@@ -989,7 +989,7 @@
           "valueField": "110"
         }
       ],
-      "definition": "if (capi_int2uint(rs1) < capi_int2uint(rs2))\n PC = PC + inm - 4n;",
+      "definition": "if (capi_int2uint(rs1) < capi_int2uint(rs2))\n PC = PC + inm;",
       "separated": [false, true, false, false, false],
       "help": ""
     },
@@ -1037,7 +1037,7 @@
           "valueField": "001"
         }
       ],
-      "definition": "if (rs1 !== rs2)\n PC = PC + inm - 4n;",
+      "definition": "if (rs1 !== rs2)\n PC = PC + inm;",
       "separated": [false, true, false, false, false],
       "help": ""
     },
@@ -2078,8 +2078,8 @@
         {
           "name": "fld",
           "type": "co",
-          "startbit": 6,
-          "stopbit": 0
+          "startbit": 31,
+          "stopbit": 26
         },
         {
           "name": "inm",
@@ -3242,8 +3242,8 @@
         {
           "name": "off",
           "type": "inm-signed",
-          "startbit": 15,
-          "stopbit": 0
+          "startbit": [31, 11],
+          "stopbit": [25, 7]
         }
       ],
       "definition": "var val = capi_split_double(ft, 0);\n capi_mem_write(base+off, val, 'w', ft_name);\n val = capi_split_double(ft, 1);\n capi_mem_write(base+off+4n, val, 'w', ft_name);",
@@ -3822,7 +3822,7 @@
       "name": "jal",
       "type": "Unconditional bifurcation",
       "signature_definition": "F0 F2 F1",
-      "signature": "jal,INT-Reg,inm-unsigned",
+      "signature": "jal,INT-Reg,offset_bytes",
       "signatureRaw": "jal rd inm",
       "co": "1101111",
       "cop": "",
@@ -3851,7 +3851,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = PC;\n PC = PC + inm - 4n;\n capi_callconv_begin(inm); capi_drawstack_begin(inm);",
+      "definition": "rd = PC + 4n;\n PC = PC + inm;\n capi_callconv_begin(inm); capi_drawstack_begin(inm);",
       "separated": [false, false, false]
     },
     {
@@ -3899,7 +3899,7 @@
           "valueField": "000"
         }
       ],
-      "definition": "rd = PC;\n PC = (rs1+inm)&~1n;\n capi_callconv_end(); capi_drawstack_end(PC);",
+      "definition": "rd = PC + 4n;\n PC = (rs1+inm)&~1n;\n capi_callconv_end(); capi_drawstack_end(PC);",
       "separated": [false, false, false, false, false]
     },
     {
@@ -4231,7 +4231,7 @@
       "signature": "mulh,INT-Reg,INT-Reg,INT-Reg",
       "signatureRaw": "mulh rd rs1 rs2",
       "co": "0110011",
-      "cop": "0000001010",
+      "cop": "0000001001",
       "nwords": 1,
       "clk_cycles": 1,
       "fields": [
@@ -4265,7 +4265,7 @@
           "type": "cop",
           "startbit": 14,
           "stopbit": 12,
-          "valueField": "010"
+          "valueField": "001"
         },
         {
           "name": "rd",
@@ -4285,7 +4285,7 @@
       "signature": "mulhsu,INT-Reg,INT-Reg,INT-Reg",
       "signatureRaw": "mulhsu rd rs1 rs2",
       "co": "0110011",
-      "cop": "0000001000",
+      "cop": "0000001010",
       "nwords": 1,
       "clk_cycles": 1,
       "fields": [
@@ -4319,7 +4319,7 @@
           "type": "cop",
           "startbit": 14,
           "stopbit": 12,
-          "valueField": "001"
+          "valueField": "010"
         },
         {
           "name": "rd",
@@ -4582,7 +4582,7 @@
       "signature": "remu,INT-Reg,INT-Reg,INT-Reg",
       "signatureRaw": "remu rd rs1 rs2",
       "co": "0110011",
-      "cop": "0000001110",
+      "cop": "0000001111",
       "nwords": 1,
       "clk_cycles": 1,
       "fields": [
@@ -4616,7 +4616,7 @@
           "type": "cop",
           "startbit": 14,
           "stopbit": 12,
-          "valueField": "110"
+          "valueField": "111"
         },
         {
           "name": "rd",
@@ -5859,7 +5859,7 @@
           "type": "inm-unsigned"
         }
       ],
-      "definition": "no_ret_op{tmp=Field.2.(31,0).int - reg.pc;\ntmp -= tmp>=2**31? 2**32 : 0;\ntmp_low=tmp&0x00000FFF;\ntmp_low=tmp_low>0x7FF? tmp_low - 0x1000 : tmp_low;\ntmp_hi=(tmp - tmp_low)>>12};\nauipc rd, op{tmp_hi};\naddi rd, rd, op{tmp_low};"
+      "definition": "no_ret_op{tmp=Field.2.(31,0).int;\ntmp_pc_offset=(reg.pc-4)&0xFFF;\ntmp_low=tmp&0x00000FFF;\ntmp_hi=tmp>>12};\nauipc rd, op{tmp_hi};\naddi rd, rd, op{tmp_low-(tmp_pc_offset)};"
     },
     {
       "name": "li",
@@ -5879,27 +5879,7 @@
           "type": "inm-signed"
         }
       ],
-      "definition": "no_ret_op{tmp=Field.2.(31,0).int;\ntmp -= tmp>=2**31? 2**32 : 0;\ntmp_low=tmp&0x00000FFF;\ntmp_low-=tmp_low>0x7FF? 0x1000 : 0;\ntmp_hi=(tmp - tmp_low)>>12;\ntmp_hi&=0xFFFFF};\nif(tmp_hi === 0){addi rd, x0, op{tmp_low};}\nelse{lui rd, op{tmp_hi};\naddi rd, rd, op{tmp_low};}"
-    },
-    {
-      "name": "lw",
-      "signature_definition": "lw F0 F1",
-      "signature": "lw,INT-Reg,inm-unsigned",
-      "signatureRaw": "lw rd addr",
-      "help": "",
-      "properties": [],
-      "nwords": 1,
-      "fields": [
-        {
-          "name": "rd",
-          "type": "INT-Reg"
-        },
-        {
-          "name": "addr",
-          "type": "inm-unsigned"
-        }
-      ],
-      "definition": "rd = capi_mem_read(addr, 'w', rd_name);"
+      "definition": "no_ret_op{tmp=Field.2.(31,0).int;\ntmp_low=tmp&0x00000FFF;\ntmp_low-=tmp_low>0x7FF? 0x1000 : 0;\ntmp_hi=(tmp - tmp_low)>>>12};\nif(tmp_hi === 0){addi rd, x0, op{tmp_low};}\nelse{lui rd, op{tmp_hi};\naddi rd, rd, op{tmp_low};}"
     },
     {
       "name": "mv",

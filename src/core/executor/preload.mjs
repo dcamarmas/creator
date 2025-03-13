@@ -18,7 +18,7 @@
  *
  */
 "use strict";
-import { architecture } from "../core.mjs";
+import { architecture, status } from "../core.mjs";
 import { clean_string } from "../utils/utils.mjs";
 import { console_log, logger } from "../utils/creator_logger.mjs";
 
@@ -185,13 +185,15 @@ export function processRegisterOperations(auxDef, signatureParts) {
             j >= 0;
             j--
         ) {
-            let clean_name = clean_string(
-                architecture.components[i].elements[j].name[0],
-                "reg_",
-            );
+            let clean_name;
             const clean_aliases = architecture.components[i].elements[j].name
                 .map(x => clean_string(x, "reg_"))
                 .join("|");
+
+            // Check if this register is PC
+            const isPC = architecture.components[i].elements[j].name.some(
+                name => name.toUpperCase() === "PC",
+            );
 
             // Handle write operations
             let re = new RegExp(
@@ -202,7 +204,14 @@ export function processRegisterOperations(auxDef, signatureParts) {
                 re = new RegExp("(" + clean_aliases + ")");
                 const reg_name = re.exec(auxDef)[0];
                 clean_name = clean_string(reg_name, "reg_");
-                writings_description += `\nwriteRegister(${clean_name}, ${i}, ${j}, "${signatureParts[i]}");`;
+
+                if (isPC) {
+                    // Special handling for PC write
+                    writings_description += `\nstatus.virtual_PC = ${clean_name};`;
+                } else {
+                    // Normal register write
+                    writings_description += `\nwriteRegister(${clean_name}, ${i}, ${j}, "${signatureParts[i]}");`;
+                }
             }
 
             // Handle read operations
@@ -211,8 +220,16 @@ export function processRegisterOperations(auxDef, signatureParts) {
                 re = new RegExp("(" + clean_aliases + ")");
                 const reg_name = re.exec(auxDef)[0];
                 clean_name = clean_string(reg_name, "reg_");
-                readings_description += `var ${clean_name}      = readRegister(${i} ,${j}, "${signatureParts[i]}");\n`;
-                readings_description += `var ${clean_name}_name = '${clean_name}';\n`;
+
+                if (isPC) {
+                    // Special handling for PC read
+                    readings_description += `var ${clean_name}      = status.virtual_PC;\n`;
+                    readings_description += `var ${clean_name}_name = 'PC';\n`;
+                } else {
+                    // Normal register read
+                    readings_description += `var ${clean_name}      = readRegister(${i} ,${j}, "${signatureParts[i]}");\n`;
+                    readings_description += `var ${clean_name}_name = '${clean_name}';\n`;
+                }
             }
         }
     }
