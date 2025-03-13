@@ -274,15 +274,15 @@ function get_execution_index(draw) {
 }
 
 // eslint-disable-next-line max-lines-per-function
-function updateExecutionStatus(draw, error) {
+function updateExecutionStatus(draw) {
     // Check for program termination due to error
     if (status.execution_index === -1) {
-        error = 1;
+        status.error = 1;
         return packExecute(false, "", "info", null);
     }
 
     // If no error occurred and we haven't reached the end of instructions
-    if (error !== 1 && status.execution_index < instructions.length) {
+    if (status.error !== 1 && status.execution_index < instructions.length) {
         // Find which instruction corresponds to the current PC value
         const pc_address = getPC();
         let found = false;
@@ -355,7 +355,7 @@ function updateExecutionStatus(draw, error) {
         );
     }
     // Case 3: Continuing execution (no error)
-    else if (error !== 1) {
+    else if (status.error !== 1) {
         draw.success.push(status.execution_index);
     }
 
@@ -480,10 +480,9 @@ function createDrawObject() {
 /**
  * Executes a single instruction cycle (fetch-decode-execute)
  * @param {Object} draw - The drawing object for UI updates
- * @param {number} error - Error flag
  * @returns {Object|null} - Returns execution result object if execution should stop, or null to continue
  */
-function executeInstructionCycle(draw, error) {
+function executeInstructionCycle(draw) {
     // Log debug information
     logger.debug("Execution Index:" + status.execution_index);
     logger.debug("Register (0,0): " + readRegister(0, 0));
@@ -513,25 +512,24 @@ function executeInstructionCycle(draw, error) {
     }
 
     // Update execution status and determine next instruction
-    return updateExecutionStatus(draw, error);
+    return updateExecutionStatus(draw);
 }
 
 function executeInstructions() {
     // Create draw object for UI updates
     const draw = createDrawObject();
-    let error = 0;
-
+    status.error = 0;
     // Main execution loop
     do {
         // Execute a single instruction cycle
-        const cycleResult = executeInstructionCycle(draw, error);
+        const cycleResult = executeInstructionCycle(draw);
         if (cycleResult !== null) {
             return cycleResult;
         }
 
         // Check if error occurred during execution
         if (status.execution_index === -1) {
-            error = 1;
+            status.error = 1;
             break;
         }
     } while (instructions[status.execution_index].hide === true);
