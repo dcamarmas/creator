@@ -54,6 +54,41 @@ import { decode_instruction } from "./decoder.mjs";
 import { buildInstructionPreload } from "./preload.mjs";
 import { dumpMemory } from "../core.mjs"; // To use with debugger
 
+function stats_update(type) {
+    for (let i = 0; i < stats.length; i++) {
+        if (type == stats[i].type) {
+            stats[i].number_instructions++;
+            stats_value[i]++;
+
+            status.totalStats++;
+            if (typeof app !== "undefined") {
+                app._data.status.totalStats++;
+            }
+        }
+    }
+
+    for (let i = 0; i < stats.length; i++) {
+        stats[i].percentage = (
+            (stats[i].number_instructions / status.totalStats) *
+            100
+        ).toFixed(2);
+    }
+}
+
+function stats_reset() {
+    status.totalStats = 0;
+    if (typeof app !== "undefined") {
+        app._data.status.totalStats = 0;
+    }
+
+    for (let i = 0; i < stats.length; i++) {
+        stats[i].percentage = 0;
+
+        stats[i].number_instructions = 0;
+        stats_value[i] = 0;
+    }
+}
+
 export function packExecute(error, err_msg, err_type, draw) {
     const ret = {};
 
@@ -111,9 +146,16 @@ function executePreload(draw) {
     }
 }
 
-function perform_pre_execute_checks() {
-    logger.debug("Execution Index:" + status.execution_index);
-    logger.debug("Register (0,0): " + readRegister(0, 0));
+/**
+ * Performs validation checks to determine if execution should continue
+ * @param {boolean} includeLogging - Whether to include debug logging statements
+ * @returns {Object|null} - Returns execution result object if validation fails, or null if validation passes
+ */
+function performExecutionChecks(includeLogging = false) {
+    if (includeLogging) {
+        logger.debug("Execution Index:" + status.execution_index);
+        logger.debug("Register (0,0): " + readRegister(0, 0));
+    }
 
     if (instructions.length === 0) {
         return packExecute(true, "No instructions in memory", "danger", null);
@@ -132,26 +174,6 @@ function perform_pre_execute_checks() {
         return packExecute(false, "", "info", null);
     }
 
-    return null;
-}
-
-function perform_in_loop_checks() {
-    if (instructions.length === 0) {
-        return packExecute(true, "No instructions in memory", "danger", null);
-    }
-    if (status.execution_index < -1) {
-        return packExecute(true, "The program has finished", "warning", null);
-    }
-    if (status.execution_index === -1) {
-        return packExecute(
-            true,
-            "The program has finished with errors",
-            "danger",
-            null,
-        );
-    } else if (status.run_program === 3) {
-        return packExecute(false, "", "info", null);
-    }
     return null;
 }
 
@@ -351,10 +373,102 @@ function incrementProgramCounter(nwords) {
     return null;
 }
 
-// eslint-disable-next-line max-lines-per-function
-function executeInstructions() {
-    // 1. Prepare drawing object and local variables
-    const draw = {
+function executeInstructionAndHandlePC(draw) {
+    /*
+     *  Depending on the architecture, the PC can point to different
+     *  addresses. For example, in MIPS/RISC-V, the PC points to the
+     *  CURRENT instruction, but in ARM, the PC points to the
+     *  NEXT instruction + 4, so we need to adapt the value of the
+     *  PC that will be seen by the instruction.
+     *
+     *  We solve this by using a "virtual" PC that is used by the
+     *  instruction and the real PC that is used by the
+     *  architecture.
+     *
+     *  The virtual PC is stored in status.virtual_pc and is
+     *  updated by the instruction. The real PC is stored in
+     *  the PC register and is updated by the architecture.
+     */
+    // Store initial virtual PC before instruction execution
+    const initialVirtualPC = status.virtual_PC;
+
+    // Execute instruction and handle errors
+    const preloadError = executePreload(draw);
+    if (preloadError) {
+        return preloadError;
+    }
+
+    // Check if PC has changed
+    if (hasVirtualPCChanged(initialVirtualPC)) {
+        // Update the real PC with the new virtual PC
+        setPC(status.virtual_PC);
+        logger.debug(
+            "Virtual PC changed, updating real PC to " + status.virtual_PC,
+        );
+    }
+
+    return null; // No errors
+}
+
+/**
+ * Processes the current instruction (fetch, decode, execute)
+ * @param {Object} draw - The drawing object for UI updates
+ * @returns {Object|null} - Returns execution result object if execution should stop, or null to continue
+ */
+function processCurrentInstruction(draw) {
+    // 1. Fetch instruction
+    const instruction = instructions[status.execution_index].loaded;
+
+    // 2. Decode instruction
+    const decoded = decode_instruction(instruction);
+    const {
+        type,
+        signatureDef,
+        signatureParts,
+        signatureRawParts,
+        instructionExec,
+        instructionExecParts,
+        auxDef,
+        nwords,
+    } = decoded;
+
+    // 3. Increment PC based on instruction size
+    incrementProgramCounter(nwords);
+
+    // 4. Build instruction preload
+    const buildPreloadResult = buildInstructionPreload(
+        signatureDef,
+        instructionExec,
+        instructionExecParts,
+        signatureRawParts,
+        signatureParts,
+        auxDef,
+        instructions[status.execution_index].preload,
+        status.execution_index,
+    );
+    if (buildPreloadResult !== null) {
+        return buildPreloadResult;
+    }
+
+    // 5. Execute instruction and handle PC changes
+    const executeResult = executeInstructionAndHandlePC(draw);
+    if (executeResult !== null) {
+        return executeResult;
+    }
+
+    // 6. Update execution statistics
+    stats_update(type);
+    clk_cycles_update(type);
+
+    return null;
+}
+
+/**
+ * Creates a drawing object used for UI updates
+ * @returns {Object} Draw object with arrays for different instruction states
+ */
+function createDrawObject() {
+    return {
         space: [],
         info: [],
         success: [],
@@ -362,121 +476,67 @@ function executeInstructions() {
         danger: [],
         flash: [],
     };
-    let error = 0;
+}
+/**
+ * Executes a single instruction cycle (fetch-decode-execute)
+ * @param {Object} draw - The drawing object for UI updates
+ * @param {number} error - Error flag
+ * @returns {Object|null} - Returns execution result object if execution should stop, or null to continue
+ */
+function executeInstructionCycle(draw, error) {
+    // Log debug information
+    logger.debug("Execution Index:" + status.execution_index);
+    logger.debug("Register (0,0): " + readRegister(0, 0));
 
-    // 2. Perform checks before the loop
-    const pre_check_result = perform_pre_execute_checks();
-    if (pre_check_result !== null) {
-        return pre_check_result;
+    // Check for conditions that would stop execution
+    const inLoopCheckResult = performExecutionChecks();
+    if (inLoopCheckResult !== null) {
+        return inLoopCheckResult;
     }
 
-    // 3. Execute instructions in a loop until conditions break
+    // Initialize execution environment if needed
+    const initResult = initialize_execution(draw);
+    if (initResult !== null) {
+        return initResult;
+    }
+
+    // Update execution index based on PC
+    get_execution_index(draw);
+
+    // Handle any pending interruptions
+    handle_interruptions(draw);
+
+    // Process the current instruction
+    const processingResult = processCurrentInstruction(draw);
+    if (processingResult !== null) {
+        return processingResult;
+    }
+
+    // Update execution status and determine next instruction
+    return updateExecutionStatus(draw, error);
+}
+
+function executeInstructions() {
+    // Create draw object for UI updates
+    const draw = createDrawObject();
+    let error = 0;
+
+    // Main execution loop
     do {
-        // 3.1 Logging and debugging info
-        logger.debug("Execution Index:" + status.execution_index);
-        logger.debug("Register (0,0): " + readRegister(0, 0));
-
-        // 3.2 Check for empty instruction set or finished program
-        const in_loop_check_result = perform_in_loop_checks();
-        if (in_loop_check_result !== null) {
-            return in_loop_check_result;
+        // Execute a single instruction cycle
+        const cycleResult = executeInstructionCycle(draw, error);
+        if (cycleResult !== null) {
+            return cycleResult;
         }
 
-        // 3.3 Initialize execution (find main label if needed)
-        const init_result = initialize_execution(draw);
-        if (init_result !== null) {
-            return init_result;
-        }
-
-        // 3.4 Get execution index by PC (status.execution_index)
-        const _exec_index = get_execution_index(draw); // TODO: Return value might be used in the UI
-
-        // 3.5 Handle interruptions if any
-        handle_interruptions(draw);
-
-        // 3.6 Fetch instruction
-        const instruction = instructions[status.execution_index].loaded;
-
-        // 3.7 Decode instruction
-        const decoded = decode_instruction(instruction);
-        let {
-            type,
-            signatureDef,
-            signatureParts,
-            signatureRawParts,
-            instructionExec,
-            instructionExecParts,
-            auxDef,
-            nwords,
-        } = decoded;
-
-        // 3.8 Increase PC register to point to the next instruction
-        incrementProgramCounter(nwords);
-
-        // 3.9 Preload instruction resources if needed
-        const build_preload_result = buildInstructionPreload(
-            signatureDef,
-            instructionExec,
-            instructionExecParts,
-            signatureRawParts,
-            signatureParts,
-            auxDef,
-            instructions[status.execution_index].preload,
-            status.execution_index,
-        );
-        if (build_preload_result !== null) {
-            return build_preload_result;
-        }
-
-        // 3.10 Execute preload function and handle errors
-
-        /*
-         *  Depending on the architecture, the PC can point to different
-         *  addresses. For example, in MIPS, the PC points to the next
-         *  instruction, but in RISC-V, it points to the current instruction.
-         *  As another example, in ARM, the PC points to the
-         *  next instruction + 4, so we need to adapt the value of the
-         *  PC that will be seen by the instruction.
-         *
-         *  We solve this by using a "virtual" PC that is used by the
-         *  instruction and the real PC that is used by the
-         *  architecture.
-         *
-         *  The virtual PC is stored in status.virtual_pc and is
-         *  updated by the instruction. The real PC is stored in
-         *  the PC register and is updated by the architecture.
-         */
-
-        // 3.10.1 Store initial virtual PC before instruction execution
-        const initialVirtualPC = status.virtual_PC;
-
-        // 3.10.2 Execute instruction and handle errors
-        const preloadError = executePreload(draw, error);
-        if (preloadError) {
-            return preloadError;
-        }
-
-        // 3.10.3 Check if PC has changed
-        if (hasVirtualPCChanged(initialVirtualPC)) {
-            // Update the real PC with the new virtual PC
-            setPC(status.virtual_PC);
-            logger.debug(
-                "Virtual PC changed, updating real PC to " + status.virtual_PC,
-            );
-        }
-
-        // 3.11 Update stats and clock cycles
-        stats_update(type);
-        clk_cycles_update(type);
-
-        // 3.12 Resolve next instruction or program end
-        const next_instruction_result = updateExecutionStatus(draw, error);
-        if (next_instruction_result !== null) {
-            return next_instruction_result;
+        // Check if error occurred during execution
+        if (status.execution_index === -1) {
+            error = 1;
+            break;
         }
     } while (instructions[status.execution_index].hide === true);
 
-    // 4. Return final packExecute result
+    // Return execution result
     return packExecute(false, null, null, draw);
 }
 
@@ -671,47 +731,12 @@ export function writeStackLimit(stackLimit) {
             "0x" + stackLimit.toString(16).padStart(8, "0").toUpperCase();
     }
 }
-/*
- * Stats
- */
-function stats_update(type) {
-    for (let i = 0; i < stats.length; i++) {
-        if (type == stats[i].type) {
-            stats[i].number_instructions++;
-            stats_value[i]++;
 
-            status.totalStats++;
-            if (typeof app !== "undefined") {
-                app._data.status.totalStats++;
-            }
-        }
-    }
-
-    for (let i = 0; i < stats.length; i++) {
-        stats[i].percentage = (
-            (stats[i].number_instructions / status.totalStats) *
-            100
-        ).toFixed(2);
-    }
-}
-function stats_reset() {
-    status.totalStats = 0;
-    if (typeof app !== "undefined") {
-        app._data.status.totalStats = 0;
-    }
-
-    for (let i = 0; i < stats.length; i++) {
-        stats[i].percentage = 0;
-
-        stats[i].number_instructions = 0;
-        stats_value[i] = 0;
-    }
-}
 /*
  * CLK Cycles
  */
 
-export var total_clk_cycles = 0;
+export let total_clk_cycles = 0;
 const clk_cycles_value = [
     {
         data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -764,29 +789,4 @@ function clk_cycles_reset() {
 
         clk_cycles_value[0].data[i] = 0;
     }
-}
-
-/*
- *  Execute binary
- */
-function get_register_binary(type, bin) {
-    for (let i = 0; i < architecture.components.length; i++) {
-        if (architecture.components[i].type == type) {
-            for (
-                let j = 0;
-                j < architecture.components[i].elements.length;
-                j++
-            ) {
-                const len = bin.length;
-                if (j.toString(2).padStart(len, "0") == bin) {
-                    return architecture.components[i].elements[j].name[0];
-                }
-            }
-        }
-    }
-
-    return null;
-}
-function get_number_binary(bin) {
-    return "0x" + bin2hex(bin);
 }
