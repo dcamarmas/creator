@@ -237,7 +237,7 @@
                       {
                         return target_ports[this._props.os];
                       },*/
-
+                      
                       //Download driver
                       download_driver()
                       {
@@ -251,6 +251,25 @@
 
                         //Google Analytics
                         creator_ga('simulator', 'simulator.download_driver', 'simulator.download_driver');
+                      },
+                      creatinoMode(isChecked )
+                      {
+                        this.save();
+
+                        this.running = true;
+
+                        var farg =  {
+                                      state: isChecked
+                                    } ;
+
+                        this_env = this;
+                        gateway_remote_monitor(this.flash_url + "/arduinoMode", farg).then( function(data)  { 
+                                                                                                          this_env.running = false; 
+                                                                                                          //show_notification(data, 'danger') ;
+                                                                                                        } ) ;
+
+                        //Google Analytics
+                        creator_ga('simulator', 'simulator.arduinoMode', 'simulator.arduinoMode');
                       },
 
                       do_flash( )
@@ -384,7 +403,8 @@
                     '       </b-container>' +
                     '       <br>' +
                     '       <b-col v-if="target_board" class="mb-3">'+
-                    '         <b-form-checkbox v-model="arduino_support">' +
+                    '         <b-form-checkbox v-model="arduino_support"' +
+                    '             @change="creatinoMode(arduino_support)">' +
                     '           Arduino Support'+
                     '         </b-form-checkbox>'+
                     '       </b-col>'+
