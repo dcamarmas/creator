@@ -28,6 +28,17 @@ const WORD_SIZE_MINUS_1 = WORD_SIZE - 1;
 const BINARY_BASE = 2;
 const DECIMAL_BASE = 10;
 
+// Custom fields (rounding mode)
+
+const ROUNDING_MODE = {
+    0: "rne",
+    1: "rtz",
+    2: "rdn",
+    3: "rup",
+    4: "rmm",
+    7: "dyn",
+};
+
 /**
  * Returns the register name given its binary representation and type
  *
@@ -62,25 +73,26 @@ function get_register_binary(type, binaryValue) {
 }
 
 /**
- * Finds the position of the operation code field (co) within the instruction fields
+ * Finds the position of the operation code field within the instruction fields
  *
  * @param {Array} fields - Array of instruction fields
  * @returns {Object|null} - An object with startbit and stopbit properties, or null if not found
  */
-function findCoFieldPosition(fields) {
+function extractOpcode(fields) {
     for (const field of fields) {
         if (field.type === "co") {
             return {
                 startbit:
                     WORD_SIZE_MINUS_1 - parseInt(field.startbit, DECIMAL_BASE),
                 stopbit: WORD_SIZE - parseInt(field.stopbit, DECIMAL_BASE),
+                value: field.valueField,
             };
         }
     }
     return null;
 }
 
-function checkCopFields(instruction, instructionExecParts) {
+function checkCopFields(instruction, instructionExec) {
     let numCopFields = 0;
     let numMatchingCopFields = 0;
 
@@ -91,7 +103,7 @@ function checkCopFields(instruction, instructionExecParts) {
 
         numCopFields++;
 
-        const fieldValue = instructionExecParts[0].substring(
+        const fieldValue = instructionExec.substring(
             instruction.nwords * WORD_SIZE_MINUS_1 - field.startbit,
             instruction.nwords * WORD_SIZE - field.stopbit,
         );
@@ -141,7 +153,8 @@ function processInstructionField(field, instructionExec, instruction_nwords) {
         case "co":
             value = field.name;
             break;
-
+        case "cop":
+            break;
         case "INT-Reg":
         case "SFP-Reg":
         case "DFP-Reg":
@@ -256,7 +269,33 @@ function processInstructionField(field, instructionExec, instruction_nwords) {
                 ) {
                     value = convertToSignedValue(binaryValue);
                 }
+                /* TODO TODO TODO */
+                // Handle custom fields
+                if (field.custom === "rounding-mode") {
+                    // Get binary value as unsigned
+                    const binaryValue = instructionExec.substring(
+                        instruction_nwords * WORD_SIZE_MINUS_1 - field.startbit,
+                        instruction_nwords * WORD_SIZE - field.stopbit,
+                    );
+
+                    // Convert to unsigned decimal
+                    const decimalValue = parseInt(binaryValue, BINARY_BASE);
+
+                    // Check if the value is a valid rounding mode
+                    if (decimalValue in ROUNDING_MODE) {
+                        value = ROUNDING_MODE[decimalValue];
+
+                        // For "dyn" (7), which is the default rounding mode, return null
+                        // so it can be omitted in the output
+                        if (decimalValue === 7) {
+                            value = "";
+                        }
+                    } else {
+                        logger.error("Invalid rounding mode: " + decimalValue);
+                    }
+                }
             }
+
             break;
         }
         default:
@@ -290,46 +329,53 @@ function parseSignatureDefinition(instruction) {
     };
 }
 
-function decodeBinaryFormat(
-    instruction,
-    instructionExec,
-    instructionExecParts,
-) {
-    const coPosition = findCoFieldPosition(instruction.fields);
-    if (
-        !coPosition ||
-        instruction.co !==
-            instructionExecParts[0].substring(
-                coPosition.startbit,
-                coPosition.stopbit,
-            )
-    ) {
+function decodeBinaryFormat(instruction, encodedInstruction) {
+    // First check if the opcode matches
+    const opcode = extractOpcode(instruction.fields);
+    const binaryOpcode = encodedInstruction.substring(
+        opcode.startbit,
+        opcode.stopbit,
+    );
+
+    if (!opcode || opcode.value !== binaryOpcode) {
         return null;
     }
 
-    if (instruction.cop !== null && instruction.cop !== "") {
-        if (!checkCopFields(instruction, instructionExecParts)) {
-            return null;
-        }
+    if (!checkCopFields(instruction, encodedInstruction)) {
+        return null;
     }
 
-    let instruction_loaded = instruction.signature_definition;
+    // If we get here we found a match
 
     // Process each field
-    for (let f = 0; f < instruction.fields.length; f++) {
-        const re = new RegExp("[Ff]" + f);
-        if (instruction_loaded.search(re) !== -1) {
-            const value = processInstructionField(
-                instruction.fields[f],
-                instructionExec,
-                instruction.nwords,
-            );
-            instruction_loaded = instruction_loaded.replace(
-                new RegExp("[Ff]" + f, "g"),
-                value,
-            );
+    let instructionArray = [];
+    for (const field of instruction.fields) {
+        let value = processInstructionField(
+            field,
+            encodedInstruction,
+            instruction.nwords,
+        );
+        if (Object.hasOwn(field, "order")) {
+            if (Object.hasOwn(field, "prefix")) {
+                value = field.prefix + value;
+            }
+            if (Object.hasOwn(field, "suffix")) {
+                value += field.suffix;
+            }
+            if (value !== null) {
+                instructionArray[field.order] = value;
+            }
         }
     }
+
+    if (instructionArray.length === 0) {
+        logger.error(
+            "instructionArray is empty! Did you forget the \'order\' field?",
+        );
+        return null;
+    }
+
+    const instruction_loaded = instructionArray.join(" ");
 
     // Extract signature parts from decoded instruction
     const parsedSignature = parseSignatureDefinition(instruction);
@@ -382,7 +428,6 @@ export function decode_instruction(instructionExec) {
             const decodedBinary = decodeBinaryFormat(
                 instruction,
                 instructionExec,
-                instructionExecParts,
             );
             if (decodedBinary) {
                 return {
