@@ -230,8 +230,6 @@ export function assembly_compiler(library, color) {
     data = [];
     status.execution_init = 1;
 
-    //TODO: Here we would get the instructions from an elf file
-
     let library_offset = 0;
     const library_instructions = update_binary.instructions_binary?.length ?? 0;
     for (var i = 0; i < library_instructions; i++) {

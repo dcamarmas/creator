@@ -532,25 +532,30 @@
           "name": "add",
           "type": "co",
           "startbit": 6,
-          "stopbit": 0
+          "stopbit": 0,
+          "valueField": "0110011",
+          "order": 0
         },
         {
           "name": "rs2",
           "type": "INT-Reg",
           "startbit": 24,
-          "stopbit": 20
+          "stopbit": 20,
+          "order": 3
         },
         {
           "name": "rs1",
           "type": "INT-Reg",
           "startbit": 19,
-          "stopbit": 15
+          "stopbit": 15,
+          "order": 2
         },
         {
           "name": "rd",
           "type": "INT-Reg",
           "startbit": 11,
-          "stopbit": 7
+          "stopbit": 7,
+          "order": 1
         },
         {
           "name": "cop",
@@ -586,25 +591,30 @@
           "name": "addi",
           "type": "co",
           "startbit": 6,
-          "stopbit": 0
+          "stopbit": 0,
+          "valueField": "0010011",
+          "order": 0
         },
         {
           "name": "inm",
           "type": "inm-signed",
           "startbit": 31,
-          "stopbit": 20
+          "stopbit": 20,
+          "order": 3
         },
         {
           "name": "rs1",
           "type": "INT-Reg",
           "startbit": 19,
-          "stopbit": 15
+          "stopbit": 15,
+          "order": 2
         },
         {
           "name": "rd",
           "type": "INT-Reg",
           "startbit": 11,
-          "stopbit": 7
+          "stopbit": 7,
+          "order": 1
         },
         {
           "name": "cop",
@@ -633,7 +643,9 @@
           "name": "and",
           "type": "co",
           "startbit": 6,
-          "stopbit": 0
+          "stopbit": 0,
+          "valueField": "0110011",
+          "order": 0
         },
         {
           "name": "cop",
@@ -646,19 +658,22 @@
           "name": "rs2",
           "type": "INT-Reg",
           "startbit": 24,
-          "stopbit": 20
+          "stopbit": 20,
+          "order": 3
         },
         {
           "name": "rs1",
           "type": "INT-Reg",
           "startbit": 19,
-          "stopbit": 15
+          "stopbit": 15,
+          "order": 2
         },
         {
           "name": "rd",
           "type": "INT-Reg",
           "startbit": 11,
-          "stopbit": 7
+          "stopbit": 7,
+          "order": 1
         },
         {
           "name": "cop2",
@@ -687,25 +702,30 @@
           "name": "andi",
           "type": "co",
           "startbit": 6,
-          "stopbit": 0
+          "stopbit": 0,
+          "valueField": "0010011",
+          "order": 0
         },
         {
           "name": "inm",
           "type": "inm-signed",
           "startbit": 31,
-          "stopbit": 20
+          "stopbit": 20,
+          "order": 3
         },
         {
           "name": "rs1",
           "type": "INT-Reg",
           "startbit": 19,
-          "stopbit": 15
+          "stopbit": 15,
+          "order": 2
         },
         {
           "name": "rd",
           "type": "INT-Reg",
           "startbit": 11,
-          "stopbit": 7
+          "stopbit": 7,
+          "order": 1
         },
         {
           "name": "cop",
@@ -734,19 +754,23 @@
           "name": "auipc",
           "type": "co",
           "startbit": 6,
-          "stopbit": 0
+          "stopbit": 0,
+          "valueField": "0010111",
+          "order": 0
         },
         {
           "name": "inm",
           "type": "offset_bytes",
           "startbit": 31,
-          "stopbit": 12
+          "stopbit": 12,
+          "order": 2
         },
         {
           "name": "rd",
           "type": "INT-Reg",
           "startbit": 11,
-          "stopbit": 7
+          "stopbit": 7,
+          "order": 1
         }
       ],
       "definition": "rd = PC + (inm << 12n);",
@@ -768,7 +792,9 @@
           "name": "beq",
           "type": "co",
           "startbit": 6,
-          "stopbit": 0
+          "stopbit": 0,
+          "valueField": "1100011",
+          "order": 0
         },
         {
           "name": "cop",
@@ -782,19 +808,22 @@
           "type": "offset_bytes",
           "startbit": [31, 7, 30, 11],
           "stopbit": [31, 7, 25, 8],
-          "padding": 1
+          "padding": 1,
+          "order": 3
         },
         {
           "name": "rs2",
           "type": "INT-Reg",
           "startbit": 24,
-          "stopbit": 20
+          "stopbit": 20,
+          "order": 2
         },
         {
           "name": "rs1",
           "type": "INT-Reg",
           "startbit": 19,
-          "stopbit": 15
+          "stopbit": 15,
+          "order": 1
         }
       ],
       "definition": "if (rs1 === rs2)\n PC = PC + inm; ",
@@ -816,26 +845,31 @@
           "name": "bge",
           "type": "co",
           "startbit": 6,
-          "stopbit": 0
+          "stopbit": 0,
+          "valueField": "1100011",
+          "order": 0
         },
         {
           "name": "inm",
           "type": "offset_bytes",
           "startbit": [31, 7, 30, 11],
           "stopbit": [31, 7, 25, 8],
-          "padding": 1
+          "padding": 1,
+          "order": 3
         },
         {
           "name": "rs2",
           "type": "INT-Reg",
           "startbit": 24,
-          "stopbit": 20
+          "stopbit": 20,
+          "order": 2
         },
         {
           "name": "rs1",
           "type": "INT-Reg",
           "startbit": 19,
-          "stopbit": 15
+          "stopbit": 15,
+          "order": 1
         },
         {
           "name": "cop",
@@ -864,26 +898,31 @@
           "name": "bgeu",
           "type": "co",
           "startbit": 6,
-          "stopbit": 0
+          "stopbit": 0,
+          "valueField": "1100011",
+          "order": 0
         },
         {
           "name": "inm",
           "type": "offset_bytes",
           "startbit": [31, 7, 30, 11],
           "stopbit": [31, 7, 25, 8],
-          "padding": 1
+          "padding": 1,
+          "order": 3
         },
         {
           "name": "rs2",
           "type": "INT-Reg",
           "startbit": 24,
-          "stopbit": 20
+          "stopbit": 20,
+          "order": 2
         },
         {
           "name": "rs1",
           "type": "INT-Reg",
           "startbit": 19,
-          "stopbit": 15
+          "stopbit": 15,
+          "order": 1
         },
         {
           "name": "cop",
@@ -912,26 +951,31 @@
           "name": "blt",
           "type": "co",
           "startbit": 6,
-          "stopbit": 0
+          "stopbit": 0,
+          "valueField": "1100011",
+          "order": 0
         },
         {
           "name": "inm",
           "type": "offset_bytes",
           "startbit": [31, 7, 30, 11],
           "stopbit": [31, 7, 25, 8],
-          "padding": 1
+          "padding": 1,
+          "order": 3
         },
         {
           "name": "rs2",
           "type": "INT-Reg",
           "startbit": 24,
-          "stopbit": 20
+          "stopbit": 20,
+          "order": 2
         },
         {
           "name": "rs1",
           "type": "INT-Reg",
           "startbit": 19,
-          "stopbit": 15
+          "stopbit": 15,
+          "order": 1
         },
         {
           "name": "cop",
@@ -960,26 +1004,31 @@
           "name": "bltu",
           "type": "co",
           "startbit": 6,
-          "stopbit": 0
+          "stopbit": 0,
+          "valueField": "1100011",
+          "order": 0
         },
         {
           "name": "inm",
           "type": "offset_bytes",
           "startbit": [31, 7, 30, 11],
           "stopbit": [31, 7, 25, 8],
-          "padding": 1
+          "padding": 1,
+          "order": 3
         },
         {
           "name": "rs2",
           "type": "INT-Reg",
           "startbit": 24,
-          "stopbit": 20
+          "stopbit": 20,
+          "order": 2
         },
         {
           "name": "rs1",
           "type": "INT-Reg",
           "startbit": 19,
-          "stopbit": 15
+          "stopbit": 15,
+          "order": 1
         },
         {
           "name": "cop",
@@ -1008,26 +1057,31 @@
           "name": "bne",
           "type": "co",
           "startbit": 6,
-          "stopbit": 0
+          "stopbit": 0,
+          "valueField": "1100011",
+          "order": 0
         },
         {
           "name": "inm",
           "type": "offset_bytes",
           "startbit": [31, 7, 30, 11],
           "stopbit": [31, 7, 25, 8],
-          "padding": 1
+          "padding": 1,
+          "order": 3
         },
         {
           "name": "rs2",
           "type": "INT-Reg",
           "startbit": 24,
-          "stopbit": 20
+          "stopbit": 20,
+          "order": 2
         },
         {
           "name": "rs1",
           "type": "INT-Reg",
           "startbit": 19,
-          "stopbit": 15
+          "stopbit": 15,
+          "order": 1
         },
         {
           "name": "cop",
@@ -1056,7 +1110,9 @@
           "name": "div",
           "type": "co",
           "startbit": 6,
-          "stopbit": 0
+          "stopbit": 0,
+          "valueField": "0110011",
+          "order": 0
         },
         {
           "name": "cop",
@@ -1110,7 +1166,9 @@
           "name": "divu",
           "type": "co",
           "startbit": 6,
-          "stopbit": 0
+          "stopbit": 0,
+          "valueField": "0110011",
+          "order": 0
         },
         {
           "name": "cop",
@@ -1164,7 +1222,9 @@
           "name": "ecall",
           "type": "co",
           "startbit": 6,
-          "stopbit": 0
+          "stopbit": 0,
+          "valueField": "1110011",
+          "order": 0
         },
         {
           "name": "cop",
@@ -1192,7 +1252,9 @@
           "name": "FADD.D",
           "type": "co",
           "startbit": 6,
-          "stopbit": 0
+          "stopbit": 0,
+          "valueField": "1010011",
+          "order": 0
         },
         {
           "name": "cop",
@@ -1341,7 +1403,9 @@
           "name": "fclass.s",
           "type": "co",
           "startbit": 6,
-          "stopbit": 0
+          "stopbit": 0,
+          "valueField": "1010011",
+          "order": 0
         },
         {
           "name": "cop",
@@ -1361,13 +1425,15 @@
           "name": "rs1",
           "type": "SFP-Reg",
           "startbit": 19,
-          "stopbit": 15
+          "stopbit": 15,
+          "order": 2
         },
         {
           "name": "rd",
           "type": "INT-Reg",
           "startbit": 11,
-          "stopbit": 7
+          "stopbit": 7,
+          "order": 1
         },
         {
           "name": "cop3",
@@ -3835,20 +3901,24 @@
           "name": "jal",
           "type": "co",
           "startbit": 6,
-          "stopbit": 0
+          "stopbit": 0,
+          "valueField": "1101111",
+          "order": 0
         },
         {
           "name": "inm",
           "type": "offset_bytes",
           "startbit": [31, 19, 20, 30],
           "stopbit": [31, 12, 20, 21],
-          "padding": 1
+          "padding": 1,
+          "order": 2
         },
         {
           "name": "rd",
           "type": "INT-Reg",
           "startbit": 11,
-          "stopbit": 7
+          "stopbit": 7,
+          "order": 1
         }
       ],
       "definition": "rd = PC + 4n;\n PC = PC + inm;\n capi_callconv_begin(inm); capi_drawstack_begin(inm);",
@@ -3871,25 +3941,32 @@
           "name": "jalr",
           "type": "co",
           "startbit": 6,
-          "stopbit": 0
+          "stopbit": 0,
+          "valueField": "1100111",
+          "order": 0
         },
         {
           "name": "inm",
           "type": "inm-signed",
           "startbit": 31,
-          "stopbit": 20
+          "stopbit": 20,
+          "order": 2
         },
         {
           "name": "rs1",
           "type": "INT-Reg",
           "startbit": 19,
-          "stopbit": 15
+          "stopbit": 15,
+          "prefix": "(",
+          "suffix": ")",
+          "order": 3
         },
         {
           "name": "rd",
           "type": "INT-Reg",
           "startbit": 11,
-          "stopbit": 7
+          "stopbit": 7,
+          "order": 1
         },
         {
           "name": "cop",
@@ -3916,25 +3993,32 @@
           "name": "lb",
           "type": "co",
           "startbit": 6,
-          "stopbit": 0
+          "stopbit": 0,
+          "valueField": "0000011",
+          "order": 0
         },
         {
           "name": "inm",
           "type": "inm-signed",
           "startbit": 31,
-          "stopbit": 20
+          "stopbit": 20,
+          "order": 2
         },
         {
           "name": "rs1",
           "type": "INT-Reg",
           "startbit": 19,
-          "stopbit": 15
+          "stopbit": 15,
+          "prefix": "(",
+          "suffix": ")",
+          "order": 3
         },
         {
           "name": "rd",
           "type": "INT-Reg",
           "startbit": 11,
-          "stopbit": 7
+          "stopbit": 7,
+          "order": 1
         },
         {
           "name": "cop",
@@ -3963,25 +4047,32 @@
           "name": "lbu",
           "type": "co",
           "startbit": 6,
-          "stopbit": 0
+          "stopbit": 0,
+          "valueField": "0000011",
+          "order": 0
         },
         {
           "name": "inm",
           "type": "inm-signed",
           "startbit": 31,
-          "stopbit": 20
+          "stopbit": 20,
+          "order": 2
         },
         {
           "name": "rs1",
           "type": "INT-Reg",
           "startbit": 19,
-          "stopbit": 15
+          "stopbit": 15,
+          "prefix": "(",
+          "suffix": ")",
+          "order": 3
         },
         {
           "name": "rd",
           "type": "INT-Reg",
           "startbit": 11,
-          "stopbit": 7
+          "stopbit": 7,
+          "order": 1
         },
         {
           "name": "cop",
@@ -4010,25 +4101,32 @@
           "name": "lh",
           "type": "co",
           "startbit": 6,
-          "stopbit": 0
+          "stopbit": 0,
+          "valueField": "0000011",
+          "order": 0
         },
         {
           "name": "inm",
           "type": "inm-signed",
           "startbit": 31,
-          "stopbit": 20
+          "stopbit": 20,
+          "order": 2
         },
         {
           "name": "rs1",
           "type": "INT-Reg",
           "startbit": 19,
-          "stopbit": 15
+          "stopbit": 15,
+          "prefix": "(",
+          "suffix": ")",
+          "order": 3
         },
         {
           "name": "rd",
           "type": "INT-Reg",
           "startbit": 11,
-          "stopbit": 7
+          "stopbit": 7,
+          "order": 1
         },
         {
           "name": "cop",
@@ -4057,25 +4155,32 @@
           "name": "lhu",
           "type": "co",
           "startbit": 6,
-          "stopbit": 0
+          "stopbit": 0,
+          "valueField": "0000011",
+          "order": 0
         },
         {
           "name": "inm",
           "type": "inm-signed",
           "startbit": 31,
-          "stopbit": 20
+          "stopbit": 20,
+          "order": 2
         },
         {
           "name": "rs1",
           "type": "INT-Reg",
           "startbit": 19,
-          "stopbit": 15
+          "stopbit": 15,
+          "prefix": "(",
+          "suffix": ")",
+          "order": 3
         },
         {
           "name": "rd",
           "type": "INT-Reg",
           "startbit": 11,
-          "stopbit": 7
+          "stopbit": 7,
+          "order": 1
         },
         {
           "name": "cop",
@@ -4104,19 +4209,23 @@
           "name": "lui",
           "type": "co",
           "startbit": 6,
-          "stopbit": 0
+          "stopbit": 0,
+          "valueField": "0110111",
+          "order": 0
         },
         {
           "name": "inm",
           "type": "inm-unsigned",
           "startbit": 31,
-          "stopbit": 12
+          "stopbit": 12,
+          "order": 2
         },
         {
           "name": "rd",
           "type": "INT-Reg",
           "startbit": 11,
-          "stopbit": 7
+          "stopbit": 7,
+          "order": 1
         }
       ],
       "definition": "rd = inm << 12n;",
@@ -4138,25 +4247,32 @@
           "name": "lw",
           "type": "co",
           "startbit": 6,
-          "stopbit": 0
+          "stopbit": 0,
+          "valueField": "0000011",
+          "order": 0
         },
         {
           "name": "inm",
           "type": "inm-signed",
           "startbit": 31,
-          "stopbit": 20
+          "stopbit": 20,
+          "order": 2
         },
         {
           "name": "rs1",
           "type": "INT-Reg",
           "startbit": 19,
-          "stopbit": 15
+          "stopbit": 15,
+          "prefix": "(",
+          "suffix": ")",
+          "order": 3
         },
         {
           "name": "rd",
           "type": "INT-Reg",
           "startbit": 11,
-          "stopbit": 7
+          "stopbit": 7,
+          "order": 1
         },
         {
           "name": "cop",
@@ -4401,7 +4517,9 @@
           "name": "or",
           "type": "co",
           "startbit": 6,
-          "stopbit": 0
+          "stopbit": 0,
+          "valueField": "0110011",
+          "order": 0
         },
         {
           "name": "cop",
@@ -4414,19 +4532,22 @@
           "name": "rs2",
           "type": "INT-Reg",
           "startbit": 24,
-          "stopbit": 20
+          "stopbit": 20,
+          "order": 3
         },
         {
           "name": "rs1",
           "type": "INT-Reg",
           "startbit": 19,
-          "stopbit": 15
+          "stopbit": 15,
+          "order": 2
         },
         {
           "name": "rd",
           "type": "INT-Reg",
           "startbit": 11,
-          "stopbit": 7
+          "stopbit": 7,
+          "order": 1
         },
         {
           "name": "cop2",
@@ -4455,25 +4576,30 @@
           "name": "ori",
           "type": "co",
           "startbit": 6,
-          "stopbit": 0
+          "stopbit": 0,
+          "valueField": "0010011",
+          "order": 0
         },
         {
           "name": "inm",
           "type": "inm-signed",
           "startbit": 31,
-          "stopbit": 20
+          "stopbit": 20,
+          "order": 3
         },
         {
           "name": "rs1",
           "type": "INT-Reg",
           "startbit": 19,
-          "stopbit": 15
+          "stopbit": 15,
+          "order": 2
         },
         {
           "name": "rd",
           "type": "INT-Reg",
           "startbit": 11,
-          "stopbit": 7
+          "stopbit": 7,
+          "order": 1
         },
         {
           "name": "cop",
@@ -4644,25 +4770,32 @@
           "name": "sb",
           "type": "co",
           "startbit": 6,
-          "stopbit": 0
+          "stopbit": 0,
+          "valueField": "0100011",
+          "order": 0
         },
         {
           "name": "inm",
           "type": "inm-signed",
           "startbit": [31, 11],
-          "stopbit": [25, 7]
+          "stopbit": [25, 7],
+          "order": 2
         },
         {
           "name": "rs2",
           "type": "INT-Reg",
           "startbit": 24,
-          "stopbit": 20
+          "stopbit": 20,
+          "order": 1
         },
         {
           "name": "rs1",
           "type": "INT-Reg",
           "startbit": 19,
-          "stopbit": 15
+          "stopbit": 15,
+          "prefix": "(",
+          "suffix": ")",
+          "order": 3
         },
         {
           "name": "cop",
@@ -4691,25 +4824,32 @@
           "name": "sh",
           "type": "co",
           "startbit": 6,
-          "stopbit": 0
+          "stopbit": 0,
+          "valueField": "0100011",
+          "order": 0
         },
         {
           "name": "inm",
           "type": "inm-signed",
           "startbit": [31, 11],
-          "stopbit": [25, 7]
+          "stopbit": [25, 7],
+          "order": 2
         },
         {
           "name": "rs2",
           "type": "INT-Reg",
           "startbit": 24,
-          "stopbit": 20
+          "stopbit": 20,
+          "order": 1
         },
         {
           "name": "rs1",
           "type": "INT-Reg",
           "startbit": 19,
-          "stopbit": 15
+          "stopbit": 15,
+          "prefix": "(",
+          "suffix": ")",
+          "order": 3
         },
         {
           "name": "cop",
@@ -4738,10 +4878,12 @@
           "name": "sll",
           "type": "co",
           "startbit": 6,
-          "stopbit": 0
+          "stopbit": 0,
+          "valueField": "0110011",
+          "order": 0
         },
         {
-          "name": "opcode",
+          "name": "funct7",
           "type": "cop",
           "startbit": 31,
           "stopbit": 25,
@@ -4751,19 +4893,22 @@
           "name": "rs2",
           "type": "INT-Reg",
           "startbit": 24,
-          "stopbit": 20
+          "stopbit": 20,
+          "order": 3
         },
         {
           "name": "rs1",
           "type": "INT-Reg",
           "startbit": 19,
-          "stopbit": 15
+          "stopbit": 15,
+          "order": 2
         },
         {
           "name": "rd",
           "type": "INT-Reg",
           "startbit": 11,
-          "stopbit": 7
+          "stopbit": 7,
+          "order": 1
         },
         {
           "name": "cop2",
@@ -4792,13 +4937,16 @@
           "name": "slli",
           "type": "co",
           "startbit": 6,
-          "stopbit": 0
+          "stopbit": 0,
+          "valueField": "0010011",
+          "order": 0
         },
         {
           "name": "rd",
           "type": "INT-Reg",
           "startbit": 11,
-          "stopbit": 7
+          "stopbit": 7,
+          "order": 1
         },
         {
           "name": "cop2",
@@ -4811,13 +4959,15 @@
           "name": "rs1",
           "type": "INT-Reg",
           "startbit": 19,
-          "stopbit": 15
+          "stopbit": 15,
+          "order": 2
         },
         {
           "name": "shamt",
           "type": "inm-unsigned",
           "startbit": 25,
-          "stopbit": 20
+          "stopbit": 20,
+          "order": 3
         },
         {
           "name": "cop",
@@ -4846,7 +4996,9 @@
           "name": "slt",
           "type": "co",
           "startbit": 6,
-          "stopbit": 0
+          "stopbit": 0,
+          "valueField": "0110011",
+          "order": 0
         },
         {
           "name": "cop",
@@ -4859,19 +5011,22 @@
           "name": "rs2",
           "type": "INT-Reg",
           "startbit": 24,
-          "stopbit": 20
+          "stopbit": 20,
+          "order": 3
         },
         {
           "name": "rs1",
           "type": "INT-Reg",
           "startbit": 19,
-          "stopbit": 15
+          "stopbit": 15,
+          "order": 2
         },
         {
           "name": "rd",
           "type": "INT-Reg",
           "startbit": 11,
-          "stopbit": 7
+          "stopbit": 7,
+          "order": 1
         },
         {
           "name": "cop2",
@@ -4900,25 +5055,30 @@
           "name": "slti",
           "type": "co",
           "startbit": 6,
-          "stopbit": 0
+          "stopbit": 0,
+          "valueField": "0010011",
+          "order": 0
         },
         {
           "name": "inm",
           "type": "inm-signed",
           "startbit": 31,
-          "stopbit": 20
+          "stopbit": 20,
+          "order": 3
         },
         {
           "name": "rs1",
           "type": "INT-Reg",
           "startbit": 19,
-          "stopbit": 15
+          "stopbit": 15,
+          "order": 2
         },
         {
           "name": "rd",
           "type": "INT-Reg",
           "startbit": 11,
-          "stopbit": 7
+          "stopbit": 7,
+          "order": 1
         },
         {
           "name": "cop",
@@ -4947,25 +5107,30 @@
           "name": "sltiu",
           "type": "co",
           "startbit": 6,
-          "stopbit": 0
+          "stopbit": 0,
+          "valueField": "0010011",
+          "order": 0
         },
         {
           "name": "inm",
           "type": "inm-signed",
           "startbit": 31,
-          "stopbit": 20
+          "stopbit": 20,
+          "order": 3
         },
         {
           "name": "rs1",
           "type": "INT-Reg",
           "startbit": 19,
-          "stopbit": 15
+          "stopbit": 15,
+          "order": 2
         },
         {
           "name": "rd",
           "type": "INT-Reg",
           "startbit": 11,
-          "stopbit": 7
+          "stopbit": 7,
+          "order": 1
         },
         {
           "name": "cop",
@@ -4994,7 +5159,9 @@
           "name": "sltu",
           "type": "co",
           "startbit": 6,
-          "stopbit": 0
+          "stopbit": 0,
+          "valueField": "0110011",
+          "order": 0
         },
         {
           "name": "opcode",
@@ -5007,19 +5174,22 @@
           "name": "rs2",
           "type": "INT-Reg",
           "startbit": 24,
-          "stopbit": 20
+          "stopbit": 20,
+          "order": 3
         },
         {
           "name": "rs1",
           "type": "INT-Reg",
           "startbit": 19,
-          "stopbit": 15
+          "stopbit": 15,
+          "order": 2
         },
         {
           "name": "rd",
           "type": "INT-Reg",
           "startbit": 11,
-          "stopbit": 7
+          "stopbit": 7,
+          "order": 1
         },
         {
           "name": "cop2",
@@ -5048,7 +5218,9 @@
           "name": "sra",
           "type": "co",
           "startbit": 6,
-          "stopbit": 0
+          "stopbit": 0,
+          "valueField": "0110011",
+          "order": 0
         },
         {
           "name": "cop",
@@ -5061,19 +5233,22 @@
           "name": "rs2",
           "type": "INT-Reg",
           "startbit": 24,
-          "stopbit": 20
+          "stopbit": 20,
+          "order": 3
         },
         {
           "name": "rs1",
           "type": "INT-Reg",
           "startbit": 19,
-          "stopbit": 15
+          "stopbit": 15,
+          "order": 2
         },
         {
           "name": "rd",
           "type": "INT-Reg",
           "startbit": 11,
-          "stopbit": 7
+          "stopbit": 7,
+          "order": 1
         },
         {
           "name": "cop2",
@@ -5102,13 +5277,16 @@
           "name": "srai",
           "type": "co",
           "startbit": 6,
-          "stopbit": 0
+          "stopbit": 0,
+          "valueField": "0010011",
+          "order": 0
         },
         {
           "name": "rd",
           "type": "INT-Reg",
           "startbit": 11,
-          "stopbit": 7
+          "stopbit": 7,
+          "order": 1
         },
         {
           "name": "cop2",
@@ -5121,13 +5299,15 @@
           "name": "rs1",
           "type": "INT-Reg",
           "startbit": 19,
-          "stopbit": 15
+          "stopbit": 15,
+          "order": 2
         },
         {
           "name": "shamt",
           "type": "inm-signed",
           "startbit": 25,
-          "stopbit": 20
+          "stopbit": 20,
+          "order": 3
         },
         {
           "name": "cop",
@@ -5156,7 +5336,9 @@
           "name": "srl",
           "type": "co",
           "startbit": 6,
-          "stopbit": 0
+          "stopbit": 0,
+          "valueField": "0110011",
+          "order": 0
         },
         {
           "name": "opcode",
@@ -5169,19 +5351,22 @@
           "name": "rs2",
           "type": "INT-Reg",
           "startbit": 24,
-          "stopbit": 20
+          "stopbit": 20,
+          "order": 3
         },
         {
           "name": "rs1",
           "type": "INT-Reg",
           "startbit": 19,
-          "stopbit": 15
+          "stopbit": 15,
+          "order": 2
         },
         {
           "name": "rd",
           "type": "INT-Reg",
           "startbit": 11,
-          "stopbit": 7
+          "stopbit": 7,
+          "order": 1
         },
         {
           "name": "cop2",
@@ -5210,13 +5395,16 @@
           "name": "srli",
           "type": "co",
           "startbit": 6,
-          "stopbit": 0
+          "stopbit": 0,
+          "valueField": "0010011",
+          "order": 0
         },
         {
           "name": "rd",
           "type": "INT-Reg",
           "startbit": 11,
-          "stopbit": 7
+          "stopbit": 7,
+          "order": 1
         },
         {
           "name": "cop2",
@@ -5229,13 +5417,15 @@
           "name": "rs1",
           "type": "INT-Reg",
           "startbit": 19,
-          "stopbit": 15
+          "stopbit": 15,
+          "order": 2
         },
         {
           "name": "shamt",
           "type": "inm-unsigned",
           "startbit": 25,
-          "stopbit": 20
+          "stopbit": 20,
+          "order": 3
         },
         {
           "name": "cop",
@@ -5264,7 +5454,9 @@
           "name": "sub",
           "type": "co",
           "startbit": 6,
-          "stopbit": 0
+          "stopbit": 0,
+          "valueField": "0110011",
+          "order": 0
         },
         {
           "name": "cop",
@@ -5277,19 +5469,22 @@
           "name": "rs2",
           "type": "INT-Reg",
           "startbit": 24,
-          "stopbit": 20
+          "stopbit": 20,
+          "order": 3
         },
         {
           "name": "rs1",
           "type": "INT-Reg",
           "startbit": 19,
-          "stopbit": 15
+          "stopbit": 15,
+          "order": 2
         },
         {
           "name": "rd",
           "type": "INT-Reg",
           "startbit": 11,
-          "stopbit": 7
+          "stopbit": 7,
+          "order": 1
         },
         {
           "name": "cop2",
@@ -5318,25 +5513,32 @@
           "name": "sw",
           "type": "co",
           "startbit": 6,
-          "stopbit": 0
+          "stopbit": 0,
+          "valueField": "0100011",
+          "order": 0
         },
         {
           "name": "inm",
           "type": "inm-signed",
           "startbit": [31, 11],
-          "stopbit": [25, 7]
+          "stopbit": [25, 7],
+          "order": 2
         },
         {
           "name": "rs2",
           "type": "INT-Reg",
           "startbit": 24,
-          "stopbit": 20
+          "stopbit": 20,
+          "order": 1
         },
         {
           "name": "rs1",
           "type": "INT-Reg",
           "startbit": 19,
-          "stopbit": 15
+          "stopbit": 15,
+          "prefix": "(",
+          "suffix": ")",
+          "order": 3
         },
         {
           "name": "cop",
@@ -5365,7 +5567,9 @@
           "name": "xor",
           "type": "co",
           "startbit": 6,
-          "stopbit": 0
+          "stopbit": 0,
+          "valueField": "0110011",
+          "order": 0
         },
         {
           "name": "opcode",
@@ -5378,19 +5582,22 @@
           "name": "rs2",
           "type": "INT-Reg",
           "startbit": 24,
-          "stopbit": 20
+          "stopbit": 20,
+          "order": 3
         },
         {
           "name": "rs1",
           "type": "INT-Reg",
           "startbit": 19,
-          "stopbit": 15
+          "stopbit": 15,
+          "order": 2
         },
         {
           "name": "rd",
           "type": "INT-Reg",
           "startbit": 11,
-          "stopbit": 7
+          "stopbit": 7,
+          "order": 1
         },
         {
           "name": "cop2",
@@ -5419,25 +5626,30 @@
           "name": "xori",
           "type": "co",
           "startbit": 6,
-          "stopbit": 0
+          "stopbit": 0,
+          "valueField": "0010011",
+          "order": 0
         },
         {
           "name": "inm",
           "type": "inm-signed",
           "startbit": 31,
-          "stopbit": 20
+          "stopbit": 20,
+          "order": 3
         },
         {
           "name": "rs1",
           "type": "INT-Reg",
           "startbit": 19,
-          "stopbit": 15
+          "stopbit": 15,
+          "order": 2
         },
         {
           "name": "rd",
           "type": "INT-Reg",
           "startbit": 11,
-          "stopbit": 7
+          "stopbit": 7,
+          "order": 1
         },
         {
           "name": "cop",
