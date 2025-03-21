@@ -38,6 +38,7 @@ import {
     main_memory,
 } from "./memory/memoryCore.mjs";
 import * as wasm from "./compiler/deno/creator_compiler.js";
+import yaml from "js-yaml";
 
 export let code_assembly = "";
 export let update_binary = "";
@@ -131,7 +132,7 @@ export function set_debug(enable_debug) {
 }
 
 // load components
-export function load_arch_select(cfg) {
+function load_arch_select(cfg) {
     const ret = {
         errorcode: "",
         token: "",
@@ -157,6 +158,118 @@ export function load_arch_select(cfg) {
     ret.token = "The selected architecture has been loaded correctly";
     ret.type = "success";
     return ret;
+}
+
+export function newArchitectureLoad(architecture, instructions) {
+    let architectureObj;
+    let instructionsObj;
+    try {
+        architectureObj = yaml.load(architecture);
+        instructionsObj = yaml.load(instructions);
+
+        // Create instructions array in architectureObj if it doesn't exist
+        if (!architectureObj.instructions) {
+            architectureObj.instructions = [];
+        }
+
+        // Process each instruction and find its corresponding template
+        if (instructionsObj && instructionsObj.instructions) {
+            instructionsObj.instructions.forEach(instruction => {
+                // Find the matching template
+                const templateType = instruction.type;
+                const template = architectureObj.templates.find(
+                    t => t.name === templateType,
+                );
+
+                if (template) {
+                    // Start with the template fields
+                    const mergedFields = [...template.fields].map(field => ({
+                        ...field,
+                    }));
+
+                    // Process instruction fields
+                    if (
+                        instruction.fields &&
+                        Array.isArray(instruction.fields)
+                    ) {
+                        instruction.fields.forEach(instructionField => {
+                            // Try to find matching field in template fields
+                            const existingFieldIndex = mergedFields.findIndex(
+                                field => field.name === instructionField.field,
+                            );
+
+                            if (existingFieldIndex !== -1) {
+                                // Field exists, override it with all properties from instruction field
+                                const baseField =
+                                    mergedFields[existingFieldIndex];
+
+                                // Override value if specified
+                                if (instructionField.value) {
+                                    baseField.valueField =
+                                        instructionField.value;
+                                }
+
+                                // Override type if specified
+                                if (instructionField.type) {
+                                    baseField.type = instructionField.type;
+                                }
+
+                                // Override any other properties specified
+                                Object.keys(instructionField).forEach(key => {
+                                    if (
+                                        key !== "field" &&
+                                        key !== "value" &&
+                                        key !== "type"
+                                    ) {
+                                        baseField[key] = instructionField[key];
+                                    }
+                                });
+                            } else {
+                                // Field doesn't exist in template, add it as a new field
+                                // Convert 'field' property to 'name' to match template format
+                                const newField = {
+                                    ...instructionField,
+                                    name: instructionField.field,
+                                };
+
+                                // If value specified, set it as valueField
+                                if (instructionField.value) {
+                                    newField.valueField =
+                                        instructionField.value;
+                                    delete newField.value;
+                                }
+
+                                delete newField.field; // Remove the field property after converting
+                                mergedFields.push(newField);
+                            }
+                        });
+                    }
+
+                    // Create the complete instruction with merged fields
+                    const fullInstruction = {
+                        name: instruction.name,
+                        nwords: template.nwords,
+                        clk_cycles: template.clk_cycles,
+                        fields: mergedFields,
+                        definition: instruction.definition,
+                    };
+
+                    // Add to architectureObj instructions
+                    architectureObj.instructions.push(fullInstruction);
+                } else {
+                    logger.error(
+                        `Template '${templateType}' not found for instruction '${instruction.name}'`,
+                    );
+                }
+            });
+        }
+
+        const ret = load_arch_select(architectureObj);
+        return ret;
+    } catch (error) {
+        logger.error(`Error parsing YAML: ${error}`);
+        return null;
+    }
 }
 
 export function load_architecture(arch_str) {

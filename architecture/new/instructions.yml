@@ -1,0 +1,934 @@
+instructions:
+    #   ____ __     __ _____ ____   ___
+    #  |  _ \\ \   / /|___ /|___ \ |_ _|
+    #  | |_) |\ \ / /   |_ \  __) | | |
+    #  |  _ <  \ V /   ___) |/ __/  | |
+    #  |_| \_\  \_/   |____/|_____||___|
+    #   RV32I 32I Base Instruction Set
+
+    # B-type instructions
+    #     31     30-25    24-20   19-15   14-12   11-8    7      6-0
+    # ┌────┬──────────┬───────┬───────┬───────┬──────┬────┬─────────┐
+    # │ imm│  imm     │  rs2  │  rs1  │ func3 │ imm  │imm │ opcode  │
+    # │[12]│  [10:5]  │       │       │       │[4:1] │[11]│         │
+    # └──┬─┴────┬─────┴───┬───┴───┬───┴───┬───┴──┬───┴────┴────┬────┘
+    #    │      │         │       │       │      │             │
+    #    1      6         5       5       3      4       1     7    bits = 32 bits = word size
+    - name: beq
+      type: B
+      fields:
+          - field: opcode
+            value: "1100011"
+          - field: funct3
+            value: "000"
+      definition: "if (rs1 === rs2)\n PC = PC + imm;"
+
+    - name: bge
+      type: B
+      fields:
+          - field: opcode
+            value: "1100011"
+          - field: funct3
+            value: "101"
+      definition: "if (capi_uint2int(rs1) >= capi_uint2int(rs2))\n PC = PC + inm;"
+
+    - name: bgeu
+      type: B
+      fields:
+          - field: opcode
+            value: "1100011"
+          - field: funct3
+            value: "111"
+      definition: "if (capi_int2uint(rs1) > capi_int2uint(rs2))\n PC = PC + inm;"
+
+    - name: blt
+      type: B
+      fields:
+          - field: opcode
+            value: "1100011"
+          - field: funct3
+            value: "100"
+      definition: "if (capi_uint2int(rs1) < capi_uint2int(rs2))\n PC = PC + inm;"
+
+    - name: bltu
+      type: B
+      fields:
+          - field: opcode
+            value: "1100011"
+          - field: funct3
+            value: "110"
+      definition: "if (capi_int2uint(rs1) < capi_int2uint(rs2))\n PC = PC + inm;"
+
+    - name: bne
+      type: B
+      fields:
+          - field: opcode
+            value: "1100011"
+          - field: funct3
+            value: "001"
+      definition: "if (rs1 !== rs2)\n PC = PC + inm;"
+
+    # I-type instructions
+    #     31-20    19-15   14-12   11-7    6-0
+    # ┌──────────┬───────┬───────┬───────┬─────────┐
+    # │   imm    │  rs1  │ func3 │  rd   │ opcode  │
+    # │  [11:0]  │       │       │       │         │
+    # └────┬─────┴───┬───┴───┬───┴───┬───┴────┬────┘
+    #      │         │       │       │        │
+    #      12        5       3       5        7    bits = 32 bits = word size
+    - name: addi
+      type: I
+      fields:
+          - field: opcode
+            value: "0010011"
+          - field: funct3
+            value: "000"
+      definition: "rd = rs1 + imm;"
+
+    - name: andi
+      type: I
+      fields:
+          - field: opcode
+            value: "0010011"
+          - field: funct3
+            value: "111"
+      definition: "rd = rs1 & capi_int2uint(inm);"
+
+    - name: jalr
+      type: I-Offset
+      fields:
+          - field: opcode
+            value: "1100111"
+          - field: funct3
+            value: "000"
+      definition: "rd = PC + 4n;\n PC = (rs1+inm)&~1n;\n capi_callconv_end(); capi_drawstack_end(PC);"
+
+    - name: lb
+      type: I-Offset
+      fields:
+          - field: opcode
+            value: "0000011"
+          - field: funct3
+            value: "000"
+      definition: "rd = capi_mem_read(inm+rs1, 'b', rd_name);"
+
+    - name: lbu
+      type: I-Offset
+      fields:
+          - field: opcode
+            value: "0000011"
+          - field: funct3
+            value: "100"
+      definition: "var addr = capi_int2uint(rs1)+inm;\n rd = capi_mem_read(addr, 'bu', rd_name);\n rd = capi_int2uint(rd);"
+
+    - name: lh
+      type: I-Offset
+      fields:
+          - field: opcode
+            value: "0000011"
+          - field: funct3
+            value: "001"
+      definition: "rd = capi_mem_read(inm+rs1, 'h', rd_name);"
+
+    - name: lhu
+      type: I-Offset
+      fields:
+          - field: opcode
+            value: "0000011"
+          - field: funct3
+            value: "101"
+      definition: "var addr = capi_int2uint(rs1)+inm;\n rd = capi_mem_read(addr, 'hu', rd_name);\n rd = capi_int2uint(rd);"
+
+    - name: lw
+      type: I-Offset
+      fields:
+          - field: opcode
+            value: "0000011"
+          - field: funct3
+            value: "010"
+      definition: "var addr = capi_int2uint(rs1)+inm;\n rd = capi_mem_read(addr, 'w', rd_name);"
+
+    - name: ori
+      type: I
+      fields:
+          - field: opcode
+            value: "0010011"
+          - field: funct3
+            value: "110"
+      definition: "rd = rs1 | inm;"
+
+    - name: slli
+      type: I-Shift
+      fields:
+          - field: opcode
+            value: "0010011"
+          - field: funct3
+            value: "001"
+          - field: funct7
+            value: "0000000"
+      definition: "if (shamt > 0) {rd = capi_int2uint(rs1 << shamt);}"
+
+    - name: slti
+      type: I
+      fields:
+          - field: opcode
+            value: "0010011"
+          - field: funct3
+            value: "010"
+      definition: "rd = (capi_uint2int(rs1) < capi_uint2int(inm)) ? 1 : 0;"
+
+    - name: sltiu
+      type: I
+      fields:
+          - field: opcode
+            value: "0010011"
+          - field: funct3
+            value: "011"
+      definition: "rd = (capi_int2uint(rs1) < capi_int2uint(inm)) ? 1 : 0;"
+
+    - name: srai
+      type: I-Shift
+      fields:
+          - field: opcode
+            value: "0010011"
+          - field: funct3
+            value: "101"
+          - field: funct7
+            value: "0100000"
+      definition: "if (shamt > 0) {rd = capi_int2uint(rs1 >> shamt);}"
+
+    - name: srli
+      type: I-Shift
+      fields:
+          - field: opcode
+            value: "0010011"
+          - field: funct3
+            value: "101"
+          - field: funct7
+            value: "0000000"
+      definition: "if (shamt > 0) {rd = capi_int2uint(rs1 >> shamt);}"
+
+    - name: xori
+      type: I
+      fields:
+          - field: opcode
+            value: "0010011"
+          - field: funct3
+            value: "100"
+      definition: "rd = rs1 ^ inm;"
+
+    # J-type instructions
+    #     31    30-21     20     19-12   11-7    6-0
+    # ┌────┬──────────┬─────┬─────────┬───────┬─────────┐
+    # │imm │   imm    │ imm │   imm   │  rd   │ opcode  │
+    # │[20]│  [10:1]  │[11] │ [19:12] │       │         │
+    # └──┬─┴────┬─────┴──┬──┴────┬────┴───┬───┴────┬────┘
+    #    │      │        │       │        │        │
+    #    1      10       1       8        5        7    bits = 32 bits = word size
+    - name: jal
+      type: J
+      fields:
+          - field: opcode
+            value: "1101111"
+      definition: "rd = PC + 4n;\n PC = PC + inm;\n capi_callconv_begin(inm); capi_drawstack_begin(inm);"
+
+    # R-type instructions
+    #     31-25    24-20   19-15   14-12   11-7    6-0
+    # ┌──────────┬───────┬───────┬───────┬───────┬─────────┐
+    # │  funct7  │  rs2  │  rs1  │ funct3│  rd   │ opcode  │
+    # │          │       │       │       │       │         │
+    # └────┬─────┴───┬───┴───┬───┴───┬───┴───┬───┴────┬────┘
+    #      │         │       │       │       │        │
+    #      7         5       5       3       5        7    bits = 32 bits = word size
+    - name: add
+      type: R
+      fields:
+          - field: opcode
+            value: "0110011"
+          - field: funct7
+            value: "0000000"
+          - field: funct3
+            value: "000"
+      definition: "rd = rs2 + rs1;"
+
+    - name: and
+      type: R
+      fields:
+          - field: opcode
+            value: "0110011"
+          - field: funct7
+            value: "0000000"
+          - field: funct3
+            value: "111"
+      definition: "rd = rs1 & rs2;"
+
+    - name: or
+      type: R
+      fields:
+          - field: opcode
+            value: "0110011"
+          - field: funct7
+            value: "0000000"
+          - field: funct3
+            value: "110"
+      definition: "rd = rs1 | rs2;"
+
+    - name: sll
+      type: R
+      fields:
+          - field: opcode
+            value: "0110011"
+          - field: funct7
+            value: "0000000"
+          - field: funct3
+            value: "001"
+      definition: "const shiftAmount = rs2 & 0x1Fn; rd = (rs1 << shiftAmount) & 0xFFFFFFFFn;"
+
+    - name: slt
+      type: R
+      fields:
+          - field: opcode
+            value: "0110011"
+          - field: funct7
+            value: "0000000"
+          - field: funct3
+            value: "010"
+      definition: "rd = (capi_uint2int(rs1) < capi_uint2int(rs2)) ? 1 : 0;"
+
+    - name: sltu
+      type: R
+      fields:
+          - field: opcode
+            value: "0110011"
+          - field: funct7
+            value: "0000000"
+          - field: funct3
+            value: "011"
+      definition: "rd = ((rs1 & 0xFFFFFFFFn) < (rs2 & 0xFFFFFFFFn)) ? 1n : 0n;"
+
+    - name: sra
+      type: R
+      fields:
+          - field: opcode
+            value: "0110011"
+          - field: funct7
+            value: "0100000"
+          - field: funct3
+            value: "101"
+      definition: "const temp = BigInt.asIntN(32, BigInt(rs1)) >> BigInt(rs2); rd = capi_int2uint(temp)"
+
+    - name: srl
+      type: R
+      fields:
+          - field: opcode
+            value: "0110011"
+          - field: funct7
+            value: "0000000"
+          - field: funct3
+            value: "101"
+      definition: "const shiftAmount = rs2 & 0x1Fn; rd = (rs1 >> shiftAmount) & 0xFFFFFFFFn;"
+
+    - name: sub
+      type: R
+      fields:
+          - field: opcode
+            value: "0110011"
+          - field: funct7
+            value: "0100000"
+          - field: funct3
+            value: "000"
+      definition: "rd = rs1 - rs2;"
+
+    - name: xor
+      type: R
+      fields:
+          - field: opcode
+            value: "0110011"
+          - field: funct7
+            value: "0000000"
+          - field: funct3
+            value: "100"
+      definition: "rd = (rs1 ^ rs2);"
+
+    # S-type instructions
+    #     31-25    24-20   19-15   14-12   11-7    6-0
+    # ┌──────────┬───────┬───────┬───────┬───────┬─────────┐
+    # │   imm    │  rs2  │  rs1  │ func3 │  imm  │ opcode  │
+    # │  [11:5]  │       │       │       │ [4:0] │         │
+    # └────┬─────┴───┬───┴───┬───┴───┬───┴───┬───┴────┬────┘
+    #      │         │       │       │       │        │
+    #      7         5       5       3       5        7    bits = 32 bits = word size
+    - name: sb
+      type: S
+      fields:
+          - field: opcode
+            value: "0100011"
+          - field: funct3
+            value: "000"
+      definition: "capi_mem_write(rs1+inm, rs2, 'b', rs2_name);"
+
+    - name: sh
+      type: S
+      fields:
+          - field: opcode
+            value: "0100011"
+          - field: funct3
+            value: "001"
+      definition: "capi_mem_write(inm+rs1, rs2, 'h', rs2_name);"
+
+    - name: sw
+      type: S
+      fields:
+          - field: opcode
+            value: "0100011"
+          - field: funct3
+            value: "010"
+      definition: "capi_mem_write(inm+rs1, rs2, 'w', rs2_name);"
+
+    # U-type instructions
+    #           31-12                   11-7    6-0
+    # ┌──────────────────────────────┬───────┬─────────┐
+    # │            imm               │  rd   │ opcode  │
+    # │           [31:12]            │       │         │
+    # └────────────────┬─────────────┴───┬───┴────┬────┘
+    #                  │                 │        │
+    #                  20                5        7    bits = 32 bits = word size
+    - name: auipc
+      type: U
+      fields:
+          - field: opcode
+            value: "0010111"
+      definition: "rd = PC + (inm << 12n);"
+
+    - name: lui
+      type: U
+      fields:
+          - field: opcode
+            value: "0110111"
+      definition: "rd = inm << 12n;"
+
+      # Special instructions
+    - name: ecall
+      type: Custom
+      fields:
+          - field: opcode
+            value: "1110011"
+          - field: zeros
+            type: cop
+            startbit: 31
+            stopbit: 7
+            value: "0000000000000000000000000"
+      definition: "switch(a7){\ncase 1n:\ncapi_print_int('a0');\nbreak;\ncase 2n:\ncapi_print_float('fa0');\nbreak;\ncase 3n:\ncapi_print_double('fa0');\nbreak;\ncase 4n:\ncapi_print_string('a0');\nbreak;\ncase 5n:\ncapi_read_int('a0');\nbreak;\ncase 6n:\ncapi_read_float('fa0');\nbreak;\ncase 7n:\ncapi_read_double('fa0');\nbreak;\ncase 8n:\ncapi_read_string('a0', 'a1');\nbreak;\ncase 9n:\ncapi_sbrk('a0', 'a0');\nbreak;\ncase 10n:\ncapi_exit();\nbreak;\ncase 11n:\ncapi_print_char('a0');\nbreak;\ncase 12n:\ncapi_read_char('a0');\nbreak;\n}"
+
+    - name: ebreak
+      type: Custom
+      fields:
+          - field: opcode
+            value: "1110011"
+          - field: funct12
+            type: cop
+            startbit: 31
+            stopbit: 20
+            value: "000000000001"
+          - field: zeros
+            type: cop
+            startbit: 19
+            stopbit: 7
+            value: "0000000000000"
+      definition: "console.log('Not implemented: ebreak');\n capi_raise('ebreak not implemented');"
+
+    #   _____ _   __                          _
+    #  |__  /(_) / _|  ___  _ __    ___  ___ (_)
+    #    / / | || |_  / _ \| '_ \  / __|/ _ \| |
+    #   / /_ | ||  _||  __/| | | || (__|  __/| |
+    #  /____||_||_|   \___||_| |_| \___|\___||_|
+    #     RV32/RV64 Zifencei Standard Exension
+
+    - name: fence.i
+      type: Custom
+      fields:
+          - field: opcode
+            value: "0001111"
+          - field: funct3
+            type: cop
+            startbit: 14
+            stopbit: 12
+            value: "001"
+          - field: zeros
+            type: cop
+            startbit: 31
+            stopbit: 15
+            value: "00000000000000000"
+          - field: zeros2
+            type: cop
+            startbit: 11
+            stopbit: 7
+            value: "00000"
+      definition: "console.log('Not implemented: fence.i');\n capi_raise('fence.i not implemented');"
+
+    #   _____ _
+    #  |__  /(_)  ___  ___  _ __
+    #    / / | | / __|/ __|| '__|
+    #   / /_ | || (__ \__ \| |
+    #  /____||_| \___||___/|_|
+    # RV32/64 Zicsr Standard Extension
+
+    # TODO: Implement CSR instructions
+
+    #   ____ __     __ _____ ____   __  __
+    #  |  _ \\ \   / /|___ /|___ \ |  \/  |
+    #  | |_) |\ \ / /   |_ \  __) || |\/| |
+    #  |  _ <  \ V /   ___) |/ __/ | |  | |
+    #  |_| \_\  \_/   |____/|_____||_|  |_|
+    #        RV32M Standard Extension
+
+    # R-type instructions
+    - name: div
+      type: R
+      fields:
+          - field: opcode
+            value: "0110011"
+          - field: funct7
+            value: "0000001"
+          - field: funct3
+            value: "100"
+      definition: "if (rs2 != 0)\n { rd = BigInt.asIntN(32, (BigInt.asIntN(32, BigInt(rs1)) / BigInt.asIntN(32, BigInt(rs2)))); }\n else { capi_raise('Division by zero not allowed'); }"
+
+    - name: divu
+      type: R
+      fields:
+          - field: opcode
+            value: "0110011"
+          - field: funct7
+            value: "0000001"
+          - field: funct3
+            value: "101"
+      definition: "if (rs2 != 0)\n { rd = BigInt.asIntN(32, (BigInt.asUintN(32, BigInt(rs1)) / BigInt.asUintN(32, BigInt(rs2)))); }\n else { capi_raise('Division by zero not allowed'); }"
+
+    - name: mul
+      type: R
+      fields:
+          - field: opcode
+            value: "0110011"
+          - field: funct7
+            value: "0000001"
+          - field: funct3
+            value: "000"
+      definition: "rd = capi_uint2int(rs1) * capi_uint2int(rs2);"
+
+    - name: mulh
+      type: R
+      fields:
+          - field: opcode
+            value: "0110011"
+          - field: funct7
+            value: "0000001"
+          - field: funct3
+            value: "001"
+      definition: "rd = BigInt.asIntN(32, (BigInt.asIntN(64, BigInt.asIntN(32, BigInt(rs1)) * BigInt.asIntN(32, BigInt(rs2))) >> 32n));"
+
+    - name: mulhsu
+      type: R
+      fields:
+          - field: opcode
+            value: "0110011"
+          - field: funct7
+            value: "0000001"
+          - field: funct3
+            value: "010"
+      definition: "rd = BigInt.asIntN(32, (BigInt.asIntN(64, BigInt.asIntN(32, BigInt(rs1)) * BigInt.asUintN(32, BigInt(rs2))) >> 32n))"
+
+    - name: mulhu
+      type: R
+      fields:
+          - field: opcode
+            value: "0110011"
+          - field: funct7
+            value: "0000001"
+          - field: funct3
+            value: "011"
+      definition: "rd = BigInt.asIntN(32, (BigInt.asUintN(64, BigInt.asUintN(32, BigInt(rs1)) * BigInt.asUintN(32, BigInt(rs2))) >> 32n));"
+
+    - name: rem
+      type: R
+      fields:
+          - field: opcode
+            value: "0110011"
+          - field: funct7
+            value: "0000001"
+          - field: funct3
+            value: "110"
+      definition: "rd = rs1 % rs2;"
+
+    - name: remu
+      type: R
+      fields:
+          - field: opcode
+            value: "0110011"
+          - field: funct7
+            value: "0000001"
+          - field: funct3
+            value: "111"
+      definition: "rd = rs1 % rs2;"
+
+    #   ____ __     __ _____ ____   _____
+    #  |  _ \\ \   / /|___ /|___ \ |  ___|
+    #  | |_) |\ \ / /   |_ \  __) || |_
+    #  |  _ <  \ V /   ___) |/ __/ |  _|
+    #  |_| \_\  \_/   |____/|_____||_|
+    #       RV32F Standard Extension
+    # I-type instructions
+    - name: flw
+      type: I-Offset
+      fields:
+          - field: opcode
+            value: "0000111"
+          - field: funct3
+            value: "010"
+          - field: rd # We're overriding the rd field from the template
+            type: SFP-Reg
+      definition: "rd = capi_mem_read(rs2+inm, 'w', rd_name);\n rd = capi_uint2float32(rd);"
+
+      # R-type instructions
+    - name: fadd.s
+      type: R-Floating
+      fields:
+          - field: opcode
+            value: "1010011"
+          - field: funct7
+            value: "0000000"
+          - field: funct3
+            type: inm-unsigned # We're overriding the funct3 field from the template
+            custom: rounding-mode
+            order: 4
+      definition: "rd = rs2 + rs1;"
+
+    - name: fclass.s
+      type: R-Floating
+      fields:
+          - field: opcode
+            value: "1010011"
+          - field: funct7
+            value: "1110000"
+          - field: funct3
+            value: "001"
+          - field: rs2
+            type: cop
+            value: "00000"
+            order: null
+          - field: rd
+            type: INT-Reg
+      definition: "let a = capi_float2bin(rs1);\nrd=capi_check_ieee(parseInt(a[0]), parseInt(a.slice(1,9), 2), parseInt(a.slice(10), 2));"
+
+    - name: fcvt.s.w
+      # There's quite a bit of overriding here, but RISC-V
+      # has a lot of different conversion instructions, so
+      # we need to be flexible
+      type: R-IntToFloat
+      fields:
+          - field: opcode
+            value: "1010011"
+          - field: funct7
+            value: "1101000"
+          - field: funct5
+            value: "00000"
+          - field: funct3
+            type: inm-unsigned
+            custom: rounding-mode
+            order: 3
+      definition: "rd = capi_int2float32(rs1);"
+
+    - name: fcvt.s.wu
+      type: R-IntToFloat
+      fields:
+          - field: opcode
+            value: "1010011"
+          - field: funct7
+            value: "1101000"
+          - field: funct5
+            value: "00001"
+          - field: funct3
+            type: inm-unsigned
+            custom: rounding-mode
+            order: 3
+      definition: "rd = capi_int2uint(rs1)"
+
+    - name: fcvt.w.s
+      type: R-FloatToInt
+      fields:
+          - field: opcode
+            value: "1010011"
+          - field: funct7
+            value: "1100000"
+          - field: funct5
+            value: "00000"
+          - field: funct3
+            type: inm-unsigned
+            custom: rounding-mode
+            order: 3
+      definition: "rd = parseInt(rs1);"
+
+    - name: fcvt.wu.s
+      type: R-FloatToInt
+      fields:
+          - field: opcode
+            value: "1010011"
+          - field: funct7
+            value: "1100000"
+          - field: funct5
+            value: "00001"
+          - field: funct3
+            type: inm-unsigned
+            custom: rounding-mode
+            order: 3
+      definition: "rd = capi_int2uint(parseInt(rs1));"
+
+    - name: fdiv.s
+      type: R-Floating
+      fields:
+          - field: opcode
+            value: "1010011"
+          - field: funct7
+            value: "0001100"
+          - field: funct3
+            type: inm-unsigned
+            custom: rounding-mode
+            order: 4
+      definition: "if (rs2 != 0)\n { rd = rs1 / rs2; }\n else { capi_raise('Division by zero not allowed'); }"
+
+    - name: feq.s
+      type: R-Floating
+      fields:
+          - field: opcode
+            value: "1010011"
+          - field: funct7
+            value: "1010000"
+          - field: funct3
+            value: "010"
+          - field: rd
+            type: INT-Reg
+      definition: "rd = (rs1 === rs2) ? 1 : 0;"
+
+    - name: fle.s
+      type: R-Floating
+      fields:
+          - field: opcode
+            value: "1010011"
+          - field: funct7
+            value: "1010000"
+          - field: funct3
+            value: "000"
+          - field: rd
+            type: INT-Reg
+      definition: "rd = (rs1 <= rs2) ? 1 : 0;"
+
+    - name: flt.s
+      type: R-Floating
+      fields:
+          - field: opcode
+            value: "1010011"
+          - field: funct7
+            value: "1010000"
+          - field: funct3
+            value: "001"
+          - field: rd
+            type: INT-Reg
+      definition: "rd = (rs1 < rs2) ? 1 : 0;"
+
+    - name: fmax.s
+      type: R-Floating
+      fields:
+          - field: opcode
+            value: "1010011"
+          - field: funct7
+            value: "0010100"
+          - field: funct3
+            value: "001"
+      definition: "rd = Math.max(rs1, rs2);"
+
+    - name: fmin.s
+      type: R-Floating
+      fields:
+          - field: opcode
+            value: "1010011"
+          - field: funct7
+            value: "0010100"
+          - field: funct3
+            value: "000"
+      definition: "rd = Math.min(rs1, rs2);"
+
+    - name: fmul.s
+      type: R-Floating
+      fields:
+          - field: opcode
+            value: "1010011"
+          - field: funct7
+            value: "0001000"
+          - field: funct3
+            type: inm-unsigned
+            custom: rounding-mode
+            order: 4
+      definition: "rd = rs2 * rs1;"
+
+    - name: fmv.w.x
+      type: R-IntToFloat
+      fields:
+          - field: opcode
+            value: "1010011"
+          - field: funct7
+            value: "1111000"
+          - field: funct5
+            value: "00000"
+          - field: funct3
+            value: "000"
+      definition: "rd = capi_uint2float32(rs1);"
+
+    - name: fmv.x.w
+      type: R-FloatToInt
+      fields:
+          - field: opcode
+            value: "1010011"
+          - field: funct7
+            value: "1110000"
+          - field: funct5
+            value: "00000"
+          - field: funct3
+            value: "000"
+      definition: "rd = capi_float322uint(rs1);"
+
+    - name: fsgnj.s
+      type: R-Floating
+      fields:
+          - field: opcode
+            value: "1010011"
+          - field: funct7
+            value: "0010000"
+          - field: funct3
+            value: "000"
+      definition: "rd = (rs2 >= 0) ? Math.abs(rs1) : -Math.abs(rs1);"
+
+    - name: fsgnjn.s
+      type: R-Floating
+      fields:
+          - field: opcode
+            value: "1010011"
+          - field: funct7
+            value: "0010000"
+          - field: funct3
+            value: "001"
+      definition: "rd = (rs2 <= 0) ? Math.abs(rs1) : -Math.abs(rs1);"
+
+    - name: fsgnjx.s
+      type: R-Floating
+      fields:
+          - field: opcode
+            value: "1010011"
+          - field: funct7
+            value: "0010000"
+          - field: funct3
+            value: "010"
+      definition: "let a = rs1<0; let b = rs2<0;\nrd = (a^b) ? -Math.abs(rs1) : Math.abs(rs1);"
+
+    - name: fsqrt.s
+      type: R-Floating
+      fields:
+          - field: opcode
+            value: "1010011"
+          - field: funct7
+            value: "0101100"
+          - field: rs2 # In this instruction, rs2 is more like a funct5
+            type: cop
+            value: "00000"
+            order: null
+          - field: funct3
+            type: inm-unsigned
+            custom: rounding-mode
+            order: 3
+      definition: "if (rs1 >= 0)\n { rd = Math.sqrt(rs1); }\n else { capi_raise('Square root of a negative number is not allowed.'); }"
+
+    - name: fsub.s
+      type: R-Floating
+      fields:
+          - field: opcode
+            value: "1010011"
+          - field: funct7
+            value: "0000100"
+          - field: funct3
+            type: inm-unsigned
+            custom: rounding-mode
+            order: 4
+      definition: "rd = rs1 - rs2;"
+
+    # R4-type instructions
+    - name: fmadd.s
+      type: R4
+      fields:
+          - field: opcode
+            value: "1000011"
+          - field: funct2
+            value: "00"
+          - field: funct3
+            type: inm-unsigned
+            custom: rounding-mode
+            order: 5
+      definition: "rd = rs1 * rs2 + rs3;"
+
+    - name: fmsub.s
+      type: R4
+      fields:
+          - field: opcode
+            value: "1000111"
+          - field: funct2
+            value: "00"
+          - field: funct3
+            type: inm-unsigned
+            custom: rounding-mode
+            order: 5
+      definition: "rd = rs1 * rs2 - rs3;"
+
+    - name: fnmadd.s
+      type: R4
+      fields:
+          - field: opcode
+            value: "1001111"
+          - field: funct2
+            value: "00"
+          - field: funct3
+            type: inm-unsigned
+            custom: rounding-mode
+            order: 5
+      definition: "rd = -rs1 * rs2 - rs3;"
+
+    - name: fnmsub.s
+      type: R4
+      fields:
+          - field: opcode
+            value: "1001011"
+          - field: funct2
+            value: "00"
+          - field: funct3
+            type: inm-unsigned
+            custom: rounding-mode
+            order: 5
+      definition: "rd = -rs1 * rs2 + rs3;"
+
+    # S-type instructions
+    - name: fsw
+      type: S
+      fields:
+          - field: opcode
+            value: "0100111"
+          - field: funct3
+            value: "010"
+          - field: rs2 # We're overriding the rs2 field from the template
+            type: SFP-Reg
+      definition: "var val1 = capi_float322uint(rs1);\n capi_mem_write(rs2+inm, val1, 'w', rs1_name);"
+
+    #   ____ __     __ _____ ____   ____
+    #  |  _ \\ \   / /|___ /|___ \ |  _ \
+    #  | |_) |\ \ / /   |_ \  __) || | | |
+    #  |  _ <  \ V /   ___) |/ __/ | |_| |
+    #  |_| \_\  \_/   |____/|_____||____/
+    #       RV32D Standard Extension
+
+    # TODO: Implement RV32D instructions

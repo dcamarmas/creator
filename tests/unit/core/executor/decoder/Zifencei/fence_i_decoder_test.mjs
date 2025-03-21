@@ -1,9 +1,9 @@
 import { assertEquals } from "https://deno.land/std/assert/mod.ts";
-import { decode_instruction } from "../../../../../../../src/core/executor/decoder.mjs";
+import { decode_instruction } from "../../../../../../src/core/executor/decoder.mjs";
 import {
     load_architecture,
     newArchitectureLoad,
-} from "../../../../../../../src/core/core.mjs";
+} from "../../../../../../src/core/core.mjs";
 import fs from "node:fs";
 
 function setupArchitecture() {
@@ -21,6 +21,6 @@ function decode_test(instruction, expected) {
     assertEquals(result, expected);
 }
 
-Deno.test("decode_instruction - ecall instruction", () =>
-    decode_test("00000000000000000000000001110011", "ecall"),
+Deno.test("decode_instruction - fence.i instruction", () =>
+    decode_test("00000000000000000001000000001111", "fence.i"),
 );
