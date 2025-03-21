@@ -21,6 +21,6 @@ function decode_test(instruction, expected) {
     assertEquals(result, expected);
 }
 
-Deno.test("decode_instruction - ecall instruction", () =>
-    decode_test("00000000000000000000000001110011", "ecall"),
+Deno.test("decode_instruction - ebreak instruction", () =>
+    decode_test("00000000000100000000000001110011", "ebreak"),
 );

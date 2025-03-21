@@ -19,6 +19,6 @@ function decode_test(instruction, expected) {
     assertEquals(result.instructionExec, expected);
 }
 
-Deno.test("decode_instruction - [instruction] instruction ", () =>
-    decode_test("00110000001000000000000001110011", "mret"),
-);
+// Deno.test("decode_instruction - [instruction] instruction ", () =>
+//     decode_test("00110000001000000000000001110011", "mret"),
+// );

@@ -2,21 +2,23 @@ import { assertEquals } from "https://deno.land/std/assert/mod.ts";
 import { decode_instruction } from "../../../../../../../src/core/executor/decoder.mjs";
 import {
     load_architecture,
-    architecture,
+    newArchitectureLoad,
 } from "../../../../../../../src/core/core.mjs";
 import fs from "node:fs";
 
 function setupArchitecture() {
-    const architecturePath = "./architecture/RISC_V_RV32IMFD.json";
+    const architecturePath = "./architecture/new/architecture.yml";
+    const instructionsPath = "./architecture/new/instructions.yml";
     const architecture_file = fs.readFileSync(architecturePath, "utf8");
-    load_architecture(architecture_file);
+    const instructions_file = fs.readFileSync(instructionsPath, "utf8");
+    newArchitectureLoad(architecture_file, instructions_file);
 }
 
 function decode_test(instruction, expected) {
     setupArchitecture();
-    const result = decode_instruction(instruction);
+    const result = decode_instruction(instruction, true);
 
-    assertEquals(result.instructionExec, expected);
+    assertEquals(result, expected);
 }
 
 Deno.test("decode_instruction - auipc instruction 1", () =>
@@ -28,11 +30,11 @@ Deno.test("decode_instruction - auipc instruction 2", () =>
 );
 
 Deno.test("decode_instruction - auipc instruction 3", () =>
-    decode_test("11111111111111111111000010010111", "auipc x1 1048575"),
+    decode_test("11111111111111111111000010010111", "auipc x1 -1"),
 );
 
 Deno.test("decode_instruction - auipc instruction 4", () =>
-    decode_test("10000000000000000000000100010111", "auipc x2 524288"),
+    decode_test("10000000000000000000000100010111", "auipc x2 -524288"),
 );
 
 Deno.test("decode_instruction - auipc instruction 5", () =>
@@ -48,7 +50,7 @@ Deno.test("decode_instruction - auipc instruction 7", () =>
 );
 
 Deno.test("decode_instruction - auipc instruction 8", () =>
-    decode_test("10101010101010101010111110010111", "auipc x31 699050"),
+    decode_test("10101010101010101010111110010111", "auipc x31 -349526"),
 );
 
 Deno.test("decode_instruction - auipc instruction 9", () =>
@@ -56,5 +58,5 @@ Deno.test("decode_instruction - auipc instruction 9", () =>
 );
 
 Deno.test("decode_instruction - auipc instruction 10", () =>
-    decode_test("10000000000000000001101000010111", "auipc x20 524289"),
+    decode_test("10000000000000000001101000010111", "auipc x20 -524287"),
 );

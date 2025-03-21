@@ -81,11 +81,22 @@ function get_register_binary(type, binaryValue) {
 function extractOpcode(fields) {
     for (const field of fields) {
         if (field.type === "co") {
+            let startbit = null;
+            let stopbit = null;
+            let value = null;
+            try {
+                startbit =
+                    WORD_SIZE_MINUS_1 - parseInt(field.startbit, DECIMAL_BASE);
+                stopbit = WORD_SIZE - parseInt(field.stopbit, DECIMAL_BASE);
+                value = field.valueField;
+            } catch (e) {
+                logger.error("Error parsing opcode field: " + e);
+            }
+
             return {
-                startbit:
-                    WORD_SIZE_MINUS_1 - parseInt(field.startbit, DECIMAL_BASE),
-                stopbit: WORD_SIZE - parseInt(field.stopbit, DECIMAL_BASE),
-                value: field.valueField,
+                startbit,
+                stopbit,
+                value,
             };
         }
     }
@@ -151,8 +162,6 @@ function processInstructionField(field, instructionExec, instruction_nwords) {
 
     switch (field.type) {
         case "co":
-            value = field.name;
-            break;
         case "cop":
             break;
         case "INT-Reg":
@@ -288,7 +297,7 @@ function processInstructionField(field, instructionExec, instruction_nwords) {
                         // For "dyn" (7), which is the default rounding mode, return null
                         // so it can be omitted in the output
                         if (decimalValue === 7) {
-                            value = "";
+                            value = null;
                         }
                     } else {
                         logger.error("Invalid rounding mode: " + decimalValue);
@@ -329,7 +338,12 @@ function parseSignatureDefinition(instruction) {
     };
 }
 
-function decodeBinaryFormat(instruction, encodedInstruction) {
+// eslint-disable-next-line max-lines-per-function
+function decodeBinaryFormat(
+    instruction,
+    encodedInstruction,
+    newFormat = false,
+) {
     // First check if the opcode matches
     const opcode = extractOpcode(instruction.fields);
     const binaryOpcode = encodedInstruction.substring(
@@ -355,6 +369,9 @@ function decodeBinaryFormat(instruction, encodedInstruction) {
             encodedInstruction,
             instruction.nwords,
         );
+        if (field.type === "co") {
+            value = instruction.name;
+        }
         if (Object.hasOwn(field, "order")) {
             if (Object.hasOwn(field, "prefix")) {
                 value = field.prefix + value;
@@ -376,7 +393,9 @@ function decodeBinaryFormat(instruction, encodedInstruction) {
     }
 
     const instruction_loaded = instructionArray.join(" ");
-
+    if (newFormat) {
+        return instruction_loaded;
+    }
     // Extract signature parts from decoded instruction
     const parsedSignature = parseSignatureDefinition(instruction);
 
@@ -417,7 +436,7 @@ function decodeAssemblyFormat(instruction, instructionExecParts) {
     };
 }
 
-export function decode_instruction(instructionExec) {
+export function decode_instruction(instructionExec, newFormat = false) {
     const instructionExecParts = instructionExec.split(" ");
     const isBinary = /^[01]+$/.test(instructionExecParts[0]);
 
@@ -428,8 +447,12 @@ export function decode_instruction(instructionExec) {
             const decodedBinary = decodeBinaryFormat(
                 instruction,
                 instructionExec,
+                newFormat,
             );
             if (decodedBinary) {
+                if (newFormat) {
+                    return decodedBinary;
+                }
                 return {
                     type: instruction.type,
                     signatureDef: decodedBinary.signatureDef,
