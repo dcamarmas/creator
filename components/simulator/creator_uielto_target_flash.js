@@ -21,6 +21,7 @@
 
 
   /* jshint esversion: 6 */
+  //import { EventBus } from '../simulator/event-bus.js';
 
   var this_env = null;
 
@@ -252,8 +253,29 @@
                         //Google Analytics
                         creator_ga('simulator', 'simulator.download_driver', 'simulator.download_driver');
                       },
+
+
+                      load_library_cr(isChecked) {
+                        try {
+                          if (isChecked) {
+                            if (EventBus && typeof EventBus.$emit === 'function') {
+                              EventBus.$emit('library_load_creatino');
+                              console.log("Evento emitido correctamente: library_load_creatino");
+                            } else {
+                              console.error("Error: EventBus no está definido o no tiene $emit.");
+                            }
+                          } else {
+                            console.log("isChecked es falso, no se emite el evento.");
+                          }
+                        } catch (error) {
+                          console.error("Error al emitir el evento:", error);
+                        }
+                      }
+                      ,                      
+
                       creatinoMode(isChecked )
                       {
+
                         this.save();
 
                         this.running = true;
@@ -270,6 +292,11 @@
 
                         //Google Analytics
                         creator_ga('simulator', 'simulator.arduinoMode', 'simulator.arduinoMode');
+                      },
+
+                      handleCheckboxChange(value) {
+                        this.creatinoMode(value);
+                        //this.load_library_cr(value);
                       },
 
                       do_flash( )
@@ -404,7 +431,7 @@
                     '       <br>' +
                     '       <b-col v-if="target_board" class="mb-3">'+
                     '         <b-form-checkbox v-model="arduino_support"' +
-                    '             @change="creatinoMode(arduino_support)">' +
+                    '             @change="handleCheckboxChange(arduino_support)">' +
                     '           Arduino Support'+
                     '         </b-form-checkbox>'+
                     '       </b-col>'+
@@ -611,7 +638,20 @@
                     '                       <b-row no-gutters>' +
                     '                         <b-col md="12">' +
                     '                           <b-card-text style="text-align: left;margin:2%;">' +
-                    '                             <span>Follow the instructions from: <a href="https://docs.espressif.com/projects/esp-idf/en/latest/esp32/" target="_blank">https://docs.espressif.com/projects/esp-idf/en/latest/esp32/</a></span>' +
+                    '                             <span>📘 For simple RISC-V instructions follow the instructions from: <a href="https://docs.espressif.com/projects/esp-idf/en/latest/esp32/" target="_blank">https://docs.espressif.com/projects/esp-idf/en/latest/esp32/</a></span>' +
+                    '                           </b-card-text>' +
+                    '                           <b-card-text style="text-align: left;margin:2%;">' +
+                    '                             <span>♾️ For Arduino purposes, follow the instructions from: <a href="https://docs.espressif.com/projects/esp-idf/en/v5.3/esp32/" target="_blank">https://docs.espressif.com/projects/esp-idf/en/v5.3/esp32/</a></span>' +
+                    '                           </b-card-text>' +
+                    '                         </b-col>' +
+                    '                       </b-row>' +
+                    '                     </b-card>' +
+                    '                     <label for="range-6">(3) Install python3 packages:</label>' +
+                    '                     <b-card class="text-center">' +
+                    '                       <b-row no-gutters>' +
+                    '                         <b-col md="12">' +
+                    '                           <b-card-text style="text-align: left;margin:2%;">' +
+                    '                             <code>pip3 install flask flask_cors </code>' +
                     '                           </b-card-text>' +
                     '                         </b-col>' +
                     '                       </b-row>' +
@@ -620,19 +660,47 @@
                     '                 </b-row>' +
                     '               </b-container>' +
                     ' ' +
+                    
+                    '      <div style="text-align: center;margin-top: 20px;">' +
+                    '        <label for="range-6"> 👾 For Debugging purposes:</label>' +
+                    '      </div>' +
                     '               <b-container fluid align-h="center" class="mx-0 px-0">' +
                     '                 <b-row cols="1" align-h="center">' +
                     '                   <b-col class="pt-2">' +
-                    '                     <label for="range-6">(3) Install python3 packages:</label>' +
+                    '                     <label for="range-6">(3-1) Install Python 3.9:</label>' +
                     '                     <b-card class="text-center">' +
                     '                       <b-row no-gutters>' +
                     '                         <b-col md="12">' +
                     '                           <b-card-text style="text-align: left;margin:2%;">' +
-                    '                             <code>pip3 install flask flask_cors</code>' +
+                    '                             <code>sudo apt install software-properties-common</code><br>' +
+                    '                             <code>sudo add-apt-repository ppa:deadsnakes/ppa</code><br>' +
+                    '                             <code>sudo apt install python3.</code><br>' +
+                    '                             <code>sudo update-alternatives —set python3 /usr/bin/python3.</code><br>' +
                     '                           </b-card-text>' +
                     '                         </b-col>' +
                     '                       </b-row>' +
                     '                     </b-card>' +
+                    '                     <label for="range-6">(3-2) Install openocd:</label>' +
+                    '                     <b-card class="text-center">' +
+                    '                       <b-row no-gutters>' +
+                    '                         <b-col md="12">' +
+                    '                           <b-card-text style="text-align: left;margin:2%;">' +
+                    '                             <span>OpenOCD: <a href="https://docs.espressif.com/projects/esp-idf/en/v3.3.3/api-guides/jtag-debugging/setup-openocd-linux.html" target="_blank">https://docs.espressif.com/projects/esp-idf/en/v3.3.3/api-guides/jtag-debugging/setup-openocd-linux.html</a></span>' +
+                    '                           </b-card-text>' +
+                    '                         </b-col>' +
+                    '                       </b-row>' +
+                    '                     </b-card>' +
+                    '                     <label for="range-6">(3-3) Prepare the setup:</label>' +
+                    '                     <b-card class="text-center">' +
+                    '                       <b-row no-gutters>' +
+                    '                         <b-col md="12">' +
+                    '                           <b-card-text style="text-align: left;margin:2%;">' +
+                    '                             <span>Check about JTAG devices: <a href="https://docs.espressif.com/projects/esp-idf/en/stable/esp32c3/api-guides/jtag-debugging/configure-builtin-jtag.html" target="_blank">https://docs.espressif.com/projects/esp-idf/en/stable/esp32c3/api-guides/jtag-debugging/configure-builtin-jtag.html</a></span>' +
+                    '                           </b-card-text>' +
+                    '                         </b-col>' +
+                    '                       </b-row>' +
+                    '                     </b-card>' +
+
                     '                   </b-col>' +
                     '                 </b-row>' +
                     '               </b-container>' +

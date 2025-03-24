@@ -1,0 +1,831 @@
+{
+  "instructions_binary": [
+    {
+      "Address": "0x0",
+      "Label": "",
+      "loaded": "1000000010000010",
+      "globl": false
+    },
+    {
+      "Address": "0x0",
+      "Label": "",
+      "loaded": "1000000010000010",
+      "globl": false
+    },
+    {
+      "Address": "0x0",
+      "Label": "",
+      "loaded": "1000000010000010",
+      "globl": false
+    },
+    {
+      "Address": "0x0",
+      "Label": "",
+      "loaded": "1000000010000010",
+      "globl": false
+    },
+    {
+      "Address": "0x0",
+      "Label": "$xrv32i2p1_m2p0_c2p0_zmmul1p0",
+      "loaded": "1000000010000010",
+      "globl": false
+    },
+    {
+      "Address": "0x5e",
+      "Label": "cr_isWhitespace",
+      "loaded": "1000000010000010",
+      "globl": false
+    },
+    {
+      "Address": "0x0",
+      "Label": "",
+      "loaded": "1000000010000010",
+      "globl": false
+    },
+    {
+      "Address": "0x0",
+      "Label": "cr_ecall",
+      "loaded": "1000000010000010",
+      "globl": true
+    },
+    {
+      "Address": "0x2",
+      "Label": "cr_initArduino",
+      "loaded": "1000000010000010",
+      "globl": true
+    },
+    {
+      "Address": "0x4",
+      "Label": "cr_digitalRead",
+      "loaded": "1000000010000010",
+      "globl": true
+    },
+    {
+      "Address": "0x6",
+      "Label": "cr_pinMode",
+      "loaded": "1000000010000010",
+      "globl": true
+    },
+    {
+      "Address": "0x8",
+      "Label": "cr_digitalWrite",
+      "loaded": "1000000010000010",
+      "globl": true
+    },
+    {
+      "Address": "0xa",
+      "Label": "cr_analogRead",
+      "loaded": "1000000010000010",
+      "globl": true
+    },
+    {
+      "Address": "0xc",
+      "Label": "cr_analogReadResolution",
+      "loaded": "1000000010000010",
+      "globl": true
+    },
+    {
+      "Address": "0xe",
+      "Label": "cr_analogWrite",
+      "loaded": "1000000010000010",
+      "globl": true
+    },
+    {
+      "Address": "0x10",
+      "Label": "cr_map",
+      "loaded": "1000000010000010",
+      "globl": true
+    },
+    {
+      "Address": "0x12",
+      "Label": "cr_constrain",
+      "loaded": "1000000010000010",
+      "globl": true
+    },
+    {
+      "Address": "0x14",
+      "Label": "cr_abs",
+      "loaded": "1000000010000010",
+      "globl": true
+    },
+    {
+      "Address": "0x16",
+      "Label": "cr_max",
+      "loaded": "1000000010000010",
+      "globl": true
+    },
+    {
+      "Address": "0x18",
+      "Label": "cr_min",
+      "loaded": "1000000010000010",
+      "globl": true
+    },
+    {
+      "Address": "0x1a",
+      "Label": "cr_pow",
+      "loaded": "1000000010000010",
+      "globl": true
+    },
+    {
+      "Address": "0x1c",
+      "Label": "cr_bit",
+      "loaded": "1000000010000010",
+      "globl": true
+    },
+    {
+      "Address": "0x1e",
+      "Label": "cr_bitClear",
+      "loaded": "1000000010000010",
+      "globl": true
+    },
+    {
+      "Address": "0x20",
+      "Label": "cr_bitRead",
+      "loaded": "1000000010000010",
+      "globl": true
+    },
+    {
+      "Address": "0x22",
+      "Label": "cr_bitSet",
+      "loaded": "1000000010000010",
+      "globl": true
+    },
+    {
+      "Address": "0x24",
+      "Label": "cr_bitWrite",
+      "loaded": "1000000010000010",
+      "globl": true
+    },
+    {
+      "Address": "0x26",
+      "Label": "cr_highByte",
+      "loaded": "1000000010000010",
+      "globl": true
+    },
+    {
+      "Address": "0x28",
+      "Label": "cr_lowByte",
+      "loaded": "1000000010000010",
+      "globl": true
+    },
+    {
+      "Address": "0x2a",
+      "Label": "cr_sqrt",
+      "loaded": "1000000010000010",
+      "globl": true
+    },
+    {
+      "Address": "0x2c",
+      "Label": "cr_sq",
+      "loaded": "1000000010000010",
+      "globl": true
+    },
+    {
+      "Address": "0x2e",
+      "Label": "cr_cos",
+      "loaded": "1000000010000010",
+      "globl": true
+    },
+    {
+      "Address": "0x30",
+      "Label": "cr_sin",
+      "loaded": "1000000010000010",
+      "globl": true
+    },
+    {
+      "Address": "0x32",
+      "Label": "cr_tan",
+      "loaded": "1000000010000010",
+      "globl": true
+    },
+    {
+      "Address": "0x34",
+      "Label": "cr_attachInterrupt",
+      "loaded": "1000000010000010",
+      "globl": true
+    },
+    {
+      "Address": "0x36",
+      "Label": "cr_detachInterrupt",
+      "loaded": "1000000010000010",
+      "globl": true
+    },
+    {
+      "Address": "0x38",
+      "Label": "cr_digitalPinToInterrupt",
+      "loaded": "1000000010000010",
+      "globl": true
+    },
+    {
+      "Address": "0x3a",
+      "Label": "cr_pulseIn",
+      "loaded": "1000000010000010",
+      "globl": true
+    },
+    {
+      "Address": "0x3c",
+      "Label": "cr_pulseInLong",
+      "loaded": "1000000010000010",
+      "globl": true
+    },
+    {
+      "Address": "0x3e",
+      "Label": "cr_shiftIn",
+      "loaded": "1000000010000010",
+      "globl": true
+    },
+    {
+      "Address": "0x40",
+      "Label": "cr_shiftOut",
+      "loaded": "1000000010000010",
+      "globl": true
+    },
+    {
+      "Address": "0x42",
+      "Label": "cr_interrupts",
+      "loaded": "1000000010000010",
+      "globl": true
+    },
+    {
+      "Address": "0x44",
+      "Label": "cr_nointerrupts",
+      "loaded": "1000000010000010",
+      "globl": true
+    },
+    {
+      "Address": "0x46",
+      "Label": "cr_isDigit",
+      "loaded": "1000000010000010",
+      "globl": true
+    },
+    {
+      "Address": "0x48",
+      "Label": "cr_isAlpha",
+      "loaded": "1000000010000010",
+      "globl": true
+    },
+    {
+      "Address": "0x4a",
+      "Label": "cr_isAlphaNumeric",
+      "loaded": "1000000010000010",
+      "globl": true
+    },
+    {
+      "Address": "0x4c",
+      "Label": "cr_isAscii",
+      "loaded": "1000000010000010",
+      "globl": true
+    },
+    {
+      "Address": "0x4e",
+      "Label": "cr_isControl",
+      "loaded": "1000000010000010",
+      "globl": true
+    },
+    {
+      "Address": "0x50",
+      "Label": "cr_isPunct",
+      "loaded": "1000000010000010",
+      "globl": true
+    },
+    {
+      "Address": "0x52",
+      "Label": "cr_isHexadecimalDigit",
+      "loaded": "1000000010000010",
+      "globl": true
+    },
+    {
+      "Address": "0x54",
+      "Label": "cr_isUpperCase",
+      "loaded": "1000000010000010",
+      "globl": true
+    },
+    {
+      "Address": "0x56",
+      "Label": "cr_isLowerCase",
+      "loaded": "1000000010000010",
+      "globl": true
+    },
+    {
+      "Address": "0x58",
+      "Label": "cr_isPrintable",
+      "loaded": "1000000010000010",
+      "globl": true
+    },
+    {
+      "Address": "0x5a",
+      "Label": "cr_isGraph",
+      "loaded": "1000000010000010",
+      "globl": true
+    },
+    {
+      "Address": "0x5c",
+      "Label": "cr_isSpace",
+      "loaded": "1000000010000010",
+      "globl": true
+    },
+    {
+      "Address": "0x0",
+      "Label": "cr_isWhiteSpace",
+      "loaded": "1000000010000010",
+      "globl": true
+    },
+    {
+      "Address": "0x60",
+      "Label": "cr_delay",
+      "loaded": "1000000010000010",
+      "globl": true
+    },
+    {
+      "Address": "0x62",
+      "Label": "cr_delayMicroseconds",
+      "loaded": "1000000010000010",
+      "globl": true
+    },
+    {
+      "Address": "0x64",
+      "Label": "cr_randomSeed",
+      "loaded": "1000000010000010",
+      "globl": true
+    },
+    {
+      "Address": "0x66",
+      "Label": "cr_random",
+      "loaded": "1000000010000010",
+      "globl": true
+    },
+    {
+      "Address": "0x68",
+      "Label": "cr_serial_available",
+      "loaded": "1000000010000010",
+      "globl": true
+    },
+    {
+      "Address": "0x6a",
+      "Label": "cr_serial_availableForWrite",
+      "loaded": "1000000010000010",
+      "globl": true
+    },
+    {
+      "Address": "0x6c",
+      "Label": "cr_serial_begin",
+      "loaded": "1000000010000010",
+      "globl": true
+    },
+    {
+      "Address": "0x6e",
+      "Label": "cr_serial_end",
+      "loaded": "1000000010000010",
+      "globl": true
+    },
+    {
+      "Address": "0x70",
+      "Label": "cr_serial_find",
+      "loaded": "1000000010000010",
+      "globl": true
+    },
+    {
+      "Address": "0x72",
+      "Label": "cr_serial_findUntil",
+      "loaded": "1000000010000010",
+      "globl": true
+    },
+    {
+      "Address": "0x74",
+      "Label": "cr_serial_flush",
+      "loaded": "1000000010000010",
+      "globl": true
+    },
+    {
+      "Address": "0x76",
+      "Label": "cr_serial_parseFloat",
+      "loaded": "1000000010000010",
+      "globl": true
+    },
+    {
+      "Address": "0x78",
+      "Label": "cr_serial_parseInt",
+      "loaded": "1000000010000010",
+      "globl": true
+    },
+    {
+      "Address": "0x7a",
+      "Label": "cr_serial_printf",
+      "loaded": "1000000010000010",
+      "globl": true
+    },
+    {
+      "Address": "0x7c",
+      "Label": "cr_serial_read",
+      "loaded": "1000000010000010",
+      "globl": true
+    },
+    {
+      "Address": "0x7e",
+      "Label": "cr_serial_readBytes",
+      "loaded": "1000000010000010",
+      "globl": true
+    },
+    {
+      "Address": "0x80",
+      "Label": "cr_serial_readBytesUntil",
+      "loaded": "1000000010000010",
+      "globl": true
+    },
+    {
+      "Address": "0x82",
+      "Label": "cr_serial_readString",
+      "loaded": "1000000010000010",
+      "globl": true
+    },
+    {
+      "Address": "0x84",
+      "Label": "cr_serial_readStringUntil",
+      "loaded": "1000000010000010",
+      "globl": true
+    },
+    {
+      "Address": "0x86",
+      "Label": "cr_serial_write",
+      "loaded": "1000000010000010",
+      "globl": true
+    }
+  ],
+  "instructions_tag": [
+    {
+      "tag": "",
+      "addr": 0,
+      "globl": false
+    },
+    {
+      "tag": "",
+      "addr": 0,
+      "globl": false
+    },
+    {
+      "tag": "",
+      "addr": 0,
+      "globl": false
+    },
+    {
+      "tag": "",
+      "addr": 0,
+      "globl": false
+    },
+    {
+      "tag": "$xrv32i2p1_m2p0_c2p0_zmmul1p0",
+      "addr": 0,
+      "globl": false
+    },
+    {
+      "tag": "cr_isWhitespace",
+      "addr": 94,
+      "globl": false
+    },
+    {
+      "tag": "",
+      "addr": 0,
+      "globl": false
+    },
+    {
+      "tag": "cr_ecall",
+      "addr": 0,
+      "globl": true
+    },
+    {
+      "tag": "cr_initArduino",
+      "addr": 2,
+      "globl": true
+    },
+    {
+      "tag": "cr_digitalRead",
+      "addr": 4,
+      "globl": true
+    },
+    {
+      "tag": "cr_pinMode",
+      "addr": 6,
+      "globl": true
+    },
+    {
+      "tag": "cr_digitalWrite",
+      "addr": 8,
+      "globl": true
+    },
+    {
+      "tag": "cr_analogRead",
+      "addr": 10,
+      "globl": true
+    },
+    {
+      "tag": "cr_analogReadResolution",
+      "addr": 12,
+      "globl": true
+    },
+    {
+      "tag": "cr_analogWrite",
+      "addr": 14,
+      "globl": true
+    },
+    {
+      "tag": "cr_map",
+      "addr": 16,
+      "globl": true
+    },
+    {
+      "tag": "cr_constrain",
+      "addr": 18,
+      "globl": true
+    },
+    {
+      "tag": "cr_abs",
+      "addr": 20,
+      "globl": true
+    },
+    {
+      "tag": "cr_max",
+      "addr": 22,
+      "globl": true
+    },
+    {
+      "tag": "cr_min",
+      "addr": 24,
+      "globl": true
+    },
+    {
+      "tag": "cr_pow",
+      "addr": 26,
+      "globl": true
+    },
+    {
+      "tag": "cr_bit",
+      "addr": 28,
+      "globl": true
+    },
+    {
+      "tag": "cr_bitClear",
+      "addr": 30,
+      "globl": true
+    },
+    {
+      "tag": "cr_bitRead",
+      "addr": 32,
+      "globl": true
+    },
+    {
+      "tag": "cr_bitSet",
+      "addr": 34,
+      "globl": true
+    },
+    {
+      "tag": "cr_bitWrite",
+      "addr": 36,
+      "globl": true
+    },
+    {
+      "tag": "cr_highByte",
+      "addr": 38,
+      "globl": true
+    },
+    {
+      "tag": "cr_lowByte",
+      "addr": 40,
+      "globl": true
+    },
+    {
+      "tag": "cr_sqrt",
+      "addr": 42,
+      "globl": true
+    },
+    {
+      "tag": "cr_sq",
+      "addr": 44,
+      "globl": true
+    },
+    {
+      "tag": "cr_cos",
+      "addr": 46,
+      "globl": true
+    },
+    {
+      "tag": "cr_sin",
+      "addr": 48,
+      "globl": true
+    },
+    {
+      "tag": "cr_tan",
+      "addr": 50,
+      "globl": true
+    },
+    {
+      "tag": "cr_attachInterrupt",
+      "addr": 52,
+      "globl": true
+    },
+    {
+      "tag": "cr_detachInterrupt",
+      "addr": 54,
+      "globl": true
+    },
+    {
+      "tag": "cr_digitalPinToInterrupt",
+      "addr": 56,
+      "globl": true
+    },
+    {
+      "tag": "cr_pulseIn",
+      "addr": 58,
+      "globl": true
+    },
+    {
+      "tag": "cr_pulseInLong",
+      "addr": 60,
+      "globl": true
+    },
+    {
+      "tag": "cr_shiftIn",
+      "addr": 62,
+      "globl": true
+    },
+    {
+      "tag": "cr_shiftOut",
+      "addr": 64,
+      "globl": true
+    },
+    {
+      "tag": "cr_interrupts",
+      "addr": 66,
+      "globl": true
+    },
+    {
+      "tag": "cr_nointerrupts",
+      "addr": 68,
+      "globl": true
+    },
+    {
+      "tag": "cr_isDigit",
+      "addr": 70,
+      "globl": true
+    },
+    {
+      "tag": "cr_isAlpha",
+      "addr": 72,
+      "globl": true
+    },
+    {
+      "tag": "cr_isAlphaNumeric",
+      "addr": 74,
+      "globl": true
+    },
+    {
+      "tag": "cr_isAscii",
+      "addr": 76,
+      "globl": true
+    },
+    {
+      "tag": "cr_isControl",
+      "addr": 78,
+      "globl": true
+    },
+    {
+      "tag": "cr_isPunct",
+      "addr": 80,
+      "globl": true
+    },
+    {
+      "tag": "cr_isHexadecimalDigit",
+      "addr": 82,
+      "globl": true
+    },
+    {
+      "tag": "cr_isUpperCase",
+      "addr": 84,
+      "globl": true
+    },
+    {
+      "tag": "cr_isLowerCase",
+      "addr": 86,
+      "globl": true
+    },
+    {
+      "tag": "cr_isPrintable",
+      "addr": 88,
+      "globl": true
+    },
+    {
+      "tag": "cr_isGraph",
+      "addr": 90,
+      "globl": true
+    },
+    {
+      "tag": "cr_isSpace",
+      "addr": 92,
+      "globl": true
+    },
+    {
+      "tag": "cr_isWhiteSpace",
+      "addr": 0,
+      "globl": true
+    },
+    {
+      "tag": "cr_delay",
+      "addr": 96,
+      "globl": true
+    },
+    {
+      "tag": "cr_delayMicroseconds",
+      "addr": 98,
+      "globl": true
+    },
+    {
+      "tag": "cr_randomSeed",
+      "addr": 100,
+      "globl": true
+    },
+    {
+      "tag": "cr_random",
+      "addr": 102,
+      "globl": true
+    },
+    {
+      "tag": "cr_serial_available",
+      "addr": 104,
+      "globl": true
+    },
+    {
+      "tag": "cr_serial_availableForWrite",
+      "addr": 106,
+      "globl": true
+    },
+    {
+      "tag": "cr_serial_begin",
+      "addr": 108,
+      "globl": true
+    },
+    {
+      "tag": "cr_serial_end",
+      "addr": 110,
+      "globl": true
+    },
+    {
+      "tag": "cr_serial_find",
+      "addr": 112,
+      "globl": true
+    },
+    {
+      "tag": "cr_serial_findUntil",
+      "addr": 114,
+      "globl": true
+    },
+    {
+      "tag": "cr_serial_flush",
+      "addr": 116,
+      "globl": true
+    },
+    {
+      "tag": "cr_serial_parseFloat",
+      "addr": 118,
+      "globl": true
+    },
+    {
+      "tag": "cr_serial_parseInt",
+      "addr": 120,
+      "globl": true
+    },
+    {
+      "tag": "cr_serial_printf",
+      "addr": 122,
+      "globl": true
+    },
+    {
+      "tag": "cr_serial_read",
+      "addr": 124,
+      "globl": true
+    },
+    {
+      "tag": "cr_serial_readBytes",
+      "addr": 126,
+      "globl": true
+    },
+    {
+      "tag": "cr_serial_readBytesUntil",
+      "addr": 128,
+      "globl": true
+    },
+    {
+      "tag": "cr_serial_readString",
+      "addr": 130,
+      "globl": true
+    },
+    {
+      "tag": "cr_serial_readStringUntil",
+      "addr": 132,
+      "globl": true
+    },
+    {
+      "tag": "cr_serial_write",
+      "addr": 134,
+      "globl": true
+    }
+  ]
+}
