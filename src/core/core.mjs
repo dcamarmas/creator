@@ -160,115 +160,385 @@ function load_arch_select(cfg) {
     return ret;
 }
 
-export function newArchitectureLoad(architecture, instructions) {
-    let architectureObj;
-    let instructionsObj;
-    try {
-        architectureObj = yaml.load(architecture);
-        instructionsObj = yaml.load(instructions);
+/**
+ * Find the template matching an instruction type
+ * @param {Object} architectureObj - The architecture object
+ * @param {Object} instruction - The instruction definition
+ * @returns {Object|null} - The matching template or null if not found
+ */
+function findTemplateForInstruction(architectureObj, instruction) {
+    const templateType = instruction.type;
+    return architectureObj.templates.find(t => t.name === templateType);
+}
+/**
+ * Update an existing field with instruction-specific properties
+ * @param {Object} existingField - The template field to update
+ * @param {Object} instructionField - The instruction field with override values
+ */
+function updateExistingField(existingField, instructionField) {
+    // Override value if specified
+    if (instructionField.value) {
+        existingField.valueField = instructionField.value;
+    }
 
-        // Create instructions array in architectureObj if it doesn't exist
-        if (!architectureObj.instructions) {
-            architectureObj.instructions = [];
+    // Override type if specified
+    if (instructionField.type) {
+        existingField.type = instructionField.type;
+    }
+
+    // Override any other properties
+    Object.keys(instructionField).forEach(key => {
+        if (key !== "field" && key !== "value" && key !== "type") {
+            existingField[key] = instructionField[key];
         }
+    });
+}
 
-        // Process each instruction and find its corresponding template
-        if (instructionsObj && instructionsObj.instructions) {
-            instructionsObj.instructions.forEach(instruction => {
-                // Find the matching template
-                const templateType = instruction.type;
-                const template = architectureObj.templates.find(
-                    t => t.name === templateType,
+/**
+ * Create a new field from instruction field definition
+ * @param {Object} instructionField - The instruction field definition
+ * @returns {Object} - The new field object
+ */
+function createNewField(instructionField) {
+    const newField = {
+        ...instructionField,
+        name: instructionField.field,
+    };
+
+    // Convert 'value' property to 'valueField' to match template format
+    if (instructionField.value) {
+        newField.valueField = instructionField.value;
+        delete instructionField.value;
+    }
+
+    delete newField.field; // Remove the field property after converting
+    return newField;
+}
+
+/**
+ * Merge template fields with instruction-specific fields
+ * @param {Object} template - The template object
+ * @param {Object} instruction - The instruction definition
+ * @returns {Array} - Merged fields array
+ */
+function mergeTemplateAndInstructionFields(template, instruction) {
+    // Start with deep copy of template fields
+    const mergedFields = [...template.fields].map(field => ({ ...field }));
+
+    // Process instruction fields if they exist
+    if (instruction.fields && Array.isArray(instruction.fields)) {
+        instruction.fields.forEach(instructionField => {
+            // Skip null fields
+            if (instructionField === null) return;
+
+            const fieldName = instructionField.field;
+
+            // Check if any attribute in the field is null, indicating this field should be removed
+            const hasNullAttribute = Object.values(instructionField).some(
+                value => value === null,
+            );
+
+            if (hasNullAttribute) {
+                const existingFieldIndex = mergedFields.findIndex(
+                    field => field.name === fieldName,
                 );
-
-                if (template) {
-                    // Start with the template fields
-                    const mergedFields = [...template.fields].map(field => ({
-                        ...field,
-                    }));
-
-                    // Process instruction fields
-                    if (
-                        instruction.fields &&
-                        Array.isArray(instruction.fields)
-                    ) {
-                        instruction.fields.forEach(instructionField => {
-                            // Try to find matching field in template fields
-                            const existingFieldIndex = mergedFields.findIndex(
-                                field => field.name === instructionField.field,
-                            );
-
-                            if (existingFieldIndex !== -1) {
-                                // Field exists, override it with all properties from instruction field
-                                const baseField =
-                                    mergedFields[existingFieldIndex];
-
-                                // Override value if specified
-                                if (instructionField.value) {
-                                    baseField.valueField =
-                                        instructionField.value;
-                                }
-
-                                // Override type if specified
-                                if (instructionField.type) {
-                                    baseField.type = instructionField.type;
-                                }
-
-                                // Override any other properties specified
-                                Object.keys(instructionField).forEach(key => {
-                                    if (
-                                        key !== "field" &&
-                                        key !== "value" &&
-                                        key !== "type"
-                                    ) {
-                                        baseField[key] = instructionField[key];
-                                    }
-                                });
-                            } else {
-                                // Field doesn't exist in template, add it as a new field
-                                // Convert 'field' property to 'name' to match template format
-                                const newField = {
-                                    ...instructionField,
-                                    name: instructionField.field,
-                                };
-
-                                // If value specified, set it as valueField
-                                if (instructionField.value) {
-                                    newField.valueField =
-                                        instructionField.value;
-                                    delete newField.value;
-                                }
-
-                                delete newField.field; // Remove the field property after converting
-                                mergedFields.push(newField);
-                            }
-                        });
-                    }
-
-                    // Create the complete instruction with merged fields
-                    const fullInstruction = {
-                        name: instruction.name,
-                        nwords: template.nwords,
-                        clk_cycles: template.clk_cycles,
-                        fields: mergedFields,
-                        definition: instruction.definition,
-                    };
-
-                    // Add to architectureObj instructions
-                    architectureObj.instructions.push(fullInstruction);
-                } else {
-                    logger.error(
-                        `Template '${templateType}' not found for instruction '${instruction.name}'`,
-                    );
+                if (existingFieldIndex !== -1) {
+                    mergedFields.splice(existingFieldIndex, 1);
                 }
-            });
+                return;
+            }
+
+            const existingFieldIndex = mergedFields.findIndex(
+                field => field.name === fieldName,
+            );
+
+            if (existingFieldIndex !== -1) {
+                // Update existing field
+                updateExistingField(
+                    mergedFields[existingFieldIndex],
+                    instructionField,
+                );
+            } else {
+                // Add new field
+                mergedFields.push(createNewField(instructionField));
+            }
+        });
+    }
+
+    return mergedFields;
+}
+
+/**
+ * Build a complete instruction object
+ * @param {Object} instruction - The instruction definition
+ * @param {Object} template - The template object
+ * @param {Array} mergedFields - The merged fields array
+ * @param {boolean} legacy - Flag for legacy support
+ * @returns {Object} - The complete instruction object
+ */
+// eslint-disable-next-line max-lines-per-function
+function buildCompleteInstruction(
+    instruction,
+    template,
+    mergedFields,
+    legacy = true,
+) {
+    const result = {
+        name: instruction.name,
+        nwords: template.nwords,
+        clk_cycles: template.clk_cycles,
+        fields: mergedFields,
+        definition: instruction.definition,
+    };
+
+    if (legacy) {
+        // This will eventually be removed!!
+
+        result.type = "Other";
+        result.description = "";
+        result.separated = [];
+        result.help = "";
+        let breakpoint = instruction.name;
+        // Create arrays to hold ordered fields
+        const orderedFields = [];
+
+        // Collect fields that have an order property
+        for (let i = 0; i < mergedFields.length; i++) {
+            if (typeof mergedFields[i].order !== "undefined") {
+                orderedFields.push({
+                    index: i,
+                    order: mergedFields[i].order,
+                    name: mergedFields[i].name,
+                    type: mergedFields[i].type,
+                    valueField: mergedFields[i].valueField,
+                });
+
+                // Include prefix and suffix if they exist
+                if (mergedFields[i].prefix) {
+                    orderedFields[orderedFields.length - 1].prefix =
+                        mergedFields[i].prefix;
+                }
+                if (mergedFields[i].suffix) {
+                    orderedFields[orderedFields.length - 1].suffix =
+                        mergedFields[i].suffix;
+                }
+            }
         }
 
-        const ret = load_arch_select(architectureObj);
-        return ret;
+        // Sort by order value
+        orderedFields.sort((a, b) => a.order - b.order);
+
+        // Compute signature_definition - format: "F0 F4 F3 F2"
+        // Each Fx represents the index of the field in the fields array
+        const signatureDefParts = orderedFields.map(field => {
+            let part = "F" + field.index;
+            // Add prefix and suffix if they exist
+            if (field.prefix) {
+                part = field.prefix + part;
+            }
+            if (field.suffix) {
+                part += field.suffix;
+            }
+            return part;
+        });
+        result.signature_definition = signatureDefParts.join(" ");
+
+        // Compute signature - format: "name,type1,type2,..."
+        // Compute signatureRaw - format: "name fieldName1 fieldName2 ..."
+        const signatureParts = [];
+        const signatureRawParts = [];
+        for (const field of orderedFields) {
+            let signaturePart;
+            let signatureRawPart;
+
+            // Special case: replace "opcode" field name with instruction name
+            if (field.name === "opcode") {
+                signaturePart = instruction.name;
+                signatureRawPart = instruction.name;
+                result.co = field.valueField;
+            } else {
+                signaturePart = field.type;
+                signatureRawPart = field.name;
+            }
+
+            // Add prefix and suffix to both signature parts
+            if (field.prefix) {
+                signaturePart = field.prefix + signaturePart;
+                signatureRawPart = field.prefix + signatureRawPart;
+            }
+            if (field.suffix) {
+                signaturePart += field.suffix;
+                signatureRawPart += field.suffix;
+            }
+
+            signatureParts.push(signaturePart);
+            signatureRawParts.push(signatureRawPart);
+        }
+        result.signature = signatureParts.join(",");
+        result.signatureRaw = signatureRawParts.join(" ");
+    }
+
+    return result;
+}
+
+/**
+ * Process instructions and add them to the architecture
+ * @param {Object} architectureObj - The architecture object
+ * @param {Array} instructions - Array of instruction definitions
+ */
+function processInstructions(architectureObj, instructions) {
+    instructions.forEach(instruction => {
+        const template = findTemplateForInstruction(
+            architectureObj,
+            instruction,
+        );
+
+        if (template) {
+            const mergedFields = mergeTemplateAndInstructionFields(
+                template,
+                instruction,
+            );
+            const fullInstruction = buildCompleteInstruction(
+                instruction,
+                template,
+                mergedFields,
+            );
+            architectureObj.instructions.push(fullInstruction);
+        } else {
+            logger.error(
+                `Template '${instruction.type}' not found for instruction '${instruction.name}'`,
+            );
+        }
+    });
+}
+
+function processPseudoInstructions(
+    architectureObj,
+    pseudoinstructions,
+    legacy = true,
+) {
+    pseudoinstructions.forEach(pseudoinstruction => {
+        let fields = [];
+        if (legacy) {
+            // Convert new field format to legacy format
+            if (
+                pseudoinstruction.fields &&
+                Array.isArray(pseudoinstruction.fields)
+            ) {
+                fields = pseudoinstruction.fields.map(field => ({
+                    name: field.field,
+                    type: field.type,
+                }));
+            }
+
+            // Create signature_definition: "name F0 F1 F2..."
+            const signatureDefParts = [pseudoinstruction.name];
+            for (let i = 0; i < fields.length; i++) {
+                signatureDefParts.push(`F${i}`);
+            }
+
+            // Create signature: "name,TYPE1,TYPE2,..."
+            const signatureParts = [pseudoinstruction.name];
+            fields.forEach(field => {
+                signatureParts.push(field.type);
+            });
+
+            // Create signatureRaw: "name fieldname1 fieldname2..."
+            const signatureRawParts = [pseudoinstruction.name];
+            fields.forEach(field => {
+                signatureRawParts.push(field.name);
+            });
+
+            // Create the full legacy pseudoinstruction object
+            const legacyPseudoinstruction = {
+                name: pseudoinstruction.name,
+                signature_definition: signatureDefParts.join(" "),
+                signature: signatureParts.join(","),
+                signatureRaw: signatureRawParts.join(" "),
+                help: "",
+                properties: [],
+                nwords: 1,
+                fields: fields,
+                definition: pseudoinstruction.definition,
+            };
+
+            // Add to architecture
+            architectureObj.pseudoinstructions.push(legacyPseudoinstruction);
+        } else {
+            // For non-legacy mode, just add the pseudoinstruction as is
+            architectureObj.pseudoinstructions.push(pseudoinstruction);
+        }
+    });
+}
+
+export function newArchitectureLoad(
+    architecture,
+    instructions,
+    skipCompiler = false,
+) {
+    try {
+        const architectureObj = yaml.load(architecture);
+        const instructionsObj = yaml.load(instructions);
+
+        // Initialize instructions array if needed
+        architectureObj.instructions = architectureObj.instructions || [];
+
+        // Initialize pseudoinstructions array if needed
+        architectureObj.pseudoinstructions =
+            architectureObj.pseudoinstructions || [];
+
+        // Process instructions if they exist
+        if (
+            instructionsObj &&
+            instructionsObj.instructions &&
+            Array.isArray(instructionsObj.instructions)
+        ) {
+            // Add processed instructions to the architecture
+            processInstructions(architectureObj, instructionsObj.instructions);
+        }
+
+        // Process pseudoinstructions if they exist
+        if (
+            instructionsObj &&
+            instructionsObj.pseudoinstructions &&
+            Array.isArray(instructionsObj.pseudoinstructions)
+        ) {
+            processPseudoInstructions(
+                architectureObj,
+                instructionsObj.pseudoinstructions,
+                true,
+            );
+        }
+
+        // Send it to the new compiler
+        const architectureJson = JSON.stringify(architectureObj);
+
+        // Dump the architecture JSON to a file for debugging
+        // try {
+        //     Deno.writeTextFileSync(
+        //         "./architecture/test.json",
+        //         architectureJson,
+        //     );
+        // } catch (writeError) {
+        //     logger.error(
+        //         `Could not write architecture file: ${writeError.message}`,
+        //     );
+        // }
+
+        if (!skipCompiler) {
+            arch = wasm.ArchitectureJS.from_json(architectureJson);
+        }
+
+        return load_arch_select(architectureObj);
     } catch (error) {
-        logger.error(`Error parsing YAML: ${error}`);
-        return null;
+        logger.error(`Error loading architecture: ${error}`);
+        return {
+            errorcode: "load_error",
+            token: `Failed to load architecture: ${error.message}`,
+            type: "error",
+            update: "",
+            status: "ko",
+        };
     }
 }
 

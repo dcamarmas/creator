@@ -30,7 +30,7 @@ instructions:
             value: "1100011"
           - field: funct3
             value: "101"
-      definition: "if (capi_uint2int(rs1) >= capi_uint2int(rs2))\n PC = PC + inm;"
+      definition: "if (capi_uint2int(rs1) >= capi_uint2int(rs2))\n PC = PC + imm;"
 
     - name: bgeu
       type: B
@@ -39,7 +39,7 @@ instructions:
             value: "1100011"
           - field: funct3
             value: "111"
-      definition: "if (capi_int2uint(rs1) > capi_int2uint(rs2))\n PC = PC + inm;"
+      definition: "if (capi_int2uint(rs1) > capi_int2uint(rs2))\n PC = PC + imm;"
 
     - name: blt
       type: B
@@ -48,7 +48,7 @@ instructions:
             value: "1100011"
           - field: funct3
             value: "100"
-      definition: "if (capi_uint2int(rs1) < capi_uint2int(rs2))\n PC = PC + inm;"
+      definition: "if (capi_uint2int(rs1) < capi_uint2int(rs2))\n PC = PC + imm;"
 
     - name: bltu
       type: B
@@ -57,7 +57,7 @@ instructions:
             value: "1100011"
           - field: funct3
             value: "110"
-      definition: "if (capi_int2uint(rs1) < capi_int2uint(rs2))\n PC = PC + inm;"
+      definition: "if (capi_int2uint(rs1) < capi_int2uint(rs2))\n PC = PC + imm;"
 
     - name: bne
       type: B
@@ -66,7 +66,7 @@ instructions:
             value: "1100011"
           - field: funct3
             value: "001"
-      definition: "if (rs1 !== rs2)\n PC = PC + inm;"
+      definition: "if (rs1 !== rs2)\n PC = PC + imm;"
 
     # I-type instructions
     #     31-20    19-15   14-12   11-7    6-0
@@ -92,7 +92,7 @@ instructions:
             value: "0010011"
           - field: funct3
             value: "111"
-      definition: "rd = rs1 & capi_int2uint(inm);"
+      definition: "rd = rs1 & capi_int2uint(imm);"
 
     - name: jalr
       type: I-Offset
@@ -101,7 +101,7 @@ instructions:
             value: "1100111"
           - field: funct3
             value: "000"
-      definition: "rd = PC + 4n;\n PC = (rs1+inm)&~1n;\n capi_callconv_end(); capi_drawstack_end(PC);"
+      definition: "rd = PC + 4n;\n PC = (rs1+imm)&~1n;\n capi_callconv_end(); capi_drawstack_end(PC);"
 
     - name: lb
       type: I-Offset
@@ -110,7 +110,7 @@ instructions:
             value: "0000011"
           - field: funct3
             value: "000"
-      definition: "rd = capi_mem_read(inm+rs1, 'b', rd_name);"
+      definition: "rd = capi_mem_read(imm+rs1, 'b', rd_name);"
 
     - name: lbu
       type: I-Offset
@@ -119,7 +119,7 @@ instructions:
             value: "0000011"
           - field: funct3
             value: "100"
-      definition: "var addr = capi_int2uint(rs1)+inm;\n rd = capi_mem_read(addr, 'bu', rd_name);\n rd = capi_int2uint(rd);"
+      definition: "var addr = capi_int2uint(rs1)+imm;\n rd = capi_mem_read(addr, 'bu', rd_name);\n rd = capi_int2uint(rd);"
 
     - name: lh
       type: I-Offset
@@ -128,7 +128,7 @@ instructions:
             value: "0000011"
           - field: funct3
             value: "001"
-      definition: "rd = capi_mem_read(inm+rs1, 'h', rd_name);"
+      definition: "rd = capi_mem_read(imm+rs1, 'h', rd_name);"
 
     - name: lhu
       type: I-Offset
@@ -137,7 +137,7 @@ instructions:
             value: "0000011"
           - field: funct3
             value: "101"
-      definition: "var addr = capi_int2uint(rs1)+inm;\n rd = capi_mem_read(addr, 'hu', rd_name);\n rd = capi_int2uint(rd);"
+      definition: "var addr = capi_int2uint(rs1)+imm;\n rd = capi_mem_read(addr, 'hu', rd_name);\n rd = capi_int2uint(rd);"
 
     - name: lw
       type: I-Offset
@@ -146,7 +146,7 @@ instructions:
             value: "0000011"
           - field: funct3
             value: "010"
-      definition: "var addr = capi_int2uint(rs1)+inm;\n rd = capi_mem_read(addr, 'w', rd_name);"
+      definition: "var addr = capi_int2uint(rs1)+imm;\n rd = capi_mem_read(addr, 'w', rd_name);"
 
     - name: ori
       type: I
@@ -155,7 +155,7 @@ instructions:
             value: "0010011"
           - field: funct3
             value: "110"
-      definition: "rd = rs1 | inm;"
+      definition: "rd = rs1 | imm;"
 
     - name: slli
       type: I-Shift
@@ -175,7 +175,7 @@ instructions:
             value: "0010011"
           - field: funct3
             value: "010"
-      definition: "rd = (capi_uint2int(rs1) < capi_uint2int(inm)) ? 1 : 0;"
+      definition: "rd = (capi_uint2int(rs1) < capi_uint2int(imm)) ? 1 : 0;"
 
     - name: sltiu
       type: I
@@ -184,7 +184,7 @@ instructions:
             value: "0010011"
           - field: funct3
             value: "011"
-      definition: "rd = (capi_int2uint(rs1) < capi_int2uint(inm)) ? 1 : 0;"
+      definition: "rd = (capi_int2uint(rs1) < capi_int2uint(imm)) ? 1 : 0;"
 
     - name: srai
       type: I-Shift
@@ -215,7 +215,7 @@ instructions:
             value: "0010011"
           - field: funct3
             value: "100"
-      definition: "rd = rs1 ^ inm;"
+      definition: "rd = rs1 ^ imm;"
 
     # J-type instructions
     #     31    30-21     20     19-12   11-7    6-0
@@ -230,7 +230,7 @@ instructions:
       fields:
           - field: opcode
             value: "1101111"
-      definition: "rd = PC + 4n;\n PC = PC + inm;\n capi_callconv_begin(inm); capi_drawstack_begin(inm);"
+      definition: "rd = PC + 4n;\n PC = PC + imm;\n capi_callconv_begin(imm); capi_drawstack_begin(imm);"
 
     # R-type instructions
     #     31-25    24-20   19-15   14-12   11-7    6-0
@@ -365,7 +365,7 @@ instructions:
             value: "0100011"
           - field: funct3
             value: "000"
-      definition: "capi_mem_write(rs1+inm, rs2, 'b', rs2_name);"
+      definition: "capi_mem_write(rs1+imm, rs2, 'b', rs2_name);"
 
     - name: sh
       type: S
@@ -374,7 +374,7 @@ instructions:
             value: "0100011"
           - field: funct3
             value: "001"
-      definition: "capi_mem_write(inm+rs1, rs2, 'h', rs2_name);"
+      definition: "capi_mem_write(imm+rs1, rs2, 'h', rs2_name);"
 
     - name: sw
       type: S
@@ -383,7 +383,7 @@ instructions:
             value: "0100011"
           - field: funct3
             value: "010"
-      definition: "capi_mem_write(inm+rs1, rs2, 'w', rs2_name);"
+      definition: "capi_mem_write(imm+rs1, rs2, 'w', rs2_name);"
 
     # U-type instructions
     #           31-12                   11-7    6-0
@@ -398,14 +398,14 @@ instructions:
       fields:
           - field: opcode
             value: "0010111"
-      definition: "rd = PC + (inm << 12n);"
+      definition: "rd = PC + (imm << 12n);"
 
     - name: lui
       type: U
       fields:
           - field: opcode
             value: "0110111"
-      definition: "rd = inm << 12n;"
+      definition: "rd = imm << 12n;"
 
       # Special instructions
     - name: ecall
@@ -587,7 +587,7 @@ instructions:
             value: "010"
           - field: rd # We're overriding the rd field from the template
             type: SFP-Reg
-      definition: "rd = capi_mem_read(rs2+inm, 'w', rd_name);\n rd = capi_uint2float32(rd);"
+      definition: "rd = capi_mem_read(rs2+imm, 'w', rd_name);\n rd = capi_uint2float32(rd);"
 
       # R-type instructions
     - name: fadd.s
@@ -922,7 +922,7 @@ instructions:
             value: "010"
           - field: rs2 # We're overriding the rs2 field from the template
             type: SFP-Reg
-      definition: "var val1 = capi_float322uint(rs1);\n capi_mem_write(rs2+inm, val1, 'w', rs1_name);"
+      definition: "var val1 = capi_float322uint(rs1);\n capi_mem_write(rs2+imm, val1, 'w', rs1_name);"
 
     #   ____ __     __ _____ ____   ____
     #  |  _ \\ \   / /|___ /|___ \ |  _ \
@@ -932,3 +932,213 @@ instructions:
     #       RV32D Standard Extension
 
     # TODO: Implement RV32D instructions
+
+pseudoinstructions:
+    # The definitions are obtained from the RISC-V ISA manual (TODO: Check these!)
+    - name: beqz
+      fields:
+          - field: rs1
+            type: INT-Reg
+          - field: off
+            type: offset_bytes
+      definition: "beq rs1, x0, off;"
+
+    - name: bgez
+      fields:
+          - field: rs1
+            type: INT-Reg
+          - field: off
+            type: offset_bytes
+      definition: "bge reg1, x0, off;"
+
+    - name: bgt
+      fields:
+          - field: rs1
+            type: INT-Reg
+          - field: rs2
+            type: INT-Reg
+          - field: off
+            type: offset_bytes
+      definition: "blt rs2, rs1, off;"
+
+    - name: bgtu
+      fields:
+          - field: rs1
+            type: INT-Reg
+          - field: rs2
+            type: INT-Reg
+          - field: off
+            type: offset_bytes
+      definition: "bltu rs2, rs1, off;"
+
+    - name: bgtz
+      fields:
+          - field: rs1
+            type: INT-Reg
+          - field: off
+            type: offset_bytes
+      definition: "bgt rs1, x0, off;"
+
+    - name: ble
+      fields:
+          - field: rs1
+            type: INT-Reg
+          - field: rs2
+            type: INT-Reg
+          - field: off
+            type: offset_bytes
+      definition: "bge rs2, rs1, off;"
+
+    - name: bleu
+      fields:
+          - field: rs1
+            type: INT-Reg
+          - field: rs2
+            type: INT-Reg
+          - field: off
+            type: offset_bytes
+      definition: "bgeu rs2, rs1, off;"
+
+    - name: blez
+      fields:
+          - field: rs1
+            type: INT-Reg
+          - field: off
+            type: offset_bytes
+      definition: "ble x0, rs1, off;"
+
+    - name: bltz
+      fields:
+          - field: rs1
+            type: INT-Reg
+          - field: off
+            type: offset_bytes
+      definition: "blt rs1, x0, off;"
+
+    - name: bnez
+      fields:
+          - field: rs1
+            type: INT-Reg
+          - field: off
+            type: offset_bytes
+      definition: "bne rs1, x0, off;"
+
+    - name: fabs.s
+      fields:
+          - field: rs1
+            type: SFP-Reg
+          - field: rs2
+            type: SFP-Reg
+      definition: "fsgnjx.s rs1, rs2, rs2;"
+
+    - name: fmv.s
+      fields:
+          - field: rs1
+            type: SFP-Reg
+          - field: rs2
+            type: SFP-Reg
+      definition: "fsgnj.s rs1, rs2, rs2;"
+
+    - name: fneg.s
+      fields:
+          - field: rs1
+            type: SFP-Reg
+          - field: rs2
+            type: SFP-Reg
+      definition: "fsgnj.s rs1, rs2, rs2;"
+
+    - name: j
+      fields:
+          - field: off
+            type: offset_bytes
+      definition: "jal x0, off;" # This is how it's done in the spec
+
+    - name: jalr
+      fields:
+          - field: rs
+            type: INT-Reg
+      definition: "jalr x1, 0(rs);"
+
+    - name: jr
+      fields:
+          - field: rs
+            type: INT-Reg
+      definition: "jalr x0, 0(rs);"
+
+    - name: la
+      fields:
+          - field: rd
+            type: INT-Reg
+          - field: addr
+            type: offset_bytes
+      definition: "no_ret_op{tmp=Field.2.(31,0).int;\ntmp_pc_offset=(reg.pc-4)&0xFFF;\ntmp_low=tmp&0x00000FFF;\ntmp_hi=tmp>>12};\nauipc rd, op{tmp_hi};\naddi rd, rd, op{tmp_low-(tmp_pc_offset)};"
+
+    - name: li
+      fields:
+          - field: rd
+            type: INT-Reg
+          - field: val
+            type: inm-unsigned
+      definition: "no_ret_op{tmp=Field.2.(31,0).int;\ntmp_low=tmp&0x00000FFF;\ntmp_low-=tmp_low>0x7FF? 0x1000 : 0;\ntmp_hi=(tmp - tmp_low)>>>12};\nif(tmp_hi === 0){addi rd, x0, op{tmp_low};}\nelse{lui rd, op{tmp_hi};\naddi rd, rd, op{tmp_low};}"
+
+    - name: mv
+      fields:
+          - field: reg1
+            type: INT-Reg
+          - field: reg2
+            type: INT-Reg
+      definition: "addi reg1, reg2, 0;"
+
+    - name: neg
+      fields:
+          - field: reg1
+            type: INT-Reg
+          - field: reg2
+            type: INT-Reg
+      definition: "sub reg1, x0, reg2;"
+
+    - name: nop
+      definition: "addi x0, x0, 0;"
+
+    - name: not
+      fields:
+          - field: reg1
+            type: INT-Reg
+          - field: reg2
+            type: INT-Reg
+      definition: "xori reg1, reg2, -1;"
+
+    - name: ret
+      definition: "jalr x0, 0(x1);" #TODO: check this!
+
+    - name: seqz
+      fields:
+          - field: reg1
+            type: INT-Reg
+          - field: reg2
+            type: INT-Reg
+      definition: "sltiu reg1, reg2, 1;"
+
+    - name: sgtz
+      fields:
+          - field: reg1
+            type: INT-Reg
+          - field: reg2
+            type: INT-Reg
+      definition: "slt reg1, x0, reg2;"
+
+    - name: sltz
+      fields:
+          - field: reg1
+            type: INT-Reg
+          - field: reg2
+            type: INT-Reg
+      definition: "slt reg1, reg2, x0;"
+
+    - name: snez
+      fields:
+          - field: reg1
+            type: INT-Reg
+          - field: reg2
+            type: INT-Reg
+      definition: "sltu reg1, x0, reg2;"

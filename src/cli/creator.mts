@@ -243,8 +243,15 @@ function show_result(
  */
 function loadArchitecture(architecturePath: string): StageResult {
     try {
-        const architecture = fs.readFileSync(architecturePath, "utf8");
-        const ret = creator.load_architecture(architecture);
+        const instructionsPath = "./architecture/new/instructions.yml";
+        const architecture_file = fs.readFileSync(architecturePath, "utf8");
+        const instructions_file = fs.readFileSync(instructionsPath, "utf8");
+        const ret = creator.newArchitectureLoad(
+            architecture_file,
+            instructions_file,
+        );
+
+        // const ret = creator.load_architecture(architecture);
         if (ret.status !== "ok") {
             throw ret.errorcode;
         }
