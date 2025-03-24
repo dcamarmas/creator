@@ -701,17 +701,17 @@ directives:
 
 memory_layout:
     - name: text start
-      value: 0x00000000
+      value: "0x00000000"
     - name: text end
-      value: 0x001FFFFF
+      value: "0x001FFFFF"
     - name: data start
-      value: 0x00200000
+      value: "0x00200000"
     - name: data end
-      value: 0x05BBFCBF
+      value: "0x05BBFCBF"
     - name: stack start
-      value: 0x0FFFFFFC
+      value: "0x0FFFFFFC"
     - name: stack end
-      value: 0x0FFFFFFF
+      value: "0x0FFFFFFF"
 
 templates:
     - name: B
@@ -728,10 +728,6 @@ templates:
             startbit: 19
             stopbit: 15
             order: 1
-          - name: funct3
-            type: cop
-            startbit: 14
-            stopbit: 12
           - name: rs2
             type: INT-Reg
             startbit: 24
@@ -751,6 +747,10 @@ templates:
                 - 8
             padding: 1
             order: 3
+          - name: funct3
+            type: cop
+            startbit: 14
+            stopbit: 12
 
     - name: I
       nwords: 1
