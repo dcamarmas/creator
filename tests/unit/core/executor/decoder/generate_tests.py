@@ -18,25 +18,8 @@ def parse_disassembly(input_text):
     return instructions
 
 def generate_test_file(instructions):
-    template = '''import { assertEquals } from "https://deno.land/std/assert/mod.ts";
-import { decode_instruction } from "../../../../../src/core/executor/decoder.mjs";
-import { load_architecture, architecture } from "../../../../../src/core/core.mjs";
-import fs from "node:fs";
-
-function setupArchitecture() {
-    const architecturePath = "./architecture/RISC_V_RV32IMFD.json";
-    const architecture_file = fs.readFileSync(architecturePath, "utf8");
-    load_architecture(architecture_file);
-}
-
-function decode_test(instruction, expected) {
-    setupArchitecture();
-    const result = decode_instruction(instruction);
-
-    assertEquals(result.instructionExec, expected);
-}
-
-'''
+    template = '''import { decode_test } from "../common.mjs";
+    '''
     
     for i, (binary, assembly) in enumerate(instructions):
         test = f'''Deno.test("decode_instruction - remu instruction {i+1}", () =>

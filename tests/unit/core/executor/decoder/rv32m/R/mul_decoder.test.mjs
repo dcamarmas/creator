@@ -1,25 +1,4 @@
-import { assertEquals } from "https://deno.land/std/assert/mod.ts";
-import { decode_instruction } from "../../../../../../../src/core/executor/decoder.mjs";
-import {
-    load_architecture,
-    newArchitectureLoad,
-} from "../../../../../../../src/core/core.mjs";
-import fs from "node:fs";
-
-function setupArchitecture() {
-    const architecturePath = "./architecture/new/architecture.yml";
-    const instructionsPath = "./architecture/new/instructions.yml";
-    const architecture_file = fs.readFileSync(architecturePath, "utf8");
-    const instructions_file = fs.readFileSync(instructionsPath, "utf8");
-    newArchitectureLoad(architecture_file, instructions_file);
-}
-
-function decode_test(instruction, expected) {
-    setupArchitecture();
-    const result = decode_instruction(instruction, true);
-
-    assertEquals(result, expected);
-}
+import { decode_test } from "../common.mjs";
 
 Deno.test("decode_instruction - mul instruction 1", () =>
     decode_test("00000010001100010000000010110011", "mul x1 x2 x3"),
