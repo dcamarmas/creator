@@ -386,8 +386,9 @@ function buildCompleteInstruction(
  * @param {Object} architectureObj - The architecture object
  * @param {Array} instructions - Array of instruction definitions
  */
-function processInstructions(architectureObj, instructions) {
-    instructions.forEach(instruction => {
+function processInstructions(architectureObj) {
+    architectureObj.instructionsProcessed = [];
+    architectureObj.instructions.forEach(instruction => {
         const template = findTemplateForInstruction(
             architectureObj,
             instruction,
@@ -403,21 +404,20 @@ function processInstructions(architectureObj, instructions) {
                 template,
                 mergedFields,
             );
-            architectureObj.instructions.push(fullInstruction);
+            architectureObj.instructionsProcessed.push(fullInstruction);
         } else {
             logger.error(
                 `Template '${instruction.type}' not found for instruction '${instruction.name}'`,
             );
         }
     });
+    architectureObj.instructions = architectureObj.instructionsProcessed;
+    delete architectureObj.instructionsProcessed;
 }
 
-function processPseudoInstructions(
-    architectureObj,
-    pseudoinstructions,
-    legacy = true,
-) {
-    pseudoinstructions.forEach(pseudoinstruction => {
+function processPseudoInstructions(architectureObj, legacy = true) {
+    architectureObj.pseudoinstructionsProcessed = [];
+    architectureObj.pseudoinstructions.forEach(pseudoinstruction => {
         let fields = [];
         if (legacy) {
             // Convert new field format to legacy format
@@ -463,67 +463,47 @@ function processPseudoInstructions(
             };
 
             // Add to architecture
-            architectureObj.pseudoinstructions.push(legacyPseudoinstruction);
+            architectureObj.pseudoinstructionsProcessed.push(
+                legacyPseudoinstruction,
+            );
         } else {
             // For non-legacy mode, just add the pseudoinstruction as is
-            architectureObj.pseudoinstructions.push(pseudoinstruction);
+            architectureObj.pseudoinstructionsProcessed.push(pseudoinstruction);
         }
     });
+    architectureObj.pseudoinstructions =
+        architectureObj.pseudoinstructionsProcessed;
+    delete architectureObj.pseudoinstructionsProcessed;
 }
 
 export function newArchitectureLoad(
     architecture,
-    instructions,
     skipCompiler = false,
+    dump = false,
 ) {
     try {
         const architectureObj = yaml.load(architecture);
-        const instructionsObj = yaml.load(instructions);
 
-        // Initialize instructions array if needed
-        architectureObj.instructions = architectureObj.instructions || [];
+        processInstructions(architectureObj);
 
-        // Initialize pseudoinstructions array if needed
-        architectureObj.pseudoinstructions =
-            architectureObj.pseudoinstructions || [];
-
-        // Process instructions if they exist
-        if (
-            instructionsObj &&
-            instructionsObj.instructions &&
-            Array.isArray(instructionsObj.instructions)
-        ) {
-            // Add processed instructions to the architecture
-            processInstructions(architectureObj, instructionsObj.instructions);
-        }
-
-        // Process pseudoinstructions if they exist
-        if (
-            instructionsObj &&
-            instructionsObj.pseudoinstructions &&
-            Array.isArray(instructionsObj.pseudoinstructions)
-        ) {
-            processPseudoInstructions(
-                architectureObj,
-                instructionsObj.pseudoinstructions,
-                true,
-            );
-        }
+        processPseudoInstructions(architectureObj, true);
 
         // Send it to the new compiler
         const architectureJson = JSON.stringify(architectureObj);
 
         // Dump the architecture JSON to a file for debugging
-        // try {
-        //     Deno.writeTextFileSync(
-        //         "./architecture/test.json",
-        //         architectureJson,
-        //     );
-        // } catch (writeError) {
-        //     logger.error(
-        //         `Could not write architecture file: ${writeError.message}`,
-        //     );
-        // }
+        if (dump) {
+            try {
+                Deno.writeTextFileSync(
+                    "./architecture/test.json",
+                    architectureJson,
+                );
+            } catch (writeError) {
+                logger.error(
+                    `Could not write architecture file: ${writeError.message}`,
+                );
+            }
+        }
 
         if (!skipCompiler) {
             arch = wasm.ArchitectureJS.from_json(architectureJson);
@@ -542,13 +522,13 @@ export function newArchitectureLoad(
     }
 }
 
-export function load_architecture(arch_str) {
-    arch = wasm.ArchitectureJS.from_json(arch_str);
-    const arch_obj = JSON.parse(arch_str);
-    const ret = load_arch_select(arch_obj);
+// export function load_architecture(arch_str) {
+//     arch = wasm.ArchitectureJS.from_json(arch_str);
+//     const arch_obj = JSON.parse(arch_str);
+//     const ret = load_arch_select(arch_obj);
 
-    return ret;
-}
+//     return ret;
+// }
 
 export function load_library(lib_str) {
     const ret = {

@@ -14,38 +14,38 @@ test_categories = {
     "riscv_examples": {
         "numbers": [2, 3, 4, 5, 6, 7, 8, 11, 12],
         "path": os.path.join(SCRIPT_DIR, "arch/riscv/correct/examples/test_riscv_example"),
-        "arch": os.path.join(SCRIPT_DIR, "../architecture/RISC_V_RV32IMFD.json")
+        "arch": os.path.join(SCRIPT_DIR, "../architecture/RISCV/RV32IMFD.yml")
     },
     "riscv_libraries": {
         "numbers": range(1, 2),
         "path": os.path.join(SCRIPT_DIR, "arch/riscv/correct/libraries/test_riscv_libraries"),
         "has_lib": True,
-        "arch": os.path.join(SCRIPT_DIR, "../architecture/RISC_V_RV32IMFD.json")
+        "arch": os.path.join(SCRIPT_DIR, "../architecture/RISCV/RV32IMFD.yml")
     },
     "riscv_syscalls": {
         "numbers": [1, 2, 3, 4, 9, 10, 11],
         "path": os.path.join(SCRIPT_DIR, "arch/riscv/correct/syscalls/test_riscv_syscall"),
-        "arch": os.path.join(SCRIPT_DIR, "../architecture/RISC_V_RV32IMFD.json")
+        "arch": os.path.join(SCRIPT_DIR, "../architecture/RISCV/RV32IMFD.yml")
     },
     # "riscv_compile_errors": {
     #     "numbers": [1, 2, 3, 4, 5, 6, 7, 8, 9, 14, 15, 16, 17, 18, 19, 21, 22, 23, 30],
     #     "path": os.path.join(SCRIPT_DIR, "arch/riscv/error/compiler/test_riscv_error_compiler"),
-    #     "arch": os.path.join(SCRIPT_DIR, "../architecture/RISC_V_RV32IMFD.json")
+    #     "arch": os.path.join(SCRIPT_DIR, "../architecture/RISCV/RV32IMFD.yml")
     # },
     "riscv_execution_errors": {
         "numbers": range(3, 10),
         "path": os.path.join(SCRIPT_DIR, "arch/riscv/error/executor/test_riscv_error_executor"),
-        "arch": os.path.join(SCRIPT_DIR, "../architecture/RISC_V_RV32IMFD.json")
+        "arch": os.path.join(SCRIPT_DIR, "../architecture/RISCV/RV32IMFD.yml")
     },
     "riscv_passing_convention": {
         "numbers": range(1, 37),
         "path": os.path.join(SCRIPT_DIR, "arch/riscv/sentinel/test_riscv_sentinels"),
-        "arch": os.path.join(SCRIPT_DIR, "../architecture/RISC_V_RV32IMFD.json")
+        "arch": os.path.join(SCRIPT_DIR, "../architecture/RISCV/RV32IMFD.yml")
     },
     "riscv_instructions": {
             "numbers": [i for i in range(1, 66) if i != 13],
             "path": os.path.join(SCRIPT_DIR, "arch/riscv/instructions/test_riscv_instruction"),
-            "arch": os.path.join(SCRIPT_DIR, "../architecture/RISC_V_RV32IMFD.json")
+            "arch": os.path.join(SCRIPT_DIR, "../architecture/RISCV/RV32IMFD.yml")
         },
     # MIPS Tests
     "mips_examples": {
