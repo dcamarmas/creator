@@ -1005,6 +1005,38 @@ templates:
             startbit: 14
             stopbit: 12
 
+    - name: R-Conversion # Generic template
+      nwords: 1
+      clk_cycles: 1
+      fields:
+          - name: opcode
+            type: co
+            startbit: 6
+            stopbit: 0
+            order: 0
+          - name: rd
+            type: Not-Set
+            startbit: 11
+            stopbit: 7
+            order: 1
+          - name: rs1
+            type: Not-Set
+            startbit: 19
+            stopbit: 15
+            order: 2
+          - name: funct5
+            type: cop
+            startbit: 24
+            stopbit: 20
+          - name: funct7
+            type: cop
+            startbit: 31
+            stopbit: 25
+          - name: funct3
+            type: cop
+            startbit: 14
+            stopbit: 12
+
     - name: R4
       nwords: 1
       clk_cycles: 1
@@ -2040,8 +2072,383 @@ instructions:
     #  |  _ <  \ V /   ___) |/ __/ | |_| |
     #  |_| \_\  \_/   |____/|_____||____/
     #       RV32D Standard Extension
+    # I-type instructions
+    - name: fld
+      type: I-Offset
+      fields:
+          - field: opcode
+            value: "0000111"
+          - field: funct3
+            value: "011"
+          - field: rd # We're overriding the rd field from the template
+            type: DFP-Reg
+      definition: "var isnotalign = capi_bad_align(rs1+imm, 'd');\n if (isnotalign) { capi_raise('The memory must be align'); }\n var val1 = capi_mem_read(rs1+imm, 'w', rd_name);\n var val2 = capi_mem_read(rs1+imm+4n, 'w', rd_name);\n var buf = new ArrayBuffer(8);\n var arr = (new Uint32Array(buf));\n arr[1] = Number(val1);\n arr[0] = Number(val2);\n rd = (new Float64Array(buf))[0];"
 
-    # TODO: Implement RV32D instructions
+      # R-type instructions
+    - name: fadd.d
+      type: R-Floating
+      fields:
+          - field: opcode
+            value: "1010011"
+          - field: funct7
+            value: "0000001"
+          - field: funct3
+            type: inm-unsigned # We're overriding the funct3 field from the template
+            custom: rounding-mode
+            order: 4
+      definition: "rd = rs2 + rs1;"
+
+    - name: fclass.d
+      type: R-Floating
+      fields:
+          - field: opcode
+            value: "1010011"
+          - field: funct7
+            value: "1110001"
+          - field: funct3
+            value: "001"
+          - field: rs2
+            type: cop
+            value: "00000"
+            order: null
+          - field: rd
+            type: INT-Reg
+      definition: "let a = capi_float2bin(rs1);\nrd=capi_check_ieee(parseInt(a[0]), parseInt(a.slice(1,12), 2), parseInt(a.slice(13), 2));"
+
+    - name: fcvt.d.s
+      type: R-Conversion
+      fields:
+          - field: opcode
+            value: "1010011"
+          - field: rd
+            type: DFP-Reg
+          - field: rs1
+            type: SFP-Reg
+          - field: funct7
+            value: "0100001"
+          - field: funct5
+            value: "00000"
+          # NOTICE: This specific instruction has a rounding mode, but it's NOT USED.
+          # A conversion from float to double doesn't need a rounding mode.
+          - field: funct3
+            type: inm-unsigned
+            custom: rounding-mode
+            order: null
+      definition: "rd = rs1;" # TODO: This doesn't seem right, check the RISC-V manual
+
+    - name: fcvt.d.w
+      type: R-Conversion
+      fields:
+          - field: opcode
+            value: "1010011"
+          - field: funct7
+            value: "1101001"
+          - field: funct5
+            value: "00000"
+          # NOTICE: This specific instruction has a rounding mode, but it's NOT USED.
+          # A conversion from float to double doesn't need a rounding mode.
+          - field: funct3
+            type: inm-unsigned
+            custom: rounding-mode
+            order: null
+          - field: rd
+            type: DFP-Reg
+          - field: rs1
+            type: INT-Reg
+      definition: "rd = capi_int2float32(rs1);"
+
+    - name: fcvt.d.wu
+      type: R-Conversion
+      fields:
+          - field: opcode
+            value: "1010011"
+          - field: funct7
+            value: "1101001"
+          - field: funct5
+            value: "00001"
+          # NOTICE: This specific instruction has a rounding mode, but it's NOT USED.
+          # A conversion from float to double doesn't need a rounding mode.
+          - field: funct3
+            type: inm-unsigned
+            custom: rounding-mode
+            order: null
+          - field: rd
+            type: DFP-Reg
+          - field: rs1
+            type: INT-Reg
+      definition: "rd = capi_int2uint(parseFloat(rs1));"
+
+    - name: fcvt.s.d
+      type: R-Conversion
+      fields:
+          - field: opcode
+            value: "1010011"
+          - field: funct7
+            value: "0100000"
+          - field: funct5
+            value: "00001"
+          - field: funct3
+            type: inm-unsigned
+            custom: rounding-mode
+            order: 3
+          - field: rd
+            type: SFP-Reg
+          - field: rs1
+            type: DFP-Reg
+      definition: "rd = rs1;" # TODO: This doesn't seem right, check the RISC-V manual
+
+    - name: fcvt.w.d
+      type: R-Conversion
+      fields:
+          - field: opcode
+            value: "1010011"
+          - field: funct7
+            value: "1100001"
+          - field: funct5
+            value: "00000"
+          - field: funct3
+            type: inm-unsigned
+            custom: rounding-mode
+            order: 3
+          - field: rd
+            type: INT-Reg
+          - field: rs1
+            type: DFP-Reg
+      definition: "rd = parseInt(rs1);"
+
+    - name: fcvt.wu.d
+      type: R-Conversion
+      fields:
+          - field: opcode
+            value: "1010011"
+          - field: funct7
+            value: "1100001"
+          - field: funct5
+            value: "00001"
+          - field: funct3
+            type: inm-unsigned
+            custom: rounding-mode
+            order: 3
+          - field: rd
+            type: INT-Reg
+          - field: rs1
+            type: DFP-Reg
+      definition: "rd = capi_int2uint(parseInt(rs1));"
+
+    - name: fdiv.d
+      type: R-Floating
+      fields:
+          - field: opcode
+            value: "1010011"
+          - field: funct7
+            value: "0001101"
+          - field: funct3
+            type: inm-unsigned
+            custom: rounding-mode
+            order: 4
+      definition: "if (rs2 != 0)\n { rd = rs1 / rs2; }\n else { capi_raise('Division by zero not allowed'); }"
+
+    - name: feq.d
+      type: R-Floating
+      fields:
+          - field: opcode
+            value: "1010011"
+          - field: funct7
+            value: "1010001"
+          - field: funct3
+            value: "010"
+          - field: rd
+            type: INT-Reg
+      definition: "rd = (rs1 == rs2) ? 1 : 0;"
+
+    - name: fle.d
+      type: R-Floating
+      fields:
+          - field: opcode
+            value: "1010011"
+          - field: funct7
+            value: "1010001"
+          - field: funct3
+            value: "000"
+          - field: rd
+            type: INT-Reg
+      definition: "rd = (rs1 <= rs2) ? 1 : 0;"
+
+    - name: flt.d
+      type: R-Floating
+      fields:
+          - field: opcode
+            value: "1010011"
+          - field: funct7
+            value: "1010001"
+          - field: funct3
+            value: "001"
+          - field: rd
+            type: INT-Reg
+      definition: "rd = (rs1 < rs2) ? 1 : 0;"
+
+    - name: fmax.d
+      type: R-Floating
+      fields:
+          - field: opcode
+            value: "1010011"
+          - field: funct7
+            value: "0010101"
+          - field: funct3
+            value: "001"
+      definition: "rd = Math.max(rs1, rs2);"
+
+    - name: fmin.d
+      type: R-Floating
+      fields:
+          - field: opcode
+            value: "1010011"
+          - field: funct7
+            value: "0010101"
+          - field: funct3
+            value: "000"
+      definition: "rd = Math.min(rs1, rs2);"
+
+    - name: fmul.d
+      type: R-Floating
+      fields:
+          - field: opcode
+            value: "1010011"
+          - field: funct7
+            value: "0001001"
+          - field: funct3
+            type: inm-unsigned
+            custom: rounding-mode
+            order: 4
+      definition: "rd = rs1 * rs2;"
+
+    - name: fsgnj.d
+      type: R-Floating
+      fields:
+          - field: opcode
+            value: "1010011"
+          - field: funct7
+            value: "0010001"
+          - field: funct3
+            value: "000"
+      definition: "rd = (rs2 > 0) ? Math.abs(rs1) : -Math.abs(rs1);"
+
+    - name: fsgnjn.d
+      type: R-Floating
+      fields:
+          - field: opcode
+            value: "1010011"
+          - field: funct7
+            value: "0010001"
+          - field: funct3
+            value: "001"
+      definition: "rd = (rs2 > 0) ? -Math.abs(rs1) : +Math.abs(rs1);"
+
+    - name: fsgnjx.d
+      type: R-Floating
+      fields:
+          - field: opcode
+            value: "1010011"
+          - field: funct7
+            value: "0010001"
+          - field: funct3
+            value: "010"
+      definition: "let a = rs1<0; let b = rs2<0;\nrd = (a^b) ? -Math.abs(rs1) : Math.abs(rs1);"
+
+    - name: fsqrt.d
+      type: R-Floating
+      fields:
+          - field: opcode
+            value: "1010011"
+          - field: funct7
+            value: "0101101"
+          - field: rs2 # In this instruction, rs2 is more like a funct5
+            type: cop
+            value: "00000"
+            order: null
+          - field: funct3
+            type: inm-unsigned
+            custom: rounding-mode
+            order: 3
+      definition: "if (rs1 >= 0)\n { rd = Math.sqrt(rs1); }\n else { capi_raise('Square root of a negative number is not allowed.'); }"
+
+    - name: fsub.d
+      type: R-Floating
+      fields:
+          - field: opcode
+            value: "1010011"
+          - field: funct7
+            value: "0000101"
+          - field: funct3
+            type: inm-unsigned
+            custom: rounding-mode
+            order: 4
+      definition: "rd = rs1 - rs2;"
+
+    # R4-type instructions
+    - name: fmadd.d
+      type: R4
+      fields:
+          - field: opcode
+            value: "1000011"
+          - field: funct2
+            value: "01"
+          - field: funct3
+            type: inm-unsigned
+            custom: rounding-mode
+            order: 5
+      definition: "rd = rs1 * rs2 + rs3;"
+
+    - name: fmsub.d
+      type: R4
+      fields:
+          - field: opcode
+            value: "1000111"
+          - field: funct2
+            value: "01"
+          - field: funct3
+            type: inm-unsigned
+            custom: rounding-mode
+            order: 5
+      definition: "rd = rs1 * rs2 - rs3;"
+
+    - name: fnmadd.d
+      type: R4
+      fields:
+          - field: opcode
+            value: "1001111"
+          - field: funct2
+            value: "01"
+          - field: funct3
+            type: inm-unsigned
+            custom: rounding-mode
+            order: 5
+      definition: "rd = -rs1 * rs2 - rs3;"
+
+    - name: fnmsub.d
+      type: R4
+      fields:
+          - field: opcode
+            value: "1001011"
+          - field: funct2
+            value: "01"
+          - field: funct3
+            type: inm-unsigned
+            custom: rounding-mode
+            order: 5
+      definition: "rd = -rs1 * rs2 + rs3;"
+
+    # S-type instructions
+    - name: fsd
+      type: S
+      fields:
+          - field: opcode
+            value: "0100111"
+          - field: funct3
+            value: "011"
+          - field: rs2 # We're overriding the rs2 field from the template
+            type: DFP-Reg
+      definition: "var val = capi_split_double(ft, 0);\n capi_mem_write(base+off, val, 'w', ft_name);\n val = capi_split_double(ft, 1);\n capi_mem_write(base+off+4n, val, 'w', ft_name);"
 
 pseudoinstructions:
     # Make sure the definitions correspond with those in the RISC-V ASM manual (TODO: Check these!)
