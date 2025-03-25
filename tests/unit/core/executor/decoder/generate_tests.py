@@ -1,18 +1,18 @@
 import re
 
 def parse_disassembly(input_text):
-    pattern = r'[\da-f]+:\s+([\da-f]{8})\s+remu\s+(x\d+),(x\d+),(x\d+)'
+    pattern = r'[\da-f]+:\s+([\da-f]{8})\s+fsd\s+(f\d+),(-?\d+)\((x\d+)\)'
     instructions = []
     
     for line in input_text.split('\n'):
         match = re.match(pattern, line)
         if match:
             binary = format(int(match.group(1), 16), '032b')
-            dest_reg = match.group(2)
-            rs1 = match.group(3)
-            rs2 = match.group(4)
+            src_reg = match.group(2)
+            offset = match.group(3)
+            base_reg = match.group(4)
             
-            instruction_str = f"remu {dest_reg} {rs1} {rs2}"
+            instruction_str = f"fsd {src_reg} {offset} ({base_reg})"
             instructions.append((binary, instruction_str))
     
     return instructions
@@ -22,7 +22,7 @@ def generate_test_file(instructions):
     '''
     
     for i, (binary, assembly) in enumerate(instructions):
-        test = f'''Deno.test("decode_instruction - remu instruction {i+1}", () =>
+        test = f'''Deno.test("decode_instruction - fsd instruction {i+1}", () =>
     decode_test("{binary}", "{assembly}"),
 );
 
@@ -40,8 +40,8 @@ instructions = parse_disassembly(input_text)
 test_file_content = generate_test_file(instructions)
 
 # Write output to file
-with open('remu_decoder.test.mjs', 'w') as f:
+with open('fsd_decoder.test.mjs', 'w') as f:
     f.write(test_file_content)
 
 # Print summary
-print(f"Generated {len(instructions)} remu instruction tests")
+print(f"Generated {len(instructions)} fsd instruction tests")
