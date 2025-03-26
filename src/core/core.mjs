@@ -399,12 +399,48 @@ function processInstructions(architectureObj) {
                 template,
                 instruction,
             );
-            const fullInstruction = buildCompleteInstruction(
-                instruction,
-                template,
-                mergedFields,
+            // We need to find if any field is optional, because if it is, we need to
+            // construct two different instructions, one with the field and one without it
+
+            // This works for 1 optional field, but not for 2 or more. Supporting more
+            // than 1 optional field is not in the roadmap.
+            const optionalFields = mergedFields.filter(
+                field => field.optional === true,
             );
-            architectureObj.instructionsProcessed.push(fullInstruction);
+            if (optionalFields.length === 1) {
+                // We need to create two instructions, one with the field and one without it
+                const instructionWithFields = buildCompleteInstruction(
+                    instruction,
+                    template,
+                    mergedFields,
+                );
+                const instructionWithoutFields = buildCompleteInstruction(
+                    instruction,
+                    template,
+                    mergedFields.filter(field => field.optional !== true),
+                );
+
+                // Add both instructions to the architecture
+                architectureObj.instructionsProcessed.push(
+                    instructionWithFields,
+                );
+                architectureObj.instructionsProcessed.push(
+                    instructionWithoutFields,
+                );
+            }
+            // If no optional fields, just add the instruction
+            else if (optionalFields.length === 0) {
+                const fullInstruction = buildCompleteInstruction(
+                    instruction,
+                    template,
+                    mergedFields,
+                );
+                architectureObj.instructionsProcessed.push(fullInstruction);
+            } else {
+                logger.error(
+                    `Instruction '${instruction.name}' has more than one optional field. This is not supported.`,
+                );
+            }
         } else {
             logger.error(
                 `Template '${instruction.type}' not found for instruction '${instruction.name}'`,
@@ -522,13 +558,16 @@ export function newArchitectureLoad(
     }
 }
 
-// export function load_architecture(arch_str) {
-//     arch = wasm.ArchitectureJS.from_json(arch_str);
-//     const arch_obj = JSON.parse(arch_str);
-//     const ret = load_arch_select(arch_obj);
+export function load_architecture(arch_str) {
+    logger.warn(
+        "load_architecture is deprecated, use newArchitectureLoad instead",
+    );
+    arch = wasm.ArchitectureJS.from_json(arch_str);
+    const arch_obj = JSON.parse(arch_str);
+    const ret = load_arch_select(arch_obj);
 
-//     return ret;
-// }
+    return ret;
+}
 
 export function load_library(lib_str) {
     const ret = {

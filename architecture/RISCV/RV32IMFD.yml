@@ -941,6 +941,39 @@ templates:
             startbit: 14
             stopbit: 12
 
+    - name: R-Double # Used in rv64d
+      nwords: 1
+      clk_cycles: 1
+      fields:
+          - name: opcode
+            type: co
+            startbit: 6
+            stopbit: 0
+            order: 0
+          - name: rd
+            type: DFP-Reg
+            startbit: 11
+            stopbit: 7
+            order: 1
+          - name: rs1
+            type: DFP-Reg
+            startbit: 19
+            stopbit: 15
+            order: 2
+          - name: rs2
+            type: DFP-Reg
+            startbit: 24
+            stopbit: 20
+            order: 3
+          - name: funct7
+            type: cop
+            startbit: 31
+            stopbit: 25
+          - name: funct3
+            type: cop
+            startbit: 14
+            stopbit: 12
+
     - name: R-IntToFloat # fcvt.s.w,...
       nwords: 1
       clk_cycles: 1
@@ -1063,6 +1096,44 @@ templates:
             order: 3
           - name: rs3
             type: SFP-Reg
+            startbit: 31
+            stopbit: 27
+            order: 4
+          - name: funct3
+            type: cop
+            startbit: 14
+            stopbit: 12
+          - name: funct2
+            type: cop
+            startbit: 26
+            stopbit: 25
+
+    - name: R4-Double
+      nwords: 1
+      clk_cycles: 1
+      fields:
+          - name: opcode
+            type: co
+            startbit: 6
+            stopbit: 0
+            order: 0
+          - name: rd
+            type: DFP-Reg
+            startbit: 11
+            stopbit: 7
+            order: 1
+          - name: rs1
+            type: DFP-Reg
+            startbit: 19
+            stopbit: 15
+            order: 2
+          - name: rs2
+            type: DFP-Reg
+            startbit: 24
+            stopbit: 20
+            order: 3
+          - name: rs3
+            type: DFP-Reg
             startbit: 31
             stopbit: 27
             order: 4
@@ -1540,6 +1611,8 @@ instructions:
       fields:
           - field: opcode
             value: "0010111"
+          - field: imm
+            type: offset_bytes
       definition: "rd = PC + (imm << 12n);"
 
     - name: lui
@@ -1742,6 +1815,7 @@ instructions:
           - field: funct3
             type: inm-unsigned # We're overriding the funct3 field from the template
             custom: rounding-mode
+            optional: true
             order: 4
       definition: "rd = rs2 + rs1;"
 
@@ -1777,6 +1851,7 @@ instructions:
           - field: funct3 # In this instruction, there is no "funct3", instead we have a rounding mode field.
             type: inm-unsigned
             custom: rounding-mode
+            optional: true
             order: 3
       definition: "rd = capi_int2float32(rs1);"
 
@@ -1792,6 +1867,7 @@ instructions:
           - field: funct3
             type: inm-unsigned
             custom: rounding-mode
+            optional: true
             order: 3
       definition: "rd = capi_int2uint(rs1)"
 
@@ -1807,6 +1883,7 @@ instructions:
           - field: funct3
             type: inm-unsigned
             custom: rounding-mode
+            optional: true
             order: 3
       definition: "rd = parseInt(rs1);"
 
@@ -1822,6 +1899,7 @@ instructions:
           - field: funct3
             type: inm-unsigned
             custom: rounding-mode
+            optional: true
             order: 3
       definition: "rd = capi_int2uint(parseInt(rs1));"
 
@@ -1835,6 +1913,7 @@ instructions:
           - field: funct3
             type: inm-unsigned
             custom: rounding-mode
+            optional: true
             order: 4
       definition: "if (rs2 != 0)\n { rd = rs1 / rs2; }\n else { capi_raise('Division by zero not allowed'); }"
 
@@ -1909,6 +1988,7 @@ instructions:
           - field: funct3
             type: inm-unsigned
             custom: rounding-mode
+            optional: true
             order: 4
       definition: "rd = rs2 * rs1;"
 
@@ -1985,6 +2065,7 @@ instructions:
           - field: funct3
             type: inm-unsigned
             custom: rounding-mode
+            optional: true
             order: 3
       definition: "if (rs1 >= 0)\n { rd = Math.sqrt(rs1); }\n else { capi_raise('Square root of a negative number is not allowed.'); }"
 
@@ -1998,6 +2079,7 @@ instructions:
           - field: funct3
             type: inm-unsigned
             custom: rounding-mode
+            optional: true
             order: 4
       definition: "rd = rs1 - rs2;"
 
@@ -2012,6 +2094,7 @@ instructions:
           - field: funct3
             type: inm-unsigned
             custom: rounding-mode
+            optional: true
             order: 5
       definition: "rd = rs1 * rs2 + rs3;"
 
@@ -2025,6 +2108,7 @@ instructions:
           - field: funct3
             type: inm-unsigned
             custom: rounding-mode
+            optional: true
             order: 5
       definition: "rd = rs1 * rs2 - rs3;"
 
@@ -2038,6 +2122,7 @@ instructions:
           - field: funct3
             type: inm-unsigned
             custom: rounding-mode
+            optional: true
             order: 5
       definition: "rd = -rs1 * rs2 - rs3;"
 
@@ -2051,6 +2136,7 @@ instructions:
           - field: funct3
             type: inm-unsigned
             custom: rounding-mode
+            optional: true
             order: 5
       definition: "rd = -rs1 * rs2 + rs3;"
 
@@ -2086,7 +2172,7 @@ instructions:
 
       # R-type instructions
     - name: fadd.d
-      type: R-Floating
+      type: R-Double
       fields:
           - field: opcode
             value: "1010011"
@@ -2095,11 +2181,12 @@ instructions:
           - field: funct3
             type: inm-unsigned # We're overriding the funct3 field from the template
             custom: rounding-mode
+            optional: true
             order: 4
       definition: "rd = rs2 + rs1;"
 
     - name: fclass.d
-      type: R-Floating
+      type: R-Double
       fields:
           - field: opcode
             value: "1010011"
@@ -2133,6 +2220,7 @@ instructions:
           - field: funct3
             type: inm-unsigned
             custom: rounding-mode
+            optional: true
             order: null
       definition: "rd = rs1;" # TODO: This doesn't seem right, check the RISC-V manual
 
@@ -2150,6 +2238,7 @@ instructions:
           - field: funct3
             type: inm-unsigned
             custom: rounding-mode
+            optional: true
             order: null
           - field: rd
             type: DFP-Reg
@@ -2171,6 +2260,7 @@ instructions:
           - field: funct3
             type: inm-unsigned
             custom: rounding-mode
+            optional: true
             order: null
           - field: rd
             type: DFP-Reg
@@ -2190,6 +2280,7 @@ instructions:
           - field: funct3
             type: inm-unsigned
             custom: rounding-mode
+            optional: true
             order: 3
           - field: rd
             type: SFP-Reg
@@ -2209,6 +2300,7 @@ instructions:
           - field: funct3
             type: inm-unsigned
             custom: rounding-mode
+            optional: true
             order: 3
           - field: rd
             type: INT-Reg
@@ -2228,6 +2320,7 @@ instructions:
           - field: funct3
             type: inm-unsigned
             custom: rounding-mode
+            optional: true
             order: 3
           - field: rd
             type: INT-Reg
@@ -2236,7 +2329,7 @@ instructions:
       definition: "rd = capi_int2uint(parseInt(rs1));"
 
     - name: fdiv.d
-      type: R-Floating
+      type: R-Double
       fields:
           - field: opcode
             value: "1010011"
@@ -2245,11 +2338,12 @@ instructions:
           - field: funct3
             type: inm-unsigned
             custom: rounding-mode
+            optional: true
             order: 4
       definition: "if (rs2 != 0)\n { rd = rs1 / rs2; }\n else { capi_raise('Division by zero not allowed'); }"
 
     - name: feq.d
-      type: R-Floating
+      type: R-Double
       fields:
           - field: opcode
             value: "1010011"
@@ -2262,7 +2356,7 @@ instructions:
       definition: "rd = (rs1 == rs2) ? 1 : 0;"
 
     - name: fle.d
-      type: R-Floating
+      type: R-Double
       fields:
           - field: opcode
             value: "1010011"
@@ -2275,7 +2369,7 @@ instructions:
       definition: "rd = (rs1 <= rs2) ? 1 : 0;"
 
     - name: flt.d
-      type: R-Floating
+      type: R-Double
       fields:
           - field: opcode
             value: "1010011"
@@ -2288,7 +2382,7 @@ instructions:
       definition: "rd = (rs1 < rs2) ? 1 : 0;"
 
     - name: fmax.d
-      type: R-Floating
+      type: R-Double
       fields:
           - field: opcode
             value: "1010011"
@@ -2299,7 +2393,7 @@ instructions:
       definition: "rd = Math.max(rs1, rs2);"
 
     - name: fmin.d
-      type: R-Floating
+      type: R-Double
       fields:
           - field: opcode
             value: "1010011"
@@ -2310,7 +2404,7 @@ instructions:
       definition: "rd = Math.min(rs1, rs2);"
 
     - name: fmul.d
-      type: R-Floating
+      type: R-Double
       fields:
           - field: opcode
             value: "1010011"
@@ -2319,11 +2413,12 @@ instructions:
           - field: funct3
             type: inm-unsigned
             custom: rounding-mode
+            optional: true
             order: 4
       definition: "rd = rs1 * rs2;"
 
     - name: fsgnj.d
-      type: R-Floating
+      type: R-Double
       fields:
           - field: opcode
             value: "1010011"
@@ -2334,7 +2429,7 @@ instructions:
       definition: "rd = (rs2 > 0) ? Math.abs(rs1) : -Math.abs(rs1);"
 
     - name: fsgnjn.d
-      type: R-Floating
+      type: R-Double
       fields:
           - field: opcode
             value: "1010011"
@@ -2345,7 +2440,7 @@ instructions:
       definition: "rd = (rs2 > 0) ? -Math.abs(rs1) : +Math.abs(rs1);"
 
     - name: fsgnjx.d
-      type: R-Floating
+      type: R-Double
       fields:
           - field: opcode
             value: "1010011"
@@ -2356,7 +2451,7 @@ instructions:
       definition: "let a = rs1<0; let b = rs2<0;\nrd = (a^b) ? -Math.abs(rs1) : Math.abs(rs1);"
 
     - name: fsqrt.d
-      type: R-Floating
+      type: R-Double
       fields:
           - field: opcode
             value: "1010011"
@@ -2369,11 +2464,12 @@ instructions:
           - field: funct3
             type: inm-unsigned
             custom: rounding-mode
+            optional: true
             order: 3
       definition: "if (rs1 >= 0)\n { rd = Math.sqrt(rs1); }\n else { capi_raise('Square root of a negative number is not allowed.'); }"
 
     - name: fsub.d
-      type: R-Floating
+      type: R-Double
       fields:
           - field: opcode
             value: "1010011"
@@ -2382,12 +2478,13 @@ instructions:
           - field: funct3
             type: inm-unsigned
             custom: rounding-mode
+            optional: true
             order: 4
       definition: "rd = rs1 - rs2;"
 
     # R4-type instructions
     - name: fmadd.d
-      type: R4
+      type: R4-Double
       fields:
           - field: opcode
             value: "1000011"
@@ -2396,11 +2493,12 @@ instructions:
           - field: funct3
             type: inm-unsigned
             custom: rounding-mode
+            optional: true
             order: 5
       definition: "rd = rs1 * rs2 + rs3;"
 
     - name: fmsub.d
-      type: R4
+      type: R4-Double
       fields:
           - field: opcode
             value: "1000111"
@@ -2409,11 +2507,12 @@ instructions:
           - field: funct3
             type: inm-unsigned
             custom: rounding-mode
+            optional: true
             order: 5
       definition: "rd = rs1 * rs2 - rs3;"
 
     - name: fnmadd.d
-      type: R4
+      type: R4-Double
       fields:
           - field: opcode
             value: "1001111"
@@ -2422,11 +2521,12 @@ instructions:
           - field: funct3
             type: inm-unsigned
             custom: rounding-mode
+            optional: true
             order: 5
       definition: "rd = -rs1 * rs2 - rs3;"
 
     - name: fnmsub.d
-      type: R4
+      type: R4-Double
       fields:
           - field: opcode
             value: "1001011"
@@ -2435,6 +2535,7 @@ instructions:
           - field: funct3
             type: inm-unsigned
             custom: rounding-mode
+            optional: true
             order: 5
       definition: "rd = -rs1 * rs2 + rs3;"
 
@@ -2448,10 +2549,12 @@ instructions:
             value: "011"
           - field: rs2 # We're overriding the rs2 field from the template
             type: DFP-Reg
-      definition: "var val = capi_split_double(ft, 0);\n capi_mem_write(base+off, val, 'w', ft_name);\n val = capi_split_double(ft, 1);\n capi_mem_write(base+off+4n, val, 'w', ft_name);"
+      definition: "var val = capi_split_double(rs2, 0);\n capi_mem_write(rs1+imm, val, 'w', rs2_name);\n val = capi_split_double(rs2, 1);\n capi_mem_write(rs1+imm+4n, val, 'w', rs2_name);"
 
 pseudoinstructions:
     # Make sure the definitions correspond with those in the RISC-V ASM manual (TODO: Check these!)
+
+    # RV32I Pseudoinstructions
     - name: beqz
       fields:
           - field: rs1
@@ -2539,30 +2642,6 @@ pseudoinstructions:
           - field: off
             type: offset_bytes
       definition: "bne rs1, x0, off;"
-
-    - name: fabs.s
-      fields:
-          - field: rs1
-            type: SFP-Reg
-          - field: rs2
-            type: SFP-Reg
-      definition: "fsgnjx.s rs1, rs2, rs2;"
-
-    - name: fmv.s
-      fields:
-          - field: rs1
-            type: SFP-Reg
-          - field: rs2
-            type: SFP-Reg
-      definition: "fsgnj.s rs1, rs2, rs2;"
-
-    - name: fneg.s
-      fields:
-          - field: rs1
-            type: SFP-Reg
-          - field: rs2
-            type: SFP-Reg
-      definition: "fsgnj.s rs1, rs2, rs2;"
 
     - name: j
       fields:
@@ -2659,3 +2738,53 @@ pseudoinstructions:
           - field: reg2
             type: INT-Reg
       definition: "sltu reg1, x0, reg2;"
+
+    # RV32F Pseudoinstructions
+    - name: fabs.s
+      fields:
+          - field: rs1
+            type: SFP-Reg
+          - field: rs2
+            type: SFP-Reg
+      definition: "fsgnjx.s rs1, rs2, rs2;"
+
+    - name: fmv.s
+      fields:
+          - field: rs1
+            type: SFP-Reg
+          - field: rs2
+            type: SFP-Reg
+      definition: "fsgnj.s rs1, rs2, rs2;"
+
+    - name: fneg.s
+      fields:
+          - field: rs1
+            type: SFP-Reg
+          - field: rs2
+            type: SFP-Reg
+      definition: "fsgnjn.s rs1, rs2, rs2;"
+
+    # RV32D Pseudoinstructions
+    - name: fabs.d
+      fields:
+          - field: rs1
+            type: DFP-Reg
+          - field: rs2
+            type: DFP-Reg
+      definition: "fsgnjx.d rs1, rs2, rs2;"
+
+    - name: fmv.d
+      fields:
+          - field: rs1
+            type: DFP-Reg
+          - field: rs2
+            type: DFP-Reg
+      definition: "fsgnj.d rs1, rs2, rs2;"
+
+    - name: fneg.d
+      fields:
+          - field: rs1
+            type: DFP-Reg
+          - field: rs2
+            type: DFP-Reg
+      definition: "fsgnjn.d rs1, rs2, rs2;"
