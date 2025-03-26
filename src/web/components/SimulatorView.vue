@@ -76,6 +76,7 @@ export default {
           components="btn_architecture,btn_assembly|btn_reset,btn_instruction,btn_run,btn_flash,btn_stop|btn_examples,btn_calculator|btn_configuration,btn_information"
           :browser="browser"
           :arch_available="arch_available"
+          :show_instruction_help="true"
         />
 
         <!-- Simulator navbar modals -->

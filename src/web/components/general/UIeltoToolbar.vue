@@ -27,6 +27,7 @@ export default {
     browser: { type: String, required: true },
     arch_available: { type: Array, required: true },
     assembly_code: { type: String, required: false },
+    show_instruction_help: { type: Boolean, default: false },
   },
 
   computed: {
@@ -47,6 +48,7 @@ export default {
           :browser="browser"
           :architectures="arch_available"
           :assembly_code="assembly_code"
+          :show_instruction_help="show_instruction_help"
         />
 
         <div class="w-100 d-block d-sm-none"></div>

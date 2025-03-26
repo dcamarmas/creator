@@ -56,7 +56,7 @@ import PopoverShortcuts from "./PopoverShortcuts.vue"
 export default {
   props: {
     browser: { type: String, required: true },
-    assembly_code: String,
+    assembly_code: { type: String, required: true },
   },
   components: {
     PopoverShortcuts,
@@ -68,9 +68,8 @@ export default {
     return {
       vimActive: false,
       luisdaMode: false,
-      lang: StreamLanguage.define(gas),
+      lang: StreamLanguage.define(gas), // doesn't work for some GOD DAMMED REASON
       extensions: [
-        // vimMode.of(vim()),
         // A line number gutter
         lineNumbers(),
         // // A gutter with code folding markers
@@ -115,7 +114,7 @@ export default {
           // Redo/undo keys
           ...historyKeymap,
           // indent with tab
-          indentWithTab,
+          // indentWithTab,
         ]),
         // javascript({ typescript: false }),
       ],
@@ -198,13 +197,13 @@ export default {
     ></textarea> -->
     <Codemirror
       v-model="code"
-      placeholder="Code goes here..."
+      placeholder="Assembly code..."
       :style="{ height: '400px' }"
       :autofocus="true"
-      :indent-with-tab="true"
-      :tab-size="8"
+      :tab="true"
+      :tab-size="4"
+      :wrap="true"
       :extensions="extensions"
-      :lang="lang"
     />
   </div>
 </template>

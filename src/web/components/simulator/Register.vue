@@ -116,7 +116,26 @@ export default {
             }
           }
           break
+
+        case "bin":
+          if (this.type === "ctrl_registers" || this.type === "int_registers") {
+            ret = register.value.toString(2).padStart(register.nbits, "0")
+          } else {
+            if (this.double_precision_type !== null) {
+              ret = float2bin(bi_BigIntTofloat(register.value))
+            } else {
+              ret = double2bin(bi_BigIntTodouble(register.value))
+            }
+          }
+          break
+
+        case "char":
+          ret = String.fromCharCode(Number(register.value))
+
+          break
+
         default:
+          return "N/A"
       }
 
       if (this.double_precision_type === "linked") {
@@ -255,8 +274,9 @@ export default {
         @click="details_callback"
       >
         <span class="text-truncate">{{ reg_name(register) }}</span>
+        &nbsp;
         <b-badge class="registerValue">
-          {{ show_value_truncate(register) }}
+          {{ register.value }}
         </b-badge>
       </b-button>
     </template>
@@ -266,7 +286,7 @@ export default {
     <table class="table table-bordered table-sm popoverText">
       <tbody>
         <tr>
-          <td>Hex.</td>
+          <td>Hexadecimal</td>
           <td>
             <b-badge class="registerPopover">
               {{ show_value(register, "hex") }}
@@ -290,7 +310,7 @@ export default {
           </td>
         </tr>
         <tr v-if="this.type !== 'fp_registers'">
-          <td>Unsig.</td>
+          <td>Unsigned</td>
           <td>
             <b-badge class="registerPopover">
               {{ show_value(register, "unsigned") }}

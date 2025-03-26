@@ -106,4 +106,10 @@ export default defineConfigWithVueTs(
       "no-new-func": "error",
     },
   },
-);
+  {
+    files: ["**/*.vue"],
+    rules: {
+      "no-invalid-this": "off", // in Vue, inside arrow functions, `this` refers to the current component
+    },
+  },
+)

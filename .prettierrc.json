@@ -18,7 +18,8 @@
         "*.css",
         "eslint.config.ts",
         "vite.config.ts",
-        ".editorconfig"
+        ".editorconfig",
+        "bun.lock"
       ],
       "options": { "tabWidth": 2 }
     }
