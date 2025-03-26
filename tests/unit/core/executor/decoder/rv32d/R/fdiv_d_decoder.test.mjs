@@ -1,22 +1,22 @@
 import { decode_test } from "../common.mjs";
 Deno.test("decode_instruction - fdiv.d instruction 1", () =>
-    decode_test("00011010001000001000000001010011", "fdiv.d f0 f1 f2"),
+    decode_test("00011010001000001000000001010011", "fdiv.d f0 f1 f2 rne"),
 );
 
 Deno.test("decode_instruction - fdiv.d instruction 2", () =>
-    decode_test("00011010011000101001001001010011", "fdiv.d f4 f5 f6"),
+    decode_test("00011010011000101001001001010011", "fdiv.d f4 f5 f6 rtz"),
 );
 
 Deno.test("decode_instruction - fdiv.d instruction 3", () =>
-    decode_test("00011010101001001010010001010011", "fdiv.d f8 f9 f10"),
+    decode_test("00011010101001001010010001010011", "fdiv.d f8 f9 f10 rdn"),
 );
 
 Deno.test("decode_instruction - fdiv.d instruction 4", () =>
-    decode_test("00011010111001101011011001010011", "fdiv.d f12 f13 f14"),
+    decode_test("00011010111001101011011001010011", "fdiv.d f12 f13 f14 rup"),
 );
 
 Deno.test("decode_instruction - fdiv.d instruction 5", () =>
-    decode_test("00011011001010001100100001010011", "fdiv.d f16 f17 f18"),
+    decode_test("00011011001010001100100001010011", "fdiv.d f16 f17 f18 rmm"),
 );
 
 Deno.test("decode_instruction - fdiv.d instruction 6", () =>
@@ -52,19 +52,19 @@ Deno.test("decode_instruction - fdiv.d instruction 13", () =>
 );
 
 Deno.test("decode_instruction - fdiv.d instruction 14", () =>
-    decode_test("00011010010101010001101001010011", "fdiv.d f20 f10 f5"),
+    decode_test("00011010010101010001101001010011", "fdiv.d f20 f10 f5 rtz"),
 );
 
 Deno.test("decode_instruction - fdiv.d instruction 15", () =>
-    decode_test("00011010111100101010110011010011", "fdiv.d f25 f5 f15"),
+    decode_test("00011010111100101010110011010011", "fdiv.d f25 f5 f15 rdn"),
 );
 
 Deno.test("decode_instruction - fdiv.d instruction 16", () =>
-    decode_test("00011010100011000011100001010011", "fdiv.d f16 f24 f8"),
+    decode_test("00011010100011000011100001010011", "fdiv.d f16 f24 f8 rup"),
 );
 
 Deno.test("decode_instruction - fdiv.d instruction 17", () =>
-    decode_test("00011011000000000100111111010011", "fdiv.d f31 f0 f16"),
+    decode_test("00011011000000000100111111010011", "fdiv.d f31 f0 f16 rmm"),
 );
 
 Deno.test("decode_instruction - fdiv.d instruction 18", () =>
