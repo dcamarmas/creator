@@ -19,6 +19,7 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 <script>
 import UIeltoToolbar from "./general/UIeltoToolbar.vue"
 import TextareaAssembly from "./assembly/TextareaAssembly.vue"
+import AssemblyError from "./assembly/AssemblyError.vue"
 
 export default {
   props: {
@@ -26,8 +27,9 @@ export default {
     arch_available: Array,
     architecture_name: String,
     assembly_code: String,
+    modal_assembly_error: Object,
   },
-  components: { UIeltoToolbar, TextareaAssembly },
+  components: { UIeltoToolbar, TextareaAssembly, AssemblyError },
 }
 </script>
 
@@ -42,6 +44,7 @@ export default {
           :browser="browser"
           :arch_available="arch_available"
           :assembly_code="assembly_code"
+          :show_instruction_help="true"
         />
 
         <!-- Assembly navbar modals -->
@@ -75,7 +78,7 @@ export default {
           <b-row cols="2">
             <b-col cols="12" id="divAssembly"> -->
         <!-- Assembly textarea-->
-        <TextareaAssembly :browser="browser" />
+        <TextareaAssembly :browser="browser" :assembly_code="assembly_code" />
         <!-- </b-col>
 
             <b-col cols="0" id="divTags" class="d-none"> -->
@@ -88,11 +91,11 @@ export default {
         </b-container> -->
 
         <!-- Compile error modal -->
-        <!-- <AssemblyError
+        <AssemblyError
           id="modalAssemblyError"
-          ref="errorAssembly"
-          :modal_assembly_error="modalAssemblyError"
-        /> -->
+          reff="errorAssembly"
+          :modal_assembly_error="modal_assembly_error"
+        />
       </b-col>
     </b-row>
   </b-container>

@@ -1,4 +1,4 @@
-# creatorV
+# creatorVI
 
 The next evolution of [CREATOR](https://github.com/creatorsim/creator/).
 

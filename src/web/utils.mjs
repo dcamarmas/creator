@@ -20,6 +20,7 @@
 
 import { useToastController } from "bootstrap-vue-next"
 const { toast } = useToastController()
+import { status } from "@/core/core.mjs"
 
 import $ from "jquery"
 
@@ -107,12 +108,14 @@ export function hide_loading() {
  */
 
 export function btn_glow(btn_name, post_label) {
-    if (run_program === 0) {
+    if (status.run_program === 0) {
         const buttonDec = "#popoverValueContent" + btn_name + post_label
         const buttonHex = "#popoverValueContent" + btn_name
 
         $(buttonDec).attr("style", "background-color:#c2c2c2;")
         $(buttonHex).attr("style", "background-color:#c2c2c2;")
+
+        // TODO: refresh value in UI
 
         setTimeout(function () {
             $(buttonDec).attr("style", "")

@@ -165,6 +165,7 @@ export let load_architectures = []
 export let back_card = []
 export let memory_hash = ['data_memory', 'instructions_memory', 'stack_memory']
 export let execution_mode = 0 // 0: instruction by instruction, 1: run program
+export function set_execution_mode(value) { execution_mode = value }  // it's the only way
 export let instructions_packed = 100
 export let architecture_json = ''
 

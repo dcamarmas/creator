@@ -21,6 +21,8 @@ import { architecture, status, REGISTERS } from "../core.mjs";
 import { packExecute, writeStackLimit } from "../executor/executor.mjs";
 import { instructions } from "../compiler/compiler.mjs";
 import { creator_callstack_writeRegister } from "../sentinel/sentinel.mjs";
+import { btn_glow } from "@/web/utils.mjs";
+
 
 export function readRegister(indexComp, indexElem) {
     const draw = {
