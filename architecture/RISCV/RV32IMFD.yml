@@ -1853,7 +1853,7 @@ instructions:
             custom: rounding-mode
             optional: true
             order: 3
-      definition: "rd = capi_int2float32(rs1);"
+      definition: "rd = capi_uint2int(rs1)"
 
     - name: fcvt.s.wu
       type: R-IntToFloat
@@ -2148,9 +2148,9 @@ instructions:
             value: "0100111"
           - field: funct3
             value: "010"
-          - field: rs2 # We're overriding the rs2 field from the template
+          - field: rs2
             type: SFP-Reg
-      definition: "var val1 = capi_float322uint(rs1);\n capi_mem_write(rs2+imm, val1, 'w', rs1_name);"
+      definition: "var val1 = capi_float322uint(rs2);\n capi_mem_write(rs1+imm, val1, 'w', rs2_name);"
 
     #   ____ __     __ _____ ____   ____
     #  |  _ \\ \   / /|___ /|___ \ |  _ \
@@ -2244,7 +2244,7 @@ instructions:
             type: DFP-Reg
           - field: rs1
             type: INT-Reg
-      definition: "rd = capi_int2float32(rs1);"
+      definition: "rd = capi_uint2int(rs1);"
 
     - name: fcvt.d.wu
       type: R-Conversion

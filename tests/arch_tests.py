@@ -27,11 +27,6 @@ test_categories = {
         "path": os.path.join(SCRIPT_DIR, "arch/riscv/correct/syscalls/test_riscv_syscall"),
         "arch": os.path.join(SCRIPT_DIR, "../architecture/RISCV/RV32IMFD.yml")
     },
-    # "riscv_compile_errors": {
-    #     "numbers": [1, 2, 3, 4, 5, 6, 7, 8, 9, 14, 15, 16, 17, 18, 19, 21, 22, 23, 30],
-    #     "path": os.path.join(SCRIPT_DIR, "arch/riscv/error/compiler/test_riscv_error_compiler"),
-    #     "arch": os.path.join(SCRIPT_DIR, "../architecture/RISCV/RV32IMFD.yml")
-    # },
     "riscv_execution_errors": {
         "numbers": range(3, 10),
         "path": os.path.join(SCRIPT_DIR, "arch/riscv/error/executor/test_riscv_error_executor"),
