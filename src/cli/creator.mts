@@ -244,7 +244,12 @@ function show_result(
 function loadArchitecture(architecturePath: string): StageResult {
     try {
         const architecture_file = fs.readFileSync(architecturePath, "utf8");
-        const ret = creator.newArchitectureLoad(architecture_file);
+        const ret = creator.newArchitectureLoad(
+            architecture_file,
+            false,
+            false,
+            ["I", "M", "F", "D", "Zicsr", "Zifencei"],
+        );
 
         // const ret = creator.load_architecture(architecture);
         if (ret.status !== "ok") {

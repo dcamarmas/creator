@@ -512,13 +512,44 @@ function processPseudoInstructions(architectureObj, legacy = true) {
     delete architectureObj.pseudoinstructionsProcessed;
 }
 
+// eslint-disable-next-line max-lines-per-function
 export function newArchitectureLoad(
     architecture,
     skipCompiler = false,
     dump = false,
+    isa = [],
 ) {
     try {
         const architectureObj = yaml.load(architecture);
+
+        const availableISAS = architectureObj.extensions || [];
+
+        let selectedInstructions = [];
+        let selectedPseudoInstructions = [];
+
+        for (const requestedISA of isa) {
+            // 1. Go to architectureObj.instructions[requestedISA]
+            const requestedISAInstructions =
+                architectureObj.instructions[requestedISA];
+            if (requestedISAInstructions) {
+                // 2. Add the instructions to selectedInstructions
+                selectedInstructions = [
+                    ...selectedInstructions,
+                    ...requestedISAInstructions,
+                ];
+            }
+            // Same for pseudoinstructions
+            const requestedISAPseudoInstructions =
+                architectureObj.pseudoinstructions[requestedISA];
+            if (requestedISAPseudoInstructions) {
+                selectedPseudoInstructions = [
+                    ...selectedPseudoInstructions,
+                    ...requestedISAPseudoInstructions,
+                ];
+            }
+        }
+        architectureObj.instructions = selectedInstructions;
+        architectureObj.pseudoinstructions = selectedPseudoInstructions;
 
         processInstructions(architectureObj);
 
