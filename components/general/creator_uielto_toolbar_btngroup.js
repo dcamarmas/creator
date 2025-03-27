@@ -97,6 +97,9 @@
                           app.$bvToast.hide()
                         }
                       },
+                      execute_load_creatino() {
+                        this.$root.$emit('library_load_creatino');
+                    },
 
                       //
                       // Architecture Selector
@@ -628,6 +631,10 @@
             '  <b-dropdown-item v-b-modal.load_binary>' +
             '    <span class="fas fa-upload"></span>' +
             '    Load Library' +
+            '  </b-dropdown-item>' +
+            '  <b-dropdown-item @click="execute_load_creatino">' +
+            '    <span class="fas fa-infinity"></span>' +
+            '    Load Arduino Library' +
             '  </b-dropdown-item>' +
             '  <b-dropdown-item @click="remove_library">' +
             '    <span class="far fa-trash-alt"></span>' +

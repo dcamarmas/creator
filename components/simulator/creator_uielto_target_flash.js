@@ -297,7 +297,6 @@
 
                       handleCheckboxChange(value) {
                         this.creatinoMode(value);
-                        //this.load_library_cr(value);
                       },
 
                       do_flash( )

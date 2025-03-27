@@ -34,6 +34,7 @@
                         name_binary_load: ''
                       }
                     },
+                    
 
         methods:    {
           closeModal() {
@@ -73,7 +74,7 @@
                         }
                       },
 
-                      library_load_creatino(e) {
+                      library_load_creatino() {
                         var reader;
                         var baseUrl = window.location.origin; 
                         var filePath = baseUrl + '/creator/test/riscv/correct/libraries/creatino.o';
@@ -105,17 +106,21 @@
                         });
                     },
                     
-                      // created() {
-                      //   EventBus.$on('library_load_creatino', this.library_load_creatino);
-                      // },
-                      // destroyed() {
-                      //   EventBus.$off('library_load_creatino', this.library_load_creatino);
-                      // }
-                      
-                      
 
-                      
+                        
                     },
+            // Hooks de ciclo de vida
+    created() {
+      console.log('Componente creado');
+      // Escuchar el evento global
+      this.$root.$on('library_load_creatino', this.library_load_creatino);
+    },
+
+  beforeDestroy() {
+      console.log('Componente va a ser destruido');
+      // Remover el listener del evento global
+      this.$root.$off('library_load_creatino', this.library_load_creatino);
+    },            
 
         template:   ' <b-modal  :id = "id"' +
                     '           title = "Load Binary" ' +
@@ -132,7 +137,6 @@
                     '   </b-form-file>' +
                     '<template #modal-footer>'+
                     '   <b-button @click="closeModal" variant="secondary">Cancel</b-button>'+
-                    '   <b-button  variant="primary" @click="library_load_creatino">Load Arduino Library</b-button>'+
                     '   <b-button  variant="primary" @click="library_update">Load from this File</b-button>'+
                     '</template>'+
                     ' </b-modal>'
