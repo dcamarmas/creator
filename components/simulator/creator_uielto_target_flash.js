@@ -89,6 +89,7 @@
                         running   = false,
                         debugging = false,
                         fullclean = false,
+                        stoprunning = false,
                       }
                     },
 
@@ -326,6 +327,29 @@
 
                         //Google Analytics
                         creator_ga('simulator', 'simulator.flash', 'simulator.flash');
+                      },
+                      do_stop_monitor()
+                      {
+
+                        this.save();
+
+                        this.stoprunning = true;
+
+                        var farg =  {
+                                      target_board: this.target_board,
+                                      target_port:  this.target_port,
+                                      assembly:     code_assembly,
+                                    } ;
+
+                        this_env = this;
+                        gateway_remote_monitor(this.flash_url + "/stopmonitor", farg).then( function(data)  { 
+                                                                                                          this_env.stoprunning = false; 
+                                                                                                          //show_notification(data, 'danger') ;
+                                                                                                        } ) ;
+
+                        //Google Analytics
+                        creator_ga('simulator', 'simulator.stopmonitor', 'simulator.stopmonitor');
+
                       },
 
                       do_monitor( )
@@ -783,28 +807,41 @@
                     '           <b-container fluid align-h="center" class="mx-0 px-0">' +
                     '             <b-row cols="4" align-h="center">' +
                     '               <b-col class="pt-4">' +
-                    '                 <b-button class="btn btn-sm btn-block" variant="primary" @click="do_flash" :pressed="flashing" :disabled="flashing || running || debugging|| fullclean">' +
+                    '                 <b-button class="btn btn-sm btn-block" variant="primary" @click="do_flash" :pressed="flashing" :disabled="flashing || running || debugging|| fullclean || stoprunning">' +
                     '                   <span v-if="!flashing"><span class="fas fa-bolt-lightning"></span> Flash</span>' +
                     '                   <span v-if="flashing"><span class="fas fa-bolt-lightning"></span>  Flashing...</span>' +
                     '                   <b-spinner small v-if="flashing"></b-spinner>' +
                     '                 </b-button>' +
                     '               </b-col>' +
-                    '               <b-col class="pt-4">' +
-                    '                 <b-button class="btn btn-sm btn-block" variant="primary" @click="do_monitor" :pressed="running" :disabled="running || flashing || debugging || fullclean">' +
-                    '                   <span v-if="!running"><span class="fas fa-play"></span> Monitor</span>' +
-                    '                   <span v-if="running"><span class="fas fa-play"></span>  Running...</span>' +
-                    '                   <b-spinner small v-if="running"></b-spinner>' +
-                    '                 </b-button>' +
-                    '               </b-col>' +
-                    '               <b-col class="pt-4">' +
-                    '                 <b-button class="btn btn-sm btn-block" variant="primary" @click="do_debug" :pressed="debugging" :disabled="debugging || flashing || running || fullclean">' +
-                    '                   <span v-if="!debugging"><span class="fas fa-bug"></span> Debug</span>' +
-                    '                   <span v-if="debugging"><span class="fas fa-bug"></span>  Debugging...</span>' +
+                    '<b-col class="pt-4">' +
+                    '<div class="btn-toolbar pull-right btn-block" role="toolbar">'  +
+                      '<div class="btn-group w-100" role="group" aria-label="Button group example" style="display: flex; align-items: center;">' +
+                      '<span style="position: absolute; top: -20px; left: 50%; transform: translateX(-50%); font-size: 14px; color: #007bff; display: flex; align-items: center;">' +
+                      '<i class="fas fa-desktop" style="margin-right: 5px;"></i>' + // Ícono de monitor
+                      'Monitor' +
+                    '</span>' +
+                        '<b-button class="btn btn-sm " style="height: 30px; flex: 1; display: flex; align-items: center; justify-content: center; min-height: 30px;" variant="primary" @click="do_monitor" :pressed="running" :disabled=" running || flashing || debugging || fullclean">' +
+                          '<span v-if="!running"><span class="fas fa-play"></span></span>' +
+                          '<span v-if="running"><span class="fas fa-play"></span></span>' +
+                          '<b-spinner small v-if="running"></b-spinner>' +
+                        '</b-button>' +
+                        '<b-button class="btn btn-sm " style="height: 30px; flex: 1; display: flex; align-items: center; justify-content: center; min-height: 30px;" variant="primary" @click="do_stop_monitor" :pressed="stoprunning" :disabled="!running || flashing || debugging || fullclean">' +
+                          '<span v-if="!stoprunning"><span class="fas fa-stop"></span></span>' +
+                          '<span v-if="stoprunning"><span class="fas fa-stop"></span></span>' +
+                          '<b-spinner small v-if="stoprunning"></b-spinner>' +
+                        '</b-button>' +
+                      '</div>' +
+                    '</div>'+
+                    '</b-col>'+
+                    '<b-col class="pt-4">' +
+                    '                 <b-button class="btn btn-sm btn-block" variant="primary" @click="do_debug" :pressed="debugging" :disabled="debugging || flashing || running || fullclean || stoprunning">' +
+                    '                   <span v-if="!debugging"><span class="fas fa-bug"></span>Debug</span>' +
+                    '                   <span v-if="debugging"><span class="fas fa-bug"></span>Debugging...</span>' +
                     '                   <b-spinner small v-if="debugging"></b-spinner>' +
                     '                 </b-button>' +
-                    '               </b-col>' +
+                    '</b-col>'+
                     '               <b-col class="pt-4">' +
-                    '                 <b-button class="btn btn-sm btn-block" variant="danger" @click="do_fullclean" :pressed="fullclean" :disabled="fullclean || flashing || running || debugging">' +
+                    '                 <b-button class="btn btn-sm btn-block" variant="danger" @click="do_fullclean" :pressed="fullclean" :disabled="fullclean || flashing || running || debugging || stoprunning">' +
                     '                   <span v-if="!fullclean"><span class="fas fa-trash"></span> Clean</span>' +
                     '                   <span v-if="fullclean"><span class="fas fa-trash"></span>  Cleaning...</span>' +
                     '                   <b-spinner small v-if="fullclean"></b-spinner>' +

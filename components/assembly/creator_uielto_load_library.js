@@ -1,4 +1,3 @@
-
 /*
  *  Copyright 2018-2025 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
@@ -22,6 +21,7 @@
 
   /* jshint esversion: 6 */
 
+
   var uielto_load_library = {
 
         props:      {
@@ -36,7 +36,11 @@
                     },
 
         methods:    {
-                      library_update(){
+          closeModal() {
+            // Cierra el modal
+            this.$bvModal.hide(this.id);
+          },            
+          library_update(){
                         if (code_binary.length !== 0){
                             update_binary = JSON.parse(code_binary);
                             load_binary = true;
@@ -65,8 +69,52 @@
 
                         function onFileLoaded(event) {
                            code_binary = event.currentTarget.result;
+                           this.$bvModal.hide(this.id);
                         }
                       },
+
+                      library_load_creatino(e) {
+                        var reader;
+                        var baseUrl = window.location.origin; 
+                        var filePath = baseUrl + '/creator/test/riscv/correct/libraries/creatino.o';
+                        
+                        fetch(filePath, {
+                            method: 'GET',
+                        })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Error al cargar el archivo: ' + response.statusText);
+                            }
+                            return response.arrayBuffer();
+                        })
+                        .then(data => {
+                            var blob = new Blob([data]);
+                            reader = new FileReader();
+                    
+                            reader.onloadend = () => {
+                                code_binary = reader.result;
+                                console.log('Archivo cargado correctamente');
+                                this.library_update(); // Llamar a library_update después de cargar el archivo
+                                this.$bvModal.hide(this.id);
+                            };
+                    
+                            reader.readAsBinaryString(blob);
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                        });
+                    },
+                    
+                      // created() {
+                      //   EventBus.$on('library_load_creatino', this.library_load_creatino);
+                      // },
+                      // destroyed() {
+                      //   EventBus.$off('library_load_creatino', this.library_load_creatino);
+                      // }
+                      
+                      
+
+                      
                     },
 
         template:   ' <b-modal  :id = "id"' +
@@ -82,7 +130,14 @@
                     '                @change="library_load" ' +
                     '                id="binary_file">' +
                     '   </b-form-file>' +
+                    '<template #modal-footer>'+
+                    '   <b-button @click="closeModal" variant="secondary">Cancel</b-button>'+
+                    '   <b-button  variant="primary" @click="library_load_creatino">Load Arduino Library</b-button>'+
+                    '   <b-button  variant="primary" @click="library_update">Load from this File</b-button>'+
+                    '</template>'+
                     ' </b-modal>'
+                    
   }
 
+                      
   Vue.component('load-library', uielto_load_library) ;
