@@ -248,7 +248,6 @@ function loadArchitecture(architecturePath: string): StageResult {
             architecture_file,
             false,
             false,
-            ["I", "M", "F", "D", "Zicsr", "Zifencei"],
         );
 
         // const ret = creator.load_architecture(architecture);

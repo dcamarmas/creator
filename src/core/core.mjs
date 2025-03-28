@@ -512,71 +512,195 @@ function processPseudoInstructions(architectureObj, legacy = true) {
     delete architectureObj.pseudoinstructionsProcessed;
 }
 
-// eslint-disable-next-line max-lines-per-function
+/**
+ * Parse architecture YAML into an object
+ * @param {string} architectureYaml - YAML string containing architecture definition
+ * @returns {Object} - Parsed architecture object or throws error
+ */
+function parseArchitectureYaml(architectureYaml) {
+    try {
+        return yaml.load(architectureYaml);
+    } catch (error) {
+        logger.error(`Failed to parse architecture YAML: ${error.message}`);
+        throw new Error(`Failed to parse architecture YAML: ${error.message}`);
+    }
+}
+
+/**
+ * Determine which instruction sets to load based on user selections
+ * @param {Object} architectureObj - The architecture object
+ * @param {Array} requestedISAs - User-requested instruction sets to load
+ * @returns {Object} - Object with selected ISAs and status
+ */
+function determineInstructionSetsToLoad(architectureObj, requestedISAs = []) {
+    // Get all available instruction sets in the architecture
+    const availableInstructionSets = [
+        ...new Set([
+            ...Object.keys(architectureObj.instructions || {}),
+            ...Object.keys(architectureObj.pseudoinstructions || {}),
+        ]),
+    ];
+
+    // If no ISAs specified, use all available ones
+    if (!requestedISAs || requestedISAs.length === 0) {
+        return {
+            instructionSets: availableInstructionSets,
+            status: "ok",
+        };
+    }
+
+    // Filter requested ISAs to only those that exist
+    const validISAs = requestedISAs.filter(requestedISA => {
+        const exists = availableInstructionSets.includes(requestedISA);
+        if (!exists) {
+            logger.warn(
+                `Requested ISA "${requestedISA}" does not exist in the architecture.`,
+            );
+        }
+        return exists;
+    });
+
+    // Return error if no valid ISAs were specified
+    if (validISAs.length === 0) {
+        return {
+            instructionSets: [],
+            status: "error",
+            message: "No valid instruction sets specified.",
+        };
+    }
+
+    return {
+        instructionSets: validISAs,
+        status: "ok",
+    };
+}
+
+/**
+ * Collect instructions and pseudoinstructions from selected instruction sets
+ * @param {Object} architectureObj - The architecture object
+ * @param {Array} instructionSetsToLoad - Array of instruction set names to load
+ * @returns {Object} - Updated architecture object with collected instructions
+ */
+function collectInstructionsFromSets(architectureObj, instructionSetsToLoad) {
+    let selectedInstructions = [];
+    let selectedPseudoInstructions = [];
+
+    // Process each instruction set
+    for (const requestedISA of instructionSetsToLoad) {
+        // Add instructions if available for this ISA
+        const isaInstructions = architectureObj.instructions[requestedISA];
+        if (isaInstructions) {
+            selectedInstructions = [
+                ...selectedInstructions,
+                ...isaInstructions,
+            ];
+        }
+
+        // Add pseudoinstructions if available for this ISA
+        const ISAPseudoInstructions =
+            architectureObj.pseudoinstructions[requestedISA];
+        if (ISAPseudoInstructions) {
+            selectedPseudoInstructions = [
+                ...selectedPseudoInstructions,
+                ...ISAPseudoInstructions,
+            ];
+        }
+    }
+
+    // Create a new architecture object with the updated instructions
+    const updatedArchObj = { ...architectureObj };
+    updatedArchObj.instructions = selectedInstructions;
+    updatedArchObj.pseudoinstructions = selectedPseudoInstructions;
+
+    return updatedArchObj;
+}
+
+/**
+ * Prepare architecture for use by processing instructions and initializing WASM
+ * @param {Object} architectureObj - The architecture object
+ * @param {boolean} skipCompiler - Whether to skip initializing the WASM compiler
+ * @param {boolean} dump - Whether to dump architecture to file for debugging
+ * @returns {Object} - The processed architecture object
+ */
+function prepareArchitecture(
+    architectureObj,
+    skipCompiler = false,
+    dump = false,
+) {
+    // Process the selected instructions and pseudoinstructions
+    processInstructions(architectureObj);
+    processPseudoInstructions(architectureObj, true);
+
+    // Convert to JSON for WASM
+    const architectureJson = JSON.stringify(architectureObj);
+
+    // Dump the architecture JSON to a file for debugging
+    if (dump) {
+        try {
+            Deno.writeTextFileSync(
+                "./architecture/test.json",
+                architectureJson,
+            );
+        } catch (writeError) {
+            logger.error(
+                `Could not write architecture file: ${writeError.message}`,
+            );
+        }
+    }
+
+    // Initialize WASM compiler if not skipped
+    if (!skipCompiler) {
+        arch = wasm.ArchitectureJS.from_json(architectureJson);
+    }
+
+    return architectureObj;
+}
+
+/**
+ * Load architecture from YAML string and prepare for use
+ * @param {string} architectureYaml - YAML string containing architecture definition
+ * @param {boolean} skipCompiler - Whether to skip initializing the WASM compiler
+ * @param {boolean} dump - Whether to dump architecture to file for debugging
+ * @param {Array} isa - Array of instruction set names to load
+ * @returns {Object} - Result object with load status
+ */
 export function newArchitectureLoad(
-    architecture,
+    architectureYaml,
     skipCompiler = false,
     dump = false,
     isa = [],
 ) {
     try {
-        const architectureObj = yaml.load(architecture);
+        // Parse YAML to object
+        const architectureObj = parseArchitectureYaml(architectureYaml);
 
-        const availableISAS = architectureObj.extensions || [];
-
-        let selectedInstructions = [];
-        let selectedPseudoInstructions = [];
-
-        for (const requestedISA of isa) {
-            // 1. Go to architectureObj.instructions[requestedISA]
-            const requestedISAInstructions =
-                architectureObj.instructions[requestedISA];
-            if (requestedISAInstructions) {
-                // 2. Add the instructions to selectedInstructions
-                selectedInstructions = [
-                    ...selectedInstructions,
-                    ...requestedISAInstructions,
-                ];
-            }
-            // Same for pseudoinstructions
-            const requestedISAPseudoInstructions =
-                architectureObj.pseudoinstructions[requestedISA];
-            if (requestedISAPseudoInstructions) {
-                selectedPseudoInstructions = [
-                    ...selectedPseudoInstructions,
-                    ...requestedISAPseudoInstructions,
-                ];
-            }
-        }
-        architectureObj.instructions = selectedInstructions;
-        architectureObj.pseudoinstructions = selectedPseudoInstructions;
-
-        processInstructions(architectureObj);
-
-        processPseudoInstructions(architectureObj, true);
-
-        // Send it to the new compiler
-        const architectureJson = JSON.stringify(architectureObj);
-
-        // Dump the architecture JSON to a file for debugging
-        if (dump) {
-            try {
-                Deno.writeTextFileSync(
-                    "./architecture/test.json",
-                    architectureJson,
-                );
-            } catch (writeError) {
-                logger.error(
-                    `Could not write architecture file: ${writeError.message}`,
-                );
-            }
+        // Determine which instruction sets to load
+        const isaResult = determineInstructionSetsToLoad(architectureObj, isa);
+        if (isaResult.status === "error") {
+            return {
+                errorcode: "invalid_isa",
+                token: isaResult.message,
+                type: "error",
+                update: "",
+                status: "ko",
+            };
         }
 
-        if (!skipCompiler) {
-            arch = wasm.ArchitectureJS.from_json(architectureJson);
-        }
+        // Collect instructions from selected sets
+        const updatedArchObj = collectInstructionsFromSets(
+            architectureObj,
+            isaResult.instructionSets,
+        );
 
-        return load_arch_select(architectureObj);
+        // Prepare architecture (process instructions, initialize WASM)
+        const preparedArchObj = prepareArchitecture(
+            updatedArchObj,
+            skipCompiler,
+            dump,
+        );
+
+        // Load the architecture into the system
+        return load_arch_select(preparedArchObj);
     } catch (error) {
         logger.error(`Error loading architecture: ${error}`);
         return {
