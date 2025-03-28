@@ -19,23 +19,23 @@ arch_conf:
       value: "#"
 
 extensions:
-    - name: I
-      description: "RV32I Base Instruction Set"
-      type: base
-    - name: M
-      description: "RV32M Integer Multiply/Divide Extension"
-    - name: F
-      description: "RV32F Single-Precision Floating-Point Extension"
-      implies: Zicsr
-    - name: D
-      description: "RV32D Double-Precision Floating-Point Extension"
-      implies: F
-    - name: V
-      description: "RV32/RV64 Vector Extension"
-    - name: Zifencei
-      description: "RV32/RV64 Zifencei Standard Extension"
-    - name: Zicsr
-      description: "RV32/RV64 Zicsr Standard Extension"
+    I:
+        description: "RV32I Base Instruction Set"
+        type: base
+    M:
+        description: "RV32M Integer Multiply/Divide Extension"
+    F:
+        description: "RV32F Single-Precision Floating-Point Extension"
+        implies: Zicsr
+    D:
+        description: "RV32D Double-Precision Floating-Point Extension"
+        implies: F
+    V:
+        description: "RV32/RV64 Vector Extension"
+    Zifencei:
+        description: "RV32/RV64 Zifencei Standard Extension"
+    Zicsr:
+        description: "RV32/RV64 Zicsr Standard Extension"
 
 components:
     - name: Control registers
