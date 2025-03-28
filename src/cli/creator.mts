@@ -31,7 +31,7 @@ interface CommandLineArgs {
     debug: boolean;
     architecture: string;
     assembly: string;
-    binary: string; // Add new binary option
+    binary: string;
     library: string;
     result: string;
     describe: string;
@@ -39,6 +39,7 @@ interface CommandLineArgs {
     output: string;
     config: string;
     jsonOutput: string;
+    isa: string[];
 }
 
 interface StageResult {
@@ -82,7 +83,7 @@ const argv = yargs(hideBin(process.argv))
         welcome() +
             "\n" +
             "Usage: $0 -a <file name> -s <file name>\n" +
-            "Usage: $0 -a <file name> -b <file name>\n" + // Add binary usage
+            "Usage: $0 -a <file name> -b <file name>\n" +
             "Usage: $0 -h",
     )
     .example([["./$0", "To show examples."]])
@@ -151,6 +152,11 @@ const argv = yargs(hideBin(process.argv))
         nargs: 1,
         default: "",
     })
+    .option("isa", {
+        type: "array",
+        describe: "Specific ISA extensions to load (e.g. --isa I M F D)",
+        default: [],
+    })
     .demandOption(
         [],
         "Please provide either a config file or architecture file with assembly or binary file.",
@@ -174,6 +180,8 @@ function help_usage(): string {
         "   ./creator.sh -a <architecture file name> -b <binary file name>\n" +
         " * Same as before but execute only 10 instructions:\n" +
         "   ./creator.sh -a <architecture file name> -s <assembly file name> --maxins 10\n" +
+        " * To load only specific ISA extensions:\n" +
+        "   ./creator.sh -a <architecture file name> -s <assembly file name> --isa base rv32f\n" +
         "\n" +
         " * Same as before and save the final state in a result file:\n" +
         "   ./creator.sh -a <architecture file name> -s <ok assembly file name> -o min > <result file>\n" +
@@ -248,15 +256,22 @@ function loadArchitecture(architecturePath: string): StageResult {
             architecture_file,
             false,
             false,
+            argv.isa, // Pass the ISA extensions array
         );
 
-        // const ret = creator.load_architecture(architecture);
         if (ret.status !== "ok") {
             throw ret.errorcode;
         }
+
+        // Update success message to include loaded ISAs if specified
+        let message = `Architecture '${architecturePath}' loaded successfully.`;
+        if (argv.isa && argv.isa.length > 0) {
+            message += ` With ISA extensions: ${argv.isa.join(", ")}`;
+        }
+
         return {
             status: "ok",
-            msg: `Architecture '${architecturePath}' loaded successfully.`,
+            msg: message,
         };
     } catch (e) {
         if (e instanceof Error || typeof e === "string") {
