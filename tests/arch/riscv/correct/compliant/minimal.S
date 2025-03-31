@@ -18,7 +18,7 @@ matrixB:  .word 0x0, 0x0, 0x0, 0x0
 
 .section .text
 main:
-        LA   t0, matrixA
+        la   t0, matrixA
         la   t1, matrixB
         li   t2, 4
         li   t3, 4
