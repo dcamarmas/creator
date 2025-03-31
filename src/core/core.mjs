@@ -105,6 +105,7 @@ export const stats = [
 ];
 
 export let arch;
+export const ARCHITECTURE_VERSION = "2.0";
 
 // TODO: Make sure these variables are all needed
 // let architecture_available = []
@@ -657,6 +658,23 @@ function prepareArchitecture(
 }
 
 /**
+ * Check if the architecture version is supported
+ * @param {Object} architectureObj - The architecture object
+ * @returns {boolean} - True if supported, false otherwise
+ */
+function isVersionSupported(architectureObj) {
+    const architectureVersion = architectureObj.version;
+    const architerctureVersionParts = architectureVersion.split(".");
+    const architectureMajor = parseInt(architerctureVersionParts[0], 10);
+    const supportedVersionParts = ARCHITECTURE_VERSION.split(".");
+    const supportedMajor = parseInt(supportedVersionParts[0], 10);
+    if (architectureMajor !== supportedMajor) {
+        return false;
+    }
+    return true;
+}
+
+/**
  * Load architecture from YAML string and prepare for use
  * @param {string} architectureYaml - YAML string containing architecture definition
  * @param {boolean} skipCompiler - Whether to skip initializing the WASM compiler
@@ -673,6 +691,17 @@ export function newArchitectureLoad(
     try {
         // Parse YAML to object
         const architectureObj = parseArchitectureYaml(architectureYaml);
+
+        // Check the version
+        if (!isVersionSupported(architectureObj)) {
+            return {
+                errorcode: "unsupported_version",
+                token: "Unsupported architecture version",
+                type: "error",
+                update: "",
+                status: "ko",
+            };
+        }
 
         // Determine which instruction sets to load
         const isaResult = determineInstructionSetsToLoad(architectureObj, isa);

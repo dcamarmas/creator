@@ -9,11 +9,11 @@ Deno.test("decode_instruction - lui instruction 2", () =>
 );
 
 Deno.test("decode_instruction - lui instruction 3", () =>
-    decode_test("11111111111111111111000010110111", "lui x1 -1"),
+    decode_test("11111111111111111111000010110111", "lui x1 1048575"),
 );
 
 Deno.test("decode_instruction - lui instruction 4", () =>
-    decode_test("10000000000000000000000100110111", "lui x2 -524288"),
+    decode_test("10000000000000000000000100110111", "lui x2 524288"),
 );
 
 Deno.test("decode_instruction - lui instruction 5", () =>
@@ -29,7 +29,7 @@ Deno.test("decode_instruction - lui instruction 7", () =>
 );
 
 Deno.test("decode_instruction - lui instruction 8", () =>
-    decode_test("10101010101010101010111110110111", "lui x31 -349526"),
+    decode_test("10101010101010101010111110110111", "lui x31 699050"),
 );
 
 Deno.test("decode_instruction - lui instruction 9", () =>
@@ -37,5 +37,5 @@ Deno.test("decode_instruction - lui instruction 9", () =>
 );
 
 Deno.test("decode_instruction - lui instruction 10", () =>
-    decode_test("10000000000000000001101000110111", "lui x20 -524287"),
+    decode_test("10000000000000000001101000110111", "lui x20 524289"),
 );
