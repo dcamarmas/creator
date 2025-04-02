@@ -18,8 +18,6 @@
  *
  */
 
-import { useToastController } from "bootstrap-vue-next"
-const { toast } = useToastController()
 import { status } from "@/core/core.mjs"
 
 import $ from "jquery"
@@ -44,21 +42,31 @@ export function console_log(m) {
 
 export let notifications = []
 
-export function show_notification(msg, type) {
+/**
+ * Shows a notification on the UI and .
+ *
+ * @param {string} msg - Notification message.
+ * @param {string} type - Type of notification, one of `'success'`, `'warning'` or `'danger'`.
+ * @param {(obj: ToastOrchestratorShowParam) => ControllerKey, null} showToast - Toast controller's `show` function, obtained from `const { show } = useToastController()` inside a Component's `setup` function.
+ *
+ */
+export function show_notification(msg, type, showToast) {
     // show notification
-    const alertMessage = msg
-    toast?.(alertMessage, {
-        variant: type,
-        solid: true,
-        toaster: "b-toaster-top-center",
-        autoHideDelay: app._data.notificationTime,
-        noAutoHide: type === "danger",
+    showToast?.({
+        props: {
+            body: msg,
+            variant: type,
+            // solid: true,
+            pos: "top-center",
+            // delay: app._data.notificationTime,  // TODO: route this
+            autoHide: type !== "danger",  // TODO: this is not working
+        }
     })
 
     // add notification to the notification summary
     const date = new Date()
     notifications.push({
-        mess: alertMessage,
+        mess: msg,
         color: type,
         time:
             date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds(),
@@ -101,27 +109,6 @@ export function hide_loading() {
 
     // disable loading spinner
     $("#loading").hide()
-}
-
-/*
- *  Glowing
- */
-
-export function btn_glow(btn_name, post_label) {
-    if (status.run_program === 0) {
-        const buttonDec = "#popoverValueContent" + btn_name + post_label
-        const buttonHex = "#popoverValueContent" + btn_name
-
-        $(buttonDec).attr("style", "background-color:#c2c2c2;")
-        $(buttonHex).attr("style", "background-color:#c2c2c2;")
-
-        // TODO: refresh value in UI
-
-        setTimeout(function () {
-            $(buttonDec).attr("style", "")
-            $(buttonHex).attr("style", "")
-        }, 500)
-    }
 }
 
 //Show backup modal

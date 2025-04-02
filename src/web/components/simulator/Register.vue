@@ -30,7 +30,6 @@ import {
 
 export default {
   props: {
-    // render: { type: Number, required: true },
     type: { type: String, required: true },
     register: { type: Object, required: true },
     double_precision_type: { type: [String, null], required: true },
@@ -38,10 +37,29 @@ export default {
     value_representation: { type: String, required: true },
   },
 
+  data() {
+    return {
+      render: 0n, // dummy variable to force components with this as key to refresh
+      glow: false, // whether the button is glowing or not
+    }
+  },
+
+  computed: {
+    popover_id() {
+      return "popoverValueContent" + this.register.name[0]
+    },
+  },
+
   methods: {
-    /*Popover functions*/
-    popover_id(name) {
-      return "popoverValueContent" + name[0]
+    refresh() {
+      // refreshes children components with `:key="render"`
+      this.render++
+
+      // make it glow
+      this.glow = true
+      setTimeout(() => {
+        this.glow = false
+      }, 500)
     },
 
     // TODO: move to utils
@@ -176,80 +194,80 @@ export default {
     },
 
     //Update a new register value
-    update_register(comp, elem, type, precision) {
-      // for (let i = 0; i < architecture.components[comp].elements.length; i++) {
-      //   if (type === "int_registers" || type === "ctrl_registers") {
-      //     if (
-      //       architecture.components[comp].elements[i].name === elem &&
-      //       this.newValue.match(/^0x/)
-      //     ) {
-      //       const value = this.newValue.split("x")
-      //       if (
-      //         value[1].length * 4 >
-      //         architecture.components[comp].elements[i].nbits
-      //       ) {
-      //         value[1] = value[1].substring(
-      //           (value[1].length * 4 -
-      //             architecture.components[comp].elements[i].nbits) /
-      //             4,
-      //           value[1].length,
-      //         )
-      //       }
-      //       writeRegister(parseInt(value[1], 16), comp, i, "int_registers")
-      //     } else if (
-      //       architecture.components[comp].elements[i].name === elem &&
-      //       this.newValue.match(/^(\d)+/)
-      //     ) {
-      //       writeRegister(parseInt(this.newValue, 10), comp, i, "int_registers")
-      //     } else if (
-      //       architecture.components[comp].elements[i].name === elem &&
-      //       this.newValue.match(/^-/)
-      //     ) {
-      //       writeRegister(parseInt(this.newValue, 10), comp, i, "int_registers")
-      //     }
-      //   } else if (type === "fp_registers") {
-      //     if (precision === false) {
-      //       if (
-      //         architecture.components[comp].elements[i].name === elem &&
-      //         this.newValue.match(/^0x/)
-      //       ) {
-      //         writeRegister(hex2float(this.newValue), comp, i, "SFP-Reg")
-      //       } else if (
-      //         architecture.components[comp].elements[i].name === elem &&
-      //         this.newValue.match(/^(\d)+/)
-      //       ) {
-      //         writeRegister(parseFloat(this.newValue, 10), comp, i, "SFP-Reg")
-      //       } else if (
-      //         architecture.components[comp].elements[i].name === elem &&
-      //         this.newValue.match(/^-/)
-      //       ) {
-      //         writeRegister(parseFloat(this.newValue, 10), comp, i, "SFP-Reg")
-      //       }
-      //     } else if (precision === true) {
-      //       if (
-      //         architecture.components[comp].elements[i].name === elem &&
-      //         this.newValue.match(/^0x/)
-      //       ) {
-      //         writeRegister(hex2double(this.newValue), comp, i, "DFP-Reg")
-      //       } else if (
-      //         architecture.components[comp].elements[i].name === elem &&
-      //         this.newValue.match(/^(\d)+/)
-      //       ) {
-      //         writeRegister(parseFloat(this.newValue, 10), comp, i, "DFP-Reg")
-      //       } else if (
-      //         architecture.components[comp].elements[i].name === elem &&
-      //         this.newValue.match(/^-/)
-      //       ) {
-      //         writeRegister(parseFloat(this.newValue, 10), comp, i, "DFP-Reg")
-      //       }
-      //     }
-      //   }
-      // }
-      // this.newValue = ""
-      // // Google Analytics
-      // creator_ga("data", "data.change", "data.change.register_value")
-      // creator_ga("data", "data.change", "data.change.register_value_" + elem)
-    },
+    // update_register(comp, elem, type, precision) {
+    // for (let i = 0; i < architecture.components[comp].elements.length; i++) {
+    //   if (type === "int_registers" || type === "ctrl_registers") {
+    //     if (
+    //       architecture.components[comp].elements[i].name === elem &&
+    //       this.newValue.match(/^0x/)
+    //     ) {
+    //       const value = this.newValue.split("x")
+    //       if (
+    //         value[1].length * 4 >
+    //         architecture.components[comp].elements[i].nbits
+    //       ) {
+    //         value[1] = value[1].substring(
+    //           (value[1].length * 4 -
+    //             architecture.components[comp].elements[i].nbits) /
+    //             4,
+    //           value[1].length,
+    //         )
+    //       }
+    //       writeRegister(parseInt(value[1], 16), comp, i, "int_registers")
+    //     } else if (
+    //       architecture.components[comp].elements[i].name === elem &&
+    //       this.newValue.match(/^(\d)+/)
+    //     ) {
+    //       writeRegister(parseInt(this.newValue, 10), comp, i, "int_registers")
+    //     } else if (
+    //       architecture.components[comp].elements[i].name === elem &&
+    //       this.newValue.match(/^-/)
+    //     ) {
+    //       writeRegister(parseInt(this.newValue, 10), comp, i, "int_registers")
+    //     }
+    //   } else if (type === "fp_registers") {
+    //     if (precision === false) {
+    //       if (
+    //         architecture.components[comp].elements[i].name === elem &&
+    //         this.newValue.match(/^0x/)
+    //       ) {
+    //         writeRegister(hex2float(this.newValue), comp, i, "SFP-Reg")
+    //       } else if (
+    //         architecture.components[comp].elements[i].name === elem &&
+    //         this.newValue.match(/^(\d)+/)
+    //       ) {
+    //         writeRegister(parseFloat(this.newValue, 10), comp, i, "SFP-Reg")
+    //       } else if (
+    //         architecture.components[comp].elements[i].name === elem &&
+    //         this.newValue.match(/^-/)
+    //       ) {
+    //         writeRegister(parseFloat(this.newValue, 10), comp, i, "SFP-Reg")
+    //       }
+    //     } else if (precision === true) {
+    //       if (
+    //         architecture.components[comp].elements[i].name === elem &&
+    //         this.newValue.match(/^0x/)
+    //       ) {
+    //         writeRegister(hex2double(this.newValue), comp, i, "DFP-Reg")
+    //       } else if (
+    //         architecture.components[comp].elements[i].name === elem &&
+    //         this.newValue.match(/^(\d)+/)
+    //       ) {
+    //         writeRegister(parseFloat(this.newValue, 10), comp, i, "DFP-Reg")
+    //       } else if (
+    //         architecture.components[comp].elements[i].name === elem &&
+    //         this.newValue.match(/^-/)
+    //       ) {
+    //         writeRegister(parseFloat(this.newValue, 10), comp, i, "DFP-Reg")
+    //       }
+    //     }
+    //   }
+    // }
+    // this.newValue = ""
+    // // Google Analytics
+    // creator_ga("data", "data.change", "data.change.register_value")
+    // creator_ga("data", "data.change", "data.change.register_value_" + elem)
+    // },
 
     get_cols() {
       if (this.double_precision_type !== null) {
@@ -266,18 +284,26 @@ export default {
 </script>
 
 <template>
-  <b-popover :click="true" :close-on-hide="false" :delay="{ show: 0, hide: 0 }">
+  <b-popover
+    :click="true"
+    :close-on-hide="false"
+    :delay="{ show: 0, hide: 0 }"
+    :key="render"
+  >
     <template #target>
       <b-button
         class="btn btn-outline-secondary btn-sm registers w-100 h-100"
-        :id="popover_id(register.name)"
+        :class="{ registers: !glow, 'registers-glow': glow }"
+        :id="popover_id"
         @click="details_callback"
       >
         <span class="text-truncate">{{ reg_name(register) }}</span>
         &nbsp;
-        <b-badge class="registerValue">
-          {{ register.value }}
-        </b-badge>
+        <transition>
+          <b-badge class="registerValue">
+            {{ register.value }}
+          </b-badge>
+        </transition>
       </b-button>
     </template>
 
@@ -344,9 +370,9 @@ export default {
       </tbody>
     </table>
 
-    <b-container fluid align-h="center" class="mx-0">
-      <b-row align-h="center" :cols="get_cols()">
-        <!-- <b-col class="popoverFooter">
+    <!-- <b-container fluid align-h="center" class="mx-0">
+      <b-row align-h="center" :cols="get_cols()"> -->
+    <!-- <b-col class="popoverFooter">
           <b-form-input
             v-model="newValue"
             type="text"
@@ -356,7 +382,7 @@ export default {
           />
         </b-col> -->
 
-        <!-- <b-col v-if="double_precision !== null">
+    <!-- <b-col v-if="double_precision !== null">
           <b-form-select v-model="precision" size="sm" block>
             <b-form-select-option value="false"
               >Simple Precision</b-form-select-option
@@ -367,7 +393,7 @@ export default {
           </b-form-select>
         </b-col> -->
 
-        <!-- <b-col>
+    <!-- <b-col>
           <b-button
             class="btn btn-primary btn-sm w-100"
             @click="
@@ -382,14 +408,19 @@ export default {
             Update
           </b-button>
         </b-col> -->
-      </b-row>
-    </b-container>
+    <!-- </b-row>
+    </b-container> -->
   </b-popover>
 </template>
 
 <style lang="scss" scoped>
 .registers {
   background-color: #f5f5f5;
+  font-size: 1.03em;
+}
+
+.registers-glow {
+  background-color: #c2c2c2;
   font-size: 1.03em;
 }
 

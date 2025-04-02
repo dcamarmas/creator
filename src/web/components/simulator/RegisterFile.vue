@@ -22,7 +22,6 @@ import Register from "./Register.vue"
 
 export default {
   props: {
-    // render: { type: Number, required: true },
     data_mode: { type: String, required: true },
     components: { type: Object, required: true },
   },
@@ -33,6 +32,8 @@ export default {
 
   data() {
     return {
+      // render: 0, // dummy variable to force the component to refresh
+
       local_data_mode: "int_registers",
 
       //Register value representation
@@ -59,6 +60,11 @@ export default {
   },
 
   methods: {
+    // refresh() {
+    //   // refreshes the component
+    //   this.render++
+    // },
+
     mk_reg_representation_options() {
       if (
         this.data_mode === "int_registers" ||
@@ -161,7 +167,6 @@ export default {
                 class="p-1 mx-0"
                 v-for="(register, _index) in bank.elements"
               >
-                <!-- :render="render" -->
                 <Register
                   :type="bank.type"
                   :double_precision_type="
@@ -170,6 +175,7 @@ export default {
                   :register="register"
                   :name_representation="reg_name_representation"
                   :value_representation="reg_representation"
+                  :ref="'reg' + register.name[0]"
                 />
               </b-col>
             </b-row>

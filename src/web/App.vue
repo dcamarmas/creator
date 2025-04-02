@@ -159,9 +159,6 @@ export default {
       /* Global Variables */
       /********************/
 
-      //Forces vue to reload a component, similar to $forceUpdate()
-      render: 0,
-
       //
       // General information
       //
@@ -506,7 +503,7 @@ export default {
     />
 
     <!-- Configuration modal -->
-    <!-- TODO: for some FUCKING reason these v-models don't sync -->
+    <!-- TODO: for some FRICKING reason these v-models don't sync -->
     <FormConfiguration
       id="configuration"
       v-model:arch_available="arch_available"
@@ -594,6 +591,7 @@ export default {
     :enter="enter"
     :browser="browser"
     :stack_total_list="stack_total_list"
+    ref="simulatorView"
   />
 </template>
 
