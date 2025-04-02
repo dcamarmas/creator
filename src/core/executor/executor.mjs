@@ -515,7 +515,7 @@ function executeInstructionCycle(draw) {
     return updateExecutionStatus(draw);
 }
 
-function executeInstructions() {
+export function step() {
     // Create draw object for UI updates
     const draw = createDrawObject();
     status.error = 0;
@@ -546,7 +546,7 @@ export function executeProgramOneShot(limit_n_instructions) {
 
     // execute program
     for (let i = 0; i < limit_n_instructions; i++) {
-        ret = executeInstructions();
+        ret = step();
 
         if (ret.error === true) {
             return ret;
