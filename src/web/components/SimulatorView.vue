@@ -120,7 +120,6 @@ export default {
               />
 
               <!-- Registers view -->
-              <!-- :render="render" -->
               <RegisterFile
                 v-if="
                   data_mode == 'int_registers' || data_mode == 'fp_registers'
@@ -128,6 +127,7 @@ export default {
                 id="register_file"
                 :data_mode="data_mode"
                 :components="architecture.components"
+                ref="registerFile"
               />
 
               <!-- Memory view-->

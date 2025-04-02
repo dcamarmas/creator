@@ -28,14 +28,13 @@ window.$ = $
 
 // Vue config
 
-document.app = createApp(App).component("font-awesome-icon", FontAwesomeIcon)
-document.app.use(createBootstrap())
+const app = createApp(App).component("font-awesome-icon", FontAwesomeIcon).use(createBootstrap())
 
 //Error handler
-document.app.config.errorHandler = function (err, vm, info) {
+app.config.errorHandler = function (err, vm, info) {
     show_notification(
         "An error has ocurred, the simulator is going to restart.  \n Error: " +
-            err,
+        err,
         "danger",
     )
     setTimeout(function () {
@@ -44,7 +43,7 @@ document.app.config.errorHandler = function (err, vm, info) {
 }
 
 try {
-    document.app.mount("#app")
+    document.app = app.mount("#app")  // store in document so we can access it through JS as `document.app`
 } catch (e) {
     show_notification(
         "An error has ocurred, the simulator is going to restart.  \n Error: " +

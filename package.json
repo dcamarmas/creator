@@ -16,7 +16,6 @@
   },
   "dependencies": {
     "@codemirror/commands": "^6.8.0",
-    "@codemirror/lang-javascript": "^6.2.2",
     "@codemirror/legacy-modes": "^6.5.0",
     "@codemirror/state": "^6.5.2",
     "@codemirror/view": "^6.36.4",
@@ -28,7 +27,7 @@
     "@replit/codemirror-vim": "^6.2.1",
     "apexcharts": "^4.4.0",
     "bootstrap": "^5.3.3",
-    "bootstrap-vue-next": "^0.26.26",
+    "bootstrap-vue-next": "^0.28.3",
     "chai": "^5.1.2",
     "codemirror": "^6.0.1",
     "colors": "^1.4.0",

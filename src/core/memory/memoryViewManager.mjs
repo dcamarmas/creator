@@ -37,8 +37,8 @@ export function creator_memory_updaterow(addr) {
     
     // skip if app.data does not exit...
     if (
-        typeof app === "undefined" ||
-        typeof app._data.main_memory === "undefined"
+        typeof document === "undefined" ||
+        typeof document.app.main_memory === "undefined"
     ) {
         return;
     }
@@ -53,10 +53,10 @@ export function creator_memory_updaterow(addr) {
     let elto = { addr: 0, addr_begin: "", addr_end: "", value: "", size: 0, hex: [], eye: true };
     if (typeof document.app.main_memory[addr_base] !== "undefined") {
         // reuse the existing element...
-        elto = app._data.main_memory[addr_base];
+        elto = document.app.main_memory[addr_base];
     } else {
         // set a new element, and set the initial values...
-        Vue.set(app._data.main_memory, addr_base, elto);
+        Vue.set(document.app.main_memory, addr_base, elto);
 
         for (let i = 0; i < word_size_bytes; i++) {
             elto.hex[i] = { byte: "00", tag: null };

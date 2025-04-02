@@ -22,14 +22,11 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 }
 </style>
 <script>
-import { useModal } from "bootstrap-vue-next";
+import { useModal, useToastController } from "bootstrap-vue-next"
 
 import { assembly_compile, set_execution_mode, status } from "@/core/core.mjs";
 import { instructions } from "@/core/compiler/compiler.mjs";
-import {
-  execute_instruction,
-  execution_index,
-} from "@/core/executor/executor.mjs";
+import { step } from "@/core/executor/executor.mjs";
 import { creator_ga } from "@/core/utils/creator_ga.mjs";
 import { show_notification } from "@/web/utils.mjs";
 
@@ -43,10 +40,11 @@ export default {
   },
 
   setup() {
-    // BV Composeables, such as this one, should only be used inside setup
-    const modalAssemblyError = useModal("modalAssemblyError");
+    // BV Composeables, such as these, should only be used inside setup
+    const modalAssemblyError = useModal("modalAssemblyError")
+    const { show } = useToastController()
 
-    return { modalAssemblyError };
+    return { modalAssemblyError, show }
   },
 
   data() {
@@ -197,13 +195,17 @@ export default {
             break;
 
           case "warning":
-            show_notification(ret.token, ret.bgcolor);
-            break;
+            show_notification(ret.token, ret.bgcolor, this.show)
+            break
 
           default:
-            show_notification("Compilation completed successfully", "success");
-            this.change_UI_mode("simulator");
-            break;
+            show_notification(
+              "Compilation completed successfully",
+              "success",
+              this.show,
+            )
+            this.change_UI_mode("simulator")
+            break
         }
       }, 25);
 
@@ -263,22 +265,22 @@ export default {
       if (
         this.$root.autoscroll &&
         status.run_program !== 1 &&
-        this.instructions.length > 0
+        instructions.length > 0
       ) {
         // scroll to next instruction
 
         if (
           status.execution_index >= 0 &&
-          status.execution_index < this.instructions.length
+          status.execution_index < instructions.length
         ) {
           let row = status.execution_index + 1 // next instruction
-          if (status.execution_index + 1 === this.instructions.length) {
+          if (status.execution_index + 1 === instructions.length) {
             // last instruction, use current instruction instead
             row = status.execution_index
           }
 
           const row_pos = $(
-            "#inst_table__row_" + this.instructions[row].Address,
+            "#inst_table__row_" + instructions[row].Address,
           ).position()
 
           if (row_pos) {
@@ -286,8 +288,8 @@ export default {
             $(".instructions_table").animate({ scrollTop: pos }, 200);
           }
         } else if (
-          execution_index > 0 &&
-          execution_index + 4 >= instructions.length
+          status.execution_index > 0 &&
+          status.execution_index + 4 >= instructions.length
         ) {
           $(".instructions_table").animate(
             { scrollTop: $(".instructions_table").height() },
@@ -296,13 +298,15 @@ export default {
         }
       }
 
-      if (app._data.data_mode === "stats") {
-        ApexCharts.exec("stat_plot", "updateSeries", stats_value);
-      }
+      // if (app._data.data_mode === "stats") {
+      //   ApexCharts.exec("stat_plot", "updateSeries", stats_value)
+      // }
 
-      if (app._data.data_mode === "clk_cycles") {
-        ApexCharts.exec("clk_plot", "updateSeries", clk_cycles_value);
-      }
+      // if (app._data.data_mode === "clk_cycles") {
+      //   ApexCharts.exec("clk_plot", "updateSeries", clk_cycles_value)
+      // }
+
+      // this.$root.$refs.simulatorView.$refs.registerFile.refresh() // refresh register file
     },
 
     // Reset execution
@@ -354,7 +358,7 @@ export default {
 
       set_execution_mode(0);
 
-      const ret = execute_instruction();
+      const ret = step();
 
       if (typeof ret === "undefined") {
         console.log("Something weird happened :-S");
@@ -364,9 +368,9 @@ export default {
         show_notification(ret.msg, ret.type);
       }
 
-      // if (ret.draw !== null) {
-      //   this.execution_UI_update(ret)
-      // }
+      if (ret.draw !== null) {
+        this.execution_UI_update(ret)
+      }
     },
 
     //Execute all program
@@ -387,12 +391,12 @@ export default {
         status.run_program = 0;
         return;
       }
-      if (execution_index < -1) {
+      if (status.execution_index < -1) {
         show_notification("The program has finished", "warning");
         status.run_program = 0;
         return;
       }
-      if (execution_index === -1) {
+      if (status.execution_index === -1) {
         show_notification("The program has finished with errors", "danger");
         status.run_program = 0;
         return;
@@ -414,7 +418,7 @@ export default {
         if (
           status.run_program === 0 || // stop button pressed
           status.run_program === 3 || // wait for user input at keyboard
-          (this.instructions[status.execution_index].Break === true &&
+          (instructions[status.execution_index].Break === true &&
             status.run_program !== 2) // stop because a breakpoint
         ) {
           local_this.execution_UI_update(ret);
@@ -426,7 +430,7 @@ export default {
           local_this.stop_disable = true;
           app._data.main_memory_busy = false;
 
-          if (this.instructions[status.execution_index].Break === true) {
+          if (instructions[status.execution_index].Break === true) {
             status.run_program = 2 //In case breakpoint --> stop
           }
           return;
@@ -435,7 +439,7 @@ export default {
             status.run_program = 1;
           }
 
-          ret = execute_instruction();
+          ret = step();
 
           if (typeof ret === "undefined") {
             console.log("Something weird happened :-S");
