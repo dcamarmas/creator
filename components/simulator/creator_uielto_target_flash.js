@@ -321,7 +321,9 @@
                         this_env = this;
                         gateway_remote_flash(this.flash_url + "/flash", farg).then( function(data)  { 
                                       				                                                        this_env.flashing = false; 
-                                                                                                      show_notification(data, 'danger') ;
+                                                                                                      if (data === 'Flash completed successfully.\n') {
+                                                                                                        show_notification(data, 'success') ;
+                                                                                                      }
                                       			                                                        } ) ;
 
                         //Google Analytics
@@ -388,7 +390,11 @@
                         this_env = this;
                         gateway_remote_monitor(this.flash_url + "/debug", farg).then( function(data)  { 
                                                                                                           this_env.debugging = false; 
-                                                                                                          //show_notification(data, 'danger') ;
+                                                                                                          if (data === 'Debugging program success.\n') {
+                                                                                                            show_notification(data, 'success') ;
+                                                                                                          }else{
+                                                                                                            show_notification(data, 'danger') ;
+                                                                                                          }
                                                                                                         } ) ;
 
                         //Google Analytics
