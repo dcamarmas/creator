@@ -26,16 +26,23 @@ extensions:
         type: base
     M:
         description: "RV32M Integer Multiply/Divide Extension"
+        type: extension
     F:
         description: "RV32F Single-Precision Floating-Point Extension"
-        implies: Zicsr
+        type: extension
+        implies:
+            - Zicsr
     D:
         description: "RV32D Double-Precision Floating-Point Extension"
-        implies: F
+        type: extension
+        implies:
+            - F
     Zifencei:
         description: "RV32/RV64 Zifencei Standard Extension"
+        type: extension
     Zicsr:
         description: "RV32/RV64 Zicsr Standard Extension"
+        type: extension
 
 components:
     - name: Control registers

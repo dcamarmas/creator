@@ -39,6 +39,8 @@ import {
 } from "./memory/memoryCore.mjs";
 import * as wasm from "./compiler/deno/creator_compiler.js";
 import yaml from "js-yaml";
+import { crex_findReg } from "./register/registerLookup.mjs";
+import { readRegister } from "./register/registerOperations.mjs";
 
 export let code_assembly = "";
 export let update_binary = "";
@@ -545,35 +547,188 @@ function determineInstructionSetsToLoad(architectureObj, requestedISAs = []) {
     // If no ISAs specified, use all available ones
     if (!requestedISAs || requestedISAs.length === 0) {
         return {
-            instructionSets: availableInstructionSets,
+            instructionSets: [...availableInstructionSets],
             status: "ok",
         };
     }
 
-    // Filter requested ISAs to only those that exist
-    const validISAs = requestedISAs.filter(requestedISA => {
-        const exists = availableInstructionSets.includes(requestedISA);
-        if (!exists) {
-            logger.warn(
-                `Requested ISA "${requestedISA}" does not exist in the architecture.`,
-            );
-        }
-        return exists;
-    });
+    // Get extensions and find base ISA
+    const extensions = architectureObj.extensions || {};
 
-    // Return error if no valid ISAs were specified
-    if (validISAs.length === 0) {
+    const baseISA = findBaseISA(extensions);
+    if (!baseISA) {
         return {
             instructionSets: [],
             status: "error",
-            message: "No valid instruction sets specified.",
+            message: "Base ISA not found in the architecture definition.",
+        };
+    }
+
+    // Validate all requested ISAs exist
+    const invalidISAs = findInvalidISAs(
+        requestedISAs,
+        availableInstructionSets,
+    );
+    if (invalidISAs.length > 0) {
+        const message = `The following requested ISAs do not exist: ${invalidISAs.join(
+            ", ",
+        )}`;
+        logger.error(message);
+        return {
+            instructionSets: [],
+            status: "error",
+            message: message,
+        };
+    }
+
+    // Calculate all required ISAs including dependencies
+    const { requiredISAs, missingDependencies, status, message } =
+        calculateRequiredISAs(
+            requestedISAs,
+            extensions,
+            baseISA,
+            availableInstructionSets,
+        );
+    if (status === "ko") {
+        return {
+            instructionSets: [],
+            status: "error",
+            message: message,
+        };
+    }
+
+    // Check if any dependencies are missing from the user request
+    if (missingDependencies.length > 0) {
+        let message = `Missing required dependencies. To use the requested ISA(s), you must also include: ${missingDependencies.join(
+            ", ",
+        )}`;
+        logger.error(message);
+
+        return {
+            instructionSets: [],
+            status: "error",
+            message: message,
+        };
+    }
+
+    // Log which ISAs were selected
+    logger.info(`Loading ISAs: ${[...requiredISAs].join(", ")}`);
+
+    return {
+        instructionSets: [...requiredISAs],
+        status: "ok",
+    };
+}
+
+/**
+ * Find the base ISA from the extensions
+ * @param {Object} extensions - The extensions object
+ * @returns {string} - The base ISA
+ */
+function findBaseISA(extensions) {
+    let baseISA;
+
+    // Try to find it from the extensions definition
+    for (const [name, value] of Object.entries(extensions)) {
+        if (value && value.type === "base") {
+            baseISA = name;
+            break;
+        }
+    }
+    // If not found, raise an error
+    if (!baseISA) {
+        logger.error("Base ISA not found in the architecture definition.");
+        return null;
+    }
+    return baseISA;
+}
+
+/**
+ * Find any requested ISAs that don't exist in the available sets
+ * @param {Array} requestedISAs - The ISAs requested by the user
+ * @param {Array} availableInstructionSets - All available instruction sets
+ * @returns {Array} - Invalid ISAs that don't exist
+ */
+function findInvalidISAs(requestedISAs, availableInstructionSets) {
+    return requestedISAs.filter(isa => !availableInstructionSets.includes(isa));
+}
+
+/**
+ * Calculate all required ISAs including dependencies
+ * @param {Array} requestedISAs - The ISAs explicitly requested by the user
+ * @param {Object} extensions - The extensions object with dependencies
+ * @param {string} baseISA - The base ISA
+ * @param {Array} availableInstructionSets - All available instruction sets
+ * @returns {Object} - Object containing required ISAs and missing dependencies
+ */
+function calculateRequiredISAs(
+    requestedISAs,
+    extensions,
+    baseISA,
+    availableInstructionSets,
+) {
+    const explicitlyRequestedISAs = new Set(requestedISAs);
+    const requiredISAs = new Set(requestedISAs);
+
+    // Always ensure base ISA is included
+    requiredISAs.add(baseISA);
+
+    // Gather all dependencies
+    const visited = new Set();
+    for (const isa of [...requiredISAs]) {
+        gatherDependencies(isa, extensions, requiredISAs, visited);
+    }
+
+    // Find dependencies that weren't explicitly requested
+    const missingDependencies = [...requiredISAs].filter(
+        isa => !explicitlyRequestedISAs.has(isa),
+    );
+
+    // Check if any required ISAs don't exist in the architecture
+    const nonExistentISAs = [...requiredISAs].filter(
+        isa => !availableInstructionSets.includes(isa),
+    );
+
+    if (nonExistentISAs.length > 0) {
+        const message = `There are nonexistant dependencies in the architecture: ${nonExistentISAs.join(
+            ", ",
+        )}`;
+        logger.error(message);
+        return {
+            requiredISAs: [],
+            missingDependencies: [],
+            status: "ko",
+            message: message,
         };
     }
 
     return {
-        instructionSets: validISAs,
-        status: "ok",
+        requiredISAs,
+        missingDependencies,
     };
+}
+
+/**
+ * Recursively gather all dependencies of an ISA
+ * @param {string} isa - The ISA to gather dependencies for
+ * @param {Object} extensions - The extensions object with dependency info
+ * @param {Set} requiredISAs - Set to collect all required ISAs
+ * @param {Set} visited - Set to track visited ISAs
+ */
+function gatherDependencies(isa, extensions, requiredISAs, visited) {
+    if (visited.has(isa)) return; // Prevent circular dependencies
+
+    visited.add(isa);
+    requiredISAs.add(isa);
+
+    // Get dependencies from extension
+    const extension = extensions[isa];
+    if (extension && extension.implies && Array.isArray(extension.implies)) {
+        for (const dependentISA of extension.implies) {
+            requiredISAs.add(dependentISA);
+            gatherDependencies(dependentISA, extensions, requiredISAs, visited);
+        }
+    }
 }
 
 /**
@@ -960,6 +1115,240 @@ export function get_state() {
     return ret;
 }
 
+// eslint-disable-next-line max-lines-per-function
+export function getState() {
+    const ret = {
+        status: "ok",
+        msg: "",
+    };
+
+    let c_name;
+    let e_name;
+    let elto_value;
+    let elto_dvalue;
+    let elto_string;
+
+    // dump registers
+    for (let i = 0; i < architecture.components.length; i++) {
+        c_name = architecture.components[i].name;
+        if (typeof c_name === "undefined") {
+            return ret;
+        }
+        c_name = c_name
+            .split(" ")
+            .map(i => i.charAt(0))
+            .join("")
+            .toLowerCase();
+
+        for (let j = 0; j < architecture.components[i].elements.length; j++) {
+            // get value
+            e_name = architecture.components[i].elements[j].name;
+            elto_value = architecture.components[i].elements[j].value;
+
+            //get default value
+            if (
+                architecture.components[i].double_precision === true &&
+                architecture.components[i].double_precision_type == "linked"
+            ) {
+                let aux_value;
+                let aux_sim1;
+                let aux_sim2;
+
+                for (let a = 0; a < architecture_hash.length; a++) {
+                    for (
+                        let b = 0;
+                        b < architecture.components[a].elements.length;
+                        b++
+                    ) {
+                        if (
+                            architecture.components[a].elements[b].name ==
+                            architecture.components[i].elements[j].simple_reg[0]
+                        ) {
+                            aux_sim1 = bin2hex(
+                                float2bin(
+                                    bi_BigIntTofloat(
+                                        architecture.components[a].elements[b]
+                                            .default_value,
+                                    ),
+                                ),
+                            );
+                        }
+                        if (
+                            architecture.components[a].elements[b].name ==
+                            architecture.components[i].elements[j].simple_reg[1]
+                        ) {
+                            aux_sim2 = bin2hex(
+                                float2bin(
+                                    bi_BigIntTofloat(
+                                        architecture.components[a].elements[b]
+                                            .default_value,
+                                    ),
+                                ),
+                            );
+                        }
+                    }
+                }
+
+                aux_value = aux_sim1 + aux_sim2;
+                elto_dvalue = hex2double("0x" + aux_value);
+            } else {
+                elto_dvalue =
+                    architecture.components[i].elements[j].default_value;
+            }
+
+            // skip default results
+            if (typeof elto_dvalue === "undefined") {
+                continue;
+            }
+            if (elto_value == elto_dvalue) {
+                continue;
+            }
+
+            // value != default value => dumpt it
+            elto_string = "0x" + elto_value.toString(16);
+            if (architecture.components[i].type == "fp_registers") {
+                if (architecture.components[i].double_precision === false) {
+                    elto_string =
+                        "0x" + bin2hex(float2bin(bi_BigIntTofloat(elto_value)));
+                }
+                if (architecture.components[i].double_precision === true) {
+                    elto_string =
+                        "0x" +
+                        bin2hex(double2bin(bi_BigIntTodouble(elto_value)));
+                }
+            }
+
+            ret.msg =
+                ret.msg + c_name + "[" + e_name + "]:" + elto_string + ";\n";
+        }
+    }
+
+    // dump memory
+    const addrs = main_memory_get_addresses();
+    for (let i = 0; i < addrs.length; i++) {
+        if (addrs[i] >= parseInt(architecture.memory_layout[3].value)) {
+            continue;
+        }
+
+        elto_value = main_memory_read_value(addrs[i]);
+        elto_dvalue = main_memory_read_default_value(addrs[i]);
+
+        if (elto_value != elto_dvalue) {
+            const addr_string = "0x" + parseInt(addrs[i]).toString(16);
+            elto_string = "0x" + elto_value;
+            ret.msg =
+                ret.msg +
+                "memory[" +
+                addr_string +
+                "]" +
+                ":" +
+                elto_string +
+                ";\n";
+        }
+    }
+
+    // dump keyboard
+    ret.msg =
+        ret.msg +
+        "keyboard[0x0]" +
+        ":'" +
+        encodeURIComponent(status.keyboard) +
+        "';\n";
+
+    // dump display
+    ret.msg =
+        ret.msg +
+        "display[0x0]" +
+        ":'" +
+        encodeURIComponent(status.display) +
+        "';\n";
+
+    return ret;
+}
+
+export function diffStates(referenceState, state) {
+    let ret = {
+        status: "ok",
+        diff: "",
+    };
+    // ANSI color codes
+    const COLOR_RED = "\x1b[31m";
+    const COLOR_RESET = "\x1b[0m";
+
+    // Parse states into arrays of entries
+    const referenceEntries = [];
+    const stateEntries = [];
+
+    // Check if the states are equal
+    if (referenceState === state) {
+        return ret;
+    }
+
+    // Process reference state
+    for (const paragraph of referenceState.split("\n")) {
+        for (const line of paragraph.split(";")) {
+            const trimmedLine = line.trim();
+            if (trimmedLine) {
+                referenceEntries.push(trimmedLine + ";");
+            }
+        }
+    }
+
+    // Process actual state
+    for (const paragraph of state.split("\n")) {
+        for (const line of paragraph.split(";")) {
+            const trimmedLine = line.trim();
+            if (trimmedLine) {
+                stateEntries.push(trimmedLine + ";");
+            }
+        }
+    }
+
+    // Create formatted output
+    const width = 50;
+    const output = [];
+
+    output.push(`┌${"─".repeat(width)}┬${"─".repeat(width)}┐`);
+    output.push(
+        `│ ${"EXPECTED".padEnd(width - 1)}│ ${"ACTUAL".padEnd(width - 1)}│`,
+    );
+    output.push(`├${"─".repeat(width)}┼${"─".repeat(width)}┤`);
+
+    // Generate rows
+    for (
+        let i = 0;
+        i < Math.max(referenceEntries.length, stateEntries.length);
+        i++
+    ) {
+        let ref = i < referenceEntries.length ? referenceEntries[i] : "";
+        let act = i < stateEntries.length ? stateEntries[i] : "";
+
+        // Truncate and pad strings to fit the table
+        const refTruncated =
+            ref.length > width - 2 ? ref.substring(0, width - 2) : ref;
+        const actTruncated =
+            act.length > width - 2 ? act.substring(0, width - 2) : act;
+
+        ref = refTruncated.padEnd(width - 2);
+        act = actTruncated.padEnd(width - 2);
+
+        // Check if entries are different
+        if (refTruncated.trim() !== actTruncated.trim()) {
+            // Add color to the differences
+            ref = COLOR_RED + ref + COLOR_RESET;
+            act = COLOR_RED + act + COLOR_RESET;
+        }
+
+        output.push(`│ ${ref} │ ${act} │`);
+    }
+
+    output.push(`└${"─".repeat(width)}┴${"─".repeat(width)}┘`);
+    ret.diff = output.join("\n");
+    ret.status = "different";
+
+    return ret;
+}
+
 export function compare_states(ref_state, alt_state) {
     const ret = {
         status: "ok",
@@ -1138,6 +1527,27 @@ export function dumpMemory(startAddr, numBytes, bytesPerRow = 16) {
     return output;
 }
 
+export function dumpAddress(startAddr, numBytes) {
+    startAddr = BigInt(startAddr);
+    numBytes = BigInt(numBytes);
+
+    const result = [];
+    let currentAddr = startAddr;
+    const endAddr = startAddr + numBytes;
+
+    while (currentAddr < endAddr) {
+        const byteValue = main_memory_read_value(currentAddr);
+        result.push(byteValue);
+        currentAddr += 1n;
+    }
+    // Convert the result to a string representation
+    const resultString = result
+        .map(byte => byte.toString(16).padStart(2, "0"))
+        .join("");
+
+    return resultString;
+}
+
 export function load_binary_file(bin_str) {
     const ret = {
         status: "ok",
@@ -1266,4 +1676,19 @@ export function load_binary_file(bin_str) {
     }
 
     return ret;
+}
+
+export function dumpRegister(register) {
+    if (typeof register === "undefined") {
+        return ret;
+    }
+
+    let result = crex_findReg(register);
+    if (result.match === 1) {
+        let value = readRegister(result.indexComp, result.indexElem).toString(
+            16,
+        );
+        return value;
+    }
+    return null;
 }
