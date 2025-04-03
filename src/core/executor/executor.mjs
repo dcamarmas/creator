@@ -171,7 +171,9 @@ function performExecutionChecks(includeLogging = false) {
             null,
         );
     } else if (status.run_program === 3) {
-        return packExecute(false, "", "info", null);
+        // TODO: Is this needed?
+        return null;
+        // return packExecute(false, "", "info", null);
     }
 
     return null;
@@ -315,29 +317,7 @@ function updateExecutionStatus(draw) {
     }
 
     // Handle program termination conditions
-    // Case 1: Program finished in run_program=3 mode
-    if (
-        status.execution_index >= instructions.length &&
-        status.run_program === 3
-    ) {
-        // Mark all instructions as space (not active)
-        for (let i = 0; i < instructions.length; i++) {
-            draw.space.push(i);
-        }
-        draw.info = [];
-
-        return packExecute(
-            false,
-            "The execution of the program has finished",
-            "success",
-            draw,
-        );
-    }
-    // Case 2: Program finished in standard mode
-    else if (
-        status.execution_index >= instructions.length &&
-        status.run_program !== 3
-    ) {
+    if (status.execution_index >= instructions.length) {
         // Mark all instructions as space (not active)
         for (let i = 0; i < instructions.length; i++) {
             draw.space.push(i);
@@ -354,7 +334,7 @@ function updateExecutionStatus(draw) {
             draw,
         );
     }
-    // Case 3: Continuing execution (no error)
+    // Case 2: Continuing execution (no error)
     else if (status.error !== 1) {
         draw.success.push(status.execution_index);
     }
@@ -565,7 +545,7 @@ export function executeProgramOneShot(limit_n_instructions) {
 }
 
 // eslint-disable-next-line max-lines-per-function
-function reset() {
+export function reset() {
     // Google Analytics
     creator_ga("execute", "execute.reset");
 

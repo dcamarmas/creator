@@ -75,6 +75,7 @@ export function kbd_read_string(keystroke, params) {
     return value;
 }
 
+// eslint-disable-next-line max-lines-per-function
 export function keyboard_read(fn_post_read, fn_post_params) {
     const draw = {
         space: [],
@@ -85,15 +86,26 @@ export function keyboard_read(fn_post_read, fn_post_params) {
         flash: [],
     };
 
-    if (typeof app === "undefined") {
-        const keystroke = readlineSync.question(" > ");
+    // Check for Deno environment
+    if (typeof Deno !== "undefined") {
+        try {
+            const keystroke = prompt("Input:");
+            const value = fn_post_read(keystroke, fn_post_params);
+            status.keyboard = status.keyboard + " " + value;
 
-        const value = fn_post_read(keystroke, fn_post_params);
-        status.keyboard = status.keyboard + " " + value;
-
-        return packExecute(false, "The data has been uploaded", "danger", null);
+            return packExecute(
+                false,
+                "The data has been uploaded",
+                "info",
+                null,
+            );
+        } catch (e) {
+            console.error("Error reading input:", e);
+            return packExecute(false, "Error reading input", "danger", null);
+        }
     }
 
+    // Web/UI mode
     app._data.enter = false;
 
     if (status.run_program === 3) {
