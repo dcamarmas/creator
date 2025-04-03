@@ -2,7 +2,7 @@ import fs from "node:fs";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import * as creator from "../core/core.mjs";
-import { step } from "../core/executor/executor.mjs";
+import { reset, step } from "../core/executor/executor.mjs";
 import { decode_instruction } from "../core/executor/decoder.mjs";
 import process from "node:process";
 import { logger } from "../core/utils/creator_logger.mjs";
@@ -136,7 +136,7 @@ function handleInstructionsCommand() {
     } else {
         // Tabular format
         console.log(
-            "B | Address  | Label      | Loaded Instruction      | User Instruction",
+            "B | Address | Label      | Loaded Instruction      | User Instruction",
         );
         console.log(
             "--|---------|------------|-------------------------|------------------------",
@@ -360,6 +360,10 @@ async function processCommand(cmd: string, args: string[]): Promise<boolean> {
             clearConsole();
             handleInstructionsCommand();
             break;
+        case "reset":
+        case "rst":
+            handleResetCommand();
+            break;
         case "help":
         case "h":
             displayHelp();
@@ -380,6 +384,17 @@ async function processCommand(cmd: string, args: string[]): Promise<boolean> {
             console.log("Type 'help' for available commands.");
     }
     return false;
+}
+
+function handleResetCommand() {
+    reset();
+
+    // Reset the previous PC tracking
+    PREVIOUS_PC = "0x0";
+
+    console.log(
+        "Program state has been reset. Ready to run from the beginning.",
+    );
 }
 
 function handleInsnCommand() {
@@ -511,6 +526,7 @@ function displayHelp() {
         console.log(
             "'save' or 'sv' followed by optional filename: Save current state to file.",
         );
+        console.log("'reset' or 'rst': Reset program to initial state.");
         console.log("'help' or 'h': Show this help message.");
         console.log("'quit' or 'q': Quit the simulator.");
     } else {
@@ -540,6 +556,9 @@ function displayHelp() {
             "  hexview <address> [count] [bytesPerLine]     - Hex viewer",
         );
         console.log(
+            "  reset, rst                                   - Reset program to initial state",
+        );
+        console.log(
             "  save, sv [filename]                          - Save current state to file",
         );
         console.log(
@@ -564,7 +583,7 @@ function parseArguments() {
         .option("isa", {
             alias: "i",
             type: "array",
-            description: "ISA extensions to load",
+            description: "ISA extensions to load (e.g. --isa I M F D)",
             default: [],
         })
         .option("binary", {
