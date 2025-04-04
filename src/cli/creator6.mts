@@ -11,7 +11,7 @@ import { instructions } from "../core/compiler/compiler.mjs";
 
 const MAX_INSTRUCTIONS = 9999;
 const CLI_VERSION = "0.1.0";
-let ACCESIBLE = false;
+let ACCESSIBLE = false;
 // Track the address of the previously executed instruction
 let PREVIOUS_PC = "0x0";
 
@@ -23,7 +23,7 @@ function clearConsole() {
 }
 
 function colorText(text: string, colorCode: string): string {
-    return !ACCESIBLE ? `\x1b[${colorCode}m${text}\x1b[0m` : text;
+    return !ACCESSIBLE ? `\x1b[${colorCode}m${text}\x1b[0m` : text;
 }
 
 function decodeAndFormatInstruction(pc_value: string) {
@@ -107,9 +107,8 @@ function handleInstructionsCommand() {
     const pc_value = creator.dumpRegister("PC");
     const currentPC = "0x" + pc_value.toUpperCase();
 
-    if (ACCESIBLE) {
-        // Accessible format
-        console.log("Displaying loaded instructions:");
+    if (ACCESSIBLE) {
+        console.log("Displaying loaded instructions.");
         for (let i = 0; i < instructions.length; i++) {
             const instr = instructions[i];
             const isCurrentInstruction = instr.Address === currentPC;
@@ -117,29 +116,34 @@ function handleInstructionsCommand() {
                 instr.Address === PREVIOUS_PC && instr.Address !== currentPC;
             const hasBreakpoint = instr.Break === true;
 
-            let addressLine = `Address ${instr.Address}${instr.Label ? " with label: " + instr.Label : ""}.`;
-            let loadedLine = `Loaded instruction: ${instr.loaded}.`;
-            let userLine = instr.user ? `User instruction: ${instr.user}.` : "";
+            let addressLine = `Address ${instr.Address}${instr.Label ? " with label: " + instr.Label : ""}`;
+            let loadedLine = instr.loaded
+                ? `Loaded instruction: ${instr.loaded}`
+                : "No instruction loaded";
+            let userLine = instr.user ? `User instruction: ${instr.user}` : "";
+            let statusInfo = "";
 
             if (hasBreakpoint) {
-                addressLine = "BREAKPOINT: " + addressLine;
+                statusInfo += "BREAKPOINT SET. ";
             }
 
             if (isCurrentInstruction) {
-                console.log("NEXT: " + addressLine, loadedLine, userLine);
+                statusInfo += "NEXT INSTRUCTION TO EXECUTE. ";
             } else if (isPreviousInstruction) {
-                console.log("CURRENT: " + addressLine, loadedLine, userLine);
-            } else {
-                console.log(addressLine, loadedLine, userLine);
+                statusInfo += "CURRENTLY EXECUTING. ";
             }
+
+            console.log(
+                `${statusInfo}${addressLine}. ${loadedLine}. ${userLine}`,
+            );
         }
     } else {
         // Tabular format
         console.log(
-            "B | Address | Label      | Loaded Instruction      | User Instruction",
+            "    B | Address | Label      | Loaded Instruction      | User Instruction",
         );
         console.log(
-            "--|---------|------------|-------------------------|------------------------",
+            "   ---|---------|------------|-------------------------|------------------------",
         );
 
         for (let i = 0; i < instructions.length; i++) {
@@ -150,7 +154,10 @@ function handleInstructionsCommand() {
             const user = instr.user || "";
             const breakpointMark = instr.Break ? "●" : " ";
 
-            let line = ` ${breakpointMark}| ${address}| ${label}| ${loaded} | ${user}`;
+            // Add an arrow for the current instruction
+            const currentMark = instr.Address === currentPC ? "➤" : " ";
+
+            let line = `${currentMark}   ${breakpointMark} | ${address}| ${label}| ${loaded} | ${user}`;
 
             // Highlight current instruction in green, previous in blue
             if (instr.Address === currentPC) {
@@ -165,6 +172,7 @@ function handleInstructionsCommand() {
         }
     }
 }
+
 function executeNonInteractive() {
     for (let i = 0; i < MAX_INSTRUCTIONS; i++) {
         const { output, completed, error } = executeStep();
@@ -193,11 +201,22 @@ function handleBreakpointCommand(args: string[]) {
             return;
         }
 
-        console.log("Current breakpoints:");
+        if (ACCESSIBLE) {
+            console.log(`${breakpoints.length} breakpoints are currently set:`);
+        } else {
+            console.log("Current breakpoints:");
+        }
+
         for (const bp of breakpoints) {
-            console.log(
-                `  ${bp.Address}${bp.Label ? ` (${bp.Label})` : ""}: ${bp.loaded}`,
-            );
+            if (ACCESSIBLE) {
+                console.log(
+                    `Breakpoint at address ${bp.Address}${bp.Label ? ` with label ${bp.Label}` : ""}, instruction: ${bp.loaded}`,
+                );
+            } else {
+                console.log(
+                    `  ${bp.Address}${bp.Label ? ` (${bp.Label})` : ""}: ${bp.loaded}`,
+                );
+            }
         }
         return;
     }
@@ -232,7 +251,7 @@ function handleBreakpointCommand(args: string[]) {
     );
 }
 
-async function handleRunCommand(args: string[]) {
+async function handleRunCommand(args: string[], silent = false) {
     // Check if we have a number argument
     const instructionsToRun =
         args.length > 1 ? parseInt(args[1], 10) : MAX_INSTRUCTIONS;
@@ -241,6 +260,12 @@ async function handleRunCommand(args: string[]) {
     if (args.length > 1 && isNaN(instructionsToRun)) {
         console.log("Invalid number of instructions");
         return;
+    }
+
+    if (ACCESSIBLE && args.length > 1) {
+        console.log(
+            `Running up to ${instructionsToRun} instructions or until completion.`,
+        );
     }
 
     let iterations = 0;
@@ -257,7 +282,15 @@ async function handleRunCommand(args: string[]) {
         // Find if there's a breakpoint at current PC
         for (const instr of instructions) {
             if (instr.Address === currentPC && instr.Break === true) {
-                console.log(colorText("Breakpoint hit at " + currentPC, "31"));
+                if (ACCESSIBLE) {
+                    console.log(
+                        `Execution paused: Breakpoint reached at address ${currentPC}`,
+                    );
+                } else {
+                    console.log(
+                        colorText("Breakpoint hit at " + currentPC, "31"),
+                    );
+                }
                 breakpointHit = true;
                 break;
             }
@@ -267,7 +300,9 @@ async function handleRunCommand(args: string[]) {
         }
 
         const { output, completed, error } = executeStep();
-        console.log(output);
+        if (!silent) {
+            console.log(output);
+        }
         iterations++;
 
         if (error) {
@@ -277,6 +312,10 @@ async function handleRunCommand(args: string[]) {
             console.log("Program execution completed.");
             break;
         }
+    }
+
+    if (ACCESSIBLE && !breakpointHit) {
+        console.log(`Executed ${iterations} instructions.`);
     }
 }
 
@@ -288,12 +327,12 @@ async function interactiveMode() {
         prompt: "CREATOR> ",
     });
 
-    if (ACCESIBLE) {
+    if (ACCESSIBLE) {
         console.log(
-            colorText(
-                "Interactive mode enabled. Type 'h' for available commands.",
-                "32",
-            ),
+            "Interactive mode enabled. Type 'help' or 'h' for available commands.",
+        );
+        console.log(
+            "You are in accessible mode, with special formatting for screen readers.",
         );
     } else {
         console.log(
@@ -337,6 +376,10 @@ async function processCommand(cmd: string, args: string[]): Promise<boolean> {
         case "r":
             await handleRunCommand(args);
             break;
+        case "silent":
+        case "sr":
+            await handleRunCommand(args, true);
+            break;
         case "break":
         case "b":
             handleBreakpointCommand(args);
@@ -350,7 +393,6 @@ async function processCommand(cmd: string, args: string[]): Promise<boolean> {
         case "hexview":
             handleHexViewCommand(args);
             break;
-        case "instructions":
         case "list":
         case "l":
             handleInstructionsCommand();
@@ -416,7 +458,7 @@ async function handleStepCommand() {
 function handleRegCommand(args: string[]) {
     if (args.length > 1) {
         const regName = args[1];
-        if (!ACCESIBLE) {
+        if (!ACCESSIBLE) {
             console.log(`${regName}: 0x${creator.dumpRegister(regName)}`);
         } else {
             const value = creator.dumpRegister(regName);
@@ -461,15 +503,18 @@ function handleSaveCommand(args: string[]) {
 }
 
 function displayAllRegisters() {
-    if (ACCESIBLE) {
-        // Use original display format for accessible mode
+    if (ACCESSIBLE) {
+        // Enhanced accessible display format
+        console.log("Register values:");
         for (let i = 0; i < 32; i++) {
             const regName = `x${i}`;
             const value = creator.dumpRegister(regName);
-            console.log(`${regName.padEnd(3)}: 0x${value}`);
+            console.log(`Register ${regName} contains value 0x${value}`);
         }
         // Display PC register
-        console.log(`PC: 0x${creator.dumpRegister("PC")}`);
+        console.log(
+            `Program Counter (PC) contains value 0x${creator.dumpRegister("PC")}`,
+        );
     } else {
         // Display registers in groups of 4
         for (let row = 0; row < 8; row++) {
@@ -489,48 +534,64 @@ function displayAllRegisters() {
 }
 
 function displayMemory(address, count) {
+    if (ACCESSIBLE) {
+        console.log(
+            `Displaying ${count} bytes of memory starting at address 0x${address.toString(16)}`,
+        );
+    }
+
     // Display memory contents in rows of 16 bytes
     for (let i = 0; i < count; i += 4) {
         const bytes = creator.dumpAddress(address + i, 4);
-        if (!ACCESIBLE) {
+        if (!ACCESSIBLE) {
             console.log(
                 `0x${(address + i).toString(16).padStart(8, "0")}: 0x${bytes}`,
             );
         } else {
             console.log(
-                `Address 0x${(address + i).toString(16).padStart(8, "0")} has value 0x${bytes}`,
+                `Memory address 0x${(address + i).toString(16).padStart(8, "0")} contains value 0x${bytes}`,
             );
         }
     }
 }
 
+// eslint-disable-next-line max-lines-per-function
 function displayHelp() {
     console.log("Available commands:");
 
-    if (ACCESIBLE) {
-        console.log("'step' or 's' or no command: Step one instruction.");
+    if (ACCESSIBLE) {
+        console.log("Command list optimized for screen readers:");
+        console.log("'step' or 's': Execute a single instruction.");
         console.log(
-            "'run' or 'r' followed by optional number: Run n instructions or until program completes.",
+            "'run' or 'r' followed by optional number: Execute multiple instructions.",
         );
         console.log(
-            "'break' or 'b' followed by address: Set/unset breakpoint at address. With no argument, shows all breakpoints.",
+            "'silent' or 'sr' followed by optional number: Execute multiple instructions silently.",
         );
         console.log(
-            "'reg' followed by optional register name: Display register values.",
+            "'break' or 'b' followed by address: Toggle a breakpoint at the specified address.",
         );
         console.log(
-            "'mem' followed by address and optional byte count: Display memory contents.",
+            "'break' with no arguments: List all currently set breakpoints.",
         );
-        console.log("'i': Show current instruction.");
-        console.log("'instructions' or 'list': Show all loaded instructions.");
         console.log(
-            "'save' or 'sv' followed by optional filename: Save current state to file.",
+            "'reg' followed by register name: Display the value of a specific register.",
         );
-        console.log("'reset' or 'rst': Reset program to initial state.");
+        console.log(
+            "'reg' with no arguments: Display values of all registers.",
+        );
+        console.log(
+            "'mem' followed by address and optional count: Display memory contents.",
+        );
+        console.log("'insn' or 'i': Show details of the current instruction.");
+        console.log("'list' or 'l': Show all loaded instructions.");
+        console.log(
+            "'save' followed by optional filename: Save execution state to a file.",
+        );
+        console.log("'reset': Reset program to initial state.");
         console.log("'help' or 'h': Show this help message.");
-        console.log("'quit' or 'q': Quit the simulator.");
+        console.log("'quit' or 'q': Exit the simulator.");
     } else {
-        // Standard visually formatted help
         console.log(
             "  step, s                                      - Execute one instruction",
         );
@@ -538,7 +599,10 @@ function displayHelp() {
             "  run, r [n]                                   - Run n instructions or until program completes",
         );
         console.log(
-            "  break, b [addr]                  - Set/unset breakpoint at address or list all",
+            "  silent, sr [n]                               - Run n instructions silently",
+        );
+        console.log(
+            "  break, b [addr]                              - Set/unset breakpoint at address or list all",
         );
         console.log(
             "  reg [name]                                   - Display register(s)",
@@ -550,7 +614,7 @@ function displayHelp() {
             "  insn, i                                      - Show current instruction",
         );
         console.log(
-            "  instructions, list                           - Show all loaded instructions",
+            "  list, l                                      - Show all loaded instructions",
         );
         console.log(
             "  hexview <address> [count] [bytesPerLine]     - Hex viewer",
@@ -631,11 +695,10 @@ function parseArguments() {
             describe: "File to save the state",
             default: "",
         })
-        .option("accesible", {
+        .option("accessible", {
             alias: "A",
             type: "boolean",
-            describe:
-                "Disables effects to facilitate usage with screen readers",
+            describe: "Enable accessible mode for use with screen readers",
             default: false,
         })
         .help().argv;
@@ -650,13 +713,16 @@ function main() {
     if (!argv.debug) {
         logger.disable();
     }
-    ACCESIBLE = argv.accesible;
-    if (!ACCESIBLE) {
+
+    ACCESSIBLE = argv.accessible;
+
+    if (!ACCESSIBLE) {
         let creatorASCII = ` \u2588\u2588\u2588\u2588\u2588\u2588\u2557\u2588\u2588\u2588\u2588\u2588\u2588\u2557 \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2557 \u2588\u2588\u2588\u2588\u2588\u2557 \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2557 \u2588\u2588\u2588\u2588\u2588\u2588\u2557 \u2588\u2588\u2588\u2588\u2588\u2588\u2557 \r\n\u2588\u2588\u2554\u2550\u2550\u2550\u2550\u255D\u2588\u2588\u2554\u2550\u2550\u2588\u2588\u2557\u2588\u2588\u2554\u2550\u2550\u2550\u2550\u255D\u2588\u2588\u2554\u2550\u2550\u2588\u2588\u2557\u255A\u2550\u2550\u2588\u2588\u2554\u2550\u2550\u255D\u2588\u2588\u2554\u2550\u2550\u2550\u2588\u2588\u2557\u2588\u2588\u2554\u2550\u2550\u2588\u2588\u2557\r\n\u2588\u2588\u2551     \u2588\u2588\u2588\u2588\u2588\u2588\u2554\u255D\u2588\u2588\u2588\u2588\u2588\u2557  \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2551   \u2588\u2588\u2551   \u2588\u2588\u2551   \u2588\u2588\u2551\u2588\u2588\u2588\u2588\u2588\u2588\u2554\u255D\r\n\u2588\u2588\u2551     \u2588\u2588\u2554\u2550\u2550\u2588\u2588\u2557\u2588\u2588\u2554\u2550\u2550\u255D  \u2588\u2588\u2554\u2550\u2550\u2588\u2588\u2551   \u2588\u2588\u2551   \u2588\u2588\u2551   \u2588\u2588\u2551\u2588\u2588\u2554\u2550\u2550\u2588\u2588\u2557\r\n\u255A\u2588\u2588\u2588\u2588\u2588\u2588\u2557\u2588\u2588\u2551  \u2588\u2588\u2551\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2557\u2588\u2588\u2551  \u2588\u2588\u2551   \u2588\u2588\u2551   \u255A\u2588\u2588\u2588\u2588\u2588\u2588\u2554\u255D\u2588\u2588\u2551  \u2588\u2588\u2551\r\n \u255A\u2550\u2550\u2550\u2550\u2550\u255D\u255A\u2550\u255D  \u255A\u2550\u255D\u255A\u2550\u2550\u2550\u2550\u2550\u2550\u255D\u255A\u2550\u255D  \u255A\u2550\u255D   \u255A\u2550\u255D    \u255A\u2550\u2550\u2550\u2550\u2550\u255D \u255A\u2550\u255D  \u255A\u2550\u255D\r\n                                                          `;
 
         console.log(creatorASCII);
     }
     console.log(`CREATOR CLI version: ${CLI_VERSION}`);
+
     // Load architecture
     loadArchitecture(argv.architecture, argv.isa);
     // If binary file is provided, load it
