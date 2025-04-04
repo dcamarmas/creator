@@ -18,38 +18,17 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <script>
-import { ref } from "vue"
 import Codemirror from "vue-codemirror6"
-import {
-  keymap,
-  highlightSpecialChars,
-  drawSelection,
-  highlightActiveLine,
-  dropCursor,
-  crosshairCursor,
-  lineNumbers,
-  highlightActiveLineGutter,
-} from "@codemirror/view"
-import {
-  defaultHighlightStyle,
-  syntaxHighlighting,
-  indentOnInput,
-  bracketMatching,
-  StreamLanguage,
-} from "@codemirror/language"
-import {
-  defaultKeymap,
-  history,
-  historyKeymap,
-  indentWithTab,
-} from "@codemirror/commands"
-import { searchKeymap, highlightSelectionMatches } from "@codemirror/search"
-import {
-  closeBrackets,
-  closeBracketsKeymap,
-} from "@codemirror/autocomplete"
 import { vim, Vim } from "@replit/codemirror-vim"
+import {
+  StreamLanguage,
+  HighlightStyle,
+  syntaxHighlighting,
+  defaultHighlightStyle,
+} from "@codemirror/language"
 import { gas } from "@codemirror/legacy-modes/mode/gas"
+import { tags } from "@lezer/highlight"
+import { EditorView } from "codemirror"
 
 import PopoverShortcuts from "./PopoverShortcuts.vue"
 
@@ -59,74 +38,35 @@ export default {
     assembly_code: { type: String, required: true },
   },
 
-  setup() {
-    // this stuff HAS to be initialized here in `setup()`, or it doesn't do sh*t (it still doesn't work)
-    const lang = StreamLanguage.define(gas)
-
-    return {
-      lang,
-    }
-  },
-
   components: {
     PopoverShortcuts,
     Codemirror,
   },
-  // eslint-disable-next-line max-lines-per-function
   data() {
-    // const vimMode = new Compartment()
     return {
       vimActive: false,
       luisdaMode: false,
       extensions: [
-        // A line number gutter
-        lineNumbers(),
-        // // A gutter with code folding markers
-        // foldGutter(),
-        // Replace non-printable characters with placeholders
-        highlightSpecialChars(),
-        // The undo history
-        history(),
-        // Replace native cursor/selection with our own
-        drawSelection(),
-        // Show a drop cursor when dragging over the editor
-        dropCursor(),
-        // // Allow multiple cursors/selections
-        // EditorState.allowMultipleSelections.of(true),
-        // Re-indent lines when typing specific input
-        indentOnInput(),
-        // Highlight syntax with a default style
-        syntaxHighlighting(defaultHighlightStyle),
-        // Highlight matching brackets near cursor
-        bracketMatching(),
-        // Automatically close brackets
-        closeBrackets(),
-        // // Load the autocompletion system
-        // autocompletion(),
-        // // Allow alt-drag to select rectangular regions
-        // rectangularSelection(),
-        // Change the cursor to a crosshair when holding alt
-        crosshairCursor(),
-        // Style the current line specially
-        highlightActiveLine(),
-        // Style the gutter for current line specially
-        highlightActiveLineGutter(),
-        // Highlight text that matches the selected text
-        highlightSelectionMatches(),
-        keymap.of([
-          // Closed-brackets aware backspace
-          ...closeBracketsKeymap,
-          // A large set of basic bindings
-          ...defaultKeymap,
-          // Search-related keys
-          ...searchKeymap,
-          // Redo/undo keys
-          ...historyKeymap,
-          // indent with tab
-          // indentWithTab,
-        ]),
+        // custom highlight on top of the default style
+        syntaxHighlighting(
+          HighlightStyle.define([
+            { tag: tags.keyword, color: "#3300aa" },
+            { tag: tags.comment, fontStyle: "italic" },
+          ]),
+        ),
+        syntaxHighlighting(defaultHighlightStyle), // this HAS to be below to be used as fallback
+        // fixed height editor
+        EditorView.theme({
+          "&": { height: "400px" },
+          ".cm-scroller": { overflow: "auto" },
+        }),
       ],
     }
+  },
+  setup() {
+    const lang = StreamLanguage.define(gas) // GNU Assembler
+
+    return { lang }
   },
   computed: {
     code: {
@@ -148,7 +88,7 @@ export default {
         this.extensions.push(vim()) // add extension
       }
 
-      // this.vimActive = !this.vimActive
+      this.vimActive = !this.vimActive
     },
     toggleLuisdaMode() {
       // @rajayonin's custom keybindings
@@ -175,14 +115,11 @@ export default {
 
 <template>
   <div>
-    <b-button
-      v-model:pressed="vimActive"
-      @click="toggleVim()"
-      title="Enable Vim mode"
-    >
+    <b-button :pressed="vimActive" @click="toggleVim()" title="Enable Vim mode">
       <font-awesome-icon icon="fa-brands fa-vimeo-v" /> Vim
     </b-button>
     <b-button
+      :pressed="luisdaMode"
       @click="toggleLuisdaMode()"
       title="Enable Luisda Vim mode"
       v-if="vimActive"
@@ -197,18 +134,13 @@ export default {
 
     <PopoverShortcuts target="assemblyInfo" :browser="browser" />
 
-    <!-- <textarea
-      id="textarea_assembly"
-      rows="14"
-      class="code-scroll-y d-none"
-      title="Asembly Code"
-    ></textarea> -->
     <Codemirror
       v-model="code"
+      basic
       placeholder="Assembly code..."
-      :style="{ height: '400px' }"
+      :lang="lang"
       :autofocus="true"
-      :tab="true"
+      :indent-with-tab="true"
       :tab-size="4"
       :wrap="true"
       :extensions="extensions"
