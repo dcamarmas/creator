@@ -83,7 +83,7 @@ function executeStep() {
 
 function loadArchitecture(filePath: string, isaExtensions: string[]) {
     const architectureFile = fs.readFileSync(filePath, "utf8");
-    let ret = creator.newArchitectureLoad(
+    const ret = creator.newArchitectureLoad(
         architectureFile,
         false,
         false,
@@ -353,137 +353,7 @@ function handleRunCommand(args: string[], silent = false) {
 }
 
 // Interactive mode functions
-function interactiveMode() {
-    const rl = readline.createInterface({
-        input: process.stdin,
-        output: process.stdout,
-        prompt: "CREATOR> ",
-    });
-
-    if (ACCESSIBLE) {
-        console.log(
-            "Interactive mode enabled. Type 'help' or 'h' for available commands.",
-        );
-        console.log(
-            "You are in accessible mode, with special formatting for screen readers.",
-        );
-    } else {
-        console.log(
-            colorText(
-                "Interactive mode enabled. Type 'help' for available commands.",
-                "32",
-            ),
-        );
-    }
-
-    rl.prompt();
-
-    rl.on("line", line => {
-        const args = line.trim().split(/\s+/);
-        const cmd = args[0].toLowerCase();
-
-        try {
-            if (processCommand(cmd, args)) {
-                rl.close();
-                return;
-            }
-        } catch (error) {
-            console.error(`Error executing command: ${error.message}`);
-        }
-        rl.prompt();
-    });
-
-    rl.on("close", () => {
-        process.exit(0);
-    });
-}
-
-function processCommand(cmd: string, args: string[]): boolean {
-    switch (cmd) {
-        case "step":
-        case "s":
-        case "":
-            handleStepCommand();
-            break;
-        case "unstep":
-        case "u":
-            handleUnstepCommand();
-            break;
-        case "run":
-        case "r":
-            handleRunCommand(args);
-            break;
-        case "bit":
-            handleBackInTimeCommand(args, false);
-            break;
-        case "silent":
-        case "sr":
-            handleRunCommand(args, true);
-            break;
-        case "break":
-        case "b":
-            handleBreakpointCommand(args);
-            break;
-        case "reg":
-            handleRegCommand(args);
-            break;
-        case "mem":
-            handleMemCommand(args);
-            break;
-        case "hexview":
-            handleHexViewCommand(args);
-            break;
-        case "list":
-        case "l":
-            handleInstructionsCommand();
-            break;
-        case ".":
-            handleStepCommand();
-            clearConsole();
-            handleInstructionsCommand();
-            break;
-        case "reset":
-        case "rst":
-            handleResetCommand();
-            break;
-        case "help":
-        case "h":
-            displayHelp();
-            break;
-        case "insn":
-        case "i":
-            handleInsnCommand();
-            break;
-        case "save":
-        case "sv":
-            handleSaveCommand(args);
-            break;
-        case "snapshot":
-        case "snap":
-            handleSnapshotCommand(args);
-            break;
-        case "restore":
-        case "rest":
-            handleRestoreCommand(args);
-            break;
-        case "about":
-            handleAboutCommand();
-            break;
-        case "config":
-        case "cfg":
-            handleConfigCommand(args);
-            break;
-        case "quit":
-        case "q":
-            return true;
-        default:
-            console.log(`Unknown command: ${cmd}`);
-            console.log("Type 'help' for available commands.");
-    }
-    return false;
-}
-
-function handleBackInTimeCommand(args: string[], silent = false) {
+function handleBackInTimeCommand() {
     if (previousStates.length === 0) {
         console.log("No previous states available for unstepping.");
         return;
@@ -657,54 +527,6 @@ function handleConfigCommand(args: string[]) {
         console.log("Available settings: max_states [number|-1]");
     }
 }
-
-function handleRegCommand(args: string[]) {
-    if (args.length > 1) {
-        const regName = args[1];
-        if (!ACCESSIBLE) {
-            console.log(`${regName}: 0x${creator.dumpRegister(regName)}`);
-        } else {
-            const value = creator.dumpRegister(regName);
-            console.log(`Register ${regName} has value 0x${value}`);
-        }
-    } else {
-        displayAllRegisters();
-    }
-}
-
-function handleMemCommand(args: string[]) {
-    if (args.length > 1) {
-        const address = parseInt(args[1], 16);
-        const count = args.length > 2 ? parseInt(args[2], 10) : 4;
-        displayMemory(address, count);
-    } else {
-        console.log("Usage: mem <address> [count]");
-    }
-}
-
-function handleHexViewCommand(args: string[]) {
-    if (args.length > 1) {
-        const address = parseInt(args[1], 16);
-        const count = args.length > 2 ? parseInt(args[2], 10) : 16;
-        const bytesPerLine = parseInt(args[3], 10) || 16;
-        console.log(creator.dumpMemory(address, count, bytesPerLine));
-    } else {
-        console.log("Usage: hexview <address> [count]");
-    }
-}
-
-function handleSaveCommand(args: string[]) {
-    const filename = args.length > 1 ? args[1] : "state.txt";
-
-    const state = creator.getState();
-    try {
-        fs.writeFileSync(filename, state.msg, "utf8");
-        console.log(`State saved to ${filename}`);
-    } catch (error) {
-        console.error(`Error saving state to ${filename}: ${error.message}`);
-    }
-}
-
 function displayAllRegisters() {
     if (ACCESSIBLE) {
         // Enhanced accessible display format
@@ -755,6 +577,52 @@ function displayMemory(address, count) {
                 `Memory address 0x${(address + i).toString(16).padStart(8, "0")} contains value 0x${bytes}`,
             );
         }
+    }
+}
+function handleRegCommand(args: string[]) {
+    if (args.length > 1) {
+        const regName = args[1];
+        if (!ACCESSIBLE) {
+            console.log(`${regName}: 0x${creator.dumpRegister(regName)}`);
+        } else {
+            const value = creator.dumpRegister(regName);
+            console.log(`Register ${regName} has value 0x${value}`);
+        }
+    } else {
+        displayAllRegisters();
+    }
+}
+
+function handleMemCommand(args: string[]) {
+    if (args.length > 1) {
+        const address = parseInt(args[1], 16);
+        const count = args.length > 2 ? parseInt(args[2], 10) : 4;
+        displayMemory(address, count);
+    } else {
+        console.log("Usage: mem <address> [count]");
+    }
+}
+
+function handleHexViewCommand(args: string[]) {
+    if (args.length > 1) {
+        const address = parseInt(args[1], 16);
+        const count = args.length > 2 ? parseInt(args[2], 10) : 16;
+        const bytesPerLine = parseInt(args[3], 10) || 16;
+        console.log(creator.dumpMemory(address, count, bytesPerLine));
+    } else {
+        console.log("Usage: hexview <address> [count]");
+    }
+}
+
+function handleSaveCommand(args: string[]) {
+    const filename = args.length > 1 ? args[1] : "state.txt";
+
+    const state = creator.getState();
+    try {
+        fs.writeFileSync(filename, state.msg, "utf8");
+        console.log(`State saved to ${filename}`);
+    } catch (error) {
+        console.error(`Error saving state to ${filename}: ${error.message}`);
     }
 }
 
@@ -931,7 +799,136 @@ function parseArguments() {
         })
         .help().argv;
 }
+// eslint-disable-next-line max-lines-per-function
+function processCommand(cmd: string, args: string[]): boolean {
+    switch (cmd) {
+        case "step":
+        case "s":
+        case "":
+            handleStepCommand();
+            break;
+        case "unstep":
+        case "u":
+            handleUnstepCommand();
+            break;
+        case "run":
+        case "r":
+            handleRunCommand(args);
+            break;
+        case "bit":
+            handleBackInTimeCommand();
+            break;
+        case "silent":
+        case "sr":
+            handleRunCommand(args, true);
+            break;
+        case "break":
+        case "b":
+            handleBreakpointCommand(args);
+            break;
+        case "reg":
+            handleRegCommand(args);
+            break;
+        case "mem":
+            handleMemCommand(args);
+            break;
+        case "hexview":
+            handleHexViewCommand(args);
+            break;
+        case "list":
+        case "l":
+            handleInstructionsCommand();
+            break;
+        case ".":
+            handleStepCommand();
+            clearConsole();
+            handleInstructionsCommand();
+            break;
+        case "reset":
+        case "rst":
+            handleResetCommand();
+            break;
+        case "help":
+        case "h":
+            displayHelp();
+            break;
+        case "insn":
+        case "i":
+            handleInsnCommand();
+            break;
+        case "save":
+        case "sv":
+            handleSaveCommand(args);
+            break;
+        case "snapshot":
+        case "snap":
+            handleSnapshotCommand(args);
+            break;
+        case "restore":
+        case "rest":
+            handleRestoreCommand(args);
+            break;
+        case "about":
+            handleAboutCommand();
+            break;
+        case "config":
+        case "cfg":
+            handleConfigCommand(args);
+            break;
+        case "quit":
+        case "q":
+            return true;
+        default:
+            console.log(`Unknown command: ${cmd}`);
+            console.log("Type 'help' for available commands.");
+    }
+    return false;
+}
 
+function interactiveMode() {
+    const rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout,
+        prompt: "CREATOR> ",
+    });
+
+    if (ACCESSIBLE) {
+        console.log(
+            "Interactive mode enabled. Type 'help' or 'h' for available commands.",
+        );
+        console.log(
+            "You are in accessible mode, with special formatting for screen readers.",
+        );
+    } else {
+        console.log(
+            colorText(
+                "Interactive mode enabled. Type 'help' for available commands.",
+                "32",
+            ),
+        );
+    }
+
+    rl.prompt();
+
+    rl.on("line", line => {
+        const args = line.trim().split(/\s+/);
+        const cmd = args[0].toLowerCase();
+
+        try {
+            if (processCommand(cmd, args)) {
+                rl.close();
+                return;
+            }
+        } catch (error) {
+            console.error(`Error executing command: ${error.message}`);
+        }
+        rl.prompt();
+    });
+
+    rl.on("close", () => {
+        process.exit(0);
+    });
+}
 function main() {
     // Parse command line arguments
     const argv = parseArguments();
