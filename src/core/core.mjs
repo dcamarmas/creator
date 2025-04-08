@@ -545,6 +545,7 @@ function parseArchitectureYaml(architectureYaml) {
  * @param {Array} requestedISAs - User-requested instruction sets to load
  * @returns {Object} - Object with selected ISAs and status
  */
+// eslint-disable-next-line max-lines-per-function
 function determineInstructionSetsToLoad(architectureObj, requestedISAs = []) {
     // Get all available instruction sets in the architecture
     const availableInstructionSets = [
@@ -959,8 +960,9 @@ export function assembly_compile(code, enable_color) {
 }
 
 // execution
-
+// TODO: remove this function
 export function execute_program(limit_n_instructions) {
+    logger.warn("execute_program is deprecated");
     let ret;
     ret = executeProgramOneShot(limit_n_instructions);
     if (ret.error === true) {
@@ -974,8 +976,10 @@ export function execute_program(limit_n_instructions) {
 
 // state management
 
+// TODO: remove this function
 // eslint-disable-next-line max-lines-per-function
 export function get_state() {
+    logger.warn("get_state is deprecated");
     const ret = {
         status: "ok",
         msg: "",
@@ -1229,7 +1233,7 @@ export function getState() {
             }
 
             ret.msg =
-                ret.msg + c_name + "[" + e_name + "]:" + elto_string + ";\n";
+                ret.msg + c_name + "[" + e_name + "]:" + elto_string + "\n";
         }
     }
 
@@ -1253,7 +1257,7 @@ export function getState() {
                 "]" +
                 ":" +
                 elto_string +
-                ";\n";
+                "\n";
         }
     }
 
@@ -1263,7 +1267,7 @@ export function getState() {
         "keyboard[0x0]" +
         ":'" +
         encodeURIComponent(status.keyboard) +
-        "';\n";
+        "'\n";
 
     // dump display
     ret.msg =
@@ -1271,10 +1275,11 @@ export function getState() {
         "display[0x0]" +
         ":'" +
         encodeURIComponent(status.display) +
-        "';\n";
+        "'\n";
 
     return ret;
 }
+
 export function snapshot(extraData) {
     // Dump architecture object to file
     const architectureJson = JSON.stringify(architecture);
@@ -1339,22 +1344,18 @@ export function diffStates(referenceState, state) {
     }
 
     // Process reference state
-    for (const paragraph of referenceState.split("\n")) {
-        for (const line of paragraph.split(";")) {
-            const trimmedLine = line.trim();
-            if (trimmedLine) {
-                referenceEntries.push(trimmedLine + ";");
-            }
+    for (const line of referenceState.split("\n")) {
+        const trimmedLine = line.trim();
+        if (trimmedLine) {
+            referenceEntries.push(trimmedLine);
         }
     }
 
     // Process actual state
-    for (const paragraph of state.split("\n")) {
-        for (const line of paragraph.split(";")) {
-            const trimmedLine = line.trim();
-            if (trimmedLine) {
-                stateEntries.push(trimmedLine + ";");
-            }
+    for (const line of state.split("\n")) {
+        const trimmedLine = line.trim();
+        if (trimmedLine) {
+            stateEntries.push(trimmedLine);
         }
     }
 
@@ -1401,43 +1402,6 @@ export function diffStates(referenceState, state) {
     ret.status = "different";
 
     return ret;
-}
-
-// help
-
-export function help_instructions() {
-    let o = "";
-    let m;
-
-    // describe instructions
-    o += "name;\t\tsignature;\t\twords;\t\ttype\n";
-    for (let i = 0; i < architecture.instructions.length; i++) {
-        m = architecture.instructions[i];
-
-        o += m.name + ";\t" + (m.name.length < 7 ? "\t" : "");
-        o += m.signatureRaw + ";\t" + (m.signatureRaw.length < 15 ? "\t" : "");
-        o += m.nwords + ";\t" + (m.nwords.length < 7 ? "\t" : "");
-        o += m.type + "\n";
-    }
-
-    return o;
-}
-
-export function help_pseudoins() {
-    let o = "";
-    let m;
-
-    // describe pseudoinstructions
-    o += "name;\t\tsignature;\t\twords\n";
-    for (let i = 0; i < architecture.pseudoinstructions.length; i++) {
-        m = architecture.pseudoinstructions[i];
-
-        o += m.name + ";\t" + (m.name.length < 7 ? "\t" : "");
-        o += m.signatureRaw + ";\t" + (m.signatureRaw.length < 15 ? "\t" : "");
-        o += m.nwords + "\n";
-    }
-
-    return o;
 }
 
 export function dumpMemory(startAddr, numBytes, bytesPerRow = 16) {
