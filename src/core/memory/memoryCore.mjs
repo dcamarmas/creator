@@ -439,3 +439,59 @@ export function main_memory_write_bydatatype(addr, value, type, value_human) {
 
     return ret;
 }
+
+/********************
+ * Memory Persistence API *
+ ********************/
+
+/**
+ * Serializes main memory to JSON format
+ * @returns {string} JSON string of memory state
+ */
+export function main_memory_serialize() {
+    // Create a simplified copy of memory structures to save
+    const memoryState = {
+        main_memory: {},
+        main_memory_datatypes: main_memory_datatypes,
+    };
+
+    // Only save non-empty addresses to reduce size
+    const addresses = main_memory_get_addresses();
+    for (const addr of addresses) {
+        memoryState.main_memory[addr] = main_memory[addr];
+    }
+
+    return JSON.stringify(memoryState);
+}
+/**
+ * Restores memory state from a memoryState object
+ * @param {Object} memoryState - The memory state to restore
+ * @param {Object} memoryState.main_memory - The main memory to restore
+ * @param {Object} memoryState.main_memory_datatypes - The main memory datatypes to restore
+ * @return {boolean} - True if successful, false otherwise
+ */
+export function main_memory_restore(memoryState) {
+    try {
+        // Clear existing memory
+        main_memory_clear();
+
+        // Restore main_memory
+        if (memoryState.main_memory) {
+            for (const [addr, value] of Object.entries(
+                memoryState.main_memory,
+            )) {
+                main_memory[addr] = value;
+            }
+        }
+
+        // Restore main_memory_datatypes
+        if (memoryState.main_memory_datatypes) {
+            main_memory_datatypes = memoryState.main_memory_datatypes;
+        }
+
+        return true;
+    } catch (error) {
+        console.error("Failed to deserialize memory:", error);
+        return false;
+    }
+}

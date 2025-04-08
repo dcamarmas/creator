@@ -182,6 +182,10 @@ export let data_tag = [];
 const load_binary = false;
 let token;
 
+export function setInstructions(instructions_) {
+    instructions = instructions_;
+}
+
 //
 // Compiler
 //
