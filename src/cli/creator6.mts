@@ -14,6 +14,10 @@ const CLI_VERSION = "0.1.0";
 let ACCESSIBLE = false;
 // Track the address of the previously executed instruction
 let PREVIOUS_PC = "0x0";
+// Maximum number of states to keep for unstepping (-1 for unlimited, 0 to disable)
+let MAX_STATES_TO_KEEP = 100;
+// Stack to store previous states for unstepping
+let previousStates: string[] = [];
 
 // Utility functions
 function clearConsole() {
@@ -41,14 +45,31 @@ function decodeAndFormatInstruction(pc_value: string) {
     };
 }
 
+function saveCurrentState() {
+    if (MAX_STATES_TO_KEEP !== 0) {
+        const state = creator.snapshot({ PREVIOUS_PC });
+        previousStates.push(state);
+        // If we've exceeded the maximum number of states to keep, remove the oldest one
+        if (
+            MAX_STATES_TO_KEEP > 0 &&
+            previousStates.length > MAX_STATES_TO_KEEP
+        ) {
+            previousStates.shift();
+        }
+    }
+}
+
 function executeStep() {
+    // Save current state for unstepping
+    saveCurrentState();
+
     const pc_value = creator.dumpRegister("PC");
     const { instruction, asmString } = decodeAndFormatInstruction(pc_value);
 
     // Store the current PC as previous PC before executing the step
     PREVIOUS_PC = "0x" + pc_value.toUpperCase();
 
-    let ret = step();
+    const ret = step();
     if (ret.error) {
         //console.error(`Error executing instruction: ${ret.msg}`);
         return { output: ``, completed: true, error: true };
@@ -62,7 +83,17 @@ function executeStep() {
 
 function loadArchitecture(filePath: string, isaExtensions: string[]) {
     const architectureFile = fs.readFileSync(filePath, "utf8");
-    creator.newArchitectureLoad(architectureFile, false, false, isaExtensions);
+    let ret = creator.newArchitectureLoad(
+        architectureFile,
+        false,
+        false,
+        isaExtensions,
+    );
+    if (ret.status !== "ok") {
+        console.error(`Error loading architecture: ${ret.token}.`);
+        process.exit(1);
+    }
+
     // console.log("Architecture loaded successfully.");
 }
 
@@ -116,11 +147,13 @@ function handleInstructionsCommand() {
                 instr.Address === PREVIOUS_PC && instr.Address !== currentPC;
             const hasBreakpoint = instr.Break === true;
 
-            let addressLine = `Address ${instr.Address}${instr.Label ? " with label: " + instr.Label : ""}`;
-            let loadedLine = instr.loaded
+            const addressLine = `Address ${instr.Address}${instr.Label ? " with label: " + instr.Label : ""}`;
+            const loadedLine = instr.loaded
                 ? `Loaded instruction: ${instr.loaded}`
                 : "No instruction loaded";
-            let userLine = instr.user ? `User instruction: ${instr.user}` : "";
+            const userLine = instr.user
+                ? `User instruction: ${instr.user}`
+                : "";
             let statusInfo = "";
 
             if (hasBreakpoint) {
@@ -163,7 +196,7 @@ function handleInstructionsCommand() {
             if (instr.Address === currentPC) {
                 line = colorText(line, "32"); // Green for current instruction
             } else if (instr.Address === PREVIOUS_PC) {
-                line = colorText(line, "34"); // Blue for previously executed instruction
+                line = colorText(line, "33"); // Blue for previously executed instruction
             } else if (instr.Break) {
                 line = colorText(line, "31"); // Red for breakpoint
             }
@@ -185,7 +218,7 @@ function executeNonInteractive() {
         }
         console.log(output);
     }
-    let state = creator.getState();
+    const state = creator.getState();
     // save state.msg to file
     fs.writeFileSync("state.txt", state.msg, "utf8");
     console.log("State saved to state.txt");
@@ -194,7 +227,7 @@ function executeNonInteractive() {
 function handleBreakpointCommand(args: string[]) {
     if (args.length < 2) {
         // List all breakpoints if no address is provided
-        let breakpoints = instructions.filter(instr => instr.Break === true);
+        const breakpoints = instructions.filter(instr => instr.Break === true);
 
         if (breakpoints.length === 0) {
             console.log("No breakpoints set.");
@@ -251,7 +284,7 @@ function handleBreakpointCommand(args: string[]) {
     );
 }
 
-async function handleRunCommand(args: string[], silent = false) {
+function handleRunCommand(args: string[], silent = false) {
     // Check if we have a number argument
     const instructionsToRun =
         args.length > 1 ? parseInt(args[1], 10) : MAX_INSTRUCTIONS;
@@ -320,7 +353,7 @@ async function handleRunCommand(args: string[], silent = false) {
 }
 
 // Interactive mode functions
-async function interactiveMode() {
+function interactiveMode() {
     const rl = readline.createInterface({
         input: process.stdin,
         output: process.stdout,
@@ -345,12 +378,12 @@ async function interactiveMode() {
 
     rl.prompt();
 
-    rl.on("line", async line => {
+    rl.on("line", line => {
         const args = line.trim().split(/\s+/);
         const cmd = args[0].toLowerCase();
 
         try {
-            if (await processCommand(cmd, args)) {
+            if (processCommand(cmd, args)) {
                 rl.close();
                 return;
             }
@@ -365,20 +398,27 @@ async function interactiveMode() {
     });
 }
 
-async function processCommand(cmd: string, args: string[]): Promise<boolean> {
+function processCommand(cmd: string, args: string[]): boolean {
     switch (cmd) {
         case "step":
         case "s":
         case "":
-            await handleStepCommand();
+            handleStepCommand();
+            break;
+        case "unstep":
+        case "u":
+            handleUnstepCommand();
             break;
         case "run":
         case "r":
-            await handleRunCommand(args);
+            handleRunCommand(args);
+            break;
+        case "bit":
+            handleBackInTimeCommand(args, false);
             break;
         case "silent":
         case "sr":
-            await handleRunCommand(args, true);
+            handleRunCommand(args, true);
             break;
         case "break":
         case "b":
@@ -398,7 +438,7 @@ async function processCommand(cmd: string, args: string[]): Promise<boolean> {
             handleInstructionsCommand();
             break;
         case ".":
-            await handleStepCommand();
+            handleStepCommand();
             clearConsole();
             handleInstructionsCommand();
             break;
@@ -418,6 +458,21 @@ async function processCommand(cmd: string, args: string[]): Promise<boolean> {
         case "sv":
             handleSaveCommand(args);
             break;
+        case "snapshot":
+        case "snap":
+            handleSnapshotCommand(args);
+            break;
+        case "restore":
+        case "rest":
+            handleRestoreCommand(args);
+            break;
+        case "about":
+            handleAboutCommand();
+            break;
+        case "config":
+        case "cfg":
+            handleConfigCommand(args);
+            break;
         case "quit":
         case "q":
             return true;
@@ -428,11 +483,108 @@ async function processCommand(cmd: string, args: string[]): Promise<boolean> {
     return false;
 }
 
+function handleBackInTimeCommand(args: string[], silent = false) {
+    if (previousStates.length === 0) {
+        console.log("No previous states available for unstepping.");
+        return;
+    }
+
+    // loop through the previous states until no more states are remaining, or we hit a breakpoint
+    let iterations = 0;
+    let breakpointHit = false;
+    while (previousStates.length > 0 && iterations < MAX_INSTRUCTIONS) {
+        // Get the previous state
+        const prevState = previousStates.pop();
+
+        // Restore the previous state
+        creator.restore(prevState);
+
+        // Restore the previous PC from the state
+        const stateData = JSON.parse(prevState);
+        PREVIOUS_PC = stateData.extraData.PREVIOUS_PC;
+
+        // Check if the current instruction has a breakpoint before executing
+        const pc_value = creator.dumpRegister("PC");
+        const currentPC = "0x" + pc_value.toUpperCase();
+
+        // Find if there's a breakpoint at current PC
+        for (const instr of instructions) {
+            if (instr.Address === currentPC && instr.Break === true) {
+                if (ACCESSIBLE) {
+                    console.log(
+                        `Execution paused: Breakpoint reached at address ${currentPC}`,
+                    );
+                } else {
+                    console.log(
+                        colorText("Breakpoint hit at " + currentPC, "31"),
+                    );
+                }
+                breakpointHit = true;
+                break;
+            }
+        }
+        if (breakpointHit) {
+            break;
+        }
+
+        iterations++;
+    }
+}
+
+function handleSnapshotCommand(args: string[]) {
+    if (args.length > 1) {
+        const filename = args[1];
+        // Dictionary with the previous PC
+        const previousPC = { PREVIOUS_PC };
+        // Add the previous PC to the state
+        const state = creator.snapshot(previousPC);
+        Deno.writeTextFileSync(filename, state);
+        console.log(`Snapshot saved to ${filename}`);
+    } else {
+        const state = creator.snapshot({ PREVIOUS_PC });
+        // Timestamp the snapshot
+        const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+        const filename = `snapshot-${timestamp}.json`;
+        // Save the snapshot to a file
+        Deno.writeTextFileSync(filename, state);
+        console.log(`Snapshot saved to ${filename}`);
+    }
+}
+
+function handleRestoreCommand(args: string[]) {
+    if (args.length > 1) {
+        // First reset the state
+        reset();
+        const filename = args[1];
+        // const filename = "snapshot.json";
+        const state = fs.readFileSync(filename, "utf8");
+        creator.restore(state);
+        // Restore the previous PC
+        const previousPC = JSON.parse(state).extraData.PREVIOUS_PC;
+        PREVIOUS_PC = previousPC;
+        console.log(`State restored from ${filename}`);
+    } else {
+        console.log("Usage: restore <filename>");
+    }
+}
+
+function handleAboutCommand() {
+    console.log("CREATOR CLI");
+    console.log(`Version: ${CLI_VERSION}`);
+    console.log(
+        "CREATOR CLI is a command-line interface for the CREATOR simulator.",
+    );
+    console.log("Copyright (C) 2025 CREATOR Team.");
+}
+
 function handleResetCommand() {
     reset();
 
     // Reset the previous PC tracking
     PREVIOUS_PC = "0x0";
+
+    // Clear the previous states when resetting
+    previousStates = [];
 
     console.log(
         "Program state has been reset. Ready to run from the beginning.",
@@ -445,13 +597,64 @@ function handleInsnCommand() {
     console.log(`0x${instruction} ${asmString}`);
 }
 
-async function handleStepCommand() {
+function handleStepCommand() {
     const { output, completed, error } = executeStep();
     console.log(output);
     if (error) {
         console.error("Error during execution.");
     } else if (completed) {
         console.log("Program execution completed.");
+    }
+}
+
+function handleUnstepCommand() {
+    if (previousStates.length === 0) {
+        console.log("No previous states available for unstepping.");
+        return;
+    }
+
+    // Get the previous state
+    const prevState = previousStates.pop();
+
+    // Restore the previous state
+    creator.restore(prevState);
+
+    // Restore the previous PC from the state
+    const stateData = JSON.parse(prevState);
+    PREVIOUS_PC = stateData.extraData.PREVIOUS_PC;
+
+    handleInsnCommand();
+}
+
+function handleConfigCommand(args: string[]) {
+    if (args.length < 2) {
+        console.log("Current configuration:");
+        console.log(
+            `  max_states: ${MAX_STATES_TO_KEEP === -1 ? "unlimited" : MAX_STATES_TO_KEEP}`,
+        );
+        return;
+    }
+
+    const setting = args[1].toLowerCase();
+
+    if (setting === "max_states" && args.length > 2) {
+        const value = parseInt(args[2], 10);
+        if (isNaN(value)) {
+            console.log(
+                "Invalid value for max_states. Must be a number or -1 for unlimited.",
+            );
+            return;
+        }
+
+        MAX_STATES_TO_KEEP = value;
+        // Clear the states if we're disabling unstepping
+        if (value === 0) {
+            previousStates = [];
+        }
+        console.log(`Set max_states to ${value === -1 ? "unlimited" : value}.`);
+    } else {
+        console.log("Unknown configuration setting or missing value.");
+        console.log("Available settings: max_states [number|-1]");
     }
 }
 
@@ -472,7 +675,7 @@ function handleRegCommand(args: string[]) {
 function handleMemCommand(args: string[]) {
     if (args.length > 1) {
         const address = parseInt(args[1], 16);
-        const count = args.length > 2 ? parseInt(args[2]) : 4;
+        const count = args.length > 2 ? parseInt(args[2], 10) : 4;
         displayMemory(address, count);
     } else {
         console.log("Usage: mem <address> [count]");
@@ -493,7 +696,7 @@ function handleHexViewCommand(args: string[]) {
 function handleSaveCommand(args: string[]) {
     const filename = args.length > 1 ? args[1] : "state.txt";
 
-    let state = creator.getState();
+    const state = creator.getState();
     try {
         fs.writeFileSync(filename, state.msg, "utf8");
         console.log(`State saved to ${filename}`);
@@ -560,8 +763,8 @@ function displayHelp() {
     console.log("Available commands:");
 
     if (ACCESSIBLE) {
-        console.log("Command list optimized for screen readers:");
         console.log("'step' or 's': Execute a single instruction.");
+        console.log("'unstep' or 'u': Undo the last instruction executed.");
         console.log(
             "'run' or 'r' followed by optional number: Execute multiple instructions.",
         );
@@ -588,12 +791,25 @@ function displayHelp() {
         console.log(
             "'save' followed by optional filename: Save execution state to a file.",
         );
+        console.log(
+            "'snapshot' or 'snap' followed by optional filename: Save a complete snapshot of the current state.",
+        );
+        console.log(
+            "'restore' or 'rest' followed by filename: Restore a previously saved snapshot.",
+        );
         console.log("'reset': Reset program to initial state.");
+        console.log(
+            "'config max_states <n>': Set the maximum number of states to keep for unstepping (-1 for unlimited, 0 to disable).",
+        );
         console.log("'help' or 'h': Show this help message.");
+        console.log("'about': Show information about the simulator.");
         console.log("'quit' or 'q': Exit the simulator.");
     } else {
         console.log(
             "  step, s                                      - Execute one instruction",
+        );
+        console.log(
+            "  unstep, u                                    - Undo last instruction",
         );
         console.log(
             "  run, r [n]                                   - Run n instructions or until program completes",
@@ -626,7 +842,19 @@ function displayHelp() {
             "  save, sv [filename]                          - Save current state to file",
         );
         console.log(
+            "  snapshot, snap [filename]                    - Save a complete snapshot of current state",
+        );
+        console.log(
+            "  restore, rest <filename>                     - Restore a previously saved snapshot",
+        );
+        console.log(
+            "  config, cfg max_states <n>                   - Set max states to keep for unstepping",
+        );
+        console.log(
             "  help, h                                      - Show this help message",
+        );
+        console.log(
+            "  about                                        - Show information about the simulator",
         );
         console.log(
             "  quit, q                                      - Quit the simulator",
@@ -717,11 +945,10 @@ function main() {
     ACCESSIBLE = argv.accessible;
 
     if (!ACCESSIBLE) {
-        let creatorASCII = ` \u2588\u2588\u2588\u2588\u2588\u2588\u2557\u2588\u2588\u2588\u2588\u2588\u2588\u2557 \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2557 \u2588\u2588\u2588\u2588\u2588\u2557 \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2557 \u2588\u2588\u2588\u2588\u2588\u2588\u2557 \u2588\u2588\u2588\u2588\u2588\u2588\u2557 \r\n\u2588\u2588\u2554\u2550\u2550\u2550\u2550\u255D\u2588\u2588\u2554\u2550\u2550\u2588\u2588\u2557\u2588\u2588\u2554\u2550\u2550\u2550\u2550\u255D\u2588\u2588\u2554\u2550\u2550\u2588\u2588\u2557\u255A\u2550\u2550\u2588\u2588\u2554\u2550\u2550\u255D\u2588\u2588\u2554\u2550\u2550\u2550\u2588\u2588\u2557\u2588\u2588\u2554\u2550\u2550\u2588\u2588\u2557\r\n\u2588\u2588\u2551     \u2588\u2588\u2588\u2588\u2588\u2588\u2554\u255D\u2588\u2588\u2588\u2588\u2588\u2557  \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2551   \u2588\u2588\u2551   \u2588\u2588\u2551   \u2588\u2588\u2551\u2588\u2588\u2588\u2588\u2588\u2588\u2554\u255D\r\n\u2588\u2588\u2551     \u2588\u2588\u2554\u2550\u2550\u2588\u2588\u2557\u2588\u2588\u2554\u2550\u2550\u255D  \u2588\u2588\u2554\u2550\u2550\u2588\u2588\u2551   \u2588\u2588\u2551   \u2588\u2588\u2551   \u2588\u2588\u2551\u2588\u2588\u2554\u2550\u2550\u2588\u2588\u2557\r\n\u255A\u2588\u2588\u2588\u2588\u2588\u2588\u2557\u2588\u2588\u2551  \u2588\u2588\u2551\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2557\u2588\u2588\u2551  \u2588\u2588\u2551   \u2588\u2588\u2551   \u255A\u2588\u2588\u2588\u2588\u2588\u2588\u2554\u255D\u2588\u2588\u2551  \u2588\u2588\u2551\r\n \u255A\u2550\u2550\u2550\u2550\u2550\u255D\u255A\u2550\u255D  \u255A\u2550\u255D\u255A\u2550\u2550\u2550\u2550\u2550\u2550\u255D\u255A\u2550\u255D  \u255A\u2550\u255D   \u255A\u2550\u255D    \u255A\u2550\u2550\u2550\u2550\u2550\u255D \u255A\u2550\u255D  \u255A\u2550\u255D\r\n                                                          `;
+        const creatorASCII = ` \u2588\u2588\u2588\u2588\u2588\u2588\u2557\u2588\u2588\u2588\u2588\u2588\u2588\u2557 \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2557 \u2588\u2588\u2588\u2588\u2588\u2557 \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2557 \u2588\u2588\u2588\u2588\u2588\u2588\u2557 \u2588\u2588\u2588\u2588\u2588\u2588\u2557 \r\n\u2588\u2588\u2554\u2550\u2550\u2550\u2550\u255D\u2588\u2588\u2554\u2550\u2550\u2588\u2588\u2557\u2588\u2588\u2554\u2550\u2550\u2550\u2550\u255D\u2588\u2588\u2554\u2550\u2550\u2588\u2588\u2557\u255A\u2550\u2550\u2588\u2588\u2554\u2550\u2550\u255D\u2588\u2588\u2554\u2550\u2550\u2550\u2588\u2588\u2557\u2588\u2588\u2554\u2550\u2550\u2588\u2588\u2557\r\n\u2588\u2588\u2551     \u2588\u2588\u2588\u2588\u2588\u2588\u2554\u255D\u2588\u2588\u2588\u2588\u2588\u2557  \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2551   \u2588\u2588\u2551   \u2588\u2588\u2551   \u2588\u2588\u2551\u2588\u2588\u2588\u2588\u2588\u2588\u2554\u255D\r\n\u2588\u2588\u2551     \u2588\u2588\u2554\u2550\u2550\u2588\u2588\u2557\u2588\u2588\u2554\u2550\u2550\u255D  \u2588\u2588\u2554\u2550\u2550\u2588\u2588\u2551   \u2588\u2588\u2551   \u2588\u2588\u2551   \u2588\u2588\u2551\u2588\u2588\u2554\u2550\u2550\u2588\u2588\u2557\r\n\u255A\u2588\u2588\u2588\u2588\u2588\u2588\u2557\u2588\u2588\u2551  \u2588\u2588\u2551\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2557\u2588\u2588\u2551  \u2588\u2588\u2551   \u2588\u2588\u2551   \u255A\u2588\u2588\u2588\u2588\u2588\u2588\u2554\u255D\u2588\u2588\u2551  \u2588\u2588\u2551\r\n \u255A\u2550\u2550\u2550\u2550\u2550\u255D\u255A\u2550\u255D  \u255A\u2550\u255D\u255A\u2550\u2550\u2550\u2550\u2550\u2550\u255D\u255A\u2550\u255D  \u255A\u2550\u255D   \u255A\u2550\u255D    \u255A\u2550\u2550\u2550\u2550\u2550\u255D \u255A\u2550\u255D  \u255A\u2550\u255D\r\n                                                          `;
 
         console.log(creatorASCII);
     }
-    console.log(`CREATOR CLI version: ${CLI_VERSION}`);
 
     // Load architecture
     loadArchitecture(argv.architecture, argv.isa);
@@ -744,8 +971,8 @@ function main() {
         executeNonInteractive();
         if (argv.reference) {
             const referenceState = fs.readFileSync(argv.reference, "utf8");
-            let state = creator.getState();
-            let ret = creator.diffStates(referenceState, state.msg);
+            const state = creator.getState();
+            const ret = creator.diffStates(referenceState, state.msg);
             if (ret.status === "ok") {
                 console.log("States are equal");
             }

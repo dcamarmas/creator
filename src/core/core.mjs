@@ -29,13 +29,19 @@ import {
 import { float2bin, double2bin, bin2hex, hex2double } from "./utils/utils.mjs";
 
 import { logger } from "./utils/creator_logger.mjs";
-import { assembly_compiler, instructions } from "./compiler/compiler.mjs";
+import {
+    assembly_compiler,
+    instructions,
+    setInstructions,
+} from "./compiler/compiler.mjs";
 import { executeProgramOneShot } from "./executor/executor.mjs";
 import {
     main_memory_get_addresses,
     main_memory_read_value,
     main_memory_read_default_value,
     main_memory,
+    main_memory_serialize,
+    main_memory_restore,
 } from "./memory/memoryCore.mjs";
 import * as wasm from "./compiler/deno/creator_compiler.js";
 import yaml from "js-yaml";
@@ -61,7 +67,7 @@ const word_size_bits = 32; // TODO: load from architecture
 export const word_size_bytes = word_size_bits / 8; // TODO: load from architecture
 export const register_size_bits = 32;
 
-export const status = {
+export let status = {
     execution_init: 1,
     totalStats: 0,
     run_program: 0,
@@ -123,6 +129,10 @@ let code_binary = "";
 
 const CAPI = initCAPI();
 let creator_debug = false;
+
+BigInt.prototype.toJSON = function () {
+    return JSON.rawJSON(this.toString());
+};
 
 export function set_debug(enable_debug) {
     creator_debug = enable_debug;
@@ -1265,6 +1275,50 @@ export function getState() {
 
     return ret;
 }
+export function snapshot(extraData) {
+    // Dump architecture object to file
+    const architectureJson = JSON.stringify(architecture);
+    const instructionsJson = JSON.stringify(instructions);
+
+    // Also dump the main_memory
+    const memoryJson = main_memory_serialize();
+
+    // And the status
+    const statusJson = JSON.stringify(status);
+
+    // Combine all JSON strings into a single snapshot string
+    const combinedState = JSON.stringify({
+        architecture: architectureJson,
+        instructions: instructionsJson,
+        memory: memoryJson,
+        status: statusJson,
+        extraData: extraData,
+    });
+
+    // Return the snapshot string
+    return combinedState;
+}
+
+export function restore(snapshot) {
+    // Parse the snapshot string back into an object
+    const parsedSnapshot = JSON.parse(snapshot);
+    const architectureJson = parsedSnapshot.architecture;
+    const memoryJson = parsedSnapshot.memory;
+    const instructionsJson = parsedSnapshot.instructions;
+    const statusJson = parsedSnapshot.status;
+    const architectureObj = JSON.parse(architectureJson);
+    const memoryObj = JSON.parse(memoryJson);
+    const instructionsObj = JSON.parse(instructionsJson);
+    const statusObj = JSON.parse(statusJson);
+    // Restore the instructions
+    setInstructions(instructionsObj);
+    // Restore the architecture object
+    architecture = architectureObj;
+    // Restore the main memory
+    main_memory_restore(memoryObj);
+    // Restore the status
+    status = statusObj;
+}
 
 export function diffStates(referenceState, state) {
     let ret = {
@@ -1349,88 +1403,6 @@ export function diffStates(referenceState, state) {
     return ret;
 }
 
-export function compare_states(ref_state, alt_state) {
-    const ret = {
-        status: "ok",
-        msg: "",
-    };
-
-    const ref_state_arr = ref_state
-        .split("\n")
-        .map(function (s) {
-            return s.replace(/^\s*|\s*$/g, "");
-        })
-        .filter(function (x) {
-            return x;
-        });
-    if (ref_state_arr.length > 0)
-        ref_state = ref_state_arr[ref_state_arr.length - 1];
-    else ref_state = "";
-
-    const alt_state_arr = alt_state
-        .split("\n")
-        .map(function (s) {
-            return s.replace(/^\s*|\s*$/g, "");
-        })
-        .filter(function (x) {
-            return x;
-        });
-    if (alt_state_arr.length > 0)
-        alt_state = alt_state_arr[alt_state_arr.length - 1];
-    else alt_state = "";
-
-    // 1) check equals
-    if (ref_state == alt_state) {
-        //ret.msg = "Equals" ;
-        return ret;
-    }
-
-    // 2) check m_alt included within m_ref
-    const m_ref = {};
-    if (ref_state.includes(";")) {
-        ref_state.split(";").map(function (i) {
-            const parts = i.split(":");
-            if (parts.length !== 2) {
-                return;
-            }
-
-            m_ref[parts[0].trim()] = parts[1].trim();
-        });
-    }
-
-    const m_alt = {};
-    if (alt_state.includes(";")) {
-        alt_state.split(";").map(function (i) {
-            const parts = i.split(":");
-            if (parts.length != 2) {
-                return;
-            }
-
-            m_alt[parts[0].trim()] = parts[1].trim();
-        });
-    }
-
-    ret.msg = "Different: ";
-    for (const elto in m_ref) {
-        if (m_alt[elto] != m_ref[elto]) {
-            if (typeof m_alt[elto] === "undefined")
-                ret.msg += elto + "=" + m_ref[elto] + " is not available. ";
-            else
-                ret.msg +=
-                    elto + "=" + m_ref[elto] + " is =" + m_alt[elto] + ". ";
-
-            ret.status = "ko";
-        }
-    }
-
-    // last) is different...
-    if (ret.status != "ko") {
-        ret.msg = "";
-    }
-
-    return ret;
-}
-
 // help
 
 export function help_instructions() {
@@ -1468,7 +1440,6 @@ export function help_pseudoins() {
     return o;
 }
 
-// memory dump for debugging
 export function dumpMemory(startAddr, numBytes, bytesPerRow = 16) {
     startAddr = BigInt(startAddr);
     numBytes = BigInt(numBytes);
