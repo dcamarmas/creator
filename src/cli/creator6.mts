@@ -8,6 +8,11 @@ import process from "node:process";
 import { logger } from "../core/utils/creator_logger.mjs";
 import readline from "node:readline";
 import { instructions } from "../core/compiler/compiler.mjs";
+import {
+    track_stack_getFrames,
+    track_stack_getNames,
+    track_stack_getAllHints,
+} from "../core/memory/stackTracker.mjs";
 
 const MAX_INSTRUCTIONS = 9999;
 const CLI_VERSION = "0.1.0";
@@ -626,6 +631,214 @@ function handleSaveCommand(args: string[]) {
     }
 }
 
+// Helper function to find a label for a memory address
+function findLabelForAddress(address: string): string {
+    // Convert input address to standard format (lowercase with 0x prefix)
+    if (!address) return "unknown";
+
+    const normalizedAddress = address.toLowerCase();
+
+    // Search through instructions for a matching address
+    for (const instr of instructions) {
+        if (instr.Address.toLowerCase() === normalizedAddress && instr.Label) {
+            return instr.Label;
+        }
+    }
+
+    // Return the original address if no label is found
+    return address;
+}
+
+// eslint-disable-next-line max-lines-per-function
+function handleStackCommand(args: string[]) {
+    try {
+        const showMemory =
+            args.length > 1 && args[1].toLowerCase() === "memory";
+
+        // Get the stack frames information
+        const stackFrames = track_stack_getFrames();
+        const stackNames = track_stack_getNames();
+        const stackHints = track_stack_getAllHints();
+
+        if (!stackFrames.ok || stackFrames.val.length === 0) {
+            console.log("No stack information available.");
+            return;
+        }
+
+        // 1. Display call stack hierarchy
+        console.log(
+            ACCESSIBLE ? "Call Stack:" : colorText("Call Stack:", "36"),
+        );
+
+        // Visual representation with indentation
+        for (let i = stackFrames.val.length - 1; i >= 0; i--) {
+            const frame = stackFrames.val[i];
+            // Get function name from label or fall back to address
+            const addressStr = stackNames.val[i] || "";
+            const functionName = findLabelForAddress(addressStr) || "unknown";
+            const depth = stackFrames.val.length - 1 - i;
+            const indent = "  ".repeat(depth);
+            const frameSize = frame.begin_callee - frame.end_callee;
+            const prefix = i === stackFrames.val.length - 1 ? "►" : "•";
+
+            // Current frame in green, others in default
+            const color = i === stackFrames.val.length - 1 ? "32" : "0";
+
+            const beginAddress = parseInt(frame.begin_callee, 16);
+            const beginAddressHex = `0x${beginAddress.toString(16).toUpperCase()}`;
+            const endAddress = parseInt(frame.end_callee, 16);
+            const endAddressHex = `0x${endAddress.toString(16).toUpperCase()}`;
+
+            console.log(
+                colorText(
+                    `${indent}${prefix} ${functionName} (${beginAddressHex} - ${endAddressHex}, ${frameSize} bytes)`,
+                    color,
+                ),
+            );
+        }
+
+        // 2. Show stack frame details for the current (top) frame
+        const stackTop = stackFrames.val[stackFrames.val.length - 1];
+        console.log(colorText("\nCurrent Frame Details:", "36"));
+
+        // Get function name from label for current function
+        const currentAddrStr = stackNames.val[stackNames.val.length - 1] || "";
+        const currentFuncName =
+            findLabelForAddress(currentAddrStr) || "unknown";
+
+        console.log(`Function: ${currentFuncName}`);
+
+        const beginAddress = parseInt(stackTop.begin_callee, 16);
+        const beginAddressHex = `0x${beginAddress.toString(16).toUpperCase()}`;
+        const endAddress = parseInt(stackTop.end_callee, 16);
+        const endAddressHex = `0x${endAddress.toString(16).toUpperCase()}`;
+
+        console.log(`Frame: ${beginAddressHex} - ${endAddressHex}`);
+
+        // Calculate frame size
+        const frameSize = stackTop.begin_callee - stackTop.end_callee;
+        console.log(`Size: ${frameSize} bytes`);
+
+        if (
+            stackFrames.val.length > 1 &&
+            stackTop.begin_caller !== stackTop.begin_callee
+        ) {
+            // Get function name from label for caller
+            const callerAddrStr =
+                stackNames.val[stackNames.val.length - 2] || "";
+            const callerFuncName =
+                findLabelForAddress(callerAddrStr) || "unknown";
+
+            const callerBeginAddress = parseInt(stackTop.begin_callee, 16);
+            const callerBeginAddressHex = `0x${callerBeginAddress.toString(16).toUpperCase()}`;
+            const callerEndAddress = parseInt(stackTop.end_callee, 16);
+            const callerEndAddressHex = `0x${callerEndAddress.toString(16).toUpperCase()}`;
+
+            console.log(`Caller: ${callerFuncName}`);
+            console.log(
+                `Caller frame: ${callerBeginAddressHex} - ${callerEndAddressHex}`,
+            );
+        }
+
+        // 3. Show stack memory contents
+        console.log(colorText("\nStack Memory Contents:", "36"));
+
+        // Calculate the range to display for the entire stack, not just current frame
+        // Get current stack pointer
+        const startAddressHex = stackTop.end_callee;
+        const startAddress = parseInt(startAddressHex, 16);
+
+        // Find the highest address in the stack (from the bottom-most frame)
+        // This is the beginning of the first frame in the stack
+        const bottomFrame = stackFrames.val[0];
+        const stackEndAddressHex =
+            bottomFrame.begin_caller || bottomFrame.begin_callee;
+        let stackEndAddress = parseInt(stackEndAddressHex, 16);
+
+        // If stack is very large, limit to a reasonable number of bytes
+        const maxBytesToShow = args.length > 2 ? parseInt(args[2]) : 256;
+        const bytesToShow = Math.min(
+            stackEndAddress - startAddress,
+            maxBytesToShow,
+        );
+        stackEndAddress = startAddress + bytesToShow;
+
+        // Show memory contents with frame boundary annotations
+        for (let addr = startAddress; addr < stackEndAddress; addr += 4) {
+            const bytes = creator.dumpAddress(addr, 4);
+            const valueStr = "0x" + bytes.padStart(8, "0").toUpperCase();
+            const formattedAddr = `0x${addr.toString(16).padStart(8, "0").toUpperCase()}`;
+
+            // Identify which frame this address belongs to and add annotations
+            let annotation = "";
+            let frameIndex = -1;
+
+            // Find which frame this address belongs to
+            for (let i = 0; i < stackFrames.val.length; i++) {
+                const frame = stackFrames.val[i];
+                const endCallee = parseInt(frame.end_callee, 16);
+                const beginCallee = parseInt(frame.begin_callee, 16);
+
+                if (addr >= endCallee && addr < beginCallee) {
+                    frameIndex = i;
+                    break;
+                }
+            }
+
+            // Check if there's a hint for this address
+            if (stackHints.ok) {
+                const hint = stackHints.val[formattedAddr];
+                if (hint) {
+                    annotation += (annotation ? ", " : "") + `"${hint}"`;
+                }
+            }
+
+            // Mark stack pointer
+            const stackPointer = parseInt(stackTop.end_callee, 16);
+            if (addr === stackPointer) {
+                annotation += (annotation ? ", " : "") + "← SP";
+            }
+
+            // Mark frame boundaries
+            for (let i = 0; i < stackFrames.val.length; i++) {
+                const frame = stackFrames.val[i];
+                if (
+                    addr === frame.end_callee &&
+                    i !== stackFrames.val.length - 1
+                ) {
+                    // Get function name from label
+                    const funcName =
+                        findLabelForAddress(stackNames.val[i] || "") ||
+                        "unknown";
+                    annotation +=
+                        (annotation ? ", " : "") + `← ${funcName} frame start`;
+                }
+                if (addr === frame.begin_callee - 4) {
+                    // Get function name from label
+                    const funcName =
+                        findLabelForAddress(stackNames.val[i] || "") ||
+                        "unknown";
+                    annotation +=
+                        (annotation ? ", " : "") + `← ${funcName} frame end`;
+                }
+            }
+
+            // Color-code by frame
+            let line = `${formattedAddr}: ${valueStr.padEnd(10)} ${annotation}`;
+            if (frameIndex >= 0) {
+                // Use different colors for different frames
+                const colorCodes = ["32", "33", "36", "35", "34"];
+                const colorCode = colorCodes[frameIndex % colorCodes.length];
+                line = colorText(line, colorCode);
+            }
+
+            console.log(line);
+        }
+    } catch (error) {
+        console.error("Error retrieving stack information:", error.message);
+    }
+}
+
 // eslint-disable-next-line max-lines-per-function
 function displayHelp() {
     console.log("Available commands:");
@@ -668,6 +881,9 @@ function displayHelp() {
         console.log("'reset': Reset program to initial state.");
         console.log(
             "'config max_states <n>': Set the maximum number of states to keep for unstepping (-1 for unlimited, 0 to disable).",
+        );
+        console.log(
+            "'stack': Display the call stack hierarchy and frame information.",
         );
         console.log("'help' or 'h': Show this help message.");
         console.log("'about': Show information about the simulator.");
@@ -717,6 +933,9 @@ function displayHelp() {
         );
         console.log(
             "  config, cfg max_states <n>                   - Set max states to keep for unstepping",
+        );
+        console.log(
+            "  stack                                        - Display call stack hierarchy and frame info",
         );
         console.log(
             "  help, h                                      - Show this help message",
@@ -875,6 +1094,9 @@ function processCommand(cmd: string, args: string[]): boolean {
         case "cfg":
             handleConfigCommand(args);
             break;
+        case "stack":
+            handleStackCommand(args);
+            break;
         case "quit":
         case "q":
             return true;
@@ -963,6 +1185,7 @@ function main() {
 
     // Run in interactive or non-interactive mode
     if (argv.interactive) {
+        reset();
         interactiveMode();
     } else {
         executeNonInteractive();

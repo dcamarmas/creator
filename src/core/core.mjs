@@ -47,6 +47,7 @@ import * as wasm from "./compiler/deno/creator_compiler.js";
 import yaml from "js-yaml";
 import { crex_findReg } from "./register/registerLookup.mjs";
 import { readRegister } from "./register/registerOperations.mjs";
+import { dumpStack, loadStack } from "./memory/stackTracker.mjs";
 
 export let code_assembly = "";
 export let update_binary = "";
@@ -1291,12 +1292,16 @@ export function snapshot(extraData) {
     // And the status
     const statusJson = JSON.stringify(status);
 
+    // And the stack
+    const stackData = dumpStack();
+
     // Combine all JSON strings into a single snapshot string
     const combinedState = JSON.stringify({
         architecture: architectureJson,
         instructions: instructionsJson,
         memory: memoryJson,
         status: statusJson,
+        stack: stackData,
         extraData: extraData,
     });
 
@@ -1315,12 +1320,15 @@ export function restore(snapshot) {
     const memoryObj = JSON.parse(memoryJson);
     const instructionsObj = JSON.parse(instructionsJson);
     const statusObj = JSON.parse(statusJson);
+    const stackData = parsedSnapshot.stack;
     // Restore the instructions
     setInstructions(instructionsObj);
     // Restore the architecture object
     architecture = architectureObj;
     // Restore the main memory
     main_memory_restore(memoryObj);
+    // Restore the stack
+    loadStack(stackData);
     // Restore the status
     status = statusObj;
 }

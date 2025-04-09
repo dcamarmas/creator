@@ -24,6 +24,10 @@ import { tag_instructions } from "../compiler/compiler.mjs";
 import {
     track_stack_enter,
     track_stack_leave,
+    track_stack_addHint,
+    track_stack_getHint,
+    track_stack_getAllHints,
+    track_stack_clearHints,
 } from "../memory/stackTracker.mjs";
 
 export const CAPI_DRAW_STACK = {
@@ -51,5 +55,15 @@ export const CAPI_DRAW_STACK = {
 
         // User notification
         crex_show_notification(ret.msg, "warning");
+    },
+
+    // Add a hint for a specific memory address
+    // Example: drawstack_add_hint(0xFFFFFFFC, "whatever register");
+    drawstack_add_hint: function (address, name) {
+        const ret = track_stack_addHint(address, name);
+        if (!ret.ok) {
+            crex_show_notification(ret.msg, "warning");
+        }
+        return ret.ok;
     },
 };

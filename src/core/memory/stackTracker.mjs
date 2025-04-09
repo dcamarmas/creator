@@ -41,13 +41,21 @@ let track_stack_names = [];
  */
 let track_stack_limits = [];
 /*
+ *  stack_hints = {
+ *    "0xFFFFFFFC": "hint",
+ *    ...
+ *  } ;
+ */
+let stack_hints = [];
+
+/*
  * Public API
  */
 //
 // Initialize
 // Example: track_stack_create() ;
 //
-function track_stack_create() {
+export function track_stack_create() {
     const ret = {
         ok: true,
         msg: "",
@@ -139,7 +147,7 @@ export function track_stack_leave() {
 // Get the last element
 // Example: var elto = track_stack_getTop() ;
 //
-function track_stack_getTop() {
+export function track_stack_getTop() {
     const ret = {
         ok: true,
         val: {
@@ -162,6 +170,40 @@ function track_stack_getTop() {
     ret.val = track_stack_limits[track_stack_limits.length - 1];
     if (typeof ret.val.begin_caller === "undefined") {
         ret.val.begin_caller = architecture.memory_layout[4].value;
+    }
+
+    return ret;
+}
+//
+// Get all stack frames
+// Example: var frames = track_stack_getFrames() ;
+//
+export function track_stack_getFrames() {
+    const ret = {
+        ok: track_stack_limits.length > 0,
+        val: track_stack_limits,
+        msg: "",
+    };
+
+    if (!ret.ok) {
+        ret.msg = "track_stack_getFrames: empty track_stack_limits.";
+    }
+
+    return ret;
+}
+//
+// Get all function names in the call stack
+// Example: var names = track_stack_getNames() ;
+//
+export function track_stack_getNames() {
+    const ret = {
+        ok: track_stack_names.length > 0,
+        val: track_stack_names,
+        msg: "",
+    };
+
+    if (!ret.ok) {
+        ret.msg = "track_stack_getNames: empty track_stack_names.";
     }
 
     return ret;
@@ -207,10 +249,105 @@ export function track_stack_setsp(value) {
         return;
     }
 
+    // convert value to hex string
+    let str = "0x" + value.toString(16).toUpperCase(); // This will be a source of headaches
+
     // return the last element in the array
     const elto = track_stack_limits[track_stack_limits.length - 1];
-    elto.end_callee = value;
+    elto.end_callee = str;
 }
+
+//
+// Add a hint for a specific memory address
+// Example: track_stack_addHint("0xFFFFFFFC", "local_var") ;
+//
+export function track_stack_addHint(address, name) {
+    const ret = {
+        ok: true,
+        msg: "",
+    };
+
+    if (typeof address !== "string" && typeof address !== "number") {
+        ret.ok = false;
+        ret.msg = "Invalid address format";
+        return ret;
+    }
+
+    // Convert address to string if it's a number
+    const addr =
+        typeof address === "number"
+            ? "0x" + address.toString(16).toUpperCase()
+            : address;
+
+    stack_hints[addr] = name;
+    return ret;
+}
+
+//
+// Get hint for a specific memory address
+// Example: var hint = track_stack_getHint("0xFFFFFFFC") ;
+//
+export function track_stack_getHint(address) {
+    const ret = {
+        ok: true,
+        val: null,
+        msg: "",
+    };
+
+    if (typeof address !== "string" && typeof address !== "number") {
+        ret.ok = false;
+        ret.msg = "Invalid address format";
+        return ret;
+    }
+
+    // Convert address to string if it's a number
+    const addr =
+        typeof address === "number"
+            ? "0x" + address.toString(16).toUpperCase()
+            : address;
+
+    ret.val = stack_hints[addr] || null;
+
+    if (ret.val === null) {
+        ret.ok = false;
+        ret.msg = "No hint found for address " + addr;
+    }
+
+    return ret;
+}
+
+//
+// Get all hints
+// Example: var allHints = track_stack_getAllHints() ;
+//
+export function track_stack_getAllHints() {
+    const ret = {
+        ok: Object.keys(stack_hints).length > 0,
+        val: stack_hints,
+        msg: "",
+    };
+
+    if (!ret.ok) {
+        ret.msg = "No hints defined";
+    }
+
+    return ret;
+}
+
+//
+// Clear all hints
+// Example: track_stack_clearHints() ;
+//
+export function track_stack_clearHints() {
+    const ret = {
+        ok: true,
+        msg: "",
+    };
+
+    stack_hints = {};
+    return ret;
+}
+
 //
 // Reset
 // Example: track_stack_reset() ;
@@ -224,6 +361,7 @@ export function track_stack_reset() {
     // initialize stack_call
     track_stack_names = [];
     track_stack_limits = [];
+    stack_hints = {}; // Clear hints
     track_stack_enter("main");
 
     // draw new limits
@@ -239,4 +377,24 @@ export function track_stack_reset() {
     }
 
     return ret;
+}
+
+export function dumpStack() {
+    return {
+        stack_hints: stack_hints,
+        track_stack_names: track_stack_names,
+        track_stack_limits: track_stack_limits,
+    };
+}
+
+export function loadStack(data) {
+    if (data.stack_hints) {
+        stack_hints = data.stack_hints;
+    }
+    if (data.track_stack_names) {
+        track_stack_names = data.track_stack_names;
+    }
+    if (data.track_stack_limits) {
+        track_stack_limits = data.track_stack_limits;
+    }
 }
