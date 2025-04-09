@@ -1469,7 +1469,7 @@ instructions:
           fields:
               - field: opcode
                 value: "1101111"
-          definition: "rd = PC + 4n;\n PC = PC + imm;\n capi_callconv_begin(imm); capi_drawstack_begin(imm);"
+          definition: "rd = PC + 4n;\n PC = PC + imm;\n capi_callconv_begin(PC); capi_drawstack_begin(PC);"
 
         # R-type instructions
         #     31-25    24-20   19-15   14-12   11-7    6-0
@@ -1615,6 +1615,7 @@ instructions:
                 value: "001"
           definition: "capi_mem_write(imm+rs1, rs2, 'h', rs2_name);"
 
+        # The check for the
         - name: sw
           type: S
           fields:
@@ -1622,7 +1623,7 @@ instructions:
                 value: "0100011"
               - field: funct3
                 value: "010"
-          definition: "capi_mem_write(imm+rs1, rs2, 'w', rs2_name);"
+          definition: "capi_mem_write(imm+rs1, rs2, 'w', rs2_name); if (rs1_name === 'sp') { const formattedAddr = '0x'+(imm+rs1).toString(16).padStart(8, '0').toUpperCase(); capi_drawstack_add_hint(formattedAddr, rs2_name) }"
 
         # U-type instructions
         #           31-12                   11-7    6-0

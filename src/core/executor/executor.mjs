@@ -39,9 +39,11 @@ import {
 } from "../register/registerOperations.mjs";
 import { creator_callstack_reset } from "../sentinel/sentinel.mjs";
 import {
+    track_stack_getTop,
     track_stack_reset,
     track_stack_setsp,
 } from "../memory/stackTracker.mjs";
+import * as stack from "../memory/stackTracker.mjs";
 import {
     bi_intToBigInt,
     bi_BigIntTofloat,
