@@ -434,3 +434,61 @@ export default {
     </b-modal>
   </div>
 </template>
+
+<style lang="scss" scoped>
+.memoryLayout {
+  width: 100%;
+  text-align: center;
+}
+
+.memoryLayoutDiv {
+  margin-top: 2%;
+  margin-bottom: 2%;
+}
+
+.memoryLayoutForm {
+  margin-bottom: 2%;
+}
+.memory_table {
+  max-height: 49vh;
+  padding-left: 1vw;
+}
+
+.table-mem-wrapper-scroll-y {
+  display: block;
+  max-height: 75vh;
+  overflow-y: auto;
+  -ms-overflow-style: -ms-autohiding-scrollbar;
+}
+
+.memoryValue {
+  float: right;
+  margin-right: 2%;
+}
+
+.memoryBorder {
+  border: 1px solid gray;
+}
+
+.memoryTag {
+  float: left;
+  position: relative;
+  left: -0.7vw;
+}
+
+.binaryTag {
+  position: relative;
+  top: -9px;
+}
+
+.table-inst-wrapper-scroll-y {
+  display: block;
+  max-height: 90vh;
+  overflow-y: auto;
+  -ms-overflow-style: -ms-autohiding-scrollbar;
+}
+
+.text-blue-funny {
+  color: #00bcfe;
+}
+</style>

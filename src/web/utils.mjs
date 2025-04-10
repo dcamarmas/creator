@@ -54,11 +54,12 @@ export function show_notification(msg, type, showToast) {
     // show notification
     showToast?.({
         props: {
+            title: "",
             body: msg,
             variant: type,
             // solid: true,
             pos: "top-center",
-            // delay: app._data.notificationTime,  // TODO: route this
+            // delay: document.app.$data.notificationTime,  // TODO: route this
             autoHide: type !== "danger",  // TODO: this is not working
         }
     })
@@ -69,13 +70,9 @@ export function show_notification(msg, type, showToast) {
         mess: msg,
         color: type,
         time:
-            date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds(),
+            date.toLocaleTimeString('es-ES'),
         date:
-            date.getDate() +
-            "/" +
-            (date.getMonth() + 1) +
-            "/" +
-            date.getFullYear(),
+            date.toLocaleDateString('es-ES')
     })
 
     return true

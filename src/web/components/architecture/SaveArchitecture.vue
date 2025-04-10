@@ -121,3 +121,10 @@ export default {
     </b-form-input>
   </b-modal>
 </template>
+
+<style lang="scss" scoped>
+.fileForm {
+  background-color: white;
+  color: black;
+}
+</style>

@@ -1112,8 +1112,8 @@ export function clk_cycles_update(type) {
             clk_cycles_value[0].data[i]++;
 
             total_clk_cycles++;
-            if (typeof app !== "undefined") {
-                app._data.total_clk_cycles++;
+            if (typeof document !== "undefined") {
+                document.app.$data.total_clk_cycles++;
             }
         }
     }
@@ -1127,8 +1127,8 @@ export function clk_cycles_update(type) {
 }
 function clk_cycles_reset() {
     total_clk_cycles = 0;
-    if (typeof app !== "undefined") {
-        app._data.total_clk_cycles = 0;
+    if (typeof document !== "undefined") {
+        document.app.$data.total_clk_cycles = 0;
     }
 
     for (let i = 0; i < clk_cycles.length; i++) {
@@ -1161,8 +1161,8 @@ export function stats_update(type) {
             stats_value[i]++;
 
             status.totalStats++;
-            if (typeof app !== "undefined") {
-                app._data.status.totalStats++;
+            if (typeof document !== "undefined") {
+                document.app.$data.totalStats++;
             }
         }
     }
@@ -1177,8 +1177,8 @@ export function stats_update(type) {
 
 function stats_reset() {
     status.totalStats = 0;
-    if (typeof app !== "undefined") {
-        app._data.status.totalStats = 0;
+    if (typeof document !== "undefined") {
+        document.app.$data.status.totalStats = 0;
     }
 
     for (let i = 0; i < stats.length; i++) {
@@ -1198,7 +1198,7 @@ export function reset() {
     status.run_program = 0;
 
     // Reset stats
-    stats_reset();
+    // stats_reset();
 
     //Power consumption reset
     clk_cycles_reset();

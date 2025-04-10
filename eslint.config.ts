@@ -6,8 +6,8 @@ import {
 import skipFormatting from "@vue/eslint-config-prettier/skip-formatting";
 
 // To allow more languages other than `ts` in `.vue` files, uncomment the following lines:
-// import { configureVueProject } from '@vue/eslint-config-typescript'
-// configureVueProject({ scriptLangs: ['ts', 'tsx'] })
+// import { configureVueProject } from "@vue/eslint-config-typescript"
+// configureVueProject({ scriptLangs: ["ts", "js"] })
 // More info at https://github.com/vuejs/eslint-config-typescript/#advanced-setup
 
 export default defineConfigWithVueTs(
@@ -63,6 +63,7 @@ export default defineConfigWithVueTs(
           ignorePattern: "^_",
         },
       ],
+      "vue/no-unused-components": "warn",
       eqeqeq: ["error", "always"],
       "max-depth": ["error", 5],
       "vue/multi-word-component-names": "off",
@@ -80,7 +81,7 @@ export default defineConfigWithVueTs(
       "require-await": "error",
       yoda: "error",
       "no-constructor-return": "error",
-      "no-duplicate-imports": "error",
+      "no-duplicate-imports": "warn",
       "no-inner-declarations": "error",
       "no-self-compare": "error",
       "no-template-curly-in-string": "warn",

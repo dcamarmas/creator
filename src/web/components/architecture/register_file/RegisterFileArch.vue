@@ -30,7 +30,10 @@ export default {
     <!-- Register File table -->
     <div class="col-lg-12 col-sm-12 p-0">
       <br />
-      <div class="col-lg-12 col-sm-12 px-0" v-for="(item, index) in register_file">
+      <div
+        class="col-lg-12 col-sm-12 px-0"
+        v-for="(item, index) in register_file"
+      >
         <!-- For each register file -->
         <b-card no-body class="mb-1">
           <b-card-header header-tag="header" class="p-1" role="tab">
@@ -64,3 +67,12 @@ export default {
   </div>
   '
 </template>
+
+<style lang="scss" scoped>
+.architecture-scroll-y {
+  display: block;
+  max-height: 60vh;
+  overflow-y: auto;
+  -ms-overflow-style: -ms-autohiding-scrollbar;
+}
+</style>

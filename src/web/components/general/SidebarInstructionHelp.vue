@@ -83,3 +83,12 @@ export default {
     </b-table>
   </b-offcanvas>
 </template>
+
+<style lang="scss" scoped>
+.help-scroll-y {
+  display: block;
+  max-height: 80vh;
+  overflow-y: auto;
+  -ms-overflow-style: -ms-autohiding-scrollbar;
+}
+</style>

@@ -35,10 +35,16 @@ export default {
         "loadedInstructions",
         "tag",
       ],
+      render: 0n, // dummy variable to force components with this as key to refresh
     }
   },
 
   methods: {
+    refresh() {
+      // refreshes children components with `:key="render"`
+      this.render++
+    },
+
     /*Filter table instructions*/
     filter(row, filter) {
       if (row.hide === true) {
@@ -95,6 +101,7 @@ export default {
           :filter-function="filter"
           filter=" "
           primary-key="Address"
+          :key="render"
         >
           <!-- Change the title of each column -->
           <template v-slot:head(userInstructions)="row">
@@ -172,7 +179,7 @@ export default {
             <b-badge
               variant="info"
               class="border border-info shadow executionTag"
-              v-if="row.item._rowVariant == 'info' && enter == null"
+              v-if="row.item._rowVariant == 'info' && !enter"
             >
               Current
             </b-badge>
@@ -205,5 +212,10 @@ export default {
   float: right;
   position: relative;
   right: -0.7vw;
+}
+
+.breakPoint {
+  width: auto !important;
+  height: 4vh;
 }
 </style>

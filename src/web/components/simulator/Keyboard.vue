@@ -136,3 +136,14 @@ export default {
     </b-container>
   </div>
 </template>
+
+<style lang="scss" scoped>
+.keyboardButton {
+  margin-top: 5%;
+  float: right;
+}
+
+.enterIcon {
+  transform: rotate(90deg);
+}
+</style>

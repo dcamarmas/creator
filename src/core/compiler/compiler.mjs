@@ -245,6 +245,7 @@ function packCompileError(err_code, err_token, err_ti, err_bgcolor) {
 /*Compile assembly code*/
 // eslint-disable-next-line max-lines-per-function
 export function assembly_compiler(library, color) {
+
     /* Google Analytics */
     creator_ga("compile", "compile.assembly")
 
@@ -511,5 +512,5 @@ export function assembly_compiler(library, color) {
         type: "",
         update: "",
         status: "ok",
-    };
+    }
 }
