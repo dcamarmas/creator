@@ -45,7 +45,15 @@ export default {
   data() {
     return {
       vimActive: false,
-      luisdaMode: false,
+      vimCustomKeybinds: [
+        // TODO: let the user specify this
+        // @rajayonin's config
+        { mode: "insert", lhs: "kj", rhs: "<Esc>" },
+        { mode: "normal", lhs: "L", rhs: "$" },
+        { mode: "visual", lhs: "L", rhs: "$" },
+        { mode: "normal", lhs: "H", rhs: "_" },
+        { mode: "visual", lhs: "H", rhs: "_" },
+      ],
       extensions: [
         // custom highlight on top of the default style
         syntaxHighlighting(
@@ -80,72 +88,67 @@ export default {
     },
   },
   methods: {
+    /**
+     * Loads the user's custom configuration for Vim
+     */
+    loadVimCustomConfig() {
+      for (const { mode, lhs, rhs } of this.vimCustomKeybinds) {
+        Vim.map(lhs, rhs, mode)
+      }
+    },
+
+    /**
+     * Removes the user's custom configuration for Vim
+     */
+    removeVimCustomConfig() {
+      for (const { mode, lhs, _ } of this.vimCustomKeybinds) {
+        Vim.unmap(lhs, mode)
+      }
+    },
     toggleVim() {
       if (this.vimActive) {
         // remove extension
         this.extensions.pop()
       } else {
         this.extensions.push(vim()) // add extension
+        this.loadVimCustomConfig()
       }
 
       this.vimActive = !this.vimActive
-    },
-    toggleLuisdaMode() {
-      // @rajayonin's custom keybindings
-      if (!this.luisdaMode) {
-        Vim.map("kj", "<Esc>", "insert")
-        Vim.map("L", "$", "normal")
-        Vim.map("L", "$", "visual")
-        Vim.map("H", "_", "normal")
-        Vim.map("H", "_", "visual")
-      } else {
-        // reset keybindings
-        Vim.map("kj", "kj", "insert")
-        Vim.map("L", "L", "normal")
-        Vim.map("L", "L", "visual")
-        Vim.map("H", "H", "normal")
-        Vim.map("H", "H", "visual")
-      }
-
-      this.luisdaMode = !this.luisdaMode
     },
   },
 }
 </script>
 
 <template>
-  <div>
-    <b-button :pressed="vimActive" @click="toggleVim()" title="Enable Vim mode">
-      <font-awesome-icon icon="fa-brands fa-vimeo-v" /> Vim
-    </b-button>
-    <b-button
-      :pressed="luisdaMode"
-      @click="toggleLuisdaMode()"
-      title="Enable Luisda Vim mode"
-      v-if="vimActive"
-    >
-      <font-awesome-icon icon="fa-solid fa-poo-storm" />
-    </b-button>
+  <PopoverShortcuts target="assemblyInfo" :browser="browser" />
 
-    <br />
+  <b-button
+    size="sm"
+    :pressed="vimActive"
+    @click="toggleVim()"
+    title="Enable Vim mode"
+  >
+    <font-awesome-icon icon="fa-brands fa-vimeo-v" /> Vim
+  </b-button>
 
-    <span id="assemblyInfo" class="fas fa-info-circle"></span>
-    <span class="h5">Assembly:</span>
+  <br />
+  <br />
 
-    <PopoverShortcuts target="assemblyInfo" :browser="browser" />
+  <font-awesome-icon icon="circle-info" />&nbsp;
+  <span class="h5">Assembly:</span>
 
-    <Codemirror
-      v-model="code"
-      basic
-      placeholder="Assembly code..."
-      :lang="lang"
-      :autofocus="true"
-      :indent-with-tab="true"
-      :tab-size="4"
-      :wrap="true"
-      :extensions="extensions"
-    />
-  </div>
+  <Codemirror
+    v-model="code"
+    basic
+    placeholder="Assembly code..."
+    :lang="lang"
+    :autofocus="true"
+    :indent-with-tab="true"
+    :tab-size="4"
+    :wrap="true"
+    :extensions="extensions"
+  />
 </template>
 
 <style lang="scss" scoped>

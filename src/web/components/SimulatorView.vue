@@ -108,7 +108,11 @@ export default {
           <b-row align-h="center">
             <!-- Execution instruction -->
             <b-col lg="7" cols="12">
-              <TableExecution :instructions="instructions" :enter="enter" />
+              <TableExecution
+                :instructions="instructions"
+                :enter="enter"
+                ref="tableExecution"
+              />
             </b-col>
 
             <!-- Execution data -->

@@ -6,124 +6,12 @@
   background-color: white;
 }
 
-.memoryLayout {
-  width: 100%;
-  text-align: center;
-}
-
-.memoryLayoutDiv {
-  margin-top: 2%;
-  margin-bottom: 2%;
-}
-
-.memoryLayoutForm {
-  margin-bottom: 2%;
-}
-
-.fields {
-  padding: 1%;
-}
-
-.architecture-scroll-y {
-  display: block;
-  max-height: 60vh;
-  overflow-y: auto;
-  -ms-overflow-style: -ms-autohiding-scrollbar;
-}
-
-.fileForm {
-  background-color: white;
-  color: black;
-}
-
-.help-scroll-y {
-  display: block;
-  max-height: 80vh;
-  overflow-y: auto;
-  -ms-overflow-style: -ms-autohiding-scrollbar;
-}
-
-.calculatorImg {
-  width: 100%;
-}
-
-.memory_table {
-  max-height: 49vh;
-  padding-left: 1vw;
-}
-
-.table-mem-wrapper-scroll-y {
-  display: block;
-  max-height: 75vh;
-  overflow-y: auto;
-  -ms-overflow-style: -ms-autohiding-scrollbar;
-}
-
-.memoryValue {
-  float: right;
-  margin-right: 2%;
-}
-
-.memoryBorder {
-  border: 1px solid gray;
-}
-
-.memoryTag {
-  float: left;
-  position: relative;
-  left: -0.7vw;
-}
-
-.binaryTag {
-  position: relative;
-  top: -9px;
-}
-
-.table-inst-wrapper-scroll-y {
-  display: block;
-  max-height: 90vh;
-  overflow-y: auto;
-  -ms-overflow-style: -ms-autohiding-scrollbar;
-}
-
-.breakPoint {
-  width: auto !important;
-  height: 4vh;
-}
-
-.keyboardButton {
-  margin-top: 5%;
-  float: right;
-}
-
-.enterIcon {
-  transform: rotate(90deg);
-}
-
-.text-blue-funny {
-  color: #00bcfe;
-}
-
 .variant-blue-funny {
   background-color: #00bcfe;
 }
 
 .stats {
   font-size: 0.85em;
-}
-
-#chart {
-  margin: 35px auto;
-  padding: 0;
-}
-
-.apexcharts-legend-text tspan:nth-child(1) {
-  font-weight: lighter;
-  fill: #999;
-}
-
-.apexcharts-legend-text tspan:nth-child(3) {
-  font-weight: bold;
 }
 
 @media only screen and (min-width: 2560px) {

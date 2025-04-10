@@ -123,9 +123,7 @@ function performExecutionChecks(includeLogging = false) {
             null,
         );
     } else if (status.run_program === 3) {
-        // TODO: Is this needed?
-        return null;
-        // return packExecute(false, "", "info", null);
+        return packExecute(false, "", "info", null);
     }
 
     return null;

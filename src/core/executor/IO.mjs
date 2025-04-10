@@ -25,9 +25,12 @@ import { writeMemory } from "../memory/memoryOperations.mjs";
 import process from "node:process";
 import { packExecute } from "./executor.mjs";
 import os from "node:os";
+import { show_notification } from "@/web/utils.mjs"
+
+
 export function display_print(info) {
-    if (typeof app !== "undefined") {
-        app._data.display += info;
+    if (typeof document !== "undefined") {
+        document.app.$data.display += info;
     } else {
         // Deno environment
         // Make sure that info is a string
@@ -80,6 +83,7 @@ export function kbd_read_string(keystroke, params) {
 
     return value;
 }
+
 function checkEnter(buf) {
     if (os.type() === "Darwin") {
         // MacOS
@@ -126,7 +130,6 @@ function rawPrompt() {
     return chunks.join("");
 }
 
-// eslint-disable-next-line max-lines-per-function
 export function keyboard_read(fn_post_read, fn_post_params) {
     const draw = {
         space: [],
@@ -157,17 +160,24 @@ export function keyboard_read(fn_post_read, fn_post_params) {
     }
 
     // Web/UI mode
-    app._data.enter = false;
+    document.app.$data.enter = false;  // signal UI to wait for keyboard read
 
     if (status.run_program === 3) {
         setTimeout(keyboard_read, 1000, fn_post_read, fn_post_params);
-        return;
+        return draw
     }
 
-    fn_post_read(app._data.keyboard, fn_post_params);
+    const val = fn_post_read(document.app.$data.keyboard, fn_post_params)
 
-    app._data.keyboard = "";
-    app._data.enter = null;
+    document.app.$data.keyboard = ""  // clear input
+
+    if (val === null) {
+        // error parsing input, retry
+        status.run_program = 3
+        return keyboard_read(fn_post_read, fn_post_params)
+    }
+
+    document.app.$data.enter = null;  // reset keyboard
 
     show_notification("The data has been uploaded", "info");
 
@@ -188,4 +198,6 @@ export function keyboard_read(fn_post_read, fn_post_params) {
     if (status.run_program === 1) {
         $("#playExecution").trigger("click");
     }
+
+    return draw
 }

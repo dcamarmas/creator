@@ -642,3 +642,9 @@ export default {
     </b-container>
   </b-modal>
 </template>
+
+<style lang="scss" scoped>
+.calculatorImg {
+  width: 100%;
+}
+</style>

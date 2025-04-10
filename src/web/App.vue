@@ -342,7 +342,7 @@ export default {
 
       display: "",
       keyboard: "",
-      enter: null, // Draw text area border in read
+      enter: null,  // defines the state of the keyboard: no keyboard read pending (null), keyboard pending (false), or keyboard success (true)
 
       //
       //Flash
@@ -731,6 +731,24 @@ export default {
 
   .buttonBackground {
     background-color: white;
+  }
+
+  #chart {
+    margin: 35px auto;
+    padding: 0;
+  }
+
+  .apexcharts-legend-text tspan:nth-child(1) {
+    font-weight: lighter;
+    fill: #999;
+  }
+
+  .apexcharts-legend-text tspan:nth-child(3) {
+    font-weight: bold;
+  }
+
+  .fields {
+    padding: 1%;
   }
 }
 </style>
