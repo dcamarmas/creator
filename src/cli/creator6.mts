@@ -13,6 +13,7 @@ import {
     track_stack_getNames,
     track_stack_getAllHints,
 } from "../core/memory/stackTracker.mjs";
+import { startTutorial } from "./tutorial.mts";
 
 const MAX_INSTRUCTIONS = 9999;
 const CLI_VERSION = "0.1.0";
@@ -23,6 +24,10 @@ let PREVIOUS_PC = "0x0";
 let MAX_STATES_TO_KEEP = 100;
 // Stack to store previous states for unstepping
 let previousStates: string[] = [];
+// Whether to show helpful tips for beginners
+let TIPS_ENABLED = false;
+// Whether tutorial mode is active
+let TUTORIAL_MODE = false;
 
 // Utility functions
 function clearConsole() {
@@ -1016,6 +1021,12 @@ function parseArguments() {
             describe: "Enable accessible mode for use with screen readers",
             default: false,
         })
+        .option("tutorial", {
+            alias: "T",
+            type: "boolean",
+            describe: "Start an interactive tutorial for RISC-V programming",
+            default: false,
+        })
         .help().argv;
 }
 // eslint-disable-next-line max-lines-per-function
@@ -1162,15 +1173,32 @@ function main() {
     }
 
     ACCESSIBLE = argv.accessible;
+    TUTORIAL_MODE = argv.tutorial;
 
     if (!ACCESSIBLE) {
-        const creatorASCII = ` \u2588\u2588\u2588\u2588\u2588\u2588\u2557\u2588\u2588\u2588\u2588\u2588\u2588\u2557 \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2557 \u2588\u2588\u2588\u2588\u2588\u2557 \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2557 \u2588\u2588\u2588\u2588\u2588\u2588\u2557 \u2588\u2588\u2588\u2588\u2588\u2588\u2557 \r\n\u2588\u2588\u2554\u2550\u2550\u2550\u2550\u255D\u2588\u2588\u2554\u2550\u2550\u2588\u2588\u2557\u2588\u2588\u2554\u2550\u2550\u2550\u2550\u255D\u2588\u2588\u2554\u2550\u2550\u2588\u2588\u2557\u255A\u2550\u2550\u2588\u2588\u2554\u2550\u2550\u255D\u2588\u2588\u2554\u2550\u2550\u2550\u2588\u2588\u2557\u2588\u2588\u2554\u2550\u2550\u2588\u2588\u2557\r\n\u2588\u2588\u2551     \u2588\u2588\u2588\u2588\u2588\u2588\u2554\u255D\u2588\u2588\u2588\u2588\u2588\u2557  \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2551   \u2588\u2588\u2551   \u2588\u2588\u2551   \u2588\u2588\u2551\u2588\u2588\u2588\u2588\u2588\u2588\u2554\u255D\r\n\u2588\u2588\u2551     \u2588\u2588\u2554\u2550\u2550\u2588\u2588\u2557\u2588\u2588\u2554\u2550\u2550\u255D  \u2588\u2588\u2554\u2550\u2550\u2588\u2588\u2551   \u2588\u2588\u2551   \u2588\u2588\u2551   \u2588\u2588\u2551\u2588\u2588\u2554\u2550\u2550\u2588\u2588\u2557\r\n\u255A\u2588\u2588\u2588\u2588\u2588\u2588\u2557\u2588\u2588\u2551  \u2588\u2588\u2551\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2557\u2588\u2588\u2551  \u2588\u2588\u2551   \u2588\u2588\u2551   \u255A\u2588\u2588\u2588\u2588\u2588\u2588\u2554\u255D\u2588\u2588\u2551  \u2588\u2588\u2551\r\n \u255A\u2550\u2550\u2550\u2550\u2550\u255D\u255A\u2550\u255D  \u255A\u2550\u255D\u255A\u2550\u2550\u2550\u2550\u2550\u2550\u255D\u255A\u2550\u255D  \u255A\u2550\u255D   \u255A\u2550\u255D    \u255A\u2550\u2550\u2550\u2550\u2550\u255D \u255A\u2550\u255D  \u255A\u2550\u255D\r\n                                                          `;
+        const creatorASCII = `
+    ██████╗██████╗ ███████╗ █████╗ ████████╗ ██████╗ ██████╗ 
+   ██╔════╝██╔══██╗██╔════╝██╔══██╗╚══██╔══╝██╔═══██╗██╔══██╗
+   ██║     ██████╔╝█████╗  ███████║   ██║   ██║   ██║██████╔╝
+   ██║     ██╔══██╗██╔══╝  ██╔══██║   ██║   ██║   ██║██╔══██╗
+   ╚██████╗██║  ██║███████╗██║  ██║   ██║   ╚██████╔╝██║  ██║
+    ╚═════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝   ╚═╝    ╚═════╝ ╚═╝  ╚═╝
+      didaCtic and geneRic assEmbly progrAmming simulaTOR
+    `;
 
         console.log(creatorASCII);
     }
 
     // Load architecture
     loadArchitecture(argv.architecture, argv.isa);
+
+    // Check if we're in tutorial mode
+    if (TUTORIAL_MODE) {
+        reset();
+        startTutorial();
+        return;
+    }
+
     // If binary file is provided, load it
     if (argv.binary) {
         loadBinary(argv.binary);
@@ -1204,5 +1232,22 @@ function main() {
         }
     }
 }
+
+// Export functions so they can be used by the tutorial module
+export {
+    handleStepCommand,
+    handleRunCommand,
+    handleBreakpointCommand,
+    handleRegCommand,
+    handleMemCommand,
+    handleInstructionsCommand,
+    handleInsnCommand,
+    handleStackCommand,
+    handleResetCommand,
+    displayHelp,
+    clearConsole,
+    colorText,
+    processCommand,
+};
 
 main();
