@@ -282,7 +282,8 @@ export default {
       //Assembly code
       //
 
-      assembly_code: ".text\n\tmain: li t0, 1",
+      // assembly_code: "",
+      assembly_code: ".text\n\tmain:\n\tli a0, 69\n\tli a7, 1\n\tecall",
 
       /*************/
       /* Simulator */
@@ -591,6 +592,8 @@ export default {
     :enter="enter"
     :browser="browser"
     :stack_total_list="stack_total_list"
+    :display="display"
+    :keyboard="keyboard"
     ref="simulatorView"
   />
 </template>

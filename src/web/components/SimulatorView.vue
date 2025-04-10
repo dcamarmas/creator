@@ -23,6 +23,8 @@ import DataViewSelector from "./simulator/DataViewSelector.vue"
 import RegisterFile from "./simulator/RegisterFile.vue"
 import Examples from "./assembly/Examples.vue"
 import Memory from "./simulator/Memory.vue"
+import Monitor from "./simulator/Monitor.vue"
+import Keyboard from "./simulator/Keyboard.vue"
 
 import { architecture } from "@/core/core.mjs"
 import { instructions } from "@/core/compiler/compiler.mjs"
@@ -35,6 +37,8 @@ export default {
     data_mode: String,
     enter: [Boolean, null],
     stack_total_list: Number,
+    display: String,
+    keyboard: String,
   },
   components: {
     UIeltoToolbar,
@@ -43,6 +47,8 @@ export default {
     RegisterFile,
     Examples,
     Memory,
+    Monitor,
+    Keyboard,
   },
 
   data() {
@@ -155,17 +161,16 @@ export default {
                 :clk_cycles_value="clk_cycles_value"
                 :total_clk_cycles="total_clk_cycles"
                 v-if="data_mode == 'clk_cycles'"
-              />
-            </b-col> -->
+              /> -->
+            </b-col>
 
-              <!-- Monitor & keyboard -->
-              <!-- <b-col lg="12" cols="12">
+            <!-- Monitor & keyboard -->
+            <b-col lg="12" cols="12">
               <b-container
                 fluid
                 align-h="center"
                 class="mx-0 px-0"
                 id="simulator"
-                v-if="creator_mode == 'simulator'"
               >
                 <b-row
                   cols-xl="2"
@@ -175,17 +180,17 @@ export default {
                   cols-xs="1"
                   cols="1"
                 >
-                  <b-col> -->
-              <!-- Monitor -->
-              <!-- <Monitor :display="display" />
+                  <b-col>
+                    <!-- Monitor -->
+                    <Monitor :display="display" />
                   </b-col>
 
-                  <b-col> -->
-              <!-- Keyboard -->
-              <!-- <Keyboard :keyboard="keyboard" :enter="enter" /> -->
-              <!-- </b-col>
+                  <b-col>
+                    <!-- Keyboard -->
+                    <Keyboard :keyboard="keyboard" :enter="enter" />
+                  </b-col>
                 </b-row>
-              </b-container> -->
+              </b-container>
             </b-col>
           </b-row>
         </b-container>

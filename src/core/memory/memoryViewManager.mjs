@@ -26,7 +26,7 @@ import { hex2float, hex2char8 } from "../utils/utils.mjs";
 
 /************************
  * Public API (2/3): UI *
-************************/
+ ************************/
 // update an document.app.$data.main_memory row:
 //  "000": { addr: 2003, addr_begin: "0x200", addr_end: "0x2003",
 //           hex:[{byte: "1A", tag: "main"},...],
@@ -53,10 +53,11 @@ export function creator_memory_updaterow(addr) {
     let elto = { addr: 0, addr_begin: "", addr_end: "", value: "", size: 0, hex: [], eye: true };
     if (typeof document.app.main_memory[addr_base] !== "undefined") {
         // reuse the existing element...
-        elto = document.app.main_memory[addr_base];
+        elto = document.app.$data.main_memory[addr_base];
     } else {
         // set a new element, and set the initial values...
-        Vue.set(document.app.main_memory, addr_base, elto);
+        // Vue.set(document.app.$data.main_memory, addr_base, elto);
+        document.app.$data.main_memory[addr_base] = elto
 
         for (let i = 0; i < word_size_bytes; i++) {
             elto.hex[i] = { byte: "00", tag: null };
@@ -182,7 +183,8 @@ export function creator_memory_update_row_view(selected_view, segment_name, row_
 
     document.app.$data.main_memory[row_info.addr].value = new_value
 }
-function creator_memory_update_space_view(
+
+export function creator_memory_update_space_view(
     selected_view,
     segment_name,
     row_info,
