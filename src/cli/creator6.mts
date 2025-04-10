@@ -135,7 +135,11 @@ function assemble(filePath: string) {
         return;
     }
     const assemblyFile = fs.readFileSync(filePath, "utf8");
-    creator.assembly_compile(assemblyFile);
+    let ret = creator.assembly_compile(assemblyFile, true);
+    if (ret.status !== "ok") {
+        console.error(ret.msg);
+        process.exit(1);
+    }
 }
 
 function handleInstructionsCommand() {

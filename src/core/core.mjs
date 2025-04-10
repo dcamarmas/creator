@@ -938,7 +938,7 @@ export function assembly_compile(code, enable_color) {
     let ret = {};
 
     code_assembly = code;
-    let color = enable_color ? wasm.Color.ANSI : wasm.Color.NoColor;
+    let color = enable_color ? wasm.Color.Ansi : wasm.Color.Off;
     ret = assembly_compiler(false, color);
     switch (ret.status) {
         case "error":
