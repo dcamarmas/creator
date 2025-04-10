@@ -18,9 +18,11 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <script>
+import { architecture, memory_hash, architecture_hash } from "@/core/core.mjs"
+
 export default {
   props: {
-    main_memory: { type: Array, required: true },
+    main_memory: { type: Object, required: true },
     memory_segment: { type: String, required: true },
     track_stack_names: { type: Array, required: true }, // TODO: optional
     callee_subrutine: { type: String, required: true }, // TODO: optional
@@ -33,6 +35,8 @@ export default {
 
   data() {
     return {
+      architecture_hash,
+      architecture,
       /*Memory table fields*/
       memFields: ["Tag", "Address", "Binary", "Value"],
       row_info: null,
@@ -42,61 +46,53 @@ export default {
   },
 
   methods: {
-    /*Filter table*/
-    filter(row, filter) {
-      const addr = parseInt(row.addr_begin)
+    /**
+     * Filters which rows to show, depending on the data segment
+     */
+    filter(row, _filter) {
+      const addr = parseInt(row.addr_begin, 16)
 
-      if (
-        this.memory_segment === "kinstructions_memory" &&
-        addr >= parseInt(memory_layout[0].value, 16) &&
-        addr <= parseInt(memory_layout[1].value, 16)
-      ) {
-        if (row.hide === true) {
+      switch (this.memory_segment) {
+        // TODO: kernel
+        // case "kinstructions_memory":
+        //   return (
+        //     !row.hide &&
+        //     addr >= parseInt(this.memory_layout[0].value, 16) &&
+        //     addr <= parseInt(this.memory_layout[1].value, 16)
+        //   )
+
+        // case "kdata_memory":
+        //   return (
+        //     addr >= parseInt(this.memory_layout[2].value, 16) &&
+        //     addr <= parseInt(this.memory_layout[3].value, 16)
+        //   )
+
+        case "instructions_memory":
+          return (
+            !row.hide &&
+            addr >= parseInt(this.memory_layout[0].value, 16) &&
+            addr <= parseInt(this.memory_layout[1].value, 16)
+          )
+
+        case "data_memory":
+          // return true
+          return (
+            addr >= parseInt(this.memory_layout[2].value, 16) &&
+            addr <= parseInt(this.memory_layout[3].value, 16)
+          )
+
+        case "stack_memory":
+          return (
+            addr > parseInt(this.memory_layout[3].value, 16) &&
+            Math.abs(addr - end_callee) < this.stack_total_list * 4
+          )
+
+        default:
           return false
-        } else {
-          return true
-        }
       }
-
-      if (
-        this.memory_segment === "kdata_memory" &&
-        addr >= parseInt(memory_layout[2].value, 16) &&
-        addr <= parseInt(memory_layout[3].value, 16)
-      ) {
-        return true
-      }
-
-      if (
-        this.memory_segment === "instructions_memory" &&
-        addr >= parseInt(memory_layout[4].value, 16) &&
-        addr <= parseInt(memory_layout[5].value, 16)
-      ) {
-        if (row.hide === true) {
-          return false
-        } else {
-          return true
-        }
-      }
-
-      if (
-        this.memory_segment === "data_memory" &&
-        addr >= parseInt(memory_layout[6].value, 16) &&
-        addr <= parseInt(memory_layout[7].value, 16)
-      ) {
-        return true
-      }
-
-      if (
-        this.memory_segment === "stack_memory" &&
-        addr > parseInt(memory_layout[7].value, 16)
-      ) {
-        return Math.abs(addr - end_callee) < this.stack_total_list * 4
-      }
-
-      return false
     },
 
-    // TODO: gereric and include modal
+    // TODO: generic and include modal
     select_data_type(record, index) {
       this.row_info = { index: index, addr: record.addr - 3, size: record.size }
 
@@ -120,7 +116,7 @@ export default {
     change_space_view() {
       creator_memory_update_space_view(
         this.selected_space_view,
-        memory_hash[3],
+        memory_hash[1],
         this.row_info,
       )
     },
@@ -132,7 +128,7 @@ export default {
     change_stack_view() {
       creator_memory_update_row_view(
         this.selected_stack_view,
-        memory_hash[4],
+        memory_hash[2],
         this.row_info,
       )
     },
@@ -154,24 +150,25 @@ export default {
     get_classes(row) {
       return {
         h6Sm:
-          row.item.addr >= parseInt(architecture.memory_layout[4].value, 16) &&
-          row.item.addr <= architecture.memory_layout[7].value,
+          row.item.addr >= parseInt(architecture.memory_layout[0].value, 16) &&
+          row.item.addr <= architecture.memory_layout[3].value,
         "h6Sm text-secondary ":
-          row.item.addr < app._data.end_callee &&
-          Math.abs(row.item.addr - app._data.end_callee) <
-            this._props.stack_total_list * 4,
+          row.item.addr < this.$root.end_callee &&
+          Math.abs(row.item.addr - this.$root.end_callee) <
+            this.stack_total_list * 4,
         "h6Sm text-success   ":
-          row.item.addr < app._data.begin_callee &&
-          row.item.addr >= app._data.end_callee,
+          row.item.addr < this.$root.begin_callee &&
+          row.item.addr >= this.$root.end_callee,
         "h6Sm text-blue-funny":
-          row.item.addr < app._data.begin_caller &&
-          row.item.addr >= app._data.end_caller,
-        "h6Sm                ": row.item.addr >= app._data.begin_caller,
+          row.item.addr < this.$root.begin_caller &&
+          row.item.addr >= this.$root.end_caller,
+        "h6Sm                ": row.item.addr >= this.$root.begin_caller,
       }
     },
   },
   computed: {
     main_memory_items() {
+      // memory items that will be shown
       return Object.entries(this.main_memory)
         .sort((a, b) => a[0] - b[0])
         .map(a => a[1])
@@ -206,75 +203,64 @@ export default {
               </div>
             </template>
 
+            <!-- remove "Tag" column title -->
             <template v-slot:head(Tag)="row"> &nbsp; </template>
 
+            <!-- control register badges -->
+
             <template v-slot:cell(Tag)="row">
-              <div v-for="item in architecture_hash">
+              <div v-for="bank in architecture_hash" :key="bank.index">
                 <div
-                  v-for="item2 in architecture.components[item.index].elements"
+                  v-for="register in architecture.components[bank.index]
+                    .elements"
+                  :key="register.name[0]"
                 >
-                  <b-badge
-                    variant="info"
-                    class="border border-info shadow memoryTag"
+                  <!-- program counter -->
+                  <div
+                    v-for="register in architecture.components[bank.index]
+                      .elements"
+                    :key="register.name[0]"
+                  >
+                    <div
+                      v-if="
+                        register.properties.includes('program_counter') &&
+                        (parseInt(register.value) & 0xfffffffc) ==
+                          (row.item.addr & 0xfffffffc)
+                      "
+                    >
+                      <b-badge
+                        variant="success"
+                        class="border border-info shadow memoryTag"
+                      >
+                        {{ register.name[1] || register.name[0] }}
+                      </b-badge>
+                      <font-awesome-icon icon="fa-solid fa-right-long" />
+                    </div>
+                  </div>
+
+                  <!-- pointers -->
+                  <div
                     v-if="
-                      item2.properties.includes('global_pointer') &&
-                      (parseInt(item2.value) & 0xfffffffc) ==
+                      (register.properties.includes('stack_pointer') ||
+                        register.properties.includes('frame_pointer') ||
+                        register.properties.includes('global_pointer')) &&
+                      (parseInt(register.value) & 0xfffffffc) ==
                         (row.item.addr & 0xfffffffc)
                     "
                   >
-                    {{ item2.name[0] }}
-                  </b-badge>
-                  <span
-                    class="fas fa-long-arrow-alt-right"
-                    v-if="
-                      item2.properties.includes('global_pointer') &&
-                      (parseInt(item2.value) & 0xfffffffc) ==
-                        (row.item.addr & 0xfffffffc)
-                    "
-                  />
-                  <b-badge
-                    variant="success"
-                    class="border border-success shadow memoryTag"
-                    v-if="
-                      item2.properties.includes('program_counter') &&
-                      (parseInt(item2.value) & 0xfffffffc) ==
-                        (row.item.addr & 0xfffffffc)
-                    "
-                  >
-                    {{ item2.name[0] }}
-                  </b-badge>
-                  <span
-                    class="fas fa-long-arrow-alt-right"
-                    v-if="
-                      item2.properties.includes('program_counter') &&
-                      (parseInt(item2.value) & 0xfffffffc) ==
-                        (row.item.addr & 0xfffffffc)
-                    "
-                  />
-                  <b-badge
-                    variant="info"
-                    class="border border-info shadow memoryTag"
-                    v-if="
-                      (item2.properties.includes('stack_pointer') ||
-                        item2.properties.includes('frame_pointer')) &&
-                      (parseInt(item2.value) & 0xfffffffc) ==
-                        (row.item.addr & 0xfffffffc)
-                    "
-                  >
-                    {{ item2.name[0] }}
-                  </b-badge>
-                  <span
-                    class="fas fa-long-arrow-alt-right"
-                    v-if="
-                      (item2.properties.includes('stack_pointer') ||
-                        item2.properties.includes('frame_pointer')) &&
-                      (parseInt(item2.value) & 0xfffffffc) ==
-                        (row.item.addr & 0xfffffffc)
-                    "
-                  />
+                    <b-badge
+                      variant="info"
+                      class="border border-info shadow memoryTag"
+                    >
+                      {{ register.name[1] || register.name[0] }}
+                    </b-badge>
+                    <font-awesome-icon icon="fa-solid fa-right-long" />
+                  </div>
                 </div>
               </div>
             </template>
+
+            <!-- address -->
 
             <template v-slot:cell(Address)="row">
               <div class="pt-3">
@@ -284,56 +270,65 @@ export default {
               </div>
             </template>
 
-            <template v-slot:cell(Binary)="row">
-              <div class="pt-3">
-                <span v-bind:class="get_classes(row)">
-                  <span v-for="item in row.item.hex">
-                    <span v-if="item.tag == null">
-                      {{ item.byte.toUpperCase() }}
-                    </span>
+            <!-- binary representation -->
 
-                    <b-badge
-                      pill
-                      variant="info"
-                      class="border border-info shadow binaryTag"
-                      style="top: -2vh !important"
-                      v-if="item.tag != null"
-                    >
-                      {{ item.tag }}
-                    </b-badge>
-                    <span v-if="item.tag != null" class="memoryBorder">
-                      {{ item.byte.toUpperCase() }}
-                    </span>
-                  </span>
+            <template v-slot:cell(Binary)="row">
+              <div class="pt-3" />
+              <span
+                v-bind:class="get_classes(row)"
+                v-for="address in row.item.hex"
+                :key="row.addr"
+              >
+                <!-- tag -->
+                <b-badge
+                  pill
+                  variant="info"
+                  class="border border-info shadow binaryTag"
+                  style="top: -2vh !important"
+                  v-if="address.tag"
+                >
+                  {{ address.tag }}
+                </b-badge>
+
+                <!-- byte -->
+                <span v-if="address.tag" class="memoryBorder">
+                  {{ address.byte.toUpperCase() }}
                 </span>
-              </div>
+                <span v-else>
+                  {{ address.byte.toUpperCase() }}
+                </span>
+
+                &nbsp;
+              </span>
             </template>
 
+            <!-- value -->
+
             <template v-slot:cell(Value)="row">
-              <div class="pt-3">
-                <span
-                  v-bind:class="get_classes(row)"
-                  style="white-space: pre-wrap"
-                >
-                  {{ row.item.value }}
-                  <span
-                    class="fas fa-eye memoryValue"
-                    v-if="row.item.eye && check_tag_null(row.item.hex)"
-                  />
-                </span>
-              </div>
+              <div class="pt-3" />
+              <span
+                v-bind:class="get_classes(row)"
+                style="white-space: pre-wrap"
+              >
+                {{ row.item.value }}
+
+                <font-awesome-icon
+                  icon="fa-solid fa-eye"
+                  v-if="row.item.eye && check_tag_null(row.item.hex)"
+                />
+              </span>
             </template>
           </b-table>
         </b-col>
       </b-row>
 
-      <b-row align-v="end">
+      <!-- Stack -->
+      <!-- <b-row align-v="end">
         <b-col>
           <div
             class="col-lg-12 col-sm-12 row mx-0 px-2 border"
             v-if="memory_segment == 'stack_memory'"
           >
-            <!-- TODO: only in stack -->
             <span class="col-lg-12 col-sm-12 my-1">
               <span>Stack memory areas: </span>
               <span class="fas fa-search-plus" id="stack_funct_popover" />
@@ -388,10 +383,10 @@ export default {
             </b-popover>
           </div>
         </b-col>
-      </b-row>
+      </b-row> -->
     </b-container>
 
-    <b-modal
+    <!-- <b-modal
       id="space_modal"
       size="sm"
       title="Select space view:"
@@ -410,9 +405,9 @@ export default {
       <b-form-radio v-model="selected_space_view" value="char"
         >Char</b-form-radio
       >
-    </b-modal>
+    </b-modal> -->
 
-    <b-modal
+    <!-- <b-modal
       id="stack_modal"
       size="sm"
       title="Select stack word view:"
@@ -431,7 +426,7 @@ export default {
       <b-form-radio v-model="selected_stack_view" value="char"
         >Char</b-form-radio
       >
-    </b-modal>
+    </b-modal> -->
   </div>
 </template>
 

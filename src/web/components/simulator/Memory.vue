@@ -20,7 +20,6 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 <script>
 import MemoryTable from "./MemoryTable.vue"
 
-import { main_memory } from "@/core/memory/memoryCore.mjs"
 import { track_stack_names } from "@/core/memory/stackTracker.mjs"
 
 export default {
@@ -28,22 +27,23 @@ export default {
     callee_subrutine: { type: String, required: true }, // TODO: optional
     caller_subrutine: { type: String, required: true }, // TODO: optional
     stack_total_list: { type: Number, required: true },
+    main_memory: { type: Object, required: true },
     main_memory_busy: { type: Boolean, required: true },
     memory_layout: { type: Object, required: true },
+    end_callee: { type: Number, required: true },
   },
 
   components: { MemoryTable },
 
   data() {
     return {
-      main_memory,
       track_stack_names,
       memory_segment: "data",
       //Memory view
       mem_representation: "data_memory",
       mem_representation_options: [
-        { text: "Kernel Data", value: "kdata_memory" },
-        { text: "Kernel Text", value: "kinstructions_memory" },
+        // { text: "Kernel Data", value: "kdata_memory" },
+        // { text: "Kernel Text", value: "kinstructions_memory" },
         { text: "Data", value: "data_memory" },
         { text: "Text", value: "instructions_memory" },
         { text: "Stack", value: "stack_memory" },
@@ -55,7 +55,9 @@ export default {
 
 <template>
   <b-container fluid align-h="center" class="mx-0 my-3 px-2">
-    <b-row cols-xl="1" cols-lg="1" cols-md="1" cols-sm="1" cols-xs="1" cols="1">
+    <b-row cols-xl="2" cols-lg="1" cols-md="2" cols-sm="1" cols-xs="1" cols="1">
+      <!-- uncomment this when kernel -->
+      <!-- <b-row cols-xl="1" cols-lg="1" cols-md="1" cols-sm="1" cols-xs="1" cols="1"> -->
       <b-col align-h="center" class="px-2">
         <div class="border m-1 py-1 px-2">
           <b-badge variant="light" class="h6 groupLabelling border mx-2 my-0">
@@ -92,7 +94,7 @@ export default {
           :stack_total_list="stack_total_list"
           :main_memory_busy="main_memory_busy"
           :memory_layout="memory_layout"
-          :end_calee="end_calee"
+          :end_callee="end_callee"
         />
       </b-col>
     </b-row>
