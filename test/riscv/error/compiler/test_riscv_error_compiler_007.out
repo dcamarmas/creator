@@ -6,6 +6,8 @@
  11 │     j mains
     │       ──┬──  
     │         ╰──── Unknown label
+    │ 
+    │ Help: Did you mean `main`?
 ────╯
 
 Not executed

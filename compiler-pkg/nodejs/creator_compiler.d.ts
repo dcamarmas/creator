@@ -4,17 +4,38 @@
  * Method used to render colors in error messages
  */
 export enum Color {
+  /**
+   * Use HTML tags, intended for display in browsers
+   */
   Html = 0,
+  /**
+   * Use ANSI escape codes, intended for display in terminals
+   */
   Ansi = 1,
+  /**
+   * Disable all formatting, using only plain text
+   */
   Off = 2,
 }
 /**
  * General category of a compiled data element
  */
 export enum DataCategoryJS {
+  /**
+   * Element represents a number
+   */
   Number = 0,
+  /**
+   * Element represents a string
+   */
   String = 1,
+  /**
+   * Element represents a reserved amount of space initialized to 0
+   */
   Space = 2,
+  /**
+   * Element represents padding that was added to align values
+   */
   Padding = 3,
 }
 /**
