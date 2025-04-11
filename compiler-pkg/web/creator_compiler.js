@@ -154,9 +154,24 @@ function debugString(val) {
 
 function notDefined(what) { return () => { throw new Error(`${what} is not defined`); }; }
 
+function addToExternrefTable0(obj) {
+    const idx = wasm.__wbindgen_export_4();
+    wasm.__wbindgen_export_2.set(idx, obj);
+    return idx;
+}
+
+function handleError(f, args) {
+    try {
+        return f.apply(this, args);
+    } catch (e) {
+        const idx = addToExternrefTable0(e);
+        wasm.__wbindgen_export_3(idx);
+    }
+}
+
 function takeFromExternrefTable0(idx) {
     const value = wasm.__wbindgen_export_2.get(idx);
-    wasm.__wbindgen_export_3(idx);
+    wasm.__wbindgen_export_5(idx);
     return value;
 }
 
@@ -167,14 +182,8 @@ function getArrayJsValueFromWasm0(ptr, len) {
     for (let i = ptr; i < ptr + 4 * len; i += 4) {
         result.push(wasm.__wbindgen_export_2.get(mem.getUint32(i, true)));
     }
-    wasm.__wbindgen_export_5(ptr, len);
+    wasm.__wbindgen_export_7(ptr, len);
     return result;
-}
-
-function addToExternrefTable0(obj) {
-    const idx = wasm.__wbindgen_export_6();
-    wasm.__wbindgen_export_2.set(idx, obj);
-    return idx;
 }
 
 function passArrayJsValueToWasm0(array, malloc) {
@@ -186,23 +195,42 @@ function passArrayJsValueToWasm0(array, malloc) {
     WASM_VECTOR_LEN = array.length;
     return ptr;
 }
-
-function handleError(f, args) {
-    try {
-        return f.apply(this, args);
-    } catch (e) {
-        const idx = addToExternrefTable0(e);
-        wasm.__wbindgen_export_7(idx);
-    }
-}
 /**
  * Method used to render colors in error messages
  */
-export const Color = Object.freeze({ Html:0,"0":"Html",Ansi:1,"1":"Ansi",Off:2,"2":"Off", });
+export const Color = Object.freeze({
+/**
+ * Use HTML tags, intended for display in browsers
+ */
+Html:0,"0":"Html",
+/**
+ * Use ANSI escape codes, intended for display in terminals
+ */
+Ansi:1,"1":"Ansi",
+/**
+ * Disable all formatting, using only plain text
+ */
+Off:2,"2":"Off", });
 /**
  * General category of a compiled data element
  */
-export const DataCategoryJS = Object.freeze({ Number:0,"0":"Number",String:1,"1":"String",Space:2,"2":"Space",Padding:3,"3":"Padding", });
+export const DataCategoryJS = Object.freeze({
+/**
+ * Element represents a number
+ */
+Number:0,"0":"Number",
+/**
+ * Element represents a string
+ */
+String:1,"1":"String",
+/**
+ * Element represents a reserved amount of space initialized to 0
+ */
+Space:2,"2":"Space",
+/**
+ * Element represents padding that was added to align values
+ */
+Padding:3,"3":"Padding", });
 
 const ArchitectureJSFinalization = (typeof FinalizationRegistry === 'undefined')
     ? { register: () => {}, unregister: () => {} }
@@ -267,7 +295,7 @@ export class ArchitectureJS {
             deferred1_1 = ret[1];
             return getStringFromWasm0(ret[0], ret[1]);
         } finally {
-            wasm.__wbindgen_export_4(deferred1_0, deferred1_1, 1);
+            wasm.__wbindgen_export_6(deferred1_0, deferred1_1, 1);
         }
     }
     /**
@@ -316,7 +344,7 @@ export class ArchitectureJS {
             deferred1_1 = ret[1];
             return getStringFromWasm0(ret[0], ret[1]);
         } finally {
-            wasm.__wbindgen_export_4(deferred1_0, deferred1_1, 1);
+            wasm.__wbindgen_export_6(deferred1_0, deferred1_1, 1);
         }
     }
 }
@@ -355,7 +383,7 @@ export class CompiledCodeJS {
     get instructions() {
         const ret = wasm.__wbg_get_compiledcodejs_instructions(this.__wbg_ptr);
         var v1 = getArrayJsValueFromWasm0(ret[0], ret[1]).slice();
-        wasm.__wbindgen_export_4(ret[0], ret[1] * 4, 4);
+        wasm.__wbindgen_export_6(ret[0], ret[1] * 4, 4);
         return v1;
     }
     /**
@@ -365,7 +393,7 @@ export class CompiledCodeJS {
     get data() {
         const ret = wasm.__wbg_get_compiledcodejs_data(this.__wbg_ptr);
         var v1 = getArrayJsValueFromWasm0(ret[0], ret[1]).slice();
-        wasm.__wbindgen_export_4(ret[0], ret[1] * 4, 4);
+        wasm.__wbindgen_export_6(ret[0], ret[1] * 4, 4);
         return v1;
     }
     /**
@@ -375,7 +403,7 @@ export class CompiledCodeJS {
     get label_table() {
         const ret = wasm.__wbg_get_compiledcodejs_label_table(this.__wbg_ptr);
         var v1 = getArrayJsValueFromWasm0(ret[0], ret[1]).slice();
-        wasm.__wbindgen_export_4(ret[0], ret[1] * 4, 4);
+        wasm.__wbindgen_export_6(ret[0], ret[1] * 4, 4);
         return v1;
     }
     /**
@@ -391,7 +419,7 @@ export class CompiledCodeJS {
             deferred1_1 = ret[1];
             return getStringFromWasm0(ret[0], ret[1]);
         } finally {
-            wasm.__wbindgen_export_4(deferred1_0, deferred1_1, 1);
+            wasm.__wbindgen_export_6(deferred1_0, deferred1_1, 1);
         }
     }
 }
@@ -438,7 +466,7 @@ export class DataJS {
     labels() {
         const ret = wasm.datajs_labels(this.__wbg_ptr);
         var v1 = getArrayJsValueFromWasm0(ret[0], ret[1]).slice();
-        wasm.__wbindgen_export_4(ret[0], ret[1] * 4, 4);
+        wasm.__wbindgen_export_6(ret[0], ret[1] * 4, 4);
         return v1;
     }
     /**
@@ -464,7 +492,7 @@ export class DataJS {
             deferred1_1 = ret[1];
             return getStringFromWasm0(ret[0], ret[1]);
         } finally {
-            wasm.__wbindgen_export_4(deferred1_0, deferred1_1, 1);
+            wasm.__wbindgen_export_6(deferred1_0, deferred1_1, 1);
         }
     }
     /**
@@ -480,7 +508,7 @@ export class DataJS {
             deferred1_1 = ret[1];
             return getStringFromWasm0(ret[0], ret[1]);
         } finally {
-            wasm.__wbindgen_export_4(deferred1_0, deferred1_1, 1);
+            wasm.__wbindgen_export_6(deferred1_0, deferred1_1, 1);
         }
     }
     /**
@@ -541,7 +569,7 @@ export class InstructionJS {
             deferred1_1 = ret[1];
             return getStringFromWasm0(ret[0], ret[1]);
         } finally {
-            wasm.__wbindgen_export_4(deferred1_0, deferred1_1, 1);
+            wasm.__wbindgen_export_6(deferred1_0, deferred1_1, 1);
         }
     }
     /**
@@ -560,7 +588,7 @@ export class InstructionJS {
     get labels() {
         const ret = wasm.__wbg_get_instructionjs_labels(this.__wbg_ptr);
         var v1 = getArrayJsValueFromWasm0(ret[0], ret[1]).slice();
-        wasm.__wbindgen_export_4(ret[0], ret[1] * 4, 4);
+        wasm.__wbindgen_export_6(ret[0], ret[1] * 4, 4);
         return v1;
     }
     /**
@@ -585,7 +613,7 @@ export class InstructionJS {
             deferred1_1 = ret[1];
             return getStringFromWasm0(ret[0], ret[1]);
         } finally {
-            wasm.__wbindgen_export_4(deferred1_0, deferred1_1, 1);
+            wasm.__wbindgen_export_6(deferred1_0, deferred1_1, 1);
         }
     }
     /**
@@ -610,7 +638,7 @@ export class InstructionJS {
             deferred1_1 = ret[1];
             return getStringFromWasm0(ret[0], ret[1]);
         } finally {
-            wasm.__wbindgen_export_4(deferred1_0, deferred1_1, 1);
+            wasm.__wbindgen_export_6(deferred1_0, deferred1_1, 1);
         }
     }
     /**
@@ -635,7 +663,7 @@ export class InstructionJS {
             deferred1_1 = ret[1];
             return getStringFromWasm0(ret[0], ret[1]);
         } finally {
-            wasm.__wbindgen_export_4(deferred1_0, deferred1_1, 1);
+            wasm.__wbindgen_export_6(deferred1_0, deferred1_1, 1);
         }
     }
     /**
@@ -689,7 +717,7 @@ export class LabelJS {
             deferred1_1 = ret[1];
             return getStringFromWasm0(ret[0], ret[1]);
         } finally {
-            wasm.__wbindgen_export_4(deferred1_0, deferred1_1, 1);
+            wasm.__wbindgen_export_6(deferred1_0, deferred1_1, 1);
         }
     }
     /**
@@ -767,23 +795,31 @@ async function __wbg_load(module, imports) {
 function __wbg_get_imports() {
     const imports = {};
     imports.wbg = {};
-    imports.wbg.__wbg_datajs_new = function(arg0) {
-        const ret = DataJS.__wrap(arg0);
+    imports.wbg.__wbg_String_904d95bced5568af = typeof String == 'function' ? String : notDefined('String');
+    imports.wbg.__wbg_newnoargs_b2702f5c785f3695 = function() { return handleError(function (arg0, arg1) {
+        const ret = new Function(getStringFromWasm0(arg0, arg1));
         return ret;
-    };
-    imports.wbg.__wbindgen_number_new = function(arg0) {
-        const ret = arg0;
+    }, arguments) };
+    imports.wbg.__wbg_call_81be4361637dd551 = function() { return handleError(function (arg0, arg1) {
+        const ret = arg0.call(arg1);
+        return ret;
+    }, arguments) };
+    imports.wbg.__wbg_instructionjs_new = function(arg0) {
+        const ret = InstructionJS.__wrap(arg0);
         return ret;
     };
     imports.wbg.__wbg_labeljs_new = function(arg0) {
         const ret = LabelJS.__wrap(arg0);
         return ret;
     };
-    imports.wbg.__wbg_instructionjs_new = function(arg0) {
-        const ret = InstructionJS.__wrap(arg0);
+    imports.wbg.__wbindgen_number_new = function(arg0) {
+        const ret = arg0;
         return ret;
     };
-    imports.wbg.__wbg_String_904d95bced5568af = typeof String == 'function' ? String : notDefined('String');
+    imports.wbg.__wbg_datajs_new = function(arg0) {
+        const ret = DataJS.__wrap(arg0);
+        return ret;
+    };
     imports.wbg.__wbindgen_string_new = function(arg0, arg1) {
         const ret = getStringFromWasm0(arg0, arg1);
         return ret;
@@ -807,7 +843,7 @@ function __wbg_get_imports() {
             deferred0_1 = arg1;
             console.error(getStringFromWasm0(arg0, arg1));
         } finally {
-            wasm.__wbindgen_export_4(deferred0_0, deferred0_1, 1);
+            wasm.__wbindgen_export_6(deferred0_0, deferred0_1, 1);
         }
     };
     imports.wbg.__wbg_BigInt_d9b88f4c25429f16 = typeof BigInt == 'function' ? BigInt : notDefined('BigInt');
@@ -819,14 +855,6 @@ function __wbg_get_imports() {
         const ret = -arg0;
         return ret;
     };
-    imports.wbg.__wbg_newnoargs_1ede4bf2ebbaaf43 = function(arg0, arg1) {
-        const ret = new Function(getStringFromWasm0(arg0, arg1));
-        return ret;
-    };
-    imports.wbg.__wbg_call_a9ef466721e824f2 = function() { return handleError(function (arg0, arg1) {
-        const ret = arg0.call(arg1);
-        return ret;
-    }, arguments) };
     imports.wbg.__wbg_eval_1bab7c4fbae3b3d6 = function() { return handleError(function (arg0, arg1) {
         const ret = eval(getStringFromWasm0(arg0, arg1));
         return ret;
