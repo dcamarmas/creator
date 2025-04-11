@@ -104,7 +104,6 @@ interface TutorialStep {
 // Tutorial state
 let currentStep = 0;
 let waitingForCommand = false;
-let expectedCommand = "";
 let rl: readline.Interface;
 
 // Assembly program used in the tutorial
@@ -228,7 +227,7 @@ const tutorialSteps: TutorialStep[] = [
         waitForCommand: true,
         expectedCommandPrefix: "mem 0x200000",
         executeAfter: function () {
-            let assembly = `\n.data\n.align 2\n\tmyword:       .word   0x12345678\n`;
+            const assembly = `\n.data\n.align 2\n\tmyword:       .word   0x12345678\n`;
             console.log(
                 colorText(
                     wrapText(
@@ -340,7 +339,6 @@ function displayTutorialStep(step: TutorialStep): void {
 
     if (step.waitForCommand) {
         waitingForCommand = true;
-        expectedCommand = step.expectedCommand || "";
         rl.setPrompt("\nCREATOR> ");
         rl.prompt();
     } else {
@@ -348,7 +346,44 @@ function displayTutorialStep(step: TutorialStep): void {
     }
 }
 
+// Helper function to advance to the next step
+function advanceToNextStep(): void {
+    currentStep++;
+    if (currentStep < tutorialSteps.length) {
+        displayTutorialStep(tutorialSteps[currentStep]);
+    } else {
+        // Instead of closing, transition to normal mode
+        clearConsole();
+        console.log(
+            boxedText(
+                "Tutorial completed! Now in normal simulator mode.",
+                60,
+                "32",
+            ),
+        );
+        console.log("");
+        console.log(
+            colorText("You can now use all simulator commands freely.", "36"),
+        );
+        console.log(
+            colorText(
+                "Type 'help' to see available commands or 'quit' to exit when done.",
+                "36",
+            ),
+        );
+        console.log("");
+
+        // Set tutorial state variables to indicate we're done with the tutorial
+        waitingForCommand = false;
+
+        // Set the prompt and display it
+        rl.setPrompt("\nCREATOR> ");
+        rl.prompt();
+    }
+}
+
 // Process user input during tutorial
+// eslint-disable-next-line max-lines-per-function
 function processTutorialCommand(line: string): void {
     const cleanedInput = line.trim().toLowerCase();
 
@@ -384,7 +419,7 @@ function processTutorialCommand(line: string): void {
     if (waitingForCommand) {
         // Check for exact match or prefix match if configured
         const step = tutorialSteps[currentStep];
-        let commandMatches = false;
+        let commandMatches;
 
         if (step.expectedCommandPrefix) {
             commandMatches = cleanedInput.startsWith(
@@ -456,42 +491,6 @@ function processTutorialCommand(line: string): void {
         console.log(
             colorText("Press Enter to continue to the next step.", "32"),
         );
-    }
-}
-
-// Helper function to advance to the next step
-function advanceToNextStep(): void {
-    currentStep++;
-    if (currentStep < tutorialSteps.length) {
-        displayTutorialStep(tutorialSteps[currentStep]);
-    } else {
-        // Instead of closing, transition to normal mode
-        clearConsole();
-        console.log(
-            boxedText(
-                "Tutorial completed! Now in normal simulator mode.",
-                60,
-                "32",
-            ),
-        );
-        console.log("");
-        console.log(
-            colorText("You can now use all simulator commands freely.", "36"),
-        );
-        console.log(
-            colorText(
-                "Type 'help' to see available commands or 'quit' to exit when done.",
-                "36",
-            ),
-        );
-        console.log("");
-
-        // Set tutorial state variables to indicate we're done with the tutorial
-        waitingForCommand = false;
-
-        // Set the prompt and display it
-        rl.setPrompt("\nCREATOR> ");
-        rl.prompt();
     }
 }
 
