@@ -15,25 +15,44 @@ import {
 } from "../core/memory/stackTracker.mjs";
 import { startTutorial } from "./tutorial.mts";
 
-const MAX_INSTRUCTIONS = 9999;
+const MAX_INSTRUCTIONS = 10000000000;
 const CLI_VERSION = "0.1.0";
 let ACCESSIBLE = false;
 // Track the address of the previously executed instruction
 let PREVIOUS_PC = "0x0";
 // Maximum number of states to keep for unstepping (-1 for unlimited, 0 to disable)
-let MAX_STATES_TO_KEEP = 100;
+let MAX_STATES_TO_KEEP = 0;
 // Stack to store previous states for unstepping
 let previousStates: string[] = [];
-// Whether to show helpful tips for beginners
-let TIPS_ENABLED = false;
 // Whether tutorial mode is active
 let TUTORIAL_MODE = false;
 
-// Utility functions
+interface ArgvOptions {
+    architecture: string;
+    isa: string[];
+    binary: string;
+    library: string;
+    assembly: string;
+    interactive: boolean;
+    debug: boolean;
+    reference: string;
+    state: string;
+    accessible: boolean;
+    tutorial: boolean;
+}
+
+interface ReturnType {
+    status?: string;
+    msg?: string;
+    token?: string;
+    errorcode?: string;
+    type?: string;
+    update?: string;
+    error?: boolean;
+}
+
 function clearConsole() {
-    // Use both methods for maximum compatibility across different terminals
     console.clear();
-    process.stdout.write("\x1Bc"); // ANSI escape code for clear screen
 }
 
 function colorText(text: string, colorCode: string): string {
@@ -79,7 +98,7 @@ function executeStep() {
     // Store the current PC as previous PC before executing the step
     PREVIOUS_PC = "0x" + pc_value.toUpperCase();
 
-    const ret = step();
+    const ret: ReturnType = step();
     if (ret.error) {
         //console.error(`Error executing instruction: ${ret.msg}`);
         return { output: ``, completed: true, error: true };
@@ -93,7 +112,7 @@ function executeStep() {
 
 function loadArchitecture(filePath: string, isaExtensions: string[]) {
     const architectureFile = fs.readFileSync(filePath, "utf8");
-    const ret = creator.newArchitectureLoad(
+    const ret: ReturnType = creator.newArchitectureLoad(
         architectureFile,
         false,
         false,
@@ -135,7 +154,7 @@ function assemble(filePath: string) {
         return;
     }
     const assemblyFile = fs.readFileSync(filePath, "utf8");
-    let ret = creator.assembly_compile(assemblyFile, true);
+    const ret: ReturnType = creator.assembly_compile(assemblyFile, true);
     if (ret.status !== "ok") {
         console.error(ret.msg);
         process.exit(1);
@@ -661,9 +680,6 @@ function findLabelForAddress(address: string): string {
 // eslint-disable-next-line max-lines-per-function
 function handleStackCommand(args: string[]) {
     try {
-        const showMemory =
-            args.length > 1 && args[1].toLowerCase() === "memory";
-
         // Get the stack frames information
         const stackFrames = track_stack_getFrames();
         const stackNames = track_stack_getNames();
@@ -765,7 +781,7 @@ function handleStackCommand(args: string[]) {
         let stackEndAddress = parseInt(stackEndAddressHex, 16);
 
         // If stack is very large, limit to a reasonable number of bytes
-        const maxBytesToShow = args.length > 2 ? parseInt(args[2]) : 256;
+        const maxBytesToShow = args.length > 2 ? parseInt(args[2], 10) : 256;
         const bytesToShow = Math.min(
             stackEndAddress - startAddress,
             maxBytesToShow,
@@ -959,7 +975,7 @@ function displayHelp() {
 }
 
 // eslint-disable-next-line max-lines-per-function
-function parseArguments() {
+function parseArguments(): ArgvOptions {
     return yargs(hideBin(process.argv))
         .usage("Usage: $0 [options]")
         .option("architecture", {
@@ -1031,7 +1047,7 @@ function parseArguments() {
             describe: "Start an interactive tutorial for RISC-V programming",
             default: false,
         })
-        .help().argv;
+        .help().argv as ArgvOptions;
 }
 // eslint-disable-next-line max-lines-per-function
 function processCommand(cmd: string, args: string[]): boolean {
@@ -1168,7 +1184,7 @@ function interactiveMode() {
 }
 function main() {
     // Parse command line arguments
-    const argv = parseArguments();
+    const argv: ArgvOptions = parseArguments();
 
     clearConsole();
 
@@ -1237,7 +1253,6 @@ function main() {
     }
 }
 
-// Export functions so they can be used by the tutorial module
 export {
     handleStepCommand,
     handleRunCommand,
