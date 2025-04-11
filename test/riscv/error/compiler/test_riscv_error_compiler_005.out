@@ -1,11 +1,11 @@
 
 
-[E10] Error: Value `291` is outside of the valid range of the field
+[E22] Error: Value `291` is outside of the valid range of the field
    ╭─[assembly:7:19]
    │
  7 │     a:      .byte 0x123
    │                   ──┬──  
-   │                     ╰──── This expression has value 291
+   │                     ╰──── This expression has value `291`
    │ 
    │ Note: Allowed range is [-128, 255]
 ───╯
