@@ -1,11 +1,13 @@
 
 
-[E05] Error: Register `s50` isn't defined in bank type Integer
+[E05] Error: Register `s50` isn't defined in file type `Integer`
     ╭─[assembly:12:19]
     │
  12 │    add $t0, $t1, $s50
     │                   ─┬─  
     │                    ╰─── Unknown register
+    │ 
+    │ Help: Did you mean `s0` or `s5`?
 ────╯
 
 Not executed

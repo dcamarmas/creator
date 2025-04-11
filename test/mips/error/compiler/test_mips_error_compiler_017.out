@@ -1,13 +1,13 @@
 
 
-Error: found end of input but expected "\""
-   ╭─[assembly:9:2]
+Error: Unterminated string literal
+   ╭─[assembly:8:33]
    │
- 9 │ 
-   │  │ 
-   │  ╰─ Unexpected input
-   │  │ 
-   │  ╰─ while parsing this token
+ 8 │     example:    .ascii "hello world
+   │                                    ┬  
+   │                                    ╰── Caused by this
+   │                                    │  
+   │                                    ╰── while parsing this token
 ───╯
 
 Not executed
