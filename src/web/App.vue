@@ -306,8 +306,8 @@ export default {
       //Memory
       //
 
-      // main_memory: {},
-      // main_memory_busy: false,
+      main_memory: {},
+      main_memory_busy: false,
 
       //Stack
       track_stack_names,
@@ -592,10 +592,14 @@ export default {
     :enter="enter"
     :browser="browser"
     :stack_total_list="stack_total_list"
+    :main_memory="main_memory"
+    :main_memory_busy="main_memory_busy"
     :display="display"
     :keyboard="keyboard"
     ref="simulatorView"
   />
+
+  {{ keyboard }}
 </template>
 
 <style lang="scss" scoped>

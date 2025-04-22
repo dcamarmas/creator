@@ -16,6 +16,7 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
+
 <script>
 import UIeltoToolbar from "./general/UIeltoToolbar.vue"
 import TableExecution from "./simulator/TableExecution.vue"
@@ -37,6 +38,8 @@ export default {
     data_mode: String,
     enter: [Boolean, null],
     stack_total_list: Number,
+    main_memory_busy: Boolean,
+    main_memory: Object,
     display: String,
     keyboard: String,
   },
@@ -64,9 +67,6 @@ export default {
       end_caller: 0,
       begin_callee: 0,
       end_callee: 0,
-
-      // memory
-      main_memory_busy: false,
     }
   },
 }
@@ -142,13 +142,15 @@ export default {
 
               <!-- Memory view-->
               <Memory
-                v-if="data_mode == 'memory'"
+                v-if="data_mode === 'memory'"
                 id="memory"
                 :callee_subrutine="callee_subrutine"
                 :caller_subrutine="caller_subrutine"
                 :stack_total_list="stack_total_list"
                 :main_memory_busy="main_memory_busy"
+                :main_memory="main_memory"
                 :memory_layout="architecture.memory_layout"
+                :end_callee="end_callee"
               />
 
               <!-- Stats view--->

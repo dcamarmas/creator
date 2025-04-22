@@ -22,6 +22,18 @@ export default {
   props: {
     display: { type: String, required: true },
   },
+
+  computed: {
+    display_value: {
+      // sync with App's
+      get() {
+        return this.display
+      },
+      set(value) {
+        this.$root.display = value
+      },
+    },
+  },
 }
 </script>
 
@@ -29,12 +41,12 @@ export default {
   <b-container fluid align-h="start" class="mx-0 px-0">
     <b-row cols="2" align-h="start">
       <b-col cols="1">
-        <span class="fas fa-desktop fa-2x mb-2 consoleIcon" />
+        <font-awesome-icon icon="fa-solid fa-desktop" class="consoleIcon" />
       </b-col>
       <b-col lg="11" cols="12">
         <b-form-textarea
           id="textarea_display"
-          v-model="display"
+          v-model="display_value"
           rows="5"
           disabled
           no-resize

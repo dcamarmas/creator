@@ -18,74 +18,79 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <script>
+import { execution_mode, status } from "@/core/core.mjs"
+
 export default {
   props: {
     keyboard: { type: String, required: true },
-    enter: { type: String, required: true },
+    enter: [Boolean, null],
   },
 
-  data() {
-    return {
-      local_keyboard: keyboard,
-    }
+  computed: {
+    keyboard_value: {
+      // sync with App's
+      get() {
+        return this.keyboard
+      },
+      set(value) {
+        this.$root.keyboard = value
+      },
+    },
   },
 
   methods: {
     /*Empty keyboard and display*/
     consoleClear() {
-      this.local_keyboard = ''
-      app._data.keyboard = '' //TODO: vue bidirectional updates
-      app._data.display = '' //TODO: vue bidirectional updates
+      this.keyboard_value = ""
+      this.$root.display = ""
     },
 
-    getDebounceTime() {
-      // Determines the refresh timeout depending on the device being used
-      if (screen.width > 768) {
-        return 500
-      } else {
-        return 1000
-      }
-    },
+    // getDebounceTime() {
+    //   // Determines the refresh timeout depending on the device being used
+    //   if (screen.width > 768) {
+    //     return 500
+    //   } else {
+    //     return 1000
+    //   }
+    // },
 
     /*Console mutex*/
     consoleEnter() {
-      if (this.local_keyboard != '') {
-        app._data.keyboard = this.local_keyboard //TODO: vue bidirectional updates
-        run_program = execution_mode
-        this.local_keyboard = ''
+      if (this.keyboard_value !== "") {
+        status.run_program = execution_mode
       }
     },
 
     /*Stop user interface refresh*/
-    debounce: _.debounce(function (param, e) {
-      console_log(param)
-      console_log(e)
+    //   debounce: _.debounce(function (param, e) {
+    //     console_log(param)
+    //     console_log(e)
 
-      e.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-      let re = new RegExp("'", 'g')
-      e = e.replace(re, '"')
-      re = new RegExp('[\f]', 'g')
-      e = e.replace(re, '\\f')
-      re = new RegExp('[\n\]', 'g')
-      e = e.replace(re, '\\n')
-      re = new RegExp('[\r]', 'g')
-      e = e.replace(re, '\\r')
-      re = new RegExp('[\t]', 'g')
-      e = e.replace(re, '\\t')
-      re = new RegExp('[\v]', 'g')
-      e = e.replace(re, '\\v')
+    //     e.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+    //     let re = /'/g
+    //     e = e.replace(re, '"')
+    //     re = /[\f]/g
+    //     e = e.replace(re, "\\f")
+    //     re = /[\n]/g
+    //     e = e.replace(re, "\\n")
+    //     re = /[\r]/g
+    //     e = e.replace(re, "\\r")
+    //     re = /[\t]/g
+    //     e = e.replace(re, "\\t")
+    //     re = /[\v]/g
+    //     e = e.replace(re, "\\v")
 
-      if (e == '') {
-        this[param] = null
-        return
-      }
+    //     if (e === "") {
+    //       this[param] = null
+    //       return
+    //     }
 
-      console_log('this.' + param + "= '" + e + "'")
+    //     console_log("this." + param + "= '" + e + "'")
 
-      eval('this.' + param + "= '" + e + "'")
+    //     eval("this." + param + "= '" + e + "'")
 
-      app.$forceUpdate()
-    }, getDebounceTime()),
+    //     this.$root.$forceUpdate()
+    //   }, getDebounceTime()),
   },
 }
 </script>
@@ -95,40 +100,51 @@ export default {
     <b-container fluid align-h="start" class="mx-0 px-0">
       <b-row cols="2" align-h="start">
         <b-col cols="1">
-          <span class="fa fa-keyboard fa-2x mb-2 consoleIcon"></span>
+          <font-awesome-icon icon="fa-solid fa-keyboard" class="consoleIcon" />
         </b-col>
         <b-col lg="11" cols="12">
-          <b-form-textarea
+          <!-- <b-form-textarea
             id="textarea_keyboard"
             v-on:input="debounce('local_keyboard', $event)"
-            :value="local_keyboard"
+            :value="keyboard_value"
             rows="5"
             no-resize
             :state="enter"
             title="Keyboard"
+          /> -->
+          <b-form-textarea
+            id="textarea_keyboard"
+            v-model="keyboard_value"
+            :state="enter"
+            rows="5"
           />
         </b-col>
       </b-row>
     </b-container>
 
     <b-container fluid align-h="end" class="mx-0 px-0">
-      <b-row cols="3" align-h="end">
+      <b-row cols="3" align-h="end" class="">
         <b-col>
           <b-button
-            class="btn btn-outline-secondary btn-block menuGroup btn-sm keyboardButton"
+            variant="outline-secondary"
+            class="btn-block menuGroup keyboardButton"
             @click="consoleClear"
           >
-            <span class="fas fa-broom" />
+            <font-awesome-icon icon="fa-solid fa-broom" />
             Clear
           </b-button>
         </b-col>
         <b-col>
           <b-button
             id="enter_keyboard"
-            class="btn btn-outline-secondary btn-block menuGroup btn-sm keyboardButton"
+            variant="outline-secondary"
+            class="menuGroup keyboardButton"
             @click="consoleEnter"
           >
-            <span class="fas fa-level-down-alt enterIcon" />
+            <font-awesome-icon
+              icon="fa-solid fa-level-down-alt"
+              class="enterIcon"
+            />
             Enter
           </b-button>
         </b-col>
