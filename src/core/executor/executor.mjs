@@ -40,6 +40,7 @@ import { decode_instruction } from "./decoder.mjs";
 import { buildInstructionPreload } from "./preload.mjs";
 import { dumpMemory } from "../core.mjs"; // To use with debugger
 import { main_memory, main_memory_write_value } from "../memory/memoryCore.mjs"; // For debugging only
+import { show_notification } from "@/web/utils.mjs"
 
 export function packExecute(error, err_msg, err_type, draw) {
     const ret = {};

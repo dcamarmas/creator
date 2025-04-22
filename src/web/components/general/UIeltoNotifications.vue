@@ -28,20 +28,28 @@ export default {
 
 <template>
   <b-modal :id="id" title="Notifications" scrollable no-footer>
-    <span class="h6" v-if="notifications.length == 0">
-      There's no notification at the moment
+    <span class="h6" v-if="notifications.length === 0">
+      There are no notifications at the moment
     </span>
 
-    <b-alert show :variant="item.color" v-for="item in notifications">
+    <b-alert
+      :model-value="true"
+      :variant="notif.color"
+      v-for="notif in notifications.toReversed()"
+    >
       <span class="h6">
-        <span class="fas fa-info-circle" v-if="item.color != 'danger'" />
-        <span
-          class="fas fa-exclamation-triangle"
-          v-if="item.color == 'danger'"
+        <font-awesome-icon
+          icon="fa-solid fa-info-circle"
+          v-if="notif.color !== 'danger'"
         />
-        {{ item.mess }}
+        <font-awesome-icon icon="fa-solid fa-exclamation-triangle" v-else />
+
+        {{ notif.date }} - {{ notif.time }}
+
+        <br />
+
+        {{ notif.mess }}
       </span>
-      <span class="h6">{{ item.time }} - {{ item.date }}</span>
     </b-alert>
   </b-modal>
 </template>
