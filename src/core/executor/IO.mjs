@@ -51,14 +51,29 @@ export function kbd_read_char(keystroke, params) {
 }
 
 export function kbd_read_int(keystroke, params) {
-    const value = parseInt(keystroke, 10);
+    // eslint-disable-next-line radix
+    const value = parseInt(keystroke)
+
+    // validate input
+    if (typeof document !== "undefined" && isNaN(value)) {
+        show_notification(`Invalid input: '${keystroke}' is not an integer`, "danger")
+        return null
+    }
+
     writeRegister(value, params.indexComp, params.indexElem);
 
     return value;
 }
 
 export function kbd_read_float(keystroke, params) {
-    const value = parseFloat(keystroke, 10);
+    const value = parseFloat(keystroke, 10)
+
+    // validate input
+    if (typeof document !== "undefined" && isNaN(value)) {
+        show_notification(`Invalid input: '${keystroke}' is not a float`, "danger", useToastController)
+        return null
+    }
+
     writeRegister(value, params.indexComp, params.indexElem, "SFP-Reg");
 
     return value;
@@ -66,6 +81,13 @@ export function kbd_read_float(keystroke, params) {
 
 export function kbd_read_double(keystroke, params) {
     const value = parseFloat(keystroke, 10);
+
+    // validate input
+    if (typeof document.app !== "undefined" && isNaN(value)) {
+        show_notification(`Invalid input: '${keystroke}' is not a double`, "danger", useToastController)
+        return null
+    }
+
     writeRegister(value, params.indexComp, params.indexElem, "DFP-Reg");
 
     return value;

@@ -50,16 +50,18 @@ export default {
     },
   },
 
+  beforeUpdate() {
+    // make it glow
+    this.glow = true
+    setTimeout(() => {
+      this.glow = false
+    }, 500)
+  },
+
   methods: {
     refresh() {
       // refreshes children components with `:key="render"`
       this.render++
-
-      // make it glow
-      this.glow = true
-      setTimeout(() => {
-        this.glow = false
-      }, 500)
     },
 
     // TODO: move to utils

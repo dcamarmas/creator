@@ -18,7 +18,11 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <script>
-import { BModalOrchestrator, BToastOrchestrator } from "bootstrap-vue-next"
+import {
+  BModalOrchestrator,
+  BToastOrchestrator,
+  useToastController,
+} from "bootstrap-vue-next"
 // import $ from "jquery"
 
 import package_json from "/package.json" // package info
@@ -149,6 +153,14 @@ export default {
   /************
    * Vue Data *
    ************/
+
+  setup() {
+    // BV Composeables, such as these, should only be used inside setup
+    const showToast = useToastController().show
+
+    return { showToast } // shows a toast notification
+  },
+
   // eslint-disable-next-line max-lines-per-function
   data() {
     return {

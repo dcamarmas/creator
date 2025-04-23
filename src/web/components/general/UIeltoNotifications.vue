@@ -40,9 +40,20 @@ export default {
       <span class="h6">
         <font-awesome-icon
           icon="fa-solid fa-info-circle"
-          v-if="notif.color !== 'danger'"
+          v-if="notif.color === 'info'"
         />
-        <font-awesome-icon icon="fa-solid fa-exclamation-triangle" v-else />
+        <font-awesome-icon
+          icon="fa-solid fa-circle-exclamation"
+          v-if="notif.color === 'danger'"
+        />
+        <font-awesome-icon
+          icon="fa-solid fa-exclamation-triangle"
+          v-if="notif.color === 'warning'"
+        />
+        <font-awesome-icon
+          icon="fa-solid fa-circle-check"
+          v-if="notif.color === 'success'"
+        />
 
         {{ notif.date }} - {{ notif.time }}
 
