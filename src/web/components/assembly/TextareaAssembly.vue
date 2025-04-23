@@ -144,7 +144,7 @@ export default {
     placeholder="Assembly code..."
     :lang="lang"
     :autofocus="true"
-    :indent-with-tab="true"
+    :tab="true"
     :tab-size="4"
     :wrap="true"
     :extensions="extensions"

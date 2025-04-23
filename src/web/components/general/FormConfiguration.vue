@@ -120,8 +120,8 @@ export default {
         // enforce limit
         if (value < 1000) {
           value = 1000
-        } else if (value > 3500) {
-          value = 3500
+        } else if (value > 5000) {
+          value = 5000
         }
 
         this.$emit("update:notification_time", value)
@@ -256,7 +256,7 @@ export default {
             v-model="notification_time_value"
             type="range"
             min="1000"
-            max="3500"
+            max="5000"
             step="10"
             title="Notification Time"
           />

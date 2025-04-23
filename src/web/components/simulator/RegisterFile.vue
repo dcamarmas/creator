@@ -19,20 +19,20 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 
 <script>
 import Register from "./Register.vue"
+import { REGISTERS } from "@/core/core.mjs"
 
 export default {
   props: {
     data_mode: { type: String, required: true },
-    components: { type: Object, required: true },
   },
 
   components: {
     Register,
   },
-
+  
   data() {
     return {
-      // render: 0, // dummy variable to force the component to refresh
+      register_file: REGISTERS,
 
       local_data_mode: "int_registers",
 
@@ -56,14 +56,16 @@ export default {
         { text: "Alias", value: "alias" },
         { text: "All", value: "all" },
       ],
+
+      render: 0n, // dummy variable to force components with this as key to refresh
     }
   },
 
   methods: {
-    // refresh() {
-    //   // refreshes the component
-    //   this.render++
-    // },
+    refresh() {
+      // refreshes children components with `:key="render"`
+      this.render++
+    },
 
     mk_reg_representation_options() {
       if (
@@ -144,7 +146,7 @@ export default {
 
     <b-container fluid align-h="center" class="mx-0 px-3 my-2">
       <b-row align-h="center" cols="1">
-        <b-col v-for="bank in components">
+        <b-col v-for="bank in register_file">
           <b-container
             fluid
             align-h="center"
@@ -176,6 +178,7 @@ export default {
                   :name_representation="reg_name_representation"
                   :value_representation="reg_representation"
                   :ref="'reg' + register.name[0]"
+                  :key="render"
                 />
               </b-col>
             </b-row>

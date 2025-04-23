@@ -136,7 +136,6 @@ export default {
                 "
                 id="register_file"
                 :data_mode="data_mode"
-                :components="architecture.components"
                 ref="registerFile"
               />
 

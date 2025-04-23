@@ -244,7 +244,7 @@ function packCompileError(err_code, err_token, err_ti, err_bgcolor) {
 
 /*Compile assembly code*/
 // eslint-disable-next-line max-lines-per-function
-export function assembly_compiler(library, color) {
+export function assembly_compiler(code, library, color) {
 
     /* Google Analytics */
     creator_ga("compile", "compile.assembly")
@@ -259,7 +259,7 @@ export function assembly_compiler(library, color) {
 
     let library_offset = 0;
     const library_instructions = update_binary.instructions_binary?.length ?? 0;
-    for (var i = 0; i < library_instructions; i++) {
+    for (let i = 0; i < library_instructions; i++) {
         const instruction = update_binary.instructions_binary[i];
         instruction.hide = !(i === 0 || instruction.globl === true);
         if (instruction.globl !== true) {
@@ -288,8 +288,8 @@ export function assembly_compiler(library, color) {
     data_address = parseInt(architecture.memory_layout[2].value)
     stack_address = parseInt(architecture.memory_layout[4].value)
 
-    for (var i = 0; i < REGISTERS.length; i++) {
-        for (var j = 0; j < REGISTERS[i].elements.length; j++) {
+    for (let i = 0; i < REGISTERS.length; i++) {
+        for (let j = 0; j < REGISTERS[i].elements.length; j++) {
             if (
                 REGISTERS[i].elements[j].properties.includes("program_counter")
             ) {
@@ -322,7 +322,7 @@ export function assembly_compiler(library, color) {
 
     /*Reset stats*/
     status.totalStats = 0;
-    for (var i = 0; i < stats.length; i++) {
+    for (let i = 0; i < stats.length; i++) {
         stats[i].percentage = 0;
         stats[i].number_instructions = 0;
         stats_value[i] = 0;
@@ -343,7 +343,7 @@ export function assembly_compiler(library, color) {
         }
         // Compile assembly
         const compiled = arch.compile(
-            code_assembly,
+            code,
             library_offset,
             labels_json,
             library ?? false,

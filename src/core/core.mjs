@@ -109,7 +109,8 @@ export let app;
 export let status = {
     execution_init: 1,
     totalStats: 0,
-    run_program: 0,
+    run_program: 0,  // 0: stopped, 1: running, 2: stopped-by-breakpoint, 3: stopped-by-mutex-read
+
     keyboard: "",
     display: "",
     execution_index: 0,
@@ -1053,11 +1054,7 @@ export function load_library(lib_str) {
 // compilation
 
 export function assembly_compile(code, enable_color) {
-    let ret = {};
-
-    code_assembly = code;
-    let color = enable_color ? Color.Ansi : Color.Off;
-    ret = assembly_compiler(false, color);
+    const ret = assembly_compiler(code, false, enable_color ? Color.Ansi : Color.Off)
     switch (ret.status) {
         case "error":
             break;
@@ -1207,7 +1204,18 @@ export function reset() {
     status.keyboard = "";
     status.display = "";
 
-    REGISTERS = JSON.parse(JSON.stringify(REGISTERS_BACKUP));
+    // reset registers
+    if (typeof document !== undefined) {
+        // I'd _like_ to use REGISTERS_BACKUP and call it a day... but if I do
+        // that Vue doesn't notice the change and it doesn't update visually
+        for (const bank of REGISTERS) {
+            for (const reg of bank.elements) {
+                reg.value = reg.default_value;
+            }
+        }
+    } else {
+        REGISTERS = JSON.parse(JSON.stringify(REGISTERS_BACKUP));
+    }
 
     architecture.memory_layout[4].value = backup_stack_address;
     architecture.memory_layout[3].value = backup_data_address;
