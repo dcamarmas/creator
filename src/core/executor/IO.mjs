@@ -10,8 +10,7 @@
  *
  *  CREATOR is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU Lesser General Public License for more details.
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
  *
  *  You should have received a copy of the GNU Lesser General Public License
  *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
@@ -26,10 +25,18 @@ import { writeMemory } from "../memory/memoryOperations.mjs";
 import process from "node:process";
 import readlineSync from "readline-sync";
 import { packExecute } from "./executor.mjs";
-
+import os from "node:os";
 export function display_print(info) {
-    if (typeof app !== "undefined") app._data.display += info;
-    else process.stdout.write(info + "\n");
+    if (typeof app !== "undefined") {
+        app._data.display += info;
+    } else {
+        // Deno environment
+        // Make sure that info is a string
+        if (typeof info !== "string") {
+            info = info.toString();
+        }
+        process.stdout.write(info);
+    }
 
     status.display += info;
 }
@@ -74,6 +81,51 @@ export function kbd_read_string(keystroke, params) {
 
     return value;
 }
+function checkEnter(buf) {
+    if (os.type() === "Darwin") {
+        // MacOS
+        return buf[0] === 13;
+    } else if (os.type() === "Windows_NT") {
+        // Windows
+        return buf[0] === 13 || buf[0] === 10;
+    } else {
+        return buf[0] === 10;
+    }
+}
+
+/**
+ * Custom prompt function for Deno
+ * @returns {string} - The user input without extra space or newline
+ */
+function rawPrompt() {
+    // Build input character by character until we hit Enter
+    const chunks = [];
+    const decoder = new TextDecoder();
+    const buf = new Uint8Array(1);
+    Deno.stdin.setRaw(true, { cbreak: true });
+    while (true) {
+        const bytesRead = Deno.stdin.readSync(buf);
+        if (bytesRead === null || bytesRead === 0) break;
+
+        if (checkEnter(buf)) {
+            // Enter key pressed
+            chunks.push("\n");
+            break;
+        } else if (buf[0] === 8 || buf[0] === 127) {
+            // Backspace or Delete key pressed
+            if (chunks.length > 0) {
+                chunks.pop(); // Remove the last character
+                process.stdout.write("\b \b"); // Move cursor back, erase character, move cursor back again
+            }
+        } else {
+            const char = decoder.decode(buf);
+            process.stdout.write(char); // Echo the character
+            chunks.push(char);
+        }
+    }
+
+    return chunks.join("");
+}
 
 // eslint-disable-next-line max-lines-per-function
 export function keyboard_read(fn_post_read, fn_post_params) {
@@ -89,7 +141,7 @@ export function keyboard_read(fn_post_read, fn_post_params) {
     // Check for Deno environment
     if (typeof Deno !== "undefined") {
         try {
-            const keystroke = prompt("Input:");
+            const keystroke = rawPrompt();
             const value = fn_post_read(keystroke, fn_post_params);
             status.keyboard = status.keyboard + " " + value;
 

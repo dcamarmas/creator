@@ -4,9 +4,9 @@
 #
 
 .data
-    msg:  .string "Please, insert the first number: "
-    msg2: .string "Please, insert the second number: "
-    msg3: .string "The result is: "
+    msg:  .string "\nPlease, insert the first number: "
+    msg2: .string "\nPlease, insert the second number: "
+    msg3: .string "\nThe result is: "
 
 .text
 main:

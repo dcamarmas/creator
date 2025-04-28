@@ -486,16 +486,7 @@ export function decode_instruction(instructionExec, newFormat = false) {
     }
 
     // No match found
-    logger.error("No match found for instruction: " + instructionExec);
-    return {
-        type: "",
-        signatureDef: "",
-        signatureParts: [],
-        signatureRawParts: [],
-        instructionExec,
-        instructionExecParts,
-        auxDef: "",
-        nwords: 1,
-        binary: false,
-    };
+    throw new Error(
+        `Unknown Instruction: 0x${parseInt(instructionExec, 2).toString(16).toUpperCase().padStart(8, "0")}`,
+    );
 }
