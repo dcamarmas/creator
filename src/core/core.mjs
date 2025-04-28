@@ -1635,3 +1635,31 @@ export function dumpRegister(register) {
     }
     return null;
 }
+
+export function getRegisterTypes() {
+    // Extract unique register types from architecture components
+    const registerTypes = architecture.components
+        .filter(component => component.type.includes("registers"))
+        .map(component => component.type);
+
+    return registerTypes;
+}
+
+export function getRegistersByType(regType) {
+    // Find the component with the specified register type
+    const component = architecture.components.find(
+        comp => comp.type === regType,
+    );
+
+    if (!component) {
+        return null;
+    }
+
+    return {
+        name: component.name,
+        type: component.type,
+        elements: component.elements,
+        double_precision: component.double_precision,
+        double_precision_type: component.double_precision_type,
+    };
+}

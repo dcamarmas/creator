@@ -14,10 +14,14 @@ import {
     track_stack_getAllHints,
 } from "../core/memory/stackTracker.mjs";
 import { startTutorial } from "./tutorial.mts";
+import yaml from "js-yaml";
+import path from "node:path";
+import { displayHelp } from "./utils.mts";
+import { Buffer } from "node:buffer";
 
 const MAX_INSTRUCTIONS = 10000000000;
 const CLI_VERSION = "0.1.0";
-let ACCESSIBLE = false;
+export let ACCESSIBLE = false;
 // Track the address of the previously executed instruction
 let PREVIOUS_PC = "0x0";
 // Maximum number of states to keep for unstepping (-1 for unlimited, 0 to disable)
@@ -26,6 +30,19 @@ let MAX_STATES_TO_KEEP = 0;
 let previousStates: string[] = [];
 // Whether tutorial mode is active
 let TUTORIAL_MODE = false;
+// Track if a binary file was loaded
+let BINARY_LOADED = false;
+// Track if execution is currently paused
+let EXECUTION_PAUSED = false;
+const creatorASCII = `
+ ██████╗██████╗ ███████╗ █████╗ ████████╗ ██████╗ ██████╗ 
+██╔════╝██╔══██╗██╔════╝██╔══██╗╚══██╔══╝██╔═══██╗██╔══██╗
+██║     ██████╔╝█████╗  ███████║   ██║   ██║   ██║██████╔╝
+██║     ██╔══██╗██╔══╝  ██╔══██║   ██║   ██║   ██║██╔══██╗
+╚██████╗██║  ██║███████╗██║  ██║   ██║   ╚██████╔╝██║  ██║
+╚═════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝   ╚═╝    ╚═════╝ ╚═╝  ╚═╝
+  didaCtic and geneRic assEmbly progrAmming simulaTOR
+`;
 
 interface ArgvOptions {
     architecture: string;
@@ -39,6 +56,8 @@ interface ArgvOptions {
     state: string;
     accessible: boolean;
     tutorial: boolean;
+    config?: string; // Add config file option
+    verbose?: boolean; // Add verbose flag option
 }
 
 interface ReturnType {
@@ -49,6 +68,129 @@ interface ReturnType {
     type?: string;
     update?: string;
     error?: boolean;
+}
+interface ConfigType {
+    settings: {
+        max_states?: number;
+        accessible?: boolean;
+        keyboard_shortcuts?: boolean; // Add keyboard shortcuts setting
+        auto_list_after_shortcuts?: boolean; // Add auto-list setting
+    };
+    aliases: {
+        [key: string]: string;
+    };
+    shortcuts: {
+        [key: string]: string;
+    };
+}
+// Loaded config
+export let CONFIG: ConfigType = { settings: {}, aliases: {}, shortcuts: {} };
+// Default config path
+const CONFIG_PATH = path.join(
+    process.env.HOME || ".",
+    ".config",
+    "creator",
+    "config.yml",
+);
+
+// Default configuration
+const DEFAULT_CONFIG: ConfigType = {
+    settings: {
+        max_states: 0,
+        accessible: false,
+        keyboard_shortcuts: true, // Enable keyboard shortcuts by default
+        auto_list_after_shortcuts: true, // Disabled by default
+    },
+    aliases: {},
+    shortcuts: {},
+};
+
+// Function to load configuration from YAML file
+function loadConfiguration(configPath: string = CONFIG_PATH): ConfigType {
+    try {
+        // Ensure the directory exists
+        const configDir = path.dirname(configPath);
+        if (!fs.existsSync(configDir)) {
+            fs.mkdirSync(configDir, { recursive: true });
+        }
+
+        // Check if config file exists, create default if not
+        if (!fs.existsSync(configPath)) {
+            fs.writeFileSync(configPath, yaml.dump(DEFAULT_CONFIG), "utf8");
+            return DEFAULT_CONFIG;
+        }
+
+        // Load and parse the config file
+        const configData = fs.readFileSync(configPath, "utf8");
+        const config = yaml.load(configData) as ConfigType;
+
+        // Merge with defaults to ensure all fields exist
+        return {
+            settings: { ...DEFAULT_CONFIG.settings, ...config.settings },
+            aliases: { ...DEFAULT_CONFIG.aliases, ...config.aliases },
+            shortcuts: { ...DEFAULT_CONFIG.shortcuts, ...config.shortcuts },
+        };
+    } catch (error) {
+        console.error(`Error loading configuration: ${error.message}`);
+        return DEFAULT_CONFIG;
+    }
+}
+
+// Apply configuration settings
+function applyConfiguration(config: ConfigType): void {
+    if (config.settings.max_states !== undefined) {
+        MAX_STATES_TO_KEEP = config.settings.max_states;
+    }
+
+    if (config.settings.accessible !== undefined) {
+        ACCESSIBLE = config.settings.accessible;
+    }
+
+    // If keyboard_shortcuts is undefined, leave the default (true)
+    // This maintains backward compatibility with older config files
+}
+
+// Helper function to determine if a command should auto-list after execution
+function shouldAutoListAfterCommand(cmd: string): boolean {
+    // Commands that already provide visual output or don't modify program state
+    const noAutoListCommands = [
+        "list",
+        "help",
+        "reg",
+        "mem",
+        "hexview",
+        "stack",
+        "snapshot",
+        "save",
+        "alias",
+        "about",
+        "clear",
+        "pause",
+        "run",
+    ];
+
+    return !noAutoListCommands.includes(cmd);
+}
+
+// Process command with potential alias substitution
+function applyAlias(
+    cmd: string,
+    args: string[],
+): { cmd: string; args: string[] } {
+    // Check if the command has an alias
+    const alias = CONFIG.aliases[cmd];
+    if (!alias) {
+        return { cmd, args };
+    }
+
+    // Parse the alias into command and args
+    const aliasTokens = alias.trim().split(/\s+/);
+    const aliasCmd = aliasTokens[0];
+
+    // Combine alias args with original args (skipping the original command)
+    const aliasArgs = aliasTokens.concat(args.slice(1));
+
+    return { cmd: aliasCmd, args: aliasArgs };
 }
 
 function clearConsole() {
@@ -134,6 +276,8 @@ function loadBinary(filePath: string) {
 
     const binaryFile = fs.readFileSync(filePath, "utf8");
     creator.load_binary_file(binaryFile);
+    // Set the flag to indicate a binary was loaded
+    BINARY_LOADED = true;
     // console.log("Binary loaded successfully.");
 }
 
@@ -171,150 +315,219 @@ function handleInstructionsCommand() {
     const pc_value = creator.dumpRegister("PC");
     const currentPC = "0x" + pc_value.toUpperCase();
 
-    if (ACCESSIBLE) {
-        console.log("Displaying loaded instructions.");
-        for (let i = 0; i < instructions.length; i++) {
-            const instr = instructions[i];
-            const isCurrentInstruction = instr.Address === currentPC;
-            const isPreviousInstruction =
-                instr.Address === PREVIOUS_PC && instr.Address !== currentPC;
-            const hasBreakpoint = instr.Break === true;
+    displayInstructionsHeader();
 
-            const addressLine = `Address ${instr.Address}${instr.Label ? " with label: " + instr.Label : ""}`;
-            const loadedLine = instr.loaded
-                ? `Loaded instruction: ${instr.loaded}`
-                : "No instruction loaded";
-            const userLine = instr.user
-                ? `User instruction: ${instr.user}`
-                : "";
-            let statusInfo = "";
-
-            if (hasBreakpoint) {
-                statusInfo += "BREAKPOINT SET. ";
-            }
-
-            if (isCurrentInstruction) {
-                statusInfo += "NEXT INSTRUCTION TO EXECUTE. ";
-            } else if (isPreviousInstruction) {
-                statusInfo += "CURRENTLY EXECUTING. ";
-            }
-
-            console.log(
-                `${statusInfo}${addressLine}. ${loadedLine}. ${userLine}`,
-            );
-        }
-    } else {
-        // Tabular format
-        console.log(
-            "    B | Address | Label      | Loaded Instruction      | User Instruction",
-        );
-        console.log(
-            "   ---|---------|------------|-------------------------|------------------------",
-        );
-
-        for (let i = 0; i < instructions.length; i++) {
-            const instr = instructions[i];
-            const address = instr.Address.padEnd(8);
-            const label = (instr.Label || "").padEnd(11);
-            const loaded = (instr.loaded || "").padEnd(23);
-            const user = instr.user || "";
-            const breakpointMark = instr.Break ? "●" : " ";
-
-            // Add an arrow for the current instruction
-            const currentMark = instr.Address === currentPC ? "➤" : " ";
-
-            let line = `${currentMark}   ${breakpointMark} | ${address}| ${label}| ${loaded} | ${user}`;
-
-            // Highlight current instruction in green, previous in blue
-            if (instr.Address === currentPC) {
-                line = colorText(line, "32"); // Green for current instruction
-            } else if (instr.Address === PREVIOUS_PC) {
-                line = colorText(line, "33"); // Blue for previously executed instruction
-            } else if (instr.Break) {
-                line = colorText(line, "31"); // Red for breakpoint
-            }
-
-            console.log(line);
-        }
+    for (let i = 0; i < instructions.length; i++) {
+        displayInstruction(instructions[i], currentPC);
     }
 }
 
-function executeNonInteractive() {
+function displayInstructionsHeader() {
+    if (BINARY_LOADED) {
+        console.log(
+            "    B | Address | Label      | Decoded Instruction     | Machine Code (hex)",
+        );
+    } else {
+        console.log(
+            "    B | Address | Label      | Loaded Instruction      | User Instruction",
+        );
+    }
+    console.log(
+        "   ---|---------|------------|-------------------------|------------------------",
+    );
+}
+
+function displayInstruction(instr, currentPC) {
+    const address = instr.Address.padEnd(8);
+    const label = (instr.Label || "").padEnd(11);
+    let loaded = (instr.loaded || "").padEnd(23);
+    let rightColumn = instr.user || "";
+    const breakpointMark = instr.Break ? "●" : " ";
+
+    // When binary is loaded, display machine code in hex in the rightmost column
+    if (BINARY_LOADED) {
+        try {
+            // Get the raw instruction from memory at this address
+            const rawInstruction = creator.dumpAddress(
+                parseInt(instr.Address, 16),
+                4,
+            );
+
+            // Set the rightmost column to show the machine code in hex
+            rightColumn = `0x${rawInstruction.toUpperCase()}`;
+
+            // Decompile binary instructions for the middle column
+            const instructionInt = parseInt(rawInstruction, 16);
+            const instructionBinary = instructionInt
+                .toString(2)
+                .padStart(32, "0");
+            const decodedInstruction = decode_instruction(instructionBinary);
+
+            // Replace the loaded instruction with decompiled version
+            if (decodedInstruction && decodedInstruction.instructionExecParts) {
+                const decompiled =
+                    decodedInstruction.instructionExecParts.join(" ");
+                loaded = decompiled.padEnd(23);
+            }
+        } catch (error) {
+            loaded = "???".padEnd(23);
+            const rawInstruction = creator.dumpAddress(
+                parseInt(instr.Address, 16),
+                4,
+            );
+            rightColumn = `0x${rawInstruction.toUpperCase()}`;
+        }
+    }
+
+    // Add an arrow for the current instruction
+    const currentMark = instr.Address === currentPC ? "➤" : " ";
+
+    let line = `${currentMark}   ${breakpointMark} | ${address}| ${label}| ${loaded} | ${rightColumn}`;
+
+    // Highlight current instruction in green, previous in blue
+    if (instr.Address === currentPC) {
+        line = colorText(line, "32"); // Green for current instruction
+    } else if (instr.Address === PREVIOUS_PC) {
+        line = colorText(line, "33"); // Blue for previously executed instruction
+    } else if (instr.Break) {
+        line = colorText(line, "31"); // Red for breakpoint
+    }
+
+    console.log(line);
+}
+
+function executeNonInteractive(
+    verbose: boolean = false,
+    statePath: string = "",
+) {
     for (let i = 0; i < MAX_INSTRUCTIONS; i++) {
         const { output, completed, error } = executeStep();
         if (error) {
             console.error("Error during execution.");
             break;
         } else if (completed) {
-            console.log("Program executed successfully.");
             break;
         }
-        console.log(output);
+        if (verbose) {
+            console.log(output);
+        }
     }
     const state = creator.getState();
-    // save state.msg to file
-    fs.writeFileSync("state.txt", state.msg, "utf8");
-    console.log("State saved to state.txt");
+
+    console.log(state.msg);
+
+    // Only save state if a path is provided
+    if (statePath) {
+        fs.writeFileSync(statePath, state.msg, "utf8");
+        console.log(`State saved to ${statePath}`);
+    }
 }
 
-function handleBreakpointCommand(args: string[]) {
-    if (args.length < 2) {
-        // List all breakpoints if no address is provided
-        const breakpoints = instructions.filter(instr => instr.Break === true);
+function listBreakpoints() {
+    const breakpoints = instructions.filter(instr => instr.Break === true);
 
-        if (breakpoints.length === 0) {
-            console.log("No breakpoints set.");
-            return;
-        }
-
-        if (ACCESSIBLE) {
-            console.log(`${breakpoints.length} breakpoints are currently set:`);
-        } else {
-            console.log("Current breakpoints:");
-        }
-
-        for (const bp of breakpoints) {
-            if (ACCESSIBLE) {
-                console.log(
-                    `Breakpoint at address ${bp.Address}${bp.Label ? ` with label ${bp.Label}` : ""}, instruction: ${bp.loaded}`,
-                );
-            } else {
-                console.log(
-                    `  ${bp.Address}${bp.Label ? ` (${bp.Label})` : ""}: ${bp.loaded}`,
-                );
-            }
-        }
+    if (breakpoints.length === 0) {
+        console.log("No breakpoints set.");
         return;
     }
 
-    // Parse address (with or without 0x prefix)
-    let address = args[1].toLowerCase();
-    if (!address.startsWith("0x")) {
-        address = "0x" + address;
+    console.log("Current breakpoints:");
+
+    for (const bp of breakpoints) {
+        console.log(
+            `  ${bp.Address}${bp.Label ? ` (${bp.Label})` : ""}: ${bp.loaded}`,
+        );
+    }
+}
+
+function findInstructionByAddressOrLabel(
+    userInput: string,
+): { address: string; index: number } | null {
+    // Normalize input
+    userInput = userInput.trim();
+    let address: string;
+
+    // Check if the input already has the '0x' prefix
+    if (userInput.startsWith("0x")) {
+        // User explicitly provided an address
+        address = userInput.toLowerCase();
+    } else {
+        // First try to find a matching label
+        const labelMatch = instructions.find(
+            instr => instr.Label === userInput,
+        );
+
+        if (labelMatch) {
+            // Found a matching label, use its address
+            address = labelMatch.Address.toLowerCase();
+        } else {
+            // No matching label found, check if it's a valid hex string
+            const isValidHex = /^[0-9a-fA-F]+$/.test(userInput);
+
+            if (isValidHex) {
+                // It's a valid hex string, treat it as a hex address
+                address = "0x" + userInput.toLowerCase();
+            } else {
+                console.log(
+                    `No label or valid address found for '${userInput}'`,
+                );
+                return null;
+            }
+        }
     }
 
     // Find the instruction with the matching address
-    const instrIndex = instructions.findIndex(
-        instr => instr.Address.toLowerCase() === address,
+    const index = instructions.findIndex(
+        instr => instr.Address.toLowerCase() === address.toLowerCase(),
     );
 
-    if (instrIndex === -1) {
+    if (index === -1) {
         console.log(`No instruction found at address ${address}`);
+        return null;
+    }
+
+    return { address, index };
+}
+
+function toggleBreakpoint(index: number) {
+    // Toggle breakpoint
+    instructions[index].Break = !instructions[index].Break;
+
+    // Get the instruction after toggling
+    const instr = instructions[index];
+    const status = instr.Break ? "set" : "removed";
+
+    console.log(
+        `Breakpoint ${status} at ${instr.Address}${
+            instr.Label ? ` (${instr.Label})` : ""
+        }: ${instr.loaded}`,
+    );
+}
+
+function handleBreakpointCommand(args: string[]) {
+    // If no arguments provided, list all breakpoints
+    if (args.length < 2) {
+        listBreakpoints();
         return;
     }
 
-    // Toggle breakpoint
-    instructions[instrIndex].Break = !instructions[instrIndex].Break;
+    // Try to find the instruction
+    const result = findInstructionByAddressOrLabel(args[1]);
+    if (!result) {
+        return; // Error already logged in the find function
+    }
 
-    // Update the instructions array used for execution
-    const status = instructions[instrIndex].Break ? "set" : "removed";
-    console.log(
-        `Breakpoint ${status} at ${address}${
-            instructions[instrIndex].Label
-                ? ` (${instructions[instrIndex].Label})`
-                : ""
-        }: ${instructions[instrIndex].loaded}`,
-    );
+    // Toggle the breakpoint
+    toggleBreakpoint(result.index);
+}
+
+function handlePauseCommand() {
+    EXECUTION_PAUSED = !EXECUTION_PAUSED;
+
+    if (!EXECUTION_PAUSED) {
+        // If we're resuming, continue execution
+        handleRunCommand(["run"], true);
+    }
 }
 
 function handleRunCommand(args: string[], silent = false) {
@@ -328,67 +541,96 @@ function handleRunCommand(args: string[], silent = false) {
         return;
     }
 
-    if (ACCESSIBLE && args.length > 1) {
-        console.log(
-            `Running up to ${instructionsToRun} instructions or until completion.`,
-        );
+    // If we're resuming from pause, make sure to reset the pause flag
+    if (EXECUTION_PAUSED) {
+        EXECUTION_PAUSED = false;
     }
 
+    // Process instructions in chunks to allow for interruption
+    const CHUNK_SIZE = 1000;
     let iterations = 0;
     let breakpointHit = false;
-    while (
-        creator.status.execution_index !== -2 &&
-        iterations < instructionsToRun &&
-        breakpointHit === false
-    ) {
-        // Check if the current instruction has a breakpoint before executing
-        const pc_value = creator.dumpRegister("PC");
-        const currentPC = "0x" + pc_value.toUpperCase();
 
-        // Find if there's a breakpoint at current PC
-        for (const instr of instructions) {
-            if (instr.Address === currentPC && instr.Break === true) {
-                if (ACCESSIBLE) {
-                    console.log(
-                        `Execution paused: Breakpoint reached at address ${currentPC}`,
-                    );
-                } else {
+    // Helper function to process a single chunk
+    function processChunk() {
+        if (
+            creator.status.execution_index === -2 ||
+            iterations >= instructionsToRun ||
+            breakpointHit ||
+            EXECUTION_PAUSED
+        ) {
+            // Stop processing if execution is completed or paused
+            return;
+        }
+
+        // Process a chunk of instructions
+        const chunkEnd = Math.min(iterations + CHUNK_SIZE, instructionsToRun);
+
+        while (
+            iterations < chunkEnd &&
+            creator.status.execution_index !== -2 &&
+            !breakpointHit &&
+            !EXECUTION_PAUSED
+        ) {
+            // Check for breakpoints
+            const pc_value = creator.dumpRegister("PC");
+            const currentPC = "0x" + pc_value.toUpperCase();
+
+            // Find if there's a breakpoint at current PC
+            for (const instr of instructions) {
+                if (instr.Address === currentPC && instr.Break === true) {
                     console.log(
                         colorText("Breakpoint hit at " + currentPC, "31"),
                     );
+                    breakpointHit = true;
+                    break;
                 }
-                breakpointHit = true;
-                break;
+            }
+            if (breakpointHit) break;
+
+            // Execute a step
+            const { output, completed, error } = executeStep();
+            if (!silent) {
+                console.log(output);
+            }
+            iterations++;
+
+            if (error) {
+                console.error("Error during execution.");
+                return;
+            } else if (completed) {
+                console.log(colorText("\nProgram execution completed.", "32"));
+                return;
             }
         }
-        if (breakpointHit) {
-            break;
-        }
 
-        const { output, completed, error } = executeStep();
-        if (!silent) {
-            console.log(output);
-        }
-        iterations++;
-
-        if (error) {
-            console.error("Error during execution.");
-            break;
-        } else if (completed) {
-            console.log("Program execution completed.");
-            break;
-        }
+        // Schedule the next chunk with setTimeout to properly yield to the event loop
+        setTimeout(processChunk, 0);
     }
 
-    if (ACCESSIBLE && !breakpointHit) {
-        console.log(`Executed ${iterations} instructions.`);
+    // Start processing chunks
+    processChunk();
+}
+
+function handleContinueCommand() {
+    if (EXECUTION_PAUSED) {
+        // Resume from paused state
+        EXECUTION_PAUSED = false;
+        console.log("Resuming execution...");
+        handleRunCommand(["run"], false);
+    } else {
+        // If not paused, just step and then run
+        handleStepCommand();
+        handleRunCommand(["run"], false);
     }
 }
 
 // Interactive mode functions
-function handleBackInTimeCommand() {
+function handleNurCommand() {
     if (previousStates.length === 0) {
-        console.log("No previous states available for unstepping.");
+        console.log(
+            colorText("No previous states available for unstepping.", "31"),
+        );
         return;
     }
 
@@ -413,15 +655,8 @@ function handleBackInTimeCommand() {
         // Find if there's a breakpoint at current PC
         for (const instr of instructions) {
             if (instr.Address === currentPC && instr.Break === true) {
-                if (ACCESSIBLE) {
-                    console.log(
-                        `Execution paused: Breakpoint reached at address ${currentPC}`,
-                    );
-                } else {
-                    console.log(
-                        colorText("Breakpoint hit at " + currentPC, "31"),
-                    );
-                }
+                console.log(colorText("Breakpoint hit at " + currentPC, "31"));
+
                 breakpointHit = true;
                 break;
             }
@@ -472,12 +707,103 @@ function handleRestoreCommand(args: string[]) {
 }
 
 function handleAboutCommand() {
-    console.log("CREATOR CLI");
-    console.log(`Version: ${CLI_VERSION}`);
-    console.log(
-        "CREATOR CLI is a command-line interface for the CREATOR simulator.",
-    );
-    console.log("Copyright (C) 2025 CREATOR Team.");
+    clearConsole();
+
+    if (!ACCESSIBLE) {
+        // Display the ASCII art with colors
+        const coloredASCII = creatorASCII
+            .split("\n")
+            .map(line => colorText(line, "32"))
+            .join("\n");
+        console.log(coloredASCII);
+
+        // Create a fancy box for info
+        console.log("\n" + "╔" + "═".repeat(60) + "╗");
+        console.log("║" + " CREATOR Information".padEnd(60) + "║");
+        console.log("╠" + "═".repeat(60) + "╣");
+
+        // Application info
+        console.log(
+            "║" +
+                colorText(" ⚙️  CREATOR CLI Version:", "33") +
+                ` ${CLI_VERSION}`.padEnd(35) +
+                "║",
+        );
+        console.log(
+            "║" +
+                colorText(" 🚀 CREATOR Core Version:", "33") +
+                " 6.0.0".padEnd(35) +
+                "║",
+        );
+        console.log(
+            "║" +
+                colorText(" 🔧 Deno Version:", "33") +
+                ` ${Deno.version.deno}`.padEnd(43) +
+                "║",
+        );
+
+        // System info
+        console.log("╠" + "═".repeat(60) + "╣");
+        console.log("║" + " System Information".padEnd(60) + "║");
+        console.log("╠" + "═".repeat(60) + "╣");
+        console.log(
+            "║" +
+                colorText(" 💻 Platform:", "32") +
+                ` ${process.platform}`.padEnd(47) +
+                "║",
+        );
+        console.log(
+            "║" +
+                colorText(" 🧠 Architecture:", "32") +
+                ` ${process.arch}`.padEnd(43) +
+                "║",
+        );
+
+        // Credits and copyright
+        console.log("╠" + "═".repeat(60) + "╣");
+        console.log("║" + " About".padEnd(60) + "║");
+        console.log("╠" + "═".repeat(60) + "╣");
+        console.log(
+            "║" +
+                " CREATOR is a didactic and generic assembly simulator".padEnd(
+                    60,
+                ) +
+                "║",
+        );
+        console.log(
+            "║" +
+                " built by the ARCOS group at the Universidad".padEnd(60) +
+                "║",
+        );
+        console.log("║" + " Carlos III de Madrid (UC3M)".padEnd(60) + "║");
+        console.log(
+            "║" +
+                colorText(" © Copyright (C) 2025 CREATOR Team", "35").padEnd(
+                    69,
+                ) +
+                "║",
+        );
+        console.log("╚" + "═".repeat(60) + "╝");
+        console.log("\n");
+    } else {
+        // Accessible version
+        console.log(
+            "CREATOR - didaCtic and geneRic assEmbly progrAmming simulaTOR",
+        );
+        console.log("\nCREATOR Information");
+        console.log("CREATOR CLI Version: " + CLI_VERSION);
+        console.log("CREATOR Core Version: 6.0.0");
+        console.log("Deno Version: " + Deno.version.deno);
+
+        console.log("\nSystem Information");
+        console.log("Platform: " + process.platform);
+        console.log("Architecture: " + process.arch);
+
+        console.log("\nAbout");
+        console.log("CREATOR is a didactic and generic assembly simulator");
+        console.log("designed for teaching computer architecture concepts.");
+        console.log("Copyright (C) 2025 CREATOR Team");
+    }
 }
 
 function handleResetCommand() {
@@ -489,9 +815,7 @@ function handleResetCommand() {
     // Clear the previous states when resetting
     previousStates = [];
 
-    console.log(
-        "Program state has been reset. Ready to run from the beginning.",
-    );
+    console.log(colorText("Program reset.", "32"));
 }
 
 function handleInsnCommand() {
@@ -512,7 +836,9 @@ function handleStepCommand() {
 
 function handleUnstepCommand() {
     if (previousStates.length === 0) {
-        console.log("No previous states available for unstepping.");
+        console.log(
+            colorText("No previous states available for unstepping.", "31"),
+        );
         return;
     }
 
@@ -529,100 +855,108 @@ function handleUnstepCommand() {
     handleInsnCommand();
 }
 
-function handleConfigCommand(args: string[]) {
-    if (args.length < 2) {
-        console.log("Current configuration:");
-        console.log(
-            `  max_states: ${MAX_STATES_TO_KEEP === -1 ? "unlimited" : MAX_STATES_TO_KEEP}`,
-        );
+function handleClearCommand() {
+    clearConsole();
+}
+
+function displayRegistersByType(regType) {
+    const registerBank = creator.getRegistersByType(regType);
+
+    if (!registerBank) {
+        console.log(`Register type "${regType}" not found.`);
         return;
     }
 
-    const setting = args[1].toLowerCase();
+    console.log(`${registerBank.name}:`);
 
-    if (setting === "max_states" && args.length > 2) {
-        const value = parseInt(args[2], 10);
-        if (isNaN(value)) {
-            console.log(
-                "Invalid value for max_states. Must be a number or -1 for unlimited.",
-            );
-            return;
-        }
+    // Display registers in a table format
+    let rowCount = Math.ceil(registerBank.elements.length / 4);
 
-        MAX_STATES_TO_KEEP = value;
-        // Clear the states if we're disabling unstepping
-        if (value === 0) {
-            previousStates = [];
+    // First, calculate max width for each column
+    const maxWidths = [0, 0, 0, 0]; // For up to 4 columns
+    for (let row = 0; row < rowCount; row++) {
+        for (let col = 0; col < 4; col++) {
+            const index = row * 4 + col;
+            if (index < registerBank.elements.length) {
+                const reg = registerBank.elements[index];
+                const primaryName = reg.name[0];
+                const altNames = reg.name.slice(1).join(",");
+                const displayName = altNames
+                    ? `${primaryName}(${altNames})`
+                    : primaryName;
+                maxWidths[col] = Math.max(maxWidths[col], displayName.length);
+            }
         }
-        console.log(`Set max_states to ${value === -1 ? "unlimited" : value}.`);
-    } else {
-        console.log("Unknown configuration setting or missing value.");
-        console.log("Available settings: max_states [number|-1]");
+    }
+
+    for (let row = 0; row < rowCount; row++) {
+        let line = "";
+        for (let col = 0; col < 4; col++) {
+            const index = row * 4 + col;
+            if (index < registerBank.elements.length) {
+                const reg = registerBank.elements[index];
+                const primaryName = reg.name[0];
+                const altNames = reg.name.slice(1).join(",");
+                const value = creator
+                    .dumpRegister(primaryName)
+                    .padStart(8, "0");
+
+                const displayName = altNames
+                    ? `${primaryName}(${altNames})`
+                    : primaryName;
+
+                const coloredName = colorText(
+                    displayName.padEnd(maxWidths[col]),
+                    "36",
+                );
+                line += `${col > 0 ? "  " : ""}${coloredName}: 0x${value}`;
+            }
+        }
+        console.log(line);
     }
 }
-function displayAllRegisters() {
-    if (ACCESSIBLE) {
-        // Enhanced accessible display format
-        console.log("Register values:");
-        for (let i = 0; i < 32; i++) {
-            const regName = `x${i}`;
-            const value = creator.dumpRegister(regName);
-            console.log(`Register ${regName} contains value 0x${value}`);
-        }
-        // Display PC register
-        console.log(
-            `Program Counter (PC) contains value 0x${creator.dumpRegister("PC")}`,
-        );
-    } else {
-        // Display registers in groups of 4
-        for (let row = 0; row < 8; row++) {
-            let line = "";
-            for (let col = 0; col < 4; col++) {
-                const regIndex = row * 4 + col;
-                const regName = `x${regIndex}`;
-                const value = creator.dumpRegister(regName).padStart(8, "0");
-                line += `${col > 0 ? "  " : ""}${regName.padStart(4)}: 0x${value}`;
-            }
-            console.log(line);
-        }
 
-        // Display PC register on its own line
-        console.log(`PC: 0x${creator.dumpRegister("PC").padStart(8, "0")}`);
+function displayRegisterTypes() {
+    const types = creator.getRegisterTypes();
+
+    console.log("Register types:");
+    types.forEach(type => {
+        console.log(`  ${type}`);
+    });
+
+    console.log("\nUse 'reg <type>' to show registers of a specific type");
+}
+
+function handleRegCommand(args: string[]) {
+    if (args.length < 2) {
+        console.log("Usage: reg <type> | reg list");
+        console.log("Use 'reg list' to see available register types");
+        return;
+    }
+
+    const cmd = args[1].toLowerCase();
+
+    if (cmd === "list") {
+        // Display all available register types
+        displayRegisterTypes();
+    } else if (args.length === 2) {
+        // Display registers of a specific type
+        displayRegistersByType(cmd);
+    } else {
+        // Handle displaying a specific register
+        const regName = args[2];
+
+        console.log(`${regName}: 0x${creator.dumpRegister(regName)}`);
     }
 }
 
 function displayMemory(address, count) {
-    if (ACCESSIBLE) {
-        console.log(
-            `Displaying ${count} bytes of memory starting at address 0x${address.toString(16)}`,
-        );
-    }
-
     // Display memory contents in rows of 16 bytes
     for (let i = 0; i < count; i += 4) {
         const bytes = creator.dumpAddress(address + i, 4);
-        if (!ACCESSIBLE) {
-            console.log(
-                `0x${(address + i).toString(16).padStart(8, "0")}: 0x${bytes}`,
-            );
-        } else {
-            console.log(
-                `Memory address 0x${(address + i).toString(16).padStart(8, "0")} contains value 0x${bytes}`,
-            );
-        }
-    }
-}
-function handleRegCommand(args: string[]) {
-    if (args.length > 1) {
-        const regName = args[1];
-        if (!ACCESSIBLE) {
-            console.log(`${regName}: 0x${creator.dumpRegister(regName)}`);
-        } else {
-            const value = creator.dumpRegister(regName);
-            console.log(`Register ${regName} has value 0x${value}`);
-        }
-    } else {
-        displayAllRegisters();
+        console.log(
+            `0x${(address + i).toString(16).padStart(8, "0")}: 0x${bytes}`,
+        );
     }
 }
 
@@ -864,114 +1198,65 @@ function handleStackCommand(args: string[]) {
     }
 }
 
-// eslint-disable-next-line max-lines-per-function
-function displayHelp() {
-    console.log("Available commands:");
+function handleAliasCommand() {
+    if (Object.keys(CONFIG.aliases).length === 0) {
+        console.log("No aliases defined.");
+        return;
+    }
+
+    console.log("Current command aliases:");
 
     if (ACCESSIBLE) {
-        console.log("'step' or 's': Execute a single instruction.");
-        console.log("'unstep' or 'u': Undo the last instruction executed.");
-        console.log(
-            "'run' or 'r' followed by optional number: Execute multiple instructions.",
-        );
-        console.log(
-            "'silent' or 'sr' followed by optional number: Execute multiple instructions silently.",
-        );
-        console.log(
-            "'break' or 'b' followed by address: Toggle a breakpoint at the specified address.",
-        );
-        console.log(
-            "'break' with no arguments: List all currently set breakpoints.",
-        );
-        console.log(
-            "'reg' followed by register name: Display the value of a specific register.",
-        );
-        console.log(
-            "'reg' with no arguments: Display values of all registers.",
-        );
-        console.log(
-            "'mem' followed by address and optional count: Display memory contents.",
-        );
-        console.log("'insn' or 'i': Show details of the current instruction.");
-        console.log("'list' or 'l': Show all loaded instructions.");
-        console.log(
-            "'save' followed by optional filename: Save execution state to a file.",
-        );
-        console.log(
-            "'snapshot' or 'snap' followed by optional filename: Save a complete snapshot of the current state.",
-        );
-        console.log(
-            "'restore' or 'rest' followed by filename: Restore a previously saved snapshot.",
-        );
-        console.log("'reset': Reset program to initial state.");
-        console.log(
-            "'config max_states <n>': Set the maximum number of states to keep for unstepping (-1 for unlimited, 0 to disable).",
-        );
-        console.log(
-            "'stack': Display the call stack hierarchy and frame information.",
-        );
-        console.log("'help' or 'h': Show this help message.");
-        console.log("'about': Show information about the simulator.");
-        console.log("'quit' or 'q': Exit the simulator.");
+        // Simple list format for accessible mode
+        Object.entries(CONFIG.aliases).forEach(([alias, command]) => {
+            console.log(`'${alias}' > '${command}'`);
+        });
     } else {
-        console.log(
-            "  step, s                                      - Execute one instruction",
+        // Table format for standard mode
+        const maxAliasLength = Math.max(
+            ...Object.keys(CONFIG.aliases).map(a => a.length),
         );
-        console.log(
-            "  unstep, u                                    - Undo last instruction",
-        );
-        console.log(
-            "  run, r [n]                                   - Run n instructions or until program completes",
-        );
-        console.log(
-            "  silent, sr [n]                               - Run n instructions silently",
-        );
-        console.log(
-            "  break, b [addr]                              - Set/unset breakpoint at address or list all",
-        );
-        console.log(
-            "  reg [name]                                   - Display register(s)",
-        );
-        console.log(
-            "  mem <address> [count]                        - Display memory (count in bytes)",
-        );
-        console.log(
-            "  insn, i                                      - Show current instruction",
-        );
-        console.log(
-            "  list, l                                      - Show all loaded instructions",
-        );
-        console.log(
-            "  hexview <address> [count] [bytesPerLine]     - Hex viewer",
-        );
-        console.log(
-            "  reset, rst                                   - Reset program to initial state",
-        );
-        console.log(
-            "  save, sv [filename]                          - Save current state to file",
-        );
-        console.log(
-            "  snapshot, snap [filename]                    - Save a complete snapshot of current state",
-        );
-        console.log(
-            "  restore, rest <filename>                     - Restore a previously saved snapshot",
-        );
-        console.log(
-            "  config, cfg max_states <n>                   - Set max states to keep for unstepping",
-        );
-        console.log(
-            "  stack                                        - Display call stack hierarchy and frame info",
-        );
-        console.log(
-            "  help, h                                      - Show this help message",
-        );
-        console.log(
-            "  about                                        - Show information about the simulator",
-        );
-        console.log(
-            "  quit, q                                      - Quit the simulator",
-        );
+
+        Object.entries(CONFIG.aliases)
+            .sort((a, b) => a[0].localeCompare(b[0])) // Sort by alias name
+            .forEach(([alias, command]) => {
+                const paddedAlias = alias.padEnd(maxAliasLength);
+                console.log(`  ${colorText(paddedAlias, "36")} → ${command}`);
+            });
     }
+
+    console.log("\nAliases can be defined in your config file at:");
+    console.log(CONFIG_PATH);
+}
+
+function handleBreakpointAtCurrentPC() {
+    // Get current PC value
+    const pc_value = creator.dumpRegister("PC");
+    const currentPC = "0x" + pc_value.toUpperCase();
+
+    // Find the instruction index with this address
+    const index = instructions.findIndex(
+        instr => instr.Address.toLowerCase() === currentPC.toLowerCase(),
+    );
+
+    if (index === -1) {
+        console.log(`No instruction found at current PC: ${currentPC}`);
+        return;
+    }
+
+    // Toggle the breakpoint
+    toggleBreakpoint(index);
+}
+
+function handleUntilCommand(args: string[]) {
+    if (args.length < 2) {
+        console.log("Usage: until <address>");
+        return;
+    }
+    // Basically set a breakpoint, run until it hits it and then remove it
+    handleBreakpointCommand(args);
+    handleRunCommand(["run"]);
+    handleBreakpointAtCurrentPC();
 }
 
 // eslint-disable-next-line max-lines-per-function
@@ -1030,7 +1315,6 @@ function parseArguments(): ArgvOptions {
             default: "",
         })
         .option("state", {
-            alias: "s",
             type: "string",
             describe: "File to save the state",
             default: "",
@@ -1047,33 +1331,53 @@ function parseArguments(): ArgvOptions {
             describe: "Start an interactive tutorial for RISC-V programming",
             default: false,
         })
+        .option("config", {
+            alias: "c",
+            type: "string",
+            describe: "Path to configuration file",
+            default: CONFIG_PATH,
+        })
+        .option("verbose", {
+            alias: "V",
+            type: "boolean",
+            describe: "Print detailed output in non-interactive mode",
+            default: false,
+        })
         .help().argv as ArgvOptions;
 }
 // eslint-disable-next-line max-lines-per-function
 function processCommand(cmd: string, args: string[]): boolean {
+    // Apply alias substitution
+    const resolved = applyAlias(cmd, args);
+    cmd = resolved.cmd;
+    args = resolved.args;
     switch (cmd) {
         case "step":
-        case "s":
         case "":
             handleStepCommand();
             break;
         case "unstep":
-        case "u":
             handleUnstepCommand();
             break;
         case "run":
-        case "r":
             handleRunCommand(args);
             break;
-        case "bit":
-            handleBackInTimeCommand();
+        case "continue":
+            handleContinueCommand();
+            break;
+        case "pause":
+            handlePauseCommand();
+            break;
+        case "nur":
+            handleNurCommand();
             break;
         case "silent":
-        case "sr":
             handleRunCommand(args, true);
             break;
+        case "until":
+            handleUntilCommand(args);
+            break;
         case "break":
-        case "b":
             handleBreakpointCommand(args);
             break;
         case "reg":
@@ -1086,50 +1390,39 @@ function processCommand(cmd: string, args: string[]): boolean {
             handleHexViewCommand(args);
             break;
         case "list":
-        case "l":
-            handleInstructionsCommand();
-            break;
-        case ".":
-            handleStepCommand();
-            clearConsole();
             handleInstructionsCommand();
             break;
         case "reset":
-        case "rst":
             handleResetCommand();
             break;
+        case "clear":
+            handleClearCommand();
+            break;
         case "help":
-        case "h":
             displayHelp();
             break;
         case "insn":
-        case "i":
             handleInsnCommand();
             break;
         case "save":
-        case "sv":
             handleSaveCommand(args);
             break;
         case "snapshot":
-        case "snap":
             handleSnapshotCommand(args);
             break;
         case "restore":
-        case "rest":
             handleRestoreCommand(args);
             break;
         case "about":
             handleAboutCommand();
             break;
-        case "config":
-        case "cfg":
-            handleConfigCommand(args);
+        case "alias":
+            handleAliasCommand();
             break;
         case "stack":
             handleStackCommand(args);
             break;
         case "quit":
-        case "q":
             return true;
         default:
             console.log(`Unknown command: ${cmd}`);
@@ -1138,12 +1431,25 @@ function processCommand(cmd: string, args: string[]): boolean {
     return false;
 }
 
+// eslint-disable-next-line max-lines-per-function
 function interactiveMode() {
     const rl = readline.createInterface({
         input: process.stdin,
         output: process.stdout,
         prompt: "CREATOR> ",
     });
+
+    // Determine if keyboard shortcuts are enabled from config
+    const keyboardShortcutsEnabled =
+        CONFIG.settings.keyboard_shortcuts !== undefined
+            ? CONFIG.settings.keyboard_shortcuts
+            : true;
+
+    // Determine if auto-list after shortcuts is enabled
+    const autoListAfterShortcuts =
+        CONFIG.settings.auto_list_after_shortcuts !== undefined
+            ? CONFIG.settings.auto_list_after_shortcuts
+            : false;
 
     if (ACCESSIBLE) {
         console.log(
@@ -1161,6 +1467,47 @@ function interactiveMode() {
         );
     }
 
+    // Setup for raw mode keyboard input if shortcuts are enabled
+    if (keyboardShortcutsEnabled) {
+        // Configure stdin for raw mode
+        process.stdin.setRawMode(true);
+        process.stdin.resume();
+        process.stdin.setEncoding("utf8");
+
+        // Handle keypress events
+        process.stdin.on("data", (key: Buffer) => {
+            const keyStr = key.toString();
+
+            // Skip processing Enter key (CR/LF) as a shortcut
+            if (keyStr === "\r" || keyStr === "\n" || keyStr === "\r\n") {
+                return; // Let readline handle Enter key
+            }
+
+            // Check if the key is a mapped shortcut
+            if (CONFIG.shortcuts && CONFIG.shortcuts[keyStr]) {
+                // Execute the command
+                const cmd = CONFIG.shortcuts[keyStr];
+
+                // Special case handlers for commands that need specific arguments
+                if (cmd === "break") {
+                    handleBreakpointAtCurrentPC();
+                } else if (cmd === "clear") {
+                    handleClearCommand();
+                } else {
+                    processCommand(cmd, [cmd]);
+                }
+
+                // Show instruction listing after the command if auto-list is enabled
+                if (autoListAfterShortcuts && shouldAutoListAfterCommand(cmd)) {
+                    // Clear the current line
+                    clearConsole();
+                    handleInstructionsCommand();
+                }
+            }
+            // Other keys are passed through to readline
+        });
+    }
+
     rl.prompt();
 
     rl.on("line", line => {
@@ -1169,6 +1516,9 @@ function interactiveMode() {
 
         try {
             if (processCommand(cmd, args)) {
+                if (keyboardShortcutsEnabled) {
+                    process.stdin.setRawMode(false);
+                }
                 rl.close();
                 return;
             }
@@ -1179,38 +1529,60 @@ function interactiveMode() {
     });
 
     rl.on("close", () => {
+        if (keyboardShortcutsEnabled) {
+            process.stdin.setRawMode(false);
+        }
         process.exit(0);
     });
 }
+
+function checkTerminalSize() {
+    // Only check if we have access to the terminal size
+    if (!process.stdout.columns || !process.stdout.rows) {
+        return; // Skip size check if terminal dimensions aren't available
+    }
+
+    const { columns, rows } = process.stdout;
+    const minColumns = 80; // Reduced from 95
+    const minRows = 24; // Reduced from 31
+
+    // Instead of exiting, just warn the user
+    if (columns < minColumns || rows < minRows) {
+        console.warn(
+            `Warning: Terminal size ${columns}x${rows} is smaller than recommended ${minColumns}x${minRows}. ` +
+                `Some output may not display correctly. Consider using the TUI version with 'creator_tui.mts'.`,
+        );
+    }
+}
+
 function main() {
+    // Check terminal size
+    checkTerminalSize();
     // Parse command line arguments
     const argv: ArgvOptions = parseArguments();
 
-    clearConsole();
+    // Load configuration
+    CONFIG = loadConfiguration(argv.config);
+
+    // Apply configuration settings
+    applyConfiguration(CONFIG);
+
+    // Command line arguments take precedence over config
+    if (argv.accessible) {
+        ACCESSIBLE = argv.accessible;
+    }
 
     if (!argv.debug) {
         logger.disable();
     }
 
-    ACCESSIBLE = argv.accessible;
     TUTORIAL_MODE = argv.tutorial;
-
-    if (!ACCESSIBLE) {
-        const creatorASCII = `
-    ██████╗██████╗ ███████╗ █████╗ ████████╗ ██████╗ ██████╗ 
-   ██╔════╝██╔══██╗██╔════╝██╔══██╗╚══██╔══╝██╔═══██╗██╔══██╗
-   ██║     ██████╔╝█████╗  ███████║   ██║   ██║   ██║██████╔╝
-   ██║     ██╔══██╗██╔══╝  ██╔══██║   ██║   ██║   ██║██╔══██╗
-   ╚██████╗██║  ██║███████╗██║  ██║   ██║   ╚██████╔╝██║  ██║
-    ╚═════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝   ╚═╝    ╚═════╝ ╚═╝  ╚═╝
-      didaCtic and geneRic assEmbly progrAmming simulaTOR
-    `;
-
-        console.log(creatorASCII);
-    }
 
     // Load architecture
     loadArchitecture(argv.architecture, argv.isa);
+
+    // Reset BINARY_LOADED flag before loading any files
+    BINARY_LOADED = false;
 
     // Check if we're in tutorial mode
     if (TUTORIAL_MODE) {
@@ -1233,10 +1605,14 @@ function main() {
 
     // Run in interactive or non-interactive mode
     if (argv.interactive) {
+        clearConsole();
+        if (!ACCESSIBLE) {
+            console.log(creatorASCII);
+        }
         reset();
         interactiveMode();
     } else {
-        executeNonInteractive();
+        executeNonInteractive(argv.verbose, argv.state);
         if (argv.reference) {
             const referenceState = fs.readFileSync(argv.reference, "utf8");
             const state = creator.getState();
