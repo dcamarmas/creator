@@ -177,6 +177,7 @@ export default {
 
       this.compiling = true // Change buttons status
 
+      // we use the setTimeout so the UI can update while compiling
       setTimeout(() => {
         // Compile
         // if (typeof code !== "undefined") {
@@ -242,12 +243,11 @@ export default {
             this.change_UI_mode("simulator")
             break
         }
-      }, 25);
+        this.compiling = false
+      }, 25)
 
       // Close all toast
       // app.$bvToast.hide()
-
-      this.compiling = false
 
       // enable execution buttons
     },
