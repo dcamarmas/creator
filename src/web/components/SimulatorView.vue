@@ -83,6 +83,7 @@ export default {
           :browser="browser"
           :arch_available="arch_available"
           :show_instruction_help="true"
+          :instructions="instructions"
         />
 
         <!-- Simulator navbar modals -->

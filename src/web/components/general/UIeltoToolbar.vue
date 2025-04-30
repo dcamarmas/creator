@@ -28,6 +28,7 @@ export default {
     arch_available: { type: Array, required: true },
     assembly_code: { type: String, required: false },
     show_instruction_help: { type: Boolean, default: false },
+    instructions: Array,
   },
 
   computed: {
@@ -49,6 +50,7 @@ export default {
           :architectures="arch_available"
           :assembly_code="assembly_code"
           :show_instruction_help="show_instruction_help"
+          :instructions="instructions"
         />
 
         <div class="w-100 d-block d-sm-none"></div>
