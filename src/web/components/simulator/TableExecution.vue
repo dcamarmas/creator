@@ -18,6 +18,10 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <script>
+import { status } from "@/core/core.mjs"
+import { creator_ga } from "@/core/utils/creator_ga.mjs"
+import { onUpdated } from "vue"
+
 export default {
   props: {
     instructions: { type: Array, required: true },
@@ -40,11 +44,6 @@ export default {
   },
 
   methods: {
-    refresh() {
-      // refreshes children components with `:key="render"`
-      this.render++
-    },
-
     /*Filter table instructions*/
     filter(row, filter) {
       if (row.hide === true) {
@@ -56,8 +55,8 @@ export default {
 
     /*Enter a breakpoint*/
     breakPoint(record, index) {
-      for (let i = 0; i < instructions.length; i++) {
-        if (instructions[i].Address === record.Address) {
+      for (let i = 0; i < this.instructions.length; i++) {
+        if (this.instructions[i].Address === record.Address) {
           index = i
           break
         }
@@ -85,119 +84,106 @@ export default {
 </script>
 
 <template>
-  <b-container fluid align-h="between" class="mx-0 px-1">
-    <b-row cols="1">
-      <b-col align-h="center">
-        <b-table
-          id="inst_table"
-          sticky-header
-          striped
-          small
-          hover
-          :items="instructions"
-          :fields="archInstructions"
-          class="instructions_table responsive"
-          @row-clicked="breakPoint"
-          :filter-function="filter"
-          filter=" "
-          primary-key="Address"
-          :key="render"
-        >
-          <!-- Change the title of each column -->
-          <template v-slot:head(userInstructions)="row">
-            User Instruction
-          </template>
+  <b-row cols="1">
+    <b-col align-h="center">
+      <b-table
+        id="inst_table"
+        sticky-header="61vh"
+        striped
+        small
+        hover
+        responsive
+        :items="instructions"
+        :fields="archInstructions"
+        class="instructions_table responsive"
+        @row-clicked="breakPoint"
+        :filter-function="filter"
+        filter=" "
+        primary-key="Address"
+      >
+        <!-- column headers -->
+        <template #head(userInstructions)="row"> User Instruction </template>
 
-          <template v-slot:head(loadedInstructions)="row">
-            Loaded Instructions
-          </template>
+        <template #head(loadedInstructions)="row">
+          Loaded Instructions
+        </template>
 
-          <template v-slot:head(tag)="row"> &nbsp; </template>
+        <template #head(tag)="row"> &nbsp; </template>
 
-          <!-- For each instruction -->
-          <template v-slot:cell(Break)="row">
-            <div class="break" :id="row.index">
-              <br v-if="row.item.Break === null" />
-              <b-img
-                alt="Break"
-                src="@/web/assets/img/stop_classic.gif"
-                class="shadow breakPoint"
-                rounded="circle"
-                v-if="row.item.Break === true"
-              />
-            </div>
-          </template>
+        <!-- breakpoints -->
+        <template #cell(Break)="row">
+          <div class="break" :id="row.index">
+            <b-img
+              alt="Break"
+              src="@/web/assets/img/stop_classic.gif"
+              class="shadow breakPoint"
+              rounded="circle"
+              v-if="row.item.Break"
+            />
+            <br v-else />
+          </div>
+        </template>
 
-          <template v-slot:cell(Address)="row">
-            <span class="h6">{{ row.item.Address }}</span>
-          </template>
+        <!-- address -->
+        <template #cell(Address)="row">
+          <span class="h6">{{ row.item.Address }}</span>
+        </template>
 
-          <template v-slot:cell(Label)="row">
-            <b-badge pill variant="info">{{ row.item.Label }}</b-badge>
-          </template>
+        <!-- label -->
+        <template #cell(Label)="row">
+          <b-badge pill variant="info">{{ row.item.Label }}</b-badge>
+        </template>
 
-          <template v-slot:cell(userInstructions)="row">
-            <span class="h6" v-if="row.item.visible == true">
-              {{ row.item.user }}
-            </span>
-            <span class="h6" v-if="row.item.visible == false">
-              &lt;&lt;Hidden&gt;&gt;
-            </span>
-          </template>
+        <!-- user instruction -->
+        <template #cell(userInstructions)="row">
+          <span class="h6" v-if="row.item.visible">
+            {{ row.item.user }}
+          </span>
+          <span class="h6" v-else> &lt;&lt;Hidden&gt;&gt; </span>
+        </template>
 
-          <template v-slot:cell(loadedInstructions)="row">
-            <span class="h6" v-if="row.item.visible == true">
-              {{ row.item.loaded }}
-            </span>
-            <span class="h6" v-if="row.item.visible == false">
-              &lt;&lt;Hidden&gt;&gt;
-            </span>
-          </template>
+        <!-- loaded instruction -->
+        <template #cell(loadedInstructions)="row">
+          <span class="h6" v-if="row.item.visible">
+            {{ row.item.loaded }}
+          </span>
+          <span class="h6" v-else> &lt;&lt;Hidden&gt;&gt; </span>
+        </template>
 
-          <template v-slot:cell(tag)="row">
-            <b-badge
-              variant="warning"
-              class="border border-warning shadow executionTag"
-              v-if="row.item._rowVariant == 'warning'"
-            >
-              Interrupted
-            </b-badge>
-            <b-badge
-              variant="info"
-              class="border border-info shadow executionTag"
-              v-if="row.item._rowVariant == 'info' && enter == false"
-            >
-              Current-Keyboard
-            </b-badge>
-            <b-badge
-              variant="success"
-              class="border border-success shadow executionTag"
-              v-if="row.item._rowVariant == 'success'"
-            >
-              Next
-            </b-badge>
-            <b-badge
-              variant="info"
-              class="border border-info shadow executionTag"
-              v-if="row.item._rowVariant == 'info' && !enter"
-            >
-              Current
-            </b-badge>
-          </template>
-
-          <!-- <template slot-scope="row"> -->
-          <template v-slot="row">
-            <span class="h6" v-if="row.item.visible == true">
-              {{ row.item.loaded }}
-            </span>
-            <span class="h6" v-if="row.item.visible == false">
-              &lt;&lt;Hidden&gt;&gt;
-            </span>
-          </template>
-        </b-table>
-      </b-col>
-    </b-row>
-  </b-container>
+        <!-- execution tags -->
+        <template #cell(tag)="row">
+          <b-badge
+            variant="warning"
+            class="border border-warning shadow executionTag"
+            v-if="row.item._rowVariant == 'warning'"
+          >
+            Interrupted
+          </b-badge>
+          <b-badge
+            variant="info"
+            class="border border-info shadow executionTag"
+            v-if="row.item._rowVariant == 'info' && enter == false"
+          >
+            Current-Keyboard
+          </b-badge>
+          <b-badge
+            variant="success"
+            class="border border-success shadow executionTag"
+            v-if="row.item._rowVariant == 'success'"
+          >
+            Next
+          </b-badge>
+          <b-badge
+            variant="info"
+            class="border border-info shadow executionTag"
+            v-if="row.item._rowVariant == 'info' && !enter"
+          >
+            Current
+          </b-badge>
+        </template>
+      </b-table>
+    </b-col>
+  </b-row>
 </template>
 
 <style lang="scss" scoped>
