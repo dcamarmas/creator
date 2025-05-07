@@ -281,3 +281,12 @@ export function binary_to_hexbytes(binary, littleEndian = false) {
     // Return in requested endianness
     return littleEndian ? hexBytes.reverse() : hexBytes;
 }
+
+export function getHexTwosComplement(value, bits) {
+    // For both positive and negative values, apply the appropriate bitmask
+    const mask = (1n << BigInt(bits)) - 1n;
+    // Use the mask to get only the relevant bits
+    const maskedValue = value & mask;
+    // Convert to hex and pad with leading zeros
+    return maskedValue.toString(16).padStart(bits / 4, '0');
+  }

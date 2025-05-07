@@ -26,7 +26,7 @@ import {
     bi_BigIntTodouble,
     register_value_deserialize,
 } from "./utils/bigint.mjs";
-import { float2bin, double2bin, bin2hex, hex2double } from "./utils/utils.mjs";
+import { float2bin, double2bin, bin2hex, hex2double, getHexTwosComplement } from "./utils/utils.mjs";
 
 import { logger } from "./utils/creator_logger.mjs";
 import {
@@ -66,7 +66,7 @@ export let architecture = {
 export let app;
 const word_size_bits = 32; // TODO: load from architecture
 export const word_size_bytes = word_size_bits / 8; // TODO: load from architecture
-export const register_size_bits = 32;
+export const register_size_bits = 64; //TODO: load from architecture
 
 export let status = {
     execution_init: 1,
@@ -545,8 +545,8 @@ function parseArchitectureYaml(architectureYaml) {
  * @param {Object} architectureObj - The architecture object
  * @param {Array} requestedISAs - User-requested instruction sets to load
  * @returns {Object} - Object with selected ISAs and status
+ * @eslint-disable-next-line max-lines-per-function
  */
-// eslint-disable-next-line max-lines-per-function
 function determineInstructionSetsToLoad(architectureObj, requestedISAs = []) {
     // Get all available instruction sets in the architecture
     const availableInstructionSets = [
@@ -1621,17 +1621,25 @@ export function load_binary_file(bin_str) {
     return ret;
 }
 
-export function dumpRegister(register) {
+export function dumpRegister(register, format="default") {
     if (typeof register === "undefined") {
         return ret;
     }
 
-    let result = crex_findReg(register);
+    const result = crex_findReg(register);
+    const registerSize = architecture.components[result.indexComp].elements[result.indexElem].nbits;
+
     if (result.match === 1) {
-        let value = readRegister(result.indexComp, result.indexElem).toString(
-            16,
-        );
-        return value;
+        if (format === "default") {
+            let value = readRegister(result.indexComp, result.indexElem).toString(
+                16,
+            );
+            return value;
+        } else if (format === "twoscomplement") {
+            let value = readRegister(result.indexComp, result.indexElem);
+            let twosComplement = getHexTwosComplement(value, registerSize);
+            return twosComplement;
+        }
     }
     return null;
 }
@@ -1645,7 +1653,7 @@ export function getRegisterTypes() {
     return registerTypes;
 }
 
-export function getRegistersByType(regType) {
+export function getRegistersByBank(regType) {
     // Find the component with the specified register type
     const component = architecture.components.find(
         comp => comp.type === regType,
@@ -1662,4 +1670,24 @@ export function getRegistersByType(regType) {
         double_precision: component.double_precision,
         double_precision_type: component.double_precision_type,
     };
+}
+
+export function getRegisterInfo(regName) {
+    // Find the register in all components
+    for (const component of architecture.components) {
+        if (component.type.includes("registers")) {
+            for (const element of component.elements) {
+                // Check if this register matches by any of its names
+                if (element.name.includes(regName)) {
+                    return {
+                        ...element,
+                        type: component.type,
+                        nbits: element.nbits
+                    };
+                }
+            }
+        }
+    }
+    
+    return null;
 }

@@ -40,7 +40,7 @@ const creatorASCII = `
 ██║     ██████╔╝█████╗  ███████║   ██║   ██║   ██║██████╔╝
 ██║     ██╔══██╗██╔══╝  ██╔══██║   ██║   ██║   ██║██╔══██╗
 ╚██████╗██║  ██║███████╗██║  ██║   ██║   ╚██████╔╝██║  ██║
-╚═════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝   ╚═╝    ╚═════╝ ╚═╝  ╚═╝
+ ╚═════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝   ╚═╝    ╚═════╝ ╚═╝  ╚═╝
   didaCtic and geneRic assEmbly progrAmming simulaTOR
 `;
 
@@ -206,7 +206,7 @@ function decodeAndFormatInstruction(pc_value: string) {
     const instructionInt = parseInt(instruction, 16);
     const instructionBinary = instructionInt.toString(2).padStart(32, "0");
     const instructionASM = decode_instruction(instructionBinary);
-    const instructionASMParts = instructionASM.instructionExecParts;
+    const instructionASMParts = instructionASM.instructionExecPartsWithProperNames;
     const instructionASMPartsString = instructionASMParts.join(",");
 
     return {
@@ -859,8 +859,8 @@ function handleClearCommand() {
     clearConsole();
 }
 
-function displayRegistersByType(regType) {
-    const registerBank = creator.getRegistersByType(regType);
+function displayRegistersByBank(regType) {
+    const registerBank = creator.getRegistersByBank(regType);
 
     if (!registerBank) {
         console.log(`Register type "${regType}" not found.`);
@@ -897,10 +897,21 @@ function displayRegistersByType(regType) {
                 const reg = registerBank.elements[index];
                 const primaryName = reg.name[0];
                 const altNames = reg.name.slice(1).join(",");
-                const value = creator
+                
+                // Get the register's bit width and calculate hex digits needed
+                const nbits = reg.nbits
+                const hexDigits = Math.ceil(nbits / 4);
+                let value;
+                if (regType === "fp_registers") {
+                    value = creator
                     .dumpRegister(primaryName)
-                    .padStart(8, "0");
-
+                    .padStart(hexDigits, "0");
+                }
+                else {
+                    value = creator
+                    .dumpRegister(primaryName, "twoscomplement")
+                    .padStart(hexDigits, "0");
+                }
                 const displayName = altNames
                     ? `${primaryName}(${altNames})`
                     : primaryName;
@@ -941,12 +952,28 @@ function handleRegCommand(args: string[]) {
         displayRegisterTypes();
     } else if (args.length === 2) {
         // Display registers of a specific type
-        displayRegistersByType(cmd);
+        displayRegistersByBank(cmd);
     } else {
         // Handle displaying a specific register
         const regName = args[2];
-
-        console.log(`${regName}: 0x${creator.dumpRegister(regName)}`);
+        
+        // Get register bit width and calculate hex digits
+        const regInfo = creator.getRegisterInfo(regName);
+        const nbits = regInfo?.nbits || 32; // Default to 32 if not found
+        const hexDigits = Math.ceil(nbits / 4);
+        let value;
+        if (regInfo.type === "fp_registers") {
+            value = creator
+            .dumpRegister(regName)
+            .padStart(hexDigits, "0");
+        }
+        else {
+            value = creator
+            .dumpRegister(regName, "twoscomplement")
+            .padStart(hexDigits, "0");
+        }
+        
+        console.log(`${regName}: 0x${value}`);
     }
 }
 
@@ -978,18 +1005,6 @@ function handleHexViewCommand(args: string[]) {
         console.log(creator.dumpMemory(address, count, bytesPerLine));
     } else {
         console.log("Usage: hexview <address> [count]");
-    }
-}
-
-function handleSaveCommand(args: string[]) {
-    const filename = args.length > 1 ? args[1] : "state.txt";
-
-    const state = creator.getState();
-    try {
-        fs.writeFileSync(filename, state.msg, "utf8");
-        console.log(`State saved to ${filename}`);
-    } catch (error) {
-        console.error(`Error saving state to ${filename}: ${error.message}`);
     }
 }
 
@@ -1404,9 +1419,6 @@ function processCommand(cmd: string, args: string[]): boolean {
         case "insn":
             handleInsnCommand();
             break;
-        case "save":
-            handleSaveCommand(args);
-            break;
         case "snapshot":
             handleSnapshotCommand(args);
             break;
@@ -1550,7 +1562,7 @@ function checkTerminalSize() {
     if (columns < minColumns || rows < minRows) {
         console.warn(
             `Warning: Terminal size ${columns}x${rows} is smaller than recommended ${minColumns}x${minRows}. ` +
-                `Some output may not display correctly. Consider using the TUI version with 'creator_tui.mts'.`,
+                `Some output may not display correctly.`,
         );
     }
 }

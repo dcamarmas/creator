@@ -76,7 +76,7 @@ function get_register_binary(type, binaryValue) {
  * Finds the position of the operation code field within the instruction fields
  *
  * @param {Array} fields - Array of instruction fields
- * @returns {Object|null} - An object with startbit and stopbit properties, or null if not found
+ * @returns {Object|null} - An object with startbit and stopbit properties, or null if found
  */
 function extractOpcode(fields) {
     for (const field of fields) {
@@ -314,6 +314,42 @@ function processInstructionField(field, instructionExec, instruction_nwords) {
 }
 
 /**
+ * Replaces register names in instruction parts with their proper names (aliases)
+ *
+ * @param {Array<string>} instructionParts - Array of instruction parts
+ * @returns {Array<string>} - Array with register names replaced with proper names
+ */
+function replaceRegisterNames(instructionParts) {
+    if (!instructionParts || !Array.isArray(instructionParts)) {
+        return instructionParts;
+    }
+
+    return instructionParts.map(part => {
+        // Check if this part is a register
+        for (const component of architecture.components) {
+            if (component.type !== "int_registers" && 
+                component.type !== "fp_registers" && 
+                component.type !== "ctrl_registers") {
+                continue;
+            }
+
+            for (const element of component.elements) {
+                if (element.name && element.name.length > 1) {
+                    // If the part matches the default name (first name in the array)
+                    if (part === element.name[0]) {
+                        // Return the proper name (second name in the array)
+                        return element.name[1];
+                    }
+                }
+            }
+        }
+        
+        // If not a register or no proper name found, return the original part
+        return part;
+    });
+}
+
+/**
  * Parse signature definition and create regex for instruction matching
  *
  * @param {Object} instruction - The instruction object containing signature information
@@ -453,14 +489,19 @@ export function decode_instruction(instructionExec, newFormat = false) {
                 if (newFormat) {
                     return decodedBinary;
                 }
+                
+                // Get instruction parts and create a version with proper register names
+                const instructionExecParts = decodedBinary.instruction_loaded.split(" ");
+                const instructionExecPartsWithProperNames = replaceRegisterNames(instructionExecParts);
+                
                 return {
                     type: instruction.type,
                     signatureDef: decodedBinary.signatureDef,
                     signatureParts: decodedBinary.signatureParts,
                     signatureRawParts: decodedBinary.signatureRawParts,
                     instructionExec: decodedBinary.instruction_loaded,
-                    instructionExecParts:
-                        decodedBinary.instruction_loaded.split(" "),
+                    instructionExecParts: instructionExecParts,
+                    instructionExecPartsWithProperNames: instructionExecPartsWithProperNames,
                     auxDef: instruction.definition,
                     nwords: instruction.nwords,
                     binary: true,
@@ -475,10 +516,14 @@ export function decode_instruction(instructionExec, newFormat = false) {
                 instructionExecParts,
             );
             if (decodedAssembly) {
+                // Create a version with proper register names
+                const instructionExecPartsWithProperNames = replaceRegisterNames(instructionExecParts);
+                
                 return {
                     ...decodedAssembly,
                     instructionExec,
                     instructionExecParts,
+                    instructionExecPartsWithProperNames,
                     binary: false,
                 };
             }
