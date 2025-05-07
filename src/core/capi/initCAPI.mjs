@@ -15,7 +15,6 @@
  *
  *  You should have received a copy of the GNU Lesser General Public License
  *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
- *
  */
 import { CAPI_MEMORY } from "./capi_memory.mjs";
 import { CAPI_SYSCALL } from "./capi_syscall.mjs";
@@ -23,6 +22,7 @@ import { CAPI_VALIDATION } from "./capi_validation.mjs";
 import { CAPI_CHECK_STACK } from "./capi_check_stack.mjs";
 import { CAPI_DRAW_STACK } from "./capi_draw_stack.mjs";
 import { CAPI_FP } from "./capi_fp.mjs";
+import { CAPI_RISCV } from "./capi_riscv.mjs";
 
 // Export all CAPI functions and make them globally available
 export function initCAPI() {
@@ -33,6 +33,7 @@ export function initCAPI() {
         ...CAPI_CHECK_STACK,
         ...CAPI_DRAW_STACK,
         ...CAPI_FP,
+        ...CAPI_RISCV,
     };
 
     // Make functions globally available for eval

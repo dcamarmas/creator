@@ -14,7 +14,7 @@ export function displayHelp() {
         "  run [n]                                      - Run n instructions or until program completes",
     );
     console.log(
-        "  silent [n]                                   - Run n instructions silently",
+        "  silent [n]                                   - Run silently",
     );
     console.log(
         "  break [addr]                                 - Set/unset breakpoint at address or list all",
@@ -40,9 +40,6 @@ export function displayHelp() {
     console.log("  hexview <address> [count] [bytesPerLine]     - Hex viewer");
     console.log(
         "  reset                                        - Reset program to initial state",
-    );
-    console.log(
-        "  save [filename]                              - Save current state to file",
     );
     console.log(
         "  snapshot [filename]                          - Save a complete snapshot of current state",

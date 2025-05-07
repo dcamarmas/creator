@@ -30,7 +30,7 @@ import { packExecute, writeStackLimit } from "../executor/executor.mjs";
 import { instructions } from "../compiler/compiler.mjs";
 import { updateDouble, updateSimple } from "./fpRegisterSync.mjs";
 import { creator_callstack_writeRegister } from "../sentinel/sentinel.mjs";
-import { console_log, logger } from "../utils/creator_logger.mjs";
+import { logger } from "../utils/creator_logger.mjs";
 
 // eslint-disable-next-line max-lines-per-function
 export function readRegister(indexComp, indexElem, register_type) {
@@ -71,9 +71,8 @@ export function readRegister(indexComp, indexElem, register_type) {
         logger.debug(
             `Reading ${architecture.components[indexComp].type} [${indexComp}][${indexElem}] ${architecture.components[indexComp].elements[indexElem].name.join("|")}: 0x${architecture.components[indexComp].elements[indexElem].value.toString(16)}`,
         );
-        return bi_intToBigInt(
-            architecture.components[indexComp].elements[indexElem].value,
-        );
+        return architecture.components[indexComp].elements[indexElem].value;
+        
     }
 
     if (architecture.components[indexComp].type == "fp_registers") {
@@ -173,10 +172,8 @@ export function writeRegister(value, indexComp, indexElem, register_type) {
                 null,
             );
         }
-        // value should always be a bigint (?)
-        // calling the conversion function doesn't do any harm anyway
-        architecture.components[indexComp].elements[indexElem].value =
-            bi_intToBigInt(value, 10);
+        
+        architecture.components[indexComp].elements[indexElem].value = value;
         creator_callstack_writeRegister(indexComp, indexElem);
 
         if (
