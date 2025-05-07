@@ -22,6 +22,27 @@ export default {
   props: {
     target: { type: String, required: true },
     browser: { type: String, required: true },
+    vim_mode: { type: Boolean, required: true },
+  },
+
+  data() {
+    return {
+      keybinds: {
+        // take into account the modifier
+        Copy: ["c"],
+        Paste: ["v"],
+        Cut: ["x"],
+        "Select All": ["a"],
+        Undo: ["z"],
+        Redo: ["y"],
+      },
+    }
+  },
+
+  computed: {
+    modifier_key() {
+      return this.browser === "Mac" ? "⌘" : "Ctrl"
+    },
   },
 }
 </script>
@@ -33,72 +54,20 @@ export default {
     triggers="hover focus"
     placement="bottomright"
   >
+
+        >
+
+      <label v-if="vim_mode"> INSERT mode </label>
+
     <b-list-group>
       <b-list-group-item
         class="d-flex justify-content-between align-items-center"
+        v-for="[name, binds] of Object.entries(keybinds)"
       >
-        Copy &nbsp;&nbsp;
-        <b-badge variant="primary" pill v-if="browser != 'Mac'">
-          Ctrl + c</b-badge
-        >
-        <b-badge variant="primary" pill v-if="browser == 'Mac'"> ⌘ + c</b-badge>
-      </b-list-group-item>
-
-      <b-list-group-item
-        class="d-flex justify-content-between align-items-center"
-      >
-        Cut&nbsp; &nbsp;&nbsp;
-        <b-badge variant="primary" pill v-if="browser != 'Mac'">
-          Ctrl + x</b-badge
-        >
-        <b-badge variant="primary" pill v-if="browser == 'Mac'"> ⌘ + x</b-badge>
-      </b-list-group-item>
-
-      <b-list-group-item
-        class="d-flex justify-content-between align-items-center"
-      >
-        Paste &nbsp;&nbsp;
-        <b-badge variant="primary" pill v-if="browser != 'Mac'">
-          Ctrl + v</b-badge
-        >
-        <b-badge variant="primary" pill v-if="browser == 'Mac'"> ⌘ + v</b-badge>
-      </b-list-group-item>
-
-      <b-list-group-item
-        class="d-flex justify-content-between align-items-center"
-      >
-        Select all &nbsp;&nbsp;
-        <b-badge variant="primary" pill v-if="browser != 'Mac'">
-          Ctrl + a</b-badge
-        >
-        <b-badge variant="primary" pill v-if="browser == 'Mac'"> ⌘ + a</b-badge>
-      </b-list-group-item>
-
-      <b-list-group-item
-        class="d-flex justify-content-between align-items-center"
-      >
-        Undo &nbsp;&nbsp;
-        <b-badge variant="primary" pill v-if="browser != 'Mac'">
-          Ctrl + z</b-badge
-        >
-        <b-badge variant="primary" pill v-if="browser == 'Mac'"> ⌘ + z</b-badge>
-      </b-list-group-item>
-
-      <b-list-group-item
-        class="d-flex justify-content-between align-items-center"
-      >
-        Redo &nbsp;&nbsp;
-        <b-badge variant="primary" pill v-if="browser != 'Mac'">
-          Ctrl + y</b-badge
-        >
-        <b-badge variant="primary" pill v-if="browser == 'Mac'"> ⌘ + y</b-badge>
-      </b-list-group-item>
-
-      <b-list-group-item
-        class="d-flex justify-content-between align-items-center"
-      >
-        Block code comment &nbsp;&nbsp;
-        <b-badge variant="primary" pill> Ctrl + m</b-badge>
+        {{ name }} &nbsp;&nbsp;
+        <b-badge variant="primary" pill v-for="b in binds">
+          {{ `${modifier_key} + ${b}` }}
+        </b-badge>
       </b-list-group-item>
     </b-list-group>
   </b-popover>

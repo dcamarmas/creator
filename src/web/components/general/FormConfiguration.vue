@@ -20,6 +20,9 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 <script>
 import { creator_ga } from "@/core/utils/creator_ga.mjs"
 import { set_debug } from "@/core/core.mjs"
+import { Vim } from "@replit/codemirror-vim"
+
+import VimKeybindsModal from "./VimKeybindsModal.vue"
 
 export default {
   props: {
@@ -32,6 +35,23 @@ export default {
     instruction_help_size: { type: Number, required: true },
     dark: { type: Boolean, required: true },
     c_debug: { type: Boolean, required: true },
+    vim_custom_keybinds: { type: Array, required: true },
+    vim_mode: { type: Boolean, required: true },
+  },
+
+  components: { VimKeybindsModal },
+
+  data() {
+    return {
+      // vim config
+      vim_expanded: false,
+      selected_vim_keybind: null,
+      newVimKeybind: {
+        mode: "normal",
+        lhs: "",
+        rhs: "",
+      },
+    }
   },
   emits: [
     // parent variables that will be updated
@@ -42,8 +62,18 @@ export default {
     "update:instruction_help_size",
     "update:dark",
     "update:c_debug",
+    "update:vim_custom_keybinds",
   ],
   computed: {
+    // placeholder for editing a vim keybind
+    // we create a copy bc we don't want to sync the value automatically, we
+    // want to wait for confirmation from the user to execute
+    // modifySelectedVimKeybind
+    modifiedVimKeybind() {
+      // copy selected keybind
+      return { ...this.vim_custom_keybinds_value[this.selected_vim_keybind] }
+    },
+
     // modifying these variables will update the corresponding parent's variables
     // see https://vuejs.org/guide/components/v-model
     default_architecture_value: {
@@ -206,6 +236,60 @@ export default {
         )
       },
     },
+    vim_custom_keybinds_value: {
+      get() {
+        return this.vim_custom_keybinds
+      },
+      set(value) {
+        this.$emit("update:vim_custom_keybinds", value)
+      },
+    },
+    vim_mode_value: {
+      get() {
+        return this.vim_mode
+      },
+      set(value) {
+        this.$emit("update:vim_mode", value)
+        localStorage.setItem("conf_vim_mode", value)
+
+        // Google Analytics
+        creator_ga(
+          "configuration",
+          "configuration.vim_mode",
+          "configuration.vim_mode." + value,
+        )
+      },
+    },
+  },
+  methods: {
+    removeVimKeybind(index) {
+      const { lhs, mode } = this.vim_custom_keybinds_value[index]
+
+      Vim.unmap(lhs, mode) // FIXME: this doesn't do shit
+      this.vim_custom_keybinds_value.splice(index, 1)
+    },
+  },
+  watch: {
+    // as we're not replacing this property, but mutating it, it will not
+    // trigger the computed property setter, so we must do this
+    vim_custom_keybinds_value: {
+      handler(value, _old) {
+        localStorage.setItem(
+          "conf_vim_custom_keybinds",
+          // if you store an object in localstorage, it saves it as the *string*
+          // '[object Object]', so we'll have to serialize it manually
+          JSON.stringify(value),
+        )
+
+        // // Google Analytics
+        // creator_ga(
+        //   "configuration",
+        //   "configuration.vim_custom_keybinds",
+        //   "configuration.vim_custom_keybinds." + value,
+        // )
+      },
+      deep: true,
+    },
   },
 }
 </script>
@@ -223,9 +307,9 @@ export default {
           title="Default Architecture"
         >
           <BFormSelectOption value="'none'">None</BFormSelectOption>
-          <BFormSelectOption value="'RISC-V (RV32IMFD)'"
-            >RISC-V (RV32IMFD)</BFormSelectOption
-          >
+          <BFormSelectOption value="'RISC-V (RV32IMFD)'">
+            RISC-V (RV32IMFD)
+          </BFormSelectOption>
           <BFormSelectOption value="'MIPS-32'">MIPS-32</BFormSelectOption>
         </b-form-select>
       </b-list-group-item>
@@ -233,7 +317,6 @@ export default {
       <b-list-group-item class="justify-content-between align-items-center m-1">
         <label for="range-1">Maximum stack values listed:</label>
         <b-input-group>
-          <!-- <b-button variant="outline-secondary" @click="stack_total_list_value -= 5">-</b-button> -->
           <b-form-input
             id="range-1"
             v-model="stack_total_list_value"
@@ -243,14 +326,12 @@ export default {
             step="5"
             title="Stack max view"
           />
-          <!-- <b-button variant="outline-secondary" @click="stack_total_list_value += 5">+</b-button> -->
         </b-input-group>
       </b-list-group-item>
 
       <b-list-group-item class="justify-content-between align-items-center m-1">
         <label for="range-3">Notification Time:</label>
         <b-input-group>
-          <!-- <b-button variant="outline-secondary" @click="notification_time_value -= 20">-</b-button> -->
           <b-form-input
             id="range-3"
             v-model="notification_time_value"
@@ -260,14 +341,12 @@ export default {
             step="10"
             title="Notification Time"
           />
-          <!-- <b-button variant="outline-secondary" @click="notification_time_value += 20">+</b-button> -->
         </b-input-group>
       </b-list-group-item>
 
       <b-list-group-item class="justify-content-between align-items-center m-1">
         <label for="range-3">Instruction Help Size:</label>
         <b-input-group>
-          <!-- <b-button variant="outline-secondary" @click="instruction_help_size_value -= 2">-</b-button> -->
           <b-form-input
             id="range-3"
             v-model="instruction_help_size_value"
@@ -277,7 +356,6 @@ export default {
             step="2"
             title="Instruction Help Size"
           />
-          <!-- <b-button variant="outline-secondary" @click="instruction_help_size_value += 2">+</b-button> -->
         </b-input-group>
       </b-list-group-item>
 
@@ -322,6 +400,93 @@ export default {
           size="lg"
         />
       </b-list-group-item>
+
+      <!-- Vim config -->
+      <b-list-group-item class="justify-content-between align-items-center m-1">
+        <label for="range-2">Vim mode:</label>
+        <b-form-checkbox
+          v-model="vim_mode_value"
+          name="check-button"
+          switch
+          size="lg"
+        />
+
+        <label for="range-7">Vim Custom Keybinds:</label>
+        &thinsp;
+
+        <!-- toggle button -->
+        <b-button
+          @click="vim_expanded = !vim_expanded"
+          :variant="vim_expanded ? 'secondary' : 'primary'"
+          size="sm"
+        >
+          <font-awesome-icon v-if="vim_expanded" icon="fa-solid fa-caret-up" />
+          <font-awesome-icon v-else icon="fa-solid fa-caret-down" />
+        </b-button>
+
+        <b-collapse v-model="vim_expanded">
+          <b-table
+            small
+            hover
+            sticky-header="25vh"
+            :items="vim_custom_keybinds_value"
+            :fields="[
+              { key: 'mode', sortable: true, class: 'text-center' },
+              { key: 'lhs', label: 'LHS', class: 'text-center font-monospace' },
+              { key: 'rhs', label: 'RHS', class: 'text-center font-monospace' },
+              { key: 'buttons', label: '', class: 'text-center' },
+            ]"
+          >
+            <!-- mode in uppercase -->
+            <template #cell(mode)="keybind">
+              {{ keybind.value.toUpperCase() }}
+            </template>
+
+            <!-- edit buttons -->
+            <template #cell(buttons)="keybind">
+              <b-button-group size="sm">
+                <b-button
+                  variant="primary"
+                  v-b-toggle.modal-vim-edit
+                  @click="selected_vim_keybind = keybind.index"
+                >
+                  <font-awesome-icon icon="fa-solid fa-pen-to-square" />
+                </b-button>
+                <b-button
+                  variant="danger"
+                  @click="removeVimKeybind(keybind.index)"
+                >
+                  <font-awesome-icon icon="fa-solid fa-trash" />
+                </b-button>
+              </b-button-group>
+            </template>
+          </b-table>
+
+          <b-container fluid>
+            <b-row align-h="end">
+              <b-button v-b-toggle.modal-vim-new variant="primary" size="sm">
+                <font-awesome-icon icon="fa-solid fa-plus" />
+              </b-button>
+            </b-row>
+          </b-container>
+        </b-collapse>
+      </b-list-group-item>
     </b-list-group>
   </b-modal>
+
+  <VimKeybindsModal
+    id="modal-vim-edit"
+    title="Edit Vim keybind"
+    type="edit"
+    :selected_vim_keybind="selected_vim_keybind"
+    v-model:vim_custom_keybinds="vim_custom_keybinds_value"
+  />
+
+  <VimKeybindsModal
+    id="modal-vim-new"
+    title="New Vim keybind"
+    type="new"
+    :selected_vim_keybind="selected_vim_keybind"
+    v-model:vim_custom_keybinds="vim_custom_keybinds_value"
+  />
 </template>

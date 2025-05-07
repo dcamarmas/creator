@@ -28,6 +28,8 @@ export default {
     architecture_name: String,
     assembly_code: String,
     modal_assembly_error: Object,
+    vim_mode: { type: Boolean, required: true },
+    vim_custom_keybinds: { type: Array, required: true },
   },
   components: { UIeltoToolbar, TextareaAssembly, AssemblyError },
 }
@@ -78,7 +80,12 @@ export default {
           <b-row cols="2">
             <b-col cols="12" id="divAssembly"> -->
         <!-- Assembly textarea-->
-        <TextareaAssembly :browser="browser" :assembly_code="assembly_code" />
+        <TextareaAssembly
+          :browser="browser"
+          :assembly_code="assembly_code"
+          :vim_mode="vim_mode"
+          :vim_custom_keybinds="vim_custom_keybinds"
+        />
         <!-- </b-col>
 
             <b-col cols="0" id="divTags" class="d-none"> -->
