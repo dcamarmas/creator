@@ -30,12 +30,16 @@ import { gas } from "@codemirror/legacy-modes/mode/gas"
 import { tags } from "@lezer/highlight"
 import { EditorView } from "codemirror"
 
+import { creator_ga } from "@/core/utils/creator_ga.mjs"
+
 import PopoverShortcuts from "./PopoverShortcuts.vue"
 
 export default {
   props: {
     browser: { type: String, required: true },
     assembly_code: { type: String, required: true },
+    vim_mode: { type: Boolean, required: true },
+    vim_custom_keybinds: { type: Array, required: true },
   },
 
   components: {
@@ -44,16 +48,6 @@ export default {
   },
   data() {
     return {
-      vimActive: false,
-      vimCustomKeybinds: [
-        // TODO: let the user specify this
-        // @rajayonin's config
-        { mode: "insert", lhs: "kj", rhs: "<Esc>" },
-        { mode: "normal", lhs: "L", rhs: "$" },
-        { mode: "visual", lhs: "L", rhs: "$" },
-        { mode: "normal", lhs: "H", rhs: "_" },
-        { mode: "visual", lhs: "H", rhs: "_" },
-      ],
       extensions: [
         // custom highlight on top of the default style
         syntaxHighlighting(
@@ -71,12 +65,36 @@ export default {
       ],
     }
   },
+
   setup() {
     const lang = StreamLanguage.define(gas) // GNU Assembler
 
     return { lang }
   },
+
+  mounted() {
+    this.syncVim(this.vim_mode)
+  },
+
   computed: {
+    vimActive: {
+      get() {
+        return this.vim_mode
+      },
+      set(value) {
+        this.$root.vim_mode = value
+        this.syncVim(value)
+
+        localStorage.setItem("conf_vim_mode", value)
+
+        // Google Analytics
+        creator_ga(
+          "configuration",
+          "configuration.vim_mode",
+          "configuration.vim_mode." + value,
+        )
+      },
+    },
     code: {
       // sync with App's
       get() {
@@ -92,28 +110,22 @@ export default {
      * Loads the user's custom configuration for Vim
      */
     loadVimCustomConfig() {
-      for (const { mode, lhs, rhs } of this.vimCustomKeybinds) {
+      for (const { mode, lhs, rhs } of this.vim_custom_keybinds) {
         Vim.map(lhs, rhs, mode)
       }
     },
 
-    /**
-     * Removes the user's custom configuration for Vim
-     */
-    removeVimCustomConfig() {
-      for (const { mode, lhs, _ } of this.vimCustomKeybinds) {
-        Vim.unmap(lhs, mode)
-      }
-    },
-    toggleVim() {
-      if (this.vimActive) {
-        // remove extension
-        this.extensions.pop()
-      } else {
+    syncVim(value) {
+      if (value) {
         this.extensions.push(vim()) // add extension
         this.loadVimCustomConfig()
+      } else {
+        // remove extension
+        this.extensions.pop()
       }
+    },
 
+    toggleVim() {
       this.vimActive = !this.vimActive
     },
   },
@@ -121,7 +133,11 @@ export default {
 </script>
 
 <template>
-  <PopoverShortcuts target="assemblyInfo" :browser="browser" />
+  <PopoverShortcuts
+    target="assemblyInfo"
+    :vim_mode="vimActive"
+    :browser="browser"
+  />
 
   <b-button
     size="sm"
@@ -135,7 +151,7 @@ export default {
   <br />
   <br />
 
-  <font-awesome-icon icon="circle-info" />&nbsp;
+  <font-awesome-icon id="assemblyInfo" icon="circle-info" />&nbsp;
   <span class="h5">Assembly:</span>
 
   <Codemirror

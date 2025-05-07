@@ -38,5 +38,25 @@ export default defineConfig({
   build: {
     outDir: "dist/web",
     emptyOutDir: true,
+    // set codemirror output as a separate file
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          codemirror: [
+            // Split CodeMirror code.
+            "vue-codemirror6",
+            "codemirror",
+            "@codemirror/autocomplete",
+            "@codemirror/commands",
+            "@codemirror/language",
+            "@codemirror/lint",
+            "@codemirror/search",
+            "@codemirror/state",
+            "@codemirror/view",
+          ],
+          "codemirror-lang": ["@codemirror/legacy-modes"],
+        },
+      },
+    },
   },
 })

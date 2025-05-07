@@ -53,7 +53,7 @@ export default {
 </script>
 
 <template>
-  <Child v-model="message" /> {{ message }}
+  <Child v-model:movelValue="message" /> {{ message }}
 </template>
 ```
 
