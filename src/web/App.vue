@@ -598,6 +598,7 @@ export default {
     :modal_assembly_error="modalAssemblyError"
     :vim_mode="vim_mode"
     :vim_custom_keybinds="vim_custom_keybinds"
+    ref="assemblyView"
   />
 
   <!-------------------->

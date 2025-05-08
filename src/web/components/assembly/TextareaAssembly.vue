@@ -115,10 +115,21 @@ export default {
       }
     },
 
+    assemble() {
+      // I know, this line also breaks my heart, and I wrote it
+      this.$root.$refs.assemblyView.$refs.toolbar.$refs.btngroup1
+        .at(0)
+        .assembly_compiler()
+    },
+
     syncVim(value) {
       if (value) {
         this.extensions.push(vim()) // add extension
         this.loadVimCustomConfig()
+
+        // map Vim commands to functions
+        Vim.defineEx("write", "w", () => this.assemble())
+        Vim.defineEx("xit", "x", () => this.assemble())
       } else {
         // remove extension
         this.extensions.pop()

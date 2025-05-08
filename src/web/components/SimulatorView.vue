@@ -84,6 +84,7 @@ export default {
           :arch_available="arch_available"
           :show_instruction_help="true"
           :instructions="instructions"
+          ref="toolbar"
         />
 
         <!-- Simulator navbar modals -->
