@@ -36,6 +36,9 @@ export default {
         Undo: ["z"],
         Redo: ["y"],
       },
+      vim_commands: {
+        "Assemble/Link": [":w", "x"],
+      },
     }
   },
 
@@ -54,10 +57,29 @@ export default {
     triggers="hover focus"
     placement="bottomright"
   >
+    <div v-if="vim_mode">
+      <label> Commands </label>
 
+      <b-list-group v-if="vim_mode">
+        <b-list-group-item
+          class="d-flex justify-content-between align-items-center"
+          v-for="[name, binds] of Object.entries(vim_commands)"
         >
+          {{ name }} &nbsp;&nbsp;
+          <b-badge
+            variant="primary"
+            class="font-monospace"
+            pill
+            v-for="b in binds"
+          >
+            {{ b }}
+          </b-badge>
+        </b-list-group-item>
+      </b-list-group>
 
-      <label v-if="vim_mode"> INSERT mode </label>
+      <br />
+      <label> INSERT mode </label>
+    </div>
 
     <b-list-group>
       <b-list-group-item

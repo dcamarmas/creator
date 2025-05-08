@@ -43,7 +43,7 @@ export default {
 <template>
   <b-container :id="id" fluid align-h="center" class="menu my-3 mx-0 px-0">
     <b-row cols-xl="4" cols-lg="3" cols-md="3" cols-sm="2" cols-xs="1" cols="1">
-      <b-col class="px-2 py-1" v-for="(item, _) in components_array">
+      <b-col class="px-2 py-1" v-for="(item, i) in components_array">
         <ToolbarBtngroup
           :group="item.split(',')"
           :browser="browser"
@@ -51,6 +51,7 @@ export default {
           :assembly_code="assembly_code"
           :show_instruction_help="show_instruction_help"
           :instructions="instructions"
+          :ref="`btngroup${i}`"
         />
 
         <div class="w-100 d-block d-sm-none"></div>
