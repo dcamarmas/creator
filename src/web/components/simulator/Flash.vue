@@ -821,7 +821,7 @@ export default {
                     <b-col class="pt-2">
                       <label for="range-6">(4) Download the driver:</label>
                       <b-button
-                        class="btn btn-sm btn-block"
+                        size="sm"
                         variant="outline-primary"
                         @click="download_driver"
                       >
@@ -915,7 +915,7 @@ export default {
               <b-row cols="2" align-h="center">
                 <b-col class="pt-2">
                   <b-button
-                    class="btn btn-sm btn-block"
+                    size="sm"
                     variant="primary"
                     @click="do_flash"
                     :pressed="flashing"
@@ -932,7 +932,7 @@ export default {
                 </b-col>
                 <b-col class="pt-2">
                   <b-button
-                    class="btn btn-sm btn-block"
+                    size="sm"
                     variant="primary"
                     @click="do_monitor"
                     :pressed="running"
@@ -973,11 +973,7 @@ export default {
         <b-container fluid align-h="center" class="mx-0 px-0" v-if="!boards">
           <b-row cols="1" align-h="center">
             <b-col class="pt-2">
-              <b-button
-                class="btn btn-sm btn-block"
-                variant="primary"
-                @click="get_boards"
-              >
+              <b-button size="sm" variant="primary" @click="get_boards">
                 <span class="fas fa-link" /> Connect
               </b-button>
             </b-col>
@@ -1036,11 +1032,7 @@ export default {
         >
           <b-row cols="1" align-h="center">
             <b-col class="pt-2">
-              <b-button
-                class="btn btn-sm btn-block"
-                variant="danger"
-                @click="do_cancel"
-              >
+              <b-button size="sm" variant="danger" @click="do_cancel">
                 <span class="fas fa-ban" /> Cancel last program
               </b-button>
             </b-col>
@@ -1056,11 +1048,7 @@ export default {
         >
           <b-row cols="1" align-h="center">
             <b-col class="pt-2">
-              <b-button
-                class="btn btn-sm btn-block"
-                variant="primary"
-                @click="do_enqueue"
-              >
+              <b-button size="sm" variant="primary" @click="do_enqueue">
                 <span class="fas fa-paper-plane" /> Send program
               </b-button>
             </b-col>

@@ -16,11 +16,7 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
-<style lang="scss" scoped>
-.actionsGroup {
-  background-color: #e0e0e0;
-}
-</style>
+
 <script>
 import { useModal } from "bootstrap-vue-next"
 
@@ -42,6 +38,7 @@ export default {
     group: { type: Array, required: true },
     instructions: Array,
     browser: { type: String, required: true },
+    os: { type: String, required: true },
     architectures: { type: Array, required: true },
     assembly_code: String,
     show_instruction_help: { type: Boolean, default: false },
@@ -75,6 +72,30 @@ export default {
       set(value) {
         instructions = value
       },
+    },
+    /**
+     * Computes the prefix keys that need to be pressed for an accesskey,
+     * depending on the platforma and the browser.
+     *
+     * @returns  {Array}  List of prefixes
+     *
+     * More information in MDN (https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Global_attributes/accesskey)
+     */
+    accesskey_prefix() {
+      if (this.os === "Mac") {
+        return ["^ Control", "⌥ Option"]
+      } else {
+        switch (this.browser) {
+          case "Chrome":
+            return ["Alt"]
+
+          case "Firefox":
+            return ["Alt", "Shift"]
+
+          default:
+            return ["???"]
+        }
+      }
     },
   },
 
@@ -555,10 +576,14 @@ export default {
 <template>
   <b-container fluid>
     <b-row>
-      <span class="col px-0 mr-1" v-for="(item, index) in group" :key="index">
+      <b-col
+        class="d-grid px-0 mx-1"
+        v-for="(item, index) in group"
+        :key="index"
+      >
         <!-- button_architecture -->
         <b-dropdown
-          class="btn btn-block menuGroup arch_btn h-100 mr-1 p-0"
+          class="menuButton"
           split
           v-if="item == 'btn_architecture'"
           right
@@ -576,8 +601,10 @@ export default {
 
         <!-- button_assembly -->
         <b-button
-          v-if="item == 'btn_assembly'"
-          class="btn btn-block btn-outline-secondary menuGroup btn-sm assembly_btn h-100 text-truncate"
+          v-if="item === 'btn_assembly'"
+          class="menuButton text-truncate"
+          size="sm"
+          variant="outline-secondary"
           id="assembly_btn_sim"
           @click="change_UI_mode('assembly')"
         >
@@ -588,7 +615,9 @@ export default {
         <!-- button_simulator -->
         <b-button
           v-if="item === 'btn_simulator'"
-          class="btn btn-block btn-outline-secondary menuGroup btn-sm simulator_btn btn_arch h-100"
+          class="menuButton"
+          size="sm"
+          variant="outline-secondary"
           id="sim_btn_arch"
           @click="change_UI_mode('simulator')"
         >
@@ -599,7 +628,9 @@ export default {
         <!-- button_edit_architecture -->
         <b-button
           v-if="item === 'btn_edit_architecture'"
-          class="btn btn-block btn-outline-secondary menuGroup btn-sm h-100"
+          class="menuButton"
+          size="sm"
+          variant="outline-secondary"
           id="edit_btn_arch"
           v-b-modal.edit_architecture
         >
@@ -608,10 +639,11 @@ export default {
         </b-button>
 
         <!-- button_save_architecture -->
-
         <b-button
           v-if="item === 'btn_save_architecture'"
-          class="btn btn-block btn-outline-secondary menuGroup btn-sm h-100"
+          class="menuButton"
+          size="sm"
+          variant="outline-secondary"
           id="save_btn_arch"
           v-b-modal.save_architecture
         >
@@ -622,10 +654,9 @@ export default {
         <!-- dropdown_assembly_file -->
         <b-dropdown
           v-if="item === 'dropdown_assembly_file'"
-          right
           text="File"
           size="sm"
-          class="btn btn-block menuGroup btn-sm p-0"
+          class="menuButton d-grid gap-2"
           variant="outline-secondary"
         >
           <b-dropdown-item @click="new_assembly">
@@ -653,7 +684,9 @@ export default {
         <!-- button_compile -->
         <b-button
           v-if="item === 'btn_compile'"
-          class="btn btn-block btn-outline-secondary actionsGroup btn-sm h-100"
+          class="actionsGroup h-100"
+          size="sm"
+          variant="outline-secondary"
           id="compile_assembly"
           @click="assembly_compiler()"
         >
@@ -665,10 +698,9 @@ export default {
         <!-- dropdown_library -->
         <b-dropdown
           v-if="item === 'dropdown_library'"
-          right
           text="Library"
           size="sm"
-          class="btn btn-block menuGroup btn-sm p-0"
+          class="menuButton d-grid gap-2"
           variant="outline-secondary"
         >
           <b-dropdown-item v-b-modal.save_binary>
@@ -686,55 +718,69 @@ export default {
         </b-dropdown>
 
         <!-- button_reset -->
-        <b-button
-          v-if="item == 'btn_reset'"
-          @click="reset(true)"
-          :disabled="reset_disable"
-          class="btn btn-block btn-outline-secondary actionsGroup btn-sm h-100 mr-1 text-truncate"
-        >
-          <font-awesome-icon icon="fa-power-off" />
-          Reset
-        </b-button>
+        <b-tooltip v-if="item === 'btn_reset'">
+          <template #target>
+            <b-button
+              class="actionsGroup h-100 mr-1 text-truncate"
+              size="sm"
+              variant="outline-secondary"
+              accesskey="x"
+              @click="reset(true)"
+              :disabled="reset_disable"
+            >
+              <font-awesome-icon icon="fa-power-off" />
+              Reset
+            </b-button>
+          </template>
+
+          {{ this.accesskey_prefix.join(" + ") }} + X
+        </b-tooltip>
 
         <!-- button_instruction -->
-        <b-button
-          v-if="item == 'btn_instruction'"
-          accesskey="a"
-          :disabled="instruction_disable"
-          class="btn btn-block btn-outline-secondary actionsGroup btn-sm h-100 mr-1 text-truncate"
-          @click="execute_instruction"
-          id="inst"
-        >
-          <font-awesome-icon icon="fa-fast-forward" />
-          Inst.
-        </b-button>
-        <b-tooltip
-          v-if="item == 'btn_instruction' && browser === 'Mac'"
-          target="inst"
-          title="Press [Control] [Alt/Option] + A"
-        />
-        <b-tooltip
-          v-else-if="item == 'btn_instruction'"
-          target="inst"
-          title="Press [Alt] [Shift] + A"
-        />
+        <b-tooltip v-if="item === 'btn_instruction'">
+          <template #target>
+            <b-button
+              class="actionsGroup h-100 mr-1 text-truncate"
+              size="sm"
+              variant="outline-secondary"
+              accesskey="a"
+              @click="execute_instruction"
+              :disabled="instruction_disable"
+            >
+              <font-awesome-icon icon="fa-fast-forward" />
+              Inst.
+            </b-button>
+          </template>
+
+          {{ this.accesskey_prefix.join(" + ") }} + A
+        </b-tooltip>
 
         <!-- button_run -->
-        <b-button
-          v-if="item === 'btn_run'"
-          class="btn btn-block btn-outline-secondary actionsGroup btn-sm h-100 mr-1"
-          @click="execute_program"
-          :disabled="run_disable"
-          id="playExecution"
-        >
-          <font-awesome-icon icon="fa-play" />
-          Run
-        </b-button>
+        <b-tooltip v-if="item === 'btn_run'">
+          <template #target>
+            <b-button
+              id="playExecution"
+              class="actionsGroup h-100 mr-1 text-truncate"
+              size="sm"
+              variant="outline-secondary"
+              @click="execute_program"
+              accesskey="r"
+              :disabled="run_disable"
+            >
+              <font-awesome-icon icon="fa-play" />
+              Run
+            </b-button>
+          </template>
+
+          {{ this.accesskey_prefix.join(" + ") }} + R
+        </b-tooltip>
 
         <!-- button_flash -->
         <b-button
           v-if="item === 'btn_flash'"
-          class="btn btn-block btn-outline-secondary actionsGroup btn-sm h-100 mr-1"
+          class="actionsGroup h-100 mr-1"
+          size="sm"
+          variant="outline-secondary"
           v-b-modal.flash
           :disabled="run_disable"
         >
@@ -743,21 +789,31 @@ export default {
         </b-button>
 
         <!-- button_stop -->
-        <b-button
-          v-if="item == 'btn_stop'"
-          class="btn btn-block btn-outline-secondary actionsGroup btn-sm h-100 text-truncate"
-          @click="stop_execution"
-          :disabled="stop_disable"
-          id="stop_execution"
-        >
-          <font-awesome-icon icon="fa-stop" />
-          Stop
-        </b-button>
+        <b-tooltip v-if="item === 'btn_stop'">
+          <template #target>
+            <b-button
+              class="actionsGroup h-100 mr-1"
+              size="sm"
+              variant="outline-secondary"
+              accesskey="c"
+              @click="stop_execution"
+              :disabled="stop_disable"
+              id="stop_execution"
+            >
+              <font-awesome-icon icon="fa-stop" />
+              Stop
+            </b-button>
+          </template>
+
+          {{ this.accesskey_prefix.join(" + ") }} + C
+        </b-tooltip>
 
         <!-- button_examples -->
         <b-button
           v-if="item == 'btn_examples'"
-          class="btn btn-block btn-outline-secondary menuGroup btn-sm h-100 mr-1 text-truncate"
+          class="menuButton h-100 mr-1 text-truncate"
+          size="sm"
+          variant="outline-secondary"
           v-b-modal.examples2
         >
           <font-awesome-icon icon="fa-regular fa-file" />
@@ -767,7 +823,9 @@ export default {
         <!-- button_calculator -->
         <b-button
           v-if="item == 'btn_calculator'"
-          class="btn btn-block btn-outline-secondary menuGroup btn-sm h-100 text-truncate"
+          class="menuButton h-100 text-truncate"
+          size="sm"
+          variant="outline-secondary"
           v-b-modal.calculator
         >
           <font-awesome-icon icon="fa-calculator" />
@@ -777,7 +835,9 @@ export default {
         <!-- button_configuration -->
         <b-button
           v-if="item == 'btn_configuration'"
-          class="btn btn-block btn-outline-secondary menuGroup btn-sm h-100 mr-1 text-truncate"
+          class="menuButton h-100 mr-1 text-truncate"
+          size="sm"
+          variant="outline-secondary"
           id="conf_btn_sim"
           v-b-modal.configuration
         >
@@ -795,7 +855,9 @@ export default {
         >
           <template #target>
             <b-button
-              class="btn btn-block btn-outline-secondary btn-sm h-100 infoButton text-truncate"
+              class="infoButton text-truncate"
+              size="sm"
+              variant="outline-secondary"
               id="info"
             >
               <font-awesome-icon icon="fa-info-circle" />
@@ -804,9 +866,10 @@ export default {
           </template>
 
           <b-button
-            class="btn btn-outline-secondary btn-sm btn-block infoButton"
             href="https://creatorsim.github.io/"
             target="_blank"
+            size="sm"
+            variant="warning"
             onclick="creator_ga('send', 'event', 'help', 'help.general_help', 'help.general_help');"
           >
             <font-awesome-icon icon="fa-question-circle" />
@@ -814,10 +877,12 @@ export default {
           </b-button>
 
           <b-button
-            class="btn btn-outline-secondary btn-block btn-sm h-100 infoButton"
+            class="h-100 infoButton"
             v-if="show_instruction_help"
             id="inst_ass"
             v-b-toggle.sidebar_help
+            size="sm"
+            variant="outline-secondary"
             onclick="creator_ga('send', 'event', 'help', 'help.instruction_help', 'help.instruction_help');"
           >
             <font-awesome-icon icon="fa-book" />
@@ -825,14 +890,29 @@ export default {
           </b-button>
 
           <b-button
-            class="btn btn-outline-secondary btn-sm btn-block buttonBackground h-100"
+            class="buttonBackground h-100"
+            size="sm"
+            variant="outline-secondary"
             v-b-modal.notifications
           >
             <font-awesome-icon icon="fa-bell" />
             Show Notifications
           </b-button>
         </b-popover>
-      </span>
+      </b-col>
     </b-row>
   </b-container>
 </template>
+
+<style lang="scss" scoped>
+.menuButton {
+  background-color: #fafafa;
+  color: #6c757d;
+}
+.actionsGroup {
+  background-color: #e0e0e0;
+}
+.infoButton {
+  background-color: #d4db17;
+}
+</style>

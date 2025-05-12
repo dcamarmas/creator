@@ -1,3 +1,23 @@
+<!--
+Copyright 2018-2025 Felix Garcia Carballeira, Diego Camarmas Alonso,
+                    Alejandro Calderon Mateos, Luis Daniel Casais Mezquida
+
+This file is part of CREATOR.
+
+CREATOR is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+CREATOR is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
 <script>
 import UIeltoToolbar from "./general/UIeltoToolbar.vue"
 import EditArchitecture from "./architecture/EditArchitecture.vue"
@@ -6,6 +26,7 @@ import ArchConf from "./architecture/configuration/ArchConf.vue"
 export default {
   props: {
     browser: String,
+    os: { type: String, required: true },
     arch_available: Array,
     architecture_name: String,
   },
@@ -31,6 +52,7 @@ export default {
           id="navbar_architecture"
           components="btn_assembly,btn_simulator|btn_edit_architecture,btn_save_architecture||btn_configuration,btn_information"
           :browser="browser"
+          :os="os"
           :arch_available="arch_available"
         />
 

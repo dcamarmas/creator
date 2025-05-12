@@ -235,15 +235,15 @@ export function hex2double(hexvalue) {
     new Uint8Array(buffer).set(value_bit.match(/.{8}/g).map(binaryStringToInt));
     return new DataView(buffer).getFloat64(0, false);
 }
-// function float2int_v2(value) {
-//     return parseInt(float2bin(value), 2);
-// }
-// function double2int_v2(value) {
-//     return parseInt(double2bin(value), 2);
-// }
-// function int2float_v2(value) {
-//     return hex2float("0x" + bin2hex(value.toString(2)));
-// }
+function float2int_v2(value) {
+    return parseInt(float2bin(value), 2);
+}
+export function double2int_v2(value) {
+    return parseInt(double2bin(value), 2);
+}
+function int2float_v2(value) {
+    return hex2float("0x" + bin2hex(value.toString(2)));
+}
 export function full_print(value, bin_value, add_dot_zero) {
     let print_value = value;
 

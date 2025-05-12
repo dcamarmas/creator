@@ -43,8 +43,8 @@ export default {
   },
 
   methods: {
-    /*Filter table instructions*/
-    filter(row, filter) {
+    /* Filter table instructions */
+    filter(row, _filter) {
       if (row.hide === true) {
         return false
       } else {
@@ -52,7 +52,7 @@ export default {
       }
     },
 
-    /*Enter a breakpoint*/
+    /* Enter a breakpoint */
     breakPoint(record, index) {
       for (let i = 0; i < this.instructions.length; i++) {
         if (this.instructions[i].Address === record.Address) {
@@ -74,6 +74,23 @@ export default {
         )
       } else if (this.instructions[index].Break) {
         this.$root.instructions[index].Break = null
+      }
+    },
+
+    /* Computes the execution tag depending on the row's `_rowVariant` */
+    computeExecutionTag(rowVariant) {
+      switch (rowVariant) {
+        case "warning":
+          return "Interrupted"
+
+        case "info":
+          return this.enter !== null ? "Current-Keyboard" : "Current"
+
+        case "success":
+          return "Next"
+
+        default:
+          return ""
       }
     },
   },
@@ -99,13 +116,13 @@ export default {
         primary-key="Address"
       >
         <!-- column headers -->
-        <template #head(userInstructions)="row"> User Instruction </template>
+        <template #head(userInstructions)="_row"> User Instruction </template>
 
-        <template #head(loadedInstructions)="row">
+        <template #head(loadedInstructions)="_row">
           Loaded Instructions
         </template>
 
-        <template #head(tag)="row"> &nbsp; </template>
+        <template #head(tag)="_row"> &nbsp; </template>
 
         <!-- breakpoints -->
         <template #cell(Break)="row">
@@ -150,32 +167,10 @@ export default {
         <!-- execution tags -->
         <template #cell(tag)="row">
           <b-badge
-            variant="warning"
-            class="border border-warning shadow executionTag"
-            v-if="row.item._rowVariant == 'warning'"
+            :variant="row.item._rowVariant"
+            :class="`border border-${row.item._rowVariant} shadow executionTag`"
           >
-            Interrupted
-          </b-badge>
-          <b-badge
-            variant="info"
-            class="border border-info shadow executionTag"
-            v-if="row.item._rowVariant == 'info' && enter == false"
-          >
-            Current-Keyboard
-          </b-badge>
-          <b-badge
-            variant="success"
-            class="border border-success shadow executionTag"
-            v-if="row.item._rowVariant == 'success'"
-          >
-            Next
-          </b-badge>
-          <b-badge
-            variant="info"
-            class="border border-info shadow executionTag"
-            v-if="row.item._rowVariant == 'info' && !enter"
-          >
-            Current
+            {{ computeExecutionTag(row.item._rowVariant) }}
           </b-badge>
         </template>
       </b-table>

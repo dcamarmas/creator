@@ -18,8 +18,8 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <script>
-import PlotStats from './PlotStats.vue'
-import TableStats from './TableStats.vue'
+import PlotStats from "./PlotStats.vue"
+import TableStats from "./TableStats.vue"
 
 export default {
   props: {
@@ -34,10 +34,10 @@ export default {
 
   data() {
     return {
-      stat_representation: 'graphic',
+      stat_representation: "graphic",
       stat_representation_options: [
-        { text: 'Graphic', value: 'graphic' },
-        { text: 'Table', value: 'table' },
+        { text: "Graphic", value: "graphic" },
+        { text: "Table", value: "table" },
       ],
     }
   },
@@ -49,7 +49,9 @@ export default {
     <b-row cols-xl="2" cols-lg="1" cols-md="2" cols-sm="1" cols-xs="1" cols="1">
       <b-col align-h="center" class="px-2">
         <div class="border m-1 py-1 px-2">
-          <b-badge variant="light" class="h6 groupLabelling border mx-2 my-0">Stats view</b-badge>
+          <b-badge variant="light" class="h6 groupLabelling border mx-2 my-0"
+            >Stats view</b-badge
+          >
           <b-form-group class="mb-2" v-slot="{ ariaDescribedby }">
             <b-form-radio-group
               id="btn-radios-1"
@@ -71,7 +73,10 @@ export default {
 
     <b-row cols="1">
       <b-col align-h="center" class="px-2 my-2">
-        <PlotStats :stats_value="stats_value" v-if="stat_representation == 'graphic'" />
+        <PlotStats
+          :stats_value="stats_value"
+          v-if="stat_representation == 'graphic'"
+        />
         <TableStats :stats="stats" v-if="stat_representation == 'table'" />
       </b-col>
     </b-row>

@@ -33,9 +33,13 @@ import { instructions } from "@/core/compiler/compiler.mjs"
 export default {
   props: {
     browser: String,
+    os: { type: String, required: true },
     arch_available: Array,
     architecture_name: String,
     data_mode: String,
+    reg_representation_int: { type: String, required: true },
+    reg_representation_float: { type: String, required: true },
+    reg_name_representation: { type: String, required: true },
     enter: [Boolean, null],
     stack_total_list: Number,
     main_memory_busy: Boolean,
@@ -81,6 +85,7 @@ export default {
           id="navbar_simulator"
           components="btn_architecture,btn_assembly|btn_reset,btn_instruction,btn_run,btn_flash,btn_stop|btn_examples,btn_calculator|btn_configuration,btn_information"
           :browser="browser"
+          :os="os"
           :arch_available="arch_available"
           :show_instruction_help="true"
           :instructions="instructions"
@@ -138,6 +143,9 @@ export default {
                 "
                 id="register_file"
                 :data_mode="data_mode"
+                :reg_representation_int="reg_representation_int"
+                :reg_representation_float="reg_representation_float"
+                :reg_name_representation="reg_name_representation"
                 ref="registerFile"
               />
 

@@ -71,35 +71,6 @@ import ArchitectureView from "./components/ArchitectureView.vue"
 import SimulatorView from "./components/SimulatorView.vue"
 import AssemblyView from "./components/AssemblyView.vue"
 
-import EditArchitecture from "./components/architecture/EditArchitecture.vue"
-import SaveArchitecture from "./components/architecture/SaveArchitecture.vue"
-// import ArchConf from "./components/architecture/configuration/ArchConf.vue"
-// import MemoryLayout from "./components/architecture/memory_layout/MemoryLayout.vue"
-// import RegisterFileArch from "./components/architecture/register_file/RegisterFileArch.vue"
-// import Instructions from "./components/architecture/instructions/Instructions.vue"
-// import InstructionFields from "./components/architecture/instructions/InstructionFields.vue"
-// import Pseudoinstructions from "./components/architecture/pseudoinstructions/Pseudoinstructions.vue"
-// import PseudoinstructionFields from "./components/architecture/pseudoinstructions/PseudoinstructionFields.vue"
-// import Directives from "./components/architecture/directives/Directives.vue"
-// import LoadAssembly from "./components/assembly/LoadAssembly.vue"
-// import SaveAssembly from "./components/assembly/SaveAssembly.vue"
-// import MakeURI from "./components/assembly/MakeURI.vue"
-// import LoadLibrary from "./components/assembly/LoadLibrary.vue"
-// import SaveLibrary from "./components/assembly/SaveLibrary.vue"
-// import TextareaAssembly from "./components/assembly/TextareaAssembly.vue"
-// import ListLibraryTags from "./components/assembly/ListLibraryTags.vue"
-// import AssemblyError from "./components/assembly/AssemblyError.vue"
-// import Flash from "./components/simulator/Flash.vue"
-// import Examples from "./components/assembly/Examples.vue"
-// import Calculator from "./components/simulator/Calculator.vue"
-// import TableExecution from "./components/simulator/TableExecution.vue"
-// import DataViewSelector from "./components/simulator/DataViewSelector.vue"
-// import RegisterFile from "./components/simulator/RegisterFile.vue"
-// import Memory from "./components/simulator/Memory.vue"
-// import ClkCycles from "./components/simulator/ClkCycles.vue"
-// import Monitor from "./components/simulator/Monitor.vue"
-// import Keyboard from "./components/simulator/Keyboard.vue"
-
 export default {
   name: "app",
   components: {
@@ -119,35 +90,6 @@ export default {
     ArchitectureView,
     SimulatorView,
     AssemblyView,
-
-    // EditArchitecture,
-    // SaveArchitecture,
-    // ArchConf,
-    // MemoryLayout,
-    // RegisterFileArch,
-    // Instructions,
-    // InstructionFields,
-    // Pseudoinstructions,
-    // PseudoinstructionFields,
-    // Directives,
-    // LoadAssembly,
-    // SaveAssembly,
-    // MakeURI,
-    // LoadLibrary,
-    // SaveLibrary,
-    // TextareaAssembly,
-    // ListLibraryTags,
-    // AssemblyError,
-    // Flash,
-    // Examples,
-    // Calculator,
-    // TableExecution,
-    // DataViewSelector,
-    // RegisterFile,
-    // Memory,
-    // ClkCycles,
-    // Monitor,
-    // Keyboard,
   },
 
   /************
@@ -175,18 +117,18 @@ export default {
       // General information
       //
 
-      //Version Number
+      // Version Number
       version: package_json.version,
 
-      //Architecture name and guide
+      // Architecture name and guide
       architecture_name: "",
       architecture_guide: "",
 
-      //Accesskey
+      // Accesskey
       os: "",
       browser: "",
 
-      //Displayed notifications
+      // Displayed notifications
       notifications, //TODO: copy or only in app?
 
       //
@@ -199,15 +141,15 @@ export default {
       // Configuration
       //
 
-      //Default architecture
+      // Default architecture
       default_architecture:
         localStorage.getItem("conf_default_architecture") || "none",
 
-      //Stack total list values
+      // Stack total list values
       stack_total_list:
         parseInt(localStorage.getItem("conf_stack_total_list"), 10) || 40,
 
-      //Notification speed
+      // Notification speed
       notification_time:
         parseInt(localStorage.getItem("conf_notification_time"), 10) || 1500,
 
@@ -215,7 +157,7 @@ export default {
       instruction_help_size:
         parseInt(localStorage.getItem("conf_instruction_help_size"), 10) || 33,
 
-      //Auto Scroll
+      // Auto Scroll
       autoscroll: (a => {
         return a === null ? true : a === "true"
       })(localStorage.getItem("conf_autoscroll")), // if null, set to true, else respect the value
@@ -223,10 +165,10 @@ export default {
       // Font size
       font_size: 15,
 
-      //Debug
+      // Debug
       c_debug: false,
 
-      //Dark Mode
+      // Dark Mode
       dark: (a => {
         return a === null ? null : a === "true"
       })(localStorage.getItem("conf_dark_mode")), // if null (no localStorage), set to null, else cast to bool
@@ -241,7 +183,7 @@ export default {
       /*************************/
 
       //
-      //Available architectures
+      // Available architectures
       //
 
       arch_available, //TODO: copy or only in app?
@@ -250,11 +192,11 @@ export default {
       /* Architecture */
       /****************/
 
-      //Load architecture
+      // Load architecture
       architecture,
       architecture_hash,
 
-      //Instructions fields
+      // Instructions fields
       modal_field_instruction: {
         //TODO: include into instruction component - modal info
         title: "",
@@ -262,7 +204,7 @@ export default {
         instruction: {},
       },
 
-      //Pseudoinstruction fields
+      // Pseudoinstruction fields
       modal_field_pseudoinstruction: {
         //TODO: include into pseudoinstruction component - modal info
         title: "",
@@ -278,14 +220,14 @@ export default {
       /************/
 
       //
-      //Available examples
+      // Available examples
       //
 
       example_set_available,
       example_available,
 
       //
-      //Code error modal
+      // Code error modal
       //
 
       modalAssemblyError: {
@@ -296,7 +238,7 @@ export default {
       },
 
       //
-      //Assembly code
+      // Assembly code
       //
 
       // assembly_code: "",
@@ -310,23 +252,28 @@ export default {
       // Execution
       //
 
-      //Instructions
+      // Instructions
       instructions,
 
       //
-      //Data view
+      // Data view
       //
 
+      // we must store this data in the root, bc it resets when re-mounting a
+      // component (in this case, RegisterFile)
       data_mode: "int_registers",
+      reg_representation_int: "signed",
+      reg_representation_float: "ieee32",
+      reg_name_representation: "alias",
 
       //
-      //Memory
+      // Memory
       //
 
       main_memory: {},
       main_memory_busy: false,
 
-      //Stack
+      // Stack
       track_stack_names,
       // callee_subrutine: "",
       // caller_subrutine: "",
@@ -337,16 +284,16 @@ export default {
       // end_callee: 0,
 
       //
-      //Stats
+      // Stats
       //
 
       totalStats: status.totalStats,
       stats,
-      //Stats Graph values
+      // Stats Graph values
       stats_value,
 
       //
-      //CLK Cycles
+      // CLK Cycles
       //
 
       total_clk_cycles,
@@ -355,7 +302,7 @@ export default {
       clk_cycles_value,
 
       //
-      //Display and keyboard
+      // Display and keyboard
       //
 
       display: "",
@@ -363,7 +310,7 @@ export default {
       enter: null,  // defines the state of the keyboard: no keyboard read pending (null), keyboard pending (false), or keyboard success (true)
 
       //
-      //Flash
+      // Flash
       //
 
       lab_url: "",
@@ -417,7 +364,11 @@ export default {
      * General methots *
      *******************/
 
-    //Detects the operating system being used
+    /**
+     * Detects the operating system being used
+     *
+     * @return  {String | Null} `"Win"`, `"Mac"`, or `"Linux"`
+     */
     detect_os() {
       if (navigator.userAgent.includes("Win")) {
         return "Win"
@@ -434,7 +385,11 @@ export default {
       return null
     },
 
-    //Detects the browser being used
+    /**
+     * Detects the browser being used
+     *
+     * @returns  {String | Null} `"Chrome"`, `"Firefox"`, or `"Safari"`
+     */
     detect_browser() {
       if (navigator.userAgent.includes("Chrome")) {
         return "Chrome"
@@ -567,6 +522,7 @@ export default {
     v-if="creator_mode === 'select_architecture'"
     :arch_available="arch_available"
     :browser="browser"
+    :os="os"
     @select-architecture="
       arch_name => {
         architecture_name = arch_name
@@ -584,6 +540,7 @@ export default {
     :architecture_name="architecture_name"
     :arch_available="arch_available"
     :browser="browser"
+    :os="os"
   />
 
   <!------------------->
@@ -594,6 +551,7 @@ export default {
     :architecture_name="architecture_name"
     :arch_available="arch_available"
     :browser="browser"
+    :os="os"
     :assembly_code="assembly_code"
     :modal_assembly_error="modalAssemblyError"
     :vim_mode="vim_mode"
@@ -608,10 +566,14 @@ export default {
   <SimulatorView
     v-if="creator_mode == 'simulator'"
     v-model:data_mode="data_mode"
+    v-model:reg_representation_int="reg_representation_int"
+    v-model:reg_representation_float="reg_representation_float"
+    v-model:reg_name_representation="reg_name_representation"
     :architecture_name="architecture_name"
     :arch_available="arch_available"
     :enter="enter"
     :browser="browser"
+    :os="os"
     :stack_total_list="stack_total_list"
     :main_memory="main_memory"
     :main_memory_busy="main_memory_busy"
@@ -734,10 +696,6 @@ export default {
     max-width: 100%;
   }
 
-  .infoButton {
-    background-color: #d4db17;
-  }
-
   .buttons {
     width: 100%;
     margin: 0px;
@@ -751,10 +709,6 @@ export default {
     align-items: center;
     margin: 5px;
     margin-bottom: 10px;
-  }
-
-  .menuGroup {
-    background-color: #fafafa;
   }
 
   .buttonBackground {

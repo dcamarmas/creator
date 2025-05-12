@@ -106,7 +106,9 @@ export default {
       >
         <b-col>
           <b-button
-            class="btn btn-outline-danger btn-block btn-sm buttonBackground"
+            class="buttonBackground"
+            variant="outline-danger"
+            size="sm"
             @click="remove_copy"
           >
             Discard
@@ -115,7 +117,9 @@ export default {
 
         <b-col>
           <b-button
-            class="btn btn-outline-primary btn-block btn-sm buttonBackground"
+            class="buttonBackground"
+            variant="outline-primary"
+            size="sm"
             @click="load_copy"
           >
             Load

@@ -46,25 +46,6 @@ export default {
     PopoverShortcuts,
     Codemirror,
   },
-  data() {
-    return {
-      extensions: [
-        // custom highlight on top of the default style
-        syntaxHighlighting(
-          HighlightStyle.define([
-            { tag: tags.keyword, color: "#3300aa" },
-            { tag: tags.comment, fontStyle: "italic" },
-          ]),
-        ),
-        syntaxHighlighting(defaultHighlightStyle), // this HAS to be below to be used as fallback
-        // fixed height editor
-        EditorView.theme({
-          "&": { height: "400px" },
-          ".cm-scroller": { overflow: "auto" },
-        }),
-      ],
-    }
-  },
 
   setup() {
     const lang = StreamLanguage.define(gas) // GNU Assembler
@@ -74,6 +55,8 @@ export default {
 
   mounted() {
     this.syncVim(this.vim_mode)
+
+    // this.$refs.textarea.editor.focus()
   },
 
   computed: {
@@ -103,6 +86,34 @@ export default {
       set(value) {
         this.$root.assembly_code = value
       },
+    },
+
+    extensions() {
+      const extensions = [
+        // basicSetup covers most of the required extensions
+
+        // fixed height editor
+        EditorView.theme({
+          "&": { height: "650px" },
+          ".cm-scroller": { overflow: "auto" },
+        }),
+      ]
+
+      // vim mode
+      if (this.vimActive) {
+        extensions.push(vim()) // add extension
+
+        // load custom keybinds
+        for (const { mode, lhs, rhs } of this.vim_custom_keybinds) {
+          Vim.map(lhs, rhs, mode)
+        }
+
+        // map Vim commands to functions
+        Vim.defineEx("write", "w", () => this.assemble())
+        Vim.defineEx("xit", "x", () => this.assemble())
+      }
+
+      return extensions
     },
   },
   methods: {
@@ -139,6 +150,14 @@ export default {
     toggleVim() {
       this.vimActive = !this.vimActive
     },
+
+    /**
+     * Codemirror callback for when component is ready
+     */
+    handleReady({ view, _state }) {
+      // focus on editor
+      view.focus()
+    },
   },
 }
 </script>
@@ -151,6 +170,8 @@ export default {
   />
 
   <b-button
+    class="actionsGroup"
+    variant="outline-secondary"
     size="sm"
     :pressed="vimActive"
     @click="toggleVim()"
@@ -166,9 +187,12 @@ export default {
   <span class="h5">Assembly:</span>
 
   <Codemirror
+    ref="textarea"
+    class="codeArea"
     v-model="code"
     basic
     placeholder="Assembly code..."
+    @ready="handleReady"
     :lang="lang"
     :autofocus="true"
     :tab="true"
@@ -179,16 +203,8 @@ export default {
 </template>
 
 <style lang="scss" scoped>
-.CodeMirror {
+.codeArea {
   border: 1px solid #eee;
-  height: auto;
   font-size: 0.85em;
-}
-
-.code-scroll-y {
-  display: block;
-  max-height: 90vh;
-  overflow-y: auto;
-  -ms-overflow-style: -ms-autohiding-scrollbar;
 }
 </style>

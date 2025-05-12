@@ -25,6 +25,7 @@ export default {
     id: { type: String, required: true },
     components: { type: String, required: true },
     browser: { type: String, required: true },
+    os: { type: String, required: true },
     arch_available: { type: Array, required: true },
     assembly_code: { type: String, required: false },
     show_instruction_help: { type: Boolean, default: false },
@@ -47,6 +48,7 @@ export default {
         <ToolbarBtngroup
           :group="item.split(',')"
           :browser="browser"
+          :os="os"
           :architectures="arch_available"
           :assembly_code="assembly_code"
           :show_instruction_help="show_instruction_help"

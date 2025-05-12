@@ -29,15 +29,15 @@ export default {
       /*clk_cycles table fields*/
       clk_cycles_fields: {
         type: {
-          label: 'Type',
+          label: "Type",
           sortable: true,
         },
         clk_cycles: {
-          label: 'CLK Cycles',
+          label: "CLK Cycles",
           sortable: true,
         },
         percentage: {
-          label: 'Percentage',
+          label: "Percentage",
           sortable: true,
         },
       },

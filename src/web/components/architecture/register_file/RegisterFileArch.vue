@@ -41,7 +41,9 @@ export default {
               block
               href="#"
               v-b-toggle="index.toString()"
-              class="btn btn-outline-secondary btn-sm buttonBackground"
+              class="buttonBackground"
+              variant="outline-secondary"
+              size="sm"
             >
               {{ item.name }}
             </b-btn>

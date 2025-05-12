@@ -265,7 +265,7 @@ export default {
     removeVimKeybind(index) {
       const { lhs, mode } = this.vim_custom_keybinds_value[index]
 
-      Vim.unmap(lhs, mode) // FIXME: this doesn't do shit
+      Vim.unmap(lhs, mode)
       this.vim_custom_keybinds_value.splice(index, 1)
     },
   },
