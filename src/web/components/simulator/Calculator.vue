@@ -634,9 +634,7 @@ export default {
     <b-container fluid align-h="center" class="mx-0 px-0">
       <b-row cols="1" align-h="center">
         <b-col class="pt-2">
-          <b-button class="btn btn-sm btn-block" variant="primary"
-            >Convert</b-button
-          >
+          <b-button size="sm" variant="primary">Convert</b-button>
         </b-col>
       </b-row>
     </b-container>

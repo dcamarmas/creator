@@ -23,26 +23,42 @@ export default {
     target: { type: String, required: true },
     show_instruction_help: { type: Boolean, required: true },
   },
-
 }
 </script>
 
 <template>
   <b-popover :target="target" triggers="click blur">
-    <b-button class="btn btn-outline-secondary btn-sm btn-block infoButton" href="https://creatorsim.github.io/"
-      target="_blank" onclick="creator_ga('send', 'event', 'help', 'help.general_help', 'help.general_help');">
+    <b-button
+      class="infoButton"
+      variant="outline-secondary"
+      size="sm"
+      href="https://creatorsim.github.io/"
+      target="_blank"
+      onclick="creator_ga('send', 'event', 'help', 'help.general_help', 'help.general_help');"
+    >
       <font-awesome-icon icon="fa-question-circle" />
       Help
     </b-button>
 
-    <b-button class="btn btn-outline-secondary btn-block btn-sm h-100 infoButton" v-if="show_instruction_help == 'true'"
-      id="inst_ass" v-b-toggle.sidebar_help
-      onclick="creator_ga('send', 'event', 'help', 'help.instruction_help', 'help.instruction_help');">
+    <b-button
+      class="h-100 infoButton"
+      variant="outline-secondary"
+      size="sm"
+      v-if="show_instruction_help == 'true'"
+      id="inst_ass"
+      v-b-toggle.sidebar_help
+      onclick="creator_ga('send', 'event', 'help', 'help.instruction_help', 'help.instruction_help');"
+    >
       <font-awesome-icon icon="fa-book" />
       Instruction Help
     </b-button>
 
-    <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground h-100" v-b-modal.notifications>
+    <b-button
+      class="buttonBackground h-100"
+      variant="outline-secondary"
+      size="sm"
+      v-b-modal.notifications
+    >
       <span class="fas fa-bell" />
       <font-awesome-icon icon="fa-bell" />
       Show Notifications

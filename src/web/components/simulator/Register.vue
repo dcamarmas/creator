@@ -26,6 +26,7 @@ import {
   hex2double,
   bin2hex,
   float2bin,
+  double2int_v2,
 } from "@/core/utils/utils.mjs"
 
 export default {
@@ -48,6 +49,26 @@ export default {
     popover_id() {
       return "popoverValueContent" + this.register.name[0]
     },
+
+    reg_name() {
+      switch (this.name_representation) {
+        case "logical":
+          return this.register.name[0]
+        case "alias":
+          if (typeof this.register.name[1] === "undefined") {
+            return this.register.name[0]
+          }
+
+          return this.register.name
+            .slice(1, this.register.name.length)
+            .join(" | ")
+        case "all":
+          return this.register.name.join(" | ")
+
+        default:
+          return ""
+      }
+    },
   },
 
   beforeUpdate() {
@@ -64,6 +85,19 @@ export default {
       this.render++
     },
 
+    // I'd like for this to be a computed property, but it won't work because
+    // ✨ computed caching ✨
+    reg_value() {
+      let ret = this.show_value(
+        this.register,
+        this.value_representation,
+      ).toString()
+      if (ret.length > 8) {
+        ret = ret.slice(0, 8) + "..."
+      }
+      return ret
+    },
+
     // TODO: move to utils
     is_positive(value, nbits) {
       return value.toString(2).padStart(nbits, "0").charAt(0) === "0"
@@ -71,7 +105,7 @@ export default {
 
     // eslint-disable-next-line max-lines-per-function
     show_value(register, representation = this.value_representation) {
-      let ret = 0
+      let ret
 
       switch (representation) {
         case "signed":
@@ -168,33 +202,6 @@ export default {
 
       return ret
     },
-
-    show_value_truncate(register) {
-      let ret = this.show_value(register, this.value_representation).toString()
-      if (ret.length > 8) {
-        ret = ret.slice(0, 8) + "..."
-      }
-      return ret
-    },
-
-    reg_name(register) {
-      switch (this.name_representation) {
-        case "logical":
-          return register.name[0]
-        case "alias":
-          if (typeof register.name[1] === "undefined") {
-            return register.name[0]
-          }
-
-          return register.name.slice(1, register.name.length).join(" | ")
-        case "all":
-          return register.name.join(" | ")
-
-        default:
-          return ""
-      }
-    },
-
     //Update a new register value
     // update_register(comp, elem, type, precision) {
     // for (let i = 0; i < architecture.components[comp].elements.length; i++) {
@@ -294,16 +301,18 @@ export default {
   >
     <template #target>
       <b-button
-        class="btn btn-outline-secondary btn-sm registers w-100 h-100"
+        class="registers w-100 h-100"
+        variant="outline-secondary"
+        size="sm"
         :class="{ registers: !glow, 'registers-glow': glow }"
         :id="popover_id"
         @click="details_callback"
       >
-        <span class="text-truncate">{{ reg_name(register) }}</span>
+        <span class="text-truncate">{{ reg_name }}</span>
         &nbsp;
         <transition>
           <b-badge class="registerValue">
-            {{ register.value }}
+            {{ reg_value() }}
           </b-badge>
         </transition>
       </b-button>
@@ -397,7 +406,9 @@ export default {
 
     <!-- <b-col>
           <b-button
-            class="btn btn-primary btn-sm w-100"
+            class="w-100"
+            variant="primary"
+            size="sm"
             @click="
               update_register(
                 component.index,
@@ -433,13 +444,9 @@ export default {
   font-weight: normal;
 }
 
-.modRegister {
-  background-color: #c2c2c2;
-  font-size: 1.03em;
-}
-
 .registerPopover {
   background-color: #ceecf5;
-  color: black;
+  font-family: monospace;
+  font-weight: normal;
 }
 </style>

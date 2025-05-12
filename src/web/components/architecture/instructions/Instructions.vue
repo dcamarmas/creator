@@ -27,15 +27,15 @@ export default {
     return {
       //Instructions table fields
       instructions_fields: [
-        'name',
-        'co',
-        'cop',
-        'nwords',
-        'signatureRaw',
-        'properties',
-        'clk_cycles',
-        'fields',
-        'definition',
+        "name",
+        "co",
+        "cop",
+        "nwords",
+        "signatureRaw",
+        "properties",
+        "clk_cycles",
+        "fields",
+        "definition",
       ],
     }
   },
@@ -43,13 +43,13 @@ export default {
   methods: {
     //Show instruction fields modal
     view_instructions_modal(name, index, button) {
-      app._data.modal_field_instruction.title = 'Fields of ' + name
+      app._data.modal_field_instruction.title = "Fields of " + name
       app._data.modal_field_instruction.index = index
       app._data.modal_field_instruction.instruction = structuredClone(
         architecture.instructions[index],
       )
 
-      this.$root.$emit('bv::show::modal', 'fields_instructions', button)
+      this.$root.$emit("bv::show::modal", "fields_instructions", button)
     },
   },
 }
@@ -68,14 +68,21 @@ export default {
         <!-- Change the title of each column -->
         <template v-slot:head(cop)="row"> Extended CO </template>
 
-        <template v-slot:head(signatureRaw)="row"> Instruction syntax </template>
+        <template v-slot:head(signatureRaw)="row">
+          Instruction syntax
+        </template>
 
         <!-- For each instruction -->
 
         <template v-slot:cell(properties)="row">
-          <b-badge class="m-1" v-for="propertie in row.item.properties" pill variant="primary">{{
-            propertie
-          }}</b-badge>
+          <b-badge
+            class="m-1"
+            v-for="propertie in row.item.properties"
+            pill
+            variant="primary"
+          >
+            {{ propertie }}
+          </b-badge>
         </template>
 
         <template v-slot:cell(signatureRaw)="row">
@@ -86,8 +93,11 @@ export default {
 
         <template v-slot:cell(fields)="row">
           <b-button
-            @click.stop="view_instructions_modal(row.item.name, row.index, $event.target)"
-            class="btn btn-outline-secondary btn-sm buttonBackground h-100"
+            @click.stop="
+              view_instructions_modal(row.item.name, row.index, $event.target)
+            "
+            variant="outline-secondary"
+            size="sm"
           >
             View Fields
           </b-button>

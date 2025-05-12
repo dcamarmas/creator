@@ -45,52 +45,12 @@ export default {
       this.$root.display = ""
     },
 
-    // getDebounceTime() {
-    //   // Determines the refresh timeout depending on the device being used
-    //   if (screen.width > 768) {
-    //     return 500
-    //   } else {
-    //     return 1000
-    //   }
-    // },
-
     /*Console mutex*/
     consoleEnter() {
       if (this.keyboard_value !== "") {
         status.run_program = execution_mode
       }
     },
-
-    /*Stop user interface refresh*/
-    //   debounce: _.debounce(function (param, e) {
-    //     console_log(param)
-    //     console_log(e)
-
-    //     e.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
-    //     let re = /'/g
-    //     e = e.replace(re, '"')
-    //     re = /[\f]/g
-    //     e = e.replace(re, "\\f")
-    //     re = /[\n]/g
-    //     e = e.replace(re, "\\n")
-    //     re = /[\r]/g
-    //     e = e.replace(re, "\\r")
-    //     re = /[\t]/g
-    //     e = e.replace(re, "\\t")
-    //     re = /[\v]/g
-    //     e = e.replace(re, "\\v")
-
-    //     if (e === "") {
-    //       this[param] = null
-    //       return
-    //     }
-
-    //     console_log("this." + param + "= '" + e + "'")
-
-    //     eval("this." + param + "= '" + e + "'")
-
-    //     this.$root.$forceUpdate()
-    //   }, getDebounceTime()),
   },
 }
 </script>
@@ -103,15 +63,6 @@ export default {
           <font-awesome-icon icon="fa-solid fa-keyboard" class="consoleIcon" />
         </b-col>
         <b-col lg="11" cols="12">
-          <!-- <b-form-textarea
-            id="textarea_keyboard"
-            v-on:input="debounce('local_keyboard', $event)"
-            :value="keyboard_value"
-            rows="5"
-            no-resize
-            :state="enter"
-            title="Keyboard"
-          /> -->
           <b-form-textarea
             id="textarea_keyboard"
             v-model="keyboard_value"
@@ -122,19 +73,17 @@ export default {
       </b-row>
     </b-container>
 
-    <b-container fluid align-h="end" class="mx-0 px-0">
-      <b-row cols="3" align-h="end" class="">
-        <b-col>
+    <b-row fluid align-h="end">
+      <b-col cols="auto">
+        <b-button-group>
           <b-button
             variant="outline-secondary"
-            class="btn-block menuGroup keyboardButton"
+            class="menuGroup keyboardButton"
             @click="consoleClear"
           >
             <font-awesome-icon icon="fa-solid fa-broom" />
             Clear
           </b-button>
-        </b-col>
-        <b-col>
           <b-button
             id="enter_keyboard"
             variant="outline-secondary"
@@ -147,9 +96,9 @@ export default {
             />
             Enter
           </b-button>
-        </b-col>
-      </b-row>
-    </b-container>
+        </b-button-group>
+      </b-col>
+    </b-row>
   </div>
 </template>
 

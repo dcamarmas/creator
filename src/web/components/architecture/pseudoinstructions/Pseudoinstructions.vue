@@ -26,20 +26,25 @@ export default {
   data() {
     return {
       //Pseudoinstructions table fields
-      pseudoinstructions_fields: ['name', 'nwords', 'signatureRaw', 'fields', 'definition'],
+      pseudoinstructions_fields: [
+        "name",
+        "nwords",
+        "signatureRaw",
+        "fields",
+        "definition",
+      ],
     }
   },
 
   methods: {
     //Show pseudoinstruction fields modal
     view_pseudoinstruction_modal(name, index, button) {
-      app._data.modal_field_pseudoinstruction.title = 'Fields of ' + name
+      app._data.modal_field_pseudoinstruction.title = "Fields of " + name
       app._data.modal_field_pseudoinstruction.index = index
-      app._data.modal_field_pseudoinstruction.pseudoinstruction = structuredClone(
-        architecture.pseudoinstructions[index],
-      )
+      app._data.modal_field_pseudoinstruction.pseudoinstruction =
+        structuredClone(architecture.pseudoinstructions[index])
 
-      this.$root.$emit('bv::show::modal', 'fields_pseudoinstructions', button)
+      this.$root.$emit("bv::show::modal", "fields_pseudoinstructions", button)
     },
   },
 }
@@ -57,7 +62,9 @@ export default {
         sticky-header="60vh"
       >
         <!-- Change the title of each column -->
-        <template v-slot:head(signatureRaw)="row"> Instruction syntax </template>
+        <template v-slot:head(signatureRaw)="row">
+          Instruction syntax
+        </template>
 
         <!-- For each pseudoinstruction -->
 
@@ -69,8 +76,16 @@ export default {
 
         <template v-slot:cell(fields)="row">
           <b-button
-            @click.stop="view_pseudoinstruction_modal(row.item.name, row.index, $event.target)"
-            class="btn btn-outline-secondary btn-sm buttonBackground h-100"
+            @click.stop="
+              view_pseudoinstruction_modal(
+                row.item.name,
+                row.index,
+                $event.target,
+              )
+            "
+            class="buttonBackground h-100"
+            variant="outline-secondary"
+            size="sm"
           >
             View Fields
           </b-button>

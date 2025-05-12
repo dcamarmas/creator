@@ -24,6 +24,9 @@ import { REGISTERS } from "@/core/core.mjs"
 export default {
   props: {
     data_mode: { type: String, required: true },
+    reg_representation_int: { type: String, required: true },
+    reg_representation_float: { type: String, required: true },
+    reg_name_representation: { type: String, required: true },
   },
 
   components: {
@@ -34,23 +37,6 @@ export default {
     return {
       register_file: REGISTERS,
 
-      local_data_mode: "int_registers",
-
-      //Register value representation
-      reg_representation: "signed",
-      reg_representation_options_int: [
-        { text: "Signed", value: "signed" },
-        { text: "Unsigned", value: "unsigned" },
-        { text: "Hex", value: "hex" },
-      ],
-
-      reg_representation_options_fp: [
-        { text: "IEEE 754 (32 bits)", value: "ieee32" },
-        { text: "IEEE 754 (64 bits)", value: "ieee64" },
-      ],
-
-      //Register name representation
-      reg_name_representation: "all",
       reg_name_representation_options: [
         { text: "Name", value: "logical" },
         { text: "Alias", value: "alias" },
@@ -61,29 +47,56 @@ export default {
     }
   },
 
-  methods: {
-    refresh() {
-      // refreshes children components with `:key="render"`
-      this.render++
+  computed: {
+    // sync w/ root
+    reg_representation_value: {
+      get() {
+        return this.data_mode === "fp_registers"
+          ? this.reg_representation_float
+          : this.reg_representation_int
+      },
+      set(value) {
+        if (this.data_mode === "fp_registers") {
+          this.$root.reg_representation_float = value
+        } else {
+          this.$root.reg_representation_int = value
+        }
+      },
     },
 
-    mk_reg_representation_options() {
+    // sync w/ root
+    reg_name_representation_value: {
+      get() {
+        return this.reg_name_representation
+      },
+      set(value) {
+        this.$root.reg_name_representation = value
+      },
+    },
+
+    reg_representation_options() {
       if (
         this.data_mode === "int_registers" ||
         this.data_mode === "ctrl_registers"
       ) {
-        if (this.data_mode !== this.local_data_mode) {
-          this.reg_representation = "signed"
-          this.local_data_mode = this.data_mode
-        }
-        return this.reg_representation_options_int
+        return [
+          { text: "Signed", value: "signed" },
+          { text: "Unsigned", value: "unsigned" },
+          { text: "Hex", value: "hex" },
+        ]
       } else {
-        if (this.data_mode !== this.local_data_mode) {
-          this.reg_representation = "ieee32"
-          this.local_data_mode = this.data_mode
-        }
-        return this.reg_representation_options_fp
+        return [
+          { text: "IEEE 754 (32 bits)", value: "ieee32" },
+          { text: "IEEE 754 (64 bits)", value: "ieee64" },
+        ]
       }
+    },
+  },
+
+  methods: {
+    refresh() {
+      // refreshes children components with `:key="render"`
+      this.render++
     },
   },
 }
@@ -102,19 +115,16 @@ export default {
       >
         <b-col cols="12" xl="6" md="6" align-h="start" class="px-2 col">
           <div class="border m-1 py-1 px-2">
-            <b-badge variant="light" class="h6 groupLabelling border mx-2 my-0">
+            <b-badge variant="light" class="h6 groupLabelling border mx-2 mb-1">
               Register value representation
             </b-badge>
-            <b-form-group class="mb-2" v-slot="{ ariaDescribedby }">
+            <b-form-group class="mb-2">
               <b-form-radio-group
-                id="btn-radios-1"
                 class="w-100"
-                v-model="reg_representation"
-                :options="mk_reg_representation_options()"
+                v-model="reg_representation_value"
+                :options="reg_representation_options"
                 button-variant="outline-secondary"
                 size="sm"
-                :aria-describedby="ariaDescribedby"
-                name="radios-btn-default"
                 buttons
               />
             </b-form-group>
@@ -123,19 +133,16 @@ export default {
 
         <b-col cols="12" xl="6" md="6" align-h="end" class="px-2 col">
           <div class="border m-1 py-1 px-2">
-            <b-badge variant="light" class="h6 groupLabelling border mx-2 my-0">
+            <b-badge variant="light" class="h6 groupLabelling border mx-2 mb-1">
               Register name representation
             </b-badge>
-            <b-form-group class="mb-2" v-slot="{ ariaDescribedby }">
+            <b-form-group class="mb-2">
               <b-form-radio-group
-                id="btn-radios-2"
                 class="w-100"
-                v-model="reg_name_representation"
+                v-model="reg_name_representation_value"
                 :options="reg_name_representation_options"
                 button-variant="outline-secondary"
                 size="sm"
-                :aria-describedby="ariaDescribedby"
-                name="radios-btn-default"
                 buttons
               />
             </b-form-group>
@@ -175,8 +182,8 @@ export default {
                     bank.double_precision ? bank.double_precision_type : null
                   "
                   :register="register"
-                  :name_representation="reg_name_representation"
-                  :value_representation="reg_representation"
+                  :name_representation="reg_name_representation_value"
+                  :value_representation="reg_representation_value"
                   :ref="'reg' + register.name[0]"
                   :key="render"
                 />
@@ -188,3 +195,11 @@ export default {
     </b-container>
   </div>
 </template>
+
+<style lang="scss" scoped>
+.groupLabelling {
+  float: top;
+  position: relative;
+  top: -0.6vw;
+}
+</style>
