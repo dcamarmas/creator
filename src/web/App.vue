@@ -1,5 +1,6 @@
 <!--
-Copyright 2018-2025 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
+Copyright 2018-2025 Felix Garcia Carballeira, Diego Camarmas Alonso,
+                    Alejandro Calderon Mateos, Luis Daniel Casais Mezquida
 
 This file is part of CREATOR.
 
