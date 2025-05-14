@@ -28,6 +28,7 @@ export default {
     reg_representation_int: { type: String, required: true },
     reg_representation_float: { type: String, required: true },
     reg_name_representation: { type: String, required: true },
+    dark: { type: Boolean, required: true },
   },
 
   components: {
@@ -116,37 +117,41 @@ export default {
       >
         <b-col cols="12" xl="6" md="6" align-h="start" class="px-2 col">
           <div class="border m-1 py-1 px-2">
-            <b-badge variant="light" class="h6 groupLabelling border mx-2 mb-1">
+            <b-badge
+              :variant="dark ? 'dark' : 'light'"
+              class="h6 border my-0 groupLabelling"
+            >
               Register value representation
             </b-badge>
-            <b-form-group class="mb-2">
-              <b-form-radio-group
-                class="w-100"
-                v-model="reg_representation_value"
-                :options="reg_representation_options"
-                button-variant="outline-secondary"
-                size="sm"
-                buttons
-              />
-            </b-form-group>
+            <b-form-radio-group
+              :class="{ 'w-100': true, 'mb-1': true, border: dark }"
+              v-model="reg_representation_value"
+              :options="reg_representation_options"
+              :button-variant="dark ? 'dark' : 'outline-secondary'"
+              size="sm"
+              buttons
+            />
           </div>
         </b-col>
 
         <b-col cols="12" xl="6" md="6" align-h="end" class="px-2 col">
           <div class="border m-1 py-1 px-2">
-            <b-badge variant="light" class="h6 groupLabelling border mx-2 mb-1">
+            <b-badge
+              :variant="dark ? 'dark' : 'light'"
+              class="h6 border my-0 groupLabelling"
+            >
               Register name representation
             </b-badge>
-            <b-form-group class="mb-2">
-              <b-form-radio-group
-                class="w-100"
-                v-model="reg_name_representation_value"
-                :options="reg_name_representation_options"
-                button-variant="outline-secondary"
-                size="sm"
-                buttons
-              />
-            </b-form-group>
+
+            <b-form-radio-group
+              :class="{ 'w-100': true, 'mb-1': true, border: dark }"
+              v-model="reg_name_representation_value"
+              :options="reg_name_representation_options"
+              :button-variant="dark ? 'dark' : 'outline-secondary'"
+              outline
+              size="sm"
+              buttons
+            />
           </div>
         </b-col>
       </b-row>

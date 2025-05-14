@@ -35,6 +35,7 @@ export default {
   props: {
     browser: String,
     os: { type: String, required: true },
+    dark: { type: Boolean, required: true },
     arch_available: Array,
     architecture_name: String,
     data_mode: String,
@@ -135,6 +136,7 @@ export default {
               <DataViewSelector
                 :data_mode="data_mode"
                 :register_file_num="architecture.components.length"
+                :dark="dark"
               />
 
               <!-- Registers view -->
@@ -147,6 +149,7 @@ export default {
                 :reg_representation_int="reg_representation_int"
                 :reg_representation_float="reg_representation_float"
                 :reg_name_representation="reg_name_representation"
+                :dark="dark"
                 ref="registerFile"
               />
 
@@ -161,6 +164,7 @@ export default {
                 :main_memory="main_memory"
                 :memory_layout="architecture.memory_layout"
                 :end_callee="end_callee"
+                :dark="dark"
               />
 
               <!-- Stats view--->

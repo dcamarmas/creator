@@ -25,6 +25,7 @@ export default {
   props: {
     data_mode: String,
     register_file_num: { type: Number, required: true },
+    dark: { type: Boolean, required: true },
   },
 
   computed: {
@@ -90,18 +91,7 @@ export default {
     <b-row cols="1">
       <b-col class="px-1">
         <b-button-group class="w-100 pb-3">
-          <b-button
-            v-if="register_file_num <= 4"
-            v-for="item in reg_representation_options"
-            :id="item.value"
-            size="sm"
-            :pressed="get_pressed(item.value)"
-            variant="outline-secondary"
-            @click="change_data_view(item.value)"
-          >
-            {{ item.text }}
-          </b-button>
-
+          <!-- Registers -->
           <b-dropdown
             split
             v-if="register_file_num > 4"
@@ -120,10 +110,25 @@ export default {
           </b-dropdown>
 
           <b-button
+            v-else
+            v-for="register_type in reg_representation_options"
+            :id="register_type.value"
+            size="sm"
+            :class="{ border: dark }"
+            :pressed="get_pressed(register_type.value)"
+            :variant="dark ? 'dark' : 'outline-secondary'"
+            @click="change_data_view(register_type.value)"
+          >
+            <font-awesome-icon icon="fa-solid fa-microchip" />
+            {{ register_type.text }}
+          </b-button>
+
+          <b-button
             id="memory_btn"
             size="sm"
             :pressed="get_pressed('memory')"
-            variant="outline-secondary"
+            :class="{ border: dark }"
+            :variant="dark ? 'dark' : 'outline-secondary'"
             @click="change_data_view('memory')"
           >
             <font-awesome-icon icon="fa-solid fa-memory" />
@@ -134,7 +139,8 @@ export default {
             id="stats_btn"
             size="sm"
             :pressed="get_pressed('stats')"
-            variant="outline-secondary"
+            :class="{ border: dark }"
+            :variant="dark ? 'dark' : 'outline-secondary'"
             @click="change_data_view('stats')"
           >
             <font-awesome-icon icon="fa-solid fa-chart-bar" />
@@ -145,7 +151,8 @@ export default {
             id="stats_btn"
             size="sm"
             :pressed="get_pressed('clk_cycles')"
-            variant="outline-secondary"
+            :class="{ border: dark }"
+            :variant="dark ? 'dark' : 'outline-secondary'"
             @click="change_data_view('clk_cycles')"
           >
             <font-awesome-icon icon="fa-regular fa-clock" />

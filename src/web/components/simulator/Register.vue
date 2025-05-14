@@ -450,4 +450,18 @@ export default {
   font-family: monospace;
   font-weight: normal;
 }
+
+[data-bs-theme="dark"] {
+  .registers {
+    background-color: #343a40;
+  }
+
+  .registers:hover {
+    background-color: #4d5154;
+  }
+
+  .registers-glow {
+    background-color: #4d5154;
+  }
+}
 </style>

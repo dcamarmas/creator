@@ -913,7 +913,34 @@ export default {
 .actionsGroup {
   background-color: #e0e0e0;
 }
+
 .infoButton {
   background-color: #d4db17;
+}
+
+[data-bs-theme="dark"] {
+  .menuButton {
+    background-color: #212529;
+    color: #818a8d;
+  }
+  .menuButton:hover {
+    // background-color: #6c757d;
+    // color: white;
+    background-color: #424649;
+  }
+  .actionsGroup {
+    background-color: #363636;
+  }
+
+  .actionsGroup:hover {
+    background-color: #424649;
+  }
+  .infoButton {
+    background-color: #a3a815;
+    color: white;
+  }
+  .infoButton:hover {
+    background-color: #424649;
+  }
 }
 </style>

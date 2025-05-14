@@ -59,4 +59,17 @@ export default defineConfig({
       },
     },
   },
+  // Silence Sass deprecation warnings (due to bootstrap-vue-next)
+  css: {
+    preprocessorOptions: {
+      scss: {
+        silenceDeprecations: [
+          "import",
+          "mixed-decls",
+          "color-functions",
+          "global-builtin",
+        ],
+      },
+    },
+  },
 })

@@ -126,4 +126,20 @@ export default {
   background-color: white;
   color: #6c757d;
 }
+
+[data-bs-theme="dark"] {
+  .header {
+    background-color: #2f2f2f;
+  }
+  .headerName {
+    color: #818a8d;
+  }
+  .linkButton {
+    background-color: #212529;
+    color: #818a8d;
+  }
+  .linkButton:hover {
+    background-color: #424649;
+  }
+}
 </style>

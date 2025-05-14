@@ -37,7 +37,12 @@ export default {
 </script>
 
 <template>
-  <b-card :img-src="author_img" :img-alt="author_alt" img-top>
+  <!-- <b-card :img-src="author_img" :img-alt="author_alt" img-top> -->
+  <b-card>
+    <template #img>
+      <!-- we do this to use the custom class -->
+      <b-img class="author-img" :src="author_img" :alt="author_alt" />
+    </template>
     <b-card-text>
       <div class="authorName">
         <span class="h6">{{ author_full_name }}</span>
@@ -60,3 +65,12 @@ export default {
     </b-card-text>
   </b-card>
 </template>
+
+<style lang="scss" scoped>
+// easter egg: evil mode
+[data-bs-theme="dark"] {
+  .author-img {
+    filter: invert(88%) hue-rotate(160deg);
+  }
+}
+</style>
