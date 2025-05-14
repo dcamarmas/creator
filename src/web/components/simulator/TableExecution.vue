@@ -197,4 +197,11 @@ export default {
   width: auto !important;
   height: 4vh;
 }
+
+[data-bs-theme="dark"] {
+  .instructions_table {
+    // mute the colors a bit...
+    filter: saturate(80%);
+  }
+}
 </style>

@@ -32,6 +32,7 @@ export default {
     modal_assembly_error: Object,
     vim_mode: { type: Boolean, required: true },
     vim_custom_keybinds: { type: Array, required: true },
+    dark: { type: Boolean, required: true },
   },
 
   components: { UIeltoToolbar, TextareaAssembly, AssemblyError },
@@ -90,6 +91,7 @@ export default {
           :assembly_code="assembly_code"
           :vim_mode="vim_mode"
           :vim_custom_keybinds="vim_custom_keybinds"
+          :dark="dark"
         />
         <!-- </b-col>
 

@@ -32,6 +32,7 @@ export default {
     main_memory_busy: { type: Boolean, required: true },
     memory_layout: { type: Object, required: true },
     end_callee: { type: Number, required: true },
+    dark: { type: Boolean, required: true },
   },
 
   components: { MemoryTable },
@@ -61,22 +62,21 @@ export default {
       <!-- <b-row cols-xl="1" cols-lg="1" cols-md="1" cols-sm="1" cols-xs="1" cols="1"> -->
       <b-col align-h="center" class="px-2">
         <div class="border m-1 py-1 px-2">
-          <b-badge variant="light" class="h6 groupLabelling border mx-2 my-0">
+          <b-badge
+            :variant="dark ? 'dark' : 'light'"
+            class="h6 border groupLabelling my-0"
+          >
             Main memory segment
           </b-badge>
-          <b-form-group class="mb-2" v-slot="{ ariaDescribedby }">
-            <b-form-radio-group
-              id="btn-radios-1"
-              class="w-100"
-              v-model="mem_representation"
-              :options="mem_representation_options"
-              button-variant="outline-secondary"
-              size="sm"
-              :aria-describedby="ariaDescribedby"
-              name="radios-btn-default"
-              buttons
-            />
-          </b-form-group>
+          <b-form-radio-group
+            :class="{ 'w-100': true, 'mb-1': true, border: dark }"
+            v-model="mem_representation"
+            :options="mem_representation_options"
+            :button-variant="dark ? 'dark' : 'outline-secondary'"
+            outline
+            size="sm"
+            buttons
+          />
         </div>
       </b-col>
 

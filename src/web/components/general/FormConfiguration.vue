@@ -202,12 +202,17 @@ export default {
       },
       set(value) {
         // update style
-        if (value) {
-          document.getElementsByTagName("body")[0].style =
-            "filter: invert(88%) hue-rotate(160deg) !important; background-color: #111 !important;"
-        } else {
-          document.getElementsByTagName("body")[0].style = ""
-        }
+
+        document.documentElement.setAttribute(
+          "data-bs-theme",
+          value ? "dark" : "light",
+        )
+        // if (value) {
+        //   document.getElementsByTagName("body")[0].style =
+        //     "filter: invert(88%) hue-rotate(160deg) !important; background-color: #111 !important;"
+        // } else {
+        //   document.getElementsByTagName("body")[0].style = ""
+        // }
 
         this.$emit("update:dark", value)
         localStorage.setItem("conf_dark_mode", value)
