@@ -24,10 +24,85 @@ import { vim, Vim } from "@replit/codemirror-vim"
 import { StreamLanguage } from "@codemirror/language"
 import { gas } from "@codemirror/legacy-modes/mode/gas"
 import { EditorView } from "codemirror"
+import { tags as t } from "@lezer/highlight"
+import { createTheme } from "@uiw/codemirror-themes"
 
 import { creator_ga } from "@/core/utils/creator_ga.mjs"
 
 import PopoverShortcuts from "./PopoverShortcuts.vue"
+
+// themes designed by @joseaverde
+const creatorLightTheme = createTheme({
+  theme: "light",
+  settings: {
+    background: "#ffffff",
+    backgroundImage: "",
+    foreground: "#202020",
+    caret: "#222222",
+    selection: "#33333340",
+    selectionMatch: "#33333340",
+    lineHighlight: "#8a91991a",
+    gutterBorder: "1px solid #33333310",
+    gutterBackground: "#f5f5f5",
+    gutterForeground: "#6c6c6c",
+  },
+  styles: [
+    { tag: t.comment, color: "#586e75", fontStyle: "italic" },
+    { tag: t.variableName, color: "#2aa198", fontWeight: "bold" },
+    {
+      tag: [t.string, t.special(t.brace)],
+      color: "#d33682",
+      fontStyle: "bold",
+    },
+    { tag: t.number, color: "#d33682" },
+    { tag: t.bool, color: "#d33682" },
+    { tag: t.null, color: "#d33682" },
+    { tag: t.keyword, color: "#b58900", fontWeight: "bold" },
+    { tag: t.operator, color: "#b58900", fontWeight: "bold" },
+    { tag: t.className, color: "#cb4b16", fontWeight: "bold" },
+    { tag: t.definition(t.typeName), color: "#5c6166" },
+    { tag: t.typeName, color: "#2aa198" },
+    { tag: t.angleBracket, color: "#89fb98" },
+    { tag: t.tagName, color: "#b58900", fontWeight: "bold" },
+    { tag: t.attributeName, color: "#cb4b16" },
+  ],
+})
+
+const creatorDarkTheme = createTheme({
+  theme: "dark",
+  settings: {
+    background: "#333333",
+    backgroundImage: "",
+    foreground: "#ffffff",
+    caret: "#f0f0f0",
+    selection: "#f0f0f040",
+    selectionMatch: "#f0f0f040",
+    lineHighlight: "#f0f0f020",
+    gutterBorder: "1px solid #ffffff10",
+    gutterBackground: "#202020",
+    gutterForeground: "#f0f0f0",
+  },
+  styles: [
+    { tag: t.comment, color: "#6dceeb", fontStyle: "italic" },
+    { tag: t.variableName, color: "#bdb76b", fontWeight: "bold" }, // directives (.text, etc)
+    {
+      tag: [t.string, t.special(t.brace)],
+      color: "#ffa0a0",
+      fontStyle: "bold",
+    },
+    { tag: t.number, color: "#ffa0a0" },
+    { tag: t.bool, color: "#ffa0a0" },
+    { tag: t.null, color: "#ffa0a0" },
+    { tag: t.keyword, color: "#f0e68c", fontWeight: "bold" },
+    { tag: t.operator, color: "#f0e68c", fontWeight: "bold" },
+    { tag: t.className, color: "#ffde9b", fontWeight: "bold" },
+    { tag: t.definition(t.typeName), color: "#5c6166" },
+    { tag: t.typeName, color: "#bdb76b" },
+    { tag: t.angleBracket, color: "#89fb98" },
+    { tag: t.tagName, color: "#f0e68c", fontWeight: "bold" },
+    { tag: t.attributeName, color: "#ffde9b" },
+  ],
+})
 
 export default {
   props: {
@@ -167,7 +242,6 @@ export default {
     :tab-size="4"
     :lang="lang"
     :extensions="extensions"
-    :dark="dark"
     @ready="handleReady"
   />
 </template>
@@ -175,6 +249,6 @@ export default {
 <style lang="scss" scoped>
 .codeArea {
   border: 1px solid #eee;
-  // font-size: 0.85em;
+  font-size: 0.85em;
 }
 </style>
