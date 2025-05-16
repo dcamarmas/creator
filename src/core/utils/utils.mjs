@@ -1,4 +1,7 @@
 "use strict";
+
+import { bi_BigIntTodouble, bi_BigIntTofloat } from "./bigint.mjs";
+
 /*
  *  Copyright 2018-2025 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
@@ -16,7 +19,6 @@
  *
  *  You should have received a copy of the GNU Lesser General Public License
  *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
- *
  */
 
 /*
@@ -44,10 +46,10 @@ export function checkTypeIEEE(s, e, m) {
 
     if (!m && !e) rd = s ? 1 << 3 : 1 << 4;
     else if (!e) rd = s ? 1 << 2 : 1 << 5;
-    else if (!(e ^ 255))
+    else if (!(e ^ 255)) {
         if (m) rd = s ? 1 << 8 : 1 << 9;
         else rd = s ? 1 << 0 : 1 << 7;
-    else rd = s ? 1 << 1 : 1 << 6;
+    } else rd = s ? 1 << 1 : 1 << 6;
     return rd;
 }
 function binaryStringToInt(bstring) {
@@ -117,15 +119,24 @@ export function float32_to_uint(value) {
     return new Uint32Array(buf)[0];
 }
 export function uint_to_float64(value0, value1) {
+    const buf = new ArrayBuffer(8);
+    const arr = new Uint32Array(buf);
+
+    // Case 1: Single BigInt argument
+    if (arguments[1] === undefined && typeof value0 === "bigint") {
+        arr[0] = Number(value0 & 0xffffffffn); // Lower 32 bits
+        arr[1] = Number(value0 >> 32n); // Upper 32 bits
+        return new Float64Array(buf)[0];
+    }
+
+    // Case 2: Two 32-bit integer arguments
     if (validInteger(value0) && validInteger(value1)) {
-        const buf = new ArrayBuffer(8);
-        const arr = new Uint32Array(buf);
         arr[0] = value0;
         arr[1] = value1;
         return new Float64Array(buf)[0];
-    } else {
-        return -1;
     }
+
+    return -1; // Invalid input
 }
 export function float64_to_uint(value) {
     const buf = new ArrayBuffer(8);
@@ -263,30 +274,82 @@ export function clean_string(value, prefix) {
     return value2;
 }
 
-/**
- * Converts a binary string to an array of hex bytes
- * @param {string} binary - Binary string (e.g., "00101010...")
- * @param {boolean} littleEndian - Whether to return bytes in little endian order
- * @returns {string[]} Array of hex bytes (e.g., ["2A", "F0", ...])
- */
-export function binary_to_hexbytes(binary, littleEndian = false) {
-    const hexBytes = [];
-    // Process 8 bits at a time to generate hex bytes
-    for (let i = 0; i < binary.length; i += 8) {
-        const byte = binary.substr(i, 8);
-        const hexByte = parseInt(byte, 2).toString(16).padStart(2, "0");
-        hexBytes.push(hexByte);
-    }
-
-    // Return in requested endianness
-    return littleEndian ? hexBytes.reverse() : hexBytes;
-}
-
-export function getHexTwosComplement(value, bits) {
+export function getHexTwosComplement(value, bits, padding = true) {
+    value = BigInt(value);
     // For both positive and negative values, apply the appropriate bitmask
     const mask = (1n << BigInt(bits)) - 1n;
     // Use the mask to get only the relevant bits
     const maskedValue = value & mask;
-    // Convert to hex and pad with leading zeros
-    return maskedValue.toString(16).padStart(bits / 4, '0');
-  }
+    // Convert to hex and conditionally pad with leading zeros
+    const hexValue = maskedValue.toString(16);
+    return padding ? hexValue.padStart(bits / 4, "0") : hexValue;
+}
+
+export function toNaNBoxedBigInt(double) {
+    // This function is adapted from a StackOverflow answer
+    // https://stackoverflow.com/questions/65538406/convert-javascript-number-to-float-single-precision-ieee-754-and-receive-integ
+    // Convert double to float32 and NaN-box it
+
+    double = Number(double);
+
+    const BYTES = 4;
+    // Buffer is like a raw view into memory
+    const buffer = new ArrayBuffer(BYTES);
+    // Float32Array: interpret bytes in the memory as f32 (IEEE-754) bits
+    const float32Arr = new Float32Array(buffer);
+    // UInt32Array: interpret bytes in the memory as unsigned integer bits.
+    // Important that we use unsigned here, otherwise the MSB would be interpreted as sign
+    const uint32Array = new Uint32Array(buffer);
+    // will convert double to float during assignment
+    float32Arr[0] = double;
+    // now read the same memory as unsigned integer value
+    const integerValue = uint32Array[0];
+
+    // Create NaN-boxed representation: upper 32 bits all 1's, lower 32 bits contain float32 representation
+    const upperBits = 0xffffffff;
+    const lowerBits = integerValue;
+
+    // Format as hex string with both parts
+    const hexUpper = upperBits.toString(16).padStart(8, "0");
+    const hexLower = lowerBits.toString(16).padStart(8, "0");
+    const hexString = "0x" + hexUpper + hexLower;
+
+    // Finally, convert to BigInt
+    const bigIntValue = BigInt(hexString);
+
+    return bigIntValue;
+}
+
+export function toJSNumber(bigIntValue) {
+    // There are two cases:
+    // 1. The value is a valid float64 representation (all numbers in javascript are float64)
+    // 2. The value is a NaN-boxed representation of a float32
+    //    (upper 32 bits are all 1's, lower 32 bits contain float32 representation)
+    bigIntValue = BigInt(bigIntValue);
+    // Special check for 0
+    if (bigIntValue === 0n) {
+        return 0;
+    }
+    const upperBits = bigIntValue >> 32n;
+    const lowerBits = bigIntValue & 0xffffffffn;
+    const isNaNBoxed = upperBits === 0xffffffffn;
+    const isFloat64 =
+        lowerBits <= 0x7ff0000000000000n || lowerBits >= 0x8000000000000000n;
+    if (isNaNBoxed) {
+        // Extract the lower 32 bits and convert to float32
+        return bi_BigIntTofloat(lowerBits);
+    } else if (isFloat64) {
+        // Convert to float64
+        return bi_BigIntTodouble(bigIntValue);
+    } else {
+        // If none of the above, return NaN
+        return NaN;
+    }
+}
+
+// // Usage
+// const doubleValue = 3.14;
+// const bigIntValue = toFloat32NaNBoxed(doubleValue);
+// console.log(bigIntValue.toString(16)); // BigInt representation
+// const jsNumber = toJSNumber(bigIntValue);
+// console.log(jsNumber); // Converted back to JavaScript number

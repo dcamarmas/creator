@@ -38,7 +38,7 @@ def process_section(section, symbols, section_name):
     data = section.data()
     for i in range(0, len(data), 4):
         addr = section['sh_addr'] + i
-        instruction = int.from_bytes(data[i:i+4], byteorder='little')
+        instruction = int.from_bytes(data[i:i+4], byteorder='big')
         
         instruction_entry = {
             "Break": None,
@@ -56,6 +56,8 @@ def process_section(section, symbols, section_name):
                         hex(addr), symbols[addr]['name'])
             
         instructions.append(instruction_entry)
+        print(f"Instruction at {hex(addr)}: {instruction_entry['loaded']}")
+        
     
     logging.info("Section processing complete - Instructions parsed: %d", len(instructions))
     return instructions
@@ -112,13 +114,10 @@ def process_data_section(section, symbols, section_name):
         # Get the block data
         block_data = data[start_offset:start_offset+block_size]
         
-        # Process data in 4-byte chunks and correct endianness
+        # Process data in 4-byte chunks
         hex_values = []
         for j in range(0, len(block_data), 4):
             chunk = block_data[j:j+4]
-            if len(chunk) == 4:
-                # Reverse the byte order for little-endian representation
-                chunk = chunk[::-1]
             hex_values.append(chunk.hex())
         
         # Join all hex values into one string

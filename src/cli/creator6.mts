@@ -202,11 +202,15 @@ function colorText(text: string, colorCode: string): string {
 }
 
 function decodeAndFormatInstruction(pc_value: string) {
-    const instruction = creator.dumpAddress(parseInt(pc_value, 16), 4);
+    const wordSize = creator.WORDSIZE / 8;
+    const instruction = creator.dumpAddress(parseInt(pc_value, 16), wordSize);
     const instructionInt = parseInt(instruction, 16);
-    const instructionBinary = instructionInt.toString(2).padStart(32, "0");
+    const instructionBinary = instructionInt
+        .toString(2)
+        .padStart(creator.WORDSIZE, "0");
     const instructionASM = decode_instruction(instructionBinary);
-    const instructionASMParts = instructionASM.instructionExecPartsWithProperNames;
+    const instructionASMParts =
+        instructionASM.instructionExecPartsWithProperNames;
     const instructionASMPartsString = instructionASMParts.join(",");
 
     return {
@@ -231,6 +235,10 @@ function saveCurrentState() {
 }
 
 function executeStep() {
+    if (creator.status.execution_index === -2) {
+        // Stop processing if execution is completed
+        return { output: ``, completed: true, error: false };
+    }
     // Save current state for unstepping
     saveCurrentState();
 
@@ -337,10 +345,11 @@ function displayInstructionsHeader() {
     );
 }
 
-function displayInstruction(instr, currentPC) {
+function displayInstruction(instr, currentPC, hideLibrary = false) {
     const address = instr.Address.padEnd(8);
     const label = (instr.Label || "").padEnd(11);
     let loaded = (instr.loaded || "").padEnd(23);
+    const loadedIsBinary = /^[01]+$/.test(loaded);
     let rightColumn = instr.user || "";
     const breakpointMark = instr.Break ? "●" : " ";
 
@@ -376,6 +385,17 @@ function displayInstruction(instr, currentPC) {
                 4,
             );
             rightColumn = `0x${rawInstruction.toUpperCase()}`;
+        }
+    }
+
+    // If the loaded instruction is binary, convert it to hex. This is only
+    // needed when loading a library.
+    if (loadedIsBinary && !BINARY_LOADED) {
+        if (hideLibrary) {
+            loaded = "********".padEnd(23);
+        } else {
+            const instructionHex = parseInt(loaded, 2).toString(16);
+            loaded = `0x${instructionHex.padStart(8, "0").toUpperCase().padEnd(21)}`;
         }
     }
 
@@ -599,7 +619,7 @@ function handleRunCommand(args: string[], silent = false) {
                 console.error("Error during execution.");
                 return;
             } else if (completed) {
-                console.log(colorText("\nProgram execution completed.", "32"));
+                console.log(colorText("Program execution completed.", "32"));
                 return;
             }
         }
@@ -726,7 +746,7 @@ function handleAboutCommand() {
         console.log(
             "║" +
                 colorText(" ⚙️  CREATOR CLI Version:", "33") +
-                ` ${CLI_VERSION}`.padEnd(35) +
+                ` ${CLI_VERSION}`.padEnd(36) +
                 "║",
         );
         console.log(
@@ -765,17 +785,15 @@ function handleAboutCommand() {
         console.log("╠" + "═".repeat(60) + "╣");
         console.log(
             "║" +
-                " CREATOR is a didactic and generic assembly simulator".padEnd(
-                    60,
-                ) +
+                " CREATOR is a didactic and generic assembly".padEnd(60) +
                 "║",
         );
         console.log(
-            "║" +
-                " built by the ARCOS group at the Universidad".padEnd(60) +
-                "║",
+            "║" + " simulator built by the ARCOS group at the".padEnd(60) + "║",
         );
-        console.log("║" + " Carlos III de Madrid (UC3M)".padEnd(60) + "║");
+        console.log(
+            "║" + " Carlos III de Madrid University (UC3M)".padEnd(60) + "║",
+        );
         console.log(
             "║" +
                 colorText(" © Copyright (C) 2025 CREATOR Team", "35").padEnd(
@@ -826,11 +844,13 @@ function handleInsnCommand() {
 
 function handleStepCommand() {
     const { output, completed, error } = executeStep();
-    console.log(output);
+    if (output) {
+        console.log(output);
+    }
     if (error) {
-        console.error("Error during execution.");
+        console.error(colorText("Error during execution.", "31"));
     } else if (completed) {
-        console.log("Program execution completed.");
+        console.log(colorText("Program execution completed.", "32"));
     }
 }
 
@@ -897,20 +917,17 @@ function displayRegistersByBank(regType) {
                 const reg = registerBank.elements[index];
                 const primaryName = reg.name[0];
                 const altNames = reg.name.slice(1).join(",");
-                
+
                 // Get the register's bit width and calculate hex digits needed
-                const nbits = reg.nbits
+                const nbits = reg.nbits;
                 const hexDigits = Math.ceil(nbits / 4);
                 let value;
                 if (regType === "fp_registers") {
+                    value = creator.dumpRegister(primaryName, "raw");
+                } else {
                     value = creator
-                    .dumpRegister(primaryName)
-                    .padStart(hexDigits, "0");
-                }
-                else {
-                    value = creator
-                    .dumpRegister(primaryName, "twoscomplement")
-                    .padStart(hexDigits, "0");
+                        .dumpRegister(primaryName, "twoscomplement")
+                        .padStart(hexDigits, "0");
                 }
                 const displayName = altNames
                     ? `${primaryName}(${altNames})`
@@ -920,7 +937,7 @@ function displayRegistersByBank(regType) {
                     displayName.padEnd(maxWidths[col]),
                     "36",
                 );
-                line += `${col > 0 ? "  " : ""}${coloredName}: 0x${value}`;
+                line += `${col > 0 ? "  " : ""}${coloredName}: ${`0x${value}`}`;
             }
         }
         console.log(line);
@@ -956,24 +973,21 @@ function handleRegCommand(args: string[]) {
     } else {
         // Handle displaying a specific register
         const regName = args[2];
-        
+
         // Get register bit width and calculate hex digits
         const regInfo = creator.getRegisterInfo(regName);
         const nbits = regInfo?.nbits || 32; // Default to 32 if not found
         const hexDigits = Math.ceil(nbits / 4);
         let value;
-        if (regInfo.type === "fp_registers") {
+        if (regInfo?.type === "fp_registers") {
+            value = creator.dumpRegister(regName, "raw");
+            console.log(`${regName}: 0x${value}`);
+        } else {
             value = creator
-            .dumpRegister(regName)
-            .padStart(hexDigits, "0");
+                .dumpRegister(regName, "twoscomplement")
+                .padStart(hexDigits, "0");
+            console.log(`${regName}: 0x${value}`);
         }
-        else {
-            value = creator
-            .dumpRegister(regName, "twoscomplement")
-            .padStart(hexDigits, "0");
-        }
-        
-        console.log(`${regName}: 0x${value}`);
     }
 }
 

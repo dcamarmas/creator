@@ -1,24 +1,15 @@
 version: 2.0.0
 
 arch_conf:
-    - name: Name
-      value: "RV32"
-    - name: Bits
-      value: "32"
-    - name: Description
-      value: "RISC-V is an instruction set architecture (ISA) based on the RISC type and its hardware is free. This architecture was created in 2010 at the University of California, Berkeley."
-    - name: Data Format
-      value: "big_endian"
-    - name: Memory Alignment
-      value: "1"
-    - name: Main Function
-      value: "main"
-    - name: Passing Convention
-      value: "1"
-    - name: Sensitive Register Name
-      value: "1"
-    - name: CommentPrefix
-      value: "#"
+    Name: RV32
+    Word Size: 32
+    Description: RISC-V is an instruction set architecture (ISA) based on the RISC type and its hardware is free. This architecture was created in 2010 at the University of California, Berkeley.
+    Endianness: little_endian
+    Memory Alignment: true
+    Main Function: main
+    Passing Convention: true
+    Sensitive Register Name: true
+    CommentPrefix: "#"
 
 extensions:
     I:
@@ -2159,7 +2150,7 @@ instructions:
                 value: "011"
               - field: rd # We're overriding the rd field from the template
                 type: DFP-Reg
-          definition: "var isnotalign = capi_bad_align(rs1+imm, 'd');\n if (isnotalign) { capi_raise('The memory must be align'); }\n var val1 = capi_mem_read(rs1+imm, 'w', rd_name);\n var val2 = capi_mem_read(rs1+imm+4n, 'w', rd_name);\n var buf = new ArrayBuffer(8);\n var arr = (new Uint32Array(buf));\n arr[1] = Number(val1);\n arr[0] = Number(val2);\n rd = (new Float64Array(buf))[0];"
+          definition: "var isnotalign = capi_bad_align(rs1+imm, 'd');\n if (isnotalign) { capi_raise('The memory must be align'); }\nrd = capi_mem_read(rs1+imm, 'd', rd_name);\n rd = capi_uint2float64(rd);"
 
           # R-type instructions
         - name: fadd.d

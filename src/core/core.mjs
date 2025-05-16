@@ -15,18 +15,23 @@
  *
  *  You should have received a copy of the GNU Lesser General Public License
  *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
- *
  */
 "use strict";
 
 import { initCAPI } from "./capi/initCAPI.mjs";
 
 import {
-    bi_BigIntTofloat,
     bi_BigIntTodouble,
+    bi_BigIntTofloat,
     register_value_deserialize,
 } from "./utils/bigint.mjs";
-import { float2bin, double2bin, bin2hex, hex2double, getHexTwosComplement } from "./utils/utils.mjs";
+import {
+    bin2hex,
+    double2bin,
+    float2bin,
+    getHexTwosComplement,
+    hex2double,
+} from "./utils/utils.mjs";
 
 import { logger } from "./utils/creator_logger.mjs";
 import {
@@ -36,12 +41,12 @@ import {
 } from "./compiler/compiler.mjs";
 import { executeProgramOneShot } from "./executor/executor.mjs";
 import {
-    main_memory_get_addresses,
-    main_memory_read_value,
-    main_memory_read_default_value,
     main_memory,
-    main_memory_serialize,
+    main_memory_get_addresses,
+    main_memory_read_default_value,
+    main_memory_read_value,
     main_memory_restore,
+    main_memory_serialize,
 } from "./memory/memoryCore.mjs";
 import * as wasm from "./compiler/deno/creator_compiler.js";
 import yaml from "js-yaml";
@@ -64,9 +69,6 @@ export let architecture = {
 };
 
 export let app;
-const word_size_bits = 32; // TODO: load from architecture
-export const word_size_bytes = word_size_bits / 8; // TODO: load from architecture
-export const register_size_bits = 64; //TODO: load from architecture
 
 export let status = {
     execution_init: 1,
@@ -115,6 +117,10 @@ export const stats = [
 
 export let arch;
 export const ARCHITECTURE_VERSION = "2.0";
+export let ENDIANNESS;
+export let WORDSIZE;
+export let REGISTERS;
+export const register_size_bits = 64; //TODO: load from architecture
 
 // TODO: Make sure these variables are all needed
 // let architecture_available = []
@@ -157,11 +163,14 @@ function load_arch_select(cfg) {
 
     const auxArchitecture = cfg;
     architecture = register_value_deserialize(auxArchitecture);
+    ENDIANNESS = architecture.arch_conf[3].value;
+    WORDSIZE = architecture.arch_conf[1].value;
+    REGISTERS = architecture.components;
 
     architecture_hash = [];
-    for (let i = 0; i < architecture.components.length; i++) {
+    for (let i = 0; i < REGISTERS.length; i++) {
         architecture_hash.push({
-            name: architecture.components[i].name,
+            name: REGISTERS[i].name,
             index: i,
         });
     }
@@ -441,8 +450,7 @@ function processInstructions(architectureObj) {
                 architectureObj.instructionsProcessed.push(
                     instructionWithoutFields,
                 );
-            }
-            // If no optional fields, just add the instruction
+            } // If no optional fields, just add the instruction
             else if (optionalFields.length === 0) {
                 const fullInstruction = buildCompleteInstruction(
                     instruction,
@@ -842,6 +850,42 @@ function isVersionSupported(architectureObj) {
 }
 
 /**
+ * Transform architecture configuration from new format to old format
+ * @param {Object} architectureObj - The architecture object to transform
+ * @returns {Object} - Transformed architecture object
+ */
+function transformArchConf(architectureObj) {
+    const transformed = { ...architectureObj };
+    const newArchConf = architectureObj.arch_conf;
+    const oldArchConf = [];
+    // Add other configuration elements that might be in the new format
+    // This converts any remaining properties to the old array format
+    Object.entries(newArchConf).forEach(([key, value]) => {
+        // If value is bool, convert to "1" or "0"
+        if (typeof value === "boolean") {
+            value = value ? "1" : "0";
+        }
+        // If key is "Word Size", convert it to "bits"
+        if (key === "Word Size") {
+            key = "Bits";
+        }
+        if (key === "Endianness") {
+            key = "Data Format";
+        }
+        // Add remaining properties as individual entries
+        oldArchConf.push({
+            name: key,
+            value: value,
+        });
+    });
+
+    // Replace with transformed arch_conf
+    transformed.arch_conf = oldArchConf;
+
+    return transformed;
+}
+
+/**
  * Load architecture from YAML string and prepare for use
  * @param {string} architectureYaml - YAML string containing architecture definition
  * @param {boolean} skipCompiler - Whether to skip initializing the WASM compiler
@@ -870,8 +914,14 @@ export function newArchitectureLoad(
             };
         }
 
+        // Transform arch_conf to the format expected by the code
+        const transformedArchObj = transformArchConf(architectureObj);
+
         // Determine which instruction sets to load
-        const isaResult = determineInstructionSetsToLoad(architectureObj, isa);
+        const isaResult = determineInstructionSetsToLoad(
+            transformedArchObj,
+            isa,
+        );
         if (isaResult.status === "error") {
             return {
                 errorcode: "invalid_isa",
@@ -884,7 +934,7 @@ export function newArchitectureLoad(
 
         // Collect instructions from selected sets
         const updatedArchObj = collectInstructionsFromSets(
-            architectureObj,
+            transformedArchObj,
             isaResult.instructionSets,
         );
 
@@ -986,66 +1036,62 @@ export function get_state() {
         msg: "",
     };
 
-    let c_name;
-    let e_name;
-    let elto_value;
-    let elto_dvalue;
-    let elto_string;
-
     // dump registers
-    for (let i = 0; i < architecture.components.length; i++) {
-        c_name = architecture.components[i].name;
-        if (typeof c_name === "undefined") {
+    for (let i = 0; i < REGISTERS.length; i++) {
+        const component = REGISTERS[i];
+        const componentName = component.name;
+        const componentType = component.type;
+        const isDoublePrecisionLinked =
+            component.double_precision === true &&
+            component.double_precision_type === "linked";
+
+        if (typeof componentName === "undefined") {
             return ret;
         }
-        c_name = c_name
+
+        // Create abbreviated component name (e.g. "Floating Point Registers" -> "fpr")
+        const shortName = componentName
             .split(" ")
             .map(i => i.charAt(0))
             .join("")
             .toLowerCase();
 
-        for (let j = 0; j < architecture.components[i].elements.length; j++) {
-            // get value
-            e_name = architecture.components[i].elements[j].name;
-            elto_value = architecture.components[i].elements[j].value;
+        for (let j = 0; j < component.elements.length; j++) {
+            const element = component.elements[j];
+            const elementName = element.name;
+            const currentValue = element.value;
+            const registerSize = parseInt(element.nbits, 10);
+            let defaultValue;
 
-            //get default value
-            if (
-                architecture.components[i].double_precision === true &&
-                architecture.components[i].double_precision_type == "linked"
-            ) {
-                let aux_value;
-                let aux_sim1;
-                let aux_sim2;
+            // Get default value based on register type
+            if (isDoublePrecisionLinked) {
+                // Handle linked double precision floating point registers
+                let auxValue;
+                let simpleReg1Value;
+                let simpleReg2Value;
 
+                // Find the linked registers' default values
                 for (let a = 0; a < architecture_hash.length; a++) {
-                    for (
-                        let b = 0;
-                        b < architecture.components[a].elements.length;
-                        b++
-                    ) {
-                        if (
-                            architecture.components[a].elements[b].name ==
-                            architecture.components[i].elements[j].simple_reg[0]
-                        ) {
-                            aux_sim1 = bin2hex(
+                    const linkedComponent = REGISTERS[a];
+
+                    for (let b = 0; b < linkedComponent.elements.length; b++) {
+                        const linkedElement = linkedComponent.elements[b];
+
+                        if (linkedElement.name == element.simple_reg[0]) {
+                            simpleReg1Value = bin2hex(
                                 float2bin(
                                     bi_BigIntTofloat(
-                                        architecture.components[a].elements[b]
-                                            .default_value,
+                                        linkedElement.default_value,
                                     ),
                                 ),
                             );
                         }
-                        if (
-                            architecture.components[a].elements[b].name ==
-                            architecture.components[i].elements[j].simple_reg[1]
-                        ) {
-                            aux_sim2 = bin2hex(
+
+                        if (linkedElement.name == element.simple_reg[1]) {
+                            simpleReg2Value = bin2hex(
                                 float2bin(
                                     bi_BigIntTofloat(
-                                        architecture.components[a].elements[b]
-                                            .default_value,
+                                        linkedElement.default_value,
                                     ),
                                 ),
                             );
@@ -1053,60 +1099,74 @@ export function get_state() {
                     }
                 }
 
-                aux_value = aux_sim1 + aux_sim2;
-                elto_dvalue = hex2double("0x" + aux_value);
+                auxValue = simpleReg1Value + simpleReg2Value;
+                defaultValue = hex2double("0x" + auxValue);
             } else {
-                elto_dvalue =
-                    architecture.components[i].elements[j].default_value;
+                defaultValue = element.default_value;
             }
 
-            // skip default results
-            if (typeof elto_dvalue === "undefined") {
+            // Skip if default value is undefined or matches current value
+            if (
+                typeof defaultValue === "undefined" ||
+                currentValue == defaultValue
+            ) {
                 continue;
             }
-            if (elto_value == elto_dvalue) {
-                continue;
-            }
-
-            // value != default value => dumpt it
-            elto_string = "0x" + elto_value.toString(16);
-            if (architecture.components[i].type == "fp_registers") {
-                if (architecture.components[i].double_precision === false) {
-                    elto_string =
-                        "0x" + bin2hex(float2bin(bi_BigIntTofloat(elto_value)));
-                }
-                if (architecture.components[i].double_precision === true) {
-                    elto_string =
+            let formattedValue;
+            if (componentType === "fp_registers") {
+                if (component.double_precision === false) {
+                    formattedValue =
                         "0x" +
-                        bin2hex(double2bin(bi_BigIntTodouble(elto_value)));
+                        bin2hex(float2bin(bi_BigIntTofloat(currentValue)));
+                } else if (component.double_precision === true) {
+                    formattedValue =
+                        "0x" +
+                        bin2hex(double2bin(bi_BigIntTodouble(currentValue)));
                 }
+            } else {
+                formattedValue =
+                    "0x" +
+                    getHexTwosComplement(currentValue, registerSize, false);
             }
 
+            // Add to output
             ret.msg =
-                ret.msg + c_name + "[" + e_name + "]:" + elto_string + "; ";
+                ret.msg +
+                shortName +
+                "[" +
+                elementName +
+                "]:" +
+                formattedValue +
+                "; ";
         }
     }
 
     // dump memory
-    const addrs = main_memory_get_addresses();
-    for (let i = 0; i < addrs.length; i++) {
-        if (addrs[i] >= parseInt(architecture.memory_layout[3].value)) {
+    const addressList = main_memory_get_addresses();
+    const dataSegmentStart = parseInt(architecture.memory_layout[3].value);
+
+    for (let i = 0; i < addressList.length; i++) {
+        const address = addressList[i];
+
+        // Skip if in data segment
+        if (address >= dataSegmentStart) {
             continue;
         }
 
-        elto_value = main_memory_read_value(addrs[i]);
-        elto_dvalue = main_memory_read_default_value(addrs[i]);
+        const memoryValue = main_memory_read_value(address);
+        const defaultMemoryValue = main_memory_read_default_value(address);
 
-        if (elto_value != elto_dvalue) {
-            const addr_string = "0x" + parseInt(addrs[i]).toString(16);
-            elto_string = "0x" + elto_value;
+        // Only show changed memory values
+        if (memoryValue != defaultMemoryValue) {
+            const formattedAddress = "0x" + parseInt(address).toString(16);
+            const formattedValue = "0x" + memoryValue;
             ret.msg =
                 ret.msg +
                 "memory[" +
-                addr_string +
+                formattedAddress +
                 "]" +
                 ":" +
-                elto_string +
+                formattedValue +
                 "; ";
         }
     }
@@ -1137,66 +1197,62 @@ export function getState() {
         msg: "",
     };
 
-    let c_name;
-    let e_name;
-    let elto_value;
-    let elto_dvalue;
-    let elto_string;
-
     // dump registers
-    for (let i = 0; i < architecture.components.length; i++) {
-        c_name = architecture.components[i].name;
-        if (typeof c_name === "undefined") {
+    for (let i = 0; i < REGISTERS.length; i++) {
+        const component = REGISTERS[i];
+        const componentName = component.name;
+        const componentType = component.type;
+        const isDoublePrecisionLinked =
+            component.double_precision === true &&
+            component.double_precision_type === "linked";
+
+        if (typeof componentName === "undefined") {
             return ret;
         }
-        c_name = c_name
+
+        // Create abbreviated component name (e.g. "Floating Point Registers" -> "fpr")
+        const shortName = componentName
             .split(" ")
             .map(i => i.charAt(0))
             .join("")
             .toLowerCase();
 
-        for (let j = 0; j < architecture.components[i].elements.length; j++) {
-            // get value
-            e_name = architecture.components[i].elements[j].name;
-            elto_value = architecture.components[i].elements[j].value;
+        for (let j = 0; j < component.elements.length; j++) {
+            const element = component.elements[j];
+            const elementName = element.name;
+            const currentValue = element.value;
+            const registerSize = parseInt(element.nbits, 10);
+            let defaultValue;
 
-            //get default value
-            if (
-                architecture.components[i].double_precision === true &&
-                architecture.components[i].double_precision_type == "linked"
-            ) {
-                let aux_value;
-                let aux_sim1;
-                let aux_sim2;
+            // Get default value based on register type
+            if (isDoublePrecisionLinked) {
+                // Handle linked double precision floating point registers
+                let auxValue;
+                let simpleReg1Value;
+                let simpleReg2Value;
 
+                // Find the linked registers' default values
                 for (let a = 0; a < architecture_hash.length; a++) {
-                    for (
-                        let b = 0;
-                        b < architecture.components[a].elements.length;
-                        b++
-                    ) {
-                        if (
-                            architecture.components[a].elements[b].name ==
-                            architecture.components[i].elements[j].simple_reg[0]
-                        ) {
-                            aux_sim1 = bin2hex(
+                    const linkedComponent = REGISTERS[a];
+
+                    for (let b = 0; b < linkedComponent.elements.length; b++) {
+                        const linkedElement = linkedComponent.elements[b];
+
+                        if (linkedElement.name == element.simple_reg[0]) {
+                            simpleReg1Value = bin2hex(
                                 float2bin(
                                     bi_BigIntTofloat(
-                                        architecture.components[a].elements[b]
-                                            .default_value,
+                                        linkedElement.default_value,
                                     ),
                                 ),
                             );
                         }
-                        if (
-                            architecture.components[a].elements[b].name ==
-                            architecture.components[i].elements[j].simple_reg[1]
-                        ) {
-                            aux_sim2 = bin2hex(
+
+                        if (linkedElement.name == element.simple_reg[1]) {
+                            simpleReg2Value = bin2hex(
                                 float2bin(
                                     bi_BigIntTofloat(
-                                        architecture.components[a].elements[b]
-                                            .default_value,
+                                        linkedElement.default_value,
                                     ),
                                 ),
                             );
@@ -1204,60 +1260,75 @@ export function getState() {
                     }
                 }
 
-                aux_value = aux_sim1 + aux_sim2;
-                elto_dvalue = hex2double("0x" + aux_value);
+                auxValue = simpleReg1Value + simpleReg2Value;
+                defaultValue = hex2double("0x" + auxValue);
             } else {
-                elto_dvalue =
-                    architecture.components[i].elements[j].default_value;
+                defaultValue = element.default_value;
             }
 
-            // skip default results
-            if (typeof elto_dvalue === "undefined") {
+            // Skip if default value is undefined or matches current value
+            if (
+                typeof defaultValue === "undefined" ||
+                currentValue == defaultValue
+            ) {
                 continue;
             }
-            if (elto_value == elto_dvalue) {
-                continue;
-            }
-
-            // value != default value => dumpt it
-            elto_string = "0x" + elto_value.toString(16);
-            if (architecture.components[i].type == "fp_registers") {
-                if (architecture.components[i].double_precision === false) {
-                    elto_string =
-                        "0x" + bin2hex(float2bin(bi_BigIntTofloat(elto_value)));
-                }
-                if (architecture.components[i].double_precision === true) {
-                    elto_string =
+            let formattedValue;
+            if (componentType === "fp_registers") {
+                if (component.double_precision === false) {
+                    formattedValue =
                         "0x" +
-                        bin2hex(double2bin(bi_BigIntTodouble(elto_value)));
+                        bin2hex(float2bin(bi_BigIntTofloat(currentValue)));
+                } else if (component.double_precision === true) {
+                    formattedValue =
+                        "0x" +
+                        bin2hex(double2bin(bi_BigIntTodouble(currentValue)));
                 }
+            } else if (componentType === "int_registers") {
+                formattedValue = getHexTwosComplement(
+                    currentValue,
+                    registerSize,
+                );
             }
 
+            // Add to output
             ret.msg =
-                ret.msg + c_name + "[" + e_name + "]:" + elto_string + "\n";
+                ret.msg +
+                shortName +
+                "[" +
+                elementName +
+                "]:" +
+                formattedValue +
+                "\n";
         }
     }
 
     // dump memory
-    const addrs = main_memory_get_addresses();
-    for (let i = 0; i < addrs.length; i++) {
-        if (addrs[i] >= parseInt(architecture.memory_layout[3].value)) {
+    const addressList = main_memory_get_addresses();
+    const dataSegmentStart = parseInt(architecture.memory_layout[3].value);
+
+    for (let i = 0; i < addressList.length; i++) {
+        const address = addressList[i];
+
+        // Skip if in data segment
+        if (address >= dataSegmentStart) {
             continue;
         }
 
-        elto_value = main_memory_read_value(addrs[i]);
-        elto_dvalue = main_memory_read_default_value(addrs[i]);
+        const memoryValue = main_memory_read_value(address);
+        const defaultMemoryValue = main_memory_read_default_value(address);
 
-        if (elto_value != elto_dvalue) {
-            const addr_string = "0x" + parseInt(addrs[i]).toString(16);
-            elto_string = "0x" + elto_value;
+        // Only show changed memory values
+        if (memoryValue != defaultMemoryValue) {
+            const formattedAddress = "0x" + parseInt(address).toString(16);
+            const formattedValue = "0x" + memoryValue;
             ret.msg =
                 ret.msg +
                 "memory[" +
-                addr_string +
+                formattedAddress +
                 "]" +
                 ":" +
-                elto_string +
+                formattedValue +
                 "\n";
         }
     }
@@ -1621,24 +1692,35 @@ export function load_binary_file(bin_str) {
     return ret;
 }
 
-export function dumpRegister(register, format="default") {
+export function dumpRegister(register, format = "hex") {
     if (typeof register === "undefined") {
         return ret;
     }
 
     const result = crex_findReg(register);
-    const registerSize = architecture.components[result.indexComp].elements[result.indexElem].nbits;
+    const registerSize =
+        REGISTERS[result.indexComp].elements[result.indexElem].nbits;
 
     if (result.match === 1) {
-        if (format === "default") {
-            let value = readRegister(result.indexComp, result.indexElem).toString(
-                16,
-            );
+        if (format === "hex") {
+            let value = readRegister(
+                result.indexComp,
+                result.indexElem,
+            ).toString(16);
             return value;
         } else if (format === "twoscomplement") {
             let value = readRegister(result.indexComp, result.indexElem);
             let twosComplement = getHexTwosComplement(value, registerSize);
             return twosComplement;
+        } else if (format === "raw") {
+            let value =
+                REGISTERS[result.indexComp].elements[
+                    result.indexElem
+                ].value.toString(16);
+            return value;
+        } else if (format === "number") {
+            let value = readRegister(result.indexComp, result.indexElem);
+            return value;
         }
     }
     return null;
@@ -1646,18 +1728,16 @@ export function dumpRegister(register, format="default") {
 
 export function getRegisterTypes() {
     // Extract unique register types from architecture components
-    const registerTypes = architecture.components
-        .filter(component => component.type.includes("registers"))
-        .map(component => component.type);
+    const registerTypes = REGISTERS.filter(component =>
+        component.type.includes("registers"),
+    ).map(component => component.type);
 
     return registerTypes;
 }
 
 export function getRegistersByBank(regType) {
     // Find the component with the specified register type
-    const component = architecture.components.find(
-        comp => comp.type === regType,
-    );
+    const component = REGISTERS.find(comp => comp.type === regType);
 
     if (!component) {
         return null;
@@ -1674,7 +1754,7 @@ export function getRegistersByBank(regType) {
 
 export function getRegisterInfo(regName) {
     // Find the register in all components
-    for (const component of architecture.components) {
+    for (const component of REGISTERS) {
         if (component.type.includes("registers")) {
             for (const element of component.elements) {
                 // Check if this register matches by any of its names
@@ -1682,12 +1762,12 @@ export function getRegisterInfo(regName) {
                     return {
                         ...element,
                         type: component.type,
-                        nbits: element.nbits
+                        nbits: element.nbits,
                     };
                 }
             }
         }
     }
-    
+
     return null;
 }

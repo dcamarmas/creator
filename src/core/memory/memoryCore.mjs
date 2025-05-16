@@ -18,10 +18,10 @@
  *
  */
 "use strict";
-import { word_size_bytes } from "../core.mjs";
+import { ENDIANNESS, WORDSIZE } from "../core.mjs";
 import { creator_memory_value_by_type } from "./memoryManager.mjs";
 import { creator_memory_updateall } from "./memoryViewManager.mjs";
-import { hex2float } from "../utils/utils.mjs";
+import { hex2float, hex2double } from "../utils/utils.mjs";
 
 export let main_memory = [];
 //  [
@@ -168,15 +168,30 @@ export function main_memory_read_default_value(addr) {
 function main_memory_read_nbytes(addr, n) {
     addr = BigInt(addr);
     let value = "";
-    for (let i = 0n; i < BigInt(n); i++) {
-        value += main_memory_read_value(addr + i);
+
+    if (ENDIANNESS === "big_endian") {
+        // Big-endian: concatenate bytes from low address to high address
+        for (let i = 0n; i < BigInt(n); i++) {
+            value += main_memory_read_value(addr + i);
+        }
+    } else {
+        // Little-endian: concatenate bytes from high address to low address
+        for (let i = BigInt(n) - 1n; i >= 0n; i--) {
+            value += main_memory_read_value(addr + i);
+        }
     }
 
     return value;
 }
-function main_memory_write_nbytes(addr, value, n) {
+
+function main_memory_write_nbytes(addr, value, n, type = null) {
     const value_str = value.toString(16).padStart(2 * n, "0");
-    const chunks = value_str.match(/.{1,2}/g);
+    let chunks = value_str.match(/.{1,2}/g);
+
+    if (ENDIANNESS === "little_endian") {
+        // Reverse the order of chunks for little-endian
+        chunks = chunks.slice(0, n).reverse();
+    }
 
     for (let i = 0n; i < BigInt(n); i++) {
         main_memory_write_value(BigInt(addr) + i, chunks[i]);
@@ -207,6 +222,7 @@ function create_memory_read_string(addr) {
 
 export function main_memory_read_bydatatype(addr, type) {
     let ret = 0n;
+    const word_size_bytes = WORDSIZE / 8;
 
     switch (type) {
         case "b":
@@ -231,10 +247,15 @@ export function main_memory_read_bydatatype(addr, type) {
             ret = BigInt("0x" + main_memory_read_nbytes(addr, word_size_bytes));
             break;
 
-        case "float":
-            ret = "0x" + main_memory_read_nbytes(addr, word_size_bytes);
-            ret = hex2float(ret);
-            break;
+        // case "float":
+        //     ret = "0x" + main_memory_read_nbytes(addr, word_size_bytes);
+        //     ret = hex2float(ret);
+        //     break;
+
+        // case "float64":
+        //     ret = "0x" + main_memory_read_nbytes(addr, word_size_bytes * 2);
+        //     ret = hex2double(ret);
+        //     break;
 
         case "d":
         case "double":
@@ -319,6 +340,7 @@ export function main_memory_write_bydatatype(addr, value, type, value_human) {
     let ret = 0x0;
     let size = 0;
     let convertedValue;
+    const word_size_bytes = WORDSIZE / 8;
 
     // store byte to byte...
     switch (type) {

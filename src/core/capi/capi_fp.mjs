@@ -15,25 +15,24 @@
  *
  *  You should have received a copy of the GNU Lesser General Public License
  *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
- *
  */
 "use strict";
 import { register_size_bits } from "../core.mjs";
 import {
     bin2hex,
-    double2bin,
-    uint_to_float32,
-    float32_to_uint,
-    uint_to_float64,
-    float64_to_uint,
     checkTypeIEEE,
+    double2bin,
     float2bin,
+    float32_to_uint,
+    float64_to_uint,
+    uint_to_float32,
+    uint_to_float64,
 } from "../utils/utils.mjs";
 import { console_log } from "../utils/creator_logger.mjs";
 
-export function capi_uint2int(value) {
+export function capi_uint2int(value, bits = register_size_bits) {
     // This function is exported to be used in capi_validation.js
-    return BigInt.asIntN(register_size_bits, BigInt(value));
+    return BigInt.asIntN(bits, BigInt(value));
 }
 
 export const CAPI_FP = {
@@ -57,8 +56,8 @@ export const CAPI_FP = {
         return float32_to_uint(value);
     },
 
-    int2uint: function (value) {
-        return BigInt.asUintN(register_size_bits, BigInt(value));
+    int2uint: function (value, bits = register_size_bits) {
+        return BigInt.asUintN(bits, BigInt(value));
     },
 
     uint2int: function (value) {

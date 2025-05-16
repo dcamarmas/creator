@@ -15,22 +15,21 @@
  *
  *  You should have received a copy of the GNU Lesser General Public License
  *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
- *
  */
 "use strict";
 import {
-    bi_intToBigInt,
-    bi_BigIntTofloat,
     bi_BigIntTodouble,
-    bi_floatToBigInt,
+    bi_BigIntTofloat,
     bi_doubleToBigInt,
+    bi_floatToBigInt,
 } from "../utils/bigint.mjs";
-import { architecture, status } from "../core.mjs";
+import { architecture, status, REGISTERS } from "../core.mjs";
 import { packExecute, writeStackLimit } from "../executor/executor.mjs";
 import { instructions } from "../compiler/compiler.mjs";
 import { updateDouble, updateSimple } from "./fpRegisterSync.mjs";
 import { creator_callstack_writeRegister } from "../sentinel/sentinel.mjs";
 import { logger } from "../utils/creator_logger.mjs";
+import { toJSNumber, toNaNBoxedBigInt } from "../utils/utils.mjs";
 
 // eslint-disable-next-line max-lines-per-function
 export function readRegister(indexComp, indexElem, register_type) {
@@ -43,9 +42,8 @@ export function readRegister(indexComp, indexElem, register_type) {
     };
 
     if (
-        architecture.components[indexComp].elements[
-            indexElem
-        ].properties.includes("read") !== true
+        REGISTERS[indexComp].elements[indexElem].properties.includes("read") !==
+        true
     ) {
         for (let i = 0; i < instructions.length; i++) {
             draw.space.push(i);
@@ -55,9 +53,7 @@ export function readRegister(indexComp, indexElem, register_type) {
         throw packExecute(
             true,
             "The register " +
-                architecture.components[indexComp].elements[
-                    indexElem
-                ].name.join(" | ") +
+                REGISTERS[indexComp].elements[indexElem].name.join(" | ") +
                 " cannot be read",
             "danger",
             null,
@@ -65,36 +61,41 @@ export function readRegister(indexComp, indexElem, register_type) {
     }
 
     if (
-        architecture.components[indexComp].type == "ctrl_registers" ||
-        architecture.components[indexComp].type == "int_registers"
+        REGISTERS[indexComp].type == "ctrl_registers" ||
+        REGISTERS[indexComp].type == "int_registers"
     ) {
         logger.debug(
-            `Reading ${architecture.components[indexComp].type} [${indexComp}][${indexElem}] ${architecture.components[indexComp].elements[indexElem].name.join("|")}: 0x${architecture.components[indexComp].elements[indexElem].value.toString(16)}`,
+            `Reading ${
+                REGISTERS[indexComp].type
+            } [${indexComp}][${indexElem}] ${REGISTERS[indexComp].elements[
+                indexElem
+            ].name.join("|")}: 0x${REGISTERS[indexComp].elements[
+                indexElem
+            ].value.toString(16)}`,
         );
-        return architecture.components[indexComp].elements[indexElem].value;
-        
+        return REGISTERS[indexComp].elements[indexElem].value;
     }
 
-    if (architecture.components[indexComp].type == "fp_registers") {
-        if (architecture.components[indexComp].double_precision === false) {
-            const value = bi_BigIntTofloat(
-                architecture.components[indexComp].elements[indexElem].value,
+    if (REGISTERS[indexComp].type == "fp_registers") {
+        if (REGISTERS[indexComp].double_precision === false) {
+            const value = toJSNumber(
+                REGISTERS[indexComp].elements[indexElem].value,
             );
             logger.debug(
-                `Reading float register [${indexComp}][${indexElem}] ${architecture.components[indexComp].elements[indexElem].name.join("|")}: ${value}`,
+                `Reading float register [${indexComp}][${indexElem}] ${REGISTERS[
+                    indexComp
+                ].elements[indexElem].name.join("|")}: ${value}`,
             );
             return value;
         } else {
-            if (
-                architecture.components[indexComp].double_precision_type ==
-                "linked"
-            ) {
-                const value = bi_BigIntTodouble(
-                    architecture.components[indexComp].elements[indexElem]
-                        .value,
+            if (REGISTERS[indexComp].double_precision_type == "linked") {
+                const value = toJSNumber(
+                    REGISTERS[indexComp].elements[indexElem].value,
                 );
                 logger.debug(
-                    `Reading linked double register [${indexComp}][${indexElem}] ${architecture.components[indexComp].elements[indexElem].name.join("|")}: ${value}`,
+                    `Reading linked double register [${indexComp}][${indexElem}] ${REGISTERS[
+                        indexComp
+                    ].elements[indexElem].name.join("|")}: ${value}`,
                 );
                 return value;
             } else {
@@ -102,22 +103,24 @@ export function readRegister(indexComp, indexElem, register_type) {
                     register_type = "DFP-Reg";
                 }
                 if (register_type === "SFP-Reg") {
-                    const value = bi_BigIntTofloat(
-                        architecture.components[indexComp].elements[indexElem]
-                            .value,
+                    const value = toJSNumber(
+                        REGISTERS[indexComp].elements[indexElem].value,
                     );
                     logger.debug(
-                        `Reading single-precision register [${indexComp}][${indexElem}] ${architecture.components[indexComp].elements[indexElem].name.join("|")}: ${value}`,
+                        `Reading single-precision register [${indexComp}][${indexElem}] ${REGISTERS[
+                            indexComp
+                        ].elements[indexElem].name.join("|")}: ${value}`,
                     );
                     return value;
                 }
                 if (register_type === "DFP-Reg") {
-                    const value = bi_BigIntTodouble(
-                        architecture.components[indexComp].elements[indexElem]
-                            .value,
+                    const value = toJSNumber(
+                        REGISTERS[indexComp].elements[indexElem].value,
                     );
                     logger.debug(
-                        `Reading double-precision register [${indexComp}][${indexElem}] ${architecture.components[indexComp].elements[indexElem].name.join("|")}: ${value}`,
+                        `Reading double-precision register [${indexComp}][${indexElem}] ${REGISTERS[
+                            indexComp
+                        ].elements[indexElem].name.join("|")}: ${value}`,
                     );
                     return value;
                 }
@@ -135,24 +138,20 @@ export function writeRegister(value, indexComp, indexElem, register_type) {
         flash: [],
     };
 
-    if (value == null) {
+    if (value === null) {
         return;
     }
 
-    if (
-        architecture.components[indexComp].type == "int_registers" ||
-        architecture.components[indexComp].type == "ctrl_registers"
-    ) {
-        if (
-            architecture.components[indexComp].elements[
-                indexElem
-            ].properties.includes("write") !== true
-        ) {
-            if (
-                architecture.components[indexComp].elements[
-                    indexElem
-                ].properties.includes("ignore_write") !== false
-            ) {
+    const component = REGISTERS[indexComp];
+    const element = component.elements[indexElem];
+    const properties = element.properties;
+    const componentType = component.type;
+    const elementName = element.name.join(" | ");
+    const stackStart = architecture.memory_layout[4].value;
+
+    if (componentType == "int_registers" || componentType == "ctrl_registers") {
+        if (!properties.includes("write")) {
+            if (properties.includes("ignore_write")) {
                 return;
             }
 
@@ -163,72 +162,49 @@ export function writeRegister(value, indexComp, indexElem, register_type) {
 
             throw packExecute(
                 true,
-                "The register " +
-                    architecture.components[indexComp].elements[
-                        indexElem
-                    ].name.join(" | ") +
-                    " cannot be written",
+                "The register " + elementName + " cannot be written",
                 "danger",
                 null,
             );
         }
-        
-        architecture.components[indexComp].elements[indexElem].value = value;
+
+        element.value = value;
         creator_callstack_writeRegister(indexComp, indexElem);
 
         if (
-            architecture.components[indexComp].elements[
-                indexElem
-            ].properties.includes("stack_pointer") !== false &&
-            value != parseInt(architecture.memory_layout[4].value)
+            properties.includes("stack_pointer") &&
+            value !== parseInt(stackStart, 16)
         ) {
-            writeStackLimit(parseInt(bi_intToBigInt(value, 10)));
+            writeStackLimit(value);
         }
 
         if (typeof window !== "undefined") {
-            btn_glow(
-                architecture.components[indexComp].elements[indexElem].name,
-                "Int",
+            btn_glow(element.name, "Int");
+        }
+    } else if (componentType === "fp_registers") {
+        if (!properties.includes("write")) {
+            if (properties.includes("ignore_write")) {
+                return;
+            }
+            draw.danger.push(status.execution_index);
+
+            throw packExecute(
+                true,
+                "The register " + elementName + " cannot be written",
+                "danger",
+                null,
             );
         }
-    } else if (architecture.components[indexComp].type == "fp_registers") {
-        if (architecture.components[indexComp].double_precision === false) {
-            if (
-                architecture.components[indexComp].elements[
-                    indexElem
-                ].properties.includes("write") !== true
-            ) {
-                if (
-                    architecture.components[indexComp].elements[
-                        indexElem
-                    ].properties.includes("ignore_write") !== false
-                ) {
-                    return;
-                }
-                draw.danger.push(status.execution_index);
 
-                throw packExecute(
-                    true,
-                    "The register " +
-                        architecture.components[indexComp].elements[
-                            indexElem
-                        ].name.join(" | ") +
-                        " cannot be written",
-                    "danger",
-                    null,
-                );
-            }
+        const doublePrecision = component.double_precision;
 
-            //architecture.components[indexComp].elements[indexElem].value = parseFloat(value); //TODO: float2bin -> bin2hex -> hex2big_int //TODO
-            architecture.components[indexComp].elements[indexElem].value =
-                bi_floatToBigInt(value);
+        if (doublePrecision === false) {
+            element.value = bi_floatToBigInt(value);
             creator_callstack_writeRegister(indexComp, indexElem);
 
             if (
-                architecture.components[indexComp].elements[
-                    indexElem
-                ].properties.includes("stack_pointer") !== false &&
-                value != parseInt(architecture.memory_layout[4].value)
+                properties.includes("stack_pointer") &&
+                value !== parseInt(stackStart, 16)
             ) {
                 writeStackLimit(parseFloat(value));
             }
@@ -236,71 +212,34 @@ export function writeRegister(value, indexComp, indexElem, register_type) {
             updateDouble(indexComp, indexElem);
 
             if (typeof window !== "undefined") {
-                btn_glow(
-                    architecture.components[indexComp].elements[indexElem].name,
-                    "FP",
-                );
+                btn_glow(element.name, "FP");
             }
-        } else if (
-            architecture.components[indexComp].double_precision === true
-        ) {
-            if (
-                architecture.components[indexComp].elements[
-                    indexElem
-                ].properties.includes("write") !== true
-            ) {
-                if (
-                    architecture.components[indexComp].elements[
-                        indexElem
-                    ].properties.includes("ignore_write") !== false
-                ) {
-                    return;
-                }
-                draw.danger.push(status.execution_index);
+        } else {
+            const precisionType = component.double_precision_type;
 
-                throw packExecute(
-                    true,
-                    "The register " +
-                        architecture.components[indexComp].elements[
-                            indexElem
-                        ].name.join(" | ") +
-                        " cannot be written",
-                    "danger",
-                    null,
-                );
-            }
-
-            if (
-                architecture.components[indexComp].double_precision_type ==
-                "linked"
-            ) {
-                //architecture.components[indexComp].elements[indexElem].value = parseFloat(value); //TODO
-                architecture.components[indexComp].elements[indexElem].value =
-                    bi_doubleToBigInt(value);
+            if (precisionType === "linked") {
+                element.value = bi_doubleToBigInt(value);
                 updateSimple(indexComp, indexElem);
             } else {
-                if (typeof register_type === "undefined") {
-                    register_type = "DFP-Reg";
+                const regType = register_type || "DFP-Reg";
+
+                if (regType === "SFP-Reg") {
+                    // Special case for RISC-V D extension.
+                    // Registers are 64 bits but the
+                    // value is a 32-bit float.
+                    // See RISC-V ISA spec, section 21.2,
+                    // NaN Boxing of Narrower Values
+                    element.value = toNaNBoxedBigInt(value);
                 }
-                if (register_type === "SFP-Reg") {
-                    architecture.components[indexComp].elements[
-                        indexElem
-                    ].value = bi_floatToBigInt(value);
-                }
-                if (register_type === "DFP-Reg") {
-                    architecture.components[indexComp].elements[
-                        indexElem
-                    ].value = bi_doubleToBigInt(value);
+                if (regType === "DFP-Reg") {
+                    element.value = bi_doubleToBigInt(value);
                 }
             }
 
             creator_callstack_writeRegister(indexComp, indexElem);
 
             if (typeof window !== "undefined") {
-                btn_glow(
-                    architecture.components[indexComp].elements[indexElem].name,
-                    "DFP",
-                );
+                btn_glow(element.name, "DFP");
             }
         }
     }

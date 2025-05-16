@@ -18,7 +18,7 @@
  *
  */
 "use strict";
-import { app, word_size_bytes } from "../core.mjs";
+import { app, WORDSIZE } from "../core.mjs";
 import { main_memory_read, main_memory_get_addresses } from "./memoryCore.mjs";
 import { hex2float, hex2char8 } from "../utils/utils.mjs";
 import { main_memory_datatypes } from "./memoryCore.mjs";
@@ -34,6 +34,7 @@ import { main_memory_datatypes } from "./memoryCore.mjs";
 
 // eslint-disable-next-line max-lines-per-function
 export function creator_memory_updaterow(addr) {
+    let word_size_bytes = WORDSIZE / 8;
     // skip if app.data does not exit...
     if (
         typeof app === "undefined" ||
