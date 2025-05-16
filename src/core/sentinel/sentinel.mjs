@@ -18,7 +18,7 @@
  *
  */
 "use strict";
-import { architecture } from "../core.mjs";
+import { architecture, REGISTERS } from "../core.mjs";
 import { address } from "../compiler/compiler.mjs";
 import { console_log } from "../utils/creator_logger.mjs";
 
@@ -122,7 +122,7 @@ export function creator_callstack_enter(function_name) {
     const arr_size_write = [];
     const arr_size_read = [];
 
-    for (let i = 0; i < architecture.components.length; i++) {
+    for (let i = 0; i < REGISTERS.length; i++) {
         arr_sm.push([]);
         arr_write.push([]);
         arr_read.push([]);
@@ -130,13 +130,13 @@ export function creator_callstack_enter(function_name) {
         arr_size_write.push([]);
         arr_size_read.push([]);
 
-        for (let j = 0; j < architecture.components[i].elements.length; j++) {
+        for (let j = 0; j < REGISTERS[i].elements.length; j++) {
             arr_sm[i].push(0);
             arr_write[i].push([]);
             arr_read[i].push([]);
             arr_size_write[i].push([]);
             arr_size_read[i].push([]);
-            arr_value[i].push(architecture.components[i].elements[j].value);
+            arr_value[i].push(REGISTERS[i].elements[j].value);
         }
     }
 
@@ -188,18 +188,12 @@ export function creator_callstack_leave() {
 
     // check values (check currrent state)
     if (ret.ok) {
-        for (let i = 0; i < architecture.components.length; i++) {
-            for (
-                let j = 0;
-                j < architecture.components[i].elements.length;
-                j++
-            ) {
+        for (let i = 0; i < REGISTERS.length; i++) {
+            for (let j = 0; j < REGISTERS[i].elements.length; j++) {
                 if (
                     last_elto.register_value[i][j] !=
-                        architecture.components[i].elements[j].value &&
-                    architecture.components[i].elements[j].properties.includes(
-                        "saved",
-                    )
+                        REGISTERS[i].elements[j].value &&
+                    REGISTERS[i].elements[j].properties.includes("saved")
                 ) {
                     ret.ok = false;
                     ret.msg =
@@ -212,12 +206,8 @@ export function creator_callstack_leave() {
 
     //Check state
     if (ret.ok) {
-        for (let i = 0; i < architecture.components.length; i++) {
-            for (
-                let j = 0;
-                j < architecture.components[i].elements.length;
-                j++
-            ) {
+        for (let i = 0; i < REGISTERS.length; i++) {
+            for (let j = 0; j < REGISTERS[i].elements.length; j++) {
                 creator_callstack_do_transition("end", i, j, null);
 
                 last_elto = stack_call_register[stack_call_register.length - 1];
@@ -233,9 +223,7 @@ export function creator_callstack_leave() {
                             last_index_read
                         ] &&
                     last_elto.register_sm[i][j] === 45 &&
-                    architecture.components[i].elements[j].properties.includes(
-                        "saved",
-                    ) // ...but should be saved
+                    REGISTERS[i].elements[j].properties.includes("saved") // ...but should be saved
                 ) {
                     break;
                 }
@@ -243,9 +231,7 @@ export function creator_callstack_leave() {
                 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 else if (
                     last_elto.register_sm[i][j] !== 3 &&
-                    architecture.components[i].elements[j].properties.includes(
-                        "saved",
-                    ) // ...but should be saved
+                    REGISTERS[i].elements[j].properties.includes("saved") // ...but should be saved
                 ) {
                     ret.ok = false;
                     ret.msg =
@@ -258,12 +244,8 @@ export function creator_callstack_leave() {
 
     //Check address
     if (ret.ok) {
-        for (let i = 0; i < architecture.components.length; i++) {
-            for (
-                let j = 0;
-                j < architecture.components[i].elements.length;
-                j++
-            ) {
+        for (let i = 0; i < REGISTERS.length; i++) {
+            for (let j = 0; j < REGISTERS[i].elements.length; j++) {
                 //last_index_write = last_elto.register_address_write[i][j].length -1;
                 const last_index_read =
                     last_elto.register_address_read[i][j].length - 1;
@@ -273,9 +255,7 @@ export function creator_callstack_leave() {
                         last_elto.register_address_read[i][j][
                             last_index_read
                         ] &&
-                    architecture.components[i].elements[j].properties.includes(
-                        "saved",
-                    ) // ...but should be saved
+                    REGISTERS[i].elements[j].properties.includes("saved") // ...but should be saved
                 ) {
                     ret.ok = false;
                     ret.msg =
@@ -288,12 +268,8 @@ export function creator_callstack_leave() {
 
     //Check size
     if (ret.ok) {
-        for (let i = 0; i < architecture.components.length; i++) {
-            for (
-                let j = 0;
-                j < architecture.components[i].elements.length;
-                j++
-            ) {
+        for (let i = 0; i < REGISTERS.length; i++) {
+            for (let j = 0; j < REGISTERS[i].elements.length; j++) {
                 //last_index_write = last_elto.register_size_write[i][j].length -1;
                 const last_index_read =
                     last_elto.register_size_read[i][j].length - 1;
@@ -301,9 +277,7 @@ export function creator_callstack_leave() {
                 if (
                     last_elto.register_size_write[i][j][0] !=
                         last_elto.register_size_read[i][j][last_index_read] &&
-                    architecture.components[i].elements[j].properties.includes(
-                        "saved",
-                    ) // ...but should be saved
+                    REGISTERS[i].elements[j].properties.includes("saved") // ...but should be saved
                 ) {
                     ret.ok = false;
                     ret.msg =
@@ -545,9 +519,7 @@ function creator_callstack_do_transition(
                     ", Action=" +
                     action +
                     " (Component: " +
-                    architecture.components[indexComponent].elements[
-                        indexElement
-                    ].name +
+                    REGISTERS[indexComponent].elements[indexElement].name +
                     ")",
                 "ERROR",
             );
@@ -562,8 +534,7 @@ function creator_callstack_do_transition(
     if (action != "end") {
         console_log(
             "[TRANSITION] " +
-                architecture.components[indexComponent].elements[indexElement]
-                    .name +
+                REGISTERS[indexComponent].elements[indexElement].name +
                 ": State " +
                 state +
                 " → " +

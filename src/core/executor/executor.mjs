@@ -15,23 +15,23 @@
  *
  *  You should have received a copy of the GNU Lesser General Public License
  *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
- *
  */
 "use strict";
 import { instructions } from "../compiler/compiler.mjs";
 import {
-    status,
+    app,
     architecture,
     architecture_hash,
-    backup_stack_address,
     backup_data_address,
+    backup_stack_address,
     stats,
     stats_value,
-    app,
+    status,
+    REGISTERS,
 } from "../core.mjs";
 import { creator_memory_zerofill } from "../memory/memoryManager.mjs";
 import { creator_memory_reset } from "../memory/memoryOperations.mjs";
-import { main_memory_write_value, main_memory } from "../memory/memoryCore.mjs"; // For debugging only
+import { main_memory, main_memory_write_value } from "../memory/memoryCore.mjs"; // For debugging only
 import { crex_findReg_bytag } from "../register/registerLookup.mjs";
 import {
     readRegister,
@@ -45,9 +45,9 @@ import {
 } from "../memory/stackTracker.mjs";
 import * as stack from "../memory/stackTracker.mjs";
 import {
-    bi_intToBigInt,
     bi_BigIntTofloat,
     bi_floatToBigInt,
+    bi_intToBigInt,
 } from "../utils/bigint.mjs";
 import { creator_ga } from "../utils/creator_ga.mjs";
 import { logger } from "../utils/creator_logger.mjs";
@@ -134,11 +134,11 @@ function executePreload(draw) {
         return null;
     } catch (e) {
         let msg = "";
-        if (e instanceof SyntaxError)
+        if (e instanceof SyntaxError) {
             msg =
                 "The definition of the instruction contains errors, please review it" +
                 e.stack;
-        else msg = e.msg;
+        } else msg = e.msg;
 
         logger.error("Error: " + e.stack);
         draw.danger.push(status.execution_index);
@@ -185,10 +185,16 @@ function initialize_execution(draw) {
     if (status.execution_init === 1) {
         for (let i = 0; i < instructions.length; i++) {
             if (instructions[i].Label == architecture.arch_conf[5].value) {
+                // Set the program counter to the address of the label
+                const pc_reg = crex_findReg_bytag("program_counter");
+                const pc_size_bits = parseInt(
+                    REGISTERS[0].elements[0].nbits,
+                    10,
+                );
                 writeRegister(
-                    bi_intToBigInt(instructions[i].Address, 10),
-                    0,
-                    0,
+                    bi_intToBigInt(instructions[i].Address, 10, pc_size_bits),
+                    pc_reg.indexComp,
+                    pc_reg.indexElem,
                 );
                 status.execution_init = 0;
                 break;
@@ -335,8 +341,7 @@ function updateExecutionStatus(draw) {
             "success",
             draw,
         );
-    }
-    // Case 2: Continuing execution (no error)
+    } // Case 2: Continuing execution (no error)
     else if (status.error !== 1) {
         draw.success.push(status.execution_index);
     }
@@ -566,56 +571,43 @@ export function reset() {
     status.display = "";
 
     for (let i = 0; i < architecture_hash.length; i++) {
-        for (let j = 0; j < architecture.components[i].elements.length; j++) {
+        for (let j = 0; j < REGISTERS[i].elements.length; j++) {
             if (
-                architecture.components[i].double_precision === false ||
-                (architecture.components[i].double_precision === true &&
-                    architecture.components[i].double_precision_type ==
-                        "extended")
+                REGISTERS[i].double_precision === false ||
+                (REGISTERS[i].double_precision === true &&
+                    REGISTERS[i].double_precision_type == "extended")
             ) {
-                architecture.components[i].elements[j].value =
-                    architecture.components[i].elements[j].default_value;
+                REGISTERS[i].elements[j].value =
+                    REGISTERS[i].elements[j].default_value;
             } else {
                 var aux_value;
                 var aux_sim1;
                 var aux_sim2;
 
                 for (let a = 0; a < architecture_hash.length; a++) {
-                    for (
-                        let b = 0;
-                        b < architecture.components[a].elements.length;
-                        b++
-                    ) {
+                    for (let b = 0; b < REGISTERS[a].elements.length; b++) {
                         if (
-                            architecture.components[a].elements[
-                                b
-                            ].name.includes(
-                                architecture.components[i].elements[j]
-                                    .simple_reg[0],
+                            REGISTERS[a].elements[b].name.includes(
+                                REGISTERS[i].elements[j].simple_reg[0],
                             ) !== false
                         ) {
                             aux_sim1 = bin2hex(
                                 float2bin(
                                     bi_BigIntTofloat(
-                                        architecture.components[a].elements[b]
-                                            .default_value,
+                                        REGISTERS[a].elements[b].default_value,
                                     ),
                                 ),
                             );
                         }
                         if (
-                            architecture.components[a].elements[
-                                b
-                            ].name.includes(
-                                architecture.components[i].elements[j]
-                                    .simple_reg[1],
+                            REGISTERS[a].elements[b].name.includes(
+                                REGISTERS[i].elements[j].simple_reg[1],
                             ) !== false
                         ) {
                             aux_sim2 = bin2hex(
                                 float2bin(
                                     bi_BigIntTofloat(
-                                        architecture.components[a].elements[b]
-                                            .default_value,
+                                        REGISTERS[a].elements[b].default_value,
                                     ),
                                 ),
                             );
@@ -624,7 +616,7 @@ export function reset() {
                 }
 
                 aux_value = aux_sim1 + aux_sim2;
-                architecture.components[i].elements[j].value = bi_floatToBigInt(
+                REGISTERS[i].elements[j].value = bi_floatToBigInt(
                     hex2double("0x" + aux_value),
                 );
             }
@@ -678,9 +670,20 @@ export function writeStackLimit(stackLimit) {
     if (stackLimit == null) {
         return;
     }
+
+    // Convert to BigInt if not already
+    const stackLimitBigInt = BigInt(stackLimit);
+
+    // Convert memory layout values to BigInt for proper comparison
+    const dataSegmentEnd = BigInt(architecture.memory_layout[3].value);
+    const dataSegmentStart = BigInt(architecture.memory_layout[2].value);
+    const textSegmentEnd = BigInt(architecture.memory_layout[1].value);
+    const textSegmentStart = BigInt(architecture.memory_layout[0].value);
+    const currentStackPointer = BigInt(architecture.memory_layout[4].value);
+
     if (
-        stackLimit <= parseInt(architecture.memory_layout[3].value) &&
-        stackLimit >= parseInt(parseInt(architecture.memory_layout[2].value))
+        stackLimitBigInt <= dataSegmentEnd &&
+        stackLimitBigInt >= dataSegmentStart
     ) {
         draw.danger.push(status.execution_index);
         throw packExecute(
@@ -690,8 +693,8 @@ export function writeStackLimit(stackLimit) {
             null,
         );
     } else if (
-        stackLimit <= parseInt(architecture.memory_layout[1].value) &&
-        stackLimit >= parseInt(architecture.memory_layout[0].value)
+        stackLimitBigInt <= textSegmentEnd &&
+        stackLimitBigInt >= textSegmentStart
     ) {
         draw.danger.push(status.execution_index);
         throw packExecute(
@@ -701,14 +704,14 @@ export function writeStackLimit(stackLimit) {
             null,
         );
     } else {
-        const diff = parseInt(architecture.memory_layout[4].value) - stackLimit;
+        const diff = Number(currentStackPointer - stackLimitBigInt);
         if (diff > 0) {
-            creator_memory_zerofill(stackLimit, diff);
+            creator_memory_zerofill(Number(stackLimitBigInt), diff);
         }
 
-        track_stack_setsp(stackLimit);
+        track_stack_setsp(Number(stackLimitBigInt));
         architecture.memory_layout[4].value =
-            "0x" + stackLimit.toString(16).padStart(8, "0").toUpperCase();
+            "0x" + stackLimitBigInt.toString(16).padStart(8, "0").toUpperCase();
     }
 }
 

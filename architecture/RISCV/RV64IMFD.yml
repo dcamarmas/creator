@@ -1,24 +1,15 @@
 version: 2.0.0
 
 arch_conf:
-    - name: Name
-      value: "RV64"
-    - name: Bits
-      value: "32"
-    - name: Description
-      value: "RISC-V is an instruction set architecture (ISA) based on the RISC type and its hardware is free. This architecture was created in 2010 at the University of California, Berkeley."
-    - name: Data Format
-      value: "big_endian"
-    - name: Memory Alignment
-      value: "1"
-    - name: Main Function
-      value: "main"
-    - name: Passing Convention
-      value: "1"
-    - name: Sensitive Register Name
-      value: "1"
-    - name: CommentPrefix
-      value: "#"
+    Name: RV64
+    Word Size: 32 # In RV64, the word size is also 32 bits
+    Description: RISC-V is an instruction set architecture (ISA) based on the RISC type and its hardware is free. This architecture was created in 2010 at the University of California, Berkeley.
+    Endianness: little_endian
+    Memory Alignment: true
+    Main Function: main
+    Passing Convention: true
+    Sensitive Register Name: true
+    CommentPrefix: "#"
 
 extensions:
     I:
@@ -1425,7 +1416,7 @@ instructions:
 
         - name: slli
           # In RV64, slli is a 6-bit shift, so we need to slightly modify the template
-          type: I-Shift 
+          type: I-Shift
           fields:
               - field: opcode
                 value: "0010011"
@@ -2826,16 +2817,15 @@ pseudoinstructions:
               - field: addr
                 type: inm-unsigned
           definition: "no_ret_op{tmp=Field.2.(31,0).int;\ntmp_pc_offset=(reg.pc-4)&0xFFF;\ntmp_low=tmp&0x00000FFF;\ntmp_hi=tmp>>12};\nauipc rd, op{tmp_hi};\naddi rd, rd, op{tmp_low-(tmp_pc_offset)};"
-          
+
         - name: li
           # For legibility purposes, the implementation is included in the CREATOR codebase as a module.
-          # TODO: Modify this after the assembler implements the register name resolution.
           fields:
               - field: rd
                 type: INT-Reg
               - field: val
                 type: inm-signed
-          definition: "no_ret_op{value = Field.2.(63,0).int;\ninstructions = capi_rv_generateLoadImmediate(value, 't1')};\nop{instructions};"
+          definition: "no_ret_op{value = Field.2.(63,0).int;\ninstructions = capi_rv_generateLoadImmediate(value, reg_name{1})};\nop{instructions};"
 
         - name: mv
           fields:

@@ -4,7 +4,7 @@
 // deno-fmt-ignore-file
 // @ts-self-types="./creator_compiler.d.ts"
 
-// source-hash: 391d6934361535f0ae2169e269d468ea09a3863c
+// source-hash: c1b8a36ff84d0165a3c586e0e0e203fd1e54625b
 import * as wasm from "./creator_compiler.wasm";
 export * from "./creator_compiler.internal.js";
 import { __wbg_set_wasm } from "./creator_compiler.internal.js";

@@ -258,6 +258,7 @@ function loadArchitecture(architecturePath: string): StageResult {
             false,
             argv.isa, // Pass the ISA extensions array
         );
+        // const ret = creator.load_architecture(architecture_file, argv.isa);
 
         if (ret.status !== "ok") {
             throw ret.errorcode;

@@ -16,10 +16,9 @@
  *
  *  You should have received a copy of the GNU Lesser General Public License
  *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
- *
  */
 
-import { architecture } from "../core.mjs";
+import { architecture, ENDIANNESS, REGISTERS } from "../core.mjs";
 import { logger } from "../utils/creator_logger.mjs";
 
 // Bit position constants
@@ -48,7 +47,7 @@ const ROUNDING_MODE = {
  */
 function get_register_binary(type, binaryValue) {
     // Find the component that matches the requested register type
-    for (const component of architecture.components) {
+    for (const component of REGISTERS) {
         if (component.type !== type) {
             continue;
         }
@@ -326,24 +325,26 @@ function replaceRegisterNames(instructionParts) {
 
     return instructionParts.map(part => {
         // Check if this part is a register
-        for (const component of architecture.components) {
-            if (component.type !== "int_registers" && 
-                component.type !== "fp_registers" && 
-                component.type !== "ctrl_registers") {
+        for (const bank of REGISTERS) {
+            if (
+                bank.type !== "int_registers" &&
+                bank.type !== "fp_registers" &&
+                bank.type !== "ctrl_registers"
+            ) {
                 continue;
             }
 
-            for (const element of component.elements) {
-                if (element.name && element.name.length > 1) {
+            for (const register of bank.elements) {
+                if (register.name && register.name.length > 1) {
                     // If the part matches the default name (first name in the array)
-                    if (part === element.name[0]) {
+                    if (part === register.name[0]) {
                         // Return the proper name (second name in the array)
-                        return element.name[1];
+                        return register.name[1];
                     }
                 }
             }
         }
-        
+
         // If not a register or no proper name found, return the original part
         return part;
     });
@@ -423,7 +424,7 @@ function decodeBinaryFormat(
 
     if (instructionArray.length === 0) {
         logger.error(
-            "instructionArray is empty! Did you forget the \'order\' field?",
+            "instructionArray is empty! Did you forget the 'order' field?",
         );
         return null;
     }
@@ -472,28 +473,48 @@ function decodeAssemblyFormat(instruction, instructionExecParts) {
     };
 }
 
-export function decode_instruction(instructionExec, newFormat = false) {
-    const instructionExecParts = instructionExec.split(" ");
-    const isBinary = /^[01]+$/.test(instructionExecParts[0]);
+// eslint-disable-next-line max-lines-per-function
+export function decode_instruction(
+    toDecode,
+    newFormat = false,
+    skipEndianness = false,
+) {
+    const toDecodeArray = toDecode.split(" ");
+    const isBinary = /^[01]+$/.test(toDecodeArray[0]);
 
     // Process based on instruction type (binary or assembly)
     if (isBinary) {
+        if (ENDIANNESS === "little_endian" && !skipEndianness) {
+            // Split by byte
+            const byteSize = 8;
+            let bytes = [];
+            for (let i = 0; i < toDecode.length; i += byteSize) {
+                bytes.push(toDecode.substr(i, byteSize));
+            }
+            // Reverse the byte order
+            bytes = bytes.reverse();
+            // Join the bytes back together
+            toDecode = bytes.join("");
+        }
+
         // Try to decode binary format
         for (const instruction of architecture.instructions) {
             const decodedBinary = decodeBinaryFormat(
                 instruction,
-                instructionExec,
+                toDecode,
                 newFormat,
             );
             if (decodedBinary) {
                 if (newFormat) {
                     return decodedBinary;
                 }
-                
+
                 // Get instruction parts and create a version with proper register names
-                const instructionExecParts = decodedBinary.instruction_loaded.split(" ");
-                const instructionExecPartsWithProperNames = replaceRegisterNames(instructionExecParts);
-                
+                const instructionExecParts =
+                    decodedBinary.instruction_loaded.split(" ");
+                const instructionExecPartsWithProperNames =
+                    replaceRegisterNames(instructionExecParts);
+
                 return {
                     type: instruction.type,
                     signatureDef: decodedBinary.signatureDef,
@@ -501,7 +522,8 @@ export function decode_instruction(instructionExec, newFormat = false) {
                     signatureRawParts: decodedBinary.signatureRawParts,
                     instructionExec: decodedBinary.instruction_loaded,
                     instructionExecParts: instructionExecParts,
-                    instructionExecPartsWithProperNames: instructionExecPartsWithProperNames,
+                    instructionExecPartsWithProperNames:
+                        instructionExecPartsWithProperNames,
                     auxDef: instruction.definition,
                     nwords: instruction.nwords,
                     binary: true,
@@ -513,16 +535,17 @@ export function decode_instruction(instructionExec, newFormat = false) {
         for (const instruction of architecture.instructions) {
             const decodedAssembly = decodeAssemblyFormat(
                 instruction,
-                instructionExecParts,
+                toDecodeArray,
             );
             if (decodedAssembly) {
                 // Create a version with proper register names
-                const instructionExecPartsWithProperNames = replaceRegisterNames(instructionExecParts);
-                
+                const instructionExecPartsWithProperNames =
+                    replaceRegisterNames(toDecodeArray);
+
                 return {
                     ...decodedAssembly,
-                    instructionExec,
-                    instructionExecParts,
+                    instructionExec: toDecode,
+                    instructionExecParts: toDecodeArray,
                     instructionExecPartsWithProperNames,
                     binary: false,
                 };
@@ -532,6 +555,9 @@ export function decode_instruction(instructionExec, newFormat = false) {
 
     // No match found
     throw new Error(
-        `Unknown Instruction: 0x${parseInt(instructionExec, 2).toString(16).toUpperCase().padStart(8, "0")}`,
+        `Unknown Instruction: 0x${parseInt(toDecode, 2)
+            .toString(16)
+            .toUpperCase()
+            .padStart(8, "0")}`,
     );
 }

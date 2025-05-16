@@ -19,92 +19,92 @@
 "use strict";
 
 function isInt(val, bits) {
-  const max = (1n << BigInt(bits - 1)) - 1n;
-  const min = -(1n << BigInt(bits - 1));
-  return BigInt(val) >= min && BigInt(val) <= max;
+    const max = (1n << BigInt(bits - 1)) - 1n;
+    const min = -(1n << BigInt(bits - 1));
+    return BigInt(val) >= min && BigInt(val) <= max;
 }
 
 function signExtend(val, bits) {
-  const mask = (1n << BigInt(bits)) - 1n;
-  const signBit = 1n << (BigInt(bits) - 1n);
-  const value = BigInt(val) & mask;
-  return (value & signBit) ? (value | ~mask) : value;
+    const mask = (1n << BigInt(bits)) - 1n;
+    const signBit = 1n << (BigInt(bits) - 1n);
+    const value = BigInt(val) & mask;
+    return value & signBit ? value | ~mask : value;
 }
 
 function countTrailingZeros(val) {
-  if (val === 0n) return 64;
+    if (val === 0n) return 64;
 
-  let count = 0;
-  let value = BigInt(val);
-  while ((value & 1n) === 0n) {
-    count++;
-    value >>= 1n;
-  }
-  return count;
+    let count = 0;
+    let value = BigInt(val);
+    while ((value & 1n) === 0n) {
+        count++;
+        value >>= 1n;
+    }
+    return count;
 }
 
 function generateInstructionsImpl(value, instructions, destReg) {
-  // Handle 32-bit values with LUI+ADDI sequence
-  if (isInt(value, 32)) {
-    const hi20 = Number(((value + 0x800n) >> 12n) & 0xFFFFFn);
+    // Handle 32-bit values with LUI+ADDI sequence
+    if (isInt(value, 32)) {
+        const hi20 = Number(((value + 0x800n) >> 12n) & 0xfffffn);
+        const lo12 = Number(signExtend(value, 12));
+
+        if (hi20) {
+            instructions.push(`lui ${destReg}, 0x${hi20.toString(16)}`);
+        }
+
+        if (lo12 || hi20 === 0) {
+            const op = hi20 ? "addiw" : "addi";
+            const src = hi20 ? destReg : "x0";
+            instructions.push(`${op} ${destReg}, ${src}, ${lo12}`);
+        }
+        return;
+    }
+
+    // Handle larger values (RV64)
     const lo12 = Number(signExtend(value, 12));
+    let remainingValue = value - BigInt(lo12);
 
-    if (hi20) {
-      instructions.push(`lui ${destReg}, 0x${hi20.toString(16)}`);
+    // Check if shifting can simplify the representation
+    let shift = 0;
+    if (!isInt(remainingValue, 32)) {
+        shift = countTrailingZeros(remainingValue);
+
+        // Handle case where shift would be 64 or greater (invalid for RISC-V slli)
+        if (shift >= 64) {
+            // If shift is 64+, remainingValue shifted right by 64+ bits is 0 in 64-bit arithmetic
+            // So we only need to handle the lo12 part directly
+            if (lo12) {
+                instructions.push(`addi ${destReg}, x0, ${lo12}`);
+            } else {
+                instructions.push(`addi ${destReg}, x0, 0`); // Zero out register
+            }
+            return; // Exit early as we've handled the value directly
+        }
+
+        remainingValue >>= BigInt(shift);
     }
 
-    if (lo12 || hi20 === 0) {
-      const op = hi20 ? "addiw" : "addi";
-      const src = hi20 ? destReg : "x0";
-      instructions.push(`${op} ${destReg}, ${src}, ${lo12}`);
-    }
-    return;
-  }
+    // Process the remaining value recursively
+    generateInstructionsImpl(remainingValue, instructions, destReg);
 
-  // Handle larger values (RV64)
-  const lo12 = Number(signExtend(value, 12));
-  let remainingValue = value - BigInt(lo12);
-
-  // Check if shifting can simplify the representation
-  let shift = 0;
-  if (!isInt(remainingValue, 32)) {
-    shift = countTrailingZeros(remainingValue);
-
-    // Handle case where shift would be 64 or greater (invalid for RISC-V slli)
-    if (shift >= 64) {
-      // If shift is 64+, remainingValue shifted right by 64+ bits is 0 in 64-bit arithmetic
-      // So we only need to handle the lo12 part directly
-      if (lo12) {
-        instructions.push(`addi ${destReg}, x0, ${lo12}`);
-      } else {
-        instructions.push(`addi ${destReg}, x0, 0`); // Zero out register
-      }
-      return; // Exit early as we've handled the value directly
+    // Apply shift if needed
+    if (shift) {
+        instructions.push(`slli ${destReg}, ${destReg}, ${shift}`);
     }
 
-    remainingValue >>= BigInt(shift);
-  }
-
-  // Process the remaining value recursively
-  generateInstructionsImpl(remainingValue, instructions, destReg);
-
-  // Apply shift if needed
-  if (shift) {
-    instructions.push(`slli ${destReg}, ${destReg}, ${shift}`);
-  }
-
-  // Add lower 12 bits if needed
-  if (lo12) {
-    instructions.push(`addi ${destReg}, ${destReg}, ${lo12}`);
-  }
+    // Add lower 12 bits if needed
+    if (lo12) {
+        instructions.push(`addi ${destReg}, ${destReg}, ${lo12}`);
+    }
 }
 
 export const CAPI_RISCV = {
-  rv_generateLoadImmediate: function (val, destReg = "t1") {
-    const instructions = [];
-    generateInstructionsImpl(BigInt(val), instructions, destReg);
-    return instructions.join(";");
-  },
+    rv_generateLoadImmediate: function (val, destReg) {
+        const instructions = [];
+        generateInstructionsImpl(BigInt(val), instructions, destReg);
+        return instructions.join(";");
+    },
 };
 
 // testing

@@ -18,7 +18,7 @@
  *
  */
 "use strict";
-import { architecture } from "../core.mjs";
+import { architecture, REGISTERS } from "../core.mjs";
 import { crex_show_notification } from "../executor/executor.mjs";
 import { tag_instructions } from "../compiler/compiler.mjs";
 import {
@@ -35,7 +35,7 @@ export const CAPI_DRAW_STACK = {
         let function_name = "";
 
         // 1.- get function name
-        if (typeof architecture.components[0] !== "undefined") {
+        if (typeof REGISTERS[0] !== "undefined") {
             if (typeof tag_instructions[addr] === "undefined")
                 function_name = "0x" + parseInt(addr).toString(16);
             else function_name = tag_instructions[addr];

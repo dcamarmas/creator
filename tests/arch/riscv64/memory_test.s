@@ -20,27 +20,27 @@ lhu x5, 0(x4)
 
 # try to save that back to memory. x5 -> mem[z1]. OVERFLOW
 la x4, z1
-sh x5 2(x4) #offset by 2 to write on the lower half of the word
+sh x5, 2(x4) #offset by 2 to write on the lower half of the word
 
 # do the same thing but with the sw instruction. Works perfectly
 la x4, z2
-sw x5 0(x4)
+sw x5, 0(x4)
 
 # *---------------------*
 
 # Now lets try with a word with its MSb set to 1 (0xF1231234)
 la x4, w1
-lw x5 0(x4)
+lw x5, 0(x4)
 
 # And we save it
-la x4 z3
-sw x5 0(x4)
+la x4, z3
+sw x5, 0(x4)
 
 # *---------------------*
 # What about bytes?
-la x4 b1
-lbu x5 0(x4)
+la x4, b1
+lbu x5, 0(x4)
 
 # Now we try to save it
-la x4 z5
-sb x5 3(x4)
+la x4, z5
+sb x5, 3(x4)

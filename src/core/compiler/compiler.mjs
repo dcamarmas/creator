@@ -31,6 +31,7 @@ import {
     backup_data_address,
     arch,
     dumpMemory,
+    REGISTERS,
 } from "../core.mjs";
 import {
     creator_memory_prereset,
@@ -265,39 +266,37 @@ export function assembly_compiler(library, color) {
     data_address = parseInt(architecture.memory_layout[2].value);
     stack_address = parseInt(architecture.memory_layout[4].value);
 
-    for (var i = 0; i < architecture.components.length; i++) {
-        for (var j = 0; j < architecture.components[i].elements.length; j++) {
+    for (var i = 0; i < REGISTERS.length; i++) {
+        for (var j = 0; j < REGISTERS[i].elements.length; j++) {
             if (
-                architecture.components[i].elements[j].properties.includes(
-                    "program_counter",
-                )
+                REGISTERS[i].elements[j].properties.includes("program_counter")
             ) {
-                architecture.components[i].elements[j].value = bi_intToBigInt(
+                REGISTERS[i].elements[j].value = bi_intToBigInt(
                     library_offset,
                     10,
                 );
-                architecture.components[i].elements[j].default_value =
-                    bi_intToBigInt(library_offset, 10);
+                REGISTERS[i].elements[j].default_value = bi_intToBigInt(
+                    library_offset,
+                    10,
+                );
             }
-            if (
-                architecture.components[i].elements[j].properties.includes(
-                    "stack_pointer",
-                )
-            ) {
-                architecture.components[i].elements[j].value = bi_intToBigInt(
+            if (REGISTERS[i].elements[j].properties.includes("stack_pointer")) {
+                REGISTERS[i].elements[j].value = bi_intToBigInt(
                     stack_address,
                     10,
                 );
-                architecture.components[i].elements[j].default_value =
-                    bi_intToBigInt(stack_address, 10);
+                REGISTERS[i].elements[j].default_value = bi_intToBigInt(
+                    stack_address,
+                    10,
+                );
             }
         }
     }
 
-    /*architecture.components[1].elements[29].value = bi_intToBigInt(stack_address,10) ;
-        architecture.components[0].elements[0].value  = bi_intToBigInt(address,10) ;
-        architecture.components[1].elements[29].default_value = bi_intToBigInt(stack_address,10) ;
-        architecture.components[0].elements[0].default_value  = bi_intToBigInt(address,10) ;*/
+    /*REGISTERS[1].elements[29].value = bi_intToBigInt(stack_address,10) ;
+        REGISTERS[0].elements[0].value  = bi_intToBigInt(address,10) ;
+        REGISTERS[1].elements[29].default_value = bi_intToBigInt(stack_address,10) ;
+        REGISTERS[0].elements[0].default_value  = bi_intToBigInt(address,10) ;*/
 
     /*Reset stats*/
     status.totalStats = 0;

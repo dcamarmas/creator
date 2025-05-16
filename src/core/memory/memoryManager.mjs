@@ -18,7 +18,7 @@
  *
  */
 "use strict";
-import { app, architecture, word_size_bytes } from "../core.mjs";
+import { app, architecture, WORDSIZE } from "../core.mjs";
 import {
     main_memory_datatype_get_addresses,
     main_memory_get_addresses,
@@ -38,6 +38,7 @@ import { align } from "../compiler/compiler.mjs";
 
 export function creator_memory_type2size(type) {
     let size = 4;
+    const word_size_bytes = WORDSIZE / 8;
 
     switch (type) {
         case "b":

@@ -18,7 +18,7 @@
  *
  */
 "use strict";
-import { architecture, word_size_bytes } from "../core.mjs";
+import { architecture, WORDSIZE } from "../core.mjs";
 import {
     main_memory_write_bydatatype,
     main_memory_read_bydatatype,
@@ -106,7 +106,7 @@ export function creator_memory_data_compiler(
         data_address += to_be_filled;
     }
 
-    if (data_address % size !== 0 && data_address % word_size_bytes !== 0) {
+    if (data_address % size !== 0 && data_address % (WORDSIZE / 8) !== 0) {
         ret.msg = "m21";
         ret.data_address = data_address;
         return ret;

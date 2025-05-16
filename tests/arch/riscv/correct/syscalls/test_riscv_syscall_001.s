@@ -9,7 +9,7 @@
   byte:			.byte 120,255
   half:			.half 34
   word:			.word -5678
-  string:  		.string "This is another string"
+  string:  		.string "This is a string"
 
 .align 2
   float:     .float 1.1
@@ -43,6 +43,6 @@ main:
   ecall
   
   # string string
-  la t1, string
-  lw a0, 0(t1)
+  li a7, 4
+  la a0, string
   ecall

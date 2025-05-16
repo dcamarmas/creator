@@ -18,7 +18,7 @@
  *
  */
 "use strict";
-import { architecture, status } from "../core.mjs";
+import { architecture, status, REGISTERS } from "../core.mjs";
 import { clean_string } from "../utils/utils.mjs";
 import { console_log, logger } from "../utils/creator_logger.mjs";
 
@@ -45,17 +45,9 @@ export function handleIntOrCtrlReg(
         writing: "",
     };
 
-    for (let j = 0; j < architecture.components.length; j++) {
-        for (
-            let z = architecture.components[j].elements.length - 1;
-            z >= 0;
-            z--
-        ) {
-            if (
-                architecture.components[j].elements[z].name.includes(
-                    instructionExecPart,
-                )
-            ) {
+    for (let j = 0; j < REGISTERS.length; j++) {
+        for (let z = REGISTERS[j].elements.length - 1; z >= 0; z--) {
+            if (REGISTERS[j].elements[z].name.includes(instructionExecPart)) {
                 result.reading = `var ${signatureRawPart}      = BigInt(readRegister (${j} ,${z}, "${signatureType}"));\n`;
                 result.reading_prev = `var ${signatureRawPart}_prev = BigInt(readRegister (${j} ,${z}, "${signatureType}"));\n`;
                 result.reading_name = `var ${signatureRawPart}_name = '${instructionExecPart}';\n`;
@@ -88,17 +80,9 @@ export function handleFloatingPointReg(
         writing: "",
     };
 
-    for (let j = 0; j < architecture.components.length; j++) {
-        for (
-            let z = architecture.components[j].elements.length - 1;
-            z >= 0;
-            z--
-        ) {
-            if (
-                architecture.components[j].elements[z].name.includes(
-                    instructionExecPart,
-                )
-            ) {
+    for (let j = 0; j < REGISTERS.length; j++) {
+        for (let z = REGISTERS[j].elements.length - 1; z >= 0; z--) {
+            if (REGISTERS[j].elements[z].name.includes(instructionExecPart)) {
                 result.reading = `var ${signatureRawPart}      = Number(readRegister (${j} ,${z}, "${signatureType}"));\n`;
                 result.reading_prev = `var ${signatureRawPart}_prev = Number(readRegister (${j} ,${z}, "${signatureType}"));\n`;
                 result.reading_name = `var ${signatureRawPart}_name = '${instructionExecPart}';\n`;
@@ -179,19 +163,15 @@ export function processRegisterOperations(auxDef, signatureParts) {
     let readings_description = "";
     let writings_description = "";
 
-    for (let i = 0; i < architecture.components.length; i++) {
-        for (
-            let j = architecture.components[i].elements.length - 1;
-            j >= 0;
-            j--
-        ) {
+    for (let i = 0; i < REGISTERS.length; i++) {
+        for (let j = REGISTERS[i].elements.length - 1; j >= 0; j--) {
             let clean_name;
-            const clean_aliases = architecture.components[i].elements[j].name
+            const clean_aliases = REGISTERS[i].elements[j].name
                 .map(x => clean_string(x, "reg_"))
                 .join("|");
 
             // Check if this register is PC
-            const isPC = architecture.components[i].elements[j].name.some(
+            const isPC = REGISTERS[i].elements[j].name.some(
                 name => name.toUpperCase() === "PC",
             );
 
