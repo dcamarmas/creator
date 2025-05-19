@@ -1718,7 +1718,7 @@ export function dumpRegister(register, format = "hex") {
                     result.indexElem
                 ].value.toString(16);
             return value;
-        } else if (format === "number") {
+        } else if (format === "decimal") {
             let value = readRegister(result.indexComp, result.indexElem);
             return value;
         }

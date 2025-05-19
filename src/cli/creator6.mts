@@ -879,7 +879,7 @@ function handleClearCommand() {
     clearConsole();
 }
 
-function displayRegistersByBank(regType) {
+function displayRegistersByBank(regType: string, format: string = "raw") {
     const registerBank = creator.getRegistersByBank(regType);
 
     if (!registerBank) {
@@ -922,12 +922,21 @@ function displayRegistersByBank(regType) {
                 const nbits = reg.nbits;
                 const hexDigits = Math.ceil(nbits / 4);
                 let value;
-                if (regType === "fp_registers") {
-                    value = creator.dumpRegister(primaryName, "raw");
+
+                const rawValue = creator.dumpRegister(
+                    primaryName,
+                    reg.type === "fp_registers" ? "raw" : "twoscomplement",
+                );
+                const floatValue = creator.dumpRegister(primaryName, "decimal");
+
+                // Format the value based on the requested format
+                if (format === "raw") {
+                    value = `0x${rawValue.padStart(hexDigits, "0")}`;
+                } else if (format === "decimal" || format === "dec") {
+                    value = `${floatValue.toString(10)}`;
                 } else {
-                    value = creator
-                        .dumpRegister(primaryName, "twoscomplement")
-                        .padStart(hexDigits, "0");
+                    console.log(`Unknown format "${format}"`);
+                    return;
                 }
                 const displayName = altNames
                     ? `${primaryName}(${altNames})`
@@ -937,7 +946,7 @@ function displayRegistersByBank(regType) {
                     displayName.padEnd(maxWidths[col]),
                     "36",
                 );
-                line += `${col > 0 ? "  " : ""}${coloredName}: ${`0x${value}`}`;
+                line += `${col > 0 ? "  " : ""}${coloredName}: ${`${value}`}`;
             }
         }
         console.log(line);
@@ -957,36 +966,40 @@ function displayRegisterTypes() {
 
 function handleRegCommand(args: string[]) {
     if (args.length < 2) {
-        console.log("Usage: reg <type> | reg list");
+        console.log("Usage: reg <type> | reg list | reg <register> [format]");
         console.log("Use 'reg list' to see available register types");
+        console.log("Format options: raw (default), number");
         return;
     }
 
     const cmd = args[1].toLowerCase();
+    const format = args[2] || "raw";
 
     if (cmd === "list") {
         // Display all available register types
         displayRegisterTypes();
-    } else if (args.length === 2) {
-        // Display registers of a specific type
-        displayRegistersByBank(cmd);
     } else {
-        // Handle displaying a specific register
-        const regName = args[2];
-
-        // Get register bit width and calculate hex digits
-        const regInfo = creator.getRegisterInfo(regName);
-        const nbits = regInfo?.nbits || 32; // Default to 32 if not found
-        const hexDigits = Math.ceil(nbits / 4);
-        let value;
-        if (regInfo?.type === "fp_registers") {
-            value = creator.dumpRegister(regName, "raw");
-            console.log(`${regName}: 0x${value}`);
+        // This can either be a request for a specific register bank, or for a specific register
+        const regType = args[1].toLowerCase();
+        const regTypes = creator.getRegisterTypes();
+        if (regTypes.includes(regType)) {
+            // Display registers of a specific type
+            displayRegistersByBank(cmd, format);
         } else {
-            value = creator
-                .dumpRegister(regName, "twoscomplement")
-                .padStart(hexDigits, "0");
-            console.log(`${regName}: 0x${value}`);
+            // If not a valid type, check if it's a register name
+            const regName = args[1];
+            const regInfo = creator.getRegisterInfo(regName);
+            if (!regInfo) {
+                console.log(`Register "${regName}" not found.`);
+                return;
+            }
+
+            const rawValue = creator.dumpRegister(
+                regName,
+                regInfo.type === "fp_registers" ? "raw" : "twoscomplement",
+            );
+            const floatValue = creator.dumpRegister(regName, "decimal");
+            console.log(`${regName}: 0x${rawValue} | ${floatValue}`);
         }
     }
 }

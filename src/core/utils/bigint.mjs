@@ -99,6 +99,10 @@ export function bi_doubleToBigInt(double_value) {
  */
 export function bi_BigIntTodouble(big_int_value) {
     const hex = big_int_value.toString(16).padStart(16, "0");
+    // if the first 8 characters are 0, it's a 32-bit float, not a double
+    if (hex.substring(0, 8) === "00000000") {
+        return hex2float("0x" + hex.substring(8, 16));
+    }
 
     return hex2double("0x" + hex);
 }
