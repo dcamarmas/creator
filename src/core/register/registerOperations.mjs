@@ -27,7 +27,7 @@ function updateRegisterUI(indexComp, indexElem) {
     const register_name = architecture.components[indexComp].elements[indexElem].name[0]
 
     // this is ugly, but it's the only way (I found)
-    document.app.$root.$refs.simulatorView.$refs.registerFile?.$refs[`reg${register_name}`][0].refresh()
+    document.app.$root.$refs.simulatorView.$refs.registerFile?.$refs[`reg${register_name}`]?.at(0)?.refresh()
 }
 
 
