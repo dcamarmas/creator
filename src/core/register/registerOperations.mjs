@@ -103,8 +103,10 @@ export function readRegister(indexComp, indexElem, register_type) {
                     register_type = "DFP-Reg";
                 }
                 if (register_type === "SFP-Reg") {
-                    const value = toJSNumber(
-                        REGISTERS[indexComp].elements[indexElem].value,
+                    const value = Math.fround(
+                        toJSNumber(
+                            REGISTERS[indexComp].elements[indexElem].value,
+                        ),
                     );
                     logger.debug(
                         `Reading single-precision register [${indexComp}][${indexElem}] ${REGISTERS[
@@ -149,7 +151,10 @@ export function writeRegister(value, indexComp, indexElem, register_type) {
     const elementName = element.name.join(" | ");
     const stackStart = architecture.memory_layout[4].value;
 
-    if (componentType == "int_registers" || componentType == "ctrl_registers") {
+    if (
+        componentType === "int_registers" ||
+        componentType === "ctrl_registers"
+    ) {
         if (!properties.includes("write")) {
             if (properties.includes("ignore_write")) {
                 return;

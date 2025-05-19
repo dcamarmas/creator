@@ -477,7 +477,7 @@ function decodeAssemblyFormat(instruction, instructionExecParts) {
 export function decode_instruction(
     toDecode,
     newFormat = false,
-    skipEndianness = false,
+    skipEndianness = false, // Used in the unit tests to skip endianness check
 ) {
     const toDecodeArray = toDecode.split(" ");
     const isBinary = /^[01]+$/.test(toDecodeArray[0]);
