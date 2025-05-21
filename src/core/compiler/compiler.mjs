@@ -193,6 +193,7 @@ export const example_set_available = [];
 export const example_available = [];
 /*Instructions memory*/
 export let instructions = [];
+export function clear_instructions() { instructions = [] }
 let instructions_tag = [];
 export let tag_instructions = {};
 let instructions_binary = [];
@@ -470,10 +471,49 @@ export function assembly_compiler(code, library, color) {
             hex,
             "00",
             label,
-            true,
-        );
+        )
     }
 
+    // Check for overlap
+    /*
+   * TODO: migrate to new memory model
+   *
+          if (memory[memory_hash[0]].length > 0)
+          {
+            if (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary[3].Addr > architecture.memory_layout[3].value) {
+              //tokenIndex = 0;
+              //nEnters = 0 ;
+              instructions = [];
+              pending_instructions = [];
+              pending_tags = [];
+              data_tag = [];
+              instructions_binary = [];
+              extern = [];
+              creator_memory_clear() ;
+              data = [];
+  
+              return packCompileError('m0', 'Data overflow', 'warning', "danger") ;
+            }
+          }
+  
+          if (memory[memory_hash[1]].length > 0)
+          {
+            if(memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary[3].Addr > architecture.memory_layout[1].value){
+              //tokenIndex = 0;
+              //nEnters = 0 ;
+              instructions = [];
+              pending_instructions = [];
+              pending_tags = [];
+              data_tag = [];
+              instructions_binary = [];
+              extern = [];
+              creator_memory_clear() ;
+              data = [];
+  
+              return packCompileError('m0', 'Instruction overflow', 'warning', "danger");
+            }
+          }
+  */
     /*Save binary*/
     for (const instruction of instructions_binary) {
         if (instruction.Label != "") {

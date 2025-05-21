@@ -29,6 +29,8 @@ export default {
     os: { type: String, required: true },
     arch_available: Array,
     architecture_name: String,
+    dark: { type: Boolean, required: true },
+    arch_code: { type: String, required: true },
   },
   components: {
     UIeltoToolbar,
@@ -59,7 +61,11 @@ export default {
         <!-- Architecture navbar modals -->
 
         <!-- Edit architecture modal -->
-        <!-- <EditArchitecture id="edit_architecture" :arch_code="arch_code" /> -->
+        <EditArchitecture
+          id="edit_architecture"
+          :arch_code="arch_code"
+          :dark="dark"
+        />
 
         <!-- Save architecture modal -->
         <!-- <SaveArchitecture id="save_architecture" /> -->
