@@ -15,6 +15,7 @@
     "test": "deno test --allow-read --unstable-node-globals --coverage"
   },
   "dependencies": {
+    "@codemirror/lang-json": "^6.0.1",
     "@codemirror/language": "^6.11.0",
     "@codemirror/legacy-modes": "^6.5.1",
     "@fortawesome/fontawesome-svg-core": "^6.7.2",

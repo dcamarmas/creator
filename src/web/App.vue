@@ -544,8 +544,10 @@ export default {
     v-if="creator_mode == 'architecture'"
     :architecture_name="architecture_name"
     :arch_available="arch_available"
+    :arch_code="arch_code"
     :browser="browser"
     :os="os"
+    :dark="dark"
   />
 
   <!------------------->

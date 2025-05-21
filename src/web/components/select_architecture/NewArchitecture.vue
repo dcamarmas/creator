@@ -22,7 +22,7 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 import { hide_loading, show_loading, show_notification } from "@/web/utils.mjs"
 import { creator_ga } from "@/core/utils/creator_ga.mjs"
 import { load_arch_select } from "@/core/core.mjs"
-import { instructions } from "@/core/compiler/compiler.mjs"
+import { clear_instructions } from "@/core/compiler/compiler.mjs"
 import { creator_memory_clear } from "@/core/memory/memoryOperations.mjs"
 
 import new_arch from "/architecture/new_arch.json"
@@ -61,8 +61,8 @@ export default {
       app._data.architecture_guide = ""
       app._data.architecture_hash = architecture_hash
 
-      //Reset execution
-      instructions = []
+      // Reset execution
+      clear_instructions()
       creator_memory_clear()
 
       //Refresh UI

@@ -19,92 +19,58 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <script>
+import Codemirror from "vue-codemirror6"
+import { EditorView } from "codemirror"
+import { json } from "@codemirror/lang-json"
+
+import {
+  architecture,
+  architecture_hash,
+} from "@/core/core.mjs"
+import { creator_memory_clear } from "@/core/memory/memoryOperations.mjs"
+import { show_notification, loadArchitecture } from "@/web/utils.mjs"
+import { clear_instructions } from "@/core/compiler/compiler.mjs"
+
 export default {
+  setup() {
+    const lang = json()
+    // fixed height editor
+    const extensions = [
+      EditorView.theme({
+        "&": { height: "650px" },
+        ".cm-scroller": { overflow: "auto" },
+      }),
+    ]
+
+    return { lang, extensions }
+  },
+  components: {
+    Codemirror,
+  },
+
   props: {
     id: { type: String, required: true },
     arch_code: { type: String, required: true },
+    dark: { type: Boolean, required: true },
+  },
+
+  computed: {
+    architecture_value: {
+      // sync w/ App's
+      get() {
+        return this.arch_code
+      },
+      set(value) {
+        this.$root.arch_code = value
+      },
+    },
   },
 
   methods: {
-    architecture_codemirror_start() {
-      // TODO: migrate to Codemirror6 (see https://discuss.codemirror.net/t/codemirror-6-and-textareas/2731/5)
-      const editor_cfg = {
-        lineNumbers: true,
-        autoRefresh: true,
-      }
-
-      const textarea_arch_obj = document.getElementById("textarea_architecture")
-
-      if (textarea_arch_obj != null) {
-        textarea_arch_editor = CodeMirror.fromTextArea(
-          textarea_arch_obj,
-          editor_cfg,
-        )
-        textarea_arch_editor.setOption("keyMap", "sublime") // vim -> 'vim', 'emacs', 'sublime', ...
-        textarea_arch_editor.setValue(app._data.arch_code)
-        textarea_arch_editor.setSize("auto", "70vh")
-      }
-    },
-    assembly_codemirror_start() {
-      // TODO: migrate to Codemirror6 (see https://discuss.codemirror.net/t/codemirror-6-and-textareas/2731/5)
-      const editor_cfg = {
-        lineNumbers: true,
-        autoRefresh: true,
-      }
-
-      const textarea_assembly_obj = document.getElementById("textarea_assembly")
-
-      if (textarea_assembly_obj != null) {
-        textarea_assembly_editor = CodeMirror.fromTextArea(
-          textarea_assembly_obj,
-          editor_cfg,
-        )
-        textarea_assembly_editor.setOption("keyMap", "sublime") // vim -> 'vim', 'emacs', 'sublime', ...
-        textarea_assembly_editor.setValue(app._data.assembly_code)
-        textarea_assembly_editor.setSize("auto", "70vh")
-
-        // add Ctrl-m
-        const map = {
-          "Ctrl-M": function (cm) {
-            cm.execCommand("toggleComment")
-          },
-        }
-        textarea_assembly_editor.addKeyMap(map)
-      }
-    },
-
-    //Load codemirror
-    load_codemirror() {
-      setTimeout(function () {
-        architecture_codemirror_start()
-
-        if (codemirrorHistory != null) {
-          textarea_arch_editor.setHistory(codemirrorHistory)
-          textarea_arch_editor.undo()
-        }
-
-        textarea_arch_editor.setValue(app._data.arch_code)
-      }, 50)
-    },
-
-    //Close codemirror
-    arch_edit_codemirror_save() {
-      app._data.arch_code = textarea_arch_editor.getValue()
-      arch_code = textarea_arch_editor.getValue()
-      codemirrorHistory = textarea_arch_editor.getHistory()
-      textarea_arch_editor.toTextArea()
-    },
-
-    //Save edit architecture
+    // save edited architecture
     arch_edit_save() {
-      app._data.arch_code = textarea_arch_editor.getValue()
-      arch_code = textarea_arch_editor.getValue()
-
-      //Load architecture
-      let aux_architecture
-
       try {
-        aux_architecture = JSON.parse(app._data.arch_code)
+        loadArchitecture(JSON.parse(this.architecture_value))
       } catch {
         show_notification(
           "Architecture not edited. JSON format is incorrect",
@@ -113,20 +79,22 @@ export default {
         return
       }
 
-      load_arch_select(aux_architecture)
+      // update architecture data
+      this.$root.architecture_name = architecture.arch_conf[0].value
+      this.$root.architecture = architecture
+      this.$root.architecture_hash = architecture_hash
 
-      uielto_preload_architecture.data.architecture_name =
-        architecture.arch_conf[0].value
-      app._data.architecture = architecture
-      app._data.architecture_name = architecture.arch_conf[0].value
-      app._data.architecture_hash = architecture_hash
-
-      //Reset execution
-      instructions = []
-      app._data.instructions = instructions
+      // reset execution
+      this.$root.instructions = []
+      clear_instructions()
       creator_memory_clear()
 
       show_notification("Architecture edited correctly", "success")
+    },
+
+    handleReady({ view, _state }) {
+      // focus on editor
+      view.focus()
     },
   },
 }
@@ -139,14 +107,28 @@ export default {
     title="Edit Architecture"
     ok-title="Save"
     @ok="arch_edit_save"
-    @show="load_codemirror"
-    @hidden="arch_edit_codemirror_save"
   >
-    <textarea
-      id="textarea_architecture"
-      rows="14"
-      class="code-scroll-y d-none"
-      title="Architecture Definition"
-    ></textarea>
+    <Codemirror
+      ref="textarea"
+      class="codeArea"
+      placeholder="Architecture definition..."
+      v-model="architecture_value"
+      minimal
+      autofocus
+      wrap
+      tab
+      :dark="dark"
+      :tab-size="2"
+      :extensions="extensions"
+      @ready="handleReady"
+    />
+    <!-- :lang="this.lang" -->
   </b-modal>
 </template>
+
+<style lang="scss" scoped>
+.codeArea {
+  border: 1px solid #eee;
+  font-size: 0.85em;
+}
+</style>
