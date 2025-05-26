@@ -110,8 +110,8 @@ This control register is divided into bit `31`, which holds the interrupt type,
 and the rest of the bits, each bit corresponding to a specific exception code.
 Some of the most used are:
 - `0`-`3` (`0x00000008`): Machine software interrupt
-- `0`-`8` (`0x00000100`): Machine external interrupt - `1`-`11` (`0x80000800`):
-Environment call from U-mode
+- `0`-`8` (`0x00000100`): Machine external interrupt
+- `1`-`11` (`0x80000800`): Environment call from U-mode
 
 Therefore, in the case of the `ecall` instruction, bit `3` of `MIP` and bit 8 of
 `MCAUSE` are set.
