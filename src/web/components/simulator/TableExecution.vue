@@ -39,7 +39,6 @@ export default {
         "loadedInstructions",
         "tag",
       ],
-      render: 0n, // dummy variable to force components with this as key to refresh
     }
   },
 

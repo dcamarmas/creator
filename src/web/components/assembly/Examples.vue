@@ -19,20 +19,63 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <script>
+import { useModalController } from "bootstrap-vue-next"
+
+import { creator_ga } from "@/core/utils/creator_ga.mjs"
+import example_set from "#/examples/example_set.json"
+import { show_notification } from "@/web/utils.mjs"
+
 export default {
   props: {
     id: { type: String, required: true },
-    reff: { type: String, required: true },
-    example_set_available: { type: Array, required: true },
-    example_available: { type: Array, required: true },
-    compile: { type: String, required: true },
-    modal: { type: String, required: true },
+    architecture_name: { type: String, required: true },
+    compile: { type: Boolean, required: true },
+  },
+
+  setup() {
+    // this HAS to be defined here
+    const { hide } = useModalController()
+    return { hide }
+  },
+
+  computed: {
+    available_sets() {
+      const sets = example_set
+        .filter(set => set.architecture === this.architecture_name)
+        // convert sets to object ({"default": {...}, ...})
+        .reduce((obj, item) => {
+          obj[item.id] = {
+            name: item.name,
+            description: item.description,
+            url: item.url,
+          }
+          return obj
+        }, {})
+
+      // load examples
+      for (const [_key, set] of Object.entries(sets)) {
+        $.ajaxSetup({ async: false })
+        $.getJSON(set.url, cfg => {
+          set.examples = cfg
+        })
+        delete set.url
+      }
+
+      return sets
+    },
+
+    example_set_options() {
+      return Object.entries(this.available_sets).map(([id, set]) => ({
+        text: set.name,
+        value: id,
+      }))
+    },
   },
 
   data() {
     return {
-      example_set: 0,
-      example_set_name: "",
+      selected_set: "default", // selected example set
+      // example_set_name: "",
     }
   },
 
@@ -41,17 +84,44 @@ export default {
       return this.example_set
     },
 
-    /*Load a selected example*/
-    load_example(url, compile) {
-      this.$root.$emit("bv::hide::modal", this._props.modal, "#closeExample")
+    assemble() {
+      // this is horrible, because this component can also be a child
+      // component of assemblyView but, as we always start at the simulatorView,
+      // the component always exists in both views
+      this.$root.$refs.simulatorView?.$refs.toolbar?.$refs.btngroup1
+        ?.at(0)
+        ?.assembly_compiler()
 
-      $.get(url, function (data) {
-        code_assembly = data
-        if (compile == "false") {
-          textarea_assembly_editor.setValue(code_assembly)
-        } else {
-          uielto_toolbar_btngroup.methods.assembly_compiler(code_assembly)
+      // update table execution UI
+      // FIXME: this doesn't update shit
+      this.$root.$refs.simulatorView?.$refs.toolbar.$refs.btngroup1
+        .at(0)
+        ?.execution_UI_reset()
+    },
+
+    /* Load a selected example */
+    /**
+     * Loads and (optionally) assembles an example
+     *
+     * @param {String} url URL of the example file (.s)
+     * @param {Boolean} assemble Set to automatically assemble the example
+     */
+    load_example(url, assemble) {
+      // close modal
+      this.hide()
+
+      $.get(url, code => {
+        this.$root.assembly_code = code
+
+        if (assemble) {
+          // TODO: re-enable when fixed
+          // this.assemble()
         }
+
+        // we change to the assembly view bc I'm not able to update the
+        // execution table (see assemble()) when that's fixed, delete this
+        this.$root.creator_mode = "assembly"
+
         show_notification(
           " The selected example has been loaded correctly",
           "success",
@@ -63,50 +133,39 @@ export default {
           "event",
           "example",
           "example.loading",
-          "example.loading. url",
+          "example.loading.url",
         )
       })
-    },
-
-    //Change exmaple set variable
-    change_example_set(value) {
-      this.example_set = value
     },
   },
 }
 </script>
 
 <template>
-  <b-modal :id="id" title="Examples" :ref="reff" no-footer scrollable>
-    <b-form-group
-      label="Examples set available:"
-      v-if="example_set_available.length > 1"
-      v-slot="{ ariaDescribedby }"
-    >
-      <b-form-radio-group
-        v-if="example_set_available.length <= 2"
-        id="example_set"
-        class="w-100"
-        v-model="example_set"
-        :options="example_set_available"
-        button-variant="outline-secondary"
-        size="sm"
-        :aria-describedby="ariaDescribedby"
-        name="radios-btn-default"
-        buttons
-      ></b-form-radio-group>
-    </b-form-group>
+  <b-modal :id="id" title="Available examples" no-footer scrollable>
+    <!-- set selector -->
+    <b-form-radio-group
+      v-if="example_set_options.length > 0 && example_set_options.length < 3"
+      id="example_set"
+      class="w-100 mb-3"
+      v-model="selected_set"
+      :options="example_set_options"
+      button-variant="outline-secondary"
+      size="sm"
+      name="radios-btn-default"
+      buttons
+    />
 
     <b-dropdown
       id="examples_dropdown"
       class="w-100 mb-3"
       size="sm"
-      text="Examples set available"
-      v-if="example_set_available.length > 2"
+      text="Example sets available"
+      v-if="example_set_options.length > 2"
     >
       <b-dropdown-item
-        v-for="item in example_set_available"
-        @click="change_example_set(item.value)"
+        v-for="item in example_set_options"
+        @click="selected_set = item.value"
       >
         {{ item.text }}
       </b-dropdown-item>
@@ -115,8 +174,8 @@ export default {
     <span
       class="h6"
       v-if="
-        example_available.length == 0 ||
-        example_available[example_set].length == 0
+        example_set_options.length === 0 ||
+        available_sets[selected_set].examples.length === 0
       "
     >
       There\'s no examples at the moment
@@ -125,12 +184,11 @@ export default {
     <b-list-group>
       <b-list-group-item
         button
-        v-for="item in example_available[example_set]"
-        @click="load_example(item.url, compile)"
-        ref="closeExample"
+        v-for="example in available_sets[selected_set].examples"
+        @click="load_example(example.url, compile)"
       >
-        {{ item.name }}:
-        <span v-html="item.description"></span>
+        {{ example.name }}:
+        {{ example.description }}
       </b-list-group-item>
     </b-list-group>
   </b-modal>

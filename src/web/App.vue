@@ -221,13 +221,6 @@ export default {
       /************/
 
       //
-      // Available examples
-      //
-
-      example_set_available,
-      example_available,
-
-      //
       // Code error modal
       //
 
