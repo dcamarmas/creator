@@ -107,14 +107,11 @@ export default {
         /> -->
 
         <!-- Examples modal -->
-        <!-- <Examples
+        <Examples
           id="examples2"
-          ref="examples2"
-          :example_set_available="example_set_available"
-          :example_available="example_available"
-          compile="true"
-          modal="examples2"
-        /> -->
+          :architecture_name="architecture_name"
+          :compile="true"
+        />
 
         <!-- Calculator -->
         <!-- <Calculator id="calculator" /> -->

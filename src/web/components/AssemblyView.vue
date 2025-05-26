@@ -21,6 +21,7 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 import UIeltoToolbar from "./general/UIeltoToolbar.vue"
 import TextareaAssembly from "./assembly/TextareaAssembly.vue"
 import AssemblyError from "./assembly/AssemblyError.vue"
+import Examples from "./assembly/Examples.vue"
 
 export default {
   props: {
@@ -35,7 +36,7 @@ export default {
     dark: { type: Boolean, required: true },
   },
 
-  components: { UIeltoToolbar, TextareaAssembly, AssemblyError },
+  components: { UIeltoToolbar, TextareaAssembly, AssemblyError, Examples },
 }
 </script>
 
@@ -64,14 +65,11 @@ export default {
         <!-- <SaveAssembly id="save_assembly" /> -->
 
         <!-- Examples modal -->
-        <!-- <Examples
+        <Examples
           id="examples"
-          ref="examples"
-          :example_set_available="example_set_available"
-          :example_available="example_available"
-          compile="false"
-          modal="examples"
-        /> -->
+          :architecture_name="architecture_name"
+          :compile="false"
+        />
 
         <!-- Get uri -->
         <!-- <MakeURI id="make_uri" /> -->
