@@ -235,8 +235,7 @@ export default {
       // Assembly code
       //
 
-      // assembly_code: "",
-      assembly_code: ".text\n\tmain:\n\tli a0, 69\n\tli a7, 1\n\tecall",
+      assembly_code: "",
 
       /*************/
       /* Simulator */

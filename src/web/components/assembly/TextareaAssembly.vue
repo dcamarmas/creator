@@ -236,7 +236,6 @@ export default {
     placeholder="Assembly code..."
     v-model="code"
     basic
-    autofocus
     wrap
     tab
     :tab-size="4"

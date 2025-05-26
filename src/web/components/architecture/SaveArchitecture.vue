@@ -39,8 +39,8 @@ export default {
       const aux_object = jQuery.extend(true, {}, architecture)
       const aux_architecture = register_value_serialize(aux_object)
 
-      aux_architecture.components.forEach((c, i) => {
-        c.elements.forEach((e, j) => {
+      aux_architecture.components.forEach((c, _i) => {
+        c.elements.forEach((e, _j) => {
           if (e.default_value) e.value = e.default_value
           else e.value = 0
         })
@@ -50,13 +50,14 @@ export default {
       const textFileAsBlob = new Blob([text_2_write], { type: "text/json" })
       let file_name
 
-      if (this.name_arch_save == "") {
+      if (this.name_arch_save === "") {
         file_name = "architecture.json"
       } else {
         file_name = this.name_arch_save + ".json"
       }
 
-      //Download the JSON file
+      // Download the JSON file
+      // yes, this is actually the way to do it in JS...
       const download_link = document.createElement("a")
       download_link.download = file_name
       download_link.innerHTML = "My Hidden Link"
@@ -70,26 +71,26 @@ export default {
 
       download_link.click()
 
-      //Add the new architecture on CREATOR
-      const name_arch = file_name.replace("\.json", "")
-      load_architectures_available.push({
-        name: name_arch,
-        img: "./images/personalized_logo.png",
-        alt: name_arch + " logo",
-        id: "select_conf" + name_arch,
-        description: architecture.arch_conf[2].value,
-        available: 1,
-      })
-      load_architectures.push({ id: name_arch, architecture: text_2_write })
+      // Add the new architecture on CREATOR
+      // const name_arch = file_name.replace("\.json", "")
+      // load_architectures_available.push({
+      //   name: name_arch,
+      //   img: "./images/personalized_logo.png",
+      //   alt: name_arch + " logo",
+      //   id: "select_conf" + name_arch,
+      //   description: architecture.arch_conf[2].value,
+      //   available: 1,
+      // })
+      // load_architectures.push({ id: name_arch, architecture: text_2_write })
 
-      //Refresh cache values
-      if (typeof Storage !== "undefined") {
-        let auxArch = JSON.stringify(load_architectures, null, 2)
-        localStorage.setItem("load_architectures", auxArch)
+      // Refresh cache values
+      // if (typeof Storage !== "undefined") {
+      //   let auxArch = JSON.stringify(load_architectures, null, 2)
+      //   localStorage.setItem("load_architectures", auxArch)
 
-        auxArch = JSON.stringify(load_architectures_available, null, 2)
-        localStorage.setItem("load_architectures_available", auxArch)
-      }
+      //   auxArch = JSON.stringify(load_architectures_available, null, 2)
+      //   localStorage.setItem("load_architectures_available", auxArch)
+      // }
 
       show_notification("Save architecture", "success")
     },

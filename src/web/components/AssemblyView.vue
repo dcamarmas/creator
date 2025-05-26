@@ -22,6 +22,8 @@ import UIeltoToolbar from "./general/UIeltoToolbar.vue"
 import TextareaAssembly from "./assembly/TextareaAssembly.vue"
 import AssemblyError from "./assembly/AssemblyError.vue"
 import Examples from "./assembly/Examples.vue"
+import LoadAssembly from "./assembly/LoadAssembly.vue"
+import SaveAssembly from "./assembly/SaveAssembly.vue"
 
 export default {
   props: {
@@ -36,7 +38,14 @@ export default {
     dark: { type: Boolean, required: true },
   },
 
-  components: { UIeltoToolbar, TextareaAssembly, AssemblyError, Examples },
+  components: {
+    UIeltoToolbar,
+    TextareaAssembly,
+    AssemblyError,
+    Examples,
+    LoadAssembly,
+    SaveAssembly,
+  },
 }
 </script>
 
@@ -59,10 +68,10 @@ export default {
         <!-- Assembly navbar modals -->
 
         <!-- Load assembly form -->
-        <!-- <LoadAssembly id="load_assembly" /> -->
+        <LoadAssembly id="load_assembly" />
 
         <!-- Save assembly form -->
-        <!-- <SaveAssembly id="save_assembly" /> -->
+        <SaveAssembly id="save_assembly" />
 
         <!-- Examples modal -->
         <Examples

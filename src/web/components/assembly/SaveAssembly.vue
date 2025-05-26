@@ -19,105 +19,74 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <script>
-import { console_log } from "../../utils.mjs";
+import { creator_ga } from "@/core/utils/creator_ga.mjs"
+import { destroyClickedElement } from "@/web/utils.mjs"
 
 export default {
-    props: {
-        id: { type: String, required: true },
+  props: {
+    id: { type: String, required: true },
+  },
+
+  setup() {
+    const default_name = "assembly"
+
+    return { default_name }
+  },
+
+  data() {
+    return { filename: null }
+  },
+
+  methods: {
+    // Save code to a local file
+    download_assembly() {
+      const textToWrite = this.$root.assembly_code
+      const textFileAsBlob = new Blob([textToWrite], { type: "text/plain" })
+
+      // download (using JS magic)
+      const downloadLink = document.createElement("a")
+      downloadLink.download = (this.filename || this.default_name) + ".s"
+      downloadLink.innerHTML = "My Hidden Link"
+
+      window.URL = window.URL || window.webkitURL
+
+      downloadLink.href = window.URL.createObjectURL(textFileAsBlob)
+      downloadLink.onclick = destroyClickedElement
+      downloadLink.style.display = "none"
+      document.body.appendChild(downloadLink)
+
+      downloadLink.click()
+
+      // reset filename
+      this.filename = "assembly"
+
+      // Google Analytics
+      creator_ga("assembly", "assembly.save", "assembly.save")
     },
-
-    data() {
-        return {
-            //Saved file name
-            save_assembly: "",
-        };
-    },
-
-    methods: {
-        //Save assembly code in a local file
-        assembly_save() {
-            const textToWrite = textarea_assembly_editor.getValue();
-            const textFileAsBlob = new Blob([textToWrite], { type: "text/plain" });
-            let fileNameToSaveAs;
-
-            if (this.save_assembly == "") {
-                fileNameToSaveAs = "assembly.s";
-            } else {
-                fileNameToSaveAs = this.save_assembly + ".s";
-            }
-
-            const downloadLink = document.createElement("a");
-            downloadLink.download = fileNameToSaveAs;
-            downloadLink.innerHTML = "My Hidden Link";
-
-            window.URL = window.URL || window.webkitURL;
-
-            downloadLink.href = window.URL.createObjectURL(textFileAsBlob);
-            downloadLink.onclick = destroyClickedElement;
-            downloadLink.style.display = "none";
-            document.body.appendChild(downloadLink);
-
-            downloadLink.click();
-
-            this.save_assembly = "";
-
-            //Google Analytics
-            creator_ga("assembly", "assembly.save", "assembly.save");
-        },
-
-        getDebounceTime() {
-            // Determines the refresh timeout depending on the device being used
-            if (screen.width > 768) {
-                return 500;
-            } else {
-                return 1000;
-            }
-        },
-
-        //Stop user interface refresh
-        debounce: _.debounce(function (param, e) {
-            console_log(param);
-            console_log(e);
-
-            e.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-            let re = new RegExp("'", "g");
-            e = e.replace(re, '"');
-            re = new RegExp("[\f]", "g");
-            e = e.replace(re, "\\f");
-            re = new RegExp("[\n\]", "g");
-            e = e.replace(re, "\\n");
-            re = new RegExp("[\r]", "g");
-            e = e.replace(re, "\\r");
-            re = new RegExp("[\t]", "g");
-            e = e.replace(re, "\\t");
-            re = new RegExp("[\v]", "g");
-            e = e.replace(re, "\\v");
-
-            if (e == "") {
-                this[param] = null;
-                return;
-            }
-
-            console_log("this." + param + "= '" + e + "'");
-
-            eval("this." + param + "= '" + e + "'");
-
-            //this[param] = e.toString();
-            app.$forceUpdate();
-        }, this.getDebounceTime()),
-    },
-};
+  },
+}
 </script>
+
 <template>
-    <b-modal :id="id" title="Save Assembly" ok-title="Save to File" @ok="assembly_save">
-        <p>Please write the file name:</p>
-        <b-form-input
-            v-on:input="debounce('save_assembly', $event)"
-            :value="save_assembly"
+  <b-modal
+    :id="id"
+    title="Save Assembly"
+    ok-title="Save to File"
+    @ok="download_assembly"
+  >
+    <BForm class="d-flex flex-row align-items-center flex-wrap">
+      <label class="col-form-label col-lg-6">Filename:</label>
+      <div class="col-lg-6">
+        <b-input-group append=".s">
+          <b-form-input
+            v-model="filename"
+            class="text-end"
+            autofocus
             type="text"
-            placeholder="File name where assembly will be saved"
-            title="File name"
-        >
-        </b-form-input>
-    </b-modal>
+            :placeholder="default_name"
+          />
+        </b-input-group>
+      </div>
+    </BForm>
+  </b-modal>
 </template>
