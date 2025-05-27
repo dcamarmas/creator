@@ -20,6 +20,10 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 
 <script>
 import { architecture, memory_hash, architecture_hash } from "@/core/core.mjs"
+import {
+  creator_memory_update_space_view,
+  creator_memory_update_row_view,
+} from "@/core/memory/memoryViewManager.mjs"
 
 export default {
   props: {
@@ -167,6 +171,7 @@ export default {
       }
     },
   },
+
   computed: {
     main_memory_items() {
       // memory items that will be shown
@@ -205,7 +210,7 @@ export default {
             </template>
 
             <!-- remove "Tag" column title -->
-            <template v-slot:head(Tag)="row"> &nbsp; </template>
+            <template v-slot:head(Tag)="_row"> &nbsp; </template>
 
             <!-- control register badges -->
 
@@ -312,12 +317,13 @@ export default {
                 style="white-space: pre-wrap"
               >
                 {{ row.item.value }}
-
-                <font-awesome-icon
-                  icon="fa-solid fa-eye"
-                  v-if="row.item.eye && check_tag_null(row.item.hex)"
-                />
               </span>
+              <font-awesome-icon
+                icon="fa-solid fa-eye"
+                class="value-button"
+                v-b-modal.space_modal
+                v-if="row.item.eye && check_tag_null(row.item.hex)"
+              />
             </template>
           </b-table>
         </b-col>
@@ -387,26 +393,26 @@ export default {
       </b-row> -->
     </b-container>
 
-    <!-- <b-modal
+    <b-modal
       id="space_modal"
       size="sm"
       title="Select space view:"
       @hidden="hide_space_modal"
       @ok="change_space_view"
     >
-      <b-form-radio v-model="selected_space_view" value="sig_int"
-        >Signed Integer</b-form-radio
-      >
-      <b-form-radio v-model="selected_space_view" value="unsig_int"
-        >Unsigned Integer</b-form-radio
-      >
-      <b-form-radio v-model="selected_space_view" value="float"
-        >Float</b-form-radio
-      >
-      <b-form-radio v-model="selected_space_view" value="char"
-        >Char</b-form-radio
-      >
-    </b-modal> -->
+      <b-form-radio v-model="selected_space_view" value="sig_int">
+        Signed Integer
+      </b-form-radio>
+      <b-form-radio v-model="selected_space_view" value="unsig_int">
+        Unsigned Integer
+      </b-form-radio>
+      <b-form-radio v-model="selected_space_view" value="float">
+        Float
+      </b-form-radio>
+      <b-form-radio v-model="selected_space_view" value="char">
+        Char
+      </b-form-radio>
+    </b-modal>
 
     <!-- <b-modal
       id="stack_modal"
@@ -432,19 +438,6 @@ export default {
 </template>
 
 <style lang="scss" scoped>
-.memoryLayout {
-  width: 100%;
-  text-align: center;
-}
-
-.memoryLayoutDiv {
-  margin-top: 2%;
-  margin-bottom: 2%;
-}
-
-.memoryLayoutForm {
-  margin-bottom: 2%;
-}
 .memory_table {
   max-height: 49vh;
   padding-left: 1vw;
@@ -455,11 +448,6 @@ export default {
   max-height: 75vh;
   overflow-y: auto;
   -ms-overflow-style: -ms-autohiding-scrollbar;
-}
-
-.memoryValue {
-  float: right;
-  margin-right: 2%;
 }
 
 .memoryBorder {
@@ -486,5 +474,14 @@ export default {
 
 .text-blue-funny {
   color: #00bcfe;
+}
+
+.value-button {
+  float: right;
+  margin-right: 5%;
+}
+
+.value-button:hover {
+  cursor: pointer;
 }
 </style>
