@@ -136,3 +136,21 @@ export default {
     </b-row>
   </b-container>
 </template>
+
+<style lang="scss" scoped>
+:deep {
+  .memoryLayout {
+    width: 100%;
+    text-align: center;
+  }
+
+  .memoryLayoutForm {
+    margin-bottom: 2%;
+  }
+
+  .memoryLayoutDiv {
+    margin-top: 2%;
+    margin-bottom: 2%;
+  }
+}
+</style>
