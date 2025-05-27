@@ -36,15 +36,16 @@ export default {
         "Select All": ["a"],
         Undo: ["z"],
         Redo: ["y"],
+        "Assemble/Link": ["s"],
       },
       vim_commands: {
-        "Assemble/Link": [":w", "x"],
+        "Assemble/Link": [":w", ":x"],
       },
     }
   },
 
   computed: {
-    modifier_key() {
+    modifierKey() {
       return this.browser === "Mac" ? "⌘" : "Ctrl"
     },
   },
@@ -89,7 +90,7 @@ export default {
       >
         {{ name }} &nbsp;&nbsp;
         <b-badge variant="primary" pill v-for="b in binds">
-          {{ `${modifier_key} + ${b}` }}
+          {{ `${modifierKey} + ${b}` }}
         </b-badge>
       </b-list-group-item>
     </b-list-group>

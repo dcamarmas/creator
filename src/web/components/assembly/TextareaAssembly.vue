@@ -24,6 +24,7 @@ import { vim, Vim } from "@replit/codemirror-vim"
 import { StreamLanguage } from "@codemirror/language"
 import { gas } from "@codemirror/legacy-modes/mode/gas"
 import { EditorView } from "codemirror"
+import { keymap } from "@codemirror/view"
 import { tags as t } from "@lezer/highlight"
 import { createTheme } from "@uiw/codemirror-themes"
 
@@ -104,6 +105,18 @@ const creatorDarkTheme = createTheme({
   ],
 })
 
+/**
+ * Handler for the Ctrl-s keydown event that disables its default action
+ */
+const ctrlSHandler = e => {
+  if (
+    e.key === "s" &&
+    (navigator.userAgent.includes("Mac") ? e.metaKey : e.ctrlKey)
+  ) {
+    e.preventDefault()
+  }
+}
+
 export default {
   props: {
     browser: { type: String, required: true },
@@ -116,6 +129,16 @@ export default {
   components: {
     PopoverShortcuts,
     Codemirror,
+  },
+
+  // we want to use Ctrl-s to assemble, so we disable its default action when
+  // mounting the component and re-enable it when unmounting
+  mounted() {
+    document.addEventListener("keydown", ctrlSHandler, false)
+  },
+
+  unmounted() {
+    document.removeEventListener("keydown", ctrlSHandler)
   },
 
   setup() {
@@ -164,6 +187,9 @@ export default {
           "&": { height: "650px" },
           ".cm-scroller": { overflow: "auto" },
         }),
+
+        // Ctrl-s to assemble
+        keymap.of([{ key: "Ctrl-s", mac: "Cmd-s", run: this.assemble }]),
       ]
 
       // vim mode
