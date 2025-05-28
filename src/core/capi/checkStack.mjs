@@ -22,48 +22,53 @@ import { architecture, REGISTERS } from "../core.mjs";
 import { crex_show_notification } from "../executor/executor.mjs";
 import { tag_instructions } from "../compiler/compiler.mjs";
 import {
-    track_stack_enter,
-    track_stack_leave,
-    track_stack_addHint,
-    track_stack_getHint,
-    track_stack_getAllHints,
-    track_stack_clearHints,
-} from "../memory/stackTracker.mjs";
+    creator_callstack_enter,
+    creator_callstack_leave,
+} from "../sentinel/sentinel.mjs";
+import { creator_ga } from "../utils/creator_ga.mjs";
 
-export const CAPI_DRAW_STACK = {
-    drawstack_begin: function (addr) {
+export const CHECK_STACK = {
+    begin: function (addr) {
         let function_name = "";
 
-        // 1.- get function name
+        // 1) Passing Convection enable?
+        if (architecture.arch_conf[6].value === 0) {
+            return;
+        }
+
+        // 2) get function name
         if (typeof REGISTERS[0] !== "undefined") {
             if (typeof tag_instructions[addr] === "undefined")
                 function_name = "0x" + parseInt(addr).toString(16);
             else function_name = tag_instructions[addr];
         }
 
-        // 2.- callstack_enter
-        track_stack_enter(function_name);
+        // 3) callstack_enter
+        creator_callstack_enter(function_name);
     },
-    drawstack_end: function () {
-        // track leave
-        const ret = track_stack_leave();
+    end: function () {
+        // 1) Passing Convection enable?
+        if (architecture.arch_conf[6].value === 0) {
+            return;
+        }
 
-        // 2) If everything is ok, just return
+        // 2) Callstack_leave
+        const ret = creator_callstack_leave();
+
+        // 3) If everything is ok, just return
         if (ret.ok) {
             return;
         }
 
-        // User notification
-        crex_show_notification(ret.msg, "warning");
-    },
+        // 4) Othewise report some warning...
+        // Google Analytics
+        creator_ga(
+            "execute",
+            "execute.exception",
+            "execute.exception.protection_jrra" + ret.msg,
+        );
 
-    // Add a hint for a specific memory address
-    // Example: drawstack_add_hint(0xFFFFFFFC, "whatever register");
-    drawstack_add_hint: function (address, name) {
-        const ret = track_stack_addHint(address, name);
-        if (!ret.ok) {
-            crex_show_notification(ret.msg, "warning");
-        }
-        return ret.ok;
+        // User notification
+        crex_show_notification(ret.msg, "danger");
     },
 };

@@ -3,7 +3,7 @@ import {
     assertNotEquals,
 } from "https://deno.land/std/assert/mod.ts";
 import { architecture } from "../../../../src/core/core.mjs"; // Unused but needed to fix circular dependency
-import { CAPI_FP, capi_uint2int } from "../../../../src/core/capi/capi_fp.mjs";
+import { CAPI_FP, capi_uint2int } from "../../../../src/core/capi/fp.mjs";
 
 Deno.test("split_double - splits 64-bit double into two 32-bit parts", () => {
     const testValue = 3.14159;

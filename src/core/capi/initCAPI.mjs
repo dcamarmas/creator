@@ -16,30 +16,26 @@
  *  You should have received a copy of the GNU Lesser General Public License
  *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  */
-import { CAPI_MEMORY } from "./capi_memory.mjs";
-import { CAPI_SYSCALL } from "./capi_syscall.mjs";
-import { CAPI_VALIDATION } from "./capi_validation.mjs";
-import { CAPI_CHECK_STACK } from "./capi_check_stack.mjs";
-import { CAPI_DRAW_STACK } from "./capi_draw_stack.mjs";
-import { CAPI_FP } from "./capi_fp.mjs";
-import { CAPI_RISCV } from "./capi_riscv.mjs";
+import { MEM } from "./memory.mjs";
+import { SYSCALL } from "./syscall.mjs";
+import { VALIDATION } from "./validation.mjs";
+import { CHECK_STACK } from "./checkStack.mjs";
+import { DRAW_STACK } from "./drawStack.mjs";
+import { FP } from "./fp.mjs";
+import { RISCV } from "./arch/riscv.mjs";
 
 // Export all CAPI functions and make them globally available
 export function initCAPI() {
     const CAPI = {
-        ...CAPI_MEMORY,
-        ...CAPI_SYSCALL,
-        ...CAPI_VALIDATION,
-        ...CAPI_CHECK_STACK,
-        ...CAPI_DRAW_STACK,
-        ...CAPI_FP,
-        ...CAPI_RISCV,
+        MEM,
+        SYSCALL,
+        VALIDATION,
+        CHECK_STACK,
+        DRAW_STACK,
+        FP,
+        RISCV,
     };
 
-    // Make functions globally available for eval
-    Object.entries(CAPI).forEach(([key, value]) => {
-        globalThis[`capi_${key}`] = value;
-    });
-
-    return CAPI;
+    // Make CAPI available as a global object
+    globalThis.CAPI = CAPI;
 }

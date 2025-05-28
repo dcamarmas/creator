@@ -1,7 +1,3 @@
-"use strict";
-
-import { bi_BigIntTodouble, bi_BigIntTofloat } from "./bigint.mjs";
-
 /*
  *  Copyright 2018-2025 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
@@ -20,26 +16,27 @@ import { bi_BigIntTodouble, bi_BigIntTofloat } from "./bigint.mjs";
  *  You should have received a copy of the GNU Lesser General Public License
  *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  */
-
+"use strict";
 /*
  * Representation
  */
+
 /**
- * method in chage of map a float number separated in parts and determinte what it.
- * @param s {Number} the sign of the number
- * @param e {Number} the exponent of the number.
- * @param m {Number} the mantinsa of the number
- * @return {number} 2^n with n as
- *      0 -> -infinite
- *      1 -> -normalized number
- *      2 -> -non-normalized number
- *      3 -> -0
- *      4 -> +0
- *      5 -> +normalized number
- *      6 -> +non-normalized number
- *      7 -> +inf
- *      8 -> -NaN
- *      9 -> +NaN
+ * Check the type of a number in IEEE 754 format.
+ * @param {number} s - Sign bit (0 for positive, 1 for negative)
+ * @param {number} e - Exponent (8 bits)
+ * @param {number} m - Mantissa (23 bits)
+ * @returns {number} Returns a number representing the type of the IEEE 754 number:
+ *      1 -> -infinite
+ *      2 -> -normalized number
+ *      4 -> -non-normalized number
+ *      8 -> -0
+ *      16 -> +0
+ *      32 -> +normalized number
+ *      64 -> +non-normalized number
+ *      128 -> +inf
+ *      256 -> -NaN
+ *      512 -> +NaN
  */
 export function checkTypeIEEE(s, e, m) {
     let rd = 0;
@@ -141,7 +138,8 @@ export function uint_to_float64(value0, value1) {
 export function float64_to_uint(value) {
     const buf = new ArrayBuffer(8);
     new Float64Array(buf)[0] = value;
-    return new Uint32Array(buf);
+    const arr = new Uint32Array(buf);
+    return [arr[0], arr[1]];
 }
 
 export function float2bin(number) {
@@ -233,15 +231,15 @@ export function hex2double(hexvalue) {
     new Uint8Array(buffer).set(value_bit.match(/.{8}/g).map(binaryStringToInt));
     return new DataView(buffer).getFloat64(0, false);
 }
-function float2int_v2(value) {
-    return parseInt(float2bin(value), 2);
-}
-function double2int_v2(value) {
-    return parseInt(double2bin(value), 2);
-}
-function int2float_v2(value) {
-    return hex2float("0x" + bin2hex(value.toString(2)));
-}
+// function float2int_v2(value) {
+//     return parseInt(float2bin(value), 2);
+// }
+// function double2int_v2(value) {
+//     return parseInt(double2bin(value), 2);
+// }
+// function int2float_v2(value) {
+//     return hex2float("0x" + bin2hex(value.toString(2)));
+// }
 export function full_print(value, bin_value, add_dot_zero) {
     let print_value = value;
 
@@ -284,72 +282,3 @@ export function getHexTwosComplement(value, bits, padding = true) {
     const hexValue = maskedValue.toString(16);
     return padding ? hexValue.padStart(bits / 4, "0") : hexValue;
 }
-
-export function toNaNBoxedBigInt(double) {
-    // This function is adapted from a StackOverflow answer
-    // https://stackoverflow.com/questions/65538406/convert-javascript-number-to-float-single-precision-ieee-754-and-receive-integ
-    // Convert double to float32 and NaN-box it
-
-    double = Number(double);
-
-    const BYTES = 4;
-    // Buffer is like a raw view into memory
-    const buffer = new ArrayBuffer(BYTES);
-    // Float32Array: interpret bytes in the memory as f32 (IEEE-754) bits
-    const float32Arr = new Float32Array(buffer);
-    // UInt32Array: interpret bytes in the memory as unsigned integer bits.
-    // Important that we use unsigned here, otherwise the MSB would be interpreted as sign
-    const uint32Array = new Uint32Array(buffer);
-    // will convert double to float during assignment
-    float32Arr[0] = double;
-    // now read the same memory as unsigned integer value
-    const integerValue = uint32Array[0];
-
-    // Create NaN-boxed representation: upper 32 bits all 1's, lower 32 bits contain float32 representation
-    const upperBits = 0xffffffff;
-    const lowerBits = integerValue;
-
-    // Format as hex string with both parts
-    const hexUpper = upperBits.toString(16).padStart(8, "0");
-    const hexLower = lowerBits.toString(16).padStart(8, "0");
-    const hexString = "0x" + hexUpper + hexLower;
-
-    // Finally, convert to BigInt
-    const bigIntValue = BigInt(hexString);
-
-    return bigIntValue;
-}
-
-export function toJSNumber(bigIntValue) {
-    // There are two cases:
-    // 1. The value is a valid float64 representation (all numbers in javascript are float64)
-    // 2. The value is a NaN-boxed representation of a float32
-    //    (upper 32 bits are all 1's, lower 32 bits contain float32 representation)
-    bigIntValue = BigInt(bigIntValue);
-    // Special check for 0
-    if (bigIntValue === 0n) {
-        return 0;
-    }
-    const upperBits = bigIntValue >> 32n;
-    const lowerBits = bigIntValue & 0xffffffffn;
-    const isNaNBoxed = upperBits === 0xffffffffn;
-    const isFloat64 =
-        lowerBits <= 0x7ff0000000000000n || lowerBits >= 0x8000000000000000n;
-    if (isNaNBoxed) {
-        // Extract the lower 32 bits and convert to float32
-        return bi_BigIntTofloat(lowerBits);
-    } else if (isFloat64) {
-        // Convert to float64
-        return bi_BigIntTodouble(bigIntValue);
-    } else {
-        // If none of the above, return NaN
-        return NaN;
-    }
-}
-
-// // Usage
-// const doubleValue = 3.14;
-// const bigIntValue = toFloat32NaNBoxed(doubleValue);
-// console.log(bigIntValue.toString(16)); // BigInt representation
-// const jsNumber = toJSNumber(bigIntValue);
-// console.log(jsNumber); // Converted back to JavaScript number

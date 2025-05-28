@@ -27,6 +27,8 @@ import {
     float64_to_uint,
     uint_to_float32,
     uint_to_float64,
+    toIEEE754_32bit,
+    toIEEE754_64bit,
 } from "../utils/utils.mjs";
 import { console_log } from "../utils/creator_logger.mjs";
 
@@ -35,9 +37,9 @@ export function capi_uint2int(value, bits = register_size_bits) {
     return BigInt.asIntN(bits, BigInt(value));
 }
 
-export const CAPI_FP = {
+export const FP = {
     split_double: function (reg, index) {
-        const value = bin2hex(double2bin(reg));
+        const value = reg.toString(16).padStart(16, "0");
         console_log(value);
         if (index === 0) {
             return value.substring(0, 8);
@@ -64,13 +66,13 @@ export const CAPI_FP = {
         return capi_uint2int(value);
     },
 
-    uint2float64: function (value0, value1) {
-        return uint_to_float64(value0, value1);
-    },
+    // uint2float64: function (value0, value1) {
+    //     return uint_to_float64(value0, value1);
+    // },
 
-    float642uint: function (value) {
-        return float64_to_uint(value);
-    },
+    // float642uint: function (value) {
+    //     return float64_to_uint(value);
+    // },
 
     check_ieee: function (s, e, m) {
         return checkTypeIEEE(s, e, m);

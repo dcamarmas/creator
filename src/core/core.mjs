@@ -48,11 +48,18 @@ import {
     main_memory_restore,
     main_memory_serialize,
 } from "./memory/memoryCore.mjs";
+import { creator_memory_reset } from "./memory/memoryOperations.mjs";
 import * as wasm from "./compiler/deno/creator_compiler.js";
 import yaml from "js-yaml";
 import { crex_findReg } from "./register/registerLookup.mjs";
 import { readRegister } from "./register/registerOperations.mjs";
-import { dumpStack, loadStack } from "./memory/stackTracker.mjs";
+import {
+    dumpStack,
+    loadStack,
+    track_stack_reset,
+} from "./memory/stackTracker.mjs";
+import { creator_ga } from "./utils/creator_ga.mjs";
+import { creator_callstack_reset } from "./sentinel/sentinel.mjs";
 
 export let code_assembly = "";
 export let update_binary = "";
@@ -120,6 +127,7 @@ export const ARCHITECTURE_VERSION = "2.0";
 export let ENDIANNESS;
 export let WORDSIZE;
 export let REGISTERS;
+export let REGISTERS_BACKUP = [];
 export const register_size_bits = 64; //TODO: load from architecture
 
 // TODO: Make sure these variables are all needed
@@ -134,7 +142,7 @@ export const register_size_bits = 64; //TODO: load from architecture
 
 let code_binary = "";
 
-const CAPI = initCAPI();
+initCAPI();
 let creator_debug = false;
 
 BigInt.prototype.toJSON = function () {
@@ -166,6 +174,7 @@ function load_arch_select(cfg) {
     ENDIANNESS = architecture.arch_conf[3].value;
     WORDSIZE = architecture.arch_conf[1].value;
     REGISTERS = architecture.components;
+    REGISTERS_BACKUP = REGISTERS;
 
     architecture_hash = [];
     for (let i = 0; i < REGISTERS.length; i++) {
@@ -409,8 +418,10 @@ function buildCompleteInstruction(
  * @param {Object} architectureObj - The architecture object
  * @param {Array} instructions - Array of instruction definitions
  */
+// eslint-disable-next-line max-lines-per-function
 function processInstructions(architectureObj) {
     architectureObj.instructionsProcessed = [];
+    // eslint-disable-next-line max-lines-per-function
     architectureObj.instructions.forEach(instruction => {
         const template = findTemplateForInstruction(
             architectureObj,
@@ -422,6 +433,31 @@ function processInstructions(architectureObj) {
                 template,
                 instruction,
             );
+
+            // We need a marker to help distinguish the user definition from the pre-operation and post-operation definitions, so we can later perform the preload correctly.
+            // The marker can be any string.
+            instruction.definition =
+                "// BEGIN USERDEF\n" +
+                instruction.definition +
+                "\n// END USERDEF\n";
+
+            // If it has a "preoperation" or "postoperation" field, we need to concatenate it with the "definition"
+            // field, and remove them
+            if (instruction.preoperation) {
+                instruction.definition =
+                    "// PREOPERATION\n" +
+                    instruction.preoperation +
+                    "\n// DEFINITION\n" +
+                    instruction.definition;
+                delete instruction.preoperation;
+            }
+            if (instruction.postoperation) {
+                instruction.definition =
+                    instruction.definition +
+                    "\n// POSTOPERATION\n" +
+                    instruction.postoperation;
+                delete instruction.postoperation;
+            }
             // We need to find if any field is optional, because if it is, we need to
             // construct two different instructions, one with the field and one without it
 
@@ -1010,6 +1046,64 @@ export function assembly_compile(code, enable_color) {
     return ret;
 }
 
+/*
+ * CLK Cycles
+ */
+
+export let total_clk_cycles = 0;
+const clk_cycles_value = [
+    {
+        data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    },
+];
+const clk_cycles = [
+    { type: "Arithmetic floating point", clk_cycles: 0, percentage: 0 },
+    { type: "Arithmetic integer", clk_cycles: 0, percentage: 0 },
+    { type: "Comparison", clk_cycles: 0, percentage: 0 },
+    { type: "Conditional bifurcation", clk_cycles: 0, percentage: 0 },
+    { type: "Control", clk_cycles: 0, percentage: 0 },
+    { type: "Function call", clk_cycles: 0, percentage: 0 },
+    { type: "I/O", clk_cycles: 0, percentage: 0 },
+    { type: "Logic", clk_cycles: 0, percentage: 0, abbreviation: "Log" },
+    { type: "Memory access", clk_cycles: 0, percentage: 0 },
+    { type: "Other", clk_cycles: 0, percentage: 0 },
+    { type: "Syscall", clk_cycles: 0, percentage: 0 },
+    { type: "Transfer between registers", clk_cycles: 0, percentage: 0 },
+    { type: "Unconditional bifurcation", clk_cycles: 0, percentage: 0 },
+];
+export function clk_cycles_update(type) {
+    for (let i = 0; i < clk_cycles.length; i++) {
+        if (type == clk_cycles[i].type) {
+            clk_cycles[i].clk_cycles++;
+
+            clk_cycles_value[0].data[i]++;
+
+            total_clk_cycles++;
+            if (typeof app !== "undefined") {
+                app._data.total_clk_cycles++;
+            }
+        }
+    }
+
+    for (let i = 0; i < stats.length; i++) {
+        clk_cycles[i].percentage = (
+            (clk_cycles[i].clk_cycles / total_clk_cycles) *
+            100
+        ).toFixed(2);
+    }
+}
+function clk_cycles_reset() {
+    total_clk_cycles = 0;
+    if (typeof app !== "undefined") {
+        app._data.total_clk_cycles = 0;
+    }
+
+    for (let i = 0; i < clk_cycles.length; i++) {
+        clk_cycles[i].percentage = 0;
+
+        clk_cycles_value[0].data[i] = 0;
+    }
+}
 // execution
 // TODO: remove this function
 export function execute_program(limit_n_instructions) {
@@ -1026,6 +1120,74 @@ export function execute_program(limit_n_instructions) {
 }
 
 // state management
+
+export function stats_update(type) {
+    for (let i = 0; i < stats.length; i++) {
+        if (type == stats[i].type) {
+            stats[i].number_instructions++;
+            stats_value[i]++;
+
+            status.totalStats++;
+            if (typeof app !== "undefined") {
+                app._data.status.totalStats++;
+            }
+        }
+    }
+
+    for (let i = 0; i < stats.length; i++) {
+        stats[i].percentage = (
+            (stats[i].number_instructions / status.totalStats) *
+            100
+        ).toFixed(2);
+    }
+}
+
+function stats_reset() {
+    status.totalStats = 0;
+    if (typeof app !== "undefined") {
+        app._data.status.totalStats = 0;
+    }
+
+    for (let i = 0; i < stats.length; i++) {
+        stats[i].percentage = 0;
+
+        stats[i].number_instructions = 0;
+        stats_value[i] = 0;
+    }
+}
+
+export function reset() {
+    // Google Analytics
+    creator_ga("execute", "execute.reset");
+
+    status.execution_index = 0;
+    status.execution_init = 1;
+    status.run_program = 0;
+
+    // Reset stats
+    stats_reset();
+
+    //Power consumption reset
+    clk_cycles_reset();
+
+    // Reset console
+    status.keyboard = "";
+    status.display = "";
+
+    REGISTERS = REGISTERS_BACKUP;
+
+    architecture.memory_layout[4].value = backup_stack_address;
+    architecture.memory_layout[3].value = backup_data_address;
+
+    // reset memory
+    creator_memory_reset();
+
+    //Stack Reset
+    creator_callstack_reset();
+    track_stack_reset();
+
+    return true;
+}
 
 // TODO: remove this function
 // eslint-disable-next-line max-lines-per-function
@@ -1059,7 +1221,11 @@ export function get_state() {
         for (let j = 0; j < component.elements.length; j++) {
             const element = component.elements[j];
             const elementName = element.name;
-            const currentValue = element.value;
+            const bits = parseInt(element.nbits, 10);
+            const currentValue = BigInt.asUintN(
+                Number(bits),
+                BigInt(element.value),
+            );
             const registerSize = parseInt(element.nbits, 10);
             let defaultValue;
 
@@ -1116,12 +1282,10 @@ export function get_state() {
             if (componentType === "fp_registers") {
                 if (component.double_precision === false) {
                     formattedValue =
-                        "0x" +
-                        bin2hex(float2bin(bi_BigIntTofloat(currentValue)));
+                        "0x" + currentValue.toString(16).padStart(8, "0");
                 } else if (component.double_precision === true) {
                     formattedValue =
-                        "0x" +
-                        bin2hex(double2bin(bi_BigIntTodouble(currentValue)));
+                        "0x" + currentValue.toString(16).padStart(16, "0");
                 }
             } else {
                 formattedValue =
@@ -1220,7 +1384,11 @@ export function getState() {
         for (let j = 0; j < component.elements.length; j++) {
             const element = component.elements[j];
             const elementName = element.name;
-            const currentValue = element.value;
+            const bits = parseInt(element.nbits, 10);
+            const currentValue = BigInt.asUintN(
+                Number(bits),
+                BigInt(element.value),
+            );
             const registerSize = parseInt(element.nbits, 10);
             let defaultValue;
 

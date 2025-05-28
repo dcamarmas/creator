@@ -21,75 +21,25 @@ import { instructions } from "../compiler/compiler.mjs";
 import {
     app,
     architecture,
-    architecture_hash,
-    backup_data_address,
-    backup_stack_address,
-    stats,
-    stats_value,
+    stats_update,
     status,
     REGISTERS,
+    clk_cycles_update,
 } from "../core.mjs";
 import { creator_memory_zerofill } from "../memory/memoryManager.mjs";
-import { creator_memory_reset } from "../memory/memoryOperations.mjs";
-import { main_memory, main_memory_write_value } from "../memory/memoryCore.mjs"; // For debugging only
 import { crex_findReg_bytag } from "../register/registerLookup.mjs";
 import {
     readRegister,
     writeRegister,
 } from "../register/registerOperations.mjs";
-import { creator_callstack_reset } from "../sentinel/sentinel.mjs";
-import {
-    track_stack_getTop,
-    track_stack_reset,
-    track_stack_setsp,
-} from "../memory/stackTracker.mjs";
-import * as stack from "../memory/stackTracker.mjs";
-import {
-    bi_BigIntTofloat,
-    bi_floatToBigInt,
-    bi_intToBigInt,
-} from "../utils/bigint.mjs";
+import { track_stack_setsp } from "../memory/stackTracker.mjs";
+import { bi_intToBigInt } from "../utils/bigint.mjs";
 import { creator_ga } from "../utils/creator_ga.mjs";
 import { logger } from "../utils/creator_logger.mjs";
-import { bin2hex, float2bin, hex2double } from "../utils/utils.mjs";
 import { decode_instruction } from "./decoder.mjs";
 import { buildInstructionPreload } from "./preload.mjs";
 import { dumpMemory } from "../core.mjs"; // To use with debugger
-
-function stats_update(type) {
-    for (let i = 0; i < stats.length; i++) {
-        if (type == stats[i].type) {
-            stats[i].number_instructions++;
-            stats_value[i]++;
-
-            status.totalStats++;
-            if (typeof app !== "undefined") {
-                app._data.status.totalStats++;
-            }
-        }
-    }
-
-    for (let i = 0; i < stats.length; i++) {
-        stats[i].percentage = (
-            (stats[i].number_instructions / status.totalStats) *
-            100
-        ).toFixed(2);
-    }
-}
-
-function stats_reset() {
-    status.totalStats = 0;
-    if (typeof app !== "undefined") {
-        app._data.status.totalStats = 0;
-    }
-
-    for (let i = 0; i < stats.length; i++) {
-        stats[i].percentage = 0;
-
-        stats[i].number_instructions = 0;
-        stats_value[i] = 0;
-    }
-}
+import { main_memory, main_memory_write_value } from "../memory/memoryCore.mjs"; // For debugging only
 
 export function packExecute(error, err_msg, err_type, draw) {
     const ret = {};
@@ -551,90 +501,6 @@ export function executeProgramOneShot(limit_n_instructions) {
     );
 }
 
-// eslint-disable-next-line max-lines-per-function
-export function reset() {
-    // Google Analytics
-    creator_ga("execute", "execute.reset");
-
-    status.execution_index = 0;
-    status.execution_init = 1;
-    status.run_program = 0;
-
-    // Reset stats
-    stats_reset();
-
-    //Power consumption reset
-    clk_cycles_reset();
-
-    // Reset console
-    status.keyboard = "";
-    status.display = "";
-
-    for (let i = 0; i < architecture_hash.length; i++) {
-        for (let j = 0; j < REGISTERS[i].elements.length; j++) {
-            if (
-                REGISTERS[i].double_precision === false ||
-                (REGISTERS[i].double_precision === true &&
-                    REGISTERS[i].double_precision_type == "extended")
-            ) {
-                REGISTERS[i].elements[j].value =
-                    REGISTERS[i].elements[j].default_value;
-            } else {
-                var aux_value;
-                var aux_sim1;
-                var aux_sim2;
-
-                for (let a = 0; a < architecture_hash.length; a++) {
-                    for (let b = 0; b < REGISTERS[a].elements.length; b++) {
-                        if (
-                            REGISTERS[a].elements[b].name.includes(
-                                REGISTERS[i].elements[j].simple_reg[0],
-                            ) !== false
-                        ) {
-                            aux_sim1 = bin2hex(
-                                float2bin(
-                                    bi_BigIntTofloat(
-                                        REGISTERS[a].elements[b].default_value,
-                                    ),
-                                ),
-                            );
-                        }
-                        if (
-                            REGISTERS[a].elements[b].name.includes(
-                                REGISTERS[i].elements[j].simple_reg[1],
-                            ) !== false
-                        ) {
-                            aux_sim2 = bin2hex(
-                                float2bin(
-                                    bi_BigIntTofloat(
-                                        REGISTERS[a].elements[b].default_value,
-                                    ),
-                                ),
-                            );
-                        }
-                    }
-                }
-
-                aux_value = aux_sim1 + aux_sim2;
-                REGISTERS[i].elements[j].value = bi_floatToBigInt(
-                    hex2double("0x" + aux_value),
-                );
-            }
-        }
-    }
-
-    architecture.memory_layout[4].value = backup_stack_address;
-    architecture.memory_layout[3].value = backup_data_address;
-
-    // reset memory
-    creator_memory_reset();
-
-    //Stack Reset
-    creator_callstack_reset();
-    track_stack_reset();
-
-    return true;
-}
 //Exit syscall
 
 export function creator_executor_exit(error) {
@@ -712,64 +578,5 @@ export function writeStackLimit(stackLimit) {
         track_stack_setsp(Number(stackLimitBigInt));
         architecture.memory_layout[4].value =
             "0x" + stackLimitBigInt.toString(16).padStart(8, "0").toUpperCase();
-    }
-}
-
-/*
- * CLK Cycles
- */
-
-export let total_clk_cycles = 0;
-const clk_cycles_value = [
-    {
-        data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    },
-];
-const clk_cycles = [
-    { type: "Arithmetic floating point", clk_cycles: 0, percentage: 0 },
-    { type: "Arithmetic integer", clk_cycles: 0, percentage: 0 },
-    { type: "Comparison", clk_cycles: 0, percentage: 0 },
-    { type: "Conditional bifurcation", clk_cycles: 0, percentage: 0 },
-    { type: "Control", clk_cycles: 0, percentage: 0 },
-    { type: "Function call", clk_cycles: 0, percentage: 0 },
-    { type: "I/O", clk_cycles: 0, percentage: 0 },
-    { type: "Logic", clk_cycles: 0, percentage: 0, abbreviation: "Log" },
-    { type: "Memory access", clk_cycles: 0, percentage: 0 },
-    { type: "Other", clk_cycles: 0, percentage: 0 },
-    { type: "Syscall", clk_cycles: 0, percentage: 0 },
-    { type: "Transfer between registers", clk_cycles: 0, percentage: 0 },
-    { type: "Unconditional bifurcation", clk_cycles: 0, percentage: 0 },
-];
-function clk_cycles_update(type) {
-    for (let i = 0; i < clk_cycles.length; i++) {
-        if (type == clk_cycles[i].type) {
-            clk_cycles[i].clk_cycles++;
-
-            clk_cycles_value[0].data[i]++;
-
-            total_clk_cycles++;
-            if (typeof app !== "undefined") {
-                app._data.total_clk_cycles++;
-            }
-        }
-    }
-
-    for (let i = 0; i < stats.length; i++) {
-        clk_cycles[i].percentage = (
-            (clk_cycles[i].clk_cycles / total_clk_cycles) *
-            100
-        ).toFixed(2);
-    }
-}
-function clk_cycles_reset() {
-    total_clk_cycles = 0;
-    if (typeof app !== "undefined") {
-        app._data.total_clk_cycles = 0;
-    }
-
-    for (let i = 0; i < clk_cycles.length; i++) {
-        clk_cycles[i].percentage = 0;
-
-        clk_cycles_value[0].data[i] = 0;
     }
 }
