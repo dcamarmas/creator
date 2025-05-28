@@ -22,7 +22,7 @@ import { architecture } from "../core.mjs";
 import { creator_executor_exit } from "../executor/executor.mjs";
 import { writeMemory, readMemory } from "../memory/memoryOperations.mjs";
 import { creator_memory_value_by_type } from "../memory/memoryManager.mjs";
-import { capi_bad_align, capi_raise } from "./capi_validation.mjs";
+import { isMisaligned, raise } from "./validation.mjs";
 import { crex_findReg } from "../register/registerLookup.mjs";
 import {
     creator_callstack_newWrite,
@@ -39,13 +39,13 @@ import {
  * Description: similar to memmove/memcpy, store a value into an address
  */
 // Memory operations
-export const CAPI_MEMORY = {
-    mem_write: function (addr, value, type, reg_name) {
+export const MEM = {
+    write: function (addr, value, type, reg_name) {
         // Implementation of capi_mem_write
         const size = 1;
 
-        if (capi_bad_align(addr, type)) {
-            capi_raise("The memory must be align");
+        if (isMisaligned(addr, type)) {
+            raise("The memory must be align");
             creator_executor_exit(true);
         }
 
@@ -54,16 +54,14 @@ export const CAPI_MEMORY = {
             addr_16 >= parseInt(architecture.memory_layout[0].value) &&
             addr_16 <= parseInt(architecture.memory_layout[1].value)
         ) {
-            capi_raise(
-                "Segmentation fault. You tried to write in the text segment",
-            );
+            raise("Segmentation fault. You tried to write in the text segment");
             creator_executor_exit(true);
         }
 
         try {
             writeMemory(value, addr, type);
         } catch (e) {
-            capi_raise(
+            raise(
                 "Invalid memory access to address '0x" +
                     addr.toString(16) +
                     "'",
@@ -82,31 +80,29 @@ export const CAPI_MEMORY = {
         creator_callstack_newWrite(i, j, addr, type);
     },
 
-    mem_read: function (addr, type, reg_name) {
+    read: function (addr, type, reg_name) {
         // Implementation of capi_mem_read
         const size = 1;
         let val = 0x0;
 
-        if (capi_bad_align(addr, type)) {
-            capi_raise("The memory must be align");
+        if (isMisaligned(addr, type)) {
+            raise("The memory must be align");
             creator_executor_exit(true);
         }
 
         const addr_16 = parseInt(addr, 16);
         if (
-            addr_16 >= parseInt(architecture.memory_layout[0].value) &&
-            addr_16 <= parseInt(architecture.memory_layout[1].value)
+            addr_16 >= parseInt(architecture.memory_layout[0].value, 16) &&
+            addr_16 <= parseInt(architecture.memory_layout[1].value, 16)
         ) {
-            capi_raise(
-                "Segmentation fault. You tried to read in the text segment",
-            );
+            raise("Segmentation fault. You tried to read in the text segment");
             creator_executor_exit(true);
         }
 
         try {
             val = readMemory(addr, type);
         } catch (e) {
-            capi_raise(
+            raise(
                 "Invalid memory access to address '0x" +
                     addr.toString(16) +
                     "'",

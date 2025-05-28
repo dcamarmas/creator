@@ -2,7 +2,7 @@ import fs from "node:fs";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import * as creator from "../core/core.mjs";
-import { reset, step } from "../core/executor/executor.mjs";
+import { step } from "../core/executor/executor.mjs";
 import { decode_instruction } from "../core/executor/decoder.mjs";
 import process from "node:process";
 import { logger } from "../core/utils/creator_logger.mjs";
@@ -712,7 +712,7 @@ function handleSnapshotCommand(args: string[]) {
 function handleRestoreCommand(args: string[]) {
     if (args.length > 1) {
         // First reset the state
-        reset();
+        creator.reset();
         const filename = args[1];
         // const filename = "snapshot.json";
         const state = fs.readFileSync(filename, "utf8");
@@ -825,7 +825,7 @@ function handleAboutCommand() {
 }
 
 function handleResetCommand() {
-    reset();
+    creator.reset();
 
     // Reset the previous PC tracking
     PREVIOUS_PC = "0x0";
@@ -1625,7 +1625,7 @@ function main() {
 
     // Check if we're in tutorial mode
     if (TUTORIAL_MODE) {
-        reset();
+        creator.reset();
         startTutorial();
         return;
     }
@@ -1648,7 +1648,7 @@ function main() {
         if (!ACCESSIBLE) {
             console.log(creatorASCII);
         }
-        reset();
+        creator.reset();
         interactiveMode();
     } else {
         executeNonInteractive(argv.verbose, argv.state);

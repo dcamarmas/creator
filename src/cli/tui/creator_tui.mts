@@ -4,7 +4,7 @@ import fs from "node:fs";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import * as creator from "../../core/core.mjs";
-import { reset, step } from "../../core/executor/executor.mjs";
+import { step } from "../../core/executor/executor.mjs";
 import { decode_instruction } from "../../core/executor/decoder.mjs";
 import { logger } from "../../core/utils/creator_logger.mjs";
 import { instructions } from "../../core/compiler/compiler.mjs";
@@ -240,12 +240,7 @@ function render() {
 
 // --- TUI State ---
 // View management
-type ViewType =
-    | "instructions"
-    | "registers"
-    | "memory"
-    | "stack"
-    | "help";
+type ViewType = "instructions" | "registers" | "memory" | "stack" | "help";
 let currentView: ViewType = "instructions";
 let selectedOption = 0;
 let sidebarFocused = false;
@@ -300,7 +295,7 @@ const views = {
                     (currentRegisterBankIndex - 1 + registerTypes.length) %
                     registerTypes.length;
                 render();
-            }
+            },
         ],
         content: width => {
             return getRegistersContent(width);
@@ -315,7 +310,7 @@ const views = {
             },
             () => {
                 memoryViewAddress = Math.max(0, memoryViewAddress - 16);
-            }
+            },
         ],
         content: width => {
             return getMemoryContent(width, memoryViewAddress);
@@ -324,8 +319,7 @@ const views = {
     stack: {
         title: "Stack View",
         options: [],
-        actions: [
-        ],
+        actions: [],
         content: width => {
             return getStackContent(width);
         },
@@ -333,8 +327,7 @@ const views = {
     help: {
         title: "Help",
         options: [],
-        actions: [
-        ],
+        actions: [],
         content: width => {
             return getHelpContent(width);
         },
@@ -892,11 +885,11 @@ function getRegistersContent(width: number): string[] {
                 const displayName = altNames
                     ? `${primaryName}(${altNames})`
                     : primaryName;
-                
+
                 // Get the register's bit width and calculate hex digits needed
                 const nbits = reg.nbits;
                 const hexDigits = Math.ceil(nbits / 4);
-                
+
                 // Format depends on register type
                 let value;
                 if (regType === "fp_registers") {
@@ -912,7 +905,7 @@ function getRegistersContent(width: number): string[] {
                 // Format each register with consistent fixed width
                 const coloredName = colorText(
                     displayName.padEnd(maxWidths[col]),
-                    "36"
+                    "36",
                 );
                 const regText = `${coloredName}: 0x${value}`;
                 rowText += regText.padEnd(colWidth);
@@ -1269,8 +1262,6 @@ function getSidebarLines(height: number): string[] {
         // Add breakpoint count
         const breakpoints = instructions.filter(instr => instr.Break === true);
         lines.push(`BPs: ${breakpoints.length}`);
-
-
     }
 
     // Ensure we return exactly the requested height
@@ -1369,7 +1360,7 @@ function executeCommand(cmd: string): void {
 }
 
 function handleResetCommand() {
-    reset();
+    creator.reset();
     PREVIOUS_PC = "0x0";
     previousStates = [];
 
@@ -1794,7 +1785,7 @@ async function main() {
         }
 
         // Reset the processor
-        reset();
+        creator.reset();
 
         // Initial render (using the new buffered approach)
         render();

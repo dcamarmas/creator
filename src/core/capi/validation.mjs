@@ -20,9 +20,9 @@
 "use strict";
 import { creator_memory_type2size } from "../memory/memoryManager.mjs";
 import { app } from "../core.mjs";
-import { capi_uint2int } from "./capi_fp.mjs";
+import { capi_uint2int } from "./fp.mjs";
 
-export function capi_raise(msg) {
+export function raise(msg) {
     if (typeof app !== "undefined") {
         app.exception(msg);
     } else {
@@ -30,7 +30,7 @@ export function capi_raise(msg) {
     }
 }
 
-export function capi_arithmetic_overflow(op1, op2, res_u) {
+export function isOverflow(op1, op2, res_u) {
     const op1_u = capi_uint2int(op1);
     const op2_u = capi_uint2int(op2);
     res_u = capi_uint2int(res_u);
@@ -41,14 +41,14 @@ export function capi_arithmetic_overflow(op1, op2, res_u) {
     );
 }
 
-export function capi_bad_align(addr, type) {
+export function isMisaligned(addr, type) {
     const size = creator_memory_type2size(type);
     return addr % size !== 0n;
 }
 
 // Object export for initCAPI spreading
-export const CAPI_VALIDATION = {
-    raise: capi_raise,
-    arithmetic_overflow: capi_arithmetic_overflow,
-    bad_align: capi_bad_align,
+export const VALIDATION = {
+    raise: raise,
+    isOverflow: isOverflow,
+    isMisaligned: isMisaligned,
 };

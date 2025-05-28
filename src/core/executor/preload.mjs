@@ -83,8 +83,8 @@ export function handleFloatingPointReg(
     for (let j = 0; j < REGISTERS.length; j++) {
         for (let z = REGISTERS[j].elements.length - 1; z >= 0; z--) {
             if (REGISTERS[j].elements[z].name.includes(instructionExecPart)) {
-                result.reading = `var ${signatureRawPart}      = Number(readRegister (${j} ,${z}, "${signatureType}"));\n`;
-                result.reading_prev = `var ${signatureRawPart}_prev = Number(readRegister (${j} ,${z}, "${signatureType}"));\n`;
+                result.reading = `var ${signatureRawPart}      = readRegister (${j} ,${z}, "${signatureType}");\n`;
+                result.reading_prev = `var ${signatureRawPart}_prev = readRegister (${j} ,${z}, "${signatureType}");\n`;
                 result.reading_name = `var ${signatureRawPart}_name = '${instructionExecPart}';\n`;
 
                 const re = new RegExp(
@@ -94,7 +94,7 @@ export function handleFloatingPointReg(
                 if (auxDef.search(re) != -1) {
                     result.writing = `writeRegister(${signatureRawPart}, ${j}, ${z}, "${signatureType}");\n`;
                 } else {
-                    result.writing = `if(Math.abs(${signatureRawPart} - ${signatureRawPart}_prev) > Number.EPSILON) { writeRegister(${signatureRawPart} ,${j} ,${z}, "${signatureType}"); }\n`;
+                    result.writing = `if(Math.abs(${signatureRawPart} != ${signatureRawPart}_prev)) { writeRegister(${signatureRawPart} ,${j} ,${z}, "${signatureType}"); }\n`;
                 }
             }
         }
@@ -302,12 +302,17 @@ export function buildInstructionPreload(
     );
     console_log("instructionExecParts: " + instructionExecParts, "DEBUG");
 
+    // These markers are used to separate the user-defined part of the
+    // instruction from the preoperation and postoperation fields.
+    let userDefinition = auxDef.split("// BEGIN USERDEF")[1];
+    userDefinition = userDefinition.split("// END USERDEF")[0];
+
     // Collect all definitions
     const definitions = collectDefinitions(
         signatureRawParts,
         signatureParts,
         instructionExecParts,
-        auxDef,
+        userDefinition,
     );
 
     // Build descriptions

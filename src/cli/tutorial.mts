@@ -1,5 +1,4 @@
 import * as creator from "../core/core.mjs";
-import { reset } from "../core/executor/executor.mjs";
 import readline from "node:readline";
 import process from "node:process";
 import { clearConsole, colorText, processCommand } from "./creator6.mts";
@@ -526,7 +525,7 @@ export function startTutorial(): void {
         creator.assembly_compile(TUTORIAL_ASSEMBLY);
 
         // Reset the simulator to ensure clean state
-        reset();
+        creator.reset();
 
         // Create an interface for reading user input
         rl = readline.createInterface({
