@@ -1260,7 +1260,7 @@ instructions:
                 value: "1100011"
               - field: funct3
                 value: "101"
-          definition: "if (capi_uint2int(rs1) >= capi_uint2int(rs2))\n PC = PC + imm;"
+          definition: "if (CAPI.FP.uint2int(rs1) >= CAPI.FP.uint2int(rs2))\n PC = PC + imm;"
 
         - name: bgeu
           type: B
@@ -1269,7 +1269,7 @@ instructions:
                 value: "1100011"
               - field: funct3
                 value: "111"
-          definition: "if (capi_int2uint(rs1) > capi_int2uint(rs2))\n PC = PC + imm;"
+          definition: "if (CAPI.FP.int2uint(rs1) > CAPI.FP.int2uint(rs2))\n PC = PC + imm;"
 
         - name: blt
           type: B
@@ -1278,7 +1278,7 @@ instructions:
                 value: "1100011"
               - field: funct3
                 value: "100"
-          definition: "if (capi_uint2int(rs1) < capi_uint2int(rs2))\n PC = PC + imm;"
+          definition: "if (CAPI.FP.uint2int(rs1) < CAPI.FP.uint2int(rs2))\n PC = PC + imm;"
 
         - name: bltu
           type: B
@@ -1287,7 +1287,7 @@ instructions:
                 value: "1100011"
               - field: funct3
                 value: "110"
-          definition: "if (capi_int2uint(rs1) < capi_int2uint(rs2))\n PC = PC + imm;"
+          definition: "if (CAPI.FP.int2uint(rs1) < CAPI.FP.int2uint(rs2))\n PC = PC + imm;"
 
         - name: bne
           type: B
@@ -1331,7 +1331,7 @@ instructions:
                 value: "0010011"
               - field: funct3
                 value: "111"
-          definition: "rd = rs1 & capi_int2uint(imm);"
+          definition: "rd = rs1 & CAPI.FP.int2uint(imm);"
 
         - name: jalr
           type: I-Offset
@@ -1340,7 +1340,7 @@ instructions:
                 value: "1100111"
               - field: funct3
                 value: "000"
-          definition: "rd = PC + 4n;\n PC = (rs1+imm)&~1n;\n capi_callconv_end(); capi_drawstack_end(PC);"
+          definition: "rd = PC + 4n;\n PC = (rs1+imm)&~1n;\n CAPI.CHECK_STACK.end(); CAPI.DRAW_STACK.end(PC);"
 
         - name: lb
           type: I-Offset
@@ -1349,7 +1349,7 @@ instructions:
                 value: "0000011"
               - field: funct3
                 value: "000"
-          definition: "rd = capi_mem_read(imm+rs1, 'b', rd_name);"
+          definition: "rd = CAPI.MEM.read(imm+rs1, 'b', rd_name);"
 
         - name: lbu
           type: I-Offset
@@ -1358,7 +1358,7 @@ instructions:
                 value: "0000011"
               - field: funct3
                 value: "100"
-          definition: "var addr = capi_int2uint(rs1)+imm;\n rd = capi_mem_read(addr, 'bu', rd_name);\n rd = capi_int2uint(rd);"
+          definition: "var addr = CAPI.FP.int2uint(rs1)+imm;\n rd = CAPI.MEM.read(addr, 'bu', rd_name);\n rd = CAPI.FP.int2uint(rd);"
 
         - name: lh
           type: I-Offset
@@ -1367,7 +1367,7 @@ instructions:
                 value: "0000011"
               - field: funct3
                 value: "001"
-          definition: "rd = capi_mem_read(imm+rs1, 'h', rd_name);"
+          definition: "rd = CAPI.MEM.read(imm+rs1, 'h', rd_name);"
 
         - name: lhu
           type: I-Offset
@@ -1376,7 +1376,7 @@ instructions:
                 value: "0000011"
               - field: funct3
                 value: "101"
-          definition: "var addr = capi_int2uint(rs1)+imm;\n rd = capi_mem_read(addr, 'hu', rd_name);\n rd = capi_int2uint(rd);"
+          definition: "var addr = CAPI.FP.int2uint(rs1)+imm;\n rd = CAPI.MEM.read(addr, 'hu', rd_name);\n rd = CAPI.FP.int2uint(rd);"
 
         - name: lw
           type: I-Offset
@@ -1385,7 +1385,7 @@ instructions:
                 value: "0000011"
               - field: funct3
                 value: "010"
-          definition: "var addr = capi_int2uint(rs1)+imm;\n rd = capi_mem_read(addr, 'w', rd_name);"
+          definition: "var addr = CAPI.FP.int2uint(rs1)+imm;\n rd = CAPI.MEM.read(addr, 'w', rd_name);"
 
         - name: lwu
           type: I-Offset
@@ -1394,7 +1394,7 @@ instructions:
                 value: "0000011"
               - field: funct3
                 value: "110"
-          definition: "var addr = capi_int2uint(rs1)+imm;\n rd = capi_mem_read(addr, 'wu', rd_name);\n rd = capi_int2uint(rd);"
+          definition: "var addr = CAPI.FP.int2uint(rs1)+imm;\n rd = CAPI.MEM.read(addr, 'wu', rd_name);\n rd = CAPI.FP.int2uint(rd);"
 
         - name: ld
           type: I-Offset
@@ -1403,7 +1403,7 @@ instructions:
                 value: "0000011"
               - field: funct3
                 value: "011"
-          definition: "var addr = capi_int2uint(rs1)+imm;\n rd = capi_mem_read(addr, 'd', rd_name);"
+          definition: "var addr = CAPI.FP.int2uint(rs1)+imm;\n rd = CAPI.MEM.read(addr, 'd', rd_name);"
 
         - name: ori
           type: I
@@ -1427,7 +1427,7 @@ instructions:
                 stopbit: 26
               - field: shamt
                 startbit: 25
-          definition: "if (shamt > 0) {rd = capi_int2uint(rs1 << shamt);}"
+          definition: "if (shamt > 0) {rd = CAPI.FP.int2uint(rs1 << shamt);}"
 
         - name: slliw
           type: I-Shift
@@ -1438,7 +1438,7 @@ instructions:
                 value: "001"
               - field: funct7
                 value: "0000000"
-          definition: "if (shamt > 0) {const temp = ((BigInt(rs1) & 0xFFFFFFFFn) << BigInt(shamt)) & 0xFFFFFFFFn; rd = temp & 0x80000000n ? temp | 0xFFFFFFFF00000000n : temp; rd = capi_int2uint(rd);}"
+          definition: "if (shamt > 0) {const temp = ((BigInt(rs1) & 0xFFFFFFFFn) << BigInt(shamt)) & 0xFFFFFFFFn; rd = temp & 0x80000000n ? temp | 0xFFFFFFFF00000000n : temp; rd = CAPI.FP.int2uint(rd);}"
 
         - name: slti
           type: I
@@ -1447,7 +1447,7 @@ instructions:
                 value: "0010011"
               - field: funct3
                 value: "010"
-          definition: "rd = (capi_uint2int(rs1) < capi_uint2int(imm)) ? 1 : 0;"
+          definition: "rd = (CAPI.FP.uint2int(rs1) < CAPI.FP.uint2int(imm)) ? 1 : 0;"
 
         - name: sltiu
           type: I
@@ -1456,7 +1456,7 @@ instructions:
                 value: "0010011"
               - field: funct3
                 value: "011"
-          definition: "rd = (capi_int2uint(rs1) < capi_int2uint(imm)) ? 1 : 0;"
+          definition: "rd = (CAPI.FP.int2uint(rs1) < CAPI.FP.int2uint(imm)) ? 1 : 0;"
 
         - name: srai
           type: I-Shift
@@ -1478,7 +1478,7 @@ instructions:
                 value: "101"
               - field: funct7
                 value: "0100000"
-          definition: "if (shamt > 0) {const temp = BigInt.asIntN(32, BigInt(rs1)) >> BigInt(shamt); rd = capi_int2uint(temp);}"
+          definition: "if (shamt > 0) {const temp = BigInt.asIntN(32, BigInt(rs1)) >> BigInt(shamt); rd = CAPI.FP.int2uint(temp);}"
 
         - name: srli
           type: I-Shift
@@ -1500,7 +1500,7 @@ instructions:
                 value: "101"
               - field: funct7
                 value: "0000000"
-          definition: "if (shamt > 0) {const temp = ((BigInt(rs1) & 0xFFFFFFFFn) >> BigInt(shamt)) & 0xFFFFFFFFn; rd = temp & 0x80000000n ? temp | 0xFFFFFFFF00000000n : temp; rd = capi_int2uint(rd);}"
+          definition: "if (shamt > 0) {const temp = ((BigInt(rs1) & 0xFFFFFFFFn) >> BigInt(shamt)) & 0xFFFFFFFFn; rd = temp & 0x80000000n ? temp | 0xFFFFFFFF00000000n : temp; rd = CAPI.FP.int2uint(rd);}"
 
         - name: xori
           type: I
@@ -1524,7 +1524,7 @@ instructions:
           fields:
               - field: opcode
                 value: "1101111"
-          definition: "rd = PC + 4n;\n PC = PC + imm;\n capi_callconv_begin(PC); capi_drawstack_begin(PC);"
+          definition: "rd = PC + 4n;\n PC = PC + imm;\n CAPI.CHECK_STACK.begin(PC); CAPI.DRAW_STACK.begin(PC);"
 
         # R-type instructions
         #     31-25    24-20   19-15   14-12   11-7    6-0
@@ -1598,7 +1598,7 @@ instructions:
                 value: "0000000"
               - field: funct3
                 value: "001"
-          definition: "const temp = ((BigInt(rs1) & 0xFFFFFFFFn) << BigInt(rs2)) & 0xFFFFFFFFn; rd = temp & 0x80000000n ? temp | 0xFFFFFFFF00000000n : temp; rd = capi_int2uint(rd);"
+          definition: "const temp = ((BigInt(rs1) & 0xFFFFFFFFn) << BigInt(rs2)) & 0xFFFFFFFFn; rd = temp & 0x80000000n ? temp | 0xFFFFFFFF00000000n : temp; rd = CAPI.FP.int2uint(rd);"
 
         - name: slt
           type: R
@@ -1609,7 +1609,7 @@ instructions:
                 value: "0000000"
               - field: funct3
                 value: "010"
-          definition: "rd = (capi_uint2int(rs1) < capi_uint2int(rs2)) ? 1 : 0;"
+          definition: "rd = (CAPI.FP.uint2int(rs1) < CAPI.FP.uint2int(rs2)) ? 1 : 0;"
 
         - name: sltu
           type: R
@@ -1631,7 +1631,7 @@ instructions:
                 value: "0100000"
               - field: funct3
                 value: "101"
-          definition: "const temp = BigInt.asIntN(32, BigInt(rs1)) >> BigInt(rs2); rd = capi_int2uint(temp)"
+          definition: "const temp = BigInt.asIntN(32, BigInt(rs1)) >> BigInt(rs2); rd = CAPI.FP.int2uint(temp)"
 
         - name: sraw
           type: R
@@ -1642,7 +1642,7 @@ instructions:
                 value: "0100000"
               - field: funct3
                 value: "101"
-          definition: "const temp = BigInt.asIntN(32, BigInt(rs1)) >> BigInt(rs2); rd = capi_int2uint(temp);"
+          definition: "const temp = BigInt.asIntN(32, BigInt(rs1)) >> BigInt(rs2); rd = CAPI.FP.int2uint(temp);"
 
         - name: srl
           type: R
@@ -1664,7 +1664,7 @@ instructions:
                 value: "0000000"
               - field: funct3
                 value: "101"
-          definition: "const temp = ((BigInt(rs1) & 0xFFFFFFFFn) >> BigInt(rs2)) & 0xFFFFFFFFn; rd = temp & 0x80000000n ? temp | 0xFFFFFFFF00000000n : temp; rd = capi_int2uint(rd);"
+          definition: "const temp = ((BigInt(rs1) & 0xFFFFFFFFn) >> BigInt(rs2)) & 0xFFFFFFFFn; rd = temp & 0x80000000n ? temp | 0xFFFFFFFF00000000n : temp; rd = CAPI.FP.int2uint(rd);"
 
         - name: sub
           type: R
@@ -1714,7 +1714,7 @@ instructions:
                 value: "0100011"
               - field: funct3
                 value: "000"
-          definition: "capi_mem_write(rs1+imm, rs2, 'b', rs2_name);"
+          definition: "CAPI.MEM.write(rs1+imm, rs2, 'b', rs2_name);"
 
         - name: sh
           type: S
@@ -1723,7 +1723,7 @@ instructions:
                 value: "0100011"
               - field: funct3
                 value: "001"
-          definition: "capi_mem_write(imm+rs1, rs2, 'h', rs2_name);"
+          definition: "CAPI.MEM.write(imm+rs1, rs2, 'h', rs2_name);"
 
         # The check for the
         - name: sw
@@ -1733,7 +1733,7 @@ instructions:
                 value: "0100011"
               - field: funct3
                 value: "010"
-          definition: "capi_mem_write(imm+rs1, rs2, 'w', rs2_name); if (rs1_name === 'sp') { const formattedAddr = '0x'+(imm+rs1).toString(16).padStart(8, '0').toUpperCase(); capi_drawstack_add_hint(formattedAddr, rs2_name) }"
+          definition: "CAPI.MEM.write(imm+rs1, rs2, 'w', rs2_name); if (rs1_name === 'sp') { const formattedAddr = '0x'+(imm+rs1).toString(16).padStart(8, '0').toUpperCase(); CAPI.DRAW_STACK.addHint(formattedAddr, rs2_name) }"
 
         - name: sd
           type: S
@@ -1742,7 +1742,7 @@ instructions:
                 value: "0100011"
               - field: funct3
                 value: "011"
-          definition: "capi_mem_write(imm+rs1, rs2, 'd', rs2_name);"
+          definition: "CAPI.MEM.write(imm+rs1, rs2, 'd', rs2_name);"
 
         # U-type instructions
         #           31-12                   11-7    6-0
@@ -1781,7 +1781,7 @@ instructions:
                 startbit: 31
                 stopbit: 7
                 value: "0000000000000000000000000"
-          definition: "switch(a7){\ncase 1n:\ncapi_print_int('a0');\nbreak;\ncase 2n:\ncapi_print_float('fa0');\nbreak;\ncase 3n:\ncapi_print_double('fa0');\nbreak;\ncase 4n:\ncapi_print_string('a0');\nbreak;\ncase 5n:\ncapi_read_int('a0');\nbreak;\ncase 6n:\ncapi_read_float('fa0');\nbreak;\ncase 7n:\ncapi_read_double('fa0');\nbreak;\ncase 8n:\ncapi_read_string('a0', 'a1');\nbreak;\ncase 9n:\ncapi_sbrk('a0', 'a0');\nbreak;\ncase 10n:\ncapi_exit();\nbreak;\ncase 11n:\ncapi_print_char('a0');\nbreak;\ncase 12n:\ncapi_read_char('a0');\ncase 13n:\ncapi_exit_error();\nbreak;\n}"
+          definition: "switch(a7){\ncase 1n:\nCAPI.SYSCALL.print(a0,'int');\nbreak;\ncase 2n:\ncase 3n:\nCAPI.SYSCALL.print(fa0Value,'float');\nbreak;\ncase 4n:\nCAPI.SYSCALL.print(a0,'string');\nbreak;\ncase 5n:\nCAPI.SYSCALL.read(a0,'int');\nbreak;\ncase 6n:\nCAPI.SYSCALL.read(fa0Value,'float');\nbreak;\ncase 7n:\nCAPI.SYSCALL.read(fa0Value,'double');\nbreak;\ncase 8n:\nCAPI.SYSCALL.read(a0, a1,'string');\nbreak;\ncase 9n:\nCAPI.SYSCALL.sbrk('a0','a0');\nbreak;\ncase 10n:\nCAPI.SYSCALL.exit();\nbreak;\ncase 11n:\nCAPI.SYSCALL.print(a0,'char');\nbreak;\ncase 12n:\nCAPI.SYSCALL.read(a0,'char');\nbreak;\n}"
 
         - name: ebreak
           type: Custom
@@ -1798,7 +1798,7 @@ instructions:
                 startbit: 19
                 stopbit: 7
                 value: "0000000000000"
-          definition: "console.log('Not implemented: ebreak');\n capi_raise('ebreak not implemented');"
+          definition: "console.log('Not implemented: ebreak');\n CAPI.VALIDATION.raise('ebreak not implemented');"
     M:
         #   ____ __     __ _____ ____   __  __
         #  |  _ \\ \   / /|___ /|___ \ |  \/  |
@@ -1817,7 +1817,7 @@ instructions:
                 value: "0000001"
               - field: funct3
                 value: "100"
-          definition: "if (rs2 != 0)\n { rd = BigInt.asIntN(32, (BigInt.asIntN(32, BigInt(rs1)) / BigInt.asIntN(32, BigInt(rs2)))); }\n else { capi_raise('Division by zero not allowed'); }"
+          definition: "if (rs2 != 0)\n { rd = BigInt.asIntN(32, (BigInt.asIntN(32, BigInt(rs1)) / BigInt.asIntN(32, BigInt(rs2)))); }\n else { CAPI.VALIDATION.raise('Division by zero not allowed'); }"
 
         - name: divu
           type: R
@@ -1828,7 +1828,7 @@ instructions:
                 value: "0000001"
               - field: funct3
                 value: "101"
-          definition: "if (rs2 != 0)\n { rd = BigInt.asIntN(32, (BigInt.asUintN(32, BigInt(rs1)) / BigInt.asUintN(32, BigInt(rs2)))); }\n else { capi_raise('Division by zero not allowed'); }"
+          definition: "if (rs2 != 0)\n { rd = BigInt.asIntN(32, (BigInt.asUintN(32, BigInt(rs1)) / BigInt.asUintN(32, BigInt(rs2)))); }\n else { CAPI.VALIDATION.raise('Division by zero not allowed'); }"
 
         - name: mul
           type: R
@@ -1839,7 +1839,7 @@ instructions:
                 value: "0000001"
               - field: funct3
                 value: "000"
-          definition: "rd = capi_uint2int(rs1) * capi_uint2int(rs2);"
+          definition: "rd = CAPI.FP.uint2int(rs1) * CAPI.FP.uint2int(rs2);"
 
         - name: mulh
           type: R
@@ -1912,7 +1912,8 @@ instructions:
                 value: "010"
               - field: rd # We're overriding the rd field from the template
                 type: SFP-Reg
-          definition: "rd = capi_mem_read(rs1+imm, 'w', rd_name);\n rd = capi_uint2float32(rd);"
+          definition: "rd = CAPI.MEM.read(rs1+imm, 'wu', rd_name);"
+          postoperation: "rd = CAPI.RISCV.NaNBox(rd);"
 
           # R-type instructions
         - name: fadd.s
@@ -1927,6 +1928,8 @@ instructions:
                 custom: rounding-mode
                 optional: true
                 order: 4
+          preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2);"
+          postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN32'); } else { rd = CAPI.RISCV.toBigInt(rd,'NaNBfloat32_64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2);"
           definition: "rd = rs2 + rs1;"
 
         - name: fclass.s
@@ -1944,7 +1947,9 @@ instructions:
                 order: null
               - field: rd
                 type: INT-Reg
-          definition: "let a = capi_float2bin(rs1);\nrd=capi_check_ieee(parseInt(a[0]), parseInt(a.slice(1,9), 2), parseInt(a.slice(10), 2));"
+          preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); if (typeof rs2 !== 'undefined') { [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2); }"
+          postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN32'); } else { rd = CAPI.RISCV.toBigInt(rd,'NaNBfloat32_64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); if (typeof rs2 !== 'undefined') { rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2); }"
+          definition: "let a = CAPI.FP.float2bin(rs1);\nrd=CAPI.FP.check_ieee(parseInt(a[0]), parseInt(a.slice(1,9), 2), parseInt(a.slice(10), 2));"
 
         - name: fcvt.s.w
           # There's quite a bit of overriding here, but RISC-V
@@ -1963,7 +1968,8 @@ instructions:
                 custom: rounding-mode
                 optional: true
                 order: 3
-          definition: "rd = capi_uint2int(rs1)"
+          postoperation: "rd = CAPI.RISCV.toBigInt(rd,'NaNBfloat32_64');"
+          definition: "rd = CAPI.FP.uint2int(rs1)"
 
         - name: fcvt.s.wu
           type: R-IntToFloat
@@ -1979,7 +1985,7 @@ instructions:
                 custom: rounding-mode
                 optional: true
                 order: 3
-          definition: "rd = capi_int2uint(rs1)"
+          definition: "rd = CAPI.FP.int2uint(rs1)"
 
         - name: fcvt.w.s
           type: R-FloatToInt
@@ -1995,6 +2001,8 @@ instructions:
                 custom: rounding-mode
                 optional: true
                 order: 3
+          preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); if (typeof rs2 !== 'undefined') { [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2); }"
+          postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN32'); } else { rd = CAPI.RISCV.toBigInt(rd,'NaNBfloat32_64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); if (typeof rs2 !== 'undefined') { rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2); }"
           definition: "rd = parseInt(rs1);"
 
         - name: fcvt.wu.s
@@ -2011,7 +2019,9 @@ instructions:
                 custom: rounding-mode
                 optional: true
                 order: 3
-          definition: "rd = capi_int2uint(parseInt(rs1));"
+          preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); if (typeof rs2 !== 'undefined') { [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2); }"
+          postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN32'); } else { rd = CAPI.RISCV.toBigInt(rd,'NaNBfloat32_64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); if (typeof rs2 !== 'undefined') { rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2); }"
+          definition: "rd = CAPI.FP.int2uint(parseInt(rs1));"
 
         - name: fdiv.s
           type: R-Floating
@@ -2025,7 +2035,9 @@ instructions:
                 custom: rounding-mode
                 optional: true
                 order: 4
-          definition: "if (rs2 != 0)\n { rd = rs1 / rs2; }\n else { capi_raise('Division by zero not allowed'); }"
+          preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2);"
+          postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN32'); } else { rd = CAPI.RISCV.toBigInt(rd,'NaNBfloat32_64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2);"
+          definition: "if (rs2 != 0)\n { rd = rs1 / rs2; }\n else { CAPI.VALIDATION.raise('Division by zero not allowed'); }"
 
         - name: feq.s
           type: R-Floating
@@ -2038,6 +2050,8 @@ instructions:
                 value: "010"
               - field: rd
                 type: INT-Reg
+          preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2);"
+          postoperation: "rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2);"
           definition: "rd = (rs1 === rs2) ? 1 : 0;"
 
         - name: fle.s
@@ -2051,6 +2065,8 @@ instructions:
                 value: "000"
               - field: rd
                 type: INT-Reg
+          preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2);"
+          postoperation: "rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2);"
           definition: "rd = (rs1 <= rs2) ? 1 : 0;"
 
         - name: flt.s
@@ -2064,6 +2080,8 @@ instructions:
                 value: "001"
               - field: rd
                 type: INT-Reg
+          preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2);"
+          postoperation: "rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2);"
           definition: "rd = (rs1 < rs2) ? 1 : 0;"
 
         - name: fmax.s
@@ -2075,6 +2093,8 @@ instructions:
                 value: "0010100"
               - field: funct3
                 value: "001"
+          preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2);"
+          postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN32'); } else { rd = CAPI.RISCV.toBigInt(rd,'NaNBfloat32_64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2);"
           definition: "rd = Math.max(rs1, rs2);"
 
         - name: fmin.s
@@ -2086,6 +2106,8 @@ instructions:
                 value: "0010100"
               - field: funct3
                 value: "000"
+          preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2);"
+          postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN32'); } else { rd = CAPI.RISCV.toBigInt(rd,'NaNBfloat32_64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2);"
           definition: "rd = Math.min(rs1, rs2);"
 
         - name: fmul.s
@@ -2100,6 +2122,8 @@ instructions:
                 custom: rounding-mode
                 optional: true
                 order: 4
+          preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2);"
+          postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN32'); } else { rd = CAPI.RISCV.toBigInt(rd,'NaNBfloat32_64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2);"
           definition: "rd = rs2 * rs1;"
 
         - name: fmv.w.x
@@ -2113,7 +2137,9 @@ instructions:
                 value: "00000"
               - field: funct3
                 value: "000"
-          definition: "rd = capi_uint2float32(rs1);"
+          preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2);"
+          postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN32'); } else { rd = CAPI.RISCV.toBigInt(rd,'NaNBfloat32_64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2);"
+          definition: "rd = CAPI.FP.uint2float32(rs1);"
 
         - name: fmv.x.w
           type: R-FloatToInt
@@ -2126,7 +2152,9 @@ instructions:
                 value: "00000"
               - field: funct3
                 value: "000"
-          definition: "rd = capi_float322uint(rs1);"
+          preoperation: "let type_rs1; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1);"
+          postoperation: "rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1);"
+          definition: "rd = CAPI.FP.float322uint(rs1);"
 
         - name: fsgnj.s
           type: R-Floating
@@ -2137,6 +2165,8 @@ instructions:
                 value: "0010000"
               - field: funct3
                 value: "000"
+          preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2);"
+          postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN32'); } else { rd = CAPI.RISCV.toBigInt(rd,'NaNBfloat32_64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2);"
           definition: "rd = (rs2 >= 0) ? Math.abs(rs1) : -Math.abs(rs1);"
 
         - name: fsgnjn.s
@@ -2148,6 +2178,8 @@ instructions:
                 value: "0010000"
               - field: funct3
                 value: "001"
+          preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2);"
+          postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN32'); } else { rd = CAPI.RISCV.toBigInt(rd,'NaNBfloat32_64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2);"
           definition: "rd = (rs2 <= 0) ? Math.abs(rs1) : -Math.abs(rs1);"
 
         - name: fsgnjx.s
@@ -2159,6 +2191,8 @@ instructions:
                 value: "0010000"
               - field: funct3
                 value: "010"
+          preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2);"
+          postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN32'); } else { rd = CAPI.RISCV.toBigInt(rd,'NaNBfloat32_64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2);"
           definition: "let a = rs1<0; let b = rs2<0;\nrd = (a^b) ? -Math.abs(rs1) : Math.abs(rs1);"
 
         - name: fsqrt.s
@@ -2177,7 +2211,9 @@ instructions:
                 custom: rounding-mode
                 optional: true
                 order: 3
-          definition: "if (rs1 >= 0)\n { rd = Math.sqrt(rs1); }\n else { capi_raise('Square root of a negative number is not allowed.'); }"
+          preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); if (typeof rs2 !== 'undefined') { [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2); }"
+          postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN32'); } else { rd = CAPI.RISCV.toBigInt(rd,'NaNBfloat32_64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); if (typeof rs2 !== 'undefined') { rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2); }"
+          definition: "if (rs1 >= 0)\n { rd = Math.sqrt(rs1); }\n else { CAPI.VALIDATION.raise('Square root of a negative number is not allowed.'); }"
 
         - name: fsub.s
           type: R-Floating
@@ -2191,6 +2227,8 @@ instructions:
                 custom: rounding-mode
                 optional: true
                 order: 4
+          preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2);"
+          postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN32'); } else { rd = CAPI.RISCV.toBigInt(rd,'NaNBfloat32_64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2);"
           definition: "rd = rs1 - rs2;"
 
         # R4-type instructions
@@ -2206,6 +2244,8 @@ instructions:
                 custom: rounding-mode
                 optional: true
                 order: 5
+          preoperation: "let type_rs1, type_rs2, type_rs3; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2); [rs3,type_rs3] = CAPI.RISCV.toJSNumberD(rs3);"
+          postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN32'); } else { rd = CAPI.RISCV.toBigInt(rd,'NaNBfloat32_64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2); rs3 = CAPI.RISCV.toBigInt(rs3,type_rs3);"
           definition: "rd = rs1 * rs2 + rs3;"
 
         - name: fmsub.s
@@ -2220,6 +2260,8 @@ instructions:
                 custom: rounding-mode
                 optional: true
                 order: 5
+          preoperation: "let type_rs1, type_rs2, type_rs3; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2); [rs3,type_rs3] = CAPI.RISCV.toJSNumberD(rs3);"
+          postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN32'); } else { rd = CAPI.RISCV.toBigInt(rd,'NaNBfloat32_64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2); rs3 = CAPI.RISCV.toBigInt(rs3,type_rs3);"
           definition: "rd = rs1 * rs2 - rs3;"
 
         - name: fnmadd.s
@@ -2234,6 +2276,8 @@ instructions:
                 custom: rounding-mode
                 optional: true
                 order: 5
+          preoperation: "let type_rs1, type_rs2, type_rs3; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2); [rs3,type_rs3] = CAPI.RISCV.toJSNumberD(rs3);"
+          postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN32'); } else { rd = CAPI.RISCV.toBigInt(rd,'NaNBfloat32_64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2); rs3 = CAPI.RISCV.toBigInt(rs3,type_rs3);"
           definition: "rd = -rs1 * rs2 - rs3;"
 
         - name: fnmsub.s
@@ -2248,6 +2292,8 @@ instructions:
                 custom: rounding-mode
                 optional: true
                 order: 5
+          preoperation: "let type_rs1, type_rs2, type_rs3; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2); [rs3,type_rs3] = CAPI.RISCV.toJSNumberD(rs3);"
+          postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN32'); } else { rd = CAPI.RISCV.toBigInt(rd,'NaNBfloat32_64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2); rs3 = CAPI.RISCV.toBigInt(rs3,type_rs3);"
           definition: "rd = -rs1 * rs2 + rs3;"
 
         # S-type instructions
@@ -2260,7 +2306,7 @@ instructions:
                 value: "010"
               - field: rs2
                 type: SFP-Reg
-          definition: "var val1 = capi_float322uint(rs2);\n capi_mem_write(rs1+imm, val1, 'w', rs2_name);"
+          definition: "CAPI.MEM.write(rs1+imm, rs2, 'w', rs2_name);"
     D:
         #   ____ __     __ _____ ____   ____
         #  |  _ \\ \   / /|___ /|___ \ |  _ \
@@ -2278,7 +2324,7 @@ instructions:
                 value: "011"
               - field: rd # We're overriding the rd field from the template
                 type: DFP-Reg
-          definition: "var isnotalign = capi_bad_align(rs1+imm, 'd');\n if (isnotalign) { capi_raise('The memory must be align'); }\n var val1 = capi_mem_read(rs1+imm, 'w', rd_name);\n var val2 = capi_mem_read(rs1+imm+4n, 'w', rd_name);\n var buf = new ArrayBuffer(8);\n var arr = (new Uint32Array(buf));\n arr[1] = Number(val1);\n arr[0] = Number(val2);\n rd = (new Float64Array(buf))[0];"
+          definition: "if (CAPI.VALIDATION.isMisaligned(rs1+imm, 'd')) { CAPI.VALIDATION.raise('The memory must be align'); }\nrd = CAPI.MEM.read(rs1+imm, 'd', rd_name);"
 
           # R-type instructions
         - name: fadd.d
@@ -2293,6 +2339,8 @@ instructions:
                 custom: rounding-mode
                 optional: true
                 order: 4
+          preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2);"
+          postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN64'); } else { rd = CAPI.RISCV.toBigInt(rd,'float64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2);"
           definition: "rd = rs2 + rs1;"
 
         - name: fclass.d
@@ -2310,7 +2358,9 @@ instructions:
                 order: null
               - field: rd
                 type: INT-Reg
-          definition: "let a = capi_float2bin(rs1);\nrd=capi_check_ieee(parseInt(a[0]), parseInt(a.slice(1,12), 2), parseInt(a.slice(13), 2));"
+          preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); if (typeof rs2 !== 'undefined') { [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2); }"
+          postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN32'); } else { rd = CAPI.RISCV.toBigInt(rd,'NaNBfloat32_64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); if (typeof rs2 !== 'undefined') { rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2); }"
+          definition: "let a = CAPI.FP.float2bin(rs1);\nrd=CAPI.FP.check_ieee(parseInt(a[0]), parseInt(a.slice(1,12), 2), parseInt(a.slice(13), 2));"
 
         - name: fcvt.d.s
           type: R-Conversion
@@ -2332,6 +2382,8 @@ instructions:
                 custom: rounding-mode
                 optional: true
                 order: null
+          preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); if (typeof rs2 !== 'undefined') { [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2); }"
+          postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN32'); } else { rd = CAPI.RISCV.toBigInt(rd,'NaNBfloat32_64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); if (typeof rs2 !== 'undefined') { rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2); }"
           definition: "rd = rs1;" # TODO: This doesn't seem right, check the RISC-V manual
 
         - name: fcvt.d.w
@@ -2354,7 +2406,8 @@ instructions:
                 type: DFP-Reg
               - field: rs1
                 type: INT-Reg
-          definition: "rd = capi_uint2int(rs1);"
+          postoperation: "rd = CAPI.RISCV.toBigInt(rd,'float64');"
+          definition: "rd = CAPI.FP.uint2int(rs1);"
 
         - name: fcvt.d.wu
           type: R-Conversion
@@ -2376,7 +2429,9 @@ instructions:
                 type: DFP-Reg
               - field: rs1
                 type: INT-Reg
-          definition: "rd = capi_int2uint(parseFloat(rs1));"
+          preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); if (typeof rs2 !== 'undefined') { [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2); }"
+          postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN32'); } else { rd = CAPI.RISCV.toBigInt(rd,'NaNBfloat32_64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); if (typeof rs2 !== 'undefined') { rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2); }"
+          definition: "rd = CAPI.FP.int2uint(parseFloat(rs1));"
 
         - name: fcvt.s.d
           type: R-Conversion
@@ -2396,6 +2451,8 @@ instructions:
                 type: SFP-Reg
               - field: rs1
                 type: DFP-Reg
+          preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); if (typeof rs2 !== 'undefined') { [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2); }"
+          postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN32'); } else { rd = CAPI.RISCV.toBigInt(rd,'NaNBfloat32_64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); if (typeof rs2 !== 'undefined') { rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2); }"
           definition: "rd = rs1;" # TODO: This doesn't seem right, check the RISC-V manual
 
         - name: fcvt.w.d
@@ -2416,6 +2473,8 @@ instructions:
                 type: INT-Reg
               - field: rs1
                 type: DFP-Reg
+          preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); if (typeof rs2 !== 'undefined') { [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2); }"
+          postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN32'); } else { rd = CAPI.RISCV.toBigInt(rd,'NaNBfloat32_64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); if (typeof rs2 !== 'undefined') { rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2); }"
           definition: "rd = parseInt(rs1);"
 
         - name: fcvt.wu.d
@@ -2436,7 +2495,9 @@ instructions:
                 type: INT-Reg
               - field: rs1
                 type: DFP-Reg
-          definition: "rd = capi_int2uint(parseInt(rs1));"
+          preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); if (typeof rs2 !== 'undefined') { [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2); }"
+          postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN32'); } else { rd = CAPI.RISCV.toBigInt(rd,'NaNBfloat32_64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); if (typeof rs2 !== 'undefined') { rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2); }"
+          definition: "rd = CAPI.FP.int2uint(parseInt(rs1));"
 
         - name: fdiv.d
           type: R-Double
@@ -2450,7 +2511,9 @@ instructions:
                 custom: rounding-mode
                 optional: true
                 order: 4
-          definition: "if (rs2 != 0)\n { rd = rs1 / rs2; }\n else { capi_raise('Division by zero not allowed'); }"
+          preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2);"
+          postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN64'); } else { rd = CAPI.RISCV.toBigInt(rd,'float64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2);"
+          definition: "if (rs2 != 0)\n { rd = rs1 / rs2; }\n else { CAPI.VALIDATION.raise('Division by zero not allowed'); }"
 
         - name: feq.d
           type: R-Double
@@ -2463,6 +2526,8 @@ instructions:
                 value: "010"
               - field: rd
                 type: INT-Reg
+          preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2);"
+          postoperation: "rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2);"
           definition: "rd = (rs1 == rs2) ? 1 : 0;"
 
         - name: fle.d
@@ -2476,6 +2541,8 @@ instructions:
                 value: "000"
               - field: rd
                 type: INT-Reg
+          preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2);"
+          postoperation: "rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2);"
           definition: "rd = (rs1 <= rs2) ? 1 : 0;"
 
         - name: flt.d
@@ -2489,6 +2556,8 @@ instructions:
                 value: "001"
               - field: rd
                 type: INT-Reg
+          preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2);"
+          postoperation: "rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2);"
           definition: "rd = (rs1 < rs2) ? 1 : 0;"
 
         - name: fmax.d
@@ -2500,7 +2569,10 @@ instructions:
                 value: "0010101"
               - field: funct3
                 value: "001"
-          definition: "rd = Math.max(rs1, rs2);"
+          preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2);"
+          postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN64'); } else { rd = CAPI.RISCV.toBigInt(rd,'float64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2);"
+
+          definition: "rd = Math.max(rs1,rs2);"
 
         - name: fmin.d
           type: R-Double
@@ -2511,6 +2583,8 @@ instructions:
                 value: "0010101"
               - field: funct3
                 value: "000"
+          preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2);"
+          postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN64'); } else { rd = CAPI.RISCV.toBigInt(rd,'float64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2);"
           definition: "rd = Math.min(rs1, rs2);"
 
         - name: fmul.d
@@ -2525,6 +2599,8 @@ instructions:
                 custom: rounding-mode
                 optional: true
                 order: 4
+          preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2);"
+          postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN64'); } else { rd = CAPI.RISCV.toBigInt(rd,'float64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2);"
           definition: "rd = rs1 * rs2;"
 
         - name: fsgnj.d
@@ -2536,6 +2612,8 @@ instructions:
                 value: "0010001"
               - field: funct3
                 value: "000"
+          preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2);"
+          postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN64'); } else { rd = CAPI.RISCV.toBigInt(rd,'float64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2);"
           definition: "rd = (rs2 > 0) ? Math.abs(rs1) : -Math.abs(rs1);"
 
         - name: fsgnjn.d
@@ -2547,6 +2625,8 @@ instructions:
                 value: "0010001"
               - field: funct3
                 value: "001"
+          preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2);"
+          postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN64'); } else { rd = CAPI.RISCV.toBigInt(rd,'float64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2);"
           definition: "rd = (rs2 > 0) ? -Math.abs(rs1) : +Math.abs(rs1);"
 
         - name: fsgnjx.d
@@ -2558,6 +2638,8 @@ instructions:
                 value: "0010001"
               - field: funct3
                 value: "010"
+          preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2);"
+          postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN64'); } else { rd = CAPI.RISCV.toBigInt(rd,'float64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2);"
           definition: "let a = rs1<0; let b = rs2<0;\nrd = (a^b) ? -Math.abs(rs1) : Math.abs(rs1);"
 
         - name: fsqrt.d
@@ -2576,7 +2658,9 @@ instructions:
                 custom: rounding-mode
                 optional: true
                 order: 3
-          definition: "if (rs1 >= 0)\n { rd = Math.sqrt(rs1); }\n else { capi_raise('Square root of a negative number is not allowed.'); }"
+          preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); if (typeof rs2 !== 'undefined') { [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2); }"
+          postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN32'); } else { rd = CAPI.RISCV.toBigInt(rd,'NaNBfloat32_64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); if (typeof rs2 !== 'undefined') { rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2); }"
+          definition: "if (rs1 >= 0)\n { rd = Math.sqrt(rs1); }\n else { CAPI.VALIDATION.raise('Square root of a negative number is not allowed.'); }"
 
         - name: fsub.d
           type: R-Double
@@ -2590,6 +2674,8 @@ instructions:
                 custom: rounding-mode
                 optional: true
                 order: 4
+          preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2);"
+          postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN64'); } else { rd = CAPI.RISCV.toBigInt(rd,'float64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2);"
           definition: "rd = rs1 - rs2;"
 
         # R4-type instructions
@@ -2605,6 +2691,8 @@ instructions:
                 custom: rounding-mode
                 optional: true
                 order: 5
+          preoperation: "let type_rs1, type_rs2, type_rs3; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2); [rs3,type_rs3] = CAPI.RISCV.toJSNumberD(rs3);"
+          postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN64'); } else { rd = CAPI.RISCV.toBigInt(rd,'float64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2); rs3 = CAPI.RISCV.toBigInt(rs3,type_rs3);"
           definition: "rd = rs1 * rs2 + rs3;"
 
         - name: fmsub.d
@@ -2619,6 +2707,8 @@ instructions:
                 custom: rounding-mode
                 optional: true
                 order: 5
+          preoperation: "let type_rs1, type_rs2, type_rs3; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2); [rs3,type_rs3] = CAPI.RISCV.toJSNumberD(rs3);"
+          postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN64'); } else { rd = CAPI.RISCV.toBigInt(rd,'float64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2); rs3 = CAPI.RISCV.toBigInt(rs3,type_rs3);"
           definition: "rd = rs1 * rs2 - rs3;"
 
         - name: fnmadd.d
@@ -2633,6 +2723,8 @@ instructions:
                 custom: rounding-mode
                 optional: true
                 order: 5
+          preoperation: "let type_rs1, type_rs2, type_rs3; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2); [rs3,type_rs3] = CAPI.RISCV.toJSNumberD(rs3);"
+          postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN64'); } else { rd = CAPI.RISCV.toBigInt(rd,'float64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2); rs3 = CAPI.RISCV.toBigInt(rs3,type_rs3);"
           definition: "rd = -rs1 * rs2 - rs3;"
 
         - name: fnmsub.d
@@ -2647,6 +2739,8 @@ instructions:
                 custom: rounding-mode
                 optional: true
                 order: 5
+          preoperation: "let type_rs1, type_rs2, type_rs3; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2); [rs3,type_rs3] = CAPI.RISCV.toJSNumberD(rs3);"
+          postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN64'); } else { rd = CAPI.RISCV.toBigInt(rd,'float64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2); rs3 = CAPI.RISCV.toBigInt(rs3,type_rs3);"
           definition: "rd = -rs1 * rs2 + rs3;"
 
         # S-type instructions
@@ -2659,7 +2753,7 @@ instructions:
                 value: "011"
               - field: rs2 # We're overriding the rs2 field from the template
                 type: DFP-Reg
-          definition: "var val = capi_split_double(rs2, 0);\n capi_mem_write(rs1+imm, val, 'w', rs2_name);\n val = capi_split_double(rs2, 1);\n capi_mem_write(rs1+imm+4n, val, 'w', rs2_name);"
+          definition: "var val = CAPI.FP.split_double(rs2, 0);\n CAPI.MEM.write(rs1+imm, val, 'w', rs2_name);\n val = CAPI.FP.split_double(rs2, 1);\n CAPI.MEM.write(rs1+imm+4n, val, 'w', rs2_name);"
     Zicsr:
         #   _____ _
         #  |__  /(_)  ___  ___  _ __
@@ -2697,7 +2791,7 @@ instructions:
                 startbit: 11
                 stopbit: 7
                 value: "00000"
-          definition: "console.log('Not implemented: fence.i');\n capi_raise('fence.i not implemented');"
+          definition: "console.log('Not implemented: fence.i');\n CAPI.VALIDATION.raise('fence.i not implemented');"
 
 pseudoinstructions:
     # Make sure the definitions correspond with those in the RISC-V ASM manual (TODO: Check these!)
@@ -2825,7 +2919,7 @@ pseudoinstructions:
                 type: INT-Reg
               - field: val
                 type: inm-signed
-          definition: "no_ret_op{value = Field.2.(63,0).int;\ninstructions = capi_rv_generateLoadImmediate(value, reg_name{1})};\nop{instructions};"
+          definition: "no_ret_op{value = Field.2.(63,0).int;\ninstructions = CAPI.RISCV.generateLoadImmediate(value, reg_name{1})};\nop{instructions};"
 
         - name: mv
           fields:
