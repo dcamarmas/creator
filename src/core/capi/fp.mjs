@@ -27,8 +27,6 @@ import {
     float64_to_uint,
     uint_to_float32,
     uint_to_float64,
-    toIEEE754_32bit,
-    toIEEE754_64bit,
 } from "../utils/utils.mjs";
 import { console_log } from "../utils/creator_logger.mjs";
 

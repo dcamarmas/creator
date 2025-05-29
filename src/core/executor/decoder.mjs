@@ -18,12 +18,8 @@
  *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { architecture, ENDIANNESS, REGISTERS } from "../core.mjs";
+import { architecture, ENDIANNESS, REGISTERS, WORDSIZE } from "../core.mjs";
 import { logger } from "../utils/creator_logger.mjs";
-
-// Bit position constants
-const WORD_SIZE = 32;
-const WORD_SIZE_MINUS_1 = WORD_SIZE - 1;
 const BINARY_BASE = 2;
 const DECIMAL_BASE = 10;
 
@@ -85,8 +81,8 @@ function extractOpcode(fields) {
             let value = null;
             try {
                 startbit =
-                    WORD_SIZE_MINUS_1 - parseInt(field.startbit, DECIMAL_BASE);
-                stopbit = WORD_SIZE - parseInt(field.stopbit, DECIMAL_BASE);
+                    WORDSIZE - 1 - parseInt(field.startbit, DECIMAL_BASE);
+                stopbit = WORDSIZE - parseInt(field.stopbit, DECIMAL_BASE);
                 value = field.valueField;
             } catch (e) {
                 logger.error("Error parsing opcode field: " + e);
@@ -114,8 +110,8 @@ function checkCopFields(instruction, instructionExec) {
         numCopFields++;
 
         const fieldValue = instructionExec.substring(
-            instruction.nwords * WORD_SIZE_MINUS_1 - field.startbit,
-            instruction.nwords * WORD_SIZE - field.stopbit,
+            instruction.nwords * (WORDSIZE - 1) - field.startbit,
+            instruction.nwords * WORDSIZE - field.stopbit,
         );
 
         if (field.valueField === fieldValue) {
@@ -168,8 +164,8 @@ function processInstructionField(field, instructionExec, instruction_nwords) {
         case "DFP-Reg":
         case "Ctrl-Reg": {
             const bin = instructionExec.substring(
-                instruction_nwords * WORD_SIZE_MINUS_1 - field.startbit,
-                instruction_nwords * WORD_SIZE - field.stopbit,
+                instruction_nwords * (WORDSIZE - 1) - field.startbit,
+                instruction_nwords * WORDSIZE - field.stopbit,
             );
             let convertedType = null;
             // The register type in the instruction is different from the one in the architecture
@@ -238,9 +234,7 @@ function processInstructionField(field, instructionExec, instruction_nwords) {
                 );
 
                 for (const bit of bitsOrder) {
-                    binaryValue += instructionExec.charAt(
-                        WORD_SIZE_MINUS_1 - bit,
-                    );
+                    binaryValue += instructionExec.charAt(WORDSIZE - 1 - bit);
                 }
                 // Now, check field.padding to see if we need to add padding
                 // We need to do this to support RISC-V's B-type instructions, which
@@ -265,8 +259,8 @@ function processInstructionField(field, instructionExec, instruction_nwords) {
                 // For example, the immediate in RISC-V's I and U-type instructions
 
                 const binaryValue = instructionExec.substring(
-                    instruction_nwords * WORD_SIZE_MINUS_1 - field.startbit,
-                    instruction_nwords * WORD_SIZE - field.stopbit,
+                    instruction_nwords * (WORDSIZE - 1) - field.startbit,
+                    instruction_nwords * WORDSIZE - field.stopbit,
                 );
 
                 value = parseInt(binaryValue, BINARY_BASE);
@@ -282,8 +276,8 @@ function processInstructionField(field, instructionExec, instruction_nwords) {
                 if (field.custom === "rounding-mode") {
                     // Get binary value as unsigned
                     const binaryValue = instructionExec.substring(
-                        instruction_nwords * WORD_SIZE_MINUS_1 - field.startbit,
-                        instruction_nwords * WORD_SIZE - field.stopbit,
+                        instruction_nwords * (WORDSIZE - 1) - field.startbit,
+                        instruction_nwords * WORDSIZE - field.stopbit,
                     );
 
                     // Convert to unsigned decimal

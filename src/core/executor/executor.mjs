@@ -304,7 +304,7 @@ function incrementProgramCounter(nwords) {
     const arch_bits = parseInt(architecture.arch_conf[1].value, 10);
     const word_size = arch_bits / 8;
     const increment = BigInt(nwords * word_size);
-    const pc_address = getPC();
+    const pc_address = BigInt(getPC());
     setPC(pc_address + increment);
     logger.debug("PC register updated to " + getPC());
     return null;

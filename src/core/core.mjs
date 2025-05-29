@@ -174,7 +174,9 @@ function load_arch_select(cfg) {
     ENDIANNESS = architecture.arch_conf[3].value;
     WORDSIZE = architecture.arch_conf[1].value;
     REGISTERS = architecture.components;
-    REGISTERS_BACKUP = REGISTERS;
+
+    // Create deep copy backup of REGISTERS
+    REGISTERS_BACKUP = JSON.parse(JSON.stringify(REGISTERS));
 
     architecture_hash = [];
     for (let i = 0; i < REGISTERS.length; i++) {
@@ -202,6 +204,7 @@ function findTemplateForInstruction(architectureObj, instruction) {
     const templateType = instruction.type;
     return architectureObj.templates.find(t => t.name === templateType);
 }
+
 /**
  * Update an existing field with instruction-specific properties
  * @param {Object} existingField - The template field to update
@@ -1174,7 +1177,7 @@ export function reset() {
     status.keyboard = "";
     status.display = "";
 
-    REGISTERS = REGISTERS_BACKUP;
+    REGISTERS = JSON.parse(JSON.stringify(REGISTERS_BACKUP));
 
     architecture.memory_layout[4].value = backup_stack_address;
     architecture.memory_layout[3].value = backup_data_address;
@@ -1531,6 +1534,9 @@ export function snapshot(extraData) {
     // And the status
     const statusJson = JSON.stringify(status);
 
+    // And the registers
+    const registersJson = JSON.stringify(REGISTERS);
+
     // And the stack
     const stackData = dumpStack();
 
@@ -1540,6 +1546,7 @@ export function snapshot(extraData) {
         instructions: instructionsJson,
         memory: memoryJson,
         status: statusJson,
+        registers: registersJson,
         stack: stackData,
         extraData: extraData,
     });
@@ -1555,15 +1562,21 @@ export function restore(snapshot) {
     const memoryJson = parsedSnapshot.memory;
     const instructionsJson = parsedSnapshot.instructions;
     const statusJson = parsedSnapshot.status;
+    const registersJson = parsedSnapshot.registers;
     const architectureObj = JSON.parse(architectureJson);
     const memoryObj = JSON.parse(memoryJson);
     const instructionsObj = JSON.parse(instructionsJson);
     const statusObj = JSON.parse(statusJson);
+    const registersObj = registersJson ? JSON.parse(registersJson) : null;
     const stackData = parsedSnapshot.stack;
     // Restore the instructions
     setInstructions(instructionsObj);
     // Restore the architecture object
     architecture = architectureObj;
+    // Restore the registers
+    if (registersObj) {
+        REGISTERS = registersObj;
+    }
     // Restore the main memory
     main_memory_restore(memoryObj);
     // Restore the stack

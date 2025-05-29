@@ -212,29 +212,29 @@ export function track_stack_getNames() {
 // Let programmers to modify some arbitrary field.
 // Example: track_stack_getTop("function_name", 1, 2, "main") ;
 //
-function track_stack_setTop(field, indexComponent, indexElement, value) {
-    const ret = {
-        ok: true,
-        msg: "",
-    };
+// function track_stack_setTop(field, indexComponent, indexElement, value) {
+//     const ret = {
+//         ok: true,
+//         msg: "",
+//     };
 
-    // check params
-    if (track_stack_limits.length === 0) {
-        ret.ok = false;
-        ret.msg = "track_stack_getTop: empty track_stack_limits !!.\n";
-        return ret;
-    }
+//     // check params
+//     if (track_stack_limits.length === 0) {
+//         ret.ok = false;
+//         ret.msg = "track_stack_getTop: empty track_stack_limits !!.\n";
+//         return ret;
+//     }
 
-    // set field value
-    const elto = track_stack_limits[track_stack_limits.length - 1];
-    if (typeof elto.length !== "undefined") {
-        elto[field][indexComponent][indexElement] = value;
-        return ret;
-    }
+//     // set field value
+//     const elto = track_stack_limits[track_stack_limits.length - 1];
+//     if (typeof elto.length !== "undefined") {
+//         elto[field][indexComponent][indexElement] = value;
+//         return ret;
+//     }
 
-    elto[field] = value;
-    return ret;
-}
+//     elto[field] = value;
+//     return ret;
+// }
 //
 // Updates the .end_callee field of the top stack element
 // Example: track_stack_setsp("0xFFFFFFF0") ;
