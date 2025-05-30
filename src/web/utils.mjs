@@ -22,6 +22,7 @@
 import $ from "jquery"
 
 import { creator_ga } from "@/core/utils/creator_ga.mjs"
+import { newArchitectureLoad } from "@/core/core.mjs"
 
 
 /*Stop the transmission of events to children*/
@@ -43,22 +44,22 @@ export function console_log(m) {
 export let notifications = []
 
 /**
- * Shows a notification on the UI and .
+ * Shows a notification on the UI and.
  *
- * @param {string} msg - Notification message.
- * @param {string} type - Type of notification, one of `'success'`, `'warning'` or `'danger'`.
- * @param {(obj: ToastOrchestratorShowParam) => ControllerKey, null} showToast - Toast controller's `show` function, obtained from `const { show } = useToastController()` inside a Component's `setup` function.
+ * @param {string} msg Notification message.
+ * @param {string} type Type of notification, one of `'success'`, `'warning'` or `'danger'`.
+ * @param {Object} root Root Vue component (App)
  *
  */
-export function show_notification(msg, type) {
+export function show_notification(msg, type, root = document.app) {
     // show notification
-    document.app.showToast({
+    root.showToast({
         props: {
             title: " ",  // TODO: use fontawesome icons here
             body: msg,
             variant: type,
             pos: "top-center",
-            value: document.app.$data.notification_time,
+            value: root.notification_time,
             // TODO: don't dismiss toast when type is danger
         }
     })
@@ -97,6 +98,7 @@ export function show_loading() {
 }
 
 export function hide_loading() {
+
     // if loading is programmed, cancel it
     if (loading_handler !== null) {
         clearTimeout(loading_handler)
@@ -120,202 +122,120 @@ export function backup_modal(env) {
     }
 }
 
-export function preload_load_example(data, url) {
-    if (url == null) {
-        show_notification("The example doesn't exist", "info")
-        return
-    }
+/**
+ * Loads the specified architecture
+ * @param {Object} arch Architecture object, as defined in available_arch.json
+ * @param {Object} root Root Vue component (App)
+ */
+export function loadArchitecture(arch, root = document.app) {
+    // show_loading()
 
-    code_assembly = data
-    uielto_toolbar_btngroup.methods.assembly_compiler(code_assembly)
+    // TODO: use Fetch API instead of jquery:
+    // https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
 
-    // show notification
-    show_notification(" The selected example has been loaded.", "success")
+    //Synchronous JSON read
+    $.ajaxSetup({ async: false })
 
-    // Google Analytics
-    creator_ga("example", "example.loading", "example.loading." + url)
+    $.get("architecture/" + arch.file + ".yml", cfg => {
+        newArchitectureLoad(cfg)
+
+        // store code to be edited
+        // TODO: change this when migration w/ new core, we'll use YAMLs
+        root.arch_code = JSON.stringify(
+            cfg,
+            // serialize BigInts
+            (_key, value) =>
+            typeof value === "bigint"
+                ? Number(value) // FIXME: this is BAD
+                : value, // return everything else unchanged
+            2,
+        )
+
+        //Refresh UI
+        show_notification(
+            arch.name + " architecture has been loaded correctly",
+            "success",
+            root=root
+        )
+
+        // Google Analytics
+        creator_ga(
+            "architecture",
+            "architecture.loading",
+            "architectures.loading.preload_cache",
+        )
+
+        // hide_loading()
+
+    }).fail(() => {
+        show_notification(
+            arch.name + " architecture is not currently available",
+            "danger",
+            root=root
+        )
+
+        // hide_loading()
+    })
+
 }
 
-export function preload_find_example(example_set_available, hash) {
-    for (var i = 0; i < example_set_available.length; i++) {
-        for (
-            var j = 0;
-            j < example_available[i].length &&
-            example_set_available[i].text == hash.example_set;
-            j++
-        ) {
-            if (example_available[i][j].id === hash.example) {
-                return example_available[i][j].url
-            }
-        }
-    }
+/**
+ * Loads the specified example for the current architecture
+ *
+ * @param {string} architecture_name Name of the architecture
+ * @param {string} set_name Desired set name
+ * @param {string} example_id Desired example ID
+ * @param {Object} root Root Vue component (App)
+ *
+ */
+export function loadExample(
+    architecture_name,
+    set_name,
+    example_id,
+    root = document.app,
+) {
+    $.ajaxSetup({ async: false })
 
-    return null
-}
+    $.getJSON(
+        // get specified example set
+        example_set.find(
+            set =>
+                set.architecture === architecture_name && set.id === set_name,
+        ),
+    )
+        .done(
+            // load list of examples of the set
+            example_list => {
+                $.ajaxSetup({ async: false })
+                // load code
+                $.get(
+                    // get code uri
+                    example_list.find(example => example.id === example_id)
+                        ?.url,
+                )
+                    .done(code => {
+                        root.assembly_code = code
 
-export function preload_find_architecture(arch_availables, arch_name) {
-    for (var i = 0; i < arch_availables.length; i++) {
-        if (arch_availables[i].alias.includes(arch_name)) {
-            return arch_availables[i]
-        }
-    }
+                        // FIXME: as we can't compile (see above), we go to the
+                        // assembly view, when we should go to simulator view
+                        root.creator_mode = "assembly"
 
-    return null
-}
-
-export function preload_example_uri(asm_decoded) {
-    if (asm_decoded == null) {
-        show_notification("Assembly not valid", "info")
-        return
-    }
-
-    code_assembly = asm_decoded
-    uielto_toolbar_btngroup.methods.assembly_compiler(code_assembly)
-
-    // show notification
-    show_notification("The assembly code has been loaded.", "success")
-
-    // Google Analytics
-    creator_ga("example", "example.loading", "example.uri")
-}
-
-//
-// Preload tasks
-//
-
-export let creator_preload_tasks = [
-    // parameter: architecture
-    {
-        name: "architecture",
-        action: function (app, hash) {
-            const arch_name = hash.architecture.trim()
-            if (arch_name === "") {
-                return new Promise(function (resolve, reject) {
-                    resolve("Empty architecture.")
-                })
-            }
-
-            return $.getJSON(
-                "architecture/available_arch.json",
-                function (arch_availables) {
-                    const a_i = preload_find_architecture(
-                        arch_availables,
-                        arch_name,
-                    )
-                    uielto_preload_architecture.methods.load_arch_select(a_i)
-                    return "Architecture loaded."
-                },
-            )
-        },
-    },
-
-    // parameter: example_set
-    {
-        name: "example_set",
-        action: function (app, hash) {
-            const exa_set = hash.example_set.trim()
-            if (exa_set === "") {
-                return new Promise(function (resolve, reject) {
-                    resolve("Empty example set.")
-                })
-            }
-
-            uielto_preload_architecture.methods.load_examples_available(
-                hash.example_set,
-            )
-            return uielto_preload_architecture.data.example_loaded
-        },
-    },
-
-    // parameter: example
-    {
-        name: "example",
-        action: function (app, hash) {
-            return new Promise(function (resolve, reject) {
-                const url = preload_find_example(example_set_available, hash)
-                if (null == url) {
-                    reject("Example not found.")
-                }
-
-                $.get(url, function (data) {
-                    preload_load_example(data, url)
-                })
-
-                resolve("Example loaded.")
-            })
-        },
-    },
-
-    // parameter: asm
-    {
-        name: "asm",
-        action: function (app, hash) {
-            return new Promise(function (resolve, reject) {
-                const assembly = hash.asm.trim()
-                if (assembly === "") {
-                    return new Promise(function (resolve, reject) {
-                        resolve("Empty assembly.")
+                        show_notification(
+                            `Loaded example '${set_name}-${example_id}'`,
+                            "success",
+                            root,
+                        )
                     })
-                }
-
-                var asm_decoded = decodeURI(assembly)
-                preload_example_uri(asm_decoded)
-
-                resolve("Assembly loaded.")
-            })
-        },
-    },
-]
-
-//
-// Preload work
-//
-
-export function creator_preload_get2hash(window_location) {
-    let hash = {}
-    let hash_field = ""
-    let uri_obj = null
-
-    // 1.- check params
-    if (typeof window_location === "undefined") {
-        return hash
-    }
-
-    // 2.- get parameters
-    const parameters = new URL(window_location).searchParams
-    for (let i = 0; i < creator_preload_tasks.length; i++) {
-        hash_field = creator_preload_tasks[i].name
-        hash[hash_field] = parameters.get(hash_field)
-
-        // overwrite null with default values
-        if (hash[hash_field] === null) {
-            hash[hash_field] = ""
-        }
-    }
-
-    return hash
-}
-
-export async function creator_preload_fromHash(app, hash) {
-    var key = ""
-    var act = function () {}
-
-    // preload tasks in order
-    var o = ""
-    for (var i = 0; i < creator_preload_tasks.length; i++) {
-        key = creator_preload_tasks[i].name
-        act = creator_preload_tasks[i].action
-
-        if (hash[key] !== "") {
-            try {
-                var v = await act(app, hash)
-                o = o + v + "<br>"
-            } catch (e) {
-                o = o + e + "<br>"
-            }
-        }
-    }
-
-    // return ok
-    return o
+                    .fail(() =>
+                        show_notification(
+                            `'${example_id}' example not found`,
+                            "danger",
+                            root,
+                        ),
+                    )
+            },
+        )
+        .fail(() =>
+            show_notification(`'${set_name}' set not found`, "danger", root),
+        )
 }

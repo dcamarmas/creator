@@ -19,42 +19,72 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <script>
+import { useModalController } from "bootstrap-vue-next"
+import QrcodeVue from "qrcode.vue"
+
 export default {
   props: {
     id: { type: String, required: true },
+    architecture_name: { type: String, required: true },
+    assembly_code: { type: String, required: false },
+    example_set: { type: String, required: false },
+    example_id: { type: String, required: false },
   },
 
-  data() {
-    return {
-      uri: "",
-    }
+  components: {
+    QrcodeVue,
+  },
+
+  setup() {
+    // this HAS to be defined here
+    const { hide } = useModalController()
+    return { hide }
+  },
+
+  computed: {
+    uri() {
+      let u =
+        window.location.href.split("?")[0].split("#")[0] +
+        "?architecture=" +
+        encodeURIComponent(this.architecture_name)
+
+      if (this.assembly_code) {
+        u += `&asm=${encodeURIComponent(this.assembly_code)}`
+      } else if (this.example_set && this.example_id) {
+        u +=
+          `&example_set=${encodeURIComponent(this.example_set)}` +
+          `&example=${encodeURIComponent(this.example_id)}`
+      }
+
+      return u
+    },
   },
 
   methods: {
-    make_uri() {
-      this.uri =
-        window.location.href.split("?")[0].split("#")[0] +
-        "?architecture=" +
-        encodeURIComponent(app._data.architecture_name) +
-        "&asm=" +
-        encodeURIComponent(textarea_assembly_editor.getValue())
-    },
-
-    copy_uri() {
+    copyURI() {
       navigator.clipboard.writeText(this.uri)
+      this.hide()
     },
   },
 }
 </script>
 
 <template>
-  <b-modal :id="id" title="URI" no-footer class="text-center" @shown="make_uri">
-    <div class="text-center">
-      <b-form-textarea v-model="uri" :rows="5"></b-form-textarea>
-      <br />
-      <b-button variant="info" @click="copy_uri()">
-        <span class="fas fa-copy"></span> Copy
+  <b-modal :id="id" title="Share via URI" no-footer class="text-center">
+    <qrcode-vue
+      v-if="uri.length < 4296"
+      class="mb-3"
+      :value="uri"
+      level="M"
+      :size="300"
+      :margin="1"
+      render-as="canvas"
+    />
+    <b-input-group>
+      <b-form-input v-model="uri" :disabled="true" />
+      <b-button variant="info" @click="copyURI">
+        <font-awesome-icon icon="fa-solid fa-copy" /> Copy
       </b-button>
-    </div>
+    </b-input-group>
   </b-modal>
 </template>

@@ -11,19 +11,15 @@ export default {
     browser: String,
     os: { type: String, required: true },
   },
+
   emits: ["select-architecture"], // PreloadArchitecture's event, we just pass it to our parent
+
   components: {
     UIeltoToolbar,
     PreloadArchitecture,
     LoadArchitecture,
     // NewArchitecture,
     DeleteArchitecture,
-  },
-  data() {
-    return {
-      //Delete architecture modal
-      // modal_delete_arch_index: 0, //TODO: include into delete architecture component - modal info
-    }
   },
 }
 </script>
@@ -39,6 +35,7 @@ export default {
           :browser="browser"
           :os="os"
           :arch_available="arch_available"
+          ref="toolbar"
         />
 
         <!-- Architecture menu -->
@@ -55,7 +52,7 @@ export default {
                 <PreloadArchitecture
                   v-for="(item, index) in arch_available"
                   :arch_available="arch_available"
-                  :item="item"
+                  :architecture="item"
                   :index="index"
                   @select-architecture="
                     arch_name => {

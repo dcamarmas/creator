@@ -49,6 +49,7 @@ export default {
     display: String,
     keyboard: String,
   },
+
   components: {
     UIeltoToolbar,
     TableExecution,
