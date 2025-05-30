@@ -100,7 +100,7 @@ export default {
             <b-col cols="12" id="divAssembly"> -->
         <!-- Assembly textarea-->
         <TextareaAssembly
-          :browser="browser"
+          :os="os"
           :assembly_code="assembly_code"
           :vim_mode="vim_mode"
           :vim_custom_keybinds="vim_custom_keybinds"

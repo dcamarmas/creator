@@ -22,7 +22,7 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 export default {
   props: {
     target: { type: String, required: true },
-    browser: { type: String, required: true },
+    os: { type: String, required: true },
     vim_mode: { type: Boolean, required: true },
   },
 
@@ -46,7 +46,7 @@ export default {
 
   computed: {
     modifierKey() {
-      return this.browser === "Mac" ? "⌘" : "Ctrl"
+      return this.os === "Mac" ? "⌘ " : "Ctrl+"
     },
   },
 }
@@ -90,7 +90,7 @@ export default {
       >
         {{ name }} &nbsp;&nbsp;
         <b-badge variant="primary" pill v-for="b in binds">
-          {{ `${modifierKey} + ${b}` }}
+          {{ `${modifierKey}${b.toUpperCase()}` }}
         </b-badge>
       </b-list-group-item>
     </b-list-group>
