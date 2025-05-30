@@ -119,7 +119,7 @@ const ctrlSHandler = e => {
 
 export default {
   props: {
-    browser: { type: String, required: true },
+    os: { type: String, required: true },
     assembly_code: { type: String, required: true },
     vim_mode: { type: Boolean, required: true },
     vim_custom_keybinds: { type: Array, required: true },
@@ -233,11 +233,7 @@ export default {
 </script>
 
 <template>
-  <PopoverShortcuts
-    target="assemblyInfo"
-    :vim_mode="vimActive"
-    :browser="browser"
-  />
+  <PopoverShortcuts target="assemblyInfo" :vim_mode="vimActive" :os="os" />
 
   <b-button
     class="actionsGroup"
