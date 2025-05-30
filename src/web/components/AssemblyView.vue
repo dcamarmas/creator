@@ -24,6 +24,7 @@ import AssemblyError from "./assembly/AssemblyError.vue"
 import Examples from "./assembly/Examples.vue"
 import LoadAssembly from "./assembly/LoadAssembly.vue"
 import SaveAssembly from "./assembly/SaveAssembly.vue"
+import MakeURI from "./assembly/MakeURI.vue"
 
 export default {
   props: {
@@ -45,6 +46,7 @@ export default {
     Examples,
     LoadAssembly,
     SaveAssembly,
+    MakeURI,
   },
 }
 </script>
@@ -81,7 +83,11 @@ export default {
         />
 
         <!-- Get uri -->
-        <!-- <MakeURI id="make_uri" /> -->
+        <MakeURI
+          id="make_uri"
+          :architecture_name="architecture_name"
+          :assembly_code="assembly_code"
+        />
 
         <!-- Load binary form -->
         <!-- <LoadLibrary id="load_binary" /> -->

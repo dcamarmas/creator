@@ -19,23 +19,14 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <script>
-import {
-  // architecture,
-  // architecture_hash,
-  // architecture_available,
-  load_architectures_available,
-  back_card,
-  // load_architectures,
-  newArchitectureLoad
-} from "@/core/core.mjs"
+import { load_architectures_available, back_card } from "@/core/core.mjs"
 
-import { hide_loading, show_loading, show_notification } from "@/web/utils.mjs"
-import { creator_ga } from "@/core/utils/creator_ga.mjs"
+import { loadArchitecture } from "@/web/utils.mjs"
 
 export default {
   props: {
     arch_available: { type: Array, required: true },
-    item: { type: Object, required: true },
+    architecture: { type: Object, required: true },
     index: { type: Number, required: true },
   },
   emits: ["select-architecture"], // event to signal an architecture has been selected
@@ -45,102 +36,11 @@ export default {
      * Selects an architecture by emitting the 'select-architecture' event with the selected architecture's name to App (grandparent)
      * @param {Object} arch Selected architecture
      */
-    select_arch(arch) {
-      show_loading()
-      // load file
-
-      // TODO: use Fetch API instead of jquery:
-      // https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
-
-      //Synchronous JSON read
-      $.ajaxSetup({
-        async: false,
-      })
-
-      $.get("architecture/" + arch.file + ".yml", cfg => {
-        newArchitectureLoad(cfg)
-
-        //Refresh UI
-        show_notification(
-          arch.name + " architecture has been loaded correctly",
-          "success",
-        )
-
-        // Google Analytics
-        creator_ga(
-          "architecture",
-          "architecture.loading",
-          "architectures.loading.preload_cache",
-        )
-      }).fail(function () {
-        show_notification(
-          arch.name + " architecture is not currently available",
-          "info",
-        )
-      })
-
-      hide_loading()
-
-      this.$emit("select-architecture", arch.name) // emit to our grandparent
-
-      // Google Analytics
-      // creator_ga(
-      //   "architecture",
-      //   "architecture.loading",
-      //   "architectures.loading.preload_" + architecture.name,
-      // )
+    select_arch() {
+      loadArchitecture(this.architecture)
+      this.$emit("select-architecture", this.architecture.name) // emit to our grandparent
     },
 
-      //Synchronous JSON read
-      $.ajaxSetup({
-        async: false,
-      })
-
-      $.getJSON("architecture/" + arch.file + ".json", cfg => {
-        load_arch_select(cfg)
-
-        // store code to be edited
-        // TODO: change this when migration w/ new core, we'll use YAMLs
-        this.$root.arch_code = JSON.stringify(
-          cfg,
-          // serialize BigInts
-          (_key, value) =>
-            typeof value === "bigint"
-              ? Number(value) // FIXME: this is BAD
-              : value, // return everything else unchanged
-          2,
-        )
-
-        //Refresh UI
-        show_notification(
-          arch.name + " architecture has been loaded correctly",
-          "success",
-        )
-
-        // Google Analytics
-        creator_ga(
-          "architecture",
-          "architecture.loading",
-          "architectures.loading.preload_cache",
-        )
-      }).fail(function () {
-        show_notification(
-          arch.name + " architecture is not currently available",
-          "info",
-        )
-      })
-
-      hide_loading()
-
-      this.$emit("select-architecture", arch.name) // emit to our grandparent
-
-      // Google Analytics
-      // creator_ga(
-      //   "architecture",
-      //   "architecture.loading",
-      //   "architectures.loading.preload_" + architecture.name,
-      // )
-    },
     // //Load the available architectures
     // load_arch_available() {
     //   //Read architectures availables JSON
@@ -484,33 +384,41 @@ export default {
   <b-card
     no-body
     class="overflow-hidden arch_card architectureCard"
-    @mouseover="change_background(item.name, 1)"
-    @mouseout="change_background(item.name, 0)"
-    v-if="item.available === 1"
+    @mouseover="change_background(architecture.name, 1)"
+    @mouseout="change_background(architecture.name, 0)"
+    v-if="architecture.available === 1"
   >
     <b-row no-gutters>
-      <b-col sm="12" @click="select_arch(item)" class="w-100">
+      <b-col sm="12" @click="select_arch" class="w-100">
         <b-card-img
           class="rounded-0"
-          :src="item.img"
-          :alt="item.alt"
+          :src="architecture.img"
+          :alt="architecture.alt"
           thumbnail
           fluid
         />
       </b-col>
 
-      <b-col sm="12" @click="select_arch(item)" v-if="!default_arch(item.name)">
-        <b-card-body :title="item.name" title-tag="h2">
+      <b-col
+        sm="12"
+        @click="select_arch(architecture)"
+        v-if="!default_arch(architecture.name)"
+      >
+        <b-card-body :title="architecture.name" title-tag="h2">
           <b-card-text class="justify">
-            {{ item.description }}
+            {{ architecture.description }}
           </b-card-text>
         </b-card-body>
       </b-col>
 
-      <b-col sm="12" @click="select_arch(item)" v-if="default_arch(item.name)">
-        <b-card-body :title="item.name" title-tag="h2">
+      <b-col
+        sm="12"
+        @click="select_arch(architecture)"
+        v-if="default_arch(architecture.name)"
+      >
+        <b-card-body :title="architecture.name" title-tag="h2">
           <b-card-text class="justify">
-            {{ item.description }}
+            {{ architecture.description }}
           </b-card-text>
         </b-card-body>
       </b-col>

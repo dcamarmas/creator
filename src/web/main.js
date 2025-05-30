@@ -24,7 +24,7 @@ import App from "./App.vue"
 
 // Import Bootstrap
 import { createBootstrap } from "bootstrap-vue-next"
-import './scss/bootstrap.scss'
+import "./scss/bootstrap.scss"
 
 // import Fontawesome
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
@@ -46,13 +46,14 @@ window.$ = $
 
 // Vue config
 
-const app = createApp(App).component("font-awesome-icon", FontAwesomeIcon).use(createBootstrap())
+const app = createApp(App)
+    .component("font-awesome-icon", FontAwesomeIcon)
+    .use(createBootstrap())
 
 //Error handler
-app.config.errorHandler = function (err, vm, info) {
+app.config.errorHandler = function (err, _vm, _info) {
     show_notification(
-        "An error has ocurred, the simulator is going to restart.  \n Error: " +
-        err,
+        `An error has ocurred, the simulator is going to restart.\nError: ${err}`,
         "danger",
     )
     setTimeout(function () {
@@ -61,7 +62,7 @@ app.config.errorHandler = function (err, vm, info) {
 }
 
 try {
-    document.app = app.mount("#app")  // store in document so we can access it through JS as `document.app`
+    document.app = app.mount("#app") // store in document so we can access it through JS as `document.app`
 } catch (e) {
     show_notification(
         "An error has ocurred, the simulator is going to restart.  \n Error: " +

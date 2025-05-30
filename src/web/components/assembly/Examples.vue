@@ -22,8 +22,11 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 import { useModalController } from "bootstrap-vue-next"
 
 import { creator_ga } from "@/core/utils/creator_ga.mjs"
-import example_set from "#/examples/example_set.json"
 import { show_notification } from "@/web/utils.mjs"
+
+import example_set from "#/examples/example_set.json"
+
+import MakeURI from "./MakeURI.vue"
 
 export default {
   props: {
@@ -31,6 +34,8 @@ export default {
     architecture_name: { type: String, required: true },
     compile: { type: Boolean, required: true },
   },
+
+  components: { MakeURI },
 
   setup() {
     // this HAS to be defined here
@@ -75,7 +80,7 @@ export default {
   data() {
     return {
       selected_set: "default", // selected example set
-      // example_set_name: "",
+      selected_example: null, // selected example id
     }
   },
 
@@ -182,14 +187,33 @@ export default {
     </span>
 
     <b-list-group>
-      <b-list-group-item
-        button
+      <b-button-group
         v-for="example in available_sets[selected_set].examples"
-        @click="load_example(example.url, compile)"
+        :key="example.id"
+        size="sm"
+        class="p-1"
       >
-        {{ example.name }}:
-        {{ example.description }}
-      </b-list-group-item>
+        <b-col cols="11">
+          <b-list-group-item button @click="load_example(example.url, compile)">
+            {{ example.name }}:
+            {{ example.description }}
+          </b-list-group-item>
+        </b-col>
+        <b-button
+          v-b-modal.example_uri
+          @click="selected_example = example.id"
+          size="sm"
+        >
+          <font-awesome-icon icon="fa-link" />
+        </b-button>
+      </b-button-group>
     </b-list-group>
   </b-modal>
+
+  <MakeURI
+    id="example_uri"
+    :architecture_name="architecture_name"
+    :example_set="selected_set"
+    :example_id="selected_example"
+  />
 </template>
