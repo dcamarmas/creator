@@ -475,9 +475,21 @@ export function decode_instruction(
 ) {
     const toDecodeArray = toDecode.split(" ");
     const isBinary = /^[01]+$/.test(toDecodeArray[0]);
+    const isHex = /^0x[0-9a-fA-F]+$/.test(toDecodeArray[0]);
 
-    // Process based on instruction type (binary or assembly)
-    if (isBinary) {
+    // Convert hex to binary if needed
+    if (isHex) {
+        const hexValue = toDecodeArray[0].slice(2); // Remove "0x" prefix
+        // Calculate the number of bits needed (4 bits per hex digit)
+        const numBits = hexValue.length * 4;
+        const binaryValue = parseInt(hexValue, 16)
+            .toString(2)
+            .padStart(numBits, "0");
+        toDecode = binaryValue;
+    }
+
+    // Process based on instruction type (binary, hex converted to binary, or assembly)
+    if (isBinary || isHex) {
         if (ENDIANNESS === "little_endian" && !skipEndianness) {
             // Split by byte
             const byteSize = 8;
@@ -548,10 +560,14 @@ export function decode_instruction(
     }
 
     // No match found
-    throw new Error(
-        `Unknown Instruction: 0x${parseInt(toDecode, 2)
-            .toString(16)
-            .toUpperCase()
-            .padStart(8, "0")}`,
-    );
+    let errorValue;
+    if (isHex) {
+        errorValue = toDecodeArray[0].toUpperCase();
+    } else if (isBinary) {
+        errorValue = `0x${parseInt(toDecode, 2).toString(16).toUpperCase()}`;
+    } else {
+        errorValue = `"${toDecode}"`;
+    }
+
+    throw new Error(`Unknown Instruction: ${errorValue}`);
 }
