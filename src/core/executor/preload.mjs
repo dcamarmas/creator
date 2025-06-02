@@ -281,7 +281,6 @@ export function collectDefinitions(
     return definitions;
 }
 
-// eslint-disable-next-line max-lines-per-function
 export function buildInstructionPreload(
     signatureDef,
     instructionExec,
@@ -336,35 +335,6 @@ export function buildInstructionPreload(
         "\n\n/* Modify values */\n",
         writings,
     ].join("");
-
-    // Debug logging
-    logger.debug(
-        "\n===== INSTRUCTION EXECUTION [" +
-            execution_index +
-            "] =====\n" +
-            "Original Definition:\n" +
-            auxDef +
-            "\n" +
-            "Modified Values:\n" +
-            writings +
-            "\n" +
-            "=====================================",
-    );
-
-    // Will eval:
-    // logger.debug(
-    //     "instructions[" +
-    //         execution_index +
-    //         "].preload = function(elto) { " +
-    //         "   try {\n" +
-    //         finalDef.replace(/this./g, "elto.") +
-    //         "\n" +
-    //         "   }\n" +
-    //         "   catch(e){\n" +
-    //         "     throw e;\n" +
-    //         "   }\n" +
-    //         "}; ",
-    // );
 
     // Create preload function
     eval(
