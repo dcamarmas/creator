@@ -48,7 +48,7 @@ import { bi_intToBigInt } from "../utils/bigint.mjs";
 import { creator_ga } from "../utils/creator_ga.mjs";
 import { logger, console_log } from "../utils/creator_logger.mjs";
 import { bin2hex } from "../utils/utils.mjs";
-import * as wasm from "./deno/creator_compiler.js";
+
 import { main_memory_zerofill } from "../memory/memoryCore.mjs";
 
 let textarea_assembly_editor;
