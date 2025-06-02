@@ -1,4 +1,3 @@
-"use strict";
 /*
  *  Copyright 2018-2025 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
@@ -16,38 +15,38 @@
  *
  *  You should have received a copy of the GNU Lesser General Public License
  *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
- *
  */
-
+"use strict";
 /*
  * Representation
  */
+
 /**
- * method in chage of map a float number separated in parts and determinte what it.
- * @param s {Number} the sign of the number
- * @param e {Number} the exponent of the number.
- * @param m {Number} the mantinsa of the number
- * @return {number} 2^n with n as
- *      0 -> -infinite
- *      1 -> -normalized number
- *      2 -> -non-normalized number
- *      3 -> -0
- *      4 -> +0
- *      5 -> +normalized number
- *      6 -> +non-normalized number
- *      7 -> +inf
- *      8 -> -NaN
- *      9 -> +NaN
+ * Check the type of a number in IEEE 754 format.
+ * @param {number} s - Sign bit (0 for positive, 1 for negative)
+ * @param {number} e - Exponent (8 bits)
+ * @param {number} m - Mantissa (23 bits)
+ * @returns {number} Returns a number representing the type of the IEEE 754 number:
+ *      1 -> -infinite
+ *      2 -> -normalized number
+ *      4 -> -non-normalized number
+ *      8 -> -0
+ *      16 -> +0
+ *      32 -> +normalized number
+ *      64 -> +non-normalized number
+ *      128 -> +inf
+ *      256 -> -NaN
+ *      512 -> +NaN
  */
 export function checkTypeIEEE(s, e, m) {
     let rd = 0;
 
     if (!m && !e) rd = s ? 1 << 3 : 1 << 4;
     else if (!e) rd = s ? 1 << 2 : 1 << 5;
-    else if (!(e ^ 255))
+    else if (!(e ^ 255)) {
         if (m) rd = s ? 1 << 8 : 1 << 9;
         else rd = s ? 1 << 0 : 1 << 7;
-    else rd = s ? 1 << 1 : 1 << 6;
+    } else rd = s ? 1 << 1 : 1 << 6;
     return rd;
 }
 function binaryStringToInt(bstring) {
@@ -60,19 +59,19 @@ function validInteger(value) {
  * Convert to...
  */
 export function hex2char8(hexvalue) {
-    var num_char = hexvalue.toString().length / 2;
-    var exponent = 0;
-    var pos = 0;
+    const num_char = hexvalue.toString().length / 2;
+    const exponent = 0;
+    let pos = 0;
 
-    var valuec = [];
+    const valuec = [];
 
     for (let i = 0; i < num_char; i++) {
-        var auxHex = hexvalue.substring(pos, pos + 2);
+        const auxHex = hexvalue.substring(pos, pos + 2);
         valuec[i] = String.fromCharCode(parseInt(auxHex, 16));
-        pos = pos + 2;
+        pos += 2;
     }
 
-    var characters = "";
+    let characters = "";
 
     for (let i = 0; i < valuec.length; i++) {
         characters = characters + valuec[i] + " ";
@@ -82,43 +81,28 @@ export function hex2char8(hexvalue) {
 }
 
 export function hex2float(hexvalue) {
-    /*var sign     = (hexvalue & 0x80000000) ? -1 : 1;
-  var exponent = ((hexvalue >> 23) & 0xff) - 127;
-  var mantissa = 1 + ((hexvalue & 0x7fffff) / 0x800000);
-
-  var valuef = sign * mantissa * Math.pow(2, exponent);
-  if (-127 == exponent)
-    if (1 == mantissa)
-      valuef = (sign == 1) ? "+0" : "-0";
-    else valuef = sign * ((hexvalue & 0x7fffff) / 0x7fffff) * Math.pow(2, -126);
-  if (128 == exponent)
-    if (1 == mantissa)
-      valuef = (sign == 1) ? "+Inf" : "-Inf";
-    else valuef = NaN;
-
-  return valuef ;*/
-    var value = hexvalue.split("x");
-    if (typeof value[1] != "undefined" && value[1].length > 8) {
+    const value = hexvalue.split("x");
+    if (typeof value[1] !== "undefined" && value[1].length > 8) {
         value[1] = value[1].substring(0, 8);
     }
 
-    var value_bit = "";
+    let value_bit = "";
 
     for (let i = 0; i < value[1].length; i++) {
-        var aux = value[1].charAt(i);
+        let aux = value[1].charAt(i);
         aux = parseInt(aux, 16).toString(2).padStart(4, "0");
-        value_bit = value_bit + aux;
+        value_bit += aux;
     }
 
     value_bit = value_bit.padStart(32, "0");
 
-    var buffer = new ArrayBuffer(4);
+    const buffer = new ArrayBuffer(4);
     new Uint8Array(buffer).set(value_bit.match(/.{8}/g).map(binaryStringToInt));
     return new DataView(buffer).getFloat32(0, false);
 }
 export function uint_to_float32(value) {
     if (validInteger(value)) {
-        var buf = new ArrayBuffer(4);
+        const buf = new ArrayBuffer(4);
         value = Number(value);
         new Uint32Array(buf)[0] = value;
         return new Float32Array(buf)[0];
@@ -127,37 +111,47 @@ export function uint_to_float32(value) {
     }
 }
 export function float32_to_uint(value) {
-    var buf = new ArrayBuffer(4);
+    const buf = new ArrayBuffer(4);
     new Float32Array(buf)[0] = value;
     return new Uint32Array(buf)[0];
 }
 export function uint_to_float64(value0, value1) {
+    const buf = new ArrayBuffer(8);
+    const arr = new Uint32Array(buf);
+
+    // Case 1: Single BigInt argument
+    if (arguments[1] === undefined && typeof value0 === "bigint") {
+        arr[0] = Number(value0 & 0xffffffffn); // Lower 32 bits
+        arr[1] = Number(value0 >> 32n); // Upper 32 bits
+        return new Float64Array(buf)[0];
+    }
+
+    // Case 2: Two 32-bit integer arguments
     if (validInteger(value0) && validInteger(value1)) {
-        var buf = new ArrayBuffer(8);
-        var arr = new Uint32Array(buf);
         arr[0] = value0;
         arr[1] = value1;
         return new Float64Array(buf)[0];
-    } else {
-        return -1;
     }
+
+    return -1; // Invalid input
 }
 export function float64_to_uint(value) {
-    var buf = new ArrayBuffer(8);
+    const buf = new ArrayBuffer(8);
     new Float64Array(buf)[0] = value;
-    return new Uint32Array(buf);
+    const arr = new Uint32Array(buf);
+    return [arr[0], arr[1]];
 }
 
 export function float2bin(number) {
     number = parseFloat(number);
-    var i,
+    let i,
         result = "";
-    var dv = new DataView(new ArrayBuffer(4));
+    const dv = new DataView(new ArrayBuffer(4));
 
     dv.setFloat32(0, number, false);
 
     for (i = 0; i < 4; i++) {
-        var bits = dv.getUint8(i).toString(2);
+        let bits = dv.getUint8(i).toString(2);
         if (bits.length < 8) {
             bits = new Array(8 - bits.length).fill("0").join("") + bits;
         }
@@ -168,14 +162,14 @@ export function float2bin(number) {
 
 export function double2bin(number) {
     number = parseFloat(number); // parseFloat works with double precision
-    var i,
+    let i,
         result = "";
-    var dv = new DataView(new ArrayBuffer(8));
+    const dv = new DataView(new ArrayBuffer(8));
 
     dv.setFloat64(0, number, false);
 
     for (i = 0; i < 8; i++) {
-        var bits = dv.getUint8(i).toString(2);
+        let bits = dv.getUint8(i).toString(2);
         if (bits.length < 8) {
             bits = new Array(8 - bits.length).fill("0").join("") + bits;
         }
@@ -185,7 +179,7 @@ export function double2bin(number) {
 }
 
 export function bin2hex(s) {
-    var i,
+    let i,
         k,
         part,
         accum,
@@ -222,32 +216,32 @@ export function bin2hex(s) {
 }
 
 export function hex2double(hexvalue) {
-    var value = hexvalue.split("x");
-    var value_bit = "";
+    const value = hexvalue.split("x");
+    let value_bit = "";
 
-    for (var i = 0; i < value[1].length; i++) {
-        var aux = value[1].charAt(i);
+    for (let i = 0; i < value[1].length; i++) {
+        let aux = value[1].charAt(i);
         aux = parseInt(aux, 16).toString(2).padStart(4, "0");
-        value_bit = value_bit + aux;
+        value_bit += aux;
     }
 
     value_bit = value_bit.padStart(64, "0");
 
-    var buffer = new ArrayBuffer(8);
+    const buffer = new ArrayBuffer(8);
     new Uint8Array(buffer).set(value_bit.match(/.{8}/g).map(binaryStringToInt));
     return new DataView(buffer).getFloat64(0, false);
 }
-function float2int_v2(value) {
-    return parseInt(float2bin(value), 2);
-}
-function double2int_v2(value) {
-    return parseInt(double2bin(value), 2);
-}
-function int2float_v2(value) {
-    return hex2float("0x" + bin2hex(value.toString(2)));
-}
+// function float2int_v2(value) {
+//     return parseInt(float2bin(value), 2);
+// }
+// function double2int_v2(value) {
+//     return parseInt(double2bin(value), 2);
+// }
+// function int2float_v2(value) {
+//     return hex2float("0x" + bin2hex(value.toString(2)));
+// }
 export function full_print(value, bin_value, add_dot_zero) {
-    var print_value = value;
+    let print_value = value;
 
     //Add - if the number is -0.0
     if (bin_value != null && value === 0 && bin_value[0] === 1) {
@@ -256,9 +250,9 @@ export function full_print(value, bin_value, add_dot_zero) {
 
     //Add .0 if the number is 0.0 or similar
     if (add_dot_zero) {
-        var aux_value = value.toString();
+        const aux_value = value.toString();
         if (aux_value.indexOf(".") == -1 && Number.isInteger(aux_value)) {
-            print_value = print_value + ".0";
+            print_value += ".0";
         }
     }
 
@@ -270,10 +264,21 @@ export function full_print(value, bin_value, add_dot_zero) {
 export function clean_string(value, prefix) {
     let value2 = value.replace(/[&/\\#,+()$~%.'":*?<>{}]/g, "_");
 
-    let re = new RegExp("^[0-9]+$");
+    const re = /^[0-9]+$/;
     if (value2.search(re) != -1 && prefix != "undefined") {
         value2 = prefix + value2;
     }
 
     return value2;
+}
+
+export function getHexTwosComplement(value, bits, padding = true) {
+    value = BigInt(value);
+    // For both positive and negative values, apply the appropriate bitmask
+    const mask = (1n << BigInt(bits)) - 1n;
+    // Use the mask to get only the relevant bits
+    const maskedValue = value & mask;
+    // Convert to hex and conditionally pad with leading zeros
+    const hexValue = maskedValue.toString(16);
+    return padding ? hexValue.padStart(bits / 4, "0") : hexValue;
 }

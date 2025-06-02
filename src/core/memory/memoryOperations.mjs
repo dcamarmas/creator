@@ -18,7 +18,7 @@
  *
  */
 "use strict";
-import { architecture, word_size_bytes } from "../core.mjs";
+import { architecture, WORDSIZE } from "../core.mjs";
 import {
     main_memory_write_bydatatype,
     main_memory_read_bydatatype,
@@ -27,8 +27,15 @@ import {
     main_memory_get_addresses,
 } from "./memoryCore.mjs";
 import { data_tag } from "../compiler/compiler.mjs";
-import { creator_memory_updaterow, creator_memory_updateall, creator_memory_clearall } from "./memoryViewManager.mjs";
-import { creator_memory_zerofill, main_memory_storedata } from "./memoryManager.mjs";
+import {
+    creator_memory_updaterow,
+    creator_memory_updateall,
+    creator_memory_clearall,
+} from "./memoryViewManager.mjs";
+import {
+    creator_memory_zerofill,
+    main_memory_storedata,
+} from "./memoryManager.mjs";
 import { align } from "../compiler/compiler.mjs";
 
 export function writeMemory(value, addr, type) {
@@ -52,7 +59,7 @@ export function creator_memory_clear() {
     creator_memory_clearall();
 }
 function creator_memory_is_address_inside_segment(segment_name, addr) {
-    var elto_inside_segment = false;
+    let elto_inside_segment = false;
 
     if (segment_name == "instructions_memory") {
         elto_inside_segment =
@@ -65,33 +72,41 @@ function creator_memory_is_address_inside_segment(segment_name, addr) {
             addr <= parseInt(architecture.memory_layout[3].value);
     }
     if (segment_name == "stack_memory") {
-        elto_inside_segment = addr >= parseInt(architecture.memory_layout[3].value);
+        elto_inside_segment =
+            addr >= parseInt(architecture.memory_layout[3].value);
     }
 
     return elto_inside_segment;
 }
 function creator_memory_is_segment_empty(segment_name) {
-    var addrs = main_memory_get_addresses();
-    var insiders = addrs.filter(function (elto) {
+    const addrs = main_memory_get_addresses();
+    const insiders = addrs.filter(function (elto) {
         return creator_memory_is_address_inside_segment(segment_name, elto);
     });
 
     return insiders.length === 0;
 }
-export function creator_memory_data_compiler(data_address, value, size, dataLabel, DefValue, type) {
-    var ret = {
+export function creator_memory_data_compiler(
+    data_address,
+    value,
+    size,
+    dataLabel,
+    DefValue,
+    type,
+) {
+    const ret = {
         msg: "",
         data_address: 0,
     };
 
     // If align changes then zerofill first...
     if (data_address % align > 0) {
-        var to_be_filled = align - (data_address % align);
+        const to_be_filled = align - (data_address % align);
         creator_memory_zerofill(data_address, to_be_filled);
-        data_address = data_address + to_be_filled;
+        data_address += to_be_filled;
     }
 
-    if (data_address % size !== 0 && data_address % word_size_bytes !== 0) {
+    if (data_address % size !== 0 && data_address % (WORDSIZE / 8) !== 0) {
         ret.msg = "m21";
         ret.data_address = data_address;
         return ret;
@@ -102,18 +117,57 @@ export function creator_memory_data_compiler(data_address, value, size, dataLabe
     }
 
     ret.msg = "";
-    ret.data_address = main_memory_storedata(data_address, value, size, dataLabel, DefValue, DefValue, type);
+    ret.data_address = main_memory_storedata(
+        data_address,
+        value,
+        size,
+        dataLabel,
+        DefValue,
+        DefValue,
+        type,
+    );
 
     return ret;
 }
-export function creator_insert_instruction(auxAddr, value, def_value, hide, hex, fill_hex, label) {
-    var size = Math.ceil(hex.toString().length / 2);
-    return main_memory_storedata(auxAddr, hex, size, label, def_value, def_value, "instruction");
+export function creator_insert_instruction(
+    auxAddr,
+    value,
+    def_value,
+    hide,
+    hex,
+    fill_hex,
+    label,
+) {
+    const size = Math.ceil(hex.toString().length / 2);
+    return main_memory_storedata(
+        auxAddr,
+        hex,
+        size,
+        label,
+        def_value,
+        def_value,
+        "instruction",
+    );
 }
-export function creator_memory_storestring(string, string_length, data_address, label, type, align) {
+export function creator_memory_storestring(
+    string,
+    string_length,
+    data_address,
+    label,
+    type,
+    align,
+) {
     if (label != null) {
         data_tag.push({ tag: label, addr: data_address });
     }
 
-    return main_memory_storedata(data_address, string, string_length, label, string, string, type);
+    return main_memory_storedata(
+        data_address,
+        string,
+        string_length,
+        label,
+        string,
+        string,
+        type,
+    );
 }

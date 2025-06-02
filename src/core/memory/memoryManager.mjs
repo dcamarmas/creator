@@ -18,17 +18,18 @@
  *
  */
 "use strict";
-import { app, architecture, word_size_bytes } from "../core.mjs";
+import { app, architecture, WORDSIZE } from "../core.mjs";
 import {
     main_memory_datatype_get_addresses,
     main_memory_get_addresses,
     main_memory_write_bydatatype,
+    main_memory_datatypes,
     main_memory_write_tag,
     main_memory_zerofill,
+    main_memory,
 } from "./memoryCore.mjs";
 import { creator_memory_updateall } from "./memoryViewManager.mjs";
 import { align } from "../compiler/compiler.mjs";
-import { main_memory, main_memory_datatypes } from "./memoryCore.mjs";
 
 /********************
  * Public API (1/3) *
@@ -36,7 +37,8 @@ import { main_memory, main_memory_datatypes } from "./memoryCore.mjs";
 // Type, size and address...
 
 export function creator_memory_type2size(type) {
-    var size = 4;
+    let size = 4;
+    const word_size_bytes = WORDSIZE / 8;
 
     switch (type) {
         case "b":
@@ -108,13 +110,13 @@ export function creator_memory_value_by_type(val, type) {
     return val;
 }
 export function creator_memory_alignelto(new_addr, new_size) {
-    var ret = {
+    const ret = {
         new_addr: new_addr,
         new_size: new_size,
     };
 
     // get align address and size
-    for (var i = 0; i < align; i++) {
+    for (let i = 0; i < align; i++) {
         if ((new_addr + i) % align === 0) {
             ret.new_addr = new_addr + i;
         }
@@ -126,10 +128,10 @@ export function creator_memory_alignelto(new_addr, new_size) {
     return ret;
 } // set default content for main_memory and main_memory_datatype
 export function creator_memory_prereset() {
-    var i = 0;
+    let i = 0;
 
     // prereset main memory
-    var addrs = main_memory_get_addresses();
+    let addrs = main_memory_get_addresses();
     for (i = 0; i < addrs.length; i++) {
         main_memory[addrs[i]].def_bin = main_memory[addrs[i]].bin;
     }
@@ -137,19 +139,20 @@ export function creator_memory_prereset() {
     // prereset datatypes
     addrs = main_memory_datatype_get_addresses();
     for (i = 0; i < addrs.length; i++) {
-        main_memory_datatypes[addrs[i]].default = main_memory_datatypes[addrs[i]].value;
+        main_memory_datatypes[addrs[i]].default =
+            main_memory_datatypes[addrs[i]].value;
     }
 }
 // find address by tag
 export function creator_memory_findaddress_bytag(tag) {
-    var ret = {
+    const ret = {
         exit: 0,
         value: 0,
     };
 
     // find main memory by tag
-    var addrs = main_memory_get_addresses();
-    for (var i = 0; i < addrs.length; i++) {
+    const addrs = main_memory_get_addresses();
+    for (let i = 0; i < addrs.length; i++) {
         if (main_memory[addrs[i]].tag == tag) {
             ret.exit = 1;
             ret.value = parseInt(addrs[i]);
@@ -172,23 +175,37 @@ export function creator_memory_zerofill(new_addr, new_size) {
 
 export function creator_memory_alloc(new_size) {
     // get align address
-    var new_addr = parseInt(architecture.memory_layout[3].value) + 1;
-    var algn = creator_memory_alignelto(new_addr, new_size);
+    const new_addr = parseInt(architecture.memory_layout[3].value) + 1;
+    const algn = creator_memory_alignelto(new_addr, new_size);
 
     // fill memory
     creator_memory_zerofill(algn.new_addr, algn.new_size);
 
     // new segment limit
-    architecture.memory_layout[3].value = "0x" + (algn.new_addr + new_size).toString(16).padStart(8, "0").toUpperCase();
+    architecture.memory_layout[3].value =
+        "0x" +
+        (algn.new_addr + new_size).toString(16).padStart(8, "0").toUpperCase();
     if (typeof app !== "undefined") {
         app.architecture.memory_layout[3].value =
-            "0x" + (algn.new_addr + new_size).toString(16).padStart(8, "0").toUpperCase();
+            "0x" +
+            (algn.new_addr + new_size)
+                .toString(16)
+                .padStart(8, "0")
+                .toUpperCase();
     }
 
     return algn.new_addr;
 }
-export function main_memory_storedata(data_address, value, size, dataLabel, value_human, DefValue, type) {
-    var algn = creator_memory_alignelto(data_address, size);
+export function main_memory_storedata(
+    data_address,
+    value,
+    size,
+    dataLabel,
+    value_human,
+    DefValue,
+    type,
+) {
+    const algn = creator_memory_alignelto(data_address, size);
 
     main_memory_write_bydatatype(algn.new_addr, value, type, value_human);
     creator_memory_zerofill(algn.new_addr + size, algn.new_size - size);
@@ -201,11 +218,11 @@ export function main_memory_storedata(data_address, value, size, dataLabel, valu
 }
 // for debugging...
 function creator_memory_consolelog() {
-    var i = 0;
+    let i = 0;
 
     // show main memory
     console.log(" ~~~ main memory ~~~~~~~~~~~~~~");
-    var addrs = main_memory_get_addresses();
+    let addrs = main_memory_get_addresses();
     for (i = 0; i < addrs.length; i++) {
         console.log(JSON.stringify(main_memory[addrs[i]]));
     }

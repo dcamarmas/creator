@@ -15,28 +15,56 @@
  *
  *  You should have received a copy of the GNU Lesser General Public License
  *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
- *
  */
 "use strict";
 
 import { initCAPI } from "./capi/initCAPI.mjs";
 
-import { bi_BigIntTofloat, bi_BigIntTodouble, register_value_deserialize } from "./utils/bigint.mjs";
-import { float2bin, double2bin, bin2hex, hex2double } from "./utils/utils.mjs";
+import {
+    bi_BigIntTodouble,
+    bi_BigIntTofloat,
+    register_value_deserialize,
+} from "./utils/bigint.mjs";
+import {
+    bin2hex,
+    double2bin,
+    float2bin,
+    getHexTwosComplement,
+    hex2double,
+} from "./utils/utils.mjs";
 
 import { logger } from "./utils/creator_logger.mjs";
-import { assembly_compiler } from "./compiler/compiler.mjs";
+import {
+    assembly_compiler,
+    instructions,
+    setInstructions,
+} from "./compiler/compiler.mjs";
 import { executeProgramOneShot } from "./executor/executor.mjs";
 import {
+    main_memory,
     main_memory_get_addresses,
-    main_memory_read_value,
     main_memory_read_default_value,
+    main_memory_read_value,
+    main_memory_restore,
+    main_memory_serialize,
 } from "./memory/memoryCore.mjs";
+import { creator_memory_reset } from "./memory/memoryOperations.mjs";
+import * as wasm from "./compiler/deno/creator_compiler.js";
+import yaml from "js-yaml";
+import { crex_findReg } from "./register/registerLookup.mjs";
+import { readRegister } from "./register/registerOperations.mjs";
+import {
+    dumpStack,
+    loadStack,
+    track_stack_reset,
+} from "./memory/stackTracker.mjs";
+import { creator_ga } from "./utils/creator_ga.mjs";
+import { creator_callstack_reset } from "./sentinel/sentinel.mjs";
 
-export var code_assembly = "";
-export var update_binary = "";
-export var backup_stack_address;
-export var backup_data_address;
+export let code_assembly = "";
+export let update_binary = "";
+export let backup_stack_address;
+export let backup_data_address;
 
 export let architecture_hash = [];
 export let architecture = {
@@ -48,20 +76,20 @@ export let architecture = {
 };
 
 export let app;
-let word_size_bits = 32; // TODO: load from architecture
-export let word_size_bytes = word_size_bits / 8; // TODO: load from architecture
-export let register_size_bits = 32;
 
-export const status = {
+export let status = {
     execution_init: 1,
     totalStats: 0,
     run_program: 0,
     keyboard: "",
     display: "",
+    execution_index: 0,
+    virtual_PC: 0n, // This is the PC the instructions see.
+    error: 0,
 };
 
-export var stats_value = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-export var stats = [
+export const stats_value = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+export const stats = [
     {
         type: "Arithmetic floating point",
         number_instructions: 0,
@@ -94,6 +122,14 @@ export var stats = [
     },
 ];
 
+export let arch;
+export const ARCHITECTURE_VERSION = "2.0";
+export let ENDIANNESS;
+export let WORDSIZE;
+export let REGISTERS;
+export let REGISTERS_BACKUP = [];
+export const register_size_bits = 64; //TODO: load from architecture
+
 // TODO: Make sure these variables are all needed
 // let architecture_available = []
 // let load_architectures_available = []
@@ -106,8 +142,12 @@ export var stats = [
 
 let code_binary = "";
 
-const CAPI = initCAPI();
+initCAPI();
 let creator_debug = false;
+
+BigInt.prototype.toJSON = function () {
+    return JSON.rawJSON(this.toString());
+};
 
 export function set_debug(enable_debug) {
     creator_debug = enable_debug;
@@ -120,8 +160,8 @@ export function set_debug(enable_debug) {
 }
 
 // load components
-export function load_arch_select(cfg) {
-    var ret = {
+function load_arch_select(cfg) {
+    const ret = {
         errorcode: "",
         token: "",
         type: "",
@@ -129,13 +169,19 @@ export function load_arch_select(cfg) {
         status: "ok",
     };
 
-    var auxArchitecture = cfg;
+    const auxArchitecture = cfg;
     architecture = register_value_deserialize(auxArchitecture);
+    ENDIANNESS = architecture.arch_conf[3].value;
+    WORDSIZE = architecture.arch_conf[1].value;
+    REGISTERS = architecture.components;
+
+    // Create deep copy backup of REGISTERS
+    REGISTERS_BACKUP = JSON.parse(JSON.stringify(REGISTERS));
 
     architecture_hash = [];
-    for (let i = 0; i < architecture.components.length; i++) {
+    for (let i = 0; i < REGISTERS.length; i++) {
         architecture_hash.push({
-            name: architecture.components[i].name,
+            name: REGISTERS[i].name,
             index: i,
         });
     }
@@ -148,17 +194,823 @@ export function load_arch_select(cfg) {
     return ret;
 }
 
-export function load_architecture(arch_str) {
-    var ret = {};
+/**
+ * Find the template matching an instruction type
+ * @param {Object} architectureObj - The architecture object
+ * @param {Object} instruction - The instruction definition
+ * @returns {Object|null} - The matching template or null if not found
+ */
+function findTemplateForInstruction(architectureObj, instruction) {
+    const templateType = instruction.type;
+    return architectureObj.templates.find(t => t.name === templateType);
+}
 
-    let arch_obj = JSON.parse(arch_str);
-    ret = load_arch_select(arch_obj);
+/**
+ * Update an existing field with instruction-specific properties
+ * @param {Object} existingField - The template field to update
+ * @param {Object} instructionField - The instruction field with override values
+ */
+function updateExistingField(existingField, instructionField) {
+    // Override value if specified
+    if (instructionField.value) {
+        existingField.valueField = instructionField.value;
+    }
+
+    // Override type if specified
+    if (instructionField.type) {
+        existingField.type = instructionField.type;
+    }
+
+    // Override any other properties
+    Object.keys(instructionField).forEach(key => {
+        if (key !== "field" && key !== "value" && key !== "type") {
+            existingField[key] = instructionField[key];
+        }
+    });
+}
+
+/**
+ * Create a new field from instruction field definition
+ * @param {Object} instructionField - The instruction field definition
+ * @returns {Object} - The new field object
+ */
+function createNewField(instructionField) {
+    const newField = {
+        ...instructionField,
+        name: instructionField.field,
+    };
+
+    // Convert 'value' property to 'valueField' to match template format
+    if (instructionField.value) {
+        newField.valueField = instructionField.value;
+        delete instructionField.value;
+    }
+
+    delete newField.field; // Remove the field property after converting
+    return newField;
+}
+
+/**
+ * Merge template fields with instruction-specific fields
+ * @param {Object} template - The template object
+ * @param {Object} instruction - The instruction definition
+ * @returns {Array} - Merged fields array
+ */
+function mergeTemplateAndInstructionFields(template, instruction) {
+    // Start with deep copy of template fields
+    const mergedFields = [...template.fields].map(field => ({ ...field }));
+
+    // Process instruction fields if they exist
+    if (instruction.fields && Array.isArray(instruction.fields)) {
+        instruction.fields.forEach(instructionField => {
+            // Skip null fields
+            if (instructionField === null) return;
+
+            const fieldName = instructionField.field;
+
+            // Check if any attribute in the field is null, indicating this field should be removed
+            const hasNullAttribute = Object.values(instructionField).some(
+                value => value === null,
+            );
+
+            if (hasNullAttribute) {
+                const existingFieldIndex = mergedFields.findIndex(
+                    field => field.name === fieldName,
+                );
+                if (existingFieldIndex !== -1) {
+                    mergedFields.splice(existingFieldIndex, 1);
+                }
+                return;
+            }
+
+            const existingFieldIndex = mergedFields.findIndex(
+                field => field.name === fieldName,
+            );
+
+            if (existingFieldIndex !== -1) {
+                // Update existing field
+                updateExistingField(
+                    mergedFields[existingFieldIndex],
+                    instructionField,
+                );
+            } else {
+                // Add new field
+                mergedFields.push(createNewField(instructionField));
+            }
+        });
+    }
+
+    return mergedFields;
+}
+
+/**
+ * Build a complete instruction object
+ * @param {Object} instruction - The instruction definition
+ * @param {Object} template - The template object
+ * @param {Array} mergedFields - The merged fields array
+ * @param {boolean} legacy - Flag for legacy support
+ * @returns {Object} - The complete instruction object
+ */
+// eslint-disable-next-line max-lines-per-function
+function buildCompleteInstruction(
+    instruction,
+    template,
+    mergedFields,
+    legacy = true,
+) {
+    const result = {
+        name: instruction.name,
+        nwords: template.nwords,
+        clk_cycles: template.clk_cycles,
+        fields: mergedFields,
+        definition: instruction.definition,
+    };
+
+    if (legacy) {
+        // This will eventually be removed!!
+
+        result.type = "Other";
+        result.description = "";
+        result.separated = [];
+        result.help = "";
+        let breakpoint = instruction.name;
+        // Create arrays to hold ordered fields
+        const orderedFields = [];
+
+        // Collect fields that have an order property
+        for (let i = 0; i < mergedFields.length; i++) {
+            if (typeof mergedFields[i].order !== "undefined") {
+                orderedFields.push({
+                    index: i,
+                    order: mergedFields[i].order,
+                    name: mergedFields[i].name,
+                    type: mergedFields[i].type,
+                    valueField: mergedFields[i].valueField,
+                });
+
+                // Include prefix and suffix if they exist
+                if (mergedFields[i].prefix) {
+                    orderedFields[orderedFields.length - 1].prefix =
+                        mergedFields[i].prefix;
+                }
+                if (mergedFields[i].suffix) {
+                    orderedFields[orderedFields.length - 1].suffix =
+                        mergedFields[i].suffix;
+                }
+            }
+        }
+
+        // Sort by order value
+        orderedFields.sort((a, b) => a.order - b.order);
+
+        // Compute signature_definition - format: "F0 F4 F3 F2"
+        // Each Fx represents the index of the field in the fields array
+        const signatureDefParts = orderedFields.map(field => {
+            let part = "F" + field.index;
+            // Add prefix and suffix if they exist
+            if (field.prefix) {
+                part = field.prefix + part;
+            }
+            if (field.suffix) {
+                part += field.suffix;
+            }
+            return part;
+        });
+        result.signature_definition = signatureDefParts.join(" ");
+
+        // Compute signature - format: "name,type1,type2,..."
+        // Compute signatureRaw - format: "name fieldName1 fieldName2 ..."
+        const signatureParts = [];
+        const signatureRawParts = [];
+        for (const field of orderedFields) {
+            let signaturePart;
+            let signatureRawPart;
+
+            // Special case: replace "opcode" field name with instruction name
+            if (field.name === "opcode") {
+                signaturePart = instruction.name;
+                signatureRawPart = instruction.name;
+                result.co = field.valueField;
+            } else {
+                signaturePart = field.type;
+                signatureRawPart = field.name;
+            }
+
+            // Add prefix and suffix to both signature parts
+            if (field.prefix) {
+                signaturePart = field.prefix + signaturePart;
+                signatureRawPart = field.prefix + signatureRawPart;
+            }
+            if (field.suffix) {
+                signaturePart += field.suffix;
+                signatureRawPart += field.suffix;
+            }
+
+            signatureParts.push(signaturePart);
+            signatureRawParts.push(signatureRawPart);
+        }
+        result.signature = signatureParts.join(",");
+        result.signatureRaw = signatureRawParts.join(" ");
+    }
+
+    return result;
+}
+
+/**
+ * Process instructions and add them to the architecture
+ * @param {Object} architectureObj - The architecture object
+ * @param {Array} instructions - Array of instruction definitions
+ */
+// eslint-disable-next-line max-lines-per-function
+function processInstructions(architectureObj) {
+    architectureObj.instructionsProcessed = [];
+    // eslint-disable-next-line max-lines-per-function
+    architectureObj.instructions.forEach(instruction => {
+        const template = findTemplateForInstruction(
+            architectureObj,
+            instruction,
+        );
+
+        if (template) {
+            const mergedFields = mergeTemplateAndInstructionFields(
+                template,
+                instruction,
+            );
+
+            // We need a marker to help distinguish the user definition from the pre-operation and post-operation definitions, so we can later perform the preload correctly.
+            // The marker can be any string.
+            instruction.definition =
+                "// BEGIN USERDEF\n" +
+                instruction.definition +
+                "\n// END USERDEF\n";
+
+            // If it has a "preoperation" or "postoperation" field, we need to concatenate it with the "definition"
+            // field, and remove them
+            if (instruction.preoperation) {
+                instruction.definition =
+                    "// PREOPERATION\n" +
+                    instruction.preoperation +
+                    "\n// DEFINITION\n" +
+                    instruction.definition;
+                delete instruction.preoperation;
+            }
+            if (instruction.postoperation) {
+                instruction.definition =
+                    instruction.definition +
+                    "\n// POSTOPERATION\n" +
+                    instruction.postoperation;
+                delete instruction.postoperation;
+            }
+            // We need to find if any field is optional, because if it is, we need to
+            // construct two different instructions, one with the field and one without it
+
+            // This works for 1 optional field, but not for 2 or more. Supporting more
+            // than 1 optional field is not in the roadmap.
+            const optionalFields = mergedFields.filter(
+                field => field.optional === true,
+            );
+            if (optionalFields.length === 1) {
+                // We need to create two instructions, one with the field and one without it
+                const instructionWithFields = buildCompleteInstruction(
+                    instruction,
+                    template,
+                    mergedFields,
+                );
+                const instructionWithoutFields = buildCompleteInstruction(
+                    instruction,
+                    template,
+                    mergedFields.filter(field => field.optional !== true),
+                );
+
+                // Add both instructions to the architecture
+                architectureObj.instructionsProcessed.push(
+                    instructionWithFields,
+                );
+                architectureObj.instructionsProcessed.push(
+                    instructionWithoutFields,
+                );
+            } // If no optional fields, just add the instruction
+            else if (optionalFields.length === 0) {
+                const fullInstruction = buildCompleteInstruction(
+                    instruction,
+                    template,
+                    mergedFields,
+                );
+                architectureObj.instructionsProcessed.push(fullInstruction);
+            } else {
+                logger.error(
+                    `Instruction '${instruction.name}' has more than one optional field. This is not supported.`,
+                );
+            }
+        } else {
+            logger.error(
+                `Template '${instruction.type}' not found for instruction '${instruction.name}'`,
+            );
+        }
+    });
+    architectureObj.instructions = architectureObj.instructionsProcessed;
+    delete architectureObj.instructionsProcessed;
+}
+
+function processPseudoInstructions(architectureObj, legacy = true) {
+    architectureObj.pseudoinstructionsProcessed = [];
+    architectureObj.pseudoinstructions.forEach(pseudoinstruction => {
+        let fields = [];
+        if (legacy) {
+            // Convert new field format to legacy format
+            if (
+                pseudoinstruction.fields &&
+                Array.isArray(pseudoinstruction.fields)
+            ) {
+                fields = pseudoinstruction.fields.map(field => ({
+                    name: field.field,
+                    type: field.type,
+                }));
+            }
+
+            // Create signature_definition: "name F0 F1 F2..."
+            const signatureDefParts = [pseudoinstruction.name];
+            for (let i = 0; i < fields.length; i++) {
+                signatureDefParts.push(`F${i}`);
+            }
+
+            // Create signature: "name,TYPE1,TYPE2,..."
+            const signatureParts = [pseudoinstruction.name];
+            fields.forEach(field => {
+                signatureParts.push(field.type);
+            });
+
+            // Create signatureRaw: "name fieldname1 fieldname2..."
+            const signatureRawParts = [pseudoinstruction.name];
+            fields.forEach(field => {
+                signatureRawParts.push(field.name);
+            });
+
+            // Create the full legacy pseudoinstruction object
+            const legacyPseudoinstruction = {
+                name: pseudoinstruction.name,
+                signature_definition: signatureDefParts.join(" "),
+                signature: signatureParts.join(","),
+                signatureRaw: signatureRawParts.join(" "),
+                help: "",
+                properties: [],
+                nwords: 1,
+                fields: fields,
+                definition: pseudoinstruction.definition,
+            };
+
+            // Add to architecture
+            architectureObj.pseudoinstructionsProcessed.push(
+                legacyPseudoinstruction,
+            );
+        } else {
+            // For non-legacy mode, just add the pseudoinstruction as is
+            architectureObj.pseudoinstructionsProcessed.push(pseudoinstruction);
+        }
+    });
+    architectureObj.pseudoinstructions =
+        architectureObj.pseudoinstructionsProcessed;
+    delete architectureObj.pseudoinstructionsProcessed;
+}
+
+/**
+ * Parse architecture YAML into an object
+ * @param {string} architectureYaml - YAML string containing architecture definition
+ * @returns {Object} - Parsed architecture object or throws error
+ */
+function parseArchitectureYaml(architectureYaml) {
+    try {
+        return yaml.load(architectureYaml);
+    } catch (error) {
+        logger.error(`Failed to parse architecture YAML: ${error.message}`);
+        throw new Error(`Failed to parse architecture YAML: ${error.message}`);
+    }
+}
+
+/**
+ * Determine which instruction sets to load based on user selections
+ * @param {Object} architectureObj - The architecture object
+ * @param {Array} requestedISAs - User-requested instruction sets to load
+ * @returns {Object} - Object with selected ISAs and status
+ * @eslint-disable-next-line max-lines-per-function
+ */
+function determineInstructionSetsToLoad(architectureObj, requestedISAs = []) {
+    // Get all available instruction sets in the architecture
+    const availableInstructionSets = [
+        ...new Set([
+            ...Object.keys(architectureObj.instructions || {}),
+            ...Object.keys(architectureObj.pseudoinstructions || {}),
+        ]),
+    ];
+
+    // If no ISAs specified, use all available ones
+    if (!requestedISAs || requestedISAs.length === 0) {
+        return {
+            instructionSets: [...availableInstructionSets],
+            status: "ok",
+        };
+    }
+
+    // Get extensions and find base ISA
+    const extensions = architectureObj.extensions || {};
+
+    const baseISA = findBaseISA(extensions);
+    if (!baseISA) {
+        return {
+            instructionSets: [],
+            status: "error",
+            message: "Base ISA not found in the architecture definition.",
+        };
+    }
+
+    // Validate all requested ISAs exist
+    const invalidISAs = findInvalidISAs(
+        requestedISAs,
+        availableInstructionSets,
+    );
+    if (invalidISAs.length > 0) {
+        const message = `The following requested ISAs do not exist: ${invalidISAs.join(
+            ", ",
+        )}`;
+        logger.error(message);
+        return {
+            instructionSets: [],
+            status: "error",
+            message: message,
+        };
+    }
+
+    // Calculate all required ISAs including dependencies
+    const { requiredISAs, missingDependencies, status, message } =
+        calculateRequiredISAs(
+            requestedISAs,
+            extensions,
+            baseISA,
+            availableInstructionSets,
+        );
+    if (status === "ko") {
+        return {
+            instructionSets: [],
+            status: "error",
+            message: message,
+        };
+    }
+
+    // Check if any dependencies are missing from the user request
+    if (missingDependencies.length > 0) {
+        let message = `Missing required dependencies. To use the requested ISA(s), you must also include: ${missingDependencies.join(
+            ", ",
+        )}`;
+        logger.error(message);
+
+        return {
+            instructionSets: [],
+            status: "error",
+            message: message,
+        };
+    }
+
+    // Log which ISAs were selected
+    logger.info(`Loading ISAs: ${[...requiredISAs].join(", ")}`);
+
+    return {
+        instructionSets: [...requiredISAs],
+        status: "ok",
+    };
+}
+
+/**
+ * Find the base ISA from the extensions
+ * @param {Object} extensions - The extensions object
+ * @returns {string} - The base ISA
+ */
+function findBaseISA(extensions) {
+    let baseISA;
+
+    // Try to find it from the extensions definition
+    for (const [name, value] of Object.entries(extensions)) {
+        if (value && value.type === "base") {
+            baseISA = name;
+            break;
+        }
+    }
+    // If not found, raise an error
+    if (!baseISA) {
+        logger.error("Base ISA not found in the architecture definition.");
+        return null;
+    }
+    return baseISA;
+}
+
+/**
+ * Find any requested ISAs that don't exist in the available sets
+ * @param {Array} requestedISAs - The ISAs requested by the user
+ * @param {Array} availableInstructionSets - All available instruction sets
+ * @returns {Array} - Invalid ISAs that don't exist
+ */
+function findInvalidISAs(requestedISAs, availableInstructionSets) {
+    return requestedISAs.filter(isa => !availableInstructionSets.includes(isa));
+}
+
+/**
+ * Calculate all required ISAs including dependencies
+ * @param {Array} requestedISAs - The ISAs explicitly requested by the user
+ * @param {Object} extensions - The extensions object with dependencies
+ * @param {string} baseISA - The base ISA
+ * @param {Array} availableInstructionSets - All available instruction sets
+ * @returns {Object} - Object containing required ISAs and missing dependencies
+ */
+function calculateRequiredISAs(
+    requestedISAs,
+    extensions,
+    baseISA,
+    availableInstructionSets,
+) {
+    const explicitlyRequestedISAs = new Set(requestedISAs);
+    const requiredISAs = new Set(requestedISAs);
+
+    // Always ensure base ISA is included
+    requiredISAs.add(baseISA);
+
+    // Gather all dependencies
+    const visited = new Set();
+    for (const isa of [...requiredISAs]) {
+        gatherDependencies(isa, extensions, requiredISAs, visited);
+    }
+
+    // Find dependencies that weren't explicitly requested
+    const missingDependencies = [...requiredISAs].filter(
+        isa => !explicitlyRequestedISAs.has(isa),
+    );
+
+    // Check if any required ISAs don't exist in the architecture
+    const nonExistentISAs = [...requiredISAs].filter(
+        isa => !availableInstructionSets.includes(isa),
+    );
+
+    if (nonExistentISAs.length > 0) {
+        const message = `There are nonexistant dependencies in the architecture: ${nonExistentISAs.join(
+            ", ",
+        )}`;
+        logger.error(message);
+        return {
+            requiredISAs: [],
+            missingDependencies: [],
+            status: "ko",
+            message: message,
+        };
+    }
+
+    return {
+        requiredISAs,
+        missingDependencies,
+    };
+}
+
+/**
+ * Recursively gather all dependencies of an ISA
+ * @param {string} isa - The ISA to gather dependencies for
+ * @param {Object} extensions - The extensions object with dependency info
+ * @param {Set} requiredISAs - Set to collect all required ISAs
+ * @param {Set} visited - Set to track visited ISAs
+ */
+function gatherDependencies(isa, extensions, requiredISAs, visited) {
+    if (visited.has(isa)) return; // Prevent circular dependencies
+
+    visited.add(isa);
+    requiredISAs.add(isa);
+
+    // Get dependencies from extension
+    const extension = extensions[isa];
+    if (extension && extension.implies && Array.isArray(extension.implies)) {
+        for (const dependentISA of extension.implies) {
+            requiredISAs.add(dependentISA);
+            gatherDependencies(dependentISA, extensions, requiredISAs, visited);
+        }
+    }
+}
+
+/**
+ * Collect instructions and pseudoinstructions from selected instruction sets
+ * @param {Object} architectureObj - The architecture object
+ * @param {Array} instructionSetsToLoad - Array of instruction set names to load
+ * @returns {Object} - Updated architecture object with collected instructions
+ */
+function collectInstructionsFromSets(architectureObj, instructionSetsToLoad) {
+    let selectedInstructions = [];
+    let selectedPseudoInstructions = [];
+
+    // Process each instruction set
+    for (const requestedISA of instructionSetsToLoad) {
+        // Add instructions if available for this ISA
+        const isaInstructions = architectureObj.instructions[requestedISA];
+        if (isaInstructions) {
+            selectedInstructions = [
+                ...selectedInstructions,
+                ...isaInstructions,
+            ];
+        }
+
+        // Add pseudoinstructions if available for this ISA
+        const ISAPseudoInstructions =
+            architectureObj.pseudoinstructions[requestedISA];
+        if (ISAPseudoInstructions) {
+            selectedPseudoInstructions = [
+                ...selectedPseudoInstructions,
+                ...ISAPseudoInstructions,
+            ];
+        }
+    }
+
+    // Create a new architecture object with the updated instructions
+    const updatedArchObj = { ...architectureObj };
+    updatedArchObj.instructions = selectedInstructions;
+    updatedArchObj.pseudoinstructions = selectedPseudoInstructions;
+
+    return updatedArchObj;
+}
+
+/**
+ * Prepare architecture for use by processing instructions and initializing WASM
+ * @param {Object} architectureObj - The architecture object
+ * @param {boolean} skipCompiler - Whether to skip initializing the WASM compiler
+ * @param {boolean} dump - Whether to dump architecture to file for debugging
+ * @returns {Object} - The processed architecture object
+ */
+function prepareArchitecture(
+    architectureObj,
+    skipCompiler = false,
+    dump = false,
+) {
+    // Process the selected instructions and pseudoinstructions
+    processInstructions(architectureObj);
+    processPseudoInstructions(architectureObj, true);
+
+    // Convert to JSON for WASM
+    const architectureJson = JSON.stringify(architectureObj);
+
+    // Dump the architecture JSON to a file for debugging
+    if (dump) {
+        try {
+            Deno.writeTextFileSync(
+                "./architecture/test.json",
+                architectureJson,
+            );
+        } catch (writeError) {
+            logger.error(
+                `Could not write architecture file: ${writeError.message}`,
+            );
+        }
+    }
+
+    // Initialize WASM compiler if not skipped
+    if (!skipCompiler) {
+        arch = wasm.ArchitectureJS.from_json(architectureJson);
+    }
+
+    return architectureObj;
+}
+
+/**
+ * Check if the architecture version is supported
+ * @param {Object} architectureObj - The architecture object
+ * @returns {boolean} - True if supported, false otherwise
+ */
+function isVersionSupported(architectureObj) {
+    const architectureVersion = architectureObj.version;
+    const architerctureVersionParts = architectureVersion.split(".");
+    const architectureMajor = parseInt(architerctureVersionParts[0], 10);
+    const supportedVersionParts = ARCHITECTURE_VERSION.split(".");
+    const supportedMajor = parseInt(supportedVersionParts[0], 10);
+    if (architectureMajor !== supportedMajor) {
+        return false;
+    }
+    return true;
+}
+
+/**
+ * Transform architecture configuration from new format to old format
+ * @param {Object} architectureObj - The architecture object to transform
+ * @returns {Object} - Transformed architecture object
+ */
+function transformArchConf(architectureObj) {
+    const transformed = { ...architectureObj };
+    const newArchConf = architectureObj.arch_conf;
+    const oldArchConf = [];
+    // Add other configuration elements that might be in the new format
+    // This converts any remaining properties to the old array format
+    Object.entries(newArchConf).forEach(([key, value]) => {
+        // If value is bool, convert to "1" or "0"
+        if (typeof value === "boolean") {
+            value = value ? "1" : "0";
+        }
+        // If key is "Word Size", convert it to "bits"
+        if (key === "Word Size") {
+            key = "Bits";
+        }
+        if (key === "Endianness") {
+            key = "Data Format";
+        }
+        // Add remaining properties as individual entries
+        oldArchConf.push({
+            name: key,
+            value: value,
+        });
+    });
+
+    // Replace with transformed arch_conf
+    transformed.arch_conf = oldArchConf;
+
+    return transformed;
+}
+
+/**
+ * Load architecture from YAML string and prepare for use
+ * @param {string} architectureYaml - YAML string containing architecture definition
+ * @param {boolean} skipCompiler - Whether to skip initializing the WASM compiler
+ * @param {boolean} dump - Whether to dump architecture to file for debugging
+ * @param {Array} isa - Array of instruction set names to load
+ * @returns {Object} - Result object with load status
+ */
+export function newArchitectureLoad(
+    architectureYaml,
+    skipCompiler = false,
+    dump = false,
+    isa = [],
+) {
+    try {
+        // Parse YAML to object
+        const architectureObj = parseArchitectureYaml(architectureYaml);
+
+        // Check the version
+        if (!isVersionSupported(architectureObj)) {
+            return {
+                errorcode: "unsupported_version",
+                token: "Unsupported architecture version",
+                type: "error",
+                update: "",
+                status: "ko",
+            };
+        }
+
+        // Transform arch_conf to the format expected by the code
+        const transformedArchObj = transformArchConf(architectureObj);
+
+        // Determine which instruction sets to load
+        const isaResult = determineInstructionSetsToLoad(
+            transformedArchObj,
+            isa,
+        );
+        if (isaResult.status === "error") {
+            return {
+                errorcode: "invalid_isa",
+                token: isaResult.message,
+                type: "error",
+                update: "",
+                status: "ko",
+            };
+        }
+
+        // Collect instructions from selected sets
+        const updatedArchObj = collectInstructionsFromSets(
+            transformedArchObj,
+            isaResult.instructionSets,
+        );
+
+        // Prepare architecture (process instructions, initialize WASM)
+        const preparedArchObj = prepareArchitecture(
+            updatedArchObj,
+            skipCompiler,
+            dump,
+        );
+
+        // Load the architecture into the system
+        return load_arch_select(preparedArchObj);
+    } catch (error) {
+        logger.error(`Error loading architecture: ${error}`);
+        return {
+            errorcode: "load_error",
+            token: `Failed to load architecture: ${error.message}`,
+            type: "error",
+            update: "",
+            status: "ko",
+        };
+    }
+}
+
+export function load_architecture(arch_str) {
+    logger.warn(
+        "load_architecture is deprecated, use newArchitectureLoad instead",
+    );
+    arch = wasm.ArchitectureJS.from_json(arch_str);
+    const arch_obj = JSON.parse(arch_str);
+    const ret = load_arch_select(arch_obj);
 
     return ret;
 }
 
 export function load_library(lib_str) {
-    var ret = {
+    const ret = {
         status: "ok",
         msg: "",
     };
@@ -171,19 +1023,14 @@ export function load_library(lib_str) {
 
 // compilation
 
-export function assembly_compile(code) {
-    var ret = {};
+export function assembly_compile(code, enable_color) {
+    let ret = {};
 
     code_assembly = code;
-    ret = assembly_compiler();
+    let color = enable_color ? wasm.Color.Ansi : wasm.Color.Off;
+    ret = assembly_compiler(false, color);
     switch (ret.status) {
         case "error":
-            var code_assembly_segment = code_assembly.split("\n");
-            ret.msg += "\n\n";
-            if (ret.line > 0) ret.msg += "  " + (ret.line + 0) + " " + code_assembly_segment[ret.line - 1] + "\n";
-            ret.msg += "->" + (ret.line + 1) + " " + code_assembly_segment[ret.line] + "\n";
-            if (ret.line < code_assembly_segment.length - 1)
-                ret.msg += "  " + (ret.line + 2) + " " + code_assembly_segment[ret.line + 1] + "\n";
             break;
 
         case "warning":
@@ -202,10 +1049,69 @@ export function assembly_compile(code) {
     return ret;
 }
 
-// execution
+/*
+ * CLK Cycles
+ */
 
+export let total_clk_cycles = 0;
+const clk_cycles_value = [
+    {
+        data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    },
+];
+const clk_cycles = [
+    { type: "Arithmetic floating point", clk_cycles: 0, percentage: 0 },
+    { type: "Arithmetic integer", clk_cycles: 0, percentage: 0 },
+    { type: "Comparison", clk_cycles: 0, percentage: 0 },
+    { type: "Conditional bifurcation", clk_cycles: 0, percentage: 0 },
+    { type: "Control", clk_cycles: 0, percentage: 0 },
+    { type: "Function call", clk_cycles: 0, percentage: 0 },
+    { type: "I/O", clk_cycles: 0, percentage: 0 },
+    { type: "Logic", clk_cycles: 0, percentage: 0, abbreviation: "Log" },
+    { type: "Memory access", clk_cycles: 0, percentage: 0 },
+    { type: "Other", clk_cycles: 0, percentage: 0 },
+    { type: "Syscall", clk_cycles: 0, percentage: 0 },
+    { type: "Transfer between registers", clk_cycles: 0, percentage: 0 },
+    { type: "Unconditional bifurcation", clk_cycles: 0, percentage: 0 },
+];
+export function clk_cycles_update(type) {
+    for (let i = 0; i < clk_cycles.length; i++) {
+        if (type == clk_cycles[i].type) {
+            clk_cycles[i].clk_cycles++;
+
+            clk_cycles_value[0].data[i]++;
+
+            total_clk_cycles++;
+            if (typeof app !== "undefined") {
+                app._data.total_clk_cycles++;
+            }
+        }
+    }
+
+    for (let i = 0; i < stats.length; i++) {
+        clk_cycles[i].percentage = (
+            (clk_cycles[i].clk_cycles / total_clk_cycles) *
+            100
+        ).toFixed(2);
+    }
+}
+function clk_cycles_reset() {
+    total_clk_cycles = 0;
+    if (typeof app !== "undefined") {
+        app._data.total_clk_cycles = 0;
+    }
+
+    for (let i = 0; i < clk_cycles.length; i++) {
+        clk_cycles[i].percentage = 0;
+
+        clk_cycles_value[0].data[i] = 0;
+    }
+}
+// execution
+// TODO: remove this function
 export function execute_program(limit_n_instructions) {
-    var ret = {};
+    logger.warn("execute_program is deprecated");
+    let ret;
     ret = executeProgramOneShot(limit_n_instructions);
     if (ret.error === true) {
         ret.status = "ko";
@@ -218,230 +1124,853 @@ export function execute_program(limit_n_instructions) {
 
 // state management
 
+export function stats_update(type) {
+    for (let i = 0; i < stats.length; i++) {
+        if (type == stats[i].type) {
+            stats[i].number_instructions++;
+            stats_value[i]++;
+
+            status.totalStats++;
+            if (typeof app !== "undefined") {
+                app._data.status.totalStats++;
+            }
+        }
+    }
+
+    for (let i = 0; i < stats.length; i++) {
+        stats[i].percentage = (
+            (stats[i].number_instructions / status.totalStats) *
+            100
+        ).toFixed(2);
+    }
+}
+
+function stats_reset() {
+    status.totalStats = 0;
+    if (typeof app !== "undefined") {
+        app._data.status.totalStats = 0;
+    }
+
+    for (let i = 0; i < stats.length; i++) {
+        stats[i].percentage = 0;
+
+        stats[i].number_instructions = 0;
+        stats_value[i] = 0;
+    }
+}
+
+export function reset() {
+    // Google Analytics
+    creator_ga("execute", "execute.reset");
+
+    status.execution_index = 0;
+    status.execution_init = 1;
+    status.run_program = 0;
+
+    // Reset stats
+    stats_reset();
+
+    //Power consumption reset
+    clk_cycles_reset();
+
+    // Reset console
+    status.keyboard = "";
+    status.display = "";
+
+    REGISTERS = JSON.parse(JSON.stringify(REGISTERS_BACKUP));
+
+    architecture.memory_layout[4].value = backup_stack_address;
+    architecture.memory_layout[3].value = backup_data_address;
+
+    // reset memory
+    creator_memory_reset();
+
+    //Stack Reset
+    creator_callstack_reset();
+    track_stack_reset();
+
+    return true;
+}
+
+// TODO: remove this function
+// eslint-disable-next-line max-lines-per-function
 export function get_state() {
-    var ret = {
+    logger.warn("get_state is deprecated");
+    const ret = {
         status: "ok",
         msg: "",
     };
 
-    var c_name = "";
-    var e_name = "";
-    var elto_value = null;
-    var elto_dvalue = null;
-    var elto_string = null;
-
     // dump registers
-    for (var i = 0; i < architecture.components.length; i++) {
-        c_name = architecture.components[i].name;
-        if (typeof c_name == "undefined") {
+    for (let i = 0; i < REGISTERS.length; i++) {
+        const component = REGISTERS[i];
+        const componentName = component.name;
+        const componentType = component.type;
+        const isDoublePrecisionLinked =
+            component.double_precision === true &&
+            component.double_precision_type === "linked";
+
+        if (typeof componentName === "undefined") {
             return ret;
         }
-        c_name = c_name
+
+        // Create abbreviated component name (e.g. "Floating Point Registers" -> "fpr")
+        const shortName = componentName
             .split(" ")
             .map(i => i.charAt(0))
             .join("")
             .toLowerCase();
 
-        for (var j = 0; j < architecture.components[i].elements.length; j++) {
-            // get value
-            e_name = architecture.components[i].elements[j].name;
-            elto_value = architecture.components[i].elements[j].value;
+        for (let j = 0; j < component.elements.length; j++) {
+            const element = component.elements[j];
+            const elementName = element.name;
+            const bits = parseInt(element.nbits, 10);
+            const currentValue = BigInt.asUintN(
+                Number(bits),
+                BigInt(element.value),
+            );
+            const registerSize = parseInt(element.nbits, 10);
+            let defaultValue;
 
-            //get default value
-            if (
-                architecture.components[i].double_precision === true &&
-                architecture.components[i].double_precision_type == "linked"
-            ) {
-                var aux_value;
-                var aux_sim1;
-                var aux_sim2;
+            // Get default value based on register type
+            if (isDoublePrecisionLinked) {
+                // Handle linked double precision floating point registers
+                let auxValue;
+                let simpleReg1Value;
+                let simpleReg2Value;
 
-                for (var a = 0; a < architecture_hash.length; a++) {
-                    for (var b = 0; b < architecture.components[a].elements.length; b++) {
-                        if (
-                            architecture.components[a].elements[b].name ==
-                            architecture.components[i].elements[j].simple_reg[0]
-                        ) {
-                            aux_sim1 = bin2hex(
-                                float2bin(bi_BigIntTofloat(architecture.components[a].elements[b].default_value)),
+                // Find the linked registers' default values
+                for (let a = 0; a < architecture_hash.length; a++) {
+                    const linkedComponent = REGISTERS[a];
+
+                    for (let b = 0; b < linkedComponent.elements.length; b++) {
+                        const linkedElement = linkedComponent.elements[b];
+
+                        if (linkedElement.name == element.simple_reg[0]) {
+                            simpleReg1Value = bin2hex(
+                                float2bin(
+                                    bi_BigIntTofloat(
+                                        linkedElement.default_value,
+                                    ),
+                                ),
                             );
                         }
-                        if (
-                            architecture.components[a].elements[b].name ==
-                            architecture.components[i].elements[j].simple_reg[1]
-                        ) {
-                            aux_sim2 = bin2hex(
-                                float2bin(bi_BigIntTofloat(architecture.components[a].elements[b].default_value)),
+
+                        if (linkedElement.name == element.simple_reg[1]) {
+                            simpleReg2Value = bin2hex(
+                                float2bin(
+                                    bi_BigIntTofloat(
+                                        linkedElement.default_value,
+                                    ),
+                                ),
                             );
                         }
                     }
                 }
 
-                aux_value = aux_sim1 + aux_sim2;
-                elto_dvalue = hex2double("0x" + aux_value);
+                auxValue = simpleReg1Value + simpleReg2Value;
+                defaultValue = hex2double("0x" + auxValue);
             } else {
-                elto_dvalue = architecture.components[i].elements[j].default_value;
+                defaultValue = element.default_value;
             }
 
-            // skip default results
-            if (typeof elto_dvalue == "undefined") {
+            // Skip if default value is undefined or matches current value
+            if (
+                typeof defaultValue === "undefined" ||
+                currentValue == defaultValue
+            ) {
                 continue;
             }
-            if (elto_value == elto_dvalue) {
-                continue;
+            let formattedValue;
+            if (componentType === "fp_registers") {
+                if (component.double_precision === false) {
+                    formattedValue =
+                        "0x" + currentValue.toString(16).padStart(8, "0");
+                } else if (component.double_precision === true) {
+                    formattedValue =
+                        "0x" + currentValue.toString(16).padStart(16, "0");
+                }
+            } else {
+                formattedValue =
+                    "0x" +
+                    getHexTwosComplement(currentValue, registerSize, false);
             }
 
-            // value != default value => dumpt it
-            elto_string = "0x" + elto_value.toString(16);
-            if (architecture.components[i].type == "fp_registers") {
-                if (architecture.components[i].double_precision === false) {
-                    elto_string = "0x" + bin2hex(float2bin(bi_BigIntTofloat(elto_value)));
-                }
-                if (architecture.components[i].double_precision === true) {
-                    elto_string = "0x" + bin2hex(double2bin(bi_BigIntTodouble(elto_value)));
-                }
-            }
-
-            ret.msg = ret.msg + c_name + "[" + e_name + "]:" + elto_string + "; ";
+            // Add to output
+            ret.msg =
+                ret.msg +
+                shortName +
+                "[" +
+                elementName +
+                "]:" +
+                formattedValue +
+                "; ";
         }
     }
 
     // dump memory
-    var addrs = main_memory_get_addresses();
-    for (let i = 0; i < addrs.length; i++) {
-        if (addrs[i] >= parseInt(architecture.memory_layout[3].value)) {
+    const addressList = main_memory_get_addresses();
+    const dataSegmentStart = parseInt(architecture.memory_layout[3].value);
+
+    for (let i = 0; i < addressList.length; i++) {
+        const address = addressList[i];
+
+        // Skip if in data segment
+        if (address >= dataSegmentStart) {
             continue;
         }
 
-        elto_value = main_memory_read_value(addrs[i]);
-        elto_dvalue = main_memory_read_default_value(addrs[i]);
+        const memoryValue = main_memory_read_value(address);
+        const defaultMemoryValue = main_memory_read_default_value(address);
 
-        if (elto_value != elto_dvalue) {
-            let addr_string = "0x" + parseInt(addrs[i]).toString(16);
-            elto_string = "0x" + elto_value;
-            ret.msg = ret.msg + "memory[" + addr_string + "]" + ":" + elto_string + "; ";
+        // Only show changed memory values
+        if (memoryValue != defaultMemoryValue) {
+            const formattedAddress = "0x" + parseInt(address).toString(16);
+            const formattedValue = "0x" + memoryValue;
+            ret.msg =
+                ret.msg +
+                "memory[" +
+                formattedAddress +
+                "]" +
+                ":" +
+                formattedValue +
+                "; ";
         }
     }
 
     // dump keyboard
-    ret.msg = ret.msg + "keyboard[0x0]" + ":'" + encodeURIComponent(status.keyboard) + "'; ";
+    ret.msg =
+        ret.msg +
+        "keyboard[0x0]" +
+        ":'" +
+        encodeURIComponent(status.keyboard) +
+        "'; ";
 
     // dump display
-    ret.msg = ret.msg + "display[0x0]" + ":'" + encodeURIComponent(status.display) + "'; ";
+    ret.msg =
+        ret.msg +
+        "display[0x0]" +
+        ":'" +
+        encodeURIComponent(status.display) +
+        "'; ";
 
     return ret;
 }
 
-export function compare_states(ref_state, alt_state) {
-    var ret = {
+// eslint-disable-next-line max-lines-per-function
+export function getState() {
+    const ret = {
         status: "ok",
         msg: "",
     };
 
-    let ref_state_arr = ref_state
-        .split("\n")
-        .map(function (s) {
-            return s.replace(/^\s*|\s*$/g, "");
-        })
-        .filter(function (x) {
-            return x;
-        });
-    if (ref_state_arr.length > 0) ref_state = ref_state_arr[ref_state_arr.length - 1];
-    else ref_state = "";
+    // dump registers
+    for (let i = 0; i < REGISTERS.length; i++) {
+        const component = REGISTERS[i];
+        const componentName = component.name;
+        const componentType = component.type;
+        const isDoublePrecisionLinked =
+            component.double_precision === true &&
+            component.double_precision_type === "linked";
 
-    let alt_state_arr = alt_state
-        .split("\n")
-        .map(function (s) {
-            return s.replace(/^\s*|\s*$/g, "");
-        })
-        .filter(function (x) {
-            return x;
-        });
-    if (alt_state_arr.length > 0) alt_state = alt_state_arr[alt_state_arr.length - 1];
-    else alt_state = "";
+        if (typeof componentName === "undefined") {
+            return ret;
+        }
 
-    // 1) check equals
-    if (ref_state == alt_state) {
-        //ret.msg = "Equals" ;
-        return ret;
-    }
+        // Create abbreviated component name (e.g. "Floating Point Registers" -> "fpr")
+        const shortName = componentName
+            .split(" ")
+            .map(i => i.charAt(0))
+            .join("")
+            .toLowerCase();
 
-    // 2) check m_alt included within m_ref
-    var m_ref = {};
-    if (ref_state.includes(";")) {
-        ref_state.split(";").map(function (i) {
-            var parts = i.split(":");
-            if (parts.length !== 2) {
-                return;
+        for (let j = 0; j < component.elements.length; j++) {
+            const element = component.elements[j];
+            const elementName = element.name;
+            const bits = parseInt(element.nbits, 10);
+            const currentValue = BigInt.asUintN(
+                Number(bits),
+                BigInt(element.value),
+            );
+            const registerSize = parseInt(element.nbits, 10);
+            let defaultValue;
+
+            // Get default value based on register type
+            if (isDoublePrecisionLinked) {
+                // Handle linked double precision floating point registers
+                let auxValue;
+                let simpleReg1Value;
+                let simpleReg2Value;
+
+                // Find the linked registers' default values
+                for (let a = 0; a < architecture_hash.length; a++) {
+                    const linkedComponent = REGISTERS[a];
+
+                    for (let b = 0; b < linkedComponent.elements.length; b++) {
+                        const linkedElement = linkedComponent.elements[b];
+
+                        if (linkedElement.name == element.simple_reg[0]) {
+                            simpleReg1Value = bin2hex(
+                                float2bin(
+                                    bi_BigIntTofloat(
+                                        linkedElement.default_value,
+                                    ),
+                                ),
+                            );
+                        }
+
+                        if (linkedElement.name == element.simple_reg[1]) {
+                            simpleReg2Value = bin2hex(
+                                float2bin(
+                                    bi_BigIntTofloat(
+                                        linkedElement.default_value,
+                                    ),
+                                ),
+                            );
+                        }
+                    }
+                }
+
+                auxValue = simpleReg1Value + simpleReg2Value;
+                defaultValue = hex2double("0x" + auxValue);
+            } else {
+                defaultValue = element.default_value;
             }
 
-            m_ref[parts[0].trim()] = parts[1].trim();
-        });
-    }
-
-    var m_alt = {};
-    if (alt_state.includes(";")) {
-        alt_state.split(";").map(function (i) {
-            var parts = i.split(":");
-            if (parts.length != 2) {
-                return;
+            // Skip if default value is undefined or matches current value
+            if (
+                typeof defaultValue === "undefined" ||
+                currentValue == defaultValue
+            ) {
+                continue;
+            }
+            let formattedValue;
+            if (componentType === "fp_registers") {
+                if (component.double_precision === false) {
+                    formattedValue =
+                        "0x" +
+                        bin2hex(float2bin(bi_BigIntTofloat(currentValue)));
+                } else if (component.double_precision === true) {
+                    formattedValue =
+                        "0x" +
+                        bin2hex(double2bin(bi_BigIntTodouble(currentValue)));
+                }
+            } else if (componentType === "int_registers") {
+                formattedValue = getHexTwosComplement(
+                    currentValue,
+                    registerSize,
+                );
             }
 
-            m_alt[parts[0].trim()] = parts[1].trim();
-        });
-    }
-
-    ret.msg = "Different: ";
-    for (var elto in m_ref) {
-        if (m_alt[elto] != m_ref[elto]) {
-            if (typeof m_alt[elto] === "undefined") ret.msg += elto + "=" + m_ref[elto] + " is not available. ";
-            else ret.msg += elto + "=" + m_ref[elto] + " is =" + m_alt[elto] + ". ";
-
-            ret.status = "ko";
+            // Add to output
+            ret.msg =
+                ret.msg +
+                shortName +
+                "[" +
+                elementName +
+                "]:" +
+                formattedValue +
+                "\n";
         }
     }
 
-    // last) is different...
-    if (ret.status != "ko") {
-        ret.msg = "";
+    // dump memory
+    const addressList = main_memory_get_addresses();
+    const dataSegmentStart = parseInt(architecture.memory_layout[3].value);
+
+    for (let i = 0; i < addressList.length; i++) {
+        const address = addressList[i];
+
+        // Skip if in data segment
+        if (address >= dataSegmentStart) {
+            continue;
+        }
+
+        const memoryValue = main_memory_read_value(address);
+        const defaultMemoryValue = main_memory_read_default_value(address);
+
+        // Only show changed memory values
+        if (memoryValue != defaultMemoryValue) {
+            const formattedAddress = "0x" + parseInt(address).toString(16);
+            const formattedValue = "0x" + memoryValue;
+            ret.msg =
+                ret.msg +
+                "memory[" +
+                formattedAddress +
+                "]" +
+                ":" +
+                formattedValue +
+                "\n";
+        }
+    }
+
+    // dump keyboard
+    ret.msg =
+        ret.msg +
+        "keyboard[0x0]" +
+        ":'" +
+        encodeURIComponent(status.keyboard) +
+        "'\n";
+
+    // dump display
+    ret.msg =
+        ret.msg +
+        "display[0x0]" +
+        ":'" +
+        encodeURIComponent(status.display) +
+        "'\n";
+
+    return ret;
+}
+
+export function snapshot(extraData) {
+    // Dump architecture object to file
+    const architectureJson = JSON.stringify(architecture);
+    const instructionsJson = JSON.stringify(instructions);
+
+    // Also dump the main_memory
+    const memoryJson = main_memory_serialize();
+
+    // And the status
+    const statusJson = JSON.stringify(status);
+
+    // And the registers
+    const registersJson = JSON.stringify(REGISTERS);
+
+    // And the stack
+    const stackData = dumpStack();
+
+    // Combine all JSON strings into a single snapshot string
+    const combinedState = JSON.stringify({
+        architecture: architectureJson,
+        instructions: instructionsJson,
+        memory: memoryJson,
+        status: statusJson,
+        registers: registersJson,
+        stack: stackData,
+        extraData: extraData,
+    });
+
+    // Return the snapshot string
+    return combinedState;
+}
+
+export function restore(snapshot) {
+    // Parse the snapshot string back into an object
+    const parsedSnapshot = JSON.parse(snapshot);
+    const architectureJson = parsedSnapshot.architecture;
+    const memoryJson = parsedSnapshot.memory;
+    const instructionsJson = parsedSnapshot.instructions;
+    const statusJson = parsedSnapshot.status;
+    const registersJson = parsedSnapshot.registers;
+    const architectureObj = JSON.parse(architectureJson);
+    const memoryObj = JSON.parse(memoryJson);
+    const instructionsObj = JSON.parse(instructionsJson);
+    const statusObj = JSON.parse(statusJson);
+    const registersObj = registersJson ? JSON.parse(registersJson) : null;
+    const stackData = parsedSnapshot.stack;
+    // Restore the instructions
+    setInstructions(instructionsObj);
+    // Restore the architecture object
+    architecture = architectureObj;
+    // Restore the registers
+    if (registersObj) {
+        REGISTERS = registersObj;
+    }
+    // Restore the main memory
+    main_memory_restore(memoryObj);
+    // Restore the stack
+    loadStack(stackData);
+    // Restore the status
+    status = statusObj;
+}
+
+export function diffStates(referenceState, state) {
+    let ret = {
+        status: "ok",
+        diff: "",
+    };
+    // ANSI color codes
+    const COLOR_RED = "\x1b[31m";
+    const COLOR_RESET = "\x1b[0m";
+
+    // Parse states into arrays of entries
+    const referenceEntries = [];
+    const stateEntries = [];
+
+    // Check if the states are equal
+    if (referenceState === state) {
+        return ret;
+    }
+
+    // Process reference state
+    for (const line of referenceState.split("\n")) {
+        const trimmedLine = line.trim();
+        if (trimmedLine) {
+            referenceEntries.push(trimmedLine);
+        }
+    }
+
+    // Process actual state
+    for (const line of state.split("\n")) {
+        const trimmedLine = line.trim();
+        if (trimmedLine) {
+            stateEntries.push(trimmedLine);
+        }
+    }
+
+    // Create formatted output
+    const width = 50;
+    const output = [];
+
+    output.push(`┌${"─".repeat(width)}┬${"─".repeat(width)}┐`);
+    output.push(
+        `│ ${"EXPECTED".padEnd(width - 1)}│ ${"ACTUAL".padEnd(width - 1)}│`,
+    );
+    output.push(`├${"─".repeat(width)}┼${"─".repeat(width)}┤`);
+
+    // Generate rows
+    for (
+        let i = 0;
+        i < Math.max(referenceEntries.length, stateEntries.length);
+        i++
+    ) {
+        let ref = i < referenceEntries.length ? referenceEntries[i] : "";
+        let act = i < stateEntries.length ? stateEntries[i] : "";
+
+        // Truncate and pad strings to fit the table
+        const refTruncated =
+            ref.length > width - 2 ? ref.substring(0, width - 2) : ref;
+        const actTruncated =
+            act.length > width - 2 ? act.substring(0, width - 2) : act;
+
+        ref = refTruncated.padEnd(width - 2);
+        act = actTruncated.padEnd(width - 2);
+
+        // Check if entries are different
+        if (refTruncated.trim() !== actTruncated.trim()) {
+            // Add color to the differences
+            ref = COLOR_RED + ref + COLOR_RESET;
+            act = COLOR_RED + act + COLOR_RESET;
+        }
+
+        output.push(`│ ${ref} │ ${act} │`);
+    }
+
+    output.push(`└${"─".repeat(width)}┴${"─".repeat(width)}┘`);
+    ret.diff = output.join("\n");
+    ret.status = "different";
+
+    return ret;
+}
+
+export function dumpMemory(startAddr, numBytes, bytesPerRow = 16) {
+    startAddr = BigInt(startAddr);
+    numBytes = BigInt(numBytes);
+    bytesPerRow = BigInt(bytesPerRow);
+
+    let output = "";
+    let currentAddr = startAddr;
+    const endAddr = startAddr + numBytes;
+
+    // Create header
+    output += "       ";
+    for (let i = 0n; i < bytesPerRow; i++) {
+        output += " " + i.toString(16).padStart(2, "0");
+    }
+    output += "  | ASCII\n";
+    output +=
+        "-------" +
+        "-".repeat(Number(bytesPerRow) * 3) +
+        "---" +
+        "-".repeat(Number(bytesPerRow)) +
+        "\n";
+
+    // Create rows
+    while (currentAddr < endAddr) {
+        // Address column
+        output += "0x" + currentAddr.toString(16).padStart(4, "0") + ": ";
+
+        let hexValues = "";
+        let asciiValues = "";
+
+        // Process bytes for this row
+        for (let i = 0n; i < bytesPerRow; i++) {
+            if (currentAddr + i < endAddr) {
+                const byteValue = main_memory_read_value(currentAddr + i);
+                hexValues += byteValue + " ";
+
+                // Try to convert to ASCII, use dot for non-printable chars
+                const charCode = parseInt(byteValue, 16);
+                if (charCode >= 32 && charCode <= 126) {
+                    // Printable ASCII range
+                    asciiValues += String.fromCharCode(charCode);
+                } else {
+                    asciiValues += ".";
+                }
+            } else {
+                // Padding for incomplete row
+                hexValues += "   ";
+                asciiValues += " ";
+            }
+        }
+
+        output += hexValues + "| " + asciiValues + "\n";
+        currentAddr += bytesPerRow;
+    }
+
+    return output;
+}
+
+export function dumpAddress(startAddr, numBytes) {
+    startAddr = BigInt(startAddr);
+    numBytes = BigInt(numBytes);
+
+    const result = [];
+    let currentAddr = startAddr;
+    const endAddr = startAddr + numBytes;
+
+    while (currentAddr < endAddr) {
+        const byteValue = main_memory_read_value(currentAddr);
+        result.push(byteValue);
+        currentAddr += 1n;
+    }
+    // Convert the result to a string representation
+    const resultString = result
+        .map(byte => byte.toString(16).padStart(2, "0"))
+        .join("");
+
+    return resultString;
+}
+
+export function load_binary_file(bin_str) {
+    const ret = {
+        status: "ok",
+        msg: "",
+    };
+
+    try {
+        // Parse binary JSON
+        const binary_data = JSON.parse(bin_str);
+
+        // Load instructions_binary directly into instructions
+        instructions.length = 0; // Clear existing instructions
+
+        // Copy instructions from binary
+        if (
+            binary_data.instructions_binary &&
+            Array.isArray(binary_data.instructions_binary)
+        ) {
+            for (let i = 0; i < binary_data.instructions_binary.length; i++) {
+                instructions.push(binary_data.instructions_binary[i]);
+            }
+            logger.info(
+                `Loaded ${instructions.length} instructions from binary`,
+            );
+        } else {
+            logger.warning("No instructions found in binary file");
+        }
+
+        // Load instructions_tag if available
+        if (
+            binary_data.instructions_tag &&
+            Array.isArray(binary_data.instructions_tag)
+        ) {
+            // Clear existing tags and create new ones from binary data
+            // This would typically be handled by the compiler but we're bypassing it
+            logger.info(
+                `Loaded ${binary_data.instructions_tag.length} instruction tags`,
+            );
+        }
+
+        // Load instructions into memory
+        for (let i = 0; i < instructions.length; i++) {
+            const instruction = instructions[i];
+            const addr = BigInt(parseInt(instruction.Address, 16));
+
+            // Convert instruction to hex bytes
+            const loadedInstruction = instruction.loaded;
+            const hexBytes = [];
+
+            // Check the format of the loaded instruction
+            if (loadedInstruction.startsWith("0x")) {
+                // Hex format - convert to bytes directly
+                const hexString = loadedInstruction.slice(2); // Remove "0x" prefix
+                for (let j = 0; j < hexString.length; j += 2) {
+                    const hexByte = hexString.substr(j, 2);
+                    hexBytes.push(hexByte);
+                }
+            } else if (loadedInstruction.startsWith("0b")) {
+                // Binary format with prefix - remove prefix and process
+                const binString = loadedInstruction.slice(2); // Remove "0b" prefix
+                for (let j = 0; j < binString.length; j += 8) {
+                    const byte = binString.substr(j, 8);
+                    const hexByte = parseInt(byte, 2)
+                        .toString(16)
+                        .padStart(2, "0");
+                    hexBytes.push(hexByte);
+                }
+            } else {
+                // Assume binary format (backwards compatibility)
+                for (let j = 0; j < loadedInstruction.length; j += 8) {
+                    const byte = loadedInstruction.substr(j, 8);
+                    const hexByte = parseInt(byte, 2)
+                        .toString(16)
+                        .padStart(2, "0");
+                    hexBytes.push(hexByte);
+                }
+            }
+
+            // Add instruction bytes to memory (little endian)
+            for (let j = 0; j < hexBytes.length; j++) {
+                const byteAddr = addr + BigInt(j);
+
+                // Create memory entry for this byte
+                main_memory[byteAddr] = {
+                    addr: byteAddr,
+                    bin: hexBytes[j],
+                    break: false,
+                    data_type: {
+                        address: byteAddr,
+                        value: "00",
+                        default: "00",
+                        type: "instruction",
+                        size: 0,
+                    },
+                    def_bin: hexBytes[j],
+                    reset: true,
+                    tag: instruction.Label || "",
+                };
+            }
+        }
+
+        // Load data section into memory
+        if (
+            binary_data.data_section &&
+            Array.isArray(binary_data.data_section)
+        ) {
+            for (let i = 0; i < binary_data.data_section.length; i++) {
+                const data_item = binary_data.data_section[i];
+                const base_addr = BigInt(parseInt(data_item.Address, 16));
+                const size = data_item.Size;
+                const hex_value = data_item.Value;
+
+                // Split hex value into bytes
+                for (let j = 0; j < hex_value.length; j += 2) {
+                    if (j / 2 >= size) break;
+
+                    const byteAddr = base_addr + BigInt(j / 2);
+                    const hexByte = hex_value.substr(j, 2);
+
+                    // Create memory entry for this byte
+                    main_memory[byteAddr] = {
+                        addr: byteAddr,
+                        bin: hexByte,
+                        break: false,
+                        data_type: {
+                            address: byteAddr,
+                            value: "00",
+                            default: "00",
+                            type: data_item.Type || "unknown",
+                            size: 0,
+                        },
+                        def_bin: hexByte,
+                        reset: true,
+                        tag: j === 0 ? data_item.Label || "" : "",
+                    };
+                }
+            }
+            logger.info(`Loaded ${binary_data.data_section.length} data items`);
+        } else {
+            logger.warning("No data section found in binary file");
+        }
+
+        ret.msg = "Binary file loaded successfully";
+    } catch (e) {
+        ret.status = "ko";
+        ret.msg = "Error loading binary file: " + e.message;
+        logger.error("Binary load error: " + e.message);
     }
 
     return ret;
 }
 
-// help
-
-export function help_instructions() {
-    var o = "";
-    var m = null;
-
-    // describe instructions
-    o += "name;\t\tsignature;\t\twords;\t\ttype\n";
-    for (var i = 0; i < architecture.instructions.length; i++) {
-        m = architecture.instructions[i];
-
-        o += m.name + ";\t" + (m.name.length < 7 ? "\t" : "");
-        o += m.signatureRaw + ";\t" + (m.signatureRaw.length < 15 ? "\t" : "");
-        o += m.nwords + ";\t" + (m.nwords.length < 7 ? "\t" : "");
-        o += m.type + "\n";
+export function dumpRegister(register, format = "hex") {
+    if (typeof register === "undefined") {
+        return ret;
     }
 
-    return o;
+    const result = crex_findReg(register);
+    const registerSize =
+        REGISTERS[result.indexComp].elements[result.indexElem].nbits;
+
+    if (result.match === 1) {
+        if (format === "hex") {
+            let value = readRegister(
+                result.indexComp,
+                result.indexElem,
+            ).toString(16);
+            return value;
+        } else if (format === "twoscomplement") {
+            let value = readRegister(result.indexComp, result.indexElem);
+            let twosComplement = getHexTwosComplement(value, registerSize);
+            return twosComplement;
+        } else if (format === "raw") {
+            let value =
+                REGISTERS[result.indexComp].elements[
+                    result.indexElem
+                ].value.toString(16);
+            return value;
+        } else if (format === "decimal") {
+            let value = readRegister(result.indexComp, result.indexElem);
+            return value;
+        }
+    }
+    return null;
 }
 
-export function help_pseudoins() {
-    var o = "";
-    var m = null;
+export function getRegisterTypes() {
+    // Extract unique register types from architecture components
+    const registerTypes = REGISTERS.filter(component =>
+        component.type.includes("registers"),
+    ).map(component => component.type);
 
-    // describe pseudoinstructions
-    o += "name;\t\tsignature;\t\twords\n";
-    for (var i = 0; i < architecture.pseudoinstructions.length; i++) {
-        m = architecture.pseudoinstructions[i];
+    return registerTypes;
+}
 
-        o += m.name + ";\t" + (m.name.length < 7 ? "\t" : "");
-        o += m.signatureRaw + ";\t" + (m.signatureRaw.length < 15 ? "\t" : "");
-        o += m.nwords + "\n";
+export function getRegistersByBank(regType) {
+    // Find the component with the specified register type
+    const component = REGISTERS.find(comp => comp.type === regType);
+
+    if (!component) {
+        return null;
     }
 
-    return o;
+    return {
+        name: component.name,
+        type: component.type,
+        elements: component.elements,
+        double_precision: component.double_precision,
+        double_precision_type: component.double_precision_type,
+    };
+}
+
+export function getRegisterInfo(regName) {
+    // Find the register in all components
+    for (const component of REGISTERS) {
+        if (component.type.includes("registers")) {
+            for (const element of component.elements) {
+                // Check if this register matches by any of its names
+                if (element.name.includes(regName)) {
+                    return {
+                        ...element,
+                        type: component.type,
+                        nbits: element.nbits,
+                    };
+                }
+            }
+        }
+    }
+
+    return null;
 }

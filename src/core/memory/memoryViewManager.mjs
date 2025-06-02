@@ -18,7 +18,7 @@
  *
  */
 "use strict";
-import { app, word_size_bytes } from "../core.mjs";
+import { app, WORDSIZE } from "../core.mjs";
 import { main_memory_read, main_memory_get_addresses } from "./memoryCore.mjs";
 import { hex2float, hex2char8 } from "../utils/utils.mjs";
 import { main_memory_datatypes } from "./memoryCore.mjs";
@@ -31,26 +31,40 @@ import { main_memory_datatypes } from "./memoryCore.mjs";
 //           hex:[{byte: "1A", tag: "main"},...],
 //           value: "1000", size: 4, eye: true, hex_packed: "1A000000" },
 //  ...
+
+// eslint-disable-next-line max-lines-per-function
 export function creator_memory_updaterow(addr) {
+    let word_size_bytes = WORDSIZE / 8;
     // skip if app.data does not exit...
-    if (typeof app == "undefined" || typeof app._data.main_memory == "undefined") {
+    if (
+        typeof app === "undefined" ||
+        typeof app._data.main_memory === "undefined"
+    ) {
         return;
     }
 
     // base address
-    var addr_base = parseInt(addr);
-    addr_base = addr_base - (addr_base % word_size_bytes); // get word aligned address
+    let addr_base = parseInt(addr);
+    addr_base -= addr_base % word_size_bytes; // get word aligned address
 
     // get_or_create...
-    var elto = { addr: 0, addr_begin: "", addr_end: "", value: "", size: 0, hex: [], eye: true };
-    if (typeof app._data.main_memory[addr_base] != "undefined") {
+    let elto = {
+        addr: 0,
+        addr_begin: "",
+        addr_end: "",
+        value: "",
+        size: 0,
+        hex: [],
+        eye: true,
+    };
+    if (typeof app._data.main_memory[addr_base] !== "undefined") {
         // reuse the existing element...
         elto = app._data.main_memory[addr_base];
     } else {
         // set a new element, and set the initial values...
         Vue.set(app._data.main_memory, addr_base, elto);
 
-        for (var i = 0; i < word_size_bytes; i++) {
+        for (let i = 0; i < word_size_bytes; i++) {
             elto.hex[i] = { byte: "00", tag: null };
         }
     }
@@ -64,7 +78,7 @@ export function creator_memory_updaterow(addr) {
             .toUpperCase();
 
     // addr_end
-    var addr_end = addr_base + word_size_bytes - 1;
+    const addr_end = addr_base + word_size_bytes - 1;
     elto.addr_end =
         "0x" +
         addr_end
@@ -76,7 +90,7 @@ export function creator_memory_updaterow(addr) {
     elto.addr = addr_end;
 
     // hex, hex_packed
-    var v1 = {};
+    let v1 = {};
     elto.hex_packed = "";
     for (let i = 0; i < word_size_bytes; i++) {
         v1 = main_memory_read(addr_base + i);
@@ -94,11 +108,11 @@ export function creator_memory_updaterow(addr) {
     elto.value = "";
     elto.size = 0;
     for (let i = 0; i < word_size_bytes; i++) {
-        if (typeof main_memory_datatypes[addr_base + i] == "undefined") {
+        if (typeof main_memory_datatypes[addr_base + i] === "undefined") {
             continue;
         }
 
-        elto.size = elto.size + main_memory_datatypes[addr_base + i].size;
+        elto.size += main_memory_datatypes[addr_base + i].size;
         if (main_memory_datatypes[addr_base + i].type != "space") {
             if (elto.value != "") elto.value += ", ";
             elto.value += main_memory_datatypes[addr_base + i].value;
@@ -111,16 +125,19 @@ export function creator_memory_updaterow(addr) {
 
 export function creator_memory_updateall() {
     // skip if app.data does not exit...
-    if (typeof app == "undefined" || typeof app._data.main_memory == "undefined") {
+    if (
+        typeof app === "undefined" ||
+        typeof app._data.main_memory === "undefined"
+    ) {
         return;
     }
 
     // update all rows in app._data.main_memory...
-    var addrs = main_memory_get_addresses();
+    const addrs = main_memory_get_addresses();
 
-    var last_addr = -1;
-    var curr_addr = -1;
-    for (var i = 0; i < addrs.length; i++) {
+    let last_addr = -1;
+    let curr_addr = -1;
+    for (let i = 0; i < addrs.length; i++) {
         curr_addr = parseInt(addrs[i]);
         if (Math.abs(curr_addr - last_addr) > word_size_bytes - 1) {
             // if (|curr - last| > 3)
@@ -131,7 +148,10 @@ export function creator_memory_updateall() {
 }
 export function creator_memory_clearall() {
     // skip if app.data does not exit...
-    if (typeof app == "undefined" || typeof app._data.main_memory == "undefined") {
+    if (
+        typeof app === "undefined" ||
+        typeof app._data.main_memory === "undefined"
+    ) {
         return;
     }
 
@@ -139,12 +159,12 @@ export function creator_memory_clearall() {
     app._data.main_memory = {};
 }
 function creator_memory_update_row_view(selected_view, segment_name, row_info) {
-    if (typeof app._data.main_memory[row_info.addr] == "undefined") {
+    if (typeof app._data.main_memory[row_info.addr] === "undefined") {
         return;
     }
 
-    var hex_packed = app._data.main_memory[row_info.addr].hex_packed;
-    var new_value = app._data.main_memory[row_info.addr].value;
+    const hex_packed = app._data.main_memory[row_info.addr].hex_packed;
+    let new_value = app._data.main_memory[row_info.addr].value;
 
     switch (selected_view) {
         case "sig_int":
@@ -163,8 +183,12 @@ function creator_memory_update_row_view(selected_view, segment_name, row_info) {
 
     app._data.main_memory[row_info.addr].value = new_value;
 }
-function creator_memory_update_space_view(selected_view, segment_name, row_info) {
-    for (var i = 0; i < row_info.size; i++) {
+function creator_memory_update_space_view(
+    selected_view,
+    segment_name,
+    row_info,
+) {
+    for (let i = 0; i < row_info.size; i++) {
         creator_memory_update_row_view(selected_view, segment_name, row_info);
         row_info.addr++;
     }
