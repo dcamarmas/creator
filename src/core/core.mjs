@@ -49,7 +49,6 @@ import {
     main_memory_serialize,
 } from "./memory/memoryCore.mjs";
 import { creator_memory_reset } from "./memory/memoryOperations.mjs";
-import * as wasm from "./compiler/deno/creator_compiler.js";
 import yaml from "js-yaml";
 import { crex_findReg } from "./register/registerLookup.mjs";
 import { readRegister } from "./register/registerOperations.mjs";
@@ -60,6 +59,21 @@ import {
 } from "./memory/stackTracker.mjs";
 import { creator_ga } from "./utils/creator_ga.mjs";
 import { creator_callstack_reset } from "./sentinel/sentinel.mjs";
+
+// Conditional import for the WASM compiler based on the environment (web or Deno)
+let wasm;
+const isDeno = typeof Deno !== "undefined";
+const isWeb = typeof window !== "undefined" && typeof document !== "undefined";
+
+if (isDeno) {
+    wasm = await import("./compiler/deno/creator_compiler.js");
+} else if (isWeb) {
+    wasm = await import("./compiler/web/creator_compiler.js");
+} else {
+    throw new Error(
+        "Unsupported environment: neither Deno nor web browser detected",
+    );
+}
 
 export let code_assembly = "";
 export let update_binary = "";
