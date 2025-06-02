@@ -18,7 +18,7 @@
  *
  */
 "use strict";
-import { architecture } from "../core.mjs";
+import { architecture, REGISTERS } from "../core.mjs";
 import { address } from "../compiler/compiler.mjs";
 import { console_log } from "../utils/creator_logger.mjs";
 
@@ -28,7 +28,7 @@ import { console_log } from "../utils/creator_logger.mjs";
 /*
  * [ "x", "y" ] ;
  */
-var stack_call_names = [];
+let stack_call_names = [];
 /*
  * [
  *   {
@@ -70,7 +70,7 @@ var stack_call_names = [];
  *      7     7    7     6  5    7   b4
  *
  */
-var stack_state_transition = [
+const stack_state_transition = [
     { "wm==": 1, "wm!=": 1, rm: 2, wr: 40, rr: 0, end: 3 },
     { "wm==": 1, "wm!=": 7, rm: 6, wr: 5, rr: 1, end: 40 },
     { "wm==": 1, "wm!=": 1, rm: 2, wr: 45, rr: 2, end: 3 },
@@ -80,7 +80,7 @@ var stack_state_transition = [
     { "wm==": 44, "wm!=": 6, rm: 6, wr: 0, rr: 6, end: 43 },
     { "wm==": 7, "wm!=": 7, rm: 6, wr: 5, rr: 7, end: 42 },
 ];
-var stack_call_register = [];
+let stack_call_register = [];
 /*
  * Public API
  */
@@ -89,7 +89,7 @@ var stack_call_register = [];
 // Example: creator_callstack_create() ;
 //
 function creator_callstack_create() {
-    var ret = {
+    const ret = {
         ok: true,
         msg: "",
     };
@@ -106,7 +106,7 @@ function creator_callstack_create() {
 // Example: creator_callstack_Enter("main")
 //
 export function creator_callstack_enter(function_name) {
-    var ret = {
+    const ret = {
         ok: true,
         msg: "",
     };
@@ -115,14 +115,14 @@ export function creator_callstack_enter(function_name) {
     stack_call_names.push(function_name);
 
     // 2.- caller element
-    var arr_sm = [];
-    var arr_write = [];
-    var arr_read = [];
-    var arr_value = [];
-    var arr_size_write = [];
-    var arr_size_read = [];
+    const arr_sm = [];
+    const arr_write = [];
+    const arr_read = [];
+    const arr_value = [];
+    const arr_size_write = [];
+    const arr_size_read = [];
 
-    for (var i = 0; i < architecture.components.length; i++) {
+    for (let i = 0; i < REGISTERS.length; i++) {
         arr_sm.push([]);
         arr_write.push([]);
         arr_read.push([]);
@@ -130,17 +130,17 @@ export function creator_callstack_enter(function_name) {
         arr_size_write.push([]);
         arr_size_read.push([]);
 
-        for (var j = 0; j < architecture.components[i].elements.length; j++) {
+        for (let j = 0; j < REGISTERS[i].elements.length; j++) {
             arr_sm[i].push(0);
             arr_write[i].push([]);
             arr_read[i].push([]);
             arr_size_write[i].push([]);
             arr_size_read[i].push([]);
-            arr_value[i].push(architecture.components[i].elements[j].value);
+            arr_value[i].push(REGISTERS[i].elements[j].value);
         }
     }
 
-    var new_elto = {
+    const new_elto = {
         function_name: function_name,
         enter_stack_pointer: architecture.memory_layout[4].value,
         register_sm: arr_sm,
@@ -160,24 +160,27 @@ export function creator_callstack_enter(function_name) {
 // "jr ra, ..." -> remove last element
 // Example: creator_callstack_Leave() ;
 //
+// eslint-disable-next-line max-lines-per-function
 export function creator_callstack_leave() {
-    var ret = {
+    const ret = {
         ok: true,
         msg: "",
     };
 
     // check params
-    if (0 === stack_call_register.length) {
+    if (stack_call_register.length === 0) {
         ret.msg = "creator_callstack_Leave: empty stack_call_register !!.\n";
         return ret;
     }
 
     // get stack top element
-    var last_elto = stack_call_register[stack_call_register.length - 1];
+    let last_elto = stack_call_register[stack_call_register.length - 1];
 
     //check sp that points to corresponding address
     if (ret.ok) {
-        if (architecture.memory_layout[4].value != last_elto.enter_stack_pointer) {
+        if (
+            architecture.memory_layout[4].value != last_elto.enter_stack_pointer
+        ) {
             ret.ok = false;
             ret.msg = "Stack memory has not been released successfully";
         }
@@ -185,14 +188,16 @@ export function creator_callstack_leave() {
 
     // check values (check currrent state)
     if (ret.ok) {
-        for (var i = 0; i < architecture.components.length; i++) {
-            for (var j = 0; j < architecture.components[i].elements.length; j++) {
+        for (let i = 0; i < REGISTERS.length; i++) {
+            for (let j = 0; j < REGISTERS[i].elements.length; j++) {
                 if (
-                    last_elto.register_value[i][j] != architecture.components[i].elements[j].value &&
-                    architecture.components[i].elements[j].properties.includes("saved")
+                    last_elto.register_value[i][j] !=
+                        REGISTERS[i].elements[j].value &&
+                    REGISTERS[i].elements[j].properties.includes("saved")
                 ) {
                     ret.ok = false;
-                    ret.msg = "Possible failure in the parameter passing convention";
+                    ret.msg =
+                        "Possible failure in the parameter passing convention";
                     break;
                 }
             }
@@ -201,21 +206,24 @@ export function creator_callstack_leave() {
 
     //Check state
     if (ret.ok) {
-        for (let i = 0; i < architecture.components.length; i++) {
-            for (let j = 0; j < architecture.components[i].elements.length; j++) {
+        for (let i = 0; i < REGISTERS.length; i++) {
+            for (let j = 0; j < REGISTERS[i].elements.length; j++) {
                 creator_callstack_do_transition("end", i, j, null);
 
                 last_elto = stack_call_register[stack_call_register.length - 1];
 
                 /////////////////////////// TEMPORAL SOLUTION ///////////////////////////////////////////////////////////////////
                 //last_index_write = last_elto.register_address_write[i][j].length -1;
-                const last_index_read = last_elto.register_address_read[i][j].length - 1;
+                const last_index_read =
+                    last_elto.register_address_read[i][j].length - 1;
 
                 if (
                     last_elto.register_address_write[i][j][0] ==
-                        last_elto.register_address_read[i][j][last_index_read] &&
+                        last_elto.register_address_read[i][j][
+                            last_index_read
+                        ] &&
                     last_elto.register_sm[i][j] === 45 &&
-                    architecture.components[i].elements[j].properties.includes("saved") // ...but should be saved
+                    REGISTERS[i].elements[j].properties.includes("saved") // ...but should be saved
                 ) {
                     break;
                 }
@@ -223,10 +231,11 @@ export function creator_callstack_leave() {
                 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 else if (
                     last_elto.register_sm[i][j] !== 3 &&
-                    architecture.components[i].elements[j].properties.includes("saved") // ...but should be saved
+                    REGISTERS[i].elements[j].properties.includes("saved") // ...but should be saved
                 ) {
                     ret.ok = false;
-                    ret.msg = "Possible failure in the parameter passing convention";
+                    ret.msg =
+                        "Possible failure in the parameter passing convention";
                     break;
                 }
             }
@@ -235,18 +244,22 @@ export function creator_callstack_leave() {
 
     //Check address
     if (ret.ok) {
-        for (let i = 0; i < architecture.components.length; i++) {
-            for (let j = 0; j < architecture.components[i].elements.length; j++) {
+        for (let i = 0; i < REGISTERS.length; i++) {
+            for (let j = 0; j < REGISTERS[i].elements.length; j++) {
                 //last_index_write = last_elto.register_address_write[i][j].length -1;
-                const last_index_read = last_elto.register_address_read[i][j].length - 1;
+                const last_index_read =
+                    last_elto.register_address_read[i][j].length - 1;
 
                 if (
                     last_elto.register_address_write[i][j][0] !=
-                        last_elto.register_address_read[i][j][last_index_read] &&
-                    architecture.components[i].elements[j].properties.includes("saved") // ...but should be saved
+                        last_elto.register_address_read[i][j][
+                            last_index_read
+                        ] &&
+                    REGISTERS[i].elements[j].properties.includes("saved") // ...but should be saved
                 ) {
                     ret.ok = false;
-                    ret.msg = "Possible failure in the parameter passing convention";
+                    ret.msg =
+                        "Possible failure in the parameter passing convention";
                     break;
                 }
             }
@@ -255,17 +268,20 @@ export function creator_callstack_leave() {
 
     //Check size
     if (ret.ok) {
-        for (let i = 0; i < architecture.components.length; i++) {
-            for (let j = 0; j < architecture.components[i].elements.length; j++) {
+        for (let i = 0; i < REGISTERS.length; i++) {
+            for (let j = 0; j < REGISTERS[i].elements.length; j++) {
                 //last_index_write = last_elto.register_size_write[i][j].length -1;
-                const last_index_read = last_elto.register_size_read[i][j].length - 1;
+                const last_index_read =
+                    last_elto.register_size_read[i][j].length - 1;
 
                 if (
-                    last_elto.register_size_write[i][j][0] != last_elto.register_size_read[i][j][last_index_read] &&
-                    architecture.components[i].elements[j].properties.includes("saved") // ...but should be saved
+                    last_elto.register_size_write[i][j][0] !=
+                        last_elto.register_size_read[i][j][last_index_read] &&
+                    REGISTERS[i].elements[j].properties.includes("saved") // ...but should be saved
                 ) {
                     ret.ok = false;
-                    ret.msg = "Possible failure in the parameter passing convention";
+                    ret.msg =
+                        "Possible failure in the parameter passing convention";
                     break;
                 }
             }
@@ -286,14 +302,14 @@ export function creator_callstack_leave() {
 // Example: var elto = creator_callstack_getTop() ;
 //
 function creator_callstack_getTop() {
-    var ret = {
+    const ret = {
         ok: true,
         val: null,
         msg: "",
     };
 
     // check params
-    if (0 === stack_call_register.length) {
+    if (stack_call_register.length === 0) {
         ret.ok = false;
         ret.msg = "creator_callstack_getTop: empty stack_call_register !!.\n";
         return ret;
@@ -308,20 +324,20 @@ function creator_callstack_getTop() {
 // Example: creator_callstack_getTop("function_name", 1, 2, "main") ;
 //
 function creator_callstack_setTop(field, indexComponent, indexElement, value) {
-    var ret = {
+    const ret = {
         ok: true,
         msg: "",
     };
 
     // check params
-    if (0 === stack_call_register.length) {
+    if (stack_call_register.length === 0) {
         ret.ok = false;
         ret.msg = "creator_callstack_getTop: empty stack_call_register !!.\n";
         return ret;
     }
 
     // set field value
-    var elto = stack_call_register[stack_call_register.length - 1];
+    const elto = stack_call_register[stack_call_register.length - 1];
     if (typeof elto.length !== "undefined") {
         elto[field][indexComponent][indexElement] = value;
         return ret;
@@ -335,7 +351,7 @@ function creator_callstack_setTop(field, indexComponent, indexElement, value) {
 // Example: creator_callstack_setState(1, 2, 1) ;
 //
 function creator_callstack_setState(indexComponent, indexElement, newState) {
-    var elto = creator_callstack_getTop();
+    const elto = creator_callstack_getTop();
     if (elto.ok === false) {
         console_log("[STATE] Failed to set state: " + elto.msg, "ERROR");
         return "";
@@ -344,7 +360,7 @@ function creator_callstack_setState(indexComponent, indexElement, newState) {
     elto.val.register_sm[indexComponent][indexElement] = newState;
 }
 function creator_callstack_getState(indexComponent, indexElement) {
-    var elto = creator_callstack_getTop();
+    const elto = creator_callstack_getTop();
     if (elto.ok === false) {
         console_log("[STATE] Failed to get state: " + elto.msg, "ERROR");
         return "";
@@ -356,13 +372,26 @@ function creator_callstack_getState(indexComponent, indexElement) {
 // Let programmers add a new write
 // Example: creator_callstack_newWrite(1, 2, 0x12345) ;
 //
-export function creator_callstack_newWrite(indexComponent, indexElement, address, length) {
+export function creator_callstack_newWrite(
+    indexComponent,
+    indexElement,
+    address,
+    length,
+) {
     // Move state finite machine
-    creator_callstack_do_transition("wm", indexComponent, indexElement, address);
+    creator_callstack_do_transition(
+        "wm",
+        indexComponent,
+        indexElement,
+        address,
+    );
 
-    var elto = creator_callstack_getTop();
+    const elto = creator_callstack_getTop();
     if (elto.ok == false) {
-        console_log("[WRITE] Failed to record new write operation: " + elto.msg, "ERROR");
+        console_log(
+            "[WRITE] Failed to record new write operation: " + elto.msg,
+            "ERROR",
+        );
         return "";
     }
 
@@ -373,10 +402,18 @@ export function creator_callstack_newWrite(indexComponent, indexElement, address
 // Let programmers add a new read
 // Example: creator_callstack_newRead(1, 2, 0x12345) ;
 //
-export function creator_callstack_newRead(indexComponent, indexElement, address, length) {
-    var elto = creator_callstack_getTop();
+export function creator_callstack_newRead(
+    indexComponent,
+    indexElement,
+    address,
+    length,
+) {
+    const elto = creator_callstack_getTop();
     if (elto.ok == false) {
-        console_log("[READ] Failed to record new read operation: " + elto.msg, "ERROR");
+        console_log(
+            "[READ] Failed to record new read operation: " + elto.msg,
+            "ERROR",
+        );
         return "";
     }
 
@@ -384,7 +421,12 @@ export function creator_callstack_newRead(indexComponent, indexElement, address,
     elto.val.register_size_read[indexComponent][indexElement].push(length);
 
     // Move state finite machine
-    creator_callstack_do_transition("rm", indexComponent, indexElement, address);
+    creator_callstack_do_transition(
+        "rm",
+        indexComponent,
+        indexElement,
+        address,
+    );
 }
 //
 // Let programmers add a new read
@@ -392,14 +434,19 @@ export function creator_callstack_newRead(indexComponent, indexElement, address,
 //
 export function creator_callstack_writeRegister(indexComponent, indexElement) {
     // Move state finite machine
-    creator_callstack_do_transition("wr", indexComponent, indexElement, address);
+    creator_callstack_do_transition(
+        "wr",
+        indexComponent,
+        indexElement,
+        address,
+    );
 }
 //
 // Reset
 // Example: creator_callstack_reset() ;
 //
 export function creator_callstack_reset() {
-    var ret = {
+    const ret = {
         ok: true,
         msg: "",
     };
@@ -416,20 +463,32 @@ export function creator_callstack_reset() {
 // do state transition
 // Example: creator_callstack_do_transition("wm", 1, 2, 0x12345678)
 //
-function creator_callstack_do_transition(doAction, indexComponent, indexElement, address) {
+// eslint-disable-next-line max-lines-per-function
+function creator_callstack_do_transition(
+    doAction,
+    indexComponent,
+    indexElement,
+    address,
+) {
     // get current state
-    var state = creator_callstack_getState(indexComponent, indexElement);
+    const state = creator_callstack_getState(indexComponent, indexElement);
 
     // get action
-    var action = doAction;
+    let action = doAction;
     if (doAction == "wm") {
         const elto = creator_callstack_getTop();
         if (elto.ok == false) {
-            console_log("creator_callstack_do_transition: " + elto.msg, "ERROR");
+            console_log(
+                "creator_callstack_do_transition: " + elto.msg,
+                "ERROR",
+            );
             return "";
         }
 
-        const equal = elto.val.register_address_write[indexComponent][indexElement].includes(address);
+        const equal =
+            elto.val.register_address_write[indexComponent][
+                indexElement
+            ].includes(address);
         action = equal ? "wm==" : "wm!=";
     }
 
@@ -440,7 +499,10 @@ function creator_callstack_do_transition(doAction, indexComponent, indexElement,
             return "";
         }
 
-        const equal = elto.val.register_address_write[indexComponent][indexElement].includes(address);
+        const equal =
+            elto.val.register_address_write[indexComponent][
+                indexElement
+            ].includes(address);
         if (equal == false) {
             return;
         }
@@ -457,7 +519,7 @@ function creator_callstack_do_transition(doAction, indexComponent, indexElement,
                     ", Action=" +
                     action +
                     " (Component: " +
-                    architecture.components[indexComponent].elements[indexElement].name +
+                    REGISTERS[indexComponent].elements[indexElement].name +
                     ")",
                 "ERROR",
             );
@@ -466,13 +528,13 @@ function creator_callstack_do_transition(doAction, indexComponent, indexElement,
     }
 
     // get new state: transition(state, action) -> new_state
-    var new_state = stack_state_transition[state][action];
+    const new_state = stack_state_transition[state][action];
     creator_callstack_setState(indexComponent, indexElement, new_state);
 
     if (action != "end") {
         console_log(
             "[TRANSITION] " +
-                architecture.components[indexComponent].elements[indexElement].name +
+                REGISTERS[indexComponent].elements[indexElement].name +
                 ": State " +
                 state +
                 " → " +

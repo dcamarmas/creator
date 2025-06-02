@@ -29,9 +29,14 @@ import {
     update_binary,
     backup_stack_address,
     backup_data_address,
+    arch,
+    dumpMemory,
+    REGISTERS,
 } from "../core.mjs";
-import { getFieldLength, generateBinary } from "./binaryFieldUtils.mjs";
-import { creator_memory_findaddress_bytag, creator_memory_prereset } from "../memory/memoryManager.mjs";
+import {
+    creator_memory_prereset,
+    creator_memory_zerofill,
+} from "../memory/memoryManager.mjs";
 import {
     creator_memory_clear,
     creator_insert_instruction,
@@ -39,40 +44,42 @@ import {
     creator_memory_data_compiler,
     creator_memory_storestring,
 } from "../memory/memoryOperations.mjs";
-import { register_value_deserialize, bi_intToBigInt } from "../utils/bigint.mjs";
+import { bi_intToBigInt } from "../utils/bigint.mjs";
 import { creator_ga } from "../utils/creator_ga.mjs";
-import { console_log } from "../utils/creator_logger.mjs";
-import { bin2hex, hex2float, float2bin, hex2double, double2bin } from "../utils/utils.mjs";
+import { logger, console_log } from "../utils/creator_logger.mjs";
+import { bin2hex } from "../utils/utils.mjs";
 
-var textarea_assembly_editor;
-var codemirrorHistory = null;
+import { main_memory_zerofill } from "../memory/memoryCore.mjs";
+
+let textarea_assembly_editor;
+const codemirrorHistory = null;
 
 /*Compilation index*/
-var tokenIndex = 0;
-var nEnters = 0;
-var pc = 4; //PRUEBA
-export var align;
+const tokenIndex = 0;
+let nEnters = 0;
+let pc = 4; //PRUEBA
+export let align;
 
 /*Instructions memory address*/
-export var address;
+export let address;
 /*Data memory address*/
-var data_address;
+let data_address;
 /*Stack memory address*/
-var stack_address;
+let stack_address;
 /*Backup memory address*/
 
 /*Pending instructions and pending tags*/
-var pending_instructions = [];
-var pending_tags = [];
+let pending_instructions = [];
+let pending_tags = [];
 /*Global functions*/
-var extern = [];
+let extern = [];
 /*Error code messages*/
-var compileError = {
+const compileError = {
     m0: function (ret) {
-        return "" + ret.token + "";
+        return String(ret.token);
     },
     m1: function (ret) {
-        return "Repeated tag: " + ret.token + "";
+        return String("Repeated tag: " + ret.token);
     },
     m2: function (ret) {
         return "Instruction '" + ret.token + "' not found";
@@ -99,28 +106,34 @@ var compileError = {
         return "Address '" + ret.token + "' is not valid";
     },
     m10: function (ret) {
-        return ".space value out of range (" + ret.token + " is greater than 50MiB)";
+        return (
+            ".space value out of range (" +
+            ret.token +
+            " is greater than 50MiB)"
+        );
     },
     m11: function (ret) {
         return "The space directive value should be positive and greater than zero";
     },
     m12: function (ret) {
-        return "This field is too small to encode in binary '" + ret.token + "";
+        return String(
+            "This field is too small to encode in binary '" + ret.token,
+        );
     },
     m13: function (ret) {
-        return "Incorrect pseudoinstruction definition " + ret.token + "";
+        return String("Incorrect pseudoinstruction definition " + ret.token);
     },
     m14: function (ret) {
-        return "Invalid directive: " + ret.token + "";
+        return String("Invalid directive: " + ret.token);
     },
     m15: function (ret) {
         return "Invalid value '" + ret.token + "' as number.";
     },
     m16: function (ret) {
-        return 'The string of characters must start with "' + ret.token + "";
+        return String('The string of characters must start with "' + ret.token);
     },
     m17: function (ret) {
-        return 'The string of characters must end with "' + ret.token + "";
+        return String('The string of characters must end with "' + ret.token);
     },
     m18: function (ret) {
         return "Number '" + ret.token + "' is too big";
@@ -130,20 +143,20 @@ var compileError = {
     },
     //'m20': function(ret) { return "The text segment should start with '"       + ret.token + "'" },
     m21: function (ret) {
-        return "The data must be aligned" + ret.token + "";
+        return String("The data must be aligned" + ret.token);
     },
     m22: function (ret) {
         return "The number should be positive '" + ret.token + "'";
     },
     m23: function (ret) {
-        return "Empty directive" + ret.token + "";
+        return String("Empty directive" + ret.token);
     },
     m24: function (ret) {
-        return "After the comma you should go a blank --> " + ret.token + "";
+        return String("After the comma you should go a blank --> " + ret.token);
     },
     //'m25': function(ret) { return "Incorrect syntax "                          + ret.token + "" },
     m26: function (ret) {
-        return "Syntax error near line: " + ret.token + "";
+        return String("Syntax error near line: " + ret.token);
     },
     m27: function (ret) {
         return "Please check instruction syntax, inmediate ranges, register name, etc.";
@@ -153,29 +166,33 @@ var compileError = {
 let promise;
 /*Simulator*/
 /*Displayed notifications*/
-var notifications = [];
+const notifications = [];
 /*Available examples*/
-var example_set_available = [];
-var example_available = [];
+const example_set_available = [];
+const example_available = [];
 /*Instructions memory*/
-export var instructions = [];
-var instructions_tag = [];
-export var tag_instructions = {};
-var instructions_binary = [];
+export let instructions = [];
+let instructions_tag = [];
+export let tag_instructions = {};
+let instructions_binary = [];
 /*Data memory*/
-var data = [];
-export var data_tag = [];
+let data = [];
+export let data_tag = [];
 /*Binary*/
 
-var load_binary = false;
-var token;
+const load_binary = false;
+let token;
+
+export function setInstructions(instructions_) {
+    instructions = instructions_;
+}
 
 //
 // Compiler
 //
 /*Compile assembly code*/
 function packCompileError(err_code, err_token, err_ti, err_bgcolor) {
-    var ret = {};
+    const ret = {};
 
     ret.status = "error";
     ret.errorcode = err_code;
@@ -186,7 +203,7 @@ function packCompileError(err_code, err_token, err_ti, err_bgcolor) {
     ret.line = nEnters;
 
     // generic error
-    if (typeof err_token == "undefined") {
+    if (typeof err_token === "undefined") {
         err_code = "m27";
         ret.token = "";
     }
@@ -195,206 +212,53 @@ function packCompileError(err_code, err_token, err_ti, err_bgcolor) {
 
     /*Google Analytics*/
     creator_ga("compile", "compile.error", "compile.error." + ret.msg);
-    creator_ga("compile", "compile.type_error", "compile.type_error." + err_code);
+    creator_ga(
+        "compile",
+        "compile.type_error",
+        "compile.type_error." + err_code,
+    );
 
     return ret;
 }
-/*Places the pointer in the first position*/
-function first_token() {
-    var assembly = code_assembly;
-    var index = tokenIndex;
 
-    // check that there are elements to read
-    if (index >= assembly.length) {
-        return null;
-    }
-
-    // skip till first token:
-    while (":\t\n \r#".includes(assembly.charAt(index)) && index < assembly.length) {
-        // skip <spaces>
-        while (":\t\n \r".includes(assembly.charAt(index)) && index < assembly.length) {
-            if (assembly.charAt(index) == "\n") nEnters++;
-            index++;
-        }
-
-        // skip line comment #...
-        if (assembly.charAt(index) == "#") {
-            while (assembly.charAt(index) != "\n" && index < assembly.length) {
-                index++;
-            }
-
-            while (":\t\n \r".includes(assembly.charAt(index)) && index < assembly.length) {
-                if (assembly.charAt(index) == "\n") nEnters++;
-                index++;
-            }
-        }
-    }
-
-    tokenIndex = index;
-}
-/* Read token */
-function get_token() {
-    var assembly = code_assembly;
-    var index = tokenIndex;
-
-    // check that there are elements to read
-    if (index >= assembly.length) {
-        return null;
-    }
-
-    // read string: '...'
-    if (assembly.charAt(index) == "'") {
-        index++;
-        while (assembly.charAt(index) != "'" && index < assembly.length) {
-            //if (assembly.charAt(index) == "\n") nEnters++ ;
-            index++;
-        }
-        index++;
-
-        return assembly.substring(tokenIndex, index);
-    }
-
-    // read string: "..."
-    if (assembly.charAt(index) == '"') {
-        index++;
-        while (assembly.charAt(index) != '"' && index < assembly.length) {
-            //if (assembly.charAt(index) == "\n") nEnters++ ;
-            index++;
-        }
-        index++;
-
-        return assembly.substring(tokenIndex, index);
-    }
-
-    // ([{...
-    if ("([{".includes(assembly.charAt(index))) {
-        index++;
-    }
-
-    while (",()[]{}:#\t\n \r".includes(assembly.charAt(index)) === false && index < assembly.length) {
-        index++;
-    }
-    //if (assembly.charAt(index) == "\n") nEnters++ ;
-    var res = assembly.substring(tokenIndex, index);
-    if (":)]}".includes(assembly.charAt(index))) {
-        res = res + assembly.charAt(index);
-    }
-
-    return res;
-}
-/*Places the pointer in the start of next token*/
-function next_token() {
-    var assembly = code_assembly;
-    var index = tokenIndex;
-
-    // '..'
-    if (assembly.charAt(index) == "'") {
-        index++;
-        while (assembly.charAt(index) != "'" && index < assembly.length) {
-            if (assembly.charAt(index) == "\n") nEnters++;
-            index++;
-        }
-        index++;
-    }
-
-    // ".."
-    if (assembly.charAt(index) == '"') {
-        index++;
-        while (assembly.charAt(index) != '"' && index < assembly.length) {
-            if (assembly.charAt(index) == "\n") nEnters++;
-            index++;
-        }
-        index++;
-    }
-
-    // ([..
-    if ("([{".includes(assembly.charAt(index))) {
-        index++;
-    }
-
-    while (",()[]{}:#\t\n \r".includes(assembly.charAt(index)) === false && index < assembly.length) {
-        index++;
-    }
-    //if (assembly.charAt(index) == "\n") nEnters++ ;
-    while (",()[]{}:#\t\n \r".includes(assembly.charAt(index)) && index < assembly.length) {
-        while (",)]}:\t\n \r".includes(assembly.charAt(index)) && index < assembly.length) {
-            if (assembly.charAt(index) == "\n") nEnters++;
-            index++;
-        }
-
-        if ("([{".includes(assembly.charAt(index))) {
-            break;
-        }
-
-        if (assembly.charAt(index) == "#") {
-            while (assembly.charAt(index) != "\n" && index < assembly.length) {
-                index++;
-            }
-
-            while ("()[]{}:\t\n \r".includes(assembly.charAt(index)) && index < assembly.length) {
-                if (assembly.charAt(index) == "\n") nEnters++;
-                index++;
-            }
-        }
-    }
-
-    tokenIndex = index;
-}
 /*Compile assembly code*/
-export function assembly_compiler() {
-    var ret = {
-        errorcode: "",
-        token: "",
-        type: "",
-        update: "",
-        status: "ok",
-    };
-
+// eslint-disable-next-line max-lines-per-function
+export function assembly_compiler(library, color) {
     /* Google Analytics */
     creator_ga("compile", "compile.assembly");
 
     instructions = [];
-    instructions_tag = [];
     tag_instructions = {};
-    pending_instructions = [];
-    pending_tags = [];
     data_tag = [];
-    instructions_binary = [];
     creator_memory_clear();
     extern = [];
     data = [];
     status.execution_init = 1;
 
-    pc = 4;
-
-    nEnters = 0;
-
-    if (update_binary.instructions_binary != null) {
-        for (let i = 0; i < update_binary.instructions_binary.length; i++) {
-            pc = pc + architecture.instructions[i].nwords * 4; //PRUEBA
-
-            instructions.push(update_binary.instructions_binary[i]);
-            if (i === 0) {
-                instructions[instructions.length - 1].hide = false;
-                if (update_binary.instructions_binary[i].globl === false) {
-                    instructions[instructions.length - 1].Label = "";
-                }
-            } else if (update_binary.instructions_binary[i].globl === false) {
-                instructions[instructions.length - 1].Label = "";
-                instructions[instructions.length - 1].hide = true;
-            } else if (update_binary.instructions_binary[i].globl == null) {
-                instructions[instructions.length - 1].hide = true;
-            } else {
-                instructions[instructions.length - 1].hide = false;
-            }
-
-            address = parseInt(instructions[instructions.length - 1].Address, 16) + 4;
+    let library_offset = 0;
+    const library_instructions = update_binary.instructions_binary?.length ?? 0;
+    for (var i = 0; i < library_instructions; i++) {
+        const instruction = update_binary.instructions_binary[i];
+        instruction.hide = !(i === 0 || instruction.globl === true);
+        if (instruction.globl !== true) {
+            instruction.Label = "";
         }
-    } else {
-        address = parseInt(architecture.memory_layout[0].value);
+        instructions.push(instruction);
+        library_offset =
+            parseInt(instruction.Address, 16) +
+            Math.ceil(instruction.loaded.length / 8);
     }
 
-    var numBinaries = instructions.length;
+    // Convert the library labels to the format used by the compiler,
+    // filtering out non-global labels
+    const library_labels =
+        update_binary.instructions_tag
+            ?.filter(x => x.globl)
+            .reduce((tbl, x) => {
+                tbl[x.tag] = x.addr;
+                return tbl;
+            }, {}) ?? {};
+    const labels_json = JSON.stringify(library_labels);
 
     /*Allocation of memory addresses*/
     architecture.memory_layout[4].value = backup_stack_address;
@@ -402,601 +266,212 @@ export function assembly_compiler() {
     data_address = parseInt(architecture.memory_layout[2].value);
     stack_address = parseInt(architecture.memory_layout[4].value);
 
-    for (let i = 0; i < architecture.components.length; i++) {
-        for (let j = 0; j < architecture.components[i].elements.length; j++) {
-            if (architecture.components[i].elements[j].properties.includes("program_counter")) {
-                architecture.components[i].elements[j].value = bi_intToBigInt(address, 10);
-                architecture.components[i].elements[j].default_value = bi_intToBigInt(address, 10);
+    for (var i = 0; i < REGISTERS.length; i++) {
+        for (var j = 0; j < REGISTERS[i].elements.length; j++) {
+            if (
+                REGISTERS[i].elements[j].properties.includes("program_counter")
+            ) {
+                REGISTERS[i].elements[j].value = bi_intToBigInt(
+                    library_offset,
+                    10,
+                );
+                REGISTERS[i].elements[j].default_value = bi_intToBigInt(
+                    library_offset,
+                    10,
+                );
             }
-            if (architecture.components[i].elements[j].properties.includes("stack_pointer")) {
-                architecture.components[i].elements[j].value = bi_intToBigInt(stack_address, 10);
-                architecture.components[i].elements[j].default_value = bi_intToBigInt(stack_address, 10);
+            if (REGISTERS[i].elements[j].properties.includes("stack_pointer")) {
+                REGISTERS[i].elements[j].value = bi_intToBigInt(
+                    stack_address,
+                    10,
+                );
+                REGISTERS[i].elements[j].default_value = bi_intToBigInt(
+                    stack_address,
+                    10,
+                );
             }
         }
     }
 
-    /*architecture.components[1].elements[29].value = bi_intToBigInt(stack_address,10) ;
-  architecture.components[0].elements[0].value  = bi_intToBigInt(address,10) ;
-  architecture.components[1].elements[29].default_value = bi_intToBigInt(stack_address,10) ;
-  architecture.components[0].elements[0].default_value  = bi_intToBigInt(address,10) ;*/
+    /*REGISTERS[1].elements[29].value = bi_intToBigInt(stack_address,10) ;
+        REGISTERS[0].elements[0].value  = bi_intToBigInt(address,10) ;
+        REGISTERS[1].elements[29].default_value = bi_intToBigInt(stack_address,10) ;
+        REGISTERS[0].elements[0].default_value  = bi_intToBigInt(address,10) ;*/
+
     /*Reset stats*/
     status.totalStats = 0;
-    for (let i = 0; i < stats.length; i++) {
+    for (var i = 0; i < stats.length; i++) {
         stats[i].percentage = 0;
         stats[i].number_instructions = 0;
         stats_value[i] = 0;
     }
 
-    align = 1;
-    var empty = false;
-
-    /*Start of compilation*/
-    first_token();
-    if (get_token() == null) {
-        return packCompileError("m0", "Please enter the assembly code before compiling", "warning", "danger");
-    }
-
-    token = get_token();
-    console_log(token);
-
-    while (!empty) {
-        token = get_token();
-        console_log(token);
-
-        if (token == null) {
-            empty = true;
-            break;
+    // Compile code
+    let label_table;
+    try {
+        // Verify an architecture has been loaded
+        if (arch === undefined || arch === null) {
+            return {
+                errorcode: "100",
+                token: "Please load an architecture before compiling",
+                type: "warning",
+                bgcolor: "danger",
+                status: "error",
+            };
         }
-
-        var change = false;
-
-        for (let i = 0; i < architecture.directives.length; i++) {
-            if (token == architecture.directives[i].name) {
-                switch (architecture.directives[i].action) {
-                    case "data_segment":
-                        console_log("data_segment");
-                        ret = data_segment_compiler();
-                        if (ret.status == "ok") {
-                            change = true;
-                        }
-                        if (ret.status != "ok") {
-                            instructions = [];
-                            pending_instructions = [];
-                            pending_tags = [];
-                            data_tag = [];
-                            instructions_binary = [];
-                            data = [];
-                            extern = [];
-                            creator_memory_clear();
-
-                            return ret;
-                        }
-                        break;
-
-                    case "code_segment":
-                        console_log("code_segment");
-                        ret = code_segment_compiler();
-                        if (ret.status == "ok") {
-                            change = true;
-                        }
-                        if (ret.status != "ok") {
-                            instructions = [];
-                            pending_instructions = [];
-                            pending_tags = [];
-                            data_tag = [];
-                            instructions_binary = [];
-                            extern = [];
-                            data = [];
-                            creator_memory_clear();
-
-                            return ret;
-                        }
-                        break;
-
-                    case "global_symbol":
-                        var isGlobl = true;
-                        next_token();
-
-                        while (isGlobl) {
-                            token = get_token();
-
-                            let re = new RegExp(",", "g");
-                            token = token.replace(re, "");
-                            console_log("token: " + token);
-
-                            extern.push(token);
-                            change = true;
-
-                            next_token();
-                            token = get_token();
-                            console_log("token: " + token);
-
-                            for (let z = 0; z < architecture.directives.length; z++) {
-                                if (
-                                    token == architecture.directives[z].name ||
-                                    token == null ||
-                                    token.search(/:$/) != -1
-                                ) {
-                                    isGlobl = false;
-                                }
-                            }
-                        }
-                        break;
-
-                    default:
-                        console_log("default");
-                        empty = true;
-                        break;
-                }
-            } else if (
-                i == architecture.directives.length - 1 &&
-                token != architecture.directives[i].name &&
-                change === false &&
-                token != null
-            ) {
-                empty = true;
-                //tokenIndex = 0;
-                //nEnters = 0 ;
-                return packCompileError("m14", token, "error", "danger");
+        // Compile assembly
+        const compiled = arch.compile(
+            code_assembly,
+            library_offset,
+            labels_json,
+            library ?? false,
+            color,
+        );
+        // Extract instructions
+        instructions.push(
+            ...compiled.instructions.map(x => ({
+                Address: x.address,
+                Label: x.labels[0] ?? "",
+                loaded: x.loaded,
+                binary: x.binary,
+                user: x.user,
+                _rowVariant: "",
+                Break: null,
+                hide: false,
+                visible: true,
+            })),
+        );
+        // Extract binary instructions for library
+        instructions_binary = instructions.map((x, idx) => ({
+            Address: x.Address,
+            Label: x.Label,
+            Break: null,
+            _rowVariant: "",
+            // Newly compiled instructions have their binary encoding in the
+            // `binary` field, but instructions from the library store it in
+            // the `loaded` field. Read the corresponding field depending on
+            // where the instruction comes from, knowing that the first
+            // `library_instructions` instructions come from the library
+            loaded: idx < library_instructions ? x.loaded : x.binary,
+            visible: false,
+            user: null,
+        }));
+        // Extract label table for library
+        label_table = compiled.label_table.reduce((tbl, x) => {
+            tbl[x.name] = { address: x.address, global: x.global };
+            return tbl;
+        }, {});
+        // Extract data elements and load them on memory
+        const data_mem = compiled.data;
+        for (var i = 0; i < data_mem.length; i++) {
+            let data = compiled.data[i];
+            const size = Number(data.size());
+            const addr = Number(data.address());
+            switch (data.data_category()) {
+                case wasm.DataCategoryJS.Number:
+                    creator_memory_data_compiler(
+                        addr,
+                        data.value(false),
+                        size,
+                        data.labels()[0],
+                        data.value(true),
+                        data.type(),
+                        true,
+                    );
+                    break;
+                case wasm.DataCategoryJS.String:
+                    creator_memory_storestring(
+                        data.value(false),
+                        size,
+                        addr,
+                        data.labels()[0],
+                        data.type(),
+                        true,
+                    );
+                    break;
+                case wasm.DataCategoryJS.Space:
+                    creator_memory_storestring(
+                        size,
+                        size,
+                        addr,
+                        data.labels()[0],
+                        data.type(),
+                        true,
+                    );
+                    break;
+                case wasm.DataCategoryJS.Padding:
+                    main_memory_zerofill(addr, size);
+                    break;
             }
         }
-    }
-
-    var found = false;
-
-    if (update_binary.instructions_binary != null) {
-        for (let j = 0; j < instructions.length; j++) {
-            if (instructions[j].Label != "") {
-                for (let i = 0; i < update_binary.instructions_tag.length; i++) {
-                    if (instructions[j].Label == update_binary.instructions_tag[i].tag) {
-                        update_binary.instructions_tag[i].addr = instructions[j].Address;
-                    }
-                }
-            }
-        }
-    }
-
-    /*Check pending instructions*/
-    for (let i = 0; i < pending_instructions.length; i++) {
-        var exit = 0;
-        var signatureParts = pending_instructions[i].signature;
-        var signatureRawParts = pending_instructions[i].signatureRaw;
-        var instructionParts = pending_instructions[i].instruction.split(" ");
-        console_log(JSON.stringify(instructions, null, 2), "DEBUG");
-
-        for (let j = 0; j < signatureParts.length && exit === 0; j++) {
-            if (
-                signatureParts[j] == "inm-signed" ||
-                signatureParts[j] == "inm-unsigned" ||
-                signatureParts[j] == "address"
-            ) {
-                for (let z = 0; z < instructions.length && exit === 0; z++) {
-                    if (instructions[z].Label == instructionParts[j]) {
-                        let addr = instructions[z].Address;
-                        let bin = parseInt(addr, 16).toString(2);
-                        let startbit = pending_instructions[i].startBit;
-                        let stopbit = pending_instructions[i].stopBit;
-                        let fieldsLength = startbit - stopbit + 1;
-
-                        //Error
-                        if (bin.length > fieldsLength) {
-                            nEnters = pending_instructions[i].line;
-                            return packCompileError("m8", signatureRawParts[j], "error", "danger");
-                        }
-
-                        instructionParts[j] = addr;
-                        let newInstruction = "";
-                        for (let w = 0; w < instructionParts.length; w++) {
-                            newInstruction = newInstruction + instructionParts[w];
-                            if (w != instructionParts.length - 1) {
-                                newInstruction = newInstruction + " ";
-                            }
-                        }
-
-                        for (let w = 0; w < instructions.length && exit === 0; w++) {
-                            let aux = "0x" + pending_instructions[i].address.toString(16);
-                            if (aux == instructions[w].Address) {
-                                instructions[w].loaded = newInstruction;
-                            }
-                        }
-
-                        for (let w = 0; w < instructions.length && exit === 0; w++) {
-                            let aux = "0x" + pending_instructions[i].address.toString(16);
-                            if (aux == instructions[w].Address) {
-                                instructions[w].loaded = newInstruction;
-                                console_log(w);
-                                console_log(numBinaries);
-                                console_log(w - numBinaries);
-                                let iload = instructions_binary[w - numBinaries].loaded;
-                                instructions_binary[w - numBinaries].loaded =
-                                    iload.substring(0, iload.length - (startbit + 1)) +
-                                    bin.padStart(fieldsLength, "0") +
-                                    iload.substring(iload.length - stopbit, iload.length);
-                                exit = 1;
-                            }
-                        }
-                    }
-                }
-
-                // NEW
-                var ret1 = creator_memory_findaddress_bytag(instructionParts[j]);
-                if (ret1.exit === 1) {
-                    let addr = ret1.value;
-                    let bin = parseInt(addr, 16).toString(2);
-                    let startbit = pending_instructions[i].startBit;
-                    let stopbit = pending_instructions[i].stopBit;
-                    let fieldsLength = startbit - stopbit + 1;
-
-                    //Error
-                    if (bin.length > fieldsLength) {
-                        nEnters = pending_instructions[i].line;
-                        return packCompileError("m8", instructionParts[j], "error", "danger");
-                    }
-
-                    instructionParts[j] = "0x" + addr.toString(16);
-                    var newInstruction = "";
-                    for (let w = 0; w < instructionParts.length; w++) {
-                        newInstruction = newInstruction + instructionParts[w];
-                        if (w != instructionParts.length - 1) {
-                            newInstruction = newInstruction + " ";
-                        }
-                    }
-                    for (let w = 0; w < instructions.length; w++) {
-                        let aux = "0x" + pending_instructions[i].address.toString(16);
-                        if (aux == instructions[w].Address) {
-                            instructions[w].loaded = newInstruction;
-                        }
-                    }
-
-                    for (let w = 0; w < instructions.length && exit === 0; w++) {
-                        let aux = "0x" + pending_instructions[i].address.toString(16);
-                        if (aux == instructions[w].Address) {
-                            instructions[w].loaded = newInstruction;
-                            fieldsLength = startbit - stopbit + 1;
-                            let iload = instructions_binary[w - numBinaries].loaded;
-                            instructions_binary[w - numBinaries].loaded =
-                                iload.substring(0, iload.length - (startbit + 1)) +
-                                bin.padStart(fieldsLength, "0") +
-                                iload.substring(iload.length - stopbit, iload.length);
-                            exit = 1;
-                        }
-                    }
-                }
-
-                if (exit === 0 && isNaN(instructionParts[j]) === true) {
-                    //tokenIndex = 0;
-                    //nEnters = 0 ;
-                    //tokenIndex=pending_instructions[i].line;
-                    nEnters = pending_instructions[i].line;
-                    instructions = [];
-                    pending_instructions = [];
-                    pending_tags = [];
-                    data_tag = [];
-                    instructions_binary = [];
-                    creator_memory_clear();
-                    data = [];
-                    extern = [];
-                    return packCompileError("m7", instructionParts[j], "error", "danger");
-                }
-            }
-
-            if (signatureParts[j] == "offset_words") {
-                for (let z = 0; z < instructions.length && exit === 0; z++) {
-                    if (instructions[z].Label == instructionParts[j]) {
-                        var addr = instructions[z].Address;
-                        var startbit = pending_instructions[i].startBit;
-                        var stopbit = pending_instructions[i].stopBit;
-
-                        addr = (addr - pending_instructions[i].address) / 4 - 1;
-
-                        if (startbit.length > 1 && stopbit.length) {
-                            var fieldsLength = 0;
-                            for (var s = 0; s < startbit.length; s++) {
-                                fieldsLength = fieldsLength + startbit[s] - stopbit[s] + 1;
-                            }
-
-                            var bin = bi_intToBigInt(addr, 10).toString(2);
-                            bin = bin.padStart(fieldsLength, "0");
-                            bin = bin.slice(bin.length - fieldsLength, bin.length);
-
-                            var last_segment = 0;
-                            for (let s = 0; s < startbit.length; s++) {
-                                var starbit_aux = 31 - startbit[s]; //TODO: using nwords
-                                var stopbit_aux = 32 - stopbit[s]; //TODO: using nwords
-
-                                var fieldsLength2 = stopbit_aux - starbit_aux;
-                                var bin_aux = bin.substring(last_segment, fieldsLength2 + last_segment);
-
-                                last_segment = last_segment + fieldsLength2;
-
-                                for (let w = 0; w < instructions.length && exit === 0; w++) {
-                                    let aux = "0x" + pending_instructions[i].address.toString(16);
-                                    if (aux == instructions[w].Address) {
-                                        instructions_binary[w - numBinaries].loaded =
-                                            instructions_binary[w - numBinaries].loaded.substring(
-                                                0,
-                                                instructions_binary[w - numBinaries].loaded.length - (startbit[s] + 1),
-                                            ) +
-                                            bin_aux +
-                                            instructions_binary[w - numBinaries].loaded.substring(
-                                                instructions_binary[w - numBinaries].loaded.length - stopbit[s],
-                                                instructions_binary[w - numBinaries].loaded.length,
-                                            );
-                                    }
-                                }
-                            }
-                        } else {
-                            fieldsLength = startbit - stopbit + 1;
-                            console_log(fieldsLength);
-                            let bin = bi_intToBigInt(addr, 10).toString(2);
-                            bin = bin.padStart(fieldsLength, "0");
-
-                            for (let w = 0; w < instructions.length && exit === 0; w++) {
-                                let aux = "0x" + pending_instructions[i].address.toString(16);
-                                if (aux == instructions[w].Address) {
-                                    instructions_binary[w - numBinaries].loaded =
-                                        instructions_binary[w - numBinaries].loaded.substring(
-                                            0,
-                                            instructions_binary[w - numBinaries].loaded.length - (startbit + 1),
-                                        ) +
-                                        bin.padStart(fieldsLength, "0") +
-                                        instructions_binary[w - numBinaries].loaded.substring(
-                                            instructions_binary[w - numBinaries].loaded.length - stopbit,
-                                            instructions_binary[w - numBinaries].loaded.length,
-                                        );
-                                }
-                            }
-                        }
-                        instructionParts[j] = addr;
-                        let newInstruction = "";
-                        for (let w = 0; w < instructionParts.length; w++) {
-                            if (w == instructionParts.length - 1) {
-                                newInstruction = newInstruction + instructionParts[w];
-                            } else {
-                                newInstruction = newInstruction + instructionParts[w] + " ";
-                            }
-                        }
-
-                        //Load new instruction
-                        for (let w = 0; w < instructions.length && exit === 0; w++) {
-                            let aux = "0x" + pending_instructions[i].address.toString(16);
-                            if (aux == instructions[w].Address) {
-                                instructions[w].loaded = newInstruction;
-                                exit = 1;
-                            }
-                        }
-                    }
-                }
-
-                if (exit === 0) {
-                    //tokenIndex = 0;
-                    //nEnters = 0 ;
-                    //tokenIndex=pending_instructions[i].line;
-                    nEnters = pending_instructions[i].line;
-                    instructions = [];
-                    pending_instructions = [];
-                    pending_tags = [];
-                    data_tag = [];
-                    instructions_binary = [];
-                    creator_memory_clear();
-                    data = [];
-                    extern = [];
-                    return packCompileError("m7", instructionParts[j], "error", "danger");
-                }
-            }
-
-            if (signatureParts[j] == "offset_bytes") {
-                for (let z = 0; z < instructions.length && exit === 0; z++) {
-                    if (instructions[z].Label == instructionParts[j]) {
-                        let addr = instructions[z].Address;
-                        let startbit = pending_instructions[i].startBit;
-                        let stopbit = pending_instructions[i].stopBit;
-
-                        let fieldsLength = startbit - stopbit + 1;
-                        let bin = bi_intToBigInt(addr, 10).toString(2);
-                        //bin = bin.substring((startbit-stopbit)+1,bin.length)
-                        bin = bin.padStart(fieldsLength, "0");
-
-                        instructionParts[j] = addr;
-                        let newInstruction = "";
-                        for (let w = 0; w < instructionParts.length; w++) {
-                            if (w == instructionParts.length - 1) {
-                                newInstruction = newInstruction + instructionParts[w];
-                            } else {
-                                newInstruction = newInstruction + instructionParts[w] + " ";
-                            }
-                        }
-                        for (let w = 0; w < instructions.length && exit == 0; w++) {
-                            let aux = "0x" + pending_instructions[i].address.toString(16);
-                            if (aux == instructions[w].Address) {
-                                instructions[w].loaded = newInstruction;
-                            }
-                        }
-
-                        for (let w = 0; w < instructions.length && exit == 0; w++) {
-                            let aux = "0x" + pending_instructions[i].address.toString(16);
-                            if (aux == instructions[w].Address) {
-                                instructions[w].loaded = newInstruction;
-                                let fieldsLength = startbit - stopbit + 1;
-                                console_log(w);
-                                console_log(numBinaries);
-                                console_log(w - numBinaries);
-                                instructions_binary[w - numBinaries].loaded =
-                                    instructions_binary[w - numBinaries].loaded.substring(
-                                        0,
-                                        instructions_binary[w - numBinaries].loaded.length - (startbit + 1),
-                                    ) +
-                                    bin.padStart(fieldsLength, "0") +
-                                    instructions_binary[w - numBinaries].loaded.substring(
-                                        instructions_binary[w - numBinaries].loaded.length - stopbit,
-                                        instructions_binary[w - numBinaries].loaded.length,
-                                    );
-                                exit = 1;
-                            }
-                        }
-                    }
-                }
-
-                if (exit == 0) {
-                    //tokenIndex = 0;
-                    //nEnters = 0 ;
-                    //tokenIndex=pending_instructions[i].line;
-                    nEnters = pending_instructions[i].line;
-                    instructions = [];
-                    pending_instructions = [];
-                    pending_tags = [];
-                    data_tag = [];
-                    instructions_binary = [];
-                    creator_memory_clear();
-                    data = [];
-                    extern = [];
-                    return packCompileError("m7", instructionParts[j], "error", "danger");
-                }
-            }
-        }
+        // Catch any errors thrown by the compiler
+    } catch (error) {
+        return {
+            errorcode: "101",
+            type: "error",
+            bgcolor: "danger",
+            status: "error",
+            msg: error,
+        };
     }
 
     /* Enter the binary in the text segment */
-    if (update_binary.instructions_binary != null) {
-        for (let i = 0; i < update_binary.instructions_binary.length; i++) {
-            var hex = bin2hex(update_binary.instructions_binary[i].loaded);
-            var auxAddr = parseInt(update_binary.instructions_binary[i].Address, 16);
-            var label = update_binary.instructions_binary[i].Label;
-            var hide = false;
+    for (const instruction of update_binary.instructions_binary ?? []) {
+        const hex = bin2hex(instruction.loaded);
+        const auxAddr = parseInt(instruction.Address, 16);
+        const label = instruction.Label;
+        const hide = instruction.hide;
 
-            if (i == 0) {
-                hide = false;
-                if (update_binary.instructions_binary[i].globl === false) {
-                    label = "";
-                }
-            } else if (update_binary.instructions_binary[i].globl === false) {
-                hide = true;
-                label = "";
-            } else if (update_binary.instructions_binary[i].globl == null) {
-                hide = false; //TODO change this
-            } else {
-                hide = false;
-            }
-            if (hide == false) {
-                auxAddr = creator_insert_instruction(
-                    auxAddr,
-                    update_binary.instructions_binary[i].loaded,
-                    update_binary.instructions_binary[i].loaded,
-                    hide,
-                    hex,
-                    "00",
-                    label,
-                );
-            } else {
-                auxAddr = creator_insert_instruction(auxAddr, "********", "********", hide, hex, "**", label);
-            }
-        }
+        creator_insert_instruction(
+            auxAddr,
+            "********",
+            "********",
+            hide,
+            hex,
+            "**",
+            label,
+            true,
+        );
     }
 
     /* Enter the compilated instructions in the text segment */
-    for (let i = 0; i < instructions_binary.length; i++) {
-        let hex = bin2hex(instructions_binary[i].loaded);
-        let auxAddr = parseInt(instructions_binary[i].Address, 16);
-        let label = instructions_binary[i].Label;
-        let binNum = 0;
-
-        if (update_binary.instructions_binary != null) {
-            binNum = update_binary.instructions_binary.length;
-        }
-
-        auxAddr = creator_insert_instruction(
+    for (var i = library_instructions; i < instructions.length; i++) {
+        const instruction = instructions[i];
+        const hex = bin2hex(instruction.binary);
+        const auxAddr = parseInt(instruction.Address, 16);
+        const label = instruction.Label;
+        creator_insert_instruction(
             auxAddr,
-            instructions[i + binNum].loaded,
-            instructions[i + binNum].loaded,
+            instruction.loaded,
+            instruction.loaded,
             false,
             hex,
             "00",
             label,
+            true,
         );
     }
 
-    // Check for overlap
-    /*
-   * TODO: migrate to new memory model
-   *
-          if (memory[memory_hash[0]].length > 0)
-          {
-            if (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary[3].Addr > architecture.memory_layout[3].value) {
-              //tokenIndex = 0;
-              //nEnters = 0 ;
-              instructions = [];
-              pending_instructions = [];
-              pending_tags = [];
-              data_tag = [];
-              instructions_binary = [];
-              extern = [];
-              creator_memory_clear() ;
-              data = [];
-  
-              return packCompileError('m0', 'Data overflow', 'warning', "danger") ;
-            }
-          }
-  
-          if (memory[memory_hash[1]].length > 0)
-          {
-            if(memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary[3].Addr > architecture.memory_layout[1].value){
-              //tokenIndex = 0;
-              //nEnters = 0 ;
-              instructions = [];
-              pending_instructions = [];
-              pending_tags = [];
-              data_tag = [];
-              instructions_binary = [];
-              extern = [];
-              creator_memory_clear() ;
-              data = [];
-  
-              return packCompileError('m0', 'Instruction overflow', 'warning', "danger");
-            }
-          }
-  */
     /*Save binary*/
-    for (let i = 0; i < instructions_binary.length; i++) {
-        if (extern.length === 0 && instructions_binary[i].Label != "") {
-            instructions_binary[i].Label = instructions_binary[i].Label + "_symbol";
-            instructions_binary[i].globl = false;
-        } else {
-            for (let j = 0; j < extern.length; j++) {
-                if (
-                    instructions_binary[i].Label != extern[j] &&
-                    j == extern.length - 1 &&
-                    instructions_binary[i].Label != ""
-                ) {
-                    instructions_binary[i].Label = instructions_binary[i].Label + "_symbol";
-                    instructions_binary[i].globl = false;
-                    break;
-                } else if (instructions_binary[i].Label == extern[j]) {
-                    instructions_binary[i].globl = true;
-                    break;
-                }
+    for (const instruction of instructions_binary) {
+        if (instruction.Label != "") {
+            if (label_table[instruction.Label].global === true) {
+                instruction.globl = true;
+            } else {
+                instruction.Label = "";
             }
         }
     }
 
     /*Save tags*/
-    for (let i = 0; i < instructions_tag.length; i++) {
-        if (extern.length === 0 && instructions_tag[i].tag != "") {
-            instructions_tag[i].tag = instructions_tag[i].tag + "_symbol";
-            instructions_tag[i].globl = false;
-            break;
-        } else {
-            for (let j = 0; j < extern.length; j++) {
-                if (instructions_tag[i].tag != extern[j] && j == extern.length - 1 && instructions_tag[i].tag != "") {
-                    instructions_tag[i].tag = instructions_tag[i].tag + "_symbol";
-                    instructions_tag[i].globl = false;
-                    break;
-                } else if (instructions_tag[i].tag == extern[j]) {
-                    instructions_tag[i].globl = true;
-                    break;
-                }
-            }
-        }
-    }
+    // Filter out non-global labels
+    instructions_tag = Object.entries(label_table)
+        .filter(x => x[1].global)
+        .map(x => ({
+            tag: x[0],
+            addr: Number(x[1].address),
+            globl: x[1].global,
+        }));
 
     if (typeof app != "undefined") app._data.instructions = instructions;
 
@@ -1009,3088 +484,11 @@ export function assembly_compiler() {
 
     // save current value as default values for reset()...
     creator_memory_prereset();
-
-    return ret;
-}
-/*Compile data segment*/
-function data_segment_compiler() {
-    var ret = {
+    return {
         errorcode: "",
         token: "",
         type: "",
         update: "",
         status: "ok",
     };
-
-    var existsData = true;
-
-    next_token();
-    while (existsData) {
-        token = get_token();
-        console_log("token: " + token);
-
-        var label = "";
-
-        if (token == null) {
-            break;
-        }
-
-        var found = false;
-        if (token.search(/:$/) != -1) {
-            if (token.length === 1) {
-                return packCompileError("m0", "Empty label", "error", "danger");
-            }
-
-            for (let i = 0; i < data_tag.length; i++) {
-                console_log(data_tag[i].tag);
-                console_log(token.substring(0, token.length - 1));
-                if (data_tag[i].tag == token.substring(0, token.length - 1)) {
-                    return packCompileError("m1", token.substring(0, token.length - 1), "error", "danger");
-                }
-            }
-
-            for (let i = 0; i < instructions.length; i++) {
-                if (instructions[i].Label == token.substring(0, token.length - 1)) {
-                    return packCompileError("m1", token.substring(0, token.length - 1), "error", "danger");
-                }
-            }
-
-            label = token.substring(0, token.length - 1);
-            next_token();
-            token = get_token();
-        }
-
-        for (let j = 0; j < architecture.directives.length; j++) {
-            if (token == architecture.directives[j].name) {
-                let re;
-                let isAscii;
-                let nextToken;
-                switch (architecture.directives[j].action) {
-                    case "byte":
-                        var isByte = true;
-
-                        next_token();
-
-                        while (isByte) {
-                            token = get_token();
-
-                            if (token == null) {
-                                return packCompileError("m23", "", "error", "danger");
-                            }
-
-                            re = new RegExp("([0-9A-Fa-f-]),([0-9A-Fa-f-])");
-                            if (token.search(re) != -1) {
-                                return packCompileError("m24", token, "error", "danger");
-                            }
-
-                            re = new RegExp(",", "g");
-                            token = token.replace(re, "");
-
-                            console_log("byte, " + token);
-
-                            let auxToken;
-                            let auxTokenString;
-
-                            if (token.match(/^'(.*?)'$/)) {
-                                re = /^'(.*?)'$/;
-                                console_log(re);
-                                var match = re.exec(token);
-                                console_log(match);
-                                var asciiCode;
-
-                                console_log(match[1]);
-
-                                if (token.search(/^'\\n'$/) != -1) {
-                                    asciiCode = 10;
-                                } else if (token.search(/^'\\t'$/) != -1) {
-                                    asciiCode = 9;
-                                } else {
-                                    asciiCode = match[1].charCodeAt(0);
-                                }
-
-                                console_log(asciiCode);
-                                auxTokenString = asciiCode.toString(16);
-                            } else if (token.match(/^0x/)) {
-                                let value = token.split("x");
-
-                                re = new RegExp("[0-9A-Fa-f]{" + value[1].length + "}", "g");
-                                if (value[1].search(re) == -1) {
-                                    return packCompileError("m15", token, "error", "danger");
-                                }
-
-                                auxTokenString = value[1].padStart(2 * parseInt(architecture.directives[j].size), "0");
-                                if (value[1].length === 0) {
-                                    return packCompileError("m19", token, "error", "danger");
-                                }
-
-                                if (auxTokenString.length > 2 * parseInt(architecture.directives[j].size)) {
-                                    return packCompileError("m18", token, "error", "danger");
-                                }
-                                auxTokenString = auxTokenString.substring(
-                                    auxTokenString.length - 2 * parseInt(architecture.directives[j].size),
-                                    auxTokenString.length,
-                                );
-                            } else {
-                                re = new RegExp("[0-9-]{" + token.length + "}", "g");
-                                if (token.search(re) == -1) {
-                                    return packCompileError("m15", token, "error", "danger");
-                                }
-                                auxToken = parseInt(token) >>> 0;
-                                auxTokenString = auxToken
-                                    .toString(16)
-                                    .substring(
-                                        auxToken.toString(16).length - 2 * parseInt(architecture.directives[j].size),
-                                        auxToken.toString(16).length,
-                                    )
-                                    .padStart(2 * parseInt(architecture.directives[j].size), "0");
-                                if (auxTokenString.length > 2 * parseInt(architecture.directives[j].size)) {
-                                    return packCompileError("m18", token, "error", "danger");
-                                }
-                                auxTokenString = auxTokenString.substring(
-                                    auxTokenString.length - 2 * parseInt(architecture.directives[j].size),
-                                    auxTokenString.length,
-                                );
-                            }
-
-                            console_log(auxTokenString);
-
-                            let r = creator_memory_data_compiler(
-                                data_address,
-                                auxTokenString,
-                                parseInt(architecture.directives[j].size),
-                                label,
-                                parseInt(auxTokenString, 16) >> 0,
-                                "byte",
-                            );
-                            if (r.msg != "") {
-                                return packCompileError(r.msg, "", "error", "danger");
-                            }
-
-                            data_address = r.data_address;
-                            label = null;
-
-                            console_log("byte Terminado");
-
-                            next_token();
-                            token = get_token();
-                            console_log("token: " + token);
-
-                            for (let z = 0; z < architecture.directives.length; z++) {
-                                if (
-                                    token == architecture.directives[z].name ||
-                                    token == null ||
-                                    token.search(/:$/) != -1
-                                ) {
-                                    isByte = false;
-                                }
-                            }
-
-                            align = 1;
-                        }
-
-                        j = 0;
-
-                        break;
-
-                    case "half_word":
-                        console_log("half_word");
-                        var ishalf = true;
-
-                        next_token();
-                        while (ishalf) {
-                            token = get_token();
-                            if (token == null) {
-                                return packCompileError("m23", "", "error", "danger");
-                            }
-
-                            re = new RegExp("([0-9A-Fa-f-]),([0-9A-Fa-f-])");
-                            if (token.search(re) != -1) {
-                                return packCompileError("m24", token, "error", "danger");
-                            }
-
-                            re = new RegExp(",", "g");
-                            token = token.replace(re, "");
-
-                            console_log("half_word, " + token);
-
-                            let auxToken;
-                            let auxTokenString;
-                            if (token.match(/^0x/)) {
-                                let value = token.split("x");
-
-                                re = new RegExp("[0-9A-Fa-f]{" + value[1].length + "}", "g");
-                                if (value[1].search(re) == -1) {
-                                    return packCompileError("m15", token, "error", "danger");
-                                }
-
-                                auxTokenString = value[1].padStart(2 * parseInt(architecture.directives[j].size), "0");
-
-                                if (value[1].length === 0) {
-                                    return packCompileError("m19", token, "error", "danger");
-                                }
-                                if (auxTokenString.length > 2 * parseInt(architecture.directives[j].size)) {
-                                    return packCompileError("m18", token, "error", "danger");
-                                }
-                                auxTokenString = auxTokenString.substring(
-                                    auxTokenString.length - 2 * parseInt(architecture.directives[j].size),
-                                    auxTokenString.length,
-                                );
-                            } else {
-                                re = new RegExp("[0-9-]{" + token.length + "}", "g");
-                                if (token.search(re) == -1) {
-                                    return packCompileError("m15", token, "error", "danger");
-                                }
-                                auxToken = parseInt(token) >>> 0;
-                                auxTokenString = auxToken
-                                    .toString(16)
-                                    .substring(
-                                        auxToken.toString(16).length - 2 * parseInt(architecture.directives[j].size),
-                                        auxToken.toString(16).length,
-                                    )
-                                    .padStart(2 * parseInt(architecture.directives[j].size), "0");
-                                if (auxTokenString.length > 2 * parseInt(architecture.directives[j].size)) {
-                                    return packCompileError("m18", token, "error", "danger");
-                                }
-                                auxTokenString = auxTokenString.substring(
-                                    auxTokenString.length - 2 * parseInt(architecture.directives[j].size),
-                                    auxTokenString.length,
-                                );
-                            }
-
-                            console_log(auxTokenString);
-
-                            let r = creator_memory_data_compiler(
-                                data_address,
-                                auxTokenString,
-                                parseInt(architecture.directives[j].size),
-                                label,
-                                parseInt(auxTokenString, 16) >> 0,
-                                "half",
-                            );
-                            if (r.msg != "") {
-                                return packCompileError(r.msg, "", "error", "danger");
-                            }
-
-                            data_address = r.data_address;
-                            label = null;
-
-                            console_log("half Terminado");
-
-                            next_token();
-                            token = get_token();
-                            console_log("token: " + token);
-
-                            for (let z = 0; z < architecture.directives.length; z++) {
-                                if (
-                                    token == architecture.directives[z].name ||
-                                    token == null ||
-                                    token.search(/:$/) != -1
-                                ) {
-                                    ishalf = false;
-                                }
-                            }
-
-                            align = 1;
-                        }
-
-                        j = 0;
-                        break;
-
-                    case "word":
-                        var isWord = true;
-                        next_token();
-
-                        while (isWord) {
-                            console_log("word");
-
-                            token = get_token();
-                            if (token == null) {
-                                return packCompileError("m23", "", "error", "danger");
-                            }
-
-                            re = new RegExp("([0-9A-Fa-f-]),([0-9A-Fa-f-])");
-                            if (token.search(re) != -1) {
-                                return packCompileError("m24", token, "error", "danger");
-                            }
-
-                            re = new RegExp(",", "g");
-                            token = token.replace(re, "");
-                            console_log("token: " + token);
-
-                            var auxToken;
-                            var auxTokenString;
-                            if (token.match(/^0x/)) {
-                                let value = token.split("x");
-
-                                re = new RegExp("[0-9A-Fa-f]{" + value[1].length + "}", "g");
-                                if (value[1].search(re) == -1) {
-                                    return packCompileError("m15", token, "error", "danger");
-                                }
-
-                                auxTokenString = value[1].padStart(2 * parseInt(architecture.directives[j].size), "0");
-                                if (value[1].length == 0) {
-                                    return packCompileError("m19", token, "error", "danger");
-                                }
-                                if (auxTokenString.length > 2 * parseInt(architecture.directives[j].size)) {
-                                    return packCompileError("m18", token, "error", "danger");
-                                }
-                                auxTokenString = auxTokenString.substring(
-                                    auxTokenString.length - 2 * parseInt(architecture.directives[j].size),
-                                    auxTokenString.length,
-                                );
-                            } else {
-                                re = new RegExp("[0-9-]{" + token.length + "}", "g");
-                                if (token.search(re) == -1) {
-                                    return packCompileError("m15", token, "error", "danger");
-                                }
-                                auxToken = parseInt(token) >>> 0;
-                                auxTokenString = auxToken
-                                    .toString(16)
-                                    .substring(
-                                        auxToken.toString(16).length - 2 * parseInt(architecture.directives[j].size),
-                                        auxToken.toString(16).length,
-                                    )
-                                    .padStart(2 * parseInt(architecture.directives[j].size), "0");
-                                if (auxTokenString.length > 2 * parseInt(architecture.directives[j].size)) {
-                                    return packCompileError("m18", token, "error", "danger");
-                                }
-                                auxTokenString = auxTokenString.substring(
-                                    auxTokenString.length - 2 * parseInt(architecture.directives[j].size),
-                                    auxTokenString.length,
-                                );
-                            }
-
-                            console_log(auxTokenString);
-
-                            let r = creator_memory_data_compiler(
-                                data_address,
-                                auxTokenString,
-                                parseInt(architecture.directives[j].size),
-                                label,
-                                parseInt(auxTokenString, 16) >> 0,
-                                "word",
-                            );
-                            if (r.msg != "") {
-                                return packCompileError(r.msg, "", "error", "danger");
-                            }
-
-                            data_address = r.data_address;
-                            label = null;
-
-                            console_log("word Terminado");
-
-                            next_token();
-                            token = get_token();
-                            console_log("token: " + token);
-
-                            for (let z = 0; z < architecture.directives.length; z++) {
-                                if (
-                                    token == architecture.directives[z].name ||
-                                    token == null ||
-                                    token.search(/:$/) != -1
-                                ) {
-                                    isWord = false;
-                                }
-                            }
-
-                            align = 1;
-                        }
-
-                        j = 0;
-                        break;
-
-                    case "double_word":
-                        var isDoubleWord = true;
-
-                        next_token();
-
-                        while (isDoubleWord) {
-                            console_log("word");
-
-                            token = get_token();
-
-                            if (token == null) {
-                                return packCompileError("m23", "", "error", "danger");
-                            }
-
-                            re = new RegExp("([0-9A-Fa-f-]),([0-9A-Fa-f-])");
-                            if (token.search(re) != -1) {
-                                return packCompileError("m24", token, "error", "danger");
-                            }
-
-                            re = new RegExp(",", "g");
-                            token = token.replace(re, "");
-                            console_log("token: " + token);
-
-                            let auxToken;
-                            let auxTokenString;
-                            if (token.match(/^0x/)) {
-                                let value = token.split("x");
-
-                                re = new RegExp("[0-9A-Fa-f]{" + value[1].length + "}", "g");
-                                if (value[1].search(re) == -1) {
-                                    return packCompileError("m15", token, "error", "danger");
-                                }
-
-                                auxTokenString = value[1].padStart(2 * parseInt(architecture.directives[j].size), "0");
-                                if (value[1].length == 0) {
-                                    return packCompileError("m19", token, "error", "danger");
-                                }
-                                if (auxTokenString.length > 2 * parseInt(architecture.directives[j].size)) {
-                                    return packCompileError("m18", token, "error", "danger");
-                                }
-                                auxTokenString = auxTokenString.substring(
-                                    auxTokenString.length - 2 * parseInt(architecture.directives[j].size),
-                                    auxTokenString.length,
-                                );
-                            } else {
-                                re = new RegExp("[0-9-]{" + token.length + "}", "g");
-                                if (token.search(re) == -1) {
-                                    return packCompileError("m15", token, "error", "danger");
-                                }
-                                auxToken = parseInt(token) >>> 0;
-                                auxTokenString = auxToken
-                                    .toString(16)
-                                    .substring(
-                                        auxToken.toString(16).length - 2 * parseInt(architecture.directives[j].size),
-                                        auxToken.toString(16).length,
-                                    )
-                                    .padStart(2 * parseInt(architecture.directives[j].size), "0");
-                                if (auxTokenString.length > 2 * parseInt(architecture.directives[j].size)) {
-                                    return packCompileError("m18", token, "error", "danger");
-                                }
-                                auxTokenString = auxTokenString.substring(
-                                    auxTokenString.length - 2 * parseInt(architecture.directives[j].size),
-                                    auxTokenString.length,
-                                );
-                            }
-
-                            let r = creator_memory_data_compiler(
-                                data_address,
-                                auxTokenString,
-                                parseInt(architecture.directives[j].size),
-                                label,
-                                parseInt(auxTokenString, 16) >> 0,
-                                "double_word",
-                            );
-                            if (r.msg != "") {
-                                return packCompileError(r.msg, "", "error", "danger");
-                            }
-
-                            data_address = r.data_address;
-                            label = null;
-
-                            console_log("double word Terminado");
-
-                            next_token();
-                            token = get_token();
-                            console_log("token: " + token);
-
-                            for (let z = 0; z < architecture.directives.length; z++) {
-                                if (
-                                    token == architecture.directives[z].name ||
-                                    token == null ||
-                                    token.search(/:$/) != -1
-                                ) {
-                                    isDoubleWord = false;
-                                }
-                            }
-
-                            align = 1;
-                        }
-
-                        j = 0;
-                        break;
-
-                    case "float":
-                        var isFloat = true;
-
-                        next_token();
-
-                        while (isFloat) {
-                            console_log("float");
-
-                            token = get_token();
-
-                            if (token == null) {
-                                return packCompileError("m23", "", "error", "danger");
-                            }
-
-                            re = new RegExp("([0-9A-Fa-f-]),([0-9A-Fa-f-])");
-                            if (token.search(re) != -1) {
-                                return packCompileError("m24", token, "error", "danger");
-                            }
-
-                            re = new RegExp(",", "g");
-                            token = token.replace(re, "");
-                            console_log("token: " + token);
-
-                            let auxToken;
-                            let auxTokenString;
-                            if (token == "-Inf" || token == "-inf" || token == "-Infinity" || token == "-infinity") {
-                                token = "-Infinity";
-                                auxTokenString = "FF800000";
-                            } else if (
-                                token == "Inf" ||
-                                token == "+Inf" ||
-                                token == "inf" ||
-                                token == "+inf" ||
-                                token == "Infinity" ||
-                                token == "+Infinity" ||
-                                token == "infinity" ||
-                                token == "+infinity"
-                            ) {
-                                token = "+Infinity";
-                                auxTokenString = "7F800000";
-                            } else if (token == "NaN" || token == "nan") {
-                                token = "NaN";
-                                auxTokenString = "7FC00000";
-                            } else if (token.match(/^0x/)) {
-                                var value = token.split("x");
-
-                                re = new RegExp("[0-9A-Fa-f]{" + value[1].length + "}", "g");
-                                if (value[1].search(re) == -1) {
-                                    return packCompileError("m15", token, "error", "danger");
-                                }
-
-                                auxTokenString = value[1].padStart(2 * parseInt(architecture.directives[j].size), "0");
-                                if (value[1].length == 0) {
-                                    return packCompileError("m19", token, "error", "danger");
-                                }
-                                if (auxTokenString.length > 2 * parseInt(architecture.directives[j].size)) {
-                                    return packCompileError("m18", token, "error", "danger");
-                                }
-                                auxTokenString = auxTokenString.substring(
-                                    auxTokenString.length - 2 * parseInt(architecture.directives[j].size),
-                                    auxTokenString.length,
-                                );
-                                token = hex2float(token);
-                            } else {
-                                re = new RegExp("[+e0-9.-]{" + token.length + "}", "g");
-                                if (token.search(re) == -1) {
-                                    return packCompileError("m15", token, "error", "danger");
-                                }
-                                auxToken = parseFloat(token, 10);
-                                auxTokenString = bin2hex(float2bin(auxToken)).padStart(
-                                    2 * parseInt(architecture.directives[j].size),
-                                    "0",
-                                );
-                                if (auxTokenString.length > 2 * parseInt(architecture.directives[j].size)) {
-                                    return packCompileError("m18", token, "error", "danger");
-                                }
-                                auxTokenString = auxTokenString.substring(
-                                    auxTokenString.length - 2 * parseInt(architecture.directives[j].size),
-                                    auxTokenString.length,
-                                );
-                            }
-
-                            console_log(auxTokenString);
-
-                            let r = creator_memory_data_compiler(
-                                data_address,
-                                auxTokenString,
-                                parseInt(architecture.directives[j].size),
-                                label,
-                                token,
-                                "float",
-                            );
-                            if (r.msg != "") {
-                                return packCompileError(r.msg, "", "error", "danger");
-                            }
-
-                            data_address = r.data_address;
-                            label = null;
-
-                            console_log("float Terminado");
-
-                            next_token();
-                            token = get_token();
-                            console_log("token: " + token);
-
-                            for (let z = 0; z < architecture.directives.length; z++) {
-                                if (
-                                    token == architecture.directives[z].name ||
-                                    token == null ||
-                                    token.search(/:$/) != -1
-                                ) {
-                                    isFloat = false;
-                                }
-                            }
-
-                            align = 1;
-                        }
-
-                        j = 0;
-                        break;
-
-                    case "double":
-                        var isDouble = true;
-
-                        next_token();
-
-                        while (isDouble) {
-                            console_log("double");
-
-                            token = get_token();
-                            if (token == null) {
-                                return packCompileError("m23", "", "error", "danger");
-                            }
-
-                            re = new RegExp("([0-9A-Fa-f-]),([0-9A-Fa-f-])");
-                            if (token.search(re) != -1) {
-                                return packCompileError("m24", token, "error", "danger");
-                            }
-
-                            re = new RegExp(",", "g");
-                            token = token.replace(re, "");
-                            console_log("token: " + token);
-
-                            let auxToken;
-                            let auxTokenString;
-                            if (token == "-Inf" || token == "-inf" || token == "-Infinity" || token == "-infinity") {
-                                token = "-Infinity";
-                                auxTokenString = "FFF0000000000000";
-                            } else if (
-                                token == "Inf" ||
-                                token == "+Inf" ||
-                                token == "inf" ||
-                                token == "+inf" ||
-                                token == "Infinity" ||
-                                token == "+Infinity" ||
-                                token == "infinity" ||
-                                token == "+infinity"
-                            ) {
-                                token = "+Infinity";
-                                auxTokenString = "7FF0000000000000";
-                            } else if (token == "NaN" || token == "nan") {
-                                token = "NaN";
-                                auxTokenString = "7FF8000000000000";
-                            } else if (token.match(/^0x/)) {
-                                let value = token.split("x");
-
-                                re = new RegExp("[0-9A-Fa-f]{" + value[1].length + "}", "g");
-                                if (value[1].search(re) == -1) {
-                                    return packCompileError("m15", token, "error", "danger");
-                                }
-
-                                auxTokenString = value[1].padStart(2 * parseInt(architecture.directives[j].size), "0");
-                                if (value[1].length == 0) {
-                                    return packCompileError("m19", token, "error", "danger");
-                                }
-                                if (auxTokenString.length > 2 * parseInt(architecture.directives[j].size)) {
-                                    return packCompileError("m18", token, "error", "danger");
-                                }
-                                auxTokenString = auxTokenString.substring(
-                                    auxTokenString.length - 2 * parseInt(architecture.directives[j].size),
-                                    auxTokenString.length,
-                                );
-                                token = hex2double(token);
-                            } else {
-                                re = new RegExp("[+e0-9.-]{" + token.length + "}", "g");
-                                if (token.search(re) == -1) {
-                                    return packCompileError("m15", token, "error", "danger");
-                                }
-                                auxToken = parseFloat(token, 10);
-                                console_log(auxTokenString);
-                                auxTokenString = bin2hex(double2bin(auxToken)).padStart(
-                                    2 * parseInt(architecture.directives[j].size),
-                                    "0",
-                                );
-                                if (auxTokenString.length > 2 * parseInt(architecture.directives[j].size)) {
-                                    return packCompileError("m18", token, "error", "danger");
-                                }
-                                auxTokenString = auxTokenString.substring(
-                                    auxTokenString.length - 2 * parseInt(architecture.directives[j].size),
-                                    auxTokenString.length,
-                                );
-                            }
-
-                            console_log(auxTokenString);
-
-                            let r = creator_memory_data_compiler(
-                                data_address,
-                                auxTokenString,
-                                parseInt(architecture.directives[j].size),
-                                label,
-                                token,
-                                "double",
-                            );
-                            if (r.msg != "") {
-                                return packCompileError(r.msg, "", "error", "danger");
-                            }
-
-                            data_address = r.data_address;
-                            label = null;
-
-                            console_log("double Terminado");
-
-                            next_token();
-                            token = get_token();
-                            console_log("token: " + token);
-
-                            for (let z = 0; z < architecture.directives.length; z++) {
-                                if (
-                                    token == architecture.directives[z].name ||
-                                    token == null ||
-                                    token.search(/:$/) != -1
-                                ) {
-                                    isDouble = false;
-                                }
-                            }
-
-                            align = 1;
-                        }
-
-                        j = 0;
-                        break;
-
-                    case "ascii_not_null_end":
-                        console_log("ascii_not_null_end");
-
-                        isAscii = true;
-                        nextToken = 1;
-
-                        next_token();
-                        while (isAscii) {
-                            token = get_token();
-                            console_log("token: " + token);
-
-                            string = token;
-
-                            re = new RegExp('^"');
-                            if (string.search(re) != -1) {
-                                string = string.replace(re, "");
-                                console_log(string);
-                            } else {
-                                return packCompileError("m16", "", "error", "danger");
-                            }
-
-                            re = new RegExp('"$');
-                            if (string.search(re) != -1) {
-                                string = string.replace(re, "");
-                                console_log(string);
-                            } else {
-                                return packCompileError("m17", "", "error", "danger");
-                            }
-
-                            if (token == null) {
-                                break;
-                            }
-
-                            data_address = creator_memory_storestring(
-                                string,
-                                string.length,
-                                data_address,
-                                label,
-                                "ascii",
-                                align,
-                            );
-
-                            console_log("ascii_not_null_end Terminado");
-
-                            if (nextToken === 1) {
-                                next_token();
-                                token = get_token();
-                                console_log("token: " + token);
-                            }
-
-                            nextToken = 1;
-
-                            for (let z = 0; z < architecture.directives.length; z++) {
-                                if (
-                                    token == architecture.directives[z].name ||
-                                    token == null ||
-                                    token.search(/:$/) != -1
-                                ) {
-                                    isAscii = false;
-                                }
-                            }
-
-                            align = 1;
-                        }
-
-                        j = 0;
-                        break;
-
-                    case "ascii_null_end":
-                        console_log("ascii_null_end");
-
-                        isAscii = true;
-                        nextToken = 1;
-
-                        next_token();
-
-                        while (isAscii) {
-                            console_log("ascii_null_end");
-
-                            token = get_token();
-                            console_log("token: " + token);
-
-                            if (token == null) {
-                                break;
-                            }
-
-                            string = token;
-
-                            re = new RegExp('^"');
-                            if (string.search(re) != -1) {
-                                string = string.replace(re, "");
-                                console_log(string);
-                            } else {
-                                return packCompileError("m16", "", "error", "danger");
-                            }
-                            re = new RegExp('"$');
-                            if (string.search(re) != -1) {
-                                string = string.replace(re, "");
-                                console_log(string);
-                            } else {
-                                return packCompileError("m17", "", "error", "danger");
-                            }
-
-                            data_address =
-                                creator_memory_storestring(
-                                    string,
-                                    string.length,
-                                    data_address,
-                                    label,
-                                    "asciiz",
-                                    align,
-                                ) + 1;
-
-                            console_log("ascii_null_end Terminado");
-
-                            if (nextToken == 1) {
-                                next_token();
-                                token = get_token();
-                                console_log("token: " + token);
-                            }
-
-                            nextToken = 1;
-
-                            for (let z = 0; z < architecture.directives.length; z++) {
-                                if (
-                                    token == architecture.directives[z].name ||
-                                    token == null ||
-                                    token.search(/:$/) != -1
-                                ) {
-                                    isAscii = false;
-                                }
-                            }
-
-                            align = 1;
-                        }
-
-                        j = 0;
-                        break;
-
-                    case "space":
-                        console_log("space");
-
-                        var string = "";
-
-                        next_token();
-                        token = get_token();
-                        console_log("token: " + token);
-
-                        if (token == null) {
-                            return packCompileError("m23", "", "error", "danger");
-                        }
-
-                        re = new RegExp("[0-9-]{" + token.length + "}", "g");
-                        if (token.search(re) == -1) {
-                            return packCompileError("m15", token, "error", "danger");
-                        }
-
-                        if (parseInt(token) <= 0) {
-                            return packCompileError("m11", token, "error", "danger");
-                        }
-
-                        if (parseInt(token) > 50 * 1024 * 1024) {
-                            return packCompileError("m10", token, "error", "danger");
-                        }
-
-                        var size = parseInt(token) * parseInt(architecture.directives[j].size);
-                        data_address = creator_memory_storestring(size, size, data_address, label, "space", align);
-
-                        next_token();
-                        token = get_token();
-                        console_log("token: " + token);
-
-                        align = 1;
-
-                        console_log("space Terminado");
-
-                        j = 0;
-                        break;
-
-                    case "align":
-                    case "balign": {
-                        console_log("[b]align");
-                        let pow_mode = token == ".align";
-
-                        next_token();
-                        token = get_token();
-                        console_log("token: " + token);
-
-                        if (token == null) {
-                            return packCompileError("m23", "", "error", "danger");
-                        }
-
-                        re = new RegExp("[0-9-]{" + token.length + "}", "g");
-                        if (token.search(re) == -1) {
-                            return packCompileError("m15", token, "error", "danger");
-                        }
-
-                        if (parseInt(token) < 0) {
-                            return packCompileError("m22", token, "error", "danger");
-                        }
-
-                        align = pow_mode ? Math.pow(2, parseInt(token)) : token;
-                        console_log(align);
-
-                        next_token();
-                        token = get_token();
-                        console_log("token: " + token);
-
-                        console_log("align Terminado");
-
-                        j = 0;
-                        break;
-                    }
-
-                    default:
-                        console_log("Default");
-                        existsData = false;
-                        break;
-                }
-            } else if (
-                j == architecture.directives.length - 1 &&
-                token != architecture.directives[j].name &&
-                token != null &&
-                token.search(/:$/) == -1
-            ) {
-                creator_memory_prereset();
-                return ret;
-            }
-        }
-    }
-
-    creator_memory_prereset();
-    return ret;
-}
-/* Compile text segment */
-function code_segment_compiler() {
-    let re;
-    let instruction;
-    var ret = {
-        errorcode: "",
-        token: "",
-        type: "",
-        update: "",
-        status: "ok",
-    };
-
-    var existsInstruction = true;
-
-    next_token();
-    var instInit = tokenIndex;
-
-    while (existsInstruction) {
-        token = get_token();
-
-        for (let i = 0; i < architecture.directives.length; i++) {
-            if (token == architecture.directives[i].name && architecture.directives[i].action == "global_symbol") {
-                next_token(); // .globl *main*
-                next_token();
-                token = get_token();
-            } else if (token == architecture.directives[i].name) {
-                if (typeof app !== "undefined") app._data.instructions = instructions;
-
-                console_log("token: " + token);
-                for (let i = 0; i < instructions.length; i++) {
-                    if (instructions[i].Label != "") {
-                        instructions_tag.push({
-                            tag: instructions[i].Label,
-                            addr: parseInt(instructions[i].Address, 16),
-                        });
-                        tag_instructions[parseInt(instructions[i].Address, 16)] = instructions[i].Label;
-                    }
-                }
-
-                return ret;
-            }
-        }
-
-        var label = "";
-        var validTagPC = true;
-
-        if (token == null) {
-            break;
-        }
-
-        console_log("token: " + token);
-
-        var found = false;
-        var end = false;
-
-        if (token.search(/:$/) != -1) {
-            if (token.length === 1) {
-                return packCompileError("m0", "Empty label", "error", "danger");
-            }
-
-            var ret1 = creator_memory_findaddress_bytag(token.substring(0, token.length - 1));
-            if (ret1.exit == 1) {
-                return packCompileError("m1", token.substring(0, token.length - 1), "error", "danger");
-            }
-
-            for (let i = 0; i < instructions.length; i++) {
-                if (instructions[i].Label == token.substring(0, token.length - 1)) {
-                    return packCompileError("m1", token.substring(0, token.length - 1), "error", "danger");
-                }
-            }
-
-            label = token.substring(0, token.length - 1);
-            next_token();
-            instInit = tokenIndex;
-            token = get_token();
-
-            if (token != null) {
-                re = new RegExp(",+$");
-                token = token.replace(re, "");
-            } else {
-                var instIndex;
-                for (let i = 0; i < architecture.instructions.length; i++) {
-                    if (architecture.instructions[i].name == "nop") {
-                        instIndex = i;
-                    }
-                }
-                instruction_compiler("nop", "nop", label, tokenIndex, false, 0, instInit, instIndex, false);
-                end = true;
-                found = true;
-            }
-        }
-
-        re = new RegExp(",+$");
-
-        if (token != null) {
-            token = token.replace(re, "");
-            console_log("token: " + token);
-            var stopFor = false;
-        }
-
-        for (let i = 0; i < architecture.instructions.length && stopFor === false && end === false; i++) {
-            if (architecture.instructions[i].name != token) {
-                continue;
-            } else {
-                instruction = "";
-                var userInstruction = "";
-
-                var numFields = 0;
-                found = true;
-
-                for (let j = 0; j < architecture.instructions[i].fields.length; j++) {
-                    if (architecture.instructions[i].fields[j].type != "cop") {
-                        numFields++;
-                    }
-                }
-                console_log(numFields);
-
-                instruction = instruction + token;
-                userInstruction = userInstruction + token;
-
-                //var new_ins = 0;
-                for (let j = 0; j < numFields - 1; j++) {
-                    next_token();
-                    token = get_token();
-                    console_log("token: " + token);
-
-                    if (token != null) {
-                        re = new RegExp(",+$");
-                        token = token.replace(re, "");
-                        instruction = instruction + " " + token;
-                        userInstruction = userInstruction + " " + token;
-                    }
-                }
-
-                console_log(instruction);
-                console_log(label);
-
-                ret = instruction_compiler(
-                    instruction,
-                    userInstruction,
-                    label,
-                    tokenIndex,
-                    false,
-                    0,
-                    instInit,
-                    i,
-                    false,
-                );
-                if (ret.status != "ok") {
-                    return ret;
-                }
-
-                next_token();
-                instInit = tokenIndex; //PRUEBA
-                stopFor = true;
-            }
-        }
-
-        if (!found) {
-            var resultPseudo = -3;
-            instruction = "";
-            var numToken = 0;
-            var exists = false;
-            var inst = token;
-
-            console_log("token: " + token);
-
-            for (let i = 0; i < architecture.pseudoinstructions.length && exists === false; i++) {
-                if (architecture.pseudoinstructions[i].name == token) {
-                    numToken = architecture.pseudoinstructions[i].fields.length;
-                    console_log(numToken);
-                    exists = true;
-                    instruction = instruction + token;
-
-                    for (let i = 0; i < numToken; i++) {
-                        // I don't know why this works (its the same variable i)
-                        next_token();
-                        token = get_token();
-
-                        if (token != null) {
-                            let re = new RegExp(",+$");
-                            token = token.replace(re, "");
-                        }
-
-                        instruction = instruction + " " + token;
-                    }
-                    resultPseudo = pseudoinstruction_compiler(instruction, label, tokenIndex);
-                    console_log(resultPseudo);
-
-                    if (resultPseudo.status != "ok") {
-                        return resultPseudo;
-                    }
-                }
-            }
-
-            //TODO: revisar funcionamiento
-            if (resultPseudo == -3) {
-                for (let i = 0; i < architecture.components.length; i++) {
-                    for (let j = 0; j < architecture.components[i].elements.length; j++) {
-                        re = new RegExp(architecture.components[i].elements[j].name.join("|")); //TODO: check
-
-                        if (token.search(re) != -1) {
-                            existsInstruction = false;
-                            //tokenIndex = 0;
-                            //nEnters = 0 ;
-                            instructions = [];
-                            pending_instructions = [];
-                            pending_tags = [];
-                            data_tag = [];
-                            instructions_binary = [];
-                            extern = [];
-                            creator_memory_clear();
-                            data = [];
-                            // ret = packCompileError('m26', (textarea_assembly_editor.posFromIndex(tokenIndex).line) + 1,
-                            //                        'error', "danger") ;
-                            ret = packCompileError("m26", nEnters + 1, "error", "danger");
-
-                            return ret;
-                        }
-                    }
-                }
-
-                existsInstruction = false;
-                //tokenIndex = 0;
-                //nEnters = 0 ;
-                instructions = [];
-                pending_instructions = [];
-                pending_tags = [];
-                data_tag = [];
-                instructions_binary = [];
-                extern = [];
-                creator_memory_clear();
-                data = [];
-
-                ret = packCompileError("m2", token, "error", "danger");
-                return ret;
-            }
-
-            if (resultPseudo == -2) {
-                existsInstruction = false;
-                //tokenIndex = 0;
-                //nEnters = 0 ;
-                instructions = [];
-                pending_instructions = [];
-                pending_tags = [];
-                data_tag = [];
-                instructions_binary = [];
-                extern = [];
-                data = [];
-                creator_memory_clear();
-
-                //PRUEBA para dar error con mas detalle
-                ret = packCompileError("m2", token, "error", "danger");
-
-                return ret;
-            }
-
-            if (resultPseudo == -1) {
-                existsInstruction = false;
-                //tokenIndex = 0;
-                //nEnters = 0 ;
-                instructions = [];
-                pending_instructions = [];
-                pending_tags = [];
-                data_tag = [];
-                instructions_binary = [];
-                extern = [];
-                data = [];
-                creator_memory_clear();
-                ret = packCompileError("m24", "", "error", "danger");
-                return ret;
-            }
-
-            next_token();
-            instInit = tokenIndex; //PRUEBA
-        }
-    }
-
-    token = get_token();
-    console_log("token: " + token);
-
-    if (typeof app !== "undefined") app._data.instructions = instructions;
-
-    for (let i = 0; i < instructions.length; i++) {
-        if (instructions[i].Label != "") {
-            instructions_tag.push({ tag: instructions[i].Label, addr: parseInt(instructions[i].Address, 16) });
-            tag_instructions[parseInt(instructions[i].Address, 16)] = instructions[i].Label;
-        }
-    }
-
-    return ret;
-}
-/* Compile instruction */
-function instruction_compiler(
-    instruction,
-    userInstruction,
-    label,
-    line,
-    pending,
-    pendingAddress,
-    instInit,
-    instIndex,
-    isPseudo,
-) {
-    var ret = {
-        errorcode: "",
-        token: "",
-        type: "",
-        update: "",
-        status: "ok",
-    };
-
-    if (instIndex == null) {
-        instIndex = 0;
-    }
-    console_log(instruction);
-    console_log(instIndex);
-    let re;
-    re = new RegExp("^ +");
-    var oriInstruction = instruction.replace(re, "");
-
-    re = new RegExp(" +", "g");
-    oriInstruction = oriInstruction.replace(re, " ");
-
-    var instructionParts = oriInstruction.split(" ");
-    var validTagPC = true;
-    var startBit;
-    var stopBit;
-    let resultPseudo = -3;
-
-    console_log(label);
-    console_log(line);
-
-    var stopFor = false;
-
-    for (let i = instIndex; i < architecture.instructions.length && stopFor === false; i++) {
-        if (architecture.instructions[i].name != instructionParts[0]) {
-            continue;
-        } else {
-            var auxSignature = architecture.instructions[i].signatureRaw;
-
-            var tag = "";
-
-            var binary = "";
-            binary = binary.padStart(architecture.instructions[i].nwords * 32, "0");
-
-            let instruction = architecture.instructions[i].signature_definition;
-            //var userInstruction = userInstruction;
-            var signatureDef = architecture.instructions[i].signature_definition;
-            signatureDef = signatureDef.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-            re = new RegExp("[fF][0-9]+", "g");
-            signatureDef = signatureDef.replace(re, "(.*?)");
-
-            re = new RegExp(",", "g");
-            var signature = architecture.instructions[i].signature.replace(re, " ");
-
-            re = new RegExp(signatureDef + "$");
-            let match = re.exec(signature);
-            var signatureParts = [];
-            for (let j = 1; j < match.length; j++) {
-                signatureParts.push(match[j]);
-            }
-
-            match = re.exec(architecture.instructions[i].signatureRaw);
-            var signatureRawParts = [];
-            for (let j = 1; j < match.length; j++) {
-                signatureRawParts.push(match[j]);
-            }
-
-            console_log(signatureParts);
-            console_log(signatureRawParts);
-
-            re = new RegExp(signatureDef + "$");
-            console_log(re);
-            if (oriInstruction.search(re) == -1) {
-                if (isPseudo === false) {
-                    console_log(get_token());
-
-                    tokenIndex = instInit;
-                    token = get_token();
-
-                    console_log("token: " + token);
-                } else {
-                    token = instructionParts[0];
-                }
-
-                resultPseudo = null;
-                let instruction = "";
-                var numToken = 0;
-
-                console_log("token: " + token);
-
-                for (let j = i + 1; j < architecture.instructions.length; j++) {
-                    if (architecture.instructions[j].name == token) {
-                        numToken = architecture.instructions[j].fields.length;
-                        instruction = instruction + token;
-
-                        for (let k = 1; k < numToken; k++) {
-                            if (architecture.instructions[j].fields[k].type != "cop") {
-                                if (isPseudo === false) {
-                                    next_token();
-                                    token = get_token();
-
-                                    if (token != null) {
-                                        re = new RegExp(",+$");
-                                        token = token.replace(re, "");
-                                    }
-                                } else {
-                                    token = instructionParts[k];
-                                }
-
-                                instruction = instruction + " " + token;
-                                console_log(instruction);
-                            }
-                        }
-                        if (isPseudo === false) {
-                            ret = instruction_compiler(
-                                instruction,
-                                instruction,
-                                label,
-                                line,
-                                pending,
-                                pendingAddress,
-                                instInit,
-                                i,
-                                false,
-                            );
-                        } else {
-                            ret = instruction_compiler(
-                                instruction,
-                                userInstruction,
-                                label,
-                                line,
-                                pending,
-                                pendingAddress,
-                                instInit,
-                                i,
-                                false,
-                            );
-                        }
-                        return ret;
-                    }
-                }
-
-                for (let i = 0; i < architecture.pseudoinstructions.length; i++) {
-                    if (architecture.pseudoinstructions[i].name == token) {
-                        numToken = architecture.pseudoinstructions[i].fields.length;
-
-                        instruction = instruction + token;
-
-                        for (let _ = 0; _ < numToken; _++) {
-                            next_token();
-                            token = get_token();
-
-                            if (token != null) {
-                                re = new RegExp(",+$");
-                                token = token.replace(re, "");
-                            }
-
-                            instruction = instruction + " " + token;
-                        }
-                        console_log(instruction);
-                        resultPseudo = pseudoinstruction_compiler(instruction, label, tokenIndex);
-
-                        console_log(resultPseudo);
-
-                        if (resultPseudo.status == "ok") {
-                            return resultPseudo;
-                        }
-                        if (resultPseudo.errorcode === 3) {
-                            return resultPseudo;
-                        }
-                    }
-                }
-            }
-
-            if (resultPseudo == null) {
-                return packCompileError("m3", auxSignature, "error", "danger");
-            }
-
-            console_log(oriInstruction);
-            console_log(re);
-            match = re.exec(oriInstruction);
-            instructionParts = [];
-            if (match != null) {
-                for (let j = 1; j < match.length; j++) {
-                    instructionParts.push(match[j]);
-                }
-            } else {
-                return packCompileError("m3", auxSignature, "error", "danger");
-            }
-
-            console_log(instructionParts);
-
-            //PRUEBA
-            re = new RegExp("[fF][0-9]+");
-            while (instruction.search(re) != -1) {
-                re = new RegExp("[fF]([0-9]+)");
-                let match = re.exec(instruction);
-                re = new RegExp("[fF][0-9]+");
-                instruction = instruction.replace(re, "Field" + match[1]);
-            }
-
-            for (let j = 0; j < signatureParts.length; j++) {
-                console_log(signatureParts[j]);
-                let validReg = false;
-                let regNum = 0;
-                let token_user = "";
-                let fieldsLength;
-                switch (signatureParts[j]) {
-                    case "INT-Reg":
-                        token = instructionParts[j];
-
-                        console_log("token: " + token);
-
-                        for (let a = 0; a < architecture.instructions[i].fields.length; a++) {
-                            if (architecture.instructions[i].fields[a].name == signatureRawParts[j]) {
-                                for (let z = 0; z < architecture_hash.length; z++) {
-                                    for (let w = 0; w < architecture.components[z].elements.length; w++) {
-                                        if (
-                                            architecture.components[z].elements[w].name.includes(token) !== false &&
-                                            architecture.components[z].type == "int_registers"
-                                        ) {
-                                            //TODO:check
-                                            validReg = true;
-
-                                            fieldsLength =
-                                                architecture.instructions[i].fields[a].startbit -
-                                                architecture.instructions[i].fields[a].stopbit +
-                                                1;
-                                            let reg = w;
-
-                                            if (reg.toString(2).length > fieldsLength) {
-                                                return packCompileError("m12", token, "error", "danger");
-                                            }
-
-                                            console_log(reg);
-                                            console_log(reg.toString(2).padStart(fieldsLength, "0"));
-                                            console_log(binary);
-                                            console_log(binary.length);
-                                            console_log(architecture.instructions[i].fields[a].startbit + 1);
-                                            console_log(
-                                                binary.length - (architecture.instructions[i].fields[a].startbit + 1),
-                                            );
-
-                                            binary =
-                                                binary.substring(
-                                                    0,
-                                                    binary.length -
-                                                        (architecture.instructions[i].fields[a].startbit + 1),
-                                                ) +
-                                                reg.toString(2).padStart(fieldsLength, "0") +
-                                                binary.substring(
-                                                    binary.length - architecture.instructions[i].fields[a].stopbit,
-                                                    binary.length,
-                                                );
-
-                                            console_log(binary);
-
-                                            re = RegExp("Field[0-9]+");
-                                            instruction = instruction.replace(re, token);
-                                        } else if (
-                                            z == architecture_hash.length - 1 &&
-                                            w == architecture.components[z].elements.length - 1 &&
-                                            validReg === false
-                                        ) {
-                                            return packCompileError("m4", token, "error", "danger");
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-                        break;
-
-                    case "SFP-Reg":
-                        token = instructionParts[j];
-
-                        console_log("token: " + token);
-
-                        for (let a = 0; a < architecture.instructions[i].fields.length; a++) {
-                            if (architecture.instructions[i].fields[a].name == signatureRawParts[j]) {
-                                for (let z = 0; z < architecture_hash.length; z++) {
-                                    if (architecture.components[z].double_precision_type == "linked") {
-                                        for (let w = 0; w < architecture.components[z].elements.length; w++) {
-                                            if (
-                                                architecture.components[z].elements[w].name.includes(token) !== false &&
-                                                architecture.components[z].type == "fp_registers" &&
-                                                architecture.components[z].double_precision === false
-                                            ) {
-                                                //TODO:check
-                                                validReg = true;
-                                                regNum++;
-
-                                                fieldsLength =
-                                                    architecture.instructions[i].fields[a].startbit -
-                                                    architecture.instructions[i].fields[a].stopbit +
-                                                    1;
-                                                var reg = w;
-
-                                                if (reg.toString(2).length > fieldsLength) {
-                                                    return packCompileError("m12", token, "error", "danger");
-                                                }
-
-                                                binary =
-                                                    binary.substring(
-                                                        0,
-                                                        binary.length -
-                                                            (architecture.instructions[i].fields[a].startbit + 1),
-                                                    ) +
-                                                    reg.toString(2).padStart(fieldsLength, "0") +
-                                                    binary.substring(
-                                                        binary.length - architecture.instructions[i].fields[a].stopbit,
-                                                        binary.length,
-                                                    );
-                                                //re = RegExp("[fF][0-9]+");
-                                                re = RegExp("Field[0-9]+");
-                                                console_log(instruction);
-                                                instruction = instruction.replace(re, token);
-                                                console_log(instruction);
-                                            } else if (
-                                                z == architecture_hash.length - 1 &&
-                                                w == architecture.components[z].elements.length - 1 &&
-                                                validReg === false
-                                            ) {
-                                                return packCompileError("m4", token, "error", "danger");
-                                            }
-                                            if (
-                                                architecture.components[z].type == "fp_registers" &&
-                                                architecture.components[z].double_precision === false
-                                            ) {
-                                                regNum++;
-                                            }
-                                        }
-                                    } else {
-                                        for (let w = 0; w < architecture.components[z].elements.length; w++) {
-                                            if (
-                                                architecture.components[z].elements[w].name.includes(token) !== false &&
-                                                architecture.components[z].type == "fp_registers"
-                                            ) {
-                                                //TODO:check
-                                                validReg = true;
-                                                regNum++;
-
-                                                fieldsLength =
-                                                    architecture.instructions[i].fields[a].startbit -
-                                                    architecture.instructions[i].fields[a].stopbit +
-                                                    1;
-                                                let reg = w;
-
-                                                if (reg.toString(2).length > fieldsLength) {
-                                                    return packCompileError("m12", token, "error", "danger");
-                                                }
-
-                                                binary =
-                                                    binary.substring(
-                                                        0,
-                                                        binary.length -
-                                                            (architecture.instructions[i].fields[a].startbit + 1),
-                                                    ) +
-                                                    reg.toString(2).padStart(fieldsLength, "0") +
-                                                    binary.substring(
-                                                        binary.length - architecture.instructions[i].fields[a].stopbit,
-                                                        binary.length,
-                                                    );
-                                                //re = RegExp("[fF][0-9]+");
-                                                re = RegExp("Field[0-9]+");
-                                                console_log(instruction);
-                                                instruction = instruction.replace(re, token);
-                                                console_log(instruction);
-                                            } else if (
-                                                z == architecture_hash.length - 1 &&
-                                                w == architecture.components[z].elements.length - 1 &&
-                                                validReg === false
-                                            ) {
-                                                return packCompileError("m4", token, "error", "danger");
-                                            }
-                                            if (
-                                                architecture.components[z].type == "fp_registers" &&
-                                                architecture.components[z].double_precision === false
-                                            ) {
-                                                regNum++;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-                        break;
-
-                    case "DFP-Reg":
-                        token = instructionParts[j];
-
-                        console_log("token: " + token);
-
-                        for (let a = 0; a < architecture.instructions[i].fields.length; a++) {
-                            if (architecture.instructions[i].fields[a].name == signatureRawParts[j]) {
-                                for (let z = 0; z < architecture_hash.length; z++) {
-                                    if (architecture.components[z].double_precision_type == "linked") {
-                                        for (let w = 0; w < architecture.components[z].elements.length; w++) {
-                                            if (
-                                                architecture.components[z].elements[w].name.includes(token) !== false &&
-                                                architecture.components[z].type == "fp_registers" &&
-                                                architecture.components[z].double_precision === true
-                                            ) {
-                                                //TODO:check
-                                                validReg = true;
-                                                regNum++;
-
-                                                fieldsLength =
-                                                    architecture.instructions[i].fields[a].startbit -
-                                                    architecture.instructions[i].fields[a].stopbit +
-                                                    1;
-                                                let reg = w;
-
-                                                if (reg.toString(2).length > fieldsLength) {
-                                                    return packCompileError("m12", token, "error", "danger");
-                                                }
-
-                                                binary =
-                                                    binary.substring(
-                                                        0,
-                                                        binary.length -
-                                                            (architecture.instructions[i].fields[a].startbit + 1),
-                                                    ) +
-                                                    reg.toString(2).padStart(fieldsLength, "0") +
-                                                    binary.substring(
-                                                        binary.length - architecture.instructions[i].fields[a].stopbit,
-                                                        binary.length,
-                                                    );
-                                                //re = RegExp("[fF][0-9]+");
-                                                re = RegExp("Field[0-9]+");
-                                                instruction = instruction.replace(re, token);
-                                            } else if (
-                                                z == architecture_hash.length - 1 &&
-                                                w == architecture.components[z].elements.length - 1 &&
-                                                validReg === false
-                                            ) {
-                                                return packCompileError("m4", token, "error", "danger");
-                                            }
-                                            if (
-                                                architecture.components[z].type == "fp_registers" &&
-                                                architecture.components[z].double_precision === true
-                                            ) {
-                                                regNum++;
-                                            }
-                                        }
-                                    } else {
-                                        for (let w = 0; w < architecture.components[z].elements.length; w++) {
-                                            if (
-                                                architecture.components[z].elements[w].name.includes(token) !== false &&
-                                                architecture.components[z].type == "fp_registers"
-                                            ) {
-                                                //TODO:check
-                                                validReg = true;
-                                                regNum++;
-
-                                                fieldsLength =
-                                                    architecture.instructions[i].fields[a].startbit -
-                                                    architecture.instructions[i].fields[a].stopbit +
-                                                    1;
-                                                let reg = w;
-
-                                                if (reg.toString(2).length > fieldsLength) {
-                                                    return packCompileError("m12", token, "error", "danger");
-                                                }
-
-                                                binary =
-                                                    binary.substring(
-                                                        0,
-                                                        binary.length -
-                                                            (architecture.instructions[i].fields[a].startbit + 1),
-                                                    ) +
-                                                    reg.toString(2).padStart(fieldsLength, "0") +
-                                                    binary.substring(
-                                                        binary.length - architecture.instructions[i].fields[a].stopbit,
-                                                        binary.length,
-                                                    );
-                                                //re = RegExp("[fF][0-9]+");
-                                                re = RegExp("Field[0-9]+");
-                                                instruction = instruction.replace(re, token);
-                                            } else if (
-                                                z == architecture_hash.length - 1 &&
-                                                w == architecture.components[z].elements.length - 1 &&
-                                                validReg === false
-                                            ) {
-                                                return packCompileError("m4", token, "error", "danger");
-                                            }
-                                            if (
-                                                architecture.components[z].type == "fp_registers" &&
-                                                architecture.components[z].double_precision === true
-                                            ) {
-                                                regNum++;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-                        break;
-
-                    case "Ctrl-Reg":
-                        token = instructionParts[j];
-
-                        console_log("token: " + token);
-
-                        for (let a = 0; a < architecture.instructions[i].fields.length; a++) {
-                            if (architecture.instructions[i].fields[a].name == signatureRawParts[j]) {
-                                for (let z = 0; z < architecture_hash.length; z++) {
-                                    for (let w = 0; w < architecture.components[z].elements.length; w++) {
-                                        if (
-                                            architecture.components[z].elements[w].name.includes(token) !== false &&
-                                            architecture.components[z].type == "ctr_registers"
-                                        ) {
-                                            //TODO: check
-                                            validReg = true;
-                                            regNum++;
-
-                                            fieldsLength =
-                                                architecture.instructions[i].fields[a].startbit -
-                                                architecture.instructions[i].fields[a].stopbit +
-                                                1;
-                                            let reg = w;
-
-                                            if (reg.toString(2).length > fieldsLength) {
-                                                return packCompileError("m12", token, "error", "danger");
-                                            }
-
-                                            binary =
-                                                binary.substring(
-                                                    0,
-                                                    binary.length -
-                                                        (architecture.instructions[i].fields[a].startbit + 1),
-                                                ) +
-                                                reg.toString(2).padStart(fieldsLength, "0") +
-                                                binary.substring(
-                                                    binary.length - architecture.instructions[i].fields[a].stopbit,
-                                                    binary.length,
-                                                );
-                                            //re = RegExp("[fF][0-9]+");
-                                            re = RegExp("Field[0-9]+");
-                                            instruction = instruction.replace(re, token);
-                                        } else if (
-                                            z == architecture_hash.length - 1 &&
-                                            w == architecture.components[z].elements.length - 1 &&
-                                            validReg === false
-                                        ) {
-                                            return packCompileError("m4", token, "error", "danger");
-                                        }
-                                        if (architecture.components[z].type == "ctr_registers") {
-                                            regNum++;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-                        break;
-
-                    case "inm-signed":
-                        token = instructionParts[j];
-
-                        console_log("token: " + token);
-
-                        for (let a = 0; a < architecture.instructions[i].fields.length; a++) {
-                            if (architecture.instructions[i].fields[a].name == signatureRawParts[j]) {
-                                fieldsLength = getFieldLength(
-                                    architecture.instructions[i].separated,
-                                    architecture.instructions[i].fields[a].startbit,
-                                    architecture.instructions[i].fields[a].stopbit,
-                                    a,
-                                );
-
-                                let inm;
-
-                                if (token.match(/^0x/)) {
-                                    let value = token.split("x");
-                                    if (value[1].length * 4 > fieldsLength) {
-                                        resultPseudo = pseudoinstruction_compiler(oriInstruction, label, line);
-
-                                        console_log(resultPseudo);
-
-                                        if (resultPseudo.status != "ok") {
-                                            return resultPseudo;
-                                        }
-                                    }
-
-                                    if (isNaN(parseInt(token, 16)) === true) {
-                                        return packCompileError("m6", token, "error", "danger");
-                                    }
-
-                                    inm = parseInt(token, 16).toString(2);
-                                } else if (token.match(/^(\d)+\.(\d)+/)) {
-                                    if (float2bin(parseFloat(token)).length > fieldsLength) {
-                                        resultPseudo = pseudoinstruction_compiler(oriInstruction, label, line);
-
-                                        console_log(resultPseudo);
-
-                                        if (resultPseudo.status != "ok") {
-                                            return resultPseudo;
-                                        }
-                                    }
-
-                                    if (isNaN(parseFloat(token)) === true) {
-                                        return packCompileError("m6", token, "error", "danger");
-                                    }
-
-                                    inm = float2bin(parseFloat(token, 16));
-                                } else if (token.match(/^'(.*?)'$/)) {
-                                    re = /^'(.*?)'$/;
-                                    console_log(re);
-                                    let match = re.exec(token);
-                                    console_log(match);
-                                    let asciiCode = match[1].charCodeAt(0);
-                                    console_log(asciiCode);
-
-                                    re = RegExp("Field[0-9]+");
-                                    instruction = instruction.replace(re, asciiCode);
-
-                                    inm = (asciiCode >>> 0).toString(2);
-                                } else if (isNaN(parseInt(token))) {
-                                    validTagPC = false;
-                                    startBit = architecture.instructions[i].fields[a].startbit;
-                                    stopBit = architecture.instructions[i].fields[a].stopbit;
-                                } else {
-                                    let comNumPos = Math.pow(2, fieldsLength - 1);
-                                    let comNumNeg = comNumPos * -1;
-                                    comNumPos = comNumPos - 1;
-
-                                    console_log(comNumPos);
-                                    console_log(comNumNeg);
-
-                                    if (parseInt(token, 10) > comNumPos || parseInt(token, 10) < comNumNeg) {
-                                        console_log(oriInstruction);
-                                        console_log(label);
-                                        console_log(line);
-                                        resultPseudo = pseudoinstruction_compiler(oriInstruction, label, line);
-                                        console_log(resultPseudo);
-
-                                        if (resultPseudo.status != "ok") {
-                                            return resultPseudo;
-                                        }
-                                    }
-
-                                    if (isNaN(parseInt(token)) === true && resultPseudo == -3) {
-                                        return packCompileError("m6", token, "error", "danger");
-                                    }
-
-                                    inm = (parseInt(token, 10) >>> 0).toString(2);
-                                    inm = inm.substring(inm.length - fieldsLength, inm.length);
-                                }
-                                if (validTagPC === true) {
-                                    console_log(inm.length);
-                                    if (
-                                        inm.length >
-                                        architecture.instructions[i].fields[a].startbit -
-                                            architecture.instructions[i].fields[a].stopbit +
-                                            1
-                                    ) {
-                                        return packCompileError("m12", token, "error", "danger");
-                                    }
-
-                                    binary = generateBinary(
-                                        architecture.instructions[i].separated,
-                                        architecture.instructions[i].fields[a].startbit,
-                                        architecture.instructions[i].fields[a].stopbit,
-                                        binary,
-                                        inm,
-                                        fieldsLength,
-                                        a,
-                                    );
-                                }
-
-                                //re = RegExp("[fF][0-9]+");
-                                re = RegExp("Field[0-9]+");
-                                instruction = instruction.replace(re, token);
-                            }
-                        }
-
-                        break;
-
-                    case "inm-unsigned":
-                        token = instructionParts[j];
-
-                        console_log("token: " + token);
-
-                        for (let a = 0; a < architecture.instructions[i].fields.length; a++) {
-                            if (architecture.instructions[i].fields[a].name == signatureRawParts[j]) {
-                                if (
-                                    !architecture.instructions[i].separated ||
-                                    !architecture.instructions[i].separated[a]
-                                )
-                                    fieldsLength =
-                                        architecture.instructions[i].fields[a].startbit -
-                                        architecture.instructions[i].fields[a].stopbit +
-                                        1;
-                                else {
-                                    fieldsLength = architecture.instructions[i].fields[a].startbit
-                                        .map((b, iii) => b - architecture.instructions[i].fields[a].stopbit[iii] + 1)
-                                        .reduce((old, newV) => old + newV);
-                                }
-
-                                //fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
-                                fieldsLength = getFieldLength(
-                                    architecture.instructions[i].separated,
-                                    architecture.instructions[i].fields[a].startbit,
-                                    architecture.instructions[i].fields[a].stopbit,
-                                    a,
-                                );
-
-                                let inm;
-
-                                if (token.match(/^0x/)) {
-                                    let value = token.split("x");
-                                    if (value[1].length * 4 > fieldsLength) {
-                                        resultPseudo = pseudoinstruction_compiler(oriInstruction, label, line);
-
-                                        console_log(resultPseudo);
-
-                                        if (resultPseudo.status != "ok") {
-                                            return resultPseudo;
-                                        }
-                                    }
-
-                                    if (isNaN(parseInt(token, 16)) === true) {
-                                        return packCompileError("m6", token, "error", "danger");
-                                    }
-
-                                    inm = parseInt(token, 16).toString(2);
-                                } else if (token.match(/^(\d)+\.(\d)+/)) {
-                                    if (float2bin(parseFloat(token)).length > fieldsLength) {
-                                        resultPseudo = pseudoinstruction_compiler(oriInstruction, label, line);
-                                        console_log(resultPseudo);
-                                        if (resultPseudo.status != "ok") {
-                                            return resultPseudo;
-                                        }
-                                    }
-
-                                    if (isNaN(parseFloat(token)) === true) {
-                                        return packCompileError("m6", token, "error", "danger");
-                                    }
-
-                                    inm = float2bin(parseFloat(token, 16));
-                                } else if (token.match(/^'(.*?)'$/)) {
-                                    re = /^'(.*?)'$/;
-                                    console_log(re);
-                                    let match = re.exec(token);
-                                    console_log(match);
-                                    let asciiCode = match[1].charCodeAt(0);
-                                    console_log(asciiCode);
-
-                                    re = RegExp("Field[0-9]+");
-                                    instruction = instruction.replace(re, asciiCode);
-
-                                    inm = (asciiCode >>> 0).toString(2);
-                                } else if (isNaN(parseInt(token))) {
-                                    validTagPC = false;
-                                    startBit = architecture.instructions[i].fields[a].startbit;
-                                    stopBit = architecture.instructions[i].fields[a].stopbit;
-                                } else {
-                                    let comNumPos = Math.pow(2, fieldsLength);
-
-                                    console_log(comNumPos);
-
-                                    if (parseInt(token, 10) > comNumPos) {
-                                        console_log(oriInstruction);
-                                        console_log(label);
-                                        console_log(line);
-                                        resultPseudo = pseudoinstruction_compiler(oriInstruction, label, line);
-                                        console_log(resultPseudo);
-                                        if (resultPseudo.status != "ok") {
-                                            return resultPseudo;
-                                        }
-                                    }
-
-                                    if (isNaN(parseInt(token)) === true && resultPseudo == -3) {
-                                        return packCompileError("m6", token, "error", "danger");
-                                    }
-
-                                    inm = (parseInt(token, 10) >>> 0).toString(2);
-                                    inm = inm.substring(inm.length - fieldsLength, inm.length);
-                                }
-                                if (validTagPC === true) {
-                                    console_log(inm.length);
-                                    if (
-                                        inm.length >
-                                        architecture.instructions[i].fields[a].startbit -
-                                            architecture.instructions[i].fields[a].stopbit +
-                                            1
-                                    ) {
-                                        return packCompileError("m12", token, "error", "danger");
-                                    }
-
-                                    binary = generateBinary(
-                                        architecture.instructions[i].separated,
-                                        architecture.instructions[i].fields[a].startbit,
-                                        architecture.instructions[i].fields[a].stopbit,
-                                        binary,
-                                        inm,
-                                        fieldsLength,
-                                        a,
-                                    );
-                                }
-
-                                //re = RegExp("[fF][0-9]+");
-                                re = RegExp("Field[0-9]+");
-                                instruction = instruction.replace(re, token);
-                            }
-                        }
-
-                        break;
-
-                    case "address":
-                        token = instructionParts[j];
-
-                        console_log("token: " + token);
-
-                        for (let a = 0; a < architecture.instructions[i].fields.length; a++) {
-                            if (architecture.instructions[i].fields[a].name == signatureRawParts[j]) {
-                                //aqui
-                                fieldsLength = getFieldLength(
-                                    architecture.instructions[i].separated,
-                                    architecture.instructions[i].fields[a].startbit,
-                                    architecture.instructions[i].fields[a].stopbit,
-                                    a,
-                                );
-
-                                if (token.match(/^0x/)) {
-                                    let value = token.split("x");
-
-                                    if (value[1].length * 4 > fieldsLength) {
-                                        return packCompileError("m8", token, "error", "danger");
-                                    }
-
-                                    if (isNaN(parseInt(token, 16)) === true) {
-                                        return packCompileError("m9", token, "error", "danger");
-                                    }
-
-                                    // addr = (parseInt(token, 16)).toString(2);
-                                    //binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + addr.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
-                                    binary = generateBinary(
-                                        architecture.instructions[i].separated,
-                                        architecture.instructions[i].fields[a].startbit,
-                                        architecture.instructions[i].fields[a].stopbit,
-                                        binary,
-                                        inm,
-                                        fieldsLength,
-                                        a,
-                                    ); //TODO: inm is not defined!
-                                    //re = RegExp("[fF][0-9]+");
-                                    re = RegExp("Field[0-9]+");
-                                    instruction = instruction.replace(re, token);
-                                } else {
-                                    var validTag = false;
-                                    startBit = architecture.instructions[i].fields[a].startbit;
-                                    stopBit = architecture.instructions[i].fields[a].stopbit;
-                                }
-                            }
-                        }
-
-                        break;
-
-                    case "offset_bytes":
-                        token = instructionParts[j];
-
-                        console_log("token: " + token);
-
-                        for (let a = 0; a < architecture.instructions[i].fields.length; a++) {
-                            if (architecture.instructions[i].fields[a].name == signatureRawParts[j]) {
-                                fieldsLength = getFieldLength(
-                                    architecture.instructions[i].separated,
-                                    architecture.instructions[i].fields[a].startbit,
-                                    architecture.instructions[i].fields[a].stopbit,
-                                    a,
-                                );
-
-                                let inm;
-
-                                if (token.match(/^0x/)) {
-                                    let value = token.split("x");
-                                    if (value[1].length * 4 > fieldsLength) {
-                                        resultPseudo = pseudoinstruction_compiler(oriInstruction, label, line);
-                                        console_log(resultPseudo);
-                                        if (resultPseudo.status != "ok") {
-                                            return resultPseudo;
-                                        }
-                                    }
-
-                                    if (isNaN(parseInt(token, 16)) === true) {
-                                        return packCompileError("m6", token, "error", "danger");
-                                    }
-
-                                    inm = parseInt(token, 16).toString(2);
-                                } else if (token.match(/^(\d)+\.(\d)+/)) {
-                                    if (float2bin(parseFloat(token)).length > fieldsLength) {
-                                        resultPseudo = pseudoinstruction_compiler(oriInstruction, label, line);
-                                        console_log(resultPseudo);
-                                        if (resultPseudo.status != "ok") {
-                                            return resultPseudo;
-                                        }
-                                    }
-
-                                    if (isNaN(parseFloat(token)) === true) {
-                                        return packCompileError("m6", token, "error", "danger");
-                                    }
-
-                                    inm = float2bin(parseFloat(token, 16));
-                                } else if (isNaN(parseInt(token))) {
-                                    validTagPC = false;
-                                    startBit = architecture.instructions[i].fields[a].startbit;
-                                    stopBit = architecture.instructions[i].fields[a].stopbit;
-                                } else {
-                                    let comNumPos = Math.pow(2, fieldsLength - 1);
-                                    let comNumNeg = comNumPos * -1;
-                                    comNumPos = comNumPos - 1;
-
-                                    console_log(comNumPos);
-                                    console_log(comNumNeg);
-
-                                    if (parseInt(token, 10) > comNumPos || parseInt(token, 10) < comNumNeg) {
-                                        console_log(oriInstruction);
-                                        console_log(label);
-                                        console_log(line);
-                                        resultPseudo = pseudoinstruction_compiler(oriInstruction, label, line);
-                                        console_log(resultPseudo);
-                                        if (resultPseudo.status != "ok") {
-                                            return resultPseudo;
-                                        }
-                                    }
-
-                                    if (isNaN(parseInt(token)) === true && resultPseudo == -3) {
-                                        return packCompileError("m6", token, "error", "danger");
-                                    }
-
-                                    inm = (parseInt(token, 10) >>> 0).toString(2);
-                                    inm = inm.substring(inm.length - fieldsLength, inm.length);
-                                }
-                                if (validTagPC === true) {
-                                    if (
-                                        inm.length >
-                                        architecture.instructions[i].fields[a].startbit -
-                                            architecture.instructions[i].fields[a].stopbit +
-                                            1
-                                    ) {
-                                        return packCompileError("m12", token, "error", "danger");
-                                    }
-
-                                    //binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + inm.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
-                                    binary = generateBinary(
-                                        architecture.instructions[i].separated,
-                                        architecture.instructions[i].fields[a].startbit,
-                                        architecture.instructions[i].fields[a].stopbit,
-                                        binary,
-                                        inm,
-                                        fieldsLength,
-                                        a,
-                                    );
-                                }
-
-                                //re = RegExp("[fF][0-9]+");
-                                re = RegExp("Field[0-9]+");
-                                console_log(instruction);
-                                instruction = instruction.replace(re, token);
-                                console_log(instruction);
-                            }
-                        }
-
-                        break;
-
-                    case "offset_words":
-                        token = instructionParts[j];
-
-                        console_log("token: " + token);
-
-                        for (let a = 0; a < architecture.instructions[i].fields.length; a++) {
-                            if (architecture.instructions[i].fields[a].name == signatureRawParts[j]) {
-                                fieldsLength = getFieldLength(
-                                    architecture.instructions[i].separated,
-                                    architecture.instructions[i].fields[a].startbit,
-                                    architecture.instructions[i].fields[a].stopbit,
-                                    a,
-                                );
-
-                                let inm;
-
-                                if (token.match(/^0x/)) {
-                                    let value = token.split("x");
-                                    if (value[1].length * 4 > fieldsLength) {
-                                        resultPseudo = pseudoinstruction_compiler(oriInstruction, label, line);
-                                        console_log(resultPseudo);
-                                        if (resultPseudo.status != "ok") {
-                                            return resultPseudo;
-                                        }
-                                    }
-
-                                    if (isNaN(parseInt(token, 16)) === true) {
-                                        return packCompileError("m6", token, "error", "danger");
-                                    }
-
-                                    inm = parseInt(token, 16).toString(2);
-                                } else if (token.match(/^(\d)+\.(\d)+/)) {
-                                    if (float2bin(parseFloat(token)).length > fieldsLength) {
-                                        resultPseudo = pseudoinstruction_compiler(oriInstruction, label, line);
-                                        console_log(resultPseudo);
-                                        if (resultPseudo.status != "ok") {
-                                            return resultPseudo;
-                                        }
-                                    }
-
-                                    if (isNaN(parseFloat(token)) === true) {
-                                        return packCompileError("m6", token, "error", "danger");
-                                    }
-
-                                    inm = float2bin(parseFloat(token, 16));
-                                } else if (isNaN(parseInt(token))) {
-                                    validTagPC = false;
-                                    startBit = architecture.instructions[i].fields[a].startbit;
-                                    stopBit = architecture.instructions[i].fields[a].stopbit;
-                                } else {
-                                    let comNumPos = Math.pow(2, fieldsLength - 1);
-                                    let comNumNeg = comNumPos * -1;
-                                    comNumPos = comNumPos - 1;
-
-                                    console_log(comNumPos);
-                                    console_log(comNumNeg);
-
-                                    if (parseInt(token, 10) > comNumPos || parseInt(token, 10) < comNumNeg) {
-                                        console_log(oriInstruction);
-                                        console_log(label);
-                                        console_log(line);
-                                        resultPseudo = pseudoinstruction_compiler(oriInstruction, label, line);
-                                        console_log(resultPseudo);
-                                        if (resultPseudo.status != "ok") {
-                                            return resultPseudo;
-                                        }
-                                    }
-
-                                    if (isNaN(parseInt(token)) === true && resultPseudo == -3) {
-                                        return packCompileError("m6", token, "error", "danger");
-                                    }
-
-                                    inm = (parseInt(token, 10) >>> 0).toString(2);
-                                    inm = inm.substring(inm.length - fieldsLength, inm.length);
-                                }
-                                if (validTagPC === true) {
-                                    if (
-                                        inm.length >
-                                        architecture.instructions[i].fields[a].startbit -
-                                            architecture.instructions[i].fields[a].stopbit +
-                                            1
-                                    ) {
-                                        return packCompileError("m12", token, "error", "danger");
-                                    }
-                                    //binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + inm.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
-                                    binary = generateBinary(
-                                        architecture.instructions[i].separated,
-                                        architecture.instructions[i].fields[a].startbit,
-                                        architecture.instructions[i].fields[a].stopbit,
-                                        binary,
-                                        inm,
-                                        fieldsLength,
-                                        a,
-                                    );
-                                }
-
-                                //re = RegExp("[fF][0-9]+");
-                                re = RegExp("Field[0-9]+");
-                                console_log(instruction);
-                                instruction = instruction.replace(re, token);
-                                console_log(instruction);
-                            }
-                        }
-
-                        break;
-
-                    default:
-                        token = instructionParts[j];
-
-                        console_log("token: " + token);
-
-                        for (let a = 0; a < architecture.instructions[i].fields.length; a++) {
-                            console_log(architecture.instructions[i].fields[a].name);
-                            if (architecture.instructions[i].fields[a].name == signatureRawParts[j]) {
-                                // Si el co es un array hay que separarlo
-                                /**/
-                                if (typeof architecture.instructions[i].fields[a].startbit == "object") {
-                                    fieldsLength = architecture.instructions[i].fields[a].startbit.reduce(
-                                        (t, cv, ind) => {
-                                            t = !ind ? 0 : t;
-                                            t + (cv - architecture.instructions[i].fields[a].stopbit[ind] + 1);
-                                        },
-                                    );
-                                    console_log(architecture.instructions[i].co.join("").padStart(fieldsLength, "0"));
-                                    // aqui_ahora
-                                } else {
-                                    fieldsLength =
-                                        architecture.instructions[i].fields[a].startbit -
-                                        architecture.instructions[i].fields[a].stopbit +
-                                        1;
-                                    console_log(architecture.instructions[i].co.padStart(fieldsLength, "0"));
-                                    binary =
-                                        binary.substring(
-                                            0,
-                                            binary.length - (architecture.instructions[i].fields[a].startbit + 1),
-                                        ) +
-                                        architecture.instructions[i].co.padStart(fieldsLength, "0") +
-                                        binary.substring(
-                                            binary.length - architecture.instructions[i].fields[a].stopbit,
-                                            binary.length,
-                                        );
-                                }
-
-                                console_log(binary);
-
-                                //re = RegExp("[fF][0-9]+");
-                                re = RegExp("Field[0-9]+");
-                                console_log(instruction);
-                                instruction = instruction.replace(re, token);
-                                console_log(instruction);
-                            }
-                            if (architecture.instructions[i].fields[a].type == "cop") {
-                                fieldsLength =
-                                    architecture.instructions[i].fields[a].startbit -
-                                    architecture.instructions[i].fields[a].stopbit +
-                                    1;
-
-                                binary =
-                                    binary.substring(
-                                        0,
-                                        binary.length - (architecture.instructions[i].fields[a].startbit + 1),
-                                    ) +
-                                    architecture.instructions[i].fields[a].valueField.padStart(fieldsLength, "0") +
-                                    binary.substring(
-                                        binary.length - architecture.instructions[i].fields[a].stopbit,
-                                        binary.length,
-                                    );
-                            }
-                        }
-
-                        break;
-                }
-            }
-
-            if (validTagPC === false && resultPseudo == -3) {
-                console_log("pendiente");
-
-                pc = pc + architecture.instructions[i].nwords * 4; //PRUEBA
-
-                let padding = "";
-                padding = padding.padStart(architecture.instructions[i].nwords * 32 - binary.length, "0");
-                binary = binary + padding;
-
-                let hex = bin2hex(binary);
-                let auxAddr = address;
-
-                console_log(binary);
-                console_log(bin2hex(binary));
-
-                pending_instructions.push({
-                    address: address,
-                    instruction: instruction,
-                    signature: signatureParts,
-                    signatureRaw: signatureRawParts,
-                    Label: label,
-                    binary: binary,
-                    startBit: startBit,
-                    stopBit: stopBit,
-                    visible: true,
-                    line: nEnters,
-                });
-
-                if (pending === false) {
-                    instructions.push({
-                        Break: null,
-                        Address: "0x" + address.toString(16),
-                        Label: label,
-                        loaded: instruction,
-                        user: userInstruction,
-                        _rowVariant: "",
-                        visible: true,
-                        hide: false,
-                    });
-                    instructions_binary.push({
-                        Break: null,
-                        Address: "0x" + address.toString(16),
-                        Label: label,
-                        loaded: binary,
-                        user: null,
-                        _rowVariant: "",
-                        visible: false,
-                    });
-
-                    address = address + 4 * architecture.instructions[i].nwords;
-                } else {
-                    for (let pos = 0; pos < instructions.length; pos++) {
-                        if (parseInt(instructions[pos].Address, 16) > pendingAddress) {
-                            instructions.splice(pos, 0, {
-                                Break: null,
-                                Address: "0x" + pendingAddress.toString(16),
-                                Label: label,
-                                loaded: instruction,
-                                user: userInstruction,
-                                _rowVariant: "",
-                                visible: true,
-                                hide: false,
-                            });
-                            instructions_binary.splice(pos, 0, {
-                                Break: null,
-                                Address: "0x" + pendingAddress.toString(16),
-                                Label: label,
-                                loaded: binary,
-                                user: null,
-                                _rowVariant: "",
-                                visible: false,
-                            });
-
-                            auxAddr = pendingAddress;
-                            break;
-                        }
-                    }
-                }
-
-                console_log(address.toString(16));
-                console_log("Instructions:\n" + JSON.stringify(instructions, null, 2), "DEBUG");
-                stopFor = true;
-                break;
-            } else {
-                if (resultPseudo == -3) {
-                    console_log("no pendiente");
-
-                    pc = pc + architecture.instructions[i].nwords * 4; //Prueba
-
-                    let padding = "";
-                    padding = padding.padStart(architecture.instructions[i].nwords * 32 - binary.length, "0");
-
-                    binary = binary + padding;
-                    let hex = bin2hex(binary);
-                    let auxAddr = address;
-
-                    console_log(binary);
-                    console_log(bin2hex(binary));
-
-                    if (pending === false) {
-                        instructions.push({
-                            Break: null,
-                            Address: "0x" + address.toString(16),
-                            Label: label,
-                            loaded: instruction,
-                            user: userInstruction,
-                            _rowVariant: "",
-                            visible: true,
-                            hide: false,
-                        });
-                        instructions_binary.push({
-                            Break: null,
-                            Address: "0x" + address.toString(16),
-                            Label: label,
-                            loaded: binary,
-                            user: null,
-                            _rowVariant: "",
-                            visible: false,
-                        });
-
-                        address = address + 4 * architecture.instructions[i].nwords;
-                    } else {
-                        for (let pos = 0; pos < instructions.length; pos++) {
-                            if (parseInt(instructions[pos].Address, 16) > pendingAddress) {
-                                instructions.splice(pos, 0, {
-                                    Break: null,
-                                    Address: "0x" + pendingAddress.toString(16),
-                                    Label: label,
-                                    loaded: instruction,
-                                    user: userInstruction,
-                                    _rowVariant: "",
-                                    visible: true,
-                                    hide: false,
-                                });
-                                instructions_binary.splice(pos, 0, {
-                                    Break: null,
-                                    Address: "0x" + pendingAddress.toString(16),
-                                    Label: label,
-                                    loaded: binary,
-                                    user: null,
-                                    _rowVariant: "",
-                                    visible: false,
-                                });
-
-                                auxAddr = pendingAddress;
-                                break;
-                            }
-                        }
-                    }
-
-                    stopFor = true;
-
-                    console_log(address.toString(16));
-                    console_log(instructions);
-                }
-            }
-        }
-    }
-
-    return ret;
-}
-function calculateField(value, type, param) {
-    return field(value, type, param);
-}
-function executeDefinition(definition) {
-    // Track execution state
-    let executionState = {
-        error: false,
-        ret: null,
-    };
-
-    // Split definition into individual instructions
-    const instructions = definition.split("\n");
-
-    // Execute each instruction
-    for (const inst of instructions) {
-        // Skip empty lines
-        if (!inst.trim()) continue;
-
-        // Handle instruction_compiler calls
-        if (inst.includes("instruction_compiler")) {
-            const match = inst.match(
-                /instruction_compiler\('([^']*)',\s*'([^']*)',\s*'([^']*)',\s*(\d+),\s*(true|false),\s*(\d+),\s*([^,]*),\s*([^,]*),\s*(true|false)/,
-            );
-            if (match) {
-                const [_, instr, userInstr, label, line, pending, pendingAddr, instInit, instIndex, isPseudo] = match;
-                executionState.ret = instruction_compiler(
-                    instr,
-                    userInstr,
-                    label,
-                    parseInt(line),
-                    pending === "true",
-                    parseInt(pendingAddr),
-                    instInit === "null" ? null : parseInt(instInit),
-                    instIndex === "null" ? null : parseInt(instIndex),
-                    isPseudo === "true",
-                );
-            }
-        }
-
-        // Handle error checking
-        if (inst.includes("if(ret.status != 'ok'){error = true}")) {
-            if (executionState.ret?.status !== "ok") {
-                executionState.error = true;
-            }
-        }
-    }
-
-    return executionState;
-}
-function getTimestampPrefix() {
-    return "tmp" + (Date.now() % 10000);
-}
-function createVariables(code) {
-    const prefix = getTimestampPrefix();
-    const regex = /(?:var|let|const)\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*=/g;
-    const variables = [...code.matchAll(regex)].map(match => match[1]);
-
-    variables.forEach(v => {
-        globalThis[prefix + v] = undefined;
-    });
-
-    const cleanup = () => {
-        variables.forEach(v => {
-            delete globalThis[prefix + v];
-        });
-    };
-
-    return { variables: variables.map(v => prefix + v), prefix, cleanup };
-}
-function executeCode(code, prefix) {
-    const cleanCode = code
-        .replace(/(?:var|let|const)\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*=/g, (_, v) => `${prefix}${v} =`)
-        .replace(/\b([a-zA-Z_][a-zA-Z0-9_]*)\b(?!\s*=)/g, (match, v) => {
-            return Object.prototype.hasOwnProperty.call(globalThis, prefix + v) ? prefix + v : match;
-        });
-
-    return eval(cleanCode);
-}
-/*Compile pseudoinstructions*/
-function pseudoinstruction_compiler(instruction, label, line) {
-    var ret = {
-        errorcode: "",
-        token: "",
-        type: "",
-        update: "",
-        status: "ok",
-    };
-    let re;
-    let aux;
-    re = /' '/;
-    instruction = instruction.replace(re, "'\0'");
-    re = /'\\n'/;
-    instruction = instruction.replace(re, "10");
-    console_log("After newline replacement: " + instruction, "DEBUG");
-    re = /'\\t'/;
-    instruction = instruction.replace(re, "9");
-    console_log("After tab replacement: " + instruction, "DEBUG");
-
-    var instructionParts = instruction.split(" ");
-    var found = false;
-
-    re = /'\0'/;
-    instruction = instruction.replace(re, "' '");
-    console_log("After null char replacement: " + instruction, "DEBUG");
-
-    for (let i = 0; i < instructionParts.length; i++) {
-        instructionParts[i] = instructionParts[i].replace(re, "' '");
-    }
-
-    console_log("Instruction parts after splitting: ", instructionParts, "DEBUG");
-
-    var auxSignature;
-
-    for (let i = 0; i < architecture.pseudoinstructions.length; i++) {
-        console_log("Checking pseudoinstruction: " + architecture.pseudoinstructions[i].name, "DEBUG");
-        if (architecture.pseudoinstructions[i].name != instructionParts[0]) {
-            continue;
-        } else {
-            found = true;
-
-            var signatureDef = architecture.pseudoinstructions[i].signature_definition;
-            signatureDef = signatureDef.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-            re = new RegExp("[fF][0-9]+", "g");
-            signatureDef = signatureDef.replace(re, "(.*?)");
-
-            var signatureParts = architecture.pseudoinstructions[i].signature.split(",");
-            var signatureRawParts = architecture.pseudoinstructions[i].signatureRaw.split(" ");
-            var definition = architecture.pseudoinstructions[i].definition;
-
-            auxSignature = architecture.pseudoinstructions[i].signatureRaw;
-
-            console_log("Signature definition: " + signatureDef, "DEBUG");
-            console_log("Current instruction: " + instruction, "DEBUG");
-            console_log("Current instruction parts: ", instructionParts, "DEBUG");
-
-            if (instructionParts.length < architecture.pseudoinstructions[i].fields.length + 1) {
-                for (
-                    let j = 0;
-                    j < architecture.pseudoinstructions[i].fields.length + 1 - instructionParts.length;
-                    j++
-                ) {
-                    next_token();
-                    token = get_token();
-
-                    console_log("Current token being processed: " + token, "DEBUG");
-
-                    if (token != null) {
-                        re = new RegExp(",+$");
-                        token = token.replace(re, "");
-                    }
-
-                    instruction = instruction + " " + token;
-                }
-
-                instructionParts = instruction.split(" ");
-            }
-
-            console_log("Updated instruction: " + instruction, "DEBUG");
-
-            re = new RegExp(signatureDef + "$");
-            console_log(re, "DEBUG");
-            if (instruction.search(re) == -1 && i == architecture.pseudoinstructions.length - 1) {
-                return packCompileError("m3", auxSignature, "error", "danger");
-            }
-
-            if (instruction.search(re) == -1 && i < architecture.pseudoinstructions.length - 1) {
-                found = false;
-            }
-
-            if (found === true) {
-                let code;
-                let value;
-                const { variables, prefix, cleanup } = createVariables(definition);
-                re = /aliasDouble\((.*)\)/;
-                for (
-                    let a = 0;
-                    a < architecture.pseudoinstructions[i].fields.length && definition.search(re) != -1;
-                    a++
-                ) {
-                    re = new RegExp(architecture.pseudoinstructions[i].fields[a].name, "g");
-                    console_log(instructionParts[a + 1], "DEBUG");
-                    instructionParts[a + 1] = instructionParts[a + 1].replace("$", "");
-                    definition = definition.replace(re, instructionParts[a + 1]);
-                }
-
-                /*Replace DFP of SPF*/
-                re = /aliasDouble\((.*)\)/;
-                console_log(re, "DEBUG");
-                while (definition.search(re) != -1) {
-                    var matchAlias = re.exec(definition);
-                    var args = matchAlias[1].split(";");
-                    aux = "";
-
-                    for (var b = 0; b < architecture.components[3].elements.length; b++) {
-                        console_log(
-                            "Checking component element: " + architecture.components[3].elements[b].name,
-                            "DEBUG",
-                        );
-                        if (architecture.components[3].elements[b].name.includes(args[0]) !== false) {
-                            aux = architecture.components[3].elements[b].simple_reg[args[1]];
-                            console_log("Found aux value: " + aux, "DEBUG");
-                            break;
-                        }
-                    }
-                    console_log("Current aux value: " + aux, "DEBUG");
-
-                    definition = definition.replace(re, aux);
-                    console_log("Updated definition after alias replacement: " + definition, "DEBUG");
-                }
-
-                for (let j = 1; j < signatureRawParts.length; j++) {
-                    aux = signatureRawParts[j].replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-                    re = new RegExp(aux, "g");
-                    definition = definition.replace(re, instructionParts[j]);
-                }
-
-                re = new RegExp("\\n", "g");
-                definition = definition.replace(re, "");
-
-                console_log("Final definition: " + definition, "DEBUG");
-                console_log("Signature parts: ", signatureParts, "DEBUG");
-
-                re = /Field.(\d).\((.*?)\).(.*?)[=<>;\s]/;
-                while (definition.search(re) != -1) {
-                    var matchField = re.exec(definition);
-                    console_log("Field match results: ", matchField, "DEBUG");
-
-                    if (instructionParts[matchField[1]].match(/^'(.*?)'$/)) {
-                        re = /^'(.*?)'$/;
-                        let match2 = re.exec(instructionParts[matchField[1]]);
-                        let asciiCode = match2[1].charCodeAt(0);
-                        value = calculateField(asciiCode, `(${matchField[2]})`, matchField[3]);
-                    } else {
-                        value = calculateField(instructionParts[matchField[1]], `(${matchField[2]})`, matchField[3]);
-                    }
-
-                    if (value == -1) {
-                        return packCompileError("m5", token, "error", "danger");
-                    }
-
-                    console_log("Calculated value: " + value, "DEBUG");
-
-                    definition = definition.replace(
-                        "Field." + matchField[1] + ".(" + matchField[2] + ")." + matchField[3],
-                        value,
-                    );
-
-                    re = /Field.(\d).\((.*?)\).(.*?)[;\s]/;
-                }
-
-                re = /Field.(\d).SIZE[=<>;\s]/g;
-                if (definition.search(re) != -1) {
-                    var matchSize = re.exec(definition);
-                    console_log(matchSize, "DEBUG");
-
-                    if (instructionParts[matchSize[1]].match(/^'(.*?)'$/)) {
-                        re = /^'(.*?)'$/;
-                        let match2 = re.exec(instructionParts[matchSize[1]]);
-                        let asciiCode = match2[1].charCodeAt(0);
-                        value = calculateField(asciiCode, "SIZE", null);
-                    } else {
-                        value = calculateField(instructionParts[matchSize[1]], "SIZE", null);
-                    }
-
-                    if (value == -1) {
-                        return packCompileError("m5", token, "error", "danger");
-                    }
-
-                    console_log(value, "DEBUG");
-                    console_log("Field." + matchSize[1] + ".SIZE", "DEBUG");
-
-                    definition = definition.replace("Field." + matchSize[1] + ".SIZE", value);
-                }
-
-                console_log("Definition after field replacements: " + definition, "DEBUG");
-
-                re = /reg\.pc/;
-                console_log("Regular expression for reg.pc: " + re, "DEBUG");
-                while (definition.search(re) != -1) {
-                    definition = definition.replace(re, "pc"); //PRUEBA
-                    console_log("Definition after reg.pc replacement: " + definition, "DEBUG");
-                }
-
-                re = /no_ret_op\{([^}]*)\};/;
-                console_log(re, "DEBUG");
-                while (definition.search(re) != -1) {
-                    let match2 = re.exec(definition);
-
-                    console_log("No return operation match: " + match2[1], "DEBUG");
-
-                    //eval(match2[1]);
-                    const _ = executeCode(match2[1], prefix);
-
-                    definition = definition.replace(re, "");
-                    console_log("Definition after no_ret_op: " + definition, "DEBUG");
-                }
-
-                console_log(definition, "DEBUG");
-
-                re = /op\{([^}]*)\}/;
-                console_log(re, "DEBUG");
-                while (definition.search(re) != -1) {
-                    let match2 = re.exec(definition);
-
-                    console_log("Operation match: " + match2[1], "DEBUG");
-
-                    //eval("result=" + match2[1]);
-                    const result = executeCode(match2[1], prefix);
-
-                    definition = definition.replace(re, result);
-                    console_log("Definition after operation replacement: " + definition, "DEBUG");
-                }
-
-                console_log("Final definition before execution: " + definition, "DEBUG");
-
-                var stop_while = 0;
-                while (definition.match(/'(.*?)'/) && stop_while === 0) {
-                    re = /'(.*?)'/;
-                    if (typeof matchField !== "undefined") {
-                        let match2 = re.exec(instructionParts[matchField[1]]);
-                        console_log(match2, "DEBUG");
-                        let asciiCode = match2[1].charCodeAt(0);
-                        console_log(asciiCode, "DEBUG");
-                        definition = definition.replace(re, asciiCode);
-                    } else {
-                        stop_while = 1;
-                    }
-                }
-
-                console_log(definition, "DEBUG");
-
-                console_log("Final instruction: " + instruction, "DEBUG");
-                re = new RegExp("'", "g");
-                instruction = instruction.replace(re, '"');
-                console_log(instruction, "DEBUG");
-
-                re = /{([^}]*)}/g;
-                code = re.exec(definition);
-
-                if (code != null) {
-                    while (code != null) {
-                        let instructions = code[1].split(";");
-                        console_log(instructions, "DEBUG");
-
-                        for (let j = 0; j < instructions.length - 1; j++) {
-                            if (j === 0) {
-                                aux =
-                                    "ret=instruction_compiler('" +
-                                    instructions[j] +
-                                    "','" +
-                                    instruction +
-                                    "','" +
-                                    label +
-                                    "'," +
-                                    line +
-                                    ", false, 0, null, null, true)\nif(ret.status != 'ok'){error = true}";
-                            } else {
-                                aux =
-                                    "ret=instruction_compiler('" +
-                                    instructions[j] +
-                                    "','', ''," +
-                                    line +
-                                    ", false, 0, null, null, true)\nif(ret.status != 'ok'){error = true}";
-                            }
-                            definition = definition.replace(instructions[j] + ";", aux + ";\n");
-                        }
-                        code = re.exec(definition);
-                    }
-                } else {
-                    let instructions = definition.split(";");
-
-                    for (let j = 0; j < instructions.length - 1; j++) {
-                        if (j == 0) {
-                            aux =
-                                "ret=instruction_compiler('" +
-                                instructions[j] +
-                                "','" +
-                                instruction +
-                                "','" +
-                                label +
-                                "'," +
-                                line +
-                                ", false, 0, null, null, true)\nif(ret.status != 'ok'){error = true}";
-                        } else {
-                            aux =
-                                "ret=instruction_compiler('" +
-                                instructions[j] +
-                                "','', ''," +
-                                line +
-                                ", false, 0, null, null, true)\nif(ret.status != 'ok'){error = true}";
-                        }
-                        definition = definition.replace(instructions[j] + ";", aux + ";\n");
-                    }
-                }
-                cleanup(); // This will remove the temporal GLOBAL variables created by createVariables
-
-                try {
-                    var error = false;
-                    console_log(definition, "DEBUG");
-                    eval(definition);
-                    if (error === true) {
-                        console_log("Error pseudo", "DEBUG");
-                        //return packCompileError('m13', "Error pseudoinstruction", 'error', "danger") ;
-                        return ret;
-                    }
-                    console_log("Fin pseudo", "DEBUG");
-                    console_log("Pseudo instruction compilation completed", "DEBUG");
-                    return ret;
-                } catch (e) {
-                    if (e instanceof SyntaxError) {
-                        return packCompileError("m13", "", "error", "danger");
-                    }
-                }
-            }
-        }
-    }
-
-    if (!found) {
-        return packCompileError("m3", auxSignature, "error", "danger");
-    }
-
-    return ret;
-}
-/* Get pseudoinstruction fields */
-function field(field, action, type) {
-    field = field.toString();
-    console_log(field);
-    console_log(action);
-    console_log(type);
-    let numAux;
-    let binNum;
-    let hexNum;
-    let ret;
-
-    if (action == "SIZE") {
-        console_log("SIZE");
-
-        if (field.match(/^0x/)) {
-            var value = field.split("x");
-            return value[1].length * 4;
-        } else if (field.match(/^([-\d])+\.(\d)+/)) {
-            return float2bin(parseFloat(field)).length;
-        } else if (field.match(/^([-\d])+/)) {
-            numAux = parseInt(field, 10);
-            return bi_intToBigInt(numAux, 10).toString(2).length;
-        } else {
-            ret = creator_memory_findaddress_bytag(field);
-            if (ret.exit === 1) {
-                numAux = ret.value;
-                return numAux.toString(2).length;
-            }
-        }
-    }
-
-    let re = /\((.*?)\)/;
-    if (action.search(re) != -1) {
-        var match = re.exec(action);
-        var bits = match[1].split(",");
-        var startBit = parseInt(bits[0]);
-        var endBit = parseInt(bits[1]);
-
-        if (field.match(/^0x/) && (type == "int" || type == "float")) {
-            binNum = parseInt(field, 16).toString(2);
-            binNum = binNum.padStart(32, "0");
-            binNum = binNum.substring(31 - startBit, 32 - endBit);
-            hexNum = "0x" + bin2hex(binNum);
-            return hexNum;
-        } else if (field.match(/^0x/) && type == "double") {
-            binNum = double2bin(hex2double(field));
-            binNum = binNum.padStart(64, "0");
-            binNum = binNum.substring(63 - startBit, 64 - endBit);
-            hexNum = "0x" + bin2hex(binNum);
-            return hexNum;
-        }
-
-        //if (Number.isInteger(field) === false)
-        if (isNaN(field) === true) {
-            ret = creator_memory_findaddress_bytag(field);
-            if (ret.exit === 1) {
-                field = ret.value;
-            }
-            if (ret.exit === 0) {
-                return -1;
-            }
-        }
-
-        if (type == "int") {
-            binNum = (parseInt(field, 10) >>> 0).toString(2);
-            binNum = binNum.padStart(32, "0");
-            binNum = binNum.substring(31 - startBit, 32 - endBit);
-            hexNum = "0x" + bin2hex(binNum);
-            return hexNum;
-        } else if (type == "float") {
-            binNum = float2bin(parseFloat(field));
-            console_log(binNum);
-            binNum = binNum.padStart(32, "0");
-            binNum = binNum.substring(31 - startBit, 32 - endBit);
-            hexNum = "0x" + bin2hex(binNum);
-            return hexNum;
-        } else if (type == "double") {
-            binNum = double2bin(parseFloat(field));
-            console_log(binNum);
-            binNum = binNum.padStart(64, "0");
-            binNum = binNum.substring(63 - startBit, 64 - endBit);
-            hexNum = "0x" + bin2hex(binNum);
-            return hexNum;
-        }
-    }
-    return -1;
 }

@@ -1,127 +1,208 @@
-import assert from 'assert';
+import { assert, assertEquals } from "https://deno.land/std/assert/mod.ts";
 import {
+    checkTypeIEEE,
+    hex2char8,
+    hex2float,
+    uint_to_float32,
+    float32_to_uint,
+    uint_to_float64,
+    float64_to_uint,
+    float2bin,
+    double2bin,
+    bin2hex,
+    hex2double,
+    full_print,
+    clean_string,
+} from "../../../../src/core/utils/utils.mjs";
 
-// Language: javascript
-  checkTypeIEEE,
-  hex2char8,
-  hex2float,
-  uint_to_float32,
-  float32_to_uint,
-  uint_to_float64,
-  float64_to_uint,
-  float2bin,
-  double2bin,
-  bin2hex,
-  hex2double,
-  full_print,
-  clean_string
-} from '../../../../src/core/utils/utils.mjs';
+// Comprehensive tests for checkTypeIEEE function
+// Testing all IEEE 754 floating-point classifications
 
-describe('utils.mjs', function () {
-
-  describe('checkTypeIEEE', function () {
-    it('should return 16 for s=0,e=0,m=0 (positive zero)', function () {
-      // 1<<4 equals 16
-      assert.strictEqual(checkTypeIEEE(0, 0, 0), 16);
-    });
-    it('should return 8 for s=1,e=0,m=0 (negative zero)', function () {
-      // 1<<3 equals 8
-      assert.strictEqual(checkTypeIEEE(1, 0, 0), 8);
-    });
-    it('should return 5<<? for normalized positive: s=0,e nonzero, m nonzero', function () {
-      // For s=0 and e!=0 and e != 255, expect 1<<6 (i.e. 64) from last else clause.
-      assert.strictEqual(checkTypeIEEE(0, 100, 1), 64);
-    });
-    it('should return 2<<? for normalized negative: s=1,e nonzero, m nonzero', function () {
-      // For s=1 and e!=0 and e !=255, expect 1<<1 which is 2.
-      assert.strictEqual(checkTypeIEEE(1, 100, 1), 2);
-    });
-  });
-
-  describe('hex2char8', function () {
-    it('should convert a hex string to spaced characters', function () {
-      // "48656c6c6f" -> "H e l l o "
-      const hexStr = "48656c6c6f";
-      const expected = "H e l l o ";
-      assert.strictEqual(hex2char8(hexStr), expected);
-    });
-  });
-
-  describe('hex2float', function () {
-    it('should convert hex representation to float (pi approx)', function () {
-      // 0x40490FDB corresponds approximately to 3.1415927 in float.
-      const hexVal = "0x40490FDB";
-      const result = hex2float(hexVal);
-      assert(Math.abs(result - 3.1415927) < 1e-6);
-    });
-  });
-
-  describe('uint_to_float32 and float32_to_uint', function () {
-    it('should round-trip conversion of float32 via uint', function () {
-      const number = 1.5;
-      const uintVal = float32_to_uint(number);
-      const floatVal = uint_to_float32(uintVal);
-      assert(Math.abs(floatVal - number) < 1e-6);
-    });
-  });
-
-  describe('uint_to_float64 and float64_to_uint', function () {
-    it('should round-trip conversion of float64 via uint array', function () {
-      const number = 2.718281828459045;
-      // Convert double to uint representation array, then back.
-      const uintArr = float64_to_uint(number);
-      // uint_to_float64 takes two 32-bit values:
-      const floatVal = uint_to_float64(uintArr[0], uintArr[1]);
-      assert(Math.abs(floatVal - number) < 1e-12);
-    });
-  });
-
-  describe('float2bin and double2bin', function () {
-    it('should return 32-bit binary string for float2bin', function () {
-      const number = 1.0;
-      const binStr = float2bin(number);
-      assert.strictEqual(binStr.length, 32);
-    });
-    it('should return 64-bit binary string for double2bin', function () {
-      const number = 1.0;
-      const binStr = double2bin(number);
-      assert.strictEqual(binStr.length, 64);
-    });
-  });
-
-  describe('bin2hex', function () {
-    it('should convert binary string to hexadecimal', function () {
-      // Example: "1111" -> "F"
-      const binStr = "1111";
-      const hex = bin2hex(binStr);
-      assert.strictEqual(hex, "F");
-    });
-    it('should return an object with valid: false for invalid binary input', function () {
-      const invalidStr = "1020";
-      const result = bin2hex(invalidStr);
-      assert.strictEqual(result.valid, false);
-    });
-  });
-
-  describe('hex2double', function () {
-    it('should convert hex representation to double (pi approx)', function () {
-      // 0x400921FB54442D18 corresponds approximately to 3.141592653589793 in double.
-      const hexVal = "0x400921FB54442D18";
-      const result = hex2double(hexVal);
-      assert(Math.abs(result - 3.141592653589793) < 1e-12);
-    });
-  });
-
-  describe('clean_string', function () {
-    it('should prepend prefix to numeric only strings', function () {
-      const input = "12345";
-      const expected = "pre12345";
-      assert.strictEqual(clean_string(input, "pre"), expected);
-    });
-    it('should not change non numeric strings without numbers only', function () {
-      const input = "abc123";
-      assert.strictEqual(clean_string(input, "pre"), "abc123");
-    });
-  });
-
+Deno.test("checkTypeIEEE - positive zero (+0): s=0, e=0, m=0", () => {
+    assertEquals(checkTypeIEEE(0, 0, 0), 16); // 1 << 4
 });
+
+Deno.test("checkTypeIEEE - negative zero (-0): s=1, e=0, m=0", () => {
+    assertEquals(checkTypeIEEE(1, 0, 0), 8); // 1 << 3
+});
+
+Deno.test("checkTypeIEEE - positive normalized number: s=0, e=127, m=1", () => {
+    assertEquals(checkTypeIEEE(0, 127, 1), 64); // 1 << 6
+});
+
+Deno.test("checkTypeIEEE - negative normalized number: s=1, e=127, m=1", () => {
+    assertEquals(checkTypeIEEE(1, 127, 1), 2); // 1 << 1
+});
+
+Deno.test(
+    "checkTypeIEEE - positive subnormal (denormalized): s=0, e=0, m=1",
+    () => {
+        assertEquals(checkTypeIEEE(0, 0, 1), 32); // 1 << 5
+    },
+);
+
+Deno.test(
+    "checkTypeIEEE - negative subnormal (denormalized): s=1, e=0, m=1",
+    () => {
+        assertEquals(checkTypeIEEE(1, 0, 1), 4); // 1 << 2
+    },
+);
+
+Deno.test("checkTypeIEEE - positive infinity: s=0, e=255, m=0", () => {
+    assertEquals(checkTypeIEEE(0, 255, 0), 128); // 1 << 7
+});
+
+Deno.test("checkTypeIEEE - negative infinity: s=1, e=255, m=0", () => {
+    assertEquals(checkTypeIEEE(1, 255, 0), 1); // 1 << 0
+});
+
+Deno.test("checkTypeIEEE - positive NaN: s=0, e=255, m=1", () => {
+    assertEquals(checkTypeIEEE(0, 255, 1), 512); // 1 << 9
+});
+
+Deno.test("checkTypeIEEE - negative NaN: s=1, e=255, m=1", () => {
+    assertEquals(checkTypeIEEE(1, 255, 1), 256); // 1 << 8
+});
+
+// Edge cases with different mantissa values
+Deno.test(
+    "checkTypeIEEE - positive subnormal with large mantissa: s=0, e=0, m=8388607",
+    () => {
+        assertEquals(checkTypeIEEE(0, 0, 8388607), 32); // 1 << 5 (still subnormal)
+    },
+);
+
+Deno.test(
+    "checkTypeIEEE - negative subnormal with large mantissa: s=1, e=0, m=8388607",
+    () => {
+        assertEquals(checkTypeIEEE(1, 0, 8388607), 4); // 1 << 2 (still subnormal)
+    },
+);
+
+Deno.test(
+    "checkTypeIEEE - positive NaN with large mantissa: s=0, e=255, m=8388607",
+    () => {
+        assertEquals(checkTypeIEEE(0, 255, 8388607), 512); // 1 << 9 (still NaN)
+    },
+);
+
+Deno.test(
+    "checkTypeIEEE - negative NaN with large mantissa: s=1, e=255, m=8388607",
+    () => {
+        assertEquals(checkTypeIEEE(1, 255, 8388607), 256); // 1 << 8 (still NaN)
+    },
+);
+
+// Test with minimum and maximum normal exponents
+Deno.test(
+    "checkTypeIEEE - positive normalized with min exponent: s=0, e=1, m=0",
+    () => {
+        assertEquals(checkTypeIEEE(0, 1, 0), 64); // 1 << 6
+    },
+);
+
+Deno.test(
+    "checkTypeIEEE - negative normalized with min exponent: s=1, e=1, m=0",
+    () => {
+        assertEquals(checkTypeIEEE(1, 1, 0), 2); // 1 << 1
+    },
+);
+
+Deno.test(
+    "checkTypeIEEE - positive normalized with max exponent: s=0, e=254, m=8388607",
+    () => {
+        assertEquals(checkTypeIEEE(0, 254, 8388607), 64); // 1 << 6
+    },
+);
+
+Deno.test(
+    "checkTypeIEEE - negative normalized with max exponent: s=1, e=254, m=8388607",
+    () => {
+        assertEquals(checkTypeIEEE(1, 254, 8388607), 2); // 1 << 1
+    },
+);
+
+// Test boundary conditions
+Deno.test(
+    "checkTypeIEEE - positive normalized with zero mantissa: s=0, e=100, m=0",
+    () => {
+        assertEquals(checkTypeIEEE(0, 100, 0), 64); // 1 << 6
+    },
+);
+
+Deno.test(
+    "checkTypeIEEE - negative normalized with zero mantissa: s=1, e=100, m=0",
+    () => {
+        assertEquals(checkTypeIEEE(1, 100, 0), 2); // 1 << 1
+    },
+);
+
+Deno.test("hex2char8 - converts hex string to spaced characters", () => {
+    const hexStr = "48656c6c6f";
+    const expected = "H e l l o ";
+    assertEquals(hex2char8(hexStr), expected);
+});
+
+Deno.test("hex2float - converts hex to float (pi approximation)", () => {
+    const hexVal = "0x40490FDB";
+    const result = hex2float(hexVal);
+    assert(Math.abs(result - 3.1415927) < 1e-6);
+});
+
+Deno.test("uint_to_float32 and float32_to_uint - round trip conversion", () => {
+    const number = 1.5;
+    const uintVal = float32_to_uint(number);
+    const floatVal = uint_to_float32(uintVal);
+    assert(Math.abs(floatVal - number) < 1e-6);
+});
+
+Deno.test("uint_to_float64 and float64_to_uint - round trip conversion", () => {
+    const number = 2.718281828459045;
+    const uintArr = float64_to_uint(number);
+    const floatVal = uint_to_float64(uintArr[0], uintArr[1]);
+    assert(Math.abs(floatVal - number) < 1e-12);
+});
+
+Deno.test("float2bin - returns 32-bit binary string", () => {
+    const number = 1.0;
+    const binStr = float2bin(number);
+    assertEquals(binStr.length, 32);
+});
+
+Deno.test("double2bin - returns 64-bit binary string", () => {
+    const number = 1.0;
+    const binStr = double2bin(number);
+    assertEquals(binStr.length, 64);
+});
+
+Deno.test("bin2hex - converts binary string to hexadecimal", () => {
+    const binStr = "1111";
+    const hex = bin2hex(binStr);
+    assertEquals(hex, "F");
+});
+
+Deno.test("bin2hex - returns invalid for incorrect binary input", () => {
+    const invalidStr = "1020";
+    const result = bin2hex(invalidStr);
+    assertEquals(result.valid, false);
+});
+
+Deno.test("hex2double - converts hex to double (pi approximation)", () => {
+    const hexVal = "0x400921FB54442D18";
+    const result = hex2double(hexVal);
+    assert(Math.abs(result - 3.141592653589793) < 1e-12);
+});
+
+Deno.test("clean_string - prepends prefix to numeric only strings", () => {
+    const input = "12345";
+    const expected = "pre12345";
+    assertEquals(clean_string(input, "pre"), expected);
+});
+
+Deno.test(
+    "clean_string - does not change strings with non-numeric characters",
+    () => {
+        const input = "abc123";
+        assertEquals(clean_string(input, "pre"), "abc123");
+    },
+);

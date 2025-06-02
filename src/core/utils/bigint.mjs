@@ -15,21 +15,31 @@
  *
  *  You should have received a copy of the GNU Lesser General Public License
  *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
- *
  */
 "use strict";
 import { register_size_bits } from "../core.mjs";
-import { float2bin, bin2hex, hex2float, double2bin, hex2double } from "./utils.mjs";
+import {
+    bin2hex,
+    double2bin,
+    float2bin,
+    hex2double,
+    hex2float,
+} from "./utils.mjs";
 
 /**
  * Converts an integer value to a BigInt with proper register size normalization
  * @param {number|string} int_value - The integer value to convert
  * @param {number} int_base - The base of the input number (default: 10)
+ * @param {number} bits - The number of bits for the register (default: register_size_bits)
  * @returns {BigInt} Normalized unsigned BigInt value
  */
-export function bi_intToBigInt(int_value, int_base) {
+export function bi_intToBigInt(
+    int_value,
+    int_base = 10,
+    bits = register_size_bits,
+) {
     // Convert input to BigInt, respecting the base
-    const bigIntValue = BigInt(int_value.toString(int_base || 10));
+    const bigIntValue = BigInt(int_value.toString(int_base));
 
     // Normalize to unsigned integer
     // This has to be the size of the register it's saving to.
@@ -38,7 +48,7 @@ export function bi_intToBigInt(int_value, int_base) {
     // it will break due to 2's complement representation being dependent on
     // the size of the register.
     // E.g. -1 in a 4-bit register is 1111, but in an 8-bit register it's 11111111.
-    return BigInt.asUintN(register_size_bits, bigIntValue);
+    return BigInt.asUintN(bits, bigIntValue);
 }
 /**
  * Converts a floating-point number to its BigInt representation
@@ -47,8 +57,8 @@ export function bi_intToBigInt(int_value, int_base) {
  */
 export function bi_floatToBigInt(float_value) {
     let BigInt_value = null;
-    let bin = float2bin(float_value);
-    let hex = bin2hex(bin);
+    const bin = float2bin(float_value);
+    const hex = bin2hex(bin);
 
     BigInt_value = BigInt("0x" + hex);
 
@@ -75,8 +85,8 @@ export function bi_BigIntTofloat(big_int_value) {
  */
 export function bi_doubleToBigInt(double_value) {
     let BigInt_value = null;
-    let bin = double2bin(double_value);
-    let hex = bin2hex(bin);
+    const bin = double2bin(double_value);
+    const hex = bin2hex(bin);
 
     BigInt_value = BigInt("0x" + hex);
 
@@ -88,7 +98,11 @@ export function bi_doubleToBigInt(double_value) {
  * @returns {number} Double-precision floating-point representation of the BigInt value
  */
 export function bi_BigIntTodouble(big_int_value) {
-    let hex = big_int_value.toString(16).padStart(16, "0");
+    const hex = big_int_value.toString(16).padStart(16, "0");
+    // if the first 8 characters are 0, it's a 32-bit float, not a double
+    if (hex.substring(0, 8) === "00000000") {
+        return hex2float("0x" + hex.substring(8, 16));
+    }
 
     return hex2double("0x" + hex);
 }
@@ -114,14 +128,18 @@ export function register_value_deserialize(architecture) {
 
             if (architecture.components[i].double_precision !== true) {
                 if (architecture.components[i].type != "fp_registers") {
-                    architecture.components[i].elements[j].default_value = bi_intToBigInt(
-                        architecture.components[i].elements[j].default_value,
-                        10,
-                    );
+                    architecture.components[i].elements[j].default_value =
+                        bi_intToBigInt(
+                            architecture.components[i].elements[j]
+                                .default_value,
+                            10,
+                        );
                 } else {
-                    architecture.components[i].elements[j].default_value = bi_floatToBigInt(
-                        architecture.components[i].elements[j].default_value,
-                    );
+                    architecture.components[i].elements[j].default_value =
+                        bi_floatToBigInt(
+                            architecture.components[i].elements[j]
+                                .default_value,
+                        );
                 }
             }
         }
@@ -129,36 +147,41 @@ export function register_value_deserialize(architecture) {
 
     return architecture;
 }
-/**
- * Serializes register values in an architecture from BigInt to string/number
- * @param {Object} architecture - The architecture object containing components and elements
- * @returns {Object} New architecture object with serialized values
- */
-function register_value_serialize(architecture) {
-    let aux_architecture = structuredClone(architecture);
-    for (let i = 0; i < architecture.components.length; i++) {
-        for (let j = 0; j < architecture.components[i].elements.length; j++) {
-            if (architecture.components[i].type != "fp_registers") {
-                aux_architecture.components[i].elements[j].value =
-                    architecture.components[i].elements[j].value.toString();
-            } else {
-                aux_architecture.components[i].elements[j].value = bi_BigIntTofloat(
-                    architecture.components[i].elements[j].value,
-                );
-            }
+// /**
+//  * Serializes register values in an architecture from BigInt to string/number
+//  * @param {Object} architecture - The architecture object containing components and elements
+//  * @returns {Object} New architecture object with serialized values
+//  */
+// function register_value_serialize(architecture) {
+//     const aux_architecture = structuredClone(architecture);
+//     for (let i = 0; i < architecture.components.length; i++) {
+//         for (let j = 0; j < architecture.components[i].elements.length; j++) {
+//             if (architecture.components[i].type != "fp_registers") {
+//                 aux_architecture.components[i].elements[j].value = architecture
+//                     .components[i].elements[j].value.toString();
+//             } else {
+//                 aux_architecture.components[i].elements[j].value =
+//                     bi_BigIntTofloat(
+//                         architecture.components[i].elements[j].value,
+//                     );
+//             }
 
-            if (architecture.components[i].double_precision !== true) {
-                if (architecture.components[i].type != "fp_registers") {
-                    aux_architecture.components[i].elements[j].default_value =
-                        architecture.components[i].elements[j].default_value.toString();
-                } else {
-                    aux_architecture.components[i].elements[j].default_value = bi_BigIntTofloat(
-                        architecture.components[i].elements[j].default_value,
-                    );
-                }
-            }
-        }
-    }
+//             if (architecture.components[i].double_precision !== true) {
+//                 if (architecture.components[i].type != "fp_registers") {
+//                     aux_architecture.components[i].elements[j].default_value =
+//                         architecture.components[i].elements[
+//                             j
+//                         ].default_value.toString();
+//                 } else {
+//                     aux_architecture.components[i].elements[j].default_value =
+//                         bi_BigIntTofloat(
+//                             architecture.components[i].elements[j]
+//                                 .default_value,
+//                         );
+//                 }
+//             }
+//         }
+//     }
 
-    return aux_architecture;
-}
+//     return aux_architecture;
+// }

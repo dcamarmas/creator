@@ -26,7 +26,7 @@ import { architecture, app } from "../core.mjs";
 /*
  *  track_stack_names = [ "PC=xxx", "main" ] ;
  */
-var track_stack_names = [];
+let track_stack_names = [];
 /*
  *  track_stack_limits = [
  *		               {
@@ -39,7 +39,15 @@ var track_stack_names = [];
  *		               ...
  *                      ] ;
  */
-var track_stack_limits = [];
+let track_stack_limits = [];
+/*
+ *  stack_hints = {
+ *    "0xFFFFFFFC": "hint",
+ *    ...
+ *  } ;
+ */
+let stack_hints = [];
+
 /*
  * Public API
  */
@@ -47,8 +55,8 @@ var track_stack_limits = [];
 // Initialize
 // Example: track_stack_create() ;
 //
-function track_stack_create() {
-    var ret = {
+export function track_stack_create() {
+    const ret = {
         ok: true,
         msg: "",
     };
@@ -65,7 +73,7 @@ function track_stack_create() {
 // Example: track_stack_Enter("main")
 //
 export function track_stack_enter(function_name) {
-    var ret = {
+    const ret = {
         ok: true,
         msg: "",
     };
@@ -74,7 +82,7 @@ export function track_stack_enter(function_name) {
     track_stack_names.push(function_name);
 
     // 2.- new call element
-    var new_elto = {
+    const new_elto = {
         function_name: function_name,
         begin_caller: track_stack_getTop().val.begin_callee, // llamante: FFFFFFFC, FFFFFFF0
         end_caller: track_stack_getTop().val.end_callee, // llamante: FFFFFFF0, FFFFFF00
@@ -86,8 +94,10 @@ export function track_stack_enter(function_name) {
 
     // 3.- update UI
     if (typeof window !== "undefined") {
-        app._data.callee_subrutine = track_stack_names[track_stack_names.length - 1];
-        app._data.caller_subrutine = track_stack_names[track_stack_names.length - 2];
+        app._data.callee_subrutine =
+            track_stack_names[track_stack_names.length - 1];
+        app._data.caller_subrutine =
+            track_stack_names[track_stack_names.length - 2];
         app._data.begin_caller = new_elto.begin_caller;
         app._data.end_caller = new_elto.end_caller;
         app._data.begin_callee = new_elto.begin_callee;
@@ -101,13 +111,13 @@ export function track_stack_enter(function_name) {
 // Example: track_stack_Leave() ;
 //
 export function track_stack_leave() {
-    var ret = {
+    const ret = {
         ok: true,
         msg: "",
     };
 
     // check params
-    if (0 === track_stack_limits.length) {
+    if (track_stack_limits.length === 0) {
         ret.msg = "track_stack_Leave: empty track_stack_limits !!.\n";
         return ret;
     }
@@ -119,10 +129,12 @@ export function track_stack_leave() {
     }
 
     // draw stack zones
-    var elto_top = track_stack_getTop();
+    const elto_top = track_stack_getTop();
     if (typeof window !== "undefined" && elto_top.val != null) {
-        app._data.callee_subrutine = track_stack_names[track_stack_names.length - 1];
-        app._data.caller_subrutine = track_stack_names[track_stack_names.length - 2];
+        app._data.callee_subrutine =
+            track_stack_names[track_stack_names.length - 1];
+        app._data.caller_subrutine =
+            track_stack_names[track_stack_names.length - 2];
         app._data.begin_caller = elto_top.val.begin_caller; // llamante: FFFFFFFC, FFFFFFF0, FFFFFF00
         app._data.end_caller = elto_top.val.end_caller; // llamante: FFFFFFF0, FFFFFF00, FFFFF000
         app._data.begin_callee = elto_top.val.begin_callee; // llamado:  FFFFFFF0, FFFFFF00, FFFFF000
@@ -135,8 +147,8 @@ export function track_stack_leave() {
 // Get the last element
 // Example: var elto = track_stack_getTop() ;
 //
-function track_stack_getTop() {
-    var ret = {
+export function track_stack_getTop() {
+    const ret = {
         ok: true,
         val: {
             begin_caller: architecture.memory_layout[4].value,
@@ -148,7 +160,7 @@ function track_stack_getTop() {
     };
 
     // check params
-    if (0 === track_stack_limits.length) {
+    if (track_stack_limits.length === 0) {
         ret.ok = false;
         ret.msg = "track_stack_getTop: empty track_stack_limits !!.\n";
         return ret;
@@ -163,32 +175,66 @@ function track_stack_getTop() {
     return ret;
 }
 //
-// Let programmers to modify some arbitrary field.
-// Example: track_stack_getTop("function_name", 1, 2, "main") ;
+// Get all stack frames
+// Example: var frames = track_stack_getFrames() ;
 //
-function track_stack_setTop(field, indexComponent, indexElement, value) {
-    var ret = {
-        ok: true,
+export function track_stack_getFrames() {
+    const ret = {
+        ok: track_stack_limits.length > 0,
+        val: track_stack_limits,
         msg: "",
     };
 
-    // check params
-    if (0 === track_stack_limits.length) {
-        ret.ok = false;
-        ret.msg = "track_stack_getTop: empty track_stack_limits !!.\n";
-        return ret;
+    if (!ret.ok) {
+        ret.msg = "track_stack_getFrames: empty track_stack_limits.";
     }
 
-    // set field value
-    var elto = track_stack_limits[track_stack_limits.length - 1];
-    if (typeof elto.length !== "undefined") {
-        elto[field][indexComponent][indexElement] = value;
-        return ret;
-    }
-
-    elto[field] = value;
     return ret;
 }
+//
+// Get all function names in the call stack
+// Example: var names = track_stack_getNames() ;
+//
+export function track_stack_getNames() {
+    const ret = {
+        ok: track_stack_names.length > 0,
+        val: track_stack_names,
+        msg: "",
+    };
+
+    if (!ret.ok) {
+        ret.msg = "track_stack_getNames: empty track_stack_names.";
+    }
+
+    return ret;
+}
+//
+// Let programmers to modify some arbitrary field.
+// Example: track_stack_getTop("function_name", 1, 2, "main") ;
+//
+// function track_stack_setTop(field, indexComponent, indexElement, value) {
+//     const ret = {
+//         ok: true,
+//         msg: "",
+//     };
+
+//     // check params
+//     if (track_stack_limits.length === 0) {
+//         ret.ok = false;
+//         ret.msg = "track_stack_getTop: empty track_stack_limits !!.\n";
+//         return ret;
+//     }
+
+//     // set field value
+//     const elto = track_stack_limits[track_stack_limits.length - 1];
+//     if (typeof elto.length !== "undefined") {
+//         elto[field][indexComponent][indexElement] = value;
+//         return ret;
+//     }
+
+//     elto[field] = value;
+//     return ret;
+// }
 //
 // Updates the .end_callee field of the top stack element
 // Example: track_stack_setsp("0xFFFFFFF0") ;
@@ -199,20 +245,115 @@ export function track_stack_setsp(value) {
     }
 
     // check params
-    if (0 === track_stack_limits.length) {
+    if (track_stack_limits.length === 0) {
         return;
     }
 
+    // convert value to hex string
+    let str = "0x" + value.toString(16).toUpperCase(); // This will be a source of headaches
+
     // return the last element in the array
-    var elto = track_stack_limits[track_stack_limits.length - 1];
-    elto.end_callee = value;
+    const elto = track_stack_limits[track_stack_limits.length - 1];
+    elto.end_callee = str;
 }
+
+//
+// Add a hint for a specific memory address
+// Example: track_stack_addHint("0xFFFFFFFC", "local_var") ;
+//
+export function track_stack_addHint(address, name) {
+    const ret = {
+        ok: true,
+        msg: "",
+    };
+
+    if (typeof address !== "string" && typeof address !== "number") {
+        ret.ok = false;
+        ret.msg = "Invalid address format";
+        return ret;
+    }
+
+    // Convert address to string if it's a number
+    const addr =
+        typeof address === "number"
+            ? "0x" + address.toString(16).toUpperCase()
+            : address;
+
+    stack_hints[addr] = name;
+    return ret;
+}
+
+//
+// Get hint for a specific memory address
+// Example: var hint = track_stack_getHint("0xFFFFFFFC") ;
+//
+export function track_stack_getHint(address) {
+    const ret = {
+        ok: true,
+        val: null,
+        msg: "",
+    };
+
+    if (typeof address !== "string" && typeof address !== "number") {
+        ret.ok = false;
+        ret.msg = "Invalid address format";
+        return ret;
+    }
+
+    // Convert address to string if it's a number
+    const addr =
+        typeof address === "number"
+            ? "0x" + address.toString(16).toUpperCase()
+            : address;
+
+    ret.val = stack_hints[addr] || null;
+
+    if (ret.val === null) {
+        ret.ok = false;
+        ret.msg = "No hint found for address " + addr;
+    }
+
+    return ret;
+}
+
+//
+// Get all hints
+// Example: var allHints = track_stack_getAllHints() ;
+//
+export function track_stack_getAllHints() {
+    const ret = {
+        ok: Object.keys(stack_hints).length > 0,
+        val: stack_hints,
+        msg: "",
+    };
+
+    if (!ret.ok) {
+        ret.msg = "No hints defined";
+    }
+
+    return ret;
+}
+
+//
+// Clear all hints
+// Example: track_stack_clearHints() ;
+//
+export function track_stack_clearHints() {
+    const ret = {
+        ok: true,
+        msg: "",
+    };
+
+    stack_hints = {};
+    return ret;
+}
+
 //
 // Reset
 // Example: track_stack_reset() ;
 //
 export function track_stack_reset() {
-    var ret = {
+    const ret = {
         ok: true,
         msg: "",
     };
@@ -220,12 +361,14 @@ export function track_stack_reset() {
     // initialize stack_call
     track_stack_names = [];
     track_stack_limits = [];
+    stack_hints = {}; // Clear hints
     track_stack_enter("main");
 
     // draw new limits
     if (typeof window !== "undefined") {
         app._data.track_stack_names = track_stack_names;
-        app._data.callee_subrutine = track_stack_names[track_stack_names.length - 1];
+        app._data.callee_subrutine =
+            track_stack_names[track_stack_names.length - 1];
         app._data.caller_subrutine = "";
         app._data.begin_caller = architecture.memory_layout[4].value;
         app._data.end_caller = architecture.memory_layout[4].value;
@@ -234,4 +377,24 @@ export function track_stack_reset() {
     }
 
     return ret;
+}
+
+export function dumpStack() {
+    return {
+        stack_hints: stack_hints,
+        track_stack_names: track_stack_names,
+        track_stack_limits: track_stack_limits,
+    };
+}
+
+export function loadStack(data) {
+    if (data.stack_hints) {
+        stack_hints = data.stack_hints;
+    }
+    if (data.track_stack_names) {
+        track_stack_names = data.track_stack_names;
+    }
+    if (data.track_stack_limits) {
+        track_stack_limits = data.track_stack_limits;
+    }
 }

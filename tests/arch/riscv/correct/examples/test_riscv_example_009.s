@@ -4,9 +4,10 @@
 #
 
 .data
-    msg:  .string "Please, insert the first number: "
-    msg2: .string "Please, insert the second number: "
-    msg3: .string "The result is: "
+    msg:  .string "\nPlease, insert the first number: "
+    msg2: .string "\nPlease, insert the second number: "
+    msg3: .string "\nThe result is: "
+    msg4: .string "\n"
 
 .text
 main:
@@ -41,6 +42,11 @@ main:
     # print t2
     add a0, t2, zero
     li a7, 1
+    ecall
+
+    # print "newline"
+    la a0, msg4
+    li a7, 4
     ecall
 
     # return 
