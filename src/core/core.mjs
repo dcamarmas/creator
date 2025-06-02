@@ -1788,15 +1788,37 @@ export function load_binary_file(bin_str) {
             const instruction = instructions[i];
             const addr = BigInt(parseInt(instruction.Address, 16));
 
-            // Convert binary instruction to hex bytes
-            const binInstruction = instruction.loaded;
+            // Convert instruction to hex bytes
+            const loadedInstruction = instruction.loaded;
             const hexBytes = [];
 
-            // Process 8 bits at a time to generate hex bytes
-            for (let j = 0; j < binInstruction.length; j += 8) {
-                const byte = binInstruction.substr(j, 8);
-                const hexByte = parseInt(byte, 2).toString(16).padStart(2, "0");
-                hexBytes.push(hexByte);
+            // Check the format of the loaded instruction
+            if (loadedInstruction.startsWith("0x")) {
+                // Hex format - convert to bytes directly
+                const hexString = loadedInstruction.slice(2); // Remove "0x" prefix
+                for (let j = 0; j < hexString.length; j += 2) {
+                    const hexByte = hexString.substr(j, 2);
+                    hexBytes.push(hexByte);
+                }
+            } else if (loadedInstruction.startsWith("0b")) {
+                // Binary format with prefix - remove prefix and process
+                const binString = loadedInstruction.slice(2); // Remove "0b" prefix
+                for (let j = 0; j < binString.length; j += 8) {
+                    const byte = binString.substr(j, 8);
+                    const hexByte = parseInt(byte, 2)
+                        .toString(16)
+                        .padStart(2, "0");
+                    hexBytes.push(hexByte);
+                }
+            } else {
+                // Assume binary format (backwards compatibility)
+                for (let j = 0; j < loadedInstruction.length; j += 8) {
+                    const byte = loadedInstruction.substr(j, 8);
+                    const hexByte = parseInt(byte, 2)
+                        .toString(16)
+                        .padStart(2, "0");
+                    hexBytes.push(hexByte);
+                }
             }
 
             // Add instruction bytes to memory (little endian)
