@@ -91,6 +91,8 @@
                         fullclean = false,
                         stoprunning = false,
                         eraseflash = false,
+                        showPopup: false,
+                        pendingAction: null,
                       }
                     },
 
@@ -321,11 +323,18 @@
 
                         this_env = this;
                         gateway_remote_flash(this.flash_url + "/flash", farg).then( function(data)  { 
-                                      				                                                        this_env.flashing = false; 
-                                                                                                      if (data === 'Flash completed successfully.\n') {
-                                                                                                        show_notification(data, 'success') ;
+                                                                                                      this_env.flashing = false;
+                                                                                                      console.log(JSON.stringify(data, null, 2));
+                                                                                                      if (JSON.stringify(data, null, 2).includes('Flash completed successfully')) {
+                                                                                                        show_notification('Flashing program success.', 'success');
                                                                                                       }
-                                      			                                                        } ) ;
+                                                                                                      if (JSON.stringify(data, null, 2).includes('No UART port found')) {
+                                                                                                        show_notification('Error flashing: Not found UART port', 'danger');
+                                                                                                      }
+                                                                                                      if (JSON.stringify(data, null, 2).includes('cr_ functions are not supported in this mode')) {
+                                                                                                        show_notification('CREATino code in CREATOR module. Make sure the "Arduino Support" checkbox is selected', 'danger');
+                                                                                                      }
+                                                                                                    } ) ;
 
                         //Google Analytics
                         creator_ga('simulator', 'simulator.flash', 'simulator.flash');
@@ -347,6 +356,10 @@
                         gateway_remote_monitor(this.flash_url + "/stopmonitor", farg).then( function(data)  { 
                                                                                                           this_env.stoprunning = false; 
                                                                                                           //show_notification(data, 'danger') ;
+                                                                                                          console.log(JSON.stringify(data, null, 2));
+                                                                                                          if (JSON.stringify(data, null, 2).includes('Process stopped')) {
+                                                                                                            show_notification('Process stopped.', 'success');
+                                                                                                          }
                                                                                                         } ) ;
 
                         //Google Analytics
@@ -370,8 +383,11 @@
 
                         this_env = this;
                         gateway_remote_monitor(this.flash_url + "/monitor", farg).then( function(data)  { 
-                                                                                                          this_env.running = false; 
-                                                                                                          //show_notification(data, 'danger') ;
+                                                                                                          this_env.running = false;
+                                                                                                          console.log(JSON.stringify(data, null, 2)); 
+                                                                                                          if (JSON.stringify(data, null, 2).includes('No UART port found')) {
+                                                                                                            show_notification('Error: Not found UART port', 'danger');
+                                                                                                          }
                                                                                                         } ) ;
 
                         //Google Analytics
@@ -393,15 +409,26 @@
                         this_env = this;
                         gateway_remote_monitor(this.flash_url + "/debug", farg).then( function(data)  { 
                                                                                                           this_env.debugging = false; 
-                                                                                                          if (data === 'Debugging program success.\n') {
-                                                                                                            show_notification(data, 'success') ;
-                                                                                                          }else{
-                                                                                                            show_notification(data, 'danger') ;
-                                                                                                          }
+                                                                                                          //show_notification(data, 'danger') ;
                                                                                                         } ) ;
 
                         //Google Analytics
                         creator_ga('simulator', 'simulator.debug', 'simulator.debug');
+                      },
+
+                      showConfirmPopup(action) {
+                          this.pendingAction = action;
+                          this.showPopup = true;
+                      },
+
+                      confirmAction() {
+                          this.showPopup = false;
+                          if (this.pendingAction === 'fullclean') {
+                              this.do_fullclean();
+                          } else if (this.pendingAction === 'eraseflash') {
+                              this.do_erase_flash();
+                          }
+                          this.pendingAction = null;
                       },
 
                       do_fullclean( )
@@ -418,8 +445,15 @@
 
                         this_env = this;
                         gateway_remote_monitor(this.flash_url + "/fullclean", farg).then( function(data)  { 
-                                                                                                          this_env.fullclean = false; 
-                                                                                                          //show_notification(data, 'danger') ;
+                                                                                                          this_env.fullclean = false;
+                                                                                                          console.log(JSON.stringify(data, null, 2));
+                                                                                                          if (JSON.stringify(data, null, 2).includes('Full clean done.')) {
+                                                                                                            show_notification('Full clean done.', 'success');
+                                                                                                          }
+                                                                                                          if (JSON.stringify(data, null, 2).includes('Nothing to clean')) {
+                                                                                                            show_notification('Nothing to clean (Did you choose the correct mode?)', 'success');
+                                                                                                          }
+                                                                                                          
                                                                                                         } ) ;
 
                         //Google Analytics
@@ -441,6 +475,13 @@
                         gateway_remote_monitor(this.flash_url + "/eraseflash", farg).then( function(data)  { 
                                                                                                           this_env.eraseflash = false; 
                                                                                                           //show_notification(data, 'danger') ;
+                                                                                                          console.log(JSON.stringify(data, null, 2));
+                                                                                                          if (JSON.stringify(data, null, 2).includes('Erase flash done')) {
+                                                                                                            show_notification('Erase flash done. Please, unplug and plug the cable(s) again', 'success');
+                                                                                                          }
+                                                                                                          if (JSON.stringify(data, null, 2).includes('Could not open /dev/ttyUSB0, the port is busy or doesn\'t exist')) {
+                                                                                                            show_notification('Error erasing flash: Hint: Check if the port is correct and ESP connected', 'danger');
+                                                                                                          }
                                                                                                         } ) ;
 
                         //Google Analytics
@@ -848,18 +889,27 @@
                     '    </b-button>' +
 
                     '    <!-- Botón Clean -->' +
-                    '    <b-button class="btn btn-block" variant="danger" @click="do_fullclean" :pressed="fullclean" :disabled="fullclean || flashing || running || debugging || stoprunning || eraseflash">' +
+                    '    <b-button class="btn btn-block" variant="danger" @click="showConfirmPopup(\'fullclean\')" :pressed="fullclean" :disabled="fullclean || flashing || running || debugging || stoprunning || eraseflash">' +
                     '      <span v-if="!fullclean"><span class="fas fa-trash"></span> Clean</span>' +
                     '      <span v-if="fullclean"><span class="fas fa-trash"></span> Cleaning...</span>' +
                     '      <b-spinner small v-if="fullclean"></b-spinner>' +
                     '    </b-button>' +
 
                     '    <!-- Botón Erase Flash -->' +
-                    '    <b-button class="btn btn-block" variant="danger" @click="do_erase_flash" :pressed="eraseflash" :disabled="eraseflash || fullclean || flashing || running || debugging || stoprunning">' +
+                    '    <b-button class="btn btn-block" variant="danger" @click="showConfirmPopup(\'eraseflash\')" :pressed="eraseflash" :disabled="eraseflash || fullclean || flashing || running || debugging || stoprunning">' +
                     '      <span v-if="!eraseflash"><span class="fas fa-broom"></span> Erase Flash</span>' +
                     '      <span v-if="eraseflash"><span class="fas fa-broom"></span> Erasing...</span>' +
                     '      <b-spinner small v-if="eraseflash"></b-spinner>' +
                     '    </b-button>' +
+
+                    '    <!-- Popup de confirmación -->' +
+                    '    <b-modal id="confirm-popup" v-model="showPopup" title="Confirm Action">' +
+                    '      <p>This action will delete your previous work. Are you sure you want to proceed?</p>' +
+                    '      <template #modal-footer>' +
+                    '        <b-button variant="secondary" @click="showPopup = false">Cancel</b-button>' +
+                    '        <b-button variant="primary" @click="confirmAction">Confirm</b-button>' +
+                    '      </template>' +
+                    '    </b-modal>' +
 
                     '  </div>' +
                     '</b-col>' +

@@ -211,75 +211,89 @@
                 ' ' +
                 '</b-sidebar'
   }
-  var uielto_board_help = {
-    
-    props:      {
-                  id:                       { type: String, required: true },
-                  architecture_name:        { type: String, required: true },
-                  architecture:             { type: Object, required: true },
-                  architecture_guide:       { type: String, required: true },
-                  instruction_help_size:    { type: Object, required: true }
-                   
-                },
+var uielto_board_help = {
+  props: {
+    id:                    { type: String, required: true },
+    architecture_name:     { type: String, required: true },
+    architecture:          { type: Object, required: true },
+    architecture_guide:    { type: String, required: true },
+    instruction_help_size: { type: Object, required: true }
+  },
 
-    data:       function () {
-                  return {
-                    //Help Filter
-                    instHelpFilter: null,
+  data: function () {
+    return {
+      instHelpFilter: null,
 
-                    //Help table
-                    insHelpFields: [
-                      { key: 'image', label: 'Image' }
-                    ],
+      insHelpFields: [{ key: 'image', label: 'Image' }],
 
-                    // Image
-                    board_info: [
-                      {
-                        name: "ESP32-C3 ARCHITECTURE",
-                        image: "https://docs.espressif.com/projects/esp-idf/en/v5.0/esp32c3/_images/esp32-c3-devkitc-02-v1-pinout.png" 
-                      },
-                    ]
-                  }
-                },
+      // Lista completa de boards
+      board_list: [
+        {
+          name: "ESP32-C3 ARCHITECTURE",
+          image: "https://docs.espressif.com/projects/esp-idf/en/v5.0/esp32c3/_images/esp32-c3-devkitc-02-v1-pinout.png"
+        },
+        {
+          name: "ESP32-H2 ARCHITECTURE",
+          image: "https://docs.espressif.com/projects/esp-dev-kits/en/latest/esp32h2/_images/esp32-h2-devkitm-1-v1.2_pinlayout.png"
+        },
+        {
+          name: "ESP32-C2 ARCHITECTURE",
+          image: "https://docs.espressif.com/projects/esp-dev-kits/en/latest/esp32c2/_images/esp8684-devkitm-1-pinout_v1.1.png"
+        }
+      ],
 
-    methods:   {
-                  get_width(){
-                    return this._props.instruction_help_size + "vw"
-                  }
-                },
+      selected_board: "ESP32-C3 ARCHITECTURE"
+    }
+  },
 
-    template:   '<b-sidebar :id="id" sidebar-class="border-left border-info px-3 py-2" right shadow' + 
-                '           title="Board Distribution Help"' +
-                '           :width="get_width()">' +
-                ' ' +
-                ' <br>' +
-                '<a target="_blank" href="https://docs.espressif.com/projects/esp-idf/en/v5.0/esp32c3/hw-reference/esp32c3/user-guide-devkitc-02.html"><span class="fas fa-globe"></span> Hardware Documentation</a>'+
-                ' <br>' +
-                ' ' +
-                ' <b-table small :items="board_info" ' +
-                '                :fields="insHelpFields" ' +
-                '                class="text-left help-scroll-y my-3"' +
-                '                :filter="instHelpFilter"' +
-                '                thead-class="d-none">' +
-                '<template #cell(image)="data">'+
-                '<div>'+
-                ' <h5 class="font-weight-bold mb-2">{{ data.item.name }}</h5>'+
-                '<img :src="data.item.image" alt="Board Image" class="img-fluid mt-2" style="max-width:300 px;"/>'+
-                '    </div>'+
-                '</template>'+
-                ' ' +
-                '   <template v-slot:cell(name)="row">' +
-                '     <h4>{{row.item.name}}</h4>' +
-                '     <em>{{row.item.signatureRaw}}</em>' +
-                '     <br>' +
-                '     {{row.item.help}}' +
-                '   </template>' +
-                ' ' +
-                ' </b-table>' +
-                ' ' +
-                '</b-sidebar'
-  }
+  computed: {
+    // Devuelve solo la board seleccionada
+    board_info() {
+      return this.board_list.filter(b => b.name === this.selected_board);
+    }
+  },
 
+  methods: {
+    get_width() {
+      return this._props.instruction_help_size + "vw";
+    }
+  },
+
+  template: `
+    <b-sidebar :id="id" sidebar-class="border-left border-info px-3 py-2" right shadow
+               title="Board Distribution Help"
+               :width="get_width()">
+
+      <br>
+      <a target="_blank" href="https://docs.espressif.com/projects/esp-idf/en/v5.0/esp32c3/hw-reference/esp32c3/user-guide-devkitc-02.html">
+        <span class="fas fa-globe"></span> Hardware Documentation
+      </a>
+
+      <br><br>
+
+      <b-form-group label="Select Board:" label-for="boardSelect">
+        <b-form-select id="boardSelect"
+                       v-model="selected_board"
+                       :options="board_list.map(b => b.name)">
+        </b-form-select>
+      </b-form-group>
+
+      <b-table small :items="board_info"
+               :fields="insHelpFields"
+               class="text-left help-scroll-y my-3"
+               :filter="instHelpFilter"
+               thead-class="d-none">
+        <template #cell(image)="data">
+          <div>
+            <h5 class="font-weight-bold mb-2">{{ data.item.name }}</h5>
+            <img :src="data.item.image" alt="Board Image" class="img-fluid mt-2" style="max-width:300px;" />
+          </div>
+        </template>
+      </b-table>
+
+    </b-sidebar>
+  `
+}
   Vue.component('sidebar-creatino_help', uielto_creatino_help) ;
   Vue.component('sidebar-board_help', uielto_board_help) ;
   Vue.component('sidebar-instruction-help', uielto_instruction_help) ;

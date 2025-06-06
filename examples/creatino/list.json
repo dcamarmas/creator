@@ -15,13 +15,13 @@
       "name": "Example 3",
       "id": "e3",
       "url":"examples/creatino/example3.s",
-      "description": "Traffic Lights example"
+      "description": "Button + LED example"
     },
     {
       "name": "Example 4",
       "id": "e4",
       "url":"examples/creatino/example4.s",
-      "description": "Button + LED example"
+      "description": "Traffic lights example"
     },
     {
       "name": "Example 5",
