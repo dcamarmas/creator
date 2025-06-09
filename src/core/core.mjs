@@ -16,9 +16,9 @@
  *  You should have received a copy of the GNU Lesser General Public License
  *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  */
-"use strict";
+"use strict"
 
-import { initCAPI } from "./capi/initCAPI.mjs";
+import { initCAPI } from "./capi/initCAPI.mjs"
 
 import {
     bi_BigIntTodouble,
@@ -31,6 +31,7 @@ import {
     float2bin,
     getHexTwosComplement,
     hex2double,
+isDeno, isWeb
 } from "./utils/utils.mjs";
 
 import { logger } from "./utils/creator_logger.mjs";
@@ -61,40 +62,55 @@ import { creator_ga } from "./utils/creator_ga.mjs";
 import { creator_callstack_reset } from "./sentinel/sentinel.mjs";
 
 // Conditional import for the WASM compiler based on the environment (web or Deno)
-let wasm;
-const isDeno = typeof Deno !== "undefined";
-const isWeb = typeof window !== "undefined" && typeof document !== "undefined";
 
+import wasm_web_init, {
+    Color as Color_web,
+    ArchitectureJS as ArchitectureJS_web,
+} from "./compiler/web/creator_compiler.js"
+import {
+    Color as Color_deno,
+    ArchitectureJS as ArchitectureJS_deno,
+} from "./compiler/deno/creator_compiler.js"
+
+let Color
+let ArchitectureJS
 if (isDeno) {
-    wasm = await import("./compiler/deno/creator_compiler.js");
+    // Deno HAS to be imported like this, as it doesn't provide a default
+    Color = Color_deno
+    ArchitectureJS = ArchitectureJS_deno
 } else if (isWeb) {
-    wasm = await import("./compiler/web/creator_compiler.js");
+    Color = Color_web
+    ArchitectureJS = ArchitectureJS_web
+    // in the web, we MUST call the default
+    wasm_web_init()
 } else {
     throw new Error(
         "Unsupported environment: neither Deno nor web browser detected",
-    );
+    )
 }
+
 
 export let code_assembly = "";
 export let update_binary = "";
 export let backup_stack_address;
 export let backup_data_address;
 
-export let architecture_hash = [];
+export let architecture_hash = []
 export let architecture = {
     arch_conf: [],
     memory_layout: [],
     components: [],
     instructions: [],
     directives: [],
-};
+}
 
 export let app;
 
 export let status = {
     execution_init: 1,
     totalStats: 0,
-    run_program: 0,
+    run_program: 0,  // 0: stopped, 1: running, 2: stopped-by-breakpoint, 3: stopped-by-mutex-read
+
     keyboard: "",
     display: "",
     execution_index: 0,
@@ -144,17 +160,17 @@ export let REGISTERS;
 export let REGISTERS_BACKUP = [];
 export const register_size_bits = 64; //TODO: load from architecture
 
-// TODO: Make sure these variables are all needed
-// let architecture_available = []
-// let load_architectures_available = []
-// let load_architectures = []
-// let back_card = []
-// let memory_hash = ['data_memory', 'instructions_memory', 'stack_memory']
-// let execution_mode = 0 // 0: instruction by instruction, 1: run program
-// let instructions_packed = 100
-// let architecture_json = ''
+export let architecture_available = []
+export let load_architectures_available = []
+export let load_architectures = []
+export let back_card = []
+export let memory_hash = ['data_memory', 'instructions_memory', 'stack_memory']
+export let execution_mode = 0 // 0: instruction by instruction, 1: run program
+export function set_execution_mode(value) { execution_mode = value }  // it's the only way
+export let instructions_packed = 100
+export let architecture_json = ''
 
-let code_binary = "";
+let code_binary = ""
 
 initCAPI();
 let creator_debug = false;
@@ -164,12 +180,12 @@ BigInt.prototype.toJSON = function () {
 };
 
 export function set_debug(enable_debug) {
-    creator_debug = enable_debug;
+    creator_debug = enable_debug
     if (creator_debug) {
-        logger.enable();
-        logger.setLevel("DEBUG");
+        logger.enable()
+        logger.setLevel("DEBUG")
     } else {
-        logger.disable();
+        logger.disable()
     }
 }
 
@@ -181,7 +197,7 @@ function load_arch_select(cfg) {
         type: "",
         update: "",
         status: "ok",
-    };
+    }
 
     const auxArchitecture = cfg;
     architecture = register_value_deserialize(auxArchitecture);
@@ -197,15 +213,15 @@ function load_arch_select(cfg) {
         architecture_hash.push({
             name: REGISTERS[i].name,
             index: i,
-        });
+        })
     }
 
-    backup_stack_address = architecture.memory_layout[4].value;
-    backup_data_address = architecture.memory_layout[3].value;
+    backup_stack_address = architecture.memory_layout[4].value
+    backup_data_address = architecture.memory_layout[3].value
 
-    ret.token = "The selected architecture has been loaded correctly";
-    ret.type = "success";
-    return ret;
+    ret.token = "The selected architecture has been loaded correctly"
+    ret.type = "success"
+    return ret
 }
 
 /**
@@ -879,7 +895,7 @@ function prepareArchitecture(
 
     // Initialize WASM compiler if not skipped
     if (!skipCompiler) {
-        arch = wasm.ArchitectureJS.from_json(architectureJson);
+        arch = ArchitectureJS.from_json(architectureJson);
     }
 
     return architectureObj;
@@ -1016,44 +1032,40 @@ export function load_architecture(arch_str) {
     logger.warn(
         "load_architecture is deprecated, use newArchitectureLoad instead",
     );
-    arch = wasm.ArchitectureJS.from_json(arch_str);
+    arch = ArchitectureJS.from_json(arch_str);
     const arch_obj = JSON.parse(arch_str);
     const ret = load_arch_select(arch_obj);
 
-    return ret;
+    return ret
 }
 
 export function load_library(lib_str) {
     const ret = {
         status: "ok",
         msg: "",
-    };
+    }
 
-    code_binary = lib_str;
-    update_binary = JSON.parse(code_binary);
+    code_binary = lib_str
+    update_binary = JSON.parse(code_binary)
 
-    return ret;
+    return ret
 }
 
 // compilation
 
 export function assembly_compile(code, enable_color) {
-    let ret = {};
-
-    code_assembly = code;
-    let color = enable_color ? wasm.Color.Ansi : wasm.Color.Off;
-    ret = assembly_compiler(false, color);
+    const ret = assembly_compiler(code, false, enable_color ? Color.Ansi : Color.Off)
     switch (ret.status) {
         case "error":
             break;
 
         case "warning":
-            ret.msg = "warning: " + ret.token;
-            break;
+            ret.msg = "warning: " + ret.token
+            break
 
         case "ok":
-            ret.msg = "Compilation completed successfully";
-            break;
+            ret.msg = "Compilation completed successfully"
+            break
 
         default:
             ret.msg = "Unknow assembly compiler code :-/";
@@ -1068,12 +1080,13 @@ export function assembly_compile(code, enable_color) {
  */
 
 export let total_clk_cycles = 0;
-const clk_cycles_value = [
+export const clk_cycles_value = [
     {
         data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     },
 ];
-const clk_cycles = [
+
+export const clk_cycles = [
     { type: "Arithmetic floating point", clk_cycles: 0, percentage: 0 },
     { type: "Arithmetic integer", clk_cycles: 0, percentage: 0 },
     { type: "Comparison", clk_cycles: 0, percentage: 0 },
@@ -1096,8 +1109,8 @@ export function clk_cycles_update(type) {
             clk_cycles_value[0].data[i]++;
 
             total_clk_cycles++;
-            if (typeof app !== "undefined") {
-                app._data.total_clk_cycles++;
+            if (typeof document !== "undefined") {
+                document.app.$data.total_clk_cycles++;
             }
         }
     }
@@ -1111,8 +1124,8 @@ export function clk_cycles_update(type) {
 }
 function clk_cycles_reset() {
     total_clk_cycles = 0;
-    if (typeof app !== "undefined") {
-        app._data.total_clk_cycles = 0;
+    if (typeof document !== "undefined") {
+        document.app.$data.total_clk_cycles = 0;
     }
 
     for (let i = 0; i < clk_cycles.length; i++) {
@@ -1128,12 +1141,12 @@ export function execute_program(limit_n_instructions) {
     let ret;
     ret = executeProgramOneShot(limit_n_instructions);
     if (ret.error === true) {
-        ret.status = "ko";
-        return ret;
+        ret.status = "ko"
+        return ret
     }
 
-    ret.status = "ok";
-    return ret;
+    ret.status = "ok"
+    return ret
 }
 
 // state management
@@ -1145,8 +1158,8 @@ export function stats_update(type) {
             stats_value[i]++;
 
             status.totalStats++;
-            if (typeof app !== "undefined") {
-                app._data.status.totalStats++;
+            if (typeof document !== "undefined") {
+                document.app.$data.totalStats++;
             }
         }
     }
@@ -1161,8 +1174,8 @@ export function stats_update(type) {
 
 function stats_reset() {
     status.totalStats = 0;
-    if (typeof app !== "undefined") {
-        app._data.status.totalStats = 0;
+    if (typeof document !== "undefined") {
+        document.app.$data.status.totalStats = 0;
     }
 
     for (let i = 0; i < stats.length; i++) {
@@ -1182,7 +1195,7 @@ export function reset() {
     status.run_program = 0;
 
     // Reset stats
-    stats_reset();
+    // stats_reset();
 
     //Power consumption reset
     clk_cycles_reset();
@@ -1191,7 +1204,18 @@ export function reset() {
     status.keyboard = "";
     status.display = "";
 
-    REGISTERS = JSON.parse(JSON.stringify(REGISTERS_BACKUP));
+    // reset registers
+    if (typeof document !== undefined) {
+        // I'd _like_ to use REGISTERS_BACKUP and call it a day... but if I do
+        // that Vue doesn't notice the change and it doesn't update visually
+        for (const bank of REGISTERS) {
+            for (const reg of bank.elements) {
+                reg.value = reg.default_value;
+            }
+        }
+    } else {
+        REGISTERS = JSON.parse(JSON.stringify(REGISTERS_BACKUP));
+    }
 
     architecture.memory_layout[4].value = backup_stack_address;
     architecture.memory_layout[3].value = backup_data_address;
@@ -1233,7 +1257,7 @@ export function get_state() {
             .split(" ")
             .map(i => i.charAt(0))
             .join("")
-            .toLowerCase();
+            .toLowerCase()
 
         for (let j = 0; j < component.elements.length; j++) {
             const element = component.elements[j];
@@ -1534,7 +1558,7 @@ export function getState() {
         encodeURIComponent(status.display) +
         "'\n";
 
-    return ret;
+    return ret
 }
 
 export function snapshot(extraData) {

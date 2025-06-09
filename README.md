@@ -1,4 +1,4 @@
-# creatorV
+# creatorVI
 
 The next evolution of [CREATOR](https://github.com/creatorsim/creator/).
 
@@ -40,14 +40,34 @@ bun run build
 bun lint
 ```
 
-### Run Unit Tests
+### Run Unit Tests (with [Mocha](https://mochajs.org/))
 
 ```sh
-mocha test
+bun test
 ```
 
 ### Run Architecture Tests (for RISC-V)
 
 ```sh
 bun run simtest -- --arch riscv
+```
+
+
+## Debugging w/ VS Code
+We'll need to launch the application in DEV mode, and then attach the VS Code debugger to the Chrome instance.
+
+An example [launch configuration](https://code.visualstudio.com/docs/debugtest/debugging-configuration#_launch-configurations) is:
+```json
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "chrome",
+      "request": "launch",
+      "name": "Debug Frontend",
+      "url": "http://localhost:5173",
+      "webRoot": "${workspaceFolder}"
+    }
+  ]
+}
 ```

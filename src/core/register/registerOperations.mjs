@@ -22,6 +22,15 @@ import { packExecute, writeStackLimit } from "../executor/executor.mjs";
 import { instructions } from "../compiler/compiler.mjs";
 import { creator_callstack_writeRegister } from "../sentinel/sentinel.mjs";
 
+
+function updateRegisterUI(indexComp, indexElem) {
+    const register_name = architecture.components[indexComp].elements[indexElem].name[0]
+
+    // this is ugly, but it's the only way (I found)
+    document.app.$root.$refs.simulatorView.$refs.registerFile?.$refs[`reg${register_name}`]?.at(0)?.refresh()
+}
+
+
 export function readRegister(indexComp, indexElem) {
     const draw = {
         space: [],
@@ -101,6 +110,7 @@ export function writeRegister(value, indexComp, indexElem) {
     }
 
     if (typeof window !== "undefined") {
-        btn_glow(element.name, "Int");
+        updateRegisterUI(indexComp, indexElem)
     }
+
 }

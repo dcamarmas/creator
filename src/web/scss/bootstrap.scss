@@ -1,0 +1,6 @@
+// custom Bootstrap overrides
+$table-bg-scale: -35%;
+
+// Import all of Bootstrap’s CSS
+@import "bootstrap/scss/bootstrap";
+@import "bootstrap-vue-next/dist/bootstrap-vue-next.css";

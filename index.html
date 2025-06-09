@@ -1,13 +1,128 @@
+<!--
+Copyright 2018-2025 Felix Garcia Carballeira, Diego Camarmas Alonso,
+                    Alejandro Calderon Mateos, Luis Daniel Casais Mezquida
+                    Alejandro Calderon Mateos, Luis Daniel Casais
+
+This file is part of CREATOR.
+
+CREATOR is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+CREATOR is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
 <!doctype html>
-<html lang="">
+<html lang="en" data-bs-theme="light">
+  <!-- Head -->
   <head>
-    <meta charset="UTF-8" />
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <!-- Google tag (gtag.js) - GA4 -->
+    <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=G-X30SC9SWE2"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-X30SC9SWE2');
+    </script> -->
+
+    <!-- Required meta tags -->
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, shrink-to-fit=no"
+    />
+
+    <title>CREATOR - didaCtic and geneRic assEmbly progrAmming simulaTOR</title>
+
+    <!-- Required stylesheets -->
+    <!-- <link type="text/css" rel="stylesheet" href="external/bootstrap_vue/bootstrap.min.css"/>
+    <link type="text/css" rel="stylesheet" href="external/bootstrap_vue/bootstrap-largegrid.min.css"/>
+    <link type="text/css" rel="stylesheet" href="external/bootstrap_vue/bootstrap-vue.min.css"/>
+    <link type="text/css" rel='stylesheet' href="external/fontawesome/css/all.css">
+    <link rel="stylesheet" href="external/codemirror/codemirror.css"> -->
+
+    <!-- Required scripts -->
+    <!-- <script src="external/bootstrap_vue/polyfill.min.js"></script>
+    <script src="external/bootstrap_vue/vue.min.js"></script>
+    <script src="external/bootstrap_vue/bootstrap-vue.min.js"></script>
+    <script src="external/jquery.min.js"></script>
+    <script src="external/lodash.js"></script> -->
+
+    <!--Codemirror scripts-->
+    <!-- <script src="external/codemirror/codemirror.js"></script>
+    <script src="external/codemirror/keymap/vim.js"></script>
+    <script src="external/codemirror/keymap/sublime.js"></script>
+    <script src="external/codemirror/mode/gas/gas.js"></script>
+    <script src="external/codemirror/mode/javascript/javascript.js"></script>
+    <script src="external/codemirror/addon/display/autorefresh.js"></script>
+    <script src="external/codemirror/addon/comment/comment.js"></script>
+    <script src="external/codemirror/addon/hint/show-hint.js"></script> -->
+
+    <!--Apexcharts scripts-->
+    <!-- <script>
+      window.Promise ||
+        document.write(
+          '<script src="external/apexcharts/polyfill.min.js"><\/script>'
+        )
+      window.Promise ||
+        document.write(
+          '<script src="external/apexcharts/classList.min.js"><\/script>'
+        )
+      window.Promise ||
+        document.write(
+          '<script src="external/apexcharts/findindex_polyfill_mdn"><\/script>'
+        )
+    </script>
+    <script src="external/apexcharts/apexcharts"></script>
+    <script src="external/apexcharts/vue-apexcharts"></script> -->
+
+    <!-- Favicon -->
+    <!-- <link rel="apple-touch-icon" sizes="57x57" href="./images/icons/apple-icon-57x57.png" />
+    <link rel="apple-touch-icon" sizes="60x60" href="./images/icons/apple-icon-60x60.png" />
+    <link rel="apple-touch-icon" sizes="72x72" href="./images/icons/apple-icon-72x72.png" />
+    <link rel="apple-touch-icon" sizes="76x76" href="./images/icons/apple-icon-76x76.png" />
+    <link rel="apple-touch-icon" sizes="114x114" href="./images/icons/apple-icon-114x114.png" />
+    <link rel="apple-touch-icon" sizes="120x120" href="./images/icons/apple-icon-120x120.png" />
+    <link rel="apple-touch-icon" sizes="144x144" href="./images/icons/apple-icon-144x144.png" />
+    <link rel="apple-touch-icon" sizes="152x152" href="./images/icons/apple-icon-152x152.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="./images/icons/apple-icon-180x180.png" />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="192x192"
+      href="./images/icons/android-icon-192x192.png"
+    />
+    <link rel="icon" type="image/png" sizes="32x32" href="./images/icons/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="96x96" href="./images/icons/favicon-96x96.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="./images/icons/favicon-16x16.png" />
+    <link rel="manifest" href="./images/icons/manifest.json" />
+    <meta name="msapplication-TileColor" content="#ffffff" />
+    <meta name="msapplication-TileImage" content="./images/icons/ms-icon-144x144.png" />
+    <meta name="theme-color" content="#ffffff" /> -->
+
     <link rel="icon" href="/favicon.ico" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Creator V</title>
   </head>
+
   <body>
+    <noscript>
+      This page contains webassembly and javascript content, please enable
+      javascript in your browser.
+    </noscript>
     <div id="app"></div>
     <script type="module" src="/src/web/main.js"></script>
   </body>
+
+  <!-- Required scripts -->
+  <!-- <script>
+    document.write("<script src=\"js/min.creator_web.js?id=" + new Date().getTime() + "\"><\/script>");
+  </script> -->
 </html>

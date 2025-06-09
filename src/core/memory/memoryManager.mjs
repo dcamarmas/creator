@@ -18,7 +18,7 @@
  *
  */
 "use strict";
-import { app, architecture, WORDSIZE } from "../core.mjs";
+import { architecture, WORDSIZE } from "../core.mjs";
 import {
     main_memory_datatype_get_addresses,
     main_memory_get_addresses,
@@ -185,8 +185,8 @@ export function creator_memory_alloc(new_size) {
     architecture.memory_layout[3].value =
         "0x" +
         (algn.new_addr + new_size).toString(16).padStart(8, "0").toUpperCase();
-    if (typeof app !== "undefined") {
-        app.architecture.memory_layout[3].value =
+    if (typeof document !== "undefined") {
+        document.app.architecture.memory_layout[3].value =
             "0x" +
             (algn.new_addr + new_size)
                 .toString(16)

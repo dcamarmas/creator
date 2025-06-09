@@ -1,0 +1,38 @@
+[
+  {
+    "name": "Example 1",
+    "id": "e1",
+    "url":"examples/RISCV/example1.s",
+    "description": "ALU operations"
+  },
+  {
+    "name": "Example 2",
+    "id": "e2",
+    "url":"examples/RISCV/example2.s",
+    "description": "ALU operations"
+  },
+  {
+    "name": "Example 3",
+    "id": "e3",
+    "url":"examples/RISCV/example3.s",
+    "description": "Memory access"
+  },
+  {
+    "name": "Example 4",
+    "id": "e4",
+    "url":"examples/RISCV/example4.s",
+    "description": "Simple Loop"
+  },
+  {
+    "name": "Example 5",
+    "id": "e5",
+    "url":"examples/RISCV/example5.s",
+    "description": "Matrix"
+  },
+  {
+    "name": "Example 6",
+    "id": "e6",
+    "url":"examples/RISCV/example6.s",
+    "description": "Subrutine"
+  }
+]

@@ -1,0 +1,164 @@
+[
+  {
+    "id":          "e1",
+    "name":        "e1",
+    "url":         "examples/ag-uc3m-ec/asm-rv32_l3a_s32.s",
+    "description": "Example at slide 32 of lesson3a"
+  },
+  {
+    "id":          "e2",
+    "name":        "e2",
+    "url":         "examples/ag-uc3m-ec/asm-rv32_l3a_s34.s",
+    "description": "Example at slide 34 of lesson3a"
+  },
+  {
+    "id":          "e3",
+    "name":        "e3",
+    "url":         "examples/ag-uc3m-ec/asm-rv32_l3a_s36.s",
+    "description": "Example at slide 36 of lesson3a"
+  },
+  {
+    "id":          "e4",
+    "name":        "e4",
+    "url":         "examples/ag-uc3m-ec/asm-rv32_l3a_s44.s",
+    "description": "Example at slide 44 of lesson3a"
+  },
+  {
+    "id":          "e5",
+    "name":        "e5",
+    "url":         "examples/ag-uc3m-ec/asm-rv32_l3a_s53.s",
+    "description": "Example at slide 53 of lesson3a"
+  },
+  {
+    "id":          "e6",
+    "name":        "e6",
+    "url":         "examples/ag-uc3m-ec/asm-rv32_l3a_s60.s",
+    "description": "Example at slide 60 of lesson3a"
+  },
+  {
+    "id":          "e7",
+    "name":        "e7",
+    "url":         "examples/ag-uc3m-ec/asm-rv32_l3a_s61.s",
+    "description": "Example at slide 61 of lesson3a"
+  },
+  {
+    "id":          "e8",
+    "name":        "e8",
+    "url":         "examples/ag-uc3m-ec/asm-rv32_l3a_s62.s",
+    "description": "Example at slide 62 of lesson3a"
+  },
+  {
+    "id":          "e9",
+    "name":        "e9",
+    "url":         "examples/ag-uc3m-ec/asm-rv32_l3a_s64.s",
+    "description": "Example at slide 64 of lesson3a"
+  },
+  {
+    "id":          "e10",
+    "name":        "e10",
+    "url":         "examples/ag-uc3m-ec/asm-rv32_l3a_t67.s",
+    "description": "Example at slide 67 of lesson3a"
+  },
+  {
+    "id":          "e11",
+    "name":        "e11",
+    "url":         "examples/ag-uc3m-ec/asm-rv32_l3a_t71.s",
+    "description": "Example at slide 71 of lesson3a"
+  },
+  {
+    "id":          "e12",
+    "name":        "e12",
+    "url":         "examples/ag-uc3m-ec/asm-rv32_l3a_t75.s",
+    "description": "Example at slide 75 of lesson3a"
+  },
+  {
+    "id":          "e13",
+    "name":        "e13",
+    "url":         "examples/ag-uc3m-ec/asm-rv32_l3b_s12.s",
+    "description": "Example at slide 12 of lesson3b"
+  },
+  {
+    "id":          "e14",
+    "name":        "e14",
+    "url":         "examples/ag-uc3m-ec/asm-rv32_l3b_s23.s",
+    "description": "Example at slide 23 of lesson3b"
+  },
+  {
+    "id":          "e15",
+    "name":        "e15",
+    "url":         "examples/ag-uc3m-ec/asm-rv32_l3b_s77.s",
+    "description": "Example at slide 77 of lesson3b"
+  },
+  {
+    "id":          "e16",
+    "name":        "e16",
+    "url":         "examples/ag-uc3m-ec/asm-rv32_l3b_s78.s",
+    "description": "Example at slide 78 of lesson3b"
+  },
+  {
+    "id":          "e17",
+    "name":        "e17",
+    "url":         "examples/ag-uc3m-ec/asm-rv32_l3b_s79.s",
+    "description": "Example at slide 79 of lesson3b"
+  },
+  {
+    "id":          "e18",
+    "name":        "e18",
+    "url":         "examples/ag-uc3m-ec/asm-rv32_l3b_s82.s",
+    "description": "Example at slide 82 of lesson3b"
+  },
+  {
+    "id":          "e19",
+    "name":        "e19",
+    "url":         "examples/ag-uc3m-ec/asm-rv32_l3b_s83.s",
+    "description": "Example at slide 83 of lesson3b"
+  },
+  {
+    "id":          "e20",
+    "name":        "e20",
+    "url":         "examples/ag-uc3m-ec/asm-rv32_l3b_s85.s",
+    "description": "Example at slide 85 of lesson3b"
+  },
+  {
+    "id":          "e21",
+    "name":        "e21",
+    "url":         "examples/ag-uc3m-ec/asm-rv32_l3b_s86.s",
+    "description": "Example at slide 86 of lesson3b"
+  },
+  {
+    "id":          "e22",
+    "name":        "e22",
+    "url":         "examples/ag-uc3m-ec/asm-rv32_l3b_s87.s",
+    "description": "Example at slide 87 of lesson3b"
+  },
+  {
+    "id":          "e23",
+    "name":        "e23",
+    "url":         "examples/ag-uc3m-ec/asm-rv32_l3b_s90.s",
+    "description": "Example at slide 90 of lesson3b"
+  },
+  {
+    "id":          "e24",
+    "name":        "e24",
+    "url":         "examples/ag-uc3m-ec/asm-rv32_l3b_s91.s",
+    "description": "Example at slide 91 of lesson3b"
+  },
+  {
+    "id":          "e25",
+    "name":        "e25",
+    "url":         "examples/ag-uc3m-ec/asm-rv32_l3b_s93.s",
+    "description": "Example at slide 93 of lesson3b"
+  },
+  {
+    "id":          "e26",
+    "name":        "e26",
+    "url":         "examples/ag-uc3m-ec/asm-rv32_l3b_s97.s",
+    "description": "Example at slide 97 of lesson3b"
+  },
+  {
+    "id":          "e27",
+    "name":        "e27",
+    "url":         "examples/ag-uc3m-ec/asm-rv32_l3b_s101.s",
+    "description": "Example at slide 101 of lesson3b"
+  }
+]
