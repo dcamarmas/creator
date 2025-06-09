@@ -342,7 +342,7 @@ function compileAssembly(assemblyPath: string): StageResult {
 function loadBinary(binaryPath: string): StageResult {
     try {
         const binary = fs.readFileSync(binaryPath, "utf8");
-        const ret = creator.load_binary_file(binary);
+        const ret = creator.loadElfFile(binary);
         if (ret.status !== "ok") {
             throw ret.msg;
         }
