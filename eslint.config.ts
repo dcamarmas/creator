@@ -6,8 +6,8 @@ import {
 import skipFormatting from "@vue/eslint-config-prettier/skip-formatting";
 
 // To allow more languages other than `ts` in `.vue` files, uncomment the following lines:
-// import { configureVueProject } from '@vue/eslint-config-typescript'
-// configureVueProject({ scriptLangs: ['ts', 'tsx'] })
+// import { configureVueProject } from "@vue/eslint-config-typescript"
+// configureVueProject({ scriptLangs: ["ts", "js"] })
 // More info at https://github.com/vuejs/eslint-config-typescript/#advanced-setup
 
 export default defineConfigWithVueTs(
@@ -36,7 +36,18 @@ export default defineConfigWithVueTs(
           },
         },
       ],
-      "@typescript-eslint/no-unused-vars": "warn",
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        {
+          args: "all",
+          argsIgnorePattern: "^_",
+          caughtErrors: "all",
+          caughtErrorsIgnorePattern: "^_",
+          destructuredArrayIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+          ignoreRestSiblings: true,
+        },
+      ],
       "max-lines-per-function": [
         "error",
         {
@@ -45,9 +56,17 @@ export default defineConfigWithVueTs(
           skipComments: true,
         },
       ],
+      "vue/valid-v-for": "off",
+      "vue/no-unused-vars": [
+        "warn",
+        {
+          ignorePattern: "^_",
+        },
+      ],
+      "vue/no-unused-components": "warn",
       eqeqeq: ["error", "always"],
       "max-depth": ["error", 5],
-      "vue/multi-word-component-names": "warn",
+      "vue/multi-word-component-names": "off",
       "prefer-const": "warn",
       "no-loss-of-precision": "error",
       "no-unreachable-loop": "error",
@@ -62,7 +81,7 @@ export default defineConfigWithVueTs(
       "require-await": "error",
       yoda: "error",
       "no-constructor-return": "error",
-      "no-duplicate-imports": "error",
+      "no-duplicate-imports": "warn",
       "no-inner-declarations": "error",
       "no-self-compare": "error",
       "no-template-curly-in-string": "warn",
@@ -73,7 +92,7 @@ export default defineConfigWithVueTs(
       "class-methods-use-this": "error",
       "consistent-return": "error",
       "default-case": "error",
-      "default-case-last": "error",
+      "default-case-last": "warn",
       "dot-notation": "error",
       "max-params": ["warn", 5],
       "no-div-regex": "error",
@@ -88,4 +107,10 @@ export default defineConfigWithVueTs(
       "no-new-func": "error",
     },
   },
-);
+  {
+    files: ["**/*.vue"],
+    rules: {
+      "no-invalid-this": "off", // in Vue, inside arrow functions, `this` refers to the current component
+    },
+  },
+)

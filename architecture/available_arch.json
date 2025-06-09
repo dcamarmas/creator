@@ -1,50 +1,56 @@
 [
   {
     "name": "RISC-V (RV32IMFD)",
-    "alias": ["RISC-V (RV32IMFD)", "RISC-V", "risc-v", "RV", "rv", "RV32", "rv32"],
-    "file": "RISC_V_RV32IMFD",
-    "img": "./images/risc-v_logo.png",
+    "alias": [
+      "RISC-V (RV32IMFD)",
+      "RISC-V",
+      "risc-v",
+      "RV",
+      "rv",
+      "RV32",
+      "rv32"
+    ],
+    "file": "RISCV/RV32IMFD",
+    "img": "/img/risc-v_logo.png",
     "alt": "RISC-V",
     "id": "select_confRISV",
-    "examples":["default"],
+    "examples": ["default"],
     "description": "RISC-V is an instruction set architecture (ISA) based on the RISC type and its hardware is free. This architecture was created in 2010 at the University of California, Berkeley.",
-    "guide":"./docs/risc_v_reference_guide.pdf",
+    "guide": "./docs/risc_v_reference_guide.pdf",
     "available": 1
   },
   {
     "name": "MIPS-32",
     "alias": ["MIPS-32", "mips-32", "MIPS32", "mips32"],
     "file": "MIPS_32",
-    "img": "./images/mips_logo.png",
-    "alt":"MIPS-32",
+    "img": "/img/mips_logo.png",
+    "alt": "MIPS-32",
     "id": "select_confMIPS",
-    "examples":["default"],
+    "examples": ["default"],
     "description": "The MIPS processor was developed by Dr.John Hennessey and his graduate students at Stanford University in the early 1980s. It is currently one of the major processors in the embedded processor market.",
-    "guide":"./docs/mips_32_reference_guide.pdf",
+    "guide": "./docs/mips_32_reference_guide.pdf",
+    "available": 1
+  },
+  {
+    "name": "MOS 6502",
+    "alias": ["6502", "MOS-6502"],
+    "file": "6502",
+    "img": "/img/6502_logo.png",
+    "alt": "6502",
+    "id": "select_conf6502",
+    "examples": [],
+    "description": "The MOS Technology 6502 is an 8-bit microprocessor that was designed by a small team led by Chuck Peddle for MOS Technology. The design team had formerly worked at Motorola on the Motorola 6800 project; the 6502 is essentially a simplified, less expensive and faster version of that design.",
+    "guide": "",
     "available": 1
   },
   {
     "name": "New Architecture",
     "alias": [],
     "file": "new_arch",
-    "img": "./images/new_icon.png",
-    "alt":"New Architecture",
+    "img": "/img/new_icon.png",
+    "alt": "New Architecture",
     "id": "select_confNEW",
-    "examples":[],
-    "description": "New Architecture",
-    "guide":"",
+    "guide": "",
     "available": 0
-  },
-  {
-    "name": "miniRISC64",
-    "alias": ["miniRISC64", "minirisc64", "mini64", "Mini64"],
-    "file": "miniRISC64",
-    "img": "./images/risc-v_logo.png",
-    "alt": "miniRISC64",
-    "id": "select_confRISV",
-    "examples":["default"],
-    "description": "",
-    "guide":"",
-    "available": 1
   }
 ]

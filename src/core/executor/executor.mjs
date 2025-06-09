@@ -16,8 +16,8 @@
  *  You should have received a copy of the GNU Lesser General Public License
  *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  */
-"use strict";
-import { instructions } from "../compiler/compiler.mjs";
+"use strict"
+import { instructions } from "../compiler/compiler.mjs"
 import {
     app,
     architecture,
@@ -40,16 +40,17 @@ import { decode_instruction } from "./decoder.mjs";
 import { buildInstructionPreload } from "./preload.mjs";
 import { dumpMemory } from "../core.mjs"; // To use with debugger
 import { main_memory, main_memory_write_value } from "../memory/memoryCore.mjs"; // For debugging only
+import { show_notification } from "@/web/utils.mjs"
 
 export function packExecute(error, err_msg, err_type, draw) {
     const ret = {};
 
-    ret.error = error;
-    ret.msg = err_msg;
-    ret.type = err_type;
-    ret.draw = draw;
+    ret.error = error
+    ret.msg = err_msg
+    ret.type = err_type
+    ret.draw = draw
 
-    return ret;
+    return ret
 }
 
 export function getPC() {
@@ -123,9 +124,7 @@ function performExecutionChecks(includeLogging = false) {
             null,
         );
     } else if (status.run_program === 3) {
-        // TODO: Is this needed?
-        return null;
-        // return packExecute(false, "", "info", null);
+        return packExecute(false, "", "info", null);
     }
 
     return null;
@@ -479,14 +478,14 @@ export function executeProgramOneShot(limit_n_instructions) {
     let ret = null;
 
     // Google Analytics
-    creator_ga("execute", "execute.run");
+    creator_ga("execute", "execute.run")
 
     // execute program
     for (let i = 0; i < limit_n_instructions; i++) {
         ret = step();
 
         if (ret.error === true) {
-            return ret;
+            return ret
         }
         if (status.execution_index < -1) {
             return ret;
@@ -505,7 +504,7 @@ export function executeProgramOneShot(limit_n_instructions) {
 
 export function creator_executor_exit(error) {
     // Google Analytics
-    creator_ga("execute", "execute.exit");
+    creator_ga("execute", "execute.exit")
 
     if (error) {
         status.execution_index = -1;
@@ -518,8 +517,8 @@ export function creator_executor_exit(error) {
  */
 
 export function crex_show_notification(msg, level) {
-    if (typeof window !== "undefined") show_notification(msg, level);
-    else console.log(level.toUpperCase() + ": " + msg);
+    if (typeof window !== "undefined") show_notification(msg, level)
+    else console.log(level.toUpperCase() + ": " + msg)
 }
 // Modify the stack limit
 
@@ -531,10 +530,10 @@ export function writeStackLimit(stackLimit) {
         warning: [],
         danger: [],
         flash: [],
-    };
+    }
 
     if (stackLimit == null) {
-        return;
+        return
     }
 
     // Convert to BigInt if not already

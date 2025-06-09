@@ -17,14 +17,13 @@
  *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-"use strict";
+"use strict"
 import {
     architecture,
     architecture_hash,
     status,
     stats,
     stats_value,
-    app,
     code_assembly,
     update_binary,
     backup_stack_address,
@@ -47,9 +46,31 @@ import {
 import { bi_intToBigInt } from "../utils/bigint.mjs";
 import { creator_ga } from "../utils/creator_ga.mjs";
 import { logger, console_log } from "../utils/creator_logger.mjs";
-import { bin2hex } from "../utils/utils.mjs";
+import { bin2hex, isDeno, isWeb } from "../utils/utils.mjs";
 
 import { main_memory_zerofill } from "../memory/memoryCore.mjs";
+
+
+// Conditional import for the WASM compiler based on the environment (web or Deno)
+import {
+    DataCategoryJS as DataCategoryJS_web,
+} from "./web/creator_compiler.js"
+import {
+    DataCategoryJS as DataCategoryJS_deno,
+} from "./deno/creator_compiler.js"
+
+let DataCategoryJS
+if (isDeno) {
+    // Deno HAS to be imported like this, as it doesn't provide a default
+    DataCategoryJS = DataCategoryJS_deno
+} else if (isWeb) {
+    DataCategoryJS = DataCategoryJS_web
+} else {
+    throw new Error(
+        "Unsupported environment: neither Deno nor web browser detected",
+    )
+}
+
 
 let textarea_assembly_editor;
 const codemirrorHistory = null;
@@ -82,28 +103,28 @@ const compileError = {
         return String("Repeated tag: " + ret.token);
     },
     m2: function (ret) {
-        return "Instruction '" + ret.token + "' not found";
+        return "Instruction '" + ret.token + "' not found"
     },
     m3: function (ret) {
-        return "Incorrect instruction syntax for '" + ret.token + "'";
+        return "Incorrect instruction syntax for '" + ret.token + "'"
     },
     m4: function (ret) {
-        return "Register '" + ret.token + "' not found";
+        return "Register '" + ret.token + "' not found"
     },
     m5: function (ret) {
-        return "Immediate number '" + ret.token + "' is too big";
+        return "Immediate number '" + ret.token + "' is too big"
     },
     m6: function (ret) {
-        return "Immediate number '" + ret.token + "' is not valid";
+        return "Immediate number '" + ret.token + "' is not valid"
     },
     m7: function (ret) {
-        return "Tag '" + ret.token + "' is not valid";
+        return "Tag '" + ret.token + "' is not valid"
     },
     m8: function (ret) {
-        return "Address '" + ret.token + "' is too big";
+        return "Address '" + ret.token + "' is too big"
     },
     m9: function (ret) {
-        return "Address '" + ret.token + "' is not valid";
+        return "Address '" + ret.token + "' is not valid"
     },
     m10: function (ret) {
         return (
@@ -113,7 +134,7 @@ const compileError = {
         );
     },
     m11: function (ret) {
-        return "The space directive value should be positive and greater than zero";
+        return "The space directive value should be positive and greater than zero"
     },
     m12: function (ret) {
         return String(
@@ -127,7 +148,7 @@ const compileError = {
         return String("Invalid directive: " + ret.token);
     },
     m15: function (ret) {
-        return "Invalid value '" + ret.token + "' as number.";
+        return "Invalid value '" + ret.token + "' as number."
     },
     m16: function (ret) {
         return String('The string of characters must start with "' + ret.token);
@@ -136,17 +157,17 @@ const compileError = {
         return String('The string of characters must end with "' + ret.token);
     },
     m18: function (ret) {
-        return "Number '" + ret.token + "' is too big";
+        return "Number '" + ret.token + "' is too big"
     },
     m19: function (ret) {
-        return "Number '" + ret.token + "' is empty";
+        return "Number '" + ret.token + "' is empty"
     },
     //'m20': function(ret) { return "The text segment should start with '"       + ret.token + "'" },
     m21: function (ret) {
         return String("The data must be aligned" + ret.token);
     },
     m22: function (ret) {
-        return "The number should be positive '" + ret.token + "'";
+        return "The number should be positive '" + ret.token + "'"
     },
     m23: function (ret) {
         return String("Empty directive" + ret.token);
@@ -159,19 +180,20 @@ const compileError = {
         return String("Syntax error near line: " + ret.token);
     },
     m27: function (ret) {
-        return "Please check instruction syntax, inmediate ranges, register name, etc.";
+        return "Please check instruction syntax, inmediate ranges, register name, etc."
     },
-};
+}
 /*Promise*/
-let promise;
+let promise
 /*Simulator*/
 /*Displayed notifications*/
 const notifications = [];
 /*Available examples*/
-const example_set_available = [];
-const example_available = [];
+export const example_set_available = [];
+export const example_available = [];
 /*Instructions memory*/
 export let instructions = [];
+export function clear_instructions() { instructions = [] }
 let instructions_tag = [];
 export let tag_instructions = {};
 let instructions_binary = [];
@@ -194,13 +216,13 @@ export function setInstructions(instructions_) {
 function packCompileError(err_code, err_token, err_ti, err_bgcolor) {
     const ret = {};
 
-    ret.status = "error";
-    ret.errorcode = err_code;
-    ret.token = err_token;
-    ret.type = err_ti;
-    ret.bgcolor = err_bgcolor;
-    ret.tokenIndex = tokenIndex;
-    ret.line = nEnters;
+    ret.status = "error"
+    ret.errorcode = err_code
+    ret.token = err_token
+    ret.type = err_ti
+    ret.bgcolor = err_bgcolor
+    ret.tokenIndex = tokenIndex
+    ret.line = nEnters
 
     // generic error
     if (typeof err_token === "undefined") {
@@ -208,7 +230,7 @@ function packCompileError(err_code, err_token, err_ti, err_bgcolor) {
         ret.token = "";
     }
 
-    ret.msg = compileError[err_code](ret);
+    ret.msg = compileError[err_code](ret)
 
     /*Google Analytics*/
     creator_ga("compile", "compile.error", "compile.error." + ret.msg);
@@ -218,14 +240,15 @@ function packCompileError(err_code, err_token, err_ti, err_bgcolor) {
         "compile.type_error." + err_code,
     );
 
-    return ret;
+    return ret
 }
 
 /*Compile assembly code*/
 // eslint-disable-next-line max-lines-per-function
-export function assembly_compiler(library, color) {
+export function assembly_compiler(code, library, color) {
+
     /* Google Analytics */
-    creator_ga("compile", "compile.assembly");
+    creator_ga("compile", "compile.assembly")
 
     instructions = [];
     tag_instructions = {};
@@ -237,7 +260,7 @@ export function assembly_compiler(library, color) {
 
     let library_offset = 0;
     const library_instructions = update_binary.instructions_binary?.length ?? 0;
-    for (var i = 0; i < library_instructions; i++) {
+    for (let i = 0; i < library_instructions; i++) {
         const instruction = update_binary.instructions_binary[i];
         instruction.hide = !(i === 0 || instruction.globl === true);
         if (instruction.globl !== true) {
@@ -261,13 +284,13 @@ export function assembly_compiler(library, color) {
     const labels_json = JSON.stringify(library_labels);
 
     /*Allocation of memory addresses*/
-    architecture.memory_layout[4].value = backup_stack_address;
-    architecture.memory_layout[3].value = backup_data_address;
-    data_address = parseInt(architecture.memory_layout[2].value);
-    stack_address = parseInt(architecture.memory_layout[4].value);
+    architecture.memory_layout[4].value = backup_stack_address
+    architecture.memory_layout[3].value = backup_data_address
+    data_address = parseInt(architecture.memory_layout[2].value)
+    stack_address = parseInt(architecture.memory_layout[4].value)
 
-    for (var i = 0; i < REGISTERS.length; i++) {
-        for (var j = 0; j < REGISTERS[i].elements.length; j++) {
+    for (let i = 0; i < REGISTERS.length; i++) {
+        for (let j = 0; j < REGISTERS[i].elements.length; j++) {
             if (
                 REGISTERS[i].elements[j].properties.includes("program_counter")
             ) {
@@ -300,7 +323,7 @@ export function assembly_compiler(library, color) {
 
     /*Reset stats*/
     status.totalStats = 0;
-    for (var i = 0; i < stats.length; i++) {
+    for (let i = 0; i < stats.length; i++) {
         stats[i].percentage = 0;
         stats[i].number_instructions = 0;
         stats_value[i] = 0;
@@ -321,7 +344,7 @@ export function assembly_compiler(library, color) {
         }
         // Compile assembly
         const compiled = arch.compile(
-            code_assembly,
+            code,
             library_offset,
             labels_json,
             library ?? false,
@@ -368,7 +391,7 @@ export function assembly_compiler(library, color) {
             const size = Number(data.size());
             const addr = Number(data.address());
             switch (data.data_category()) {
-                case wasm.DataCategoryJS.Number:
+                case DataCategoryJS.Number:
                     creator_memory_data_compiler(
                         addr,
                         data.value(false),
@@ -379,7 +402,7 @@ export function assembly_compiler(library, color) {
                         true,
                     );
                     break;
-                case wasm.DataCategoryJS.String:
+                case DataCategoryJS.String:
                     creator_memory_storestring(
                         data.value(false),
                         size,
@@ -389,7 +412,7 @@ export function assembly_compiler(library, color) {
                         true,
                     );
                     break;
-                case wasm.DataCategoryJS.Space:
+                case DataCategoryJS.Space:
                     creator_memory_storestring(
                         size,
                         size,
@@ -399,7 +422,7 @@ export function assembly_compiler(library, color) {
                         true,
                     );
                     break;
-                case wasm.DataCategoryJS.Padding:
+                case DataCategoryJS.Padding:
                     main_memory_zerofill(addr, size);
                     break;
             }
@@ -448,10 +471,49 @@ export function assembly_compiler(library, color) {
             hex,
             "00",
             label,
-            true,
-        );
+        )
     }
 
+    // Check for overlap
+    /*
+   * TODO: migrate to new memory model
+   *
+          if (memory[memory_hash[0]].length > 0)
+          {
+            if (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary[3].Addr > architecture.memory_layout[3].value) {
+              //tokenIndex = 0;
+              //nEnters = 0 ;
+              instructions = [];
+              pending_instructions = [];
+              pending_tags = [];
+              data_tag = [];
+              instructions_binary = [];
+              extern = [];
+              creator_memory_clear() ;
+              data = [];
+  
+              return packCompileError('m0', 'Data overflow', 'warning', "danger") ;
+            }
+          }
+  
+          if (memory[memory_hash[1]].length > 0)
+          {
+            if(memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary[3].Addr > architecture.memory_layout[1].value){
+              //tokenIndex = 0;
+              //nEnters = 0 ;
+              instructions = [];
+              pending_instructions = [];
+              pending_tags = [];
+              data_tag = [];
+              instructions_binary = [];
+              extern = [];
+              creator_memory_clear() ;
+              data = [];
+  
+              return packCompileError('m0', 'Instruction overflow', 'warning', "danger");
+            }
+          }
+  */
     /*Save binary*/
     for (const instruction of instructions_binary) {
         if (instruction.Label != "") {
@@ -473,14 +535,14 @@ export function assembly_compiler(library, color) {
             globl: x[1].global,
         }));
 
-    if (typeof app != "undefined") app._data.instructions = instructions;
+    if (typeof document !== "undefined") document.app.$data.instructions = instructions
 
     /* Initialize stack */
-    writeMemory("00", parseInt(stack_address), "word");
+    writeMemory("00", parseInt(stack_address), "word")
 
-    address = parseInt(architecture.memory_layout[0].value);
-    data_address = parseInt(architecture.memory_layout[2].value);
-    stack_address = parseInt(architecture.memory_layout[4].value);
+    address = parseInt(architecture.memory_layout[0].value)
+    data_address = parseInt(architecture.memory_layout[2].value)
+    stack_address = parseInt(architecture.memory_layout[4].value)
 
     // save current value as default values for reset()...
     creator_memory_prereset();
@@ -490,5 +552,5 @@ export function assembly_compiler(library, color) {
         type: "",
         update: "",
         status: "ok",
-    };
+    }
 }

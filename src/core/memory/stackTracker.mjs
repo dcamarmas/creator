@@ -17,8 +17,8 @@
  *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-"use strict";
-import { architecture, app } from "../core.mjs";
+"use strict"
+import { architecture, app } from "../core.mjs"
 
 /*
  * Data Structure
@@ -26,7 +26,7 @@ import { architecture, app } from "../core.mjs";
 /*
  *  track_stack_names = [ "PC=xxx", "main" ] ;
  */
-let track_stack_names = [];
+export let track_stack_names = []
 /*
  *  track_stack_limits = [
  *		               {
@@ -59,14 +59,14 @@ export function track_stack_create() {
     const ret = {
         ok: true,
         msg: "",
-    };
+    }
 
     // initialize array
-    track_stack_names = [];
-    track_stack_limits = [];
-    track_stack_enter("main");
+    track_stack_names = []
+    track_stack_limits = []
+    track_stack_enter("main")
 
-    return ret;
+    return ret
 }
 //
 // "jal X, ..." -> add new element (at the end)
@@ -76,10 +76,10 @@ export function track_stack_enter(function_name) {
     const ret = {
         ok: true,
         msg: "",
-    };
+    }
 
     // 1.- caller name
-    track_stack_names.push(function_name);
+    track_stack_names.push(function_name)
 
     // 2.- new call element
     const new_elto = {
@@ -88,23 +88,23 @@ export function track_stack_enter(function_name) {
         end_caller: track_stack_getTop().val.end_callee, // llamante: FFFFFFF0, FFFFFF00
         begin_callee: architecture.memory_layout[4].value, // llamado:  FFFFFFF0, FFFFFF00
         end_callee: architecture.memory_layout[4].value, // llamado:  FFFFFFF0, FFFFFF00
-    };
+    }
 
-    track_stack_limits.push(new_elto);
+    track_stack_limits.push(new_elto)
 
     // 3.- update UI
     if (typeof window !== "undefined") {
-        app._data.callee_subrutine =
-            track_stack_names[track_stack_names.length - 1];
-        app._data.caller_subrutine =
-            track_stack_names[track_stack_names.length - 2];
-        app._data.begin_caller = new_elto.begin_caller;
-        app._data.end_caller = new_elto.end_caller;
-        app._data.begin_callee = new_elto.begin_callee;
-        app._data.end_callee = new_elto.end_callee;
+        document.app.$data.callee_subrutine =
+            track_stack_names[track_stack_names.length - 1]
+        document.app.$data.caller_subrutine =
+            track_stack_names[track_stack_names.length - 2]
+        document.app.$data.begin_caller = new_elto.begin_caller
+        document.app.$data.end_caller = new_elto.end_caller
+        document.app.$data.begin_callee = new_elto.begin_callee
+        document.app.$data.end_callee = new_elto.end_callee
     }
 
-    return ret;
+    return ret
 }
 //
 // "jr ra, ..." -> remove last element
@@ -114,7 +114,7 @@ export function track_stack_leave() {
     const ret = {
         ok: true,
         msg: "",
-    };
+    }
 
     // check params
     if (track_stack_limits.length === 0) {
@@ -123,25 +123,25 @@ export function track_stack_leave() {
     }
 
     // pop both stacks
-    track_stack_limits.pop();
+    track_stack_limits.pop()
     if (track_stack_names.length > 0) {
-        track_stack_names.pop();
+        track_stack_names.pop()
     }
 
     // draw stack zones
     const elto_top = track_stack_getTop();
     if (typeof window !== "undefined" && elto_top.val != null) {
-        app._data.callee_subrutine =
-            track_stack_names[track_stack_names.length - 1];
-        app._data.caller_subrutine =
-            track_stack_names[track_stack_names.length - 2];
-        app._data.begin_caller = elto_top.val.begin_caller; // llamante: FFFFFFFC, FFFFFFF0, FFFFFF00
-        app._data.end_caller = elto_top.val.end_caller; // llamante: FFFFFFF0, FFFFFF00, FFFFF000
-        app._data.begin_callee = elto_top.val.begin_callee; // llamado:  FFFFFFF0, FFFFFF00, FFFFF000
-        app._data.end_callee = elto_top.val.end_callee; // llamado:  FFFFFFF0, FFFFFF00, FFFFF000
+        document.app.$data.callee_subrutine =
+            track_stack_names[track_stack_names.length - 1]
+        document.app.$data.caller_subrutine =
+            track_stack_names[track_stack_names.length - 2]
+        document.app.$data.begin_caller = elto_top.val.begin_caller // llamante: FFFFFFFC, FFFFFFF0, FFFFFF00
+        document.app.$data.end_caller = elto_top.val.end_caller // llamante: FFFFFFF0, FFFFFF00, FFFFF000
+        document.app.$data.begin_callee = elto_top.val.begin_callee // llamado:  FFFFFFF0, FFFFFF00, FFFFF000
+        document.app.$data.end_callee = elto_top.val.end_callee // llamado:  FFFFFFF0, FFFFFF00, FFFFF000
     }
 
-    return ret;
+    return ret
 }
 //
 // Get the last element
@@ -157,7 +157,7 @@ export function track_stack_getTop() {
             end_callee: architecture.memory_layout[4].value,
         },
         msg: "",
-    };
+    }
 
     // check params
     if (track_stack_limits.length === 0) {
@@ -167,12 +167,12 @@ export function track_stack_getTop() {
     }
 
     // return the last element in the array
-    ret.val = track_stack_limits[track_stack_limits.length - 1];
+    ret.val = track_stack_limits[track_stack_limits.length - 1]
     if (typeof ret.val.begin_caller === "undefined") {
-        ret.val.begin_caller = architecture.memory_layout[4].value;
+        ret.val.begin_caller = architecture.memory_layout[4].value
     }
 
-    return ret;
+    return ret
 }
 //
 // Get all stack frames
@@ -183,7 +183,7 @@ export function track_stack_getFrames() {
         ok: track_stack_limits.length > 0,
         val: track_stack_limits,
         msg: "",
-    };
+    }
 
     if (!ret.ok) {
         ret.msg = "track_stack_getFrames: empty track_stack_limits.";
@@ -241,7 +241,7 @@ export function track_stack_getNames() {
 //
 export function track_stack_setsp(value) {
     if (typeof window !== "undefined") {
-        app._data.end_callee = value; // llamado:  FFFFFFF0, FFFFFF00, FFFFF000
+        document.app.$data.end_callee = value // llamado:  FFFFFFF0, FFFFFF00, FFFFF000
     }
 
     // check params
@@ -356,7 +356,7 @@ export function track_stack_reset() {
     const ret = {
         ok: true,
         msg: "",
-    };
+    }
 
     // initialize stack_call
     track_stack_names = [];
@@ -366,17 +366,17 @@ export function track_stack_reset() {
 
     // draw new limits
     if (typeof window !== "undefined") {
-        app._data.track_stack_names = track_stack_names;
-        app._data.callee_subrutine =
-            track_stack_names[track_stack_names.length - 1];
-        app._data.caller_subrutine = "";
-        app._data.begin_caller = architecture.memory_layout[4].value;
-        app._data.end_caller = architecture.memory_layout[4].value;
-        app._data.begin_callee = architecture.memory_layout[4].value;
-        app._data.end_callee = architecture.memory_layout[4].value;
+        document.app.$data.track_stack_names = track_stack_names
+        document.app.$data.callee_subrutine =
+            track_stack_names[track_stack_names.length - 1]
+        document.app.$data.caller_subrutine = ""
+        document.app.$data.begin_caller = architecture.memory_layout[4].value
+        document.app.$data.end_caller = architecture.memory_layout[4].value
+        document.app.$data.begin_callee = architecture.memory_layout[4].value
+        document.app.$data.end_callee = architecture.memory_layout[4].value
     }
 
-    return ret;
+    return ret
 }
 
 export function dumpStack() {
@@ -398,3 +398,4 @@ export function loadStack(data) {
         track_stack_limits = data.track_stack_limits;
     }
 }
+

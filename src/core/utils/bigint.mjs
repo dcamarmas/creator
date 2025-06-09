@@ -60,9 +60,9 @@ export function bi_floatToBigInt(float_value) {
     const bin = float2bin(float_value);
     const hex = bin2hex(bin);
 
-    BigInt_value = BigInt("0x" + hex);
+    BigInt_value = BigInt("0x" + hex)
 
-    return BigInt_value;
+    return BigInt_value
 }
 /**
  * Converts a BigInt back to a floating-point number
@@ -70,13 +70,13 @@ export function bi_floatToBigInt(float_value) {
  * @returns {number} Floating-point representation of the BigInt value
  */
 export function bi_BigIntTofloat(big_int_value) {
-    let hex = big_int_value.toString(16);
+    let hex = big_int_value.toString(16)
 
     if (hex.length > 8) {
-        hex = hex.substring(hex.length - 8, hex.length);
+        hex = hex.substring(hex.length - 8, hex.length)
     }
 
-    return hex2float("0x" + hex);
+    return hex2float("0x" + hex)
 }
 /**
  * Converts a double-precision floating-point number to BigInt
@@ -88,9 +88,9 @@ export function bi_doubleToBigInt(double_value) {
     const bin = double2bin(double_value);
     const hex = bin2hex(bin);
 
-    BigInt_value = BigInt("0x" + hex);
+    BigInt_value = BigInt("0x" + hex)
 
-    return BigInt_value;
+    return BigInt_value
 }
 /**
  * Converts a BigInt back to a double-precision floating-point number
@@ -104,7 +104,7 @@ export function bi_BigIntTodouble(big_int_value) {
         return hex2float("0x" + hex.substring(8, 16));
     }
 
-    return hex2double("0x" + hex);
+    return hex2double("0x" + hex)
 }
 /**
  * Deserializes register values in an architecture from string/number to BigInt
@@ -119,11 +119,11 @@ export function register_value_deserialize(architecture) {
                 architecture.components[i].elements[j].value = bi_intToBigInt(
                     architecture.components[i].elements[j].value,
                     10,
-                );
+                )
             } else {
                 architecture.components[i].elements[j].value = bi_floatToBigInt(
                     architecture.components[i].elements[j].value,
-                );
+                )
             }
 
             if (architecture.components[i].double_precision !== true) {
@@ -145,7 +145,7 @@ export function register_value_deserialize(architecture) {
         }
     }
 
-    return architecture;
+    return architecture
 }
 // /**
 //  * Serializes register values in an architecture from BigInt to string/number
