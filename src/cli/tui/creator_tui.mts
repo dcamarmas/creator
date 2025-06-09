@@ -1611,7 +1611,7 @@ function loadBinary(filePath: string) {
 
     try {
         const binaryFile = fs.readFileSync(filePath, "utf8");
-        creator.load_binary_file(binaryFile);
+        creator.loadElfFile(binaryFile);
         BINARY_LOADED = true;
     } catch (error) {
         console.error(`Error loading binary file: ${error.message}`);

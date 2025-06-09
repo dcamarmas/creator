@@ -16,9 +16,9 @@
  *  You should have received a copy of the GNU Lesser General Public License
  *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  */
-"use strict"
+"use strict";
 
-import { initCAPI } from "./capi/initCAPI.mjs"
+import { initCAPI } from "./capi/initCAPI.mjs";
 
 import {
     bi_BigIntTodouble,
@@ -31,7 +31,8 @@ import {
     float2bin,
     getHexTwosComplement,
     hex2double,
-isDeno, isWeb
+    isDeno,
+    isWeb,
 } from "./utils/utils.mjs";
 
 import { logger } from "./utils/creator_logger.mjs";
@@ -66,50 +67,49 @@ import { creator_callstack_reset } from "./sentinel/sentinel.mjs";
 import wasm_web_init, {
     Color as Color_web,
     ArchitectureJS as ArchitectureJS_web,
-} from "./compiler/web/creator_compiler.js"
+} from "./compiler/web/creator_compiler.js";
 import {
     Color as Color_deno,
     ArchitectureJS as ArchitectureJS_deno,
-} from "./compiler/deno/creator_compiler.js"
+} from "./compiler/deno/creator_compiler.js";
 
-let Color
-let ArchitectureJS
+let Color;
+let ArchitectureJS;
 if (isDeno) {
     // Deno HAS to be imported like this, as it doesn't provide a default
-    Color = Color_deno
-    ArchitectureJS = ArchitectureJS_deno
+    Color = Color_deno;
+    ArchitectureJS = ArchitectureJS_deno;
 } else if (isWeb) {
-    Color = Color_web
-    ArchitectureJS = ArchitectureJS_web
+    Color = Color_web;
+    ArchitectureJS = ArchitectureJS_web;
     // in the web, we MUST call the default
-    wasm_web_init()
+    wasm_web_init();
 } else {
     throw new Error(
         "Unsupported environment: neither Deno nor web browser detected",
-    )
+    );
 }
-
 
 export let code_assembly = "";
 export let update_binary = "";
 export let backup_stack_address;
 export let backup_data_address;
 
-export let architecture_hash = []
+export let architecture_hash = [];
 export let architecture = {
     arch_conf: [],
     memory_layout: [],
     components: [],
     instructions: [],
     directives: [],
-}
+};
 
 export let app;
 
 export let status = {
     execution_init: 1,
     totalStats: 0,
-    run_program: 0,  // 0: stopped, 1: running, 2: stopped-by-breakpoint, 3: stopped-by-mutex-read
+    run_program: 0, // 0: stopped, 1: running, 2: stopped-by-breakpoint, 3: stopped-by-mutex-read
 
     keyboard: "",
     display: "",
@@ -156,21 +156,24 @@ export let arch;
 export const ARCHITECTURE_VERSION = "2.0";
 export let ENDIANNESS;
 export let WORDSIZE;
+export let BYTESIZE = 8;
 export let REGISTERS;
 export let REGISTERS_BACKUP = [];
 export const register_size_bits = 64; //TODO: load from architecture
 
-export let architecture_available = []
-export let load_architectures_available = []
-export let load_architectures = []
-export let back_card = []
-export let memory_hash = ['data_memory', 'instructions_memory', 'stack_memory']
-export let execution_mode = 0 // 0: instruction by instruction, 1: run program
-export function set_execution_mode(value) { execution_mode = value }  // it's the only way
-export let instructions_packed = 100
-export let architecture_json = ''
+export let architecture_available = [];
+export let load_architectures_available = [];
+export let load_architectures = [];
+export let back_card = [];
+export let memory_hash = ["data_memory", "instructions_memory", "stack_memory"];
+export let execution_mode = 0; // 0: instruction by instruction, 1: run program
+export function set_execution_mode(value) {
+    execution_mode = value;
+} // it's the only way
+export let instructions_packed = 100;
+export let architecture_json = "";
 
-let code_binary = ""
+let code_binary = "";
 
 initCAPI();
 let creator_debug = false;
@@ -180,12 +183,12 @@ BigInt.prototype.toJSON = function () {
 };
 
 export function set_debug(enable_debug) {
-    creator_debug = enable_debug
+    creator_debug = enable_debug;
     if (creator_debug) {
-        logger.enable()
-        logger.setLevel("DEBUG")
+        logger.enable();
+        logger.setLevel("DEBUG");
     } else {
-        logger.disable()
+        logger.disable();
     }
 }
 
@@ -197,7 +200,7 @@ function load_arch_select(cfg) {
         type: "",
         update: "",
         status: "ok",
-    }
+    };
 
     const auxArchitecture = cfg;
     architecture = register_value_deserialize(auxArchitecture);
@@ -213,15 +216,15 @@ function load_arch_select(cfg) {
         architecture_hash.push({
             name: REGISTERS[i].name,
             index: i,
-        })
+        });
     }
 
-    backup_stack_address = architecture.memory_layout[4].value
-    backup_data_address = architecture.memory_layout[3].value
+    backup_stack_address = architecture.memory_layout[4].value;
+    backup_data_address = architecture.memory_layout[3].value;
 
-    ret.token = "The selected architecture has been loaded correctly"
-    ret.type = "success"
-    return ret
+    ret.token = "The selected architecture has been loaded correctly";
+    ret.type = "success";
+    return ret;
 }
 
 /**
@@ -496,29 +499,79 @@ function processInstructions(architectureObj) {
 
             // This works for 1 optional field, but not for 2 or more. Supporting more
             // than 1 optional field is not in the roadmap.
-            const optionalFields = mergedFields.filter(
+            let mergedFieldsOriginal = JSON.parse(JSON.stringify(mergedFields));
+            let optionalFields = mergedFields.filter(
                 field => field.optional === true,
             );
             if (optionalFields.length === 1) {
                 // We need to create two instructions, one with the field and one without it
-                const instructionWithFields = buildCompleteInstruction(
-                    instruction,
-                    template,
-                    mergedFields,
-                );
-                const instructionWithoutFields = buildCompleteInstruction(
-                    instruction,
-                    template,
-                    mergedFields.filter(field => field.optional !== true),
-                );
+                // Let's first check whether the optional field is of type "enum"
 
-                // Add both instructions to the architecture
-                architectureObj.instructionsProcessed.push(
-                    instructionWithFields,
-                );
-                architectureObj.instructionsProcessed.push(
-                    instructionWithoutFields,
-                );
+                const optionalField = optionalFields[0];
+                if (optionalField.type === "enum") {
+                    // get the enum_name
+                    const enumName = optionalField.enum_name;
+                    // get the enum values from the architecture
+                    const enumValues = architectureObj.enums[enumName];
+
+                    const defaultEnum = enumValues.DEFAULT;
+                    // if its not undefined...
+                    if (defaultEnum === undefined) {
+                        logger.error(
+                            `Enum '${enumName}' does not have a DEFAULT value. Cannot process instruction '${instruction.name}' with optional field '${optionalField.name}'.`,
+                        );
+                        return;
+                    }
+                    // Then DEFAULT has the name of the value which contains the default value
+                    optionalField.valueField = enumValues[defaultEnum];
+                    // and convert it to a string, in binary
+                    optionalField.valueField =
+                        optionalField.valueField.toString(2);
+
+                    delete optionalField.order;
+                    optionalField.type = "inm-unsigned";
+                    // remove the optional property
+                    delete optionalField.optional;
+
+                    // Now we can build the instruction with the field
+                    const instructionWithDefault = buildCompleteInstruction(
+                        instruction,
+                        template,
+                        mergedFields,
+                    );
+                    architectureObj.instructionsProcessed.push(
+                        instructionWithDefault,
+                    );
+                    // And the original instruction for the non default case
+                    const instructionWithFields = buildCompleteInstruction(
+                        instruction,
+                        template,
+                        mergedFieldsOriginal,
+                    );
+                    architectureObj.instructionsProcessed.push(
+                        instructionWithFields,
+                    );
+                } else {
+                    // If the optional field is not an enum, we can just filter out the optional field
+                    const instructionWithFields = buildCompleteInstruction(
+                        instruction,
+                        template,
+                        mergedFieldsOriginal,
+                    );
+                    architectureObj.instructionsProcessed.push(
+                        instructionWithFields,
+                    );
+                    const instructionWithoutFields = buildCompleteInstruction(
+                        instruction,
+                        template,
+                        mergedFieldsOriginal.filter(
+                            field => field.optional !== true,
+                        ),
+                    );
+                    architectureObj.instructionsProcessed.push(
+                        instructionWithoutFields,
+                    );
+                }
             } // If no optional fields, just add the instruction
             else if (optionalFields.length === 0) {
                 const fullInstruction = buildCompleteInstruction(
@@ -540,6 +593,16 @@ function processInstructions(architectureObj) {
     });
     architectureObj.instructions = architectureObj.instructionsProcessed;
     delete architectureObj.instructionsProcessed;
+    // If enums exist, for each enum, find whether there's a "DEFAULT" value.
+    // If there is, DELETE it
+    if (architectureObj.enums) {
+        Object.keys(architectureObj.enums).forEach(enumName => {
+            const enumValues = architectureObj.enums[enumName];
+            if (enumValues.DEFAULT !== undefined) {
+                delete enumValues.DEFAULT;
+            }
+        });
+    }
 }
 
 function processPseudoInstructions(architectureObj, legacy = true) {
@@ -1036,36 +1099,40 @@ export function load_architecture(arch_str) {
     const arch_obj = JSON.parse(arch_str);
     const ret = load_arch_select(arch_obj);
 
-    return ret
+    return ret;
 }
 
 export function load_library(lib_str) {
     const ret = {
         status: "ok",
         msg: "",
-    }
+    };
 
-    code_binary = lib_str
-    update_binary = JSON.parse(code_binary)
+    code_binary = lib_str;
+    update_binary = JSON.parse(code_binary);
 
-    return ret
+    return ret;
 }
 
 // compilation
 
 export function assembly_compile(code, enable_color) {
-    const ret = assembly_compiler(code, false, enable_color ? Color.Ansi : Color.Off)
+    const ret = assembly_compiler(
+        code,
+        false,
+        enable_color ? Color.Ansi : Color.Off,
+    );
     switch (ret.status) {
         case "error":
             break;
 
         case "warning":
-            ret.msg = "warning: " + ret.token
-            break
+            ret.msg = "warning: " + ret.token;
+            break;
 
         case "ok":
-            ret.msg = "Compilation completed successfully"
-            break
+            ret.msg = "Compilation completed successfully";
+            break;
 
         default:
             ret.msg = "Unknow assembly compiler code :-/";
@@ -1141,12 +1208,12 @@ export function execute_program(limit_n_instructions) {
     let ret;
     ret = executeProgramOneShot(limit_n_instructions);
     if (ret.error === true) {
-        ret.status = "ko"
-        return ret
+        ret.status = "ko";
+        return ret;
     }
 
-    ret.status = "ok"
-    return ret
+    ret.status = "ok";
+    return ret;
 }
 
 // state management
@@ -1257,7 +1324,7 @@ export function get_state() {
             .split(" ")
             .map(i => i.charAt(0))
             .join("")
-            .toLowerCase()
+            .toLowerCase();
 
         for (let j = 0; j < component.elements.length; j++) {
             const element = component.elements[j];
@@ -1558,7 +1625,7 @@ export function getState() {
         encodeURIComponent(status.display) +
         "'\n";
 
-    return ret
+    return ret;
 }
 
 export function snapshot(extraData) {
@@ -1781,7 +1848,7 @@ export function dumpAddress(startAddr, numBytes) {
     return resultString;
 }
 
-export function load_binary_file(bin_str) {
+export function loadElfFile(bin_str) {
     const ret = {
         status: "ok",
         msg: "",

@@ -47,7 +47,7 @@ const creatorASCII = `
 interface ArgvOptions {
     architecture: string;
     isa: string[];
-    binary: string;
+    elf: string;
     library: string;
     assembly: string;
     interactive: boolean;
@@ -276,14 +276,14 @@ function loadArchitecture(filePath: string, isaExtensions: string[]) {
     // console.log("Architecture loaded successfully.");
 }
 
-function loadBinary(filePath: string) {
+function loadElf(filePath: string) {
     if (!filePath) {
         console.error("No binary file specified.");
         return;
     }
 
     const binaryFile = fs.readFileSync(filePath, "utf8");
-    creator.load_binary_file(binaryFile);
+    creator.loadElfFile(binaryFile);
     // Set the flag to indicate a binary was loaded
     BINARY_LOADED = true;
     // console.log("Binary loaded successfully.");
@@ -1317,8 +1317,8 @@ function parseArguments(): ArgvOptions {
             description: "ISA extensions to load (e.g. --isa I M F D)",
             default: [],
         })
-        .option("binary", {
-            alias: "b",
+        .option("elf", {
+            alias: "e",
             type: "string",
             describe: "Binary file",
             nargs: 1,
@@ -1631,8 +1631,8 @@ function main() {
     }
 
     // If binary file is provided, load it
-    if (argv.binary) {
-        loadBinary(argv.binary);
+    if (argv.elf) {
+        loadElf(argv.elf);
     } else {
         if (argv.library) {
             loadLibrary(argv.library);

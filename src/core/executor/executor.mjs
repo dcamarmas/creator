@@ -16,8 +16,8 @@
  *  You should have received a copy of the GNU Lesser General Public License
  *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  */
-"use strict"
-import { instructions } from "../compiler/compiler.mjs"
+"use strict";
+import { instructions } from "../compiler/compiler.mjs";
 import {
     app,
     architecture,
@@ -25,8 +25,11 @@ import {
     status,
     REGISTERS,
     clk_cycles_update,
+    WORDSIZE,
+    BYTESIZE,
 } from "../core.mjs";
 import { creator_memory_zerofill } from "../memory/memoryManager.mjs";
+import { readMemory } from "../memory/memoryOperations.mjs";
 import { crex_findReg_bytag } from "../register/registerLookup.mjs";
 import {
     readRegister,
@@ -40,17 +43,17 @@ import { decode_instruction } from "./decoder.mjs";
 import { buildInstructionPreload } from "./preload.mjs";
 import { dumpMemory } from "../core.mjs"; // To use with debugger
 import { main_memory, main_memory_write_value } from "../memory/memoryCore.mjs"; // For debugging only
-import { show_notification } from "@/web/utils.mjs"
+import { show_notification } from "@/web/utils.mjs";
 
 export function packExecute(error, err_msg, err_type, draw) {
     const ret = {};
 
-    ret.error = error
-    ret.msg = err_msg
-    ret.type = err_type
-    ret.draw = draw
+    ret.error = error;
+    ret.msg = err_msg;
+    ret.type = err_type;
+    ret.draw = draw;
 
-    return ret
+    return ret;
 }
 
 export function getPC() {
@@ -110,9 +113,9 @@ function performExecutionChecks(includeLogging = false) {
         logger.debug("Register (0,0): " + readRegister(0, 0));
     }
 
-    if (instructions.length === 0) {
-        return packExecute(true, "No instructions in memory", "danger", null);
-    }
+    // if (instructions.length === 0) {
+    //     return packExecute(true, "No instructions in memory", "danger", null);
+    // }
     if (status.execution_index < -1) {
         return packExecute(true, "The program has finished", "warning", null);
     }
@@ -132,31 +135,17 @@ function performExecutionChecks(includeLogging = false) {
 
 function initialize_execution(draw) {
     if (status.execution_init === 1) {
-        for (let i = 0; i < instructions.length; i++) {
-            if (instructions[i].Label == architecture.arch_conf[5].value) {
-                // Set the program counter to the address of the label
-                const pc_reg = crex_findReg_bytag("program_counter");
-                const pc_size_bits = parseInt(
-                    REGISTERS[0].elements[0].nbits,
-                    10,
-                );
-                writeRegister(
-                    bi_intToBigInt(instructions[i].Address, 10, pc_size_bits),
-                    pc_reg.indexComp,
-                    pc_reg.indexElem,
-                );
-                status.execution_init = 0;
-                break;
-            } else if (i == instructions.length - 1) {
-                status.execution_index = -1;
-                return packExecute(
-                    true,
-                    'Label "' + architecture.arch_conf[5].value + '" not found',
-                    "danger",
-                    null,
-                );
-            }
-        }
+        // Set the PC to the entry point of the architecture
+        const pc_reg = crex_findReg_bytag("program_counter");
+        const pc_size_bits = parseInt(REGISTERS[0].elements[0].nbits, 10);
+        // const start_address = bi_intToBigInt(
+        //     architecture.arch_conf[5].value,
+        //     10,
+        //     pc_size_bits,
+        // );
+        const start_address = 0x0; // TODO: Get from architecture config
+        writeRegister(start_address, pc_reg.indexComp, pc_reg.indexElem);
+        status.execution_init = 0;
     }
     return null;
 }
@@ -352,38 +341,23 @@ function executeInstructionAndHandlePC(draw) {
  * @returns {Object|null} - Returns execution result object if execution should stop, or null to continue
  */
 function processCurrentInstruction(draw) {
-    // 1. Fetch instruction
-    const instruction = instructions[status.execution_index].loaded;
+    // 1. Fetch
+    const pc_address = getPC();
+    const word = main_memory_read_nbytes(pc_address, WORDSIZE / BYTESIZE);
 
     // 2. Decode instruction
-    const decoded = decode_instruction(instruction);
-    const {
-        type,
-        signatureDef,
-        signatureParts,
-        signatureRawParts,
-        instructionExec,
-        instructionExecParts,
-        auxDef,
-        nwords,
-    } = decoded;
-
+    let instruction = decode_instruction("0x" + word);
+    // }
+    const { type, nwords } = instruction;
     // 3. Increment PC based on instruction size
     incrementProgramCounter(nwords);
 
     // 4. Build instruction preload
-    const buildPreloadResult = buildInstructionPreload(
-        signatureDef,
-        instructionExec,
-        instructionExecParts,
-        signatureRawParts,
-        signatureParts,
-        auxDef,
-        instructions[status.execution_index].preload,
-        status.execution_index,
-    );
-    if (buildPreloadResult !== null) {
-        return buildPreloadResult;
+    const preloadFunction = buildInstructionPreload(instruction);
+
+    // Assign the returned preload function if one was created
+    if (preloadFunction !== null) {
+        instructions[status.execution_index].preload = preloadFunction;
     }
 
     // 5. Execute instruction and handle PC changes
@@ -436,7 +410,7 @@ function executeInstructionCycle(draw) {
     }
 
     // Update execution index based on PC
-    get_execution_index(draw);
+    // get_execution_index(draw);
 
     // Handle any pending interruptions
     handle_interruptions(draw);
@@ -478,14 +452,14 @@ export function executeProgramOneShot(limit_n_instructions) {
     let ret = null;
 
     // Google Analytics
-    creator_ga("execute", "execute.run")
+    creator_ga("execute", "execute.run");
 
     // execute program
     for (let i = 0; i < limit_n_instructions; i++) {
         ret = step();
 
         if (ret.error === true) {
-            return ret
+            return ret;
         }
         if (status.execution_index < -1) {
             return ret;
@@ -504,7 +478,7 @@ export function executeProgramOneShot(limit_n_instructions) {
 
 export function creator_executor_exit(error) {
     // Google Analytics
-    creator_ga("execute", "execute.exit")
+    creator_ga("execute", "execute.exit");
 
     if (error) {
         status.execution_index = -1;
@@ -517,8 +491,8 @@ export function creator_executor_exit(error) {
  */
 
 export function crex_show_notification(msg, level) {
-    if (typeof window !== "undefined") show_notification(msg, level)
-    else console.log(level.toUpperCase() + ": " + msg)
+    if (typeof window !== "undefined") show_notification(msg, level);
+    else console.log(level.toUpperCase() + ": " + msg);
 }
 // Modify the stack limit
 
@@ -530,10 +504,10 @@ export function writeStackLimit(stackLimit) {
         warning: [],
         danger: [],
         flash: [],
-    }
+    };
 
     if (stackLimit == null) {
-        return
+        return;
     }
 
     // Convert to BigInt if not already

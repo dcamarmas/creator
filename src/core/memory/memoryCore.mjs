@@ -165,7 +165,7 @@ export function main_memory_read_default_value(addr) {
     return main_memory_read(addr).def_bin;
 }
 //// Read/write nbytes
-function main_memory_read_nbytes(addr, n) {
+export function main_memory_read_nbytes(addr, n) {
     addr = BigInt(addr);
     let value = "";
 

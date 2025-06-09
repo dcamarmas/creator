@@ -31,6 +31,7 @@ import {
     arch,
     dumpMemory,
     REGISTERS,
+    wasm,
 } from "../core.mjs";
 import {
     creator_memory_prereset,

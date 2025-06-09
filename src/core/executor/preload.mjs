@@ -281,21 +281,18 @@ export function collectDefinitions(
     return definitions;
 }
 
-export function buildInstructionPreload(
-    signatureDef,
-    instructionExec,
-    instructionExecParts,
-    signatureRawParts,
-    signatureParts,
-    auxDef,
-    preload,
-    execution_index,
-) {
-    if (typeof preload !== "undefined") {
-        return null;
-    }
+export function buildInstructionPreload(decoded) {
+    // Extract properties from decoded object
+    const {
+        signatureDef,
+        instructionExec,
+        signatureRawParts,
+        signatureParts,
+        auxDef,
+    } = decoded;
+
     // Extract instruction parts
-    instructionExecParts = handleInstructionMatch(
+    const instructionExecParts = handleInstructionMatch(
         instructionExec,
         signatureDef,
     );
@@ -336,20 +333,14 @@ export function buildInstructionPreload(
         writings,
     ].join("");
 
-    // Create preload function
-    eval(
-        "instructions[" +
-            execution_index +
-            "].preload = function(elto) { " +
-            "   try {\n" +
-            finalDef.replace(/this./g, "elto.") +
-            "\n" +
-            "   }\n" +
-            "   catch(e){\n" +
-            "     throw e;\n" +
-            "   }\n" +
-            "}; ",
-    );
+    // Create and return preload function
+    const preloadFunction = function () {
+        try {
+            eval(finalDef);
+        } catch (e) {
+            throw e;
+        }
+    };
 
-    return null;
+    return preloadFunction;
 }

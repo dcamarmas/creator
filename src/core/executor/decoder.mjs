@@ -22,17 +22,7 @@ import { architecture, ENDIANNESS, REGISTERS, WORDSIZE } from "../core.mjs";
 import { logger } from "../utils/creator_logger.mjs";
 const BINARY_BASE = 2;
 const DECIMAL_BASE = 10;
-
-// Custom fields (rounding mode)
-
-const ROUNDING_MODE = {
-    0: "rne",
-    1: "rtz",
-    2: "rdn",
-    3: "rup",
-    4: "rmm",
-    7: "dyn",
-};
+let instructionLookupCache = null;
 
 /**
  * Returns the register name given its binary representation and type
@@ -70,8 +60,8 @@ function get_register_binary(type, binaryValue) {
 /**
  * Finds the position of the operation code field within the instruction fields
  *
- * @param {Array} fields - Array of instruction fields
- * @returns {Object|null} - An object with startbit and stopbit properties, or null if found
+ * @param {Array<Object>} fields - Array of instruction fields
+ * @returns {Object|null} - An object with startbit, stopbit, and value properties, or null if not found
  */
 function extractOpcode(fields) {
     for (const field of fields) {
@@ -80,6 +70,7 @@ function extractOpcode(fields) {
             let stopbit = null;
             let value = null;
             try {
+                // Keep the original calculation for backward compatibility
                 startbit =
                     WORDSIZE - 1 - parseInt(field.startbit, DECIMAL_BASE);
                 stopbit = WORDSIZE - parseInt(field.stopbit, DECIMAL_BASE);
@@ -98,30 +89,12 @@ function extractOpcode(fields) {
     return null;
 }
 
-function checkCopFields(instruction, instructionExec) {
-    let numCopFields = 0;
-    let numMatchingCopFields = 0;
-
-    for (const field of instruction.fields) {
-        if (field.type !== "cop") {
-            continue;
-        }
-
-        numCopFields++;
-
-        const fieldValue = instructionExec.substring(
-            instruction.nwords * (WORDSIZE - 1) - field.startbit,
-            instruction.nwords * WORDSIZE - field.stopbit,
-        );
-
-        if (field.valueField === fieldValue) {
-            numMatchingCopFields++;
-        }
-    }
-
-    return numCopFields === numMatchingCopFields;
-}
-
+/**
+ * Converts a binary string to a signed integer value using two's complement
+ *
+ * @param {string} binaryValue - The binary string to convert
+ * @returns {number} The signed integer value
+ */
 function convertToSignedValue(binaryValue) {
     let value = parseInt(binaryValue, BINARY_BASE);
     if (binaryValue.charAt(0) === "1") {
@@ -151,6 +124,14 @@ function computeBitsOrder(startbit, stopbit) {
     return bitsOrder;
 }
 
+/**
+ * Processes a single instruction field and extracts its value from the binary instruction
+ *
+ * @param {Object} field - The instruction field definition object
+ * @param {string} instructionExec - The binary instruction string
+ * @param {number} instruction_nwords - Number of words in the instruction
+ * @returns {string|number|null} The extracted field value or null if not applicable
+ */
 // eslint-disable-next-line max-lines-per-function
 function processInstructionField(field, instructionExec, instruction_nwords) {
     let value = null;
@@ -185,6 +166,39 @@ function processInstructionField(field, instructionExec, instruction_nwords) {
             }
 
             value = get_register_binary(convertedType, bin);
+            break;
+        }
+        case "enum": {
+            const binaryValue = instructionExec.substring(
+                instruction_nwords * (WORDSIZE - 1) - field.startbit,
+                instruction_nwords * WORDSIZE - field.stopbit,
+            );
+
+            // Convert to unsigned decimal
+            const decimalValue = parseInt(binaryValue, BINARY_BASE);
+
+            // Get the enum definition from architecture
+            if (architecture.enums && architecture.enums[field.enum_name]) {
+                const enumDef = architecture.enums[field.enum_name];
+
+                // Find the enum name that corresponds to this value
+                for (const [enumName, enumValue] of Object.entries(enumDef)) {
+                    if (enumValue === decimalValue) {
+                        value = enumName;
+                        // TODO: This is hardcoded and specific to RISC-V. Remove this.
+                        // For "dyn" (7), which is the default rounding mode, return null
+                        // so it can be omitted in the output
+                        if (enumName === "dyn") {
+                            value = null;
+                        }
+                        break;
+                    }
+                }
+            } else {
+                logger.error(
+                    `Enum ${field.enum_name} not found in architecture`,
+                );
+            }
             break;
         }
         case "inm-signed":
@@ -271,31 +285,6 @@ function processInstructionField(field, instructionExec, instruction_nwords) {
                 ) {
                     value = convertToSignedValue(binaryValue);
                 }
-                /* TODO TODO TODO */
-                // Handle custom fields
-                if (field.custom === "rounding-mode") {
-                    // Get binary value as unsigned
-                    const binaryValue = instructionExec.substring(
-                        instruction_nwords * (WORDSIZE - 1) - field.startbit,
-                        instruction_nwords * WORDSIZE - field.stopbit,
-                    );
-
-                    // Convert to unsigned decimal
-                    const decimalValue = parseInt(binaryValue, BINARY_BASE);
-
-                    // Check if the value is a valid rounding mode
-                    if (decimalValue in ROUNDING_MODE) {
-                        value = ROUNDING_MODE[decimalValue];
-
-                        // For "dyn" (7), which is the default rounding mode, return null
-                        // so it can be omitted in the output
-                        if (decimalValue === 7) {
-                            value = null;
-                        }
-                    } else {
-                        logger.error("Invalid rounding mode: " + decimalValue);
-                    }
-                }
             }
 
             break;
@@ -348,7 +337,14 @@ function replaceRegisterNames(instructionParts) {
  * Parse signature definition and create regex for instruction matching
  *
  * @param {Object} instruction - The instruction object containing signature information
+ * @param {string} instruction.signature_definition - The signature definition pattern
+ * @param {string} instruction.signature - The instruction signature
+ * @param {string} instruction.signatureRaw - The raw instruction signature
  * @returns {Object} Object containing parsed signature elements
+ * @returns {string} returns.signatureDef - Processed signature definition
+ * @returns {string} returns.signature - Processed signature
+ * @returns {RegExpMatchArray|null} returns.signatureMatch - Regex match result for signature
+ * @returns {RegExpMatchArray|null} returns.signatureRawMatch - Regex match result for raw signature
  */
 function parseSignatureDefinition(instruction) {
     let signatureDef = instruction.signature_definition.replace(
@@ -369,205 +365,357 @@ function parseSignatureDefinition(instruction) {
     };
 }
 
-// eslint-disable-next-line max-lines-per-function
-function decodeBinaryFormat(
-    instruction,
-    encodedInstruction,
-    newFormat = false,
-) {
-    // First check if the opcode matches
-    const opcode = extractOpcode(instruction.fields);
-    const binaryOpcode = encodedInstruction.substring(
-        opcode.startbit,
-        opcode.stopbit,
+/**
+ * Builds a lookup table for fast instruction matching
+ * Groups instructions by opcode and creates bit masks for function fields
+ *
+ * @returns {Map<string, Array<Object>>} A map where keys are opcode identifiers and values are arrays of instruction candidates
+ */
+function buildInstructionLookupTable() {
+    if (instructionLookupCache) {
+        return instructionLookupCache;
+    }
+
+    const lookupTable = new Map();
+
+    for (const instruction of architecture.instructions) {
+        const opcodeField = extractOpcode(instruction.fields);
+        if (!opcodeField) continue;
+
+        const key = `${opcodeField.value}_${opcodeField.startbit}_${opcodeField.stopbit}`;
+
+        if (!lookupTable.has(key)) {
+            lookupTable.set(key, []);
+        }
+
+        // Pre-compute function field masks for this instruction
+        const functionMasks = [];
+        for (const field of instruction.fields) {
+            if (field.type === "cop") {
+                functionMasks.push({
+                    startbit:
+                        instruction.nwords * (WORDSIZE - 1) - field.startbit,
+                    stopbit: instruction.nwords * WORDSIZE - field.stopbit,
+                    expectedValue: field.valueField,
+                });
+            }
+        }
+
+        lookupTable.get(key).push({
+            instruction,
+            functionMasks,
+            opcodeInfo: opcodeField,
+        });
+    }
+
+    instructionLookupCache = lookupTable;
+    return lookupTable;
+}
+
+/**
+ * Checks if two instructions only differ by one having an enum field
+ * Returns the instruction with the enum field if applicable, null otherwise
+ *
+ * @param {Object} inst1 - First instruction object to compare
+ * @param {Object} inst2 - Second instruction object to compare
+ * @returns {Object|null} The instruction with enum field preference or null if no preference can be determined
+ */
+function checkEnumFieldPreference(inst1, inst2) {
+    // Get fields that have an order (excluding co and cop fields)
+    const fields1 = inst1.fields.filter(
+        f => f.type !== "co" && f.type !== "cop",
+    );
+    const fields2 = inst2.fields.filter(
+        f => f.type !== "co" && f.type !== "cop",
     );
 
-    if (!opcode || opcode.value !== binaryOpcode) {
+    // If different number of fields, can't match
+    if (fields1.length !== fields2.length) {
         return null;
     }
 
-    if (!checkCopFields(instruction, encodedInstruction)) {
-        return null;
+    // Sort fields by position for comparison
+    const sortedFields1 = fields1.sort((a, b) => a.startbit - b.startbit);
+    const sortedFields2 = fields2.sort((a, b) => a.startbit - b.startbit);
+
+    let enumDifferences = 0;
+    let enumInstruction = null;
+
+    // Compare fields at each position
+    for (let i = 0; i < sortedFields1.length; i++) {
+        const field1 = sortedFields1[i];
+        const field2 = sortedFields2[i];
+
+        // Check if fields are at the same position
+        if (
+            field1.startbit !== field2.startbit ||
+            field1.stopbit !== field2.stopbit
+        ) {
+            // Fields don't match by position, can't determine preference
+            return null;
+        }
+
+        // Check if types differ and one is enum
+        if (field1.type !== field2.type) {
+            if (field1.type === "enum" && field2.type !== "enum") {
+                enumDifferences++;
+                enumInstruction = inst1;
+            } else if (field2.type === "enum" && field1.type !== "enum") {
+                enumDifferences++;
+                enumInstruction = inst2;
+            } else {
+                // Types differ but neither is enum, or both are enum
+                return null;
+            }
+        }
     }
 
-    // If we get here we found a match
+    // Return the instruction with enum field only if there's exactly one difference
+    return enumDifferences === 1 ? enumInstruction : null;
+}
 
-    // Process each field
-    let instructionArray = [];
+/**
+ * Fast instruction matching using pre-computed lookup table
+ *
+ * @param {string} binaryInstruction - The binary instruction string to match
+ * @returns {Object|null} The matching instruction object or null if no match found
+ */
+function findMatchingInstruction(binaryInstruction) {
+    const lookupTable = buildInstructionLookupTable();
+    const matchingInstructions = [];
+    // Try different opcode positions and sizes
+    const instructionLength = binaryInstruction.length;
+
+    for (const [key, candidates] of lookupTable) {
+        const [opcodeValue, startBitStr, stopBitStr] = key.split("_");
+        const startBit = parseInt(startBitStr, 10);
+        const stopBit = parseInt(stopBitStr, 10);
+        const opcodeSize = stopBit - startBit;
+
+        // Extract opcode from instruction at the expected position
+        let extractedOpcode;
+        if (startBit === 0) {
+            // Opcode at the beginning
+            extractedOpcode = binaryInstruction.substring(0, opcodeSize);
+        } else if (stopBit === instructionLength) {
+            // Opcode at the end
+            extractedOpcode = binaryInstruction.substring(startBit);
+        } else {
+            // Opcode in the middle
+            extractedOpcode = binaryInstruction.substring(startBit, stopBit);
+        }
+
+        if (extractedOpcode !== opcodeValue) continue;
+
+        // Check candidates with this opcode
+        for (const candidate of candidates) {
+            if (candidate.functionMasks.length === 0) {
+                // No function fields to check
+                return candidate.instruction;
+            }
+
+            // Check all function fields
+            let allMatch = true;
+            for (const mask of candidate.functionMasks) {
+                const fieldValue = binaryInstruction.substring(
+                    mask.startbit,
+                    mask.stopbit,
+                );
+                if (fieldValue !== mask.expectedValue) {
+                    allMatch = false;
+                    break;
+                }
+            }
+
+            if (allMatch) {
+                matchingInstructions.push(candidate.instruction);
+            }
+        }
+
+        // If more than one match, check for enum field preference
+        if (matchingInstructions.length > 1) {
+            // This is a workaround due to the assembler not supporting
+            // optional fields in the signature definition.
+            // The way we fix this is by duplicating the instruction
+            // in the architecture file. However, this breaks the
+            // instruction matching logic, so we need to handle it here.
+
+            // Check if we have exactly 2 matches and they only differ by an enum field
+            if (matchingInstructions.length === 2) {
+                const inst1 = matchingInstructions[0];
+                const inst2 = matchingInstructions[1];
+
+                // Compare fields to see if they only differ in one field having enum type
+                const enumPreference = checkEnumFieldPreference(inst1, inst2);
+                if (enumPreference !== null) {
+                    return enumPreference;
+                }
+            }
+
+            logger.error(
+                `Ambiguous instruction match for opcode ${opcodeValue} (found ${matchingInstructions.length} matches)`,
+            );
+            return null;
+        }
+        if (matchingInstructions.length === 1) {
+            return matchingInstructions[0];
+        }
+    }
+
+    return null;
+}
+
+/**
+ * Processes all instruction fields and returns a map of ordered results
+ *
+ * @param {Object} instruction - The instruction definition object
+ * @param {string} binaryInstruction - The binary instruction string
+ * @returns {Map<number, string|number>} Map of field order to processed field values
+ */
+function processAllFields(instruction, binaryInstruction) {
+    const results = new Map();
+
     for (const field of instruction.fields) {
-        let value = processInstructionField(
+        if (!field.order && field.type !== "co") continue;
+
+        const value = processInstructionField(
             field,
-            encodedInstruction,
+            binaryInstruction,
             instruction.nwords,
         );
+
         if (field.type === "co") {
-            value = instruction.name;
-        }
-        if (Object.hasOwn(field, "order")) {
-            if (Object.hasOwn(field, "prefix")) {
-                value = field.prefix + value;
-            }
-            if (Object.hasOwn(field, "suffix")) {
-                value += field.suffix;
-            }
-            if (value !== null) {
-                instructionArray[field.order] = value;
-            }
+            results.set(field.order || 0, instruction.name);
+        } else if (value !== null) {
+            let finalValue = value;
+
+            // Apply prefix/suffix if specified
+            if (field.prefix) finalValue = field.prefix + finalValue;
+            if (field.suffix) finalValue += field.suffix;
+
+            results.set(field.order, finalValue);
         }
     }
 
-    if (instructionArray.length === 0) {
-        logger.error(
-            "instructionArray is empty! Did you forget the 'order' field?",
-        );
-        return null;
-    }
-
-    const instruction_loaded = instructionArray.join(" ");
-    if (newFormat) {
-        return instruction_loaded;
-    }
-    // Extract signature parts from decoded instruction
-    const parsedSignature = parseSignatureDefinition(instruction);
-
-    return {
-        signatureDef: parsedSignature.signatureDef,
-        instruction_loaded,
-        signatureParts: Array.from(parsedSignature.signatureMatch).slice(1),
-        signatureRawParts: Array.from(parsedSignature.signatureRawMatch).slice(
-            1,
-        ),
-    };
+    return results;
 }
 
-function decodeAssemblyFormat(instruction, instructionExecParts) {
-    const auxSig = instruction.signatureRaw.split(" ");
-    if (
-        instruction.name !== instructionExecParts[0] ||
-        instructionExecParts.length !== auxSig.length
-    ) {
-        return null;
-    }
-
-    const parsedSignature = parseSignatureDefinition(instruction);
-
-    if (!parsedSignature.signatureMatch || !parsedSignature.signatureRawMatch) {
-        return null;
-    }
+/**
+ * Formats the decoded instruction in legacy format for backward compatibility
+ *
+ * @param {Object} matchedInstruction - The matched instruction definition
+ * @param {string} instruction_loaded - The assembled instruction string
+ * @returns {Object} Legacy format object with instruction details
+ * @returns {string} returns.type - Instruction type
+ * @returns {string} returns.signatureDef - Signature definition
+ * @returns {Array<string>} returns.signatureParts - Parsed signature parts
+ * @returns {Array<string>} returns.signatureRawParts - Parsed raw signature parts
+ * @returns {string} returns.instructionExec - Instruction execution string
+ * @returns {Array<string>} returns.instructionExecParts - Instruction parts
+ * @returns {Array<string>} returns.instructionExecPartsWithProperNames - Instruction parts with proper register names
+ * @returns {string} returns.auxDef - Instruction definition
+ * @returns {number} returns.nwords - Number of words
+ * @returns {boolean} returns.binary - Binary flag
+ */
+function legacyFormat(matchedInstruction, instruction_loaded) {
+    const parsedSignature = parseSignatureDefinition(matchedInstruction);
+    const instructionExecParts = instruction_loaded.split(" ");
+    const instructionExecPartsWithProperNames =
+        replaceRegisterNames(instructionExecParts);
 
     return {
-        type: instruction.type,
+        type: matchedInstruction.type,
         signatureDef: parsedSignature.signatureDef,
         signatureParts: Array.from(parsedSignature.signatureMatch).slice(1),
         signatureRawParts: Array.from(parsedSignature.signatureRawMatch).slice(
             1,
         ),
-        auxDef: instruction.definition,
-        nwords: instruction.nwords,
+        instructionExec: instruction_loaded,
+        instructionExecParts: instructionExecParts,
+        instructionExecPartsWithProperNames:
+            instructionExecPartsWithProperNames,
+        auxDef: matchedInstruction.definition,
+        nwords: matchedInstruction.nwords,
+        binary: true,
     };
 }
 
-// eslint-disable-next-line max-lines-per-function
+/**
+ * Decodes a binary or hexadecimal instruction into its assembly representation
+ *
+ * @param {string} toDecode - The instruction to decode (binary, hex, or assembly)
+ * @param {boolean} [newFormat=false] - Whether to use new format (just return instruction string) or legacy format
+ * @param {boolean} [skipEndianness=false] - Whether to skip endianness conversion
+ * @returns {string|Object} Decoded instruction as string (newFormat=true) or legacy object (newFormat=false)
+ * @throws {Error} When instruction cannot be decoded or is unknown
+ */
 export function decode_instruction(
     toDecode,
     newFormat = false,
-    skipEndianness = false, // Used in the unit tests to skip endianness check
+    skipEndianness = false,
 ) {
     const toDecodeArray = toDecode.split(" ");
     const isBinary = /^[01]+$/.test(toDecodeArray[0]);
     const isHex = /^0x[0-9a-fA-F]+$/.test(toDecodeArray[0]);
+    let binaryInstruction = toDecode;
 
     // Convert hex to binary if needed
     if (isHex) {
-        const hexValue = toDecodeArray[0].slice(2); // Remove "0x" prefix
-        // Calculate the number of bits needed (4 bits per hex digit)
+        const hexValue = toDecodeArray[0].slice(2);
         const numBits = hexValue.length * 4;
-        const binaryValue = parseInt(hexValue, 16)
+        binaryInstruction = parseInt(hexValue, 16)
             .toString(2)
             .padStart(numBits, "0");
-        toDecode = binaryValue;
     }
 
-    // Process based on instruction type (binary, hex converted to binary, or assembly)
-    if (isBinary || isHex) {
-        if (ENDIANNESS === "little_endian" && !skipEndianness) {
-            // Split by byte
-            const byteSize = 8;
-            let bytes = [];
-            for (let i = 0; i < toDecode.length; i += byteSize) {
-                bytes.push(toDecode.substr(i, byteSize));
-            }
-            // Reverse the byte order
-            bytes = bytes.reverse();
-            // Join the bytes back together
-            toDecode = bytes.join("");
+    // Handle endianness if needed
+    if (ENDIANNESS === "little_endian" && !skipEndianness) {
+        const byteSize = 8;
+        let bytes = [];
+        for (let i = 0; i < binaryInstruction.length; i += byteSize) {
+            bytes.push(binaryInstruction.substr(i, byteSize));
         }
+        bytes = bytes.reverse();
+        binaryInstruction = bytes.join("");
+    }
 
-        // Try to decode binary format
-        for (const instruction of architecture.instructions) {
-            const decodedBinary = decodeBinaryFormat(
-                instruction,
-                toDecode,
-                newFormat,
-            );
-            if (decodedBinary) {
-                if (newFormat) {
-                    return decodedBinary;
-                }
+    // Use fast instruction matching
+    const matchedInstruction = findMatchingInstruction(binaryInstruction);
 
-                // Get instruction parts and create a version with proper register names
-                const instructionExecParts =
-                    decodedBinary.instruction_loaded.split(" ");
-                const instructionExecPartsWithProperNames =
-                    replaceRegisterNames(instructionExecParts);
-
-                return {
-                    type: instruction.type,
-                    signatureDef: decodedBinary.signatureDef,
-                    signatureParts: decodedBinary.signatureParts,
-                    signatureRawParts: decodedBinary.signatureRawParts,
-                    instructionExec: decodedBinary.instruction_loaded,
-                    instructionExecParts: instructionExecParts,
-                    instructionExecPartsWithProperNames:
-                        instructionExecPartsWithProperNames,
-                    auxDef: instruction.definition,
-                    nwords: instruction.nwords,
-                    binary: true,
-                };
-            }
+    if (!matchedInstruction) {
+        let errorValue;
+        if (isHex) {
+            errorValue = toDecodeArray[0].toUpperCase();
+        } else if (isBinary) {
+            errorValue = `0x${parseInt(binaryInstruction, 2).toString(16).toUpperCase()}`;
+        } else {
+            errorValue = `"${toDecode}"`;
         }
+        throw new Error(`Unknown Instruction: ${errorValue}`);
+    }
+
+    // Process all fields efficiently
+    const fieldResults = processAllFields(
+        matchedInstruction,
+        binaryInstruction,
+    );
+
+    // Build instruction array from ordered results
+    const maxOrder = Math.max(...fieldResults.keys());
+    const instructionArray = new Array(maxOrder + 1);
+
+    for (const [order, value] of fieldResults) {
+        instructionArray[order] = value;
+    }
+
+    // Filter out undefined elements and join
+    const instruction_loaded = instructionArray
+        .filter(x => x !== undefined)
+        .join(" ");
+
+    if (newFormat) {
+        return instruction_loaded;
     } else {
-        // Try to decode assembly format
-        for (const instruction of architecture.instructions) {
-            const decodedAssembly = decodeAssemblyFormat(
-                instruction,
-                toDecodeArray,
-            );
-            if (decodedAssembly) {
-                // Create a version with proper register names
-                const instructionExecPartsWithProperNames =
-                    replaceRegisterNames(toDecodeArray);
-
-                return {
-                    ...decodedAssembly,
-                    instructionExec: toDecode,
-                    instructionExecParts: toDecodeArray,
-                    instructionExecPartsWithProperNames,
-                    binary: false,
-                };
-            }
-        }
+        return legacyFormat(matchedInstruction, instruction_loaded);
     }
-
-    // No match found
-    let errorValue;
-    if (isHex) {
-        errorValue = toDecodeArray[0].toUpperCase();
-    } else if (isBinary) {
-        errorValue = `0x${parseInt(toDecode, 2).toString(16).toUpperCase()}`;
-    } else {
-        errorValue = `"${toDecode}"`;
-    }
-
-    throw new Error(`Unknown Instruction: ${errorValue}`);
 }

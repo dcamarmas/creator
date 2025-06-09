@@ -1797,8 +1797,8 @@ instructions:
               - field: funct7
                 value: "0000000"
               - field: funct3
-                type: inm-unsigned # We're overriding the funct3 field from the template
-                custom: rounding-mode
+                type: enum
+                enum_name: rounding_mode
                 optional: true
                 order: 4
           preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2);"
@@ -1836,9 +1836,9 @@ instructions:
                 value: "1101000"
               - field: funct5
                 value: "00000"
-              - field: funct3 # In this instruction, there is no "funct3", instead we have a rounding mode field.
-                type: inm-unsigned
-                custom: rounding-mode
+              - field: funct3
+                type: enum
+                enum_name: rounding_mode
                 optional: true
                 order: 3
           postoperation: "rd = CAPI.RISCV.toBigInt(rd,'NaNBfloat32_64');"
@@ -1854,8 +1854,8 @@ instructions:
               - field: funct5
                 value: "00001"
               - field: funct3
-                type: inm-unsigned
-                custom: rounding-mode
+                type: enum
+                enum_name: rounding_mode
                 optional: true
                 order: 3
           definition: "rd = CAPI.FP.int2uint(rs1)"
@@ -1870,8 +1870,8 @@ instructions:
               - field: funct5
                 value: "00000"
               - field: funct3
-                type: inm-unsigned
-                custom: rounding-mode
+                type: enum
+                enum_name: rounding_mode
                 optional: true
                 order: 3
           preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); if (typeof rs2 !== 'undefined') { [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2); }"
@@ -1888,8 +1888,8 @@ instructions:
               - field: funct5
                 value: "00001"
               - field: funct3
-                type: inm-unsigned
-                custom: rounding-mode
+                type: enum
+                enum_name: rounding_mode
                 optional: true
                 order: 3
           preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); if (typeof rs2 !== 'undefined') { [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2); }"
@@ -1904,8 +1904,8 @@ instructions:
               - field: funct7
                 value: "0001100"
               - field: funct3
-                type: inm-unsigned
-                custom: rounding-mode
+                type: enum
+                enum_name: rounding_mode
                 optional: true
                 order: 4
           preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2);"
@@ -1991,8 +1991,8 @@ instructions:
               - field: funct7
                 value: "0001000"
               - field: funct3
-                type: inm-unsigned
-                custom: rounding-mode
+                type: enum
+                enum_name: rounding_mode
                 optional: true
                 order: 4
           preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2);"
@@ -2075,13 +2075,13 @@ instructions:
                 value: "1010011"
               - field: funct7
                 value: "0101100"
-              - field: rs2 # In this instruction, rs2 is more like a funct5
+              - field: rs2
                 type: cop
                 value: "00000"
                 order: null
               - field: funct3
-                type: inm-unsigned
-                custom: rounding-mode
+                type: enum
+                enum_name: rounding_mode
                 optional: true
                 order: 3
           preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); if (typeof rs2 !== 'undefined') { [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2); }"
@@ -2096,8 +2096,8 @@ instructions:
               - field: funct7
                 value: "0000100"
               - field: funct3
-                type: inm-unsigned
-                custom: rounding-mode
+                type: enum
+                enum_name: rounding_mode
                 optional: true
                 order: 4
           preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2);"
@@ -2113,8 +2113,8 @@ instructions:
               - field: funct2
                 value: "00"
               - field: funct3
-                type: inm-unsigned
-                custom: rounding-mode
+                type: enum
+                enum_name: rounding_mode
                 optional: true
                 order: 5
           preoperation: "let type_rs1, type_rs2, type_rs3; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2); [rs3,type_rs3] = CAPI.RISCV.toJSNumberD(rs3);"
@@ -2129,8 +2129,8 @@ instructions:
               - field: funct2
                 value: "00"
               - field: funct3
-                type: inm-unsigned
-                custom: rounding-mode
+                type: enum
+                enum_name: rounding_mode
                 optional: true
                 order: 5
           preoperation: "let type_rs1, type_rs2, type_rs3; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2); [rs3,type_rs3] = CAPI.RISCV.toJSNumberD(rs3);"
@@ -2145,8 +2145,8 @@ instructions:
               - field: funct2
                 value: "00"
               - field: funct3
-                type: inm-unsigned
-                custom: rounding-mode
+                type: enum
+                enum_name: rounding_mode
                 optional: true
                 order: 5
           preoperation: "let type_rs1, type_rs2, type_rs3; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2); [rs3,type_rs3] = CAPI.RISCV.toJSNumberD(rs3);"
@@ -2161,8 +2161,8 @@ instructions:
               - field: funct2
                 value: "00"
               - field: funct3
-                type: inm-unsigned
-                custom: rounding-mode
+                type: enum
+                enum_name: rounding_mode
                 optional: true
                 order: 5
           preoperation: "let type_rs1, type_rs2, type_rs3; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2); [rs3,type_rs3] = CAPI.RISCV.toJSNumberD(rs3);"
@@ -2208,8 +2208,8 @@ instructions:
               - field: funct7
                 value: "0000001"
               - field: funct3
-                type: inm-unsigned # We're overriding the funct3 field from the template
-                custom: rounding-mode
+                type: enum
+                enum_name: rounding_mode
                 optional: true
                 order: 4
           preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2);"
@@ -2251,8 +2251,8 @@ instructions:
               # NOTICE: This specific instruction has a rounding mode, but it's NOT USED.
               # A conversion from float to double doesn't need a rounding mode.
               - field: funct3
-                type: inm-unsigned
-                custom: rounding-mode
+                type: enum
+                enum_name: rounding_mode
                 optional: true
                 order: null
           preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); if (typeof rs2 !== 'undefined') { [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2); }"
@@ -2271,8 +2271,8 @@ instructions:
               # NOTICE: This specific instruction has a rounding mode, but it's NOT USED.
               # A conversion from float to double doesn't need a rounding mode.
               - field: funct3
-                type: inm-unsigned
-                custom: rounding-mode
+                type: enum
+                enum_name: rounding_mode
                 optional: true
                 order: null
               - field: rd
@@ -2294,8 +2294,8 @@ instructions:
               # NOTICE: This specific instruction has a rounding mode, but it's NOT USED.
               # A conversion from float to double doesn't need a rounding mode.
               - field: funct3
-                type: inm-unsigned
-                custom: rounding-mode
+                type: enum
+                enum_name: rounding_mode
                 optional: true
                 order: null
               - field: rd
@@ -2316,8 +2316,8 @@ instructions:
               - field: funct5
                 value: "00001"
               - field: funct3
-                type: inm-unsigned
-                custom: rounding-mode
+                type: enum
+                enum_name: rounding_mode
                 optional: true
                 order: 3
               - field: rd
@@ -2338,8 +2338,8 @@ instructions:
               - field: funct5
                 value: "00000"
               - field: funct3
-                type: inm-unsigned
-                custom: rounding-mode
+                type: enum
+                enum_name: rounding_mode
                 optional: true
                 order: 3
               - field: rd
@@ -2360,8 +2360,8 @@ instructions:
               - field: funct5
                 value: "00001"
               - field: funct3
-                type: inm-unsigned
-                custom: rounding-mode
+                type: enum
+                enum_name: rounding_mode
                 optional: true
                 order: 3
               - field: rd
@@ -2380,8 +2380,8 @@ instructions:
               - field: funct7
                 value: "0001101"
               - field: funct3
-                type: inm-unsigned
-                custom: rounding-mode
+                type: enum
+                enum_name: rounding_mode
                 optional: true
                 order: 4
           preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2);"
@@ -2468,8 +2468,8 @@ instructions:
               - field: funct7
                 value: "0001001"
               - field: funct3
-                type: inm-unsigned
-                custom: rounding-mode
+                type: enum
+                enum_name: rounding_mode
                 optional: true
                 order: 4
           preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2);"
@@ -2522,13 +2522,13 @@ instructions:
                 value: "1010011"
               - field: funct7
                 value: "0101101"
-              - field: rs2 # In this instruction, rs2 is more like a funct5
+              - field: rs2
                 type: cop
                 value: "00000"
                 order: null
               - field: funct3
-                type: inm-unsigned
-                custom: rounding-mode
+                type: enum
+                enum_name: rounding_mode
                 optional: true
                 order: 3
           preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); if (typeof rs2 !== 'undefined') { [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2); }"
@@ -2543,8 +2543,8 @@ instructions:
               - field: funct7
                 value: "0000101"
               - field: funct3
-                type: inm-unsigned
-                custom: rounding-mode
+                type: enum
+                enum_name: rounding_mode
                 optional: true
                 order: 4
           preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2);"
@@ -2560,8 +2560,8 @@ instructions:
               - field: funct2
                 value: "01"
               - field: funct3
-                type: inm-unsigned
-                custom: rounding-mode
+                type: enum
+                enum_name: rounding_mode
                 optional: true
                 order: 5
           preoperation: "let type_rs1, type_rs2, type_rs3; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2); [rs3,type_rs3] = CAPI.RISCV.toJSNumberD(rs3);"
@@ -2576,8 +2576,8 @@ instructions:
               - field: funct2
                 value: "01"
               - field: funct3
-                type: inm-unsigned
-                custom: rounding-mode
+                type: enum
+                enum_name: rounding_mode
                 optional: true
                 order: 5
           preoperation: "let type_rs1, type_rs2, type_rs3; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2); [rs3,type_rs3] = CAPI.RISCV.toJSNumberD(rs3);"
@@ -2592,8 +2592,8 @@ instructions:
               - field: funct2
                 value: "01"
               - field: funct3
-                type: inm-unsigned
-                custom: rounding-mode
+                type: enum
+                enum_name: rounding_mode
                 optional: true
                 order: 5
           preoperation: "let type_rs1, type_rs2, type_rs3; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2); [rs3,type_rs3] = CAPI.RISCV.toJSNumberD(rs3);"
@@ -2608,8 +2608,8 @@ instructions:
               - field: funct2
                 value: "01"
               - field: funct3
-                type: inm-unsigned
-                custom: rounding-mode
+                type: enum
+                enum_name: rounding_mode
                 optional: true
                 order: 5
           preoperation: "let type_rs1, type_rs2, type_rs3; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2); [rs3,type_rs3] = CAPI.RISCV.toJSNumberD(rs3);"
@@ -2904,3 +2904,13 @@ pseudoinstructions:
               - field: rs2
                 type: DFP-Reg
           definition: "fsgnjn.d rs1, rs2, rs2;"
+
+enums:
+    rounding_mode:
+        rne: 0
+        rtz: 1
+        rdn: 2
+        rup: 3
+        rmm: 4
+        dyn: 7
+        DEFAULT: dyn
