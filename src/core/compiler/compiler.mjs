@@ -17,7 +17,8 @@
  *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-"use strict"
+"use strict";
+import { parse } from "node:path";
 import {
     architecture,
     architecture_hash,
@@ -29,21 +30,22 @@ import {
     backup_stack_address,
     backup_data_address,
     arch,
-    dumpMemory,
     REGISTERS,
     wasm,
+    main_memory,
+    BYTESIZE,
 } from "../core.mjs";
-import {
-    creator_memory_prereset,
-    creator_memory_zerofill,
-} from "../memory/memoryManager.mjs";
-import {
-    creator_memory_clear,
-    creator_insert_instruction,
-    writeMemory,
-    creator_memory_data_compiler,
-    creator_memory_storestring,
-} from "../memory/memoryOperations.mjs";
+// import {
+//     creator_memory_prereset,
+//     creator_memory_zerofill,
+// } from "../memory/memoryManager.mjs";
+// import {
+//     creator_memory_clear,
+//     creator_insert_instruction,
+//     writeMemory,
+//     creator_memory_data_compiler,
+//     creator_memory_storestring,
+// } from "../memory/memoryOperations.mjs";
 import { bi_intToBigInt } from "../utils/bigint.mjs";
 import { creator_ga } from "../utils/creator_ga.mjs";
 import { logger, console_log } from "../utils/creator_logger.mjs";
@@ -51,27 +53,21 @@ import { bin2hex, isDeno, isWeb } from "../utils/utils.mjs";
 
 import { main_memory_zerofill } from "../memory/memoryCore.mjs";
 
-
 // Conditional import for the WASM compiler based on the environment (web or Deno)
-import {
-    DataCategoryJS as DataCategoryJS_web,
-} from "./web/creator_compiler.js"
-import {
-    DataCategoryJS as DataCategoryJS_deno,
-} from "./deno/creator_compiler.js"
+import { DataCategoryJS as DataCategoryJS_web } from "./web/creator_compiler.js";
+import { DataCategoryJS as DataCategoryJS_deno } from "./deno/creator_compiler.js";
 
-let DataCategoryJS
+let DataCategoryJS;
 if (isDeno) {
     // Deno HAS to be imported like this, as it doesn't provide a default
-    DataCategoryJS = DataCategoryJS_deno
+    DataCategoryJS = DataCategoryJS_deno;
 } else if (isWeb) {
-    DataCategoryJS = DataCategoryJS_web
+    DataCategoryJS = DataCategoryJS_web;
 } else {
     throw new Error(
         "Unsupported environment: neither Deno nor web browser detected",
-    )
+    );
 }
-
 
 let textarea_assembly_editor;
 const codemirrorHistory = null;
@@ -104,28 +100,28 @@ const compileError = {
         return String("Repeated tag: " + ret.token);
     },
     m2: function (ret) {
-        return "Instruction '" + ret.token + "' not found"
+        return "Instruction '" + ret.token + "' not found";
     },
     m3: function (ret) {
-        return "Incorrect instruction syntax for '" + ret.token + "'"
+        return "Incorrect instruction syntax for '" + ret.token + "'";
     },
     m4: function (ret) {
-        return "Register '" + ret.token + "' not found"
+        return "Register '" + ret.token + "' not found";
     },
     m5: function (ret) {
-        return "Immediate number '" + ret.token + "' is too big"
+        return "Immediate number '" + ret.token + "' is too big";
     },
     m6: function (ret) {
-        return "Immediate number '" + ret.token + "' is not valid"
+        return "Immediate number '" + ret.token + "' is not valid";
     },
     m7: function (ret) {
-        return "Tag '" + ret.token + "' is not valid"
+        return "Tag '" + ret.token + "' is not valid";
     },
     m8: function (ret) {
-        return "Address '" + ret.token + "' is too big"
+        return "Address '" + ret.token + "' is too big";
     },
     m9: function (ret) {
-        return "Address '" + ret.token + "' is not valid"
+        return "Address '" + ret.token + "' is not valid";
     },
     m10: function (ret) {
         return (
@@ -135,7 +131,7 @@ const compileError = {
         );
     },
     m11: function (ret) {
-        return "The space directive value should be positive and greater than zero"
+        return "The space directive value should be positive and greater than zero";
     },
     m12: function (ret) {
         return String(
@@ -149,7 +145,7 @@ const compileError = {
         return String("Invalid directive: " + ret.token);
     },
     m15: function (ret) {
-        return "Invalid value '" + ret.token + "' as number."
+        return "Invalid value '" + ret.token + "' as number.";
     },
     m16: function (ret) {
         return String('The string of characters must start with "' + ret.token);
@@ -158,17 +154,17 @@ const compileError = {
         return String('The string of characters must end with "' + ret.token);
     },
     m18: function (ret) {
-        return "Number '" + ret.token + "' is too big"
+        return "Number '" + ret.token + "' is too big";
     },
     m19: function (ret) {
-        return "Number '" + ret.token + "' is empty"
+        return "Number '" + ret.token + "' is empty";
     },
     //'m20': function(ret) { return "The text segment should start with '"       + ret.token + "'" },
     m21: function (ret) {
         return String("The data must be aligned" + ret.token);
     },
     m22: function (ret) {
-        return "The number should be positive '" + ret.token + "'"
+        return "The number should be positive '" + ret.token + "'";
     },
     m23: function (ret) {
         return String("Empty directive" + ret.token);
@@ -181,11 +177,11 @@ const compileError = {
         return String("Syntax error near line: " + ret.token);
     },
     m27: function (ret) {
-        return "Please check instruction syntax, inmediate ranges, register name, etc."
+        return "Please check instruction syntax, inmediate ranges, register name, etc.";
     },
-}
+};
 /*Promise*/
-let promise
+let promise;
 /*Simulator*/
 /*Displayed notifications*/
 const notifications = [];
@@ -194,7 +190,9 @@ export const example_set_available = [];
 export const example_available = [];
 /*Instructions memory*/
 export let instructions = [];
-export function clear_instructions() { instructions = [] }
+export function clear_instructions() {
+    instructions = [];
+}
 let instructions_tag = [];
 export let tag_instructions = {};
 let instructions_binary = [];
@@ -217,13 +215,13 @@ export function setInstructions(instructions_) {
 function packCompileError(err_code, err_token, err_ti, err_bgcolor) {
     const ret = {};
 
-    ret.status = "error"
-    ret.errorcode = err_code
-    ret.token = err_token
-    ret.type = err_ti
-    ret.bgcolor = err_bgcolor
-    ret.tokenIndex = tokenIndex
-    ret.line = nEnters
+    ret.status = "error";
+    ret.errorcode = err_code;
+    ret.token = err_token;
+    ret.type = err_ti;
+    ret.bgcolor = err_bgcolor;
+    ret.tokenIndex = tokenIndex;
+    ret.line = nEnters;
 
     // generic error
     if (typeof err_token === "undefined") {
@@ -231,7 +229,7 @@ function packCompileError(err_code, err_token, err_ti, err_bgcolor) {
         ret.token = "";
     }
 
-    ret.msg = compileError[err_code](ret)
+    ret.msg = compileError[err_code](ret);
 
     /*Google Analytics*/
     creator_ga("compile", "compile.error", "compile.error." + ret.msg);
@@ -241,21 +239,19 @@ function packCompileError(err_code, err_token, err_ti, err_bgcolor) {
         "compile.type_error." + err_code,
     );
 
-    return ret
+    return ret;
 }
 
 /*Compile assembly code*/
 // eslint-disable-next-line max-lines-per-function
 export function assembly_compiler(code, library, color) {
-
     /* Google Analytics */
-    creator_ga("compile", "compile.assembly")
+    creator_ga("compile", "compile.assembly");
 
     instructions = [];
     tag_instructions = {};
     data_tag = [];
-    creator_memory_clear();
-    extern = [];
+    main_memory.zeroOut();
     data = [];
     status.execution_init = 1;
 
@@ -285,10 +281,10 @@ export function assembly_compiler(code, library, color) {
     const labels_json = JSON.stringify(library_labels);
 
     /*Allocation of memory addresses*/
-    architecture.memory_layout[4].value = backup_stack_address
-    architecture.memory_layout[3].value = backup_data_address
-    data_address = parseInt(architecture.memory_layout[2].value)
-    stack_address = parseInt(architecture.memory_layout[4].value)
+    architecture.memory_layout[4].value = backup_stack_address;
+    architecture.memory_layout[3].value = backup_data_address;
+    data_address = parseInt(architecture.memory_layout[2].value);
+    stack_address = parseInt(architecture.memory_layout[4].value);
 
     for (let i = 0; i < REGISTERS.length; i++) {
         for (let j = 0; j < REGISTERS[i].elements.length; j++) {
@@ -458,63 +454,18 @@ export function assembly_compiler(code, library, color) {
         );
     }
 
-    /* Enter the compilated instructions in the text segment */
-    for (var i = library_instructions; i < instructions.length; i++) {
+    /* Enter the assembled instructions in the text segment */
+    for (let i = library_instructions; i < instructions.length; i++) {
         const instruction = instructions[i];
-        const hex = bin2hex(instruction.binary);
-        const auxAddr = parseInt(instruction.Address, 16);
-        const label = instruction.Label;
-        creator_insert_instruction(
-            auxAddr,
-            instruction.loaded,
-            instruction.loaded,
-            false,
-            hex,
-            "00",
-            label,
-        )
+        const baseAddr = parseInt(instruction.Address, 16);
+
+        // Split binary into bytes and write to memory
+        for (let j = 0; j < instruction.binary.length; j += BYTESIZE) {
+            const byte = parseInt(instruction.binary.substr(j, BYTESIZE), 2);
+            main_memory.write(baseAddr + j / BYTESIZE, byte);
+        }
     }
 
-    // Check for overlap
-    /*
-   * TODO: migrate to new memory model
-   *
-          if (memory[memory_hash[0]].length > 0)
-          {
-            if (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary[3].Addr > architecture.memory_layout[3].value) {
-              //tokenIndex = 0;
-              //nEnters = 0 ;
-              instructions = [];
-              pending_instructions = [];
-              pending_tags = [];
-              data_tag = [];
-              instructions_binary = [];
-              extern = [];
-              creator_memory_clear() ;
-              data = [];
-  
-              return packCompileError('m0', 'Data overflow', 'warning', "danger") ;
-            }
-          }
-  
-          if (memory[memory_hash[1]].length > 0)
-          {
-            if(memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary[3].Addr > architecture.memory_layout[1].value){
-              //tokenIndex = 0;
-              //nEnters = 0 ;
-              instructions = [];
-              pending_instructions = [];
-              pending_tags = [];
-              data_tag = [];
-              instructions_binary = [];
-              extern = [];
-              creator_memory_clear() ;
-              data = [];
-  
-              return packCompileError('m0', 'Instruction overflow', 'warning', "danger");
-            }
-          }
-  */
     /*Save binary*/
     for (const instruction of instructions_binary) {
         if (instruction.Label != "") {
@@ -536,22 +487,18 @@ export function assembly_compiler(code, library, color) {
             globl: x[1].global,
         }));
 
-    if (typeof document !== "undefined") document.app.$data.instructions = instructions
+    if (typeof document !== "undefined")
+        document.app.$data.instructions = instructions;
 
-    /* Initialize stack */
-    writeMemory("00", parseInt(stack_address), "word")
+    address = parseInt(architecture.memory_layout[0].value, 16);
+    data_address = parseInt(architecture.memory_layout[2].value, 16);
+    stack_address = parseInt(architecture.memory_layout[4].value, 16);
 
-    address = parseInt(architecture.memory_layout[0].value)
-    data_address = parseInt(architecture.memory_layout[2].value)
-    stack_address = parseInt(architecture.memory_layout[4].value)
-
-    // save current value as default values for reset()...
-    creator_memory_prereset();
     return {
         errorcode: "",
         token: "",
         type: "",
         update: "",
         status: "ok",
-    }
+    };
 }

@@ -27,8 +27,9 @@ import {
     clk_cycles_update,
     WORDSIZE,
     BYTESIZE,
+    main_memory,
 } from "../core.mjs";
-import { creator_memory_zerofill } from "../memory/memoryManager.mjs";
+// import { creator_memory_zerofill } from "../memory/memoryManager.mjs";
 import { readMemory } from "../memory/memoryOperations.mjs";
 import { crex_findReg_bytag } from "../register/registerLookup.mjs";
 import {
@@ -343,11 +344,14 @@ function executeInstructionAndHandlePC(draw) {
 function processCurrentInstruction(draw) {
     // 1. Fetch
     const pc_address = getPC();
-    const word = main_memory_read_nbytes(pc_address, WORDSIZE / BYTESIZE);
+    const wordBytes = main_memory.readBytes(pc_address, WORDSIZE / BYTESIZE);
+    const word = Array.from(new Uint8Array(wordBytes))
+        .map(byte => byte.toString(16).padStart(2, "0"))
+        .join("");
 
     // 2. Decode instruction
-    let instruction = decode_instruction("0x" + word);
-    // }
+    const instruction = decode_instruction("0x" + word);
+
     const { type, nwords } = instruction;
     // 3. Increment PC based on instruction size
     incrementProgramCounter(nwords);

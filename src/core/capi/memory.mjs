@@ -18,10 +18,8 @@
  *
  */
 "use strict";
-import { architecture } from "../core.mjs";
+import { architecture, main_memory } from "../core.mjs";
 import { creator_executor_exit } from "../executor/executor.mjs";
-import { writeMemory, readMemory } from "../memory/memoryOperations.mjs";
-import { creator_memory_value_by_type } from "../memory/memoryManager.mjs";
 import { isMisaligned, raise } from "./validation.mjs";
 import { crex_findReg } from "../register/registerLookup.mjs";
 import {
@@ -40,16 +38,13 @@ import {
  */
 // Memory operations
 export const MEM = {
-    write: function (addr, value, type, reg_name) {
-        // Implementation of capi_mem_write
-        const size = 1;
+    write: function (address, value, size, reg_name) {
+        // if (isMisaligned(addr, type)) {
+        //     raise("The memory must be align");
+        //     creator_executor_exit(true);
+        // }
 
-        if (isMisaligned(addr, type)) {
-            raise("The memory must be align");
-            creator_executor_exit(true);
-        }
-
-        const addr_16 = parseInt(addr, 16);
+        const addr_16 = parseInt(address, 16);
         if (
             addr_16 >= parseInt(architecture.memory_layout[0].value) &&
             addr_16 <= parseInt(architecture.memory_layout[1].value)
@@ -59,11 +54,13 @@ export const MEM = {
         }
 
         try {
-            writeMemory(value, addr, type);
+            // This function will take in a value and write it to the memory.
+            // The memory is implemented as a Memory class instance.
+            // The
         } catch (e) {
             raise(
                 "Invalid memory access to address '0x" +
-                    addr.toString(16) +
+                    address.toString(16) +
                     "'",
             );
             creator_executor_exit(true);
@@ -77,7 +74,7 @@ export const MEM = {
         const i = ret.indexComp;
         const j = ret.indexElem;
 
-        creator_callstack_newWrite(i, j, addr, type);
+        creator_callstack_newWrite(i, j, address, type);
     },
 
     read: function (addr, type, reg_name) {

@@ -30,8 +30,6 @@ import {
     kbd_read_char,
     kbd_read_string,
 } from "../executor/IO.mjs";
-import { readMemory } from "../memory/memoryOperations.mjs";
-import { creator_memory_alloc } from "../memory/memoryManager.mjs";
 import {
     readRegister,
     writeRegister,

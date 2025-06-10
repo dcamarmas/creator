@@ -201,21 +201,25 @@ function colorText(text: string, colorCode: string): string {
     return !ACCESSIBLE ? `\x1b[${colorCode}m${text}\x1b[0m` : text;
 }
 
-function decodeAndFormatInstruction(pc_value: string) {
-    const wordSize = creator.WORDSIZE / 8;
-    const instruction = creator.dumpAddress(parseInt(pc_value, 16), wordSize);
-    const instructionInt = parseInt(instruction, 16);
-    const instructionBinary = instructionInt
-        .toString(2)
-        .padStart(creator.WORDSIZE, "0");
-    const instructionASM = decode_instruction(instructionBinary);
-    const instructionASMParts =
-        instructionASM.instructionExecPartsWithProperNames;
+function decodeAndFormatInstruction() {
+    const pc_address = BigInt("0x" + creator.dumpRegister("PC"));
+    const wordBytes = creator.main_memory.readBytes(
+        pc_address,
+        creator.WORDSIZE / creator.BYTESIZE,
+    );
+    const word = Array.from(new Uint8Array(wordBytes))
+        .map(byte => byte.toString(16).padStart(2, "0"))
+        .join("");
+
+    // 2. Decode instruction
+    const instruction = decode_instruction("0x" + word, false);
+    // TODO: If instruction.words is > 1, we need to fetch the next word(s) to properly display the instruction
+
+    const instructionASMParts = instruction.instructionExecPartsWithProperNames;
     const instructionASMPartsString = instructionASMParts.join(",");
 
     return {
-        pc: pc_value,
-        instruction,
+        instruction: word,
         asmString: instructionASMPartsString,
     };
 }
@@ -241,9 +245,12 @@ function executeStep() {
     }
     // Save current state for unstepping
     saveCurrentState();
-
+    // Get current PC value
     const pc_value = creator.dumpRegister("PC");
-    const { instruction, asmString } = decodeAndFormatInstruction(pc_value);
+
+    // Decode the instruction (just for display purposes, the
+    // actual fetch, decode, execute happens in the step function)
+    const { instruction, asmString } = decodeAndFormatInstruction();
 
     // Store the current PC as previous PC before executing the step
     PREVIOUS_PC = "0x" + pc_value.toUpperCase();
@@ -837,8 +844,7 @@ function handleResetCommand() {
 }
 
 function handleInsnCommand() {
-    const pc_value = creator.dumpRegister("PC");
-    const { instruction, asmString } = decodeAndFormatInstruction(pc_value);
+    const { instruction, asmString } = decodeAndFormatInstruction();
     console.log(`0x${instruction} ${asmString}`);
 }
 

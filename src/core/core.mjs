@@ -42,15 +42,7 @@ import {
     setInstructions,
 } from "./compiler/compiler.mjs";
 import { executeProgramOneShot } from "./executor/executor.mjs";
-import {
-    main_memory,
-    main_memory_get_addresses,
-    main_memory_read_default_value,
-    main_memory_read_value,
-    main_memory_restore,
-    main_memory_serialize,
-} from "./memory/memoryCore.mjs";
-import { creator_memory_reset } from "./memory/memoryOperations.mjs";
+import { Memory } from "./memory/Memory.mts";
 import yaml from "js-yaml";
 import { crex_findReg } from "./register/registerLookup.mjs";
 import { readRegister } from "./register/registerOperations.mjs";
@@ -160,6 +152,8 @@ export let BYTESIZE = 8;
 export let REGISTERS;
 export let REGISTERS_BACKUP = [];
 export const register_size_bits = 64; //TODO: load from architecture
+export let main_memory;
+let main_memory_backup;
 
 export let architecture_available = [];
 export let load_architectures_available = [];
@@ -221,6 +215,22 @@ function load_arch_select(cfg) {
 
     backup_stack_address = architecture.memory_layout[4].value;
     backup_data_address = architecture.memory_layout[3].value;
+
+    // Initialize main memory
+
+    // calculate the total size of the memory
+    // get the smallest memory address in the memory layout
+    const minMemoryAddress = Math.min(
+        ...architecture.memory_layout.map(el => parseInt(el.value, 16)),
+    );
+    // get the largest memory address in the memory layout
+    const maxMemoryAddress = Math.max(
+        ...architecture.memory_layout.map(el => parseInt(el.value, 16)),
+    );
+    // calculate the total size
+    const totalMemorySize = maxMemoryAddress - minMemoryAddress + 1;
+
+    main_memory = new Memory(totalMemorySize, BYTESIZE);
 
     ret.token = "The selected architecture has been loaded correctly";
     ret.type = "success";
@@ -1132,6 +1142,7 @@ export function assembly_compile(code, enable_color) {
 
         case "ok":
             ret.msg = "Compilation completed successfully";
+            main_memory_backup = main_memory.dump();
             break;
 
         default:
@@ -1288,7 +1299,7 @@ export function reset() {
     architecture.memory_layout[3].value = backup_data_address;
 
     // reset memory
-    creator_memory_reset();
+    main_memory.restore(main_memory_backup);
 
     //Stack Reset
     creator_callstack_reset();
@@ -1802,7 +1813,8 @@ export function dumpMemory(startAddr, numBytes, bytesPerRow = 16) {
         // Process bytes for this row
         for (let i = 0n; i < bytesPerRow; i++) {
             if (currentAddr + i < endAddr) {
-                const byteValue = main_memory_read_value(currentAddr + i);
+                const byte = main_memory.read(currentAddr + i);
+                const byteValue = byte.toString(16).padStart(2, "0");
                 hexValues += byteValue + " ";
 
                 // Try to convert to ASCII, use dot for non-printable chars
@@ -1836,7 +1848,7 @@ export function dumpAddress(startAddr, numBytes) {
     const endAddr = startAddr + numBytes;
 
     while (currentAddr < endAddr) {
-        const byteValue = main_memory_read_value(currentAddr);
+        const byteValue = main_memory.read(currentAddr);
         result.push(byteValue);
         currentAddr += 1n;
     }
