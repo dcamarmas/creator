@@ -1,6 +1,7 @@
 import {
     assertEquals,
     assertThrows,
+    assertNotEquals,
 } from "https://deno.land/std/assert/mod.ts";
 
 import { Memory } from "../../../../src/core/memory/Memory.mts";
@@ -653,12 +654,6 @@ Deno.test("Memory - uneven byte sizes with dump/restore", () => {
 
     // Dump memory
     const dump = memory.dump();
-    // assertEquals(dump.buffer.length, 5);
-    // assertEquals(dump.buffer[0], 31);
-    // assertEquals(dump.buffer[1], 15);
-    // assertEquals(dump.buffer[2], 7);
-    // assertEquals(dump.buffer[3], 0);
-    // assertEquals(dump.buffer[4], 20);
 
     // Clear and restore
     memory.zeroOut();
@@ -757,4 +752,599 @@ Deno.test("Memory - complex bit pattern test with 14-bit bytes", () => {
         memory.write(BigInt(index), value);
         assertEquals(memory.read(BigInt(index)), value);
     });
+});
+
+// Tests for splitToBytes method
+Deno.test("Memory - splitToBytes with 8-bit bytes", () => {
+    const memory = new Memory(100, 8);
+
+    // Test basic cases
+    assertEquals(memory.splitToBytes(0n), [0]);
+    assertEquals(memory.splitToBytes(255n), [255]);
+    assertEquals(memory.splitToBytes(256n), [1, 0]);
+    assertEquals(memory.splitToBytes(65535n), [255, 255]);
+    assertEquals(memory.splitToBytes(16777215n), [255, 255, 255]);
+
+    // Test power of 2 values
+    assertEquals(memory.splitToBytes(1n), [1]);
+    assertEquals(memory.splitToBytes(256n), [1, 0]);
+    assertEquals(memory.splitToBytes(65536n), [1, 0, 0]);
+
+    // Test arbitrary values
+    assertEquals(memory.splitToBytes(0x1234n), [0x12, 0x34]);
+    assertEquals(memory.splitToBytes(0x123456n), [0x12, 0x34, 0x56]);
+});
+
+Deno.test("Memory - splitToBytes with 4-bit bytes", () => {
+    const memory = new Memory(100, 4);
+
+    // Test basic cases
+    assertEquals(memory.splitToBytes(0n), [0]);
+    assertEquals(memory.splitToBytes(15n), [15]); // max single byte
+    assertEquals(memory.splitToBytes(16n), [1, 0]); // requires 2 bytes
+    assertEquals(memory.splitToBytes(255n), [15, 15]); // 4-bit: 1111 1111
+
+    // Test boundary values
+    assertEquals(memory.splitToBytes(17n), [1, 1]); // 4-bit: 0001 0001
+    assertEquals(memory.splitToBytes(240n), [15, 0]); // 4-bit: 1111 0000
+    assertEquals(memory.splitToBytes(170n), [10, 10]); // 4-bit: 1010 1010
+});
+
+Deno.test("Memory - splitToBytes with 1-bit bytes", () => {
+    const memory = new Memory(100, 1);
+
+    // Test basic cases
+    assertEquals(memory.splitToBytes(0n), [0]);
+    assertEquals(memory.splitToBytes(1n), [1]);
+    assertEquals(memory.splitToBytes(2n), [1, 0]);
+    assertEquals(memory.splitToBytes(3n), [1, 1]);
+    assertEquals(memory.splitToBytes(7n), [1, 1, 1]);
+    assertEquals(memory.splitToBytes(8n), [1, 0, 0, 0]);
+
+    // Test larger values
+    assertEquals(memory.splitToBytes(15n), [1, 1, 1, 1]); // binary: 1111
+    assertEquals(memory.splitToBytes(31n), [1, 1, 1, 1, 1]); // binary: 11111
+    assertEquals(memory.splitToBytes(255n), [1, 1, 1, 1, 1, 1, 1, 1]); // 8 ones
+});
+
+Deno.test("Memory - splitToBytes with 16-bit bytes", () => {
+    const memory = new Memory(100, 16);
+
+    // Test basic cases
+    assertEquals(memory.splitToBytes(0n), [0]);
+    assertEquals(memory.splitToBytes(65535n), [65535]); // max single 16-bit byte
+    assertEquals(memory.splitToBytes(65536n), [1, 0]); // requires 2 bytes
+    assertEquals(memory.splitToBytes(131071n), [1, 65535]); // 2^17 - 1
+
+    // Test larger values
+    assertEquals(memory.splitToBytes(16777215n), [255, 65535]); // 2^24 - 1
+    assertEquals(memory.splitToBytes(4294967295n), [65535, 65535]); // 2^32 - 1
+});
+
+Deno.test("Memory - splitToBytes with 3-bit bytes", () => {
+    const memory = new Memory(100, 3);
+
+    // Test basic cases
+    assertEquals(memory.splitToBytes(0n), [0]);
+    assertEquals(memory.splitToBytes(7n), [7]); // max single 3-bit byte
+    assertEquals(memory.splitToBytes(8n), [1, 0]); // requires 2 bytes
+    assertEquals(memory.splitToBytes(15n), [1, 7]); // 3-bit: 001 111
+    assertEquals(memory.splitToBytes(63n), [7, 7]); // 3-bit: 111 111
+
+    // Test more complex values
+    assertEquals(memory.splitToBytes(73n), [1, 1, 1]); // 3-bit: 001 001 001
+    assertEquals(memory.splitToBytes(511n), [7, 7, 7]); // 3-bit: 111 111 111
+});
+
+Deno.test("Memory - splitToBytes with 5-bit bytes", () => {
+    const memory = new Memory(100, 5);
+
+    // Test basic cases
+    assertEquals(memory.splitToBytes(0n), [0]);
+    assertEquals(memory.splitToBytes(31n), [31]); // max single 5-bit byte
+    assertEquals(memory.splitToBytes(32n), [1, 0]); // requires 2 bytes
+    assertEquals(memory.splitToBytes(1023n), [31, 31]); // 5-bit: 11111 11111
+
+    // Test specific patterns
+    assertEquals(memory.splitToBytes(1024n), [1, 0, 0]); // 2^10
+    assertEquals(memory.splitToBytes(1055n), [1, 0, 31]); // 1024 + 31
+});
+
+Deno.test("Memory - splitToBytes with 12-bit bytes", () => {
+    const memory = new Memory(100, 12);
+
+    // Test basic cases
+    assertEquals(memory.splitToBytes(0n), [0]);
+    assertEquals(memory.splitToBytes(4095n), [4095]); // max single 12-bit byte
+    assertEquals(memory.splitToBytes(4096n), [1, 0]); // requires 2 bytes
+    assertEquals(memory.splitToBytes(16777215n), [4095, 4095]); // 2^24 - 1
+
+    // Test larger values
+    assertEquals(memory.splitToBytes(16777216n), [1, 0, 0]); // 2^24
+});
+
+Deno.test("Memory - splitToBytes edge cases", () => {
+    const memory8 = new Memory(100, 8);
+    const memory4 = new Memory(100, 4);
+
+    // Test negative values (should throw error)
+    assertThrows(
+        () => memory8.splitToBytes(-1n),
+        Error,
+        "Value -1 cannot be negative",
+    );
+
+    assertThrows(
+        () => memory4.splitToBytes(-100n),
+        Error,
+        "Value -100 cannot be negative",
+    );
+});
+
+Deno.test("Memory - splitToBytes with large values", () => {
+    const memory = new Memory(100, 8);
+
+    // Test very large values
+    const largeValue = 0xffffffffn; // 2^32 - 1
+    const result = memory.splitToBytes(largeValue);
+    assertEquals(result, [255, 255, 255, 255]);
+
+    // Test reconstructing value using bigint operations
+    let reconstructed = 0n;
+    for (let i = 0; i < result.length; i++) {
+        reconstructed = (reconstructed << 8n) | BigInt(result[i]);
+    }
+    assertEquals(reconstructed, largeValue);
+});
+
+Deno.test("Memory - splitToBytes consistency with different byte sizes", () => {
+    // Test that the same value splits consistently across different byte sizes
+    const testValue = 255n;
+
+    const memory1 = new Memory(100, 1);
+    const memory4 = new Memory(100, 4);
+    const memory8 = new Memory(100, 8);
+
+    const result1 = memory1.splitToBytes(testValue);
+    const result4 = memory4.splitToBytes(testValue);
+    const result8 = memory8.splitToBytes(testValue);
+
+    // 255 in different representations
+    assertEquals(result1, [1, 1, 1, 1, 1, 1, 1, 1]); // 8 bits
+    assertEquals(result4, [15, 15]); // 2 nibbles
+    assertEquals(result8, [255]); // 1 byte
+
+    // Verify all represent the same value
+    assertEquals(result1.length, 8);
+    assertEquals(result4.length, 2);
+    assertEquals(result8.length, 1);
+});
+
+Deno.test("Memory - splitToBytes with very large bigint values", () => {
+    const memory = new Memory(100, 8);
+
+    // Test values larger than Number.MAX_SAFE_INTEGER
+    const veryLargeValue = 0x123456789abcdefn; // 64-bit value
+    const result = memory.splitToBytes(veryLargeValue);
+    assertEquals(result, [1, 35, 69, 103, 137, 171, 205, 239]); // [0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef]
+
+    // Test reconstruction
+    let reconstructed = 0n;
+    for (let i = 0; i < result.length; i++) {
+        reconstructed = (reconstructed << 8n) | BigInt(result[i]);
+    }
+    assertEquals(reconstructed, veryLargeValue);
+
+    // Test another large value
+    const maxUint64 = 0xffffffffffffffffn;
+    const maxResult = memory.splitToBytes(maxUint64);
+    assertEquals(maxResult, [255, 255, 255, 255, 255, 255, 255, 255]);
+
+    // Verify reconstruction of max value
+    let maxReconstructed = 0n;
+    for (let i = 0; i < maxResult.length; i++) {
+        maxReconstructed = (maxReconstructed << 8n) | BigInt(maxResult[i]);
+    }
+    assertEquals(maxReconstructed, maxUint64);
+});
+
+Deno.test(
+    "Memory - splitToBytes with custom byte sizes and large values",
+    () => {
+        // Test 12-bit bytes with very large values
+        const memory12 = new Memory(100, 12);
+        const largeValue12 = 0x123456789n; // 36-bit value
+        const result12 = memory12.splitToBytes(largeValue12);
+
+        // 36 bits = 3 * 12-bit bytes
+        // 0x123456789 = 4886718345 decimal
+        // In 12-bit chunks: 0x123, 0x456, 0x789
+        assertEquals(result12, [0x123, 0x456, 0x789]);
+
+        // Test 5-bit bytes with large values
+        const memory5 = new Memory(100, 5);
+        const largeValue5 = 0x3fffffffn; // 30-bit value (6 * 5-bit bytes)
+        const result5 = memory5.splitToBytes(largeValue5);
+
+        // All 5-bit bytes should be 31 (0x1f)
+        assertEquals(result5, [31, 31, 31, 31, 31, 31]);
+    },
+);
+
+// Word size and endianness tests
+Deno.test("Memory - constructor with word size and default endianness", () => {
+    const memory = new Memory(100, 8, 4);
+    assertEquals(memory.getWordSize(), 4);
+    assertEquals(memory.getEndianness(), [0, 1, 2, 3]); // Default little-endian
+});
+
+Deno.test("Memory - constructor with custom endianness (big-endian)", () => {
+    const memory = new Memory(100, 8, 4, [3, 2, 1, 0]);
+    assertEquals(memory.getWordSize(), 4);
+    assertEquals(memory.getEndianness(), [3, 2, 1, 0]);
+});
+
+Deno.test("Memory - constructor with custom endianness (mixed order)", () => {
+    const memory = new Memory(100, 8, 4, [1, 0, 3, 2]);
+    assertEquals(memory.getWordSize(), 4);
+    assertEquals(memory.getEndianness(), [1, 0, 3, 2]);
+});
+
+Deno.test("Memory - constructor throws error for invalid word size", () => {
+    assertThrows(
+        () => new Memory(100, 8, 0),
+        Error,
+        "wordSize must be at least 1",
+    );
+
+    assertThrows(
+        () => new Memory(100, 8, -1),
+        Error,
+        "wordSize must be at least 1",
+    );
+});
+
+Deno.test(
+    "Memory - constructor throws error for mismatched endianness length",
+    () => {
+        assertThrows(
+            () => new Memory(100, 8, 4, [0, 1, 2]), // length 3, wordSize 4
+            Error,
+            "Endianness array length (3) must match word size (4)",
+        );
+    },
+);
+
+Deno.test(
+    "Memory - constructor throws error for invalid endianness values",
+    () => {
+        assertThrows(
+            () => new Memory(100, 8, 4, [0, 1, 2, 4]), // 4 is out of range
+            Error,
+            "Endianness array must contain all byte indices from 0 to wordSize-1",
+        );
+
+        assertThrows(
+            () => new Memory(100, 8, 4, [0, 1, 1, 2]), // duplicate 1, missing 3
+            Error,
+            "Endianness array must contain all byte indices from 0 to wordSize-1",
+        );
+    },
+);
+
+Deno.test("Memory - readWord and writeWord with default little-endian", () => {
+    const memory = new Memory(100, 8, 4);
+    const word = [0x12, 0x34, 0x56, 0x78];
+
+    memory.writeWord(10n, word);
+    const readWord = memory.readWord(10n);
+
+    assertEquals(readWord, word);
+
+    // Check individual bytes in memory (little-endian order)
+    assertEquals(memory.read(10n), 0x12); // byte 0
+    assertEquals(memory.read(11n), 0x34); // byte 1
+    assertEquals(memory.read(12n), 0x56); // byte 2
+    assertEquals(memory.read(13n), 0x78); // byte 3
+});
+
+Deno.test("Memory - readWord and writeWord with big-endian", () => {
+    const memory = new Memory(100, 8, 4, [3, 2, 1, 0]);
+    const word = [0x12, 0x34, 0x56, 0x78];
+
+    memory.writeWord(10n, word);
+    const readWord = memory.readWord(10n);
+
+    assertEquals(readWord, word);
+
+    // Check individual bytes in memory (big-endian order)
+    assertEquals(memory.read(10n), 0x78); // byte 3 stored at position 0
+    assertEquals(memory.read(11n), 0x56); // byte 2 stored at position 1
+    assertEquals(memory.read(12n), 0x34); // byte 1 stored at position 2
+    assertEquals(memory.read(13n), 0x12); // byte 0 stored at position 3
+});
+
+Deno.test("Memory - readWord and writeWord with mixed endianness", () => {
+    const memory = new Memory(100, 8, 4, [1, 0, 3, 2]);
+    const word = [0x12, 0x34, 0x56, 0x78];
+
+    memory.writeWord(20n, word);
+    const readWord = memory.readWord(20n);
+
+    assertEquals(readWord, word);
+
+    // Check individual bytes in memory (mixed order: [1,0,3,2])
+    assertEquals(memory.read(20n), 0x34); // byte 1 stored at position 0
+    assertEquals(memory.read(21n), 0x12); // byte 0 stored at position 1
+    assertEquals(memory.read(22n), 0x78); // byte 3 stored at position 2
+    assertEquals(memory.read(23n), 0x56); // byte 2 stored at position 3
+});
+
+Deno.test("Memory - readWord and writeWord with 2-byte words", () => {
+    const memory = new Memory(100, 8, 2, [1, 0]); // 16-bit big-endian
+    const word = [0xab, 0xcd];
+
+    memory.writeWord(50n, word);
+    const readWord = memory.readWord(50n);
+
+    assertEquals(readWord, word);
+    assertEquals(memory.read(50n), 0xcd); // byte 1 stored first
+    assertEquals(memory.read(51n), 0xab); // byte 0 stored second
+});
+
+Deno.test("Memory - readWord and writeWord with custom byte sizes", () => {
+    const memory = new Memory(100, 4, 3, [2, 1, 0]); // 4-bit bytes, 3-byte words, reverse endian
+    const word = [0x0a, 0x0b, 0x0c];
+
+    memory.writeWord(30n, word);
+    const readWord = memory.readWord(30n);
+
+    assertEquals(readWord, word);
+    assertEquals(memory.read(30n), 0x0c); // byte 2 stored at position 0
+    assertEquals(memory.read(31n), 0x0b); // byte 1 stored at position 1
+    assertEquals(memory.read(32n), 0x0a); // byte 0 stored at position 2
+});
+
+Deno.test(
+    "Memory - writeWord throws error for word exceeding memory boundary",
+    () => {
+        const memory = new Memory(10, 8, 4);
+        const word = [0x12, 0x34, 0x56, 0x78];
+
+        assertThrows(
+            () => memory.writeWord(7n, word), // address 7 + wordSize 4 = 11 > memory size 10
+            Error,
+            "Word at address 7 with size 4 exceeds memory size 10",
+        );
+
+        assertThrows(
+            () => memory.writeWord(10n, word), // address 10 + wordSize 4 = 14 > memory size 10
+            Error,
+            "Word at address 10 with size 4 exceeds memory size 10",
+        );
+    },
+);
+
+Deno.test(
+    "Memory - readWord throws error for word exceeding memory boundary",
+    () => {
+        const memory = new Memory(10, 8, 4);
+
+        assertThrows(
+            () => memory.readWord(7n), // address 7 + wordSize 4 = 11 > memory size 10
+            Error,
+            "Word at address 7 with size 4 exceeds memory size 10",
+        );
+
+        assertThrows(
+            () => memory.readWord(10n), // address 10 + wordSize 4 = 14 > memory size 10
+            Error,
+            "Word at address 10 with size 4 exceeds memory size 10",
+        );
+    },
+);
+
+Deno.test("Memory - writeWord throws error for wrong word array length", () => {
+    const memory = new Memory(100, 8, 4);
+
+    assertThrows(
+        () => memory.writeWord(0n, [0x12, 0x34, 0x56]), // length 3, expected 4
+        Error,
+        "Word array length (3) must match word size (4)",
+    );
+
+    assertThrows(
+        () => memory.writeWord(0n, [0x12, 0x34, 0x56, 0x78, 0x9a]), // length 5, expected 4
+        Error,
+        "Word array length (5) must match word size (4)",
+    );
+});
+
+Deno.test(
+    "Memory - writeWord throws error for byte values exceeding byte size",
+    () => {
+        const memory = new Memory(100, 4, 4); // 4-bit bytes, max value 15
+
+        assertThrows(
+            () => memory.writeWord(0n, [10, 16, 5, 3]), // 16 > 15 (max for 4-bit)
+            Error,
+            "Word byte 1 value 16 exceeds byte size (max: 15)",
+        );
+
+        assertThrows(
+            () => memory.writeWord(0n, [10, 5, -1, 3]), // -1 < 0
+            Error,
+            "Word byte 2 value -1 exceeds byte size (max: 15)",
+        );
+    },
+);
+
+Deno.test("Memory - word operations with single-byte words", () => {
+    const memory = new Memory(100, 8, 1);
+    const word = [0xff];
+
+    memory.writeWord(25n, word);
+    const readWord = memory.readWord(25n);
+
+    assertEquals(readWord, word);
+    assertEquals(memory.read(25n), 0xff);
+});
+
+Deno.test("Memory - word operations with large words", () => {
+    const memory = new Memory(100, 8, 8); // 8-byte words
+    const word = [0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef];
+
+    memory.writeWord(10n, word);
+    const readWord = memory.readWord(10n);
+
+    assertEquals(readWord, word);
+
+    // Verify each byte
+    for (let i = 0; i < 8; i++) {
+        assertEquals(memory.read(BigInt(10 + i)), word[i]);
+    }
+});
+
+Deno.test("Memory - multiple word operations don't interfere", () => {
+    const memory = new Memory(100, 8, 4);
+    const word1 = [0x11, 0x22, 0x33, 0x44];
+    const word2 = [0xaa, 0xbb, 0xcc, 0xdd];
+    const word3 = [0x55, 0x66, 0x77, 0x88];
+
+    memory.writeWord(0n, word1);
+    memory.writeWord(10n, word2);
+    memory.writeWord(20n, word3);
+
+    assertEquals(memory.readWord(0n), word1);
+    assertEquals(memory.readWord(10n), word2);
+    assertEquals(memory.readWord(20n), word3);
+});
+
+Deno.test("Memory - word operations mixed with byte operations", () => {
+    const memory = new Memory(100, 8, 4);
+    const word = [0x12, 0x34, 0x56, 0x78];
+
+    // Write word
+    memory.writeWord(10n, word);
+
+    // Modify individual bytes
+    memory.write(11n, 0xff);
+    memory.write(13n, 0x00);
+
+    // Read word should reflect changes
+    const modifiedWord = memory.readWord(10n);
+    assertEquals(modifiedWord, [0x12, 0xff, 0x56, 0x00]);
+
+    // Write individual bytes
+    memory.write(15n, 0xaa);
+    memory.write(16n, 0xbb);
+    memory.write(17n, 0xcc);
+    memory.write(18n, 0xdd);
+
+    // Read as word
+    const assembledWord = memory.readWord(15n);
+    assertEquals(assembledWord, [0xaa, 0xbb, 0xcc, 0xdd]);
+});
+
+Deno.test(
+    "Memory - endianness affects only word operations, not individual bytes",
+    () => {
+        const memory = new Memory(100, 8, 4, [3, 2, 1, 0]); // big-endian
+
+        // Write individual bytes
+        memory.write(0n, 0x12);
+        memory.write(1n, 0x34);
+        memory.write(2n, 0x56);
+        memory.write(3n, 0x78);
+
+        // Read as word (should apply endianness)
+        const word = memory.readWord(0n);
+        assertEquals(word, [0x78, 0x56, 0x34, 0x12]); // reversed due to big-endian
+
+        // Read individual bytes (should not be affected by endianness)
+        assertEquals(memory.read(0n), 0x12);
+        assertEquals(memory.read(1n), 0x34);
+        assertEquals(memory.read(2n), 0x56);
+        assertEquals(memory.read(3n), 0x78);
+    },
+);
+
+Deno.test(
+    "Memory - word operations with non-standard byte sizes and endianness",
+    () => {
+        const memory = new Memory(50, 6, 3, [2, 0, 1]); // 6-bit bytes, 3-byte words, custom endianness
+        const word = [0x20, 0x15, 0x3f]; // All values valid for 6-bit bytes (max 63)
+
+        memory.writeWord(5n, word);
+        const readWord = memory.readWord(5n);
+
+        assertEquals(readWord, word);
+
+        // Check memory layout according to endianness [2, 0, 1]
+        assertEquals(memory.read(5n), 0x3f); // byte 2 at position 0
+        assertEquals(memory.read(6n), 0x20); // byte 0 at position 1
+        assertEquals(memory.read(7n), 0x15); // byte 1 at position 2
+    },
+);
+
+Deno.test("Memory - dump and restore preserves word configuration", () => {
+    const memory = new Memory(20, 8, 4, [3, 2, 1, 0]);
+    const word = [0x12, 0x34, 0x56, 0x78];
+
+    memory.writeWord(0n, word);
+
+    // Dump and restore
+    const dump = memory.dump();
+    memory.zeroOut();
+    memory.restore(dump);
+
+    // Verify word configuration is preserved
+    assertEquals(memory.getWordSize(), 4);
+    assertEquals(memory.getEndianness(), [3, 2, 1, 0]);
+
+    // Verify word data is preserved
+    const restoredWord = memory.readWord(0n);
+    assertEquals(restoredWord, word);
+});
+
+Deno.test("Memory - getEndianness returns copy, not reference", () => {
+    const originalEndianness = [3, 2, 1, 0];
+    const memory = new Memory(100, 8, 4, originalEndianness);
+
+    const endianness1 = memory.getEndianness();
+    const endianness2 = memory.getEndianness();
+
+    // Modify returned arrays
+    endianness1[0] = 99;
+    endianness2[1] = 88;
+
+    // Original should be unchanged
+    assertEquals(memory.getEndianness(), originalEndianness);
+
+    // Different calls should return independent arrays
+    assertNotEquals(endianness1, endianness2);
+});
+
+Deno.test("Memory - stress test with word operations", () => {
+    const memory = new Memory(1000, 8, 4, [1, 3, 0, 2]); // Custom endianness
+    const testWords = new Map();
+
+    // Write random words
+    for (let i = 0; i < 100; i++) {
+        const addr = BigInt(Math.floor(Math.random() * 250) * 4); // Align to word boundaries
+        const word = [
+            Math.floor(Math.random() * 256),
+            Math.floor(Math.random() * 256),
+            Math.floor(Math.random() * 256),
+            Math.floor(Math.random() * 256),
+        ];
+        memory.writeWord(addr, word);
+        testWords.set(addr, word);
+    }
+
+    // Verify all words
+    for (const [addr, expectedWord] of testWords) {
+        const actualWord = memory.readWord(addr);
+        assertEquals(actualWord, expectedWord);
+    }
 });

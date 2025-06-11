@@ -18,7 +18,7 @@
  *
  */
 "use strict";
-import { status, total_clk_cycles } from "../core.mjs";
+import { status, total_clk_cycles, main_memory } from "../core.mjs";
 import { crex_findReg } from "../register/registerLookup.mjs";
 import { creator_executor_exit, packExecute } from "../executor/executor.mjs";
 import {
@@ -62,12 +62,19 @@ export const SYSCALL = {
                 break;
             }
             case "char": {
-                let char_code = Number(value & 0xffn);
+                const char_code = Number(value & 0xffn);
                 display_print(String.fromCharCode(char_code));
                 break;
             }
             case "string": {
-                const msg = readMemory(parseInt(value, 10), "string");
+                const buffer = [];
+                // read byte by byte until a null terminator is found
+                for (let i = 0; i < main_memory.size; i++) {
+                    const byte = main_memory.read(value + BigInt(i));
+                    if (byte === 0) break; // null terminator
+                    buffer.push(String.fromCharCode(byte));
+                }
+                const msg = buffer.join("");
                 display_print(msg);
                 break;
             }

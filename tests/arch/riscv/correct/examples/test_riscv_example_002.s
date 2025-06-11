@@ -5,8 +5,8 @@
 
 .text
    main:
-      # Use a base memory address (we'll use address 0x10000000)
-      li t1, 0x10000000
+      # Use a base memory address 
+      li t1, 0x200000
       
       # Store "hello world" byte by byte
       # 'h' = 104
@@ -60,11 +60,6 @@
       # Print the string (system call 4 - print string)
       mv a0, t1        # address of string
       li a7, 4         # system call for print string
-      ecall
-      
-      # Print newline character
-      li a0, 10        # ASCII for newline
-      li a7, 11        # system call for print character
       ecall
       
       # Return

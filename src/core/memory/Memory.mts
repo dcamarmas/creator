@@ -1,21 +1,196 @@
 import { readFileSync } from "node:fs";
 
+/**
+ *
+ * This class provides a comprehensive memory simulation that supports:
+ * - Custom byte sizes (1-32 bits per byte)
+ * - Custom word sizes (any number of bytes)
+ * - Flexible endianness configuration
+ * - Efficient bit-level storage
+ * - Word-level and byte-level operations
+ *
+ * ## Key Concepts
+ *
+ * ### Custom Byte Sizes
+ * This class allows configuring any byte size from 1 to 32 bits.
+ *
+ * ### Endianness Configuration
+ * Endianness determines the order of bytes within words. Rather than just
+ * supporting little-endian and big-endian, this class allows completely
+ * custom byte ordering within words.
+ *
+ * The endianness array specifies which word position goes to each memory position:
+ * - `[0, 1, 2, 3]` = little-endian (byte 0 at position 0, byte 1 at position 1, etc.)
+ * - `[3, 2, 1, 0]` = big-endian (byte 3 at position 0, byte 2 at position 1, etc.)
+ * - `[1, 0, 3, 2]` = mixed endianness (bytes 1,0,3,2 at positions 0,1,2,3)
+ *
+ * ### Memory Layout vs Logical Structure
+ * - **Physical Layout**: How bytes are actually stored in memory (affected by endianness)
+ * - **Logical Structure**: How the word is represented in the program (unaffected by endianness)
+ *
+ * Word operations (readWord/writeWord) work with logical structure, while
+ * individual byte operations (read/write) work with physical layout.
+ *
+ * ### Bit Packing
+ * When using non-8-bit bytes, the class efficiently packs multiple custom bytes
+ * into standard 8-bit storage bytes. For example, four 6-bit bytes (24 bits total)
+ * are packed into three 8-bit storage bytes.
+ *
+ * ## Usage Examples
+ *
+ * @example Basic 8-bit byte memory
+ * ```typescript
+ * const memory = new Memory(1024); // 1024 bytes, 8 bits per byte
+ * memory.write(0n, 0xFF);
+ * console.log(memory.read(0n)); // 255
+ * ```
+ *
+ * @example Custom byte size memory
+ * ```typescript
+ * const memory = new Memory(100, 12); // 100 12-bit "bytes", max value 4095
+ * memory.write(0n, 4095);
+ * console.log(memory.read(0n)); // 4095
+ * ```
+ *
+ * @example Word operations with endianness
+ * ```typescript
+ * // 4-byte words with big-endian ordering
+ * const memory = new Memory(100, 8, 4, [3, 2, 1, 0]);
+ * const word = [0x12, 0x34, 0x56, 0x78];
+ * memory.writeWord(0n, word);
+ *
+ * // Memory layout: [0x78, 0x56, 0x34, 0x12] (reversed)
+ * console.log(memory.read(0n)); // 0x78
+ * console.log(memory.read(1n)); // 0x56
+ *
+ * // But readWord returns original order: [0x12, 0x34, 0x56, 0x78]
+ * console.log(memory.readWord(0n)); // [0x12, 0x34, 0x56, 0x78]
+ * ```
+ *
+ * @example Mixed operations
+ * ```typescript
+ * const memory = new Memory(100, 8, 4);
+ *
+ * // Write word, read individual bytes
+ * memory.writeWord(0n, [0xAA, 0xBB, 0xCC, 0xDD]);
+ * console.log(memory.read(1n)); // 0xBB
+ *
+ * // Write individual bytes, read as word
+ * memory.write(10n, 0x11);
+ * memory.write(11n, 0x22);
+ * memory.write(12n, 0x33);
+ * memory.write(13n, 0x44);
+ * console.log(memory.readWord(10n)); // [0x11, 0x22, 0x33, 0x44]
+ * ```
+ *
+ * ## Performance Considerations
+ *
+ * - 8-bit byte operations use fast path with direct array access
+ * - Custom byte sizes require bit manipulation
+ * - Word operations are optimized for the configured endianness
+ * - Memory dumps/restores are very fast using direct buffer copying
+ */
 export class Memory {
+    /** Total number of addressable units (bytes) in memory */
     private size: number;
+
+    /** Number of bits per addressable unit (byte). Range: 1-32 bits */
     private bitsPerByte: number;
+
+    /** Maximum value that can be stored in a single byte */
     private maxByteValue: number;
+
+    /** Underlying storage buffer using standard 8-bit bytes */
     private buffer: ArrayBuffer;
+
+    /** Typed array view for efficient access to the buffer */
     private uint8View: Uint8Array;
 
-    constructor(sizeInBytes: number, bitsPerByte: number = 8) {
+    /** Number of bytes that constitute a word */
+    private wordSize: number;
+
+    /**
+     * Endianness configuration array.
+     * endianness[i] specifies which word position should be stored at memory position i.
+     *
+     * Examples:
+     * - [0, 1, 2, 3] = little-endian (default)
+     * - [3, 2, 1, 0] = big-endian
+     * - [1, 0, 3, 2] = mixed/custom endianness
+     */
+    private endianness: number[];
+
+    /**
+     * Creates a new Memory instance with configurable byte size, word size, and endianness.
+     *
+     * The memory uses efficient bit-packing when bitsPerByte != 8, storing multiple
+     * custom bytes within standard 8-bit storage bytes.
+     *
+     * @param sizeInBytes - Total number of addressable units (bytes) in memory
+     * @param bitsPerByte - Number of bits per addressable unit (1-32). Default: 8
+     * @param wordSize - Number of bytes that constitute a word. Default: 4
+     * @param endianness - Optional array specifying byte order within words.
+     *                    Must contain all indices 0 to wordSize-1 exactly once.
+     *                    Default: little-endian [0, 1, 2, 3, ...]
+     *
+     * @throws Error if bitsPerByte is not in range 1-32
+     * @throws Error if wordSize is less than 1
+     * @throws Error if endianness array length doesn't match wordSize
+     * @throws Error if endianness array doesn't contain valid indices
+     *
+     * @example Standard 8-bit memory
+     * ```typescript
+     * const memory = new Memory(1024); // 1KB memory
+     * ```
+     *
+     * @example 12-bit bytes with big-endian words
+     * ```typescript
+     * const memory = new Memory(256, 12, 4, [3, 2, 1, 0]);
+     * ```
+     */
+    constructor(
+        sizeInBytes: number,
+        bitsPerByte: number = 8,
+        wordSize: number = 4,
+        endianness?: number[],
+    ) {
         if (bitsPerByte < 1 || bitsPerByte > 32) {
             throw new Error("bitsPerByte must be between 1 and 32");
+        }
+
+        if (wordSize < 1) {
+            throw new Error("wordSize must be at least 1");
         }
 
         this.size = sizeInBytes;
         this.bitsPerByte = bitsPerByte;
         this.maxByteValue =
             bitsPerByte === 32 ? 0xffffffff : (1 << bitsPerByte) - 1;
+        this.wordSize = wordSize;
+
+        // Default endianness is little-endian (0, 1, 2, 3...)
+        if (endianness) {
+            if (endianness.length !== wordSize) {
+                throw new Error(
+                    `Endianness array length (${endianness.length}) must match word size (${wordSize})`,
+                );
+            }
+
+            // Validate endianness array contains valid byte indices
+            const sortedEndianness = [...endianness].sort();
+            for (let i = 0; i < wordSize; i++) {
+                if (sortedEndianness[i] !== i) {
+                    throw new Error(
+                        "Endianness array must contain all byte indices from 0 to wordSize-1",
+                    );
+                }
+            }
+
+            this.endianness = [...endianness];
+        } else {
+            // Default little-endian
+            this.endianness = Array.from({ length: wordSize }, (_, i) => i);
+        }
 
         // Calculate storage needed: we need enough 8-bit bytes to store all the custom bytes
         const bitsNeeded = sizeInBytes * bitsPerByte;
@@ -27,10 +202,40 @@ export class Memory {
         this.uint8View.fill(0);
     }
 
+    /**
+     * Clears all memory by setting every byte to zero.
+     * This operation preserves the memory configuration (size, word size, endianness).
+     */
     zeroOut(): void {
         this.uint8View.fill(0);
     }
 
+    /**
+     * Reads a single byte from memory at the specified address.
+     *
+     * For custom byte sizes (bitsPerByte != 8), this method handles bit-level
+     * extraction from the underlying 8-bit storage, including cases where
+     * the custom byte spans multiple storage bytes.
+     *
+     * @param address - Memory address to read from (0-based)
+     * @returns The byte value (0 to maxByteValue)
+     *
+     * @throws Error if address exceeds memory size
+     *
+     * @example Reading from 8-bit memory
+     * ```typescript
+     * const memory = new Memory(100);
+     * memory.write(5n, 255);
+     * console.log(memory.read(5n)); // 255
+     * ```
+     *
+     * @example Reading from 12-bit memory
+     * ```typescript
+     * const memory = new Memory(100, 12);
+     * memory.write(3n, 4095); // Max 12-bit value
+     * console.log(memory.read(3n)); // 4095
+     * ```
+     */
     read(address: bigint): number {
         const addr = Number(address);
         if (addr >= this.size) {
@@ -81,6 +286,32 @@ export class Memory {
         }
     }
 
+    /**
+     * Writes a single byte to memory at the specified address.
+     *
+     * For custom byte sizes (bitsPerByte != 8), this method handles bit-level
+     * packing into the underlying 8-bit storage, including cases where
+     * the custom byte spans multiple storage bytes.
+     *
+     * @param address - Memory address to write to (0-based)
+     * @param value - Byte value to write (0 to maxByteValue)
+     *
+     * @throws Error if address exceeds memory size
+     * @throws Error if value exceeds maxByteValue or is negative
+     *
+     * @example Writing to 8-bit memory
+     * ```typescript
+     * const memory = new Memory(100);
+     * memory.write(10n, 128);
+     * ```
+     *
+     * @example Writing to 4-bit memory
+     * ```typescript
+     * const memory = new Memory(100, 4);
+     * memory.write(0n, 15); // Max 4-bit value
+     * // memory.write(0n, 16); // Would throw error
+     * ```
+     */
     write(address: bigint, value: number): void {
         const addr = Number(address);
         if (addr >= this.size) {
@@ -138,7 +369,23 @@ export class Memory {
         }
     }
 
-    // Load ROM data into memory (assumes data uses same byte size)
+    /**
+     * Loads ROM data into memory starting at the specified offset.
+     * This method only works with 8-bit byte memories for direct compatibility
+     * with standard binary data.
+     *
+     * @param romData - Binary data to load
+     * @param offset - Starting address offset. Default: 0
+     *
+     * @throws Error if memory doesn't use 8-bit bytes
+     *
+     * @example Loading ROM data
+     * ```typescript
+     * const memory = new Memory(1024);
+     * const rom = new Uint8Array([0x12, 0x34, 0x56, 0x78]);
+     * memory.loadROM(rom, 0x100n);
+     * ```
+     */
     loadROM(romData: Uint8Array, offset: bigint = 0n): void {
         if (this.bitsPerByte !== 8) {
             throw new Error(
@@ -148,20 +395,65 @@ export class Memory {
         this.uint8View.set(romData, Number(offset));
     }
 
-    // Load ROM data with custom byte size
+    /**
+     * Loads custom ROM data into memory for non-8-bit byte configurations.
+     * Each number in the array represents one memory byte using the configured byte size.
+     *
+     * @param romData - Array of byte values (each 0 to maxByteValue)
+     * @param offset - Starting address offset. Default: 0
+     *
+     * @example Loading 12-bit ROM data
+     * ```typescript
+     * const memory = new Memory(100, 12);
+     * const rom = [4095, 2048, 1024, 512]; // 12-bit values
+     * memory.loadCustomROM(rom, 10n);
+     * ```
+     */
     loadCustomROM(romData: number[], offset: bigint = 0n): void {
         for (let i = 0; i < romData.length; i++) {
             this.write(offset + BigInt(i), romData[i]);
         }
     }
 
-    // Load binary file from disk into memory
+    /**
+     * Loads a binary file from disk into memory.
+     * Only works with 8-bit byte memories for direct file compatibility.
+     *
+     * @param filePath - Path to the binary file
+     * @param offset - Starting address offset. Default: 0
+     *
+     * @throws Error if memory doesn't use 8-bit bytes
+     * @throws Error if file cannot be read
+     *
+     * @example Loading a binary file
+     * ```typescript
+     * const memory = new Memory(65536);
+     * memory.loadBinaryFile("program.bin", 0x8000n);
+     * ```
+     */
     loadBinaryFile(filePath: string, offset: bigint = 0n): void {
         const fileData = readFileSync(filePath);
         this.loadROM(new Uint8Array(fileData), offset);
     }
 
-    // Read n bytes starting from address
+    /**
+     * Reads multiple consecutive bytes from memory starting at the specified address.
+     *
+     * @param address - Starting memory address
+     * @param count - Number of bytes to read
+     * @returns Array of byte values
+     *
+     * @example Reading a sequence of bytes
+     * ```typescript
+     * const memory = new Memory(100);
+     * memory.write(10n, 0xAA);
+     * memory.write(11n, 0xBB);
+     * memory.write(12n, 0xCC);
+     *
+     * const bytes = memory.readBytes(10n, 3);
+     * console.log(bytes); // [0xAA, 0xBB, 0xCC]
+     * ```
+     */
     readBytes(address: bigint, count: number): number[] {
         const result: number[] = [];
         for (let i = 0; i < count; i++) {
@@ -170,7 +462,24 @@ export class Memory {
         return result;
     }
 
-    // Fast dump memory state (stores raw buffer + metadata)
+    /**
+     * Creates a snapshot of the current memory state for fast save/restore operations.
+     * The dump includes the raw storage buffer and metadata needed for restoration.
+     *
+     * @returns Object containing memory state data
+     *
+     * @example Creating and using a memory snapshot
+     * ```typescript
+     * const memory = new Memory(100);
+     * memory.write(0n, 123);
+     *
+     * const snapshot = memory.dump();
+     * memory.write(0n, 456); // Modify memory
+     *
+     * memory.restore(snapshot); // Restore original state
+     * console.log(memory.read(0n)); // 123
+     * ```
+     */
     dump(): { buffer: Uint8Array; bitsPerByte: number; size: number } {
         return {
             buffer: new Uint8Array(this.uint8View),
@@ -179,7 +488,22 @@ export class Memory {
         };
     }
 
-    // Fast restore memory state from buffer dump
+    /**
+     * Restores memory state from a previously created dump.
+     * The dump must be compatible with the current memory configuration.
+     *
+     * @param dump - Memory state dump from dump() method
+     *
+     * @throws Error if dump metadata doesn't match current configuration
+     *
+     * @example Restoring memory state
+     * ```typescript
+     * const memory = new Memory(100, 8);
+     * const snapshot = memory.dump();
+     * // ... modify memory ...
+     * memory.restore(snapshot); // Back to original state
+     * ```
+     */
     restore(dump: {
         buffer: Uint8Array;
         bitsPerByte: number;
@@ -193,12 +517,234 @@ export class Memory {
         this.uint8View.set(dump.buffer);
     }
 
-    // Get byte size information
+    /**
+     * Returns the number of bits per byte in this memory configuration.
+     *
+     * @returns Number of bits per byte (1-32)
+     */
     getBitsPerByte(): number {
         return this.bitsPerByte;
     }
 
+    /**
+     * Returns the maximum value that can be stored in a single byte.
+     * This is calculated as (2^bitsPerByte - 1).
+     *
+     * @returns Maximum byte value (e.g., 255 for 8-bit, 15 for 4-bit)
+     */
     getMaxByteValue(): number {
         return this.maxByteValue;
+    }
+
+    /**
+     * Returns the number of bytes that constitute a word in this memory configuration.
+     *
+     * @returns Word size in bytes
+     */
+    getWordSize(): number {
+        return this.wordSize;
+    }
+
+    /**
+     * Returns a copy of the endianness configuration array.
+     * The returned array is a copy to prevent external modification.
+     *
+     * @returns Copy of endianness array
+     *
+     * @example Checking endianness configuration
+     * ```typescript
+     * const memory = new Memory(100, 8, 4, [3, 2, 1, 0]);
+     * console.log(memory.getEndianness()); // [3, 2, 1, 0]
+     * ```
+     */
+    getEndianness(): number[] {
+        return [...this.endianness];
+    }
+
+    /**
+     * Splits a large value into bytes according to the memory's byte size configuration.
+     * The result is in big-endian order (most significant byte first).
+     *
+     * This method is useful for converting multi-byte values into individual bytes
+     * that can be stored in memory using write() operations.
+     *
+     * @param value - Value to split (must be non-negative)
+     * @returns Array of byte values in big-endian order
+     *
+     * @throws Error if value is negative
+     *
+     * @example Splitting values with 8-bit bytes
+     * ```typescript
+     * const memory = new Memory(100, 8);
+     * console.log(memory.splitToBytes(0x1234n)); // [0x12, 0x34]
+     * console.log(memory.splitToBytes(0x123456n)); // [0x12, 0x34, 0x56]
+     * ```
+     *
+     * @example Splitting values with 4-bit bytes
+     * ```typescript
+     * const memory = new Memory(100, 4);
+     * console.log(memory.splitToBytes(0xABn)); // [10, 11] (0xA=10, 0xB=11)
+     * console.log(memory.splitToBytes(0x123n)); // [1, 2, 3]
+     * ```
+     */
+    splitToBytes(value: bigint): number[] {
+        if (value < 0n) {
+            throw new Error(`Value ${value} cannot be negative`);
+        }
+
+        // Special case for 8-bit bytes - use standard approach
+        if (this.bitsPerByte === 8) {
+            const bytes: number[] = [];
+            let remainingValue = value;
+
+            while (remainingValue > 0n) {
+                bytes.unshift(Number(remainingValue & 0xffn));
+                remainingValue >>= 8n;
+            }
+
+            return bytes.length === 0 ? [0] : bytes;
+        }
+
+        // For custom byte sizes
+        const bytes: number[] = [];
+        let remainingValue = value;
+        const maxByteValueBigInt = BigInt(this.maxByteValue);
+        const bitsPerByteBigInt = BigInt(this.bitsPerByte);
+
+        while (remainingValue > 0n) {
+            const byteValue = Number(remainingValue & maxByteValueBigInt);
+            bytes.unshift(byteValue);
+            remainingValue >>= bitsPerByteBigInt;
+        }
+
+        return bytes.length === 0 ? [0] : bytes;
+    }
+
+    /**
+     * Reads a complete word from memory starting at the specified address.
+     *
+     * The method reads wordSize consecutive bytes from memory and reorders them
+     * according to the endianness configuration to reconstruct the original word.
+     * The returned array represents the word in logical order (as it was written).
+     *
+     * @param address - Starting memory address for the word
+     * @returns Array of bytes representing the word in logical order
+     *
+     * @throws Error if word would exceed memory boundaries
+     *
+     * @example Reading words with different endianness
+     * ```typescript
+     * // Little-endian (default)
+     * const memoryLE = new Memory(100, 8, 4);
+     * memoryLE.writeWord(0n, [0x12, 0x34, 0x56, 0x78]);
+     * console.log(memoryLE.readWord(0n)); // [0x12, 0x34, 0x56, 0x78]
+     *
+     * // Big-endian
+     * const memoryBE = new Memory(100, 8, 4, [3, 2, 1, 0]);
+     * memoryBE.writeWord(0n, [0x12, 0x34, 0x56, 0x78]);
+     * console.log(memoryBE.readWord(0n)); // [0x12, 0x34, 0x56, 0x78] (same logical result)
+     *
+     * // But physical memory layout differs:
+     * console.log(memoryLE.read(0n)); // 0x12 (LE: first byte stored first)
+     * console.log(memoryBE.read(0n)); // 0x78 (BE: last byte stored first)
+     * ```
+     */
+    readWord(address: bigint): number[] {
+        const addr = Number(address);
+        if (addr + this.wordSize > this.size) {
+            throw new Error(
+                `Word at address ${addr} with size ${this.wordSize} exceeds memory size ${this.size}`,
+            );
+        }
+
+        const bytes: number[] = [];
+        for (let i = 0; i < this.wordSize; i++) {
+            bytes.push(this.read(BigInt(addr + i)));
+        }
+
+        // Reorder bytes according to endianness
+        // endianness[i] tells us which word position should come from memory position i
+        const reorderedBytes: number[] = new Array(this.wordSize);
+        for (let i = 0; i < this.wordSize; i++) {
+            reorderedBytes[this.endianness[i]] = bytes[i];
+        }
+
+        return reorderedBytes;
+    }
+
+    /**
+     * Writes a complete word to memory starting at the specified address.
+     *
+     * The method takes a word as an array of bytes in logical order and stores
+     * them in memory according to the endianness configuration. The endianness
+     * determines the physical layout in memory while preserving the logical
+     * word structure for readWord operations.
+     *
+     * @param address - Starting memory address for the word
+     * @param word - Array of bytes representing the word in logical order
+     *
+     * @throws Error if word would exceed memory boundaries
+     * @throws Error if word array length doesn't match configured word size
+     * @throws Error if any byte value exceeds maxByteValue or is negative
+     *
+     * @example Writing words with different configurations
+     * ```typescript
+     * // Standard 4-byte word
+     * const memory = new Memory(100, 8, 4);
+     * memory.writeWord(0n, [0x12, 0x34, 0x56, 0x78]);
+     *
+     * // 2-byte word with big-endian
+     * const memory16 = new Memory(100, 8, 2, [1, 0]);
+     * memory16.writeWord(10n, [0xAB, 0xCD]);
+     * // Physical layout: [0xCD, 0xAB] but readWord returns [0xAB, 0xCD]
+     *
+     * // Custom byte size with mixed endianness
+     * const custom = new Memory(50, 6, 3, [2, 0, 1]);
+     * custom.writeWord(5n, [32, 21, 63]); // All values ≤ 63 for 6-bit bytes
+     * ```
+     *
+     * @example Error cases
+     * ```typescript
+     * const memory = new Memory(100, 4, 4); // 4-bit bytes, max value 15
+     *
+     * // These will throw errors:
+     * // memory.writeWord(0n, [1, 2, 3]);        // Wrong length (3 vs 4)
+     * // memory.writeWord(0n, [1, 2, 3, 16]);    // Value 16 > max 15
+     * // memory.writeWord(98n, [1, 2, 3, 4]);    // Exceeds memory boundary
+     * ```
+     */
+    writeWord(address: bigint, word: number[]): void {
+        const addr = Number(address);
+        if (addr + this.wordSize > this.size) {
+            throw new Error(
+                `Word at address ${addr} with size ${this.wordSize} exceeds memory size ${this.size}`,
+            );
+        }
+
+        if (word.length !== this.wordSize) {
+            throw new Error(
+                `Word array length (${word.length}) must match word size (${this.wordSize})`,
+            );
+        }
+
+        // Validate all bytes in the word
+        for (let i = 0; i < word.length; i++) {
+            if (word[i] > this.maxByteValue || word[i] < 0) {
+                throw new Error(
+                    `Word byte ${i} value ${word[i]} exceeds byte size (max: ${this.maxByteValue})`,
+                );
+            }
+        }
+
+        // Reorder bytes according to endianness and write to memory
+        // endianness[i] tells us which word position should go to memory position i
+        const bytesToWrite: number[] = new Array(this.wordSize);
+        for (let i = 0; i < this.wordSize; i++) {
+            bytesToWrite[i] = word[this.endianness[i]];
+        }
+
+        for (let i = 0; i < this.wordSize; i++) {
+            this.write(BigInt(addr + i), bytesToWrite[i]);
+        }
     }
 }

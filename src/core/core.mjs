@@ -56,10 +56,10 @@ import { creator_callstack_reset } from "./sentinel/sentinel.mjs";
 
 // Conditional import for the WASM compiler based on the environment (web or Deno)
 
-import wasm_web_init, {
-    Color as Color_web,
-    ArchitectureJS as ArchitectureJS_web,
-} from "./compiler/web/creator_compiler.js";
+// import wasm_web_init, {
+//     Color as Color_web,
+//     ArchitectureJS as ArchitectureJS_web,
+// } from "./compiler/web/creator_compiler.js";
 import {
     Color as Color_deno,
     ArchitectureJS as ArchitectureJS_deno,

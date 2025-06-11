@@ -29,8 +29,6 @@ import {
     BYTESIZE,
     main_memory,
 } from "../core.mjs";
-// import { creator_memory_zerofill } from "../memory/memoryManager.mjs";
-import { readMemory } from "../memory/memoryOperations.mjs";
 import { crex_findReg_bytag } from "../register/registerLookup.mjs";
 import {
     readRegister,
@@ -43,7 +41,6 @@ import { logger } from "../utils/creator_logger.mjs";
 import { decode_instruction } from "./decoder.mjs";
 import { buildInstructionPreload } from "./preload.mjs";
 import { dumpMemory } from "../core.mjs"; // To use with debugger
-import { main_memory, main_memory_write_value } from "../memory/memoryCore.mjs"; // For debugging only
 import { show_notification } from "@/web/utils.mjs";
 
 export function packExecute(error, err_msg, err_type, draw) {

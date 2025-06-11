@@ -1340,7 +1340,7 @@ instructions:
                 value: "0000011"
               - field: funct3
                 value: "000"
-          definition: "rd = CAPI.MEM.read(imm+rs1, 'b', rd_name);"
+          definition: "rd = CAPI.MEM.read(imm+rs1, 1, rd_name);"
 
         - name: lbu
           type: I-Offset
@@ -1349,7 +1349,7 @@ instructions:
                 value: "0000011"
               - field: funct3
                 value: "100"
-          definition: "var addr = CAPI.FP.int2uint(rs1)+imm;\n rd = CAPI.MEM.read(addr, 'bu', rd_name);\n rd = CAPI.FP.int2uint(rd);"
+          definition: "var addr = CAPI.FP.int2uint(rs1)+imm;\n rd = CAPI.MEM.read(addr, 1, rd_name);\n rd = CAPI.FP.int2uint(rd);"
 
         - name: lh
           type: I-Offset
@@ -1358,7 +1358,7 @@ instructions:
                 value: "0000011"
               - field: funct3
                 value: "001"
-          definition: "rd = CAPI.MEM.read(imm+rs1, 'h', rd_name);"
+          definition: "rd = CAPI.MEM.read(imm+rs1, 2, rd_name);"
 
         - name: lhu
           type: I-Offset
@@ -1367,7 +1367,7 @@ instructions:
                 value: "0000011"
               - field: funct3
                 value: "101"
-          definition: "var addr = CAPI.FP.int2uint(rs1)+imm;\n rd = CAPI.MEM.read(addr, 'hu', rd_name);\n rd = CAPI.FP.int2uint(rd);"
+          definition: "var addr = CAPI.FP.int2uint(rs1)+imm;\n rd = CAPI.MEM.read(addr, 2, rd_name);\n rd = CAPI.FP.int2uint(rd);"
 
         - name: lw
           type: I-Offset
@@ -1376,7 +1376,7 @@ instructions:
                 value: "0000011"
               - field: funct3
                 value: "010"
-          definition: "var addr = CAPI.FP.int2uint(rs1)+imm;\n rd = CAPI.MEM.read(addr, 'w', rd_name);"
+          definition: "var addr = CAPI.FP.int2uint(rs1)+imm;\n rd = CAPI.MEM.read(addr, 4, rd_name);"
 
         - name: ori
           type: I
@@ -1595,7 +1595,7 @@ instructions:
                 value: "0100011"
               - field: funct3
                 value: "000"
-          definition: "CAPI.MEM.write(rs1+imm, rs2, 'b', rs2_name);"
+          definition: "CAPI.MEM.write(rs1+imm, rs2, rs2_name);"
 
         - name: sh
           type: S
@@ -1604,7 +1604,7 @@ instructions:
                 value: "0100011"
               - field: funct3
                 value: "001"
-          definition: "CAPI.MEM.write(imm+rs1, rs2, 'h', rs2_name);"
+          definition: "CAPI.MEM.write(imm+rs1, rs2, rs2_name);"
 
         # The check for the
         - name: sw
@@ -1614,7 +1614,7 @@ instructions:
                 value: "0100011"
               - field: funct3
                 value: "010"
-          definition: "CAPI.MEM.write(imm+rs1, rs2, 'w', rs2_name); if (rs1_name === 'sp') { const formattedAddr = '0x'+(imm+rs1).toString(16).padStart(8, '0').toUpperCase(); CAPI.DRAW_STACK.addHint(formattedAddr, rs2_name) }"
+          definition: "CAPI.MEM.write(imm+rs1, rs2, rs2_name); if (rs1_name === 'sp') { const formattedAddr = '0x'+(imm+rs1).toString(16).padStart(8, '0').toUpperCase(); CAPI.DRAW_STACK.addHint(formattedAddr, rs2_name) }"
 
         # U-type instructions
         #           31-12                   11-7    6-0
@@ -1785,7 +1785,7 @@ instructions:
                 value: "010"
               - field: rd # We're overriding the rd field from the template
                 type: SFP-Reg
-          definition: "rd = CAPI.MEM.read(rs1+imm, 'wu', rd_name);"
+          definition: "rd = CAPI.MEM.read(rs1+imm, 4, rd_name);"
           postoperation: "rd = CAPI.RISCV.NaNBox(rd);"
 
           # R-type instructions
@@ -2179,7 +2179,7 @@ instructions:
                 value: "010"
               - field: rs2
                 type: SFP-Reg
-          definition: "CAPI.MEM.write(rs1+imm, rs2, 'w', rs2_name);"
+          definition: "let value = rs2 & 0xFFFFFFFFn; CAPI.MEM.write(rs1+imm, value, rs2_name);"
     D:
         #   ____ __     __ _____ ____   ____
         #  |  _ \\ \   / /|___ /|___ \ |  _ \
@@ -2197,7 +2197,7 @@ instructions:
                 value: "011"
               - field: rd # We're overriding the rd field from the template
                 type: DFP-Reg
-          definition: "if (CAPI.VALIDATION.isMisaligned(rs1+imm, 'd')) { CAPI.VALIDATION.raise('The memory must be align'); }\nrd = CAPI.MEM.read(rs1+imm, 'd', rd_name);"
+          definition: "if (CAPI.VALIDATION.isMisaligned(rs1+imm, 'd')) { CAPI.VALIDATION.raise('The memory must be align'); }\nrd = CAPI.MEM.read(rs1+imm, 8, rd_name);"
 
           # R-type instructions
         - name: fadd.d
@@ -2626,7 +2626,7 @@ instructions:
                 value: "011"
               - field: rs2 # We're overriding the rs2 field from the template
                 type: DFP-Reg
-          definition: "var val = CAPI.FP.split_double(rs2, 0);\n CAPI.MEM.write(rs1+imm, val, 'w', rs2_name);\n val = CAPI.FP.split_double(rs2, 1);\n CAPI.MEM.write(rs1+imm+4n, val, 'w', rs2_name);"
+          definition: "var val = CAPI.FP.split_double(rs2, 0);\n CAPI.MEM.write(rs1+imm, val, rs2_name);\n val = CAPI.FP.split_double(rs2, 1);\n CAPI.MEM.write(rs1+imm+4n, val, rs2_name);"
     Zicsr:
         #   _____ _
         #  |__  /(_)  ___  ___  _ __

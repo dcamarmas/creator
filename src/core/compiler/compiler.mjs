@@ -31,7 +31,6 @@ import {
     backup_data_address,
     arch,
     REGISTERS,
-    wasm,
     main_memory,
     BYTESIZE,
 } from "../core.mjs";
@@ -51,10 +50,8 @@ import { creator_ga } from "../utils/creator_ga.mjs";
 import { logger, console_log } from "../utils/creator_logger.mjs";
 import { bin2hex, isDeno, isWeb } from "../utils/utils.mjs";
 
-import { main_memory_zerofill } from "../memory/memoryCore.mjs";
-
 // Conditional import for the WASM compiler based on the environment (web or Deno)
-import { DataCategoryJS as DataCategoryJS_web } from "./web/creator_compiler.js";
+// import { DataCategoryJS as DataCategoryJS_web } from "./web/creator_compiler.js";
 import { DataCategoryJS as DataCategoryJS_deno } from "./deno/creator_compiler.js";
 
 let DataCategoryJS;
@@ -383,45 +380,15 @@ export function assembly_compiler(code, library, color) {
         }, {});
         // Extract data elements and load them on memory
         const data_mem = compiled.data;
-        for (var i = 0; i < data_mem.length; i++) {
-            let data = compiled.data[i];
-            const size = Number(data.size());
-            const addr = Number(data.address());
-            switch (data.data_category()) {
-                case DataCategoryJS.Number:
-                    creator_memory_data_compiler(
-                        addr,
-                        data.value(false),
-                        size,
-                        data.labels()[0],
-                        data.value(true),
-                        data.type(),
-                        true,
-                    );
-                    break;
-                case DataCategoryJS.String:
-                    creator_memory_storestring(
-                        data.value(false),
-                        size,
-                        addr,
-                        data.labels()[0],
-                        data.type(),
-                        true,
-                    );
-                    break;
-                case DataCategoryJS.Space:
-                    creator_memory_storestring(
-                        size,
-                        size,
-                        addr,
-                        data.labels()[0],
-                        data.type(),
-                        true,
-                    );
-                    break;
-                case DataCategoryJS.Padding:
-                    main_memory_zerofill(addr, size);
-                    break;
+        for (let i = 0; i < data_mem.length; i++) {
+            const data = compiled.data[i];
+            const addr = BigInt(data.address());
+            const value = BigInt(data.value(true));
+
+            const bytes = main_memory.splitToBytes(value);
+            // Write the data to memory
+            for (let j = 0n; j < bytes.length; j++) {
+                main_memory.write(addr + j, bytes[j]);
             }
         }
         // Catch any errors thrown by the compiler
