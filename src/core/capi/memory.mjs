@@ -26,6 +26,7 @@ import {
     creator_callstack_newWrite,
     creator_callstack_newRead,
 } from "../sentinel/sentinel.mjs";
+import { logger } from "../utils/creator_logger.mjs";
 
 /*
  *  CREATOR instruction description API:
@@ -38,7 +39,7 @@ import {
  */
 // Memory operations
 export const MEM = {
-    write: function (address, value, size, reg_name) {
+    write: function (address, value, reg_name) {
         // if (isMisaligned(addr, type)) {
         //     raise("The memory must be align");
         //     creator_executor_exit(true);
@@ -52,11 +53,22 @@ export const MEM = {
             raise("Segmentation fault. You tried to write in the text segment");
             creator_executor_exit(true);
         }
-
+        let bytes;
         try {
-            // This function will take in a value and write it to the memory.
             // The memory is implemented as a Memory class instance.
-            // The
+            // The memory class ONLY reads and writes one byte at a time,
+            // so we need to handle the size of the value to write.
+            // first, we need to split the value to write into bytes
+            bytes = main_memory.splitToBytes(value);
+            logger.debug(
+                `Writing value '0x${value.toString(16)}' to memory at address '0x${address.toString(
+                    16,
+                )}' as bytes: ${bytes.map(b => `0x${b.toString(16)}`).join(", ")}`,
+            );
+            // Now we write each byte to the memory
+            for (let i = 0n; i < bytes.length; i++) {
+                main_memory.write(address + i, bytes[i]);
+            }
         } catch (e) {
             raise(
                 "Invalid memory access to address '0x" +
@@ -74,18 +86,17 @@ export const MEM = {
         const i = ret.indexComp;
         const j = ret.indexElem;
 
-        creator_callstack_newWrite(i, j, address, type);
+        creator_callstack_newWrite(i, j, address, bytes.length);
     },
 
-    read: function (addr, type, reg_name) {
+    read: function (addr, bytes, reg_name) {
         // Implementation of capi_mem_read
-        const size = 1;
-        let val = 0x0;
+        let val = 0n;
 
-        if (isMisaligned(addr, type)) {
-            raise("The memory must be align");
-            creator_executor_exit(true);
-        }
+        // if (isMisaligned(addr, bytes)) {
+        //     raise("The memory must be align");
+        //     creator_executor_exit(true);
+        // }
 
         const addr_16 = parseInt(addr, 16);
         if (
@@ -97,7 +108,22 @@ export const MEM = {
         }
 
         try {
-            val = readMemory(addr, type);
+            // the memory only reads one byte at a time,
+            // so we need to read the bytes one by one
+            const bytesRead = [];
+            for (let i = 0n; i < bytes; i++) {
+                const byte = main_memory.read(addr + i);
+                bytesRead.push(byte);
+            }
+
+            // Combine bytes into a single value (big-endian)
+            val = 0n;
+            for (let i = 0; i < bytesRead.length; i++) {
+                val =
+                    (val << BigInt(main_memory.getBitsPerByte())) |
+                    BigInt(bytesRead[i]);
+            }
+            console.log("Read value:", val);
         } catch (e) {
             raise(
                 "Invalid memory access to address '0x" +
@@ -107,7 +133,8 @@ export const MEM = {
             creator_executor_exit(true);
         }
 
-        const ret = creator_memory_value_by_type(val, type);
+        // Remove the call to undefined function
+        const ret = val;
 
         const find_ret = crex_findReg(reg_name);
         if (find_ret.match === 0) {
@@ -117,7 +144,7 @@ export const MEM = {
         const i = find_ret.indexComp;
         const j = find_ret.indexElem;
 
-        creator_callstack_newRead(i, j, addr, type);
+        creator_callstack_newRead(i, j, addr, bytes);
 
         return ret;
     },
