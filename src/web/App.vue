@@ -49,7 +49,6 @@ import {
   set_debug,
 } from "@/core/core.mjs"
 
-
 import { instructions } from "@/core/compiler/compiler.mjs"
 
 import { track_stack_names } from "@/core/memory/stackTracker.mjs"
@@ -294,7 +293,7 @@ export default {
 
       display: "",
       keyboard: "",
-      enter: null,  // defines the state of the keyboard: no keyboard read pending (null), keyboard pending (false), or keyboard success (true)
+      enter: null, // defines the state of the keyboard: no keyboard read pending (null), keyboard pending (false), or keyboard success (true)
 
       //
       // Flash
@@ -509,7 +508,7 @@ export default {
       this.target_port = this.target_ports[this.os]
     },
   },
-};
+}
 </script>
 
 <template>
@@ -778,7 +777,8 @@ export default {
   }
 
   .buttonBackground {
-    background-color: white;
+    background-color: #fafafa;
+    color: #6c757d;
   }
 
   #chart {
@@ -797,6 +797,17 @@ export default {
 
   .fields {
     padding: 1%;
+  }
+
+  // for some reason this doesn't work
+  [data-bs-theme="dark"] {
+    .buttonBackground {
+      background-color: #212529;
+      color: #818a8d;
+    }
+    .buttonBackground:hover {
+      background-color: #424649;
+    }
   }
 }
 </style>

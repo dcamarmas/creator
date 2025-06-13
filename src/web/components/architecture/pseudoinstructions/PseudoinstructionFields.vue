@@ -22,7 +22,7 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 export default {
   props: {
     id: { type: String, required: true },
-    title: { type: String, required: true },
+    name: { type: String, required: true },
     index: { type: Number, required: true },
     pseudoinstruction: { type: Object, required: true },
   },
@@ -30,52 +30,50 @@ export default {
 </script>
 
 <template>
-  <b-modal :id="id" size="lg" :title="title" no-footer>
+  <b-modal :id="id" size="lg" :title="`Fields of ${name}`" no-footer>
     <b-form>
-      <div id="viewFieldsPseudo">
-        <div class="col-lg-12 col-sm-12 row">
-          <div class="col-lg-4 col-4 fields"></div>
-          <div class="col-lg-4 col-4 fields">
-            <span class="h6">Name:</span>
-          </div>
-          <div class="col-lg-4 col-4 fields">
-            <span class="h6">Type</span>
-          </div>
-        </div>
+      <!-- headers -->
 
-        <div>
-          <div v-for="(item, field_index) in pseudoinstruction.fields">
-            <div class="col-lg-12 col-sm-12 row">
-              <div class="col-lg-4 col-4 fields">
-                <span class="h6">Field {{ field_index }}</span>
-              </div>
-              <div class="col-lg-4 col-4 fields">
-                <b-form-group>
-                  <b-form-input
-                    type="text"
-                    v-model="pseudoinstruction.fields[field_index].name"
-                    required
-                    size="sm"
-                    disabled
-                    title="Field name"
-                  >
-                  </b-form-input>
-                </b-form-group>
-              </div>
-              <div class="col-lg-4 col-4 fields">
-                <b-form-group>
-                  <b-form-input
-                    v-model="pseudoinstruction.fields[field_index].type"
-                    required
-                    type="text"
-                    size="sm"
-                    disabled
-                    title="Field type"
-                  >
-                  </b-form-input>
-                </b-form-group>
-              </div>
-            </div>
+      <div class="col-lg-12 col-sm-12 row">
+        <div class="col-lg-4 col-4 fields"></div>
+        <div class="col-lg-4 col-4 fields">
+          <span class="h6">Name</span>
+        </div>
+        <div class="col-lg-4 col-4 fields">
+          <span class="h6">Type</span>
+        </div>
+      </div>
+
+      <div
+        v-for="(field, field_index) in pseudoinstruction.fields"
+        :key="field.name"
+      >
+        <div class="col-lg-12 col-sm-12 row">
+          <div class="col-lg-4 col-4 fields">
+            <span class="h6">Field {{ field_index }}</span>
+          </div>
+          <div class="col-lg-4 col-4 fields">
+            <b-form-group>
+              <b-form-input
+                type="text"
+                :model-value="field.name"
+                readonly
+                size="sm"
+                title="Field name"
+              />
+            </b-form-group>
+          </div>
+
+          <div class="col-lg-4 col-4 fields">
+            <b-form-group>
+              <b-form-input
+                :model-value="field.type"
+                readonly
+                type="text"
+                size="sm"
+                title="Field type"
+              />
+            </b-form-group>
           </div>
         </div>
       </div>

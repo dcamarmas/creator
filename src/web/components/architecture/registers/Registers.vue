@@ -27,29 +27,9 @@ export default {
 
   data() {
     return {
-      //Directives table fields
-      registers_fields: ['name', 'ID', 'nbits', 'default_value', 'properties'],
+      // Directives table fields
+      registers_fields: ["name", "ID", "nbits", "default_value", "properties"],
     }
-  },
-
-  methods: {
-    //Generate new register ID //TODO: improve the search
-    element_id(name, type, double) {
-      let id = 0
-      for (let i = 0; i < architecture.components.length; i++) {
-        for (let j = 0; j < architecture.components[i].elements.length; j++) {
-          if (architecture.components[i].elements[j].name == name) {
-            return id
-          }
-          if (
-            architecture.components[i].type == type &&
-            architecture.components[i].double_precision == double
-          ) {
-            id++
-          }
-        }
-      }
-    },
   },
 }
 </script>
@@ -65,26 +45,21 @@ export default {
     <!-- For each register -->
 
     <template v-slot:cell(name)="row">
-      {{ registers[row.index].name.join(' | ') }}
+      {{ registers[row.index].name.join(" | ") }}
     </template>
 
     <template v-slot:cell(ID)="row">
-      {{
-        element_id(
-          registers[row.index].name,
-          architecture.components[register_file_index].type,
-          architecture.components[register_file_index].double_precision,
-        )
-      }}
+      <!-- TODO: take into account double precision registers -->
+      {{ row.index }}
     </template>
 
     <template v-slot:cell(properties)="row">
       <b-badge
         class="m-1"
-        v-for="propertie in registers[row.index].properties"
+        v-for="property in registers[row.index].properties"
         pill
         variant="primary"
-        >{{ propertie }}</b-badge
+        >{{ property }}</b-badge
       >
     </template>
   </b-table>

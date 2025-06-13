@@ -25,8 +25,21 @@ export default {
   },
 
   computed: {
-    memory_layout_length() {
-      return this._props.memory_layout.length
+    layout() {
+      return (
+        this.memory_layout
+          // group in chunks of two so we get [[start0, end0], ...]
+          .reduce((resultArray, item, index) => {
+            const chunkIndex = Math.floor(index / 2)
+            if (!resultArray[chunkIndex]) {
+              resultArray[chunkIndex] = [] // start a new chunk
+            }
+            resultArray[chunkIndex].push(item)
+            return resultArray
+          }, [])
+          // remove empty segments
+          .filter(([start, end]) => end.value - start.value > 0)
+      )
     },
   },
 
@@ -35,56 +48,52 @@ export default {
      * Obtains the color depending on the memory segment
      */
     getVariant(name) {
-      // TODO
       switch (name) {
-        case 'ktext':
-        case 'text':
-          return 'info'
-        case 'kdata':
-        case 'data':
-          return 'warning'
-        case 'stack':
-          return 'success'
+        case "ktext":
+        case "text":
+          return "info"
+        case "kdata":
+        case "data":
+          return "warning"
+        case "stack":
+          return "success"
+        default:
+          return "secondary"
       }
-
-      return 'info'
-    },
-
-    computeSize(i) {
-      return this._props.memory_layout[i].value - this._props.memory_layout[i - 1].value
     },
   },
 }
 </script>
+
 <template>
-  <div class="col-lg-12 col-sm-12 row memoryLayoutDiv mx-0 px-0">
-    <div class="col-lg-3 col-sm-12"></div>
+  <div class="col-lg-12 col-sm-12 row memoryLayoutDiv mt-5 mx-0 px-0">
+    <div class="col-lg-4 col-sm-12" />
 
     <!-- Memory layout sketch -->
-    <div class="col-lg-6 col-sm-12">
-      <b-list-group class="memoryLayout">
+    <div class="col-lg-5 col-sm-10">
+      <b-list-group>
         <!-- main memory -->
 
         <b-list-group
           horizontal
-          v-for="i in memory_layout_length - 2"
-          v-if="i % 2 && computeSize(i) > 0"
+          v-for="[start, end] in this.layout.slice(0, -1)"
         >
-          <!-- i goes 1..n bc Vue -->
-          <!--  TODO: get variant from getVariant() -->
-          <b-list-group-item variant="info" class="memoryLayout">
+          <b-list-group-item
+            :variant="getVariant(start.name.split(' ').shift())"
+            class="memoryLayout font-monospace"
+          >
             <br />
-            .{{ memory_layout[i - 1].name.split(' ').shift() }}
+            .{{ start.name.split(" ").shift() }}
             <br />
             <br />
           </b-list-group-item>
-          <b-list-group-item class="memoryLayout noBorder left">
+          <b-list-group-item class="memoryLayout noBorder left font-monospace">
             <!-- start -->
-            <span class="h6"> {{ memory_layout[i - 1].value }} </span>
+            <span class="h6"> {{ start.value }} </span>
             <br />
             <br />
             <!-- end -->
-            <span class="h6"> {{ memory_layout[i].value }} </span>
+            <span class="h6"> {{ end.value }} </span>
           </b-list-group-item>
         </b-list-group>
       </b-list-group>
@@ -92,33 +101,48 @@ export default {
       <!-- empty space -->
 
       <b-list-group horizontal>
-        <b-list-group-item variant="secondary" class="memoryLayout">
+        <b-list-group-item
+          variant="secondary"
+          class="memoryLayout font-monospace"
+        >
           <br />
           ...
           <br />
           <br />
         </b-list-group-item>
-        <b-list-group-item class="memoryLayout noBorder"> </b-list-group-item>
+        <b-list-group-item class="memoryLayout noBorder" />
       </b-list-group>
 
       <!-- stack -->
 
       <b-list-group horizontal>
-        <b-list-group-item variant="success" class="memoryLayout">
+        <b-list-group-item
+          variant="success"
+          class="memoryLayout font-monospace"
+        >
           <br />
-          .{{ memory_layout[memory_layout_length - 2].name.split(' ').shift() }}
+          .{{ layout.at(-1)[0].name.split(" ").shift() }}
           <br />
           <br />
         </b-list-group-item>
-        <b-list-group-item class="memoryLayout noBorder left">
-          <span class="h6"> {{ memory_layout[memory_layout_length - 2].value }} </span>
+        <b-list-group-item class="memoryLayout noBorder left font-monospace">
+          <span class="h6">
+            {{ layout.at(-1)[0].value }}
+          </span>
           <br />
           <br />
-          <span class="h6"> {{ memory_layout[memory_layout_length - 2].value }} </span>
+          <span class="h6">
+            {{ layout.at(-1)[1].value }}
+          </span>
         </b-list-group-item>
       </b-list-group>
     </div>
-
-    <div class="col-lg-3 col-sm-12"></div>
   </div>
 </template>
+
+<style lang="scss" scoped>
+.memoryLayout {
+  width: 100%;
+  text-align: center;
+}
+</style>

@@ -19,103 +19,108 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <script>
+import InstructionFields from "./InstructionFields.vue"
+
 export default {
   props: {
     instructions: { type: Array, required: true },
   },
 
+  components: { InstructionFields },
+
   data() {
     return {
-      //Instructions table fields
+      // Instructions table fields
       instructions_fields: [
-        "name",
-        "co",
-        "cop",
-        "nwords",
-        "signatureRaw",
-        "properties",
-        "clk_cycles",
-        "fields",
-        "definition",
+        { key: "name", sortable: true },
+        { key: "co", label: "CO" },
+        { key: "cop", label: "Extended CO" },
+        { key: "nwords" },
+        { key: "signatureRaw", label: "Instruction syntax" },
+        { key: "properties" },
+        { key: "clk_cycles" },
+        { key: "fields" },
+        { key: "definition" },
       ],
+
+      // instruction data
+      modal_field_instruction: {
+        name: "",
+        index: 0,
+      },
     }
   },
 
   methods: {
-    //Show instruction fields modal
-    view_instructions_modal(name, index, button) {
-      app._data.modal_field_instruction.title = "Fields of " + name
-      app._data.modal_field_instruction.index = index
-      app._data.modal_field_instruction.instruction = structuredClone(
-        architecture.instructions[index],
-      )
-
-      this.$root.$emit("bv::show::modal", "fields_instructions", button)
+    // Show instruction fields modal
+    view_instructions_modal(name, index) {
+      this.modal_field_instruction = {
+        name: name,
+        index: index,
+      }
     },
   },
 }
 </script>
 <template>
-  <div>
-    <!-- Instruction set table -->
-    <div class="col-lg-12 col-sm-12 mt-3">
-      <b-table
-        small
-        :items="instructions"
-        :fields="instructions_fields"
-        class="text-center"
-        sticky-header="60vh"
-      >
-        <!-- Change the title of each column -->
-        <template v-slot:head(cop)="row"> Extended CO </template>
+  <InstructionFields
+    id="fields_instructions"
+    :name="modal_field_instruction.name"
+    :index="modal_field_instruction.index"
+    :instruction="instructions[modal_field_instruction.index]"
+  />
 
-        <template v-slot:head(signatureRaw)="row">
-          Instruction syntax
-        </template>
+  <!-- Instruction set table -->
+  <div class="col-lg-12 col-sm-12 mt-3">
+    <b-table
+      small
+      :items="instructions"
+      :fields="instructions_fields"
+      class="text-center"
+      sticky-header="60vh"
+    >
 
-        <!-- For each instruction -->
+      <!-- For each instruction -->
 
-        <template v-slot:cell(properties)="row">
-          <b-badge
-            class="m-1"
-            v-for="propertie in row.item.properties"
-            pill
-            variant="primary"
-          >
-            {{ propertie }}
-          </b-badge>
-        </template>
+      <template v-slot:cell(properties)="row">
+        <b-badge
+          class="m-1"
+          v-for="property in row.item.properties"
+          pill
+          variant="primary"
+        >
+          {{ property }}
+        </b-badge>
+      </template>
 
-        <template v-slot:cell(signatureRaw)="row">
-          {{ row.item.signatureRaw }}
-          <br />
-          {{ row.item.signature }}
-        </template>
+      <template v-slot:cell(signatureRaw)="row">
+        {{ row.item.signatureRaw }}
+        <br />
+        {{ row.item.signature }}
+      </template>
 
-        <template v-slot:cell(fields)="row">
-          <b-button
-            @click.stop="
-              view_instructions_modal(row.item.name, row.index, $event.target)
-            "
-            variant="outline-secondary"
-            size="sm"
-          >
-            View Fields
-          </b-button>
-        </template>
+      <template v-slot:cell(fields)="row">
+        <b-button
+          @click.stop="view_instructions_modal(row.item.name, row.index)"
+          variant="outline-secondary"
+          size="sm"
+          v-b-toggle.fields_instructions
+        >
+          View Fields
+        </b-button>
+      </template>
 
-        <template v-slot:cell(definition)="row">
-          <b-form-textarea
-            v-model="row.item.definition"
-            disabled
-            no-resize
-            rows="1"
-            max-rows="4"
-            title="Instruction Definition"
-          >
-          </b-form-textarea>
-        </template>
-      </b-table>
-    </div>
+      <template v-slot:cell(definition)="row">
+        <b-form-textarea
+          v-model="row.item.definition"
+          readonly
+          no-resize
+          rows="1"
+          max-rows="4"
+          title="Instruction Definition"
+        >
+        </b-form-textarea>
+      </template>
+    </b-table>
   </div>
 </template>

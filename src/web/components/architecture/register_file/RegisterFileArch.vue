@@ -19,9 +19,14 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <script>
+import Registers from "../registers/Registers.vue"
+
 export default {
   props: {
     register_file: { type: Array, required: true },
+  },
+  components: {
+    Registers,
   },
 }
 </script>
@@ -34,31 +39,35 @@ export default {
       <div
         class="col-lg-12 col-sm-12 px-0"
         v-for="(item, index) in register_file"
+        :key="item.type"
       >
         <!-- For each register file -->
         <b-card no-body class="mb-1">
-          <b-card-header header-tag="header" class="p-1" role="tab">
-            <b-btn
+          <b-card-header
+            header-tag="header"
+            class="p-1 d-grid gap-2"
+            role="tab"
+          >
+            <b-button
               block
               href="#"
-              v-b-toggle="index.toString()"
+              v-b-toggle="'registerfile' + index.toString()"
               class="buttonBackground"
               variant="outline-secondary"
               size="sm"
             >
               {{ item.name }}
-            </b-btn>
+            </b-button>
           </b-card-header>
           <b-collapse
-            :id="index.toString()"
-            visible
+            :id="'registerfile' + index.toString()"
             accordion="my-accordion"
             role="tabpanel"
             class="architecture-scroll-y"
           >
             <b-card-body>
               <Registers
-                :registers="architecture.components[index].elements"
+                :registers="register_file[index].elements"
                 :register_file_index="index"
               >
               </Registers>
@@ -68,7 +77,6 @@ export default {
       </div>
     </div>
   </div>
-  '
 </template>
 
 <style lang="scss" scoped>
@@ -77,5 +85,15 @@ export default {
   max-height: 60vh;
   overflow-y: auto;
   -ms-overflow-style: -ms-autohiding-scrollbar;
+}
+
+[data-bs-theme="dark"] {
+  .buttonBackground {
+    background-color: #212529;
+    color: #818a8d;
+  }
+  .buttonBackground:hover {
+    background-color: #424649;
+  }
 }
 </style>

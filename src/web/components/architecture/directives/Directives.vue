@@ -41,8 +41,7 @@ export default {
         :fields="directivesFields"
         class="text-center"
         sticky-header="60vh"
-      >
-      </b-table>
+      />
     </div>
   </div>
 </template>
