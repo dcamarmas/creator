@@ -24,7 +24,6 @@ import { useModal } from "bootstrap-vue-next"
 import {
   assembly_compile,
   set_execution_mode,
-  architecture,
   status,
   instructions_packed,
   reset,
@@ -32,7 +31,8 @@ import {
 import { instructions } from "@/core/compiler/compiler.mjs"
 import { step, packExecute } from "@/core/executor/executor.mjs"
 import { creator_ga } from "@/core/utils/creator_ga.mjs"
-import { show_notification } from "@/web/utils.mjs"
+import { show_notification, loadArchitecture } from "@/web/utils.mjs"
+
 
 export default {
   props: {
@@ -173,10 +173,7 @@ export default {
     //
 
     load_arch_select(arch) {
-      uielto_preload_architecture.methods.load_arch_select(arch);
-
-      //Close all toast and refresh
-      // app.$bvToast.hide()
+      loadArchitecture(arch)
     },
 
     //
@@ -580,20 +577,25 @@ export default {
       >
         <!-- button_architecture -->
         <b-dropdown
-          class="menuButton"
-          split
-          v-if="item == 'btn_architecture'"
-          right
-          text="Architecture"
-          size="sm"
+          v-if="item === 'btn_architecture'"
+          menu-class="menuButton"
           variant="outline-secondary"
-          @click="change_UI_mode('architecture')"
+          split
+          right
+          size="sm"
         >
-          <b-dropdown-item
-            v-for="item in arch_available"
-            @click="load_arch_select(item)"
-            >{{ item.name }}</b-dropdown-item
+          <template #button-content>
+            <span @click="change_UI_mode('architecture')">
+              Architecture
+            </span>
+          </template>
+
+          <b-dropdown-item-button
+            v-for="arch in arch_available"
+            @click="load_arch_select(arch)"
           >
+            {{ arch.name }}
+          </b-dropdown-item-button>
         </b-dropdown>
 
         <!-- button_assembly -->

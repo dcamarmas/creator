@@ -19,9 +19,16 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <script>
+import { architecture } from "@/core/core.mjs"
+
 import UIeltoToolbar from "./general/UIeltoToolbar.vue"
 import EditArchitecture from "./architecture/EditArchitecture.vue"
 import ArchConf from "./architecture/configuration/ArchConf.vue"
+import MemoryLayout from "./architecture/memory_layout/MemoryLayout.vue"
+import RegisterFileArch from "./architecture/register_file/RegisterFileArch.vue"
+import Instructions from "./architecture/instructions/Instructions.vue"
+import Directives from "./architecture/directives/Directives.vue"
+import Pseudoinstructions from "./architecture/pseudoinstructions/Pseudoinstructions.vue"
 
 export default {
   props: {
@@ -36,10 +43,15 @@ export default {
     UIeltoToolbar,
     EditArchitecture,
     ArchConf,
+    MemoryLayout,
+    RegisterFileArch,
+    Instructions,
+    Directives,
+    Pseudoinstructions,
   },
   data() {
     return {
-      // arch_code: JSON.stringify(register_value_serialize(cfg), null, 2),
+      architecture,
     }
   },
 }
@@ -76,58 +88,38 @@ export default {
             <b-col class="menu" id="view_components">
               <b-tabs>
                 <!-- Architecture configuration -->
-                <!-- <b-tab title="Architecture Info" active>
+                <b-tab title="Architecture Info" active>
                   <ArchConf :arch_conf="architecture.arch_conf" />
-                </b-tab> -->
+                </b-tab>
 
                 <!-- Memory layout -->
-                <!-- <b-tab title="Memory Layout">
+                <b-tab title="Memory Layout">
                   <MemoryLayout :memory_layout="architecture.memory_layout" />
-                </b-tab> -->
+                </b-tab>
 
                 <!-- Register File -->
-                <!-- <b-tab title="Register File">
+                <b-tab title="Register File">
                   <RegisterFileArch :register_file="architecture.components" />
-                </b-tab> -->
+                </b-tab>
 
                 <!-- Instruction definition -->
-                <!-- <b-tab title="Instructions">
-                  <Instructions :instructions="architecture.instructions" /> -->
-
-                <!-- Instructions modals -->
-
-                <!-- Intruction fields-->
-                <!-- <InstructionFields
-                    id="fields_instructions"
-                    :title="modal_field_instruction.title"
-                    :index="modal_field_instruction.index"
-                    :instruction="modal_field_instruction.instruction"
-                  />
-                </b-tab> -->
+                <b-tab title="Instructions">
+                  <Instructions :instructions="architecture.instructions" />
+                </b-tab>
 
                 <!-- Pseudoinstruction definition -->
-                <!-- <b-tab title="Pseudoinstructions">
+                <b-tab title="Pseudoinstructions">
                   <Pseudoinstructions
                     :pseudoinstructions="architecture.pseudoinstructions"
-                  /> -->
-
-                <!-- Pseudoinstructions modals -->
-
-                <!-- Pseudontruction fields -->
-                <!-- <PseudoinstructionFields
-                    id="fields_pseudoinstructions"
-                    :title="modal_field_pseudoinstruction.title"
-                    :index="modal_field_pseudoinstruction.index"
-                    :pseudoinstruction="
-                      modal_field_pseudoinstruction.pseudoinstruction
-                    "
                   />
-                </b-tab> -->
+
+                  <!-- Pseudoinstructions modals -->
+                </b-tab>
 
                 <!-- Directives definition -->
-                <!-- <b-tab title="Directives">
+                <b-tab title="Directives">
                   <Directives :directives="architecture.directives" />
-                </b-tab> -->
+                </b-tab>
               </b-tabs>
             </b-col>
           </b-row>
@@ -136,21 +128,3 @@ export default {
     </b-row>
   </b-container>
 </template>
-
-<style lang="scss" scoped>
-:deep {
-  .memoryLayout {
-    width: 100%;
-    text-align: center;
-  }
-
-  .memoryLayoutForm {
-    margin-bottom: 2%;
-  }
-
-  .memoryLayoutDiv {
-    margin-top: 2%;
-    margin-bottom: 2%;
-  }
-}
-</style>

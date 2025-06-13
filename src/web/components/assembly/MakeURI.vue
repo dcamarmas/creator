@@ -81,7 +81,7 @@ export default {
       render-as="canvas"
     />
     <b-input-group>
-      <b-form-input v-model="uri" :disabled="true" />
+      <b-form-input v-model="uri" readonly />
       <b-button variant="info" @click="copyURI">
         <font-awesome-icon icon="fa-solid fa-copy" /> Copy
       </b-button>

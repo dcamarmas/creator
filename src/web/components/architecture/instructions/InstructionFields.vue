@@ -22,14 +22,14 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 export default {
   props: {
     id: { type: String, required: true },
-    title: { type: String, required: true },
+    name: { type: String, required: true },
     index: { type: Number, required: true },
     instruction: { type: Object, required: true },
   },
 
   data() {
     return {
-      //Allow instruction with fractioned fields
+      // Allow instruction with fractioned fields
       fragmet_data: [
         "inm-signed",
         "inm-unsigned",
@@ -41,200 +41,156 @@ export default {
   },
 }
 </script>
+
 <template>
-  <b-modal :id="id" size="lg" :title="title" no-footer>
+  <b-modal :id="id" size="lg" :title="`Fields of ${name}`" no-footer>
     <b-form>
-      <div id="viewFields">
-        <div class="col-lg-14 col-sm-14 row">
-          <div class="col-lg-1 col-1 fields"></div>
-          <div class="col-lg-2 col-2 fields">
-            <span class="h6">Name:</span>
-          </div>
-          <div class="col-lg-2 col-2 fields">
-            <span class="h6">Type</span>
-          </div>
-          <div class="col-lg-1 col-1 fields">
-            <span class="h6">Break</span>
-          </div>
-          <div class="col-lg-2 col-2 fields">
-            <span class="h6">Start Bit</span>
-          </div>
-          <div class="col-lg-2 col-2 fields">
-            <span class="h6">End Bit</span>
-          </div>
-          <div class="col-lg-2 col-2 fields">
-            <span class="h6">Value</span>
-          </div>
+      <!-- headers -->
+
+      <div class="col-lg-14 col-sm-14 row">
+        <div class="col-lg-1 col-1 fields" />
+        <div class="col-lg-2 col-2 fields">
+          <span class="h6">Name</span>
         </div>
+        <div class="col-lg-2 col-2 fields">
+          <span class="h6">Type</span>
+        </div>
+        <div class="col-lg-1 col-1 fields">
+          <span class="h6">Break</span>
+        </div>
+        <div class="col-lg-2 col-2 fields">
+          <span class="h6">Start Bit</span>
+        </div>
+        <div class="col-lg-2 col-2 fields">
+          <span class="h6">End Bit</span>
+        </div>
+        <div class="col-lg-2 col-2 fields">
+          <span class="h6">Value</span>
+        </div>
+      </div>
 
-        <div>
-          <div v-for="(item, field_index) in instruction.fields">
-            <div class="col-lg-14 col-sm-14 row">
-              <div class="col-lg-1 col-1 fields">
-                <span class="h6">Field {{ field_index }}</span>
-              </div>
-              <div class="col-lg-2 col-2 fields">
-                <b-form-group>
-                  <b-form-input
-                    type="text"
-                    v-model="instruction.fields[field_index].name"
-                    required
-                    size="sm"
-                    v-if="field_index != 0"
-                    disabled
-                    title="Field name"
-                  >
-                  </b-form-input>
-                  <b-form-input
-                    type="text"
-                    v-model="
-                      instruction.fields[field_index].name = instruction.name
-                    "
-                    required
-                    size="sm"
-                    v-if="field_index == 0"
-                    disabled
-                    title="Field name"
-                  >
-                  </b-form-input>
-                </b-form-group>
-              </div>
+      <!-- fields -->
+      <div v-for="(field, field_index) in instruction.fields" :key="field.name">
+        <div class="col-lg-14 col-sm-14 row">
+          <div class="col-lg-1 col-1 fields">
+            <span class="h6">Field {{ field_index }}</span>
+          </div>
 
-              <div class="col-lg-2 col-2 fields">
-                <b-form-group>
-                  <b-form-input
-                    type="text"
-                    v-model="instruction.fields[field_index].type"
-                    required
-                    size="sm"
-                    disabled
-                    title="Field type"
-                  >
-                  </b-form-input>
-                </b-form-group>
-              </div>
-              <div
-                class="col-lg-1 col-1 fields"
-                v-if="typeof instruction.separated !== 'undefined'"
-              >
-                <b-form-checkbox
-                  :id="'view-fragment-' + i"
-                  v-model="instruction.separated[field_index]"
-                  v-if="
-                    fragmet_data.indexOf(instruction.separated[field_index]) !==
-                    -1
-                  "
-                  class="ml-3"
-                  disabled
-                >
-                </b-form-checkbox>
-              </div>
+          <div class="col-lg-2 col-2 fields">
+            <b-form-input
+              v-if="field_index != 0"
+              type="text"
+              :model-value="field.name"
+              readonly
+              size="sm"
+              title="Field name"
+            />
+            <b-form-input
+              v-else
+              type="text"
+              :model-value="field.name"
+              readonly
+              size="sm"
+              title="Field name"
+            />
+          </div>
 
-              <!-- start bit description -->
-              <div class="col-lg-2 col-2 fields">
-                <b-form-group>
-                  <b-form-input
-                    v-model="true"
-                    type="number"
-                    min="0"
-                    :max="32 * instruction.nwords - 1"
-                    v-model="instruction.fields[field_index].startbit"
-                    required
-                    size="sm"
-                    disabled
-                    v-if="typeof(instruction.fields[field_index].startbit) !== \'object\'"
-                    title="Field start bit"
-                  >
-                  </b-form-input>
-                  <b-form-input
-                    v-else
-                    v-for="(j, ind) in instruction.fields[field_index].startbit"
-                    type="number"
-                    min="0"
-                    :max="32 * instruction.nwords - 1"
-                    v-model="instruction.fields[field_index].startbit[ind]"
-                    required
-                    class="mb-2"
-                    disabled
-                    title="Field start bit"
-                  >
-                  </b-form-input>
-                </b-form-group>
-              </div>
+          <div class="col-lg-2 col-2 fields">
+            <b-form-input
+              type="text"
+              :model-value="field.type"
+              readonly
+              size="sm"
+              title="Field type"
+            />
+          </div>
 
-              <!-- stop bit description -->
-              <div class="col-lg-2 col-2 fields">
-                <b-form-group>
-                  <b-form-input
-                    type="number"
-                    min="0"
-                    :max="32 * instruction.nwords - 1"
-                    v-model="instruction.fields[field_index].stopbit"
-                    required
-                    size="sm"
-                    disabled
-                    v-if="
-                      typeof instruction.fields[field_index].stopbit !==
-                      'object'
-                    "
-                    title="Field end bit"
-                  >
-                  </b-form-input>
-                  <b-form-input
-                    v-else
-                    v-for="(j, ind) in instruction.fields[field_index].stopbit"
-                    type="number"
-                    min="0"
-                    :max="32 * instruction.nwords - 1"
-                    v-model="instruction.fields[field_index].stopbit[ind]"
-                    required
-                    class="mb-2"
-                    disabled
-                    title="Field end bit"
-                  >
-                  </b-form-input>
-                </b-form-group>
-              </div>
+          <div
+            v-if="typeof instruction.separated !== 'undefined'"
+            class="col-lg-1 col-1 fields"
+          >
+            <b-form-checkbox
+              v-if="
+                fragmet_data.indexOf(instruction.separated[field_index]) !== -1
+              "
+              :id="'view-fragment-' + i"
+              :model-value="instruction.separated[field_index]"
+              class="ml-3"
+              disabled
+            />
+          </div>
 
-              <div
-                class="col-lg-2 col-2 fields"
-                v-if="instruction.fields[field_index].type == 'co'"
-              >
-                <b-form-group>
-                  <b-form-input
-                    type="text"
-                    v-model="instruction.co"
-                    required
-                    size="sm"
-                    disabled
-                    title="Instruction CO"
-                  >
-                  </b-form-input>
-                </b-form-group>
-              </div>
-              <div
-                class="col-lg-2 col-2 fields"
-                v-if="instruction.fields[field_index].type == 'cop'"
-              >
-                <b-form-group>
-                  <b-form-input
-                    type="text"
-                    v-on:input="
-                      debounce(
-                        'instruction.fields[field_index].valueField',
-                        $event,
-                      )
-                    "
-                    v-model="instruction.fields[field_index].valueField"
-                    required
-                    size="sm"
-                    disabled
-                    title="Field value"
-                  >
-                  </b-form-input>
-                </b-form-group>
-              </div>
-            </div>
+          <!-- start bit description -->
+          <div class="col-lg-2 col-2 fields">
+            <b-form-input
+              v-if="typeof field.startbit !== 'object'"
+              type="number"
+              min="0"
+              :max="32 * instruction.nwords - 1"
+              :model-value="field.startbit"
+              readonly
+              size="sm"
+              title="Field start bit"
+            />
+            <b-form-group v-else>
+              <b-form-input
+                v-for="(j, ind) in field.startbit"
+                type="number"
+                min="0"
+                :max="32 * instruction.nwords - 1"
+                :model-value="field.startbit[ind]"
+                readonly
+                class="mb-2"
+                title="Field start bit"
+              />
+            </b-form-group>
+          </div>
+
+          <!-- stop bit description -->
+          <div class="col-lg-2 col-2 fields">
+            <b-form-input
+              v-if="typeof field.stopbit !== 'object'"
+              type="number"
+              min="0"
+              :max="32 * instruction.nwords - 1"
+              :model-value="field.stopbit"
+              readonly
+              size="sm"
+              title="Field end bit"
+            />
+            <b-form-group v-else>
+              <b-form-input
+                v-for="bit in field.stopbit"
+                type="number"
+                min="0"
+                :max="32 * instruction.nwords - 1"
+                :model-value="bit"
+                readonly
+                class="mb-2"
+                title="Field end bit"
+              />
+            </b-form-group>
+          </div>
+
+          <div class="col-lg-2 col-2 fields" v-if="field.type == 'co'">
+            <b-form-input
+              type="text"
+              :model-value="instruction.co"
+              readonly
+              size="sm"
+              title="Instruction CO"
+            />
+          </div>
+
+          <div class="col-lg-2 col-2 fields" v-if="field.type == 'cop'">
+            <b-form-input
+              type="text"
+              v-on:input="debounce('field.valueField', $event)"
+              :model-value="field.valueField"
+              readonly
+              size="sm"
+              title="Field value"
+            />
           </div>
         </div>
       </div>

@@ -19,92 +19,92 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <script>
+import PseudoinstructionFields from "./PseudoinstructionFields.vue"
+
 export default {
   props: {
     pseudoinstructions: { type: Array, required: true },
   },
 
+  components: { PseudoinstructionFields },
+
   data() {
     return {
-      //Pseudoinstructions table fields
+      // Pseudoinstructions table fields
       pseudoinstructions_fields: [
-        "name",
-        "nwords",
-        "signatureRaw",
-        "fields",
-        "definition",
+        { key: "name", sortable: true },
+        { key: "nwords" },
+        { key: "signatureRaw", label: "Instruction syntax" },
+        { key: "fields" },
+        { key: "definition" },
       ],
+
+      modal_field_pseudoinstruction: {
+        name: "",
+        index: 0,
+      },
     }
   },
 
   methods: {
     //Show pseudoinstruction fields modal
-    view_pseudoinstruction_modal(name, index, button) {
-      app._data.modal_field_pseudoinstruction.title = "Fields of " + name
-      app._data.modal_field_pseudoinstruction.index = index
-      app._data.modal_field_pseudoinstruction.pseudoinstruction =
-        structuredClone(architecture.pseudoinstructions[index])
-
-      this.$root.$emit("bv::show::modal", "fields_pseudoinstructions", button)
+    view_pseudoinstruction_modal(name, index) {
+      this.modal_field_pseudoinstruction = {
+        name: name,
+        index: index,
+      }
     },
   },
 }
 </script>
 
 <template>
-  <div>
-    <!-- Pseudoinstruction set table -->
-    <div class="col-lg-12 col-sm-12 mt-3">
-      <b-table
-        small
-        :items="pseudoinstructions"
-        :fields="pseudoinstructions_fields"
-        class="text-center"
-        sticky-header="60vh"
-      >
-        <!-- Change the title of each column -->
-        <template v-slot:head(signatureRaw)="row">
-          Instruction syntax
-        </template>
+  <!-- Pseudontruction fields -->
+  <PseudoinstructionFields
+    id="fields_pseudoinstructions"
+    :name="modal_field_pseudoinstruction.name"
+    :index="modal_field_pseudoinstruction.index"
+    :pseudoinstruction="pseudoinstructions[modal_field_pseudoinstruction.index]"
+  />
 
-        <!-- For each pseudoinstruction -->
+  <!-- Pseudoinstruction set table -->
+  <div class="col-lg-12 col-sm-12 mt-3">
+    <b-table
+      small
+      :items="pseudoinstructions"
+      :fields="pseudoinstructions_fields"
+      class="text-center"
+      sticky-header="60vh"
+    >
+      <!-- For each pseudoinstruction -->
 
-        <template v-slot:cell(signatureRaw)="row">
-          {{ row.item.signatureRaw }}
-          <br />
-          {{ row.item.signature }}
-        </template>
+      <template v-slot:cell(signatureRaw)="row">
+        {{ row.item.signatureRaw }}
+        <br />
+        {{ row.item.signature }}
+      </template>
 
-        <template v-slot:cell(fields)="row">
-          <b-button
-            @click.stop="
-              view_pseudoinstruction_modal(
-                row.item.name,
-                row.index,
-                $event.target,
-              )
-            "
-            class="buttonBackground h-100"
-            variant="outline-secondary"
-            size="sm"
-          >
-            View Fields
-          </b-button>
-        </template>
+      <template v-slot:cell(fields)="row">
+        <b-button
+          @click.stop="view_pseudoinstruction_modal(row.item.name, row.index)"
+          v-b-toggle.fields_pseudoinstructions
+          variant="outline-secondary"
+          size="sm"
+        >
+          View Fields
+        </b-button>
+      </template>
 
-        <template v-slot:cell(definition)="row">
-          <b-form-textarea
-            v-model="row.item.definition"
-            disabled
-            no-resize
-            rows="1"
-            max-rows="4"
-            title="Pseudoinstruction Definition"
-          >
-          </b-form-textarea>
-        </template>
-      </b-table>
-    </div>
+      <template v-slot:cell(definition)="row">
+        <b-form-textarea
+          v-model="row.item.definition"
+          readonly
+          no-resize
+          rows="1"
+          max-rows="4"
+          title="Pseudoinstruction Definition"
+        />
+      </template>
+    </b-table>
   </div>
-  '
 </template>

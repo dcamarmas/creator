@@ -155,7 +155,7 @@ export function loadArchitecture(arch, root = document.app) {
         show_notification(
             arch.name + " architecture has been loaded correctly",
             "success",
-            root=root
+            root
         )
 
         // Google Analytics
@@ -171,7 +171,7 @@ export function loadArchitecture(arch, root = document.app) {
         show_notification(
             arch.name + " architecture is not currently available",
             "danger",
-            root=root
+            root
         )
 
         // hide_loading()
