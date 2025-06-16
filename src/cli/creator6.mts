@@ -48,6 +48,7 @@ interface ArgvOptions {
     architecture: string;
     isa: string[];
     elf: string;
+    bin: string;
     library: string;
     assembly: string;
     interactive: boolean;
@@ -68,6 +69,11 @@ interface ReturnType {
     type?: string;
     update?: string;
     error?: boolean;
+    instructionData?: {
+        asm?: string;
+        machineCode?: string;
+        success?: boolean;
+    };
 }
 interface ConfigType {
     settings: {
@@ -201,29 +207,6 @@ function colorText(text: string, colorCode: string): string {
     return !ACCESSIBLE ? `\x1b[${colorCode}m${text}\x1b[0m` : text;
 }
 
-function decodeAndFormatInstruction() {
-    const pc_address = BigInt("0x" + creator.dumpRegister("PC"));
-    const wordBytes = creator.main_memory.readBytes(
-        pc_address,
-        creator.WORDSIZE / creator.BYTESIZE,
-    );
-    const word = Array.from(new Uint8Array(wordBytes))
-        .map(byte => byte.toString(16).padStart(2, "0"))
-        .join("");
-
-    // 2. Decode instruction
-    const instruction = decode_instruction("0x" + word, false);
-    // TODO: If instruction.words is > 1, we need to fetch the next word(s) to properly display the instruction
-
-    const instructionASMParts = instruction.instructionExecPartsWithProperNames;
-    const instructionASMPartsString = instructionASMParts.join(",");
-
-    return {
-        instruction: word,
-        asmString: instructionASMPartsString,
-    };
-}
-
 function saveCurrentState() {
     if (MAX_STATES_TO_KEEP !== 0) {
         const state = creator.snapshot({ PREVIOUS_PC });
@@ -248,10 +231,6 @@ function executeStep() {
     // Get current PC value
     const pc_value = creator.dumpRegister("PC");
 
-    // Decode the instruction (just for display purposes, the
-    // actual fetch, decode, execute happens in the step function)
-    const { instruction, asmString } = decodeAndFormatInstruction();
-
     // Store the current PC as previous PC before executing the step
     PREVIOUS_PC = "0x" + pc_value.toUpperCase();
 
@@ -261,17 +240,31 @@ function executeStep() {
         return { output: ``, completed: true, error: true };
     }
 
+    // Get instruction data from the step result
+    const instructionData = ret.instructionData;
+    let instruction = "unknown";
+    let asmString = "unknown";
+
+    if (instructionData) {
+        instruction = instructionData.machineCode || "unknown";
+        asmString = instructionData.asm || "unknown";
+    }
+
     return {
         output: `0x${pc_value} (0x${instruction}) ${asmString}`,
         completed: creator.status.execution_index === -2,
     };
 }
 
-function loadArchitecture(filePath: string, isaExtensions: string[]) {
+function loadArchitecture(
+    filePath: string,
+    isaExtensions: string[],
+    skipCompiler: boolean = false,
+) {
     const architectureFile = fs.readFileSync(filePath, "utf8");
     const ret: ReturnType = creator.newArchitectureLoad(
         architectureFile,
-        false,
+        skipCompiler,
         false,
         isaExtensions,
     );
@@ -294,6 +287,26 @@ function loadElf(filePath: string) {
     // Set the flag to indicate a binary was loaded
     BINARY_LOADED = true;
     // console.log("Binary loaded successfully.");
+}
+
+function loadBin(filePath: string) {
+    if (!filePath) {
+        console.error("No binary file specified.");
+        return;
+    }
+
+    try {
+        // Use the Memory class loadBinaryFile method to load raw binary data
+        creator.main_memory.loadBinaryFile(filePath, 0n);
+        // Set the flag to indicate a binary was loaded
+        BINARY_LOADED = true;
+        console.log("Binary file loaded successfully.");
+    } catch (error) {
+        const errorMessage =
+            error instanceof Error ? error.message : String(error);
+        console.error(`Error loading binary file: ${errorMessage}`);
+        process.exit(1);
+    }
 }
 
 function loadLibrary(filePath: string) {
@@ -1330,6 +1343,13 @@ function parseArguments(): ArgvOptions {
             nargs: 1,
             default: "",
         })
+        .option("bin", {
+            alias: "b",
+            type: "string",
+            describe: "Binary file (alternative)",
+            nargs: 1,
+            default: "",
+        })
         .option("library", {
             alias: "l",
             type: "string",
@@ -1622,9 +1642,11 @@ function main() {
     }
 
     TUTORIAL_MODE = argv.tutorial;
+    // If we load a binary, we have to skip the compiler
+    const skipCompiler = argv.bin !== "";
 
     // Load architecture
-    loadArchitecture(argv.architecture, argv.isa);
+    loadArchitecture(argv.architecture, argv.isa, skipCompiler);
 
     // Reset BINARY_LOADED flag before loading any files
     BINARY_LOADED = false;
@@ -1639,6 +1661,8 @@ function main() {
     // If binary file is provided, load it
     if (argv.elf) {
         loadElf(argv.elf);
+    } else if (argv.bin) {
+        loadBin(argv.bin);
     } else {
         if (argv.library) {
             loadLibrary(argv.library);

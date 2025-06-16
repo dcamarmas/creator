@@ -2,7 +2,7 @@ version: 2.0.0
 
 arch_conf:
     Name: Z80
-    Word Size: 8
+    Word Size: 8 # 8-bit word size, which is the same as the byte size
     Description: Z80
     Data Format: little_endian
     Memory Alignment: true
@@ -241,7 +241,7 @@ memory_layout:
       value: "0xFFFF"
 
 templates:
-    - name: Custom
+    - name: oneWord
       nwords: 1
       clk_cycles: 1
       fields:
@@ -250,8 +250,10 @@ templates:
             startbit: 7
             stopbit: 0
             order: 0
-    - name: Custom
-      nwords: 1
+            word: 0
+
+    - name: twoWords
+      nwords: 2
       clk_cycles: 1
       fields:
           - name: opcode
@@ -259,45 +261,129 @@ templates:
             startbit: 7
             stopbit: 0
             order: 0
+            word: 0
+    - name: threeWords
+      nwords: 3
+      clk_cycles: 1
+      fields:
+          - name: opcode
+            type: co
+            startbit: 7
+            stopbit: 0
+            order: 0
+            word: 0
+
+    - name: 2BOpcode
+      nwords: 2
+      clk_cycles: 1
+      fields:
+          - name: opcode1
+            type: co
+            startbit: 7
+            stopbit: 0
+            order: 0
+            word: 0
+          - name: opcode2
+            type: cop
+            startbit: 7
+            stopbit: 0
+            word: 1
+
+    - name: 2BOpcode_imm
+      nwords: 4
+      clk_cycles: 1
+      fields:
+          - name: opcode1
+            type: co
+            startbit: 7
+            stopbit: 0
+            order: 0
+            word: 0
+          - name: opcode2
+            type: cop
+            startbit: 7
+            stopbit: 0
+            word: 1
 
 instructions:
     base:
         - name: nop
-          type: Custom
+          type: oneWord
           fields:
               - field: opcode
-                value: "00000000"
+                value: "0x00"
           definition: ""
+
         - name: add
-          type: Custom
+          type: oneWord
           fields:
               - field: opcode
-                value: "10000000"
+                value: "0x80"
           definition: "A = A + B"
-        - name: lda
-          type: Custom
-          nwords: 2
+
+        - name: ld
+          type: twoWords
           fields:
               - field: opcode
-                value: "10101101"
+                value: "0x06"
               - field: imm
                 type: inm-unsigned
-                startbit: 15
-                stopbit: 8
+                startbit: 7
+                stopbit: 0
                 order: 1
-                prefix: "%"
-              - field: imm2
+                word: 1
+          definition: "B = imm"
+
+        - name: slp
+          type: 2BOpcode
+          fields:
+              - field: opcode1
+                value: "0xED"
+              - field: opcode2
+                value: "0x76"
+          definition: "console.log('sleep example')"
+
+        - name: ld bc
+          type: 2BOpcode_imm
+          fields:
+              - field: opcode1
+                value: "0xED"
+              - field: opcode2
+                value: "0x4B"
+              - field: imm
                 type: inm-unsigned
-                startbit: 24
-                stopbit: 16
-                order: 2
-                prefix: "%"
-              - field: zeros
-                type: co
-                startbit: 32
-                stopbit: 25
-                value: "00000000"
-          definition: "A = imm + imm2"
+                startbit: 16
+                stopbit: 0
+                prefix: "("
+                suffix: ")"
+                order: 1
+                word: [2, 3]
+          definition: "console.log('ld bc example')"
+
+        #DD CB d 06 -> rlc (ix+d)
+        - name: rlc
+          type: 2BOpcode_imm
+          fields:
+              - field: opcode1
+                value: "0xDD"
+              - field: opcode2
+                value: "0xCB"
+              - field: imm
+                type: inm-unsigned
+                startbit: 7
+                stopbit: 0
+                prefix: "("
+                suffix: ")"
+                order: 1
+                word: 2
+              - field: opcode3
+                type: cop
+                startbit: 7
+                stopbit: 0
+                value: "0x06"
+                word: 3
+
+          definition: "console.log('another example')"
 
 pseudoinstructions:
     base:

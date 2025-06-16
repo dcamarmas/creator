@@ -1348,3 +1348,109 @@ Deno.test("Memory - stress test with word operations", () => {
         assertEquals(actualWord, expectedWord);
     }
 });
+
+Deno.test(
+    "Memory - getUsedAddresses returns empty array for empty memory",
+    () => {
+        const memory = new Memory(100, 8);
+        const usedAddresses = memory.getUsedAddresses();
+        assertEquals(usedAddresses, []);
+    },
+);
+
+Deno.test("Memory - getUsedAddresses with 8-bit memory", () => {
+    const memory = new Memory(100, 8);
+
+    memory.write(5n, 123);
+    memory.write(10n, 255);
+    memory.write(7n, 0); // Zero value - shouldn't be included
+    memory.write(50n, 42);
+    memory.write(25n, 1);
+
+    const usedAddresses = memory.getUsedAddresses();
+    assertEquals(usedAddresses, [50n, 25n, 10n, 5n]); // Sorted highest to lowest, no address 7
+});
+
+Deno.test("Memory - getUsedAddresses with custom byte sizes", () => {
+    const memory = new Memory(50, 12); // 12-bit bytes
+
+    memory.write(0n, 1000);
+    memory.write(25n, 4095); // Max 12-bit value
+    memory.write(15n, 0); // Zero - shouldn't be included
+    memory.write(10n, 500);
+
+    const usedAddresses = memory.getUsedAddresses();
+    assertEquals(usedAddresses, [25n, 10n, 0n]); // Sorted highest to lowest, no address 15
+});
+
+Deno.test("Memory - getUsedAddresses with 4-bit memory", () => {
+    const memory = new Memory(20, 4);
+
+    memory.write(3n, 15); // Max 4-bit value
+    memory.write(0n, 8);
+    memory.write(8n, 0); // Zero - shouldn't be included
+    memory.write(12n, 1);
+    memory.write(19n, 7);
+
+    const usedAddresses = memory.getUsedAddresses();
+    assertEquals(usedAddresses, [19n, 12n, 3n, 0n]); // Sorted highest to lowest, no address 8
+});
+
+Deno.test("Memory - getUsedAddresses after zeroOut", () => {
+    const memory = new Memory(50, 8);
+
+    memory.write(5n, 100);
+    memory.write(20n, 200);
+    memory.write(35n, 50);
+
+    // Before zeroOut
+    let usedAddresses = memory.getUsedAddresses();
+    assertEquals(usedAddresses, [35n, 20n, 5n]);
+
+    // After zeroOut
+    memory.zeroOut();
+    usedAddresses = memory.getUsedAddresses();
+    assertEquals(usedAddresses, []);
+});
+
+Deno.test("Memory - getUsedAddresses with word operations", () => {
+    const memory = new Memory(100, 8, 4);
+
+    // Write a word
+    memory.writeWord(10n, [0x12, 0x34, 0x56, 0x78]);
+
+    // Write individual bytes
+    memory.write(0n, 0xff);
+    memory.write(5n, 0); // Zero - shouldn't be included
+    memory.write(50n, 0xaa);
+
+    const usedAddresses = memory.getUsedAddresses();
+    assertEquals(usedAddresses, [50n, 13n, 12n, 11n, 10n, 0n]); // Word writes to addresses 10-13
+});
+
+Deno.test("Memory - getUsedAddresses stress test", () => {
+    const memory = new Memory(1000, 8);
+    const expectedAddresses = [];
+
+    // Write to random addresses
+    const testAddresses = [5, 15, 100, 250, 500, 750, 999];
+    for (const addr of testAddresses) {
+        memory.write(BigInt(addr), addr % 256);
+        if (addr % 256 !== 0) {
+            // Only include non-zero values
+            expectedAddresses.push(BigInt(addr));
+        }
+    }
+
+    // Write zero to some addresses (shouldn't be included)
+    memory.write(25n, 0);
+    memory.write(300n, 0);
+
+    const usedAddresses = memory.getUsedAddresses();
+    expectedAddresses.sort((a, b) => {
+        if (a > b) return -1;
+        if (a < b) return 1;
+        return 0;
+    }); // Sort highest to lowest
+    assertEquals(usedAddresses, expectedAddresses);
+});

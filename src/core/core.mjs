@@ -149,6 +149,7 @@ export const ARCHITECTURE_VERSION = "2.0";
 export let ENDIANNESS;
 export let WORDSIZE;
 export let BYTESIZE = 8;
+export let MAXNWORDS;
 export let REGISTERS;
 export let REGISTERS_BACKUP = [];
 export const register_size_bits = 64; //TODO: load from architecture
@@ -230,8 +231,7 @@ function load_arch_select(cfg) {
     // calculate the total size
     const totalMemorySize = maxMemoryAddress - minMemoryAddress + 1;
 
-    main_memory = new Memory(totalMemorySize, BYTESIZE);
-
+    main_memory = new Memory(totalMemorySize, BYTESIZE, WORDSIZE / BYTESIZE);
     ret.token = "The selected architecture has been loaded correctly";
     ret.type = "success";
     return ret;
@@ -504,6 +504,27 @@ function processInstructions(architectureObj) {
                     instruction.postoperation;
                 delete instruction.postoperation;
             }
+            // Check to convert (if needed) the "valueField" property from hex to binary
+            mergedFields.forEach(field => {
+                if (field.valueField !== undefined) {
+                    // If the valueField is a string, it might be in hex format
+                    if (typeof field.valueField === "string") {
+                        // If it starts with "0x", convert it to binary
+                        if (field.valueField.startsWith("0x")) {
+                            const hexValue = field.valueField.slice(2);
+                            const binaryValue = parseInt(hexValue, 16).toString(
+                                2,
+                            );
+                            // Pad to maintain the same bit width as the original hex
+                            const expectedBitWidth = hexValue.length * 4;
+                            field.valueField = binaryValue.padStart(
+                                expectedBitWidth,
+                                "0",
+                            );
+                        }
+                    }
+                }
+            });
             // We need to find if any field is optional, because if it is, we need to
             // construct two different instructions, one with the field and one without it
 
@@ -695,8 +716,8 @@ function parseArchitectureYaml(architectureYaml) {
  * @param {Object} architectureObj - The architecture object
  * @param {Array} requestedISAs - User-requested instruction sets to load
  * @returns {Object} - Object with selected ISAs and status
- * @eslint-disable-next-line max-lines-per-function
  */
+//eslint-disable-next-line max-lines-per-function
 function determineInstructionSetsToLoad(architectureObj, requestedISAs = []) {
     // Get all available instruction sets in the architecture
     const availableInstructionSets = [
@@ -948,6 +969,11 @@ function prepareArchitecture(
     // Process the selected instructions and pseudoinstructions
     processInstructions(architectureObj);
     processPseudoInstructions(architectureObj, true);
+
+    // Calculate MAXNWORDS from all processed instructions
+    MAXNWORDS = architectureObj.instructions.reduce((max, instruction) => {
+        return Math.max(max, instruction.nwords || 1);
+    }, 1);
 
     // Convert to JSON for WASM
     const architectureJson = JSON.stringify(architectureObj);
@@ -1299,7 +1325,7 @@ export function reset() {
     architecture.memory_layout[3].value = backup_data_address;
 
     // reset memory
-    main_memory.restore(main_memory_backup);
+    // main_memory.restore(main_memory_backup); // FIXME: When loading a binary, this resets the memory to the initial state, which doesn't include the binary data.
 
     //Stack Reset
     creator_callstack_reset();
@@ -1425,7 +1451,7 @@ export function get_state() {
     }
 
     // dump memory
-    const addressList = main_memory_get_addresses();
+    const addressList = main_memory.getUsedAddresses();
     const dataSegmentStart = parseInt(architecture.memory_layout[3].value);
 
     for (let i = 0; i < addressList.length; i++) {
@@ -1436,12 +1462,12 @@ export function get_state() {
             continue;
         }
 
-        const memoryValue = main_memory_read_value(address);
-        const defaultMemoryValue = main_memory_read_default_value(address);
+        const memoryValue = main_memory.read(address).toString(16);
+        const defaultMemoryValue = 0n;
 
         // Only show changed memory values
-        if (memoryValue != defaultMemoryValue) {
-            const formattedAddress = "0x" + parseInt(address).toString(16);
+        if (memoryValue !== defaultMemoryValue) {
+            const formattedAddress = "0x" + address.toString(16);
             const formattedValue = "0x" + memoryValue;
             ret.msg =
                 ret.msg +
@@ -1591,7 +1617,7 @@ export function getState() {
     }
 
     // dump memory
-    const addressList = main_memory_get_addresses();
+    const addressList = main_memory.getUsedAddresses();
     const dataSegmentStart = parseInt(architecture.memory_layout[3].value);
 
     for (let i = 0; i < addressList.length; i++) {
