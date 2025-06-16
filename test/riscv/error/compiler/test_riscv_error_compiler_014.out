@@ -1,7 +1,7 @@
 
 
 [E01] Error: Directive `.directive` isn't defined
-   ╭─[assembly:8:14]
+   ╭─[ assembly:8:14 ]
    │
  8 │     example:    .directive 221
    │                 ─────┬────  

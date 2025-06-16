@@ -1,7 +1,7 @@
 
 
 [E02] Error: Instruction `suma` isn't defined
-    ╭─[assembly:12:2]
+    ╭─[ assembly:12:2 ]
     │
  12 │     suma t0, t1, t2
     │     ──┬─  

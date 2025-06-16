@@ -116,7 +116,7 @@
               check_tag_null ( record )
               {
                 for (var i = 0; i < record.length; i++) {
-                  if (record[i].tag != null){
+                  if (record[i].tag.length > 0){
                     return true;
                   }
                 }
@@ -217,17 +217,18 @@
             '             <span v-bind:class="get_classes(row)">' +
             '               <span v-for="item in row.item.hex">' +
             ' ' +
-            '                 <span v-if="item.tag == null">' +
+            '                 <span v-if="item.tag.length === 0">' +
             '                   {{item.byte.toUpperCase()}}' +
             '                 </span> ' +
             ' ' +
             '                 <b-badge pill variant="info" ' +
             '                          class="border border-info shadow binaryTag" ' +
             '                          style="top: -2vh !important;" ' +
-            '                          v-if="item.tag != null">' +
-            '                   {{item.tag}}' +
+            '                          v-if="item.tag.length > 0"' +
+            '                          v-for="tag in item.tag">' +
+            '                   {{tag}}' +
             '                 </b-badge>' +
-            '                 <span v-if="item.tag != null" class="memoryBorder">' +
+            '                 <span v-if="item.tag.length > 0" class="memoryBorder">' +
             '                   {{item.byte.toUpperCase()}}' +
             '                 </span> ' +
             ' ' +
@@ -239,8 +240,8 @@
             '         <template v-slot:cell(Value)="row">' +
             '           <div class="pt-3">' +
             '             <span v-bind:class="get_classes(row)" style="white-space: pre-wrap;">' +
-            '               {{row.item.value}}' +
-            '               <span class="fas fa-eye memoryValue" ' +
+                           '{{row.item.value}}' +
+                           '<span class="fas fa-eye memoryValue" ' +
             '                     v-if="row.item.eye && check_tag_null(row.item.hex)">' +
             '               </span>' +
             '             </span>' +

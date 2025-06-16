@@ -1166,7 +1166,7 @@
       "name": "auipc",
       "type": "Arithmetic integer",
       "signature_definition": "F0 F2 F1",
-      "signature": "auipc,INT-Reg,offset_words",
+      "signature": "auipc,INT-Reg,offset_bytes",
       "signatureRaw": "auipc rd inm",
       "co": "0010111",
       "cop": "",
@@ -1181,7 +1181,7 @@
         },
         {
           "name": "inm",
-          "type": "offset_words",
+          "type": "offset_bytes",
           "startbit": 31,
           "stopbit": 12
         },
@@ -1192,7 +1192,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = PC + (inm << 12);",
+      "definition": "rd = PC - 4 + (inm << 12);",
       "separated": [
         false,
         false,
@@ -1204,7 +1204,7 @@
       "name": "beq",
       "type": "Conditional bifurcation",
       "signature_definition": "F0 F4 F3 F2",
-      "signature": "beq,INT-Reg,INT-Reg,offset_words",
+      "signature": "beq,INT-Reg,INT-Reg,offset_bytes",
       "signatureRaw": "beq rs1 rs2 inm",
       "co": "1100011",
       "cop": "000",
@@ -1226,7 +1226,7 @@
         },
         {
           "name": "inm",
-          "type": "offset_words",
+          "type": "offset_bytes",
           "startbit": [
             31,
             11
@@ -1234,7 +1234,8 @@
           "stopbit": [
             25,
             7
-          ]
+          ],
+          "padding": 1
         },
         {
           "name": "rs2",
@@ -1249,7 +1250,7 @@
           "stopbit": 15
         }
       ],
-      "definition": "if (rs1 === rs2)\n PC = PC + ((inm << 16) >> 14); ",
+      "definition": "if (rs1 === rs2)\n PC = PC - 4 + inm; ",
       "separated": [
         false,
         false,
@@ -1263,7 +1264,7 @@
       "name": "bge",
       "type": "Conditional bifurcation",
       "signature_definition": "F0 F3 F2 F1",
-      "signature": "bge,INT-Reg,INT-Reg,offset_words",
+      "signature": "bge,INT-Reg,INT-Reg,offset_bytes",
       "signatureRaw": "bge rs1 rs2 inm",
       "co": "1100011",
       "cop": "101",
@@ -1278,7 +1279,7 @@
         },
         {
           "name": "inm",
-          "type": "offset_words",
+          "type": "offset_bytes",
           "startbit": [
             31,
             11
@@ -1286,7 +1287,8 @@
           "stopbit": [
             25,
             7
-          ]
+          ],
+          "padding": 1
         },
         {
           "name": "rs2",
@@ -1308,7 +1310,7 @@
           "valueField": "101"
         }
       ],
-      "definition": "if (capi_uint2int(rs1) >= capi_uint2int(rs2))\n PC = PC + ((inm << 16) >> 14);",
+      "definition": "if (capi_uint2int(rs1) >= capi_uint2int(rs2))\n PC = PC - 4 + inm;",
       "separated": [
         false,
         true,
@@ -1322,7 +1324,7 @@
       "name": "bgeu",
       "type": "Conditional bifurcation",
       "signature_definition": "F0 F3 F2 F1",
-      "signature": "bgeu,INT-Reg,INT-Reg,offset_words",
+      "signature": "bgeu,INT-Reg,INT-Reg,offset_bytes",
       "signatureRaw": "bgeu rs1 rs2 inm",
       "co": "1100011",
       "cop": "111",
@@ -1337,7 +1339,7 @@
         },
         {
           "name": "inm",
-          "type": "offset_words",
+          "type": "offset_bytes",
           "startbit": [
             31,
             11
@@ -1345,7 +1347,8 @@
           "stopbit": [
             25,
             7
-          ]
+          ],
+          "padding": 1
         },
         {
           "name": "rs2",
@@ -1367,7 +1370,7 @@
           "valueField": "111"
         }
       ],
-      "definition": "if (capi_int2uint(rs1) > capi_int2uint(rs2))\n PC = PC + ((inm << 16) >> 14);",
+      "definition": "if (capi_int2uint(rs1) > capi_int2uint(rs2))\n PC = PC - 4 + inm;",
       "separated": [
         false,
         true,
@@ -1381,7 +1384,7 @@
       "name": "blt",
       "type": "Conditional bifurcation",
       "signature_definition": "F0 F3 F2 F1",
-      "signature": "blt,INT-Reg,INT-Reg,offset_words",
+      "signature": "blt,INT-Reg,INT-Reg,offset_bytes",
       "signatureRaw": "blt rs1 rs2 inm",
       "co": "1100011",
       "cop": "100",
@@ -1396,7 +1399,7 @@
         },
         {
           "name": "inm",
-          "type": "offset_words",
+          "type": "offset_bytes",
           "startbit": [
             31,
             11
@@ -1404,7 +1407,8 @@
           "stopbit": [
             25,
             7
-          ]
+          ],
+          "padding": 1
         },
         {
           "name": "rs2",
@@ -1426,7 +1430,7 @@
           "valueField": "100"
         }
       ],
-      "definition": "if (capi_uint2int(rs1) < capi_uint2int(rs2))\n PC = PC + ((inm << 16) >> 14);",
+      "definition": "if (capi_uint2int(rs1) < capi_uint2int(rs2))\n PC = PC - 4 + inm;",
       "separated": [
         false,
         true,
@@ -1440,7 +1444,7 @@
       "name": "bltu",
       "type": "Conditional bifurcation",
       "signature_definition": "F0 F3 F2 F1",
-      "signature": "bltu,INT-Reg,INT-Reg,offset_words",
+      "signature": "bltu,INT-Reg,INT-Reg,offset_bytes",
       "signatureRaw": "bltu rs1 rs2 inm",
       "co": "1100011",
       "cop": "110",
@@ -1455,7 +1459,7 @@
         },
         {
           "name": "inm",
-          "type": "offset_words",
+          "type": "offset_bytes",
           "startbit": [
             31,
             11
@@ -1463,7 +1467,8 @@
           "stopbit": [
             25,
             7
-          ]
+          ],
+          "padding": 1
         },
         {
           "name": "rs2",
@@ -1485,7 +1490,7 @@
           "valueField": "110"
         }
       ],
-      "definition": "if (capi_int2uint(rs1) < capi_int2uint(rs2))\n PC = PC + ((inm << 16) >> 14);",
+      "definition": "if (capi_int2uint(rs1) < capi_int2uint(rs2))\n PC = PC - 4 + inm;",
       "separated": [
         false,
         true,
@@ -1499,7 +1504,7 @@
       "name": "bne",
       "type": "Conditional bifurcation",
       "signature_definition": "F0 F3 F2 F1",
-      "signature": "bne,INT-Reg,INT-Reg,offset_words",
+      "signature": "bne,INT-Reg,INT-Reg,offset_bytes",
       "signatureRaw": "bne rs1 rs2 inm",
       "co": "1100011",
       "cop": "001",
@@ -1514,7 +1519,7 @@
         },
         {
           "name": "inm",
-          "type": "offset_words",
+          "type": "offset_bytes",
           "startbit": [
             31,
             11
@@ -1522,7 +1527,8 @@
           "stopbit": [
             25,
             7
-          ]
+          ],
+          "padding": 1
         },
         {
           "name": "rs2",
@@ -1544,7 +1550,7 @@
           "valueField": "001"
         }
       ],
-      "definition": "if (rs1 !== rs2)\n PC = PC + ((inm << 16) >> 14);",
+      "definition": "if (rs1 !== rs2)\n PC = PC - 4 + inm;",
       "separated": [
         false,
         true,
@@ -4710,7 +4716,7 @@
       "name": "jal",
       "type": "Unconditional bifurcation",
       "signature_definition": "F0 F2 F1",
-      "signature": "jal,INT-Reg,inm-unsigned",
+      "signature": "jal,INT-Reg,offset_bytes",
       "signatureRaw": "jal rd inm",
       "co": "1101111",
       "cop": "",
@@ -4729,9 +4735,10 @@
         },
         {
           "name": "inm",
-          "type": "inm-unsigned",
+          "type": "offset_bytes",
           "startbit": 31,
-          "stopbit": 12
+          "stopbit": 12,
+          "padding": 1
         },
         {
           "name": "rd",
@@ -4740,7 +4747,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = PC;\n PC = inm;\n capi_callconv_begin(inm); capi_drawstack_begin(inm);",
+      "definition": "rd = PC;\n PC = PC - 4 + inm;\n capi_callconv_begin(PC); capi_drawstack_begin(PC);",
       "separated": [
         false,
         false,
@@ -6565,7 +6572,7 @@
     {
       "name": "beqz",
       "signature_definition": "beqz F0 F1",
-      "signature": "beqz,INT-Reg,offset_words",
+      "signature": "beqz,INT-Reg,offset_bytes",
       "signatureRaw": "beqz reg1 off",
       "help": "",
       "properties": [],
@@ -6577,7 +6584,7 @@
         },
         {
           "name": "off",
-          "type": "offset_words"
+          "type": "offset_bytes"
         }
       ],
       "definition": "beq reg1, x0, off;"
@@ -6585,7 +6592,7 @@
     {
       "name": "bgez",
       "signature_definition": "bgez F0 F1",
-      "signature": "bgez,INT-Reg,offset_words",
+      "signature": "bgez,INT-Reg,offset_bytes",
       "signatureRaw": "bgez reg1 off",
       "help": "",
       "properties": [],
@@ -6597,7 +6604,7 @@
         },
         {
           "name": "off",
-          "type": "offset_words"
+          "type": "offset_bytes"
         }
       ],
       "definition": "bge reg1 x0 off;"
@@ -6605,7 +6612,7 @@
     {
       "name": "bgt",
       "signature_definition": "bgt F0 F1 F2",
-      "signature": "bgt,INT-Reg,INT-Reg,offset_words",
+      "signature": "bgt,INT-Reg,INT-Reg,offset_bytes",
       "signatureRaw": "bgt reg1 reg2 off",
       "help": "",
       "properties": [],
@@ -6621,7 +6628,7 @@
         },
         {
           "name": "off",
-          "type": "offset_words"
+          "type": "offset_bytes"
         }
       ],
       "definition": "blt reg2, reg1, off;"
@@ -6629,7 +6636,7 @@
     {
       "name": "bgtu",
       "signature_definition": "bgtu F0 F1 F2",
-      "signature": "bgtu,INT-Reg,INT-Reg,offset_words",
+      "signature": "bgtu,INT-Reg,INT-Reg,offset_bytes",
       "signatureRaw": "bgtu reg1 reg2 off",
       "help": "",
       "properties": [],
@@ -6645,7 +6652,7 @@
         },
         {
           "name": "off",
-          "type": "offset_words"
+          "type": "offset_bytes"
         }
       ],
       "definition": "bltu reg2, reg1, off;"
@@ -6653,7 +6660,7 @@
     {
       "name": "bgtz",
       "signature_definition": "bgtz F0 F1",
-      "signature": "bgtz,INT-Reg,offset_words",
+      "signature": "bgtz,INT-Reg,offset_bytes",
       "signatureRaw": "bgtz reg1 off",
       "help": "",
       "properties": [],
@@ -6665,7 +6672,7 @@
         },
         {
           "name": "off",
-          "type": "offset_words"
+          "type": "offset_bytes"
         }
       ],
       "definition": "blt x0, reg1, off;"
@@ -6673,7 +6680,7 @@
     {
       "name": "ble",
       "signature_definition": "ble F0 F1 F2",
-      "signature": "ble,INT-Reg,INT-Reg,offset_words",
+      "signature": "ble,INT-Reg,INT-Reg,offset_bytes",
       "signatureRaw": "ble reg1 reg2 off",
       "help": "",
       "properties": [],
@@ -6689,7 +6696,7 @@
         },
         {
           "name": "off",
-          "type": "offset_words"
+          "type": "offset_bytes"
         }
       ],
       "definition": "bge reg2, reg1, off;"
@@ -6697,7 +6704,7 @@
     {
       "name": "bleu",
       "signature_definition": "bleu F0 F1 F2",
-      "signature": "bleu,INT-Reg,INT-Reg,offset_words",
+      "signature": "bleu,INT-Reg,INT-Reg,offset_bytes",
       "signatureRaw": "bleu reg1 reg2 off",
       "help": "",
       "properties": [],
@@ -6713,7 +6720,7 @@
         },
         {
           "name": "off",
-          "type": "offset_words"
+          "type": "offset_bytes"
         }
       ],
       "definition": "bgeu reg2, reg1, off;"
@@ -6721,7 +6728,7 @@
     {
       "name": "blez",
       "signature_definition": "blez F0 F1",
-      "signature": "blez,INT-Reg,offset_words",
+      "signature": "blez,INT-Reg,offset_bytes",
       "signatureRaw": "blez reg1 off",
       "help": "",
       "properties": [],
@@ -6733,7 +6740,7 @@
         },
         {
           "name": "off",
-          "type": "offset_words"
+          "type": "offset_bytes"
         }
       ],
       "definition": "bge x0, reg1, off;"
@@ -6741,7 +6748,7 @@
     {
       "name": "bltz",
       "signature_definition": "bltz F0 F1",
-      "signature": "bltz,INT-Reg,offset_words",
+      "signature": "bltz,INT-Reg,offset_bytes",
       "signatureRaw": "bltz reg1 off",
       "help": "Conditional branch if Rsrc1 is less than zero.",
       "properties": [],
@@ -6755,7 +6762,7 @@
         },
         {
           "name": "off",
-          "type": "offset_words",
+          "type": "offset_bytes",
           "startbit": 15,
           "stopbit": 0
         }
@@ -6765,7 +6772,7 @@
     {
       "name": "bnez",
       "signature_definition": "bnez F0 F1",
-      "signature": "bnez,INT-Reg,offset_words",
+      "signature": "bnez,INT-Reg,offset_bytes",
       "signatureRaw": "bnez reg1 off",
       "help": "",
       "properties": [],
@@ -6777,7 +6784,7 @@
         },
         {
           "name": "off",
-          "type": "offset_words"
+          "type": "offset_bytes"
         }
       ],
       "definition": "bne reg1, x0, off;"
@@ -6905,7 +6912,7 @@
     {
       "name": "j",
       "signature_definition": "j F0",
-      "signature": "j,offset_words",
+      "signature": "j,offset_bytes",
       "signatureRaw": "j off",
       "help": "",
       "properties": [],
@@ -6913,7 +6920,7 @@
       "fields": [
         {
           "name": "off",
-          "type": "offset_words"
+          "type": "offset_bytes"
         }
       ],
       "definition": "beq zero, zero, off;"
@@ -6968,7 +6975,7 @@
           "type": "inm-unsigned"
         }
       ],
-      "definition": "no_ret_op{tmp=Field.2.(31,0).int - reg.pc;\ntmp -= tmp>=2**31? 2**32 : 0;\ntmp_low=tmp&0x00000FFF;\ntmp_low=tmp_low>0x7FF? tmp_low - 0x1000 : tmp_low;\ntmp_hi=(tmp - tmp_low)>>12};\nauipc rd, op{tmp_hi};\naddi rd, rd, op{tmp_low};"
+      "definition": "no_ret_op{tmp=Field.2.(31,0).int - (reg.pc - 4);\ntmp_low=tmp&0x00000FFF;\ntmp_low=tmp_low>0x7FF? tmp_low - 0x1000 : tmp_low;\ntmp_hi=(tmp - tmp_low)>>12};\nauipc rd, op{tmp_hi};\naddi rd, rd, op{tmp_low};"
     },
     {
       "name": "li",

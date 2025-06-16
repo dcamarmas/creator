@@ -1,7 +1,7 @@
 
 
-[E07] Error: Label `A` is already defined
-   ╭─[assembly:9:4]
+[E11] Error: Label `A` is already defined
+   ╭─[ assembly:9:4 ]
    │
  7 │    A:    .word -1
    │    ─┬  
