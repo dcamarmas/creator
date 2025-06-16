@@ -1,7 +1,7 @@
 
 
 [E08] Error: Incorrect instruction syntax
-    ╭─[assembly:12:8]
+    ╭─[ assembly:12:8 ]
     │
  12 │    add t0, t1
     │        ───┬──  
@@ -13,7 +13,7 @@
 
 The syntax `add rd,rs1,rs2` failed with the following reason:
 Error: found `end of input` but expected `,` or `\n`
-    ╭─[assembly:12:14]
+    ╭─[ assembly:12:14 ]
     │
  12 │    add t0, t1
     │              │ 

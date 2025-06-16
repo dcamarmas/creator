@@ -1,7 +1,7 @@
 
 
 [E08] Error: Incorrect instruction syntax
-    ╭─[assembly:11:7]
+    ╭─[ assembly:11:7 ]
     │
  11 │    li t0, 0xhello
     │       ─────┬─────  
@@ -13,7 +13,7 @@
 
 The syntax `li rd,val` failed with the following reason:
 Error: found `identifier (xhello)` but expected `\n` or `end of input`
-    ╭─[assembly:11:12]
+    ╭─[ assembly:11:12 ]
     │
  11 │    li t0, 0xhello
     │            ───┬──  

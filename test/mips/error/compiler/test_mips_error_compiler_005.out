@@ -1,7 +1,7 @@
 
 
 [E22] Error: Value `291` is outside of the valid range of the field
-   ╭─[assembly:7:19]
+   ╭─[ assembly:7:19 ]
    │
  7 │     a:      .byte 0x123
    │                   ──┬──  

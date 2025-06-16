@@ -1,7 +1,7 @@
 
 
 Error: Unterminated string literal
-   ╭─[assembly:8:34]
+   ╭─[ assembly:8:34 ]
    │
  8 │     example:    .string hello world"
    │                                     ┬  

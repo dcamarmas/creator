@@ -39,9 +39,10 @@ export enum DataCategoryJS {
   Padding = 3,
 }
 /**
- *r" Architecture definition
+ * r" Architecture definition
  */
 export class ArchitectureJS {
+  private constructor();
   free(): void;
   /**
    * Load architecture data from `JSON`
@@ -54,13 +55,10 @@ export class ArchitectureJS {
    *
    * Errors if the input `JSON` data is invalid, either because it's ill-formatted or because it
    * doesn't conform to the specification
-   * @param {string} json
-   * @returns {ArchitectureJS}
    */
   static from_json(json: string): ArchitectureJS;
   /**
    * Converts the architecture to a pretty printed string for debugging
-   * @returns {string}
    */
   toString(): string;
   /**
@@ -78,17 +76,10 @@ export class ArchitectureJS {
    *
    * Errors if the assembly code has a syntactical or semantical error, or if the `labels`
    * parameter is either an invalid `JSON` or has invalid mappings
-   * @param {string} src
-   * @param {number} reserved_offset
-   * @param {string} labels
-   * @param {boolean} library
-   * @param {Color} color
-   * @returns {CompiledCodeJS}
    */
   compile(src: string, reserved_offset: number, labels: string, library: boolean, color: Color): CompiledCodeJS;
   /**
    * Generate a `JSON` schema
-   * @returns {string}
    */
   static schema(): string;
 }
@@ -96,40 +87,39 @@ export class ArchitectureJS {
  * Assembly compilation output
  */
 export class CompiledCodeJS {
+  private constructor();
   free(): void;
   /**
    * Converts the compiled code to a pretty printed string for debugging
-   * @returns {string}
    */
   toString(): string;
-/**
- * Compiled data to add to the data segment
- */
-  readonly data: (DataJS)[];
-/**
- * Compiled instructions to execute
- */
-  readonly instructions: (InstructionJS)[];
-/**
- * Symbol table for labels
- */
-  readonly label_table: (LabelJS)[];
+  /**
+   * Compiled instructions to execute
+   */
+  readonly instructions: InstructionJS[];
+  /**
+   * Compiled data to add to the data segment
+   */
+  readonly data: DataJS[];
+  /**
+   * Symbol table for labels
+   */
+  readonly label_table: LabelJS[];
 }
 /**
  * Compiled data wrapper
  */
 export class DataJS {
+  private constructor();
   free(): void;
   /**
    * Address of the data element
-   * @returns {bigint}
    */
   address(): bigint;
   /**
    * Labels pointing to this data element
-   * @returns {(string)[]}
    */
-  labels(): (string)[];
+  labels(): string[];
   /**
    * Value of the data element:
    *
@@ -141,23 +131,18 @@ export class DataJS {
    * # Parameters
    *
    * * `human`: whether to return the value as a human-readable representation or in hexadecimal
-   * @param {boolean} human
-   * @returns {string}
    */
   value(human: boolean): string;
   /**
    * Precise type of the data element
-   * @returns {string}
    */
   type(): string;
   /**
    * General category of the data element
-   * @returns {DataCategoryJS}
    */
   data_category(): DataCategoryJS;
   /**
    * Size of the data element in bytes
-   * @returns {bigint}
    */
   size(): bigint;
 }
@@ -165,45 +150,47 @@ export class DataJS {
  * Compiled instruction wrapper
  */
 export class InstructionJS {
+  private constructor();
   free(): void;
-/**
- * Address of the instruction in hexadecimal (`0xABCD`)
- */
+  /**
+   * Address of the instruction in hexadecimal (`0xABCD`)
+   */
   address: string;
-/**
- * Instruction encoded in binary
- */
-  binary: string;
-/**
- * Labels pointing to this instruction
- */
-  labels: (string)[];
-/**
- * Translated instruction to a simplified syntax
- */
+  /**
+   * Labels pointing to this instruction
+   */
+  labels: string[];
+  /**
+   * Translated instruction to a simplified syntax
+   */
   loaded: string;
-/**
- * Instruction in the code
- */
+  /**
+   * Instruction encoded in binary
+   */
+  binary: string;
+  /**
+   * Instruction in the code
+   */
   user: string;
 }
 /**
  * Label table entry wrapper
  */
 export class LabelJS {
+  private constructor();
   free(): void;
-/**
- * Address to which the label points
- */
-  address: bigint;
-/**
- * Whether the label is local to the file (`false`) or global
- */
-  global: boolean;
-/**
- * Name of the label
- */
+  /**
+   * Name of the label
+   */
   name: string;
+  /**
+   * Address to which the label points
+   */
+  address: bigint;
+  /**
+   * Whether the label is local to the file (`false`) or global
+   */
+  global: boolean;
 }
 
 export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembly.Module;
@@ -211,48 +198,48 @@ export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembl
 export interface InitOutput {
   readonly memory: WebAssembly.Memory;
   readonly __wbg_architecturejs_free: (a: number, b: number) => void;
-  readonly architecturejs_from_json: (a: number, b: number) => Array;
-  readonly architecturejs_toString: (a: number) => Array;
-  readonly architecturejs_compile: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number) => Array;
-  readonly architecturejs_schema: () => Array;
+  readonly architecturejs_from_json: (a: number, b: number) => [number, number, number];
+  readonly architecturejs_toString: (a: number) => [number, number];
+  readonly architecturejs_compile: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number) => [number, number, number];
+  readonly architecturejs_schema: () => [number, number];
   readonly __wbg_compiledcodejs_free: (a: number, b: number) => void;
-  readonly __wbg_get_compiledcodejs_instructions: (a: number) => Array;
-  readonly __wbg_get_compiledcodejs_data: (a: number) => Array;
-  readonly __wbg_get_compiledcodejs_label_table: (a: number) => Array;
-  readonly compiledcodejs_toString: (a: number) => Array;
+  readonly __wbg_get_compiledcodejs_instructions: (a: number) => [number, number];
+  readonly __wbg_get_compiledcodejs_data: (a: number) => [number, number];
+  readonly __wbg_get_compiledcodejs_label_table: (a: number) => [number, number];
+  readonly compiledcodejs_toString: (a: number) => [number, number];
   readonly __wbg_labeljs_free: (a: number, b: number) => void;
-  readonly __wbg_get_labeljs_address: (a: number) => number;
-  readonly __wbg_set_labeljs_address: (a: number, b: number) => void;
+  readonly __wbg_get_labeljs_address: (a: number) => any;
+  readonly __wbg_set_labeljs_address: (a: number, b: any) => void;
   readonly __wbg_get_labeljs_global: (a: number) => number;
   readonly __wbg_set_labeljs_global: (a: number, b: number) => void;
   readonly __wbg_instructionjs_free: (a: number, b: number) => void;
-  readonly __wbg_get_instructionjs_address: (a: number) => Array;
+  readonly __wbg_get_instructionjs_address: (a: number) => [number, number];
   readonly __wbg_set_instructionjs_address: (a: number, b: number, c: number) => void;
-  readonly __wbg_get_instructionjs_labels: (a: number) => Array;
+  readonly __wbg_get_instructionjs_labels: (a: number) => [number, number];
   readonly __wbg_set_instructionjs_labels: (a: number, b: number, c: number) => void;
-  readonly __wbg_get_instructionjs_loaded: (a: number) => Array;
+  readonly __wbg_get_instructionjs_loaded: (a: number) => [number, number];
   readonly __wbg_set_instructionjs_loaded: (a: number, b: number, c: number) => void;
-  readonly __wbg_get_instructionjs_binary: (a: number) => Array;
+  readonly __wbg_get_instructionjs_binary: (a: number) => [number, number];
   readonly __wbg_set_instructionjs_binary: (a: number, b: number, c: number) => void;
-  readonly __wbg_get_instructionjs_user: (a: number) => Array;
+  readonly __wbg_get_instructionjs_user: (a: number) => [number, number];
   readonly __wbg_set_instructionjs_user: (a: number, b: number, c: number) => void;
   readonly __wbg_datajs_free: (a: number, b: number) => void;
-  readonly datajs_address: (a: number) => number;
-  readonly datajs_labels: (a: number) => Array;
-  readonly datajs_value: (a: number, b: number) => Array;
-  readonly datajs_type: (a: number) => Array;
+  readonly datajs_address: (a: number) => any;
+  readonly datajs_labels: (a: number) => [number, number];
+  readonly datajs_value: (a: number, b: number) => [number, number];
+  readonly datajs_type: (a: number) => [number, number];
   readonly datajs_data_category: (a: number) => number;
-  readonly datajs_size: (a: number) => number;
+  readonly datajs_size: (a: number) => any;
   readonly __wbg_set_labeljs_name: (a: number, b: number, c: number) => void;
-  readonly __wbg_get_labeljs_name: (a: number) => Array;
-  readonly __wbindgen_export_0: (a: number, b: number) => number;
-  readonly __wbindgen_export_1: (a: number, b: number, c: number, d: number) => number;
+  readonly __wbg_get_labeljs_name: (a: number) => [number, number];
+  readonly __wbindgen_exn_store: (a: number) => void;
+  readonly __externref_table_alloc: () => number;
   readonly __wbindgen_export_2: WebAssembly.Table;
-  readonly __wbindgen_export_3: (a: number) => void;
-  readonly __wbindgen_export_4: () => number;
-  readonly __wbindgen_export_5: (a: number) => void;
-  readonly __wbindgen_export_6: (a: number, b: number, c: number) => void;
-  readonly __wbindgen_export_7: (a: number, b: number) => void;
+  readonly __wbindgen_free: (a: number, b: number, c: number) => void;
+  readonly __wbindgen_malloc: (a: number, b: number) => number;
+  readonly __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;
+  readonly __externref_table_dealloc: (a: number) => void;
+  readonly __externref_drop_slice: (a: number, b: number) => void;
   readonly __wbindgen_start: () => void;
 }
 

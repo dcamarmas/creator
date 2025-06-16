@@ -1,7 +1,7 @@
 
 
 [E12] Error: Main label `main` not found
-   ╭─[assembly:8:15]
+   ╭─[ assembly:8:15 ]
    │
  8 │     li $t0, 10
    │               ┬  
