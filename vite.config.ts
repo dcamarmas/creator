@@ -39,26 +39,8 @@ export default defineConfig({
   build: {
     outDir: "dist/web",
     emptyOutDir: true,
+    target: 'esnext' //browsers can handle the latest ES features
     // set codemirror output as a separate file
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          codemirror: [
-            // Split CodeMirror code.
-            "vue-codemirror6",
-            "codemirror",
-            "@codemirror/autocomplete",
-            "@codemirror/commands",
-            "@codemirror/language",
-            "@codemirror/lint",
-            "@codemirror/search",
-            "@codemirror/state",
-            "@codemirror/view",
-          ],
-          "codemirror-lang": ["@codemirror/legacy-modes"],
-        },
-      },
-    },
   },
   // Silence Sass deprecation warnings (due to bootstrap-vue-next)
   css: {
