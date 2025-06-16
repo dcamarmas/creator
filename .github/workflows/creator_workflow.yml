@@ -36,7 +36,7 @@ jobs:
   creator-checker:
     name: Execute CREATOR Checker
     needs: build
-  
+
     runs-on: ubuntu-latest
 
     strategy:
@@ -57,8 +57,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - run: npm run build --if-present
-      - run: npm run test-creator-node
-    
+      - run: npm run test
+
   deploy-pages-beta:
     name: Deploy CREATOR to GitHub Pages (development)
     runs-on: ubuntu-latest
@@ -71,7 +71,7 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v4
-    
+
   deploy-pages-stable:
     name: Deploy CREATOR to GitHub Pages (stable)
     runs-on: ubuntu-latest
@@ -85,7 +85,7 @@ jobs:
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v4
 
-  build-creator-cl:    
+  build-creator-cl:
     name: Build creator_cl Docker Image
     needs: creator-checker
     if: github.event_name != 'pull_request'
@@ -108,18 +108,18 @@ jobs:
         name: github-pages
         tarball-name: artifact.tar
         path: .
-    - name: Set up QEMU        
+    - name: Set up QEMU
       uses: docker/setup-qemu-action@v3
       with:
         image: tonistiigi/binfmt:qemu-v7.0.0-28
-    - name: Set up Docker Buildx        
+    - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
-    - name: Login to GitHub Package Registry        
+    - name: Login to GitHub Package Registry
       run:  echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
     - name: Build & Push Docker image
       run:  cd ./dockers/command_line/ && docker buildx build -t ghcr.io/${{ github.repository_owner }}/creator_cl:${GITHUB_SHA} -t ghcr.io/${{ github.repository_owner }}/creator_cl  -f ./Dockerfile  --push --platform=linux/amd64,linux/arm64,linux/arm/v7 .
 
-  push-creator-cl:    
+  push-creator-cl:
     name: Push creator_cl Docker Image
     needs: build-creator-cl
     if: github.event_name != 'pull_request' && github.repository == 'creatorsim/creator'
@@ -127,17 +127,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Login to Docker Hub        
-      env:          
-        DH_TOKEN: ${{ secrets.DOCKER_HUB_PASSWORD }}               
+    - name: Login to Docker Hub
+      env:
+        DH_TOKEN: ${{ secrets.DOCKER_HUB_PASSWORD }}
       run: docker login -u creatorsim -p ${DH_TOKEN}
-    - name: Re-tag & Push Docker Image to Docker Hub        
-      run: |          
+    - name: Re-tag & Push Docker Image to Docker Hub
+      run: |
         chmod +r $HOME/.docker/config.json
         docker container run --rm --network host -v regctl-conf:/home/appuser/.regctl/ -v $HOME/.docker/config.json:/home/appuser/.docker/config.json regclient/regctl:v0.3.9 image copy ghcr.io/${{ github.repository_owner }}/creator_cl:${GITHUB_SHA}  docker.io/creatorsim/creator_cl:${GITHUB_SHA}
         docker container run --rm --network host -v regctl-conf:/home/appuser/.regctl/ -v $HOME/.docker/config.json:/home/appuser/.docker/config.json regclient/regctl:v0.3.9 image copy ghcr.io/${{ github.repository_owner }}/creator_cl docker.io/creatorsim/creator_cl
-        
-  build-creator-gateway:    
+
+  build-creator-gateway:
     name: Build creator_gateway Docker Image
     needs: creator-checker
     if: github.event_name != 'pull_request'
@@ -160,18 +160,18 @@ jobs:
         name: github-pages
         tarball-name: artifact.tar
         path: .
-    - name: Set up QEMU        
+    - name: Set up QEMU
       uses: docker/setup-qemu-action@v3
       with:
         image: tonistiigi/binfmt:qemu-v7.0.0-28
-    - name: Set up Docker Buildx        
+    - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
-    - name: Login to GitHub Package Registry        
+    - name: Login to GitHub Package Registry
       run:  echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
     - name: Build & Push Docker image
       run:  cd ./dockers/gateway/ && docker buildx build -t ghcr.io/${{ github.repository_owner }}/creator_gateway:${GITHUB_SHA} -t ghcr.io/${{ github.repository_owner }}/creator_gateway -f ./Dockerfile  --push --platform=linux/amd64,linux/arm64,linux/arm/v7 .
 
-  push-creator-gateway:    
+  push-creator-gateway:
     name: Push creator_gateway Docker Image
     needs: build-creator-gateway
     if: github.event_name != 'pull_request' && github.repository == 'creatorsim/creator'
@@ -179,17 +179,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Login to Docker Hub        
-      env:          
-        DH_TOKEN: ${{ secrets.DOCKER_HUB_PASSWORD }}               
+    - name: Login to Docker Hub
+      env:
+        DH_TOKEN: ${{ secrets.DOCKER_HUB_PASSWORD }}
       run: docker login -u creatorsim -p ${DH_TOKEN}
-    - name: Re-tag & Push Docker Image to Docker Hub        
-      run: |          
+    - name: Re-tag & Push Docker Image to Docker Hub
+      run: |
         chmod +r $HOME/.docker/config.json
         docker container run --rm --network host -v regctl-conf:/home/appuser/.regctl/ -v $HOME/.docker/config.json:/home/appuser/.docker/config.json regclient/regctl:v0.3.9 image copy ghcr.io/${{ github.repository_owner }}/creator_gateway:${GITHUB_SHA}  docker.io/creatorsim/creator_gateway:${GITHUB_SHA}
         docker container run --rm --network host -v regctl-conf:/home/appuser/.regctl/ -v $HOME/.docker/config.json:/home/appuser/.docker/config.json regclient/regctl:v0.3.9 image copy ghcr.io/${{ github.repository_owner }}/creator_gateway docker.io/creatorsim/creator_gateway
 
-  build-creator-hw-lab:    
+  build-creator-hw-lab:
     name: Build creator_remote_lab Docker Image
     needs: creator-checker
     if: github.event_name != 'pull_request'
@@ -212,18 +212,18 @@ jobs:
         name: github-pages
         tarball-name: artifact.tar
         path: .
-    - name: Set up QEMU        
+    - name: Set up QEMU
       uses: docker/setup-qemu-action@v3
       with:
         image: tonistiigi/binfmt:qemu-v7.0.0-28
-    - name: Set up Docker Buildx        
+    - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
-    - name: Login to GitHub Package Registry        
+    - name: Login to GitHub Package Registry
       run:  echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
     - name: Build & Push Docker image
       run:  cd ./dockers/remote_lab/ && docker buildx build -t ghcr.io/${{ github.repository_owner }}/creator_remote_lab:${GITHUB_SHA} -t ghcr.io/${{ github.repository_owner }}/creator_remote_lab -f ./Dockerfile  --push --platform=linux/amd64,linux/arm64,linux/arm/v7 .
 
-  push-creator-hw-lab:    
+  push-creator-hw-lab:
     name: Push creator_remote_lab Docker Image
     needs: build-creator-hw-lab
     if: github.event_name != 'pull_request' && github.repository == 'creatorsim/creator'
@@ -231,12 +231,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Login to Docker Hub        
-      env:          
-        DH_TOKEN: ${{ secrets.DOCKER_HUB_PASSWORD }}               
+    - name: Login to Docker Hub
+      env:
+        DH_TOKEN: ${{ secrets.DOCKER_HUB_PASSWORD }}
       run: docker login -u creatorsim -p ${DH_TOKEN}
-    - name: Re-tag & Push Docker Image to Docker Hub        
-      run: |          
+    - name: Re-tag & Push Docker Image to Docker Hub
+      run: |
         chmod +r $HOME/.docker/config.json
         docker container run --rm --network host -v regctl-conf:/home/appuser/.regctl/ -v $HOME/.docker/config.json:/home/appuser/.docker/config.json regclient/regctl:v0.3.9 image copy ghcr.io/${{ github.repository_owner }}/creator_remote_lab:${GITHUB_SHA}  docker.io/creatorsim/creator_remote_lab:${GITHUB_SHA}
         docker container run --rm --network host -v regctl-conf:/home/appuser/.regctl/ -v $HOME/.docker/config.json:/home/appuser/.docker/config.json regclient/regctl:v0.3.9 image copy ghcr.io/${{ github.repository_owner }}/creator_remote_lab docker.io/creatorsim/creator_remote_lab

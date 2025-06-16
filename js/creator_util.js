@@ -302,14 +302,3 @@
   }
 
 
-  /* 
-   *  Debug
-   */
-
-  var creator_debug = false ;
-  
-  function console_log(m){
-    if(creator_debug){
-      console.log(m);
-    }
-  }

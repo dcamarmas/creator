@@ -42,7 +42,7 @@ var main_memory_datatypes = {} ;
     //    ...
     //  }
 
-var memory_hash = [ "data_memory", "instructions_memory", "stack_memory" ] ;
+var memory_hash = [ "kdata_memory", "kinstructions_memory", "instructions_memory", "data_memory", "stack_memory" ] ;
     // main segments
 
 
@@ -273,6 +273,7 @@ function main_memory_read_bydatatype ( addr, type )
 
           case 'w':
           case 'integer':
+          case 'int':
           case 'word':
                ret = "0x" + main_memory_read_nbytes(addr, word_size_bytes) ;
                ret = parseInt(ret, 16) ;
@@ -440,6 +441,18 @@ function main_memory_write_bydatatype ( addr, value, type, value_human )
                      ret = main_memory_write_nbytes(addr, value, size, type) ;
                      main_memory_datatypes_update_or_create(addr, value_human, size, type);
                      break;
+
+                case 'char': {
+                     main_memory_write_nbytes(
+                         addr,
+                         creator_memory_value_by_type(value.charCodeAt(0), 'bu'),
+                         1,
+                         type
+                    ) ;
+                     main_memory_datatypes_update_or_create(addr, value_human, size, 'byte');
+                     break;
+                }
+
         }
 
         return ret ;
@@ -603,17 +616,20 @@ function creator_memory_zerofill ( new_addr, new_size )
 
 function creator_memory_alloc ( new_size )
 {
+        // check if kernel to compute offset
+        let mem_offset = architecture.memory_layout.length == 10 ? 4 : 0;
+
         // get align address
-        var new_addr = parseInt(architecture.memory_layout[3].value) + 1 ;
+        var new_addr = parseInt(architecture.memory_layout[mem_offset + 3].value) + 1 ;
         var algn = creator_memory_alignelto(new_addr, new_size) ;
 
         // fill memory
         creator_memory_zerofill(algn.new_addr, algn.new_size) ;
 
         // new segment limit
-        architecture.memory_layout[3].value ="0x" + ((algn.new_addr + new_size).toString(16)).padStart(8, "0").toUpperCase();
+        architecture.memory_layout[mem_offset + 3].value ="0x" + ((algn.new_addr + new_size).toString(16)).padStart(8, "0").toUpperCase();
         if (typeof app !== "undefined") {
-            app.architecture.memory_layout[3].value = "0x" + ((algn.new_addr + new_size).toString(16)).padStart(8, "0").toUpperCase();
+            app.architecture.memory_layout[mem_offset + 3].value = "0x" + ((algn.new_addr + new_size).toString(16)).padStart(8, "0").toUpperCase();
         }
 
         return algn.new_addr ;
@@ -844,19 +860,35 @@ function creator_memory_clear ( )
 
 function creator_memory_is_address_inside_segment ( segment_name, addr )
 {
-         var elto_inside_segment = false ;
+    var elto_inside_segment = false ;
 
-         if (segment_name == "instructions_memory") {
+    // check if kernel to compute offset
+    let mem_offset = architecture.memory_layout.length == 10 ? 4 : 0;
+
+    switch (segment_name) {
+
+        case "kdata_memory":
              elto_inside_segment = ((addr >= parseInt(architecture.memory_layout[0].value)) && (addr <= parseInt(architecture.memory_layout[1].value))) ;
-         }
-         if (segment_name == "data_memory") {
-             elto_inside_segment = ((addr >= parseInt(architecture.memory_layout[2].value)) && (addr <= parseInt(architecture.memory_layout[3].value))) ;
-         }
-         if (segment_name == "stack_memory") {
-             elto_inside_segment = (addr >= parseInt(architecture.memory_layout[3].value)) ;
-         }
+             break;
 
-         return elto_inside_segment ;
+        case "kinstuctions_memory":
+             elto_inside_segment = ((addr >= parseInt(architecture.memory_layout[2].value)) && (addr <= parseInt(architecture.memory_layout[3].value))) ;
+
+        case "instructions_memory":
+             elto_inside_segment = ((addr >= parseInt(architecture.memory_layout[mem_offset + 0].value)) && (addr <= parseInt(architecture.memory_layout[mem_offset + 1].value))) ;
+             break;
+
+        case "data_memory":
+             elto_inside_segment = ((addr >= parseInt(architecture.memory_layout[mem_offset + 2].value)) && (addr <= parseInt(architecture.memory_layout[mem_offset + 3].value))) ;
+             break;
+
+        case "stack_memory":
+             elto_inside_segment = (addr >= parseInt(architecture.memory_layout[mem_offset + 3].value));
+             break;
+
+    }
+
+    return elto_inside_segment ;
 }
 
 function creator_memory_is_segment_empty ( segment_name )

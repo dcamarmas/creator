@@ -61,6 +61,7 @@ function execute_instruction ( )
 
   do
   {
+    /* FETCH */
     console_log(execution_index);
     //console_log(architecture.components[0].elements[0].value); //TODO
     console_log(readRegister(0, 0));
@@ -97,41 +98,15 @@ function execute_instruction ( )
       }
     }
 
-    //Get execution index by PC
-    get_execution_index (draw);
+    /* INTERRUPTS */
 
-
-    //Ask interruption before execute intruction
-    var i_reg = crex_findReg_bytag ("event_cause");
-    if (i_reg.match != 0)
-    {
-      var i_reg_value = readRegister(i_reg.indexComp, i_reg.indexElem);
-      if (i_reg_value != 0)
-      {
-        console.log("Interruption detected");
-        //TODO: Print badget on instruction
-        draw.warning.push(execution_index);
-
-        //Save register PC (in EPC), STATUS
-        var epc_reg = crex_findReg_bytag ("exception_program_counter");
-        var pc_reg  = crex_findReg_bytag ("program_counter");
-
-        var pc_reg_value = readRegister(pc_reg.indexComp, pc_reg.indexElem);
-        writeRegister(pc_reg_value, epc_reg.indexComp, epc_reg.indexElem);
-
-        //TODO: get new PC
-        var handler_addres = 0;
-
-        //Load in PC new PC (associated handler) and modify execution_index
-        writeRegister(handler_addres, pc_reg.indexComp, pc_reg.indexElem);
-        get_execution_index (draw);
-
-        //Reset CAUSE register
-        console.log(i_reg);
-        writeRegister(0, i_reg.indexComp, i_reg.indexElem);
-      }
+    // handle interruptions
+    if (interruptsEnabled && checkInterrupt()) {
+      draw.warning.push(execution_index);  //Print badget on instruction
+      handleInterrupt();
     }
 
+    get_execution_index(draw);  // Get execution index by PC
 
     var instructionExec = instructions[execution_index].loaded;
     var instructionExecParts = instructionExec.split(' ');
@@ -144,6 +119,9 @@ function execute_instruction ( )
     var nwords;
     var auxDef;
     var type;
+
+
+    /* DECODE */
 
     //Search the instruction to execute
     //TODO: move the instruction identification to the compiler stage, binary not
@@ -185,9 +163,9 @@ function execute_instruction ( )
 
         var instruction_loaded    = architecture.instructions[i].signature_definition;
         var instruction_fields    = architecture.instructions[i].fields;
-        var instruction_nwords    = architecture.instructions[i].nwords;   
+        var instruction_nwords    = architecture.instructions[i].nwords;
 
-        for (var f = 0; f < instruction_fields.length; f++) 
+        for (var f = 0; f < instruction_fields.length; f++)
         {
           re = new RegExp("[Ff]"+f);
           var res = instruction_loaded.search(re);
@@ -206,19 +184,19 @@ function execute_instruction ( )
               case "INT-Reg":
                 var bin = instructionExec.substring(((instruction_nwords*31) - instruction_fields[f].startbit), ((instruction_nwords*32) - instruction_fields[f].stopbit));
                 value = get_register_binary ("int_registers", bin);
-                break; 
+                break;
               case "SFP-Reg":
                 var bin = instructionExec.substring(((instruction_nwords*31) - instruction_fields[f].startbit), ((instruction_nwords*32) - instruction_fields[f].stopbit));
                 value = get_register_binary ("fp_registers", bin);
-                break; 
+                break;
               case "DFP-Reg":
                 var bin = instructionExec.substring(((instruction_nwords*31) - instruction_fields[f].startbit), ((instruction_nwords*32) - instruction_fields[f].stopbit));
                 value = get_register_binary ("fp_registers", bin);
-                break; 
+                break;
               case "Ctrl-Reg":
                 var bin = instructionExec.substring(((instruction_nwords*31) - instruction_fields[f].startbit), ((instruction_nwords*32) - instruction_fields[f].stopbit));
                 value = get_register_binary ("ctrl_registers", bin);
-                break; 
+                break;
 
               case "inm-signed":
               case "inm-unsigned":
@@ -241,7 +219,7 @@ function execute_instruction ( )
                 value     = (parseInt(bin, 2) << architecture.instructions[i].fields[f].padding).toString(16);
                 value_len = Math.abs(instruction_fields[f].startbit - instruction_fields[f].stopbit) ;
                 value     = '0x' + value.padStart(value_len/4, '0') ;
-                break; 
+                break;
 
               default:
                 break
@@ -298,6 +276,7 @@ function execute_instruction ( )
     word_size = parseInt(architecture.arch_conf[1].value) / 8;
     writeRegister(readRegister(pc_reg.indexComp, pc_reg.indexElem) + (nwords * word_size), 0,0);
     console_log(auxDef);
+
 
 
     // preload
@@ -448,7 +427,22 @@ function execute_instruction ( )
     }
 
 
+
+    /* EXEC */
+
     try {
+      // check privileged instructions
+      let instructionDefinition;
+      for (var i = 0; i < architecture.instructions.length; i++) {
+        if (auxSig[0] === architecture.instructions[i].name) {
+          instructionDefinition = architecture.instructions[i];
+          break;
+        }
+      }
+      if (currentExecutionMode === ExecutionMode.User && instructionDefinition?.properties?.includes('privileged')) {
+        throw new Error("💀 Can't execute privileged instruction '" + architecture.instructions[i].name + "' in User mode.");
+      }
+
       var result = instructions[execution_index].preload(this);
       if ( (typeof result != "undefined") && (result.error) ) {
         return result;
@@ -459,7 +453,7 @@ function execute_instruction ( )
       var msg = '' ;
       if (e instanceof SyntaxError)
         msg = 'The definition of the instruction contains errors, please review it' + e.stack ; //TODO
-      else msg = e.msg ;
+      else msg = e.msg || e.message ;
 
       console_log("Error: " + e.stack);
       error = 1;
@@ -502,6 +496,10 @@ function execute_instruction ( )
         }
       }
     }
+
+    // devices
+    handleDevices();
+
 
     if ((execution_index >= instructions.length) && (run_program === 3))
     {
@@ -607,8 +605,16 @@ function reset ()
     }
   }
 
-  architecture.memory_layout[4].value = backup_stack_address;
-  architecture.memory_layout[3].value = backup_data_address;
+  // reset stack
+
+  // check if kernel to compute offset
+  let mem_offset = architecture.memory_layout.length == 10 ? 4 : 0;
+
+  architecture.memory_layout[mem_offset + 4].value = backup_stack_address;
+  architecture.memory_layout[mem_offset + 3].value = backup_data_address;
+
+  // reset interrupts
+  if (architecture.interrupts?.enabled) enableInterrupts();
 
   // reset memory
   creator_memory_reset() ;
@@ -650,7 +656,7 @@ function get_execution_index ( draw )
   var pc_reg_value = readRegister(pc_reg.indexComp, pc_reg.indexElem);
   for (var i = 0; i < instructions.length; i++)
   {
-    if (parseInt(instructions[i].Address, 16) == pc_reg_value) 
+    if (parseInt(instructions[i].Address, 16) == pc_reg_value)
     {
       execution_index = i;
 
@@ -690,29 +696,33 @@ function writeStackLimit ( stackLimit )
     danger:  [],
     flash:   []
   } ;
-  
+
   if (stackLimit == null) {
       return ;
   }
-  if (stackLimit <= parseInt(architecture.memory_layout[3].value) && stackLimit >= parseInt(parseInt(architecture.memory_layout[2].value)))
+
+  // check if kernel to compute offset
+  let mem_offset = architecture.memory_layout.length == 10 ? 4 : 0;
+
+  if (stackLimit <= parseInt(architecture.memory_layout[mem_offset + 3].value) && stackLimit >= parseInt(parseInt(architecture.memory_layout[mem_offset + 2].value)))
   {
     draw.danger.push(execution_index);
     throw packExecute(true, 'Stack pointer cannot be placed in the data segment', 'danger', null);
   }
-  else if(stackLimit <= parseInt(architecture.memory_layout[1].value) && stackLimit >= parseInt(architecture.memory_layout[0].value))
+  else if(stackLimit <= parseInt(architecture.memory_layout[mem_offset + 1].value) && stackLimit >= parseInt(architecture.memory_layout[mem_offset + 0].value))
   {
     draw.danger.push(execution_index);
     throw packExecute(true, 'Stack pointer cannot be placed in the text segment', 'danger', null);
   }
   else
   {
-    var diff = parseInt(architecture.memory_layout[4].value) - stackLimit ;
+    var diff = parseInt(architecture.memory_layout[mem_offset + 4].value) - stackLimit ;
     if (diff > 0) {
       creator_memory_zerofill(stackLimit, diff) ;
     }
 
     track_stack_setsp(stackLimit);
-    architecture.memory_layout[4].value = "0x" + (stackLimit.toString(16)).padStart(8, "0").toUpperCase();
+    architecture.memory_layout[mem_offset + 4].value = "0x" + (stackLimit.toString(16)).padStart(8, "0").toUpperCase();
   }
 }
 
@@ -814,7 +824,7 @@ function clk_cycles_update ( type )
 
       //Update CLK Cycles plot
       clk_cycles_value[0].data[i] ++;
-      
+
       total_clk_cycles++;
       if (typeof app !== "undefined") {
         app._data.total_clk_cycles++;
