@@ -1,10 +1,34 @@
 
 
-Error at line 12 (add $reg3 $reg2 $reg1):
-Incorrect instruction syntax for 'add $reg3 $reg2 $reg1'
+[E08] Error: Incorrect instruction syntax
+    ╭─[ assembly:12:8 ]
+    │
+ 12 │    add 25, $t1, 12
+    │        ─────┬─────  
+    │             ╰─────── Incorrect syntax
+    │ 
+    │ Note: Allowed formats:
+    │       add $reg3,$reg2,$reg1
+    │       add $rs,$rt,inm
+────╯
 
-  11 main:
-->12    add 25, $t1, 12
+The syntax `add $reg3,$reg2,$reg1` failed with the following reason:
+Error: found `integer (25)` but expected `$`
+    ╭─[ assembly:12:8 ]
+    │
+ 12 │    add 25, $t1, 12
+    │        ─┬  
+    │         ╰── Unexpected input
+────╯
+
+The syntax `add $rs,$rt,inm` failed with the following reason:
+Error: found `integer (25)` but expected `$`
+    ╭─[ assembly:12:8 ]
+    │
+ 12 │    add 25, $t1, 12
+    │        ─┬  
+    │         ╰── Unexpected input
+────╯
 
 Not executed
 keyboard[0x0]:''; display[0x0]:''; 
