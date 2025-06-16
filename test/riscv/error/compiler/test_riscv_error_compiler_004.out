@@ -1,7 +1,7 @@
 
 
 [E05] Error: Register `s50` isn't defined in file type `Integer`
-    ╭─[assembly:12:14]
+    ╭─[ assembly:12:14 ]
     │
  12 │     add t0, t1, s50
     │                 ─┬─  

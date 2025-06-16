@@ -1,7 +1,7 @@
 
 
 [E22] Error: Value `305419896` is outside of the valid range of the field
-   ╭─[<pseudoinstruction expansion>:1:17]
+   ╭─[ <pseudoinstruction expansion>:1:17 ]
    │
  1 │ beq zero, zero, off;
    │                 ─┬─  
@@ -11,7 +11,7 @@
 ───╯
 
 [39mNote:[0m Instruction generated from this pseudoinstruction
-   ╭─[assembly:8:4]
+   ╭─[ assembly:8:4 ]
    │
  8 │    j 0x12345678
    │    ──────┬─────  

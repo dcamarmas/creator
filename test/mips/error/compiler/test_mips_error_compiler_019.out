@@ -1,7 +1,7 @@
 
 
 Error: found `identifier (x)` but expected `,`, `\n`, or `end of input`
-   ╭─[assembly:7:12]
+   ╭─[ assembly:7:12 ]
    │
  7 │     .byte 0x
    │            ┬  

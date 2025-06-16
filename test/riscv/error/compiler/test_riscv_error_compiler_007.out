@@ -1,7 +1,7 @@
 
 
 [E03] Error: Label `mains` isn't defined
-    ╭─[assembly:11:7]
+    ╭─[ assembly:11:7 ]
     │
  11 │     j mains
     │       ──┬──  

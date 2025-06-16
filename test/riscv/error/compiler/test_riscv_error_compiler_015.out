@@ -1,7 +1,7 @@
 
 
 [E03] Error: Label `hello` isn't defined
-   ╭─[assembly:8:22]
+   ╭─[ assembly:8:22 ]
    │
  8 │     example:   .word hello
    │                      ──┬──  

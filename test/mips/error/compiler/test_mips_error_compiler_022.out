@@ -1,7 +1,7 @@
 
 
 [E21] Error: Negative values aren't allowed here
-   ╭─[assembly:7:12]
+   ╭─[ assembly:7:12 ]
    │
  7 │     .space -10
    │            ─┬─  

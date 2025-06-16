@@ -1,7 +1,7 @@
 
 
 [E08] Error: Incorrect instruction syntax
-   ╭─[assembly:8:6]
+   ╭─[ assembly:8:6 ]
    │
  8 │    j 0xhello
    │      ───┬───  
@@ -13,7 +13,7 @@
 
 The syntax `j off` failed with the following reason:
 Error: found `identifier (xhello)` but expected `\n` or `end of input`
-   ╭─[assembly:8:7]
+   ╭─[ assembly:8:7 ]
    │
  8 │    j 0xhello
    │       ───┬──  
