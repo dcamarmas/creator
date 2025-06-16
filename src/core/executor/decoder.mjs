@@ -66,23 +66,11 @@ function get_register_binary(type, binaryValue) {
 function extractOpcode(fields) {
     for (const field of fields) {
         if (field.type === "co") {
-            let startbit = null;
-            let stopbit = null;
-            let value = null;
-            try {
-                // Keep the original calculation for backward compatibility
-                startbit =
-                    WORDSIZE - 1 - parseInt(field.startbit, DECIMAL_BASE);
-                stopbit = WORDSIZE - parseInt(field.stopbit, DECIMAL_BASE);
-                value = field.valueField;
-            } catch (e) {
-                logger.error("Error parsing opcode field: " + e);
-            }
-
             return {
-                startbit,
-                stopbit,
-                value,
+                startbit: field.startbit,
+                stopbit: field.stopbit,
+                word: field.word,
+                value: field.valueField,
             };
         }
     }
@@ -136,6 +124,44 @@ function computeBitsOrder(startbit, stopbit) {
 function processInstructionField(field, instructionExec, instruction_nwords) {
     let value = null;
 
+    // Split instruction into words
+    const words = [];
+    for (let i = 0; i < instruction_nwords; i++) {
+        const word = instructionExec.substring(
+            i * WORDSIZE,
+            (i + 1) * WORDSIZE,
+        );
+        words.push(word);
+    }
+
+    // Helper function to get the combined word(s) for this field
+    function getCombinedWord(field, words) {
+        if (Array.isArray(field.word)) {
+            // Multi-word field: combine the specified words
+            let combinedWord = "";
+            for (const wordIndex of field.word) {
+                if (wordIndex >= words.length) {
+                    logger.error(
+                        `Field references word ${wordIndex} but instruction only has ${words.length} words`,
+                    );
+                    return null;
+                }
+                combinedWord += words[wordIndex];
+            }
+            return combinedWord;
+        } else {
+            // Single word field
+            const wordIndex = field.word || 0;
+            if (wordIndex >= words.length) {
+                logger.error(
+                    `Field references word ${wordIndex} but instruction only has ${words.length} words`,
+                );
+                return null;
+            }
+            return words[wordIndex];
+        }
+    }
+
     switch (field.type) {
         case "co":
         case "cop":
@@ -144,9 +170,12 @@ function processInstructionField(field, instructionExec, instruction_nwords) {
         case "SFP-Reg":
         case "DFP-Reg":
         case "Ctrl-Reg": {
-            const bin = instructionExec.substring(
-                instruction_nwords * (WORDSIZE - 1) - field.startbit,
-                instruction_nwords * WORDSIZE - field.stopbit,
+            const combinedWord = getCombinedWord(field, words);
+            if (combinedWord === null) break;
+
+            const bin = combinedWord.substring(
+                combinedWord.length - field.startbit - 1,
+                combinedWord.length - field.stopbit,
             );
             let convertedType = null;
             // The register type in the instruction is different from the one in the architecture
@@ -169,9 +198,12 @@ function processInstructionField(field, instructionExec, instruction_nwords) {
             break;
         }
         case "enum": {
-            const binaryValue = instructionExec.substring(
-                instruction_nwords * (WORDSIZE - 1) - field.startbit,
-                instruction_nwords * WORDSIZE - field.stopbit,
+            const combinedWord = getCombinedWord(field, words);
+            if (combinedWord === null) break;
+
+            const binaryValue = combinedWord.substring(
+                combinedWord.length - field.startbit - 1,
+                combinedWord.length - field.stopbit,
             );
 
             // Convert to unsigned decimal
@@ -247,13 +279,15 @@ function processInstructionField(field, instructionExec, instruction_nwords) {
                     field.stopbit,
                 );
 
+                const combinedWord = getCombinedWord(field, words);
+                if (combinedWord === null) break;
+
                 for (const bit of bitsOrder) {
-                    binaryValue += instructionExec.charAt(WORDSIZE - 1 - bit);
+                    binaryValue += combinedWord.charAt(
+                        combinedWord.length - 1 - bit,
+                    );
                 }
                 // Now, check field.padding to see if we need to add padding
-                // We need to do this to support RISC-V's B-type instructions, which
-                // actually have a 13-bit immediate encoded in 12 bits, since the LSB is always 0.
-                // Honesly, this is a bit of a hack, but its needed to support RISC-V
                 const padding = parseInt(field.padding, DECIMAL_BASE);
                 if (padding > 0) {
                     binaryValue += "0".repeat(padding);
@@ -270,11 +304,12 @@ function processInstructionField(field, instructionExec, instruction_nwords) {
                 }
             } else {
                 // Handle normal case where the immediate is contiguous and ordered
-                // For example, the immediate in RISC-V's I and U-type instructions
+                const combinedWord = getCombinedWord(field, words);
+                if (combinedWord === null) break;
 
-                const binaryValue = instructionExec.substring(
-                    instruction_nwords * (WORDSIZE - 1) - field.startbit,
-                    instruction_nwords * WORDSIZE - field.stopbit,
+                const binaryValue = combinedWord.substring(
+                    combinedWord.length - field.startbit - 1,
+                    combinedWord.length - field.stopbit,
                 );
 
                 value = parseInt(binaryValue, BINARY_BASE);
@@ -382,7 +417,7 @@ function buildInstructionLookupTable() {
         const opcodeField = extractOpcode(instruction.fields);
         if (!opcodeField) continue;
 
-        const key = `${opcodeField.value}_${opcodeField.startbit}_${opcodeField.stopbit}`;
+        const key = `${opcodeField.value}_${opcodeField.startbit}_${opcodeField.stopbit}_${opcodeField.word}`;
 
         if (!lookupTable.has(key)) {
             lookupTable.set(key, []);
@@ -393,10 +428,10 @@ function buildInstructionLookupTable() {
         for (const field of instruction.fields) {
             if (field.type === "cop") {
                 functionMasks.push({
-                    startbit:
-                        instruction.nwords * (WORDSIZE - 1) - field.startbit,
-                    stopbit: instruction.nwords * WORDSIZE - field.stopbit,
+                    startbit: field.startbit,
+                    stopbit: field.stopbit,
                     expectedValue: field.valueField,
+                    word: field.word,
                 });
             }
         }
@@ -475,89 +510,132 @@ function checkEnumFieldPreference(inst1, inst2) {
 }
 
 /**
+ * Checks if a candidate instruction matches the given binary instruction
+ *
+ * @param {Object} candidate - The candidate instruction object
+ * @param {string} instruction - The binary instruction to match against
+ * @returns {boolean} True if the candidate matches, false otherwise
+ */
+function checkCandidateOpcode(candidate, instruction) {
+    if (candidate.functionMasks.length === 0) {
+        // No function fields to check
+        return true;
+    }
+
+    // Split instruction into words
+    const nwords = instruction.length / WORDSIZE;
+    const words = [];
+    for (let i = 0; i < nwords; i++) {
+        const word = instruction.substring(i * WORDSIZE, (i + 1) * WORDSIZE);
+        words.push(word);
+    }
+
+    // Check all function fields
+    for (const mask of candidate.functionMasks) {
+        // Get the word that contains this field
+        const wordIndex = mask.word || 0;
+        if (wordIndex >= words.length) {
+            return false;
+        }
+
+        const word = words[wordIndex];
+        const fieldValue = word.substring(
+            WORDSIZE - mask.startbit - 1,
+            WORDSIZE - mask.stopbit,
+        );
+        if (fieldValue !== mask.expectedValue) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+/**
  * Fast instruction matching using pre-computed lookup table
  *
  * @param {string} binaryInstruction - The binary instruction string to match
  * @returns {Object|null} The matching instruction object or null if no match found
  */
+// eslint-disable-next-line max-lines-per-function
 function findMatchingInstruction(binaryInstruction) {
     const lookupTable = buildInstructionLookupTable();
-    const matchingInstructions = [];
-    // Try different opcode positions and sizes
-    const instructionLength = binaryInstruction.length;
+    const nwords = binaryInstruction.length / WORDSIZE;
+    if (binaryInstruction.length % WORDSIZE !== 0) {
+        throw new Error(
+            "Binary instruction length is not a multiple of WORDSIZE",
+        );
+    }
+    // Words array
+    const words = [];
+    for (let i = 0; i < nwords; i++) {
+        const word = binaryInstruction.substring(
+            i * WORDSIZE,
+            (i + 1) * WORDSIZE,
+        );
+        words.push(word);
+    }
 
-    for (const [key, candidates] of lookupTable) {
-        const [opcodeValue, startBitStr, stopBitStr] = key.split("_");
-        const startBit = parseInt(startBitStr, 10);
-        const stopBit = parseInt(stopBitStr, 10);
-        const opcodeSize = stopBit - startBit;
+    // Try incrementally: first 1 word, then 2 words, etc.
+    for (let wordCount = 1; wordCount <= nwords; wordCount++) {
+        const currentBinaryInstruction = words.slice(0, wordCount).join("");
+        const matchingInstructions = [];
 
-        // Extract opcode from instruction at the expected position
-        let extractedOpcode;
-        if (startBit === 0) {
-            // Opcode at the beginning
-            extractedOpcode = binaryInstruction.substring(0, opcodeSize);
-        } else if (stopBit === instructionLength) {
-            // Opcode at the end
-            extractedOpcode = binaryInstruction.substring(startBit);
-        } else {
-            // Opcode in the middle
-            extractedOpcode = binaryInstruction.substring(startBit, stopBit);
-        }
+        // Try different opcode positions and sizes with current word count
+        for (const [key, candidates] of lookupTable) {
+            const [opcodeValue, startBitStr, stopBitStr] = key.split("_");
+            const startBit = parseInt(startBitStr, 10);
+            const stopBit = parseInt(stopBitStr, 10);
 
-        if (extractedOpcode !== opcodeValue) continue;
-
-        // Check candidates with this opcode
-        for (const candidate of candidates) {
-            if (candidate.functionMasks.length === 0) {
-                // No function fields to check
-                return candidate.instruction;
-            }
-
-            // Check all function fields
-            let allMatch = true;
-            for (const mask of candidate.functionMasks) {
-                const fieldValue = binaryInstruction.substring(
-                    mask.startbit,
-                    mask.stopbit,
-                );
-                if (fieldValue !== mask.expectedValue) {
-                    allMatch = false;
-                    break;
-                }
-            }
-
-            if (allMatch) {
-                matchingInstructions.push(candidate.instruction);
-            }
-        }
-
-        // If more than one match, check for enum field preference
-        if (matchingInstructions.length > 1) {
-            // This is a workaround due to the assembler not supporting
-            // optional fields in the signature definition.
-            // The way we fix this is by duplicating the instruction
-            // in the architecture file. However, this breaks the
-            // instruction matching logic, so we need to handle it here.
-
-            // Check if we have exactly 2 matches and they only differ by an enum field
-            if (matchingInstructions.length === 2) {
-                const inst1 = matchingInstructions[0];
-                const inst2 = matchingInstructions[1];
-
-                // Compare fields to see if they only differ in one field having enum type
-                const enumPreference = checkEnumFieldPreference(inst1, inst2);
-                if (enumPreference !== null) {
-                    return enumPreference;
-                }
-            }
-
-            logger.error(
-                `Ambiguous instruction match for opcode ${opcodeValue} (found ${matchingInstructions.length} matches)`,
+            // Extract opcode from instruction at the expected position
+            // Use the actual startbit and stopbit positions to extract the opcode
+            let extractedOpcode = currentBinaryInstruction.substring(
+                currentBinaryInstruction.length - startBit - 1,
+                currentBinaryInstruction.length - stopBit,
             );
-            return null;
+
+            if (extractedOpcode !== opcodeValue) continue;
+
+            // Check candidates with this opcode
+            for (const candidate of candidates) {
+                if (checkCandidateOpcode(candidate, binaryInstruction)) {
+                    matchingInstructions.push(candidate.instruction);
+                }
+            }
         }
-        if (matchingInstructions.length === 1) {
+
+        // If we found matches for this word count, process them
+        if (matchingInstructions.length > 0) {
+            // If more than one match, check for enum field preference
+            if (matchingInstructions.length > 1) {
+                // This is a workaround due to the assembler not supporting
+                // optional fields in the signature definition.
+                // The way we fix this is by duplicating the instruction
+                // in the architecture file. However, this breaks the
+                // instruction matching logic, so we need to handle it here.
+
+                // Check if we have exactly 2 matches and they only differ by an enum field
+                if (matchingInstructions.length === 2) {
+                    const inst1 = matchingInstructions[0];
+                    const inst2 = matchingInstructions[1];
+
+                    // Compare fields to see if they only differ in one field having enum type
+                    const enumPreference = checkEnumFieldPreference(
+                        inst1,
+                        inst2,
+                    );
+                    if (enumPreference !== null) {
+                        return enumPreference;
+                    }
+                }
+
+                logger.error(
+                    `Ambiguous instruction match for opcode (found ${matchingInstructions.length} matches)`,
+                );
+                return null;
+            }
+
+            // Return the single match found
             return matchingInstructions[0];
         }
     }
@@ -645,15 +723,10 @@ function legacyFormat(matchedInstruction, instruction_loaded) {
  *
  * @param {string} toDecode - The instruction to decode (binary, hex, or assembly)
  * @param {boolean} [newFormat=false] - Whether to use new format (just return instruction string) or legacy format
- * @param {boolean} [skipEndianness=false] - Whether to skip endianness conversion
  * @returns {string|Object} Decoded instruction as string (newFormat=true) or legacy object (newFormat=false)
  * @throws {Error} When instruction cannot be decoded or is unknown
  */
-export function decode_instruction(
-    toDecode,
-    newFormat = false,
-    skipEndianness = false,
-) {
+export function decode_instruction(toDecode, newFormat = false) {
     const toDecodeArray = toDecode.split(" ");
     const isBinary = /^[01]+$/.test(toDecodeArray[0]);
     const isHex = /^0x[0-9a-fA-F]+$/.test(toDecodeArray[0]);
@@ -666,17 +739,6 @@ export function decode_instruction(
         binaryInstruction = parseInt(hexValue, 16)
             .toString(2)
             .padStart(numBits, "0");
-    }
-
-    // Handle endianness if needed
-    if (ENDIANNESS === "little_endian" && !skipEndianness) {
-        const byteSize = 8;
-        let bytes = [];
-        for (let i = 0; i < binaryInstruction.length; i += byteSize) {
-            bytes.push(binaryInstruction.substr(i, byteSize));
-        }
-        bytes = bytes.reverse();
-        binaryInstruction = bytes.join("");
     }
 
     // Use fast instruction matching

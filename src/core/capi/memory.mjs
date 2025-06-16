@@ -116,14 +116,13 @@ export const MEM = {
                 bytesRead.push(byte);
             }
 
-            // Combine bytes into a single value (big-endian)
+            // Combine bytes into a single value
             val = 0n;
             for (let i = 0; i < bytesRead.length; i++) {
                 val =
                     (val << BigInt(main_memory.getBitsPerByte())) |
                     BigInt(bytesRead[i]);
             }
-            console.log("Read value:", val);
         } catch (e) {
             raise(
                 "Invalid memory access to address '0x" +

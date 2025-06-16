@@ -18,7 +18,6 @@
  *
  */
 "use strict";
-import { parse } from "node:path";
 import {
     architecture,
     architecture_hash,
@@ -34,20 +33,9 @@ import {
     main_memory,
     BYTESIZE,
 } from "../core.mjs";
-// import {
-//     creator_memory_prereset,
-//     creator_memory_zerofill,
-// } from "../memory/memoryManager.mjs";
-// import {
-//     creator_memory_clear,
-//     creator_insert_instruction,
-//     writeMemory,
-//     creator_memory_data_compiler,
-//     creator_memory_storestring,
-// } from "../memory/memoryOperations.mjs";
 import { bi_intToBigInt } from "../utils/bigint.mjs";
 import { creator_ga } from "../utils/creator_ga.mjs";
-import { logger, console_log } from "../utils/creator_logger.mjs";
+import { logger } from "../utils/creator_logger.mjs";
 import { bin2hex, isDeno, isWeb } from "../utils/utils.mjs";
 
 // Conditional import for the WASM compiler based on the environment (web or Deno)

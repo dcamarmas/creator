@@ -562,6 +562,106 @@ export class Memory {
     }
 
     /**
+     * Returns an array of all memory addresses that contain non-zero values,
+     * sorted from highest to lowest address.
+     *
+     * This method scans through all memory locations and identifies addresses
+     * that have been written to (contain non-zero values). The returned addresses
+     * are sorted in descending order for easy inspection of memory usage patterns.
+     *
+     * @returns Array of bigint addresses containing non-zero values, sorted highest to lowest
+     *
+     * @example Finding used memory addresses
+     * ```typescript
+     * const memory = new Memory(100);
+     * memory.write(5n, 123);
+     * memory.write(10n, 255);
+     * memory.write(7n, 0);    // Zero value - won't be included
+     * memory.write(50n, 42);
+     *
+     * const usedAddresses = memory.getUsedAddresses();
+     * console.log(usedAddresses); // [50n, 10n, 5n]
+     * ```
+     *
+     * @example With custom byte sizes
+     * ```typescript
+     * const memory = new Memory(50, 12); // 12-bit bytes
+     * memory.write(0n, 1000);
+     * memory.write(25n, 4095); // Max 12-bit value
+     * memory.write(15n, 0);    // Zero - won't be included
+     *
+     * console.log(memory.getUsedAddresses()); // [25n, 0n]
+     * ```
+     */
+    getUsedAddresses(): bigint[] {
+        const usedAddresses: bigint[] = [];
+
+        if (this.bitsPerByte === 8) {
+            // Fast path for 8-bit bytes: directly scan the storage buffer
+            for (let addr = 0; addr < this.size; addr++) {
+                if (this.uint8View[addr] !== 0) {
+                    usedAddresses.push(BigInt(addr));
+                }
+            }
+        } else {
+            // For custom byte sizes, we need to decode values
+            // But we can optimize by checking storage bytes first
+            const usedStorageBytes = new Set<number>();
+
+            // First pass: find which storage bytes are non-zero
+            for (let i = 0; i < this.uint8View.length; i++) {
+                if (this.uint8View[i] !== 0) {
+                    usedStorageBytes.add(i);
+                }
+            }
+
+            // If no storage bytes are used, return empty array
+            if (usedStorageBytes.size === 0) {
+                return [];
+            }
+
+            // Second pass: only check addresses that could be affected by non-zero storage bytes
+            for (let addr = 0; addr < this.size; addr++) {
+                const bitOffset = addr * this.bitsPerByte;
+                const startByteIndex = Math.floor(bitOffset / 8);
+                const endByteIndex = Math.floor(
+                    (bitOffset + this.bitsPerByte - 1) / 8,
+                );
+
+                // Check if any storage byte that this address spans is non-zero
+                let couldBeNonZero = false;
+                for (
+                    let byteIdx = startByteIndex;
+                    byteIdx <= endByteIndex;
+                    byteIdx++
+                ) {
+                    if (usedStorageBytes.has(byteIdx)) {
+                        couldBeNonZero = true;
+                        break;
+                    }
+                }
+
+                // Only do expensive read if the address could possibly be non-zero
+                if (couldBeNonZero) {
+                    const value = this.read(BigInt(addr));
+                    if (value !== 0) {
+                        usedAddresses.push(BigInt(addr));
+                    }
+                }
+            }
+        }
+
+        // Sort addresses from highest to lowest
+        usedAddresses.sort((a, b) => {
+            if (a > b) return -1;
+            if (a < b) return 1;
+            return 0;
+        });
+
+        return usedAddresses;
+    }
+
+    /**
      * Splits a large value into bytes according to the memory's byte size configuration.
      * The result is in big-endian order (most significant byte first).
      *
