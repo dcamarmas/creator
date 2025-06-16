@@ -68,6 +68,7 @@
 
                     try {
                       var aux_architecture = JSON.parse(app._data.arch_code);
+                      arch = wasm.ArchitectureJS.from_json(app._data.arch_code);
                     }
                     catch (e) {
                       show_notification('Architecture not edited. JSON format is incorrect', 'danger');

@@ -5,6 +5,14 @@ body{
   height: 100vh;
 }
 
+:root {
+  --err-red: #ff0000;
+  --err-bright-blue: #00BCFE;
+  --err-yellow: #ffff00;
+  --black-bg: #1f1f1f;
+  --white-fg: #d4d4d4;
+}
+
 * { box-sizing: border-box; margin: 0; padding: 0; }
 .flexbox { display: flex; }
 .flexbox .stretch { flex: 1; }
@@ -261,8 +269,17 @@ h2 {
 
 
 .errorAssembly {
-  padding: 3%;
-  background: #EF9A9A;
+  padding: 15px;
+  background: black;
+  white-space: pre;
+  color: #d4d4d4;
+  overflow-x: auto;
+}
+
+@media (min-width: 576px) {
+  #modalAssemblyError > .modal-dialog {
+    max-width: 90vw;
+  }
 }
 
 .fileForm {

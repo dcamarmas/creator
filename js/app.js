@@ -472,6 +472,9 @@ try
     return parseInt(b, 2);
   }
 
+  if (typeof WebAssembly !== "object") {
+    alert("WebAssembly support not detected. WebAssembly is required to compile programs")
+  }
 }
 catch(e)
 {

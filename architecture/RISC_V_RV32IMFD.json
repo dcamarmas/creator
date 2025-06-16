@@ -31,6 +31,10 @@
     {
       "name": "Sensitive Register Name",
       "value": "1"
+    },
+    {
+      "name": "CommentPrefix",
+      "value": "#"
     }
   ],
   "components": [
@@ -930,7 +934,7 @@
       ]
     }
   ],
-  "instructions":[
+  "instructions": [
     {
       "name": "add",
       "type": "Arithmetic integer",
@@ -1030,8 +1034,8 @@
         {
           "name": "cop",
           "type": "cop",
-          "startbit": "14",
-          "stopbit": "12",
+          "startbit": 14,
+          "stopbit": 12,
           "valueField": "000"
         }
       ],
@@ -1162,7 +1166,7 @@
       "name": "auipc",
       "type": "Arithmetic integer",
       "signature_definition": "F0 F2 F1",
-      "signature": "auipc,INT-Reg,offset_words",
+      "signature": "auipc,INT-Reg,offset_bytes",
       "signatureRaw": "auipc rd inm",
       "co": "0010111",
       "cop": "",
@@ -1177,7 +1181,7 @@
         },
         {
           "name": "inm",
-          "type": "offset_words",
+          "type": "offset_bytes",
           "startbit": 31,
           "stopbit": 12
         },
@@ -1188,7 +1192,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = PC + (inm << 12);",
+      "definition": "rd = PC - 4 + (inm << 12);",
       "separated": [
         false,
         false,
@@ -1200,7 +1204,7 @@
       "name": "beq",
       "type": "Conditional bifurcation",
       "signature_definition": "F0 F4 F3 F2",
-      "signature": "beq,INT-Reg,INT-Reg,offset_words",
+      "signature": "beq,INT-Reg,INT-Reg,offset_bytes",
       "signatureRaw": "beq rs1 rs2 inm",
       "co": "1100011",
       "cop": "000",
@@ -1222,7 +1226,7 @@
         },
         {
           "name": "inm",
-          "type": "offset_words",
+          "type": "offset_bytes",
           "startbit": [
             31,
             11
@@ -1230,7 +1234,8 @@
           "stopbit": [
             25,
             7
-          ]
+          ],
+          "padding": 1
         },
         {
           "name": "rs2",
@@ -1245,7 +1250,7 @@
           "stopbit": 15
         }
       ],
-      "definition": "if (rs1 === rs2)\n PC = PC + ((inm << 16) >> 14); ",
+      "definition": "if (rs1 === rs2)\n PC = PC - 4 + inm; ",
       "separated": [
         false,
         false,
@@ -1259,7 +1264,7 @@
       "name": "bge",
       "type": "Conditional bifurcation",
       "signature_definition": "F0 F3 F2 F1",
-      "signature": "bge,INT-Reg,INT-Reg,offset_words",
+      "signature": "bge,INT-Reg,INT-Reg,offset_bytes",
       "signatureRaw": "bge rs1 rs2 inm",
       "co": "1100011",
       "cop": "101",
@@ -1274,7 +1279,7 @@
         },
         {
           "name": "inm",
-          "type": "offset_words",
+          "type": "offset_bytes",
           "startbit": [
             31,
             11
@@ -1282,7 +1287,8 @@
           "stopbit": [
             25,
             7
-          ]
+          ],
+          "padding": 1
         },
         {
           "name": "rs2",
@@ -1304,7 +1310,7 @@
           "valueField": "101"
         }
       ],
-      "definition": "if (capi_uint2int(rs1) >= capi_uint2int(rs2))\n PC = PC + ((inm << 16) >> 14);",
+      "definition": "if (capi_uint2int(rs1) >= capi_uint2int(rs2))\n PC = PC - 4 + inm;",
       "separated": [
         false,
         true,
@@ -1318,7 +1324,7 @@
       "name": "bgeu",
       "type": "Conditional bifurcation",
       "signature_definition": "F0 F3 F2 F1",
-      "signature": "bgeu,INT-Reg,INT-Reg,offset_words",
+      "signature": "bgeu,INT-Reg,INT-Reg,offset_bytes",
       "signatureRaw": "bgeu rs1 rs2 inm",
       "co": "1100011",
       "cop": "111",
@@ -1333,7 +1339,7 @@
         },
         {
           "name": "inm",
-          "type": "offset_words",
+          "type": "offset_bytes",
           "startbit": [
             31,
             11
@@ -1341,7 +1347,8 @@
           "stopbit": [
             25,
             7
-          ]
+          ],
+          "padding": 1
         },
         {
           "name": "rs2",
@@ -1363,7 +1370,7 @@
           "valueField": "111"
         }
       ],
-      "definition": "if (capi_int2uint(rs1) > capi_int2uint(rs2))\n PC = PC + ((inm << 16) >> 14);",
+      "definition": "if (capi_int2uint(rs1) > capi_int2uint(rs2))\n PC = PC - 4 + inm;",
       "separated": [
         false,
         true,
@@ -1377,7 +1384,7 @@
       "name": "blt",
       "type": "Conditional bifurcation",
       "signature_definition": "F0 F3 F2 F1",
-      "signature": "blt,INT-Reg,INT-Reg,offset_words",
+      "signature": "blt,INT-Reg,INT-Reg,offset_bytes",
       "signatureRaw": "blt rs1 rs2 inm",
       "co": "1100011",
       "cop": "100",
@@ -1392,7 +1399,7 @@
         },
         {
           "name": "inm",
-          "type": "offset_words",
+          "type": "offset_bytes",
           "startbit": [
             31,
             11
@@ -1400,7 +1407,8 @@
           "stopbit": [
             25,
             7
-          ]
+          ],
+          "padding": 1
         },
         {
           "name": "rs2",
@@ -1422,7 +1430,7 @@
           "valueField": "100"
         }
       ],
-      "definition": "if (capi_uint2int(rs1) < capi_uint2int(rs2))\n PC = PC + ((inm << 16) >> 14);",
+      "definition": "if (capi_uint2int(rs1) < capi_uint2int(rs2))\n PC = PC - 4 + inm;",
       "separated": [
         false,
         true,
@@ -1436,7 +1444,7 @@
       "name": "bltu",
       "type": "Conditional bifurcation",
       "signature_definition": "F0 F3 F2 F1",
-      "signature": "bltu,INT-Reg,INT-Reg,offset_words",
+      "signature": "bltu,INT-Reg,INT-Reg,offset_bytes",
       "signatureRaw": "bltu rs1 rs2 inm",
       "co": "1100011",
       "cop": "110",
@@ -1451,7 +1459,7 @@
         },
         {
           "name": "inm",
-          "type": "offset_words",
+          "type": "offset_bytes",
           "startbit": [
             31,
             11
@@ -1459,7 +1467,8 @@
           "stopbit": [
             25,
             7
-          ]
+          ],
+          "padding": 1
         },
         {
           "name": "rs2",
@@ -1481,7 +1490,7 @@
           "valueField": "110"
         }
       ],
-      "definition": "if (capi_int2uint(rs1) < capi_int2uint(rs2))\n PC = PC + ((inm << 16) >> 14);",
+      "definition": "if (capi_int2uint(rs1) < capi_int2uint(rs2))\n PC = PC - 4 + inm;",
       "separated": [
         false,
         true,
@@ -1495,7 +1504,7 @@
       "name": "bne",
       "type": "Conditional bifurcation",
       "signature_definition": "F0 F3 F2 F1",
-      "signature": "bne,INT-Reg,INT-Reg,offset_words",
+      "signature": "bne,INT-Reg,INT-Reg,offset_bytes",
       "signatureRaw": "bne rs1 rs2 inm",
       "co": "1100011",
       "cop": "001",
@@ -1510,7 +1519,7 @@
         },
         {
           "name": "inm",
-          "type": "offset_words",
+          "type": "offset_bytes",
           "startbit": [
             31,
             11
@@ -1518,7 +1527,8 @@
           "stopbit": [
             25,
             7
-          ]
+          ],
+          "padding": 1
         },
         {
           "name": "rs2",
@@ -1540,7 +1550,7 @@
           "valueField": "001"
         }
       ],
-      "definition": "if (rs1 !== rs2)\n PC = PC + ((inm << 16) >> 14);",
+      "definition": "if (rs1 !== rs2)\n PC = PC - 4 + inm;",
       "separated": [
         false,
         true,
@@ -1601,6 +1611,67 @@
         }
       ],
       "definition": "if (rs2 != 0)\n { rd = (rs1 >> 0) / (rs2 >> 0); }\n else { capi_raise('Division by zero not allowed'); }",
+      "separated": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "help": ""
+    },
+    {
+      "name": "divu",
+      "type": "Arithmetic integer",
+      "signature_definition": "F0 F5 F3 F2",
+      "signature": "divu,INT-Reg,INT-Reg,INT-Reg",
+      "signatureRaw": "divu rd rs1 rs2",
+      "co": "0110011",
+      "cop": "0000001101",
+      "nwords": 1,
+      "clk_cycles": 1,
+      "fields": [
+        {
+          "name": "divu",
+          "type": "co",
+          "startbit": 6,
+          "stopbit": 0
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 31,
+          "stopbit": 25,
+          "valueField": "0000001"
+        },
+        {
+          "name": "rs2",
+          "type": "INT-Reg",
+          "startbit": 24,
+          "stopbit": 20
+        },
+        {
+          "name": "rs1",
+          "type": "INT-Reg",
+          "startbit": 19,
+          "stopbit": 15
+        },
+        {
+          "name": "cop2",
+          "type": "cop",
+          "startbit": 14,
+          "stopbit": 12,
+          "valueField": "101"
+        },
+        {
+          "name": "rd",
+          "type": "INT-Reg",
+          "startbit": 11,
+          "stopbit": 7
+        }
+      ],
+      "definition": "if (rs2 != 0)\n { rd = (rs1 >>> 0) / (rs2 >>> 0); }\n else { capi_raise('Division by zero not allowed'); }",
       "separated": [
         false,
         false,
@@ -2654,7 +2725,7 @@
       "name": "fld",
       "type": "Memory access",
       "signature_definition": "F0 F4 F1 (F2)",
-      "signature": "fld,DFP-Reg,inm-unsigned,(INT-Reg)",
+      "signature": "fld,DFP-Reg,inm-signed,(INT-Reg)",
       "signatureRaw": "fld rd inm (rs1)",
       "co": "0000111",
       "cop": "011",
@@ -2669,7 +2740,7 @@
         },
         {
           "name": "inm",
-          "type": "inm-unsigned",
+          "type": "inm-signed",
           "startbit": 31,
           "stopbit": 20
         },
@@ -2953,7 +3024,7 @@
       "name": "flw",
       "type": "Memory access",
       "signature_definition": "F0 F4 F1 (F2)",
-      "signature": "flw,SFP-Reg,inm-unsigned,(INT-Reg)",
+      "signature": "flw,SFP-Reg,inm-signed,(INT-Reg)",
       "signatureRaw": "flw rd inm (rs2)",
       "co": "0000111",
       "cop": "010",
@@ -2968,7 +3039,7 @@
         },
         {
           "name": "inm",
-          "type": "inm-unsigned",
+          "type": "inm-signed",
           "startbit": 31,
           "stopbit": 20
         },
@@ -3951,7 +4022,7 @@
       "name": "fsd",
       "type": "Memory access",
       "signature_definition": "F0 F2 F3 (F1)",
-      "signature": "fsd,DFP-Reg,inm-unsigned,(INT-Reg)",
+      "signature": "fsd,DFP-Reg,inm-signed,(INT-Reg)",
       "signatureRaw": "fsd ft off (base)",
       "co": "0100111",
       "cop": "011",
@@ -3978,7 +4049,7 @@
         },
         {
           "name": "off",
-          "type": "inm-unsigned",
+          "type": "inm-signed",
           "startbit": 15,
           "stopbit": 0
         }
@@ -4585,7 +4656,7 @@
       "name": "fsw",
       "type": "Memory access",
       "signature_definition": "F0 F3 F1 (F2)",
-      "signature": "fsw,SFP-Reg,inm-unsigned,(INT-Reg)",
+      "signature": "fsw,SFP-Reg,inm-signed,(INT-Reg)",
       "signatureRaw": "fsw rs1 inm (rs2)",
       "co": "0100111",
       "cop": "010",
@@ -4600,7 +4671,7 @@
         },
         {
           "name": "inm",
-          "type": "inm-unsigned",
+          "type": "inm-signed",
           "startbit": [
             31,
             11
@@ -4645,7 +4716,7 @@
       "name": "jal",
       "type": "Unconditional bifurcation",
       "signature_definition": "F0 F2 F1",
-      "signature": "jal,INT-Reg,inm-unsigned",
+      "signature": "jal,INT-Reg,offset_bytes",
       "signatureRaw": "jal rd inm",
       "co": "1101111",
       "cop": "",
@@ -4664,9 +4735,10 @@
         },
         {
           "name": "inm",
-          "type": "inm-unsigned",
+          "type": "offset_bytes",
           "startbit": 31,
-          "stopbit": 12
+          "stopbit": 12,
+          "padding": 1
         },
         {
           "name": "rd",
@@ -4675,7 +4747,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = PC;\n PC = inm;\n capi_callconv_begin(inm); capi_drawstack_begin(inm);",
+      "definition": "rd = PC;\n PC = PC - 4 + inm;\n capi_callconv_begin(PC); capi_drawstack_begin(PC);",
       "separated": [
         false,
         false,
@@ -4742,11 +4814,11 @@
       "name": "lb",
       "type": "Memory access",
       "signature_definition": "F0 F3 F1 (F2)",
-      "signature": "lb,INT-Reg,inm-unsigned,(INT-Reg)",
+      "signature": "lb,INT-Reg,inm-signed,(INT-Reg)",
       "signatureRaw": "lb rd inm (rs1)",
       "co": "0000011",
       "cop": "000",
-      "nwords": "1",
+      "nwords": 1,
       "fields": [
         {
           "name": "lb",
@@ -4756,7 +4828,7 @@
         },
         {
           "name": "inm",
-          "type": "inm-unsigned",
+          "type": "inm-signed",
           "startbit": 31,
           "stopbit": 20
         },
@@ -4794,7 +4866,7 @@
       "name": "lbu",
       "type": "Memory access",
       "signature_definition": "F0 F3 F1 (F2)",
-      "signature": "lbu,INT-Reg,inm-unsigned,(INT-Reg)",
+      "signature": "lbu,INT-Reg,inm-signed,(INT-Reg)",
       "signatureRaw": "lbu rd inm (rs1)",
       "co": "0000011",
       "cop": "100",
@@ -4809,7 +4881,7 @@
         },
         {
           "name": "inm",
-          "type": "inm-unsigned",
+          "type": "inm-signed",
           "startbit": 31,
           "stopbit": 20
         },
@@ -4847,7 +4919,7 @@
       "name": "lh",
       "type": "Memory access",
       "signature_definition": "F0 F3 F1 (F2)",
-      "signature": "lh,INT-Reg,inm-unsigned,(INT-Reg)",
+      "signature": "lh,INT-Reg,inm-signed,(INT-Reg)",
       "signatureRaw": "lh rd inm (rs1)",
       "co": "0000011",
       "cop": "001",
@@ -4862,7 +4934,7 @@
         },
         {
           "name": "inm",
-          "type": "inm-unsigned",
+          "type": "inm-signed",
           "startbit": 31,
           "stopbit": 20
         },
@@ -4900,7 +4972,7 @@
       "name": "lhu",
       "type": "Memory access",
       "signature_definition": "F0 F3 F1 (F2)",
-      "signature": "lhu,INT-Reg,inm-unsigned,(INT-Reg)",
+      "signature": "lhu,INT-Reg,inm-signed,(INT-Reg)",
       "signatureRaw": "lhu rd inm (rs1)",
       "co": "0000011",
       "cop": "101",
@@ -4915,7 +4987,7 @@
         },
         {
           "name": "inm",
-          "type": "inm-unsigned",
+          "type": "inm-signed",
           "startbit": 31,
           "stopbit": 20
         },
@@ -4953,7 +5025,7 @@
       "name": "lui",
       "type": "Arithmetic integer",
       "signature_definition": "F0 F2 F1",
-      "signature": "lui,INT-Reg,inm-signed",
+      "signature": "lui,INT-Reg,inm-unsigned",
       "signatureRaw": "lui rd inm",
       "co": "0110111",
       "cop": "",
@@ -4968,7 +5040,7 @@
         },
         {
           "name": "inm",
-          "type": "inm-signed",
+          "type": "inm-unsigned",
           "startbit": 31,
           "stopbit": 12
         },
@@ -4992,7 +5064,7 @@
       "name": "lw",
       "type": "Memory access",
       "signature_definition": "F0 F3 F1 (F2)",
-      "signature": "lw,INT-Reg,inm-unsigned,(INT-Reg)",
+      "signature": "lw,INT-Reg,inm-signed,(INT-Reg)",
       "signatureRaw": "lw rd inm (rs1)",
       "co": "0000011",
       "cop": "010",
@@ -5007,7 +5079,7 @@
         },
         {
           "name": "inm",
-          "type": "inm-unsigned",
+          "type": "inm-signed",
           "startbit": 31,
           "stopbit": 20
         },
@@ -5495,10 +5567,71 @@
       "help": ""
     },
     {
+      "name": "remu",
+      "type": "Arithmetic integer",
+      "signature_definition": "F0 F5 F3 F2",
+      "signature": "remu,INT-Reg,INT-Reg,INT-Reg",
+      "signatureRaw": "remu rd rs1 rs2",
+      "co": "0110011",
+      "cop": "0000001111",
+      "nwords": 1,
+      "clk_cycles": 1,
+      "fields": [
+        {
+          "name": "remu",
+          "type": "co",
+          "startbit": 6,
+          "stopbit": 0
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 31,
+          "stopbit": 25,
+          "valueField": "0000001"
+        },
+        {
+          "name": "rs2",
+          "type": "INT-Reg",
+          "startbit": 24,
+          "stopbit": 20
+        },
+        {
+          "name": "rs1",
+          "type": "INT-Reg",
+          "startbit": 19,
+          "stopbit": 15
+        },
+        {
+          "name": "cop2",
+          "type": "cop",
+          "startbit": 14,
+          "stopbit": 12,
+          "valueField": "111"
+        },
+        {
+          "name": "rd",
+          "type": "INT-Reg",
+          "startbit": 11,
+          "stopbit": 7
+        }
+      ],
+      "definition": "rd = (rs1 >>> 0) % (rs2 >>> 0);",
+      "separated": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "help": ""
+    },
+    {
       "name": "sb",
       "type": "Memory access",
       "signature_definition": "F0 F2 F1 (F3)",
-      "signature": "sb,INT-Reg,inm-unsigned,(INT-Reg)",
+      "signature": "sb,INT-Reg,inm-signed,(INT-Reg)",
       "signatureRaw": "sb rs2 inm (rs1)",
       "co": "0100011",
       "cop": "000",
@@ -5513,7 +5646,7 @@
         },
         {
           "name": "inm",
-          "type": "inm-unsigned",
+          "type": "inm-signed",
           "startbit": [
             31,
             11
@@ -5557,7 +5690,7 @@
       "name": "sh",
       "type": "Memory access",
       "signature_definition": "F0 F2 F1 (F3)",
-      "signature": "sh,INT-Reg,inm-unsigned,(INT-Reg)",
+      "signature": "sh,INT-Reg,inm-signed,(INT-Reg)",
       "signatureRaw": "sh rs2 inm (rs1)",
       "co": "0100011",
       "cop": "001",
@@ -5572,7 +5705,7 @@
         },
         {
           "name": "inm",
-          "type": "inm-signeinm-unsigned",
+          "type": "inm-signed",
           "startbit": [
             31,
             11
@@ -5657,8 +5790,8 @@
         {
           "name": "cop2",
           "type": "cop",
-          "startbit": "14",
-          "stopbit": "12",
+          "startbit": 14,
+          "stopbit": 12,
           "valueField": "001"
         }
       ],
@@ -5778,8 +5911,8 @@
         {
           "name": "cop2",
           "type": "cop",
-          "startbit": "14",
-          "stopbit": "12",
+          "startbit": 14,
+          "stopbit": 12,
           "valueField": "010"
         }
       ],
@@ -5831,8 +5964,8 @@
         {
           "name": "cop",
           "type": "cop",
-          "startbit": "14",
-          "stopbit": "12",
+          "startbit": 14,
+          "stopbit": 12,
           "valueField": "010"
         }
       ],
@@ -5883,8 +6016,8 @@
         {
           "name": "cop",
           "type": "cop",
-          "startbit": "14",
-          "stopbit": "12",
+          "startbit": 14,
+          "stopbit": 12,
           "valueField": "011"
         }
       ],
@@ -5942,8 +6075,8 @@
         {
           "name": "cop2",
           "type": "cop",
-          "startbit": "14",
-          "stopbit": "12",
+          "startbit": 14,
+          "stopbit": 12,
           "valueField": "011"
         }
       ],
@@ -6266,7 +6399,7 @@
       "name": "sw",
       "type": "Memory access",
       "signature_definition": "F0 F2 F1 (F3)",
-      "signature": "sw,INT-Reg,inm-unsigned,(INT-Reg)",
+      "signature": "sw,INT-Reg,inm-signed,(INT-Reg)",
       "signatureRaw": "sw rs2 inm (rs1)",
       "co": "0100011",
       "cop": "010",
@@ -6281,7 +6414,7 @@
         },
         {
           "name": "inm",
-          "type": "inm-unsigned",
+          "type": "inm-signed",
           "startbit": [
             31,
             11
@@ -6366,8 +6499,8 @@
         {
           "name": "cop2",
           "type": "cop",
-          "startbit": "14",
-          "stopbit": "12",
+          "startbit": 14,
+          "stopbit": 12,
           "valueField": "100"
         }
       ],
@@ -6439,7 +6572,7 @@
     {
       "name": "beqz",
       "signature_definition": "beqz F0 F1",
-      "signature": "beqz,INT-Reg,offset_words",
+      "signature": "beqz,INT-Reg,offset_bytes",
       "signatureRaw": "beqz reg1 off",
       "help": "",
       "properties": [],
@@ -6451,15 +6584,15 @@
         },
         {
           "name": "off",
-          "type": "offset_words"
+          "type": "offset_bytes"
         }
       ],
-      "definition": "beq reg1 x0 off;"
+      "definition": "beq reg1, x0, off;"
     },
     {
       "name": "bgez",
       "signature_definition": "bgez F0 F1",
-      "signature": "bgez,INT-Reg,offset_words",
+      "signature": "bgez,INT-Reg,offset_bytes",
       "signatureRaw": "bgez reg1 off",
       "help": "",
       "properties": [],
@@ -6471,7 +6604,7 @@
         },
         {
           "name": "off",
-          "type": "offset_words"
+          "type": "offset_bytes"
         }
       ],
       "definition": "bge reg1 x0 off;"
@@ -6479,7 +6612,7 @@
     {
       "name": "bgt",
       "signature_definition": "bgt F0 F1 F2",
-      "signature": "bgt,INT-Reg,INT-Reg,offset_words",
+      "signature": "bgt,INT-Reg,INT-Reg,offset_bytes",
       "signatureRaw": "bgt reg1 reg2 off",
       "help": "",
       "properties": [],
@@ -6495,15 +6628,15 @@
         },
         {
           "name": "off",
-          "type": "offset_words"
+          "type": "offset_bytes"
         }
       ],
-      "definition": "blt reg2 reg1 off;"
+      "definition": "blt reg2, reg1, off;"
     },
     {
       "name": "bgtu",
       "signature_definition": "bgtu F0 F1 F2",
-      "signature": "bgtu,INT-Reg,INT-Reg,offset_words",
+      "signature": "bgtu,INT-Reg,INT-Reg,offset_bytes",
       "signatureRaw": "bgtu reg1 reg2 off",
       "help": "",
       "properties": [],
@@ -6519,15 +6652,15 @@
         },
         {
           "name": "off",
-          "type": "offset_words"
+          "type": "offset_bytes"
         }
       ],
-      "definition": "bltu reg2 reg1 off;"
+      "definition": "bltu reg2, reg1, off;"
     },
     {
       "name": "bgtz",
       "signature_definition": "bgtz F0 F1",
-      "signature": "bgtz,INT-Reg,offset_words",
+      "signature": "bgtz,INT-Reg,offset_bytes",
       "signatureRaw": "bgtz reg1 off",
       "help": "",
       "properties": [],
@@ -6539,15 +6672,15 @@
         },
         {
           "name": "off",
-          "type": "offset_words"
+          "type": "offset_bytes"
         }
       ],
-      "definition": "blt x0 reg1 off;"
+      "definition": "blt x0, reg1, off;"
     },
     {
       "name": "ble",
       "signature_definition": "ble F0 F1 F2",
-      "signature": "ble,INT-Reg,INT-Reg,offset_words",
+      "signature": "ble,INT-Reg,INT-Reg,offset_bytes",
       "signatureRaw": "ble reg1 reg2 off",
       "help": "",
       "properties": [],
@@ -6563,15 +6696,15 @@
         },
         {
           "name": "off",
-          "type": "offset_words"
+          "type": "offset_bytes"
         }
       ],
-      "definition": "bge reg2 reg1 off;"
+      "definition": "bge reg2, reg1, off;"
     },
     {
       "name": "bleu",
       "signature_definition": "bleu F0 F1 F2",
-      "signature": "bleu,INT-Reg,INT-Reg,offset_words",
+      "signature": "bleu,INT-Reg,INT-Reg,offset_bytes",
       "signatureRaw": "bleu reg1 reg2 off",
       "help": "",
       "properties": [],
@@ -6587,15 +6720,15 @@
         },
         {
           "name": "off",
-          "type": "offset_words"
+          "type": "offset_bytes"
         }
       ],
-      "definition": "bgeu reg2 reg1 off;"
+      "definition": "bgeu reg2, reg1, off;"
     },
     {
       "name": "blez",
       "signature_definition": "blez F0 F1",
-      "signature": "blez,INT-Reg,offset_words",
+      "signature": "blez,INT-Reg,offset_bytes",
       "signatureRaw": "blez reg1 off",
       "help": "",
       "properties": [],
@@ -6607,15 +6740,15 @@
         },
         {
           "name": "off",
-          "type": "offset_words"
+          "type": "offset_bytes"
         }
       ],
-      "definition": "bge x0 reg1 off;"
+      "definition": "bge x0, reg1, off;"
     },
     {
       "name": "bltz",
       "signature_definition": "bltz F0 F1",
-      "signature": "bltz,INT-Reg,offset_words",
+      "signature": "bltz,INT-Reg,offset_bytes",
       "signatureRaw": "bltz reg1 off",
       "help": "Conditional branch if Rsrc1 is less than zero.",
       "properties": [],
@@ -6629,17 +6762,17 @@
         },
         {
           "name": "off",
-          "type": "offset_words",
+          "type": "offset_bytes",
           "startbit": 15,
           "stopbit": 0
         }
       ],
-      "definition": "blt reg1 x0 off;"
+      "definition": "blt reg1, x0, off;"
     },
     {
       "name": "bnez",
       "signature_definition": "bnez F0 F1",
-      "signature": "bnez,INT-Reg,offset_words",
+      "signature": "bnez,INT-Reg,offset_bytes",
       "signatureRaw": "bnez reg1 off",
       "help": "",
       "properties": [],
@@ -6651,10 +6784,10 @@
         },
         {
           "name": "off",
-          "type": "offset_words"
+          "type": "offset_bytes"
         }
       ],
-      "definition": "bne reg1 x0 off;"
+      "definition": "bne reg1, x0, off;"
     },
     {
       "name": "fabs.d",
@@ -6674,7 +6807,7 @@
           "type": "DFP-Reg"
         }
       ],
-      "definition": "fsgnjx.d reg1 reg2 reg2;"
+      "definition": "fsgnjx.d reg1, reg2, reg2;"
     },
     {
       "name": "fabs.s",
@@ -6694,7 +6827,7 @@
           "type": "SFP-Reg"
         }
       ],
-      "definition": "fsgnjx.s reg1 reg2 reg2;"
+      "definition": "fsgnjx.s reg1, reg2, reg2;"
     },
     {
       "name": "fmv.d",
@@ -6714,7 +6847,7 @@
           "type": "DFP-Reg"
         }
       ],
-      "definition": "fsgnj.d reg1 reg2 reg2;"
+      "definition": "fsgnj.d reg1, reg2, reg2;"
     },
     {
       "name": "fmv.s",
@@ -6734,7 +6867,7 @@
           "type": "SFP-Reg"
         }
       ],
-      "definition": "fsgnj.s reg1 reg2 reg2;"
+      "definition": "fsgnj.s reg1, reg2, reg2;"
     },
     {
       "name": "fneg.d",
@@ -6754,7 +6887,7 @@
           "type": "DFP-Reg"
         }
       ],
-      "definition": "fsgnjn.d reg1 reg2 reg2;"
+      "definition": "fsgnjn.d reg1, reg2, reg2;"
     },
     {
       "name": "fneg.s",
@@ -6774,12 +6907,12 @@
           "type": "SFP-Reg"
         }
       ],
-      "definition": "fsgnjn.s reg1 reg2 reg2;"
+      "definition": "fsgnjn.s reg1, reg2, reg2;"
     },
     {
       "name": "j",
       "signature_definition": "j F0",
-      "signature": "j,offset_words",
+      "signature": "j,offset_bytes",
       "signatureRaw": "j off",
       "help": "",
       "properties": [],
@@ -6787,10 +6920,10 @@
       "fields": [
         {
           "name": "off",
-          "type": "offset_words"
+          "type": "offset_bytes"
         }
       ],
-      "definition": "beq zero zero off;"
+      "definition": "beq zero, zero, off;"
     },
     {
       "name": "jalr",
@@ -6806,7 +6939,7 @@
           "type": "INT-Reg"
         }
       ],
-      "definition": "jalr x1 0 (rs);"
+      "definition": "jalr x1, 0(rs);"
     },
     {
       "name": "jr",
@@ -6822,7 +6955,7 @@
           "type": "INT-Reg"
         }
       ],
-      "definition": "jalr x0 0 (rs);"
+      "definition": "jalr x0, 0(rs);"
     },
     {
       "name": "la",
@@ -6842,7 +6975,7 @@
           "type": "inm-unsigned"
         }
       ],
-      "definition": "no_ret_op{tmp=Field.2.(31,0).int - reg.pc;\ntmp_hi='0x'+(((tmp&0xFFFFF000)>>12) + ((tmp&0x00000400)>>11)).toString(16);\ntmp_low='0x'+(tmp&0x00000FFF).toString(16)};\nauipc rd op{tmp_hi};\naddi rd rd op{tmp_low};"
+      "definition": "no_ret_op{tmp=Field.2.(31,0).int - (reg.pc - 4);\ntmp_low=tmp&0x00000FFF;\ntmp_low=tmp_low>0x7FF? tmp_low - 0x1000 : tmp_low;\ntmp_hi=(tmp - tmp_low)>>12};\nauipc rd, op{tmp_hi};\naddi rd, rd, op{tmp_low};"
     },
     {
       "name": "li",
@@ -6862,7 +6995,7 @@
           "type": "inm-signed"
         }
       ],
-      "definition": "if(Field.2.SIZE<=12){addi rd x0 val;}\nelse{lui rd 0;\nlui rd Field.2.(31,12).int;\naddi rd rd op{'0x'+(Field.2.(11,0).int ).toString(16)};}"
+      "definition": "no_ret_op{tmp=Field.2.(31,0).int;\ntmp_low=tmp&0x00000FFF;\ntmp_low-=tmp_low>0x7FF? 0x1000 : 0;\ntmp_hi=(tmp - tmp_low)>>>12};\nif(tmp_hi === 0){addi rd, x0, op{tmp_low};}\nelse{lui rd, op{tmp_hi};\naddi rd, rd, op{tmp_low};}"
     },
     {
       "name": "mv",
@@ -6882,7 +7015,7 @@
           "type": "INT-Reg"
         }
       ],
-      "definition": "addi reg1 reg2 0;"
+      "definition": "addi reg1, reg2, 0;"
     },
     {
       "name": "neg",
@@ -6902,7 +7035,7 @@
           "type": "INT-Reg"
         }
       ],
-      "definition": "sub reg1 x0 reg2;"
+      "definition": "sub reg1, x0, reg2;"
     },
     {
       "name": "nop",
@@ -6913,7 +7046,7 @@
       "properties": [],
       "nwords": 1,
       "fields": [],
-      "definition": "addi x0 x0 0;"
+      "definition": "addi x0, x0, 0;"
     },
     {
       "name": "not",
@@ -6933,7 +7066,7 @@
           "type": "INT-Reg"
         }
       ],
-      "definition": "xori reg1 reg2 -1;"
+      "definition": "xori reg1, reg2, -1;"
     },
     {
       "name": "ret",
@@ -6944,7 +7077,7 @@
       "properties": [],
       "nwords": 1,
       "fields": [],
-      "definition": "jalr x0 0 (x1);"
+      "definition": "jalr x0, 0(x1);"
     },
     {
       "name": "seqz",
@@ -6964,7 +7097,7 @@
           "type": "INT-Reg"
         }
       ],
-      "definition": "sltiu reg1 reg2 1;"
+      "definition": "sltiu reg1, reg2, 1;"
     },
     {
       "name": "sgtz",
@@ -6984,7 +7117,7 @@
           "type": "INT-Reg"
         }
       ],
-      "definition": "slt reg1 x0 reg2;"
+      "definition": "slt reg1, x0, reg2;"
     },
     {
       "name": "sltz",
@@ -7004,7 +7137,7 @@
           "type": "INT-Reg"
         }
       ],
-      "definition": "slt reg1 reg2 x0;"
+      "definition": "slt reg1, reg2, x0;"
     },
     {
       "name": "snez",
@@ -7024,7 +7157,7 @@
           "type": "INT-Reg"
         }
       ],
-      "definition": "sltu reg1 x0 reg2;"
+      "definition": "sltu reg1, x0, reg2;"
     },
     {
       "name": "zext.b",
@@ -7044,7 +7177,7 @@
           "type": "INT-Reg"
         }
       ],
-      "definition": "andi reg1 reg2 255;"
+      "definition": "andi reg1, reg2, 255;"
     }
   ],
   "directives": [
@@ -7066,7 +7199,12 @@
     {
       "name": ".zero",
       "action": "space",
-      "size": "1"
+      "size": 1
+    },
+    {
+      "name": ".space",
+      "action": "space",
+      "size": 1
     },
     {
       "name": ".align",
@@ -7089,34 +7227,44 @@
       "size": null
     },
     {
+      "name": ".asciz",
+      "action": "ascii_null_end",
+      "size": null
+    },
+    {
+      "name": ".ascii",
+      "action": "ascii_not_null_end",
+      "size": null
+    },
+    {
       "name": ".byte",
       "action": "byte",
-      "size": "1"
+      "size": 1
     },
     {
       "name": ".half",
       "action": "half_word",
-      "size": "2"
+      "size": 2
     },
     {
       "name": ".word",
       "action": "word",
-      "size": "4"
+      "size": 4
     },
     {
       "name": ".dword",
       "action": "double_word",
-      "size": "8"
+      "size": 8
     },
     {
       "name": ".float",
       "action": "float",
-      "size": "4"
+      "size": 4
     },
     {
       "name": ".double",
       "action": "double",
-      "size": "8"
+      "size": 8
     }
   ],
   "memory_layout": [
