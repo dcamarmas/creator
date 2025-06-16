@@ -45,6 +45,7 @@
                 change_data_view(e)
                 {
                   app._data.data_mode = e; //TODO: vue bidirectional updates
+                  //console.log(app._data.data_mode);
 
                   if(e == "int_registers")
                   {
@@ -147,6 +148,14 @@
               '                  @click="change_data_view(\'clk_cycles\')">' +
               '          <span class="fa-regular fa-clock"></span>' +
               '          CLK Cyles' +
+              '        </b-button>' +
+              '        <b-button id="stats_btn"' +
+              '                  size="sm"' +
+              '                  :pressed="get_pressed(\'board-sim\')"' +
+              '                  variant="outline-secondary"' +
+              '                  @click="change_data_view(\'board-sim\')">' +
+              '          <span class="fa-solid fa-pencil"></span>' +
+              '          Board simulator' +
               '        </b-button>' +
               '        ' +
               '      </b-button-group>' +

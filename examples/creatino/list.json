@@ -1,0 +1,38 @@
+[
+    {
+      "name": "Example 1",
+      "id": "e1",
+      "url":"examples/creatino/example1.s",
+      "description": "Template for new examples"
+    },
+    {
+      "name": "Example 2",
+      "id": "e2",
+      "url":"examples/creatino/example2.s",
+      "description": "Blink Example"
+    },
+    {
+      "name": "Example 3",
+      "id": "e3",
+      "url":"examples/creatino/example3.s",
+      "description": "Button + LED example"
+    },
+    {
+      "name": "Example 4",
+      "id": "e4",
+      "url":"examples/creatino/example4.s",
+      "description": "Traffic lights example"
+    },
+    {
+      "name": "Example 5",
+      "id": "e5",
+      "url":"examples/creatino/example5.s",
+      "description": "Hello World with Serial Printf"
+    },
+    {
+      "name": "Example 6",
+      "id": "e6",
+      "url":"examples/creatino/example6.s",
+      "description": "I/O with Serial Read"
+    }
+  ]

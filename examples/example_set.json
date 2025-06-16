@@ -26,5 +26,12 @@
     "architecture":"RISC-V (RV32IMFD)",
     "url":"examples/ag-uc3m-ec/list.json",
     "description": "RISC-V examples for Aula Global at UC3M"
+  },
+  {
+    "name": "RISC-V Arduino Examples",
+    "id": "arduino",
+    "architecture":"RISC-V (RV32IMFD)",
+    "url":"examples/creatino/list.json",
+    "description": "RISC-V Arduino Examples"
   }
 ]
