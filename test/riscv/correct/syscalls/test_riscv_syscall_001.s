@@ -6,7 +6,7 @@
 
 .align 2
 
-  byte:			.byte 120,257
+  byte:			.byte 120,1
   half:			.half 34
   word:			.word -5678
   string:  		.string "This is another string"
@@ -39,8 +39,8 @@ main:
   lw a0, 0(t1)
   ecall
   
-  # print float
-  li a0, 1.1
+  # print int
+  li a0, 1
   ecall
   
   # string string

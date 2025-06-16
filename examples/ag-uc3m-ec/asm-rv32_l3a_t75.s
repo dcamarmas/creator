@@ -29,5 +29,5 @@ while:   bge  t0, t2, fin
          addi t0, t0, 1
          j while            # beq  x0, x0, while
 
-fin:     # ...
+fin:     nop # ...
 

@@ -6,7 +6,7 @@
 
 .align 2
 
-  byte:			.byte 120,257
+  byte:			.byte 120,1
   half:			.half 34
   word:			.word -5678
   string:  	.ascii "This is another string"
@@ -36,8 +36,8 @@ main:
   lw $a0, word
   syscall
   
-  # print float
-  li $a0, 1.1
+  # print int
+  li $a0, 1
   syscall
   
   # string string

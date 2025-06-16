@@ -9,7 +9,7 @@
       li  t0, 4
       li  t1, 2
       li  t3, 5
-      bge t3, t0 jump1
+      bge t3, t0, jump1
       
     jump2: 
       li t3, 34

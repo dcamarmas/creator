@@ -17,5 +17,5 @@ while:  bge  $t0, $t2, fin
         srl  $t1, $t1, 1
         addi $t0, $t0, 1
         b    while
-fin:    # ...
+fin:    nop # ...
 

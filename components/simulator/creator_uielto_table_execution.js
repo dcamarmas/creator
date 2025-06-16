@@ -121,7 +121,7 @@
               '         </template>' +
               ' ' +
               '         <template v-slot:cell(Label)="row">' +
-              '           <b-badge pill variant="info">{{row.item.Label}}</b-badge>' +
+              '           <b-badge pill variant="info" v-for="label in row.item.Label">{{label}}</b-badge>' +
               '         </template>' +
               ' ' +
               '         <template v-slot:cell(userInstructions)="row">' +

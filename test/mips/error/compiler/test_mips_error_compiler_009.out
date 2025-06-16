@@ -1,10 +1,26 @@
 
 
-Error at line 8 (0xhello):
-Immediate number '0xhello' is not valid
+[E08] Error: Incorrect instruction syntax
+   ╭─[ assembly:8:6 ]
+   │
+ 8 │    j 0xhello
+   │      ───┬───  
+   │         ╰───── Incorrect syntax
+   │ 
+   │ Note: Allowed formats:
+   │       j addr
+───╯
 
-  7 main:
-->8    j 0xhello
+The syntax `j addr` failed with the following reason:
+Error: found `identifier (xhello)` but expected `\n` or `end of input`
+   ╭─[ assembly:8:7 ]
+   │
+ 8 │    j 0xhello
+   │       ───┬──  
+   │          ╰──── Unexpected input
+   │          │    
+   │          ╰──── while parsing this expression
+───╯
 
 Not executed
 keyboard[0x0]:''; display[0x0]:''; 

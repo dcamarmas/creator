@@ -11,7 +11,7 @@
 
         li        t0,  0x40490E56 
         fmv.w.x   ft0, t0   # ft0 t0     
-        li        t1   4    # 4 en Ca2
+        li        t1,  4    # 4 en Ca2
 
         # length = PI * radio;
 

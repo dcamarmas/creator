@@ -32,7 +32,7 @@ var word_size_bytes = word_size_bits / 8 ;
 
 var main_memory = [] ;
     //  [
-    //    addr: { addr: addr, bin: "00", def_bin: "00", tag: null, data_type: ref <main_memory_datatypes>, reset: true, break: false },
+    //    addr: { addr: addr, bin: "00", def_bin: "00", tag: [], data_type: ref <main_memory_datatypes>, reset: true, break: false },
     //    ...
     //  ]
 
@@ -42,7 +42,7 @@ var main_memory_datatypes = {} ;
     //    ...
     //  }
 
-var memory_hash = [ "data_memory", "instructions_memory", "stack_memory" ] ;
+var memory_hash = [ "kdata_memory", "kinstructions_memory", "instructions_memory", "data_memory", "stack_memory" ] ;
     // main segments
 
 
@@ -84,7 +84,7 @@ function main_memory_packs_forav ( addr, value )
                  addr: addr,
                  bin: value,
                  def_bin: "00",
-                 tag: null,
+                 tag: [],
                  data_type: null,
                  reset: true,
                  break: false
@@ -113,18 +113,14 @@ function main_memory_datatypes_packs_foravt ( addr, value, type, size )
 
 function main_memory_reset ( )
 {
-        var i = 0;
-
         // reset memory
-        var addrs = main_memory_get_addresses() ;
-        for (i=0; i<addrs.length; i++) {
-             main_memory[addrs[i]].bin = main_memory[addrs[i]].def_bin ;
+        for (const [_, entry] of Object.entries(main_memory)) {
+             entry.bin = entry.def_bin ;
         }
 
         // reset datatypes
-        addrs = main_memory_datatype_get_addresses() ;
-        for (i=0; i<addrs.length; i++) {
-             main_memory_datatypes[addrs[i]].value = main_memory_datatypes[addrs[i]].default ;
+        for (const [_, entry] of Object.entries(main_memory_datatypes)) {
+             entry.value = entry.default ;
         }
 }
 
@@ -164,7 +160,7 @@ function main_memory_zerofill ( addr, size )
                addr: 0,
                bin: '00',
                def_bin: "00",
-               tag: null,
+               tag: [],
                data_type: null,
                reset: true,
                break: false
@@ -277,6 +273,7 @@ function main_memory_read_bydatatype ( addr, type )
 
           case 'w':
           case 'integer':
+          case 'int':
           case 'word':
                ret = "0x" + main_memory_read_nbytes(addr, word_size_bytes) ;
                ret = parseInt(ret, 16) ;
@@ -412,20 +409,22 @@ function main_memory_write_bydatatype ( addr, value, type, value_human )
                 case 'asciiz':
                 case 'ascii_not_null_end':
                 case 'ascii':
-                     var ch   = 0 ;
-                     var ch_h = '';
-                     for (var i=0; i<value.length; i++) {
-                          ch = value.charCodeAt(i);
-                          ch_h = value.charAt(i);
-                          main_memory_write_nbytes(addr+i, ch.toString(16), 1, type) ;
-                          main_memory_datatypes_update_or_create(addr+i, ch_h, 1, 'char');
-                          size++ ;
+                     bytes = new Uint8Array(4);
+                     encoder = new TextEncoder;
+                     for (const ch_h of value) {
+                          const n = encoder.encodeInto(ch_h, bytes).written;
+                          ch = ""
+                          for (let i = 0; i < n; i++) {
+                              ch += bytes[i].toString(16).padStart(2, "0");
+                          }
+                          main_memory_write_nbytes(addr, ch, n, type) ;
+                          main_memory_datatypes_update_or_create(addr, ch_h, n, 'char');
+                          addr += n
                      }
 
                      if ( (type != 'ascii') && (type != 'ascii_not_null_end') ) {
-                           main_memory_write_nbytes(addr+value.length, "00", 1, type) ;
-                           main_memory_datatypes_update_or_create(addr+value.length, "0", 1, 'char');
-                           size++ ;
+                           main_memory_write_nbytes(addr, "00", 1, type) ;
+                           main_memory_datatypes_update_or_create(addr, "0", 1, 'char');
                      }
                      break;
 
@@ -442,10 +441,19 @@ function main_memory_write_bydatatype ( addr, value, type, value_human )
                      ret = main_memory_write_nbytes(addr, value, size, type) ;
                      main_memory_datatypes_update_or_create(addr, value_human, size, type);
                      break;
-        }
 
-        // update view
-        creator_memory_updateall();
+                case 'char': {
+                     main_memory_write_nbytes(
+                         addr,
+                         creator_memory_value_by_type(value.charCodeAt(0), 'bu'),
+                         1,
+                         type
+                    ) ;
+                     main_memory_datatypes_update_or_create(addr, value_human, size, 'byte');
+                     break;
+                }
+
+        }
 
         return ret ;
 }
@@ -558,18 +566,14 @@ function creator_memory_alignelto ( new_addr, new_size )
 
 function creator_memory_prereset ( )
 {
-        var i = 0;
-
         // prereset main memory
-        var addrs = main_memory_get_addresses() ;
-        for (i=0; i<addrs.length; i++) {
-             main_memory[addrs[i]].def_bin = main_memory[addrs[i]].bin ;
+        for (const [_, entry] of Object.entries(main_memory)) {
+             entry.def_bin = entry.bin ;
         }
 
         // prereset datatypes
-        addrs = main_memory_datatype_get_addresses() ;
-        for (i=0; i<addrs.length; i++) {
-             main_memory_datatypes[addrs[i]].default = main_memory_datatypes[addrs[i]].value ;
+        for (const [_, entry] of Object.entries(main_memory_datatypes)) {
+             entry.default = entry.value ;
         }
 }
 
@@ -586,7 +590,7 @@ function creator_memory_findaddress_bytag ( tag )
         var addrs = main_memory_get_addresses() ;
         for (var i=0; i<addrs.length; i++)
         {
-             if (main_memory[addrs[i]].tag == tag)
+             if (main_memory[addrs[i]].tag.includes(tag))
              {
                  ret.exit  = 1 ;
                  ret.value = parseInt(addrs[i]) ;
@@ -612,31 +616,38 @@ function creator_memory_zerofill ( new_addr, new_size )
 
 function creator_memory_alloc ( new_size )
 {
+        // check if kernel to compute offset
+        let mem_offset = architecture.memory_layout.length == 10 ? 4 : 0;
+
         // get align address
-        var new_addr = parseInt(architecture.memory_layout[3].value) + 1 ;
+        var new_addr = parseInt(architecture.memory_layout[mem_offset + 3].value) + 1 ;
         var algn = creator_memory_alignelto(new_addr, new_size) ;
 
         // fill memory
         creator_memory_zerofill(algn.new_addr, algn.new_size) ;
 
         // new segment limit
-        architecture.memory_layout[3].value ="0x" + ((algn.new_addr + new_size).toString(16)).padStart(8, "0").toUpperCase();
+        architecture.memory_layout[mem_offset + 3].value ="0x" + ((algn.new_addr + new_size).toString(16)).padStart(8, "0").toUpperCase();
         if (typeof app !== "undefined") {
-            app.architecture.memory_layout[3].value = "0x" + ((algn.new_addr + new_size).toString(16)).padStart(8, "0").toUpperCase();
+            app.architecture.memory_layout[mem_offset + 3].value = "0x" + ((algn.new_addr + new_size).toString(16)).padStart(8, "0").toUpperCase();
         }
 
         return algn.new_addr ;
 }
 
-function main_memory_storedata ( data_address, value, size, dataLabel, value_human, DefValue, type )
+function main_memory_storedata ( data_address, value, size, dataLabel, value_human, DefValue, type, skip_update_ui)
 {
         var algn = creator_memory_alignelto(data_address, size) ;
 
         main_memory_write_bydatatype(algn.new_addr, value, type, value_human) ;
-        creator_memory_zerofill((algn.new_addr + size), (algn.new_size - size)) ;
+        main_memory_zerofill((algn.new_addr + size), (algn.new_size - size)) ;
 
-        if (dataLabel != '') {
+        if (dataLabel.length > 0) {
             main_memory_write_tag(algn.new_addr, dataLabel) ;
+        }
+
+        if (skip_update_ui !== true) {
+            creator_memory_updateall();
         }
 
         return parseInt(algn.new_addr) + parseInt(size) ;
@@ -696,7 +707,7 @@ function creator_memory_updaterow ( addr )
         Vue.set(app._data.main_memory, addr_base, elto) ;
 
         for (var i=0; i<word_size_bytes; i++) {
-             elto.hex[i] = { byte: "00", tag: null } ;
+             elto.hex[i] = { byte: "00", tag: [] } ;
         }
     }
 
@@ -719,10 +730,6 @@ function creator_memory_updaterow ( addr )
 
          elto.hex[i].byte = v1.bin;
          elto.hex[i].tag  = v1.tag;
-         if (v1.tag == "") {
-             elto.hex[i].tag  = null;
-         }
-
          elto.hex_packed += v1.bin ;
     }
 
@@ -853,19 +860,35 @@ function creator_memory_clear ( )
 
 function creator_memory_is_address_inside_segment ( segment_name, addr )
 {
-         var elto_inside_segment = false ;
+    var elto_inside_segment = false ;
 
-         if (segment_name == "instructions_memory") {
+    // check if kernel to compute offset
+    let mem_offset = architecture.memory_layout.length == 10 ? 4 : 0;
+
+    switch (segment_name) {
+
+        case "kdata_memory":
              elto_inside_segment = ((addr >= parseInt(architecture.memory_layout[0].value)) && (addr <= parseInt(architecture.memory_layout[1].value))) ;
-         }
-         if (segment_name == "data_memory") {
-             elto_inside_segment = ((addr >= parseInt(architecture.memory_layout[2].value)) && (addr <= parseInt(architecture.memory_layout[3].value))) ;
-         }
-         if (segment_name == "stack_memory") {
-             elto_inside_segment = (addr >= parseInt(architecture.memory_layout[3].value)) ;
-         }
+             break;
 
-         return elto_inside_segment ;
+        case "kinstuctions_memory":
+             elto_inside_segment = ((addr >= parseInt(architecture.memory_layout[2].value)) && (addr <= parseInt(architecture.memory_layout[3].value))) ;
+
+        case "instructions_memory":
+             elto_inside_segment = ((addr >= parseInt(architecture.memory_layout[mem_offset + 0].value)) && (addr <= parseInt(architecture.memory_layout[mem_offset + 1].value))) ;
+             break;
+
+        case "data_memory":
+             elto_inside_segment = ((addr >= parseInt(architecture.memory_layout[mem_offset + 2].value)) && (addr <= parseInt(architecture.memory_layout[mem_offset + 3].value))) ;
+             break;
+
+        case "stack_memory":
+             elto_inside_segment = (addr >= parseInt(architecture.memory_layout[mem_offset + 3].value));
+             break;
+
+    }
+
+    return elto_inside_segment ;
 }
 
 function creator_memory_is_segment_empty ( segment_name )
@@ -879,7 +902,7 @@ function creator_memory_is_segment_empty ( segment_name )
 }
 
 
-function creator_memory_data_compiler ( data_address, value, size, dataLabel, DefValue, type )
+function creator_memory_data_compiler ( data_address, value, size, dataLabel, DefValue, type, skip_update_ui)
 {
         var ret = {
                      msg: '',
@@ -900,28 +923,20 @@ function creator_memory_data_compiler ( data_address, value, size, dataLabel, De
             return ret ;
         }
 
-        if (dataLabel != null) {
-            data_tag.push({tag: dataLabel, addr: data_address});
-        }
-
         ret.msg = '' ;
-        ret.data_address = main_memory_storedata(data_address, value, size, dataLabel, DefValue, DefValue, type) ;
+        ret.data_address = main_memory_storedata(data_address, value, size, dataLabel, DefValue, DefValue, type, skip_update_ui) ;
 
         return ret ;
 }
 
-function creator_insert_instruction ( auxAddr, value, def_value, hide, hex, fill_hex, label )
+function creator_insert_instruction ( auxAddr, value, def_value, hide, hex, fill_hex, label, skip_update_ui)
 {
         var size = Math.ceil(hex.toString().length / 2) ;
-        return main_memory_storedata(auxAddr, hex, size, label, def_value, def_value, "instruction") ;
+        return main_memory_storedata(auxAddr, hex, size, label, def_value, def_value, "instruction", skip_update_ui) ;
 }
 
-function creator_memory_storestring ( string, string_length, data_address, label, type, align )
+function creator_memory_storestring ( string, string_length, data_address, label, type, skip_update_ui)
 {
-        if (label != null) {
-            data_tag.push({tag: label, addr: data_address});
-        }
-
-        return main_memory_storedata(data_address, string, string_length, label, string, string, type);
+        return main_memory_storedata(data_address, string, string_length, label, string, string, type, skip_update_ui);
 }
 

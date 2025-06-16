@@ -21,8 +21,8 @@
          li   t1, 2
          li   t2, 8
 
-         bne  t0, t2  fin1
+         bne  t0, t2, fin1
          li   t1, 1
 
-  fin1:  # ...
+  fin1:  nop # ...
 

@@ -12,5 +12,5 @@ main:
     
     andi x8, x5, 0x455
     andi x9, x6, 0x222
-  	andi x10, x7, 0xFFF
+  	andi x10, x7, 0x7FF
     

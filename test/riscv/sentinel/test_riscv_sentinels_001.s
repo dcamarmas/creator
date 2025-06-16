@@ -22,7 +22,7 @@
             addi sp, sp, -12
             sw   ra, 8(sp)
             sw   fp, 4(sp)
-            addi fp, sp 4
+            addi fp, sp, 4
 
 			li a0, 2
 

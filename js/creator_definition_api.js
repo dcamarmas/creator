@@ -71,13 +71,17 @@ function capi_mem_write ( addr, value, type, reg_name )
 	// 1) check address is aligned
 	if (capi_bad_align(addr, type))
 	{
-		capi_raise("The memory must be align") ;
+		capi_raise("The memory must be aligned") ;
 		creator_executor_exit( true );
 	}
 
 	// 2) check address is into text segment
+
+	// check if kernel to compute offset
+	let mem_offset = architecture.memory_layout.length == 10 ? 4 : 0;
+
 	var addr_16 = parseInt(addr, 16);
-	if((addr_16 >= parseInt(architecture.memory_layout[0].value)) && (addr_16 <= parseInt(architecture.memory_layout[1].value)))
+	if((addr_16 >= parseInt(architecture.memory_layout[mem_offset + 0].value)) && (addr_16 <= parseInt(architecture.memory_layout[mem_offset + 1].value)) && (checkDeviceAddr(addr) === null))
     {
         capi_raise('Segmentation fault. You tried to write in the text segment');
         creator_executor_exit( true );
@@ -118,13 +122,17 @@ function capi_mem_read ( addr, type, reg_name )
 	// 1) check address is aligned
 	if (capi_bad_align(addr, type))
 	{
-		capi_raise("The memory must be align") ;
+		capi_raise("The memory must be aligned") ;
 		creator_executor_exit( true );
 	}
 
 	// 2) check address is into text segment
 	var addr_16 = parseInt(addr, 16);
-	if((addr_16 >= parseInt(architecture.memory_layout[0].value)) && (addr_16 <= parseInt(architecture.memory_layout[1].value)))
+
+	// check if kernel to compute offset
+	let mem_offset = architecture.memory_layout.length == 10 ? 4 : 0;
+
+	if((addr_16 >= parseInt(architecture.memory_layout[mem_offset + 0].value)) && (addr_16 <= parseInt(architecture.memory_layout[mem_offset + 1].value)) && (checkDeviceAddr(addr) === null))
     {
         capi_raise('Segmentation fault. You tried to read in the text segment');
         creator_executor_exit( true );
@@ -424,9 +432,9 @@ function capi_callconv_begin ( addr )
 	// 2) get function name
 	if (typeof architecture.components[0] !== "undefined")
 	{
-		if (typeof tag_instructions[addr] === "undefined")
+		if ((addr_label[addr] ?? []).length === 0)
 			 function_name = "0x" + parseInt(addr).toString(16) ;
-		else function_name = tag_instructions[addr] ;
+		else function_name = addr_label[addr].join(" | ") ;
 	}
 
 	// 3) callstack_enter
@@ -469,9 +477,9 @@ function capi_drawstack_begin ( addr )
 	// 1.- get function name
 	if (typeof architecture.components[0] !== "undefined")
 	{
-		if (typeof tag_instructions[addr] == "undefined")
+		if ((addr_label[addr] ?? []).length === 0)
 			 function_name = "0x" + parseInt(addr).toString(16) ;
-		else function_name = tag_instructions[addr] ;
+		else function_name = addr_label[addr].join(" | ") ;
 	}
 
 	// 2.- callstack_enter

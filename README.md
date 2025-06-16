@@ -31,7 +31,9 @@
 | :microscope: Nightly build   | https://dcamarmas.github.io/creator             |
 | :clipboard:  Tests           | [Test Descriptions](docs/test.md)               | 
 
-### Supported Internet Browser
+
+
+### Supported Internet Browsers
 
 ![Edge](https://img.shields.io/badge/Edge-0078D7?style=for-the-badge&logo=Microsoft-edge&logoColor=white)
 ![Firefox](https://img.shields.io/badge/Firefox-FF7139?style=for-the-badge&logo=Firefox-Browser&logoColor=white)
@@ -177,6 +179,7 @@
   * :technologist: Lucas Elvira Martín (RISC-V and several improvements)
   * :technologist: José Antonio Verde Jiménez (Real hardware integration)
   * :technologist: Álvaro Guerrero Espinosa (New compiler)
+  * :technologist: Luis Daniel Casais Mezquida (Interrupts, kernel support, and devices)
 
 
 ## ChangeLog

@@ -26,7 +26,9 @@
 
     props:      {
                   target:                 { type: String, required: true },
-                  show_instruction_help:  { type: Boolean, required: true }
+                  show_instruction_help:  { type: Boolean, required: true },
+                  show_creatino_help:     { type: Boolean, required: true },
+                  show_board_help:        { type: Boolean, required: true },
                 },
 
     methods:    {
@@ -57,6 +59,22 @@
                 '     <span class="fas fa-book"></span>' +
                 '     Instruction Help' +
                 '   </b-button>' +
+                ' ' +
+                '   <b-button class="btn btn-outline-secondary btn-block btn-sm h-100 infoButton" v-if="show_creatino_help==\'true\'"' +
+                '             id="inst_ass" v-b-toggle.sidebar_cr_help' +
+                '             onclick="creator_ga(\'send\', \'event\', \'help\', \'help.creatino_help\', \'help.creatino_help\');">' +
+                '     <span class="fas fa-infinity"></span>' +
+                '     Creatino Help' +
+                '   </b-button>' +
+
+                '   <b-button class="btn btn-outline-secondary btn-block btn-sm h-100 infoButton" v-if="show_board_help==\'true\'"' +
+                '             id="inst_ass" v-b-toggle.sidebar_board_help' +
+                '             onclick="creator_ga(\'send\', \'event\', \'help\', \'help.board_help\', \'help.board_help\');">' +
+                '     <span class="fas fa-chess-board"></span>' +
+                '     Board Info' +
+                '   </b-button>' +
+
+
                 ' ' +
                 '   <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground h-100" ' +
                 '             v-b-modal.notifications>' +

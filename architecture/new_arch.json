@@ -27,14 +27,14 @@
     {
       "name": "Sensitive Register Name",
       "value": "1"
+    },
+    {
+      "name": "CommentPrefix",
+      "value": "#"
     }
   ],
-  "components": [
-
-  ],
-  "instructions": [
-    
-  ],
+  "components": [],
+  "instructions": [],
   "directives": [
     {
       "name": ".data",

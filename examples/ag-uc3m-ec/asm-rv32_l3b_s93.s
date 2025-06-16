@@ -25,4 +25,5 @@
 
    .align 2
    v5: .word 20, 22 
-
+.text
+main: nop

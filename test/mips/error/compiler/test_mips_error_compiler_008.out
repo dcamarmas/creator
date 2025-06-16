@@ -1,10 +1,14 @@
 
 
-Error at line 8:
-Please check instruction syntax, inmediate ranges, register name, etc.
-
-  7 main:
-->8    j 0x12345678
+[E22] Error: Value `305419896` is outside of the valid range of the field
+   ╭─[ assembly:8:6 ]
+   │
+ 8 │    j 0x12345678
+   │      ─────┬────  
+   │           ╰────── This expression has value `305419896`
+   │ 
+   │ Note: Allowed range is [-33554432, 33554431]
+───╯
 
 Not executed
 keyboard[0x0]:''; display[0x0]:''; 

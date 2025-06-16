@@ -19,6 +19,20 @@
  *
  */
 
+const wasm = require('../compiler-pkg/nodejs/creator_compiler.js')
+const { logger, console_log } = require('./utils/creator_logger');
+
+var creator_debug = false;
+
+function set_debug(enable_debug) {
+    creator_debug = enable_debug;
+    if (creator_debug) {
+        logger.enable();
+        logger.setLevel('DEBUG');
+    } else {
+        logger.disable();
+    }
+}
 
 // load components
 
@@ -26,6 +40,7 @@ function load_architecture ( arch_str )
 {
     var ret = {} ;
 
+    arch = wasm.ArchitectureJS.from_json(arch_str);
     arch_obj = JSON.parse(arch_str) ;
     ret = load_arch_select(arch_obj) ;
 
@@ -47,22 +62,16 @@ function load_library ( lib_str )
 
 // compilation
 
-function assembly_compile ( code )
+function assembly_compile ( code, enable_color )
 {
     var ret = {} ;
 
     code_assembly = code ;
-    ret = assembly_compiler() ;
+    color = enable_color? wasm.Color.Ansi : wasm.Color.Off;
+    ret = assembly_compiler(false) ;
     switch (ret.status)
     {
         case "error":
-         var code_assembly_segment = code_assembly.split('\n') ;
-         ret.msg += "\n\n" ;
-         if (ret.line > 0)
-             ret.msg += "  " + (ret.line+0) + " " + code_assembly_segment[ret.line - 1] + "\n" ;
-             ret.msg += "->" + (ret.line+1) + " " + code_assembly_segment[ret.line] + "\n" ;
-         if (ret.line < code_assembly_segment.length - 1)
-             ret.msg += "  " + (ret.line+2) + " " + code_assembly_segment[ret.line + 1] + "\n" ;
              break;
 
         case "warning":
@@ -178,9 +187,13 @@ function get_state ( )
 
     // dump memory
     var addrs = main_memory_get_addresses() ;
+
+    // check if kernel to compute offset
+    let mem_offset = architecture.memory_layout.length == 10 ? 4 : 0;
+
     for (var i=0; i<addrs.length; i++)
     {
-      if(addrs[i] >= parseInt(architecture.memory_layout[3].value)){
+      if(addrs[i] >= parseInt(architecture.memory_layout[mem_offset + 3].value)){
         continue;
       }
 
@@ -336,3 +349,4 @@ module.exports.compare_states    = compare_states ;
 module.exports.help_instructions = help_instructions ;
 module.exports.help_pseudoins    = help_pseudoins ;
 
+module.exports.set_debug         = set_debug;

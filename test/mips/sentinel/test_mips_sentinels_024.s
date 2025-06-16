@@ -20,11 +20,11 @@
 	test:
             # crear "stack frame" para $ra, $fp y una variable local
             subu $sp, $sp, 12
-            sw   $ra 8($sp)
-            sw   $fp 4($sp)
+            sw   $ra, 8($sp)
+            sw   $fp, 4($sp)
             addu $fp, $sp, 4
 
-			li $t5 2
+			li $t5, 2
 
 	b_efs:  lw   $ra, 8($sp)
             lw   $fp, 4($sp)

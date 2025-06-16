@@ -1,0 +1,14 @@
+[
+  {
+    "name": "Example 0",
+    "id": "e0",
+    "url":"examples/riscv-interrupts/example0.s",
+    "description": "Basic String I/O"
+  },
+  {
+    "name": "Example 1",
+    "id": "e1",
+    "url":"examples/riscv-interrupts/example1.s",
+    "description": "Full ecall example"
+  }
+]
