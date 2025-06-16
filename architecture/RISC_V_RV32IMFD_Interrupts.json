@@ -2,7 +2,7 @@
   "arch_conf": [
     {
       "name": "Name",
-      "value": "RISC-V (RV32IMFD)"
+      "value": "RISC-V (interrupts)"
     },
     {
       "name": "Bits",
@@ -54,6 +54,90 @@
             "read",
             "write",
             "program_counter"
+          ]
+        },
+        {
+          "name": [
+            "MEPC"
+          ],
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write",
+            "exception_program_counter"
+          ]
+        },
+        {
+          "name": [
+            "MCAUSE"
+          ],
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": [
+            "MTVEC"
+          ],
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read"
+          ]
+        },
+        {
+          "name": [
+            "MSTATUS"
+          ],
+          "nbits": "32",
+          "value": 8,
+          "default_value": 8,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": [
+            "MIP"
+          ],
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": [
+            "MIE"
+          ],
+          "nbits": "32",
+          "value": 2056,
+          "default_value": 2056,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": [
+            "MSCRATCH"
+          ],
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
           ]
         }
       ]
@@ -1707,7 +1791,38 @@
           "valueField": "001100"
         }
       ],
-      "definition": "switch(a7){\ncase 1:\ncapi_print_int('a0');\nbreak;\ncase 2:\ncapi_print_float('fa0');\nbreak;\ncase 3:\ncapi_print_double('fa0');\nbreak;\ncase 4:\ncapi_print_string('a0');\nbreak;\ncase 5:\ncapi_read_int('a0');\nbreak;\ncase 6:\ncapi_read_float('fa0');\nbreak;\ncase 7:\ncapi_read_double('fa0');\nbreak;\ncase 8:\ncapi_read_string('a0', 'a1');\nbreak;\ncase 9:\ncapi_sbrk('a0', 'a0');\nbreak;\ncase 10:\ncapi_exit();\nbreak;\ncase 11:\ncapi_print_char('a0');\nbreak;\ncase 12:\ncapi_read_char('a0');\nbreak;\n}",
+      "definition": "MIP = MIP | 2**3; MCAUSE = 2**8;\ncapi_drawstack_begin(PC);",
+      "help": ""
+    },
+    {
+      "name": "mret",
+      "type": "Syscall",
+      "co": "001100000010",
+      "cop": "1110011",
+      "nwords": 1,
+      "clk_cycles": 1,
+      "signature_definition": "F0",
+      "signature": "mret",
+      "signatureRaw": "mret",
+      "properties": [
+        "privileged"
+      ],
+      "fields": [
+        {
+          "name": "mret",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 20
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 6,
+          "stopbit": 0,
+          "valueField": "1110011"
+        }
+      ],
+      "definition": "PC = MEPC; MIP = MIP & -2057; MCAUSE = 0; capi_drawstack_end();currentExecutionMode = ExecutionMode.User;",
       "help": ""
     },
     {
@@ -6566,6 +6681,60 @@
         false
       ],
       "help": ""
+    },
+    {
+      "name": "csrrw",
+      "type": "Control",
+      "signature_definition": "F0 F1 F2 F3",
+      "signature": "csrrw,INT-Reg,Ctrl-Reg,INT-Reg",
+      "signatureRaw": "csrrw rd csr rs1",
+      "co": "001",
+      "cop": "1110011",
+      "nwords": 1,
+      "clk_cycles": 1,
+      "fields": [
+        {
+          "name": "csrrw",
+          "type": "co",
+          "startbit": 6,
+          "stopbit": 0
+        },
+        {
+          "name": "rd",
+          "type": "INT-Reg",
+          "startbit": 11,
+          "stopbit": 7
+        },
+        {
+          "name": "csr",
+          "type": "Ctrl-Reg",
+          "startbit": 31,
+          "stopbit": 20
+        },
+        {
+          "name": "rs1",
+          "type": "INT-Reg",
+          "startbit": 19,
+          "stopbit": 15
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 14,
+          "stopbit": 12,
+          "valueField": "001"
+        }
+      ],
+      "definition": "rd = csr;\ncsr = rs1;",
+      "separated": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "help": "Atomically swaps values in the CSRs and integer registers. CSRRW reads the old value of the CSR, then writes it to integer register rd. The initial value in rs1 is written to the CSR."
     }
   ],
   "pseudoinstructions": [
@@ -7192,6 +7361,16 @@
       "size": null
     },
     {
+      "name": ".ktext",
+      "action": "kernel_code_segment",
+      "size": null
+    },
+    {
+      "name": ".kdata",
+      "action": "kernel_data_segment",
+      "size": null
+    },
+    {
       "name": ".bss",
       "action": "global_symbol",
       "size": null
@@ -7269,20 +7448,36 @@
   ],
   "memory_layout": [
     {
-      "name": "text start",
+      "name": "ktext start",
       "value": "0x00000000"
     },
     {
-      "name": "text end",
+      "name": "ktext end",
       "value": "0x001FFFFF"
     },
     {
-      "name": "data start",
+      "name": "kdata start",
       "value": "0x00200000"
     },
     {
+      "name": "kdata end",
+      "value": "0x003FFFFF"
+    },
+    {
+      "name": "text start",
+      "value": "0x00400000"
+    },
+    {
+      "name": "text end",
+      "value": "0x005FFFFF"
+    },
+    {
+      "name": "data start",
+      "value": "0x00600000"
+    },
+    {
       "name": "data end",
-      "value": "0x05BBFCBF"
+      "value": "0x08BBFCBF"
     },
     {
       "name": "stack start",
@@ -7292,5 +7487,15 @@
       "name": "stack end",
       "value": "0x0FFFFFFF"
     }
-  ]
+  ],
+  "interrupts": {
+    "enabled": true,
+    "interrupt_check": "let MIP = crex_findReg('MIP'); if (MIP.match) { let value = readRegister(MIP.indexComp, MIP.indexElem); if (value & 2**11) InterruptType.External; else if (value & 2**3) InterruptType.Software; else null; } else null;",
+    "enable_check": "let MSTATUS = crex_findReg('MSTATUS'); if (MSTATUS.match) !!(readRegister(MSTATUS.indexComp, MSTATUS.indexElem) & 2**3); else false;",
+    "interrupt_enable": "let MSTATUS = crex_findReg('MSTATUS'); if (MSTATUS.match) readRegister(MSTATUS.indexComp, MSTATUS.indexElem) | 2**3;",
+    "interrupt_disable": "let MSTATUS = crex_findReg('MSTATUS'); if (MSTATUS.match) !(readRegister(MSTATUS.indexComp, MSTATUS.indexElem) | 2**3);",
+    "get_handler_addr": "let MTVEC = crex_findReg('MTVEC'); if (MTVEC.match) readRegister(MTVEC.indexComp, MTVEC.indexElem) >> 2",
+    "clear_interrupt": "let MIP = crex_findReg('MIP'); if (MIP.match) writeRegister(readRegister(MIP.indexComp, MIP.indexElem) & ~(2**11 + 2**3), MIP.indexComp, MIP.indexElem)",
+    "set_interrupt_cause": "(interrupt_type) => let MCAUSE = crex_findReg('MCAUSE'); if (MCAUSE.match) { let val; switch (interrupt_type) { case 'InterruptType.Software': val = 2**3; break; case 'InterruptType.External': val = 2**31 + 2**11; break; case 'InterruptType.EnvironmentCall': val = 2**8; break; } writeRegister(val, MCAUSE.indexComp, MSTATUS.indexElem); }"
+  }
 }

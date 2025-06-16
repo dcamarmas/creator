@@ -8,5 +8,5 @@ before_install:
   - npm install jshint
 
 script:
-  - npm run test-creator-node
+  - npm run test
 

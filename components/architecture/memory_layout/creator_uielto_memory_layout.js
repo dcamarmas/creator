@@ -28,13 +28,35 @@
                   memory_layout:                  { type: Array,  required: true }
                 },
 
-    data:       function () {
-                  return {
-                    
-                  }
+    computed:   {
+                        memory_layout_length: function () { return this._props.memory_layout.length }
                 },
 
     methods:    {
+                    /*
+                     * Obtains the color depending on the memory segment
+                    */
+                    getVariant(name) {
+                        let segment = memory_layout[i - 1].name.split(" ").shift();
+
+                        switch (segment) {
+                            case "ktext":
+                            case "text":
+                                return "info";
+                            case "kdata":
+                            case "data":
+                                return "warning";
+                            case "stack":
+                                return "success";
+                        }
+
+                        return "info";
+
+                    },
+
+                    computeSize(i) {
+                        return this._props.memory_layout[i].value - this._props.memory_layout[i - 1].value
+                    }
 
                 },
 
@@ -45,44 +67,28 @@
                 '  <!-- Memory layout sketch -->' +
                 '  <div class="col-lg-6 col-sm-12 ">' +
                 '    <b-list-group class="memoryLayout">' +
-                '      <b-list-group horizontal>' +
+                '      <b-list-group horizontal v-for="i in memory_layout_length - 2" v-if="i%2 && computeSize(i) > 0">' +  // i goes 1..n bc Vue
+                        // TODO: get variant from getVariant()
                 '        <b-list-group-item variant="info" class="memoryLayout">' +
                 '          <br>' +
-                '          .text' +
+                '            .{{memory_layout[i - 1].name.split(" ").shift()}}' +
                 '          <br>' +
                 '          <br>' +
                 '        </b-list-group-item>' +
                 '        <b-list-group-item class="memoryLayout noBorder left">' +
-                '          <span class="h6" v-if="memory_layout.length > 0">' +
-                '            {{memory_layout[0].value}}' +
+                '          <span class="h6">' +
+                '            {{ memory_layout[i - 1].value }} ' +  // start
                 '          </span>' +
                 '          <br>' +
                 '          <br>' +
-                '          <span class="h6" v-if="memory_layout.length > 0">' +
-                '            {{memory_layout[1].value}}' +
-                '          </span>' +
-                '        </b-list-group-item>' +
-                '      </b-list-group>' +
-                '' +
-                '      <b-list-group horizontal>' +
-                '        <b-list-group-item variant="warning" class="memoryLayout">' +
-                '          <br>' +
-                '          .data' +
-                '          <br>' +
-                '          <br>' +
-                '        </b-list-group-item>' +
-                '        <b-list-group-item class="memoryLayout noBorder left">' +
-                '          <span class="h6" v-if="memory_layout.length > 0">' +
-                '            {{memory_layout[2].value}}' +
-                '          </span>' +
-                '          <br>' +
-                '          <br>' +
-                '          <span class="h6" v-if="memory_layout.length > 0">' +
-                '            {{memory_layout[3].value}}' +
+                '          <span class="h6">' +
+                '            {{ memory_layout[i].value }} ' +  // end
                 '          </span>' +
                 '        </b-list-group-item>' +
                 '      </b-list-group>' +
+                '    </b-list-group>' +
                 '' +
+                // stack
                 '      <b-list-group horizontal>' +
                 '        <b-list-group-item variant="secondary" class="memoryLayout">' +
                 '          <br>' +
@@ -98,22 +104,21 @@
                 '      <b-list-group horizontal>' +
                 '        <b-list-group-item variant="success" class="memoryLayout">' +
                 '          <br>' +
-                '          stack' +
+                '            .{{memory_layout[memory_layout_length - 2].name.split(" ").shift()}}' +
                 '          <br>' +
                 '          <br>' +
                 '        </b-list-group-item>' +
                 '        <b-list-group-item class="memoryLayout noBorder left">' +
-                '          <span class="h6" v-if="memory_layout.length > 0">' +
-                '            {{memory_layout[4].value}}' +
+                '          <span class="h6">' +
+                '            {{ memory_layout[memory_layout_length - 2].value }} ' +  // start
                 '          </span>' +
                 '          <br>' +
                 '          <br>' +
-                '          <span class="h6" v-if="memory_layout.length > 0">' +
-                '            {{memory_layout[5].value}}' +
+                '          <span class="h6">' +
+                '            {{ memory_layout[memory_layout_length - 2].value }} ' +  // end
                 '          </span>' +
                 '        </b-list-group-item>' +
                 '      </b-list-group>' +
-                '    </b-list-group>' +
                 '  </div>' +
                 '' +
                 '  <div class="col-lg-3 col-sm-12 "></div>' +

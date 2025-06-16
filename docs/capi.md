@@ -24,7 +24,7 @@
 * capi_bad_align ( addr, type ) &rarr; Checks if address is aligned for this architecture.
   ```javascript
   var isnotalign = capi_bad_align(rs1+inm, 'd');
-  if (isnotalign) { capi_raise('The memory must be align'); }
+  if (isnotalign) { capi_raise('The memory must be aligned'); }
   ```
 
 

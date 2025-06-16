@@ -160,6 +160,9 @@ function writeRegister ( value, indexComp, indexElem, register_type )
     return;
   }
 
+  // check if kernel to compute offset
+  let mem_offset = architecture.memory_layout.length == 10 ? 4 : 0;
+
   if ((architecture.components[indexComp].type == "int_registers") ||
       (architecture.components[indexComp].type == "ctrl_registers"))
   {
@@ -180,8 +183,9 @@ function writeRegister ( value, indexComp, indexElem, register_type )
       architecture.components[indexComp].elements[indexElem].value = bi_intToBigInt(value,10);
       creator_callstack_writeRegister(indexComp, indexElem);
 
+      // check if modified stack pointer
       if ((architecture.components[indexComp].elements[indexElem].properties.includes('stack_pointer') !== false) &&
-          (value != parseInt(architecture.memory_layout[4].value))) {
+          (value != parseInt(architecture.memory_layout[mem_offset + 4].value))) {
             writeStackLimit(parseInt(bi_intToBigInt(value,10)));
       }
 
@@ -209,7 +213,7 @@ function writeRegister ( value, indexComp, indexElem, register_type )
       creator_callstack_writeRegister(indexComp, indexElem);
 
       if ((architecture.components[indexComp].elements[indexElem].properties.includes('stack_pointer') !== false) &&
-          (value != parseInt(architecture.memory_layout[4].value))) {
+          (value != parseInt(architecture.memory_layout[mem_offset + 4].value))) {
             writeStackLimit(parseFloat(value));
       }
 

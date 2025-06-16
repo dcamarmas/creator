@@ -9,7 +9,7 @@ echo " ----------------"
 echo ""
 echo "  Requirements:"
 echo "  * terser, colors, yargs, readline-sync"
-npm install terser jshint colors yargs readline-sync
+npm install terser jshint colors yargs readline-sync source-map-support
 echo ""
 if [ $# -gt 0 ]; then
      set -x
@@ -31,7 +31,9 @@ cat js/creator_bigint.js \
     js/creator_registerfile.js \
     js/creator_memory.js \
     js/creator_compiler.js \
+    js/creator_interrupt.js \
     js/creator_executor.js \
+    js/creator_devices.js \
     \
     components/general/creator_uielto_loading.js \
     components/general/creator_uielto_supported_browser.js \
@@ -101,24 +103,26 @@ rm -fr js/creator_web.js
 
 
 echo "  * min.creator_node.js..."
-cat js/creator_bigint.js \
-    js/creator_ga.js \
-    js/creator_util.js \
-    \
-    js/creator_sentinel.js \
-    js/creator_definition_api.js \
-    js/creator_track_stack.js \
-    \
-    js/creator_registerfile.js \
-    js/creator_memory.js \
-    js/creator_compiler.js \
-    js/creator_executor.js \
-    \
-    js/creator_node.js > js/min.creator_node.js
+terser \
+  js/creator_bigint.js \
+  js/creator_ga.js \
+  js/creator_util.js \
+  js/creator_sentinel.js \
+  js/creator_definition_api.js \
+  js/creator_track_stack.js \
+  js/creator_registerfile.js \
+  js/creator_memory.js \
+  js/creator_compiler.js \
+  js/creator_executor.js \
+  js/creator_node.js \
+  js/creator_interrupt.js \
+  js/creator_devices.js \
+  --output js/min.creator_node.js \
+  --source-map "filename='min.creator_node.js.map',url='min.creator_node.js.map',root='..'" \
+
 
 
 # the end
 echo ""
 echo "  CREATOR packed (if no error was shown)."
 echo ""
-

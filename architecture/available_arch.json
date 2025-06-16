@@ -24,6 +24,18 @@
     "available": 1
   },
   {
+    "name": "RISC-V (interrupts)",
+    "alias": [""],
+    "file": "RISC_V_RV32IMFD_Interrupts",
+    "img": "./images/risc-v_logo.png",
+    "alt":"",
+    "id": "select_confRISCVI",
+    "examples":["default"],
+    "description": "RISC-V, with interrupts.",
+    "guide":"",
+    "available": 1
+  },
+  {
     "name": "New Architecture",
     "alias": [],
     "file": "new_arch",

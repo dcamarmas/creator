@@ -4,15 +4,25 @@
   "author": "dcamarma@inf.uc3m.es",
   "version": "5.0-β",
   "scripts": {
-    "test-creator-node": "./run_test.sh",
-    "build-creator-web": "./mk_min.sh",
-    "build-creator-node": "./mk_min.sh"
+    "test": "python test.py",
+    "build": "./mk_min.sh",
+    "serve": "python -m http.server 8080",
+    "lint": "eslint",
+    "format": "prettier"
   },
   "dependencies": {
     "colors": "^1.4.0",
     "jshint": "^2.13.6",
     "readline-sync": "^1.4.10",
+    "source-map-support": "^0.5.21",
     "terser": "^5.39.0",
     "yargs": "^17.7.2"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.19.0",
+    "eslint": "^9.19.0",
+    "eslint-plugin-vue": "^9.32.0",
+    "globals": "^15.14.0",
+    "prettier": "^3.5.2"
   }
 }

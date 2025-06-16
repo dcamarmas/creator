@@ -76,22 +76,12 @@
                     }
 
                     //Load architecture
-                    architecture = register_value_deserialize(aux_architecture);
+                    load_arch_select(aux_architecture);
+
                     uielto_preload_architecture.data.architecture_name = architecture.arch_conf[0].value;
                     app._data.architecture = architecture;
                     app._data.architecture_name = architecture.arch_conf[0].value;
-
-                    //Generate architecture hash table
-                    architecture_hash = [];
-                    for (i = 0; i < architecture.components.length; i++)
-                    {
-                      architecture_hash.push({name: architecture.components[i].name, index: i});
-                      app._data.architecture_hash = architecture_hash; 
-                    }
-
-                    //Define stack limits
-                    backup_stack_address = architecture.memory_layout[4].value;
-                    backup_data_address  = architecture.memory_layout[3].value;
+                    app._data.architecture_hash = architecture_hash;
 
                     //Reset execution
                     instructions = [];

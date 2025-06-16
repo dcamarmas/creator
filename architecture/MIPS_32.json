@@ -3379,7 +3379,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "var isnotalign = capi_bad_align(base+off, 'd');\n if (isnotalign) {  capi_raise('The memory must be align'); }\n var val1 = capi_mem_read(base+off, 'w');\n var val2 = capi_mem_read(base+off+4, 'w', ft_name);\n var buf = new ArrayBuffer(8);\n var arr = (new Uint32Array(buf));\narr[1] = val1;\n arr[0] = val2;\n ft = (new Float64Array(buf))[0];"
+      "definition": "var isnotalign = capi_bad_align(base+off, 'd');\n if (isnotalign) {  capi_raise('The memory must be aligned'); }\n var val1 = capi_mem_read(base+off, 'w');\n var val2 = capi_mem_read(base+off+4, 'w', ft_name);\n var buf = new ArrayBuffer(8);\n var arr = (new Uint32Array(buf));\narr[1] = val1;\n arr[0] = val2;\n ft = (new Float64Array(buf))[0];"
     },
     {
       "name": "lh",
