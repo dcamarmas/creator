@@ -1,7 +1,7 @@
 
 
-[E08] Error: Main label `main` not found
-   ╭─[assembly:1:1]
+[E12] Error: Main label `main` not found
+   ╭─[ assembly:1:1 ]
    │
  1 │ 
    │ ┬  

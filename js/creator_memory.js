@@ -32,7 +32,7 @@ var word_size_bytes = word_size_bits / 8 ;
 
 var main_memory = [] ;
     //  [
-    //    addr: { addr: addr, bin: "00", def_bin: "00", tag: null, data_type: ref <main_memory_datatypes>, reset: true, break: false },
+    //    addr: { addr: addr, bin: "00", def_bin: "00", tag: [], data_type: ref <main_memory_datatypes>, reset: true, break: false },
     //    ...
     //  ]
 
@@ -84,7 +84,7 @@ function main_memory_packs_forav ( addr, value )
                  addr: addr,
                  bin: value,
                  def_bin: "00",
-                 tag: null,
+                 tag: [],
                  data_type: null,
                  reset: true,
                  break: false
@@ -160,7 +160,7 @@ function main_memory_zerofill ( addr, size )
                addr: 0,
                bin: '00',
                def_bin: "00",
-               tag: null,
+               tag: [],
                data_type: null,
                reset: true,
                break: false
@@ -408,20 +408,22 @@ function main_memory_write_bydatatype ( addr, value, type, value_human )
                 case 'asciiz':
                 case 'ascii_not_null_end':
                 case 'ascii':
-                     var ch   = 0 ;
-                     var ch_h = '';
-                     for (var i=0; i<value.length; i++) {
-                          ch = value.charCodeAt(i);
-                          ch_h = value.charAt(i);
-                          main_memory_write_nbytes(addr+i, ch.toString(16), 1, type) ;
-                          main_memory_datatypes_update_or_create(addr+i, ch_h, 1, 'char');
-                          size++ ;
+                     bytes = new Uint8Array(4);
+                     encoder = new TextEncoder;
+                     for (const ch_h of value) {
+                          const n = encoder.encodeInto(ch_h, bytes).written;
+                          ch = ""
+                          for (let i = 0; i < n; i++) {
+                              ch += bytes[i].toString(16).padStart(2, "0");
+                          }
+                          main_memory_write_nbytes(addr, ch, n, type) ;
+                          main_memory_datatypes_update_or_create(addr, ch_h, n, 'char');
+                          addr += n
                      }
 
                      if ( (type != 'ascii') && (type != 'ascii_not_null_end') ) {
-                           main_memory_write_nbytes(addr+value.length, "00", 1, type) ;
-                           main_memory_datatypes_update_or_create(addr+value.length, "0", 1, 'char');
-                           size++ ;
+                           main_memory_write_nbytes(addr, "00", 1, type) ;
+                           main_memory_datatypes_update_or_create(addr, "0", 1, 'char');
                      }
                      break;
 
@@ -575,7 +577,7 @@ function creator_memory_findaddress_bytag ( tag )
         var addrs = main_memory_get_addresses() ;
         for (var i=0; i<addrs.length; i++)
         {
-             if (main_memory[addrs[i]].tag == tag)
+             if (main_memory[addrs[i]].tag.includes(tag))
              {
                  ret.exit  = 1 ;
                  ret.value = parseInt(addrs[i]) ;
@@ -624,7 +626,7 @@ function main_memory_storedata ( data_address, value, size, dataLabel, value_hum
         main_memory_write_bydatatype(algn.new_addr, value, type, value_human) ;
         main_memory_zerofill((algn.new_addr + size), (algn.new_size - size)) ;
 
-        if (dataLabel != '') {
+        if (dataLabel.length > 0) {
             main_memory_write_tag(algn.new_addr, dataLabel) ;
         }
 
@@ -689,7 +691,7 @@ function creator_memory_updaterow ( addr )
         Vue.set(app._data.main_memory, addr_base, elto) ;
 
         for (var i=0; i<word_size_bytes; i++) {
-             elto.hex[i] = { byte: "00", tag: null } ;
+             elto.hex[i] = { byte: "00", tag: [] } ;
         }
     }
 
@@ -712,10 +714,6 @@ function creator_memory_updaterow ( addr )
 
          elto.hex[i].byte = v1.bin;
          elto.hex[i].tag  = v1.tag;
-         if (v1.tag == "") {
-             elto.hex[i].tag  = null;
-         }
-
          elto.hex_packed += v1.bin ;
     }
 
@@ -893,10 +891,6 @@ function creator_memory_data_compiler ( data_address, value, size, dataLabel, De
             return ret ;
         }
 
-        if (dataLabel != null) {
-            data_tag.push({tag: dataLabel, addr: data_address});
-        }
-
         ret.msg = '' ;
         ret.data_address = main_memory_storedata(data_address, value, size, dataLabel, DefValue, DefValue, type, skip_update_ui) ;
 
@@ -911,10 +905,6 @@ function creator_insert_instruction ( auxAddr, value, def_value, hide, hex, fill
 
 function creator_memory_storestring ( string, string_length, data_address, label, type, skip_update_ui)
 {
-        if (label != null) {
-            data_tag.push({tag: label, addr: data_address});
-        }
-
         return main_memory_storedata(data_address, string, string_length, label, string, string, type, skip_update_ui);
 }
 
