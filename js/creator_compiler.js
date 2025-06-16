@@ -77,11 +77,10 @@ var example_available = [];
 /*Instructions memory*/
 var instructions = [];
 var instructions_tag = [];
-var tag_instructions = {};
+var addr_label = {};
 var instructions_binary = [];
 /*Data memory*/
 var data = [];
-var data_tag = [];
 /*Binary*/
 var code_binary = '';
 var update_binary = '';
@@ -135,25 +134,10 @@ function assembly_compiler(library)
         creator_ga('compile', 'compile.assembly');
         
         instructions = [];
-        tag_instructions = {};
-        data_tag = [];
         creator_memory_clear() ;
         extern = [];
         data = [];
         execution_init = 1;
-
-
-        let library_offset = 0;
-        const library_instructions = update_binary.instructions_binary?.length ?? 0;
-        for(var i = 0; i < library_instructions; i++){
-          const instruction = update_binary.instructions_binary[i];
-          instruction.hide = !(i === 0 || instruction.globl === true);
-          if(instruction.globl !== true){
-              instruction.Label = "";
-          }
-          instructions.push(instruction);
-          library_offset = parseInt(instruction.Address, 16) + Math.ceil(instruction.loaded.length / 8);
-        }
 
         // Convert the library labels to the format used by the compiler,
         // filtering out non-global labels
@@ -165,6 +149,24 @@ function assembly_compiler(library)
             {},
         ) ?? {};
         const labels_json = JSON.stringify(library_labels);
+
+
+        const text_address = parseInt(architecture.memory_layout[0].value);
+        let addr = text_address;
+        const library_instructions = update_binary.instructions_binary?.length ?? 0;
+        for(var i = 0; i < library_instructions; i++){
+          const instruction = update_binary.instructions_binary[i];
+          let label = instruction.Label;
+          if (typeof(label) === "string") {
+              label = label === ""? [] : [label];
+          }
+          // Remove non-global labels
+          instruction.Label = label.filter(x => x in library_labels)
+          instruction.hide = !(i === 0 || instruction.Label.length > 0);
+          instructions.push(instruction);
+          addr = parseInt(instruction.Address, 16) + Math.ceil(instruction.loaded.length / 8);
+        }
+        library_offset = addr - text_address;
 
         /*Allocation of memory addresses*/
         architecture.memory_layout[4].value = backup_stack_address;
@@ -203,7 +205,8 @@ function assembly_compiler(library)
         }
 
         // Compile code
-        let label_table;
+        let label_table = {};
+        addr_label = {};
         try {
             // Verify an architecture has been loaded
             if (arch === undefined || arch === null) {
@@ -220,7 +223,7 @@ function assembly_compiler(library)
             // Extract instructions
             instructions.push(...compiled.instructions.map(x => ({
                 Address: x.address,
-                Label: x.labels[0] ?? "",
+                Label: x.labels,
                 loaded: x.loaded,
                 binary: x.binary,
                 user: x.user,
@@ -245,13 +248,14 @@ function assembly_compiler(library)
                 user: null,
             }));
             // Extract label table for library
-            label_table = compiled.label_table.reduce(
-                (tbl, x) => {
-                    tbl[x.name] = { address: x.address, global: x.global };
-                    return tbl
-                },
-                {},
-            );
+            for (const label of compiled.label_table) {
+                const name = label.name;
+                const addr = label.address;
+                const global = label.global;
+                label_table[name] = { address: addr, global: global };
+                addr_label[addr] ??= [];
+                addr_label[addr].push(name);
+            };
             // Extract data elements and load them on memory
             const data_mem = compiled.data;
             for (var i = 0; i < data_mem.length; i++) {
@@ -264,7 +268,7 @@ function assembly_compiler(library)
                             addr,
                             data.value(false),
                             size,
-                            data.labels()[0],
+                            data.labels(),
                             data.value(true),
                             data.type(),
                             true,
@@ -274,7 +278,7 @@ function assembly_compiler(library)
                         creator_memory_storestring(
                             data.value(false),
                             size, addr,
-                            data.labels()[0],
+                            data.labels(),
                             data.type(),
                             true,
                         );
@@ -282,7 +286,7 @@ function assembly_compiler(library)
                     case wasm.DataCategoryJS.Space:
                         creator_memory_storestring(
                             size, size, addr,
-                            data.labels()[0],
+                            data.labels(),
                             data.type(),
                             true,
                         );
@@ -310,7 +314,6 @@ function assembly_compiler(library)
           const auxAddr = parseInt(instruction.Address, 16);
           const label   = instruction.Label;
           const hide    = instruction.hide;
-
           creator_insert_instruction(auxAddr, "********", "********", hide, hex, "**", label, true);
         }
 
@@ -325,13 +328,7 @@ function assembly_compiler(library)
 
         /*Save binary*/
         for (const instruction of instructions_binary) {
-          if (instruction.Label != "") {
-            if (label_table[instruction.Label].global === true) {
-              instruction.globl = true;
-            } else {
-              instruction.Label = "";
-            }
-          }
+            instruction.Label = instruction.Label.filter(x => label_table[x].global === true)
         }
 
         /*Save tags*/

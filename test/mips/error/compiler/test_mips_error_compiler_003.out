@@ -1,7 +1,7 @@
 
 
-[E06] Error: Incorrect instruction syntax
-    ╭─[assembly:12:8]
+[E08] Error: Incorrect instruction syntax
+    ╭─[ assembly:12:8 ]
     │
  12 │    add 25, $t1, 12
     │        ─────┬─────  
@@ -13,8 +13,8 @@
 ────╯
 
 The syntax `add $reg3,$reg2,$reg1` failed with the following reason:
-Error: found "25" but expected "$"
-    ╭─[assembly:12:8]
+Error: found `integer (25)` but expected `$`
+    ╭─[ assembly:12:8 ]
     │
  12 │    add 25, $t1, 12
     │        ─┬  
@@ -22,8 +22,8 @@ Error: found "25" but expected "$"
 ────╯
 
 The syntax `add $rs,$rt,inm` failed with the following reason:
-Error: found "25" but expected "$"
-    ╭─[assembly:12:8]
+Error: found `integer (25)` but expected `$`
+    ╭─[ assembly:12:8 ]
     │
  12 │    add 25, $t1, 12
     │        ─┬  
