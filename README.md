@@ -12,7 +12,7 @@
 
 |                              | URL                                             | 
 |:----------------------------:|:------------------------------------------------| 
-| Creator                      | https://creatorsim.github.io/creator/           |
+| CREATOR                      | https://creatorsim.github.io/creator/           |
 | Documentation                | https://creatorsim.github.io/                   | 
 | Examples included            | :point_right: [RISC-V](docs/examples.md#point_right---risc-v) :point_right: [MIPS-32](docs/examples.md#point_right---mips) | 
 
@@ -180,11 +180,25 @@
   * :technologist: José Antonio Verde Jiménez (Real hardware integration)
   * :technologist: Álvaro Guerrero Espinosa (New compiler)
   * :technologist: Luis Daniel Casais Mezquida (Interrupts, kernel support, and devices)
+  * :technologist: Elisa Utrilla Arroyo (Arduino integration for creator)
 
 
 ## ChangeLog
 
 <details open>
+<summary>:atom: 5.0.x:</summary>
+
+  - [x] New functionality:
+     * New compiler
+     * Interrupts, devices, and control registers initial support
+     * Initial support for arduino integration
+  - [x] User Interface:
+     * Several improvements and minor bugs fixed
+
+</details>
+
+
+<details>
 <summary>:atom: 4.1.x:</summary>
 
   - [x] New functionality:
@@ -194,8 +208,6 @@
      * Several improvements and minor bugs fixed
 
 </details>
-
-
 
 <details>
 <summary>:atom: 4.0.x:</summary>
@@ -270,7 +282,7 @@
       * ./creator.sh -a ./architecture/MIPS-32.json -s ./examples/MIPS/example2.txt -o min > output.txt
     * Example: compare the final state and the state saved on 'output.txt' file:
       * ./creator.sh -a ./architecture/MIPS-32.json -s ./examples/MIPS/example2.txt -o min -r output.txt
-  - [x] Creator now accepts three GET values:
+  - [x] CREATOR now accepts three GET values:
     * Preload the MIPS architecture:
       * https://creatorsim.github.io/creator/?architecture=MIPS-32
     * Preload example 'e3' from example set 'uc3m-ec':
@@ -278,3 +290,4 @@
   - [x] Bootstrap-vue upgraded up to v2.15.0
 
 </details>
+
