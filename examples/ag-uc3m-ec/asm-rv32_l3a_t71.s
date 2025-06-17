@@ -8,8 +8,8 @@
          #  int i, s;
          #  s=i=0;
 
-         li t0 0
-         li a0 0
+         li t0, 0
+         li a0, 0
 
          #  while (i < 10) 
          #  {
@@ -21,7 +21,7 @@
  while1:
          bgt t0, t2, fin1
          add a0, a0, t0
-         add t0, t0, 1
+         addi t0, t0, 1
          j while1      # beq x0 x0 while1
- fin1: 
+ fin1:   nop
 

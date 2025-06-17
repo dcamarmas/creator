@@ -18,7 +18,7 @@
                        help:    'green',
                        warn:    'yellow',
                        success: 'cyan',
-                       error:   'bgRed'
+                       error:   'red'
                      } ;
    var gray_theme  = {
                        info:    'white',
@@ -162,7 +162,7 @@
            hdr = 'FileName' ;
 	         show_result(output_format, file_names[i], file_names[i], '', true) ;
 
-           ret = one_file(argv.architecture, argv.library, file_names[i], limit_n_ins, argv.result) ;
+           ret = one_file(argv.architecture, argv.library, file_names[i], limit_n_ins, argv.result, argv.color) ;
 
            // info: show possible errors
            for (var j=0; j<ret.stages.length; j++)
@@ -296,7 +296,7 @@
        }
    }
 
-   function one_file ( argv_architecture, argv_library, argv_assembly, limit_n_ins, argv_result )
+   function one_file ( argv_architecture, argv_library, argv_assembly, limit_n_ins, argv_result, enable_color)
    {
        var msg1 = '' ;
        var ret  = null ;
@@ -351,12 +351,9 @@
        {
            var architecture = fs.readFileSync(argv_architecture, 'utf8') ;
            var assembly = fs.readFileSync(argv_assembly, 'utf8') ;
-           ret = creator.assembly_compile(assembly) ;
+           ret = creator.assembly_compile(assembly, enable_color) ;
            if (ret.status !== "ok") {
-                                     msg1  = "\nError at line " + (ret.line+1) ;
-               if (ret.token !== '') msg1 += " (" + ret.token + ")" ;
-                                     msg1 += ":\n" + ret.msg ;
-               throw msg1 ;
+               throw "\n" + ret.msg ;
            }
 
            ret1.Compile = { 'status': 'ok', 'msg': "Code '" + argv.s + "' compiled successfully." } ;
