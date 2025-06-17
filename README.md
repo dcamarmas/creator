@@ -1,37 +1,50 @@
-# creatorVI
+# creatorV(I)
 
 The next evolution of [CREATOR](https://github.com/creatorsim/creator/).
 
-## Recommended IDE Setup
-
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
-
-## Type Support for `.vue` Imports in TS
-
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
 
 ## Project Setup
 
-This project uses [Bun](https://bun.sh).
+This project uses [Bun](https://bun.sh) (for Web) and [Deno](https://deno.com/) (for CLI).
 
 ```sh
 bun install
 ```
 
-### Compile and Hot-Reload for Development
+> [!IMPORTANT]
+> You must build the compiler (assembler) before executing for the first time.  
+> See [compiler README](src/core/compiler/README.md).
 
+
+### Compile Web and Hot-Reload for Development (with [Vite](https://vite.dev/))
 ```sh
-bun dev
+bun dev:web
 ```
 
-### Type-Check, Compile and Minify for Production
-
+### Run CLI and Hot-Reload for Development (with [Deno](https://deno.com/))
 ```sh
-bun run build
+bun dev:cli
+```
+
+> [!NOTE]
+> Remember to pass the extra arguments, e.g:
+> ```sh
+> bun dev:cli -a ./architecture/RISCV/RV32IMFD.yml -I -c creatorconfig.yml
+> ```
+
+### Building Web version for production
+- With type-checking:
+  ```sh
+  bun run build:web
+  ```
+- Without type-checking:
+  ```sh
+  bun run build-only
+  ```
+
+### Building CLI version
+```sh
+bun build:cli
 ```
 
 ### Lint with [ESLint](https://eslint.org/)
@@ -40,34 +53,65 @@ bun run build
 bun lint
 ```
 
-### Run Unit Tests (with [Mocha](https://mochajs.org/))
+### Format with [Prettier](https://prettier.io/)
 
 ```sh
-bun test
+bun format
 ```
 
-### Run Architecture Tests (for RISC-V)
+### Run Tests
+- Unit tests (with [Deno](https://deno.com/))
+  ```sh
+  deno run test
+  ```
+- Architecture Tests for RISC-V (with [Python 3](https://www.python.org/))
+  ```sh
+  bun simtest --arch riscv
+  ```
 
-```sh
-bun run simtest -- --arch riscv
-```
 
+### VS Code Setup
+The recommended extensions are:
+- [`Vue.volar`](https://marketplace.visualstudio.com/items?itemName=Vue.volar)
+- [`denoland.vscode-deno`](https://marketplace.visualstudio.com/items?itemName=denoland.vscode-deno)
+- [`dbaeumer.vscode-eslint`](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint)
+- [`esbenp.prettier-vscode`](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
 
-## Debugging w/ VS Code
-We'll need to launch the application in DEV mode, and then attach the VS Code debugger to the Chrome instance.
+#### Debugging
+We provide some example [launch configurations](https://code.visualstudio.com/docs/debugtest/debugging-configuration#_launch-configurations):
 
-An example [launch configuration](https://code.visualstudio.com/docs/debugtest/debugging-configuration#_launch-configurations) is:
+##### Web
+We'll need to [launch the application in DEV mode](#compile-and-hot-reload-for-development), and then attach the VS Code debugger to the Chrome instance.
 ```json
 {
-  "version": "0.2.0",
-  "configurations": [
-    {
-      "type": "chrome",
-      "request": "launch",
-      "name": "Debug Frontend",
-      "url": "http://localhost:5173",
-      "webRoot": "${workspaceFolder}"
-    }
-  ]
+    "type": "chrome",
+    "request": "launch",
+    "name": "Debug Web",
+    "url": "http://localhost:5173",
+    "webRoot": "${workspaceFolder}"
+}
+```
+
+##### CLI
+```json
+{
+    "type": "node",
+    "request": "launch",
+    "name": "Debug CLI",
+    "program": "${workspaceFolder}/src/cli/creator6.mts",
+    "runtimeExecutable": "deno",
+    "console": "integratedTerminal",
+    "runtimeArgs": ["-A", "--unstable-node-globals", "--inspect-brk"],
+    "experimentalNetworking": "off",
+    "args": [
+        "-a",
+        "./architecture/RISCV/RV32IMFD.yml",
+        "-s",
+        "./tests/arch/riscv/correct/examples/test_riscv_example_011.s",
+        "-c",
+        "creatorconfig.yml",
+        "-I"
+    ],
+    "attachSimplePort": 9229
 }
 ```
