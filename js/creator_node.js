@@ -19,6 +19,7 @@
  *
  */
 
+const wasm = require('../compiler-pkg/nodejs/creator_compiler.js')
 
 // load components
 
@@ -26,6 +27,7 @@ function load_architecture ( arch_str )
 {
     var ret = {} ;
 
+    arch = wasm.ArchitectureJS.from_json(arch_str);
     arch_obj = JSON.parse(arch_str) ;
     ret = load_arch_select(arch_obj) ;
 
@@ -47,22 +49,16 @@ function load_library ( lib_str )
 
 // compilation
 
-function assembly_compile ( code )
+function assembly_compile ( code, enable_color )
 {
     var ret = {} ;
 
     code_assembly = code ;
-    ret = assembly_compiler() ;
+    color = enable_color? wasm.Color.Ansi : wasm.Color.Off;
+    ret = assembly_compiler(false) ;
     switch (ret.status)
     {
         case "error":
-         var code_assembly_segment = code_assembly.split('\n') ;
-         ret.msg += "\n\n" ;
-         if (ret.line > 0)
-             ret.msg += "  " + (ret.line+0) + " " + code_assembly_segment[ret.line - 1] + "\n" ;
-             ret.msg += "->" + (ret.line+1) + " " + code_assembly_segment[ret.line] + "\n" ;
-         if (ret.line < code_assembly_segment.length - 1)
-             ret.msg += "  " + (ret.line+2) + " " + code_assembly_segment[ret.line + 1] + "\n" ;
              break;
 
         case "warning":

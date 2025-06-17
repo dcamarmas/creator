@@ -14,5 +14,5 @@ main:
 
 then_1: move $t1, $t2
 
- fin_1: # ...
+ fin_1: nop # ...
 

@@ -63,6 +63,11 @@
                     //Load architecture
                     var aux_architecture = cfg;
                     architecture = register_value_deserialize(aux_architecture);
+                    try {
+                      arch = wasm.ArchitectureJS.from_json(JSON.stringify(architecture));
+                    } catch (error) {
+                      console_log("Error loading architecture: " + error);
+                    }
                     architecture_json = "new_arch";
                     uielto_preload_architecture.data.architecture_name = architecture.arch_conf[0].value;
                     app._data.architecture = architecture; 
