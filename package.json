@@ -10,7 +10,7 @@
     "build-only": "vite build",
     "type-check": "vue-tsc --build",
     "build:cli": "deno compile --no-check -A --include ./src/core/compiler/deno ./src/cli/creator6.mts",
-    "lint": "eslint . --fix",
+    "lint": "eslint src/",
     "format": "prettier --write src/",
     "simtest": "python ./tests/arch_tests.py",
     "test": "deno test --allow-read --unstable-node-globals --coverage"
