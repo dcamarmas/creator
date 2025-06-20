@@ -28,7 +28,7 @@ import {
   reset,
   newArchitectureLoad,
 } from "@/core/core.mjs"
-import { show_notification } from "@/web/utils.mjs"
+import { show_notification, storeBackup } from "@/web/utils.mjs"
 
 export default {
   props: {
@@ -88,6 +88,8 @@ export default {
       reset()
 
       show_notification("Architecture edited correctly", "success")
+
+      storeBackup()
     },
 
     handleReady({ view, _state }) {

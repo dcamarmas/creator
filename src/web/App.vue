@@ -32,7 +32,6 @@ import arch_available from "/architecture/available_arch.json" // package info
 import {
   notifications,
   show_notification,
-  backup_modal,
   loadArchitecture,
   loadExample,
 } from "./utils.mjs"
@@ -320,8 +319,6 @@ export default {
    * Mounted vue instance *
    ************************/
   mounted() {
-    backup_modal(this)
-
     // Preload following URL params
     this.loadFromURI()
     // const url_hash = creator_preload_get2hash(window.location)
@@ -565,7 +562,7 @@ export default {
     />
 
     <!-- Backup modal -->
-    <UIeltoBackup id="copy" />
+    <UIeltoBackup id="copy" @load-architecture="creator_mode = 'assembly'" />
   </header>
 
   <!----------------------->

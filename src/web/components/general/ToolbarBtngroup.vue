@@ -31,7 +31,11 @@ import {
 import { instructions } from "@/core/compiler/compiler.mjs"
 import { step, packExecute } from "@/core/executor/executor.mjs"
 import { creator_ga } from "@/core/utils/creator_ga.mjs"
-import { show_notification, loadArchitecture } from "@/web/utils.mjs"
+import {
+  show_notification,
+  loadArchitecture,
+  storeBackup
+} from "@/web/utils.mjs"
 
 
 export default {
@@ -135,33 +139,7 @@ export default {
         // }
 
         // fast transition <any> => <any> - "architecture"
-        // this.$root.creator_mode = e
         this.$root.creator_mode = e;
-
-        //Assembly view => Start codemirror
-        // if (e === "assembly") {
-        //   setTimeout(function () {
-        //     assembly_codemirror_start()
-        //     if (codemirrorHistory !== null) {
-        //       textarea_assembly_editor.setHistory(codemirrorHistory)
-        //       textarea_assembly_editor.undo()
-        //     }
-        //     textarea_assembly_editor.setValue(code_assembly)
-        //     if (update_binary !== "") {
-        //       $("#divAssembly").attr("class", "col-lg-10 col-sm-12")
-        //       $("#divTags").attr("class", "col-lg-2 col-sm-12")
-        //       $("#divTags").show()
-        //     }
-        //   }, 50)
-        // }
-
-        //Architecture or simulator view => Close codemirror
-        // if (textarea_assembly_editor !== null && e !== "assembly") {
-        //   app._data.assembly_code = textarea_assembly_editor.getValue()
-        //   code_assembly = textarea_assembly_editor.getValue()
-        //   codemirrorHistory = textarea_assembly_editor.getHistory()
-        //   textarea_assembly_editor.toTextArea()
-        // }
 
         //Close all toast and refresh
         // this.$root.$bvToast.hide()
@@ -211,40 +189,11 @@ export default {
         // tokenIndex = 0 //TODO: change to token_index in all files
         // uielto_toolbar_btngroup.methods.reset(true)
 
-        // TODO: Save a backup in the cache memory
-        // if (typeof Storage !== "undefined") {
-        //   const aux_object = jQuery.extend(true, {}, architecture)
-        //   const aux_architecture = register_value_serialize(aux_object)
-        //   const aux_arch = JSON.stringify(aux_architecture, null, 2)
-
-        //   const date = new Date()
-        //   const auxDate =
-        //     date.getHours() +
-        //     ":" +
-        //     date.getMinutes() +
-        //     ":" +
-        //     date.getSeconds() +
-        //     " - " +
-        //     date.getDate() +
-        //     "/" +
-        //     (date.getMonth() + 1) +
-        //     "/" +
-        //     date.getFullYear()
-
-        //   localStorage.setItem(
-        //     "backup_arch_name",
-        //     app._data.architecture_name,
-        //   )
-        //   localStorage.setItem("backup_arch", aux_arch)
-        //   localStorage.setItem("backup_asm", code_assembly)
-        //   localStorage.setItem("backup_date", auxDate)
-        // }
-
-        //show error/warning
-
         //Change buttons status
         this.compiling = false;
 
+
+        // show error/warning
         switch (ret.type) {
           case "error":
             this.compile_error(ret.msg);
@@ -267,7 +216,7 @@ export default {
       // Close all toast
       // app.$bvToast.hide()
 
-      // enable execution buttons
+      storeBackup()
     },
 
     // Show error message in the compilation
