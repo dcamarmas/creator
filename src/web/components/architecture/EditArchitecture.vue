@@ -21,36 +21,24 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 <script>
 import Codemirror from "vue-codemirror6"
 import { EditorView } from "codemirror"
-import { json } from "@codemirror/lang-json"
 
 import {
   architecture,
   architecture_hash,
   reset,
+  newArchitectureLoad,
 } from "@/core/core.mjs"
-import { show_notification, loadArchitecture } from "@/web/utils.mjs"
+import { show_notification } from "@/web/utils.mjs"
 
 export default {
-  setup() {
-    const lang = json()
-    // fixed height editor
-    const extensions = [
-      EditorView.theme({
-        "&": { height: "650px" },
-        ".cm-scroller": { overflow: "auto" },
-      }),
-    ]
-
-    return { lang, extensions }
-  },
-  components: {
-    Codemirror,
-  },
-
   props: {
     id: { type: String, required: true },
     arch_code: { type: String, required: true },
     dark: { type: Boolean, required: true },
+  },
+
+  components: {
+    Codemirror,
   },
 
   computed: {
@@ -63,16 +51,28 @@ export default {
         this.$root.arch_code = value
       },
     },
+
+    extensions() {
+      return [
+        // basicSetup covers most of the required extensions
+
+        // fixed height editor
+        EditorView.theme({
+          "&": { height: "650px" },
+          ".cm-scroller": { overflow: "auto" },
+        }),
+      ]
+    },
   },
 
   methods: {
     // save edited architecture
     arch_edit_save() {
       try {
-        loadArchitecture(JSON.parse(this.architecture_value))
+        newArchitectureLoad(this.architecture_value)
       } catch {
         show_notification(
-          "Architecture not edited. JSON format is incorrect",
+          "Architecture not edited. Architecture format is incorrect",
           "danger",
         )
         return
@@ -120,7 +120,6 @@ export default {
       :extensions="extensions"
       @ready="handleReady"
     />
-    <!-- :lang="this.lang" -->
   </b-modal>
 </template>
 
