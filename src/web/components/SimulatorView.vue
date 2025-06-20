@@ -153,6 +153,7 @@ export default {
               <!-- Memory view-->
               <Memory
                 v-if="data_mode === 'memory'"
+                ref="memory"
                 id="memory"
                 :callee_subrutine="callee_subrutine"
                 :caller_subrutine="caller_subrutine"
