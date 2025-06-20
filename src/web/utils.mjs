@@ -140,16 +140,7 @@ export function loadArchitecture(arch, root = document.app) {
         newArchitectureLoad(cfg)
 
         // store code to be edited
-        // TODO: change this when migration w/ new core, we'll use YAMLs
-        root.arch_code = JSON.stringify(
-            cfg,
-            // serialize BigInts
-            (_key, value) =>
-            typeof value === "bigint"
-                ? Number(value) // FIXME: this is BAD
-                : value, // return everything else unchanged
-            2,
-        )
+        root.arch_code = cfg
 
         //Refresh UI
         show_notification(

@@ -188,7 +188,7 @@ export default {
 
     <b-list-group>
       <b-button-group
-        v-for="example in available_sets[selected_set].examples"
+        v-for="example in available_sets[selected_set]?.examples"
         :key="example.id"
         size="sm"
         class="p-1"

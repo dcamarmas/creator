@@ -1781,7 +1781,6 @@
   "workspace": {
     "packageJson": {
       "dependencies": [
-        "npm:@codemirror/lang-json@^6.0.1",
         "npm:@codemirror/language@^6.11.0",
         "npm:@codemirror/legacy-modes@^6.5.1",
         "npm:@fortawesome/fontawesome-svg-core@^6.7.2",
