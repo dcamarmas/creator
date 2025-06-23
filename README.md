@@ -76,6 +76,7 @@ The recommended extensions are:
 - [`denoland.vscode-deno`](https://marketplace.visualstudio.com/items?itemName=denoland.vscode-deno)
 - [`dbaeumer.vscode-eslint`](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint)
 - [`esbenp.prettier-vscode`](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
+- [`redhat.vscode-yaml`](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-yaml)
 
 #### Debugging
 We provide some example [launch configurations](https://code.visualstudio.com/docs/debugtest/debugging-configuration#_launch-configurations):
