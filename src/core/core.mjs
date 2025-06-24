@@ -95,6 +95,7 @@ export let architecture = {
     instructions: [],
     directives: [],
 };
+export let newArchitecture;
 
 export let app;
 
@@ -146,9 +147,9 @@ export const stats = [
 
 export let arch;
 export const ARCHITECTURE_VERSION = "2.0";
-export let ENDIANNESS;
 export let WORDSIZE;
-export let BYTESIZE = 8;
+export let BYTESIZE;
+export let ENDIANNESSARR = [];
 export let MAXNWORDS;
 export let REGISTERS;
 export let REGISTERS_BACKUP = [];
@@ -199,12 +200,24 @@ function load_arch_select(cfg) {
 
     const auxArchitecture = cfg;
     architecture = register_value_deserialize(auxArchitecture);
-    ENDIANNESS = architecture.arch_conf[3].value;
-    WORDSIZE = architecture.arch_conf[1].value;
-    REGISTERS = architecture.components;
+    WORDSIZE = newArchitecture.arch_conf.WordSize;
+    BYTESIZE = newArchitecture.arch_conf.ByteSize;
+    const endianness = newArchitecture.arch_conf.Endianness;
 
-    // Create deep copy backup of REGISTERS
-    REGISTERS_BACKUP = JSON.parse(JSON.stringify(REGISTERS));
+    const bytesPerWord = WORDSIZE / BYTESIZE;
+
+    if (endianness === "big_endian") {
+        ENDIANNESSARR = Array.from({ length: bytesPerWord }, (_, i) => i);
+    } else if (endianness === "little_endian") {
+        ENDIANNESSARR = Array.from(
+            { length: bytesPerWord },
+            (_, i) => bytesPerWord - 1 - i,
+        );
+    } else if (Array.isArray(endianness)) {
+        ENDIANNESSARR = endianness;
+    }
+
+    REGISTERS = architecture.components;
 
     architecture_hash = [];
     for (let i = 0; i < REGISTERS.length; i++) {
@@ -217,21 +230,38 @@ function load_arch_select(cfg) {
     backup_stack_address = architecture.memory_layout[4].value;
     backup_data_address = architecture.memory_layout[3].value;
 
-    // Initialize main memory
+    // Initialize main memory with architecture layout support
 
-    // calculate the total size of the memory
-    // get the smallest memory address in the memory layout
+    // Calculate the total size of the memory
+    // Get the smallest memory address in the memory layout
     const minMemoryAddress = Math.min(
         ...architecture.memory_layout.map(el => parseInt(el.value, 16)),
     );
-    // get the largest memory address in the memory layout
+    // Get the largest memory address in the memory layout
     const maxMemoryAddress = Math.max(
         ...architecture.memory_layout.map(el => parseInt(el.value, 16)),
     );
-    // calculate the total size
+    // Calculate the total size
     const totalMemorySize = maxMemoryAddress - minMemoryAddress + 1;
 
-    main_memory = new Memory(totalMemorySize, BYTESIZE, WORDSIZE / BYTESIZE);
+    // Create memory with layout support
+    main_memory = new Memory({
+        sizeInBytes: totalMemorySize,
+        bitsPerByte: BYTESIZE,
+        wordSize: WORDSIZE / BYTESIZE,
+        memoryLayout: architecture.memory_layout,
+        baseAddress: BigInt(minMemoryAddress),
+        endianness: ENDIANNESSARR,
+    });
+
+    // Initialize stack tracker and other related components
+    // This must happen before creating the register backup
+    track_stack_reset();
+
+    // Create deep copy backup of REGISTERS after all initialization is complete
+    // This ensures the backup contains the correct values for all registers, including SP
+    REGISTERS_BACKUP = JSON.parse(JSON.stringify(REGISTERS));
+
     ret.token = "The selected architecture has been loaded correctly";
     ret.type = "success";
     return ret;
@@ -361,13 +391,16 @@ function buildCompleteInstruction(
     mergedFields,
     legacy = true,
 ) {
-    const result = {
-        name: instruction.name,
-        nwords: template.nwords,
-        clk_cycles: template.clk_cycles,
-        fields: mergedFields,
-        definition: instruction.definition,
-    };
+    // Start with template properties as base
+    const result = { ...template };
+
+    // Override with instruction properties (instruction takes precedence)
+    Object.assign(result, instruction);
+
+    // Set the specific properties that should always be used
+    result.name = instruction.name;
+    result.fields = mergedFields;
+    result.definition = instruction.definition;
 
     if (legacy) {
         // This will eventually be removed!!
@@ -934,10 +967,9 @@ function collectInstructionsFromSets(architectureObj, instructionSetsToLoad) {
                 ...isaInstructions,
             ];
         }
-
         // Add pseudoinstructions if available for this ISA
         const ISAPseudoInstructions =
-            architectureObj.pseudoinstructions[requestedISA];
+            architectureObj.pseudoinstructions?.[requestedISA];
         if (ISAPseudoInstructions) {
             selectedPseudoInstructions = [
                 ...selectedPseudoInstructions,
@@ -1034,11 +1066,20 @@ function transformArchConf(architectureObj) {
             value = value ? "1" : "0";
         }
         // If key is "Word Size", convert it to "bits"
-        if (key === "Word Size") {
+        if (key === "WordSize") {
             key = "Bits";
         }
         if (key === "Endianness") {
             key = "Data Format";
+        }
+        if (key === "StartAddress") {
+            return;
+        }
+        if (key === "PCOffset") {
+            return;
+        }
+        if (key === "ByteSize") {
+            return;
         }
         // Add remaining properties as individual entries
         oldArchConf.push({
@@ -1070,6 +1111,7 @@ export function newArchitectureLoad(
     try {
         // Parse YAML to object
         const architectureObj = parseArchitectureYaml(architectureYaml);
+        newArchitecture = architectureObj;
 
         // Check the version
         if (!isVersionSupported(architectureObj)) {
@@ -1309,7 +1351,7 @@ export function reset() {
     status.display = "";
 
     // reset registers
-    if (typeof document !== undefined) {
+    if (typeof document !== "undefined") {
         // I'd _like_ to use REGISTERS_BACKUP and call it a day... but if I do
         // that Vue doesn't notice the change and it doesn't update visually
         for (const bank of REGISTERS) {
@@ -1884,158 +1926,6 @@ export function dumpAddress(startAddr, numBytes) {
         .join("");
 
     return resultString;
-}
-
-export function loadElfFile(bin_str) {
-    const ret = {
-        status: "ok",
-        msg: "",
-    };
-
-    try {
-        // Parse binary JSON
-        const binary_data = JSON.parse(bin_str);
-
-        // Load instructions_binary directly into instructions
-        instructions.length = 0; // Clear existing instructions
-
-        // Copy instructions from binary
-        if (
-            binary_data.instructions_binary &&
-            Array.isArray(binary_data.instructions_binary)
-        ) {
-            for (let i = 0; i < binary_data.instructions_binary.length; i++) {
-                instructions.push(binary_data.instructions_binary[i]);
-            }
-            logger.info(
-                `Loaded ${instructions.length} instructions from binary`,
-            );
-        } else {
-            logger.warning("No instructions found in binary file");
-        }
-
-        // Load instructions_tag if available
-        if (
-            binary_data.instructions_tag &&
-            Array.isArray(binary_data.instructions_tag)
-        ) {
-            // Clear existing tags and create new ones from binary data
-            // This would typically be handled by the compiler but we're bypassing it
-            logger.info(
-                `Loaded ${binary_data.instructions_tag.length} instruction tags`,
-            );
-        }
-
-        // Load instructions into memory
-        for (let i = 0; i < instructions.length; i++) {
-            const instruction = instructions[i];
-            const addr = BigInt(parseInt(instruction.Address, 16));
-
-            // Convert instruction to hex bytes
-            const loadedInstruction = instruction.loaded;
-            const hexBytes = [];
-
-            // Check the format of the loaded instruction
-            if (loadedInstruction.startsWith("0x")) {
-                // Hex format - convert to bytes directly
-                const hexString = loadedInstruction.slice(2); // Remove "0x" prefix
-                for (let j = 0; j < hexString.length; j += 2) {
-                    const hexByte = hexString.substr(j, 2);
-                    hexBytes.push(hexByte);
-                }
-            } else if (loadedInstruction.startsWith("0b")) {
-                // Binary format with prefix - remove prefix and process
-                const binString = loadedInstruction.slice(2); // Remove "0b" prefix
-                for (let j = 0; j < binString.length; j += 8) {
-                    const byte = binString.substr(j, 8);
-                    const hexByte = parseInt(byte, 2)
-                        .toString(16)
-                        .padStart(2, "0");
-                    hexBytes.push(hexByte);
-                }
-            } else {
-                // Assume binary format (backwards compatibility)
-                for (let j = 0; j < loadedInstruction.length; j += 8) {
-                    const byte = loadedInstruction.substr(j, 8);
-                    const hexByte = parseInt(byte, 2)
-                        .toString(16)
-                        .padStart(2, "0");
-                    hexBytes.push(hexByte);
-                }
-            }
-
-            // Add instruction bytes to memory (little endian)
-            for (let j = 0; j < hexBytes.length; j++) {
-                const byteAddr = addr + BigInt(j);
-
-                // Create memory entry for this byte
-                main_memory[byteAddr] = {
-                    addr: byteAddr,
-                    bin: hexBytes[j],
-                    break: false,
-                    data_type: {
-                        address: byteAddr,
-                        value: "00",
-                        default: "00",
-                        type: "instruction",
-                        size: 0,
-                    },
-                    def_bin: hexBytes[j],
-                    reset: true,
-                    tag: instruction.Label || "",
-                };
-            }
-        }
-
-        // Load data section into memory
-        if (
-            binary_data.data_section &&
-            Array.isArray(binary_data.data_section)
-        ) {
-            for (let i = 0; i < binary_data.data_section.length; i++) {
-                const data_item = binary_data.data_section[i];
-                const base_addr = BigInt(parseInt(data_item.Address, 16));
-                const size = data_item.Size;
-                const hex_value = data_item.Value;
-
-                // Split hex value into bytes
-                for (let j = 0; j < hex_value.length; j += 2) {
-                    if (j / 2 >= size) break;
-
-                    const byteAddr = base_addr + BigInt(j / 2);
-                    const hexByte = hex_value.substr(j, 2);
-
-                    // Create memory entry for this byte
-                    main_memory[byteAddr] = {
-                        addr: byteAddr,
-                        bin: hexByte,
-                        break: false,
-                        data_type: {
-                            address: byteAddr,
-                            value: "00",
-                            default: "00",
-                            type: data_item.Type || "unknown",
-                            size: 0,
-                        },
-                        def_bin: hexByte,
-                        reset: true,
-                        tag: j === 0 ? data_item.Label || "" : "",
-                    };
-                }
-            }
-            logger.info(`Loaded ${binary_data.data_section.length} data items`);
-        } else {
-            logger.warning("No data section found in binary file");
-        }
-
-        ret.msg = "Binary file loaded successfully";
-    } catch (e) {
-        ret.status = "ko";
-        ret.msg = "Error loading binary file: " + e.message;
-        logger.error("Binary load error: " + e.message);
-    }
-
-    return ret;
 }
 
 export function dumpRegister(register, format = "hex") {

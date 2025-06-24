@@ -19,15 +19,14 @@
 main:
     
     la t0, w1         # w1 address -> t0
-    la t1, b1         # b1 address -> t1
-    la t2, h1         # h1 address -> t2
-    
     lw t3,  0(t0)     # Memory[t0] -> t3
-    
+
+    la t1, b1         # b1 address -> t1
     lb t4,  0(t1)     # Memory[t1] -> t4
     
+    la t2, h1         # h1 address -> t2
     lh t5, 0 (t2)     # Memory[t2] -> t5
-    
+
     la t0, w2         # w2 address -> t0
     sw t3,  0(t0)     # t3 -> Memory[w2]
 

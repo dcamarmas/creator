@@ -16,7 +16,7 @@
  *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-import { status } from "../core.mjs";
+import { status, main_memory } from "../core.mjs";
 import {
     readRegister,
     writeRegister,
@@ -103,16 +103,15 @@ export function kbd_read_double(keystroke, params) {
 }
 
 export function kbd_read_string(keystroke, params) {
-    let value = "";
-    let neltos = readRegister(params.indexComp2, params.indexElem2);
-    for (let i = 0; i < neltos && i < keystroke.length; i++) {
-        value += keystroke.charAt(i);
+    const addr = readRegister(params.indexComp, params.indexElem);
+
+    const bytes = new TextEncoder().encode(keystroke);
+    // Write the string to memory byte by byte
+    for (let i = 0n; i < keystroke.length && i < params.size; i++) {
+        main_memory.write(BigInt(addr + BigInt(i)), bytes[i]);
     }
 
-    neltos = readRegister(params.indexComp, params.indexElem);
-    writeMemory(value, parseInt(neltos), "string");
-
-    return value;
+    return keystroke;
 }
 
 function checkEnter(buf) {
@@ -177,6 +176,7 @@ export function keyboard_read(fn_post_read, fn_post_params) {
             const keystroke = rawPrompt();
             const value = fn_post_read(keystroke, fn_post_params);
             status.keyboard = status.keyboard + " " + value;
+            status.run_program = 0; // Reset run_program status
 
             return packExecute(
                 false,

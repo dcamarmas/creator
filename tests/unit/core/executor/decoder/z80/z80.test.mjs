@@ -24,6 +24,10 @@ Deno.test("decode_instruction - ld bc (nn) instruction 2 ", () =>
     decode_test("0xED4BFFFF", "ld bc (65535)"),
 );
 
-Deno.test("decode_instruction - rlc (ix+d), b ", () =>
+Deno.test("decode_instruction - rlc (ix+d)", () =>
     decode_test("0xDDCB0006", "rlc (0)"),
+);
+
+Deno.test("decode_instruction - rlc (ix+d), b ", () =>
+    decode_test("0xDDCB0000", "rlc (0) b"),
 );
