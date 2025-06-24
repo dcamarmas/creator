@@ -2,14 +2,17 @@ version: 2.0.0
 
 arch_conf:
     Name: Z80
-    Word Size: 8 # 8-bit word size, which is the same as the byte size
+    WordSize: 8 # 8-bit word size, which is the same as the byte size
+    ByteSize: 8
     Description: Z80
-    Data Format: little_endian
+    Endianness: little_endian
     Memory Alignment: true
     Main Function: main
     Passing Convention: true
     Sensitive Register Name: true
     CommentPrefix: ";"
+    StartAddress: 0x0
+    PCOffset: 0
 
 components:
     - name: Control registers

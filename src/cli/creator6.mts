@@ -50,14 +50,12 @@ interface ArgvOptions {
     bin: string;
     library: string;
     assembly: string;
-    interactive: boolean;
     debug: boolean;
     reference: string;
     state: string;
     accessible: boolean;
     tutorial: boolean;
     config?: string; // Add config file option
-    verbose?: boolean; // Add verbose flag option
 }
 
 interface ReturnType {
@@ -420,33 +418,6 @@ function displayInstruction(instr, currentPC, hideLibrary = false) {
     }
 
     console.log(line);
-}
-
-function executeNonInteractive(
-    verbose: boolean = false,
-    statePath: string = "",
-) {
-    for (let i = 0; i < MAX_INSTRUCTIONS; i++) {
-        const { output, completed, error } = executeStep();
-        if (error) {
-            console.error("Error during execution.");
-            break;
-        } else if (completed) {
-            break;
-        }
-        if (verbose) {
-            console.log(output);
-        }
-    }
-    const state = creator.getState();
-
-    console.log(state.msg);
-
-    // Only save state if a path is provided
-    if (statePath) {
-        fs.writeFileSync(statePath, state.msg, "utf8");
-        console.log(`State saved to ${statePath}`);
-    }
 }
 
 function listBreakpoints() {
@@ -1343,12 +1314,6 @@ function parseArguments(): ArgvOptions {
             nargs: 1,
             default: "",
         })
-        .option("interactive", {
-            alias: "I",
-            type: "boolean",
-            describe: "Run in interactive mode",
-            default: false,
-        })
         .option("debug", {
             alias: "v",
             type: "boolean",
@@ -1383,12 +1348,6 @@ function parseArguments(): ArgvOptions {
             type: "string",
             describe: "Path to configuration file",
             default: CONFIG_PATH,
-        })
-        .option("verbose", {
-            alias: "V",
-            type: "boolean",
-            describe: "Print detailed output in non-interactive mode",
-            default: false,
         })
         .help().argv as ArgvOptions;
 }
@@ -1495,19 +1454,10 @@ function interactiveMode() {
             ? CONFIG.settings.auto_list_after_shortcuts
             : false;
 
+    console.log(colorText("Type 'help' for available commands.", "32"));
     if (ACCESSIBLE) {
         console.log(
-            "Interactive mode enabled. Type 'help' or 'h' for available commands.",
-        );
-        console.log(
             "You are in accessible mode, with special formatting for screen readers.",
-        );
-    } else {
-        console.log(
-            colorText(
-                "Interactive mode enabled. Type 'help' for available commands.",
-                "32",
-            ),
         );
     }
 
@@ -1649,30 +1599,12 @@ function main() {
         }
     }
 
-    // Run in interactive or non-interactive mode
-    if (argv.interactive) {
-        clearConsole();
-        if (!ACCESSIBLE) {
-            console.log(creatorASCII);
-        }
-        creator.reset();
-        interactiveMode();
-    } else {
-        executeNonInteractive(argv.verbose, argv.state);
-        if (argv.reference) {
-            const referenceState = fs.readFileSync(argv.reference, "utf8");
-            const state = creator.getState();
-            const ret = creator.diffStates(referenceState, state.msg);
-            if (ret.status === "ok") {
-                console.log("States are equal");
-            }
-            if (ret.status === "different") {
-                console.log(ret.diff);
-                // exit with error code 1
-                process.exit(1);
-            }
-        }
+    clearConsole();
+    if (!ACCESSIBLE) {
+        console.log(creatorASCII);
     }
+    creator.reset();
+    interactiveMode();
 }
 
 export {
