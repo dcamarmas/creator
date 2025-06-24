@@ -1598,7 +1598,7 @@ instructions:
                 value: "0100011"
               - field: funct3
                 value: "000"
-          definition: "CAPI.MEM.write(rs1+imm, 1, rs2, rs2_name);"
+          definition: "CAPI.MEM.write(rs1+imm, 1, BigInt.asUintN(8,rs2), rs2_name);"
 
         - name: sh
           type: S
@@ -1607,7 +1607,7 @@ instructions:
                 value: "0100011"
               - field: funct3
                 value: "001"
-          definition: "CAPI.MEM.write(imm+rs1, 2, rs2, rs2_name);"
+          definition: "CAPI.MEM.write(imm+rs1, 2, BigInt.asUintN(16,rs2), rs2_name);"
 
         # The check for the
         - name: sw
@@ -1617,7 +1617,7 @@ instructions:
                 value: "0100011"
               - field: funct3
                 value: "010"
-          definition: "CAPI.MEM.write(imm+rs1, 4, rs2, rs2_name); if (rs1_name === 'sp') { const formattedAddr = '0x'+(imm+rs1).toString(16).padStart(8, '0').toUpperCase(); CAPI.DRAW_STACK.addHint(formattedAddr, rs2_name) }"
+          definition: "CAPI.MEM.write(imm+rs1, 4, BigInt.asUintN(32,rs2), rs2_name); if (rs1_name === 'sp') { const formattedAddr = '0x'+(imm+rs1).toString(16).padStart(8, '0').toUpperCase(); CAPI.DRAW_STACK.addHint(formattedAddr, rs2_name) }"
 
         # U-type instructions
         #           31-12                   11-7    6-0
@@ -1656,8 +1656,7 @@ instructions:
                 startbit: 31
                 stopbit: 7
                 value: "0000000000000000000000000"
-          preoperation: "let fa0Value, fa0Type; [fa0Value, fa0Type] = CAPI.RISCV.toJSNumberD(fa0); a0 = BigInt.asIntN(32, a0);"
-          postoperation: "a0 = BigInt.asUintN(32, a0);"
+          preoperation: "let fa0Value, fa0Type; [fa0Value, fa0Type] = CAPI.RISCV.toJSNumberD(fa0);"
           definition: "switch(a7){\ncase 1n:\nCAPI.SYSCALL.print(a0,'int');\nbreak;\ncase 2n:\ncase 3n:\nCAPI.SYSCALL.print(fa0Value,'float');\nbreak;\ncase 4n:\nCAPI.SYSCALL.print(a0,'string');\nbreak;\ncase 5n:\nCAPI.SYSCALL.read('a0','int');\nbreak;\ncase 6n:\nCAPI.SYSCALL.read(fa0Value,'float');\nbreak;\ncase 7n:\nCAPI.SYSCALL.read(fa0Value,'double');\nbreak;\ncase 8n:\nCAPI.SYSCALL.read('a0', 'string', 'a1',);\nbreak;\ncase 9n:\nCAPI.SYSCALL.sbrk('a0','a0');\nbreak;\ncase 10n:\nCAPI.SYSCALL.exit();\nbreak;\ncase 11n:\nCAPI.SYSCALL.print(a0,'char');\nbreak;\ncase 12n:\nCAPI.SYSCALL.read('a0','char');\nbreak;\n}"
 
         - name: ebreak

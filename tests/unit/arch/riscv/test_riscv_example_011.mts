@@ -75,7 +75,7 @@ sub:
         // x10 (a0) should contain 0xffffff70 (-144 in 2's complement)
         assertEquals(
             getRegisterValue("x10"),
-            BigInt.asUintN(32, 0xffffff70n),
+            BigInt.asIntN(32, 0xffffff70n),
             "x10 (a0) should contain 0xffffff70",
         );
 
