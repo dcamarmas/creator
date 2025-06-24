@@ -113,14 +113,21 @@ export function handleOtherTypes(
         reading_name: "",
         writing: "",
     };
+    if (signaturePart === "skip") {
+        // Skip this part. This is used to add comments in the actual instruction
+        return result;
+    }
+    if (signaturePart === "enum") {
+        return result;
+    }
 
-    if (signaturePart == "offset_words") {
+    if (signaturePart === "offset_words") {
         if (instructionExecPart.startsWith("0x")) {
             let value = parseInt(instructionExecPart);
             const nbits = 4 * (instructionExecPart.length - 2);
             let value_bin = value.toString(2).padStart(nbits, "0");
 
-            if (value_bin[0] == "1") {
+            if (value_bin[0] === "1") {
                 value_bin = "".padStart(32 - nbits, "1") + value_bin;
             } else {
                 value_bin = "".padStart(32 - nbits, "0") + value_bin;

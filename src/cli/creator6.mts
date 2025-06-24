@@ -47,7 +47,6 @@ const creatorASCII = `
 interface ArgvOptions {
     architecture: string;
     isa: string[];
-    elf: string;
     bin: string;
     library: string;
     assembly: string;
@@ -276,19 +275,6 @@ function loadArchitecture(
     // console.log("Architecture loaded successfully.");
 }
 
-function loadElf(filePath: string) {
-    if (!filePath) {
-        console.error("No binary file specified.");
-        return;
-    }
-
-    const binaryFile = fs.readFileSync(filePath, "utf8");
-    creator.loadElfFile(binaryFile);
-    // Set the flag to indicate a binary was loaded
-    BINARY_LOADED = true;
-    // console.log("Binary loaded successfully.");
-}
-
 function loadBin(filePath: string) {
     if (!filePath) {
         console.error("No binary file specified.");
@@ -424,11 +410,11 @@ function displayInstruction(instr, currentPC, hideLibrary = false) {
 
     let line = `${currentMark}   ${breakpointMark} | ${address}| ${label}| ${loaded} | ${rightColumn}`;
 
-    // Highlight current instruction in green, previous in blue
+    // Highlight instruction
     if (instr.Address === currentPC) {
         line = colorText(line, "32"); // Green for current instruction
     } else if (instr.Address === PREVIOUS_PC) {
-        line = colorText(line, "33"); // Blue for previously executed instruction
+        line = colorText(line, "33"); // Yellow for previously executed instruction
     } else if (instr.Break) {
         line = colorText(line, "31"); // Red for breakpoint
     }
@@ -1336,13 +1322,6 @@ function parseArguments(): ArgvOptions {
             description: "ISA extensions to load (e.g. --isa I M F D)",
             default: [],
         })
-        .option("elf", {
-            alias: "e",
-            type: "string",
-            describe: "Binary file",
-            nargs: 1,
-            default: "",
-        })
         .option("bin", {
             alias: "b",
             type: "string",
@@ -1659,9 +1638,7 @@ function main() {
     }
 
     // If binary file is provided, load it
-    if (argv.elf) {
-        loadElf(argv.elf);
-    } else if (argv.bin) {
+    if (argv.bin) {
         loadBin(argv.bin);
     } else {
         if (argv.library) {

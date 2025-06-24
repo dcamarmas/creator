@@ -4,7 +4,7 @@ arch_conf:
     Name: RV64
     Word Size: 32 # In RV64, the word size is also 32 bits
     Description: RISC-V is an instruction set architecture (ISA) based on the RISC type and its hardware is free. This architecture was created in 2010 at the University of California, Berkeley.
-    Endianness: little_endian
+    Endianness: big_endian
     Memory Alignment: true
     Main Function: main
     Passing Convention: true

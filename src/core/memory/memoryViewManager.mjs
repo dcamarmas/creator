@@ -19,11 +19,6 @@
  */
 "use strict";
 import { WORDSIZE } from "../core.mjs";
-import {
-    main_memory_read,
-    main_memory_get_addresses,
-    main_memory_datatypes,
-} from "./memoryCore.mjs";
 import { hex2float, hex2char8 } from "../utils/utils.mjs";
 
 /************************
@@ -139,7 +134,7 @@ export function creator_memory_updateall() {
     const word_size_bytes = WORDSIZE / 8;
 
     // update all rows in main_memory...
-    const addrs = main_memory_get_addresses();
+    const addrs = main_memory.getUsedAddresses();
 
     let last_addr = -1;
     let curr_addr;

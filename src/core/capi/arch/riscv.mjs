@@ -17,7 +17,10 @@
  *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  */
 "use strict";
-import { bi_BigIntTofloat, bi_BigIntTodouble } from "../../utils/bigint.mjs";
+import {
+    bi_BigIntTofloat,
+    bi_BigIntTodouble,
+} from "../../utils/float_bigint.mjs";
 
 function isInt(val, bits) {
     const max = (1n << BigInt(bits - 1)) - 1n;

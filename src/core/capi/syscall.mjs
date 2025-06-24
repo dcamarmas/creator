@@ -99,30 +99,50 @@ export const SYSCALL = {
             document.getElementById("enter_keyboard").scrollIntoView();
         }
         status.run_program = 3;
+        const register = crex_findReg(dest_reg_info);
+        if (register.match === 0) {
+            throw packExecute(
+                true,
+                "capi_syscall: register " + value1 + " not found",
+                "danger",
+                null,
+            );
+        }
 
         switch (type) {
             case "int":
-                return keyboard_read(kbd_read_int, dest_reg_info);
+                return keyboard_read(kbd_read_int, register);
             case "float":
-                return keyboard_read(kbd_read_float, dest_reg_info);
+                return keyboard_read(kbd_read_float, register);
             case "double":
-                return keyboard_read(kbd_read_double, dest_reg_info);
+                return keyboard_read(kbd_read_double, register);
             case "char":
-                return keyboard_read(kbd_read_char, dest_reg_info);
+                return keyboard_read(kbd_read_char, register);
             case "string":
-                // dest_reg_info is for the buffer address register
-                // aux_info is the register info for the length
-                if (!aux_info) {
-                    throw packExecute(
-                        true,
-                        "capi_syscall: missing length register info for read string",
-                        "danger",
-                        null,
+                if (aux_info !== null) {
+                    const auxreg = crex_findReg(aux_info);
+                    if (auxreg.match === 0) {
+                        throw packExecute(
+                            true,
+                            "capi_syscall: register " + aux_info + " not found",
+                            "danger",
+                            null,
+                        );
+                    }
+                    const size = readRegister(
+                        auxreg.indexComp,
+                        auxreg.indexElem,
                     );
+                    let funct_params = {
+                        indexComp: register.indexComp,
+                        indexElem: register.indexElem,
+                        size: size,
+                    };
+                    return keyboard_read(kbd_read_string, funct_params);
                 }
-                dest_reg_info.indexComp2 = aux_info.indexComp;
-                dest_reg_info.indexElem2 = aux_info.indexElem;
-                return keyboard_read(kbd_read_string, dest_reg_info);
+
+                return keyboard_read(kbd_read_string, register);
+
             default:
                 status.run_program = 1; // Revert run_program status
                 throw packExecute(

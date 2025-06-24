@@ -8,6 +8,7 @@ import { readFileSync } from "node:fs";
  * - Flexible endianness configuration
  * - Efficient bit-level storage
  * - Word-level and byte-level operations
+ * - Memory layout segments (text, data, stack, etc.)
  *
  * ## Key Concepts
  *
@@ -19,10 +20,10 @@ import { readFileSync } from "node:fs";
  * supporting little-endian and big-endian, this class allows completely
  * custom byte ordering within words.
  *
- * The endianness array specifies which word position goes to each memory position:
- * - `[0, 1, 2, 3]` = little-endian (byte 0 at position 0, byte 1 at position 1, etc.)
- * - `[3, 2, 1, 0]` = big-endian (byte 3 at position 0, byte 2 at position 1, etc.)
- * - `[1, 0, 3, 2]` = mixed endianness (bytes 1,0,3,2 at positions 0,1,2,3)
+ * The endianness array specifies which memory position should be used for each word position:
+ * - `[0, 1, 2, 3]` = big-endian (word pos 0 from mem pos 0, word pos 1 from mem pos 1, etc.)
+ * - `[3, 2, 1, 0]` = little-endian (word pos 0 from mem pos 3, word pos 1 from mem pos 2, etc.)
+ * - `[1, 0, 3, 2]` = mixed endianness (word pos 0 from mem pos 1, word pos 1 from mem pos 0, etc.)
  *
  * ### Memory Layout vs Logical Structure
  * - **Physical Layout**: How bytes are actually stored in memory (affected by endianness)
@@ -30,6 +31,16 @@ import { readFileSync } from "node:fs";
  *
  * Word operations (readWord/writeWord) work with logical structure, while
  * individual byte operations (read/write) work with physical layout.
+ *
+ * ### Memory Layout Segments
+ * The memory system now supports architectural memory layout with named segments:
+ * - **Text Segment**: Contains executable instructions
+ * - **Data Segment**: Contains initialized data
+ * - **Stack Segment**: Contains runtime stack
+ * - **Custom Segments**: Architecture-specific segments
+ *
+ * Each segment has start and end addresses, and the memory system can validate
+ * and track access to different segments.
  *
  * ### Bit Packing
  * When using non-8-bit bytes, the class efficiently packs multiple custom bytes
@@ -40,22 +51,37 @@ import { readFileSync } from "node:fs";
  *
  * @example Basic 8-bit byte memory
  * ```typescript
- * const memory = new Memory(1024); // 1024 bytes, 8 bits per byte
+ * const memory = new Memory({ sizeInBytes: 1024 }); // 1024 bytes, 8 bits per byte
  * memory.write(0n, 0xFF);
  * console.log(memory.read(0n)); // 255
  * ```
  *
  * @example Custom byte size memory
  * ```typescript
- * const memory = new Memory(100, 12); // 100 12-bit "bytes", max value 4095
+ * const memory = new Memory({ sizeInBytes: 100, bitsPerByte: 12 }); // 100 12-bit "bytes", max value 4095
  * memory.write(0n, 4095);
  * console.log(memory.read(0n)); // 4095
+ * ```
+ *
+ * @example Memory with layout segments
+ * ```typescript
+ * const layout = [
+ *   { name: "text start", value: "0x0000" },
+ *   { name: "text end", value: "0x1000" },
+ *   { name: "data start", value: "0x1010" },
+ *   { name: "data end", value: "0x2000" },
+ *   { name: "stack start", value: "0xFFFE" },
+ *   { name: "stack end", value: "0xFFFF" }
+ * ];
+ * const memory = new Memory({ sizeInBytes: 0x10000, memoryLayout: layout });
+ * console.log(memory.getSegmentForAddress(0x0500)); // "text"
+ * console.log(memory.isValidAccess(0x0500, "text")); // true
  * ```
  *
  * @example Word operations with endianness
  * ```typescript
  * // 4-byte words with big-endian ordering
- * const memory = new Memory(100, 8, 4, [3, 2, 1, 0]);
+ * const memory = new Memory({ sizeInBytes: 100, bitsPerByte: 8, wordSize: 4, endianness: [3, 2, 1, 0] });
  * const word = [0x12, 0x34, 0x56, 0x78];
  * memory.writeWord(0n, word);
  *
@@ -69,7 +95,7 @@ import { readFileSync } from "node:fs";
  *
  * @example Mixed operations
  * ```typescript
- * const memory = new Memory(100, 8, 4);
+ * const memory = new Memory({ sizeInBytes: 100, bitsPerByte: 8, wordSize: 4 });
  *
  * // Write word, read individual bytes
  * memory.writeWord(0n, [0xAA, 0xBB, 0xCC, 0xDD]);
@@ -89,117 +115,303 @@ import { readFileSync } from "node:fs";
  * - Custom byte sizes require bit manipulation
  * - Word operations are optimized for the configured endianness
  * - Memory dumps/restores are very fast using direct buffer copying
+ * - Segment lookups are optimized with caching for frequent access patterns
  */
+
+/**
+ * Interface for memory layout segment definitions
+ */
+interface MemoryLayoutSegment {
+    name: string;
+    value: string; // Hexadecimal address as string (e.g., "0x1000")
+}
+
+/**
+ * Interface for processed memory segment information
+ */
+interface MemorySegment {
+    start: string; // Hexadecimal address as string (e.g., "0x0000")
+    end: string; // Hexadecimal address as string (e.g., "0x1000")
+    startAddress: bigint; // Parsed start address
+    endAddress: bigint; // Parsed end address
+    size: bigint;
+}
+
+/**
+ * Configuration options for Memory constructor
+ */
+interface MemoryConfig {
+    sizeInBytes: number;
+    bitsPerByte?: number;
+    wordSize?: number;
+    endianness?: number[];
+    memoryLayout?: MemoryLayoutSegment[];
+    baseAddress?: bigint;
+}
+
+/**
+ * Required configuration after applying defaults
+ */
+interface RequiredMemoryConfig {
+    sizeInBytes: number;
+    bitsPerByte: number;
+    wordSize: number;
+    endianness?: number[];
+    memoryLayout: MemoryLayoutSegment[];
+    baseAddress: bigint;
+}
+
 export class Memory {
     /** Total number of addressable units (bytes) in memory */
-    private size: number;
+    private size!: number;
 
     /** Number of bits per addressable unit (byte). Range: 1-32 bits */
-    private bitsPerByte: number;
+    private bitsPerByte!: number;
 
     /** Maximum value that can be stored in a single byte */
-    private maxByteValue: number;
+    private maxByteValue!: number;
 
     /** Underlying storage buffer using standard 8-bit bytes */
-    private buffer: ArrayBuffer;
+    private buffer!: ArrayBuffer;
 
     /** Typed array view for efficient access to the buffer */
-    private uint8View: Uint8Array;
+    private uint8View!: Uint8Array;
 
     /** Number of bytes that constitute a word */
-    private wordSize: number;
+    private wordSize!: number;
 
     /**
      * Endianness configuration array.
-     * endianness[i] specifies which word position should be stored at memory position i.
+     * endianness[i] specifies which memory position should be used for word position i.
      *
      * Examples:
-     * - [0, 1, 2, 3] = little-endian (default)
-     * - [3, 2, 1, 0] = big-endian
+     * - [0, 1, 2, 3] = big-endian
+     * - [3, 2, 1, 0] = little-endian (default)
      * - [1, 0, 3, 2] = mixed/custom endianness
      */
-    private endianness: number[];
+    private endianness!: number[];
+
+    /** Base address offset for memory addressing */
+    private baseAddress!: bigint;
+
+    /** Memory layout segments from architecture configuration */
+    private memoryLayout!: MemoryLayoutSegment[];
+
+    /** Processed memory segments stored as a map for efficient lookup */
+    private segments!: Map<string, MemorySegment>;
+
+    /** Cache for segment lookups to improve performance */
+    private segmentCache!: Map<bigint, string>;
 
     /**
-     * Creates a new Memory instance with configurable byte size, word size, and endianness.
+     * Creates a new Memory instance with configurable byte size, word size, endianness, and memory layout.
      *
      * The memory uses efficient bit-packing when bitsPerByte != 8, storing multiple
      * custom bytes within standard 8-bit storage bytes.
      *
-     * @param sizeInBytes - Total number of addressable units (bytes) in memory
-     * @param bitsPerByte - Number of bits per addressable unit (1-32). Default: 8
-     * @param wordSize - Number of bytes that constitute a word. Default: 4
-     * @param endianness - Optional array specifying byte order within words.
-     *                    Must contain all indices 0 to wordSize-1 exactly once.
-     *                    Default: little-endian [0, 1, 2, 3, ...]
+     * @param config - Configuration object containing memory parameters
+     * @param config.sizeInBytes - Total number of addressable units (bytes) in memory
+     * @param config.bitsPerByte - Number of bits per addressable unit (1-32). Default: 8
+     * @param config.wordSize - Number of bytes that constitute a word. Default: 4
+     * @param config.endianness - Optional array specifying memory position for each word position.
+     *                           endianness[i] = memory position for word position i.
+     *                           Must contain all indices 0 to wordSize-1 exactly once.
+     *                           Default: little-endian [3, 2, 1, 0] for 4-byte words
+     * @param config.memoryLayout - Optional array of memory layout segments from architecture
+     * @param config.baseAddress - Optional base address offset for memory addressing. Default: 0
      *
      * @throws Error if bitsPerByte is not in range 1-32
      * @throws Error if wordSize is less than 1
      * @throws Error if endianness array length doesn't match wordSize
      * @throws Error if endianness array doesn't contain valid indices
+     * @throws Error if memory layout segments are invalid
      *
      * @example Standard 8-bit memory
      * ```typescript
-     * const memory = new Memory(1024); // 1KB memory
+     * const memory = new Memory({ sizeInBytes: 1024 }); // 1KB memory
      * ```
      *
      * @example 12-bit bytes with big-endian words
      * ```typescript
-     * const memory = new Memory(256, 12, 4, [3, 2, 1, 0]);
+     * const memory = new Memory({
+     *   sizeInBytes: 256,
+     *   bitsPerByte: 12,
+     *   wordSize: 4,
+     *   endianness: [0, 1, 2, 3]
+     * });
+     * ```
+     *
+     * @example Memory with layout segments
+     * ```typescript
+     * const layout = [
+     *   { name: "text start", value: "0x0000" },
+     *   { name: "text end", value: "0x1000" },
+     *   { name: "data start", value: "0x1010" },
+     *   { name: "data end", value: "0x2000" }
+     * ];
+     * const memory = new Memory({
+     *   sizeInBytes: 0x10000,
+     *   memoryLayout: layout,
+     *   baseAddress: 0n
+     * });
      * ```
      */
-    constructor(
-        sizeInBytes: number,
-        bitsPerByte: number = 8,
-        wordSize: number = 4,
-        endianness?: number[],
-    ) {
-        if (bitsPerByte < 1 || bitsPerByte > 32) {
+    constructor(config: MemoryConfig) {
+        // Apply defaults to config
+        const finalConfig: RequiredMemoryConfig = {
+            sizeInBytes: config.sizeInBytes,
+            bitsPerByte: config.bitsPerByte ?? 8,
+            wordSize: config.wordSize ?? 4,
+            endianness: config.endianness,
+            memoryLayout: config.memoryLayout ?? [],
+            baseAddress: config.baseAddress ?? 0n,
+        };
+
+        // Initialize basic properties
+        this.initializeBasicProperties(finalConfig);
+
+        // Initialize endianness
+        this.initializeEndianness(finalConfig);
+
+        // Initialize memory layout and segments
+        this.initializeMemoryLayout(finalConfig);
+
+        // Initialize storage buffer
+        this.initializeStorage(finalConfig);
+    }
+
+    /**
+     * Initializes basic memory properties
+     * @private
+     */
+    private initializeBasicProperties(config: RequiredMemoryConfig): void {
+        if (config.bitsPerByte < 1 || config.bitsPerByte > 32) {
             throw new Error("bitsPerByte must be between 1 and 32");
         }
 
-        if (wordSize < 1) {
+        if (config.wordSize < 1) {
             throw new Error("wordSize must be at least 1");
         }
 
-        this.size = sizeInBytes;
-        this.bitsPerByte = bitsPerByte;
+        this.size = config.sizeInBytes;
+        this.bitsPerByte = config.bitsPerByte;
         this.maxByteValue =
-            bitsPerByte === 32 ? 0xffffffff : (1 << bitsPerByte) - 1;
-        this.wordSize = wordSize;
+            config.bitsPerByte === 32
+                ? 0xffffffff
+                : (1 << config.bitsPerByte) - 1;
+        this.wordSize = config.wordSize;
+        this.baseAddress = config.baseAddress;
+    }
 
-        // Default endianness is little-endian (0, 1, 2, 3...)
-        if (endianness) {
-            if (endianness.length !== wordSize) {
+    /**
+     * Initializes endianness configuration
+     * @private
+     */
+    private initializeEndianness(config: RequiredMemoryConfig): void {
+        if (config.endianness) {
+            if (config.endianness.length !== config.wordSize) {
                 throw new Error(
-                    `Endianness array length (${endianness.length}) must match word size (${wordSize})`,
+                    `Endianness array length (${config.endianness.length}) must match word size (${config.wordSize})`,
                 );
             }
 
             // Validate endianness array contains valid byte indices
-            const sortedEndianness = [...endianness].sort();
-            for (let i = 0; i < wordSize; i++) {
+            const sortedEndianness = [...config.endianness].sort();
+            for (let i = 0; i < config.wordSize; i++) {
                 if (sortedEndianness[i] !== i) {
                     throw new Error(
-                        "Endianness array must contain all byte indices from 0 to wordSize-1",
+                        `Endianness array must contain all indices 0 to ${config.wordSize - 1} exactly once`,
                     );
                 }
             }
 
-            this.endianness = [...endianness];
+            this.endianness = [...config.endianness];
         } else {
-            // Default little-endian
-            this.endianness = Array.from({ length: wordSize }, (_, i) => i);
+            // Default little-endian (LSB at lowest address)
+            this.endianness = Array.from(
+                { length: config.wordSize },
+                (_, i) => config.wordSize - 1 - i,
+            );
         }
+    }
 
+    /**
+     * Initializes memory layout and segments
+     * @private
+     */
+    private initializeMemoryLayout(config: RequiredMemoryConfig): void {
+        this.memoryLayout = [...config.memoryLayout];
+        this.segments = this.processMemoryLayout();
+        this.segmentCache = new Map();
+    }
+
+    /**
+     * Initializes the storage buffer
+     * @private
+     */
+    private initializeStorage(config: RequiredMemoryConfig): void {
         // Calculate storage needed: we need enough 8-bit bytes to store all the custom bytes
-        const bitsNeeded = sizeInBytes * bitsPerByte;
+        const bitsNeeded = config.sizeInBytes * config.bitsPerByte;
         const storageBytes = Math.ceil(bitsNeeded / 8);
 
         this.buffer = new ArrayBuffer(storageBytes);
         this.uint8View = new Uint8Array(this.buffer);
 
         this.uint8View.fill(0);
+    }
+
+    /**
+     * Processes the memory layout segments from architecture configuration into
+     * structured segment information for efficient access.
+     *
+     * @private
+     * @returns Map of processed memory segments
+     */
+    private processMemoryLayout(): Map<string, MemorySegment> {
+        const segments = new Map<string, MemorySegment>();
+
+        if (!this.memoryLayout || this.memoryLayout.length === 0) {
+            return segments;
+        }
+
+        // Group layout entries by segment type (text, data, stack, etc.)
+        const segmentGroups = new Map<string, MemoryLayoutSegment[]>();
+
+        for (const layoutEntry of this.memoryLayout) {
+            const parts = layoutEntry.name.split(" ");
+            if (parts.length >= 2) {
+                const segmentType = parts[0]; // "text", "data", "stack", etc.
+                // parts[1] contains "start" or "end" but we don't need to store it
+
+                if (!segmentGroups.has(segmentType)) {
+                    segmentGroups.set(segmentType, []);
+                }
+                segmentGroups.get(segmentType)!.push(layoutEntry);
+            }
+        }
+
+        // Process each segment group
+        for (const [segmentType, entries] of segmentGroups) {
+            const startEntry = entries.find(e => e.name.includes("start"));
+            const endEntry = entries.find(e => e.name.includes("end"));
+
+            if (startEntry && endEntry) {
+                const startAddr = BigInt(startEntry.value);
+                const endAddr = BigInt(endEntry.value);
+
+                if (startAddr <= endAddr) {
+                    segments.set(segmentType, {
+                        start: startEntry.value,
+                        end: endEntry.value,
+                        startAddress: startAddr,
+                        endAddress: endAddr,
+                        size: endAddr - startAddr + 1n,
+                    });
+                }
+            }
+        }
+
+        return segments;
     }
 
     /**
@@ -224,14 +436,14 @@ export class Memory {
      *
      * @example Reading from 8-bit memory
      * ```typescript
-     * const memory = new Memory(100);
+     * const memory = new Memory({ sizeInBytes: 100 });
      * memory.write(5n, 255);
      * console.log(memory.read(5n)); // 255
      * ```
      *
      * @example Reading from 12-bit memory
      * ```typescript
-     * const memory = new Memory(100, 12);
+     * const memory = new Memory({ sizeInBytes: 100, bitsPerByte: 12 });
      * memory.write(3n, 4095); // Max 12-bit value
      * console.log(memory.read(3n)); // 4095
      * ```
@@ -301,13 +513,13 @@ export class Memory {
      *
      * @example Writing to 8-bit memory
      * ```typescript
-     * const memory = new Memory(100);
+     * const memory = new Memory({ sizeInBytes: 100 });
      * memory.write(10n, 128);
      * ```
      *
      * @example Writing to 4-bit memory
      * ```typescript
-     * const memory = new Memory(100, 4);
+     * const memory = new Memory({ sizeInBytes: 100, bitsPerByte: 4 });
      * memory.write(0n, 15); // Max 4-bit value
      * // memory.write(0n, 16); // Would throw error
      * ```
@@ -381,7 +593,7 @@ export class Memory {
      *
      * @example Loading ROM data
      * ```typescript
-     * const memory = new Memory(1024);
+     * const memory = new Memory({ sizeInBytes: 1024 });
      * const rom = new Uint8Array([0x12, 0x34, 0x56, 0x78]);
      * memory.loadROM(rom, 0x100n);
      * ```
@@ -404,7 +616,7 @@ export class Memory {
      *
      * @example Loading 12-bit ROM data
      * ```typescript
-     * const memory = new Memory(100, 12);
+     * const memory = new Memory({ sizeInBytes: 100, bitsPerByte: 12 });
      * const rom = [4095, 2048, 1024, 512]; // 12-bit values
      * memory.loadCustomROM(rom, 10n);
      * ```
@@ -427,7 +639,7 @@ export class Memory {
      *
      * @example Loading a binary file
      * ```typescript
-     * const memory = new Memory(65536);
+     * const memory = new Memory({ sizeInBytes: 65536 });
      * memory.loadBinaryFile("program.bin", 0x8000n);
      * ```
      */
@@ -445,7 +657,7 @@ export class Memory {
      *
      * @example Reading a sequence of bytes
      * ```typescript
-     * const memory = new Memory(100);
+     * const memory = new Memory({ sizeInBytes: 100 });
      * memory.write(10n, 0xAA);
      * memory.write(11n, 0xBB);
      * memory.write(12n, 0xCC);
@@ -470,7 +682,7 @@ export class Memory {
      *
      * @example Creating and using a memory snapshot
      * ```typescript
-     * const memory = new Memory(100);
+     * const memory = new Memory({ sizeInBytes: 100 });
      * memory.write(0n, 123);
      *
      * const snapshot = memory.dump();
@@ -498,7 +710,7 @@ export class Memory {
      *
      * @example Restoring memory state
      * ```typescript
-     * const memory = new Memory(100, 8);
+     * const memory = new Memory({ sizeInBytes: 100, bitsPerByte: 8 });
      * const snapshot = memory.dump();
      * // ... modify memory ...
      * memory.restore(snapshot); // Back to original state
@@ -553,8 +765,8 @@ export class Memory {
      *
      * @example Checking endianness configuration
      * ```typescript
-     * const memory = new Memory(100, 8, 4, [3, 2, 1, 0]);
-     * console.log(memory.getEndianness()); // [3, 2, 1, 0]
+     * const memory = new Memory({ sizeInBytes: 100, bitsPerByte: 8, wordSize: 4, endianness: [0, 1, 2, 3] });
+     * console.log(memory.getEndianness()); // [0, 1, 2, 3] (big-endian)
      * ```
      */
     getEndianness(): number[] {
@@ -573,7 +785,7 @@ export class Memory {
      *
      * @example Finding used memory addresses
      * ```typescript
-     * const memory = new Memory(100);
+     * const memory = new Memory({ sizeInBytes: 100 });
      * memory.write(5n, 123);
      * memory.write(10n, 255);
      * memory.write(7n, 0);    // Zero value - won't be included
@@ -585,7 +797,7 @@ export class Memory {
      *
      * @example With custom byte sizes
      * ```typescript
-     * const memory = new Memory(50, 12); // 12-bit bytes
+     * const memory = new Memory({ sizeInBytes: 50, bitsPerByte: 12 }); // 12-bit bytes
      * memory.write(0n, 1000);
      * memory.write(25n, 4095); // Max 12-bit value
      * memory.write(15n, 0);    // Zero - won't be included
@@ -675,14 +887,14 @@ export class Memory {
      *
      * @example Splitting values with 8-bit bytes
      * ```typescript
-     * const memory = new Memory(100, 8);
+     * const memory = new Memory({ sizeInBytes: 100, bitsPerByte: 8 });
      * console.log(memory.splitToBytes(0x1234n)); // [0x12, 0x34]
      * console.log(memory.splitToBytes(0x123456n)); // [0x12, 0x34, 0x56]
      * ```
      *
      * @example Splitting values with 4-bit bytes
      * ```typescript
-     * const memory = new Memory(100, 4);
+     * const memory = new Memory({ sizeInBytes: 100, bitsPerByte: 4 });
      * console.log(memory.splitToBytes(0xABn)); // [10, 11] (0xA=10, 0xB=11)
      * console.log(memory.splitToBytes(0x123n)); // [1, 2, 3]
      * ```
@@ -690,6 +902,9 @@ export class Memory {
     splitToBytes(value: bigint): number[] {
         if (value < 0n) {
             throw new Error(`Value ${value} cannot be negative`);
+        }
+        if (typeof value !== "bigint") {
+            throw new Error(`Value must be a bigint, got ${typeof value}`);
         }
 
         // Special case for 8-bit bytes - use standard approach
@@ -735,18 +950,18 @@ export class Memory {
      * @example Reading words with different endianness
      * ```typescript
      * // Little-endian (default)
-     * const memoryLE = new Memory(100, 8, 4);
+     * const memoryLE = new Memory({ sizeInBytes: 100, bitsPerByte: 8, wordSize: 4 });
      * memoryLE.writeWord(0n, [0x12, 0x34, 0x56, 0x78]);
      * console.log(memoryLE.readWord(0n)); // [0x12, 0x34, 0x56, 0x78]
      *
      * // Big-endian
-     * const memoryBE = new Memory(100, 8, 4, [3, 2, 1, 0]);
+     * const memoryBE = new Memory({ sizeInBytes: 100, bitsPerByte: 8, wordSize: 4, endianness: [0, 1, 2, 3] });
      * memoryBE.writeWord(0n, [0x12, 0x34, 0x56, 0x78]);
      * console.log(memoryBE.readWord(0n)); // [0x12, 0x34, 0x56, 0x78] (same logical result)
      *
      * // But physical memory layout differs:
-     * console.log(memoryLE.read(0n)); // 0x12 (LE: first byte stored first)
-     * console.log(memoryBE.read(0n)); // 0x78 (BE: last byte stored first)
+     * console.log(memoryLE.read(0n)); // 0x78 (LE: LSB stored first)
+     * console.log(memoryBE.read(0n)); // 0x12 (BE: MSB stored first)
      * ```
      */
     readWord(address: bigint): number[] {
@@ -763,10 +978,10 @@ export class Memory {
         }
 
         // Reorder bytes according to endianness
-        // endianness[i] tells us which word position should come from memory position i
+        // endianness[i] tells us which memory position should be read for word position i
         const reorderedBytes: number[] = new Array(this.wordSize);
         for (let i = 0; i < this.wordSize; i++) {
-            reorderedBytes[this.endianness[i]] = bytes[i];
+            reorderedBytes[i] = bytes[this.endianness[i]];
         }
 
         return reorderedBytes;
@@ -790,22 +1005,22 @@ export class Memory {
      * @example Writing words with different configurations
      * ```typescript
      * // Standard 4-byte word
-     * const memory = new Memory(100, 8, 4);
+     * const memory = new Memory({ sizeInBytes: 100, bitsPerByte: 8, wordSize: 4 });
      * memory.writeWord(0n, [0x12, 0x34, 0x56, 0x78]);
      *
      * // 2-byte word with big-endian
-     * const memory16 = new Memory(100, 8, 2, [1, 0]);
+     * const memory16 = new Memory({ sizeInBytes: 100, bitsPerByte: 8, wordSize: 2, endianness: [0, 1] });
      * memory16.writeWord(10n, [0xAB, 0xCD]);
-     * // Physical layout: [0xCD, 0xAB] but readWord returns [0xAB, 0xCD]
+     * // Physical layout: [0xAB, 0xCD] but with little-endian default would be [0xCD, 0xAB]
      *
      * // Custom byte size with mixed endianness
-     * const custom = new Memory(50, 6, 3, [2, 0, 1]);
+     * const custom = new Memory({ sizeInBytes: 50, bitsPerByte: 6, wordSize: 3, endianness: [2, 0, 1] });
      * custom.writeWord(5n, [32, 21, 63]); // All values ≤ 63 for 6-bit bytes
      * ```
      *
      * @example Error cases
      * ```typescript
-     * const memory = new Memory(100, 4, 4); // 4-bit bytes, max value 15
+     * const memory = new Memory({ sizeInBytes: 100, bitsPerByte: 4, wordSize: 4 }); // 4-bit bytes, max value 15
      *
      * // These will throw errors:
      * // memory.writeWord(0n, [1, 2, 3]);        // Wrong length (3 vs 4)
@@ -837,14 +1052,203 @@ export class Memory {
         }
 
         // Reorder bytes according to endianness and write to memory
-        // endianness[i] tells us which word position should go to memory position i
+        // endianness[i] tells us which memory position should store word position i
         const bytesToWrite: number[] = new Array(this.wordSize);
         for (let i = 0; i < this.wordSize; i++) {
-            bytesToWrite[i] = word[this.endianness[i]];
+            bytesToWrite[this.endianness[i]] = word[i];
         }
 
         for (let i = 0; i < this.wordSize; i++) {
             this.write(BigInt(addr + i), bytesToWrite[i]);
         }
+    }
+
+    /**
+     * Gets the memory segment that contains the specified address.
+     *
+     * @param address - Address to look up
+     * @returns Name of the segment containing the address, or undefined if not in any segment
+     *
+     * @example Getting segment for address
+     * ```typescript
+     * const memory = new Memory({ sizeInBytes: 0x10000, bitsPerByte: 8, wordSize: 4, memoryLayout: layout });
+     * console.log(memory.getSegmentForAddress(0x0500n)); // "text"
+     * console.log(memory.getSegmentForAddress(0x1500n)); // "data"
+     * ```
+     */
+    getSegmentForAddress(address: bigint): string | undefined {
+        // Check cache first
+        if (this.segmentCache.has(address)) {
+            return this.segmentCache.get(address);
+        }
+
+        // Convert relative address to absolute if needed
+        const absoluteAddress = address + this.baseAddress;
+
+        // Find segment containing this address
+        for (const [segmentName, segment] of this.segments) {
+            if (
+                absoluteAddress >= segment.startAddress &&
+                absoluteAddress <= segment.endAddress
+            ) {
+                this.segmentCache.set(address, segmentName);
+                return segmentName;
+            }
+        }
+
+        return undefined;
+    }
+
+    /**
+     * Validates whether an access to the specified address is allowed for the given operation type.
+     *
+     * @param address - Address to validate
+     * @param operation - Type of operation ("read", "write", "execute")
+     * @param expectedSegment - Optional expected segment name for validation
+     * @returns True if access is valid, false otherwise
+     *
+     * @example Validating memory access
+     * ```typescript
+     * // Check if we can execute code at this address
+     * if (memory.isValidAccess(0x0500n, "execute", "text")) {
+     *     console.log("Valid instruction address");
+     * }
+     *
+     * // Check if we can write data at this address
+     * if (memory.isValidAccess(0x1500n, "write", "data")) {
+     *     console.log("Valid data write");
+     * }
+     * ```
+     */
+    isValidAccess(
+        address: bigint,
+        operation: string,
+        expectedSegment?: string,
+    ): boolean {
+        const segment = this.getSegmentForAddress(address);
+
+        if (!segment) {
+            return false; // Address not in any defined segment
+        }
+
+        if (expectedSegment && segment !== expectedSegment) {
+            return false; // Address not in expected segment
+        }
+
+        // Basic segment-based access control
+        switch (operation) {
+            case "execute":
+                return segment === "text" || segment === "ktext";
+            case "read":
+                return true; // Generally allow reads from any segment
+            case "write":
+                return segment !== "text" && segment !== "ktext"; // Don't allow writes to text segments
+            default:
+                return true;
+        }
+    }
+
+    /**
+     * Gets information about all memory segments defined in the layout.
+     *
+     * @returns Map of memory segment information
+     *
+     * @example Getting all segments
+     * ```typescript
+     * const segments = memory.getMemorySegments();
+     * for (const [name, segment] of segments) {
+     *     console.log(`${name}: ${segment.start} - ${segment.end}`);
+     * }
+     * ```
+     */
+    getMemorySegments(): Map<string, MemorySegment> {
+        return new Map(this.segments); // Return copy to prevent external modification
+    }
+
+    /**
+     * Gets the base address offset used for memory addressing.
+     *
+     * @returns Base address offset
+     */
+    getBaseAddress(): bigint {
+        return this.baseAddress;
+    }
+
+    /**
+     * Converts a physical memory address to a logical address by subtracting the base address.
+     *
+     * @param physicalAddress - Physical address to convert
+     * @returns Logical address
+     */
+    physicalToLogical(physicalAddress: bigint): bigint {
+        return physicalAddress - this.baseAddress;
+    }
+
+    /**
+     * Converts a logical memory address to a physical address by adding the base address.
+     *
+     * @param logicalAddress - Logical address to convert
+     * @returns Physical address
+     */
+    logicalToPhysical(logicalAddress: bigint): bigint {
+        return logicalAddress + this.baseAddress;
+    }
+
+    /**
+     * Clears the segment lookup cache. Useful when memory layout changes at runtime.
+     */
+    clearSegmentCache(): void {
+        this.segmentCache.clear();
+    }
+
+    /**
+     * Gets statistics about memory segment usage.
+     *
+     * @returns Object containing usage statistics for each segment
+     *
+     * @example Getting segment usage
+     * ```typescript
+     * const stats = memory.getSegmentUsage();
+     * console.log(`Text segment: ${stats.text?.usedBytes} / ${stats.text?.totalBytes} bytes used`);
+     * ```
+     */
+    getSegmentUsage(): Record<
+        string,
+        { usedBytes: bigint; totalBytes: bigint; utilization: number }
+    > {
+        const usage: Record<
+            string,
+            { usedBytes: bigint; totalBytes: bigint; utilization: number }
+        > = {};
+        const usedAddresses = this.getUsedAddresses();
+
+        // Initialize segment usage counters
+        for (const [segmentName, segment] of this.segments) {
+            usage[segmentName] = {
+                usedBytes: 0n,
+                totalBytes: segment.size,
+                utilization: 0,
+            };
+        }
+
+        // Count used addresses in each segment
+        for (const address of usedAddresses) {
+            const segmentName = this.getSegmentForAddress(address);
+            if (segmentName && usage[segmentName]) {
+                usage[segmentName].usedBytes++;
+            }
+        }
+
+        // Calculate utilization percentages
+        for (const [segmentName] of this.segments) {
+            const stats = usage[segmentName];
+            if (stats && stats.totalBytes > 0n) {
+                stats.utilization = Number(
+                    (stats.usedBytes * 100n) / stats.totalBytes,
+                );
+            }
+        }
+
+        return usage;
     }
 }

@@ -18,7 +18,7 @@
  *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { architecture, ENDIANNESS, REGISTERS, WORDSIZE } from "../core.mjs";
+import { architecture, REGISTERS, WORDSIZE } from "../core.mjs";
 import { logger } from "../utils/creator_logger.mjs";
 const BINARY_BASE = 2;
 const DECIMAL_BASE = 10;
@@ -324,6 +324,10 @@ function processInstructionField(field, instructionExec, instruction_nwords) {
 
             break;
         }
+        case "skip":
+            value = field.valueField;
+            break;
+
         default:
             logger.error("Unknown field type: " + field.type);
     }
@@ -557,7 +561,6 @@ function checkCandidateOpcode(candidate, instruction) {
  * @param {string} binaryInstruction - The binary instruction string to match
  * @returns {Object|null} The matching instruction object or null if no match found
  */
-// eslint-disable-next-line max-lines-per-function
 function findMatchingInstruction(binaryInstruction) {
     const lookupTable = buildInstructionLookupTable();
     const nwords = binaryInstruction.length / WORDSIZE;
@@ -589,7 +592,7 @@ function findMatchingInstruction(binaryInstruction) {
 
             // Extract opcode from instruction at the expected position
             // Use the actual startbit and stopbit positions to extract the opcode
-            let extractedOpcode = currentBinaryInstruction.substring(
+            const extractedOpcode = currentBinaryInstruction.substring(
                 currentBinaryInstruction.length - startBit - 1,
                 currentBinaryInstruction.length - stopBit,
             );
@@ -774,6 +777,16 @@ export function decode_instruction(toDecode, newFormat = false) {
     const instruction_loaded = instructionArray
         .filter(x => x !== undefined)
         .join(" ");
+
+    const instructionExecParts = instruction_loaded.split(" ");
+    const instructionAltNames = replaceRegisterNames(instructionExecParts);
+
+    let finalInstruction = {
+        instruction: instructionExecParts,
+        instructionAltNames,
+        nwords: matchedInstruction.nwords,
+        definition: matchedInstruction.definition,
+    };
 
     if (newFormat) {
         return instruction_loaded;

@@ -2,7 +2,7 @@ version: 2.0.0
 
 arch_conf:
     Name: RV32
-    Word Size: 32
+    WordSize: 32
     Description: RISC-V is an instruction set architecture (ISA) based on the RISC type and its hardware is free. This architecture was created in 2010 at the University of California, Berkeley.
     Endianness: big_endian
     Memory Alignment: true
@@ -10,6 +10,9 @@ arch_conf:
     Passing Convention: true
     Sensitive Register Name: true
     CommentPrefix: "#"
+    StartAddress: 0x0
+    PCOffset: -4
+    ByteSize: 8
 
 extensions:
     I:
@@ -1367,7 +1370,7 @@ instructions:
                 value: "0000011"
               - field: funct3
                 value: "101"
-          definition: "var addr = CAPI.FP.int2uint(rs1)+imm;\n rd = CAPI.MEM.read(addr, 2, rd_name);\n rd = CAPI.FP.int2uint(rd);"
+          definition: "var addr = CAPI.FP.int2uint(rs1,32)+imm;\n rd = CAPI.MEM.read(addr, 2, rd_name);\n rd = CAPI.FP.int2uint(rd);"
 
         - name: lw
           type: I-Offset
@@ -1376,7 +1379,7 @@ instructions:
                 value: "0000011"
               - field: funct3
                 value: "010"
-          definition: "var addr = CAPI.FP.int2uint(rs1)+imm;\n rd = CAPI.MEM.read(addr, 4, rd_name);"
+          definition: "var addr = CAPI.FP.int2uint(rs1,32)+imm;\n rd = CAPI.MEM.read(addr, 4, rd_name);"
 
         - name: ori
           type: I
@@ -1595,7 +1598,7 @@ instructions:
                 value: "0100011"
               - field: funct3
                 value: "000"
-          definition: "CAPI.MEM.write(rs1+imm, rs2, rs2_name);"
+          definition: "CAPI.MEM.write(rs1+imm, 1, rs2, rs2_name);"
 
         - name: sh
           type: S
@@ -1604,7 +1607,7 @@ instructions:
                 value: "0100011"
               - field: funct3
                 value: "001"
-          definition: "CAPI.MEM.write(imm+rs1, rs2, rs2_name);"
+          definition: "CAPI.MEM.write(imm+rs1, 2, rs2, rs2_name);"
 
         # The check for the
         - name: sw
@@ -1614,7 +1617,7 @@ instructions:
                 value: "0100011"
               - field: funct3
                 value: "010"
-          definition: "CAPI.MEM.write(imm+rs1, rs2, rs2_name); if (rs1_name === 'sp') { const formattedAddr = '0x'+(imm+rs1).toString(16).padStart(8, '0').toUpperCase(); CAPI.DRAW_STACK.addHint(formattedAddr, rs2_name) }"
+          definition: "CAPI.MEM.write(imm+rs1, 4, rs2, rs2_name); if (rs1_name === 'sp') { const formattedAddr = '0x'+(imm+rs1).toString(16).padStart(8, '0').toUpperCase(); CAPI.DRAW_STACK.addHint(formattedAddr, rs2_name) }"
 
         # U-type instructions
         #           31-12                   11-7    6-0
@@ -1653,8 +1656,9 @@ instructions:
                 startbit: 31
                 stopbit: 7
                 value: "0000000000000000000000000"
-          preoperation: "let fa0Value, fa0Type; [fa0Value, fa0Type] = CAPI.RISCV.toJSNumberD(fa0);"
-          definition: "switch(a7){\ncase 1n:\nCAPI.SYSCALL.print(a0,'int');\nbreak;\ncase 2n:\ncase 3n:\nCAPI.SYSCALL.print(fa0Value,'float');\nbreak;\ncase 4n:\nCAPI.SYSCALL.print(a0,'string');\nbreak;\ncase 5n:\nCAPI.SYSCALL.read(a0,'int');\nbreak;\ncase 6n:\nCAPI.SYSCALL.read(fa0Value,'float');\nbreak;\ncase 7n:\nCAPI.SYSCALL.read(fa0Value,'double');\nbreak;\ncase 8n:\nCAPI.SYSCALL.read(a0, a1,'string');\nbreak;\ncase 9n:\nCAPI.SYSCALL.sbrk('a0','a0');\nbreak;\ncase 10n:\nCAPI.SYSCALL.exit();\nbreak;\ncase 11n:\nCAPI.SYSCALL.print(a0,'char');\nbreak;\ncase 12n:\nCAPI.SYSCALL.read(a0,'char');\nbreak;\n}"
+          preoperation: "let fa0Value, fa0Type; [fa0Value, fa0Type] = CAPI.RISCV.toJSNumberD(fa0); a0 = BigInt.asIntN(32, a0);"
+          postoperation: "a0 = BigInt.asUintN(32, a0);"
+          definition: "switch(a7){\ncase 1n:\nCAPI.SYSCALL.print(a0,'int');\nbreak;\ncase 2n:\ncase 3n:\nCAPI.SYSCALL.print(fa0Value,'float');\nbreak;\ncase 4n:\nCAPI.SYSCALL.print(a0,'string');\nbreak;\ncase 5n:\nCAPI.SYSCALL.read('a0','int');\nbreak;\ncase 6n:\nCAPI.SYSCALL.read(fa0Value,'float');\nbreak;\ncase 7n:\nCAPI.SYSCALL.read(fa0Value,'double');\nbreak;\ncase 8n:\nCAPI.SYSCALL.read('a0', 'string', 'a1',);\nbreak;\ncase 9n:\nCAPI.SYSCALL.sbrk('a0','a0');\nbreak;\ncase 10n:\nCAPI.SYSCALL.exit();\nbreak;\ncase 11n:\nCAPI.SYSCALL.print(a0,'char');\nbreak;\ncase 12n:\nCAPI.SYSCALL.read('a0','char');\nbreak;\n}"
 
         - name: ebreak
           type: Custom
@@ -2179,7 +2183,7 @@ instructions:
                 value: "010"
               - field: rs2
                 type: SFP-Reg
-          definition: "let value = rs2 & 0xFFFFFFFFn; CAPI.MEM.write(rs1+imm, value, rs2_name);"
+          definition: "let value = rs2 & 0xFFFFFFFFn; CAPI.MEM.write(rs1+imm, 4, value, rs2_name);"
     D:
         #   ____ __     __ _____ ____   ____
         #  |  _ \\ \   / /|___ /|___ \ |  _ \
@@ -2626,7 +2630,7 @@ instructions:
                 value: "011"
               - field: rs2 # We're overriding the rs2 field from the template
                 type: DFP-Reg
-          definition: "var val = CAPI.FP.split_double(rs2, 0);\n CAPI.MEM.write(rs1+imm, val, rs2_name);\n val = CAPI.FP.split_double(rs2, 1);\n CAPI.MEM.write(rs1+imm+4n, val, rs2_name);"
+          definition: "var val = BigInt('0x' + CAPI.FP.split_double(rs2, 0));\n CAPI.MEM.write(rs1+imm, 4, val, rs2_name);\n val = BigInt('0x' + CAPI.FP.split_double(rs2, 1));\n CAPI.MEM.write(rs1+imm+4n, 4, val, rs2_name);"
     Zicsr:
         #   _____ _
         #  |__  /(_)  ___  ___  _ __

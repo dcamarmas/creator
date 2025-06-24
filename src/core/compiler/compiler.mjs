@@ -18,8 +18,10 @@
  *
  */
 "use strict";
+import { raise } from "../capi/validation.mjs";
 import {
     architecture,
+    newArchitecture,
     architecture_hash,
     status,
     stats,
@@ -32,11 +34,13 @@ import {
     REGISTERS,
     main_memory,
     BYTESIZE,
+    WORDSIZE,
+    ENDIANNESSARR,
 } from "../core.mjs";
 import { bi_intToBigInt } from "../utils/bigint.mjs";
 import { creator_ga } from "../utils/creator_ga.mjs";
 import { logger } from "../utils/creator_logger.mjs";
-import { bin2hex, isDeno, isWeb } from "../utils/utils.mjs";
+import { bin2hex, isDeno, isWeb, uint_to_float64 } from "../utils/utils.mjs";
 
 // Conditional import for the WASM compiler based on the environment (web or Deno)
 // import { DataCategoryJS as DataCategoryJS_web } from "./web/creator_compiler.js";
@@ -193,6 +197,30 @@ export function setInstructions(instructions_) {
     instructions = instructions_;
 }
 
+/**
+ * Helper function to write multi-byte values as words to memory
+ * @param {bigint} addr - Starting memory address
+ * @param {Uint8Array} bytes - Array of bytes to write
+ * @param {number} wordSizeBytes - Size of each word in bytes
+ */
+function writeMultiByteValueAsWords(addr, bytes, wordSizeBytes) {
+    for (
+        let wordOffset = 0;
+        wordOffset < bytes.length;
+        wordOffset += wordSizeBytes
+    ) {
+        const wordBytes = new Uint8Array(wordSizeBytes);
+        for (
+            let i = 0;
+            i < wordSizeBytes && wordOffset + i < bytes.length;
+            i++
+        ) {
+            wordBytes[i] = bytes[wordOffset + i];
+        }
+        main_memory.writeWord(addr + BigInt(wordOffset), wordBytes);
+    }
+}
+
 //
 // Compiler
 //
@@ -268,8 +296,8 @@ export function assembly_compiler(code, library, color) {
     /*Allocation of memory addresses*/
     architecture.memory_layout[4].value = backup_stack_address;
     architecture.memory_layout[3].value = backup_data_address;
-    data_address = parseInt(architecture.memory_layout[2].value);
-    stack_address = parseInt(architecture.memory_layout[4].value);
+    data_address = parseInt(architecture.memory_layout[2].value, 10);
+    stack_address = parseInt(architecture.memory_layout[4].value, 10);
 
     for (let i = 0; i < REGISTERS.length; i++) {
         for (let j = 0; j < REGISTERS[i].elements.length; j++) {
@@ -370,13 +398,187 @@ export function assembly_compiler(code, library, color) {
         const data_mem = compiled.data;
         for (let i = 0; i < data_mem.length; i++) {
             const data = compiled.data[i];
+            const size = BigInt(data.size());
             const addr = BigInt(data.address());
-            const value = BigInt(data.value(true));
 
-            const bytes = main_memory.splitToBytes(value);
-            // Write the data to memory
-            for (let j = 0n; j < bytes.length; j++) {
-                main_memory.write(addr + j, bytes[j]);
+            switch (data.data_category()) {
+                case DataCategoryJS.Number:
+                    switch (data.type()) {
+                        case "float": {
+                            const floatValue = data.value(true);
+                            // Convert float to 32-bit IEEE 754 representation
+                            const buffer = new ArrayBuffer(4);
+                            const view = new DataView(buffer);
+                            view.setFloat32(0, floatValue, false);
+
+                            // Get word size from architecture configuration
+                            const wordSizeBytes =
+                                newArchitecture.arch_conf.WordSize /
+                                newArchitecture.arch_conf.ByteSize;
+
+                            // Extract bytes from the float's binary representation
+                            const floatBytes = new Uint8Array(4);
+                            for (let i = 0; i < 4; i++) {
+                                floatBytes[i] = view.getUint8(i);
+                            }
+
+                            // Write the float as words to memory
+                            writeMultiByteValueAsWords(
+                                addr,
+                                floatBytes,
+                                wordSizeBytes,
+                            );
+                            break;
+                        }
+                        case "double": {
+                            const doubleValue = data.value(true);
+                            // Convert double to 64-bit IEEE 754 representation
+                            const buffer = new ArrayBuffer(8);
+                            const view = new DataView(buffer);
+                            view.setFloat64(0, doubleValue, false); // false = big-endian
+
+                            // Get word size from architecture configuration
+                            const wordSizeBytes =
+                                newArchitecture.arch_conf.WordSize /
+                                newArchitecture.arch_conf.ByteSize;
+
+                            // Extract bytes from the double's binary representation
+                            const doubleBytes = new Uint8Array(8);
+                            for (let i = 0; i < 8; i++) {
+                                doubleBytes[i] = view.getUint8(i);
+                            }
+
+                            // Write the double as words to memory
+                            writeMultiByteValueAsWords(
+                                addr,
+                                doubleBytes,
+                                wordSizeBytes,
+                            );
+                            break;
+                        }
+                        case "byte": {
+                            const byteValue = Number("0x" + data.value());
+                            main_memory.write(addr, byteValue);
+                            break;
+                        }
+                        case "word":
+                            {
+                                const wordValue = BigInt("0x" + data.value());
+                                // Get word size from architecture configuration
+                                const wordSizeBytes =
+                                    newArchitecture.arch_conf.WordSize /
+                                    newArchitecture.arch_conf.ByteSize;
+                                // Split the word into bytes
+                                const wordBytes = new Uint8Array(wordSizeBytes);
+
+                                // Extract bytes from the word value based on word size
+                                for (let i = 0; i < wordSizeBytes; i++) {
+                                    const shiftAmount = BigInt(
+                                        (wordSizeBytes - 1 - i) *
+                                            newArchitecture.arch_conf.ByteSize,
+                                    );
+                                    wordBytes[i] = Number(
+                                        (wordValue >> shiftAmount) &
+                                            BigInt(
+                                                (1 <<
+                                                    newArchitecture.arch_conf
+                                                        .ByteSize) -
+                                                    1,
+                                            ),
+                                    );
+                                }
+
+                                main_memory.writeWord(addr, wordBytes);
+                            }
+
+                            break;
+                        case "half": {
+                            const halfValue = BigInt("0x" + data.value());
+                            // Split the half-word into bytes
+                            const halfBytes = new Uint8Array(2);
+                            halfBytes[0] = Number((halfValue >> 8n) & 0xffn);
+                            halfBytes[1] = Number(halfValue & 0xffn);
+
+                            // Reorder bytes according to endianness
+                            // For half-word, we need to determine the byte order within a 2-byte boundary
+                            // Extract the relative ordering from ENDIANNESSARR for the first 2 bytes
+
+                            // This might seem obvious, but even though ENDIANNESSARR contains the ordering
+                            // of the bytes within a word, and it can be any order (not just big-endian or
+                            // little-endian), if we're looking at a half-word (2 bytes), the order can
+                            // ONLY be one of two possibilities:
+                            // 1. Big-endian: byte0 first, byte1 second
+                            // 2. Little-endian: byte1 first, byte0 second
+
+                            const orderedBytes = new Uint8Array(2);
+
+                            // Find which positions in ENDIANNESSARR correspond to bytes 0 and 1
+                            const byte0Pos = ENDIANNESSARR.indexOf(0);
+                            const byte1Pos = ENDIANNESSARR.indexOf(1);
+
+                            // Order the bytes according to their positions
+                            if (byte0Pos < byte1Pos) {
+                                // Big-endian order for half-word
+                                orderedBytes[0] = halfBytes[0];
+                                orderedBytes[1] = halfBytes[1];
+                            } else {
+                                // Little-endian order for half-word
+                                orderedBytes[0] = halfBytes[1];
+                                orderedBytes[1] = halfBytes[0];
+                            }
+
+                            // Write byte by byte
+                            main_memory.write(addr, orderedBytes[0]);
+                            main_memory.write(addr + 1n, orderedBytes[1]);
+
+                            break;
+                        }
+                        default: {
+                            throw new Error(
+                                `Unsupported number type: ${data.type()}`,
+                            );
+                        }
+                    }
+
+                    break;
+                case DataCategoryJS.String: {
+                    const encoder = new TextEncoder();
+                    let currentAddr = addr;
+
+                    for (const ch_h of data.value()) {
+                        const bytes = new Uint8Array(4);
+                        const n = encoder.encodeInto(ch_h, bytes).written;
+                        // Write the string to memory
+                        for (let j = 0; j < n; j++) {
+                            main_memory.write(currentAddr, bytes[j]);
+                            currentAddr++;
+                        }
+                    }
+                    break;
+                }
+                case DataCategoryJS.Padding:
+                case DataCategoryJS.Space: {
+                    const space_size = BigInt(data.size());
+                    if (space_size < 0n) {
+                        throw new Error(
+                            "The space directive value should be positive and greater than zero",
+                        );
+                    }
+                    if (space_size > 50n * 1024n * 1024n) {
+                        throw new Error(
+                            ".space value out of range (greater than 50MiB)",
+                        );
+                    }
+                    // Write zeroes to the memory
+                    for (let j = 0n; j < space_size; j++) {
+                        main_memory.write(addr + j, 0);
+                    }
+                    break;
+                }
+                default:
+                    throw new Error(
+                        `Unknown data category: ${data.data_category()}`,
+                    );
             }
         }
         // Catch any errors thrown by the compiler
@@ -414,16 +616,24 @@ export function assembly_compiler(code, library, color) {
         const instruction = instructions[i];
         const baseAddr = parseInt(instruction.Address, 16);
 
-        // Split binary into bytes and write to memory
-        for (let j = 0; j < instruction.binary.length; j += BYTESIZE) {
-            const byte = parseInt(instruction.binary.substr(j, BYTESIZE), 2);
-            main_memory.write(baseAddr + j / BYTESIZE, byte);
+        // Split binary into words and write to memory
+        for (let j = 0; j < instruction.binary.length; j += WORDSIZE) {
+            const wordBinary = instruction.binary.substr(j, WORDSIZE);
+            const wordBytes = [];
+
+            // Split word into bytes
+            for (let k = 0; k < wordBinary.length; k += BYTESIZE) {
+                const byte = parseInt(wordBinary.substr(k, BYTESIZE), 2);
+                wordBytes.push(byte);
+            }
+
+            main_memory.writeWord(BigInt(baseAddr + j / BYTESIZE), wordBytes);
         }
     }
 
     /*Save binary*/
     for (const instruction of instructions_binary) {
-        if (instruction.Label != "") {
+        if (instruction.Label !== "") {
             if (label_table[instruction.Label].global === true) {
                 instruction.globl = true;
             } else {
