@@ -18,7 +18,13 @@ You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
+<!-- TODO: this whole thing needs to be redone... -->
+
 <script>
+import { console_log } from "@/web/utils.mjs"
+import { hex2float, float2bin, bin2hex } from "@/core/utils/utils.mjs"
+import { creator_ga } from "@/core/utils/creator_ga.mjs"
+
 export default {
   props: {
     id: { type: String, required: true },
@@ -38,7 +44,7 @@ export default {
         sign: "",
         exponent: "",
         mantissa: "",
-        mantisaDec: 0,
+        mantissaDec: 0,
         exponentDec: "",
         decimal: "",
         variant32: "primary",
@@ -92,7 +98,11 @@ export default {
     },
 
     /*Calculator functionality*/
+    // eslint-disable-next-line max-lines-per-function
     calculatorFunct(index) {
+      let float
+      let binary
+
       switch (index) {
         case 0:
           console_log(
@@ -102,8 +112,6 @@ export default {
             this.calculator.bits / 4,
             "0",
           )
-          let float
-          let binary
 
           if (this.calculator.bits === 32) {
             const re = /[0-9A-Fa-f]{8}/g
@@ -137,9 +145,8 @@ export default {
             let j = 0
             for (let i = 0; i < this.calculator.mantissa.length; i++) {
               j--
-              this.calculator.mantissaDec =
-                this.calculator.mantissaDec +
-                parseInt(this.calculator.mantissa.charAt(i)) * Math.pow(2, j)
+              this.calculator.mantissaDec +=
+                parseInt(this.calculator.mantissa.charAt(i), 10) * 2 ** j
             }
 
             /* Google Analytics */
@@ -189,9 +196,8 @@ export default {
             let j = 0
             for (let i = 0; i < this.calculator.mantissa.length; i++) {
               j--
-              this.calculator.mantissaDec =
-                this.calculator.mantissaDec +
-                parseInt(this.calculator.mantissa.charAt(i)) * Math.pow(2, j)
+              this.calculator.mantissaDec +=
+                parseInt(this.calculator.mantissa.charAt(i), 10) * 2 ** j
             }
 
             /* Google Analytics */
@@ -238,8 +244,8 @@ export default {
               return
             }
 
-            float = hex2float("0x" + bin2hex(binary))
-            hexadecimal = bin2hex(binary)
+            const float = hex2float("0x" + bin2hex(binary))
+            const hexadecimal = bin2hex(binary)
 
             this.calculator.decimal = float
             this.calculator.hexadecimal = hexadecimal.padStart(
@@ -255,9 +261,8 @@ export default {
             let j = 0
             for (let i = 0; i < this.calculator.mantissa.length; i++) {
               j--
-              this.calculator.mantissaDec =
-                this.calculator.mantissaDec +
-                parseInt(this.calculator.mantissa.charAt(i)) * Math.pow(2, j)
+              this.calculator.mantissaDec +=
+                parseInt(this.calculator.mantissa.charAt(i), 10) * 2 ** j
             }
 
             /*Google Analytics*/
@@ -307,15 +312,14 @@ export default {
               let j = 0
               for (let i = 0; i < this.calculator.mantissa.length; i++) {
                 j--
-                this.calculator.mantissaDec =
-                  this.calculator.mantissaDec +
-                  parseInt(this.calculator.mantissa.charAt(i)) * Math.pow(2, j)
+                this.calculator.mantissaDec +=
+                  parseInt(this.calculator.mantissa.charAt(i), 10) * 2 ** j
               }
               return
             }
 
             double = hex2double("0x" + bin2hex(binary))
-            hexadecimal = bin2hex(binary)
+            const hexadecimal = bin2hex(binary)
 
             this.calculator.decimal = double
             this.calculator.hexadecimal = hexadecimal.padStart(
@@ -342,7 +346,7 @@ export default {
 
           break
         case 2:
-          if (this.calculator.decimal.indexOf(",") != -1) {
+          if (this.calculator.decimal.indexOf(",") !== -1) {
             this.calculator.decimal = this.calculator.decimal.replace(",", ".")
           }
 
@@ -371,9 +375,8 @@ export default {
             let j = 0
             for (let i = 0; i < this.calculator.mantissa.length; i++) {
               j--
-              this.calculator.mantissaDec =
-                this.calculator.mantissaDec +
-                parseInt(this.calculator.mantissa.charAt(i)) * Math.pow(2, j)
+              this.calculator.mantissaDec +=
+                parseInt(this.calculator.mantissa.charAt(i), 10) * 2 ** j
             }
 
             /*Google Analytics*/
@@ -413,9 +416,8 @@ export default {
             let j = 0
             for (let i = 0; i < this.calculator.mantissa.length; i++) {
               j--
-              this.calculator.mantissaDec =
-                this.calculator.mantissaDec +
-                parseInt(this.calculator.mantissa.charAt(i)) * Math.pow(2, j)
+              this.calculator.mantissaDec +=
+                parseInt(this.calculator.mantissa.charAt(i), 10) * 2 ** j
             }
 
             /* Google Analytics */
@@ -435,39 +437,9 @@ export default {
             )
           }
           break
+        default:
       }
     },
-
-    /*Stop user interface refresh*/
-    debounce: _.debounce(function (param, e) {
-      console_log(param)
-      console_log(e)
-
-      e.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
-      let re = new RegExp("'", "g")
-      e = e.replace(re, '"')
-      re = new RegExp("[\f]", "g")
-      e = e.replace(re, "\\f")
-      re = new RegExp("[\n\]", "g")
-      e = e.replace(re, "\\n")
-      re = new RegExp("[\r]", "g")
-      e = e.replace(re, "\\r")
-      re = new RegExp("[\t]", "g")
-      e = e.replace(re, "\\t")
-      re = new RegExp("[\v]", "g")
-      e = e.replace(re, "\\v")
-
-      if (e == "") {
-        this[param] = null
-        return
-      }
-
-      console_log("this." + param + "= '" + e + "'")
-
-      eval("this." + param + "= '" + e + "'")
-
-      app.$forceUpdate()
-    }, getDebounceTime()),
   },
 }
 </script>
@@ -507,8 +479,7 @@ export default {
         <b-col lg="6" offset-lg="2" class="pt-3">
           <b-form-input
             class="form-control form-control-sm"
-            v-on:input="debounce('calculator.hexadecimal', $event)"
-            :value="calculator.hexadecimal"
+            v-model="calculator.hexadecimal"
             @change="calculatorFunct(0)"
             placeholder="Enter hexadecimal number"
             :maxlength="calculator.lengthHexadecimal"
@@ -536,8 +507,7 @@ export default {
         <b-col lg="1" cols="2" offset-lg="1" class="p-1">
           <b-form-input
             class="form-control form-control-sm"
-            v-on:input="debounce('calculator.sign', $event)"
-            :value="calculator.sign"
+            v-model="calculator.sign"
             @change="calculatorFunct(1)"
             placeholder="Enter sign"
             :maxlength="calculator.lengthSign"
@@ -547,8 +517,7 @@ export default {
         <b-col lg="3" cols="4" class="p-1">
           <b-form-input
             class="form-control form-control-sm"
-            v-on:input="debounce('calculator.exponent', $event)"
-            :value="calculator.exponent"
+            v-model="calculator.exponent"
             @change="calculatorFunct(1)"
             placeholder="Enter exponent"
             :maxlength="calculator.lengthExponent"
@@ -558,8 +527,7 @@ export default {
         <b-col lg="4" cols="6" class="p-1">
           <b-form-input
             class="form-control form-control-sm"
-            v-on:input="debounce('calculator.mantissa', $event)"
-            :value="calculator.mantissa"
+            v-model="calculator.mantissa"
             @change="calculatorFunct(1)"
             placeholder="Enter mantissa"
             :maxlength="calculator.lengthMantissa"
@@ -572,14 +540,14 @@ export default {
     <b-container fluid align-h="start" class="mx-0 px-0 text-center">
       <b-row cols="4" align-h="start">
         <b-col lg="1" cols="2" offset-lg="1" class="p-1">
-          <span class="fas fa-long-arrow-alt-down p-1" />
+          <font-awesome-icon icon="fas fa-long-arrow-alt-down" class="p-1" />
           <br />
           <span class="h5">
             -1<sup>{{ calculator.sign }}</sup> *
           </span>
         </b-col>
         <b-col lg="3" cols="4" class="p-1">
-          <span class="fas fa-long-arrow-alt-down p-1" />
+          <font-awesome-icon icon="fas fa-long-arrow-alt-down" class="p-1" />
           <br />
           <span class="h5" v-if="calculator.bits == 32">
             2
@@ -588,25 +556,25 @@ export default {
             </sup>
             <sup
               v-if="
-                calculator.exponent != '' &&
-                calculator.exponent == 0 &&
-                calculator.mantissa != 0
+                calculator.exponent !== '' &&
+                calculator.exponent === 0 &&
+                calculator.mantissa !== 0
               "
             >
               {{ calculator.exponentDec }}-126
             </sup>
             *
           </span>
-          <span class="h5" v-if="calculator.bits == 64">
+          <span class="h5" v-if="calculator.bits === 64">
             2
             <sup v-if="calculator.exponent == '' || calculator.exponent != 0">
               {{ calculator.exponentDec }}-1023
             </sup>
             <sup
               v-if="
-                calculator.exponent != '' &&
-                calculator.exponent == 0 &&
-                calculator.mantissa != 0
+                calculator.exponent !== '' &&
+                calculator.exponent === 0 &&
+                calculator.mantissa !== 0
               "
             >
               {{ calculator.exponentDec }}-1022
@@ -615,15 +583,14 @@ export default {
           </span>
         </b-col>
         <b-col lg="4" cols="6" class="p-1">
-          <span class="fas fa-long-arrow-alt-down p-1"></span>
+          <font-awesome-icon icon="fas fa-long-arrow-alt-down" />
           <br />
-          <span class="h5"> {{ calculator.mantissaDec }} = </span>
+          <span class="h6"> {{ calculator.mantissaDec }} = </span>
         </b-col>
-        <b-col lg="3" cols="12" class="pt-3">
+        <b-col lg="3" cols="12" class="pt-4">
           <b-form-input
             class="form-control form-control-sm"
-            v-on:input="debounce('calculator.decimal', $event)"
-            :value="calculator.decimal"
+            v-model="calculator.decimal"
             @change="calculatorFunct(2)"
             placeholder="Enter decimal number"
             title="Decimal"
