@@ -27,7 +27,7 @@ import {
 // import $ from "jquery"
 
 import package_json from "/package.json" // package info
-import arch_available from "/architecture/available_arch.json" // package info
+import arch_available from "/architecture/available_arch.json"
 
 import {
   notifications,
@@ -553,11 +553,11 @@ export default {
     <UIeltoAbout id="about" />
 
     <!-- Instruction Help sidebar -->
+    <!-- we don't want to load this unless we have selected an architecture -->
     <SidebarInstructionHelp
+      v-if="architecture_name !== ''"
       id="sidebar_help"
       :architecture_name="architecture_name"
-      :architecture="architecture"
-      :architecture_guide="architecture_guide"
       :instruction_help_size="instruction_help_size"
     />
 

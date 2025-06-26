@@ -403,6 +403,7 @@ function buildCompleteInstruction(
     result.name = instruction.name;
     result.fields = mergedFields;
     result.definition = instruction.definition;
+    result.help = instruction.help ?? ""
 
     if (legacy) {
         // This will eventually be removed!!
@@ -410,7 +411,6 @@ function buildCompleteInstruction(
         result.type = "Other";
         result.description = "";
         result.separated = [];
-        result.help = "";
         let breakpoint = instruction.name;
         // Create arrays to hold ordered fields
         const orderedFields = [];
@@ -1163,7 +1163,7 @@ export function newArchitectureLoad(
         logger.error(`Error loading architecture: ${error}`);
         return {
             errorcode: "load_error",
-            token: `Failed to load architecture: ${error.message}`,
+            token: `Failed to load architecture: ${error.message || error}`,
             type: "error",
             update: "",
             status: "ko",

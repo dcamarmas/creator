@@ -128,36 +128,41 @@ export function loadArchitecture(arch, root = document.app) {
     $.ajaxSetup({ async: false })
 
     $.get("architecture/" + arch.file + ".yml", cfg => {
-        newArchitectureLoad(cfg)
+        const { status, errorcode, token } = newArchitectureLoad(cfg);
+
+        if (status === "ko") {
+            show_notification(`[${errorcode}] ${token}`, "danger", root);
+
+            return;
+        }
 
         // store code to be edited
-        root.arch_code = cfg
+        root.arch_code = cfg;
 
         //Refresh UI
         show_notification(
             arch.name + " architecture has been loaded correctly",
             "success",
-            root
-        )
+            root,
+        );
 
         // Google Analytics
         creator_ga(
             "architecture",
             "architecture.loading",
             "architectures.loading.preload_cache",
-        )
+        );
 
         // hide_loading()
-
     }).fail(() => {
         show_notification(
             arch.name + " architecture is not currently available",
             "danger",
-            root
-        )
+            root,
+        );
 
         // hide_loading()
-    })
+    });
 
 }
 
