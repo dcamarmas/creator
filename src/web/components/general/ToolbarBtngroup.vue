@@ -121,6 +121,10 @@ export default {
   },
 
   methods: {
+    help_event(event) {
+      creator_ga('send', 'event', 'help', `help.${event}`, `help.${event}`)
+    },
+
     //
     //Screen change
     //
@@ -800,10 +804,11 @@ export default {
         <!-- button_information -->
 
         <b-popover
-          v-if="item == 'btn_information'"
+          v-if="item === 'btn_information'"
           :click="true"
           :close-on-hide="true"
           :delay="{ show: 0, hide: 0 }"
+          position="auto"
         >
           <template #target>
             <b-button
@@ -817,39 +822,42 @@ export default {
             </b-button>
           </template>
 
-          <b-button
-            href="https://creatorsim.github.io/"
-            target="_blank"
-            size="sm"
-            variant="warning"
-            onclick="creator_ga('send', 'event', 'help', 'help.general_help', 'help.general_help');"
-          >
-            <font-awesome-icon icon="fa-question-circle" />
-            Help
-          </b-button>
+          <div class="d-grid gap-2">
+            <b-button
+              class="infoButton text-truncate"
+              href="https://creatorsim.github.io/"
+              target="_blank"
+              size="sm"
+              variant="outline-secondary"
+              @click="help_event('general_help')"
+            >
+              <font-awesome-icon icon="fa-question-circle" />
+              Help
+            </b-button>
 
-          <b-button
-            class="h-100 infoButton"
-            v-if="show_instruction_help"
-            id="inst_ass"
-            v-b-toggle.sidebar_help
-            size="sm"
-            variant="outline-secondary"
-            onclick="creator_ga('send', 'event', 'help', 'help.instruction_help', 'help.instruction_help');"
-          >
-            <font-awesome-icon icon="fa-book" />
-            Instruction Help
-          </b-button>
+            <b-button
+              class="infoButton"
+              v-if="show_instruction_help"
+              id="inst_ass"
+              v-b-toggle.sidebar_help
+              size="sm"
+              variant="outline-secondary"
+              @click="help_event('instruction_help')"
+            >
+              <font-awesome-icon icon="fa-book" />
+              Instruction Help
+            </b-button>
 
-          <b-button
-            class="buttonBackground h-100"
-            size="sm"
-            variant="outline-secondary"
-            v-b-modal.notifications
-          >
-            <font-awesome-icon icon="fa-bell" />
-            Show Notifications
-          </b-button>
+            <b-button
+              class="menuButton"
+              size="sm"
+              variant="outline-secondary"
+              v-b-modal.notifications
+            >
+              <font-awesome-icon icon="fa-bell" />
+              Show Notifications
+            </b-button>
+          </div>
         </b-popover>
       </b-col>
     </b-row>
