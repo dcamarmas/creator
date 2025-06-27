@@ -155,7 +155,7 @@ export let REGISTERS;
 export let REGISTERS_BACKUP = [];
 export const register_size_bits = 64; //TODO: load from architecture
 export let main_memory;
-let main_memory_backup;
+export let main_memory_backup;
 
 export let architecture_available = [];
 export let load_architectures_available = [];
@@ -1354,8 +1354,8 @@ export function reset() {
     architecture.memory_layout[3].value = backup_data_address;
 
     // reset memory
-    // main_memory.restore(main_memory_backup); // FIXME: When loading a binary, this resets the memory to the initial state, which doesn't include the binary data.
-
+    main_memory.restore(main_memory_backup);
+    main_memory.clearHints();
     //Stack Reset
     creator_callstack_reset();
     track_stack_reset();
@@ -1369,7 +1369,29 @@ export function snapshot(extraData) {
     const instructionsJson = JSON.stringify(instructions);
 
     // Also dump the main_memory
-    const memoryJson = main_memory_serialize();
+    const memoryDump = main_memory.dump();
+
+    // Serialize the memory dump efficiently using base64 encoding
+    // This avoids the memory overhead and performance issues of Array.from()
+    let base64Buffer;
+    if (typeof Buffer !== "undefined") {
+        // Node.js environment
+        base64Buffer = Buffer.from(memoryDump.buffer).toString("base64");
+    } else {
+        // Browser environment
+        const binaryString = String.fromCharCode.apply(
+            null,
+            Array.from(memoryDump.buffer),
+        );
+        base64Buffer = btoa(binaryString);
+    }
+
+    const memoryJson = JSON.stringify({
+        buffer: base64Buffer,
+        bitsPerByte: memoryDump.bitsPerByte,
+        size: memoryDump.size,
+        encoding: "base64",
+    });
 
     // And the status
     const statusJson = JSON.stringify(status);
@@ -1409,6 +1431,35 @@ export function restore(snapshot) {
     const statusObj = JSON.parse(statusJson);
     const registersObj = registersJson ? JSON.parse(registersJson) : null;
     const stackData = parsedSnapshot.stack;
+
+    // Deserialize the memory dump - handle both old array format and new base64 format
+    let memoryBuffer;
+    if (memoryObj.encoding === "base64") {
+        // New base64 format
+        if (typeof Buffer !== "undefined") {
+            // Node.js environment
+            memoryBuffer = new Uint8Array(
+                Buffer.from(memoryObj.buffer, "base64"),
+            );
+        } else {
+            // Browser environment
+            const binaryString = atob(memoryObj.buffer);
+            memoryBuffer = new Uint8Array(binaryString.length);
+            for (let i = 0; i < binaryString.length; i++) {
+                memoryBuffer[i] = binaryString.charCodeAt(i);
+            }
+        }
+    } else {
+        // Legacy array format (for backward compatibility)
+        memoryBuffer = new Uint8Array(memoryObj.buffer);
+    }
+
+    const memoryDump = {
+        buffer: memoryBuffer,
+        bitsPerByte: memoryObj.bitsPerByte,
+        size: memoryObj.size,
+    };
+
     // Restore the instructions
     setInstructions(instructionsObj);
     // Restore the architecture object
@@ -1418,7 +1469,7 @@ export function restore(snapshot) {
         REGISTERS = registersObj;
     }
     // Restore the main memory
-    main_memory_restore(memoryObj);
+    main_memory.restore(memoryDump);
     // Restore the stack
     loadStack(stackData);
     // Restore the status
@@ -1582,4 +1633,24 @@ export function getRegisterInfo(regName) {
     }
 
     return null;
+}
+export function loadBinaryFile(filePath, offset = 0n) {
+    try {
+        // Load the binary file into memory
+        main_memory.loadBinaryFile(filePath, offset);
+
+        // Create a new backup of memory that includes the loaded binary data
+        // This ensures that reset() will restore to the state with the binary loaded
+        main_memory_backup = main_memory.dump();
+
+        return {
+            status: "ok",
+            msg: "Binary file loaded successfully",
+        };
+    } catch (error) {
+        return {
+            status: "error",
+            msg: `Error loading binary file: ${error.message}`,
+        };
+    }
 }

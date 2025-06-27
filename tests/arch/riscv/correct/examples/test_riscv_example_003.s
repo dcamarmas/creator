@@ -6,6 +6,7 @@
 .data
     w1:     .word 14
     b1:     .byte 120
+    b4:     .byte 0x7F
 
     .align 1
     h1:     .half 22

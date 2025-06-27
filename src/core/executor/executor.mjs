@@ -522,16 +522,6 @@ export function writeStackLimit(stackLimit) {
 
     // Get current stack pointer from memory segments
     const stackSegment = segments.get("stack");
-    let currentStackPointer;
-    if (stackSegment) {
-        // Use the stack segment's current pointer (stored in the start address)
-        currentStackPointer = BigInt(stackSegment.start);
-    } else {
-        // If no stack segment is defined, we can't determine the current stack pointer
-        // This might indicate a configuration issue
-        logger.warn("No stack segment found in memory layout");
-        currentStackPointer = stackLimitBigInt; // Assume it's at the desired limit
-    }
 
     track_stack_setsp(Number(stackLimitBigInt));
 
@@ -541,5 +531,7 @@ export function writeStackLimit(stackLimit) {
         stackSegment.start =
             "0x" + stackLimitBigInt.toString(16).padStart(8, "0").toUpperCase();
         stackSegment.startAddress = stackLimitBigInt;
+        // And update the size of the stack segment
+        stackSegment.size = stackSegment.endAddress - stackSegment.startAddress;
     }
 }
