@@ -588,7 +588,7 @@ export default {
   <!------------------>
 
   <ArchitectureView
-    v-if="creator_mode == 'architecture'"
+    v-if="creator_mode === 'architecture'"
     :architecture_name="architecture_name"
     :arch_available="arch_available"
     :arch_code="arch_code"
@@ -619,7 +619,7 @@ export default {
   <!-------------------->
 
   <SimulatorView
-    v-if="creator_mode == 'simulator'"
+    v-if="creator_mode === 'simulator'"
     v-model:data_mode="data_mode"
     v-model:reg_representation_int="reg_representation_int"
     v-model:reg_representation_float="reg_representation_float"

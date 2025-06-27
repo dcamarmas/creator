@@ -167,6 +167,9 @@ export let instructions = [];
 export function clear_instructions() {
     instructions = [];
 }
+export function set_instructions(value) {
+    instructions = value;
+}
 export let tag_instructions = {};
 let instructions_binary = [];
 
