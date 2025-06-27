@@ -265,6 +265,7 @@ export function assembly_compiler(code, library, color) {
     tag_instructions = {};
     data_tag = [];
     main_memory.zeroOut();
+    main_memory.clearHints(); // Clear any existing memory hints
     data = [];
     status.execution_init = 1;
 
@@ -428,6 +429,9 @@ export function assembly_compiler(code, library, color) {
                                 floatBytes,
                                 wordSizeBytes,
                             );
+
+                            // Add memory hint for the float
+                            main_memory.addHint(addr, "<float>", 32);
                             break;
                         }
                         case "double": {
@@ -454,11 +458,17 @@ export function assembly_compiler(code, library, color) {
                                 doubleBytes,
                                 wordSizeBytes,
                             );
+
+                            // Add memory hint for the double
+                            main_memory.addHint(addr, "<double>", 64);
                             break;
                         }
                         case "byte": {
                             const byteValue = Number("0x" + data.value());
                             main_memory.write(addr, byteValue);
+
+                            // Add memory hint for the byte
+                            main_memory.addHint(addr, "<byte>", 8);
                             break;
                         }
                         case "word":
@@ -489,6 +499,13 @@ export function assembly_compiler(code, library, color) {
                                 }
 
                                 main_memory.writeWord(addr, wordBytes);
+
+                                // Add memory hint for the word
+                                main_memory.addHint(
+                                    addr,
+                                    "<word>",
+                                    newArchitecture.arch_conf.WordSize,
+                                );
                             }
 
                             break;
@@ -531,6 +548,9 @@ export function assembly_compiler(code, library, color) {
                             main_memory.write(addr, orderedBytes[0]);
                             main_memory.write(addr + 1n, orderedBytes[1]);
 
+                            // Add memory hint for the half-word
+                            main_memory.addHint(addr, "<half>", 16);
+
                             break;
                         }
                         default: {
@@ -544,6 +564,7 @@ export function assembly_compiler(code, library, color) {
                 case DataCategoryJS.String: {
                     const encoder = new TextEncoder();
                     let currentAddr = addr;
+                    const startAddr = addr;
 
                     for (const ch_h of data.value()) {
                         const bytes = new Uint8Array(4);
@@ -554,6 +575,14 @@ export function assembly_compiler(code, library, color) {
                             currentAddr++;
                         }
                     }
+
+                    // Add memory hint for the string
+                    const stringLength = Number(currentAddr - startAddr);
+                    main_memory.addHint(
+                        startAddr,
+                        "<string>",
+                        stringLength * 8,
+                    ); // stringLength in bytes * 8 bits per byte
                     break;
                 }
                 case DataCategoryJS.Padding:
@@ -573,6 +602,13 @@ export function assembly_compiler(code, library, color) {
                     for (let j = 0n; j < space_size; j++) {
                         main_memory.write(addr + j, 0);
                     }
+
+                    // Add memory hint for the space/padding
+                    const hintType =
+                        data.data_category() === DataCategoryJS.Padding
+                            ? "<padding>"
+                            : "<space>";
+                    main_memory.addHint(addr, hintType, Number(space_size) * 8); // space_size in bytes * 8 bits per byte
                     break;
                 }
                 default:

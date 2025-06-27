@@ -33,7 +33,7 @@ import { readFileSync } from "node:fs";
  * individual byte operations (read/write) work with physical layout.
  *
  * ### Memory Layout Segments
- * The memory system now supports architectural memory layout with named segments:
+ * The memory system supports architectural memory layout with named segments:
  * - **Text Segment**: Contains executable instructions
  * - **Data Segment**: Contains initialized data
  * - **Stack Segment**: Contains runtime stack
@@ -138,6 +138,15 @@ interface MemorySegment {
 }
 
 /**
+ * Interface for memory hints
+ */
+interface MemoryHint {
+    address: bigint;
+    hint: string;
+    sizeInBits?: number; // Optional size of the type in bits
+}
+
+/**
  * Configuration options for Memory constructor
  */
 interface MemoryConfig {
@@ -202,6 +211,9 @@ export class Memory {
 
     /** Cache for segment lookups to improve performance */
     private segmentCache!: Map<bigint, string>;
+
+    /** Map of memory hints: address -> hint information */
+    private hints!: Map<bigint, MemoryHint>;
 
     /**
      * Creates a new Memory instance with configurable byte size, word size, endianness, and memory layout.
@@ -275,6 +287,9 @@ export class Memory {
 
         // Initialize memory layout and segments
         this.initializeMemoryLayout(finalConfig);
+
+        // Initialize hints system
+        this.hints = new Map();
 
         // Initialize storage buffer
         this.initializeStorage(finalConfig);
@@ -1250,5 +1265,151 @@ export class Memory {
         }
 
         return usage;
+    }
+
+    /**
+     * Adds a hint for a memory address.
+     *
+     * @param address - Memory address to add hint for
+     * @param hint - Description of the data type or purpose (e.g., "<double>", "<int32>", "<string>")
+     * @param sizeInBits - Optional size of the type in bits (e.g., 64 for double, 32 for int32)
+     *
+     * @example Adding hints
+     * ```typescript
+     * const memory = new Memory({ sizeInBytes: 1024 });
+     * memory.addHint(0x100n, "<double>", 64);
+     * memory.addHint(0x200n, "<int32>", 32);
+     * memory.addHint(0x300n, "<string>"); // No size specified
+     * ```
+     */
+    addHint(address: bigint, hint: string, sizeInBits?: number): void {
+        this.hints.set(address, {
+            address,
+            hint,
+            sizeInBits,
+        });
+    }
+
+    /**
+     * Removes a hint for a memory address.
+     *
+     * @param address - Memory address to remove hint for
+     * @returns True if hint was removed, false if no hint existed
+     *
+     * @example Removing hints
+     * ```typescript
+     * const memory = new Memory({ sizeInBytes: 1024 });
+     * memory.addHint(0x100n, "<double>", 64);
+     * const removed = memory.removeHint(0x100n); // true
+     * const notFound = memory.removeHint(0x200n); // false
+     * ```
+     */
+    removeHint(address: bigint): boolean {
+        return this.hints.delete(address);
+    }
+
+    /**
+     * Gets the hint for a memory address.
+     *
+     * @param address - Memory address to get hint for
+     * @returns Hint information if it exists, undefined otherwise
+     *
+     * @example Getting hints
+     * ```typescript
+     * const memory = new Memory({ sizeInBytes: 1024 });
+     * memory.addHint(0x100n, "<double>", 64);
+     *
+     * const hint = memory.getHint(0x100n);
+     * if (hint) {
+     *     console.log(`Address ${hint.address.toString(16)}: ${hint.hint}`);
+     *     if (hint.sizeInBits) {
+     *         console.log(`Size: ${hint.sizeInBits} bits`);
+     *     }
+     * }
+     * ```
+     */
+    getHint(address: bigint): MemoryHint | undefined {
+        return this.hints.get(address);
+    }
+
+    /**
+     * Gets all hints in memory.
+     *
+     * @returns Array of all hint information, sorted by address
+     *
+     * @example Getting all hints
+     * ```typescript
+     * const memory = new Memory({ sizeInBytes: 1024 });
+     * memory.addHint(0x200n, "<int32>", 32);
+     * memory.addHint(0x100n, "<double>", 64);
+     *
+     * const hints = memory.getAllHints();
+     * for (const hint of hints) {
+     *     console.log(`0x${hint.address.toString(16)}: ${hint.hint}`);
+     * }
+     * // Output:
+     * // 0x100: <double>
+     * // 0x200: <int32>
+     * ```
+     */
+    getAllHints(): MemoryHint[] {
+        const hints = Array.from(this.hints.values());
+        hints.sort((a, b) => {
+            if (a.address < b.address) return -1;
+            if (a.address > b.address) return 1;
+            return 0;
+        });
+        return hints;
+    }
+
+    /**
+     * Clears all hints from memory.
+     *
+     * @example Clearing hints
+     * ```typescript
+     * const memory = new Memory({ sizeInBytes: 1024 });
+     * memory.addHint(0x100n, "<double>", 64);
+     * memory.addHint(0x200n, "<int32>", 32);
+     *
+     * console.log(memory.getAllHints().length); // 2
+     * memory.clearHints();
+     * console.log(memory.getAllHints().length); // 0
+     * ```
+     */
+    clearHints(): void {
+        this.hints.clear();
+    }
+
+    /**
+     * Gets hints within a specified address range.
+     *
+     * @param startAddress - Start of address range (inclusive)
+     * @param endAddress - End of address range (inclusive)
+     * @returns Array of hints within the range, sorted by address
+     *
+     * @example Getting hints in range
+     * ```typescript
+     * const memory = new Memory({ sizeInBytes: 1024 });
+     * memory.addHint(0x100n, "<double>", 64);
+     * memory.addHint(0x200n, "<int32>", 32);
+     * memory.addHint(0x300n, "<string>");
+     *
+     * const hintsInRange = memory.getHintsInRange(0x150n, 0x250n);
+     * console.log(hintsInRange.length); // 1 (only the int32 at 0x200)
+     * ```
+     */
+    getHintsInRange(startAddress: bigint, endAddress: bigint): MemoryHint[] {
+        const hintsInRange: MemoryHint[] = [];
+        for (const hint of this.hints.values()) {
+            if (hint.address >= startAddress && hint.address <= endAddress) {
+                hintsInRange.push(hint);
+            }
+        }
+        hintsInRange.sort((a, b) => {
+            if (a.address < b.address) return -1;
+            if (a.address > b.address) return 1;
+            return 0;
+        });
+        return hintsInRange;
     }
 }

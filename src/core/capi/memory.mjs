@@ -26,7 +26,7 @@ import {
     creator_callstack_newWrite,
     creator_callstack_newRead,
 } from "../sentinel/sentinel.mjs";
-import { logger } from "../utils/creator_logger.mjs";
+import { track_stack_addHint } from "../memory/stackTracker.mjs";
 
 /*
  *  CREATOR instruction description API:
@@ -198,6 +198,11 @@ export const MEM = {
         const i = ret.indexComp;
         const j = ret.indexElem;
 
+        // Add stack hint if we're writing to the stack segment and have a register name
+        if (segment === "stack" && reg_name) {
+            track_stack_addHint(address, reg_name);
+        }
+
         creator_callstack_newWrite(i, j, address, byteArray.length);
     },
 
@@ -247,5 +252,27 @@ export const MEM = {
         creator_callstack_newRead(i, j, addr, bytes);
 
         return ret;
+    },
+
+    /**
+     * Adds a hint for a memory address. If a hint already exists at the specified address, it replaces it.
+     * @param {bigint} address - Memory address to add hint for
+     * @param {string} hint - Description of the data type or purpose (e.g., "<double>", "<int32>", "<string>")
+     * @param {number} [sizeInBits] - Optional size of the type in bits (e.g., 64 for double, 32 for int32)
+     * @returns {boolean} - True if the hint was successfully added
+     */
+    addHint: function (address, hint, sizeInBits) {
+        try {
+            main_memory.addHint(address, hint, sizeInBits);
+            return true;
+        } catch (e) {
+            raise(
+                "Failed to add hint for address '0x" +
+                    address.toString(16) +
+                    "': " +
+                    e,
+            );
+            return false;
+        }
     },
 };

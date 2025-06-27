@@ -18,7 +18,7 @@
  *
  */
 "use strict";
-import { architecture, status, REGISTERS } from "../core.mjs";
+import { architecture, status, REGISTERS, main_memory } from "../core.mjs";
 import { clean_string } from "../utils/utils.mjs";
 import { console_log, logger } from "../utils/creator_logger.mjs";
 
