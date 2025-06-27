@@ -1792,6 +1792,7 @@
         "npm:@tsconfig/node22@^22.0.1",
         "npm:@types/colors@^1.1.3",
         "npm:@types/humanize-duration@^3.27.4",
+        "npm:@types/jquery@^3.5.32",
         "npm:@types/node@^22.14.0",
         "npm:@types/yargs@^17.0.33",
         "npm:@uiw/codemirror-themes@^4.23.12",

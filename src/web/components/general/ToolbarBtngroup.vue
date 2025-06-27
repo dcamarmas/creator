@@ -28,7 +28,7 @@ import {
   instructions_packed,
   reset,
 } from "@/core/core.mjs"
-import { instructions } from "@/core/compiler/compiler.mjs"
+import { instructions, set_instructions } from "@/core/compiler/compiler.mjs"
 import { step, packExecute } from "@/core/executor/executor.mjs"
 import { creator_ga } from "@/core/utils/creator_ga.mjs"
 import {
@@ -74,7 +74,7 @@ export default {
         return this.instructions
       },
       set(value) {
-        instructions = value
+        set_instructions(value)
       },
     },
     /**
