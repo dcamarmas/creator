@@ -20,11 +20,6 @@
  */
 
 let wasm;
-import("../compiler-pkg/web/creator_compiler.js").then(mod => {
-  mod.default({})
-  wasm = mod
-  color = wasm.Color.Html;
-});
 
   /* jshint esversion: 6 */
 
