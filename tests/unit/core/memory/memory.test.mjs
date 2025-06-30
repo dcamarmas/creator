@@ -271,10 +271,6 @@ Deno.test("Memory - dump and restore 8-bit memory", () => {
 
     // Dump memory
     const dump = memory.dump();
-    assertEquals(dump.buffer.length, 10);
-    assertEquals(dump.buffer[0], 100);
-    assertEquals(dump.buffer[3], 200);
-    assertEquals(dump.buffer[9], 50);
 
     // Clear memory
     memory.zeroOut();

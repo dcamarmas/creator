@@ -184,7 +184,7 @@ export class Memory {
     private buffer!: ArrayBuffer;
 
     /** Typed array view for efficient access to the buffer */
-    private uint8View!: Uint8Array;
+    public uint8View!: Uint8Array; // Public so that it can be read by Vue
 
     /** Number of bytes that constitute a word */
     private wordSize!: number;
@@ -214,6 +214,9 @@ export class Memory {
 
     /** Map of memory hints: address -> hint information */
     private hints!: Map<bigint, MemoryHint>;
+
+    /** Set of addresses that have been written to (for sparse memory serialization) */
+    private writtenAddresses!: Set<number>;
 
     /**
      * Creates a new Memory instance with configurable byte size, word size, endianness, and memory layout.
@@ -290,6 +293,9 @@ export class Memory {
 
         // Initialize hints system
         this.hints = new Map();
+
+        // Initialize written addresses tracking for sparse memory
+        this.writtenAddresses = new Set();
 
         // Initialize storage buffer
         this.initializeStorage(finalConfig);
@@ -550,6 +556,9 @@ export class Memory {
             );
         }
 
+        // Track this address as written
+        this.writtenAddresses.add(addr);
+
         if (this.bitsPerByte === 8) {
             this.uint8View[addr] = value;
             return;
@@ -620,6 +629,12 @@ export class Memory {
             );
         }
         this.uint8View.set(romData, Number(offset));
+
+        // Track all addresses that were written to
+        const startAddr = Number(offset);
+        for (let i = 0; i < romData.length; i++) {
+            this.writtenAddresses.add(startAddr + i);
+        }
     }
 
     /**
@@ -690,58 +705,124 @@ export class Memory {
     }
 
     /**
-     * Creates a snapshot of the current memory state for fast save/restore operations.
-     * The dump includes the raw storage buffer and metadata needed for restoration.
+     * Creates a memory dump containing only written addresses and their values.
+     * Also includes memory hints for data type information.
+     * This is much more efficient for large, sparse memory spaces.
      *
-     * @returns Object containing memory state data
+     * @returns Memory dump with written addresses, values, and hints
      *
-     * @example Creating and using a memory snapshot
+     * @example Creating and using dump
      * ```typescript
-     * const memory = new Memory({ sizeInBytes: 100 });
-     * memory.write(0n, 123);
+     * const memory = new Memory({ sizeInBytes: 1000000 });
+     * memory.write(100n, 123);
+     * memory.write(50000n, 456);
+     * memory.addHint(100n, "<int32>", 32);
      *
-     * const snapshot = memory.dump();
-     * memory.write(0n, 456); // Modify memory
-     *
-     * memory.restore(snapshot); // Restore original state
-     * console.log(memory.read(0n)); // 123
+     * const snapshot = memory.dump(); // Only contains 2 entries, not 1M, plus hints
+     * memory.restore(snapshot);
      * ```
      */
-    dump(): { buffer: Uint8Array; bitsPerByte: number; size: number } {
+    dump(): {
+        addresses: number[];
+        values: number[];
+        bitsPerByte: number;
+        size: number;
+        hints: { address: string; hint: string; sizeInBits?: number }[];
+    } {
+        const addresses: number[] = [];
+        const values: number[] = [];
+
+        // Sort addresses to ensure consistent output
+        const sortedAddresses = Array.from(this.writtenAddresses).sort(
+            (a, b) => a - b,
+        );
+
+        for (const addr of sortedAddresses) {
+            addresses.push(addr);
+            values.push(this.read(BigInt(addr)));
+        }
+
+        // Include hints in the dump
+        const hints: { address: string; hint: string; sizeInBits?: number }[] =
+            [];
+        for (const hint of this.hints.values()) {
+            hints.push({
+                address: hint.address.toString(),
+                hint: hint.hint,
+                sizeInBits: hint.sizeInBits,
+            });
+        }
+
         return {
-            buffer: new Uint8Array(this.uint8View),
+            addresses,
+            values,
             bitsPerByte: this.bitsPerByte,
             size: this.size,
+            hints,
         };
     }
 
     /**
      * Restores memory state from a previously created dump.
      * The dump must be compatible with the current memory configuration.
+     * Also restores memory hints if they are present in the dump.
      *
-     * @param dump - Memory state dump from dump() method
+     * @param dump - Memory dump from dump() method
      *
      * @throws Error if dump metadata doesn't match current configuration
      *
      * @example Restoring memory state
      * ```typescript
-     * const memory = new Memory({ sizeInBytes: 100, bitsPerByte: 8 });
+     * const memory = new Memory({ sizeInBytes: 100000, bitsPerByte: 8 });
+     * memory.addHint(0x100n, "<int32>", 32);
      * const snapshot = memory.dump();
      * // ... modify memory ...
-     * memory.restore(snapshot); // Back to original state
+     * memory.restore(snapshot); // Back to original state with hints
      * ```
      */
     restore(dump: {
-        buffer: Uint8Array;
+        addresses: number[];
+        values: number[];
         bitsPerByte: number;
         size: number;
+        hints?: { address: string; hint: string; sizeInBits?: number }[];
     }): void {
         if (dump.bitsPerByte !== this.bitsPerByte || dump.size !== this.size) {
             throw new Error(
                 "Dump metadata does not match current memory configuration",
             );
         }
-        this.uint8View.set(dump.buffer);
+
+        // Clear current memory state
+        this.uint8View.fill(0);
+        this.writtenAddresses.clear();
+
+        // Restore sparse data
+        for (let i = 0; i < dump.addresses.length; i++) {
+            const addr = dump.addresses[i];
+            const value = dump.values[i];
+
+            // Use direct uint8View access to avoid re-tracking
+            if (this.bitsPerByte === 8) {
+                this.uint8View[addr] = value;
+                this.writtenAddresses.add(addr);
+            } else {
+                // For non-8-bit bytes, use the write method which handles bit packing
+                this.write(BigInt(addr), value);
+            }
+        }
+
+        // Restore hints if they exist in the dump
+        this.hints.clear();
+        if (dump.hints) {
+            for (const hint of dump.hints) {
+                this.hints.set(BigInt(hint.address), {
+                    address: BigInt(hint.address),
+                    hint: hint.hint,
+                    sizeInBits: hint.sizeInBits,
+                });
+            }
+        }
     }
 
     /**
