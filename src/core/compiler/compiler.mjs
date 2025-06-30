@@ -434,8 +434,8 @@ export function assembly_compiler(code, library, color) {
                             // Add memory hint for the float
                             const floatHint =
                                 labels.length > 0
-                                    ? `${labels[0]}: <float>`
-                                    : "<float>";
+                                    ? `${labels[0]}: <float32>`
+                                    : "<float32>";
                             main_memory.addHint(addr, floatHint, 32);
                             break;
                         }
@@ -467,8 +467,8 @@ export function assembly_compiler(code, library, color) {
                             // Add memory hint for the double
                             const doubleHint =
                                 labels.length > 0
-                                    ? `${labels[0]}: <double>`
-                                    : "<double>";
+                                    ? `${labels[0]}: <float64>`
+                                    : "<float64>";
                             main_memory.addHint(addr, doubleHint, 64);
                             break;
                         }
@@ -526,6 +526,73 @@ export function assembly_compiler(code, library, color) {
                             }
 
                             break;
+
+                        case "double_word": {
+                            const dwordValue = BigInt("0x" + data.value());
+                            // Get word size from architecture configuration
+                            const wordSizeBytes =
+                                newArchitecture.arch_conf.WordSize /
+                                newArchitecture.arch_conf.ByteSize;
+
+                            // Split dword into two words (high and low)
+                            const highWord =
+                                dwordValue >>
+                                BigInt(newArchitecture.arch_conf.WordSize);
+                            const lowWord =
+                                dwordValue &
+                                BigInt(
+                                    (1n <<
+                                        BigInt(
+                                            newArchitecture.arch_conf.WordSize,
+                                        )) -
+                                        1n,
+                                );
+
+                            // Convert words to byte arrays
+                            const highWordBytes = new Uint8Array(wordSizeBytes);
+                            const lowWordBytes = new Uint8Array(wordSizeBytes);
+
+                            for (let i = 0; i < wordSizeBytes; i++) {
+                                const shiftAmount = BigInt(
+                                    (wordSizeBytes - 1 - i) *
+                                        newArchitecture.arch_conf.ByteSize,
+                                );
+                                highWordBytes[i] = Number(
+                                    (highWord >> shiftAmount) &
+                                        BigInt(
+                                            (1 <<
+                                                newArchitecture.arch_conf
+                                                    .ByteSize) -
+                                                1,
+                                        ),
+                                );
+                                lowWordBytes[i] = Number(
+                                    (lowWord >> shiftAmount) &
+                                        BigInt(
+                                            (1 <<
+                                                newArchitecture.arch_conf
+                                                    .ByteSize) -
+                                                1,
+                                        ),
+                                );
+                            }
+
+                            // Write two words to memory
+                            main_memory.writeWord(addr, highWordBytes);
+                            main_memory.writeWord(
+                                addr + BigInt(wordSizeBytes),
+                                lowWordBytes,
+                            );
+
+                            // Add memory hint for the dword
+                            const dwordHint =
+                                labels.length > 0
+                                    ? `${labels[0]}: <dword>`
+                                    : "<dword>";
+                            main_memory.addHint(addr, dwordHint, 64);
+                            break;
+                        }
+
                         case "half": {
                             const halfValue = BigInt("0x" + data.value());
                             // Split the half-word into bytes
@@ -668,16 +735,19 @@ export function assembly_compiler(code, library, color) {
         const label = instruction.Label;
         const hide = instruction.hide;
 
-        creator_insert_instruction(
-            auxAddr,
-            "********",
-            "********",
-            hide,
-            hex,
-            "**",
-            label,
-            true,
-        );
+        // Split binary into words and write to memory
+        for (let j = 0; j < instruction.loaded.length; j += WORDSIZE) {
+            const wordBinary = instruction.loaded.substr(j, WORDSIZE);
+            const wordBytes = [];
+
+            // Split word into bytes
+            for (let k = 0; k < wordBinary.length; k += BYTESIZE) {
+                const byte = parseInt(wordBinary.substr(k, BYTESIZE), 2);
+                wordBytes.push(byte);
+            }
+
+            main_memory.writeWord(BigInt(auxAddr + j / BYTESIZE), wordBytes);
+        }
     }
 
     /* Enter the assembled instructions in the text segment */

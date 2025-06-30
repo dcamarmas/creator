@@ -18,7 +18,7 @@
  *
  */
 "use strict";
-import { main_memory } from "../core.mjs";
+import { main_memory, BYTESIZE } from "../core.mjs";
 import { creator_executor_exit } from "../executor/executor.mjs";
 import { raise } from "./validation.mjs";
 import { crex_findReg } from "../register/registerLookup.mjs";
@@ -160,7 +160,7 @@ function readValueFromMemory(addr, bytes) {
  */
 // Memory operations
 export const MEM = {
-    write: function (address, bytes, value, reg_name) {
+    write: function (address, bytes, value, reg_name, hint) {
         // Check if the address is in a writable segment using memory functions
         const segment = main_memory.getSegmentForAddress(address);
         if (segment === "text") {
@@ -188,6 +188,21 @@ export const MEM = {
                     "'",
             );
             creator_executor_exit(true);
+        }
+
+        // Add hint if provided
+        if (hint) {
+            try {
+                const sizeInBits = bytes * BYTESIZE;
+                main_memory.addHint(address, hint, sizeInBits);
+            } catch (e) {
+                raise(
+                    "Failed to add hint for address '0x" +
+                        address.toString(16) +
+                        "': " +
+                        e,
+                );
+            }
         }
 
         const ret = crex_findReg(reg_name);
