@@ -1353,8 +1353,10 @@ export function reset() {
     architecture.memory_layout[4].value = backup_stack_address;
     architecture.memory_layout[3].value = backup_data_address;
 
-    // reset memory and restore initial hints from backup
-    main_memory.restore(main_memory_backup);
+    // reset memory and restore initial hints from backup (if it exists)
+    if (typeof main_memory_backup !== "undefined") {
+        main_memory.restore(main_memory_backup);
+    }
 
     //Stack Reset
     creator_callstack_reset();
