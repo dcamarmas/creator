@@ -4,7 +4,7 @@
 settings:
     # Maximum number of states to keep for unstepping
     # -1: unlimited, 0: disabled, positive number: maximum states to keep
-    max_states: 0
+    max_states: -1
 
     # Accessible mode for screen readers
     accessible: false
@@ -32,6 +32,7 @@ aliases:
     snap: "snapshot"
     load: "restore"
     exit: "quit"
+    data: "mem 0x200000 64"
 
 # Keyboard shortcuts
 # Format: ctrl_key: "command"

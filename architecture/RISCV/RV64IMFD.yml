@@ -1716,7 +1716,7 @@ instructions:
                 value: "0100011"
               - field: funct3
                 value: "000"
-          definition: "CAPI.MEM.write(rs1+imm, rs2, 'b', rs2_name);"
+          definition: "CAPI.MEM.write(rs1+imm, rs2, 'b', rs2_name); CAPI.MEM.addHint(rs1+imm, '<byte>', 8);"
 
         - name: sh
           type: S
@@ -1725,7 +1725,7 @@ instructions:
                 value: "0100011"
               - field: funct3
                 value: "001"
-          definition: "CAPI.MEM.write(imm+rs1, rs2, 'h', rs2_name);"
+          definition: "CAPI.MEM.write(rs1+imm, 1, BigInt.asUintN(8,rs2), rs2_name); CAPI.MEM.addHint(rs1+imm, '<byte>', 8);"
 
         # The check for the
         - name: sw
@@ -1735,7 +1735,7 @@ instructions:
                 value: "0100011"
               - field: funct3
                 value: "010"
-          definition: "CAPI.MEM.write(imm+rs1, rs2, 'w', rs2_name); if (rs1_name === 'sp') { const formattedAddr = '0x'+(imm+rs1).toString(16).padStart(8, '0').toUpperCase(); CAPI.DRAW_STACK.addHint(formattedAddr, rs2_name) }"
+          definition: "CAPI.MEM.write(imm+rs1, 4, BigInt.asUintN(32,rs2), rs2_name); CAPI.MEM.addHint(imm+rs1, '<word>', 32);"
 
         - name: sd
           type: S
@@ -1744,8 +1744,7 @@ instructions:
                 value: "0100011"
               - field: funct3
                 value: "011"
-          definition: "CAPI.MEM.write(imm+rs1, rs2, 'd', rs2_name);"
-
+          definition: "CAPI.MEM.write(imm+rs1, 8, BigInt.asUintN(64,rs2), rs2_name); CAPI.MEM.addHint(imm+rs1, '<doubleWord>', 64);"
         # U-type instructions
         #           31-12                   11-7    6-0
         # ┌──────────────────────────────┬───────┬─────────┐
@@ -2308,7 +2307,7 @@ instructions:
                 value: "010"
               - field: rs2
                 type: SFP-Reg
-          definition: "CAPI.MEM.write(rs1+imm, rs2, 'w', rs2_name);"
+          definition: "let value = rs2 & 0xFFFFFFFFn; CAPI.MEM.write(rs1+imm, 4, value, rs2_name); CAPI.MEM.addHint(rs1+imm, <float>, 32);"
     D:
         #   ____ __     __ _____ ____   ____
         #  |  _ \\ \   / /|___ /|___ \ |  _ \
@@ -2755,7 +2754,7 @@ instructions:
                 value: "011"
               - field: rs2 # We're overriding the rs2 field from the template
                 type: DFP-Reg
-          definition: "var val = CAPI.FP.split_double(rs2, 0);\n CAPI.MEM.write(rs1+imm, val, 'w', rs2_name);\n val = CAPI.FP.split_double(rs2, 1);\n CAPI.MEM.write(rs1+imm+4n, val, 'w', rs2_name);"
+          definition: "var val = BigInt('0x' + CAPI.FP.split_double(rs2, 0));\n CAPI.MEM.write(rs1+imm, 4, val, rs2_name);\n val = BigInt('0x' + CAPI.FP.split_double(rs2, 1));\n CAPI.MEM.write(rs1+imm+4n, 4, val, rs2_name); CAPI.MEM.addHint(rs1+imm, <double>, 64);"
     Zicsr:
         #   _____ _
         #  |__  /(_)  ___  ___  _ __

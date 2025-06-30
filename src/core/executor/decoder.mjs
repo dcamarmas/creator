@@ -756,7 +756,7 @@ export function decode_instruction(toDecode, newFormat = false) {
         } else {
             errorValue = `"${toDecode}"`;
         }
-        throw new Error(`Unknown Instruction: ${errorValue}`);
+        throw new Error(`Illegal Instruction: ${errorValue}`);
     }
 
     // Process all fields efficiently

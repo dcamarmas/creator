@@ -1353,9 +1353,9 @@ export function reset() {
     architecture.memory_layout[4].value = backup_stack_address;
     architecture.memory_layout[3].value = backup_data_address;
 
-    // reset memory
+    // reset memory and restore initial hints from backup
     main_memory.restore(main_memory_backup);
-    main_memory.clearHints();
+
     //Stack Reset
     creator_callstack_reset();
     track_stack_reset();
@@ -1368,30 +1368,9 @@ export function snapshot(extraData) {
     const architectureJson = JSON.stringify(architecture);
     const instructionsJson = JSON.stringify(instructions);
 
-    // Also dump the main_memory
+    // Use sparse memory dump for efficiency
     const memoryDump = main_memory.dump();
-
-    // Serialize the memory dump efficiently using base64 encoding
-    // This avoids the memory overhead and performance issues of Array.from()
-    let base64Buffer;
-    if (typeof Buffer !== "undefined") {
-        // Node.js environment
-        base64Buffer = Buffer.from(memoryDump.buffer).toString("base64");
-    } else {
-        // Browser environment
-        const binaryString = String.fromCharCode.apply(
-            null,
-            Array.from(memoryDump.buffer),
-        );
-        base64Buffer = btoa(binaryString);
-    }
-
-    const memoryJson = JSON.stringify({
-        buffer: base64Buffer,
-        bitsPerByte: memoryDump.bitsPerByte,
-        size: memoryDump.size,
-        encoding: "base64",
-    });
+    const memoryJson = JSON.stringify(memoryDump);
 
     // And the status
     const statusJson = JSON.stringify(status);
@@ -1432,33 +1411,7 @@ export function restore(snapshot) {
     const registersObj = registersJson ? JSON.parse(registersJson) : null;
     const stackData = parsedSnapshot.stack;
 
-    // Deserialize the memory dump - handle both old array format and new base64 format
-    let memoryBuffer;
-    if (memoryObj.encoding === "base64") {
-        // New base64 format
-        if (typeof Buffer !== "undefined") {
-            // Node.js environment
-            memoryBuffer = new Uint8Array(
-                Buffer.from(memoryObj.buffer, "base64"),
-            );
-        } else {
-            // Browser environment
-            const binaryString = atob(memoryObj.buffer);
-            memoryBuffer = new Uint8Array(binaryString.length);
-            for (let i = 0; i < binaryString.length; i++) {
-                memoryBuffer[i] = binaryString.charCodeAt(i);
-            }
-        }
-    } else {
-        // Legacy array format (for backward compatibility)
-        memoryBuffer = new Uint8Array(memoryObj.buffer);
-    }
-
-    const memoryDump = {
-        buffer: memoryBuffer,
-        bitsPerByte: memoryObj.bitsPerByte,
-        size: memoryObj.size,
-    };
+    main_memory.restore(memoryObj);
 
     // Restore the instructions
     setInstructions(instructionsObj);
@@ -1468,8 +1421,6 @@ export function restore(snapshot) {
     if (registersObj) {
         REGISTERS = registersObj;
     }
-    // Restore the main memory
-    main_memory.restore(memoryDump);
     // Restore the stack
     loadStack(stackData);
     // Restore the status

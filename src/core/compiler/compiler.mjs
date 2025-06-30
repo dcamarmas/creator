@@ -401,6 +401,7 @@ export function assembly_compiler(code, library, color) {
             const data = compiled.data[i];
             const size = BigInt(data.size());
             const addr = BigInt(data.address());
+            const labels = data.labels();
 
             switch (data.data_category()) {
                 case DataCategoryJS.Number:
@@ -431,7 +432,11 @@ export function assembly_compiler(code, library, color) {
                             );
 
                             // Add memory hint for the float
-                            main_memory.addHint(addr, "<float>", 32);
+                            const floatHint =
+                                labels.length > 0
+                                    ? `${labels[0]}: <float>`
+                                    : "<float>";
+                            main_memory.addHint(addr, floatHint, 32);
                             break;
                         }
                         case "double": {
@@ -460,7 +465,11 @@ export function assembly_compiler(code, library, color) {
                             );
 
                             // Add memory hint for the double
-                            main_memory.addHint(addr, "<double>", 64);
+                            const doubleHint =
+                                labels.length > 0
+                                    ? `${labels[0]}: <double>`
+                                    : "<double>";
+                            main_memory.addHint(addr, doubleHint, 64);
                             break;
                         }
                         case "byte": {
@@ -468,7 +477,11 @@ export function assembly_compiler(code, library, color) {
                             main_memory.write(addr, byteValue);
 
                             // Add memory hint for the byte
-                            main_memory.addHint(addr, "<byte>", 8);
+                            const byteHint =
+                                labels.length > 0
+                                    ? `${labels[0]}: <byte>`
+                                    : "<byte>";
+                            main_memory.addHint(addr, byteHint, 8);
                             break;
                         }
                         case "word":
@@ -501,9 +514,13 @@ export function assembly_compiler(code, library, color) {
                                 main_memory.writeWord(addr, wordBytes);
 
                                 // Add memory hint for the word
+                                const wordHint =
+                                    labels.length > 0
+                                        ? `${labels[0]}: <word>`
+                                        : "<word>";
                                 main_memory.addHint(
                                     addr,
-                                    "<word>",
+                                    wordHint,
                                     newArchitecture.arch_conf.WordSize,
                                 );
                             }
@@ -549,7 +566,11 @@ export function assembly_compiler(code, library, color) {
                             main_memory.write(addr + 1n, orderedBytes[1]);
 
                             // Add memory hint for the half-word
-                            main_memory.addHint(addr, "<half>", 16);
+                            const halfHint =
+                                labels.length > 0
+                                    ? `${labels[0]}: <half>`
+                                    : "<half>";
+                            main_memory.addHint(addr, halfHint, 16);
 
                             break;
                         }
@@ -578,9 +599,13 @@ export function assembly_compiler(code, library, color) {
 
                     // Add memory hint for the string
                     const stringLength = Number(currentAddr - startAddr);
+                    const stringHint =
+                        labels.length > 0
+                            ? `${labels[0]}: <string>`
+                            : "<string>";
                     main_memory.addHint(
                         startAddr,
-                        "<string>",
+                        stringHint,
                         stringLength * 8,
                     ); // stringLength in bytes * 8 bits per byte
                     break;
@@ -608,7 +633,15 @@ export function assembly_compiler(code, library, color) {
                         data.data_category() === DataCategoryJS.Padding
                             ? "<padding>"
                             : "<space>";
-                    main_memory.addHint(addr, hintType, Number(space_size) * 8); // space_size in bytes * 8 bits per byte
+                    const spaceHint =
+                        labels.length > 0
+                            ? `${labels[0]}: ${hintType}`
+                            : hintType;
+                    main_memory.addHint(
+                        addr,
+                        spaceHint,
+                        Number(space_size) * 8,
+                    ); // space_size in bytes * 8 bits per byte
                     break;
                 }
                 default:
