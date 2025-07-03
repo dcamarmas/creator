@@ -314,21 +314,25 @@ export default {
         return
       }
 
-      // update execution table instruction colors
-      for (let i = 0; i < ret.draw.space.length; i++) {
-        this.instruction_values[ret.draw.space[i]]._rowVariant = ""
-      }
-      for (let i = 0; i < ret.draw.success.length; i++) {
-        this.instruction_values[ret.draw.success[i]]._rowVariant = "success"
-      }
-      for (let i = 0; i < ret.draw.info.length; i++) {
-        this.instruction_values[ret.draw.info[i]]._rowVariant = "info"
-      }
-      for (let i = 0; i < ret.draw.warning.length; i++) {
-        this.instruction_values[ret.draw.warning[i]]._rowVariant = "warning"
-      }
-      for (let i = 0; i < ret.draw.danger.length; i++) {
-        this.instruction_values[ret.draw.danger[i]]._rowVariant = "danger"
+      // update instructions' _rowVariant depending on the result of the
+      // execution
+
+      // we use this style of loop instead of a `for (const [i, instruction] of
+      // this.instruction_values.entries())` because we have to update through
+      // `this.instruction_values` so the computed property is updated
+      for (let i = 0; i < this.instruction_values.length; i++) {
+        // clear type
+        this.instruction_values[i]._rowVariant = ""
+
+        for (const [type, toUpdate] of Object.entries(ret.draw)) {
+          if (
+            toUpdate.includes(i) &&
+            ["success", "info", "warning", "danger"].includes(type)
+          ) {
+            // update instruction type
+            this.instruction_values[i]._rowVariant = type
+          }
+        }
       }
 
       // Auto-scroll

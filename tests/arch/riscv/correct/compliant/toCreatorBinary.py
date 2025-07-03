@@ -46,7 +46,6 @@ def process_section(section, symbols, section_name):
             "Label": symbols[addr]['name'] if addr in symbols else "",
             "loaded": format(instruction, '032b'),
             "user": None,
-            "_rowVariant": "",
             "visible": True
         }
         
