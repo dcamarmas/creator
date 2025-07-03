@@ -155,6 +155,9 @@ function updateExecutionStatus(draw) {
         const pc_address = getPC();
         let found = false;
 
+        // mark previous instruction
+        draw.info.push(status.execution_index)
+
         for (let i = 0; i < instructions.length; i++) {
             const address = BigInt(instructions[i].Address);
 
@@ -180,10 +183,6 @@ function updateExecutionStatus(draw) {
                 status.execution_index = instructions.length + 1;
             }
         }
-    }
-
-    if (status.error !== 1) {
-        draw.success.push(status.execution_index);
     }
 
     // Return null to continue execution

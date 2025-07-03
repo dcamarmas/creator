@@ -369,7 +369,6 @@ export function assembly_compiler(code, library, color) {
                 loaded: x.loaded,
                 binary: x.binary,
                 user: x.user,
-                _rowVariant: "",
                 Break: null,
                 hide: false,
                 visible: true,
@@ -380,7 +379,6 @@ export function assembly_compiler(code, library, color) {
             Address: x.Address,
             Label: x.Label,
             Break: null,
-            _rowVariant: "",
             // Newly compiled instructions have their binary encoding in the
             // `binary` field, but instructions from the library store it in
             // the `loaded` field. Read the corresponding field depending on
