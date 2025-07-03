@@ -273,6 +273,44 @@ function loadArchitecture(
     // console.log("Architecture loaded successfully.");
 }
 
+/**
+ * Loads a binary file from disk into memory.
+ * Only works with 8-bit byte memories for direct file compatibility.
+ *
+ * @param filePath - Path to the binary file
+ * @param offset - Starting address offset. Default: 0
+ *
+ * @throws Error if memory doesn't use 8-bit bytes
+ * @throws Error if file cannot be read
+ *
+ * @example Loading a binary file
+ * ```typescript
+ * const memory = new Memory({ sizeInBytes: 65536 });
+ * memory.loadBinaryFile("program.bin", 0x8000n);
+ * ```
+ */
+function loadBinaryFile(filePath: string, offset = 0n) {
+    try {
+        // Load the binary file into memory
+        const fileData = fs.readFileSync(filePath);
+        creator.main_memory.loadROM(new Uint8Array(fileData), offset);
+
+        // Create a new backup of memory that includes the loaded binary data
+        // This ensures that reset() will restore to the state with the binary loaded
+        creator.updateMainMemoryBackup(creator.main_memory.dump());
+
+        return {
+            status: "ok",
+            msg: "Binary file loaded successfully",
+        };
+    } catch (error) {
+        return {
+            status: "error",
+            msg: `Error loading binary file: ${error.message}`,
+        };
+    }
+}
+
 function loadBin(filePath: string) {
     if (!filePath) {
         console.error("No binary file specified.");
@@ -280,7 +318,7 @@ function loadBin(filePath: string) {
     }
 
     // Use the core function that handles binary loading and memory backup
-    const ret = creator.loadBinaryFile(filePath, 0n);
+    const ret = loadBinaryFile(filePath);
     if (ret.status !== "ok") {
         console.error(ret.msg);
         process.exit(1);
