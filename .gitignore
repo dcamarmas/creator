@@ -32,3 +32,4 @@ coverage
 
 # others
 /components.d.ts
+out/
