@@ -1,18 +1,18 @@
 version: 2.0.0
 
 arch_conf:
-    Name: RV32
-    WordSize: 32
-    Description: RISC-V is an instruction set architecture (ISA) based on the RISC type and its hardware is free. This architecture was created in 2010 at the University of California, Berkeley.
-    Endianness: big_endian
-    Memory Alignment: true
-    Main Function: main
-    Passing Convention: true
-    Sensitive Register Name: true
-    CommentPrefix: "#"
-    StartAddress: 0x0
-    PCOffset: -4
-    ByteSize: 8
+  Name: RV32
+  WordSize: 32
+  Description: RISC-V is an instruction set architecture (ISA) based on the RISC type and its hardware is free. This architecture was created in 2010 at the University of California, Berkeley.
+  Endianness: big_endian
+  Memory Alignment: true
+  Main Function: main
+  Passing Convention: true
+  Sensitive Register Name: true
+  CommentPrefix: "#"
+  StartAddress: 0x0
+  PCOffset: -4
+  ByteSize: 8
 
 extensions:
     I:
@@ -39,699 +39,699 @@ extensions:
         type: extension
 
 components:
-    - name: Control registers
-      type: ctrl_registers
-      double_precision: false
-      elements:
-          - name:
-                - PC
-            nbits: "32"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-                - program_counter
-    - name: Integer registers
-      type: int_registers
-      double_precision: false
-      elements:
-          - name:
-                - x0
-                - zero
-            nbits: "32"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - ignore_write
-          - name:
-                - x1
-                - ra
-            nbits: "32"
-            value: 4294967295
-            default_value: 4294967295
-            properties:
-                - read
-                - write
-          - name:
-                - x2
-                - sp
-            nbits: "32"
-            value: 268435452
-            default_value: 268435452
-            properties:
-                - read
-                - write
-                - stack_pointer
-          - name:
-                - x3
-                - gp
-            nbits: "32"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-                - global_pointer
-          - name:
-                - x4
-                - tp
-            nbits: "32"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-          - name:
-                - x5
-                - t0
-            nbits: "32"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-          - name:
-                - x6
-                - t1
-            nbits: "32"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-          - name:
-                - x7
-                - t2
-            nbits: "32"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-          - name:
-                - x8
-                - fp
-                - s0
-            nbits: "32"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-                - frame_pointer
-                - saved
-          - name:
-                - x9
-                - s1
-            nbits: "32"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-                - saved
-          - name:
-                - x10
-                - a0
-            nbits: "32"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-          - name:
-                - x11
-                - a1
-            nbits: "32"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-          - name:
-                - x12
-                - a2
-            nbits: "32"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-          - name:
-                - x13
-                - a3
-            nbits: "32"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-          - name:
-                - x14
-                - a4
-            nbits: "32"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-          - name:
-                - x15
-                - a5
-            nbits: "32"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-          - name:
-                - x16
-                - a6
-            nbits: "32"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-          - name:
-                - x17
-                - a7
-            nbits: "32"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-          - name:
-                - x18
-                - s2
-            nbits: "32"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-                - saved
-          - name:
-                - x19
-                - s3
-            nbits: "32"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-                - saved
-          - name:
-                - x20
-                - s4
-            nbits: "32"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-                - saved
-          - name:
-                - x21
-                - s5
-            nbits: "32"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-                - saved
-          - name:
-                - x22
-                - s6
-            nbits: "32"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-                - saved
-          - name:
-                - x23
-                - s7
-            nbits: "32"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-                - saved
-          - name:
-                - x24
-                - s8
-            nbits: "32"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-                - saved
-          - name:
-                - x25
-                - s9
-            nbits: "32"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-                - saved
-          - name:
-                - x26
-                - s10
-            nbits: "32"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-                - saved
-          - name:
-                - x27
-                - s11
-            nbits: "32"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-                - saved
-          - name:
-                - x28
-                - t3
-            nbits: "32"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-          - name:
-                - x29
-                - t4
-            nbits: "32"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-          - name:
-                - x30
-                - t5
-            nbits: "32"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-          - name:
-                - x31
-                - t6
-            nbits: "32"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-    - name: Floating point registers
-      type: fp_registers
-      double_precision: true
-      double_precision_type: extended
-      elements:
-          - name:
-                - f0
-                - ft0
-            nbits: "64"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-          - name:
-                - f1
-                - ft1
-            nbits: "64"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-          - name:
-                - f2
-                - ft2
-            nbits: "64"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-          - name:
-                - f3
-                - ft3
-            nbits: "64"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-          - name:
-                - f4
-                - ft4
-            nbits: "64"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-          - name:
-                - f5
-                - ft5
-            nbits: "64"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-          - name:
-                - f6
-                - ft6
-            nbits: "64"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-          - name:
-                - f7
-                - ft7
-            nbits: "64"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-          - name:
-                - f8
-                - fs0
-            nbits: "64"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-                - saved
-          - name:
-                - f9
-                - fs1
-            nbits: "64"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-                - saved
-          - name:
-                - f10
-                - fa0
-            nbits: "64"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-          - name:
-                - f11
-                - fa1
-            nbits: "64"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-          - name:
-                - f12
-                - fa2
-            nbits: "64"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-          - name:
-                - f13
-                - fa3
-            nbits: "64"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-          - name:
-                - f14
-                - fa4
-            nbits: "64"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-          - name:
-                - f15
-                - fa5
-            nbits: "64"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-          - name:
-                - f16
-                - fa6
-            nbits: "64"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-          - name:
-                - f17
-                - fa7
-            nbits: "64"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-          - name:
-                - f18
-                - fs2
-            nbits: "64"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-                - saved
-          - name:
-                - f19
-                - fs3
-            nbits: "64"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-                - saved
-          - name:
-                - f20
-                - fs4
-            nbits: "64"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-                - saved
-          - name:
-                - f21
-                - fs5
-            nbits: "64"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-                - saved
-          - name:
-                - f22
-                - fs6
-            nbits: "64"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-                - saved
-          - name:
-                - f23
-                - fs7
-            nbits: "64"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-                - saved
-          - name:
-                - f24
-                - fs8
-            nbits: "64"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-                - saved
-          - name:
-                - f25
-                - fs9
-            nbits: "64"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-                - saved
-          - name:
-                - f26
-                - fs10
-            nbits: "64"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-                - saved
-          - name:
-                - f27
-                - fs11
-            nbits: "64"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-                - saved
-          - name:
-                - f28
-                - ft8
-            nbits: "64"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-          - name:
-                - f29
-                - ft9
-            nbits: "64"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-          - name:
-                - f30
-                - ft10
-            nbits: "64"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-          - name:
-                - f31
-                - ft11
-            nbits: "64"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
+  - name: Control registers
+    type: ctrl_registers
+    double_precision: false
+    elements:
+      - name:
+          - PC
+        nbits: "32"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+          - program_counter
+  - name: Integer registers
+    type: int_registers
+    double_precision: false
+    elements:
+      - name:
+          - x0
+          - zero
+        nbits: "32"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - ignore_write
+      - name:
+          - x1
+          - ra
+        nbits: "32"
+        value: 4294967295
+        default_value: 4294967295
+        properties:
+          - read
+          - write
+      - name:
+          - x2
+          - sp
+        nbits: "32"
+        value: 268435452
+        default_value: 268435452
+        properties:
+          - read
+          - write
+          - stack_pointer
+      - name:
+          - x3
+          - gp
+        nbits: "32"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+          - global_pointer
+      - name:
+          - x4
+          - tp
+        nbits: "32"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - x5
+          - t0
+        nbits: "32"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - x6
+          - t1
+        nbits: "32"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - x7
+          - t2
+        nbits: "32"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - x8
+          - fp
+          - s0
+        nbits: "32"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+          - frame_pointer
+          - saved
+      - name:
+          - x9
+          - s1
+        nbits: "32"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+          - saved
+      - name:
+          - x10
+          - a0
+        nbits: "32"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - x11
+          - a1
+        nbits: "32"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - x12
+          - a2
+        nbits: "32"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - x13
+          - a3
+        nbits: "32"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - x14
+          - a4
+        nbits: "32"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - x15
+          - a5
+        nbits: "32"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - x16
+          - a6
+        nbits: "32"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - x17
+          - a7
+        nbits: "32"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - x18
+          - s2
+        nbits: "32"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+          - saved
+      - name:
+          - x19
+          - s3
+        nbits: "32"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+          - saved
+      - name:
+          - x20
+          - s4
+        nbits: "32"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+          - saved
+      - name:
+          - x21
+          - s5
+        nbits: "32"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+          - saved
+      - name:
+          - x22
+          - s6
+        nbits: "32"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+          - saved
+      - name:
+          - x23
+          - s7
+        nbits: "32"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+          - saved
+      - name:
+          - x24
+          - s8
+        nbits: "32"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+          - saved
+      - name:
+          - x25
+          - s9
+        nbits: "32"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+          - saved
+      - name:
+          - x26
+          - s10
+        nbits: "32"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+          - saved
+      - name:
+          - x27
+          - s11
+        nbits: "32"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+          - saved
+      - name:
+          - x28
+          - t3
+        nbits: "32"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - x29
+          - t4
+        nbits: "32"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - x30
+          - t5
+        nbits: "32"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - x31
+          - t6
+        nbits: "32"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+  - name: Floating point registers
+    type: fp_registers
+    double_precision: true
+    double_precision_type: extended
+    elements:
+      - name:
+          - f0
+          - ft0
+        nbits: "64"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f1
+          - ft1
+        nbits: "64"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f2
+          - ft2
+        nbits: "64"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f3
+          - ft3
+        nbits: "64"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f4
+          - ft4
+        nbits: "64"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f5
+          - ft5
+        nbits: "64"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f6
+          - ft6
+        nbits: "64"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f7
+          - ft7
+        nbits: "64"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f8
+          - fs0
+        nbits: "64"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+          - saved
+      - name:
+          - f9
+          - fs1
+        nbits: "64"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+          - saved
+      - name:
+          - f10
+          - fa0
+        nbits: "64"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f11
+          - fa1
+        nbits: "64"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f12
+          - fa2
+        nbits: "64"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f13
+          - fa3
+        nbits: "64"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f14
+          - fa4
+        nbits: "64"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f15
+          - fa5
+        nbits: "64"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f16
+          - fa6
+        nbits: "64"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f17
+          - fa7
+        nbits: "64"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f18
+          - fs2
+        nbits: "64"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+          - saved
+      - name:
+          - f19
+          - fs3
+        nbits: "64"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+          - saved
+      - name:
+          - f20
+          - fs4
+        nbits: "64"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+          - saved
+      - name:
+          - f21
+          - fs5
+        nbits: "64"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+          - saved
+      - name:
+          - f22
+          - fs6
+        nbits: "64"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+          - saved
+      - name:
+          - f23
+          - fs7
+        nbits: "64"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+          - saved
+      - name:
+          - f24
+          - fs8
+        nbits: "64"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+          - saved
+      - name:
+          - f25
+          - fs9
+        nbits: "64"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+          - saved
+      - name:
+          - f26
+          - fs10
+        nbits: "64"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+          - saved
+      - name:
+          - f27
+          - fs11
+        nbits: "64"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+          - saved
+      - name:
+          - f28
+          - ft8
+        nbits: "64"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f29
+          - ft9
+        nbits: "64"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f30
+          - ft10
+        nbits: "64"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f31
+          - ft11
+        nbits: "64"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
 
 directives:
-    - name: .data
-      action: data_segment
-      size: null
-    - name: .text
-      action: code_segment
-      size: null
-    - name: .bss
-      action: global_symbol
-      size: null
-    - name: .zero
-      action: space
-      size: 1
-    - name: .space
-      action: space
-      size: 1
-    - name: .align
-      action: align
-      size: null
-    - name: .balign
-      action: balign
-      size: null
-    - name: .globl
-      action: global_symbol
-      size: null
-    - name: .string
-      action: ascii_null_end
-      size: null
-    - name: .asciz
-      action: ascii_null_end
-      size: null
-    - name: .ascii
-      action: ascii_not_null_end
-      size: null
-    - name: .byte
-      action: byte
-      size: 1
-    - name: .half
-      action: half_word
-      size: 2
-    - name: .word
-      action: word
-      size: 4
-    - name: .dword
-      action: double_word
-      size: 8
-    - name: .float
-      action: float
-      size: 4
-    - name: .double
-      action: double
-      size: 8
+  - name: .data
+    action: data_segment
+    size: null
+  - name: .text
+    action: code_segment
+    size: null
+  - name: .bss
+    action: global_symbol
+    size: null
+  - name: .zero
+    action: space
+    size: 1
+  - name: .space
+    action: space
+    size: 1
+  - name: .align
+    action: align
+    size: null
+  - name: .balign
+    action: balign
+    size: null
+  - name: .globl
+    action: global_symbol
+    size: null
+  - name: .string
+    action: ascii_null_end
+    size: null
+  - name: .asciz
+    action: ascii_null_end
+    size: null
+  - name: .ascii
+    action: ascii_not_null_end
+    size: null
+  - name: .byte
+    action: byte
+    size: 1
+  - name: .half
+    action: half_word
+    size: 2
+  - name: .word
+    action: word
+    size: 4
+  - name: .dword
+    action: double_word
+    size: 8
+  - name: .float
+    action: float
+    size: 4
+  - name: .double
+    action: double
+    size: 8
 
 memory_layout:
-    - name: text start
-      value: "0x00000000"
-    - name: text end
-      value: "0x001FFFFF"
-    - name: data start
-      value: "0x00200000"
-    - name: data end
-      value: "0x05BBFCBF"
-    - name: stack start
-      value: "0x0FFFFFFC"
-    - name: stack end
-      value: "0x0FFFFFFF"
+  - name: text start
+    value: "0x00000000"
+  - name: text end
+    value: "0x001FFFFF"
+  - name: data start
+    value: "0x00200000"
+  - name: data end
+    value: "0x05BBFCBF"
+  - name: stack start
+    value: "0x0FFFFFFC"
+  - name: stack end
+    value: "0x0FFFFFFF"
 
 templates:
     - name: B
@@ -773,99 +773,99 @@ templates:
             startbit: 14
             stopbit: 12
 
-    - name: I
-      nwords: 1
-      clk_cycles: 1
-      fields:
-          - name: opcode
-            type: co
-            startbit: 6
-            stopbit: 0
-            order: 0
-          - name: rd
-            type: INT-Reg
-            startbit: 11
-            stopbit: 7
-            order: 1
-          - name: imm
-            type: inm-signed
-            startbit: 31
-            stopbit: 20
-            order: 3
-          - name: rs1
-            type: INT-Reg
-            startbit: 19
-            stopbit: 15
-            order: 2
-          - name: funct3
-            type: cop
-            startbit: 14
-            stopbit: 12
+  - name: I
+    nwords: 1
+    clk_cycles: 1
+    fields:
+      - name: opcode
+        type: co
+        startbit: 6
+        stopbit: 0
+        order: 0
+      - name: rd
+        type: INT-Reg
+        startbit: 11
+        stopbit: 7
+        order: 1
+      - name: imm
+        type: inm-signed
+        startbit: 31
+        stopbit: 20
+        order: 3
+      - name: rs1
+        type: INT-Reg
+        startbit: 19
+        stopbit: 15
+        order: 2
+      - name: funct3
+        type: cop
+        startbit: 14
+        stopbit: 12
 
-    - name: I-Offset
-      # Not an "official" instruction, but used for the offset in the I-type instructions
-      nwords: 1
-      clk_cycles: 1
-      fields:
-          - name: opcode
-            type: co
-            startbit: 6
-            stopbit: 0
-            order: 0
-          - name: rd
-            type: INT-Reg
-            startbit: 11
-            stopbit: 7
-            order: 1
-          - name: imm
-            type: inm-signed
-            startbit: 31
-            stopbit: 20
-            order: 2
-          - name: rs1
-            type: INT-Reg
-            startbit: 19
-            stopbit: 15
-            order: 3
-            prefix: (
-            suffix: )
-          - name: funct3
-            type: cop
-            startbit: 14
-            stopbit: 12
+  - name: I-Offset
+    # Not an "official" instruction, but used for the offset in the I-type instructions
+    nwords: 1
+    clk_cycles: 1
+    fields:
+      - name: opcode
+        type: co
+        startbit: 6
+        stopbit: 0
+        order: 0
+      - name: rd
+        type: INT-Reg
+        startbit: 11
+        stopbit: 7
+        order: 1
+      - name: imm
+        type: inm-signed
+        startbit: 31
+        stopbit: 20
+        order: 2
+      - name: rs1
+        type: INT-Reg
+        startbit: 19
+        stopbit: 15
+        order: 3
+        prefix: (
+        suffix: )
+      - name: funct3
+        type: cop
+        startbit: 14
+        stopbit: 12
 
-    - name: I-Shift
-      nwords: 1
-      clk_cycles: 1
-      fields:
-          - name: opcode
-            type: co
-            startbit: 6
-            stopbit: 0
-            order: 0
-          - name: rd
-            type: INT-Reg
-            startbit: 11
-            stopbit: 7
-            order: 1
-          - name: rs1
-            type: INT-Reg
-            startbit: 19
-            stopbit: 15
-            order: 2
-          - name: shamt
-            type: inm-unsigned
-            startbit: 24
-            stopbit: 20
-            order: 3
-          - name: funct7
-            type: cop
-            startbit: 31
-            stopbit: 25
-          - name: funct3
-            type: cop
-            startbit: 14
-            stopbit: 12
+  - name: I-Shift
+    nwords: 1
+    clk_cycles: 1
+    fields:
+      - name: opcode
+        type: co
+        startbit: 6
+        stopbit: 0
+        order: 0
+      - name: rd
+        type: INT-Reg
+        startbit: 11
+        stopbit: 7
+        order: 1
+      - name: rs1
+        type: INT-Reg
+        startbit: 19
+        stopbit: 15
+        order: 2
+      - name: shamt
+        type: inm-unsigned
+        startbit: 24
+        stopbit: 20
+        order: 3
+      - name: funct7
+        type: cop
+        startbit: 31
+        stopbit: 25
+      - name: funct3
+        type: cop
+        startbit: 14
+        stopbit: 12
 
     - name: J
       type: Unconditional bifurcation
@@ -1233,15 +1233,15 @@ templates:
             stopbit: 12
             order: 2
 
-    - name: Custom
-      nwords: 1
-      clk_cycles: 1
-      fields:
-          - name: opcode
-            type: co
-            startbit: 6
-            stopbit: 0
-            order: 0
+  - name: Custom
+    nwords: 1
+    clk_cycles: 1
+    fields:
+      - name: opcode
+        type: co
+        startbit: 6
+        stopbit: 0
+        order: 0
 
 instructions:
     # help descriptions taken from https://msyksphinz-self.github.io/riscv-isadoc/html/
@@ -2773,14 +2773,14 @@ instructions:
         #  /____||_| \___||___/|_|
         # RV32/64 Zicsr Standard Extension
 
-        # TODO: Implement CSR instructions
-    Zifencei:
-        #   _____ _   __                          _
-        #  |__  /(_) / _|  ___  _ __    ___  ___ (_)
-        #    / / | || |_  / _ \| '_ \  / __|/ _ \| |
-        #   / /_ | ||  _||  __/| | | || (__|  __/| |
-        #  /____||_||_|   \___||_| |_| \___|\___||_|
-        #     RV32/RV64 Zifencei Standard Exension
+    # TODO: Implement CSR instructions
+  Zifencei:
+    #   _____ _   __                          _
+    #  |__  /(_) / _|  ___  _ __    ___  ___ (_)
+    #    / / | || |_  / _ \| '_ \  / __|/ _ \| |
+    #   / /_ | ||  _||  __/| | | || (__|  __/| |
+    #  /____||_||_|   \___||_| |_| \___|\___||_|
+    #     RV32/RV64 Zifencei Standard Exension
 
         - name: fence.i
           template: Custom
@@ -2807,17 +2807,17 @@ instructions:
           help: Provides explicit synchronization between writes to instruction memory and instruction fetches on the same hart.
 
 pseudoinstructions:
-    # Make sure the definitions correspond with those in the RISC-V ASM manual (TODO: Check these!)
+  # Make sure the definitions correspond with those in the RISC-V ASM manual (TODO: Check these!)
 
-    # RV32I Pseudoinstructions
-    I:
-        - name: beqz
-          fields:
-              - field: rs1
-                type: INT-Reg
-              - field: off
-                type: offset_bytes
-          definition: "beq rs1, x0, off;"
+  # RV32I Pseudoinstructions
+  I:
+    - name: beqz
+      fields:
+        - field: rs1
+          type: INT-Reg
+        - field: off
+          type: offset_bytes
+      definition: "beq rs1, x0, off;"
 
         - name: bgez
           fields:
@@ -2828,103 +2828,103 @@ pseudoinstructions:
           definition: "bge reg1, x0, off;"
           help: Take the branch if the value in register rs1 is zero.
 
-        - name: bgt
-          fields:
-              - field: rs1
-                type: INT-Reg
-              - field: rs2
-                type: INT-Reg
-              - field: off
-                type: offset_bytes
-          definition: "blt rs2, rs1, off;"
+    - name: bgt
+      fields:
+        - field: rs1
+          type: INT-Reg
+        - field: rs2
+          type: INT-Reg
+        - field: off
+          type: offset_bytes
+      definition: "blt rs2, rs1, off;"
 
-        - name: bgtu
-          fields:
-              - field: rs1
-                type: INT-Reg
-              - field: rs2
-                type: INT-Reg
-              - field: off
-                type: offset_bytes
-          definition: "bltu rs2, rs1, off;"
+    - name: bgtu
+      fields:
+        - field: rs1
+          type: INT-Reg
+        - field: rs2
+          type: INT-Reg
+        - field: off
+          type: offset_bytes
+      definition: "bltu rs2, rs1, off;"
 
-        - name: bgtz
-          fields:
-              - field: rs1
-                type: INT-Reg
-              - field: off
-                type: offset_bytes
-          definition: "bgt rs1, x0, off;"
+    - name: bgtz
+      fields:
+        - field: rs1
+          type: INT-Reg
+        - field: off
+          type: offset_bytes
+      definition: "bgt rs1, x0, off;"
 
-        - name: ble
-          fields:
-              - field: rs1
-                type: INT-Reg
-              - field: rs2
-                type: INT-Reg
-              - field: off
-                type: offset_bytes
-          definition: "bge rs2, rs1, off;"
+    - name: ble
+      fields:
+        - field: rs1
+          type: INT-Reg
+        - field: rs2
+          type: INT-Reg
+        - field: off
+          type: offset_bytes
+      definition: "bge rs2, rs1, off;"
 
-        - name: bleu
-          fields:
-              - field: rs1
-                type: INT-Reg
-              - field: rs2
-                type: INT-Reg
-              - field: off
-                type: offset_bytes
-          definition: "bgeu rs2, rs1, off;"
+    - name: bleu
+      fields:
+        - field: rs1
+          type: INT-Reg
+        - field: rs2
+          type: INT-Reg
+        - field: off
+          type: offset_bytes
+      definition: "bgeu rs2, rs1, off;"
 
-        - name: blez
-          fields:
-              - field: rs1
-                type: INT-Reg
-              - field: off
-                type: offset_bytes
-          definition: "ble x0, rs1, off;"
+    - name: blez
+      fields:
+        - field: rs1
+          type: INT-Reg
+        - field: off
+          type: offset_bytes
+      definition: "ble x0, rs1, off;"
 
-        - name: bltz
-          fields:
-              - field: rs1
-                type: INT-Reg
-              - field: off
-                type: offset_bytes
-          definition: "blt rs1, x0, off;"
+    - name: bltz
+      fields:
+        - field: rs1
+          type: INT-Reg
+        - field: off
+          type: offset_bytes
+      definition: "blt rs1, x0, off;"
 
-        - name: bnez
-          fields:
-              - field: rs1
-                type: INT-Reg
-              - field: off
-                type: offset_bytes
-          definition: "bne rs1, x0, off;"
+    - name: bnez
+      fields:
+        - field: rs1
+          type: INT-Reg
+        - field: off
+          type: offset_bytes
+      definition: "bne rs1, x0, off;"
 
-        - name: j
-          fields:
-              - field: off
-                type: offset_bytes
-          definition: "beq zero, zero, off;"
+    - name: j
+      fields:
+        - field: off
+          type: offset_bytes
+      definition: "beq zero, zero, off;"
 
-        - name: jalr
-          fields:
-              - field: rs
-                type: INT-Reg
-          definition: "jalr x1, 0(rs);"
+    - name: jalr
+      fields:
+        - field: rs
+          type: INT-Reg
+      definition: "jalr x1, 0(rs);"
 
-        - name: jr
-          fields:
-              - field: rs
-                type: INT-Reg
-          definition: "jalr x0, 0(rs);"
+    - name: jr
+      fields:
+        - field: rs
+          type: INT-Reg
+      definition: "jalr x0, 0(rs);"
 
-        - name: la
-          fields:
-              - field: rd
-                type: INT-Reg
-              - field: addr
-                type: inm-unsigned
-          definition: "no_ret_op{tmp=Field.2.(31,0).int;\ntmp_pc_offset=(reg.pc-4)&0xFFF;\ntmp_low=tmp&0x00000FFF;\ntmp_hi=tmp>>12};\nauipc rd, op{tmp_hi};\naddi rd, rd, op{tmp_low-(tmp_pc_offset)};"
+    - name: la
+      fields:
+        - field: rd
+          type: INT-Reg
+        - field: addr
+          type: inm-unsigned
+      definition: "no_ret_op{tmp=Field.2.(31,0).int;\ntmp_pc_offset=(reg.pc-4)&0xFFF;\ntmp_low=tmp&0x00000FFF;\ntmp_hi=tmp>>12};\nauipc rd, op{tmp_hi};\naddi rd, rd, op{tmp_low-(tmp_pc_offset)};"
 
         - name: li
           fields:
@@ -2944,117 +2944,117 @@ pseudoinstructions:
           definition: "addi reg1, reg2, 0;"
           help: Copy the value in register rs2 into register rd.
 
-        - name: neg
-          fields:
-              - field: reg1
-                type: INT-Reg
-              - field: reg2
-                type: INT-Reg
-          definition: "sub reg1, x0, reg2;"
+    - name: neg
+      fields:
+        - field: reg1
+          type: INT-Reg
+        - field: reg2
+          type: INT-Reg
+      definition: "sub reg1, x0, reg2;"
 
         - name: nop
           definition: "addi x0, x0, 0;"
           help: Does not change any user-visible state, except for advancing the pc.
 
-        - name: not
-          fields:
-              - field: reg1
-                type: INT-Reg
-              - field: reg2
-                type: INT-Reg
-          definition: "xori reg1, reg2, -1;"
+    - name: not
+      fields:
+        - field: reg1
+          type: INT-Reg
+        - field: reg2
+          type: INT-Reg
+      definition: "xori reg1, reg2, -1;"
 
-        - name: ret
-          definition: "jalr x0, 0(x1);" #TODO: check this!
+    - name: ret
+      definition: "jalr x0, 0(x1);" #TODO: check this!
 
-        - name: seqz
-          fields:
-              - field: reg1
-                type: INT-Reg
-              - field: reg2
-                type: INT-Reg
-          definition: "sltiu reg1, reg2, 1;"
+    - name: seqz
+      fields:
+        - field: reg1
+          type: INT-Reg
+        - field: reg2
+          type: INT-Reg
+      definition: "sltiu reg1, reg2, 1;"
 
-        - name: sgtz
-          fields:
-              - field: reg1
-                type: INT-Reg
-              - field: reg2
-                type: INT-Reg
-          definition: "slt reg1, x0, reg2;"
+    - name: sgtz
+      fields:
+        - field: reg1
+          type: INT-Reg
+        - field: reg2
+          type: INT-Reg
+      definition: "slt reg1, x0, reg2;"
 
-        - name: sltz
-          fields:
-              - field: reg1
-                type: INT-Reg
-              - field: reg2
-                type: INT-Reg
-          definition: "slt reg1, reg2, x0;"
+    - name: sltz
+      fields:
+        - field: reg1
+          type: INT-Reg
+        - field: reg2
+          type: INT-Reg
+      definition: "slt reg1, reg2, x0;"
 
-        - name: snez
-          fields:
-              - field: reg1
-                type: INT-Reg
-              - field: reg2
-                type: INT-Reg
-          definition: "sltu reg1, x0, reg2;"
-    F:
-        # RV32F Pseudoinstructions
-        - name: fabs.s
-          fields:
-              - field: rs1
-                type: SFP-Reg
-              - field: rs2
-                type: SFP-Reg
-          definition: "fsgnjx.s rs1, rs2, rs2;"
+    - name: snez
+      fields:
+        - field: reg1
+          type: INT-Reg
+        - field: reg2
+          type: INT-Reg
+      definition: "sltu reg1, x0, reg2;"
+  F:
+    # RV32F Pseudoinstructions
+    - name: fabs.s
+      fields:
+        - field: rs1
+          type: SFP-Reg
+        - field: rs2
+          type: SFP-Reg
+      definition: "fsgnjx.s rs1, rs2, rs2;"
 
-        - name: fmv.s
-          fields:
-              - field: rs1
-                type: SFP-Reg
-              - field: rs2
-                type: SFP-Reg
-          definition: "fsgnj.s rs1, rs2, rs2;"
+    - name: fmv.s
+      fields:
+        - field: rs1
+          type: SFP-Reg
+        - field: rs2
+          type: SFP-Reg
+      definition: "fsgnj.s rs1, rs2, rs2;"
 
-        - name: fneg.s
-          fields:
-              - field: rs1
-                type: SFP-Reg
-              - field: rs2
-                type: SFP-Reg
-          definition: "fsgnjn.s rs1, rs2, rs2;"
-    D:
-        # RV32D Pseudoinstructions
-        - name: fabs.d
-          fields:
-              - field: rs1
-                type: DFP-Reg
-              - field: rs2
-                type: DFP-Reg
-          definition: "fsgnjx.d rs1, rs2, rs2;"
+    - name: fneg.s
+      fields:
+        - field: rs1
+          type: SFP-Reg
+        - field: rs2
+          type: SFP-Reg
+      definition: "fsgnjn.s rs1, rs2, rs2;"
+  D:
+    # RV32D Pseudoinstructions
+    - name: fabs.d
+      fields:
+        - field: rs1
+          type: DFP-Reg
+        - field: rs2
+          type: DFP-Reg
+      definition: "fsgnjx.d rs1, rs2, rs2;"
 
-        - name: fmv.d
-          fields:
-              - field: rs1
-                type: DFP-Reg
-              - field: rs2
-                type: DFP-Reg
-          definition: "fsgnj.d rs1, rs2, rs2;"
+    - name: fmv.d
+      fields:
+        - field: rs1
+          type: DFP-Reg
+        - field: rs2
+          type: DFP-Reg
+      definition: "fsgnj.d rs1, rs2, rs2;"
 
-        - name: fneg.d
-          fields:
-              - field: rs1
-                type: DFP-Reg
-              - field: rs2
-                type: DFP-Reg
-          definition: "fsgnjn.d rs1, rs2, rs2;"
+    - name: fneg.d
+      fields:
+        - field: rs1
+          type: DFP-Reg
+        - field: rs2
+          type: DFP-Reg
+      definition: "fsgnjn.d rs1, rs2, rs2;"
 
 enums:
-    rounding_mode:
-        rne: 0
-        rtz: 1
-        rdn: 2
-        rup: 3
-        rmm: 4
-        dyn: 7
-        DEFAULT: dyn
+  rounding_mode:
+    rne: 0
+    rtz: 1
+    rdn: 2
+    rup: 3
+    rmm: 4
+    dyn: 7
+    DEFAULT: dyn
