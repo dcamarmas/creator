@@ -712,12 +712,12 @@ function legacyFormat(matchedInstruction, instruction_loaded) {
             1,
         ),
         instructionExec: instruction_loaded,
-        instructionExecParts: instructionExecParts,
-        instructionExecPartsWithProperNames:
-            instructionExecPartsWithProperNames,
+        instructionExecParts,
+        instructionExecPartsWithProperNames,
         auxDef: matchedInstruction.definition,
         nwords: matchedInstruction.nwords,
         binary: true,
+        clk_cycles: matchedInstruction.clk_cycles ?? 1,
     };
 }
 
