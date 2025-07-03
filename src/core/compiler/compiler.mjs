@@ -43,7 +43,7 @@ import { logger } from "../utils/creator_logger.mjs";
 import { bin2hex, isDeno, isWeb, uint_to_float64 } from "../utils/utils.mjs";
 
 // Conditional import for the WASM compiler based on the environment (web or Deno)
-// import { DataCategoryJS as DataCategoryJS_web } from "./web/creator_compiler.js";
+import { DataCategoryJS as DataCategoryJS_web } from "./web/creator_compiler.js";
 import { DataCategoryJS as DataCategoryJS_deno } from "./deno/creator_compiler.js";
 
 let DataCategoryJS;
@@ -473,7 +473,7 @@ export function assembly_compiler(code, library, color) {
                             break;
                         }
                         case "byte": {
-                            const byteValue = Number("0x" + data.value());
+                            const byteValue = Number("0x" + data.value(false));
                             main_memory.write(addr, byteValue);
 
                             // Add memory hint for the byte
@@ -486,7 +486,7 @@ export function assembly_compiler(code, library, color) {
                         }
                         case "word":
                             {
-                                const wordValue = BigInt("0x" + data.value());
+                                const wordValue = BigInt("0x" + data.value(false));
                                 // Get word size from architecture configuration
                                 const wordSizeBytes =
                                     newArchitecture.arch_conf.WordSize /
@@ -528,7 +528,7 @@ export function assembly_compiler(code, library, color) {
                             break;
 
                         case "double_word": {
-                            const dwordValue = BigInt("0x" + data.value());
+                            const dwordValue = BigInt("0x" + data.value(false));
                             // Get word size from architecture configuration
                             const wordSizeBytes =
                                 newArchitecture.arch_conf.WordSize /
@@ -594,7 +594,7 @@ export function assembly_compiler(code, library, color) {
                         }
 
                         case "half": {
-                            const halfValue = BigInt("0x" + data.value());
+                            const halfValue = BigInt("0x" + data.value(false));
                             // Split the half-word into bytes
                             const halfBytes = new Uint8Array(2);
                             halfBytes[0] = Number((halfValue >> 8n) & 0xffn);
@@ -654,7 +654,7 @@ export function assembly_compiler(code, library, color) {
                     let currentAddr = addr;
                     const startAddr = addr;
 
-                    for (const ch_h of data.value()) {
+                    for (const ch_h of data.value(false)) {
                         const bytes = new Uint8Array(4);
                         const n = encoder.encodeInto(ch_h, bytes).written;
                         // Write the string to memory

@@ -1,5 +1,3 @@
-import { readFileSync } from "node:fs";
-
 /**
  *
  * This class provides a comprehensive memory simulation that supports:
@@ -655,27 +653,6 @@ export class Memory {
         for (let i = 0; i < romData.length; i++) {
             this.write(offset + BigInt(i), romData[i]);
         }
-    }
-
-    /**
-     * Loads a binary file from disk into memory.
-     * Only works with 8-bit byte memories for direct file compatibility.
-     *
-     * @param filePath - Path to the binary file
-     * @param offset - Starting address offset. Default: 0
-     *
-     * @throws Error if memory doesn't use 8-bit bytes
-     * @throws Error if file cannot be read
-     *
-     * @example Loading a binary file
-     * ```typescript
-     * const memory = new Memory({ sizeInBytes: 65536 });
-     * memory.loadBinaryFile("program.bin", 0x8000n);
-     * ```
-     */
-    loadBinaryFile(filePath: string, offset: bigint = 0n): void {
-        const fileData = readFileSync(filePath);
-        this.loadROM(new Uint8Array(fileData), offset);
     }
 
     /**

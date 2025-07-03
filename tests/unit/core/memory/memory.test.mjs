@@ -219,27 +219,6 @@ Deno.test("Memory - loadCustomROM with various byte sizes", () => {
     assertEquals(memory4bit.read(9n), 12);
 });
 
-Deno.test("Memory - loadBinaryFile", () => {
-    const memory = new Memory({ sizeInBytes: 100, bitsPerByte: 8 });
-    const testData = new Uint8Array([0xaa, 0xbb, 0xcc, 0xdd]);
-    const testFile = "/tmp/test_memory.bin";
-
-    // Create test file
-    writeFileSync(testFile, testData);
-
-    try {
-        memory.loadBinaryFile(testFile, 20n);
-
-        assertEquals(memory.read(20n), 0xaa);
-        assertEquals(memory.read(21n), 0xbb);
-        assertEquals(memory.read(22n), 0xcc);
-        assertEquals(memory.read(23n), 0xdd);
-    } finally {
-        // Clean up test file
-        unlinkSync(testFile);
-    }
-});
-
 Deno.test("Memory - readBytes", () => {
     const memory = new Memory({ sizeInBytes: 100, bitsPerByte: 8 });
     memory.write(10n, 0x10);

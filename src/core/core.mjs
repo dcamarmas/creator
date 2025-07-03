@@ -56,10 +56,10 @@ import { creator_callstack_reset } from "./sentinel/sentinel.mjs";
 
 // Conditional import for the WASM compiler based on the environment (web or Deno)
 
-// import wasm_web_init, {
-//     Color as Color_web,
-//     ArchitectureJS as ArchitectureJS_web,
-// } from "./compiler/web/creator_compiler.js";
+import wasm_web_init, {
+    Color as Color_web,
+    ArchitectureJS as ArchitectureJS_web,
+} from "./compiler/web/creator_compiler.js";
 import {
     Color as Color_deno,
     ArchitectureJS as ArchitectureJS_deno,
@@ -156,6 +156,7 @@ export let REGISTERS_BACKUP = [];
 export const register_size_bits = 64; //TODO: load from architecture
 export let main_memory;
 export let main_memory_backup;
+export function updateMainMemoryBackup(value) { main_memory_backup = value }
 
 export let architecture_available = [];
 export let load_architectures_available = [];
@@ -1586,24 +1587,4 @@ export function getRegisterInfo(regName) {
     }
 
     return null;
-}
-export function loadBinaryFile(filePath, offset = 0n) {
-    try {
-        // Load the binary file into memory
-        main_memory.loadBinaryFile(filePath, offset);
-
-        // Create a new backup of memory that includes the loaded binary data
-        // This ensures that reset() will restore to the state with the binary loaded
-        main_memory_backup = main_memory.dump();
-
-        return {
-            status: "ok",
-            msg: "Binary file loaded successfully",
-        };
-    } catch (error) {
-        return {
-            status: "error",
-            msg: `Error loading binary file: ${error.message}`,
-        };
-    }
 }
