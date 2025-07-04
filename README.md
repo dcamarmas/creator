@@ -44,6 +44,20 @@
 ### 2025
 
 <details>
+<summary>:newspaper: Simulador web para RISC-V basado en la especificación SAIL</summary>
+
+  * Conference paper: Jornadas Sarteco
+  * Authors: Juan Carlos Cano-Resa, Félix García-Carballeira, Diego Camarmas-Alonso, Alejandro Calderón-Mateos
+</details>
+
+<details>
+<summary>:newspaper: Extensión del simulador CREATOR para integrar funcionalidades de Arduino: caso de estudio con el microcontrolador ESP32</summary>
+
+  * Conference paper: Jornadas Sarteco
+  * Authors: Elisa Utrilla-Arroyo, Diego Camarmas-Alonso, Félix García-Carballeira, Alejandro Calderón-Mateos
+</details>
+
+<details>
 <summary>:newspaper: CREATOR: un entorno de desarrollo integrado para la docencia y la investigación en procesadores RISC-V</summary>
 
   * Seminar: CAPAP-H
@@ -182,6 +196,17 @@
 ## ChangeLog
 
 <details open>
+<summary>:atom: 5.0.x:</summary>
+
+  - [x] New functionality:
+     * New compiler based on Rust
+     * New architecture editor based on CodeMirror
+  - [x] User Interface:
+     * Several improvements and minor bugs fixed
+
+</details>
+
+<details>
 <summary>:atom: 4.1.x:</summary>
 
   - [x] New functionality:
@@ -191,8 +216,6 @@
      * Several improvements and minor bugs fixed
 
 </details>
-
-
 
 <details>
 <summary>:atom: 4.0.x:</summary>
