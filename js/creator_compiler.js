@@ -50,6 +50,16 @@ var textarea_assembly_editor;
 var codemirrorHistory = null;
 /*Assembly code textarea*/
 var code_assembly = '';
+/*Compilation index*/
+var tokenIndex = 0 ;
+var nEnters = 0 ;
+var pc = 4; //PRUEBA
+/*Kernel Instructions memory address*/
+var kaddress;
+/*Kernel Data memory address*/
+var kdata_address;
+/*Instructions memory address*/
+var address;
 /*Data memory address*/
 var data_address;
 /*Stack memory address*/
@@ -95,7 +105,7 @@ let color;
 
 // Load architecture
 
-function load_arch_select ( cfg ) //TODO: repeated?
+function load_arch_select ( cfg )
 {
       var ret = {
                   errorcode: "",
@@ -105,6 +115,7 @@ function load_arch_select ( cfg ) //TODO: repeated?
                   status: "ok"
                 } ;
 
+
       var auxArchitecture = cfg;
       architecture = register_value_deserialize(auxArchitecture);
 
@@ -113,8 +124,13 @@ function load_arch_select ( cfg ) //TODO: repeated?
            architecture_hash.push({name: architecture.components[i].name, index: i});
       }
 
-      backup_stack_address = architecture.memory_layout[4].value;
-      backup_data_address  = architecture.memory_layout[3].value;
+      // check if kernel to compute offset
+      let mem_offset = architecture.memory_layout.length == 10 ? 4 : 0;
+
+      backup_stack_address = architecture.memory_layout[mem_offset + 4].value;
+      backup_data_address  = architecture.memory_layout[mem_offset + 3].value;
+
+      if (architecture.interrupts?.enabled) enableInterrupts();
 
       ret.token = "The selected architecture has been loaded correctly";
       ret.type  = "success";
@@ -132,7 +148,7 @@ function assembly_compiler(library)
 {
         /* Google Analytics */
         creator_ga('compile', 'compile.assembly');
-        
+
         instructions = [];
         creator_memory_clear() ;
         extern = [];
@@ -168,17 +184,28 @@ function assembly_compiler(library)
         }
         library_offset = addr - text_address;
 
+        var numBinaries = instructions.length;
+
+        // check if kernel to compute offset
+        let mem_offset = 0;
+
+        if (architecture.memory_layout.length == 10) {
+            // there is a kernel
+            kdata_address = parseInt(architecture.memory_layout[2].value);
+            mem_offset = 4;
+        }
+
         /*Allocation of memory addresses*/
-        architecture.memory_layout[4].value = backup_stack_address;
-        architecture.memory_layout[3].value = backup_data_address;
-        data_address = parseInt(architecture.memory_layout[2].value);
-        stack_address = parseInt(architecture.memory_layout[4].value);
+        architecture.memory_layout[mem_offset + 4].value = backup_stack_address;
+        architecture.memory_layout[mem_offset + 3].value = backup_data_address;
+        data_address = parseInt(architecture.memory_layout[mem_offset + 2].value);
+        stack_address = parseInt(architecture.memory_layout[mem_offset + 4].value);
 
         for (var i = 0; i < architecture.components.length; i++)
         {
           for (var j = 0; j < architecture.components[i].elements.length; j++)
           {
-            if (architecture.components[i].elements[j].properties.includes("program_counter")) 
+            if (architecture.components[i].elements[j].properties.includes("program_counter"))
             {
               architecture.components[i].elements[j].value          = bi_intToBigInt(library_offset,10) ;
               architecture.components[i].elements[j].default_value  = bi_intToBigInt(library_offset,10) ;
@@ -345,9 +372,14 @@ function assembly_compiler(library)
         /* Initialize stack */
         writeMemory("00", parseInt(stack_address), "word") ;
 
-        address = parseInt(architecture.memory_layout[0].value);
-        data_address = parseInt(architecture.memory_layout[2].value);
-        stack_address = parseInt(architecture.memory_layout[4].value);
+        // check if kernel
+        if (architecture.memory_layout.length == 10) {
+            kaddress = parseInt(architecture.memory_layout[0].value);
+            kdata_address = parseInt(architecture.memory_layout[2].value);
+        }
+        address = parseInt(architecture.memory_layout[mem_offset + 0].value);
+        data_address = parseInt(architecture.memory_layout[mem_offset + 2].value);
+        stack_address = parseInt(architecture.memory_layout[mem_offset + 4].value);
 
   // save current value as default values for reset()...
         creator_memory_prereset() ;

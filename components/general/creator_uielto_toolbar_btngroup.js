@@ -97,6 +97,9 @@
                           app.$bvToast.hide()
                         }
                       },
+                      execute_load_creatino() {
+                        this.$root.$emit('library_load_creatino');
+                    },
 
                       //
                       // Architecture Selector
@@ -606,6 +609,10 @@
             '    <span class="fas fa-upload"></span>' +
             '    Load Library' +
             '  </b-dropdown-item>' +
+            '  <b-dropdown-item @click="execute_load_creatino">' +
+            '    <span class="fas fa-infinity"></span>' +
+            '    Load Arduino Library' +
+            '  </b-dropdown-item>' +
             '  <b-dropdown-item @click="remove_library">' +
             '    <span class="far fa-trash-alt"></span>' +
             '    Remove' +
@@ -697,5 +704,5 @@
             '</b-button>' + 
             ' ' +
             '<!-- Information popover -->' +
-            '<popover-info target="info" show_instruction_help="true"></popover-info>'
+            '<popover-info target="info" show_instruction_help="true" show_creatino_help="true" show_board_help="true"></popover-info>'
   }

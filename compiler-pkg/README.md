@@ -1,6 +1,6 @@
-# Creator Compiler
+# CREATOR Compiler
 
-Reimplementation of the compiler used by [Creator](https://creatorsim.github.io/)
+Reimplementation of the compiler used by [CREATOR](https://creatorsim.github.io/)
 to have better performance, more helpful error messages, and a more correct output.
 
 ## Building

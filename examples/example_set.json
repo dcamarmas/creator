@@ -26,5 +26,19 @@
     "architecture":"RISC-V (RV32IMFD)",
     "url":"examples/ag-uc3m-ec/list.json",
     "description": "RISC-V examples for Aula Global at UC3M"
+  },
+  {
+    "name": "RISC-V Interrupts",
+    "id": "interrupts",
+    "architecture":"RISC-V (interrupts)",
+    "url":"examples/riscv-interrupts/list.json",
+    "description": "RISC-V interrupt examples"
+  },
+  {
+    "name": "RISC-V devices",
+    "id": "devices",
+    "architecture":"RISC-V (interrupts)",
+    "url":"examples/riscv-devices/list.json",
+    "description": "RISC-V device examples"
   }
 ]

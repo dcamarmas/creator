@@ -20,6 +20,19 @@
  */
 
 const wasm = require('../compiler-pkg/nodejs/creator_compiler.js')
+const { logger, console_log } = require('./utils/creator_logger');
+
+var creator_debug = false;
+
+function set_debug(enable_debug) {
+    creator_debug = enable_debug;
+    if (creator_debug) {
+        logger.enable();
+        logger.setLevel('DEBUG');
+    } else {
+        logger.disable();
+    }
+}
 
 // load components
 
@@ -174,9 +187,13 @@ function get_state ( )
 
     // dump memory
     var addrs = main_memory_get_addresses() ;
+
+    // check if kernel to compute offset
+    let mem_offset = architecture.memory_layout.length == 10 ? 4 : 0;
+
     for (var i=0; i<addrs.length; i++)
     {
-      if(addrs[i] >= parseInt(architecture.memory_layout[3].value)){
+      if(addrs[i] >= parseInt(architecture.memory_layout[mem_offset + 3].value)){
         continue;
       }
 
@@ -332,3 +349,4 @@ module.exports.compare_states    = compare_states ;
 module.exports.help_instructions = help_instructions ;
 module.exports.help_pseudoins    = help_pseudoins ;
 
+module.exports.set_debug         = set_debug;

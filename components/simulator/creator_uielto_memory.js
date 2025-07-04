@@ -39,6 +39,8 @@
                 //Memory view
                 mem_representation: "data_memory",
                 mem_representation_options: [
+                  { text: 'Kernel Data', value: 'kdata_memory' },
+                  { text: 'Kernel Text', value: 'kinstructions_memory' },
                   { text: 'Data', value: 'data_memory' },
                   { text: 'Text', value: 'instructions_memory' },
                   { text: 'Stack', value: 'stack_memory'}
@@ -51,7 +53,7 @@
             },
 
   template: ' <b-container fluid align-h="center" class="mx-0 my-3 px-2">' +
-            '   <b-row cols-xl="2" cols-lg="1" cols-md="2" cols-sm="1" cols-xs="1" cols="1">' +
+            '   <b-row cols-xl="1" cols-lg="1" cols-md="1" cols-sm="1" cols-xs="1" cols="1">' +
             '     <b-col align-h="center" class="px-2">' +
             '       <div class="border m-1 py-1 px-2">' +
             '         <b-badge variant="light" class="h6 groupLabelling border mx-2 my-0">Main memory segment</b-badge>' +

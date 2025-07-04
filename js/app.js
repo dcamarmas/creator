@@ -26,7 +26,6 @@
 /****************
  * Vue instance *
  ****************/
-
 try
 {
 
@@ -106,7 +105,7 @@ try
       //Dark Mode
       dark: false,
 
-      
+
 
       /*************************/
       /* Architecture Selector */
@@ -121,7 +120,7 @@ try
       //Architectures card background
       back_card: back_card, //TODO: copy or only in app?
 
-      //Delete architecture modal 
+      //Delete architecture modal
       modal_delete_arch_index: 0, //TODO: include into delete architecture component - modal info
 
 
@@ -153,8 +152,8 @@ try
       //Architecture edit code
       arch_code: "",
 
-      
-      
+
+
       /************/
       /* Assembly */
       /************/
@@ -315,7 +314,7 @@ try
       detect_os(){
         if (navigator.appVersion.indexOf("Win") != -1) {
           this.os = "Win";
-        } 
+        }
         else if (navigator.appVersion.indexOf("Mac") != -1) {
           this.os = "Mac";
         }
@@ -495,3 +494,17 @@ catch(e)
     location.reload(true)
   }, 3000);
 }
+
+
+/*
+   *  Debug
+   */
+
+var creator_debug = false ;
+
+function console_log(m){
+  if(creator_debug){
+    console.log(m);
+  }
+}
+

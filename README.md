@@ -12,7 +12,7 @@
 
 |                              | URL                                             | 
 |:----------------------------:|:------------------------------------------------| 
-| Creator                      | https://creatorsim.github.io/creator/           |
+| CREATOR                      | https://creatorsim.github.io/creator/           |
 | Documentation                | https://creatorsim.github.io/                   | 
 | Examples included            | :point_right: [RISC-V](docs/examples.md#point_right---risc-v) :point_right: [MIPS-32](docs/examples.md#point_right---mips) | 
 
@@ -31,7 +31,9 @@
 | :microscope: Nightly build   | https://dcamarmas.github.io/creator             |
 | :clipboard:  Tests           | [Test Descriptions](docs/test.md)               | 
 
-### Supported Internet Browser
+
+
+### Supported Internet Browsers
 
 ![Edge](https://img.shields.io/badge/Edge-0078D7?style=for-the-badge&logo=Microsoft-edge&logoColor=white)
 ![Firefox](https://img.shields.io/badge/Firefox-FF7139?style=for-the-badge&logo=Firefox-Browser&logoColor=white)
@@ -191,6 +193,8 @@
   * :technologist: Lucas Elvira Martín (RISC-V and several improvements)
   * :technologist: José Antonio Verde Jiménez (Real hardware integration)
   * :technologist: Álvaro Guerrero Espinosa (New compiler)
+  * :technologist: Luis Daniel Casais Mezquida (Interrupts, kernel support, and devices)
+  * :technologist: Elisa Utrilla Arroyo (Arduino integration for creator)
 
 
 ## ChangeLog
@@ -201,6 +205,8 @@
   - [x] New functionality:
      * New compiler based on Rust
      * New architecture editor based on CodeMirror
+     * Interrupts, devices, and control registers initial support
+     * Initial support for arduino integration
   - [x] User Interface:
      * Several improvements and minor bugs fixed
 
@@ -290,7 +296,7 @@
       * ./creator.sh -a ./architecture/MIPS-32.json -s ./examples/MIPS/example2.txt -o min > output.txt
     * Example: compare the final state and the state saved on 'output.txt' file:
       * ./creator.sh -a ./architecture/MIPS-32.json -s ./examples/MIPS/example2.txt -o min -r output.txt
-  - [x] Creator now accepts three GET values:
+  - [x] CREATOR now accepts three GET values:
     * Preload the MIPS architecture:
       * https://creatorsim.github.io/creator/?architecture=MIPS-32
     * Preload example 'e3' from example set 'uc3m-ec':
@@ -298,3 +304,4 @@
   - [x] Bootstrap-vue upgraded up to v2.15.0
 
 </details>
+
