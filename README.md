@@ -200,6 +200,7 @@
 
   - [x] New functionality:
      * New compiler
+     * New architecture editor based on CodeMirror
   - [x] User Interface:
      * Several improvements and minor bugs fixed
 
