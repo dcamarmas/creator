@@ -4,8 +4,8 @@
    ╭─[ assembly:8:14 ]
    │
  8 │     li t0, 10
-   │              ┬  
-   │              ╰── Consider adding a label called `main` to an instruction
+   │              │ 
+   │              ╰─ Consider adding a label called `main` to an instruction
 ───╯
 
 Not executed
