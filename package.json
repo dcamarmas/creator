@@ -2,7 +2,7 @@
   "name": "creator",
   "description": "Check CREATOR",
   "author": "dcamarma@inf.uc3m.es",
-  "version": "5.0-β",
+  "version": "5.0",
   "scripts": {
     "test-creator-node": "./run_test.sh",
     "build-creator-web": "./mk_min.sh",
