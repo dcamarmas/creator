@@ -21,9 +21,9 @@
  * Representation
  */
 
-
 export const isDeno = typeof Deno !== "undefined";
-export const isWeb = typeof window !== "undefined" && typeof document !== "undefined";
+export const isWeb =
+    typeof window !== "undefined" && typeof document !== "undefined";
 
 /**
  * Check the type of a number in IEEE 754 format.
@@ -85,15 +85,15 @@ export function hex2char8(hexvalue) {
 }
 
 export function hex2float(hexvalue) {
-    const value = hexvalue.split("x");
-    if (typeof value[1] !== "undefined" && value[1].length > 8) {
-        value[1] = value[1].substring(0, 8);
+    const value = hexvalue.replace("0x", "");
+    if (typeof value !== "undefined" && value.length > 8) {
+        value = value.substring(0, 8);
     }
 
     let value_bit = "";
 
-    for (let i = 0; i < value[1].length; i++) {
-        let aux = value[1].charAt(i);
+    for (let i = 0; i < value.length; i++) {
+        let aux = value.charAt(i);
         aux = parseInt(aux, 16).toString(2).padStart(4, "0");
         value_bit += aux;
     }
@@ -220,11 +220,11 @@ export function bin2hex(s) {
 }
 
 export function hex2double(hexvalue) {
-    const value = hexvalue.split("x");
+    const value = hexvalue.replace("0x", "");
     let value_bit = "";
 
-    for (let i = 0; i < value[1].length; i++) {
-        let aux = value[1].charAt(i);
+    for (let i = 0; i < value.length; i++) {
+        let aux = value.charAt(i);
         aux = parseInt(aux, 16).toString(2).padStart(4, "0");
         value_bit += aux;
     }
@@ -235,6 +235,24 @@ export function hex2double(hexvalue) {
     new Uint8Array(buffer).set(value_bit.match(/.{8}/g).map(binaryStringToInt));
     return new DataView(buffer).getFloat64(0, false);
 }
+
+/**
+ * Returns a signed integer. Max size of input is 32b.
+ */
+export function hex2SignedInt(hexvalue) {
+    const size = hexvalue.replace("0x", "").length;
+    const mask = 0x8 * 16 ** (size - 1);
+    const sub = -0x1 * 16 ** size;
+
+    if ((parseInt(hexvalue, 16) & mask) > 0) {
+        // negative
+        return sub + parseInt(hexvalue, 16);
+    } else {
+        // positive
+        return parseInt(hexvalue, 16);
+    }
+}
+
 function float2int_v2(value) {
     return parseInt(float2bin(value), 2);
 }
@@ -285,4 +303,84 @@ export function getHexTwosComplement(value, bits, padding = true) {
     // Convert to hex and conditionally pad with leading zeros
     const hexValue = maskedValue.toString(16);
     return padding ? hexValue.padStart(bits / 4, "0") : hexValue;
+}
+
+/**
+ * Converts an Object of Arrays to an Array of Objects
+ * @param {Object} object_arrays An object of arrays where each array is of the same length
+ * @returns {Array<Object>} An Array of objects where each key in each object corresponds to that element in the original array
+ */
+export function obj_arraysTOarray_objs(object_arrays) {
+    // stolen from
+    // https://gist.github.com/thesofakillers/bcf39eaed428304ddc126ca8f12336f7
+
+    const final_array = object_arrays[Object.keys(object_arrays)[0]].map(
+        // el is unused, but needs to be defined for map to give access to index i
+        (_el, i) => {
+            const internal_object = {};
+            Object.keys(object_arrays).forEach(
+                key => (internal_object[key] = object_arrays[key][i]),
+            );
+            return internal_object;
+        },
+    );
+    return final_array;
+}
+
+
+/**
+ * Splits an array into chunks.
+ *
+ * Modified from
+ * https://www.geeksforgeeks.org/javascript/split-an-array-into-chunks-in-javascript/
+ *
+ * @example
+ * ```js
+ * chunks(
+ *   [ 10, 20, 30, 40, 50, 60, 70],
+ *   2
+ * ); // [ [ 10, 20 ], [ 30, 40 ], [ 50, 60 ], [ 70, 80 ] ]
+ * ```
+ *
+ * @param {Iterable} arr Array to iterate through
+ * @param {number} chunkSize Size of the chunks
+ *
+ */
+export function chunks(arr, chunkSize) {
+    return arr.reduce((acc, _, index) => {
+        if (index % chunkSize !== 0) {
+            // continue
+            return acc;
+        }
+        // Create chunk using array.slice() and push into the accumulator
+        acc.push(arr.slice(index, index + chunkSize));
+
+        return acc;
+    }, []);
+}
+
+
+/**
+ * Returns a range [`start`, `stop`), if `stop` is specified. Otherwise, it
+ * returns a range [`0`, `start`).
+ *
+ * Modified from
+ * https://artemee-lemann.medium.com/range-function-in-javascript-b12fbff42d03
+ *
+ * @param {number?} start Beginning of the range.
+ * @param {number} stop End of range.
+ * @param {number?} step Interval between numbers. Default is 1.
+ *
+ * @return {Generator}
+ */
+
+export function* range(start, stop = undefined, step = 1) {
+    if (stop === undefined) {
+        stop = start;
+        start = 0;
+    }
+    while (start < stop) {
+        yield start;
+        start += step;
+    }
 }

@@ -18,4 +18,4 @@ main:
     li t0, 0x00000001
     fcvt.d.w fa0, t0
     ecall
-    
+    jr ra

@@ -19,10 +19,7 @@
  */
 "use strict";
 import { WORDSIZE } from "../core.mjs";
-import { main_memory_read, main_memory_get_addresses, main_memory_datatypes } from "./memoryCore.mjs";
 import { hex2float, hex2char8 } from "../utils/utils.mjs";
-
-
 
 /************************
  * Public API (2/3): UI *
@@ -34,7 +31,6 @@ import { hex2float, hex2char8 } from "../utils/utils.mjs";
 //  ...
 
 export function creator_memory_updaterow(addr) {
-    
     // skip if app.data does not exit...
     if (
         typeof document === "undefined" ||
@@ -50,14 +46,22 @@ export function creator_memory_updaterow(addr) {
     addr_base -= addr_base % word_size_bytes; // get word aligned address
 
     // get_or_create...
-    let elto = { addr: 0, addr_begin: "", addr_end: "", value: "", size: 0, hex: [], eye: true };
+    let elto = {
+        addr: 0,
+        addr_begin: "",
+        addr_end: "",
+        value: "",
+        size: 0,
+        hex: [],
+        eye: true,
+    };
     if (typeof document.app.main_memory[addr_base] !== "undefined") {
         // reuse the existing element...
         elto = document.app.$data.main_memory[addr_base];
     } else {
         // set a new element, and set the initial values...
         // Vue.set(document.app.$data.main_memory, addr_base, elto);
-        document.app.$data.main_memory[addr_base] = elto
+        document.app.$data.main_memory[addr_base] = elto;
 
         for (let i = 0; i < word_size_bytes; i++) {
             elto.hex[i] = { byte: "00", tag: null };
@@ -124,13 +128,13 @@ export function creator_memory_updateall() {
         typeof document === "undefined" ||
         typeof document.app.main_memory === "undefined"
     ) {
-        return
+        return;
     }
 
     const word_size_bytes = WORDSIZE / 8;
 
     // update all rows in main_memory...
-    const addrs = main_memory_get_addresses();
+    const addrs = main_memory.getUsedAddresses();
 
     let last_addr = -1;
     let curr_addr;
@@ -149,39 +153,42 @@ export function creator_memory_clearall() {
         typeof document === "undefined" ||
         typeof document.app.main_memory === "undefined"
     ) {
-        return
+        return;
     }
 
     // clear all
     document.app.main_memory = {};
 }
 
-
-export function creator_memory_update_row_view(selected_view, segment_name, row_info) {
+export function creator_memory_update_row_view(
+    selected_view,
+    segment_name,
+    row_info,
+) {
     if (typeof document.app.$data.main_memory[row_info.addr] === "undefined") {
-        return
+        return;
     }
 
-    const hex_packed = document.app.main_memory[row_info.addr].hex_packed
-    let new_value = document.app.main_memory[row_info.addr].value
+    const hex_packed = document.app.main_memory[row_info.addr].hex_packed;
+    let new_value = document.app.main_memory[row_info.addr].value;
 
     switch (selected_view) {
         case "sig_int":
-            new_value = parseInt(hex_packed, 16) >> 0
-            break
+            new_value = parseInt(hex_packed, 16) >> 0;
+            break;
         case "unsig_int":
-            new_value = parseInt(hex_packed, 16) >>> 0
-            break
+            new_value = parseInt(hex_packed, 16) >>> 0;
+            break;
         case "float":
-            new_value = hex2float("0x" + hex_packed)
-            break
+            new_value = hex2float("0x" + hex_packed);
+            break;
         case "char":
-            new_value = hex2char8(hex_packed)
-            break
+            new_value = hex2char8(hex_packed);
+            break;
         default:
     }
 
-    document.app.$data.main_memory[row_info.addr].value = new_value
+    document.app.$data.main_memory[row_info.addr].value = new_value;
 }
 
 export function creator_memory_update_space_view(

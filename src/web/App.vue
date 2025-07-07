@@ -252,12 +252,6 @@ export default {
       reg_representation_float: "ieee32",
       reg_name_representation: "alias",
 
-      //
-      // Memory
-      //
-
-      main_memory: {},
-      main_memory_busy: false,
 
       // Stack
       track_stack_names,
@@ -639,8 +633,6 @@ export default {
     :browser="browser"
     :os="os"
     :stack_total_list="stack_total_list"
-    :main_memory="main_memory"
-    :main_memory_busy="main_memory_busy"
     :display="display"
     :keyboard="keyboard"
     :dark="dark"

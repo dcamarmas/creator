@@ -25,4 +25,4 @@ main:
     li a0, '\n'
     li a7, 11
     ecall
-
+    jr ra

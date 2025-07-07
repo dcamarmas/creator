@@ -19,7 +19,7 @@ Deno.test("bi_intToBigInt - converts positive integer correctly", () => {
 
 Deno.test("bi_intToBigInt - normalizes negative integer correctly", () => {
     const input = -1;
-    const result = bi_intToBigInt(input, 10);
+    const result = bi_intToBigInt(input, 10, 32);
     assertEquals(result, UINT32_MAX - 1n);
 });
 

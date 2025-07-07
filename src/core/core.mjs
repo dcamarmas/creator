@@ -16,9 +16,9 @@
  *  You should have received a copy of the GNU Lesser General Public License
  *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  */
-"use strict"
+"use strict";
 
-import { initCAPI } from "./capi/initCAPI.mjs"
+import { initCAPI } from "./capi/initCAPI.mjs";
 
 import {
     bi_BigIntTodouble,
@@ -31,7 +31,8 @@ import {
     float2bin,
     getHexTwosComplement,
     hex2double,
-isDeno, isWeb
+    isDeno,
+    isWeb,
 } from "./utils/utils.mjs";
 
 import { logger } from "./utils/creator_logger.mjs";
@@ -41,15 +42,7 @@ import {
     setInstructions,
 } from "./compiler/compiler.mjs";
 import { executeProgramOneShot } from "./executor/executor.mjs";
-import {
-    main_memory,
-    main_memory_get_addresses,
-    main_memory_read_default_value,
-    main_memory_read_value,
-    main_memory_restore,
-    main_memory_serialize,
-} from "./memory/memoryCore.mjs";
-import { creator_memory_reset } from "./memory/memoryOperations.mjs";
+import { Memory } from "./memory/Memory.mts";
 import yaml from "js-yaml";
 import { crex_findReg } from "./register/registerLookup.mjs";
 import { readRegister } from "./register/registerOperations.mjs";
@@ -66,50 +59,50 @@ import { creator_callstack_reset } from "./sentinel/sentinel.mjs";
 import wasm_web_init, {
     Color as Color_web,
     ArchitectureJS as ArchitectureJS_web,
-} from "./compiler/web/creator_compiler.js"
+} from "./compiler/web/creator_compiler.js";
 import {
     Color as Color_deno,
     ArchitectureJS as ArchitectureJS_deno,
-} from "./compiler/deno/creator_compiler.js"
+} from "./compiler/deno/creator_compiler.js";
 
-let Color
-let ArchitectureJS
+let Color;
+let ArchitectureJS;
 if (isDeno) {
     // Deno HAS to be imported like this, as it doesn't provide a default
-    Color = Color_deno
-    ArchitectureJS = ArchitectureJS_deno
+    Color = Color_deno;
+    ArchitectureJS = ArchitectureJS_deno;
 } else if (isWeb) {
-    Color = Color_web
-    ArchitectureJS = ArchitectureJS_web
+    Color = Color_web;
+    ArchitectureJS = ArchitectureJS_web;
     // in the web, we MUST call the default
-    wasm_web_init()
+    wasm_web_init();
 } else {
     throw new Error(
         "Unsupported environment: neither Deno nor web browser detected",
-    )
+    );
 }
-
 
 export let code_assembly = "";
 export let update_binary = "";
 export let backup_stack_address;
 export let backup_data_address;
 
-export let architecture_hash = []
+export let architecture_hash = [];
 export let architecture = {
     arch_conf: [],
     memory_layout: [],
     components: [],
     instructions: [],
     directives: [],
-}
+};
+export let newArchitecture;
 
 export let app;
 
 export let status = {
     execution_init: 1,
     totalStats: 0,
-    run_program: 0,  // 0: stopped, 1: running, 2: stopped-by-breakpoint, 3: stopped-by-mutex-read
+    run_program: 0, // 0: stopped, 1: running, 2: stopped-by-breakpoint, 3: stopped-by-mutex-read
 
     keyboard: "",
     display: "",
@@ -154,23 +147,30 @@ export const stats = [
 
 export let arch;
 export const ARCHITECTURE_VERSION = "2.0";
-export let ENDIANNESS;
 export let WORDSIZE;
+export let BYTESIZE;
+export let ENDIANNESSARR = [];
+export let MAXNWORDS;
 export let REGISTERS;
 export let REGISTERS_BACKUP = [];
 export const register_size_bits = 64; //TODO: load from architecture
+export let main_memory;
+export let main_memory_backup;
+export function updateMainMemoryBackup(value) { main_memory_backup = value }
 
-export let architecture_available = []
-export let load_architectures_available = []
-export let load_architectures = []
-export let back_card = []
-export let memory_hash = ['data_memory', 'instructions_memory', 'stack_memory']
-export let execution_mode = 0 // 0: instruction by instruction, 1: run program
-export function set_execution_mode(value) { execution_mode = value }  // it's the only way
-export let instructions_packed = 100
-export let architecture_json = ''
+export let architecture_available = [];
+export let load_architectures_available = [];
+export let load_architectures = [];
+export let back_card = [];
+export let memory_hash = ["data_memory", "instructions_memory", "stack_memory"];
+export let execution_mode = 0; // 0: instruction by instruction, 1: run program
+export function set_execution_mode(value) {
+    execution_mode = value;
+} // it's the only way
+export let instructions_packed = 100;
+export let architecture_json = "";
 
-let code_binary = ""
+let code_binary = "";
 
 initCAPI();
 let creator_debug = false;
@@ -180,12 +180,12 @@ BigInt.prototype.toJSON = function () {
 };
 
 export function set_debug(enable_debug) {
-    creator_debug = enable_debug
+    creator_debug = enable_debug;
     if (creator_debug) {
-        logger.enable()
-        logger.setLevel("DEBUG")
+        logger.enable();
+        logger.setLevel("DEBUG");
     } else {
-        logger.disable()
+        logger.disable();
     }
 }
 
@@ -197,31 +197,75 @@ function load_arch_select(cfg) {
         type: "",
         update: "",
         status: "ok",
-    }
+    };
 
     const auxArchitecture = cfg;
     architecture = register_value_deserialize(auxArchitecture);
-    ENDIANNESS = architecture.arch_conf[3].value;
-    WORDSIZE = architecture.arch_conf[1].value;
-    REGISTERS = architecture.components;
+    WORDSIZE = newArchitecture.arch_conf.WordSize;
+    BYTESIZE = newArchitecture.arch_conf.ByteSize;
+    const endianness = newArchitecture.arch_conf.Endianness;
 
-    // Create deep copy backup of REGISTERS
-    REGISTERS_BACKUP = JSON.parse(JSON.stringify(REGISTERS));
+    const bytesPerWord = WORDSIZE / BYTESIZE;
+
+    if (endianness === "big_endian") {
+        ENDIANNESSARR = Array.from({ length: bytesPerWord }, (_, i) => i);
+    } else if (endianness === "little_endian") {
+        ENDIANNESSARR = Array.from(
+            { length: bytesPerWord },
+            (_, i) => bytesPerWord - 1 - i,
+        );
+    } else if (Array.isArray(endianness)) {
+        ENDIANNESSARR = endianness;
+    }
+
+    REGISTERS = architecture.components;
 
     architecture_hash = [];
     for (let i = 0; i < REGISTERS.length; i++) {
         architecture_hash.push({
             name: REGISTERS[i].name,
             index: i,
-        })
+        });
     }
 
-    backup_stack_address = architecture.memory_layout[4].value
-    backup_data_address = architecture.memory_layout[3].value
+    backup_stack_address = architecture.memory_layout[4].value;
+    backup_data_address = architecture.memory_layout[3].value;
 
-    ret.token = "The selected architecture has been loaded correctly"
-    ret.type = "success"
-    return ret
+    // Initialize main memory with architecture layout support
+
+    // Calculate the total size of the memory
+    // Get the smallest memory address in the memory layout
+    const minMemoryAddress = Math.min(
+        ...architecture.memory_layout.map(el => parseInt(el.value, 16)),
+    );
+    // Get the largest memory address in the memory layout
+    const maxMemoryAddress = Math.max(
+        ...architecture.memory_layout.map(el => parseInt(el.value, 16)),
+    );
+    // Calculate the total size
+    const totalMemorySize = maxMemoryAddress - minMemoryAddress + 1;
+
+    // Create memory with layout support
+    main_memory = new Memory({
+        sizeInBytes: totalMemorySize,
+        bitsPerByte: BYTESIZE,
+        wordSize: WORDSIZE / BYTESIZE,
+        memoryLayout: architecture.memory_layout,
+        baseAddress: BigInt(minMemoryAddress),
+        endianness: ENDIANNESSARR,
+    });
+
+    // Initialize stack tracker and other related components
+    // This must happen before creating the register backup
+    track_stack_reset();
+
+    // Create deep copy backup of REGISTERS after all initialization is complete
+    // This ensures the backup contains the correct values for all registers, including SP
+    REGISTERS_BACKUP = JSON.parse(JSON.stringify(REGISTERS));
+
+    ret.token = "The selected architecture has been loaded correctly";
+    ret.type = "success";
+    return ret;
 }
 
 /**
@@ -348,13 +392,16 @@ function buildCompleteInstruction(
     mergedFields,
     legacy = true,
 ) {
-    const result = {
-        name: instruction.name,
-        nwords: template.nwords,
-        clk_cycles: template.clk_cycles,
-        fields: mergedFields,
-        definition: instruction.definition,
-    };
+    // Start with template properties as base
+    const result = { ...template };
+
+    // Override with instruction properties (instruction takes precedence)
+    Object.assign(result, instruction);
+
+    // Set the specific properties that should always be used
+    result.name = instruction.name;
+    result.fields = mergedFields;
+    result.definition = instruction.definition;
 
     if (legacy) {
         // This will eventually be removed!!
@@ -491,34 +538,105 @@ function processInstructions(architectureObj) {
                     instruction.postoperation;
                 delete instruction.postoperation;
             }
+            // Check to convert (if needed) the "valueField" property from hex to binary
+            mergedFields.forEach(field => {
+                if (field.valueField !== undefined) {
+                    // If the valueField is a string, it might be in hex format
+                    if (typeof field.valueField === "string") {
+                        // If it starts with "0x", convert it to binary
+                        if (field.valueField.startsWith("0x")) {
+                            const hexValue = field.valueField.slice(2);
+                            const binaryValue = parseInt(hexValue, 16).toString(
+                                2,
+                            );
+                            // Pad to maintain the same bit width as the original hex
+                            const expectedBitWidth = hexValue.length * 4;
+                            field.valueField = binaryValue.padStart(
+                                expectedBitWidth,
+                                "0",
+                            );
+                        }
+                    }
+                }
+            });
             // We need to find if any field is optional, because if it is, we need to
             // construct two different instructions, one with the field and one without it
 
             // This works for 1 optional field, but not for 2 or more. Supporting more
             // than 1 optional field is not in the roadmap.
-            const optionalFields = mergedFields.filter(
+            let mergedFieldsOriginal = JSON.parse(JSON.stringify(mergedFields));
+            let optionalFields = mergedFields.filter(
                 field => field.optional === true,
             );
             if (optionalFields.length === 1) {
                 // We need to create two instructions, one with the field and one without it
-                const instructionWithFields = buildCompleteInstruction(
-                    instruction,
-                    template,
-                    mergedFields,
-                );
-                const instructionWithoutFields = buildCompleteInstruction(
-                    instruction,
-                    template,
-                    mergedFields.filter(field => field.optional !== true),
-                );
+                // Let's first check whether the optional field is of type "enum"
 
-                // Add both instructions to the architecture
-                architectureObj.instructionsProcessed.push(
-                    instructionWithFields,
-                );
-                architectureObj.instructionsProcessed.push(
-                    instructionWithoutFields,
-                );
+                const optionalField = optionalFields[0];
+                if (optionalField.type === "enum") {
+                    // get the enum_name
+                    const enumName = optionalField.enum_name;
+                    // get the enum values from the architecture
+                    const enumValues = architectureObj.enums[enumName];
+
+                    const defaultEnum = enumValues.DEFAULT;
+                    // if its not undefined...
+                    if (defaultEnum === undefined) {
+                        logger.error(
+                            `Enum '${enumName}' does not have a DEFAULT value. Cannot process instruction '${instruction.name}' with optional field '${optionalField.name}'.`,
+                        );
+                        return;
+                    }
+                    // Then DEFAULT has the name of the value which contains the default value
+                    optionalField.valueField = enumValues[defaultEnum];
+                    // and convert it to a string, in binary
+                    optionalField.valueField =
+                        optionalField.valueField.toString(2);
+
+                    delete optionalField.order;
+                    optionalField.type = "inm-unsigned";
+                    // remove the optional property
+                    delete optionalField.optional;
+
+                    // Now we can build the instruction with the field
+                    const instructionWithDefault = buildCompleteInstruction(
+                        instruction,
+                        template,
+                        mergedFields,
+                    );
+                    architectureObj.instructionsProcessed.push(
+                        instructionWithDefault,
+                    );
+                    // And the original instruction for the non default case
+                    const instructionWithFields = buildCompleteInstruction(
+                        instruction,
+                        template,
+                        mergedFieldsOriginal,
+                    );
+                    architectureObj.instructionsProcessed.push(
+                        instructionWithFields,
+                    );
+                } else {
+                    // If the optional field is not an enum, we can just filter out the optional field
+                    const instructionWithFields = buildCompleteInstruction(
+                        instruction,
+                        template,
+                        mergedFieldsOriginal,
+                    );
+                    architectureObj.instructionsProcessed.push(
+                        instructionWithFields,
+                    );
+                    const instructionWithoutFields = buildCompleteInstruction(
+                        instruction,
+                        template,
+                        mergedFieldsOriginal.filter(
+                            field => field.optional !== true,
+                        ),
+                    );
+                    architectureObj.instructionsProcessed.push(
+                        instructionWithoutFields,
+                    );
+                }
             } // If no optional fields, just add the instruction
             else if (optionalFields.length === 0) {
                 const fullInstruction = buildCompleteInstruction(
@@ -540,6 +658,16 @@ function processInstructions(architectureObj) {
     });
     architectureObj.instructions = architectureObj.instructionsProcessed;
     delete architectureObj.instructionsProcessed;
+    // If enums exist, for each enum, find whether there's a "DEFAULT" value.
+    // If there is, DELETE it
+    if (architectureObj.enums) {
+        Object.keys(architectureObj.enums).forEach(enumName => {
+            const enumValues = architectureObj.enums[enumName];
+            if (enumValues.DEFAULT !== undefined) {
+                delete enumValues.DEFAULT;
+            }
+        });
+    }
 }
 
 function processPseudoInstructions(architectureObj, legacy = true) {
@@ -622,8 +750,8 @@ function parseArchitectureYaml(architectureYaml) {
  * @param {Object} architectureObj - The architecture object
  * @param {Array} requestedISAs - User-requested instruction sets to load
  * @returns {Object} - Object with selected ISAs and status
- * @eslint-disable-next-line max-lines-per-function
  */
+//eslint-disable-next-line max-lines-per-function
 function determineInstructionSetsToLoad(architectureObj, requestedISAs = []) {
     // Get all available instruction sets in the architecture
     const availableInstructionSets = [
@@ -840,10 +968,9 @@ function collectInstructionsFromSets(architectureObj, instructionSetsToLoad) {
                 ...isaInstructions,
             ];
         }
-
         // Add pseudoinstructions if available for this ISA
         const ISAPseudoInstructions =
-            architectureObj.pseudoinstructions[requestedISA];
+            architectureObj.pseudoinstructions?.[requestedISA];
         if (ISAPseudoInstructions) {
             selectedPseudoInstructions = [
                 ...selectedPseudoInstructions,
@@ -875,6 +1002,11 @@ function prepareArchitecture(
     // Process the selected instructions and pseudoinstructions
     processInstructions(architectureObj);
     processPseudoInstructions(architectureObj, true);
+
+    // Calculate MAXNWORDS from all processed instructions
+    MAXNWORDS = architectureObj.instructions.reduce((max, instruction) => {
+        return Math.max(max, instruction.nwords || 1);
+    }, 1);
 
     // Convert to JSON for WASM
     const architectureJson = JSON.stringify(architectureObj);
@@ -935,11 +1067,20 @@ function transformArchConf(architectureObj) {
             value = value ? "1" : "0";
         }
         // If key is "Word Size", convert it to "bits"
-        if (key === "Word Size") {
+        if (key === "WordSize") {
             key = "Bits";
         }
         if (key === "Endianness") {
             key = "Data Format";
+        }
+        if (key === "StartAddress") {
+            return;
+        }
+        if (key === "PCOffset") {
+            return;
+        }
+        if (key === "ByteSize") {
+            return;
         }
         // Add remaining properties as individual entries
         oldArchConf.push({
@@ -971,6 +1112,7 @@ export function newArchitectureLoad(
     try {
         // Parse YAML to object
         const architectureObj = parseArchitectureYaml(architectureYaml);
+        newArchitecture = architectureObj;
 
         // Check the version
         if (!isVersionSupported(architectureObj)) {
@@ -1036,36 +1178,41 @@ export function load_architecture(arch_str) {
     const arch_obj = JSON.parse(arch_str);
     const ret = load_arch_select(arch_obj);
 
-    return ret
+    return ret;
 }
 
 export function load_library(lib_str) {
     const ret = {
         status: "ok",
         msg: "",
-    }
+    };
 
-    code_binary = lib_str
-    update_binary = JSON.parse(code_binary)
+    code_binary = lib_str;
+    update_binary = JSON.parse(code_binary);
 
-    return ret
+    return ret;
 }
 
 // compilation
 
 export function assembly_compile(code, enable_color) {
-    const ret = assembly_compiler(code, false, enable_color ? Color.Ansi : Color.Off)
+    const ret = assembly_compiler(
+        code,
+        false,
+        enable_color ? Color.Ansi : Color.Off,
+    );
     switch (ret.status) {
         case "error":
             break;
 
         case "warning":
-            ret.msg = "warning: " + ret.token
-            break
+            ret.msg = "warning: " + ret.token;
+            break;
 
         case "ok":
-            ret.msg = "Compilation completed successfully"
-            break
+            ret.msg = "Compilation completed successfully";
+            main_memory_backup = main_memory.dump();
+            break;
 
         default:
             ret.msg = "Unknow assembly compiler code :-/";
@@ -1135,19 +1282,6 @@ function clk_cycles_reset() {
     }
 }
 // execution
-// TODO: remove this function
-export function execute_program(limit_n_instructions) {
-    logger.warn("execute_program is deprecated");
-    let ret;
-    ret = executeProgramOneShot(limit_n_instructions);
-    if (ret.error === true) {
-        ret.status = "ko"
-        return ret
-    }
-
-    ret.status = "ok"
-    return ret
-}
 
 // state management
 
@@ -1205,7 +1339,7 @@ export function reset() {
     status.display = "";
 
     // reset registers
-    if (typeof document !== undefined) {
+    if (typeof document !== "undefined") {
         // I'd _like_ to use REGISTERS_BACKUP and call it a day... but if I do
         // that Vue doesn't notice the change and it doesn't update visually
         for (const bank of REGISTERS) {
@@ -1220,8 +1354,10 @@ export function reset() {
     architecture.memory_layout[4].value = backup_stack_address;
     architecture.memory_layout[3].value = backup_data_address;
 
-    // reset memory
-    creator_memory_reset();
+    // reset memory and restore initial hints from backup (if it exists)
+    if (typeof main_memory_backup !== "undefined") {
+        main_memory.restore(main_memory_backup);
+    }
 
     //Stack Reset
     creator_callstack_reset();
@@ -1230,344 +1366,14 @@ export function reset() {
     return true;
 }
 
-// TODO: remove this function
-// eslint-disable-next-line max-lines-per-function
-export function get_state() {
-    logger.warn("get_state is deprecated");
-    const ret = {
-        status: "ok",
-        msg: "",
-    };
-
-    // dump registers
-    for (let i = 0; i < REGISTERS.length; i++) {
-        const component = REGISTERS[i];
-        const componentName = component.name;
-        const componentType = component.type;
-        const isDoublePrecisionLinked =
-            component.double_precision === true &&
-            component.double_precision_type === "linked";
-
-        if (typeof componentName === "undefined") {
-            return ret;
-        }
-
-        // Create abbreviated component name (e.g. "Floating Point Registers" -> "fpr")
-        const shortName = componentName
-            .split(" ")
-            .map(i => i.charAt(0))
-            .join("")
-            .toLowerCase()
-
-        for (let j = 0; j < component.elements.length; j++) {
-            const element = component.elements[j];
-            const elementName = element.name;
-            const bits = parseInt(element.nbits, 10);
-            const currentValue = BigInt.asUintN(
-                Number(bits),
-                BigInt(element.value),
-            );
-            const registerSize = parseInt(element.nbits, 10);
-            let defaultValue;
-
-            // Get default value based on register type
-            if (isDoublePrecisionLinked) {
-                // Handle linked double precision floating point registers
-                let auxValue;
-                let simpleReg1Value;
-                let simpleReg2Value;
-
-                // Find the linked registers' default values
-                for (let a = 0; a < architecture_hash.length; a++) {
-                    const linkedComponent = REGISTERS[a];
-
-                    for (let b = 0; b < linkedComponent.elements.length; b++) {
-                        const linkedElement = linkedComponent.elements[b];
-
-                        if (linkedElement.name == element.simple_reg[0]) {
-                            simpleReg1Value = bin2hex(
-                                float2bin(
-                                    bi_BigIntTofloat(
-                                        linkedElement.default_value,
-                                    ),
-                                ),
-                            );
-                        }
-
-                        if (linkedElement.name == element.simple_reg[1]) {
-                            simpleReg2Value = bin2hex(
-                                float2bin(
-                                    bi_BigIntTofloat(
-                                        linkedElement.default_value,
-                                    ),
-                                ),
-                            );
-                        }
-                    }
-                }
-
-                auxValue = simpleReg1Value + simpleReg2Value;
-                defaultValue = hex2double("0x" + auxValue);
-            } else {
-                defaultValue = element.default_value;
-            }
-
-            // Skip if default value is undefined or matches current value
-            if (
-                typeof defaultValue === "undefined" ||
-                currentValue == defaultValue
-            ) {
-                continue;
-            }
-            let formattedValue;
-            if (componentType === "fp_registers") {
-                if (component.double_precision === false) {
-                    formattedValue =
-                        "0x" + currentValue.toString(16).padStart(8, "0");
-                } else if (component.double_precision === true) {
-                    formattedValue =
-                        "0x" + currentValue.toString(16).padStart(16, "0");
-                }
-            } else {
-                formattedValue =
-                    "0x" +
-                    getHexTwosComplement(currentValue, registerSize, false);
-            }
-
-            // Add to output
-            ret.msg =
-                ret.msg +
-                shortName +
-                "[" +
-                elementName +
-                "]:" +
-                formattedValue +
-                "; ";
-        }
-    }
-
-    // dump memory
-    const addressList = main_memory_get_addresses();
-    const dataSegmentStart = parseInt(architecture.memory_layout[3].value);
-
-    for (let i = 0; i < addressList.length; i++) {
-        const address = addressList[i];
-
-        // Skip if in data segment
-        if (address >= dataSegmentStart) {
-            continue;
-        }
-
-        const memoryValue = main_memory_read_value(address);
-        const defaultMemoryValue = main_memory_read_default_value(address);
-
-        // Only show changed memory values
-        if (memoryValue != defaultMemoryValue) {
-            const formattedAddress = "0x" + parseInt(address).toString(16);
-            const formattedValue = "0x" + memoryValue;
-            ret.msg =
-                ret.msg +
-                "memory[" +
-                formattedAddress +
-                "]" +
-                ":" +
-                formattedValue +
-                "; ";
-        }
-    }
-
-    // dump keyboard
-    ret.msg =
-        ret.msg +
-        "keyboard[0x0]" +
-        ":'" +
-        encodeURIComponent(status.keyboard) +
-        "'; ";
-
-    // dump display
-    ret.msg =
-        ret.msg +
-        "display[0x0]" +
-        ":'" +
-        encodeURIComponent(status.display) +
-        "'; ";
-
-    return ret;
-}
-
-// eslint-disable-next-line max-lines-per-function
-export function getState() {
-    const ret = {
-        status: "ok",
-        msg: "",
-    };
-
-    // dump registers
-    for (let i = 0; i < REGISTERS.length; i++) {
-        const component = REGISTERS[i];
-        const componentName = component.name;
-        const componentType = component.type;
-        const isDoublePrecisionLinked =
-            component.double_precision === true &&
-            component.double_precision_type === "linked";
-
-        if (typeof componentName === "undefined") {
-            return ret;
-        }
-
-        // Create abbreviated component name (e.g. "Floating Point Registers" -> "fpr")
-        const shortName = componentName
-            .split(" ")
-            .map(i => i.charAt(0))
-            .join("")
-            .toLowerCase();
-
-        for (let j = 0; j < component.elements.length; j++) {
-            const element = component.elements[j];
-            const elementName = element.name;
-            const bits = parseInt(element.nbits, 10);
-            const currentValue = BigInt.asUintN(
-                Number(bits),
-                BigInt(element.value),
-            );
-            const registerSize = parseInt(element.nbits, 10);
-            let defaultValue;
-
-            // Get default value based on register type
-            if (isDoublePrecisionLinked) {
-                // Handle linked double precision floating point registers
-                let auxValue;
-                let simpleReg1Value;
-                let simpleReg2Value;
-
-                // Find the linked registers' default values
-                for (let a = 0; a < architecture_hash.length; a++) {
-                    const linkedComponent = REGISTERS[a];
-
-                    for (let b = 0; b < linkedComponent.elements.length; b++) {
-                        const linkedElement = linkedComponent.elements[b];
-
-                        if (linkedElement.name == element.simple_reg[0]) {
-                            simpleReg1Value = bin2hex(
-                                float2bin(
-                                    bi_BigIntTofloat(
-                                        linkedElement.default_value,
-                                    ),
-                                ),
-                            );
-                        }
-
-                        if (linkedElement.name == element.simple_reg[1]) {
-                            simpleReg2Value = bin2hex(
-                                float2bin(
-                                    bi_BigIntTofloat(
-                                        linkedElement.default_value,
-                                    ),
-                                ),
-                            );
-                        }
-                    }
-                }
-
-                auxValue = simpleReg1Value + simpleReg2Value;
-                defaultValue = hex2double("0x" + auxValue);
-            } else {
-                defaultValue = element.default_value;
-            }
-
-            // Skip if default value is undefined or matches current value
-            if (
-                typeof defaultValue === "undefined" ||
-                currentValue == defaultValue
-            ) {
-                continue;
-            }
-            let formattedValue;
-            if (componentType === "fp_registers") {
-                if (component.double_precision === false) {
-                    formattedValue =
-                        "0x" +
-                        bin2hex(float2bin(bi_BigIntTofloat(currentValue)));
-                } else if (component.double_precision === true) {
-                    formattedValue =
-                        "0x" +
-                        bin2hex(double2bin(bi_BigIntTodouble(currentValue)));
-                }
-            } else if (componentType === "int_registers") {
-                formattedValue = getHexTwosComplement(
-                    currentValue,
-                    registerSize,
-                );
-            }
-
-            // Add to output
-            ret.msg =
-                ret.msg +
-                shortName +
-                "[" +
-                elementName +
-                "]:" +
-                formattedValue +
-                "\n";
-        }
-    }
-
-    // dump memory
-    const addressList = main_memory_get_addresses();
-    const dataSegmentStart = parseInt(architecture.memory_layout[3].value);
-
-    for (let i = 0; i < addressList.length; i++) {
-        const address = addressList[i];
-
-        // Skip if in data segment
-        if (address >= dataSegmentStart) {
-            continue;
-        }
-
-        const memoryValue = main_memory_read_value(address);
-        const defaultMemoryValue = main_memory_read_default_value(address);
-
-        // Only show changed memory values
-        if (memoryValue != defaultMemoryValue) {
-            const formattedAddress = "0x" + parseInt(address).toString(16);
-            const formattedValue = "0x" + memoryValue;
-            ret.msg =
-                ret.msg +
-                "memory[" +
-                formattedAddress +
-                "]" +
-                ":" +
-                formattedValue +
-                "\n";
-        }
-    }
-
-    // dump keyboard
-    ret.msg =
-        ret.msg +
-        "keyboard[0x0]" +
-        ":'" +
-        encodeURIComponent(status.keyboard) +
-        "'\n";
-
-    // dump display
-    ret.msg =
-        ret.msg +
-        "display[0x0]" +
-        ":'" +
-        encodeURIComponent(status.display) +
-        "'\n";
-
-    return ret
-}
-
 export function snapshot(extraData) {
     // Dump architecture object to file
     const architectureJson = JSON.stringify(architecture);
     const instructionsJson = JSON.stringify(instructions);
 
-    // Also dump the main_memory
-    const memoryJson = main_memory_serialize();
+    // Use sparse memory dump for efficiency
+    const memoryDump = main_memory.dump();
+    const memoryJson = JSON.stringify(memoryDump);
 
     // And the status
     const statusJson = JSON.stringify(status);
@@ -1607,6 +1413,9 @@ export function restore(snapshot) {
     const statusObj = JSON.parse(statusJson);
     const registersObj = registersJson ? JSON.parse(registersJson) : null;
     const stackData = parsedSnapshot.stack;
+
+    main_memory.restore(memoryObj);
+
     // Restore the instructions
     setInstructions(instructionsObj);
     // Restore the architecture object
@@ -1615,93 +1424,11 @@ export function restore(snapshot) {
     if (registersObj) {
         REGISTERS = registersObj;
     }
-    // Restore the main memory
-    main_memory_restore(memoryObj);
     // Restore the stack
     loadStack(stackData);
     // Restore the status
     status = statusObj;
 }
-
-export function diffStates(referenceState, state) {
-    let ret = {
-        status: "ok",
-        diff: "",
-    };
-    // ANSI color codes
-    const COLOR_RED = "\x1b[31m";
-    const COLOR_RESET = "\x1b[0m";
-
-    // Parse states into arrays of entries
-    const referenceEntries = [];
-    const stateEntries = [];
-
-    // Check if the states are equal
-    if (referenceState === state) {
-        return ret;
-    }
-
-    // Process reference state
-    for (const line of referenceState.split("\n")) {
-        const trimmedLine = line.trim();
-        if (trimmedLine) {
-            referenceEntries.push(trimmedLine);
-        }
-    }
-
-    // Process actual state
-    for (const line of state.split("\n")) {
-        const trimmedLine = line.trim();
-        if (trimmedLine) {
-            stateEntries.push(trimmedLine);
-        }
-    }
-
-    // Create formatted output
-    const width = 50;
-    const output = [];
-
-    output.push(`┌${"─".repeat(width)}┬${"─".repeat(width)}┐`);
-    output.push(
-        `│ ${"EXPECTED".padEnd(width - 1)}│ ${"ACTUAL".padEnd(width - 1)}│`,
-    );
-    output.push(`├${"─".repeat(width)}┼${"─".repeat(width)}┤`);
-
-    // Generate rows
-    for (
-        let i = 0;
-        i < Math.max(referenceEntries.length, stateEntries.length);
-        i++
-    ) {
-        let ref = i < referenceEntries.length ? referenceEntries[i] : "";
-        let act = i < stateEntries.length ? stateEntries[i] : "";
-
-        // Truncate and pad strings to fit the table
-        const refTruncated =
-            ref.length > width - 2 ? ref.substring(0, width - 2) : ref;
-        const actTruncated =
-            act.length > width - 2 ? act.substring(0, width - 2) : act;
-
-        ref = refTruncated.padEnd(width - 2);
-        act = actTruncated.padEnd(width - 2);
-
-        // Check if entries are different
-        if (refTruncated.trim() !== actTruncated.trim()) {
-            // Add color to the differences
-            ref = COLOR_RED + ref + COLOR_RESET;
-            act = COLOR_RED + act + COLOR_RESET;
-        }
-
-        output.push(`│ ${ref} │ ${act} │`);
-    }
-
-    output.push(`└${"─".repeat(width)}┴${"─".repeat(width)}┘`);
-    ret.diff = output.join("\n");
-    ret.status = "different";
-
-    return ret;
-}
-
 export function dumpMemory(startAddr, numBytes, bytesPerRow = 16) {
     startAddr = BigInt(startAddr);
     numBytes = BigInt(numBytes);
@@ -1735,7 +1462,8 @@ export function dumpMemory(startAddr, numBytes, bytesPerRow = 16) {
         // Process bytes for this row
         for (let i = 0n; i < bytesPerRow; i++) {
             if (currentAddr + i < endAddr) {
-                const byteValue = main_memory_read_value(currentAddr + i);
+                const byte = main_memory.read(currentAddr + i);
+                const byteValue = byte.toString(16).padStart(2, "0");
                 hexValues += byteValue + " ";
 
                 // Try to convert to ASCII, use dot for non-printable chars
@@ -1769,7 +1497,7 @@ export function dumpAddress(startAddr, numBytes) {
     const endAddr = startAddr + numBytes;
 
     while (currentAddr < endAddr) {
-        const byteValue = main_memory_read_value(currentAddr);
+        const byteValue = main_memory.read(currentAddr);
         result.push(byteValue);
         currentAddr += 1n;
     }
@@ -1779,158 +1507,6 @@ export function dumpAddress(startAddr, numBytes) {
         .join("");
 
     return resultString;
-}
-
-export function load_binary_file(bin_str) {
-    const ret = {
-        status: "ok",
-        msg: "",
-    };
-
-    try {
-        // Parse binary JSON
-        const binary_data = JSON.parse(bin_str);
-
-        // Load instructions_binary directly into instructions
-        instructions.length = 0; // Clear existing instructions
-
-        // Copy instructions from binary
-        if (
-            binary_data.instructions_binary &&
-            Array.isArray(binary_data.instructions_binary)
-        ) {
-            for (let i = 0; i < binary_data.instructions_binary.length; i++) {
-                instructions.push(binary_data.instructions_binary[i]);
-            }
-            logger.info(
-                `Loaded ${instructions.length} instructions from binary`,
-            );
-        } else {
-            logger.warning("No instructions found in binary file");
-        }
-
-        // Load instructions_tag if available
-        if (
-            binary_data.instructions_tag &&
-            Array.isArray(binary_data.instructions_tag)
-        ) {
-            // Clear existing tags and create new ones from binary data
-            // This would typically be handled by the compiler but we're bypassing it
-            logger.info(
-                `Loaded ${binary_data.instructions_tag.length} instruction tags`,
-            );
-        }
-
-        // Load instructions into memory
-        for (let i = 0; i < instructions.length; i++) {
-            const instruction = instructions[i];
-            const addr = BigInt(parseInt(instruction.Address, 16));
-
-            // Convert instruction to hex bytes
-            const loadedInstruction = instruction.loaded;
-            const hexBytes = [];
-
-            // Check the format of the loaded instruction
-            if (loadedInstruction.startsWith("0x")) {
-                // Hex format - convert to bytes directly
-                const hexString = loadedInstruction.slice(2); // Remove "0x" prefix
-                for (let j = 0; j < hexString.length; j += 2) {
-                    const hexByte = hexString.substr(j, 2);
-                    hexBytes.push(hexByte);
-                }
-            } else if (loadedInstruction.startsWith("0b")) {
-                // Binary format with prefix - remove prefix and process
-                const binString = loadedInstruction.slice(2); // Remove "0b" prefix
-                for (let j = 0; j < binString.length; j += 8) {
-                    const byte = binString.substr(j, 8);
-                    const hexByte = parseInt(byte, 2)
-                        .toString(16)
-                        .padStart(2, "0");
-                    hexBytes.push(hexByte);
-                }
-            } else {
-                // Assume binary format (backwards compatibility)
-                for (let j = 0; j < loadedInstruction.length; j += 8) {
-                    const byte = loadedInstruction.substr(j, 8);
-                    const hexByte = parseInt(byte, 2)
-                        .toString(16)
-                        .padStart(2, "0");
-                    hexBytes.push(hexByte);
-                }
-            }
-
-            // Add instruction bytes to memory (little endian)
-            for (let j = 0; j < hexBytes.length; j++) {
-                const byteAddr = addr + BigInt(j);
-
-                // Create memory entry for this byte
-                main_memory[byteAddr] = {
-                    addr: byteAddr,
-                    bin: hexBytes[j],
-                    break: false,
-                    data_type: {
-                        address: byteAddr,
-                        value: "00",
-                        default: "00",
-                        type: "instruction",
-                        size: 0,
-                    },
-                    def_bin: hexBytes[j],
-                    reset: true,
-                    tag: instruction.Label || "",
-                };
-            }
-        }
-
-        // Load data section into memory
-        if (
-            binary_data.data_section &&
-            Array.isArray(binary_data.data_section)
-        ) {
-            for (let i = 0; i < binary_data.data_section.length; i++) {
-                const data_item = binary_data.data_section[i];
-                const base_addr = BigInt(parseInt(data_item.Address, 16));
-                const size = data_item.Size;
-                const hex_value = data_item.Value;
-
-                // Split hex value into bytes
-                for (let j = 0; j < hex_value.length; j += 2) {
-                    if (j / 2 >= size) break;
-
-                    const byteAddr = base_addr + BigInt(j / 2);
-                    const hexByte = hex_value.substr(j, 2);
-
-                    // Create memory entry for this byte
-                    main_memory[byteAddr] = {
-                        addr: byteAddr,
-                        bin: hexByte,
-                        break: false,
-                        data_type: {
-                            address: byteAddr,
-                            value: "00",
-                            default: "00",
-                            type: data_item.Type || "unknown",
-                            size: 0,
-                        },
-                        def_bin: hexByte,
-                        reset: true,
-                        tag: j === 0 ? data_item.Label || "" : "",
-                    };
-                }
-            }
-            logger.info(`Loaded ${binary_data.data_section.length} data items`);
-        } else {
-            logger.warning("No data section found in binary file");
-        }
-
-        ret.msg = "Binary file loaded successfully";
-    } catch (e) {
-        ret.status = "ko";
-        ret.msg = "Error loading binary file: " + e.message;
-        logger.error("Binary load error: " + e.message);
-    }
-
-    return ret;
 }
 
 export function dumpRegister(register, format = "hex") {

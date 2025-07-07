@@ -1,0 +1,384 @@
+version: 2.0.0
+
+arch_conf:
+    Name: Z80
+    WordSize: 8 # 8-bit word size, which is the same as the byte size
+    ByteSize: 8
+    Description: Z80
+    Endianness: little_endian
+    Memory Alignment: true
+    Main Function: main
+    Passing Convention: true
+    Sensitive Register Name: true
+    CommentPrefix: ";"
+    StartAddress: 0x0
+    PCOffset: 0
+
+components:
+    - name: Control registers
+      type: ctrl_registers
+      double_precision: false
+      elements:
+          - name:
+                - PC
+            nbits: "16"
+            value: 0
+            default_value: 0
+            properties:
+                - read
+                - write
+                - program_counter
+    - name: Integer registers
+      type: int_registers
+      double_precision: false
+      elements:
+          - name:
+                - A
+            nbits: "8"
+            value: 0
+            default_value: 0
+            properties:
+                - read
+                - write
+          - name:
+                - B
+            nbits: "8"
+            value: 1
+            default_value: 1
+            properties:
+                - read
+                - write
+          - name:
+                - C
+            nbits: "8"
+            value: 0
+            default_value: 0
+            properties:
+                - read
+                - write
+          - name:
+                - D
+            nbits: "8"
+            value: 0
+            default_value: 0
+            properties:
+                - read
+                - write
+          - name:
+                - E
+            nbits: "8"
+            value: 0
+            default_value: 0
+            properties:
+                - read
+                - write
+                - write
+          - name:
+                - H
+            nbits: "8"
+            value: 0
+            default_value: 0
+            properties:
+                - read
+                - write
+                - write
+          - name:
+                - L
+            nbits: "8"
+            value: 0
+            default_value: 0
+            properties:
+                - read
+                - write
+                - write
+          - name:
+                - A'
+            nbits: "8"
+            value: 0
+            default_value: 0
+            properties:
+                - read
+                - write
+          - name:
+                - B'
+            nbits: "8"
+            value: 0
+            default_value: 0
+            properties:
+                - read
+                - write
+          - name:
+                - C'
+            nbits: "8"
+            value: 0
+            default_value: 0
+            properties:
+                - read
+                - write
+          - name:
+                - D'
+            nbits: "8"
+            value: 0
+            default_value: 0
+            properties:
+                - read
+                - write
+          - name:
+                - E'
+            nbits: "8"
+            value: 0
+            default_value: 0
+            properties:
+                - read
+                - write
+                - write
+          - name:
+                - H'
+            nbits: "8"
+            value: 0
+            default_value: 0
+            properties:
+                - read
+                - write
+                - write
+          - name:
+                - L'
+            nbits: "8"
+            value: 0
+            default_value: 0
+            properties:
+                - read
+                - write
+                - write
+          - name:
+                - SP
+            nbits: "16"
+            value: 0
+            default_value: 0
+            properties:
+                - read
+                - write
+                - stack_pointer
+          - name:
+                - IX
+            nbits: "16"
+            value: 0
+            default_value: 0
+            properties:
+                - read
+                - write
+          - name:
+                - IY
+            nbits: "16"
+            value: 0
+            default_value: 0
+            properties:
+                - read
+                - write
+
+memory_layout:
+    - name: text start
+      value: "0x0000"
+    - name: text end
+      value: "0x3FFF"
+    - name: data start
+      value: "0x4000"
+    - name: data end
+      value: "0x7FFF"
+    - name: stack start
+      value: "0xFFFE"
+    - name: stack end
+      value: "0xFFFF"
+
+templates:
+    # Main Instructions
+    - name: standard
+      nwords: 1
+      clk_cycles: 1
+      fields:
+          - name: opcode
+            type: co
+            startbit: 7
+            stopbit: 0
+            order: 0
+            word: 0
+
+    # IX Bit Instructions
+    - name: DDCB
+      nwords: 4
+      clk_cycles: 1
+      fields:
+          - name: opcode1
+            type: co
+            startbit: 7
+            stopbit: 0
+            order: 0
+            word: 0
+            valueField: "11011101"
+          - name: opcode2
+            type: cop
+            startbit: 7
+            stopbit: 0
+            word: 1
+            valueField: "11001011"
+          - name: imm
+            type: inm-unsigned
+            startbit: 7
+            stopbit: 0
+            prefix: "("
+            suffix: ")"
+            order: 1
+            word: 2
+          - name: opcode3
+            type: cop
+            startbit: 7
+            stopbit: 0
+            word: 3
+
+    # Misc. Instructions
+    - name: ED
+      nwords: 2
+      clk_cycles: 1
+      fields:
+          - name: opcode1
+            type: co
+            startbit: 7
+            stopbit: 0
+            order: 0
+            word: 0
+            valueField: "11101101"
+          - name: opcode2
+            type: cop
+            startbit: 7
+            stopbit: 0
+            word: 1
+
+    # Bit Instructions
+    - name: CB
+      nwords: 2
+      clk_cycles: 1
+      fields:
+          - name: opcode1
+            type: co
+            startbit: 7
+            stopbit: 0
+            order: 0
+            word: 0
+            valueField: "11101101"
+          - name: opcode2
+            type: cop
+            startbit: 7
+            stopbit: 0
+            word: 1
+
+instructions:
+    base:
+        - name: nop
+          type: standard
+          fields:
+              - field: opcode
+                value: "0x00"
+          definition: ""
+
+        - name: ld
+          type: standard
+          nwords: 3
+          fields:
+              - field: opcode
+                value: "0x01"
+              - field: nn
+                type: inm-unsigned
+                startbit: 15
+                stopbit: 0
+                prefix: "("
+                suffix: ")"
+                order: 1
+                word: [1, 2]
+          definition: "console.log('Loads the value pointed to by nn into BC.')"
+
+        - name: jp
+          type: standard
+          nwords: 3
+          fields:
+              - field: opcode
+                value: "0xC3"
+              - field: nn
+                type: inm-unsigned
+                startbit: 15
+                stopbit: 0
+                prefix: "("
+                suffix: ")"
+                order: 1
+                word: [1, 2]
+          definition: "PC = nn"
+
+        - name: add
+          type: standard
+          fields:
+              - field: opcode
+                value: "0x80"
+          definition: "A = A + B"
+
+        - name: ld
+          type: standard
+          nwords: 2
+          fields:
+              - field: opcode
+                value: "0x06"
+              - field: n
+                type: inm-unsigned
+                startbit: 7
+                stopbit: 0
+                order: 1
+                word: 1
+          definition: "B = n"
+
+        - name: di
+          type: standard
+          fields:
+              - field: opcode
+                value: "0xF3"
+          definition: "console.log('Resets both interrupt flip-flops, thus preventing maskable interrupts from triggering.')"
+
+        - name: slp
+          type: ED
+          fields:
+              - field: opcode2
+                value: "0x76"
+          definition: "console.log('slp example')"
+
+        - name: ld bc
+          type: ED
+          nwords: 4
+          fields:
+              - field: opcode2
+                value: "0x4B"
+              - field: nn
+                type: inm-unsigned
+                startbit: 16
+                stopbit: 0
+                prefix: "("
+                suffix: ")"
+                order: 1
+                word: [2, 3]
+          definition: "console.log('Loads the value pointed to by nn into BC.')"
+
+        - name: rlc
+          type: DDCB
+          nwords: 4
+          fields:
+              - field: opcode3
+                value: "0x06"
+
+        - name: rlc
+          type: DDCB
+          nwords: 4
+          fields:
+              - field: opcode3
+                value: "0x00"
+              - field: regname
+                type: skip # This is ONLY for visualization purposes, it is not a real field
+                value: "b"
+                order: 2
+          definition: "console.log('rlc (ix+d), b')" #placeholder for actual instruction definition
+

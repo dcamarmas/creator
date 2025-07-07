@@ -46,3 +46,4 @@ main:
   li a7, 4
   la a0, string
   ecall
+  jr ra
