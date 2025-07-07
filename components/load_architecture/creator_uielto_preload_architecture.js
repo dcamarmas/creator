@@ -19,6 +19,7 @@
  *
  */
 
+let wasm;
 
   /* jshint esversion: 6 */
 
@@ -97,11 +98,15 @@
 
                         //Read architecture JSON
                         $.getJSON('architecture/'+e.file+'.json' + "?v=" + new Date().getTime(), function(cfg){
-                          uielto_preload_architecture.methods.load_arch_select_aux(cfg, true, e);
+                          try {
+                            uielto_preload_architecture.methods.load_arch_select_aux(cfg, true, e);
+                            show_notification(e.name + ' architecture has been loaded correctly', 'success');
+                          } catch (error) {
+                            show_notification(e.name + ' architecture is invalid: ' + error, 'danger');
+                          }
 
                           //Refresh UI
                           hide_loading();
-                          show_notification(e.name + ' architecture has been loaded correctly', 'success');
 
                           // Google Analytics
                           creator_ga('architecture', 'architecture.loading', 'architectures.loading.preload_cache');
@@ -132,11 +137,14 @@
                       if (e.name == load_architectures[i].id)
                       {
                         var aux_architecture = JSON.parse(load_architectures[i].architecture);
-                        uielto_preload_architecture.methods.load_arch_select_aux(aux_architecture, true, e);
-
+                        try {
+                          uielto_preload_architecture.methods.load_arch_select_aux(aux_architecture, true, e);
+                          show_notification(e.name + ' architecture has been loaded correctly', 'success');
+                        } catch (error) {
+                          show_notification(e.name + ' architecture is invalid: ' + error, 'danger');
+                        }
                         //Refresh UI
                         hide_loading();
-                        show_notification(e.name + ' architecture has been loaded correctly', 'success');
 
                         // Google Analytics
                         creator_ga('architecture', 'architecture.loading', 'architectures.loading.preload_' + e.name);
@@ -152,11 +160,15 @@
 
                     //Read architecture JSON
                     $.getJSON('architecture/'+e.file+'.json' + "?v=" + new Date().getTime(), function(cfg){
-                      uielto_preload_architecture.methods.load_arch_select_aux(cfg, true, e);
+                      try {
+                        uielto_preload_architecture.methods.load_arch_select_aux(cfg, true, e);
+                        show_notification(e.name + ' architecture has been loaded correctly', 'success');
+                      } catch (error) {
+                        show_notification(e.name + ' architecture is invalid: ' + error, 'danger');
+                      }
 
                       //Refresh UI
                       hide_loading();
-                      show_notification(e.name + ' architecture has been loaded correctly', 'success');
 
                       // Google Analytics
                       creator_ga('architecture', 'architecture.loading', 'architectures.loading.preload_cache');
@@ -202,15 +214,16 @@
                     app._data.instructions = instructions;
                     creator_memory_clear();
 
-                    //Refresh UI
-                    uielto_toolbar_btngroup.methods.change_UI_mode('simulator');
-                    uielto_data_view_selector.methods.change_data_view('int_registers');
-                    app._data.render++; //Forces vue to reload a component, similar to $forceUpdate()
-
                     //Save current architecture into cache
                     var aux_object = jQuery.extend(true, {}, architecture);
                     var aux_architecture = register_value_serialize(aux_object);
                     var aux_arch = JSON.stringify(aux_architecture, null, 2);
+                    arch = wasm.ArchitectureJS.from_json(aux_arch);
+
+                    //Refresh UI
+                    uielto_toolbar_btngroup.methods.change_UI_mode('simulator');
+                    uielto_data_view_selector.methods.change_data_view('int_registers');
+                    app._data.render++; //Forces vue to reload a component, similar to $forceUpdate()
                   },
 
                   //Load the available examples
@@ -375,4 +388,4 @@
                 '</b-card>'
   }
 
-  Vue.component('preload-architecture', uielto_preload_architecture) ;
+  Vue.component('preload-architecture', uielto_preload_architecture);

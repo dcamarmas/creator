@@ -1,10 +1,26 @@
 
 
-Error at line 12 (add rd rs1 rs2):
-Incorrect instruction syntax for 'add rd rs1 rs2'
+[E08] Error: Incorrect instruction syntax
+    ╭─[ assembly:12:8 ]
+    │
+ 12 │    add t0, t1
+    │        ───┬──  
+    │           ╰──── Incorrect syntax
+    │ 
+    │ Note: Allowed formats:
+    │       add rd,rs1,rs2
+────╯
 
-  11 main:
-->12    add t0, t1
+The syntax `add rd,rs1,rs2` failed with the following reason:
+Error: found `end of input` but expected `,` or `\n`
+    ╭─[ assembly:12:14 ]
+    │
+ 12 │    add t0, t1
+    │              │ 
+    │              ╰─ Unexpected input
+    │              │ 
+    │              ╰─ while parsing this expression
+────╯
 
 Not executed
 keyboard[0x0]:''; display[0x0]:''; 
