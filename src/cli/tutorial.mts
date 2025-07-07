@@ -165,14 +165,14 @@ const tutorialSteps: TutorialStep[] = [
     },
     {
         title: "Examining Registers",
-        text: "Registers are small, fast storage locations in the CPU. RISC-V has 32 general-purpose registers (x0-x31).\n\nTo view all registers, use the 'reg' command.\n\nTry it now by typing 'reg':",
+        text: "Registers are small, fast storage locations in the CPU. RISC-V has 32 general-purpose registers (x0-x31).\n\nTo view the integer registers, use the 'reg' command.\n\nTry it now by typing 'reg int_registers':",
         waitForCommand: true,
-        expectedCommand: "reg",
+        expectedCommand: "reg int_registers",
         executeAfter: function () {
             console.log(
                 colorText(
                     wrapText(
-                        "\nWhen typing 'reg' without any register, all registers are displayed. The first column shows the register name, and the second column shows its value.\n\nThe 'zero' register (x0) is always 0. The 'ra' register (x1) is used for return addresses, and the 'sp' register (x2) is the stack pointer.\n\nLet's go ahead and execute our first instruction.",
+                        "\nThe first column shows the register name, and the second column shows its value.\n\nThe 'zero' register (x0) is always 0. The 'ra' register (x1) is used for return addresses, and the 'sp' register (x2) is the stack pointer.\n\nLet's go ahead and execute our first instruction.",
                     ),
                     "36",
                 ),
@@ -191,15 +191,6 @@ const tutorialSteps: TutorialStep[] = [
                         "\nYou just executed an instruction! The output shows the address, machine code, and decompiled machine code of the executed instruction. The instruction you executed was 'addi t1, zero, 0x123'.\n\nThis instruction adds the immediate value 0x123 to the value in register zero (which is always 0) and stores the result in register t1.\n",
                     ),
                     "36",
-                ),
-            );
-            console.log(
-                wrapText(
-                    colorText(
-                        "💡 " +
-                            "NOTE: Notice that the decompiled machine code (addi,x6,x0,291) doesn't exactly match the actual instruction (addi t1, zero, 0x123). This is a purely visual difference. ",
-                        "33",
-                    ),
                 ),
             );
         },
@@ -292,9 +283,9 @@ const tutorialSteps: TutorialStep[] = [
     },
     {
         title: "Running to a Breakpoint (continued)",
-        text: "To continue execution, use the 'step' command to step over the current breakpoint.\n\nTry it now by typing 'step':",
+        text: "To resume execution, use the 'continue'.\n\nTry it now by typing 'continue':",
         waitForCommand: true,
-        expectedCommand: "step",
+        expectedCommand: "continue",
     },
 
     {

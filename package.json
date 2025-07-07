@@ -13,7 +13,7 @@
     "lint": "eslint src/",
     "format": "prettier --write src/",
     "simtest": "python ./tests/arch_tests.py",
-    "test": "deno test --allow-read --unstable-node-globals --coverage"
+    "test": "deno test -A --unstable-node-globals --parallel"
   },
   "dependencies": {
     "@codemirror/lang-json": "^6.0.1",
@@ -44,6 +44,7 @@
     "sass-loader": "^16.0.5",
     "source-map-support": "^0.5.21",
     "terser": "^5.39.1",
+    "typedoc": "^0.28.5",
     "vite-node": "^3.1.3",
     "vite-plugin-wasm": "^3.4.1",
     "vue": "^3.5.14",

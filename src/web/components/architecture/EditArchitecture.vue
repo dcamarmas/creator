@@ -26,10 +26,9 @@ import { json } from "@codemirror/lang-json"
 import {
   architecture,
   architecture_hash,
+  reset,
 } from "@/core/core.mjs"
-import { creator_memory_clear } from "@/core/memory/memoryOperations.mjs"
 import { show_notification, loadArchitecture } from "@/web/utils.mjs"
-import { clear_instructions } from "@/core/compiler/compiler.mjs"
 
 export default {
   setup() {
@@ -86,8 +85,7 @@ export default {
 
       // reset execution
       this.$root.instructions = []
-      clear_instructions()
-      creator_memory_clear()
+      reset()
 
       show_notification("Architecture edited correctly", "success")
     },

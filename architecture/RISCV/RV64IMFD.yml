@@ -2,14 +2,16 @@ version: 2.0.0
 
 arch_conf:
     Name: RV64
-    Word Size: 32 # In RV64, the word size is also 32 bits
+    WordSize: 32 # In RV64, the word size is also 32 bits
+    ByteSize: 8
     Description: RISC-V is an instruction set architecture (ISA) based on the RISC type and its hardware is free. This architecture was created in 2010 at the University of California, Berkeley.
-    Endianness: little_endian
+    Endianness: big_endian
     Memory Alignment: true
     Main Function: main
     Passing Convention: true
     Sensitive Register Name: true
     CommentPrefix: "#"
+    StartAddress: 0x0
 
 extensions:
     I:
@@ -1349,7 +1351,7 @@ instructions:
                 value: "0000011"
               - field: funct3
                 value: "000"
-          definition: "rd = CAPI.MEM.read(imm+rs1, 'b', rd_name);"
+          definition: "rd = CAPI.MEM.read(imm+rs1, 1, rd_name);"
 
         - name: lbu
           type: I-Offset
@@ -1358,7 +1360,7 @@ instructions:
                 value: "0000011"
               - field: funct3
                 value: "100"
-          definition: "var addr = CAPI.FP.int2uint(rs1)+imm;\n rd = CAPI.MEM.read(addr, 'bu', rd_name);\n rd = CAPI.FP.int2uint(rd);"
+          definition: "var addr = CAPI.FP.int2uint(rs1)+imm;\n rd = CAPI.MEM.read(addr, 1, rd_name);\n rd = CAPI.FP.int2uint(rd);"
 
         - name: lh
           type: I-Offset
@@ -1367,7 +1369,7 @@ instructions:
                 value: "0000011"
               - field: funct3
                 value: "001"
-          definition: "rd = CAPI.MEM.read(imm+rs1, 'h', rd_name);"
+          definition: "rd = CAPI.MEM.read(imm+rs1, 2, rd_name);"
 
         - name: lhu
           type: I-Offset
@@ -1376,7 +1378,7 @@ instructions:
                 value: "0000011"
               - field: funct3
                 value: "101"
-          definition: "var addr = CAPI.FP.int2uint(rs1)+imm;\n rd = CAPI.MEM.read(addr, 'hu', rd_name);\n rd = CAPI.FP.int2uint(rd);"
+          definition: "var addr = CAPI.FP.int2uint(rs1,32)+imm;\n rd = CAPI.MEM.read(addr, 2, rd_name);\n rd = CAPI.FP.int2uint(rd);"
 
         - name: lw
           type: I-Offset
@@ -1385,7 +1387,7 @@ instructions:
                 value: "0000011"
               - field: funct3
                 value: "010"
-          definition: "var addr = CAPI.FP.int2uint(rs1)+imm;\n rd = CAPI.MEM.read(addr, 'w', rd_name);"
+          definition: "var addr = CAPI.FP.int2uint(rs1,32)+imm;\n rd = CAPI.MEM.read(addr, 4, rd_name);"
 
         - name: lwu
           type: I-Offset
@@ -1394,7 +1396,7 @@ instructions:
                 value: "0000011"
               - field: funct3
                 value: "110"
-          definition: "var addr = CAPI.FP.int2uint(rs1)+imm;\n rd = CAPI.MEM.read(addr, 'wu', rd_name);\n rd = CAPI.FP.int2uint(rd);"
+          definition: "var addr = CAPI.FP.int2uint(rs1)+imm;\n rd = CAPI.MEM.read(addr, 4, rd_name);\n rd = CAPI.FP.int2uint(rd);"
 
         - name: ld
           type: I-Offset
@@ -1403,7 +1405,7 @@ instructions:
                 value: "0000011"
               - field: funct3
                 value: "011"
-          definition: "var addr = CAPI.FP.int2uint(rs1)+imm;\n rd = CAPI.MEM.read(addr, 'd', rd_name);"
+          definition: "var addr = CAPI.FP.int2uint(rs1)+imm;\n rd = CAPI.MEM.read(addr, 8, rd_name);"
 
         - name: ori
           type: I
@@ -1714,7 +1716,7 @@ instructions:
                 value: "0100011"
               - field: funct3
                 value: "000"
-          definition: "CAPI.MEM.write(rs1+imm, rs2, 'b', rs2_name);"
+          definition: "CAPI.MEM.write(rs1+imm, 1, BigInt.asUintN(8,rs2), rs2_name, '<byte>');"
 
         - name: sh
           type: S
@@ -1723,7 +1725,7 @@ instructions:
                 value: "0100011"
               - field: funct3
                 value: "001"
-          definition: "CAPI.MEM.write(imm+rs1, rs2, 'h', rs2_name);"
+          definition: "CAPI.MEM.write(imm+rs1, 2, BigInt.asUintN(16,rs2), rs2_name, '<half>');"
 
         # The check for the
         - name: sw
@@ -1733,7 +1735,7 @@ instructions:
                 value: "0100011"
               - field: funct3
                 value: "010"
-          definition: "CAPI.MEM.write(imm+rs1, rs2, 'w', rs2_name); if (rs1_name === 'sp') { const formattedAddr = '0x'+(imm+rs1).toString(16).padStart(8, '0').toUpperCase(); CAPI.DRAW_STACK.addHint(formattedAddr, rs2_name) }"
+          definition: "CAPI.MEM.write(imm+rs1, 4, BigInt.asUintN(32,rs2), rs2_name, '<word>');"
 
         - name: sd
           type: S
@@ -1742,8 +1744,7 @@ instructions:
                 value: "0100011"
               - field: funct3
                 value: "011"
-          definition: "CAPI.MEM.write(imm+rs1, rs2, 'd', rs2_name);"
-
+          definition: "CAPI.MEM.write(imm+rs1, 8, BigInt.asUintN(64,rs2), rs2_name, '<double>');"
         # U-type instructions
         #           31-12                   11-7    6-0
         # ┌──────────────────────────────┬───────┬─────────┐
@@ -2306,7 +2307,7 @@ instructions:
                 value: "010"
               - field: rs2
                 type: SFP-Reg
-          definition: "CAPI.MEM.write(rs1+imm, rs2, 'w', rs2_name);"
+          definition: "let value = rs2 & 0xFFFFFFFFn; CAPI.MEM.write(rs1+imm, 4, value, rs2_name, '<float32>');"
     D:
         #   ____ __     __ _____ ____   ____
         #  |  _ \\ \   / /|___ /|___ \ |  _ \
@@ -2324,7 +2325,7 @@ instructions:
                 value: "011"
               - field: rd # We're overriding the rd field from the template
                 type: DFP-Reg
-          definition: "if (CAPI.VALIDATION.isMisaligned(rs1+imm, 'd')) { CAPI.VALIDATION.raise('The memory must be align'); }\nrd = CAPI.MEM.read(rs1+imm, 'd', rd_name);"
+          definition: "if (CAPI.VALIDATION.isMisaligned(rs1+imm, 'd')) { CAPI.VALIDATION.raise('The memory must be align'); }\nrd = CAPI.MEM.read(rs1+imm, 8, rd_name);"
 
           # R-type instructions
         - name: fadd.d
@@ -2753,7 +2754,7 @@ instructions:
                 value: "011"
               - field: rs2 # We're overriding the rs2 field from the template
                 type: DFP-Reg
-          definition: "var val = CAPI.FP.split_double(rs2, 0);\n CAPI.MEM.write(rs1+imm, val, 'w', rs2_name);\n val = CAPI.FP.split_double(rs2, 1);\n CAPI.MEM.write(rs1+imm+4n, val, 'w', rs2_name);"
+          definition: "var val = BigInt('0x' + CAPI.FP.split_double(rs2, 0));\n CAPI.MEM.write(rs1+imm, 4, val, rs2_name);\n val = BigInt('0x' + CAPI.FP.split_double(rs2, 1));\n CAPI.MEM.write(rs1+imm+4n, 4, val, rs2_name); CAPI.MEM.addHint(rs1+imm, '<float64>', 64);" # addHint is neccesary here since we are writing two 32-bit words to memory, so we cant add the hint in the actual write operation (since it would use the wrong size)
     Zicsr:
         #   _____ _
         #  |__  /(_)  ___  ___  _ __

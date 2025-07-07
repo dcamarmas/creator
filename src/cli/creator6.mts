@@ -47,17 +47,15 @@ const creatorASCII = `
 interface ArgvOptions {
     architecture: string;
     isa: string[];
-    binary: string;
+    bin: string;
     library: string;
     assembly: string;
-    interactive: boolean;
     debug: boolean;
     reference: string;
     state: string;
     accessible: boolean;
     tutorial: boolean;
     config?: string; // Add config file option
-    verbose?: boolean; // Add verbose flag option
 }
 
 interface ReturnType {
@@ -68,6 +66,11 @@ interface ReturnType {
     type?: string;
     update?: string;
     error?: boolean;
+    instructionData?: {
+        asm?: string;
+        machineCode?: string;
+        success?: boolean;
+    };
 }
 interface ConfigType {
     settings: {
@@ -201,25 +204,6 @@ function colorText(text: string, colorCode: string): string {
     return !ACCESSIBLE ? `\x1b[${colorCode}m${text}\x1b[0m` : text;
 }
 
-function decodeAndFormatInstruction(pc_value: string) {
-    const wordSize = creator.WORDSIZE / 8;
-    const instruction = creator.dumpAddress(parseInt(pc_value, 16), wordSize);
-    const instructionInt = parseInt(instruction, 16);
-    const instructionBinary = instructionInt
-        .toString(2)
-        .padStart(creator.WORDSIZE, "0");
-    const instructionASM = decode_instruction(instructionBinary);
-    const instructionASMParts =
-        instructionASM.instructionExecPartsWithProperNames;
-    const instructionASMPartsString = instructionASMParts.join(",");
-
-    return {
-        pc: pc_value,
-        instruction,
-        asmString: instructionASMPartsString,
-    };
-}
-
 function saveCurrentState() {
     if (MAX_STATES_TO_KEEP !== 0) {
         const state = creator.snapshot({ PREVIOUS_PC });
@@ -241,9 +225,8 @@ function executeStep() {
     }
     // Save current state for unstepping
     saveCurrentState();
-
+    // Get current PC value
     const pc_value = creator.dumpRegister("PC");
-    const { instruction, asmString } = decodeAndFormatInstruction(pc_value);
 
     // Store the current PC as previous PC before executing the step
     PREVIOUS_PC = "0x" + pc_value.toUpperCase();
@@ -254,17 +237,31 @@ function executeStep() {
         return { output: ``, completed: true, error: true };
     }
 
+    // Get instruction data from the step result
+    const instructionData = ret.instructionData;
+    let instruction = "unknown";
+    let asmString = "unknown";
+
+    if (instructionData) {
+        instruction = instructionData.machineCode || "unknown";
+        asmString = instructionData.asm || "unknown";
+    }
+
     return {
         output: `0x${pc_value} (0x${instruction}) ${asmString}`,
         completed: creator.status.execution_index === -2,
     };
 }
 
-function loadArchitecture(filePath: string, isaExtensions: string[]) {
+function loadArchitecture(
+    filePath: string,
+    isaExtensions: string[],
+    skipCompiler: boolean = false,
+) {
     const architectureFile = fs.readFileSync(filePath, "utf8");
     const ret: ReturnType = creator.newArchitectureLoad(
         architectureFile,
-        false,
+        skipCompiler,
         false,
         isaExtensions,
     );
@@ -276,17 +273,60 @@ function loadArchitecture(filePath: string, isaExtensions: string[]) {
     // console.log("Architecture loaded successfully.");
 }
 
-function loadBinary(filePath: string) {
+/**
+ * Loads a binary file from disk into memory.
+ * Only works with 8-bit byte memories for direct file compatibility.
+ *
+ * @param filePath - Path to the binary file
+ * @param offset - Starting address offset. Default: 0
+ *
+ * @throws Error if memory doesn't use 8-bit bytes
+ * @throws Error if file cannot be read
+ *
+ * @example Loading a binary file
+ * ```typescript
+ * const memory = new Memory({ sizeInBytes: 65536 });
+ * memory.loadBinaryFile("program.bin", 0x8000n);
+ * ```
+ */
+function loadBinaryFile(filePath: string, offset = 0n) {
+    try {
+        // Load the binary file into memory
+        const fileData = fs.readFileSync(filePath);
+        creator.main_memory.loadROM(new Uint8Array(fileData), offset);
+
+        // Create a new backup of memory that includes the loaded binary data
+        // This ensures that reset() will restore to the state with the binary loaded
+        creator.updateMainMemoryBackup(creator.main_memory.dump());
+
+        return {
+            status: "ok",
+            msg: "Binary file loaded successfully",
+        };
+    } catch (error) {
+        return {
+            status: "error",
+            msg: `Error loading binary file: ${error.message}`,
+        };
+    }
+}
+
+function loadBin(filePath: string) {
     if (!filePath) {
         console.error("No binary file specified.");
         return;
     }
 
-    const binaryFile = fs.readFileSync(filePath, "utf8");
-    creator.load_binary_file(binaryFile);
+    // Use the core function that handles binary loading and memory backup
+    const ret = loadBinaryFile(filePath);
+    if (ret.status !== "ok") {
+        console.error(ret.msg);
+        process.exit(1);
+    }
+
     // Set the flag to indicate a binary was loaded
     BINARY_LOADED = true;
-    // console.log("Binary loaded successfully.");
+    console.log(ret.msg);
 }
 
 function loadLibrary(filePath: string) {
@@ -404,43 +444,16 @@ function displayInstruction(instr, currentPC, hideLibrary = false) {
 
     let line = `${currentMark}   ${breakpointMark} | ${address}| ${label}| ${loaded} | ${rightColumn}`;
 
-    // Highlight current instruction in green, previous in blue
+    // Highlight instruction
     if (instr.Address === currentPC) {
         line = colorText(line, "32"); // Green for current instruction
     } else if (instr.Address === PREVIOUS_PC) {
-        line = colorText(line, "33"); // Blue for previously executed instruction
+        line = colorText(line, "33"); // Yellow for previously executed instruction
     } else if (instr.Break) {
         line = colorText(line, "31"); // Red for breakpoint
     }
 
     console.log(line);
-}
-
-function executeNonInteractive(
-    verbose: boolean = false,
-    statePath: string = "",
-) {
-    for (let i = 0; i < MAX_INSTRUCTIONS; i++) {
-        const { output, completed, error } = executeStep();
-        if (error) {
-            console.error("Error during execution.");
-            break;
-        } else if (completed) {
-            break;
-        }
-        if (verbose) {
-            console.log(output);
-        }
-    }
-    const state = creator.getState();
-
-    console.log(state.msg);
-
-    // Only save state if a path is provided
-    if (statePath) {
-        fs.writeFileSync(statePath, state.msg, "utf8");
-        console.log(`State saved to ${statePath}`);
-    }
 }
 
 function listBreakpoints() {
@@ -660,6 +673,7 @@ function handleNurCommand() {
     while (previousStates.length > 0 && iterations < MAX_INSTRUCTIONS) {
         // Get the previous state
         const prevState = previousStates.pop();
+        if (!prevState) break;
 
         // Restore the previous state
         creator.restore(prevState);
@@ -837,9 +851,40 @@ function handleResetCommand() {
 }
 
 function handleInsnCommand() {
+    // Get current PC value
     const pc_value = creator.dumpRegister("PC");
-    const { instruction, asmString } = decodeAndFormatInstruction(pc_value);
-    console.log(`0x${instruction} ${asmString}`);
+    const currentPC = "0x" + pc_value.toUpperCase();
+
+    try {
+        // Get the raw instruction from memory at this address
+        const rawInstruction = creator.dumpAddress(parseInt(currentPC, 16), 4);
+        const instruction = rawInstruction.toUpperCase();
+
+        // Decompile binary instructions
+        const instructionInt = parseInt(rawInstruction, 16);
+        const instructionBinary = instructionInt.toString(2).padStart(32, "0");
+        const decodedInstruction = decode_instruction(instructionBinary);
+
+        let asmString = "unknown";
+        if (
+            decodedInstruction &&
+            typeof decodedInstruction === "object" &&
+            "instructionExecParts" in decodedInstruction
+        ) {
+            const parts = (
+                decodedInstruction as unknown as {
+                    instructionExecParts: string[];
+                }
+            ).instructionExecParts;
+            if (Array.isArray(parts)) {
+                asmString = parts.join(" ");
+            }
+        }
+
+        console.log(`0x${instruction} ${asmString}`);
+    } catch (_error) {
+        console.log(`0x${currentPC}: Unable to decode instruction`);
+    }
 }
 
 function handleStepCommand() {
@@ -864,6 +909,10 @@ function handleUnstepCommand() {
 
     // Get the previous state
     const prevState = previousStates.pop();
+    if (!prevState) {
+        console.log(colorText("No previous state available.", "31"));
+        return;
+    }
 
     // Restore the previous state
     creator.restore(prevState);
@@ -890,7 +939,7 @@ function displayRegistersByBank(regType: string, format: string = "raw") {
     console.log(`${registerBank.name}:`);
 
     // Display registers in a table format
-    let rowCount = Math.ceil(registerBank.elements.length / 4);
+    const rowCount = Math.ceil(registerBank.elements.length / 4);
 
     // First, calculate max width for each column
     const maxWidths = [0, 0, 0, 0]; // For up to 4 columns
@@ -957,7 +1006,7 @@ function displayRegisterTypes() {
     const types = creator.getRegisterTypes();
 
     console.log("Register types:");
-    types.forEach(type => {
+    types.forEach((type: string) => {
         console.log(`  ${type}`);
     });
 
@@ -1004,13 +1053,119 @@ function handleRegCommand(args: string[]) {
     }
 }
 
-function displayMemory(address, count) {
-    // Display memory contents in rows of 16 bytes
+function getHintColors(): string[] {
+    // Use a highly differentiable color palette
+    return [
+        "93", // bright yellow
+        "92", // bright green
+        "96", // bright cyan
+        "95", // bright magenta
+        "94", // bright blue
+        "91", // bright red
+        "97", // bright white
+        "90", // bright black/gray
+    ];
+}
+
+function applyHintHighlighting(
+    memValue: string,
+    hintsInRange: Array<{
+        hint: { hint: string; sizeInBits?: number };
+        offset: number;
+    }>,
+): string {
+    let highlightedValue = memValue;
+    const colors = getHintColors();
+
+    // Process hints in reverse order to maintain string positions
+    for (let k = hintsInRange.length - 1; k >= 0; k--) {
+        const { hint, offset } = hintsInRange[k];
+        if (!hint.sizeInBits) continue;
+
+        const sizeInBytes = Math.ceil(hint.sizeInBits / 8);
+        const startChar = 2 + offset * 2; // Skip "0x" and account for byte position
+        const endChar = startChar + sizeInBytes * 2;
+
+        // Only highlight if the hint fits within this 4-byte word
+        if (offset + sizeInBytes <= 4) {
+            const before = highlightedValue.substring(0, startChar);
+            const toHighlight = highlightedValue.substring(startChar, endChar);
+            const after = highlightedValue.substring(endChar);
+
+            const colorCode = colors[k % colors.length];
+            highlightedValue =
+                before + colorText(toHighlight, colorCode) + after;
+        }
+    }
+    return highlightedValue;
+}
+
+function displayMemory(address: number, count: number) {
+    // Display memory contents with hints
     for (let i = 0; i < count; i += 4) {
-        const bytes = creator.dumpAddress(address + i, 4);
-        console.log(
-            `0x${(address + i).toString(16).padStart(8, "0")}: 0x${bytes}`,
-        );
+        const currentAddr = address + i;
+        const bytes = creator.dumpAddress(currentAddr, 4);
+        const formattedAddr = `0x${currentAddr.toString(16).padStart(8, "0")}`;
+
+        // Check for hints at this address and collect all hints in this 4-byte range
+        const hintsInRange: Array<{
+            hint: { hint: string; sizeInBits?: number };
+            offset: number;
+        }> = [];
+        for (let j = 0; j < 4; j++) {
+            const byteAddr = BigInt(currentAddr + j);
+            const hint = creator.main_memory.getHint(byteAddr);
+            if (hint) {
+                hintsInRange.push({ hint, offset: j });
+            }
+        }
+
+        let memValue = `0x${bytes}`;
+        const hintTexts: string[] = [];
+
+        if (hintsInRange.length > 0) {
+            // Sort hints by offset to process them in order
+            hintsInRange.sort((a, b) => a.offset - b.offset);
+
+            // Apply highlighting for each hint (if not in accessible mode)
+            if (!ACCESSIBLE) {
+                memValue = applyHintHighlighting(memValue, hintsInRange);
+            }
+
+            // Collect all hint descriptions with matching colors
+            const colors = getHintColors();
+            for (let k = 0; k < hintsInRange.length; k++) {
+                const { hint, offset } = hintsInRange[k];
+                const shortHint = hint.hint.replace("<", "").replace(">", "");
+                const sizeInfo = hint.sizeInBits
+                    ? ` (${hint.sizeInBits}b)`
+                    : "";
+                const offsetInfo =
+                    hintsInRange.length > 1 ? ` @+${offset}` : "";
+                const hintText = `${shortHint}${sizeInfo}${offsetInfo}`;
+
+                if (ACCESSIBLE) {
+                    hintTexts.push(hintText);
+                } else {
+                    const colorCode = colors[k % colors.length];
+                    hintTexts.push(colorText(hintText, colorCode));
+                }
+            }
+        }
+
+        let output = `${formattedAddr}: ${memValue}`;
+
+        // Add hints if found
+        if (hintTexts.length > 0) {
+            const allHints = hintTexts.join(", ");
+            if (ACCESSIBLE) {
+                output += ` // ${allHints}`;
+            } else {
+                output += ` // ${allHints}`; // Hints already have individual colors
+            }
+        }
+
+        console.log(output);
     }
 }
 
@@ -1031,7 +1186,7 @@ function handleHexViewCommand(args: string[]) {
         const bytesPerLine = parseInt(args[3], 10) || 16;
         console.log(creator.dumpMemory(address, count, bytesPerLine));
     } else {
-        console.log("Usage: hexview <address> [count]");
+        console.log("Usage: hexview <address> [count] [bytesPerLine]");
     }
 }
 
@@ -1051,6 +1206,16 @@ function findLabelForAddress(address: string): string {
 
     // Return the original address if no label is found
     return address;
+}
+
+function getFrameColor(frameIndex: number, totalFrames: number): string {
+    const colorCodes = ["32", "33", "36", "35", "34"]; // green, yellow, cyan, magenta, blue
+
+    if (frameIndex === totalFrames - 1) {
+        return colorCodes[0]; // green for current/top frame
+    }
+
+    return colorCodes[(frameIndex + 1) % colorCodes.length];
 }
 
 // eslint-disable-next-line max-lines-per-function
@@ -1082,12 +1247,12 @@ function handleStackCommand(args: string[]) {
             const frameSize = frame.begin_callee - frame.end_callee;
             const prefix = i === stackFrames.val.length - 1 ? "►" : "•";
 
-            // Current frame in green, others in default
-            const color = i === stackFrames.val.length - 1 ? "32" : "0";
+            // Use consistent color mapping for frames
+            const color = getFrameColor(i, stackFrames.val.length);
 
-            const beginAddress = parseInt(frame.begin_callee, 16);
+            const beginAddress = BigInt(frame.begin_callee);
             const beginAddressHex = `0x${beginAddress.toString(16).toUpperCase()}`;
-            const endAddress = parseInt(frame.end_callee, 16);
+            const endAddress = BigInt(frame.end_callee);
             const endAddressHex = `0x${endAddress.toString(16).toUpperCase()}`;
 
             console.log(
@@ -1109,9 +1274,9 @@ function handleStackCommand(args: string[]) {
 
         console.log(`Function: ${currentFuncName}`);
 
-        const beginAddress = parseInt(stackTop.begin_callee, 16);
+        const beginAddress = BigInt(stackTop.begin_callee);
         const beginAddressHex = `0x${beginAddress.toString(16).toUpperCase()}`;
-        const endAddress = parseInt(stackTop.end_callee, 16);
+        const endAddress = BigInt(stackTop.end_callee);
         const endAddressHex = `0x${endAddress.toString(16).toUpperCase()}`;
 
         console.log(`Frame: ${beginAddressHex} - ${endAddressHex}`);
@@ -1130,9 +1295,9 @@ function handleStackCommand(args: string[]) {
             const callerFuncName =
                 findLabelForAddress(callerAddrStr) || "unknown";
 
-            const callerBeginAddress = parseInt(stackTop.begin_callee, 16);
+            const callerBeginAddress = BigInt(stackTop.begin_callee);
             const callerBeginAddressHex = `0x${callerBeginAddress.toString(16).toUpperCase()}`;
-            const callerEndAddress = parseInt(stackTop.end_callee, 16);
+            const callerEndAddress = BigInt(stackTop.end_callee);
             const callerEndAddressHex = `0x${callerEndAddress.toString(16).toUpperCase()}`;
 
             console.log(`Caller: ${callerFuncName}`);
@@ -1145,27 +1310,31 @@ function handleStackCommand(args: string[]) {
         console.log(colorText("\nStack Memory Contents:", "36"));
 
         // Calculate the range to display for the entire stack, not just current frame
-        // Get current stack pointer
+        // Get current stack pointer (lowest address)
         const startAddressHex = stackTop.end_callee;
-        const startAddress = parseInt(startAddressHex, 16);
+        const startAddress = BigInt(startAddressHex);
 
-        // Find the highest address in the stack (from the bottom-most frame)
-        // This is the beginning of the first frame in the stack
-        const bottomFrame = stackFrames.val[0];
-        const stackEndAddressHex =
-            bottomFrame.begin_caller || bottomFrame.begin_callee;
-        let stackEndAddress = parseInt(stackEndAddressHex, 16);
+        // Find the highest address in the stack (from the bottom-most frame or top frame)
+        // Use the highest begin_callee from all frames
+        let stackEndAddress = startAddress;
+        for (const frame of stackFrames.val) {
+            const frameBegin = BigInt(frame.begin_callee);
+            if (frameBegin > stackEndAddress) {
+                stackEndAddress = frameBegin;
+            }
+        }
 
         // If stack is very large, limit to a reasonable number of bytes
         const maxBytesToShow = args.length > 2 ? parseInt(args[2], 10) : 256;
-        const bytesToShow = Math.min(
-            stackEndAddress - startAddress,
-            maxBytesToShow,
-        );
-        stackEndAddress = startAddress + bytesToShow;
+        const actualBytesToShow = stackEndAddress - startAddress;
+
+        // If the actual stack is larger than our limit, reduce the end address
+        if (actualBytesToShow > BigInt(maxBytesToShow)) {
+            stackEndAddress = startAddress + BigInt(maxBytesToShow);
+        }
 
         // Show memory contents with frame boundary annotations
-        for (let addr = startAddress; addr < stackEndAddress; addr += 4) {
+        for (let addr = startAddress; addr < stackEndAddress; addr += 4n) {
             const bytes = creator.dumpAddress(addr, 4);
             const valueStr = "0x" + bytes.padStart(8, "0").toUpperCase();
             const formattedAddr = `0x${addr.toString(16).padStart(8, "0").toUpperCase()}`;
@@ -1177,8 +1346,8 @@ function handleStackCommand(args: string[]) {
             // Find which frame this address belongs to
             for (let i = 0; i < stackFrames.val.length; i++) {
                 const frame = stackFrames.val[i];
-                const endCallee = parseInt(frame.end_callee, 16);
-                const beginCallee = parseInt(frame.begin_callee, 16);
+                const endCallee = BigInt(frame.end_callee);
+                const beginCallee = BigInt(frame.begin_callee);
 
                 if (addr >= endCallee && addr < beginCallee) {
                     frameIndex = i;
@@ -1188,14 +1357,17 @@ function handleStackCommand(args: string[]) {
 
             // Check if there's a hint for this address
             if (stackHints.ok) {
-                const hint = stackHints.val[formattedAddr];
+                const addrString = addr.toString();
+                const hint = (
+                    stackHints.val as unknown as Record<string, string>
+                )[addrString];
                 if (hint) {
                     annotation += (annotation ? ", " : "") + `"${hint}"`;
                 }
             }
 
             // Mark stack pointer
-            const stackPointer = parseInt(stackTop.end_callee, 16);
+            const stackPointer = BigInt(stackTop.end_callee);
             if (addr === stackPointer) {
                 annotation += (annotation ? ", " : "") + "← SP";
             }
@@ -1203,10 +1375,11 @@ function handleStackCommand(args: string[]) {
             // Mark frame boundaries
             for (let i = 0; i < stackFrames.val.length; i++) {
                 const frame = stackFrames.val[i];
-                if (
-                    addr === frame.end_callee &&
-                    i !== stackFrames.val.length - 1
-                ) {
+                const frameEndCallee = BigInt(frame.end_callee);
+                const frameBeginCallee = BigInt(frame.begin_callee);
+
+                // Mark frame start (at the end_callee address, which is the low address/stack pointer)
+                if (addr === frameEndCallee) {
                     // Get function name from label
                     const funcName =
                         findLabelForAddress(stackNames.val[i] || "") ||
@@ -1214,7 +1387,9 @@ function handleStackCommand(args: string[]) {
                     annotation +=
                         (annotation ? ", " : "") + `← ${funcName} frame start`;
                 }
-                if (addr === frame.begin_callee - 4) {
+
+                // Mark frame end (at the begin_callee address, which is the high address)
+                if (addr === frameBeginCallee) {
                     // Get function name from label
                     const funcName =
                         findLabelForAddress(stackNames.val[i] || "") ||
@@ -1224,19 +1399,24 @@ function handleStackCommand(args: string[]) {
                 }
             }
 
-            // Color-code by frame
+            // Color-code by frame using consistent color mapping
             let line = `${formattedAddr}: ${valueStr.padEnd(10)} ${annotation}`;
             if (frameIndex >= 0) {
-                // Use different colors for different frames
-                const colorCodes = ["32", "33", "36", "35", "34"];
-                const colorCode = colorCodes[frameIndex % colorCodes.length];
+                // Use the same color mapping as in the call stack
+                const colorCode = getFrameColor(
+                    frameIndex,
+                    stackFrames.val.length,
+                );
                 line = colorText(line, colorCode);
             }
 
             console.log(line);
         }
     } catch (error) {
-        console.error("Error retrieving stack information:", error.message);
+        console.error(
+            "Error retrieving stack information:",
+            (error as Error).message,
+        );
     }
 }
 
@@ -1317,10 +1497,10 @@ function parseArguments(): ArgvOptions {
             description: "ISA extensions to load (e.g. --isa I M F D)",
             default: [],
         })
-        .option("binary", {
+        .option("bin", {
             alias: "b",
             type: "string",
-            describe: "Binary file",
+            describe: "Binary file (alternative)",
             nargs: 1,
             default: "",
         })
@@ -1337,12 +1517,6 @@ function parseArguments(): ArgvOptions {
             describe: "Assembly file to assemble",
             nargs: 1,
             default: "",
-        })
-        .option("interactive", {
-            alias: "I",
-            type: "boolean",
-            describe: "Run in interactive mode",
-            default: false,
         })
         .option("debug", {
             alias: "v",
@@ -1378,12 +1552,6 @@ function parseArguments(): ArgvOptions {
             type: "string",
             describe: "Path to configuration file",
             default: CONFIG_PATH,
-        })
-        .option("verbose", {
-            alias: "V",
-            type: "boolean",
-            describe: "Print detailed output in non-interactive mode",
-            default: false,
         })
         .help().argv as ArgvOptions;
 }
@@ -1490,19 +1658,10 @@ function interactiveMode() {
             ? CONFIG.settings.auto_list_after_shortcuts
             : false;
 
+    console.log(colorText("Type 'help' for available commands.", "32"));
     if (ACCESSIBLE) {
         console.log(
-            "Interactive mode enabled. Type 'help' or 'h' for available commands.",
-        );
-        console.log(
             "You are in accessible mode, with special formatting for screen readers.",
-        );
-    } else {
-        console.log(
-            colorText(
-                "Interactive mode enabled. Type 'help' for available commands.",
-                "32",
-            ),
         );
     }
 
@@ -1562,7 +1721,9 @@ function interactiveMode() {
                 return;
             }
         } catch (error) {
-            console.error(`Error executing command: ${error.message}`);
+            console.error(
+                `Error executing command: ${(error as Error).message}`,
+            );
         }
         rl.prompt();
     });
@@ -1616,9 +1777,11 @@ function main() {
     }
 
     TUTORIAL_MODE = argv.tutorial;
+    // If we load a binary, we have to skip the compiler
+    const skipCompiler = argv.bin !== "";
 
     // Load architecture
-    loadArchitecture(argv.architecture, argv.isa);
+    loadArchitecture(argv.architecture, argv.isa, skipCompiler);
 
     // Reset BINARY_LOADED flag before loading any files
     BINARY_LOADED = false;
@@ -1631,8 +1794,8 @@ function main() {
     }
 
     // If binary file is provided, load it
-    if (argv.binary) {
-        loadBinary(argv.binary);
+    if (argv.bin) {
+        loadBin(argv.bin);
     } else {
         if (argv.library) {
             loadLibrary(argv.library);
@@ -1642,30 +1805,12 @@ function main() {
         }
     }
 
-    // Run in interactive or non-interactive mode
-    if (argv.interactive) {
-        clearConsole();
-        if (!ACCESSIBLE) {
-            console.log(creatorASCII);
-        }
-        creator.reset();
-        interactiveMode();
-    } else {
-        executeNonInteractive(argv.verbose, argv.state);
-        if (argv.reference) {
-            const referenceState = fs.readFileSync(argv.reference, "utf8");
-            const state = creator.getState();
-            const ret = creator.diffStates(referenceState, state.msg);
-            if (ret.status === "ok") {
-                console.log("States are equal");
-            }
-            if (ret.status === "different") {
-                console.log(ret.diff);
-                // exit with error code 1
-                process.exit(1);
-            }
-        }
+    clearConsole();
+    if (!ACCESSIBLE) {
+        console.log(creatorASCII);
     }
+    creator.reset();
+    interactiveMode();
 }
 
 export {

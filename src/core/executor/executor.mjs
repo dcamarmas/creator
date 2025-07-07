@@ -16,47 +16,45 @@
  *  You should have received a copy of the GNU Lesser General Public License
  *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  */
-"use strict"
-import { instructions } from "../compiler/compiler.mjs"
+"use strict";
+import { instructions } from "../compiler/compiler.mjs";
 import {
-    app,
-    architecture,
     stats_update,
     status,
-    REGISTERS,
     clk_cycles_update,
+    WORDSIZE,
+    BYTESIZE,
+    MAXNWORDS,
+    main_memory,
+    newArchitecture,
 } from "../core.mjs";
-import { creator_memory_zerofill } from "../memory/memoryManager.mjs";
 import { crex_findReg_bytag } from "../register/registerLookup.mjs";
 import {
     readRegister,
     writeRegister,
 } from "../register/registerOperations.mjs";
 import { track_stack_setsp } from "../memory/stackTracker.mjs";
-import { bi_intToBigInt } from "../utils/bigint.mjs";
 import { creator_ga } from "../utils/creator_ga.mjs";
 import { logger } from "../utils/creator_logger.mjs";
 import { decode_instruction } from "./decoder.mjs";
 import { buildInstructionPreload } from "./preload.mjs";
-import { dumpMemory } from "../core.mjs"; // To use with debugger
-import { main_memory, main_memory_write_value } from "../memory/memoryCore.mjs"; // For debugging only
-import { show_notification } from "@/web/utils.mjs"
+import { show_notification } from "@/web/utils.mjs";
 
 export function packExecute(error, err_msg, err_type, draw) {
     const ret = {};
 
-    ret.error = error
-    ret.msg = err_msg
-    ret.type = err_type
-    ret.draw = draw
+    ret.error = error;
+    ret.msg = err_msg;
+    ret.type = err_type;
+    ret.draw = draw;
 
-    return ret
+    return ret;
 }
 
 export function getPC() {
     const pc_reg = crex_findReg_bytag("program_counter");
     const pc_address = readRegister(pc_reg.indexComp, pc_reg.indexElem);
-    return pc_address;
+    return BigInt(pc_address);
 }
 
 export function setPC(value) {
@@ -66,8 +64,8 @@ export function setPC(value) {
         "PC register updated to " +
             readRegister(pc_reg.indexComp, pc_reg.indexElem),
     );
-    const offset = -4n;
-    status.virtual_PC = BigInt(value + offset); // TODO: This should depend on the architecture
+    const offset = BigInt(newArchitecture.arch_conf.PCOffset || 0n);
+    status.virtual_PC = BigInt(value + offset);
     logger.debug("Virtual PC register updated to " + status.virtual_PC);
     return null;
 }
@@ -76,43 +74,12 @@ export function hasVirtualPCChanged(oldVirtualPC) {
     return oldVirtualPC !== status.virtual_PC;
 }
 
-function executePreload(draw) {
-    try {
-        const result = instructions[status.execution_index].preload();
-        if (typeof result !== "undefined" && result.error) {
-            return result;
-        }
-        return null;
-    } catch (e) {
-        let msg = "";
-        if (e instanceof SyntaxError) {
-            msg =
-                "The definition of the instruction contains errors, please review it" +
-                e.stack;
-        } else msg = e.msg;
-
-        logger.error("Error: " + e.stack);
-        draw.danger.push(status.execution_index);
-        status.execution_index = -1;
-
-        return packExecute(true, msg, "danger", draw);
-    }
-}
-
 /**
  * Performs validation checks to determine if execution should continue
  * @param {boolean} includeLogging - Whether to include debug logging statements
  * @returns {Object|null} - Returns execution result object if validation fails, or null if validation passes
  */
-function performExecutionChecks(includeLogging = false) {
-    if (includeLogging) {
-        logger.debug("Execution Index:" + status.execution_index);
-        logger.debug("Register (0,0): " + readRegister(0, 0));
-    }
-
-    if (instructions.length === 0) {
-        return packExecute(true, "No instructions in memory", "danger", null);
-    }
+function performExecutionChecks() {
     if (status.execution_index < -1) {
         return packExecute(true, "The program has finished", "warning", null);
     }
@@ -130,33 +97,18 @@ function performExecutionChecks(includeLogging = false) {
     return null;
 }
 
-function initialize_execution(draw) {
+function initialize_execution() {
     if (status.execution_init === 1) {
-        for (let i = 0; i < instructions.length; i++) {
-            if (instructions[i].Label == architecture.arch_conf[5].value) {
-                // Set the program counter to the address of the label
-                const pc_reg = crex_findReg_bytag("program_counter");
-                const pc_size_bits = parseInt(
-                    REGISTERS[0].elements[0].nbits,
-                    10,
-                );
-                writeRegister(
-                    bi_intToBigInt(instructions[i].Address, 10, pc_size_bits),
-                    pc_reg.indexComp,
-                    pc_reg.indexElem,
-                );
-                status.execution_init = 0;
-                break;
-            } else if (i == instructions.length - 1) {
-                status.execution_index = -1;
-                return packExecute(
-                    true,
-                    'Label "' + architecture.arch_conf[5].value + '" not found',
-                    "danger",
-                    null,
-                );
-            }
+        // Set the PC to the entry point of the architecture. Specified in the architecture
+        const pc_reg = crex_findReg_bytag("program_counter");
+        const address = newArchitecture.arch_conf.StartAddress;
+        if (address === undefined || address === null) {
+            throw new Error(
+                "Start address not defined in architecture configuration",
+            );
         }
+        writeRegister(address, pc_reg.indexComp, pc_reg.indexElem);
+        status.execution_init = 0;
     }
     return null;
 }
@@ -190,49 +142,6 @@ function handle_interruptions(draw) {
     writeRegister(0, i_reg.indexComp, i_reg.indexElem);
 }
 
-//Get execution index by PC
-function get_execution_index(draw) {
-    const pc_address = getPC();
-    let found_index = -1;
-    // The value of the program counter is DECIMAL
-    // The value of the Address is HEXADECIMAL
-    // When calling the BigInt function, the address is converted to DECIMAL
-    for (let i = 0; i < instructions.length; i++) {
-        // Mark current instruction and update execution index if PC matches
-        const address = BigInt(instructions[i].Address);
-        if (address === pc_address) {
-            status.execution_index = i;
-            found_index = i;
-
-            logger.debug(
-                `Instruction Hidden Status: ${instructions[i].hide}`,
-                "DEBUG",
-            );
-            logger.debug(
-                `Current Execution Index: ${i} of ${instructions.length}`,
-                "DEBUG",
-            );
-            logger.debug(
-                `Instruction Address: ${instructions[i].Address}`,
-                "DEBUG",
-            );
-
-            if (!instructions[i].hide) {
-                draw.info.push(i);
-            }
-        } else if (!instructions[status.execution_index].hide) {
-            draw.space.push(i);
-        }
-    }
-
-    if (found_index === -1) {
-        logger.error("Execution index not found");
-    }
-
-    return found_index;
-}
-
-// eslint-disable-next-line max-lines-per-function
 function updateExecutionStatus(draw) {
     // Check for program termination due to error
     if (status.execution_index === -1) {
@@ -245,6 +154,9 @@ function updateExecutionStatus(draw) {
         // Find which instruction corresponds to the current PC value
         const pc_address = getPC();
         let found = false;
+
+        // mark previous instruction
+        draw.info.push(status.execution_index)
 
         for (let i = 0; i < instructions.length; i++) {
             const address = BigInt(instructions[i].Address);
@@ -273,43 +185,19 @@ function updateExecutionStatus(draw) {
         }
     }
 
-    // Handle program termination conditions
-    if (status.execution_index >= instructions.length) {
-        // Mark all instructions as space (not active)
-        for (let i = 0; i < instructions.length; i++) {
-            draw.space.push(i);
-        }
-        draw.info = [];
-
-        // Set special execution index (-2) to indicate normal termination
-        status.execution_index = -2;
-
-        return packExecute(
-            false,
-            "The execution of the program has finished",
-            "success",
-            draw,
-        );
-    } // Case 2: Continuing execution (no error)
-    else if (status.error !== 1) {
-        draw.success.push(status.execution_index);
-    }
-
     // Return null to continue execution
     return null;
 }
 
 function incrementProgramCounter(nwords) {
-    const arch_bits = parseInt(architecture.arch_conf[1].value, 10);
-    const word_size = arch_bits / 8;
-    const increment = BigInt(nwords * word_size);
+    const increment = BigInt((nwords * WORDSIZE) / BYTESIZE);
     const pc_address = BigInt(getPC());
     setPC(pc_address + increment);
     logger.debug("PC register updated to " + getPC());
     return null;
 }
 
-function executeInstructionAndHandlePC(draw) {
+function executeInstructionAndHandlePC(draw, preloadFunction) {
     /*
      *  Depending on the architecture, the PC can point to different
      *  addresses. For example, in MIPS/RISC-V, the PC points to the
@@ -329,9 +217,20 @@ function executeInstructionAndHandlePC(draw) {
     const initialVirtualPC = status.virtual_PC;
 
     // Execute instruction and handle errors
-    const preloadError = executePreload(draw);
-    if (preloadError) {
-        return preloadError;
+    if (preloadFunction) {
+        try {
+            preloadFunction();
+        } catch (e) {
+            logger.error("Preload function error: " + e.stack);
+            draw.danger.push(status.execution_index);
+            status.execution_index = -1; // Set execution index to -1 to indicate error
+            return packExecute(
+                true,
+                "Error executing preload function: " + e.message,
+                "danger",
+                draw,
+            );
+        }
     }
 
     // Check if PC has changed
@@ -352,42 +251,43 @@ function executeInstructionAndHandlePC(draw) {
  * @returns {Object|null} - Returns execution result object if execution should stop, or null to continue
  */
 function processCurrentInstruction(draw) {
-    // 1. Fetch instruction
-    const instruction = instructions[status.execution_index].loaded;
+    // 1. Fetch
+    // When fetching, we could have an instruction that spans multiple words,
+    // so to make sure we always get the full instruction, we read however many
+    // words the longest instruction needs (MAXNWORDS).
+
+    let pc_address = getPC();
+
+    const words = [];
+    for (let i = 0; i < MAXNWORDS; i++) {
+        // Read the word at the current PC address
+        const wordBytes = main_memory.readWord(pc_address);
+        const word = Array.from(new Uint8Array(wordBytes))
+            .map(byte => byte.toString(16).padStart(2, "0"))
+            .join("");
+
+        words.push(word);
+        // Increment the PC address by the word size
+        pc_address += BigInt(WORDSIZE / BYTESIZE);
+    }
+    // Join the words to form the full instruction word
+    const word = words.join("");
 
     // 2. Decode instruction
-    const decoded = decode_instruction(instruction);
-    const {
-        type,
-        signatureDef,
-        signatureParts,
-        signatureRawParts,
-        instructionExec,
-        instructionExecParts,
-        auxDef,
-        nwords,
-    } = decoded;
+    const instruction = decode_instruction("0x" + word);
 
+    const asm = instruction.instructionExecPartsWithProperNames.join(" ");
+    const machineCode = words.slice(0, instruction.nwords).join("");
+
+    const { type, nwords } = instruction;
     // 3. Increment PC based on instruction size
     incrementProgramCounter(nwords);
 
     // 4. Build instruction preload
-    const buildPreloadResult = buildInstructionPreload(
-        signatureDef,
-        instructionExec,
-        instructionExecParts,
-        signatureRawParts,
-        signatureParts,
-        auxDef,
-        instructions[status.execution_index].preload,
-        status.execution_index,
-    );
-    if (buildPreloadResult !== null) {
-        return buildPreloadResult;
-    }
+    const preloadFunction = buildInstructionPreload(instruction);
 
     // 5. Execute instruction and handle PC changes
-    const executeResult = executeInstructionAndHandlePC(draw);
+    const executeResult = executeInstructionAndHandlePC(draw, preloadFunction);
     if (executeResult !== null) {
         return executeResult;
     }
@@ -396,7 +296,12 @@ function processCurrentInstruction(draw) {
     stats_update(type);
     clk_cycles_update(type);
 
-    return null;
+    // Return instruction data for CLI display
+    return {
+        asm,
+        machineCode,
+        success: true,
+    };
 }
 
 /**
@@ -421,7 +326,7 @@ function createDrawObject() {
 function executeInstructionCycle(draw) {
     // Log debug information
     logger.debug("Execution Index:" + status.execution_index);
-    logger.debug("Register (0,0): " + readRegister(0, 0));
+    logger.debug("PC Register: " + readRegister(0, 0));
 
     // Check for conditions that would stop execution
     const inLoopCheckResult = performExecutionChecks();
@@ -436,56 +341,96 @@ function executeInstructionCycle(draw) {
     }
 
     // Update execution index based on PC
-    get_execution_index(draw);
+    // get_execution_index(draw);
 
     // Handle any pending interruptions
     handle_interruptions(draw);
 
     // Process the current instruction
     const processingResult = processCurrentInstruction(draw);
-    if (processingResult !== null) {
+    if (processingResult !== null && !processingResult.success) {
         return processingResult;
     }
 
     // Update execution status and determine next instruction
-    return updateExecutionStatus(draw);
+    const statusResult = updateExecutionStatus(draw);
+
+    // Return the processing result with instruction data, or combine with status result if there's an error
+    if (statusResult === null) {
+        return processingResult;
+    } else {
+        return {
+            ...statusResult,
+            instructionData: processingResult,
+        };
+    }
 }
 
 export function step() {
     // Create draw object for UI updates
     const draw = createDrawObject();
     status.error = 0;
-    // Main execution loop
-    do {
-        // Execute a single instruction cycle
-        const cycleResult = executeInstructionCycle(draw);
-        if (cycleResult !== null) {
-            return cycleResult;
-        }
 
-        // Check if error occurred during execution
-        if (status.execution_index === -1) {
-            status.error = 1;
-            break;
-        }
-    } while (instructions[status.execution_index].hide === true);
+    // Execute a single instruction cycle
+    const cycleResult = executeInstructionCycle(draw);
 
-    // Return execution result
-    return packExecute(false, null, null, draw);
+    // Check if error occurred during execution
+    if (status.execution_index === -1) {
+        status.error = 1;
+    }
+
+    // Capture instruction data from the executed cycle before checking PC validity
+    let instructionData = null;
+    if (cycleResult && cycleResult.instructionData) {
+        instructionData = cycleResult.instructionData;
+    } else if (cycleResult && cycleResult.asm) {
+        // If cycleResult is the instruction data itself
+        instructionData = cycleResult;
+    }
+
+    // Check if the PC is outside valid execution segments
+    const pc_address = getPC();
+    const currentSegment = main_memory.getSegmentForAddress(pc_address);
+
+    // TODO: This check does not make sense at the architecture level. This is an
+    // operating system check, not an architecture check.
+    // Check if we can execute at this address
+    if (!main_memory.isValidAccess(pc_address, "execute")) {
+        status.execution_index = -2;
+        const result = packExecute(
+            false,
+            `The execution of the program has finished - PC in non-executable segment '${currentSegment}'`,
+            "success",
+            draw,
+        );
+        // Include the instruction data from the last executed instruction
+        if (instructionData) {
+            result.instructionData = instructionData;
+        }
+        return result;
+    }
+
+    // Return execution result with instruction data
+    const result = packExecute(status.error, null, null, draw);
+    if (instructionData) {
+        result.instructionData = instructionData;
+    }
+
+    return result;
 }
 
 export function executeProgramOneShot(limit_n_instructions) {
     let ret = null;
 
     // Google Analytics
-    creator_ga("execute", "execute.run")
+    creator_ga("execute", "execute.run");
 
     // execute program
     for (let i = 0; i < limit_n_instructions; i++) {
         ret = step();
 
         if (ret.error === true) {
-            return ret
+            return ret;
         }
         if (status.execution_index < -1) {
             return ret;
@@ -504,7 +449,7 @@ export function executeProgramOneShot(limit_n_instructions) {
 
 export function creator_executor_exit(error) {
     // Google Analytics
-    creator_ga("execute", "execute.exit")
+    creator_ga("execute", "execute.exit");
 
     if (error) {
         status.execution_index = -1;
@@ -517,8 +462,8 @@ export function creator_executor_exit(error) {
  */
 
 export function crex_show_notification(msg, level) {
-    if (typeof window !== "undefined") show_notification(msg, level)
-    else console.log(level.toUpperCase() + ": " + msg)
+    if (typeof window !== "undefined") show_notification(msg, level);
+    else console.log(level.toUpperCase() + ": " + msg);
 }
 // Modify the stack limit
 
@@ -530,25 +475,25 @@ export function writeStackLimit(stackLimit) {
         warning: [],
         danger: [],
         flash: [],
-    }
+    };
 
-    if (stackLimit == null) {
-        return
+    if (stackLimit === null) {
+        return;
     }
 
     // Convert to BigInt if not already
     const stackLimitBigInt = BigInt(stackLimit);
 
-    // Convert memory layout values to BigInt for proper comparison
-    const dataSegmentEnd = BigInt(architecture.memory_layout[3].value);
-    const dataSegmentStart = BigInt(architecture.memory_layout[2].value);
-    const textSegmentEnd = BigInt(architecture.memory_layout[1].value);
-    const textSegmentStart = BigInt(architecture.memory_layout[0].value);
-    const currentStackPointer = BigInt(architecture.memory_layout[4].value);
+    // Get memory segments from the Memory object
+    const segments = main_memory.getMemorySegments();
+    const dataSegment = segments.get("data");
+    const textSegment = segments.get("text");
 
+    // Check if stack pointer would be placed in data segment
     if (
-        stackLimitBigInt <= dataSegmentEnd &&
-        stackLimitBigInt >= dataSegmentStart
+        dataSegment &&
+        stackLimitBigInt <= dataSegment.endAddress &&
+        stackLimitBigInt >= dataSegment.startAddress
     ) {
         draw.danger.push(status.execution_index);
         throw packExecute(
@@ -557,9 +502,13 @@ export function writeStackLimit(stackLimit) {
             "danger",
             null,
         );
-    } else if (
-        stackLimitBigInt <= textSegmentEnd &&
-        stackLimitBigInt >= textSegmentStart
+    }
+
+    // Check if stack pointer would be placed in text segment
+    if (
+        textSegment &&
+        stackLimitBigInt <= textSegment.endAddress &&
+        stackLimitBigInt >= textSegment.startAddress
     ) {
         draw.danger.push(status.execution_index);
         throw packExecute(
@@ -568,14 +517,20 @@ export function writeStackLimit(stackLimit) {
             "danger",
             null,
         );
-    } else {
-        const diff = Number(currentStackPointer - stackLimitBigInt);
-        if (diff > 0) {
-            creator_memory_zerofill(Number(stackLimitBigInt), diff);
-        }
+    }
 
-        track_stack_setsp(Number(stackLimitBigInt));
-        architecture.memory_layout[4].value =
+    // Get current stack pointer from memory segments
+    const stackSegment = segments.get("stack");
+
+    track_stack_setsp(Number(stackLimitBigInt));
+
+    // Update the stack segment in the memory layout if it exists
+    if (stackSegment) {
+        // Update the memory segment's start address to reflect the new stack pointer
+        stackSegment.start =
             "0x" + stackLimitBigInt.toString(16).padStart(8, "0").toUpperCase();
+        stackSegment.startAddress = stackLimitBigInt;
+        // And update the size of the stack segment
+        stackSegment.size = stackSegment.endAddress - stackSegment.startAddress;
     }
 }

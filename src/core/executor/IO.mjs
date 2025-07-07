@@ -16,17 +16,15 @@
  *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-import { status } from "../core.mjs";
+import { status, main_memory } from "../core.mjs";
 import {
     readRegister,
     writeRegister,
 } from "../register/registerOperations.mjs";
-import { writeMemory } from "../memory/memoryOperations.mjs";
 import process from "node:process";
 import { packExecute } from "./executor.mjs";
 import os from "node:os";
-import { show_notification } from "@/web/utils.mjs"
-
+import { show_notification } from "@/web/utils.mjs";
 
 export function display_print(info) {
     if (typeof document !== "undefined") {
@@ -52,12 +50,15 @@ export function kbd_read_char(keystroke, params) {
 
 export function kbd_read_int(keystroke, params) {
     // eslint-disable-next-line radix
-    const value = parseInt(keystroke)
+    const value = parseInt(keystroke);
 
     // validate input
     if (typeof document !== "undefined" && isNaN(value)) {
-        show_notification(`Invalid input: '${keystroke}' is not an integer`, "danger")
-        return null
+        show_notification(
+            `Invalid input: '${keystroke}' is not an integer`,
+            "danger",
+        );
+        return null;
     }
 
     writeRegister(value, params.indexComp, params.indexElem);
@@ -66,12 +67,16 @@ export function kbd_read_int(keystroke, params) {
 }
 
 export function kbd_read_float(keystroke, params) {
-    const value = parseFloat(keystroke, 10)
+    const value = parseFloat(keystroke, 10);
 
     // validate input
     if (typeof document !== "undefined" && isNaN(value)) {
-        show_notification(`Invalid input: '${keystroke}' is not a float`, "danger", useToastController)
-        return null
+        show_notification(
+            `Invalid input: '${keystroke}' is not a float`,
+            "danger",
+            useToastController,
+        );
+        return null;
     }
 
     writeRegister(value, params.indexComp, params.indexElem, "SFP-Reg");
@@ -84,8 +89,12 @@ export function kbd_read_double(keystroke, params) {
 
     // validate input
     if (typeof document.app !== "undefined" && isNaN(value)) {
-        show_notification(`Invalid input: '${keystroke}' is not a double`, "danger", useToastController)
-        return null
+        show_notification(
+            `Invalid input: '${keystroke}' is not a double`,
+            "danger",
+            useToastController,
+        );
+        return null;
     }
 
     writeRegister(value, params.indexComp, params.indexElem, "DFP-Reg");
@@ -94,16 +103,15 @@ export function kbd_read_double(keystroke, params) {
 }
 
 export function kbd_read_string(keystroke, params) {
-    let value = "";
-    let neltos = readRegister(params.indexComp2, params.indexElem2);
-    for (let i = 0; i < neltos && i < keystroke.length; i++) {
-        value += keystroke.charAt(i);
+    const addr = readRegister(params.indexComp, params.indexElem);
+
+    const bytes = new TextEncoder().encode(keystroke);
+    // Write the string to memory byte by byte
+    for (let i = 0n; i < keystroke.length && i < params.size; i++) {
+        main_memory.write(BigInt(addr + BigInt(i)), bytes[i]);
     }
 
-    neltos = readRegister(params.indexComp, params.indexElem);
-    writeMemory(value, parseInt(neltos), "string");
-
-    return value;
+    return keystroke;
 }
 
 function checkEnter(buf) {
@@ -168,6 +176,7 @@ export function keyboard_read(fn_post_read, fn_post_params) {
             const keystroke = rawPrompt();
             const value = fn_post_read(keystroke, fn_post_params);
             status.keyboard = status.keyboard + " " + value;
+            status.run_program = 0; // Reset run_program status
 
             return packExecute(
                 false,
@@ -182,24 +191,24 @@ export function keyboard_read(fn_post_read, fn_post_params) {
     }
 
     // Web/UI mode
-    document.app.$data.enter = false;  // signal UI to wait for keyboard read
+    document.app.$data.enter = false; // signal UI to wait for keyboard read
 
     if (status.run_program === 3) {
         setTimeout(keyboard_read, 1000, fn_post_read, fn_post_params);
-        return draw
+        return draw;
     }
 
-    const val = fn_post_read(document.app.$data.keyboard, fn_post_params)
+    const val = fn_post_read(document.app.$data.keyboard, fn_post_params);
 
-    document.app.$data.keyboard = ""  // clear input
+    document.app.$data.keyboard = ""; // clear input
 
     if (val === null) {
         // error parsing input, retry
-        status.run_program = 3
-        return keyboard_read(fn_post_read, fn_post_params)
+        status.run_program = 3;
+        return keyboard_read(fn_post_read, fn_post_params);
     }
 
-    document.app.$data.enter = null;  // reset keyboard
+    document.app.$data.enter = null; // reset keyboard
 
     show_notification("The data has been uploaded", "info");
 
@@ -221,5 +230,5 @@ export function keyboard_read(fn_post_read, fn_post_params) {
         $("#playExecution").trigger("click");
     }
 
-    return draw
+    return draw;
 }

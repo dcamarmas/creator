@@ -32,6 +32,7 @@ aliases:
     snap: "snapshot"
     load: "restore"
     exit: "quit"
+    data: "mem 0x200000 64"
 
 # Keyboard shortcuts
 # Format: ctrl_key: "command"

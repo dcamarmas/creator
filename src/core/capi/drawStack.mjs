@@ -18,16 +18,13 @@
  *
  */
 "use strict";
-import { architecture, REGISTERS } from "../core.mjs";
+import { REGISTERS } from "../core.mjs";
 import { crex_show_notification } from "../executor/executor.mjs";
 import { tag_instructions } from "../compiler/compiler.mjs";
 import {
     track_stack_enter,
     track_stack_leave,
     track_stack_addHint,
-    track_stack_getHint,
-    track_stack_getAllHints,
-    track_stack_clearHints,
 } from "../memory/stackTracker.mjs";
 
 export const DRAW_STACK = {
@@ -37,7 +34,7 @@ export const DRAW_STACK = {
         // 1.- get function name
         if (typeof REGISTERS[0] !== "undefined") {
             if (typeof tag_instructions[addr] === "undefined")
-                function_name = "0x" + parseInt(addr).toString(16);
+                function_name = "0x" + parseInt(addr, 10).toString(16);
             else function_name = tag_instructions[addr];
         }
 

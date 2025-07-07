@@ -45,7 +45,6 @@ export default {
     enter: [Boolean, null],
     stack_total_list: Number,
     main_memory_busy: Boolean,
-    main_memory: Object,
     display: String,
     keyboard: String,
   },
@@ -63,8 +62,8 @@ export default {
 
   data() {
     return {
-      architecture: architecture,
-      instructions: instructions,
+      architecture,
+      instructions,
 
       // stack
       callee_subrutine: "",
@@ -158,8 +157,6 @@ export default {
                 :callee_subrutine="callee_subrutine"
                 :caller_subrutine="caller_subrutine"
                 :stack_total_list="stack_total_list"
-                :main_memory_busy="main_memory_busy"
-                :main_memory="main_memory"
                 :memory_layout="architecture.memory_layout"
                 :end_callee="end_callee"
                 :dark="dark"
