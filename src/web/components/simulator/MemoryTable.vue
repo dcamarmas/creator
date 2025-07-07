@@ -24,18 +24,48 @@ import {
   creator_memory_update_space_view,
   creator_memory_update_row_view,
 } from "@/core/memory/memoryViewManager.mjs"
+import {
+  chunks,
+  hex2SignedInt,
+  hex2float,
+  hex2double,
+} from "@/core/utils/utils.mjs"
+
+// As currently hints are stored as a string containing the tag and the
+// hint itself, we have to separate them back
+function extractType(hint) {
+  if (hint === undefined) return undefined
+
+  let val = hint
+
+  if (hint.includes(":")) {
+    val = hint.split(":").at(-1)
+  }
+
+  return val.replace("<", "").replace(">", "").trim()
+}
+
+function extractTag(tag) {
+  if (tag === undefined) return undefined
+
+  if (tag.includes(":")) {
+    return tag.split(":").at(0)
+  }
+
+  return undefined
+}
 
 export default {
   props: {
     main_memory: { type: Object, required: true },
     memory_segment: { type: String, required: true },
-    track_stack_names: { type: Array, required: true }, // TODO: optional
-    callee_subrutine: { type: String, required: true }, // TODO: optional
-    caller_subrutine: { type: String, required: true }, // TODO: optional
-    stack_total_list: { type: Number, required: true },
-    main_memory_busy: { type: Boolean, required: true },
-    memory_layout: { type: Object, required: true },
-    end_callee: { type: Number, required: true },
+    // track_stack_names: { type: Array, required: true }, // TODO: optional
+    // callee_subrutine: { type: String, required: true }, // TODO: optional
+    // caller_subrutine: { type: String, required: true }, // TODO: optional
+    // stack_total_list: { type: Number, required: true },
+    // main_memory_busy: { type: Boolean, required: true },
+    // memory_layout: { type: Object, required: true },
+    // end_callee: { type: Number, required: true },
   },
 
   data() {
@@ -47,6 +77,7 @@ export default {
       row_info: null,
       selected_space_view: null,
       selected_stack_view: null,
+      memorySegments: this.main_memory.getMemorySegments(),
     }
   },
 
@@ -55,51 +86,15 @@ export default {
      * Filters which rows to show, depending on the data segment
      */
     filter(row, _filter) {
-      const addr = parseInt(row.addr_begin, 16)
+      const segment = this.memorySegments.get(this.memory_segment)
+      if (segment === undefined) return false
 
-      switch (this.memory_segment) {
-        // TODO: kernel
-        // case "kinstructions_memory":
-        //   return (
-        //     !row.hide &&
-        //     addr >= parseInt(this.memory_layout[0].value, 16) &&
-        //     addr <= parseInt(this.memory_layout[1].value, 16)
-        //   )
-
-        // case "kdata_memory":
-        //   return (
-        //     addr >= parseInt(this.memory_layout[2].value, 16) &&
-        //     addr <= parseInt(this.memory_layout[3].value, 16)
-        //   )
-
-        case "instructions_memory":
-          return (
-            !row.hide &&
-            addr >= parseInt(this.memory_layout[0].value, 16) &&
-            addr <= parseInt(this.memory_layout[1].value, 16)
-          )
-
-        case "data_memory":
-          // return true
-          return (
-            addr >= parseInt(this.memory_layout[2].value, 16) &&
-            addr <= parseInt(this.memory_layout[3].value, 16)
-          )
-
-        case "stack_memory":
-          return (
-            addr > parseInt(this.memory_layout[3].value, 16) &&
-            Math.abs(addr - end_callee) < this.stack_total_list * 4
-          )
-
-        default:
-          return false
-      }
+      return row.start >= segment.startAddress && row.end <= segment.endAddress
     },
 
     // TODO: generic and include modal
     select_data_type(record, index) {
-      this.row_info = { index: index, addr: record.addr - 3, size: record.size }
+      this.row_info = { index, addr: record.addr - 3, size: record.size }
 
       if (this.memory_segment === "instructions_memory") {
         return
@@ -154,30 +149,139 @@ export default {
 
     get_classes(row) {
       return {
-        h6Sm:
-          row.item.addr >= parseInt(architecture.memory_layout[0].value, 16) &&
-          row.item.addr <= architecture.memory_layout[3].value,
+        h6Sm: this.memory_segment !== "stack",
         "h6Sm text-secondary ":
-          row.item.addr < this.$root.end_callee &&
-          Math.abs(row.item.addr - this.$root.end_callee) <
-            this.stack_total_list * 4,
+          row.item.start < this.$root.end_callee &&
+          Math.abs(row.item.start - this.$root.end_callee) <
+            this.$root.stack_total_list * 4,
         "h6Sm text-success   ":
-          row.item.addr < this.$root.begin_callee &&
-          row.item.addr >= this.$root.end_callee,
+          row.item.start < this.$root.begin_callee &&
+          row.item.start >= this.$root.end_callee,
         "h6Sm text-blue-funny":
-          row.item.addr < this.$root.begin_caller &&
-          row.item.addr >= this.$root.end_caller,
-        "h6Sm                ": row.item.addr >= this.$root.begin_caller,
+          row.item.start < this.$root.begin_caller &&
+          row.item.start >= this.$root.end_caller,
+        "h6Sm                ": row.item.start >= this.$root.begin_caller,
+      }
+    },
+
+    /**
+     *
+     * Transforms a value into a hextring.
+     *
+     * @param {number} value
+     * @param {number} padding Padding, in bytes
+     *
+     * @returns {string}
+     */
+    toHex(value, padding) {
+      return value
+        .toString(16)
+        .padStart(padding * 2, "0")
+        .toUpperCase()
+    },
+
+    /**
+     * Computes what values are stored in a set of bytes, according to the type.
+     *
+     * @param {number[]} bytes
+     * @param {string} type
+     *
+     * @returns {string[]} Array of the same length as `bytes`,
+     */
+    computeHumanValues(bytes, type) {
+      // TODO: eventually, move this logic to the architecture definition, as
+      // the hints are given by the architecture
+
+      const values = new Array(bytes.length)
+      const view = new DataView(new Uint8Array(bytes).buffer)
+
+      switch (type) {
+        case "byte":
+          // unsigned integer
+          values[0] = view.getUint8()
+          return values
+
+        case "half":
+          values[0] = view.getUint16()
+          return values
+
+        case "word":
+          values[0] = view.getInt32()
+          return values
+
+        case "dword":
+          values[0] = view.getInt64()
+
+          return values
+
+        case "float32":
+          values[0] = view.getFloat32()
+          return values
+
+        case "float64":
+          values[0] = view.getFloat64()
+          return values
+
+        case "string":
+          return bytes.map(b => String.fromCharCode(b))
+
+        case "padding":
+        case "space":
+        default:
+          return values
       }
     },
   },
 
   computed: {
+    hints() {
+      return this.main_memory
+        .getAllHints()
+        .map(({ address, hint, sizeInBits }) => ({
+          address: Number(address),
+          // FIXME: when hints and tags become two separate things, redo this
+          // temporary fix
+          tag: extractTag(hint),
+          type: extractType(hint),
+          size: sizeInBits / this.main_memory.getBitsPerByte(),
+        }))
+    },
+
     main_memory_items() {
-      // memory items that will be shown
-      return Object.entries(this.main_memory)
-        .sort((a, b) => a[0] - b[0])
-        .map(a => a[1])
+      const mem = this.main_memory.getWritten()
+
+      // set human values, depending on hints
+      let i = 0
+      while (i < mem.length) {
+        const hint = this.hints.find(h => h.address === mem.at(i).addr)
+        if (hint === undefined) {
+          i++
+          continue
+        }
+
+        const bytes = mem.slice(i, i + hint.size).map(b => b.value)
+
+        // compute human values and store them in memory
+        this.computeHumanValues(bytes, hint.type).forEach(
+          (b, j) => (mem[i + j].human = b),
+        )
+
+        i += hint.size
+      }
+
+      return (
+        // group bytes by words
+        chunks(mem, this.main_memory.getWordSize()).map(bytes => ({
+          start: bytes.at(0).addr,
+          end: bytes.at(-1).addr,
+          bytes: bytes.map(b => ({
+            addr: b.addr,
+            value: b.value,
+            tag: this.hints.find(h => h.address === b.addr)?.tag,
+            human: b.human,
+          })),
+        }))
+      )
     },
   },
 }
@@ -194,7 +298,6 @@ export default {
             ref="table"
             small
             hover
-            :busy="main_memory_busy"
             :items="main_memory_items"
             :fields="memFields"
             :filter-function="filter"
@@ -251,7 +354,7 @@ export default {
                         register.properties.includes('frame_pointer') ||
                         register.properties.includes('global_pointer')) &&
                       (parseInt(register.value) & 0xfffffffc) ==
-                        (row.item.addr & 0xfffffffc)
+                        (row.item.start & 0xfffffffc)
                     "
                   >
                     <b-badge
@@ -271,7 +374,9 @@ export default {
             <template v-slot:cell(Address)="row">
               <div class="pt-3">
                 <span v-bind:class="get_classes(row)">
-                  {{ row.item.addr_begin }} - {{ row.item.addr_end }}
+                  0x{{ toHex(row.item.start, 4) }} - 0x{{
+                    toHex(row.item.end, 4)
+                  }}
                 </span>
               </div>
             </template>
@@ -282,8 +387,8 @@ export default {
               <div class="pt-3" />
               <span
                 v-bind:class="get_classes(row)"
-                v-for="address in row.item.hex"
-                :key="row.addr"
+                v-for="byte in row.item.bytes"
+                :key="byte.addr"
               >
                 <!-- tag -->
                 <b-badge
@@ -291,17 +396,14 @@ export default {
                   variant="info"
                   class="border border-info shadow binaryTag"
                   style="top: -2vh !important"
-                  v-if="address.tag"
+                  v-if="byte.tag"
                 >
-                  {{ address.tag }}
+                  {{ byte.tag }}
                 </b-badge>
 
                 <!-- byte -->
-                <span v-if="address.tag" class="memoryBorder">
-                  {{ address.byte.toUpperCase() }}
-                </span>
-                <span v-else>
-                  {{ address.byte.toUpperCase() }}
+                <span :class="{ memoryBorder: byte.tag }">
+                  {{ toHex(byte.value, 1) }}
                 </span>
 
                 &nbsp;
@@ -316,14 +418,19 @@ export default {
                 v-bind:class="get_classes(row)"
                 style="white-space: pre-wrap"
               >
-                {{ row.item.value }}
+                {{
+                  row.item.bytes
+                    .map(byte => byte.human) // get human values
+                    .filter(x => x) // remove `undefined`s
+                    .join(", ")
+                }}
               </span>
-              <font-awesome-icon
+              <!-- <font-awesome-icon
                 icon="fa-solid fa-eye"
                 class="value-button"
                 v-b-modal.space_modal
                 v-if="row.item.eye && check_tag_null(row.item.hex)"
-              />
+              /> -->
             </template>
           </b-table>
         </b-col>

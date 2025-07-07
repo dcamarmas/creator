@@ -417,7 +417,7 @@ export default {
 
       this.execution_UI_reset()
 
-      this.$root.$refs.simulatorView.$refs.registerFile.refresh() // refresh registers
+      this.$root.$refs.simulatorView.$refs.registerFile?.refresh() // refresh registers
     },
 
     // Execute one instruction
