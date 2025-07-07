@@ -22,16 +22,16 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 import MemoryTable from "./MemoryTable.vue"
 
 import { track_stack_names } from "@/core/memory/stackTracker.mjs"
+import { main_memory } from "@/core/core.mjs"
 
 export default {
   props: {
-    callee_subrutine: { type: String, required: true }, // TODO: optional
-    caller_subrutine: { type: String, required: true }, // TODO: optional
-    stack_total_list: { type: Number, required: true },
-    main_memory: { type: Object, required: true },
-    main_memory_busy: { type: Boolean, required: true },
-    memory_layout: { type: Object, required: true },
-    end_callee: { type: Number, required: true },
+    // callee_subrutine: { type: String, required: true }, // TODO: optional
+    // caller_subrutine: { type: String, required: true }, // TODO: optional
+    // stack_total_list: { type: Number, required: true },
+    // main_memory_busy: { type: Boolean, required: true },
+    // memory_layout: { type: Object, required: true },
+    // end_callee: { type: Number, required: true },
     dark: { type: Boolean, required: true },
   },
 
@@ -39,17 +39,14 @@ export default {
 
   data() {
     return {
+      main_memory,
       track_stack_names,
       memory_segment: "data",
-      //Memory view
-      mem_representation: "data_memory",
-      mem_representation_options: [
-        // { text: "Kernel Data", value: "kdata_memory" },
-        // { text: "Kernel Text", value: "kinstructions_memory" },
-        { text: "Data", value: "data_memory" },
-        { text: "Text", value: "instructions_memory" },
-        { text: "Stack", value: "stack_memory" },
-      ],
+      mem_representation_options: main_memory
+        .getMemorySegments()
+        .keys()
+        .toArray()
+        .map(s => ({ text: s.charAt(0).toUpperCase() + s.slice(1), value: s })),
     }
   },
 }
@@ -70,7 +67,7 @@ export default {
           </b-badge>
           <b-form-radio-group
             :class="{ 'w-100': true, 'mb-1': true, border: dark }"
-            v-model="mem_representation"
+            v-model="memory_segment"
             :options="mem_representation_options"
             :button-variant="dark ? 'dark' : 'outline-secondary'"
             outline
@@ -88,14 +85,7 @@ export default {
         <MemoryTable
           class="my-2"
           :main_memory="main_memory"
-          :memory_segment="mem_representation"
-          :track_stack_names="track_stack_names"
-          :callee_subrutine="callee_subrutine"
-          :caller_subrutine="caller_subrutine"
-          :stack_total_list="stack_total_list"
-          :main_memory_busy="main_memory_busy"
-          :memory_layout="memory_layout"
-          :end_callee="end_callee"
+          :memory_segment="memory_segment"
         />
       </b-col>
     </b-row>
