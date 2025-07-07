@@ -27,7 +27,8 @@
         props:      {
                       id:                    { type: String, required: true },
                       ref:                   { type: String, required: true },
-                      modal_assembly_error:  { type: Object, required: true }
+                      modal_assembly_error:  { type: Object, required: true },
+                      dark_mode:             { type: String, required: true }
                     },
 
         template:   ' <b-modal :id="id"' +
@@ -36,48 +37,12 @@
                     '          hide-footer' +
                     '          size="lg">' +
                     ' ' +
-                    '   <span class="h6 font-weight-light">Code fragment:</span>' +
+                    '   <span class="h6 font-weight-light">Error message:</span>' +
                     ' ' +
-                    '   <div class="errorAssembly">' +
-                    '     <span class="h6 text-monospace" label="Code fragment:">' +
-                    '       <b-container>' +
-                    '         <b-row>' +
-                    '           <b-col class="px-0"         >&nbsp;</b-col>' +
-                    '           <b-col class="px-2"         >...</b-col>' +
-                    '           <b-col class="pl-2" cols="10">&nbsp;</b-col>' +
-                    '         </b-row>' +
-                    ' ' +
-                    '         <b-row>' +
-                    '           <b-col class="px-0"         >&nbsp;</b-col>' +
-                    '           <b-col class="px-2"         >{{modal_assembly_error.line1}}</b-col>' +
-                    '           <b-col class="pl-2" cols="10">{{modal_assembly_error.code1}}</b-col>' +
-                    '         </b-row>' +
-                    ' ' +
-                    '         <b-row>' +
-                    '           <b-col class="px-0"         >*</b-col>' +
-                    '           <b-col class="px-2"         >{{modal_assembly_error.line2}}</b-col>' +
-                    '           <b-col class="pl-2" cols="10">{{modal_assembly_error.code2}}</b-col>' +
-                    '         </b-row>' +
-                    ' ' +
-                    '         <b-row>' +
-                    '           <b-col class="px-0"         >&nbsp;</b-col>' +
-                    '           <b-col class="px-2"         >{{modal_assembly_error.line3}}</b-col>' +
-                    '           <b-col class="pl-2" cols="10">{{modal_assembly_error.code3}}</b-col>' +
-                    '         </b-row>' +
-                    ' ' +
-                    '         <b-row>' +
-                    '           <b-col class="px-0"         >&nbsp;</b-col>' +
-                    '           <b-col class="px-2"         >...</b-col>' +
-                    '           <b-col class="pl-2" cols="10">&nbsp;</b-col>' +
-                    '         </b-row>' +
-                    '       </b-container>' +
+                    '   <div :error_dark="dark_mode" class="errorAssembly" >' +
+                    '     <span class="h6 text-monospace" label="Error message:" v-html="modal_assembly_error.error">' +
                     '     </span>' +
                     '   </div>' +
-                    '   <br>' +
-                    ' ' +
-                    '   <span class="h6 font-weight-light">Error description:</span>' +
-                    '   <br>' +
-                    '   <span class="h6">{{modal_assembly_error.error}}</span>' +
                     '   <br>' +
                     ' </b-modal>'
   }

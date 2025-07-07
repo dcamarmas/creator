@@ -20,8 +20,8 @@ main:
       
        # 5 + vector(2)
        li $t5, 5
-       lw $t3, ($t2)
+       lw $t3  ($t2)
        add $t5, $t5, $t3
        # vector(2) = 3
        li $t4, 3
-       sw $t4, ($t2)
+       sw $t4  ($t2)

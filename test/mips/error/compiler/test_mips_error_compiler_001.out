@@ -1,10 +1,18 @@
 
 
-Error at line 9 (A):
-Repeated tag: A
-
-  8    a:    .byte -1
-->9    A:    .half 23
+[E11] Error: Label `A` is already defined
+   ╭─[ assembly:9:4 ]
+   │
+ 7 │    A:    .word -1
+   │    ─┬  
+   │     ╰── Note: Label also defined here
+   │ 
+ 9 │    A:    .half 23
+   │    ─┬  
+   │     ╰── Duplicate label
+   │ 
+   │ Help: Consider renaming either of the labels
+───╯
 
 Not executed
 keyboard[0x0]:''; display[0x0]:''; 
