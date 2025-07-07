@@ -20,7 +20,7 @@
 	test:
             # crear "stack frame" para $ra, $fp y una variable local
             subu $sp, $sp, 4
-            sw   $s0, ($sp)
+            sw   $s0  ($sp)
 
 			li $s0, 5
 

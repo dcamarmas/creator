@@ -45,7 +45,7 @@ factorial:
            # finalizar "stack frame"
    b_efs:  lw   $ra, 8($sp)
            lw   $fp, 4($sp)
-           addu $sp, $sp 12
+           addu $sp, $sp, 12
 
            # return $v0
            jr $ra
