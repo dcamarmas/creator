@@ -2,7 +2,7 @@
   "name": "creator",
   "description": "Check CREATOR",
   "author": "dcamarma@inf.uc3m.es",
-  "version": "5.0",
+  "version": "5.0-β",
   "scripts": {
     "test": "python test.py",
     "build": "./mk_min.sh",
