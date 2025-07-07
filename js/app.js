@@ -279,8 +279,9 @@ try
     /************************
      * Mounted vue instance *
      ************************/
-    mounted(){
+    async mounted(){
       this.validate_browser();
+      await this.load_compiler_wasm();
       uielto_backup.methods.backup_modal(this);
 
       //Pre-load following URL params
@@ -369,6 +370,13 @@ try
       },
 
 
+      // Load compiler wasm module
+      async load_compiler_wasm() {
+        const mod = await import("../compiler-pkg/web/creator_compiler.js");
+        await mod.default({}); // Initialize wasm
+        wasm = mod;
+        color = wasm.Color.Html;
+      },
 
 
       /*************/
@@ -472,6 +480,9 @@ try
     return parseInt(b, 2);
   }
 
+  if (typeof WebAssembly !== "object") {
+    alert("WebAssembly support not detected. WebAssembly is required to compile programs")
+  }
 }
 catch(e)
 {

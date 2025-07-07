@@ -83,7 +83,7 @@ function execute_instruction ( )
     {
       for (var i = 0; i < instructions.length; i++)
       {
-        if (instructions[i].Label == architecture.arch_conf[5].value) {
+        if (instructions[i].Label.includes(architecture.arch_conf[5].value)) {
           //draw.success.push(execution_index) ;
           //architecture.components[0].elements[0].value = bi_intToBigInt(instructions[i].Address, 10); //TODO
           writeRegister(bi_intToBigInt(instructions[i].Address, 10), 0, 0);
@@ -238,7 +238,7 @@ function execute_instruction ( )
                 }
 
                 // value = get_number_binary(bin) ;
-                value     = parseInt(bin, 2).toString(16) ;
+                value     = (parseInt(bin, 2) << architecture.instructions[i].fields[f].padding).toString(16);
                 value_len = Math.abs(instruction_fields[f].startbit - instruction_fields[f].stopbit) ;
                 value     = '0x' + value.padStart(value_len/4, '0') ;
                 break; 
