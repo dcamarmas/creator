@@ -276,6 +276,11 @@ h2 {
   overflow-x: auto;
 }
 
+div[error_dark=true] {
+  filter: invert(100%) hue-rotate(200deg) !important;
+  background-color: black !important;
+}
+
 @media (min-width: 576px) {
   #modalAssemblyError > .modal-dialog {
     max-width: 90vw;

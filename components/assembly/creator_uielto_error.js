@@ -27,7 +27,8 @@
         props:      {
                       id:                    { type: String, required: true },
                       ref:                   { type: String, required: true },
-                      modal_assembly_error:  { type: Object, required: true }
+                      modal_assembly_error:  { type: Object, required: true },
+                      dark_mode:             { type: String, required: true }
                     },
 
         template:   ' <b-modal :id="id"' +
@@ -38,7 +39,7 @@
                     ' ' +
                     '   <span class="h6 font-weight-light">Error message:</span>' +
                     ' ' +
-                    '   <div class="errorAssembly">' +
+                    '   <div :error_dark="dark_mode" class="errorAssembly" >' +
                     '     <span class="h6 text-monospace" label="Error message:" v-html="modal_assembly_error.error">' +
                     '     </span>' +
                     '   </div>' +
