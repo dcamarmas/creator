@@ -189,7 +189,8 @@
 <summary>:atom: 5.0.x:</summary>
 
   - [x] New functionality:
-     * New compiler
+     * New compiler based on Rust
+     * New architecture editor based on CodeMirror
      * Interrupts, devices, and control registers initial support
      * Initial support for arduino integration
   - [x] User Interface:
