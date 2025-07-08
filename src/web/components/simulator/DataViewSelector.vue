@@ -143,20 +143,8 @@ export default {
             :variant="dark ? 'dark' : 'outline-secondary'"
             @click="change_data_view('stats')"
           >
-            <font-awesome-icon icon="fa-solid fa-chart-bar" />
-            Stats
-          </b-button>
-
-          <b-button
-            id="stats_btn"
-            size="sm"
-            :pressed="get_pressed('clk_cycles')"
-            :class="{ border: dark }"
-            :variant="dark ? 'dark' : 'outline-secondary'"
-            @click="change_data_view('clk_cycles')"
-          >
-            <font-awesome-icon icon="fa-regular fa-clock" />
-            CLK Cyles
+            <font-awesome-icon icon="fa-solid fa-chart-line" />
+            Statistics
           </b-button>
         </b-button-group>
       </b-col>

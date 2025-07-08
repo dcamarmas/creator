@@ -93,10 +93,3 @@ export default {
   </b-container>
 </template>
 
-<style lang="scss" scoped>
-.groupLabelling {
-  float: top;
-  position: relative;
-  top: -0.6vw;
-}
-</style>

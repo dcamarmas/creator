@@ -215,6 +215,33 @@ export default {
           return values
       }
     },
+
+    /**
+     * Checks if any of the special control registers are pointing to this
+     * address, and returns its types and names.
+     *
+     * @param {Number} addr Adress to check
+     *
+     * @returns {Array<{type: string, name: string}>}
+     */
+    get_pointers(addr) {
+      return REGISTERS.flatMap(bank =>
+        bank.elements
+          .filter(
+            register =>
+              // check it's one of the control registers
+              register.properties.some(p =>
+                this.ctrl_register_tags.includes(p),
+              ) &&
+              // check value is correct
+              (register.value & 0xfffffffcn) === (BigInt(addr) & 0xfffffffcn),
+          )
+          .map(reg => ({
+            type: reg.properties.find(p => this.ctrl_register_tags.includes(p)),
+            name: reg.name[1] || reg.name[0],
+          })),
+      )
+    },
   },
 
   computed: {
@@ -314,7 +341,7 @@ export default {
               -->
               <div :key="render">
                 <div
-                  v-for="{ type, name } of get_pointers(row.item.addr)"
+                  v-for="{ type, name } of get_pointers(row.item.start)"
                   :key="type"
                 >
                   <b-badge
