@@ -715,7 +715,7 @@ export class Memory {
      * const memory = new Memory({ sizeInBytes: 1000000 });
      * memory.write(100n, 123);
      * memory.write(50000n, 456);
-     * memory.addHint(100n, "<int32>", 32);
+     * memory.addHint(100n, "int32", 32);
      *
      * const snapshot = memory.dump(); // Only contains 2 entries, not 1M, plus hints
      * memory.restore(snapshot);
@@ -774,7 +774,7 @@ export class Memory {
      * @example Restoring memory state
      * ```typescript
      * const memory = new Memory({ sizeInBytes: 100000, bitsPerByte: 8 });
-     * memory.addHint(0x100n, "<int32>", 32);
+     * memory.addHint(0x100n, "int32", 32);
      * const snapshot = memory.dump();
      * // ... modify memory ...
      * memory.restore(snapshot); // Back to original state with hints
@@ -820,7 +820,7 @@ export class Memory {
                 let tag = hint.tag;
                 let type = hint.type;
                 if (!tag && !type && typeof hint.hint === "string") {
-                    // Try to split "<type>:tag" or "<type>" or "tag"
+                    // Try to split "type:tag" or "type" or "tag"
                     const m = /^<([^>]+)>(?::(.*))?$/.exec(hint.hint);
                     if (m) {
                         type = m[1];
@@ -1367,21 +1367,28 @@ export class Memory {
      * Adds a hint for a memory address.
      *
      * @param address - Memory address to add hint for
-     * @param hint - Description of the data type or purpose (e.g., "<double>", "<int32>", "<string>")
+     * @param tag - Tag for the hint (e.g., "variableName", "functionName")
+     * @param type - Description of the data type or purpose (e.g., "double", "int32", "string")
      * @param sizeInBits - Optional size of the type in bits (e.g., 64 for double, 32 for int32)
      *
      * @example Adding hints
      * ```typescript
      * const memory = new Memory({ sizeInBytes: 1024 });
-     * memory.addHint(0x100n, "<double>", 64);
-     * memory.addHint(0x200n, "<int32>", 32);
-     * memory.addHint(0x300n, "<string>"); // No size specified
+     * memory.addHint(0x100n, "", "double", 64); // No tag, just type
+     * memory.addHint(0x200n, "myVar", "int32", 32);
+     * memory.addHint(0x300n, "myString", "string"); // No size specified
      * ```
      */
     addHint(address: bigint, tag: string, type: string, sizeInBits?: number): void {
+        // If no tag is provided and a hint exists, preserve the existing tag
+        let finalTag = tag;
+        const existing = this.hints.get(address);
+        if ((!tag || tag === "") && existing) {
+            finalTag = existing.tag;
+        }
         this.hints.set(address, {
             address,
-            tag,
+            tag: finalTag,
             type,
             sizeInBits,
         });
@@ -1396,7 +1403,7 @@ export class Memory {
      * @example Removing hints
      * ```typescript
      * const memory = new Memory({ sizeInBytes: 1024 });
-     * memory.addHint(0x100n, "<double>", 64);
+     * memory.addHint(0x100n, "double", 64);
      * const removed = memory.removeHint(0x100n); // true
      * const notFound = memory.removeHint(0x200n); // false
      * ```
@@ -1414,7 +1421,7 @@ export class Memory {
      * @example Getting hints
      * ```typescript
      * const memory = new Memory({ sizeInBytes: 1024 });
-     * memory.addHint(0x100n, "<double>", 64);
+     * memory.addHint(0x100n, "double", 64);
      *
      * const hint = memory.getHint(0x100n);
      * if (hint) {
@@ -1437,16 +1444,16 @@ export class Memory {
      * @example Getting all hints
      * ```typescript
      * const memory = new Memory({ sizeInBytes: 1024 });
-     * memory.addHint(0x200n, "<int32>", 32);
-     * memory.addHint(0x100n, "<double>", 64);
+     * memory.addHint(0x200n, "int32", 32);
+     * memory.addHint(0x100n, "double", 64);
      *
      * const hints = memory.getAllHints();
      * for (const hint of hints) {
      *     console.log(`0x${hint.address.toString(16)}: ${hint.hint}`);
      * }
      * // Output:
-     * // 0x100: <double>
-     * // 0x200: <int32>
+     * // 0x100: double
+     * // 0x200: int32
      * ```
      */
     getAllHints(): MemoryHint[] {
@@ -1465,8 +1472,8 @@ export class Memory {
      * @example Clearing hints
      * ```typescript
      * const memory = new Memory({ sizeInBytes: 1024 });
-     * memory.addHint(0x100n, "<double>", 64);
-     * memory.addHint(0x200n, "<int32>", 32);
+     * memory.addHint(0x100n, "double", 64);
+     * memory.addHint(0x200n, "int32", 32);
      *
      * console.log(memory.getAllHints().length); // 2
      * memory.clearHints();
@@ -1504,9 +1511,9 @@ export class Memory {
      * @example Getting hints in range
      * ```typescript
      * const memory = new Memory({ sizeInBytes: 1024 });
-     * memory.addHint(0x100n, "<double>", 64);
-     * memory.addHint(0x200n, "<int32>", 32);
-     * memory.addHint(0x300n, "<string>");
+     * memory.addHint(0x100n, "double", 64);
+     * memory.addHint(0x200n, "int32", 32);
+     * memory.addHint(0x300n, "string");
      *
      * const hintsInRange = memory.getHintsInRange(0x150n, 0x250n);
      * console.log(hintsInRange.length); // 1 (only the int32 at 0x200)
