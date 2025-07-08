@@ -35,9 +35,8 @@ import { creator_ga } from "@/core/utils/creator_ga.mjs"
 import {
   show_notification,
   loadArchitecture,
-  storeBackup
+  storeBackup,
 } from "@/web/utils.mjs"
-
 
 export default {
   props: {
@@ -63,11 +62,11 @@ export default {
       instruction_disable: false,
       run_disable: false,
       stop_disable: true,
-    };
+    }
   },
   computed: {
     arch_available() {
-      return this.architectures.filter(item => item.available === 1);
+      return this.architectures.filter(item => item.available === 1)
     },
 
     instruction_values: {
@@ -256,9 +255,23 @@ export default {
      *                 }
      */
     execution_UI_update(ret) {
+      // this is ugly, but it's the only way I found, because the computed
+      // properties in PlotStats.vue / TableStats.vue / TableExecution.vue don't
+      // react to changes done to `stats`
+
       if (ret === undefined) {
         return
       }
+
+      /* MEMORY */
+
+      this.$root.$refs.simulatorView.$refs.memory?.$refs?.memory_table?.refresh()
+
+      /* STATS */
+
+      this.$root.$refs.simulatorView.$refs.stats?.refresh()
+
+      /* EXECUTION TABLE */
 
       // update instructions' _rowVariant depending on the result of the
       // execution
