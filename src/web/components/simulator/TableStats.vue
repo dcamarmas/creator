@@ -19,28 +19,58 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <script>
+import { status } from "@/core/core.mjs"
+
 export default {
   props: {
-    stats: { type: Array, required: true },
+    stats: { type: Map, required: true },
+    type: { type: String, required: true },
+    dark: { type: Boolean, required: true },
   },
 
-  data() {
-    return {
-      /*Stats table fields*/
-      statsFields: {
-        type: {
-          label: 'Type',
+  computed: {
+    // FIXME: this doesn't automagically update...
+    statsValues() {
+      return Array.from(
+        // for some reason I have to use the Array.from, otherwise it gives me a
+        // `TypeError: this.stats.values(...).map is not a function`
+        this.stats.entries(),
+      ).map(([k, v]) => {
+        const value = this.type === "instructions" ? v.instructions : v.cycles
+
+        return {
+          type: k,
+          number: value,
+          percentage:
+            ((100 * value) / this.totalExecuted || 0).toFixed(2) + "%",
+        }
+      })
+    },
+
+    totalExecuted() {
+      return this.type === "instructions"
+        ? status.executedInstructions
+        : status.clkCycles
+    },
+
+    fields() {
+      return  [
+        {
+          key: "type",
+          label: "Type",
           sortable: true,
         },
-        number_instructions: {
-          label: 'Number of instructions',
+        {
+          key: "number",
+          label: `Number of ${this.type}`,
           sortable: true,
         },
-        percentage: {
-          label: 'Percentage',
+        {
+          key: "percentage",
+          label: "Percentage",
           sortable: true,
         },
-      },
+      ]
     }
   },
 }
@@ -51,8 +81,8 @@ export default {
     striped
     small
     hover
-    :items="stats"
-    :fields="statsFields"
+    :items="statsValues"
+    :fields="fields"
     class="stats text-center px-0"
   />
 </template>

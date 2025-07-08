@@ -28,6 +28,7 @@ import Memory from "./simulator/Memory.vue"
 import Monitor from "./simulator/Monitor.vue"
 import Keyboard from "./simulator/Keyboard.vue"
 import Calculator from "./simulator/Calculator.vue"
+import Stats from "./simulator/Stats.vue"
 
 import { architecture } from "@/core/core.mjs"
 import { instructions } from "@/core/compiler/compiler.mjs"
@@ -43,6 +44,8 @@ export default {
     reg_representation_int: { type: String, required: true },
     reg_representation_float: { type: String, required: true },
     reg_name_representation: { type: String, required: true },
+    stat_representation: { type: String, required: true },
+    stat_type: { type: String, required: true },
     enter: [Boolean, null],
     stack_total_list: Number,
     main_memory_busy: Boolean,
@@ -59,7 +62,8 @@ export default {
     Memory,
     Monitor,
     Keyboard,
-    Calculator
+    Calculator,
+    Stats,
   },
 
   data() {
@@ -166,16 +170,14 @@ export default {
               />
 
               <!-- Stats view--->
-              <!-- <Stats :stats="stats" :stats_value="stats_value" v-if="data_mode ==
-              'stats'" /> -->
+              <Stats
+                v-if="data_mode === 'stats'"
+                ref="stats"
+                :dark="dark"
+                :representation="stat_representation"
+                :type="stat_type"
+              />
 
-              <!-- CLK Cycles view--->
-              <!-- <ClkCycles
-                :clk_cycles="clk_cycles"
-                :clk_cycles_value="clk_cycles_value"
-                :total_clk_cycles="total_clk_cycles"
-                v-if="data_mode == 'clk_cycles'"
-              /> -->
             </b-col>
 
             <!-- Monitor & keyboard -->
@@ -218,6 +220,12 @@ export default {
   .consoleIcon {
     height: 5vh;
     opacity: 0.6;
+  }
+
+  .groupLabelling {
+    float: top;
+    position: relative;
+    top: -0.6vw;
   }
 }
 

@@ -17,7 +17,7 @@ arch_conf:
 extensions:
     I:
         description: "RV32I Base Instruction Set"
-        type: base
+        template: Base
     M:
         description: "RV32M Integer Multiply/Divide Extension"
         type: extension
@@ -735,6 +735,7 @@ memory_layout:
 
 templates:
     - name: B
+      type: Conditional bifurcation
       nwords: 1
       clk_cycles: 1
       fields:
@@ -867,6 +868,7 @@ templates:
             stopbit: 12
 
     - name: J
+      type: Unconditional bifurcation
       nwords: 1
       clk_cycles: 1
       fields:
@@ -896,6 +898,7 @@ templates:
             order: 2
 
     - name: R
+      type: Arithmetic integer
       nwords: 1
       clk_cycles: 1
       fields:
@@ -929,6 +932,7 @@ templates:
             stopbit: 12
 
     - name: R-Floating # Used in rv32f / rv64f
+      type: Arithmetic floating point
       nwords: 1
       clk_cycles: 1
       fields:
@@ -963,6 +967,7 @@ templates:
 
     - name: R-Double # Used in rv64d
       nwords: 1
+      type: Arithmetic floating point
       clk_cycles: 1
       fields:
           - name: opcode
@@ -996,6 +1001,7 @@ templates:
 
     - name: R-IntToFloat # fcvt.s.w,...
       nwords: 1
+      type: Transfer between registers
       clk_cycles: 1
       fields:
           - name: opcode
@@ -1027,6 +1033,7 @@ templates:
             stopbit: 12
 
     - name: R-FloatToInt # fcvt.w.s,...
+      type: Transfer between registers
       nwords: 1
       clk_cycles: 1
       fields:
@@ -1059,6 +1066,7 @@ templates:
             stopbit: 12
 
     - name: R-Conversion # Generic template
+      type: Transfer between registers
       nwords: 1
       clk_cycles: 1
       fields:
@@ -1091,6 +1099,7 @@ templates:
             stopbit: 12
 
     - name: R4
+      type: Arithmetic floating point
       nwords: 1
       clk_cycles: 1
       fields:
@@ -1129,6 +1138,7 @@ templates:
             stopbit: 25
 
     - name: R4-Double
+      type: Arithmetic floating point
       nwords: 1
       clk_cycles: 1
       fields:
@@ -1167,6 +1177,7 @@ templates:
             stopbit: 25
 
     - name: S
+      type: Memory access
       nwords: 1
       clk_cycles: 1
       fields:
@@ -1202,6 +1213,7 @@ templates:
             stopbit: 12
 
     - name: U
+      type: Arithmetic integer
       nwords: 1
       clk_cycles: 1
       fields:
@@ -1250,7 +1262,7 @@ instructions:
         #    │      │         │       │       │      │             │
         #    1      6         5       5       3      4       1     7    bits = 32 bits = word size
         - name: beq
-          type: B
+          template: B
           fields:
               - field: opcode
                 value: "1100011"
@@ -1260,7 +1272,7 @@ instructions:
           help: Take the branch if registers rs1 and rs2 are equal.
 
         - name: bge
-          type: B
+          template: B
           fields:
               - field: opcode
                 value: "1100011"
@@ -1270,7 +1282,7 @@ instructions:
           help: Take the branch if registers rs1 is greater than or equal to rs2, using signed comparison.
 
         - name: bgeu
-          type: B
+          template: B
           fields:
               - field: opcode
                 value: "1100011"
@@ -1280,7 +1292,7 @@ instructions:
           help: Take the branch if registers rs1 is greater than or equal to rs2, using unsigned comparison.
 
         - name: blt
-          type: B
+          template: B
           fields:
               - field: opcode
                 value: "1100011"
@@ -1290,7 +1302,7 @@ instructions:
           help: Take the branch if registers rs1 is less than rs2, using signed comparison.
 
         - name: bltu
-          type: B
+          template: B
           fields:
               - field: opcode
                 value: "1100011"
@@ -1300,7 +1312,7 @@ instructions:
           help: Take the branch if registers rs1 is less than rs2, using unsigned comparison.
 
         - name: bne
-          type: B
+          template: B
           fields:
               - field: opcode
                 value: "1100011"
@@ -1318,7 +1330,8 @@ instructions:
         #      │         │       │       │        │
         #      12        5       3       5        7    bits = 32 bits = word size
         - name: addi
-          type: I
+          template: I
+          type: Arithmetic integer
           fields:
               - field: opcode
                 value: "0010011"
@@ -1328,7 +1341,8 @@ instructions:
           help: Adds the sign-extended 12-bit immediate to register rs1. Arithmetic overflow is ignored and the result is simply the low XLEN bits of the result.
 
         - name: andi
-          type: I
+          template: I
+          type: Logic
           fields:
               - field: opcode
                 value: "0010011"
@@ -1338,7 +1352,8 @@ instructions:
           help: Performs bitwise AND on register rs1 and the sign-extended 12-bit immediate and place the result in rd.
 
         - name: jalr
-          type: I-Offset
+          template: I-Offset
+          type: Unconditional bifurcation
           fields:
               - field: opcode
                 value: "1100111"
@@ -1348,7 +1363,8 @@ instructions:
           help: Jump to address and place return address in rd.
 
         - name: lb
-          type: I-Offset
+          template: I-Offset
+          type: Memory access
           fields:
               - field: opcode
                 value: "0000011"
@@ -1358,7 +1374,8 @@ instructions:
           help: Loads a 8-bit value from memory and sign-extends this to XLEN bits before storing it in register rd.
 
         - name: lbu
-          type: I-Offset
+          template: I-Offset
+          type: Memory access
           fields:
               - field: opcode
                 value: "0000011"
@@ -1368,7 +1385,8 @@ instructions:
           help: Loads a 8-bit value from memory and zero-extends this to XLEN bits before storing it in register rd.
 
         - name: lh
-          type: I-Offset
+          template: I-Offset
+          type: Memory access
           fields:
               - field: opcode
                 value: "0000011"
@@ -1378,7 +1396,8 @@ instructions:
           help: Loads a 16-bit value from memory and sign-extends this to XLEN bits before storing it in register rd.
 
         - name: lhu
-          type: I-Offset
+          template: I-Offset
+          type: Memory access
           fields:
               - field: opcode
                 value: "0000011"
@@ -1388,7 +1407,8 @@ instructions:
           help: Loads a 16-bit value from memory and zero-extends this to XLEN bits before storing it in register rd.
 
         - name: lw
-          type: I-Offset
+          template: I-Offset
+          type: Memory access
           fields:
               - field: opcode
                 value: "0000011"
@@ -1398,7 +1418,8 @@ instructions:
           help: Loads a 32-bit value from memory and sign-extends this to XLEN bits before storing it in register rd.
 
         - name: ori
-          type: I
+          template: I
+          type: Logic
           fields:
               - field: opcode
                 value: "0010011"
@@ -1408,7 +1429,8 @@ instructions:
           help: Performs bitwise OR on register rs1 and the sign-extended 12-bit immediate and place the result in rd.
 
         - name: slli
-          type: I-Shift
+          template: I-Shift
+          type: Arithmetic integer
           fields:
               - field: opcode
                 value: "0010011"
@@ -1420,7 +1442,8 @@ instructions:
           help: Performs logical left shift on the value in register rs1 by the shift amount held in the lower 5 bits of the immediate.
 
         - name: slti
-          type: I
+          template: I
+          type: Logic
           fields:
               - field: opcode
                 value: "0010011"
@@ -1430,7 +1453,8 @@ instructions:
           help: Place the value 1 in register rd if register rs1 is less than the signextended immediate when both are treated as signed numbers, else 0 is written to rd.
 
         - name: sltiu
-          type: I
+          template: I
+          type: Logic
           fields:
               - field: opcode
                 value: "0010011"
@@ -1440,7 +1464,8 @@ instructions:
           help: Place the value 1 in register rd if register rs1 is less than the immediate when both are treated as unsigned numbers, else 0 is written to rd.
 
         - name: srai
-          type: I-Shift
+          template: I-Shift
+          type: Arithmetic integer
           fields:
               - field: opcode
                 value: "0010011"
@@ -1452,7 +1477,8 @@ instructions:
           help: Performs arithmetic right shift on the value in register rs1 by the shift amount held in the lower 5 bits of the immediate.
 
         - name: srli
-          type: I-Shift
+          template: I-Shift
+          type: Arithmetic integer
           fields:
               - field: opcode
                 value: "0010011"
@@ -1464,7 +1490,8 @@ instructions:
           help: Performs logical right shift on the value in register rs1 by the shift amount held in the lower 5 bits of the immediate.
 
         - name: xori
-          type: I
+          template: I
+          type: Logic
           fields:
               - field: opcode
                 value: "0010011"
@@ -1482,7 +1509,7 @@ instructions:
         #    │      │        │       │        │        │
         #    1      10       1       8        5        7    bits = 32 bits = word size
         - name: jal
-          type: J
+          template: J
           fields:
               - field: opcode
                 value: "1101111"
@@ -1498,7 +1525,7 @@ instructions:
         #      │         │       │       │       │        │
         #      7         5       5       3       5        7    bits = 32 bits = word size
         - name: add
-          type: R
+          template: R
           fields:
               - field: opcode
                 value: "0110011"
@@ -1510,7 +1537,7 @@ instructions:
           help: Adds the registers rs1 and rs2 and stores the result in rd. Arithmetic overflow is ignored and the result is simply the low XLEN bits of the result.
 
         - name: and
-          type: R
+          template: R
           fields:
               - field: opcode
                 value: "0110011"
@@ -1522,7 +1549,7 @@ instructions:
           help: Performs bitwise AND on registers rs1 and rs2 and place the result in rd.
 
         - name: or
-          type: R
+          template: R
           fields:
               - field: opcode
                 value: "0110011"
@@ -1534,7 +1561,7 @@ instructions:
           help: Performs bitwise OR on registers rs1 and rs2 and place the result in rd.
 
         - name: sll
-          type: R
+          template: R
           fields:
               - field: opcode
                 value: "0110011"
@@ -1546,7 +1573,7 @@ instructions:
           help: Performs logical left shift on the value in register rs1 by the shift amount held in the lower 5 bits of register rs2.
 
         - name: slt
-          type: R
+          template: R
           fields:
               - field: opcode
                 value: "0110011"
@@ -1558,7 +1585,7 @@ instructions:
           help: Place the value 1 in register rd if register rs1 is less than register rs2 when both are treated as signed numbers, else 0 is written to rd.
 
         - name: sltu
-          type: R
+          template: R
           fields:
               - field: opcode
                 value: "0110011"
@@ -1570,7 +1597,7 @@ instructions:
           help: Place the value 1 in register rd if register rs1 is less than register rs2 when both are treated as unsigned numbers, else 0 is written to rd.
 
         - name: sra
-          type: R
+          template: R
           fields:
               - field: opcode
                 value: "0110011"
@@ -1582,7 +1609,7 @@ instructions:
           help: Performs arithmetic right shift on the value in register rs1 by the shift amount held in the lower 5 bits of register rs2.
 
         - name: srl
-          type: R
+          template: R
           fields:
               - field: opcode
                 value: "0110011"
@@ -1594,7 +1621,7 @@ instructions:
           help: Logical right shift on the value in register rs1 by the shift amount held in the lower 5 bits of register rs2.
 
         - name: sub
-          type: R
+          template: R
           fields:
               - field: opcode
                 value: "0110011"
@@ -1606,7 +1633,7 @@ instructions:
           help: Subs the register rs2 from rs1 and stores the result in rd. Arithmetic overflow is ignored and the result is simply the low XLEN bits of the result.
 
         - name: xor
-          type: R
+          template: R
           fields:
               - field: opcode
                 value: "0110011"
@@ -1626,7 +1653,7 @@ instructions:
         #      │         │       │       │       │        │
         #      7         5       5       3       5        7    bits = 32 bits = word size
         - name: sb
-          type: S
+          template: S
           fields:
               - field: opcode
                 value: "0100011"
@@ -1636,7 +1663,7 @@ instructions:
           help: Store 8-bit, values from the low bits of register rs2 to memory.
 
         - name: sh
-          type: S
+          template: S
           fields:
               - field: opcode
                 value: "0100011"
@@ -1647,7 +1674,7 @@ instructions:
 
         # The check for the
         - name: sw
-          type: S
+          template: S
           fields:
               - field: opcode
                 value: "0100011"
@@ -1665,7 +1692,7 @@ instructions:
         #                  │                 │        │
         #                  20                5        7    bits = 32 bits = word size
         - name: auipc
-          type: U
+          template: U
           fields:
               - field: opcode
                 value: "0010111"
@@ -1675,7 +1702,7 @@ instructions:
           help: Build pc-relative addresses and uses the U-type format. AUIPC forms a 32-bit offset from the 20-bit U-immediate, filling in the lowest 12 bits with zeros, adds this offset to the pc, then places the result in register rd.
 
         - name: lui
-          type: U
+          template: U
           fields:
               - field: opcode
                 value: "0110111"
@@ -1686,7 +1713,8 @@ instructions:
 
           # Special instructions
         - name: ecall
-          type: Custom
+          template: Custom
+          type: Syscall
           fields:
               - field: opcode
                 value: "1110011"
@@ -1700,7 +1728,8 @@ instructions:
           help: Make a request to the supporting execution environment. When executed in U-mode, S-mode, or M-mode, it generates an environment-call-from-U-mode exception, environment-call-from-S-mode exception, or environment-call-from-M-mode exception, respectively, and performs no other operation.
 
         - name: ebreak
-          type: Custom
+          template: Custom
+          type: Syscall
           fields:
               - field: opcode
                 value: "1110011"
@@ -1727,7 +1756,7 @@ instructions:
 
         # R-type instructions
         - name: div
-          type: R
+          template: R
           fields:
               - field: opcode
                 value: "0110011"
@@ -1739,7 +1768,7 @@ instructions:
           help: Perform an XLEN bits by XLEN bits signed integer division of rs1 by rs2, rounding towards zero.
 
         - name: divu
-          type: R
+          template: R
           fields:
               - field: opcode
                 value: "0110011"
@@ -1751,7 +1780,7 @@ instructions:
           help: Perform an XLEN-bit by XLEN-bit unsigned integer division of rs1 by rs2, rounding towards zero.
 
         - name: mul
-          type: R
+          template: R
           fields:
               - field: opcode
                 value: "0110011"
@@ -1763,7 +1792,7 @@ instructions:
           help: Performs an XLEN-bit by XLEN-bit multiplication of signed rs1 by signed rs2 and places the lower XLEN bits in the destination register.
 
         - name: mulh
-          type: R
+          template: R
           fields:
               - field: opcode
                 value: "0110011"
@@ -1775,7 +1804,7 @@ instructions:
           help: Performs an XLEN-bit by XLEN-bit multiplication of signed rs1 by signed rs2 and places the lower XLEN bits in the destination register.
 
         - name: mulhsu
-          type: R
+          template: R
           fields:
               - field: opcode
                 value: "0110011"
@@ -1787,7 +1816,7 @@ instructions:
           help: Performs an XLEN-bit by XLEN-bit multiplication of signed rs1 by unsigned rs2 and places the upper XLEN bits in the destination register.
 
         - name: mulhu
-          type: R
+          template: R
           fields:
               - field: opcode
                 value: "0110011"
@@ -1799,7 +1828,7 @@ instructions:
           help: Performs an XLEN-bit by XLEN-bit multiplication of unsigned rs1 by unsigned rs2 and places the upper XLEN bits in the destination register.
 
         - name: rem
-          type: R
+          template: R
           fields:
               - field: opcode
                 value: "0110011"
@@ -1811,7 +1840,7 @@ instructions:
           help: Perform an XLEN-bit by XLEN-bit signed integer reminder of rs1 by rs2.
 
         - name: remu
-          type: R
+          template: R
           fields:
               - field: opcode
                 value: "0110011"
@@ -1831,7 +1860,8 @@ instructions:
         #       RV32F Standard Extension
         # I-type instructions
         - name: flw
-          type: I-Offset
+          template: I-Offset
+          type: Memory access
           fields:
               - field: opcode
                 value: "0000111"
@@ -1845,7 +1875,7 @@ instructions:
 
           # R-type instructions
         - name: fadd.s
-          type: R-Floating
+          template: R-Floating
           fields:
               - field: opcode
                 value: "1010011"
@@ -1862,7 +1892,7 @@ instructions:
           help: Perform single-precision floating-point addition.
 
         - name: fclass.s
-          type: R-Floating
+          template: R-Floating
           fields:
               - field: opcode
                 value: "1010011"
@@ -1885,7 +1915,7 @@ instructions:
           # There's quite a bit of overriding here, but RISC-V
           # has a lot of different conversion instructions, so
           # we need to be flexible
-          type: R-IntToFloat
+          template: R-IntToFloat
           fields:
               - field: opcode
                 value: "1010011"
@@ -1903,7 +1933,7 @@ instructions:
           help: Converts a 32-bit signed integer, in integer register rs1 into a floating-point number in floating-point register rd.
 
         - name: fcvt.s.wu
-          type: R-IntToFloat
+          template: R-IntToFloat
           fields:
               - field: opcode
                 value: "1010011"
@@ -1920,7 +1950,7 @@ instructions:
           help: Converts a 32-bit unsigned integer, in integer register rs1 into a floating-point number in floating-point register rd.
 
         - name: fcvt.w.s
-          type: R-FloatToInt
+          template: R-FloatToInt
           fields:
               - field: opcode
                 value: "1010011"
@@ -1939,7 +1969,7 @@ instructions:
           help: Convert a floating-point number in floating-point register rs1 to a signed 32-bit in integer register rd.
 
         - name: fcvt.wu.s
-          type: R-FloatToInt
+          template: R-FloatToInt
           fields:
               - field: opcode
                 value: "1010011"
@@ -1958,7 +1988,7 @@ instructions:
           help: Convert a floating-point number in floating-point register rs1 to a signed 32-bit in unsigned integer register rd.
 
         - name: fdiv.s
-          type: R-Floating
+          template: R-Floating
           fields:
               - field: opcode
                 value: "1010011"
@@ -1975,7 +2005,7 @@ instructions:
           help: Perform single-precision floating-point division.
 
         - name: feq.s
-          type: R-Floating
+          template: R-Floating
           fields:
               - field: opcode
                 value: "1010011"
@@ -1991,7 +2021,7 @@ instructions:
           help: Performs a quiet equal comparison between floating-point registers rs1 and rs2 and record the Boolean result in integer register rd. Only signaling NaN inputs cause an Invalid Operation exception. The result is 0 if either operand is NaN.
 
         - name: fle.s
-          type: R-Floating
+          template: R-Floating
           fields:
               - field: opcode
                 value: "1010011"
@@ -2007,7 +2037,7 @@ instructions:
           help: Performs a quiet less or equal comparison between floating-point registers rs1 and rs2 and record the Boolean result in integer register rd. Only signaling NaN inputs cause an Invalid Operation exception. The result is 0 if either operand is NaN.
 
         - name: flt.s
-          type: R-Floating
+          template: R-Floating
           fields:
               - field: opcode
                 value: "1010011"
@@ -2023,7 +2053,7 @@ instructions:
           help: Performs a quiet less comparison between floating-point registers rs1 and rs2 and record the Boolean result in integer register rd. Only signaling NaN inputs cause an Invalid Operation exception. The result is 0 if either operand is NaN.
 
         - name: fmax.s
-          type: R-Floating
+          template: R-Floating
           fields:
               - field: opcode
                 value: "1010011"
@@ -2037,7 +2067,7 @@ instructions:
           help: Write the larger of single precision data in rs1 and rs2 to rd.
 
         - name: fmin.s
-          type: R-Floating
+          template: R-Floating
           fields:
               - field: opcode
                 value: "1010011"
@@ -2051,7 +2081,7 @@ instructions:
           help: Write the smaller of single precision data in rs1 and rs2 to rd.
 
         - name: fmul.s
-          type: R-Floating
+          template: R-Floating
           fields:
               - field: opcode
                 value: "1010011"
@@ -2068,7 +2098,7 @@ instructions:
           help: Perform single-precision floating-point multiplication.
 
         - name: fmv.w.x
-          type: R-IntToFloat
+          template: R-IntToFloat
           fields:
               - field: opcode
                 value: "1010011"
@@ -2084,7 +2114,7 @@ instructions:
           help: Move the single-precision value encoded in IEEE 754-2008 standard encoding from the lower 32 bits of integer register rs1 to the floating-point register rd.
 
         - name: fmv.x.w
-          type: R-FloatToInt
+          template: R-FloatToInt
           fields:
               - field: opcode
                 value: "1010011"
@@ -2100,7 +2130,7 @@ instructions:
           help: Move the single-precision value in floating-point register rs1 represented in IEEE 754-2008 encoding to the lower 32 bits of integer register rd.
 
         - name: fsgnj.s
-          type: R-Floating
+          template: R-Floating
           fields:
               - field: opcode
                 value: "1010011"
@@ -2114,7 +2144,7 @@ instructions:
           help: Produce a result that takes all bits except the sign bit from rs1. The result's sign bit is rs2's sign bit.
 
         - name: fsgnjn.s
-          type: R-Floating
+          template: R-Floating
           fields:
               - field: opcode
                 value: "1010011"
@@ -2128,7 +2158,7 @@ instructions:
           help: Produce a result that takes all bits except the sign bit from rs1. The result's sign bit is rs2's sign bit.
 
         - name: fsgnjx.s
-          type: R-Floating
+          template: R-Floating
           fields:
               - field: opcode
                 value: "1010011"
@@ -2142,7 +2172,7 @@ instructions:
           help: Produce a result that takes all bits except the sign bit from rs1. The result's sign bit is XOR of sign bit of rs1 and rs2.
 
         - name: fsqrt.s
-          type: R-Floating
+          template: R-Floating
           fields:
               - field: opcode
                 value: "1010011"
@@ -2163,7 +2193,7 @@ instructions:
           help: Perform single-precision square root.
 
         - name: fsub.s
-          type: R-Floating
+          template: R-Floating
           fields:
               - field: opcode
                 value: "1010011"
@@ -2181,7 +2211,7 @@ instructions:
 
         # R4-type instructions
         - name: fmadd.s
-          type: R4
+          template: R4
           fields:
               - field: opcode
                 value: "1000011"
@@ -2198,7 +2228,7 @@ instructions:
           help: Perform single-precision fused multiply addition.
 
         - name: fmsub.s
-          type: R4
+          template: R4
           fields:
               - field: opcode
                 value: "1000111"
@@ -2215,7 +2245,7 @@ instructions:
           help: Perform single-precision fused multiply addition.
 
         - name: fnmadd.s
-          type: R4
+          template: R4
           fields:
               - field: opcode
                 value: "1001111"
@@ -2232,7 +2262,7 @@ instructions:
           help: Perform negated single-precision fused multiply addition.
 
         - name: fnmsub.s
-          type: R4
+          template: R4
           fields:
               - field: opcode
                 value: "1001011"
@@ -2250,7 +2280,7 @@ instructions:
 
         # S-type instructions
         - name: fsw
-          type: S
+          template: S
           fields:
               - field: opcode
                 value: "0100111"
@@ -2270,7 +2300,8 @@ instructions:
         #       RV32D Standard Extension
         # I-type instructions
         - name: fld
-          type: I-Offset
+          template: I-Offset
+          type: Memory access
           fields:
               - field: opcode
                 value: "0000111"
@@ -2283,7 +2314,7 @@ instructions:
 
           # R-type instructions
         - name: fadd.d
-          type: R-Double
+          template: R-Double
           fields:
               - field: opcode
                 value: "1010011"
@@ -2300,7 +2331,7 @@ instructions:
           help: Perform double-precision floating-point addition.
 
         - name: fclass.d
-          type: R-Double
+          template: R-Double
           fields:
               - field: opcode
                 value: "1010011"
@@ -2320,7 +2351,7 @@ instructions:
           help: Examines the value in double-precision floating-point register rs1 and writes to integer register rd a 10-bit mask that indicates the class of the floating-point number. The corresponding bit in rd will be set if the property is true and clear otherwise. All other bits in rd are cleared. Note that exactly one bit in rd will be set.
 
         - name: fcvt.d.s
-          type: R-Conversion
+          template: R-Conversion
           fields:
               - field: opcode
                 value: "1010011"
@@ -2345,7 +2376,7 @@ instructions:
           help: Converts double floating-point register in rs1 into a double floating-point number in floating-point register rd.
 
         - name: fcvt.d.w
-          type: R-Conversion
+          template: R-Conversion
           fields:
               - field: opcode
                 value: "1010011"
@@ -2369,7 +2400,7 @@ instructions:
           help: Converts a 32-bit signed integer, in integer register rs1 into a double-precision floating-point number in floating-point register rd.
 
         - name: fcvt.d.wu
-          type: R-Conversion
+          template: R-Conversion
           fields:
               - field: opcode
                 value: "1010011"
@@ -2394,7 +2425,7 @@ instructions:
           help: Converts a 32-bit unsigned integer, in integer register rs1 into a double-precision floating-point number in floating-point register rd.
 
         - name: fcvt.s.d
-          type: R-Conversion
+          template: R-Conversion
           fields:
               - field: opcode
                 value: "1010011"
@@ -2417,7 +2448,7 @@ instructions:
           help: Converts double floating-point register in rs1 into a floating-point number in floating-point register rd.
 
         - name: fcvt.w.d
-          type: R-Conversion
+          template: R-Conversion
           fields:
               - field: opcode
                 value: "1010011"
@@ -2440,7 +2471,7 @@ instructions:
           help: Converts a double-precision floating-point number in floating-point register rs1 to a signed 32-bit integer, in integer register rd.
 
         - name: fcvt.wu.d
-          type: R-Conversion
+          template: R-Conversion
           fields:
               - field: opcode
                 value: "1010011"
@@ -2463,7 +2494,7 @@ instructions:
           help: Converts a double-precision floating-point number in floating-point register rs1 to a unsigned 32-bit integer, in integer register rd.
 
         - name: fdiv.d
-          type: R-Double
+          template: R-Double
           fields:
               - field: opcode
                 value: "1010011"
@@ -2480,7 +2511,7 @@ instructions:
           help: Perform double-precision floating-point division.
 
         - name: feq.d
-          type: R-Double
+          template: R-Double
           fields:
               - field: opcode
                 value: "1010011"
@@ -2496,7 +2527,7 @@ instructions:
           help: Performs a quiet equal comparison between double-precision floating-point registers rs1 and rs2 and record the Boolean result in integer register rd. Only signaling NaN inputs cause an Invalid Operation exception. The result is 0 if either operand is NaN.
 
         - name: fle.d
-          type: R-Double
+          template: R-Double
           fields:
               - field: opcode
                 value: "1010011"
@@ -2512,7 +2543,7 @@ instructions:
           help: Performs a quiet less or equal comparison between double-precision floating-point registers rs1 and rs2 and record the Boolean result in integer register rd. Only signaling NaN inputs cause an Invalid Operation exception. The result is 0 if either operand is NaN.
 
         - name: flt.d
-          type: R-Double
+          template: R-Double
           fields:
               - field: opcode
                 value: "1010011"
@@ -2528,7 +2559,7 @@ instructions:
           help: Performs a quiet less comparison between double-precision floating-point registers rs1 and rs2 and record the Boolean result in integer register rd. Only signaling NaN inputs cause an Invalid Operation exception. The result is 0 if either operand is NaN.
 
         - name: fmax.d
-          type: R-Double
+          template: R-Double
           fields:
               - field: opcode
                 value: "1010011"
@@ -2542,7 +2573,7 @@ instructions:
           help: Write the larger of double precision data in rs1 and rs2 to rd.
 
         - name: fmin.d
-          type: R-Double
+          template: R-Double
           fields:
               - field: opcode
                 value: "1010011"
@@ -2556,7 +2587,7 @@ instructions:
           help: Write the smaller of double precision data in rs1 and rs2 to rd.
 
         - name: fmul.d
-          type: R-Double
+          template: R-Double
           fields:
               - field: opcode
                 value: "1010011"
@@ -2573,7 +2604,7 @@ instructions:
           help: Perform double-precision floating-point addition.
 
         - name: fsgnj.d
-          type: R-Double
+          template: R-Double
           fields:
               - field: opcode
                 value: "1010011"
@@ -2587,7 +2618,7 @@ instructions:
           help: Perform double-precision floating-point multiplication.
 
         - name: fsgnjn.d
-          type: R-Double
+          template: R-Double
           fields:
               - field: opcode
                 value: "1010011"
@@ -2601,7 +2632,7 @@ instructions:
           help: Produce a result that takes all bits except the sign bit from rs1. The result's sign bit is opposite of rs2's sign bit.
 
         - name: fsgnjx.d
-          type: R-Double
+          template: R-Double
           fields:
               - field: opcode
                 value: "1010011"
@@ -2615,7 +2646,7 @@ instructions:
           help: Produce a result that takes all bits except the sign bit from rs1. The result's sign bit is XOR of sign bit of rs1 and rs2.
 
         - name: fsqrt.d
-          type: R-Double
+          template: R-Double
           fields:
               - field: opcode
                 value: "1010011"
@@ -2636,7 +2667,7 @@ instructions:
           help: Perform double-precision square root.
 
         - name: fsub.d
-          type: R-Double
+          template: R-Double
           fields:
               - field: opcode
                 value: "1010011"
@@ -2654,7 +2685,7 @@ instructions:
 
         # R4-type instructions
         - name: fmadd.d
-          type: R4-Double
+          template: R4-Double
           fields:
               - field: opcode
                 value: "1000011"
@@ -2671,7 +2702,7 @@ instructions:
           help: Perform double-precision fused multiply addition.
 
         - name: fmsub.d
-          type: R4-Double
+          template: R4-Double
           fields:
               - field: opcode
                 value: "1000111"
@@ -2688,7 +2719,7 @@ instructions:
           help: Perform double-precision fused multiply subtraction.
 
         - name: fnmadd.d
-          type: R4-Double
+          template: R4-Double
           fields:
               - field: opcode
                 value: "1001111"
@@ -2705,7 +2736,7 @@ instructions:
           help: Perform negated double-precision fused multiply addition.
 
         - name: fnmsub.d
-          type: R4-Double
+          template: R4-Double
           fields:
               - field: opcode
                 value: "1001011"
@@ -2723,7 +2754,7 @@ instructions:
 
         # S-type instructions
         - name: fsd
-          type: S
+          template: S
           fields:
               - field: opcode
                 value: "0100111"
@@ -2752,7 +2783,8 @@ instructions:
         #     RV32/RV64 Zifencei Standard Exension
 
         - name: fence.i
-          type: Custom
+          template: Custom
+          type: Syscall
           fields:
               - field: opcode
                 value: "0001111"

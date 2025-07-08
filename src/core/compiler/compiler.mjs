@@ -24,8 +24,6 @@ import {
     newArchitecture,
     architecture_hash,
     status,
-    stats,
-    stats_value,
     code_assembly,
     update_binary,
     backup_stack_address,
@@ -43,6 +41,7 @@ import { bi_intToBigInt } from "../utils/bigint.mjs";
 import { creator_ga } from "../utils/creator_ga.mjs";
 import { logger } from "../utils/creator_logger.mjs";
 import { bin2hex, isDeno, isWeb, uint_to_float64 } from "../utils/utils.mjs";
+import { resetStats } from "../executor/stats.mjs";
 
 const compiler_map = {
     default: assembly_compiler_default,
@@ -341,13 +340,12 @@ function assembly_compiler_default(code, library, color) {
     architecture.memory_layout[4].value = backup_stack_address;
     architecture.memory_layout[3].value = backup_data_address;
 
-    /*Reset stats*/
-    status.totalStats = 0;
-    for (let i = 0; i < stats.length; i++) {
-        stats[i].percentage = 0;
-        stats[i].number_instructions = 0;
-        stats_value[i] = 0;
-    }
+    /* Reset stats */
+
+    resetStats()
+
+    status.executedInstructions = 0;
+    status.clkCycles = 0;
 
     // Compile code
     let label_table;

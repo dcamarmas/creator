@@ -28,6 +28,7 @@ import {
   instructions_packed,
   reset,
 } from "@/core/core.mjs"
+import { resetStats } from "@/core/executor/stats.mts"
 import { instructions, set_instructions } from "@/core/compiler/compiler.mjs"
 import { step, packExecute } from "@/core/executor/executor.mjs"
 import { creator_ga } from "@/core/utils/creator_ga.mjs"
@@ -180,20 +181,12 @@ export default {
       // we use the setTimeout so the UI can update while compiling
       setTimeout(() => {
         // Compile
-        // if (typeof code !== "undefined") {
-        //   code_assembly = code
-        // } else {
-        //   code_assembly = textarea_assembly_editor.getValue()
-        // }
         const ret = assembly_compile(this.$root.assembly_code)
 
-        //TODO: Update/reset stats
-        // app._data.totalStats = 0
-        // app._data.instructions = instructions
-        // tokenIndex = 0 //TODO: change to token_index in all files
-        // uielto_toolbar_btngroup.methods.reset(true)
+        // Update/reset stats
+        resetStats()
 
-        //Change buttons status
+        // Change buttons status
         this.compiling = false;
 
 
