@@ -39,6 +39,7 @@ import { logger } from "./utils/creator_logger.mjs";
 import {
     assembly_compiler,
     instructions,
+    precomputeInstructions,
     setInstructions,
 } from "./compiler/compiler.mjs";
 import { executeProgramOneShot } from "./executor/executor.mjs";
@@ -1195,11 +1196,12 @@ export function load_library(lib_str) {
 
 // compilation
 
-export function assembly_compile(code, enable_color) {
+export function assembly_compile(code, enable_color, compiler = "default") {
     const ret = assembly_compiler(
         code,
         false,
         enable_color ? Color.Ansi : Color.Off,
+        compiler,
     );
     switch (ret.status) {
         case "error":
@@ -1587,4 +1589,26 @@ export function getRegisterInfo(regName) {
     }
 
     return null;
+}
+export function loadBinaryFile(filePath, offset = 0n) {
+    try {
+        // Load the binary file into memory
+        main_memory.loadBinaryFile(filePath, offset);
+
+        // Create a new backup of memory that includes the loaded binary data
+        // This ensures that reset() will restore to the state with the binary loaded
+        main_memory_backup = main_memory.dump();
+
+        precomputeInstructions();
+
+        return {
+            status: "ok",
+            msg: "Binary file loaded successfully",
+        };
+    } catch (error) {
+        return {
+            status: "error",
+            msg: `Error loading binary file: ${error.message}`,
+        };
+    }
 }

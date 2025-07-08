@@ -340,20 +340,20 @@ function loadLibrary(filePath: string) {
     console.log("Library loaded successfully.");
 }
 
-function assemble(filePath: string) {
+function assemble(filePath: string, compiler?: string) {
     if (!filePath) {
         console.log("No assembly file specified.");
         return;
     }
     const assemblyFile = fs.readFileSync(filePath, "utf8");
-    const ret: ReturnType = creator.assembly_compile(assemblyFile, true);
-    if (ret.status !== "ok") {
+    const ret: ReturnType = creator.assembly_compile(assemblyFile, true, compiler);
+    if (ret && ret.status !== "ok") {
         console.error(ret.msg);
         process.exit(1);
     }
 }
 
-function handleInstructionsCommand() {
+function handleInstructionsCommand(limit?: number) {
     if (instructions.length === 0) {
         console.log("No instructions loaded.");
         return;
@@ -365,7 +365,8 @@ function handleInstructionsCommand() {
 
     displayInstructionsHeader();
 
-    for (let i = 0; i < instructions.length; i++) {
+    const count = typeof limit === "number" && limit > 0 ? Math.min(limit, instructions.length) : instructions.length;
+    for (let i = 0; i < count; i++) {
         displayInstruction(instructions[i], currentPC);
     }
 }
@@ -392,41 +393,6 @@ function displayInstruction(instr, currentPC, hideLibrary = false) {
     const loadedIsBinary = /^[01]+$/.test(loaded);
     let rightColumn = instr.user || "";
     const breakpointMark = instr.Break ? "●" : " ";
-
-    // When binary is loaded, display machine code in hex in the rightmost column
-    if (BINARY_LOADED) {
-        try {
-            // Get the raw instruction from memory at this address
-            const rawInstruction = creator.dumpAddress(
-                parseInt(instr.Address, 16),
-                4,
-            );
-
-            // Set the rightmost column to show the machine code in hex
-            rightColumn = `0x${rawInstruction.toUpperCase()}`;
-
-            // Decompile binary instructions for the middle column
-            const instructionInt = parseInt(rawInstruction, 16);
-            const instructionBinary = instructionInt
-                .toString(2)
-                .padStart(32, "0");
-            const decodedInstruction = decode_instruction(instructionBinary);
-
-            // Replace the loaded instruction with decompiled version
-            if (decodedInstruction && decodedInstruction.instructionExecParts) {
-                const decompiled =
-                    decodedInstruction.instructionExecParts.join(" ");
-                loaded = decompiled.padEnd(23);
-            }
-        } catch (error) {
-            loaded = "???".padEnd(23);
-            const rawInstruction = creator.dumpAddress(
-                parseInt(instr.Address, 16),
-                4,
-            );
-            rightColumn = `0x${rawInstruction.toUpperCase()}`;
-        }
-    }
 
     // If the loaded instruction is binary, convert it to hex. This is only
     // needed when loading a library.
@@ -1070,7 +1036,7 @@ function getHintColors(): string[] {
 function applyHintHighlighting(
     memValue: string,
     hintsInRange: Array<{
-        hint: { hint: string; sizeInBits?: number };
+        hint: { tag: string; type: string; sizeInBits?: number };
         offset: number;
     }>,
 ): string {
@@ -1109,7 +1075,9 @@ function displayMemory(address: number, count: number) {
 
         // Check for hints at this address and collect all hints in this 4-byte range
         const hintsInRange: Array<{
-            hint: { hint: string; sizeInBits?: number };
+            hint: { tag: string; type: string; sizeInBits?: number };
+            offset: number;
+            hint: { tag: string; type: string; sizeInBits?: number };
             offset: number;
         }> = [];
         for (let j = 0; j < 4; j++) {
@@ -1136,7 +1104,9 @@ function displayMemory(address: number, count: number) {
             const colors = getHintColors();
             for (let k = 0; k < hintsInRange.length; k++) {
                 const { hint, offset } = hintsInRange[k];
-                const shortHint = hint.hint.replace("<", "").replace(">", "");
+                const tag = hint.tag || "";
+                const type = hint.type || "";
+                const shortHint = type && tag ? `${tag}:${type}` : (type || tag);
                 const sizeInfo = hint.sizeInBits
                     ? ` (${hint.sizeInBits}b)`
                     : "";
@@ -1518,6 +1488,12 @@ function parseArguments(): ArgvOptions {
             nargs: 1,
             default: "",
         })
+        .option("compiler", {
+            alias: "C",
+            type: "string",
+            describe: "Compiler backend to use (default, sjasmplus, etc)",
+            default: "default",
+        })
         .option("debug", {
             alias: "v",
             type: "boolean",
@@ -1599,9 +1575,20 @@ function processCommand(cmd: string, args: string[]): boolean {
         case "hexview":
             handleHexViewCommand(args);
             break;
-        case "list":
-            handleInstructionsCommand();
+        case "list": {
+            // Support: list [limit] or list --limit N
+            let limit: number | undefined;
+            if (args.length > 1) {
+                const arg = args[1];
+                if (arg === "--limit" && args.length > 2) {
+                    limit = parseInt(args[2], 10);
+                } else if (!isNaN(Number(arg))) {
+                    limit = parseInt(arg, 10);
+                }
+            }
+            handleInstructionsCommand(limit);
             break;
+        }
         case "reset":
             handleResetCommand();
             break;
@@ -1778,7 +1765,8 @@ function main() {
 
     TUTORIAL_MODE = argv.tutorial;
     // If we load a binary, we have to skip the compiler
-    const skipCompiler = argv.bin !== "";
+    // Or if we use a compiler which isn't the default one
+    const skipCompiler = argv.bin !== "" || argv.compiler !== "default";
 
     // Load architecture
     loadArchitecture(argv.architecture, argv.isa, skipCompiler);
@@ -1801,7 +1789,7 @@ function main() {
             loadLibrary(argv.library);
         }
         if (argv.assembly) {
-            assemble(argv.assembly);
+            assemble(argv.assembly, argv.compiler);
         }
     }
 
