@@ -46,7 +46,7 @@ import { bin2hex, isDeno, isWeb, uint_to_float64 } from "../utils/utils.mjs";
 
 const compiler_map = {
     default: assembly_compiler_default,
-    sjasmplus: assembly_compiler_sjasmplus,
+    sjasmplus: console.log("womp womp"),
 };
 
 // Conditional import for the WASM compiler based on the environment (web or Deno)
@@ -784,104 +784,6 @@ function assembly_compiler_default(code, library, color) {
         type: "",
         update: "",
         status: "ok",
-    };
-}
-
-/**
- * Compile assembly code using different backends.
- * @param {string} code - Assembly code to compile.
- * @param {string} compiler - Compiler backend ("default", "sjasmplus", etc).
- */
-import fs from "node:fs";
-import os from "node:os";
-import path from "node:path";
-import { spawnSync } from "node:child_process";
-
-function assembly_compiler_sjasmplus(code) {
-    // Create a temporary directory
-    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "sjasmplus-"));
-    const tmp = path.join(tmpDir, "temp.asm");
-    fs.writeFileSync(tmp, code, "utf8");
-
-    // Output file
-    const outFile = tmp.replace(/\.asm$/, ".bin");
-    const symFile = tmp.replace(/\.asm$/, ".sym");
-
-    // Run sjasmplus (needs to be installed in the system)
-    const result = spawnSync(
-        "sjasmplus",
-        ["--raw=" + outFile, "--sym=" + symFile, tmp],
-        {
-            encoding: "utf8",
-            maxBuffer: 10 * 1024 * 1024,
-        },
-    );
-
-    if (result.status !== 0) {
-        // Clean up temp files
-        try {
-            fs.unlinkSync(tmp);
-        } catch {}
-        try {
-            fs.unlinkSync(outFile);
-        } catch {}
-        try {
-            fs.unlinkSync(symFile);
-        } catch {}
-        try {
-            fs.rmdirSync(tmpDir);
-        } catch {}
-        return {
-            errorcode: "sjasmplus",
-            type: "error",
-            bgcolor: "danger",
-            status: "error",
-            msg: result.stderr || "sjasmplus failed",
-        };
-    }
-
-    // Read the output binary
-    const binary = fs.readFileSync(outFile);
-
-    // Read debug symbols if available
-    let debugSymbols = null;
-    try {
-        debugSymbols = fs.readFileSync(symFile, "utf8");
-    } catch {}
-
-    // Parse debug symbols if available
-    const parsedSymbols = parseDebugSymbols(debugSymbols);
-
-    main_memory.loadROM(binary);
-    precomputeInstructions(parsedSymbols);
-
-    // Now add hints to memory based on the parsed symbols (its a dictionary)
-    for (const [name, addr] of Object.entries(parsedSymbols)) {
-        main_memory.addHint(addr, name);
-    }
-
-    // Clean up temp files
-    try {
-        fs.unlinkSync(tmp);
-    } catch {}
-    try {
-        fs.unlinkSync(outFile);
-    } catch {}
-    try {
-        fs.unlinkSync(symFile);
-    } catch {}
-    try {
-        fs.rmdirSync(tmpDir);
-    } catch {}
-
-    return {
-        errorcode: "",
-        token: "",
-        type: "",
-        update: "",
-        status: "ok",
-        binary,
-        stdout: result.stdout,
     };
 }
 
