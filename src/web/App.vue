@@ -84,9 +84,9 @@ export default {
 
   setup() {
     // BV Composeables, such as these, should only be used inside setup
-    const showToast = useToastController().show
+    const createToast = useToastController().create
 
-    return { showToast } // shows a toast notification
+    return { createToast } // shows a toast notification
   },
 
   data() {

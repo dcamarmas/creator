@@ -56,12 +56,12 @@ export let notifications = []
  */
 export function show_notification(msg, type, root = document.app) {
     // show notification
-    root.showToast({
+    root.createToast({
         props: {
             title: " ",  // TODO: use fontawesome icons here
             body: msg,
             variant: type,
-            pos: "top-center",
+            position: "top-center",
             value: root.notification_time,
             // TODO: don't dismiss toast when type is danger
         }
