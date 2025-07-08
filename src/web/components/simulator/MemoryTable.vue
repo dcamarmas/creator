@@ -56,14 +56,26 @@ export default {
         "global_pointer",
       ],
 
-      render: 0n, // dummy variable to force components with this as key to refresh
+      render: 0n, // dummy variable to force refresh the memory table
+      render_tag: 0n, // dummy variable to force refresh the memory tags
     }
   },
 
   methods: {
+    /**
+     * Refreshes the memory table
+     */
     refresh() {
       // refreshes children components with `:key="render"`
       this.render++
+    },
+
+    /**
+     * Refreshes the memory tags
+     */
+    refresh_tags() {
+      // refreshes children components with `:key="render_tag"`
+      this.render_tag++
     },
 
     /**
@@ -144,7 +156,7 @@ export default {
         "h6Sm text-blue-funny":
           row.item.start < this.$root.begin_caller &&
           row.item.start >= this.$root.end_caller,
-        "h6Sm                ": row.item.start >= this.$root.begin_caller,
+        h6Sm: row.item.start >= this.$root.begin_caller,
       }
     },
 
@@ -242,27 +254,18 @@ export default {
           })),
       )
     },
-  },
 
-  computed: {
-    hints() {
-      return this.main_memory
-        .getAllHints()
-        .map(({ address, tag, type, sizeInBits }) => ({
-          address: Number(address),
-          tag,
-          type,
-          size: sizeInBits / this.main_memory.getBitsPerByte(),
-        }))
-    },
-
+    // I'd _like_ for these to be a computed method but, as none of the
+    // dependencies are reactive, as we're calling
+    // `this.main_memory.getWritten()`, computed caching comes into play and not
+    // even force updating works.
     main_memory_items() {
       const mem = this.main_memory.getWritten()
 
       // set human values, depending on hints
       let i = 0
       while (i < mem.length) {
-        const hint = this.hints.find(h => h.address === mem.at(i).addr)
+        const hint = this.hints().find(h => h.address === mem.at(i).addr)
         if (hint === undefined) {
           i++
           continue
@@ -286,18 +289,30 @@ export default {
           bytes: bytes.map(b => ({
             addr: b.addr,
             value: b.value,
-            tag: this.hints.find(h => h.address === b.addr)?.tag,
+            tag: this.hints().find(h => h.address === b.addr)?.tag,
             human: b.human,
           })),
         }))
       )
     },
+
+    hints() {
+      return this.main_memory
+        .getAllHints()
+        .map(({ address, tag, type, sizeInBits }) => ({
+          address: Number(address),
+          tag,
+          type,
+          size: sizeInBits / this.main_memory.getBitsPerByte(),
+        }))
+    },
   },
+
 }
 </script>
 
 <template>
-  <div>
+  <div :key="render">
     <b-container fluid align-h="between" class="mx-0 px-0">
       <b-row align-v="start" cols="1">
         <b-col class="mx-0 pl-0 pr-2" style="min-height: 35vh !important">
@@ -307,7 +322,7 @@ export default {
             ref="table"
             small
             hover
-            :items="main_memory_items"
+            :items="main_memory_items()"
             :fields="memFields"
             :filter-function="filter"
             filter=" "
@@ -339,7 +354,7 @@ export default {
               time we update a register. It's hacky, its inefficient, and it's
               plain ugly, but it works.
               -->
-              <div :key="render">
+              <div :key="render_tag">
                 <div
                   v-for="{ type, name } of get_pointers(row.item.start)"
                   :key="type"

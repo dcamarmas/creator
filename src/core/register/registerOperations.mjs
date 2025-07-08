@@ -46,7 +46,7 @@ function updateRegisterUI(indexComp, indexElem) {
 
     // check it's one of the control registers
     if (register.properties.some(p => ctrl_register_tags.includes(p))) {
-        document.app.$root.$refs.simulatorView.$refs.memory?.$refs?.memory_table?.refresh();
+        document.app.$root.$refs.simulatorView.$refs.memory?.$refs?.memory_table?.refresh_tags();
     }
 }
 
