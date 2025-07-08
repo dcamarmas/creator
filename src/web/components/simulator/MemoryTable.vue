@@ -24,36 +24,7 @@ import {
   creator_memory_update_space_view,
   creator_memory_update_row_view,
 } from "@/core/memory/memoryViewManager.mjs"
-import {
-  chunks,
-  hex2SignedInt,
-  hex2float,
-  hex2double,
-} from "@/core/utils/utils.mjs"
-
-// As currently hints are stored as a string containing the tag and the
-// hint itself, we have to separate them back
-function extractType(hint) {
-  if (hint === undefined) return undefined
-
-  let val = hint
-
-  if (hint.includes(":")) {
-    val = hint.split(":").at(-1)
-  }
-
-  return val.replace("<", "").replace(">", "").trim()
-}
-
-function extractTag(tag) {
-  if (tag === undefined) return undefined
-
-  if (tag.includes(":")) {
-    return tag.split(":").at(0)
-  }
-
-  return undefined
-}
+import { chunks } from "@/core/utils/utils.mjs"
 
 export default {
   props: {
@@ -237,12 +208,10 @@ export default {
     hints() {
       return this.main_memory
         .getAllHints()
-        .map(({ address, hint, sizeInBits }) => ({
+        .map(({ address, tag, type, sizeInBits }) => ({
           address: Number(address),
-          // FIXME: when hints and tags become two separate things, redo this
-          // temporary fix
-          tag: extractTag(hint),
-          type: extractType(hint),
+          tag,
+          type,
           size: sizeInBits / this.main_memory.getBitsPerByte(),
         }))
     },
