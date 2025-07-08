@@ -194,7 +194,7 @@ export const MEM = {
         if (hint) {
             try {
                 const sizeInBits = bytes * BYTESIZE;
-                main_memory.addHint(address, hint, sizeInBits);
+                main_memory.addHint(address, "", hint, sizeInBits);
             } catch (e) {
                 raise(
                     "Failed to add hint for address '0x" +
@@ -278,7 +278,7 @@ export const MEM = {
      */
     addHint: function (address, hint, sizeInBits) {
         try {
-            main_memory.addHint(address, hint, sizeInBits);
+            main_memory.addHint(address, "", hint, sizeInBits);
             return true;
         } catch (e) {
             raise(

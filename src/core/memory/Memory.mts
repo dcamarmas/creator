@@ -140,7 +140,8 @@ interface MemorySegment {
  */
 interface MemoryHint {
     address: bigint;
-    hint: string;
+    tag: string;
+    type: string;
     sizeInBits?: number; // Optional size of the type in bits
 }
 
@@ -304,6 +305,9 @@ export class Memory {
      * @private
      */
     private initializeBasicProperties(config: RequiredMemoryConfig): void {
+        if (!Number.isSafeInteger(config.sizeInBytes) || config.sizeInBytes <= 0) {
+            throw new Error("sizeInBytes must be a positive safe integer (<= Number.MAX_SAFE_INTEGER)");
+        }
         if (config.bitsPerByte < 1 || config.bitsPerByte > 32) {
             throw new Error("bitsPerByte must be between 1 and 32");
         }
@@ -722,7 +726,7 @@ export class Memory {
         values: number[];
         bitsPerByte: number;
         size: number;
-        hints: { address: string; hint: string; sizeInBits?: number }[];
+        hints: { address: string; tag: string; type: string; sizeInBits?: number }[];
     } {
         const addresses: number[] = [];
         const values: number[] = [];
@@ -738,12 +742,13 @@ export class Memory {
         }
 
         // Include hints in the dump
-        const hints: { address: string; hint: string; sizeInBits?: number }[] =
+        const hints: { address: string; tag: string; type: string; sizeInBits?: number }[] =
             [];
         for (const hint of this.hints.values()) {
             hints.push({
                 address: hint.address.toString(),
-                hint: hint.hint,
+                tag: hint.tag,
+                type: hint.type,
                 sizeInBits: hint.sizeInBits,
             });
         }
@@ -780,7 +785,7 @@ export class Memory {
         values: number[];
         bitsPerByte: number;
         size: number;
-        hints?: { address: string; hint: string; sizeInBits?: number }[];
+        hints?: { address: string; tag?: string; type?: string; hint?: string; sizeInBits?: number }[];
     }): void {
         if (dump.bitsPerByte !== this.bitsPerByte || dump.size !== this.size) {
             throw new Error(
@@ -811,9 +816,24 @@ export class Memory {
         this.hints.clear();
         if (dump.hints) {
             for (const hint of dump.hints) {
+                // Backward compatibility: if only "hint" exists, split it
+                let tag = hint.tag;
+                let type = hint.type;
+                if (!tag && !type && typeof hint.hint === "string") {
+                    // Try to split "<type>:tag" or "<type>" or "tag"
+                    const m = /^<([^>]+)>(?::(.*))?$/.exec(hint.hint);
+                    if (m) {
+                        type = m[1];
+                        tag = m[2] || "";
+                    } else {
+                        tag = hint.hint;
+                        type = "";
+                    }
+                }
                 this.hints.set(BigInt(hint.address), {
                     address: BigInt(hint.address),
-                    hint: hint.hint,
+                    tag: tag || "",
+                    type: type || "",
                     sizeInBits: hint.sizeInBits,
                 });
             }
@@ -1358,10 +1378,11 @@ export class Memory {
      * memory.addHint(0x300n, "<string>"); // No size specified
      * ```
      */
-    addHint(address: bigint, hint: string, sizeInBits?: number): void {
+    addHint(address: bigint, tag: string, type: string, sizeInBits?: number): void {
         this.hints.set(address, {
             address,
-            hint,
+            tag,
+            type,
             sizeInBits,
         });
     }
@@ -1454,6 +1475,23 @@ export class Memory {
      */
     clearHints(): void {
         this.hints.clear();
+    }
+
+    /**
+     * Returns an array of all addresses that have been written to.
+     *
+     * @returns Array of written addresses (number), sorted in ascending order.
+     *
+     * @example
+     * ```typescript
+     * const memory = new Memory({ sizeInBytes: 100 });
+     * memory.write(5n, 123);
+     * memory.write(10n, 255);
+     * const written = memory.getWrittenAddresses(); // [5, 10]
+     * ```
+     */
+    getWrittenAddresses(): number[] {
+        return Array.from(this.writtenAddresses).sort((a, b) => a - b);
     }
 
     /**
