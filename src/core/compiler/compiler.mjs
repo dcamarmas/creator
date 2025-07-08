@@ -35,7 +35,9 @@ import {
     WORDSIZE,
     ENDIANNESSARR,
     MAXNWORDS,
+    MAXNWORDS,
 } from "../core.mjs";
+import { decode_instruction } from "../executor/decoder.mjs";
 import { decode_instruction } from "../executor/decoder.mjs";
 import { bi_intToBigInt } from "../utils/bigint.mjs";
 import { creator_ga } from "../utils/creator_ga.mjs";
@@ -45,7 +47,7 @@ import { resetStats } from "../executor/stats.mts";
 
 const compiler_map = {
     default: assembly_compiler_default,
-    sjasmplus: console.log("womp womp"),
+    sjasmplus: assembly_compiler_sjasmplus,
 };
 
 // Conditional import for the WASM compiler based on the environment (web or Deno)
@@ -172,6 +174,7 @@ export function set_instructions(value) {
 export let tag_instructions = {};
 let instructions_binary = [];
 
+
 /*Binary*/
 
 export function setInstructions(instructions_) {
@@ -205,6 +208,7 @@ function writeMultiByteValueAsWords(addr, bytes, wordSizeBytes) {
 //
 // Compiler
 //
+
 
 /*Compile assembly code*/
 
@@ -300,7 +304,101 @@ function parseDebugSymbols(debugSymbols) {
     return symbols;
 }
 
+
+export function precomputeInstructions(tags = null) {
+    // When we don't use the default compiler, we need to precompute the instructions.
+    // To do so, we iterate through the binary file, and decode the instructions, adding them to the instructions array.
+
+    // First we need to fetch only the addresses that have been written to memory.
+    const segments = main_memory.getMemorySegments();
+    const textSegment = segments.get("text");
+    let memory = main_memory.getWrittenAddresses();
+    memory = memory.filter(
+        addr =>
+            addr >= Number(textSegment.startAddress) &&
+            addr <= Number(textSegment.endAddress),
+    );
+    if (memory.length === 0) {
+        raise("No memory written, cannot precompute instructions");
+    }
+
+    // Iterate through the memory addresses, decoding instructions.
+    instructions = [];
+    let idx = 0;
+    while (idx < memory.length) {
+        const addr = memory[idx];
+        const words = [];
+        // Read up to MAXNWORDS words starting from the current address
+        for (let j = 0; j < MAXNWORDS && idx + j < memory.length; j++) {
+            const wordBytes = main_memory.readWord(memory[idx + j]);
+            const word = Array.from(new Uint8Array(wordBytes))
+                .map(byte => byte.toString(16).padStart(2, "0"))
+                .join("");
+            words.push(word);
+        }
+        const word = words.join("");
+        const instruction = decode_instruction("0x" + word);
+
+        // Get only the first nwords for the machine code
+        const machineCode = words
+            .slice(0, instruction.nwords)
+            .join("")
+            .toUpperCase();
+
+        if (instruction) {
+            // Find tag label for this address if tags are provided
+            let label = "";
+            if (tags) {
+                for (const [tag, tagAddr] of Object.entries(tags)) {
+                    if (Number(addr) === Number(tagAddr)) {
+                        label = tag;
+                        break;
+                    }
+                }
+            }
+            instructions.push({
+                Address: "0x" + addr.toString(16),
+                Label: label,
+                loaded: instruction.instructionExec,
+                binary: false,
+                user: "0x" + machineCode,
+                _rowVariant: "",
+                Break: false,
+                hide: false,
+                visible: true,
+            });
+
+            idx += instruction.nwords;
+        } else {
+            // If decoding fails, skip to next address to avoid infinite loop
+            idx += 1;
+        }
+    }
+    console.log("Instructions precomputed successfully");
+}
+
+function parseDebugSymbols(debugSymbols) {
+    const symbols = {};
+    const lines = debugSymbols.split("\n");
+    for (const line of lines) {
+        const parts = line.split(/\s+/);
+        if (parts.length < 2) continue; // Skip invalid lines
+        // In each line, the tag is whatever is before ":", and the address is whatever is after "0x"
+        const tag = parts[0].replace(":", "");
+
+        // now search in the full line for the address
+        const address = parts.find(part => part.startsWith("0x"));
+        if (!address) continue; // Skip lines without an address
+        const addressValue = parseInt(address, 16);
+
+        // Store the tag and address in the symbols object
+        symbols[tag] = addressValue;
+    }
+    return symbols;
+}
+
 // eslint-disable-next-line max-lines-per-function
+function assembly_compiler_default(code, library, color) {
 function assembly_compiler_default(code, library, color) {
     /* Google Analytics */
     creator_ga("compile", "compile.assembly");
@@ -440,6 +538,9 @@ function assembly_compiler_default(code, library, color) {
                             let floatTag = labels[0] ?? "";
                             let floatType = "float32";
                             main_memory.addHint(addr, floatTag, floatType, 32);
+                            let floatTag = labels[0] ?? "";
+                            let floatType = "float32";
+                            main_memory.addHint(addr, floatTag, floatType, 32);
                             break;
                         }
                         case "double": {
@@ -476,6 +577,14 @@ function assembly_compiler_default(code, library, color) {
                                 doubleType,
                                 64,
                             );
+                            let doubleTag = labels[0] ?? "";
+                            let doubleType = "float64";
+                            main_memory.addHint(
+                                addr,
+                                doubleTag,
+                                doubleType,
+                                64,
+                            );
                             break;
                         }
                         case "byte": {
@@ -483,6 +592,9 @@ function assembly_compiler_default(code, library, color) {
                             main_memory.write(addr, byteValue);
 
                             // Add memory hint for the byte
+                            let byteTag = labels[0] ?? "";
+                            let byteType = "byte";
+                            main_memory.addHint(addr, byteTag, byteType, 8);
                             let byteTag = labels[0] ?? "";
                             let byteType = "byte";
                             main_memory.addHint(addr, byteTag, byteType, 8);
@@ -520,8 +632,12 @@ function assembly_compiler_default(code, library, color) {
                                 // Add memory hint for the word
                                 let wordTag = labels[0] ?? "";
                                 let wordType = "word";
+                                let wordTag = labels[0] ?? "";
+                                let wordType = "word";
                                 main_memory.addHint(
                                     addr,
+                                    wordTag,
+                                    wordType,
                                     wordTag,
                                     wordType,
                                     newArchitecture.arch_conf.WordSize,
@@ -591,6 +707,9 @@ function assembly_compiler_default(code, library, color) {
                             let dwordTag = labels[0] ?? "";
                             let dwordType = "dword";
                             main_memory.addHint(addr, dwordTag, dwordType, 64);
+                            let dwordTag = labels[0] ?? "";
+                            let dwordType = "dword";
+                            main_memory.addHint(addr, dwordTag, dwordType, 64);
                             break;
                         }
 
@@ -637,6 +756,9 @@ function assembly_compiler_default(code, library, color) {
                             let halfTag = labels[0] ?? "";
                             let halfType = "half";
                             main_memory.addHint(addr, halfTag, halfType, 16);
+                            let halfTag = labels[0] ?? "";
+                            let halfType = "half";
+                            main_memory.addHint(addr, halfTag, halfType, 16);
 
                             break;
                         }
@@ -667,8 +789,12 @@ function assembly_compiler_default(code, library, color) {
                     const stringLength = Number(currentAddr - startAddr);
                     let stringTag = labels[0] ?? "";
                     let stringType = "string";
+                    let stringTag = labels[0] ?? "";
+                    let stringType = "string";
                     main_memory.addHint(
                         startAddr,
+                        stringTag,
+                        stringType,
                         stringTag,
                         stringType,
                         stringLength * 8,
@@ -696,11 +822,17 @@ function assembly_compiler_default(code, library, color) {
                     // Add memory hint for the space/padding
                     let spaceTag = labels[0] ?? "";
                     let spaceType =
+                    let spaceTag = labels[0] ?? "";
+                    let spaceType =
                         data.data_category() === DataCategoryJS.Padding
+                            ? "padding"
+                            : "space";
                             ? "padding"
                             : "space";
                     main_memory.addHint(
                         addr,
+                        spaceTag,
+                        spaceType,
                         spaceTag,
                         spaceType,
                         Number(space_size) * 8,
@@ -785,6 +917,104 @@ function assembly_compiler_default(code, library, color) {
         type: "",
         update: "",
         status: "ok",
+    };
+}
+
+/**
+ * Compile assembly code using different backends.
+ * @param {string} code - Assembly code to compile.
+ * @param {string} compiler - Compiler backend ("default", "sjasmplus", etc).
+ */
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
+import { spawnSync } from "node:child_process";
+
+function assembly_compiler_sjasmplus(code) {
+    // Create a temporary directory
+    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "sjasmplus-"));
+    const tmp = path.join(tmpDir, "temp.asm");
+    fs.writeFileSync(tmp, code, "utf8");
+
+    // Output file
+    const outFile = tmp.replace(/\.asm$/, ".bin");
+    const symFile = tmp.replace(/\.asm$/, ".sym");
+
+    // Run sjasmplus (needs to be installed in the system)
+    const result = spawnSync(
+        "sjasmplus",
+        ["--raw=" + outFile, "--sym=" + symFile, tmp],
+        {
+            encoding: "utf8",
+            maxBuffer: 10 * 1024 * 1024,
+        },
+    );
+
+    if (result.status !== 0) {
+        // Clean up temp files
+        try {
+            fs.unlinkSync(tmp);
+        } catch {}
+        try {
+            fs.unlinkSync(outFile);
+        } catch {}
+        try {
+            fs.unlinkSync(symFile);
+        } catch {}
+        try {
+            fs.rmdirSync(tmpDir);
+        } catch {}
+        return {
+            errorcode: "sjasmplus",
+            type: "error",
+            bgcolor: "danger",
+            status: "error",
+            msg: result.stderr || "sjasmplus failed",
+        };
+    }
+
+    // Read the output binary
+    const binary = fs.readFileSync(outFile);
+
+    // Read debug symbols if available
+    let debugSymbols = null;
+    try {
+        debugSymbols = fs.readFileSync(symFile, "utf8");
+    } catch {}
+
+    // Parse debug symbols if available
+    const parsedSymbols = parseDebugSymbols(debugSymbols);
+
+    main_memory.loadROM(binary);
+    precomputeInstructions(parsedSymbols);
+
+    // Now add hints to memory based on the parsed symbols (its a dictionary)
+    for (const [name, addr] of Object.entries(parsedSymbols)) {
+        main_memory.addHint(addr, name);
+    }
+
+    // Clean up temp files
+    try {
+        fs.unlinkSync(tmp);
+    } catch {}
+    try {
+        fs.unlinkSync(outFile);
+    } catch {}
+    try {
+        fs.unlinkSync(symFile);
+    } catch {}
+    try {
+        fs.rmdirSync(tmpDir);
+    } catch {}
+
+    return {
+        errorcode: "",
+        token: "",
+        type: "",
+        update: "",
+        status: "ok",
+        binary,
+        stdout: result.stdout,
     };
 }
 
