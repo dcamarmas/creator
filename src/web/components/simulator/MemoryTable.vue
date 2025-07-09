@@ -24,7 +24,7 @@ import {
   creator_memory_update_space_view,
   creator_memory_update_row_view,
 } from "@/core/memory/memoryViewManager.mjs"
-import { chunks } from "@/core/utils/utils.mjs"
+import { chunks, range } from "@/core/utils/utils.mjs"
 
 export default {
   props: {
@@ -279,6 +279,43 @@ export default {
     // even force updating works.
     main_memory_items() {
       const mem = this.main_memory.getWritten()
+      const addresses = this.main_memory.getWrittenAddresses()
+
+      // ensure full words
+      // why do we do this? because we don't want to hold the whole simulator
+      // memory array in memory, so we just get the written values, but there
+      // might be gaps, bytes that were not written
+      mem
+        // find missing addresses
+        .reduce((missing, byte) => {
+          // for each start of word address, check the bytes of the full word
+          // are present
+          if (byte.addr % 4 === 0) {
+            range(byte.addr, byte.addr + 4).forEach(addr => {
+              if (!addresses.includes(addr)) missing.push(addr)
+            })
+          }
+
+          // do the same for the end of the word
+          // FIXME: we _shouldn't_ need this, as memory is _supposed_ to be
+          // aligned... but currently there's a problem with zero-terminated
+          // strings (the last zero is not marked as a written value). When the
+          // compiler is updated, remove this.
+          if (byte.addr % 4 === 3) {
+            range(byte.addr - 3, byte.addr + 1).forEach(addr => {
+              if (!addresses.includes(addr)) missing.push(addr)
+            })
+          }
+
+          return missing
+        }, [])
+        // fill the missing addresses
+        .forEach(a => {
+          mem.splice(mem.findIndex(b => b.addr === a - 1) + 1, 0, {
+            addr: a,
+            value: 0,
+          })
+        })
 
       // set human values, depending on hints
       let i = 0
