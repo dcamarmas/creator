@@ -61,7 +61,7 @@ export function show_notification(msg, type, root = document.app) {
             title: " ",  // TODO: use fontawesome icons here
             body: msg,
             variant: type,
-            position: "top-center",
+            position: "bottom-end",
             value: root.notification_time,
             // TODO: don't dismiss toast when type is danger
         }
