@@ -19,7 +19,7 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <script>
-import { architecture, memory_hash, architecture_hash } from "@/core/core.mjs"
+import { architecture, memory_hash, REGISTERS } from "@/core/core.mjs"
 import {
   creator_memory_update_space_view,
   creator_memory_update_row_view,
@@ -41,18 +41,44 @@ export default {
 
   data() {
     return {
-      architecture_hash,
       architecture,
-      /*Memory table fields*/
-      memFields: ["Tag", "Address", "Binary", "Value"],
+
+      memFields: [{ key: "Tag", label: "" }, "Address", "Binary", "Value"],
       row_info: null,
-      selected_space_view: null,
+      spaceView: false,
+      spaceItem: null,
       selected_stack_view: null,
       memorySegments: this.main_memory.getMemorySegments(),
+
+      ctrl_register_tags: [
+        "program_counter",
+        "stack_pointer",
+        "frame_pointer",
+        "global_pointer",
+      ],
+
+      render: 0n, // dummy variable to force refresh the memory table
+      render_tag: 0n, // dummy variable to force refresh the memory tags
     }
   },
 
   methods: {
+    /**
+     * Refreshes the memory table
+     */
+    refresh() {
+      // refreshes children components with `:key="render"`
+      this.render++
+    },
+
+    /**
+     * Refreshes the memory tags
+     */
+    refresh_tags() {
+      // refreshes children components with `:key="render_tag"`
+      this.render_tag++
+    },
+
     /**
      * Filters which rows to show, depending on the data segment
      */
@@ -118,20 +144,20 @@ export default {
       return false
     },
 
-    get_classes(row) {
+    get_classes(item) {
       return {
         h6Sm: this.memory_segment !== "stack",
-        "h6Sm text-secondary ":
-          row.item.start < this.$root.end_callee &&
-          Math.abs(row.item.start - this.$root.end_callee) <
+        "h6Sm text-secondary":
+          item.start < this.$root.end_callee &&
+          Math.abs(item.start - this.$root.end_callee) <
             this.$root.stack_total_list * 4,
-        "h6Sm text-success   ":
-          row.item.start < this.$root.begin_callee &&
-          row.item.start >= this.$root.end_callee,
+        "h6Sm text-success":
+          item.start < this.$root.begin_callee &&
+          item.start >= this.$root.end_callee,
         "h6Sm text-blue-funny":
-          row.item.start < this.$root.begin_caller &&
-          row.item.start >= this.$root.end_caller,
-        "h6Sm                ": row.item.start >= this.$root.begin_caller,
+          item.start < this.$root.begin_caller &&
+          item.start >= this.$root.end_caller,
+        h6Sm: item.start >= this.$root.begin_caller,
       }
     },
 
@@ -152,17 +178,29 @@ export default {
     },
 
     /**
+     *
+     * Transforms a value into a hextring.
+     *
+     * @param {number} value
+     * @param {number} padding Padding, in bytes
+     *
+     * @returns {string}
+     */
+    toBin(value, padding) {
+      return value.toString(2).padStart(padding * 8, "0")
+    },
+
+    /**
      * Computes what values are stored in a set of bytes, according to the type.
      *
      * @param {number[]} bytes
      * @param {string} type
      *
-     * @returns {string[]} Array of the same length as `bytes`,
+     * @returns {string[]} Array of the same length as `bytes`, with the value
+     * stored in the corresponding byte, that is, the first byte for all cases
+     * except the string, where its a char value per byte.
      */
     computeHumanValues(bytes, type) {
-      // TODO: eventually, move this logic to the architecture definition, as
-      // the hints are given by the architecture
-
       const values = new Array(bytes.length)
       const view = new DataView(new Uint8Array(bytes).buffer)
 
@@ -177,7 +215,12 @@ export default {
           return values
 
         case "word":
+        case "signed":
           values[0] = view.getInt32()
+          return values
+
+        case "unsigned":
+          values[0] = view.getUint32()
           return values
 
         case "dword":
@@ -202,7 +245,6 @@ export default {
           return values
       }
     },
-  },
 
   computed: {
     hints() {
@@ -216,13 +258,54 @@ export default {
         }))
     },
 
+    // I'd _like_ for these to be a computed method but, as none of the
+    // dependencies are reactive, as we're calling
+    // `this.main_memory.getWritten()`, computed caching comes into play and not
+    // even force updating works.
     main_memory_items() {
       const mem = this.main_memory.getWritten()
+      const addresses = this.main_memory.getWrittenAddresses()
+
+      // ensure full words
+      // why do we do this? because we don't want to hold the whole simulator
+      // memory array in memory, so we just get the written values, but there
+      // might be gaps, bytes that were not written
+      mem
+        // find missing addresses
+        .reduce((missing, byte) => {
+          // for each start of word address, check the bytes of the full word
+          // are present
+          if (byte.addr % 4 === 0) {
+            range(byte.addr, byte.addr + 4).forEach(addr => {
+              if (!addresses.includes(addr)) missing.push(addr)
+            })
+          }
+
+          // do the same for the end of the word
+          // FIXME: we _shouldn't_ need this, as memory is _supposed_ to be
+          // aligned... but currently there's a problem with zero-terminated
+          // strings (the last zero is not marked as a written value). When the
+          // compiler is updated, remove this.
+          if (byte.addr % 4 === 3) {
+            range(byte.addr - 3, byte.addr + 1).forEach(addr => {
+              if (!addresses.includes(addr)) missing.push(addr)
+            })
+          }
+
+          return missing
+        }, [])
+        // fill the missing addresses
+        .forEach(a => {
+          mem.splice(mem.findIndex(b => b.addr === a - 1) + 1, 0, {
+            addr: a,
+            value: 0,
+          })
+        })
 
       // set human values, depending on hints
       let i = 0
       while (i < mem.length) {
-        const hint = this.hints.find(h => h.address === mem.at(i).addr)
+        const hint = this.hints().find(h => h.address === mem.at(i).addr)
         if (hint === undefined) {
           i++
           continue
@@ -246,18 +329,29 @@ export default {
           bytes: bytes.map(b => ({
             addr: b.addr,
             value: b.value,
-            tag: this.hints.find(h => h.address === b.addr)?.tag,
+            tag: this.hints().find(h => h.address === b.addr)?.tag,
             human: b.human,
           })),
         }))
       )
+    },
+
+    hints() {
+      return this.main_memory
+        .getAllHints()
+        .map(({ address, tag, type, sizeInBits }) => ({
+          address: Number(address),
+          tag,
+          type,
+          size: sizeInBits / this.main_memory.getBitsPerByte(),
+        }))
     },
   },
 }
 </script>
 
 <template>
-  <div>
+  <div :key="render">
     <b-container fluid align-h="between" class="mx-0 px-0">
       <b-row align-v="start" cols="1">
         <b-col class="mx-0 pl-0 pr-2" style="min-height: 35vh !important">
@@ -267,12 +361,17 @@ export default {
             ref="table"
             small
             hover
-            :items="main_memory_items"
+            :items="main_memory_items()"
             :fields="memFields"
             :filter-function="filter"
             filter=" "
             class="memory_table align-items-start"
-            @row-clicked="select_data_type"
+            @row-clicked="
+              (item, _index, _event) => {
+                spaceItem = item
+                spaceView = true
+              }
+            "
           >
             <template #table-busy>
               <div class="text-center text-primary my-2">
@@ -281,59 +380,36 @@ export default {
               </div>
             </template>
 
-            <!-- remove "Tag" column title -->
-            <template v-slot:head(Tag)="_row"> &nbsp; </template>
-
             <!-- control register badges -->
 
             <template v-slot:cell(Tag)="row">
-              <div v-for="bank in architecture_hash" :key="bank.index">
-                <div
-                  v-for="register in architecture.components[bank.index]
-                    .elements"
-                  :key="register.name[0]"
-                >
-                  <!-- program counter -->
-                  <div
-                    v-for="register in architecture.components[bank.index]
-                      .elements"
-                    :key="register.name[0]"
-                  >
-                    <div
-                      v-if="
-                        register.properties.includes('program_counter') &&
-                        (parseInt(register.value) & 0xfffffffc) ==
-                          (row.item.addr & 0xfffffffc)
-                      "
-                    >
-                      <b-badge
-                        variant="success"
-                        class="border border-info shadow memoryTag"
-                      >
-                        {{ register.name[1] || register.name[0] }}
-                      </b-badge>
-                      <font-awesome-icon icon="fa-solid fa-right-long" />
-                    </div>
-                  </div>
+              <!--
+              OK, here we go...
+              I'd _like_ to prevent doing this. I HATE doing this, but good ol'
+              Vue makes me do this, as I found no other way.
 
-                  <!-- pointers -->
-                  <div
-                    v-if="
-                      (register.properties.includes('stack_pointer') ||
-                        register.properties.includes('frame_pointer') ||
-                        register.properties.includes('global_pointer')) &&
-                      (parseInt(register.value) & 0xfffffffc) ==
-                        (row.item.start & 0xfffffffc)
-                    "
+              We want the badges to automatically update, right? It _should_ be
+              as easy as using the method and that's it, but no... Vue doesn't
+              like this. Maybe it's because the method depends on row.item.addr,
+              and that doesn't change when registers change, so nothing updates.
+
+              The "hack" I found is adding another horrible line in the
+              updateRegisterUI function to force update these components every
+              time we update a register. It's hacky, its inefficient, and it's
+              plain ugly, but it works.
+              -->
+              <div :key="render_tag">
+                <div
+                  v-for="{ type, name } of get_pointers(row.item.start)"
+                  :key="type"
+                >
+                  <b-badge
+                    class="border border-info shadow memoryTag"
+                    :variant="type === 'program_counter' ? 'success' : 'info'"
                   >
-                    <b-badge
-                      variant="info"
-                      class="border border-info shadow memoryTag"
-                    >
-                      {{ register.name[1] || register.name[0] }}
-                    </b-badge>
-                    <font-awesome-icon icon="fa-solid fa-right-long" />
-                  </div>
+                    {{ name }}
+                  </b-badge>
+                  <font-awesome-icon icon="fa-solid fa-right-long" />
                 </div>
               </div>
             </template>
@@ -342,7 +418,7 @@ export default {
 
             <template v-slot:cell(Address)="row">
               <div class="pt-3">
-                <span v-bind:class="get_classes(row)">
+                <span v-bind:class="get_classes(row.item)">
                   0x{{ toHex(row.item.start, 4) }} - 0x{{
                     toHex(row.item.end, 4)
                   }}
@@ -355,7 +431,7 @@ export default {
             <template v-slot:cell(Binary)="row">
               <div class="pt-3" />
               <span
-                v-bind:class="get_classes(row)"
+                v-bind:class="get_classes(row.item)"
                 v-for="byte in row.item.bytes"
                 :key="byte.addr"
               >
@@ -384,7 +460,7 @@ export default {
             <template v-slot:cell(Value)="row">
               <div class="pt-3" />
               <span
-                v-bind:class="get_classes(row)"
+                v-bind:class="get_classes(row.item)"
                 style="white-space: pre-wrap"
               >
                 {{
@@ -394,18 +470,12 @@ export default {
                     .join(", ")
                 }}
               </span>
-              <!-- <font-awesome-icon
-                icon="fa-solid fa-eye"
-                class="value-button"
-                v-b-modal.space_modal
-                v-if="row.item.eye && check_tag_null(row.item.hex)"
-              /> -->
             </template>
           </b-table>
         </b-col>
       </b-row>
 
-      <!-- Stack -->
+      <!-- TODO: Stack -->
       <!-- <b-row align-v="end">
         <b-col>
           <div
@@ -469,25 +539,93 @@ export default {
       </b-row> -->
     </b-container>
 
+    <!-- Modals -->
+
     <b-modal
       id="space_modal"
-      size="sm"
-      title="Select space view:"
-      @hidden="hide_space_modal"
-      @ok="change_space_view"
+      v-if="spaceItem"
+      responsive
+      no-footer
+      centered
+      :title="`Space view for 0x${toHex(spaceItem.start, 1)}`"
+      v-model="spaceView"
     >
-      <b-form-radio v-model="selected_space_view" value="sig_int">
-        Signed Integer
-      </b-form-radio>
-      <b-form-radio v-model="selected_space_view" value="unsig_int">
-        Unsigned Integer
-      </b-form-radio>
-      <b-form-radio v-model="selected_space_view" value="float">
-        Float
-      </b-form-radio>
-      <b-form-radio v-model="selected_space_view" value="char">
-        Char
-      </b-form-radio>
+      <b-table-simple small responsive bordered>
+        <b-tbody>
+          <b-tr>
+            <b-td>Hexadecimal</b-td>
+            <b-td>
+              <b-badge class="registerPopover">
+                0x{{ spaceItem.bytes.map(b => toHex(b.value, 1)).join("") }}
+              </b-badge>
+            </b-td>
+          </b-tr>
+          <b-tr>
+            <b-td>Binary</b-td>
+            <b-td>
+              <b-badge
+                class="registerPopover me-1"
+                v-for="byte of spaceItem.bytes.map(b => toBin(b.value, 1))"
+              >
+                {{ byte }}
+              </b-badge>
+            </b-td>
+          </b-tr>
+          <b-tr>
+            <b-td>Chars</b-td>
+            <b-td>
+              <b-badge
+                class="registerPopover me-1"
+                v-for="char of computeHumanValues(
+                  spaceItem.bytes.map(b => b.value),
+                  'string',
+                )"
+              >
+                {{ char }}
+              </b-badge>
+            </b-td>
+          </b-tr>
+          <b-tr>
+            <b-td>Signed</b-td>
+            <b-td>
+              <b-badge class="registerPopover">
+                {{
+                  computeHumanValues(
+                    spaceItem.bytes.map(b => b.value),
+                    "signed",
+                  ).at(0)
+                }}
+              </b-badge>
+            </b-td>
+          </b-tr>
+          <b-tr>
+            <b-td>Unsigned</b-td>
+            <b-td>
+              <b-badge class="registerPopover">
+                {{
+                  computeHumanValues(
+                    spaceItem.bytes.map(b => b.value),
+                    "unsigned",
+                  ).at(0)
+                }}
+              </b-badge>
+            </b-td>
+          </b-tr>
+          <b-tr>
+            <b-td>IEEE 754 (32 bits)</b-td>
+            <b-td>
+              <b-badge class="registerPopover">
+                {{
+                  computeHumanValues(
+                    spaceItem.bytes.map(b => b.value),
+                    "float32",
+                  ).at(0)
+                }}
+              </b-badge>
+            </b-td>
+          </b-tr>
+        </b-tbody>
+      </b-table-simple>
     </b-modal>
 
     <!-- <b-modal
@@ -497,18 +635,18 @@ export default {
       @hidden="hide_stack_modal"
       @ok="change_stack_view"
     >
-      <b-form-radio v-model="selected_stack_view" value="sig_int"
-        >Signed Integer</b-form-radio
-      >
-      <b-form-radio v-model="selected_stack_view" value="unsig_int"
-        >Unsigned Integer</b-form-radio
-      >
-      <b-form-radio v-model="selected_stack_view" value="float"
-        >Float</b-form-radio
-      >
-      <b-form-radio v-model="selected_stack_view" value="char"
-        >Char</b-form-radio
-      >
+      <b-form-radio v-model="selected_stack_view" value="sig_int">
+        Signed Integer
+      </b-form-radio>
+      <b-form-radio v-model="selected_stack_view" value="unsig_int">
+        Unsigned Integer
+        </b-form-radio>
+      <b-form-radio v-model="selected_stack_view" value="float">
+        Float
+      </b-form-radio>
+      <b-form-radio v-model="selected_stack_view" value="char">
+        Char
+      </b-form-radio>
     </b-modal> -->
   </div>
 </template>
@@ -517,6 +655,7 @@ export default {
 .memory_table {
   max-height: 49vh;
   padding-left: 1vw;
+  cursor: pointer;
 }
 
 .table-mem-wrapper-scroll-y {
@@ -552,12 +691,9 @@ export default {
   color: #00bcfe;
 }
 
-.value-button {
-  float: right;
-  margin-right: 5%;
-}
-
-.value-button:hover {
-  cursor: pointer;
+.registerPopover {
+  background-color: #ceecf5;
+  font-family: monospace;
+  font-weight: normal;
 }
 </style>

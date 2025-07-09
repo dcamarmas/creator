@@ -22,10 +22,13 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 import PlotStats from "./PlotStats.vue"
 import TableStats from "./TableStats.vue"
 
+import { stats } from "@/core/executor/stats.mts"
+
 export default {
   props: {
-    stats: { type: Array, required: true },
-    stats_value: { type: Number, required: true },
+    dark: { type: Boolean, required: true },
+    representation: { type: String, required: true },
+    type: { type: String, required: true },
   },
 
   components: {
@@ -35,12 +38,36 @@ export default {
 
   data() {
     return {
-      stat_representation: "graphic",
-      stat_representation_options: [
-        { text: "Graphic", value: "graphic" },
-        { text: "Table", value: "table" },
-      ],
+      stats,
+      render: 0n, // dummy variable to force components with this as key to refresh
     }
+  },
+  computed: {
+    representation_value: {
+      get() {
+        return this.representation
+      },
+
+      set(value) {
+        this.$root.stat_representation = value
+      },
+    },
+    type_value: {
+      get() {
+        return this.type
+      },
+
+      set(value) {
+        this.$root.stat_type = value
+      },
+    },
+  },
+
+  methods: {
+    refresh() {
+      // refreshes children components with `:key="render"`
+      this.render++
+    },
   },
 }
 </script>
@@ -50,35 +77,80 @@ export default {
     <b-row cols-xl="2" cols-lg="1" cols-md="2" cols-sm="1" cols-xs="1" cols="1">
       <b-col align-h="center" class="px-2">
         <div class="border m-1 py-1 px-2">
-          <b-badge variant="light" class="h6 groupLabelling border mx-2 my-0"
-            >Stats view</b-badge
+          <b-badge
+            :variant="dark ? 'dark' : 'light'"
+            class="h6 border my-0 groupLabelling"
           >
-          <b-form-group class="mb-2" v-slot="{ ariaDescribedby }">
-            <b-form-radio-group
-              id="btn-radios-1"
-              class="w-100"
-              v-model="stat_representation"
-              :options="stat_representation_options"
-              button-variant="outline-secondary"
-              size="sm"
-              :aria-describedby="ariaDescribedby"
-              name="radios-btn-default"
-              buttons
-            />
-          </b-form-group>
+            Statistics
+          </b-badge>
+          <b-form-radio-group
+            :class="{ 'w-100': true, 'mb-1': true, border: dark }"
+            v-model="type_value"
+            :button-variant="dark ? 'dark' : 'outline-secondary'"
+            size="sm"
+            buttons
+          >
+            <b-form-radio value="instructions">
+              <font-awesome-icon icon="fa-solid fa-bars" />
+              Instructions
+            </b-form-radio>
+            <b-form-radio value="cycles">
+              <font-awesome-icon icon="fa-regular fa-clock" />
+              Cycles
+            </b-form-radio>
+          </b-form-radio-group>
         </div>
       </b-col>
 
-      <b-col></b-col>
+      <b-col align-h="center" class="px-2">
+        <div class="border m-1 py-1 px-2">
+          <b-badge
+            :variant="dark ? 'dark' : 'light'"
+            class="h6 border my-0 groupLabelling"
+          >
+            Statistic representation
+          </b-badge>
+          <b-form-radio-group
+            :class="{ 'w-100': true, 'mb-1': true, border: dark }"
+            v-model="representation_value"
+            :button-variant="dark ? 'dark' : 'outline-secondary'"
+            size="sm"
+            buttons
+          >
+            <b-form-radio value="graphic">
+              <font-awesome-icon
+                :icon="[
+                  'fas',
+                  `chart-${type === 'instructions' ? 'pie' : 'simple'}`,
+                ]"
+              />
+              Graph
+            </b-form-radio>
+            <b-form-radio value="table">
+              <font-awesome-icon :icon="['fas', 'table']" />
+              Table
+            </b-form-radio>
+          </b-form-radio-group>
+        </div>
+      </b-col>
     </b-row>
 
     <b-row cols="1">
       <b-col align-h="center" class="px-2 my-2">
         <PlotStats
-          :stats_value="stats_value"
-          v-if="stat_representation == 'graphic'"
+          v-if="representation_value === 'graphic'"
+          :stats="stats"
+          :type="type_value"
+          :dark="dark"
+          :key="render"
         />
-        <TableStats :stats="stats" v-if="stat_representation == 'table'" />
+        <TableStats
+          v-if="representation_value === 'table'"
+          :stats="stats"
+          :type="type_value"
+          :dark="dark"
+          :key="render"
+        />
       </b-col>
     </b-row>
   </b-container>

@@ -19,9 +19,7 @@
 "use strict";
 import { instructions } from "../compiler/compiler.mjs";
 import {
-    stats_update,
     status,
-    clk_cycles_update,
     WORDSIZE,
     BYTESIZE,
     MAXNWORDS,
@@ -39,6 +37,8 @@ import { logger } from "../utils/creator_logger.mjs";
 import { decode_instruction } from "./decoder.mjs";
 import { buildInstructionPreload } from "./preload.mjs";
 import { show_notification } from "@/web/utils.mjs";
+import { dumpMemory } from "../core.mjs"; // To use with debugger
+import { updateStats } from "./stats.mts";
 
 export function packExecute(error, err_msg, err_type, draw) {
     const ret = {};
@@ -293,8 +293,7 @@ function processCurrentInstruction(draw) {
     }
 
     // 6. Update execution statistics
-    stats_update(type);
-    clk_cycles_update(type);
+    updateStats(type, instruction.clk_cycles)
 
     // Return instruction data for CLI display
     return {

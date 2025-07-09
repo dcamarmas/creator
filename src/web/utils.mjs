@@ -21,8 +21,11 @@
 
 import $ from "jquery"
 
+import humanizeDuration from "humanize-duration";
+
 import { creator_ga } from "@/core/utils/creator_ga.mjs"
 import { newArchitectureLoad } from "@/core/core.mjs"
+import { console_log as clog } from "@/core/utils/creator_logger.mjs";
 
 
 /*Stop the transmission of events to children*/
@@ -34,9 +37,9 @@ export function confirmExit() {
     return "He's tried to get off this page. Changes may not be saved."
 }
 
-export function console_log(m) {
-    if (creator_debug) {
-        console.log(m)
+export function console_log(msg, level = "INFO") {
+    if (document.app.c_debug) {
+        clog(msg, level);
     }
 }
 
@@ -48,17 +51,17 @@ export let notifications = []
  *
  * @param {string} msg Notification message.
  * @param {string} type Type of notification, one of `'success'`, `'warning'` or `'danger'`.
- * @param {Object} root Root Vue component (App)
+ * @param {Object} [root] Root Vue component (App)
  *
  */
 export function show_notification(msg, type, root = document.app) {
     // show notification
-    root.showToast({
+    root.createToast({
         props: {
             title: " ",  // TODO: use fontawesome icons here
             body: msg,
             variant: type,
-            pos: "top-center",
+            position: "bottom-end",
             value: root.notification_time,
             // TODO: don't dismiss toast when type is danger
         }
@@ -109,23 +112,11 @@ export function hide_loading() {
     $("#loading").hide()
 }
 
-//Show backup modal
-export function backup_modal(env) {
-    if (typeof Storage !== "undefined") {
-        if (
-            localStorage.getItem("backup_arch") != null &&
-            localStorage.getItem("backup_asm") != null &&
-            localStorage.getItem("backup_date") != null
-        ) {
-            env.$root.$emit("bv::show::modal", "copy")
-        }
-    }
-}
 
 /**
  * Loads the specified architecture
  * @param {Object} arch Architecture object, as defined in available_arch.json
- * @param {Object} root Root Vue component (App)
+ * @param {Object} [root] Root Vue component (App)
  */
 export function loadArchitecture(arch, root = document.app) {
     // show_loading()
@@ -137,45 +128,41 @@ export function loadArchitecture(arch, root = document.app) {
     $.ajaxSetup({ async: false })
 
     $.get("architecture/" + arch.file + ".yml", cfg => {
-        newArchitectureLoad(cfg)
+        const { status, errorcode, token } = newArchitectureLoad(cfg);
+
+        if (status === "ko") {
+            show_notification(`[${errorcode}] ${token}`, "danger", root);
+
+            return;
+        }
 
         // store code to be edited
-        // TODO: change this when migration w/ new core, we'll use YAMLs
-        root.arch_code = JSON.stringify(
-            cfg,
-            // serialize BigInts
-            (_key, value) =>
-            typeof value === "bigint"
-                ? Number(value) // FIXME: this is BAD
-                : value, // return everything else unchanged
-            2,
-        )
+        root.arch_code = cfg;
 
         //Refresh UI
         show_notification(
             arch.name + " architecture has been loaded correctly",
             "success",
-            root
-        )
+            root,
+        );
 
         // Google Analytics
         creator_ga(
             "architecture",
             "architecture.loading",
             "architectures.loading.preload_cache",
-        )
+        );
 
         // hide_loading()
-
     }).fail(() => {
         show_notification(
             arch.name + " architecture is not currently available",
             "danger",
-            root
-        )
+            root,
+        );
 
         // hide_loading()
-    })
+    });
 
 }
 
@@ -238,4 +225,38 @@ export function loadExample(
         .fail(() =>
             show_notification(`'${set_name}' set not found`, "danger", root),
         )
+}
+
+/**
+ * Stores a backup of the code and architecture in localStorage
+ *
+ * @param {Object} [root] Root Vue component (App)
+ */
+export function storeBackup(root = document.app) {
+    if (!root.assembly_code || !root.arch_code || !root.architecture_name) {
+        show_notification("Unable to store backup", "warning");
+    }
+
+    localStorage.setItem("backup_asm", root.assembly_code);
+    localStorage.setItem("backup_arch", root.arch_code);
+    localStorage.setItem("backup_arch_name", root.architecture_name);
+    localStorage.setItem("backup_timestamp", Date.now());
+}
+
+/**
+ * Returns the time elapsed since the specified date in a human-readable format.
+ *
+ * @param {Date} date
+ *
+ * @returns {String}
+ */
+export function formatRelativeDate(date) {
+    // I tried using Intl.RelativeTimeFormat... it didn't go well
+
+    return (
+        humanizeDuration(date.getTime() - Date.now(), { round: true })
+            // we only want the biggest unit
+            .split(",")
+            .shift() + " ago"
+    );
 }

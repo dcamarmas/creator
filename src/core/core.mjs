@@ -54,6 +54,7 @@ import {
 } from "./memory/stackTracker.mjs";
 import { creator_ga } from "./utils/creator_ga.mjs";
 import { creator_callstack_reset } from "./sentinel/sentinel.mjs";
+import { resetStats } from "./executor/stats.mts";
 
 // Conditional import for the WASM compiler based on the environment (web or Deno)
 
@@ -102,8 +103,9 @@ export let app;
 
 export let status = {
     execution_init: 1,
-    totalStats: 0,
-    run_program: 0, // 0: stopped, 1: running, 2: stopped-by-breakpoint, 3: stopped-by-mutex-read
+    executedInstructions: 0,
+    clkCycles: 0,
+    run_program: 0,  // 0: stopped, 1: running, 2: stopped-by-breakpoint, 3: stopped-by-mutex-read
 
     keyboard: "",
     display: "",
@@ -112,39 +114,6 @@ export let status = {
     error: 0,
 };
 
-export const stats_value = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-export const stats = [
-    {
-        type: "Arithmetic floating point",
-        number_instructions: 0,
-        percentage: 0,
-    },
-    { type: "Arithmetic integer", number_instructions: 0, percentage: 0 },
-    { type: "Comparison", number_instructions: 0, percentage: 0 },
-    { type: "Conditional bifurcation", number_instructions: 0, percentage: 0 },
-    { type: "Control", number_instructions: 0, percentage: 0 },
-    { type: "Function call", number_instructions: 0, percentage: 0 },
-    { type: "I/O", number_instructions: 0, percentage: 0 },
-    {
-        type: "Logic",
-        number_instructions: 0,
-        percentage: 0,
-        abbreviation: "Log",
-    },
-    { type: "Memory access", number_instructions: 0, percentage: 0 },
-    { type: "Other", number_instructions: 0, percentage: 0 },
-    { type: "Syscall", number_instructions: 0, percentage: 0 },
-    {
-        type: "Transfer between registers",
-        number_instructions: 0,
-        percentage: 0,
-    },
-    {
-        type: "Unconditional bifurcation",
-        number_instructions: 0,
-        percentage: 0,
-    },
-];
 
 export let arch;
 export const ARCHITECTURE_VERSION = "2.0";
@@ -276,7 +245,7 @@ function load_arch_select(cfg) {
  * @returns {Object|null} - The matching template or null if not found
  */
 function findTemplateForInstruction(architectureObj, instruction) {
-    const templateType = instruction.type;
+    const templateType = instruction.template;
     return architectureObj.templates.find(t => t.name === templateType);
 }
 
@@ -403,14 +372,14 @@ function buildCompleteInstruction(
     result.name = instruction.name;
     result.fields = mergedFields;
     result.definition = instruction.definition;
+    result.type = instruction.type || "Other"
+    result.help = instruction.help ?? ""
 
     if (legacy) {
         // This will eventually be removed!!
 
-        result.type = "Other";
         result.description = "";
         result.separated = [];
-        result.help = "";
         let breakpoint = instruction.name;
         // Create arrays to hold ordered fields
         const orderedFields = [];
@@ -514,6 +483,9 @@ function processInstructions(architectureObj) {
                 template,
                 instruction,
             );
+
+            // merge template type and instruction type
+            instruction.type = instruction.type || template.type;
 
             // We need a marker to help distinguish the user definition from the pre-operation and post-operation definitions, so we can later perform the preload correctly.
             // The marker can be any string.
@@ -653,7 +625,7 @@ function processInstructions(architectureObj) {
             }
         } else {
             logger.error(
-                `Template '${instruction.type}' not found for instruction '${instruction.name}'`,
+                `Template '${instruction.template}' not found for instruction '${instruction.name}'`,
             );
         }
     });
@@ -1163,7 +1135,7 @@ export function newArchitectureLoad(
         logger.error(`Error loading architecture: ${error}`);
         return {
             errorcode: "load_error",
-            token: `Failed to load architecture: ${error.message}`,
+            token: `Failed to load architecture: ${error.message || error}`,
             type: "error",
             update: "",
             status: "ko",
@@ -1224,103 +1196,8 @@ export function assembly_compile(code, enable_color, compiler = "default") {
     return ret;
 }
 
-/*
- * CLK Cycles
- */
-
-export let total_clk_cycles = 0;
-export const clk_cycles_value = [
-    {
-        data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    },
-];
-
-export const clk_cycles = [
-    { type: "Arithmetic floating point", clk_cycles: 0, percentage: 0 },
-    { type: "Arithmetic integer", clk_cycles: 0, percentage: 0 },
-    { type: "Comparison", clk_cycles: 0, percentage: 0 },
-    { type: "Conditional bifurcation", clk_cycles: 0, percentage: 0 },
-    { type: "Control", clk_cycles: 0, percentage: 0 },
-    { type: "Function call", clk_cycles: 0, percentage: 0 },
-    { type: "I/O", clk_cycles: 0, percentage: 0 },
-    { type: "Logic", clk_cycles: 0, percentage: 0, abbreviation: "Log" },
-    { type: "Memory access", clk_cycles: 0, percentage: 0 },
-    { type: "Other", clk_cycles: 0, percentage: 0 },
-    { type: "Syscall", clk_cycles: 0, percentage: 0 },
-    { type: "Transfer between registers", clk_cycles: 0, percentage: 0 },
-    { type: "Unconditional bifurcation", clk_cycles: 0, percentage: 0 },
-];
-export function clk_cycles_update(type) {
-    for (let i = 0; i < clk_cycles.length; i++) {
-        if (type == clk_cycles[i].type) {
-            clk_cycles[i].clk_cycles++;
-
-            clk_cycles_value[0].data[i]++;
-
-            total_clk_cycles++;
-            if (typeof document !== "undefined") {
-                document.app.$data.total_clk_cycles++;
-            }
-        }
-    }
-
-    for (let i = 0; i < stats.length; i++) {
-        clk_cycles[i].percentage = (
-            (clk_cycles[i].clk_cycles / total_clk_cycles) *
-            100
-        ).toFixed(2);
-    }
-}
-function clk_cycles_reset() {
-    total_clk_cycles = 0;
-    if (typeof document !== "undefined") {
-        document.app.$data.total_clk_cycles = 0;
-    }
-
-    for (let i = 0; i < clk_cycles.length; i++) {
-        clk_cycles[i].percentage = 0;
-
-        clk_cycles_value[0].data[i] = 0;
-    }
-}
 // execution
 
-// state management
-
-export function stats_update(type) {
-    for (let i = 0; i < stats.length; i++) {
-        if (type == stats[i].type) {
-            stats[i].number_instructions++;
-            stats_value[i]++;
-
-            status.totalStats++;
-            if (typeof document !== "undefined") {
-                document.app.$data.totalStats++;
-            }
-        }
-    }
-
-    for (let i = 0; i < stats.length; i++) {
-        stats[i].percentage = (
-            (stats[i].number_instructions / status.totalStats) *
-            100
-        ).toFixed(2);
-    }
-}
-
-function stats_reset() {
-    status.totalStats = 0;
-    if (typeof document !== "undefined") {
-        document.app.$data.status.totalStats = 0;
-    }
-
-    for (let i = 0; i < stats.length; i++) {
-        stats[i].percentage = 0;
-
-        stats[i].number_instructions = 0;
-        stats_value[i] = 0;
-    }
-}
 
 export function reset() {
     // Google Analytics
@@ -1331,10 +1208,10 @@ export function reset() {
     status.run_program = 0;
 
     // Reset stats
-    // stats_reset();
+    resetStats()
 
-    //Power consumption reset
-    clk_cycles_reset();
+    status.executedInstructions = 0;
+    status.clkCycles = 0;
 
     // Reset console
     status.keyboard = "";
