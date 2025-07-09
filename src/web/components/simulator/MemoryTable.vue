@@ -45,7 +45,8 @@ export default {
 
       memFields: [{ key: "Tag", label: "" }, "Address", "Binary", "Value"],
       row_info: null,
-      selected_space_view: null,
+      spaceView: false,
+      spaceItem: null,
       selected_stack_view: null,
       memorySegments: this.main_memory.getMemorySegments(),
 
@@ -143,20 +144,20 @@ export default {
       return false
     },
 
-    get_classes(row) {
+    get_classes(item) {
       return {
         h6Sm: this.memory_segment !== "stack",
         "h6Sm text-secondary":
-          row.item.start < this.$root.end_callee &&
-          Math.abs(row.item.start - this.$root.end_callee) <
+          item.start < this.$root.end_callee &&
+          Math.abs(item.start - this.$root.end_callee) <
             this.$root.stack_total_list * 4,
         "h6Sm text-success":
-          row.item.start < this.$root.begin_callee &&
-          row.item.start >= this.$root.end_callee,
+          item.start < this.$root.begin_callee &&
+          item.start >= this.$root.end_callee,
         "h6Sm text-blue-funny":
-          row.item.start < this.$root.begin_caller &&
-          row.item.start >= this.$root.end_caller,
-        h6Sm: row.item.start >= this.$root.begin_caller,
+          item.start < this.$root.begin_caller &&
+          item.start >= this.$root.end_caller,
+        h6Sm: item.start >= this.$root.begin_caller,
       }
     },
 
@@ -177,17 +178,29 @@ export default {
     },
 
     /**
+     *
+     * Transforms a value into a hextring.
+     *
+     * @param {number} value
+     * @param {number} padding Padding, in bytes
+     *
+     * @returns {string}
+     */
+    toBin(value, padding) {
+      return value.toString(2).padStart(padding * 8, "0")
+    },
+
+    /**
      * Computes what values are stored in a set of bytes, according to the type.
      *
      * @param {number[]} bytes
      * @param {string} type
      *
-     * @returns {string[]} Array of the same length as `bytes`,
+     * @returns {string[]} Array of the same length as `bytes`, with the value
+     * stored in the corresponding byte, that is, the first byte for all cases
+     * except the string, where its a char value per byte.
      */
     computeHumanValues(bytes, type) {
-      // TODO: eventually, move this logic to the architecture definition, as
-      // the hints are given by the architecture
-
       const values = new Array(bytes.length)
       const view = new DataView(new Uint8Array(bytes).buffer)
 
@@ -202,7 +215,12 @@ export default {
           return values
 
         case "word":
+        case "signed":
           values[0] = view.getInt32()
+          return values
+
+        case "unsigned":
+          values[0] = view.getUint32()
           return values
 
         case "dword":
@@ -307,7 +325,6 @@ export default {
         }))
     },
   },
-
 }
 </script>
 
@@ -327,7 +344,12 @@ export default {
             :filter-function="filter"
             filter=" "
             class="memory_table align-items-start"
-            @row-clicked="select_data_type"
+            @row-clicked="
+              (item, _index, _event) => {
+                spaceItem = item
+                spaceView = true
+              }
+            "
           >
             <template #table-busy>
               <div class="text-center text-primary my-2">
@@ -374,7 +396,7 @@ export default {
 
             <template v-slot:cell(Address)="row">
               <div class="pt-3">
-                <span v-bind:class="get_classes(row)">
+                <span v-bind:class="get_classes(row.item)">
                   0x{{ toHex(row.item.start, 4) }} - 0x{{
                     toHex(row.item.end, 4)
                   }}
@@ -387,7 +409,7 @@ export default {
             <template v-slot:cell(Binary)="row">
               <div class="pt-3" />
               <span
-                v-bind:class="get_classes(row)"
+                v-bind:class="get_classes(row.item)"
                 v-for="byte in row.item.bytes"
                 :key="byte.addr"
               >
@@ -416,7 +438,7 @@ export default {
             <template v-slot:cell(Value)="row">
               <div class="pt-3" />
               <span
-                v-bind:class="get_classes(row)"
+                v-bind:class="get_classes(row.item)"
                 style="white-space: pre-wrap"
               >
                 {{
@@ -426,12 +448,6 @@ export default {
                     .join(", ")
                 }}
               </span>
-              <!-- <font-awesome-icon
-                icon="fa-solid fa-eye"
-                class="value-button"
-                v-b-modal.space_modal
-                v-if="row.item.eye && check_tag_null(row.item.hex)"
-              /> -->
             </template>
           </b-table>
         </b-col>
@@ -505,23 +521,89 @@ export default {
 
     <b-modal
       id="space_modal"
-      size="sm"
-      title="Select space view:"
-      @hidden="hide_space_modal"
-      @ok="change_space_view"
+      v-if="spaceItem"
+      responsive
+      no-footer
+      centered
+      :title="`Space view for 0x${toHex(spaceItem.start, 1)}`"
+      v-model="spaceView"
     >
-      <b-form-radio v-model="selected_space_view" value="sig_int">
-        Signed Integer
-      </b-form-radio>
-      <b-form-radio v-model="selected_space_view" value="unsig_int">
-        Unsigned Integer
-      </b-form-radio>
-      <b-form-radio v-model="selected_space_view" value="float">
-        Float
-      </b-form-radio>
-      <b-form-radio v-model="selected_space_view" value="char">
-        Char
-      </b-form-radio>
+      <b-table-simple small responsive bordered>
+        <b-tbody>
+          <b-tr>
+            <b-td>Hexadecimal</b-td>
+            <b-td>
+              <b-badge class="registerPopover">
+                0x{{ spaceItem.bytes.map(b => toHex(b.value, 1)).join("") }}
+              </b-badge>
+            </b-td>
+          </b-tr>
+          <b-tr>
+            <b-td>Binary</b-td>
+            <b-td>
+              <b-badge
+                class="registerPopover me-1"
+                v-for="byte of spaceItem.bytes.map(b => toBin(b.value, 1))"
+              >
+                {{ byte }}
+              </b-badge>
+            </b-td>
+          </b-tr>
+          <b-tr>
+            <b-td>Chars</b-td>
+            <b-td>
+              <b-badge
+                class="registerPopover me-1"
+                v-for="char of computeHumanValues(
+                  spaceItem.bytes.map(b => b.value),
+                  'string',
+                )"
+              >
+                {{ char }}
+              </b-badge>
+            </b-td>
+          </b-tr>
+          <b-tr>
+            <b-td>Signed</b-td>
+            <b-td>
+              <b-badge class="registerPopover">
+                {{
+                  computeHumanValues(
+                    spaceItem.bytes.map(b => b.value),
+                    "signed",
+                  ).at(0)
+                }}
+              </b-badge>
+            </b-td>
+          </b-tr>
+          <b-tr>
+            <b-td>Unsigned</b-td>
+            <b-td>
+              <b-badge class="registerPopover">
+                {{
+                  computeHumanValues(
+                    spaceItem.bytes.map(b => b.value),
+                    "unsigned",
+                  ).at(0)
+                }}
+              </b-badge>
+            </b-td>
+          </b-tr>
+          <b-tr>
+            <b-td>IEEE 754 (32 bits)</b-td>
+            <b-td>
+              <b-badge class="registerPopover">
+                {{
+                  computeHumanValues(
+                    spaceItem.bytes.map(b => b.value),
+                    "float32",
+                  ).at(0)
+                }}
+              </b-badge>
+            </b-td>
+          </b-tr>
+        </b-tbody>
+      </b-table-simple>
     </b-modal>
 
     <!-- <b-modal
@@ -551,6 +633,7 @@ export default {
 .memory_table {
   max-height: 49vh;
   padding-left: 1vw;
+  cursor: pointer;
 }
 
 .table-mem-wrapper-scroll-y {
@@ -586,12 +669,9 @@ export default {
   color: #00bcfe;
 }
 
-.value-button {
-  float: right;
-  margin-right: 5%;
-}
-
-.value-button:hover {
-  cursor: pointer;
+.registerPopover {
+  background-color: #ceecf5;
+  font-family: monospace;
+  font-weight: normal;
 }
 </style>
