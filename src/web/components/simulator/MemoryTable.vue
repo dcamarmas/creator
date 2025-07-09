@@ -24,7 +24,7 @@ import {
   creator_memory_update_space_view,
   creator_memory_update_row_view,
 } from "@/core/memory/memoryViewManager.mjs"
-import { chunks, range } from "@/core/utils/utils.mjs"
+import { chunks } from "@/core/utils/utils.mjs"
 
 export default {
   props: {
@@ -246,31 +246,16 @@ export default {
       }
     },
 
-    /**
-     * Checks if any of the special control registers are pointing to this
-     * address, and returns its types and names.
-     *
-     * @param {Number} addr Adress to check
-     *
-     * @returns {Array<{type: string, name: string}>}
-     */
-    get_pointers(addr) {
-      return REGISTERS.flatMap(bank =>
-        bank.elements
-          .filter(
-            register =>
-              // check it's one of the control registers
-              register.properties.some(p =>
-                this.ctrl_register_tags.includes(p),
-              ) &&
-              // check value is correct
-              (register.value & 0xfffffffcn) === (BigInt(addr) & 0xfffffffcn),
-          )
-          .map(reg => ({
-            type: reg.properties.find(p => this.ctrl_register_tags.includes(p)),
-            name: reg.name[1] || reg.name[0],
-          })),
-      )
+  computed: {
+    hints() {
+      return this.main_memory
+        .getAllHints()
+        .map(({ address, tag, type, sizeInBits }) => ({
+          address: Number(address),
+          tag,
+          type,
+          size: sizeInBits / this.main_memory.getBitsPerByte(),
+        }))
     },
 
     // I'd _like_ for these to be a computed method but, as none of the
