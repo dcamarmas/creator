@@ -41,7 +41,7 @@ import { bi_intToBigInt } from "../utils/bigint.mjs";
 import { creator_ga } from "../utils/creator_ga.mjs";
 import { logger } from "../utils/creator_logger.mjs";
 import { bin2hex, isDeno, isWeb, uint_to_float64 } from "../utils/utils.mjs";
-import { resetStats } from "../executor/stats.mjs";
+import { resetStats } from "../executor/stats.mts";
 
 const compiler_map = {
     default: assembly_compiler_default,
