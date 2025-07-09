@@ -180,7 +180,7 @@ export default {
       class="h6"
       v-if="
         example_set_options.length === 0 ||
-        available_sets[selected_set].examples.length === 0
+        available_sets[selected_set]?.examples.length === 0
       "
     >
       There\'s no examples at the moment
@@ -188,7 +188,7 @@ export default {
 
     <b-list-group>
       <b-button-group
-        v-for="example in available_sets[selected_set].examples"
+        v-for="example in available_sets[selected_set]?.examples"
         :key="example.id"
         size="sm"
         class="p-1"

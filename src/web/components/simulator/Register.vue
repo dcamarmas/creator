@@ -321,66 +321,66 @@ export default {
 
     {{ register.name.join(" | ") }}
 
-    <table class="table table-bordered table-sm popoverText">
-      <tbody>
-        <tr>
-          <td>Hexadecimal</td>
-          <td>
+    <b-table-simple small responsive bordered>
+      <b-tbody>
+        <b-tr>
+          <b-td>Hexadecimal</b-td>
+          <b-td>
             <b-badge class="registerPopover">
               {{ show_value(register, "hex") }}
             </b-badge>
-          </td>
-        </tr>
-        <tr>
-          <td>Binary</td>
-          <td>
+          </b-td>
+        </b-tr>
+        <b-tr>
+          <b-td>Binary</b-td>
+          <b-td>
             <b-badge class="registerPopover">
               {{ show_value(register, "bin") }}
             </b-badge>
-          </td>
-        </tr>
-        <tr v-if="this.type !== 'fp_registers'">
-          <td>Signed</td>
-          <td>
+          </b-td>
+        </b-tr>
+        <b-tr v-if="this.type !== 'fp_registers'">
+          <b-td>Signed</b-td>
+          <b-td>
             <b-badge class="registerPopover">
               {{ show_value(register, "signed") }}
             </b-badge>
-          </td>
-        </tr>
-        <tr v-if="this.type !== 'fp_registers'">
-          <td>Unsigned</td>
-          <td>
+          </b-td>
+        </b-tr>
+        <b-tr v-if="this.type !== 'fp_registers'">
+          <b-td>Unsigned</b-td>
+          <b-td>
             <b-badge class="registerPopover">
               {{ show_value(register, "unsigned") }}
             </b-badge>
-          </td>
-        </tr>
-        <tr v-if="this.type !== 'fp_registers'">
-          <td>Char</td>
-          <td>
+          </b-td>
+        </b-tr>
+        <b-tr v-if="this.type !== 'fp_registers'">
+          <b-td>Char</b-td>
+          <b-td>
             <b-badge class="registerPopover">
               {{ show_value(register, "char") }}
             </b-badge>
-          </td>
-        </tr>
-        <tr>
-          <td>IEEE 754 (32 bits)</td>
-          <td>
+          </b-td>
+        </b-tr>
+        <b-tr>
+          <b-td>IEEE 754 (32 bits)</b-td>
+          <b-td>
             <b-badge class="registerPopover">
               {{ show_value(register, "ieee32") }}
             </b-badge>
-          </td>
-        </tr>
-        <tr>
-          <td>IEEE 754 (64 bits)</td>
-          <td>
+          </b-td>
+        </b-tr>
+        <b-tr>
+          <b-td>IEEE 754 (64 bits)</b-td>
+          <b-td>
             <b-badge class="registerPopover">
               {{ show_value(register, "ieee64") }}
             </b-badge>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+          </b-td>
+        </b-tr>
+      </b-tbody>
+    </b-table-simple>
 
     <!-- <b-container fluid align-h="center" class="mx-0">
       <b-row align-h="center" :cols="get_cols()"> -->

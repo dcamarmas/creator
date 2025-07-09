@@ -84,6 +84,7 @@ export default {
       <b-col align-h="center" class="px-2">
         <MemoryTable
           class="my-2"
+          ref="memory_table"
           :main_memory="main_memory"
           :memory_segment="memory_segment"
         />
@@ -92,10 +93,3 @@ export default {
   </b-container>
 </template>
 
-<style lang="scss" scoped>
-.groupLabelling {
-  float: top;
-  position: relative;
-  top: -0.6vw;
-}
-</style>

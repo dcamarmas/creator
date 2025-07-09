@@ -24,30 +24,19 @@ import {
   BToastOrchestrator,
   useToastController,
 } from "bootstrap-vue-next"
-// import $ from "jquery"
 
 import package_json from "/package.json" // package info
-import arch_available from "/architecture/available_arch.json" // package info
+import arch_available from "/architecture/available_arch.json"
 
 import {
   notifications,
   show_notification,
-  backup_modal,
   loadArchitecture,
   loadExample,
 } from "./utils.mjs"
 
-import {
-  architecture,
-  architecture_hash,
-  status,
-  stats,
-  stats_value,
-  total_clk_cycles,
-  clk_cycles,
-  clk_cycles_value,
-  set_debug,
-} from "@/core/core.mjs"
+import { architecture, architecture_hash, set_debug } from "@/core/core.mjs"
+import { stats } from "@/core/executor/stats.mts"
 
 import { instructions } from "@/core/compiler/compiler.mjs"
 
@@ -95,12 +84,11 @@ export default {
 
   setup() {
     // BV Composeables, such as these, should only be used inside setup
-    const showToast = useToastController().show
+    const createToast = useToastController().create
 
-    return { showToast } // shows a toast notification
+    return { createToast } // shows a toast notification
   },
 
-  // eslint-disable-next-line max-lines-per-function
   data() {
     return {
       /********************/
@@ -190,24 +178,10 @@ export default {
       architecture,
       architecture_hash,
 
-      // Instructions fields
-      modal_field_instruction: {
-        //TODO: include into instruction component - modal info
-        title: "",
-        index: null,
-        instruction: {},
-      },
 
-      // Pseudoinstruction fields
-      modal_field_pseudoinstruction: {
-        //TODO: include into pseudoinstruction component - modal info
-        title: "",
-        index: null,
-        pseudoinstruction: {},
-      },
-
-      //Architecture edit code
+      // Architecture edit code
       arch_code: "",
+
 
       /************/
       /* Assembly */
@@ -267,19 +241,9 @@ export default {
       // Stats
       //
 
-      totalStats: status.totalStats,
       stats,
-      // Stats Graph values
-      stats_value,
-
-      //
-      // CLK Cycles
-      //
-
-      total_clk_cycles,
-      clk_cycles,
-      //CLK Cycles Graph values
-      clk_cycles_value,
+      stat_representation: "graphic",
+      stat_type: "instructions",
 
       //
       // Display and keyboard
@@ -320,8 +284,6 @@ export default {
    * Mounted vue instance *
    ************************/
   mounted() {
-    backup_modal(this)
-
     // Preload following URL params
     this.loadFromURI()
     // const url_hash = creator_preload_get2hash(window.location)
@@ -556,16 +518,16 @@ export default {
     <UIeltoAbout id="about" />
 
     <!-- Instruction Help sidebar -->
+    <!-- we don't want to load this unless we have selected an architecture -->
     <SidebarInstructionHelp
+      v-if="architecture_name !== ''"
       id="sidebar_help"
       :architecture_name="architecture_name"
-      :architecture="architecture"
-      :architecture_guide="architecture_guide"
       :instruction_help_size="instruction_help_size"
     />
 
     <!-- Backup modal -->
-    <UIeltoBackup id="copy" />
+    <UIeltoBackup id="copy" @load-architecture="creator_mode = 'assembly'" />
   </header>
 
   <!----------------------->
@@ -591,7 +553,7 @@ export default {
   <!------------------>
 
   <ArchitectureView
-    v-if="creator_mode == 'architecture'"
+    v-if="creator_mode === 'architecture'"
     :architecture_name="architecture_name"
     :arch_available="arch_available"
     :arch_code="arch_code"
@@ -622,11 +584,13 @@ export default {
   <!-------------------->
 
   <SimulatorView
-    v-if="creator_mode == 'simulator'"
-    v-model:data_mode="data_mode"
-    v-model:reg_representation_int="reg_representation_int"
-    v-model:reg_representation_float="reg_representation_float"
-    v-model:reg_name_representation="reg_name_representation"
+    v-if="creator_mode === 'simulator'"
+    :data_mode="data_mode"
+    :reg_representation_int="reg_representation_int"
+    :reg_representation_float="reg_representation_float"
+    :reg_name_representation="reg_name_representation"
+    :stat_representation="stat_representation"
+    :stat_type="stat_type"
     :architecture_name="architecture_name"
     :arch_available="arch_available"
     :enter="enter"

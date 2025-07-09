@@ -16,20 +16,39 @@
  *  You should have received a copy of the GNU Lesser General Public License
  *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  */
-"use strict";
+
 import { architecture, status, REGISTERS } from "../core.mjs";
 import { packExecute, writeStackLimit } from "../executor/executor.mjs";
 import { instructions } from "../compiler/compiler.mjs";
 import { creator_callstack_writeRegister } from "../sentinel/sentinel.mjs";
 
-
+/**
+ * Updates UI after a register update
+ *
+ * @param {Number} indexComp Index of the register bank
+ * @param {Number} indexElem Index of the register
+ */
 function updateRegisterUI(indexComp, indexElem) {
-    const register_name = architecture.components[indexComp].elements[indexElem].name[0]
+    const register = REGISTERS[indexComp].elements[indexElem];
+    const ctrl_register_tags = [
+        "program_counter",
+        "stack_pointer",
+        "frame_pointer",
+        "global_pointer",
+    ];
 
     // this is ugly, but it's the only way (I found)
-    document.app.$root.$refs.simulatorView.$refs.registerFile?.$refs[`reg${register_name}`]?.at(0)?.refresh()
-}
+    document.app.$root.$refs.simulatorView.$refs.registerFile?.$refs[
+        `reg${register.name[0]}`
+    ]
+        ?.at(0)
+        ?.refresh();
 
+    // check it's one of the control registers
+    if (register.properties.some(p => ctrl_register_tags.includes(p))) {
+        document.app.$root.$refs.simulatorView.$refs.memory?.$refs?.memory_table?.refresh_tags();
+    }
+}
 
 export function readRegister(indexComp, indexElem) {
     const draw = {
@@ -110,7 +129,6 @@ export function writeRegister(value, indexComp, indexElem) {
     }
 
     if (typeof window !== "undefined") {
-        updateRegisterUI(indexComp, indexElem)
+        updateRegisterUI(indexComp, indexElem);
     }
-
 }

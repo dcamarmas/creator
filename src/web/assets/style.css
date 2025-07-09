@@ -10,9 +10,6 @@
   background-color: #00bcfe;
 }
 
-.stats {
-  font-size: 0.85em;
-}
 
 @media only screen and (min-width: 2560px) {
   .instructions_table {

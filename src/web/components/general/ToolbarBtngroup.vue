@@ -28,11 +28,15 @@ import {
   instructions_packed,
   reset,
 } from "@/core/core.mjs"
-import { instructions } from "@/core/compiler/compiler.mjs"
+import { resetStats } from "@/core/executor/stats.mts"
+import { instructions, set_instructions } from "@/core/compiler/compiler.mjs"
 import { step, packExecute } from "@/core/executor/executor.mjs"
 import { creator_ga } from "@/core/utils/creator_ga.mjs"
-import { show_notification, loadArchitecture } from "@/web/utils.mjs"
-
+import {
+  show_notification,
+  loadArchitecture,
+  storeBackup,
+} from "@/web/utils.mjs"
 
 export default {
   props: {
@@ -58,11 +62,11 @@ export default {
       instruction_disable: false,
       run_disable: false,
       stop_disable: true,
-    };
+    }
   },
   computed: {
     arch_available() {
-      return this.architectures.filter(item => item.available === 1);
+      return this.architectures.filter(item => item.available === 1)
     },
 
     instruction_values: {
@@ -70,7 +74,7 @@ export default {
         return this.instructions
       },
       set(value) {
-        instructions = value
+        set_instructions(value)
       },
     },
     /**
@@ -117,6 +121,10 @@ export default {
   },
 
   methods: {
+    help_event(event) {
+      creator_ga('send', 'event', 'help', `help.${event}`, `help.${event}`)
+    },
+
     //
     //Screen change
     //
@@ -135,33 +143,7 @@ export default {
         // }
 
         // fast transition <any> => <any> - "architecture"
-        // this.$root.creator_mode = e
         this.$root.creator_mode = e;
-
-        //Assembly view => Start codemirror
-        // if (e === "assembly") {
-        //   setTimeout(function () {
-        //     assembly_codemirror_start()
-        //     if (codemirrorHistory !== null) {
-        //       textarea_assembly_editor.setHistory(codemirrorHistory)
-        //       textarea_assembly_editor.undo()
-        //     }
-        //     textarea_assembly_editor.setValue(code_assembly)
-        //     if (update_binary !== "") {
-        //       $("#divAssembly").attr("class", "col-lg-10 col-sm-12")
-        //       $("#divTags").attr("class", "col-lg-2 col-sm-12")
-        //       $("#divTags").show()
-        //     }
-        //   }, 50)
-        // }
-
-        //Architecture or simulator view => Close codemirror
-        // if (textarea_assembly_editor !== null && e !== "assembly") {
-        //   app._data.assembly_code = textarea_assembly_editor.getValue()
-        //   code_assembly = textarea_assembly_editor.getValue()
-        //   codemirrorHistory = textarea_assembly_editor.getHistory()
-        //   textarea_assembly_editor.toTextArea()
-        // }
 
         //Close all toast and refresh
         // this.$root.$bvToast.hide()
@@ -198,53 +180,16 @@ export default {
       // we use the setTimeout so the UI can update while compiling
       setTimeout(() => {
         // Compile
-        // if (typeof code !== "undefined") {
-        //   code_assembly = code
-        // } else {
-        //   code_assembly = textarea_assembly_editor.getValue()
-        // }
         const ret = assembly_compile(this.$root.assembly_code)
 
-        //TODO: Update/reset stats
-        // app._data.totalStats = 0
-        // app._data.instructions = instructions
-        // tokenIndex = 0 //TODO: change to token_index in all files
-        // uielto_toolbar_btngroup.methods.reset(true)
+        // Update/reset stats
+        resetStats()
 
-        // TODO: Save a backup in the cache memory
-        // if (typeof Storage !== "undefined") {
-        //   const aux_object = jQuery.extend(true, {}, architecture)
-        //   const aux_architecture = register_value_serialize(aux_object)
-        //   const aux_arch = JSON.stringify(aux_architecture, null, 2)
-
-        //   const date = new Date()
-        //   const auxDate =
-        //     date.getHours() +
-        //     ":" +
-        //     date.getMinutes() +
-        //     ":" +
-        //     date.getSeconds() +
-        //     " - " +
-        //     date.getDate() +
-        //     "/" +
-        //     (date.getMonth() + 1) +
-        //     "/" +
-        //     date.getFullYear()
-
-        //   localStorage.setItem(
-        //     "backup_arch_name",
-        //     app._data.architecture_name,
-        //   )
-        //   localStorage.setItem("backup_arch", aux_arch)
-        //   localStorage.setItem("backup_asm", code_assembly)
-        //   localStorage.setItem("backup_date", auxDate)
-        // }
-
-        //show error/warning
-
-        //Change buttons status
+        // Change buttons status
         this.compiling = false;
 
+
+        // show error/warning
         switch (ret.type) {
           case "error":
             this.compile_error(ret.msg);
@@ -267,7 +212,7 @@ export default {
       // Close all toast
       // app.$bvToast.hide()
 
-      // enable execution buttons
+      storeBackup()
     },
 
     // Show error message in the compilation
@@ -310,9 +255,23 @@ export default {
      *                 }
      */
     execution_UI_update(ret) {
+      // this is ugly, but it's the only way I found, because the computed
+      // properties in PlotStats.vue / TableStats.vue / TableExecution.vue don't
+      // react to changes done to `stats`
+
       if (ret === undefined) {
         return
       }
+
+      /* MEMORY */
+
+      this.$root.$refs.simulatorView.$refs.memory?.$refs?.memory_table?.refresh()
+
+      /* STATS */
+
+      this.$root.$refs.simulatorView.$refs.stats?.refresh()
+
+      /* EXECUTION TABLE */
 
       // update instructions' _rowVariant depending on the result of the
       // execution
@@ -851,10 +810,11 @@ export default {
         <!-- button_information -->
 
         <b-popover
-          v-if="item == 'btn_information'"
+          v-if="item === 'btn_information'"
           :click="true"
           :close-on-hide="true"
           :delay="{ show: 0, hide: 0 }"
+          position="auto"
         >
           <template #target>
             <b-button
@@ -868,39 +828,42 @@ export default {
             </b-button>
           </template>
 
-          <b-button
-            href="https://creatorsim.github.io/"
-            target="_blank"
-            size="sm"
-            variant="warning"
-            onclick="creator_ga('send', 'event', 'help', 'help.general_help', 'help.general_help');"
-          >
-            <font-awesome-icon icon="fa-question-circle" />
-            Help
-          </b-button>
+          <div class="d-grid gap-2">
+            <b-button
+              class="infoButton text-truncate"
+              href="https://creatorsim.github.io/"
+              target="_blank"
+              size="sm"
+              variant="outline-secondary"
+              @click="help_event('general_help')"
+            >
+              <font-awesome-icon icon="fa-question-circle" />
+              Help
+            </b-button>
 
-          <b-button
-            class="h-100 infoButton"
-            v-if="show_instruction_help"
-            id="inst_ass"
-            v-b-toggle.sidebar_help
-            size="sm"
-            variant="outline-secondary"
-            onclick="creator_ga('send', 'event', 'help', 'help.instruction_help', 'help.instruction_help');"
-          >
-            <font-awesome-icon icon="fa-book" />
-            Instruction Help
-          </b-button>
+            <b-button
+              class="infoButton"
+              v-if="show_instruction_help"
+              id="inst_ass"
+              v-b-toggle.sidebar_help
+              size="sm"
+              variant="outline-secondary"
+              @click="help_event('instruction_help')"
+            >
+              <font-awesome-icon icon="fa-book" />
+              Instruction Help
+            </b-button>
 
-          <b-button
-            class="buttonBackground h-100"
-            size="sm"
-            variant="outline-secondary"
-            v-b-modal.notifications
-          >
-            <font-awesome-icon icon="fa-bell" />
-            Show Notifications
-          </b-button>
+            <b-button
+              class="menuButton"
+              size="sm"
+              variant="outline-secondary"
+              v-b-modal.notifications
+            >
+              <font-awesome-icon icon="fa-bell" />
+              Show Notifications
+            </b-button>
+          </div>
         </b-popover>
       </b-col>
     </b-row>

@@ -19,12 +19,13 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <script>
+import available_arch from "/architecture/available_arch.json"
+import { architecture } from "@/core/core.mjs"
+
 export default {
   props: {
     id: { type: String, required: true },
     architecture_name: { type: String, required: true },
-    architecture: { type: Object, required: true },
-    architecture_guide: { type: String, required: true },
     instruction_help_size: { type: Number, required: true },
   },
 
@@ -35,12 +36,22 @@ export default {
 
       //Help table
       insHelpFields: ["name"],
+
+      instructions: architecture.instructions,
     }
   },
 
   computed: {
     width() {
       return this.instruction_help_size + "vw"
+    },
+
+    architecture_guide() {
+      return available_arch.find(
+        arch =>
+          arch.name === this.architecture_name ||
+          arch.alias.includes(this.architecture_name),
+      )?.guide
     },
   },
 }
@@ -57,11 +68,7 @@ export default {
     />
 
     <br />
-    <a
-      v-if="architecture_guide != ''"
-      target="_blank"
-      :href="architecture_guide"
-    >
+    <a v-if="architecture_guide" target="_blank" :href="architecture_guide">
       <font-awesome-icon icon="fa-solid fa-file-pdf" />
       {{ architecture_name }} Guide
     </a>
@@ -69,11 +76,12 @@ export default {
 
     <b-table
       small
-      :items="architecture.instructions"
+      :items="instructions"
       :fields="insHelpFields"
-      class="text-left help-scroll-y my-3"
+      class="text-left my-3"
       :filter="instHelpFilter"
       thead-class="d-none"
+      primary-key="name"
     >
       <template v-slot:cell(name)="row">
         <h4>{{ row.item.name }}</h4>
