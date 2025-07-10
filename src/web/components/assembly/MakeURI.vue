@@ -41,6 +41,14 @@ export default {
     return { hide }
   },
 
+  data() {
+    return {
+      // 40-M, Alphanumeric Mode (see
+      // https://www.thonky.com/qr-code-tutorial/character-capacities)
+      maxQRSize: 3391,
+    }
+  },
+
   computed: {
     uri() {
       let u =
@@ -72,7 +80,7 @@ export default {
 <template>
   <b-modal :id="id" title="Share via URI" no-footer class="text-center">
     <qrcode-vue
-      v-if="uri.length < 4296"
+      v-if="uri.length < maxQRSize"
       class="mb-3"
       :value="uri"
       level="M"
