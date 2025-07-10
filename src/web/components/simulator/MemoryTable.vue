@@ -237,7 +237,31 @@ export default {
           return values
 
         case "string":
-          return bytes.map(b => String.fromCharCode(b))
+          return bytes.map(b => {
+            switch (b) {
+              // escape characters, such as \0, \n, etc., need to be escaped so we can show them literally
+              case 0:
+                return "\\0"
+
+              case 8:
+                return "\\b"
+
+              case 9:
+                return "\\t"
+
+              case 10:
+                return "\\n"
+
+              case 12:
+                return "\\f"
+
+              case 13:
+                return "\\r"
+
+              default:
+                return String.fromCharCode(b)
+            }
+          })
 
         case "padding":
         case "space":
