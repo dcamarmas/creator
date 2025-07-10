@@ -46,6 +46,7 @@ export default {
     reg_name_representation: { type: String, required: true },
     stat_representation: { type: String, required: true },
     stat_type: { type: String, required: true },
+    memory_segment: { type: String, required: true },
     enter: [Boolean, null],
     stack_total_list: Number,
     main_memory_busy: Boolean,
@@ -164,6 +165,7 @@ export default {
                 :callee_subrutine="callee_subrutine"
                 :caller_subrutine="caller_subrutine"
                 :stack_total_list="stack_total_list"
+                :selectedSegment="memory_segment"
                 :memory_layout="architecture.memory_layout"
                 :end_callee="end_callee"
                 :dark="dark"
@@ -177,7 +179,6 @@ export default {
                 :representation="stat_representation"
                 :type="stat_type"
               />
-
             </b-col>
 
             <!-- Monitor & keyboard -->

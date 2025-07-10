@@ -225,6 +225,7 @@ export default {
       reg_representation_int: "signed",
       reg_representation_float: "ieee32",
       reg_name_representation: "alias",
+      memory_segment: "data",
 
 
       // Stack
@@ -591,6 +592,7 @@ export default {
     :reg_name_representation="reg_name_representation"
     :stat_representation="stat_representation"
     :stat_type="stat_type"
+    :memory_segment="memory_segment"
     :architecture_name="architecture_name"
     :arch_available="arch_available"
     :enter="enter"

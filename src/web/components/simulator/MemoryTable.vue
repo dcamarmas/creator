@@ -29,7 +29,7 @@ import { chunks } from "@/core/utils/utils.mjs"
 export default {
   props: {
     main_memory: { type: Object, required: true },
-    memory_segment: { type: String, required: true },
+    segment: { type: String, required: true },
     // track_stack_names: { type: Array, required: true }, // TODO: optional
     // callee_subrutine: { type: String, required: true }, // TODO: optional
     // caller_subrutine: { type: String, required: true }, // TODO: optional
@@ -83,7 +83,7 @@ export default {
      * Filters which rows to show, depending on the data segment
      */
     filter(row, _filter) {
-      const segment = this.memorySegments.get(this.memory_segment)
+      const segment = this.memorySegments.get(this.segment)
       if (segment === undefined) return false
 
       return row.start >= segment.startAddress && row.end <= segment.endAddress
@@ -146,7 +146,7 @@ export default {
 
     get_classes(item) {
       return {
-        h6Sm: this.memory_segment !== "stack",
+        h6Sm: this.segment !== "stack",
         "h6Sm text-secondary":
           item.start < this.$root.end_callee &&
           Math.abs(item.start - this.$root.end_callee) <
