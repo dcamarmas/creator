@@ -1463,6 +1463,7 @@
         "npm:@vue/eslint-config-prettier@^10.2.0",
         "npm:@vue/eslint-config-typescript@^14.6.0",
         "npm:@vue/tsconfig@0.7",
+        "npm:ansicolor@^2.0.3",
         "npm:apexcharts@^4.7.0",
         "npm:bootstrap-vue-next@~0.30.4",
         "npm:bootstrap@^5.3.7",

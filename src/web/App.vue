@@ -99,6 +99,7 @@ export default {
 
       // Version Number
       version: package_json.version,
+      simulatorViewKey: 0, // Add a key for SimulatorView to force re-render
 
       // Architecture name and guide
       architecture_name: "",
@@ -589,6 +590,7 @@ export default {
     :memory_segment="memory_segment"
     :architecture_name="architecture_name"
     :arch_available="arch_available"
+    :instructions="instructions"
     :enter="enter"
     :browser="browser"
     :os="os"
@@ -597,6 +599,7 @@ export default {
     :keyboard="keyboard"
     :dark="dark"
     ref="simulatorView"
+    :key="simulatorViewKey"
   />
 
   {{ keyboard }}

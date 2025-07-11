@@ -1,0 +1,114 @@
+/*
+ *  Copyright 2018-2025 Felix Garcia Carballeira, Alejandro Calderon Mateos, Diego Camarmas Alonso
+ *
+ *  This file is part of CREATOR.
+ *
+ *  CREATOR is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Lesser General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  CREATOR is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+"use strict";
+import { spawnSync } from "node:child_process";
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
+import { main_memory } from "../../../core.mjs";
+import { parseDebugSymbols, precomputeInstructions } from "../../compiler.mjs";
+
+export function assembly_compiler_rasm(code) {
+  // Create a temporary directory
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "rasm-"));
+  const tmp = path.join(tmpDir, "temp.asm");
+  fs.writeFileSync(tmp, code, "utf8");
+
+  // Output file
+  const outFile = tmp.replace(/\.asm$/, ".bin");
+  const symFile = tmp.replace(/\.asm$/, ".sym");
+
+  // Run rasm (needs to be installed in the system)
+  const result = spawnSync(
+    "rasm",
+    ["-o", outFile, "-s", symFile, tmp],
+    {
+      encoding: "utf8",
+      maxBuffer: 10 * 1024 * 1024,
+    }
+  );
+
+  if (result.status !== 0) {
+    // Clean up temp files
+    try {
+      fs.unlinkSync(tmp);
+    } catch { }
+    try {
+      fs.unlinkSync(outFile);
+    } catch { }
+    try {
+      fs.unlinkSync(symFile);
+    } catch { }
+    try {
+      fs.rmdirSync(tmpDir);
+    } catch { }
+    return {
+      errorcode: "rasm",
+      type: "error",
+      bgcolor: "danger",
+      status: "error",
+      msg: result.stderr || "rasm failed",
+    };
+  }
+
+  // Read the output binary
+  const binary = fs.readFileSync(outFile);
+
+  // Read debug symbols if available
+  let debugSymbols = null;
+  try {
+    debugSymbols = fs.readFileSync(symFile, "utf8");
+  } catch { }
+
+  // Parse debug symbols if available
+  const parsedSymbols = parseDebugSymbols(debugSymbols);
+
+  main_memory.loadROM(binary);
+  precomputeInstructions(parsedSymbols);
+
+  // Now add hints to memory based on the parsed symbols (its a dictionary)
+  for (const [name, addr] of Object.entries(parsedSymbols)) {
+    main_memory.addHint(addr, name);
+  }
+
+  // Clean up temp files
+  try {
+    fs.unlinkSync(tmp);
+  } catch { }
+  try {
+    fs.unlinkSync(outFile);
+  } catch { }
+  try {
+    fs.unlinkSync(symFile);
+  } catch { }
+  try {
+    fs.rmdirSync(tmpDir);
+  } catch { }
+
+  return {
+    errorcode: "",
+    token: "",
+    type: "",
+    update: "",
+    status: "ok",
+    binary,
+    stdout: result.stdout,
+  };
+}

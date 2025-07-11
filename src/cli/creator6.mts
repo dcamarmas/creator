@@ -18,6 +18,8 @@ import yaml from "js-yaml";
 import path from "node:path";
 import { displayHelp } from "./utils.mts";
 import { Buffer } from "node:buffer";
+import { assembly_compiler_sjasmplus } from "../core/compiler/sjasmplus/deno/sjasmplus.mjs";
+import { assembly_compiler_default } from "../core/compiler/creatorCompiler/deno/creatorCompiler.mjs";
 
 const MAX_INSTRUCTIONS = 10000000000;
 const CLI_VERSION = "0.1.0";
@@ -50,6 +52,7 @@ interface ArgvOptions {
     bin: string;
     library: string;
     assembly: string;
+    compiler: string;
     debug: boolean;
     reference: string;
     state: string;
@@ -71,6 +74,14 @@ interface ReturnType {
         machineCode?: string;
         success?: boolean;
     };
+}
+
+interface Instruction {
+    Address: string;
+    Label: string | null;
+    loaded: string;
+    user: string;
+    Break: boolean;
 }
 interface ConfigType {
     settings: {
@@ -134,7 +145,7 @@ function loadConfiguration(configPath: string = CONFIG_PATH): ConfigType {
             shortcuts: { ...DEFAULT_CONFIG.shortcuts, ...config.shortcuts },
         };
     } catch (error) {
-        console.error(`Error loading configuration: ${error.message}`);
+        console.error(`Error loading configuration: ${(error as Error).message}`);
         return DEFAULT_CONFIG;
     }
 }
@@ -306,7 +317,7 @@ function loadBinaryFile(filePath: string, offset = 0n) {
     } catch (error) {
         return {
             status: "error",
-            msg: `Error loading binary file: ${error.message}`,
+            msg: `Error loading binary file: ${(error as Error).message}`,
         };
     }
 }
@@ -339,14 +350,20 @@ function loadLibrary(filePath: string) {
     creator.load_library(libraryFile);
     console.log("Library loaded successfully.");
 }
-
-function assemble(filePath: string, compiler?: string) {
+const compiler_map = {
+    default: assembly_compiler_default,
+    sjasmplus: assembly_compiler_sjasmplus,
+};
+async function assemble(filePath: string, compiler?: string) {
     if (!filePath) {
         console.log("No assembly file specified.");
         return;
     }
+    // get function from the compiler map, with type safety
+    const compilerKey = (compiler && compiler in compiler_map) ? compiler as keyof typeof compiler_map : "default";
+    const compilerFunction = compiler_map[compilerKey];
     const assemblyFile = fs.readFileSync(filePath, "utf8");
-    const ret: ReturnType = creator.assembly_compile(assemblyFile, true, compiler);
+    const ret: ReturnType = await creator.assembly_compile(assemblyFile, compilerFunction);
     if (ret && ret.status !== "ok") {
         console.error(ret.msg);
         process.exit(1);
@@ -386,7 +403,7 @@ function displayInstructionsHeader() {
     );
 }
 
-function displayInstruction(instr, currentPC, hideLibrary = false) {
+function displayInstruction(instr: Instruction, currentPC: string, hideLibrary = false) {
     const address = instr.Address.padEnd(8);
     const label = (instr.Label || "").padEnd(11);
     let loaded = (instr.loaded || "").padEnd(23);
@@ -1081,8 +1098,6 @@ function displayMemory(address: number, count: number) {
         const hintsInRange: Array<{
             hint: { tag: string; type: string; sizeInBits?: number };
             offset: number;
-            hint: { tag: string; type: string; sizeInBits?: number };
-            offset: number;
         }> = [];
         for (let j = 0; j < wordSize; j++) {
             const byteAddr = BigInt(currentAddr + j);
@@ -1758,7 +1773,7 @@ function checkTerminalSize() {
     }
 }
 
-function main() {
+async function main() {
     // Check terminal size
     checkTerminalSize();
     // Parse command line arguments
@@ -1805,7 +1820,7 @@ function main() {
             loadLibrary(argv.library);
         }
         if (argv.assembly) {
-            assemble(argv.assembly, argv.compiler);
+            await assemble(argv.assembly, argv.compiler);
         }
     }
 

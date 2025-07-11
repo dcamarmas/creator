@@ -39,11 +39,11 @@ export default {
 <style lang="scss" scoped>
 .errorAssembly {
   padding: 3%;
-  background: #dc3545;
-  color: white;
+  background: #000000;
+  color: rgb(241, 241, 241);
   white-space: pre;
   overflow-x: auto;
   line-height: 112%;
-  border-radius: 10px;
+  border-radius: 3px;
 }
 </style>
