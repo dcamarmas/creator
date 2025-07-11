@@ -19,31 +19,18 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <script>
-import { architecture, memory_hash, REGISTERS } from "@/core/core.mjs"
-import {
-  creator_memory_update_space_view,
-  creator_memory_update_row_view,
-} from "@/core/memory/memoryViewManager.mjs"
-import { chunks } from "@/core/utils/utils.mjs"
+import { REGISTERS } from "@/core/core.mjs"
+import { stack_hints, track_stack_limits } from "@/core/memory/stackTracker.mjs"
+import { chunks, range } from "@/core/utils/utils.mjs"
 
 export default {
   props: {
     main_memory: { type: Object, required: true },
     segment: { type: String, required: true },
-    // track_stack_names: { type: Array, required: true }, // TODO: optional
-    // callee_subrutine: { type: String, required: true }, // TODO: optional
-    // caller_subrutine: { type: String, required: true }, // TODO: optional
-    // stack_total_list: { type: Number, required: true },
-    // main_memory_busy: { type: Boolean, required: true },
-    // memory_layout: { type: Object, required: true },
-    // end_callee: { type: Number, required: true },
   },
 
   data() {
     return {
-      architecture,
-
-      memFields: [{ key: "Tag", label: "" }, "Address", "Binary", "Value"],
       row_info: null,
       spaceView: false,
       spaceItem: null,
@@ -89,64 +76,9 @@ export default {
       return row.start >= segment.startAddress && row.end <= segment.endAddress
     },
 
-    // TODO: generic and include modal
-    select_data_type(record, index) {
-      this.row_info = { index, addr: record.addr - 3, size: record.size }
-
-      if (this.memory_segment === "instructions_memory") {
-        return
-      }
-
-      if (this.memory_segment === "data_memory") {
-        if (this.check_tag_null(record.hex)) {
-          //app.$refs['space_modal'].show(); // TODO: vue bidirectional updates
-          this.$root.$emit("bv::show::modal", "space_modal")
-        }
-      }
-
-      if (this.memory_segment === "stack_memory") {
-        //app.$refs['stack_modal'].show(); // TODO: vue bidirectional updates
-        this.$root.$emit("bv::show::modal", "stack_modal")
-      }
-    },
-
-    change_space_view() {
-      creator_memory_update_space_view(
-        this.selected_space_view,
-        memory_hash[1],
-        this.row_info,
-      )
-    },
-
-    hide_space_modal() {
-      this.selected_space_view = null
-    },
-
-    change_stack_view() {
-      creator_memory_update_row_view(
-        this.selected_stack_view,
-        memory_hash[2],
-        this.row_info,
-      )
-    },
-
-    hide_stack_modal() {
-      this.selected_stack_view = null
-    },
-
-    check_tag_null(record) {
-      for (let i = 0; i < record.length; i++) {
-        if (record[i].tag !== null) {
-          return true
-        }
-      }
-
-      return false
-    },
-
     get_classes(item) {
       return {
-        h6Sm: this.segment !== "stack",
+        h6Sm: this.segment !== "stack" || item.start >= this.$root.begin_caller,
         "h6Sm text-secondary":
           item.start < this.$root.end_callee &&
           Math.abs(item.start - this.$root.end_callee) <
@@ -154,10 +86,9 @@ export default {
         "h6Sm text-success":
           item.start < this.$root.begin_callee &&
           item.start >= this.$root.end_callee,
-        "h6Sm text-blue-funny":
+        "h6Sm text-info":
           item.start < this.$root.begin_caller &&
           item.start >= this.$root.end_caller,
-        h6Sm: item.start >= this.$root.begin_caller,
       }
     },
 
@@ -286,9 +217,17 @@ export default {
     // dependencies are reactive, as we're calling
     // `this.main_memory.getWritten()`, computed caching comes into play and not
     // even force updating works.
-    main_memory_items() {
-      const mem = this.main_memory.getWritten()
-      const addresses = this.main_memory.getWrittenAddresses()
+    memory() {
+      // we show just the written memory addresses bc we don't want to store a
+      // 4GiB array full of zeroes
+      const mem = this.main_memory
+        .getWritten()
+        // we filter out the stack, we'll add it later bc not all values in the
+        // stack are written values
+        .filter(
+          b => b.addr < Number(this.memorySegments.get("stack").startAddress),
+        )
+      const addresses = mem.map(b => b.addr)
 
       // ensure full words
       // why do we do this? because we don't want to hold the whole simulator
@@ -345,6 +284,16 @@ export default {
         i += hint.size
       }
 
+      // add the stack
+      for (const addr of range(this.stackTop(), this.stackBottom() + 1)) {
+        mem.push({
+          addr,
+          value: this.main_memory.read(BigInt(addr)),
+          // note that we don't need the "human" hints, as we'll use the last
+          // written register as a hint
+        })
+      }
+
       return (
         // group bytes by words
         chunks(mem, wordSize).map(bytes => ({
@@ -370,6 +319,34 @@ export default {
           size: sizeInBits / this.main_memory.getBitsPerByte(),
         }))
     },
+    stackTop() {
+      return parseInt(track_stack_limits.at(-1)?.end_callee, 16)
+    },
+
+    stackBottom() {
+      return parseInt(track_stack_limits.at(0)?.begin_caller, 16)
+    },
+
+    getStackHint(addr) {
+      return stack_hints[addr]
+    },
+
+    stackFrames() {
+      return track_stack_limits
+    },
+  },
+
+  computed: {
+    memFields() {
+      return [
+        { key: "Tag", label: "" },
+        "Address",
+        "Binary",
+        this.segment === "stack"
+          ? { key: "Hint", label: "Register hint" }
+          : "Value",
+      ]
+    },
   },
 }
 </script>
@@ -385,7 +362,7 @@ export default {
             ref="table"
             small
             hover
-            :items="main_memory_items()"
+            :items="memory()"
             :fields="memFields"
             :filter-function="filter"
             filter=" "
@@ -495,75 +472,97 @@ export default {
                 }}
               </span>
             </template>
+
+            <!-- stack hints -->
+
+            <template v-slot:cell(Hint)="row">
+              <b-badge class="registerPopover">
+                {{ getStackHint(row.item.start) }}
+              </b-badge>
+            </template>
           </b-table>
         </b-col>
       </b-row>
 
-      <!-- TODO: Stack -->
-      <!-- <b-row align-v="end">
-        <b-col>
-          <div
-            class="col-lg-12 col-sm-12 row mx-0 px-2 border"
-            v-if="memory_segment == 'stack_memory'"
-          >
-            <span class="col-lg-12 col-sm-12 my-1">
-              <span>Stack memory areas: </span>
-              <span class="fas fa-search-plus" id="stack_funct_popover" />
-            </span>
+      <!-- stack visualizer -->
 
-            <span
-              class="badge badge-white border border-secondary text-secondary mx-1 col"
+      <div v-if="segment === 'stack'" class="px-2 border">
+        <span>Stack memory areas</span>
+
+        <!-- secondary view -->
+        <b-popover
+          target="stack_funct_popover"
+          triggers="hover"
+          placement="top"
+          class="d-flex text-center"
+        >
+          <template #target>
+            <font-awesome-icon
+              :icon="['fas', 'magnifying-glass-plus']"
+              id="stack_funct_popover"
+              class="ms-2"
+            />
+          </template>
+
+          <p class="font-monospace">0x{{ toHex(stackTop()) }}</p>
+
+          <b-list-group class="mb-1">
+            <b-list-group-item
+              v-for="(frame, index) in stackFrames().toReversed()"
+              :class="{
+                'text-success': index === 0,
+                'text-info': index === 1,
+              }"
             >
+              {{ frame.function_name }}
+            </b-list-group-item>
+          </b-list-group>
+
+          <p class="font-monospace">0x{{ toHex(stackBottom()) }}</p>
+        </b-popover>
+
+        <!-- Free stack -->
+        <b-row align-v="end" class="text-center my-1">
+          <b-col cols="6" md="5" sm="2" class="border rounded ms-2">
+            <!-- we use b-badge bc it makes the text smaller -->
+            <b-badge variant="white" class="text-secondary">
               Free <br />
               stack
-            </span>
-            <span
-              class="badge badge-white border border-secondary text-success mx-1"
-            >
-              Callee: <br />{{ callee_subrutine }}
-            </span>
-            <span
-              class="badge badge-white border border-secondary text-info mx-1"
-              v-if="track_stack_names.length > 1"
-            >
-              Caller: <br />{{ caller_subrutine }}
-            </span>
-            <span
-              class="badge badge-white border border-secondary text-dark mx-1"
-              v-if="track_stack_names.length > 2"
-              align-v="center"
-            >
-              <b>&bull;&bull;&bull;<br />{{ track_stack_names.length - 2 }}</b>
-            </span>
-            <span
-              class="badge badge-white border border-secondary text-dark mx-1"
-            >
-              System <br />stack
-            </span>
+            </b-badge>
+          </b-col>
 
-            <b-popover
-              target="stack_funct_popover"
-              triggers="hover"
-              placement="top"
-            >
-              <span>0x000...</span>
-              <b-list-group class="my-2">
-                <b-list-group-item
-                  v-for="(item, index) in track_stack_names.slice().reverse()"
-                >
-                  <span class="text-success" v-if="index == 0">{{ item }}</span>
-                  <span class="text-info" v-if="index == 1">{{ item }}</span>
-                  <span class="text-dark" v-if="index > 1">{{ item }}</span>
-                </b-list-group-item>
-              </b-list-group>
-              <span>0xFFF...</span>
-            </b-popover>
-          </div>
-        </b-col>
-      </b-row> -->
+          <!-- Callee -->
+          <b-col class="border rounded ms-1">
+            <b-badge variant="white" class="text-success">
+              Callee: <br />{{ this.$root.callee_subrutine }}
+            </b-badge>
+          </b-col>
+
+          <!-- Caller -->
+          <b-col v-if="stackFrames().length > 1" class="border rounded ms-1">
+            <b-badge variant="white" class="text-info">
+              Caller: <br />{{ this.$root.caller_subrutine }}
+            </b-badge>
+          </b-col>
+
+          <!-- rest of frames -->
+          <b-col v-if="stackFrames().length > 2" class="border rounded ms-1">
+            <b-badge variant="white" class="text-secondary">
+              <b>&bull;&bull;&bull;<br />{{ stackFrames().length - 2 }}</b>
+            </b-badge>
+          </b-col>
+
+          <!-- System -->
+          <b-col class="border rounded ms-1 me-2">
+            <b-badge variant="white" class="text-secondary">
+              System<br />stack
+            </b-badge>
+          </b-col>
+        </b-row>
+      </div>
     </b-container>
 
-    <!-- Modals -->
+    <!-- space view -->
 
     <b-modal
       id="space_modal"
@@ -651,27 +650,6 @@ export default {
         </b-tbody>
       </b-table-simple>
     </b-modal>
-
-    <!-- <b-modal
-      id="stack_modal"
-      size="sm"
-      title="Select stack word view:"
-      @hidden="hide_stack_modal"
-      @ok="change_stack_view"
-    >
-      <b-form-radio v-model="selected_stack_view" value="sig_int">
-        Signed Integer
-      </b-form-radio>
-      <b-form-radio v-model="selected_stack_view" value="unsig_int">
-        Unsigned Integer
-        </b-form-radio>
-      <b-form-radio v-model="selected_stack_view" value="float">
-        Float
-      </b-form-radio>
-      <b-form-radio v-model="selected_stack_view" value="char">
-        Char
-      </b-form-radio>
-    </b-modal> -->
   </div>
 </template>
 
@@ -709,10 +687,6 @@ export default {
   max-height: 90vh;
   overflow-y: auto;
   -ms-overflow-style: -ms-autohiding-scrollbar;
-}
-
-.text-blue-funny {
-  color: #00bcfe;
 }
 
 .registerPopover {

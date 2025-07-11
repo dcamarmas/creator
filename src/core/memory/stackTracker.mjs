@@ -68,7 +68,7 @@ function getCurrentStackPointer() {
 /*
  *  track_stack_names = [ "PC=xxx", "main" ] ;
  */
-export let track_stack_names = [];
+export let track_stack_names = [];  // FIXME: the order is broken
 /*
  *  track_stack_limits = [
  *		               {
@@ -81,14 +81,14 @@ export let track_stack_names = [];
  *		               ...
  *                      ] ;
  */
-let track_stack_limits = [];
+export let track_stack_limits = [];
 /*
  *  stack_hints = {
- *    "0xFFFFFFFC": "hint",
+ *    4294967292: "hint",
  *    ...
  *  } ;
  */
-let stack_hints = {};
+export let stack_hints = {};
 
 /*
  * Public API
@@ -319,38 +319,6 @@ export function track_stack_addHint(address, name) {
     return ret;
 }
 
-//
-// Get hint for a specific memory address
-// Example: var hint = track_stack_getHint("0xFFFFFFFC") ;
-//
-export function track_stack_getHint(address) {
-    const ret = {
-        ok: true,
-        val: null,
-        msg: "",
-    };
-
-    if (typeof address !== "string" && typeof address !== "number") {
-        ret.ok = false;
-        ret.msg = "Invalid address format";
-        return ret;
-    }
-
-    // Convert address to string if it's a number
-    const addr =
-        typeof address === "number"
-            ? "0x" + address.toString(16).toUpperCase()
-            : address;
-
-    ret.val = stack_hints[addr] || null;
-
-    if (ret.val === null) {
-        ret.ok = false;
-        ret.msg = "No hint found for address " + addr;
-    }
-
-    return ret;
-}
 
 //
 // Get all hints

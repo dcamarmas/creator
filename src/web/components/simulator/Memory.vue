@@ -26,12 +26,6 @@ import { main_memory } from "@/core/core.mjs"
 
 export default {
   props: {
-    // callee_subrutine: { type: String, required: true }, // TODO: optional
-    // caller_subrutine: { type: String, required: true }, // TODO: optional
-    // stack_total_list: { type: Number, required: true },
-    // main_memory_busy: { type: Boolean, required: true },
-    // memory_layout: { type: Object, required: true },
-    // end_callee: { type: Number, required: true },
     dark: { type: Boolean, required: true },
     selectedSegment: { type: String, required: true }
   },
