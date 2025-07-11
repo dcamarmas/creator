@@ -173,7 +173,7 @@ export class CreatorDebugSession extends DebugSession {
                 // Fallback to default RISC-V
                 architecturePath = this.getArchitecturePath("RISC-V");
             }
-            await this.rpcClient.loadArchitecture(architecturePath, ["I", "M"]);
+            await this.rpcClient.loadArchitecture(architecturePath, []);
 
             const compileResult =
                 await this.rpcClient.compileAssembly(assemblySource);

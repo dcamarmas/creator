@@ -391,9 +391,6 @@ export function step() {
     const pc_address = getPC();
     const currentSegment = main_memory.getSegmentForAddress(pc_address);
 
-    // TODO: This check does not make sense at the architecture level. This is an
-    // operating system check, not an architecture check.
-    // Check if we can execute at this address
     if (!main_memory.isValidAccess(pc_address, "execute")) {
         status.execution_index = -2;
         const result = packExecute(
@@ -407,6 +404,33 @@ export function step() {
             result.instructionData = instructionData;
         }
         return result;
+    }
+
+    const segments = main_memory.getMemorySegments();
+    const textSegment = segments.get("text");
+    if (textSegment) {
+        const written = main_memory.getWrittenAddresses();
+        // Only consider addresses within the text segment
+        const textWritten = written.filter(addr =>
+            addr >= Number(textSegment.startAddress) &&
+            addr <= Number(textSegment.endAddress)
+        );
+        if (textWritten.length > 0) {
+            const maxTextAddr = Math.max(...textWritten);
+            if (pc_address > BigInt(maxTextAddr)) {
+                status.execution_index = -2;
+                const result = packExecute(
+                    false,
+                    `The execution of the program has finished - PC (${pc_address}) is higher than the highest written address (${maxTextAddr}) in the text segment`,
+                    "success",
+                    draw,
+                );
+                if (instructionData) {
+                    result.instructionData = instructionData;
+                }
+                return result;
+            }
+        }
     }
 
     // Return execution result with instruction data

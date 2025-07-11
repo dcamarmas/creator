@@ -452,7 +452,7 @@ class HexViewer {
 
     const header = document.createElement("div");
     header.className = "hint-header";
-    header.textContent = hintInfo.hint;
+    header.textContent = hintInfo.tag + (hintInfo.type ? " (" + hintInfo.type + ")" : "");
     tooltip.appendChild(header);
 
     if (hintInfo.sizeInBits) {
@@ -526,7 +526,7 @@ class HexViewer {
 
       const hintInfo = this.hintMap.get(address);
       if (hintInfo) {
-        info += \` | Hint: \${hintInfo.hint}\`;
+        info += " | Hint: " + hintInfo.tag + (hintInfo.type ? " (" + hintInfo.type + ")" : "");
       }
 
       selectionInfo.textContent = info;
@@ -582,17 +582,19 @@ class HexViewer {
     for (const hint of dump.hints) {
       const address = parseInt(hint.address);
 
-      if (!hintColors.has(hint.hint)) {
-        hintColors.set(hint.hint, colorIndex % 8);
+      const tagTypeKey = hint.tag + ":" + hint.type;
+      if (!hintColors.has(tagTypeKey)) {
+        hintColors.set(tagTypeKey, colorIndex % 8);
         colorIndex++;
       }
 
-      const hintColorIndex = hintColors.get(hint.hint);
+      const hintColorIndex = hintColors.get(tagTypeKey);
 
       const sizeInBytes = hint.sizeInBits ? Math.ceil(hint.sizeInBits / 8) : 1;
       for (let i = 0; i < sizeInBytes; i++) {
         this.hintMap.set(address + i, {
-          hint: hint.hint,
+          tag: hint.tag,
+          type: hint.type,
           sizeInBits: hint.sizeInBits,
           colorIndex: hintColorIndex,
         });
@@ -1189,15 +1191,13 @@ class MemoryProvider
                 // Add hints to the description and tooltip if available
                 if (entry.hints.length > 0) {
                     const hintDescriptions = entry.hints.map((hint: any) => {
-                        const shortHint = hint.hint
-                            .replace("<", "")
-                            .replace(">", "");
+                        const tagType = hint.tag + (hint.type ? " (" + hint.type + ")" : "");
                         const sizeInfo = hint.sizeInBits
                             ? ` (${hint.sizeInBits}b)`
                             : "";
                         const offsetInfo =
                             entry.hints.length > 1 ? ` @+${hint.offset}` : "";
-                        return `${shortHint}${sizeInfo}${offsetInfo}`;
+                        return `${tagType}${sizeInfo}${offsetInfo}`;
                     });
                     description = ` // ${hintDescriptions.join(", ")}`;
                     tooltip = `${entry.value}\n\nHints:\n${hintDescriptions.join("\n")}`;

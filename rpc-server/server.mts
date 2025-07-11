@@ -449,7 +449,8 @@ class CreatorRpcServer {
             address: string;
             value: string;
             hints: Array<{
-                hint: string;
+                tag: string;
+                type: string;
                 offset: number;
                 sizeInBits?: number;
             }>;
@@ -533,12 +534,14 @@ class CreatorRpcServer {
         baseAddress: bigint,
         wordSize: number,
     ): Array<{
-        hint: string;
+        tag: string;
+        type: string;
         offset: number;
         sizeInBits?: number;
     }> {
         const hints: Array<{
-            hint: string;
+            tag: string;
+            type: string;
             offset: number;
             sizeInBits?: number;
         }> = [];
@@ -548,7 +551,8 @@ class CreatorRpcServer {
             const hint = creator.main_memory.getHint(byteAddr);
             if (hint) {
                 hints.push({
-                    hint: hint.hint,
+                    tag: hint.tag,
+                    type: hint.type,
                     offset: j,
                     sizeInBits: hint.sizeInBits,
                 });
@@ -1101,7 +1105,8 @@ class CreatorRpcServer {
         values: number[];
         hints: Array<{
             address: string;
-            hint: string;
+            tag: string;
+            type: string;
             sizeInBits?: number;
         }>;
         wordSize: number;
