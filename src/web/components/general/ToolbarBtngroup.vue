@@ -29,7 +29,7 @@ import {
   reset,
 } from "@/core/core.mjs"
 import { resetStats } from "@/core/executor/stats.mts"
-import { instructions, set_instructions } from "@/core/compiler/compiler.mjs"
+import { instructions, setInstructions } from "@/core/compiler/compiler.mjs"
 import { step, packExecute } from "@/core/executor/executor.mjs"
 import { creator_ga } from "@/core/utils/creator_ga.mjs"
 import {
@@ -39,6 +39,7 @@ import {
 } from "@/web/utils.mjs"
 import { assembly_compiler_sjasmplus } from "@/core/compiler/sjasmplus/web/sjasmplus.mjs"
 import { assembly_compiler_rasm } from "@/core/compiler/rasm/web/rasm.mjs"
+import { assembly_compiler_default } from "@/core/compiler/creatorCompiler/web/creatorCompiler.mjs"
 
 export default {
   props: {
@@ -66,12 +67,12 @@ export default {
       stop_disable: true,
       selectedCompiler: "default",
       compilerOptions: [
-        { value: "default", text: "Default Compiler" },
+        { value: "default", text: "CREATOR" },
         { value: "sjasmplus", text: "Sjasmplus" },
         { value: "rasm", text: "RASM" }
       ],
       compiler_map: {
-        default: null,
+        default: assembly_compiler_default,
         sjasmplus: assembly_compiler_sjasmplus,
         rasm: assembly_compiler_rasm,
       },
@@ -91,7 +92,7 @@ export default {
         return this.instructions
       },
       set(value) {
-        set_instructions(value)
+        setInstructions(value)
       },
     },
     /**
