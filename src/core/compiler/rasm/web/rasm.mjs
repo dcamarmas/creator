@@ -1,8 +1,8 @@
 import { RasmModule } from "./wasm/rasm.js";
 import { main_memory } from "../../../core.mjs";
-import { precomputeInstructions } from "../../compiler.mjs";
+import { precomputeInstructions, formatErrorWithColors } from "../../compiler.mjs";
 import { parseDebugSymbolsRASM } from "../utils.mjs";
-import ansicolor from 'ansicolor'
+
 // eslint-disable-next-line max-lines-per-function
 export async function assembly_compiler_rasm(code) {
     // Re-initialize WASM module every time
@@ -68,9 +68,9 @@ export async function assembly_compiler_rasm(code) {
         if (exitCode !== 0) {
             console.error("Assembly failed with exit code:", exitCode);
             // remove the first 7 lines from capturedStdout, which contain the program header
-            const errorLines = ansicolor.strip(capturedStdout.join('\n').split('\n').slice(7).join('\n'));
+            const errorLines = capturedStdout.join('\n').split('\n').slice(7).join('\n');
 
-            result.msg = errorLines;
+            result.msg = formatErrorWithColors(errorLines);
             result.type = "error";
             result.bgcolor = "danger";
             result.status = "error";

@@ -282,14 +282,14 @@ templates:
 instructions:
   base:
     - name: nop
-      type: standard
+      template: standard
       fields:
         - field: opcode
           value: "0x00"
       definition: ""
 
     - name: ld
-      type: standard
+      template: standard
       nwords: 3
       fields:
         - field: opcode
@@ -305,7 +305,7 @@ instructions:
       definition: "console.log('Loads the value pointed to by nn into BC.')"
 
     - name: jp
-      type: standard
+      template: standard
       nwords: 3
       fields:
         - field: opcode
@@ -321,7 +321,7 @@ instructions:
       definition: "PC = nn"
 
     - name: add a, b
-      type: standard
+      template: standard
       fields:
         - field: opcode
           value: "0x80"
@@ -341,7 +341,7 @@ instructions:
         A = sum;
 
     - name: add a, c
-      type: standard
+      template: standard
       fields:
         - field: opcode
           value: "0x81"
@@ -360,7 +360,7 @@ instructions:
         A = sum;
 
     - name: add a, d
-      type: standard
+      template: standard
       fields:
         - field: opcode
           value: "0x82"
@@ -379,7 +379,7 @@ instructions:
         A = sum;
 
     - name: add a, e
-      type: standard
+      template: standard
       fields:
         - field: opcode
           value: "0x83"
@@ -398,7 +398,7 @@ instructions:
         A = sum;
 
     - name: add a, h
-      type: standard
+      template: standard
       fields:
         - field: opcode
           value: "0x84"
@@ -417,7 +417,7 @@ instructions:
         A = sum;
 
     - name: add a, l
-      type: standard
+      template: standard
       fields:
         - field: opcode
           value: "0x85"
@@ -436,7 +436,7 @@ instructions:
         A = sum;
 
     - name: add a, (hl)
-      type: standard
+      template: standard
       clk_cycles: 2
       fields:
         - field: opcode
@@ -456,7 +456,7 @@ instructions:
         A = sum;
 
     - name: add a, a
-      type: standard
+      template: standard
       clk_cycles: 1
       fields:
         - field: opcode
@@ -476,7 +476,7 @@ instructions:
         A = sum;
 
     - name: adc a, b
-      type: standard
+      template: standard
       fields:
         - field: opcode
           value: "0x88"
@@ -495,7 +495,7 @@ instructions:
         A = sum;
 
     - name: adc a, c
-      type: standard
+      template: standard
       fields:
         - field: opcode
           value: "0x89"
@@ -514,7 +514,7 @@ instructions:
         A = sum;
 
     - name: adc a, d
-      type: standard
+      template: standard
       fields:
         - field: opcode
           value: "0x8A"
@@ -533,7 +533,7 @@ instructions:
         A = sum;
 
     - name: adc a, e
-      type: standard
+      template: standard
       fields:
         - field: opcode
           value: "0x8B"
@@ -552,7 +552,7 @@ instructions:
         A = sum;
 
     - name: adc a, h
-      type: standard
+      template: standard
       fields:
         - field: opcode
           value: "0x8C"
@@ -571,7 +571,7 @@ instructions:
         A = sum;
 
     - name: adc a, l
-      type: standard
+      template: standard
       fields:
         - field: opcode
           value: "0x8D"
@@ -590,7 +590,7 @@ instructions:
         A = sum;
 
     - name: adc a, (hl)
-      type: standard
+      template: standard
       clk_cycles: 2
       fields:
         - field: opcode
@@ -611,7 +611,7 @@ instructions:
         A = sum;
 
     - name: adc a, a
-      type: standard
+      template: standard
       clk_cycles: 1
       fields:
         - field: opcode
@@ -631,7 +631,7 @@ instructions:
         A = sum;
 
     - name: adc a, n
-      type: standard
+      template: standard
       nwords: 2
       clk_cycles: 2
       fields:
@@ -658,7 +658,7 @@ instructions:
         A = sum;
 
     - name: add # add a, n
-      type: standard
+      template: standard
       nwords: 2
       clk_cycles: 2
       fields:
@@ -690,7 +690,7 @@ instructions:
         A = sum;
 
     - name: ld
-      type: standard
+      template: standard
       nwords: 2
       fields:
         - field: opcode
@@ -704,7 +704,7 @@ instructions:
       definition: "B = n"
 
     - name: ld
-      type: standard
+      template: standard
       nwords: 1
       fields:
         - field: opcode
@@ -712,7 +712,7 @@ instructions:
       definition: "CAPI.MEM.write((B << 8n) | C, 1, A);"
 
     - name: ld bc, #(nn). The comma is not an accident. It's for display purposes.
-      type: ED
+      template: ED
       nwords: 4
       fields:
         - field: opcode2
@@ -733,14 +733,14 @@ instructions:
 
 
     - name: rlc
-      type: DDCB
+      template: DDCB
       nwords: 4
       fields:
         - field: opcode3
           value: "0x06"
 
     - name: rlc
-      type: DDCB
+      template: DDCB
       nwords: 4
       fields:
         - field: opcode3

@@ -85,7 +85,7 @@ export function hex2char8(hexvalue) {
 }
 
 export function hex2float(hexvalue) {
-    const value = hexvalue.replace("0x", "");
+    let value = hexvalue.replace("0x", "");
     if (typeof value !== "undefined" && value.length > 8) {
         value = value.substring(0, 8);
     }
