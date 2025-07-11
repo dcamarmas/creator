@@ -314,7 +314,7 @@ export default {
         .reduce((missing, byte) => {
           // for each start of word address, check the bytes of the full word
           // are present
-          if (byte.addr % 4 === 0) {
+          if (byte.addr % wordSize === 0) {
             range(byte.addr, byte.addr + 4).forEach(addr => {
               if (!addresses.includes(addr)) missing.push(addr)
             })
@@ -323,10 +323,10 @@ export default {
           // do the same for the end of the word
           // FIXME: we _shouldn't_ need this, as memory is _supposed_ to be
           // aligned... but currently there's a problem with zero-terminated
-          // strings (the last zero is not marked as a written value). When the
-          // compiler is updated, remove this.
-          if (byte.addr % 4 === 3) {
-            range(byte.addr - 3, byte.addr + 1).forEach(addr => {
+          // strings (the lenght of the string does not take into account the
+          // last \0). When the compiler is updated, remove this.
+          if (byte.addr % wordSize === wordSize - 1) {
+            range(byte.addr - (wordSize - 1), byte.addr + 1).forEach(addr => {
               if (!addresses.includes(addr)) missing.push(addr)
             })
           }
@@ -362,7 +362,7 @@ export default {
 
       return (
         // group bytes by words
-        chunks(mem, this.main_memory.getWordSize()).map(bytes => ({
+        chunks(mem, wordSize).map(bytes => ({
           start: bytes.at(0).addr,
           end: bytes.at(-1).addr,
           bytes: bytes.map(b => ({
