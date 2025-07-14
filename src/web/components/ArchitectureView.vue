@@ -23,6 +23,7 @@ import { architecture } from "@/core/core.mjs"
 
 import UIeltoToolbar from "./general/UIeltoToolbar.vue"
 import EditArchitecture from "./architecture/EditArchitecture.vue"
+import DownloadPopup from "./general/DownloadModal.vue"
 import ArchConf from "./architecture/configuration/ArchConf.vue"
 import MemoryLayout from "./architecture/memory_layout/MemoryLayout.vue"
 import RegisterFileArch from "./architecture/register_file/RegisterFileArch.vue"
@@ -42,6 +43,7 @@ export default {
   components: {
     UIeltoToolbar,
     EditArchitecture,
+    DownloadPopup,
     ArchConf,
     MemoryLayout,
     RegisterFileArch,
@@ -80,7 +82,16 @@ export default {
         />
 
         <!-- Save architecture modal -->
-        <!-- <SaveArchitecture id="save_architecture" /> -->
+
+        <!-- TODO: add to saved architectures (localStorage) -->
+        <DownloadPopup
+          id="save_architecture"
+          type="architecture"
+          title="Save Architecture"
+          extension=".yml"
+          :fileData="arch_code"
+          default-filename="architecture"
+        />
 
         <!-- Architecture information -->
         <b-container fluid align-h="center" class="mx-0 px-0">
