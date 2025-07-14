@@ -15,12 +15,22 @@ import {
 } from "../src/core/register/registerLookup.mjs";
 import { logger } from "../src/core/utils/creator_logger.mjs";
 import { instructions } from "../src/core/compiler/compiler.mjs";
+import { assembly_compiler_sjasmplus } from "../src/core/compiler/sjasmplus/deno/sjasmplus.mjs";
+import { assembly_compiler_default } from "../src/core/compiler/creatorCompiler/deno/creatorCompiler.mjs";
 import {
     track_stack_getFrames,
     track_stack_getNames,
     track_stack_getAllHints,
 } from "../src/core/memory/stackTracker.mjs";
 import fs from "node:fs";
+
+// Compiler map similar to CLI version
+const compiler_map = {
+    default: assembly_compiler_default,
+    sjasmplus: assembly_compiler_sjasmplus,
+} as const;
+
+type CompilerType = keyof typeof compiler_map;
 
 // JSON RPC Types
 interface JsonRpcRequest {
@@ -153,10 +163,11 @@ class CreatorRpcServer {
     }
 
     /**
-     * Compile assembly code
+     * Compile assembly code with specified compiler
      */
     async compileAssembly(params: {
         assembly: string;
+        compiler?: CompilerType;
         enableColor?: boolean;
     }): Promise<CompileResult> {
         if (!this.architectureLoaded) {
@@ -168,9 +179,16 @@ class CreatorRpcServer {
         }
 
         try {
-            const result = creator.assembly_compile(
+            console.log(`Compiling assembly with compiler: ${params.compiler || "default"}`);
+            // Get compiler function from the map, with type safety
+            const compilerKey = (params.compiler && params.compiler in compiler_map) 
+                ? params.compiler as CompilerType 
+                : "default";
+            const compilerFunction = compiler_map[compilerKey];
+
+            const result = await creator.assembly_compile(
                 params.assembly,
-                params.enableColor || false,
+                compilerFunction,
             ) as CompileResult;
 
             if (result.status === "ok") {
@@ -1081,6 +1099,34 @@ class CreatorRpcServer {
     }
 
     /**
+     * Get available compilers
+     */
+    async getAvailableCompilers(): Promise<{
+        compilers: Array<{
+            name: string;
+            displayName: string;
+            description: string;
+        }>;
+        default: string;
+    }> {
+        return {
+            compilers: [
+                {
+                    name: "default",
+                    displayName: "CREATOR Default",
+                    description: "Built-in CREATOR assembly compiler",
+                },
+                {
+                    name: "sjasmplus",
+                    displayName: "SjASMPlus",
+                    description: "External SjASMPlus assembler (requires installation)",
+                },
+            ],
+            default: "default",
+        };
+    }
+
+    /**
      * Enable or disable debug logging
      */
     async setDebug(params: { enabled: boolean }): Promise<{ status: string }> {
@@ -1191,6 +1237,8 @@ class CreatorRpcServer {
                 return this.setBreakpoint(params);
             case "getInstructions":
                 return this.getInstructions();
+            case "getAvailableCompilers":
+                return this.getAvailableCompilers();
             default:
                 throw {
                     code: RPC_ERRORS.METHOD_NOT_FOUND,

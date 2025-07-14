@@ -100,6 +100,65 @@ export function activate(context: vscode.ExtensionContext) {
 
     context.subscriptions.push(
         vscode.commands.registerCommand(
+            "creator-debugger.selectCompiler",
+            async () => {
+                try {
+                    const config = vscode.workspace.getConfiguration("creator-debugger");
+                    const rpcServerUrl = config.get<string>(
+                        "rpcServerUrl",
+                        "http://localhost:8080",
+                    );
+                    const client = new CreatorRpcClient(rpcServerUrl);
+
+                    // Check if server is running
+                    const isAlive = await client.isServerAlive();
+                    if (!isAlive) {
+                        vscode.window.showErrorMessage(
+                            "CREATOR RPC server is not running. Please start the server first.",
+                        );
+                        return;
+                    }
+
+                    // Get available compilers
+                    const compilerInfo = await client.getAvailableCompilers();
+                    const compilerItems = compilerInfo.compilers.map(compiler => ({
+                        label: compiler.displayName,
+                        description: compiler.description,
+                        detail: compiler.name === compilerInfo.default ? "(Default)" : "",
+                        value: compiler.name,
+                    }));
+
+                    const selectedCompiler = await vscode.window.showQuickPick(
+                        compilerItems,
+                        {
+                            placeHolder: "Select a compiler",
+                            title: "Choose CREATOR Compiler",
+                        },
+                    );
+
+                    if (selectedCompiler) {
+                        await config.update(
+                            "defaultCompiler",
+                            selectedCompiler.value,
+                            vscode.ConfigurationTarget.Global,
+                        );
+                        vscode.window.showInformationMessage(
+                            `Default compiler set to ${selectedCompiler.label}`,
+                        );
+                    }
+                } catch (error) {
+                    vscode.window.showErrorMessage(
+                        `Failed to get available compilers: ${
+                            error instanceof Error ? error.message : String(error)
+                        }`,
+                    );
+                }
+            },
+        ),
+    );
+
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
             "creator-debugger.showMemoryHexDump",
             async () => {
                 try {
@@ -921,6 +980,7 @@ async function startDebugging() {
     // Get configuration
     const config = vscode.workspace.getConfiguration("creator-debugger");
     const architectureFile = config.get<string>("defaultArchitectureFile");
+    const compiler = config.get<string>("defaultCompiler");
     const rpcServerUrl = config.get<string>(
         "rpcServerUrl",
         "http://localhost:8080",
@@ -975,6 +1035,7 @@ async function startDebugging() {
         name: "Debug Assembly",
         program: filePath,
         architectureFile: selectedArchitectureFile,
+        compiler: compiler,
         rpcServerUrl: rpcServerUrl,
     };
 

@@ -59,6 +59,7 @@ interface CreatorLaunchRequestArguments
     program: string;
     architectureFile?: string;
     rpcServerUrl?: string;
+    compiler?: string;
 }
 
 interface CallStackFrame {
@@ -176,7 +177,7 @@ export class CreatorDebugSession extends DebugSession {
             await this.rpcClient.loadArchitecture(architecturePath, []);
 
             const compileResult =
-                await this.rpcClient.compileAssembly(assemblySource);
+                await this.rpcClient.compileAssembly(assemblySource, args.compiler);
             if (compileResult.status !== "ok") {
                 throw new Error(
                     `Compilation failed: ${compileResult.msg || "Unknown error"}`,
