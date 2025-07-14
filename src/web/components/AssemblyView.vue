@@ -23,7 +23,7 @@ import TextareaAssembly from "./assembly/TextareaAssembly.vue"
 import AssemblyError from "./assembly/AssemblyError.vue"
 import Examples from "./assembly/Examples.vue"
 import LoadAssembly from "./assembly/LoadAssembly.vue"
-import SaveAssembly from "./assembly/SaveAssembly.vue"
+import DownloadPopup from "./general/DownloadModal.vue"
 import MakeURI from "./assembly/MakeURI.vue"
 
 export default {
@@ -45,7 +45,7 @@ export default {
     AssemblyError,
     Examples,
     LoadAssembly,
-    SaveAssembly,
+    DownloadPopup,
     MakeURI,
   },
 }
@@ -73,7 +73,14 @@ export default {
         <LoadAssembly id="load_assembly" />
 
         <!-- Save assembly form -->
-        <SaveAssembly id="save_assembly" />
+        <DownloadPopup
+          id="save_assembly"
+          type="assembly"
+          title="Save Assembly"
+          default-filename="assembly"
+          extension=".s"
+          :fileData="this.$root.assembly_code"
+        />
 
         <!-- Examples modal -->
         <Examples

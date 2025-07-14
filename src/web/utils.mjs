@@ -260,3 +260,29 @@ export function formatRelativeDate(date) {
             .shift() + " ago"
     );
 }
+
+/**
+ * Downloads a plain text file with the specified filename.
+ * 
+ * @param {String} data TXT data to store in file
+ * @param {String} filename Name of the file
+ * 
+ */
+export function downloadToTXTFile(data, filename) {
+    // yes, this is actually the way to do it in JS...
+
+    const downloadLink = document.createElement("a");
+    downloadLink.download = filename;
+    downloadLink.innerHTML = "My Hidden Link";
+
+    window.URL = window.URL || window.webkitURL;
+
+    downloadLink.href = window.URL.createObjectURL(
+        new Blob([data], { type: "text/plain" }),
+    );
+    downloadLink.onclick = destroyClickedElement;
+    downloadLink.style.display = "none";
+    document.body.appendChild(downloadLink);
+
+    downloadLink.click();
+}

@@ -20,17 +20,16 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 
 <script>
 import { creator_ga } from "@/core/utils/creator_ga.mjs"
-import { destroyClickedElement } from "@/web/utils.mjs"
+import { downloadToTXTFile } from "@/web/utils.mjs"
 
 export default {
   props: {
     id: { type: String, required: true },
-  },
-
-  setup() {
-    const default_name = "assembly"
-
-    return { default_name }
+    title: { type: String, required: true },
+    extension: { type: String, required: true },
+    fileData: { type: String, required: true },
+    defaultFilename: { type: String, required: true },
+    type: { type: String, required: true },
   },
 
   data() {
@@ -38,30 +37,14 @@ export default {
   },
 
   methods: {
-    // Save code to a local file
-    download_assembly() {
-      const textToWrite = this.$root.assembly_code
-      const textFileAsBlob = new Blob([textToWrite], { type: "text/plain" })
-
-      // download (using JS magic)
-      const downloadLink = document.createElement("a")
-      downloadLink.download = (this.filename || this.default_name) + ".s"
-      downloadLink.innerHTML = "My Hidden Link"
-
-      window.URL = window.URL || window.webkitURL
-
-      downloadLink.href = window.URL.createObjectURL(textFileAsBlob)
-      downloadLink.onclick = destroyClickedElement
-      downloadLink.style.display = "none"
-      document.body.appendChild(downloadLink)
-
-      downloadLink.click()
-
-      // reset filename
-      this.filename = "assembly"
+    download() {
+      downloadToTXTFile(
+        this.fileData,
+        (this.filename || this.defaultFilename) + this.extension,
+      )
 
       // Google Analytics
-      creator_ga("assembly", "assembly.save", "assembly.save")
+      creator_ga(this.type, `${this.type}.save`, `${this.type}.save`)
     },
   },
 }
@@ -70,23 +53,27 @@ export default {
 <template>
   <b-modal
     :id="id"
-    title="Save Assembly"
+    :title="title"
     ok-title="Save to File"
-    @ok="download_assembly"
+    @ok="download"
+    @hidden="filename = null"
   >
-    <BForm class="d-flex flex-row align-items-center flex-wrap">
-      <label class="col-form-label col-lg-6">Filename:</label>
-      <div class="col-lg-6">
-        <b-input-group append=".s">
+    <b-form class="d-flex flex-row align-items-center flex-wrap">
+      <b-col>
+        <label class=".fs-3">Filename:</label>
+      </b-col>
+
+      <b-col cols="8">
+        <b-input-group :append="this.extension">
           <b-form-input
             v-model="filename"
             class="text-end"
             autofocus
             type="text"
-            :placeholder="default_name"
+            :placeholder="defaultFilename"
           />
         </b-input-group>
-      </div>
-    </BForm>
+      </b-col>
+    </b-form>
   </b-modal>
 </template>
