@@ -83,6 +83,11 @@
         "icon": "$(settings-gear)"
       },
       {
+        "command": "creator-debugger.selectCompiler",
+        "title": "CREATOR: Select Compiler",
+        "icon": "$(tools)"
+      },
+      {
         "command": "creator-debugger.showMemoryHexDump",
         "title": "CREATOR: Open Memory Hex Viewer",
         "icon": "$(file-binary)"
@@ -226,6 +231,10 @@
         "creator-debugger.defaultArchitectureFile": {
           "type": "string",
           "description": "Path to the default CREATOR architecture YAML file (.yml/.yaml)"
+        },
+        "creator-debugger.defaultCompiler": {
+          "type": "string",
+          "description": "Default compiler to use for assembly compilation"
         },
         "creator-debugger.autoStartServer": {
           "type": "boolean",

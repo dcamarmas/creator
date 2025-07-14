@@ -25,6 +25,7 @@ import process from "node:process";
 import { packExecute } from "./executor.mjs";
 import os from "node:os";
 import { show_notification } from "@/web/utils.mjs";
+import { instructions } from "../compiler/compiler.mjs";
 
 export function display_print(info) {
     if (typeof document !== "undefined") {

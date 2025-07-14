@@ -121,11 +121,23 @@ export class CreatorRpcClient {
         });
     }
 
-    async compileAssembly(assembly: string, enableColor = false) {
+    async compileAssembly(assembly: string, compiler?: string, enableColor = false) {
         return this.sendRequest("compileAssembly", {
             assembly,
+            compiler,
             enableColor,
         });
+    }
+
+    async getAvailableCompilers(): Promise<{
+        compilers: Array<{
+            name: string;
+            displayName: string;
+            description: string;
+        }>;
+        default: string;
+    }> {
+        return this.sendRequest("getAvailableCompilers");
     }
 
     async executeStep() {

@@ -75,7 +75,7 @@ export function hasVirtualPCChanged(oldVirtualPC) {
 }
 
 /**
- * Performs validation checks to determine if execution should continue
+ * Performs validation checks to determine if execution should continue. This is used to prevent the execution from continuing AFTER it has already finished, but the user tries to step again.
  * @param {boolean} includeLogging - Whether to include debug logging statements
  * @returns {Object|null} - Returns execution result object if validation fails, or null if validation passes
  */
@@ -146,6 +146,11 @@ function updateExecutionStatus(draw) {
     // Check for program termination due to error
     if (status.execution_index === -1) {
         status.error = 1;
+        return packExecute(false, "", "info", null);
+    }
+
+    else if (status.execution_index === -2) {
+        // Normal program termination
         return packExecute(false, "", "info", null);
     }
 
@@ -477,7 +482,7 @@ export function creator_executor_exit(error) {
     if (error) {
         status.execution_index = -1;
     } else {
-        status.execution_index = instructions.length + 1;
+        status.execution_index = -2; // Set to -2 to indicate normal exit
     }
 }
 /*
