@@ -243,6 +243,7 @@ export default {
           b => b.addr < Number(this.memorySegments.get("stack").startAddress),
         )
       const addresses = mem.map(b => b.addr)
+      const wordSize = this.main_memory.getWordSize()
 
       // ensure full words
       // why do we do this? because we don't want to hold the whole simulator
