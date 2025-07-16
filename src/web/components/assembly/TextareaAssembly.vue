@@ -123,6 +123,7 @@ export default {
     assembly_code: { type: String, required: true },
     vim_mode: { type: Boolean, required: true },
     vim_custom_keybinds: { type: Array, required: true },
+    height: { type: String, required: true },
     dark: { type: Boolean, required: true },
   },
 
@@ -184,7 +185,7 @@ export default {
 
         // fixed height editor
         EditorView.theme({
-          "&": { height: "650px" },
+          "&": { height: this.height },
           ".cm-scroller": { overflow: "auto" },
         }),
 

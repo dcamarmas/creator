@@ -80,6 +80,8 @@ export default {
 </template>
 
 <style lang="scss" scoped>
+@import "bootstrap/scss/bootstrap";
+
 .architecture-scroll-y {
   display: block;
   max-height: 60vh;
@@ -90,7 +92,7 @@ export default {
 [data-bs-theme="dark"] {
   .buttonBackground {
     background-color: #212529;
-    color: #818a8d;
+    color: $secondary;
   }
   .buttonBackground:hover {
     background-color: #424649;

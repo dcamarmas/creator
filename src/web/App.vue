@@ -35,7 +35,7 @@ import {
   loadExample,
 } from "./utils.mjs"
 
-import { architecture, architecture_hash, set_debug } from "@/core/core.mjs"
+import { set_debug } from "@/core/core.mjs"
 import { stats } from "@/core/executor/stats.mts"
 
 import { instructions } from "@/core/compiler/compiler.mjs"
@@ -112,6 +112,10 @@ export default {
       // Displayed notifications
       notifications, //TODO: copy or only in app?
 
+      // window size
+      windowHeight: window.innerHeight,
+      windowWidth: window.innerWidth,
+
       //
       // Current view
       //
@@ -172,10 +176,6 @@ export default {
       /****************/
       /* Architecture */
       /****************/
-
-      // Load architecture
-      architecture,
-      architecture_hash,
 
       // Architecture edit code
       arch_code: "",
@@ -270,7 +270,6 @@ export default {
    * Created vue instance *
    ************************/
   created() {
-    // uielto_preload_architecture.methods.load_arch_available()
     this.os = this.detect_os()
     this.browser = this.detect_browser()
     this.get_target_port()
@@ -282,26 +281,26 @@ export default {
   mounted() {
     // Preload following URL params
     this.loadFromURI()
-    // const url_hash = creator_preload_get2hash(window.location)
-    // creator_preload_fromHash(this, url_hash)
+
+    // set config
     this.set_dark_mode()
     set_debug(this.c_debug)
+
+    // listener for window size changes
+    window.addEventListener("resize", this.resizeHandler)
   },
 
-  /*************
-   * Before UI *
-   *************/
-  beforeUpdate() {
-    // uielto_configuration.methods.get_configuration()
+  unmounted() {
+    window.removeEventListener("resize", this.resizeHandler)
   },
 
   /***************
-   * Vue methots *
+   * Vue methods *
    ***************/
 
   methods: {
     /*******************
-     * General methots *
+     * General methods *
      *******************/
 
     /**
@@ -359,12 +358,6 @@ export default {
         "data-bs-theme",
         this.dark ? "dark" : "light",
       )
-      // if (this.dark) {
-      //   document.getElementsByTagName("body")[0].style =
-      //     "filter: invert(88%) hue-rotate(160deg) !important; background-color: #111 !important;"
-      // } else {
-      //   document.getElementsByTagName("body")[0].style = ""
-      // }
     },
 
     /**
@@ -459,6 +452,11 @@ export default {
     get_target_port() {
       this.target_port = this.target_ports[this.os]
     },
+
+    resizeHandler(_e) {
+      this.windowHeight = window.innerHeight
+      this.windowWidth = window.innerWidth
+    },
   },
 }
 </script>
@@ -535,6 +533,8 @@ export default {
     :arch_available="arch_available"
     :browser="browser"
     :os="os"
+    :dark="dark"
+    :window-height="windowHeight"
     ref="selectArchitectureView"
     @select-architecture="
       arch_name => {
@@ -594,15 +594,14 @@ export default {
     :enter="enter"
     :browser="browser"
     :os="os"
-    :stack_total_list="stack_total_list"
+    :window-height="windowHeight"
+    :window-width="windowWidth"
     :display="display"
     :keyboard="keyboard"
     :dark="dark"
     ref="simulatorView"
     :key="simulatorViewKey"
   />
-
-  {{ keyboard }}
 </template>
 
 <style lang="scss" scoped>
@@ -754,7 +753,7 @@ export default {
     padding: 1%;
   }
 
-  // for some reason this doesn't work
+  // for some reason this doesn't affect sub-components
   [data-bs-theme="dark"] {
     .buttonBackground {
       background-color: #212529;

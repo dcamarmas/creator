@@ -61,6 +61,7 @@ export default {
           components="btn_architecture,btn_simulator|btn_compile|dropdown_assembly_file,dropdown_library|btn_configuration,btn_information"
           :browser="browser"
           :os="os"
+          :dark="dark"
           :arch_available="arch_available"
           :assembly_code="assembly_code"
           :show_instruction_help="true"
@@ -111,6 +112,7 @@ export default {
           :assembly_code="assembly_code"
           :vim_mode="vim_mode"
           :vim_custom_keybinds="vim_custom_keybinds"
+          height="75vh"
           :dark="dark"
         />
         <!-- </b-col>
