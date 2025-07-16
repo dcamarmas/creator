@@ -428,8 +428,10 @@ export default {
 </template>
 
 <style lang="scss" scoped>
+@import "bootstrap/scss/bootstrap";
+
 .registers {
-  background-color: #f5f5f5;
+  background-color: #f8f9fa;
   font-size: 1.03em;
 }
 
@@ -454,6 +456,7 @@ export default {
 [data-bs-theme="dark"] {
   .registers {
     background-color: #343a40;
+    color: $secondary;
   }
 
   .registers:hover {

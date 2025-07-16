@@ -48,7 +48,9 @@ export default {
      * Obtains the color depending on the memory segment
      */
     getVariant(name) {
-      switch (name) {
+      switch (
+        name.replace(/^\.+/, "") // delete leading "."
+      ) {
         case "ktext":
         case "text":
           return "info"
@@ -101,10 +103,7 @@ export default {
       <!-- empty space -->
 
       <b-list-group horizontal>
-        <b-list-group-item
-          variant="secondary"
-          class="memoryLayout font-monospace"
-        >
+        <b-list-group-item variant="secondary" class="memoryLayout">
           <br />
           ...
           <br />
@@ -121,7 +120,7 @@ export default {
           class="memoryLayout font-monospace"
         >
           <br />
-          .{{ layout.at(-1)[0].name.split(" ").shift() }}
+          {{ layout.at(-1)[0].name.split(" ").shift() }}
           <br />
           <br />
         </b-list-group-item>

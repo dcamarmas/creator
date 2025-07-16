@@ -69,6 +69,7 @@ export default {
           components="btn_assembly,btn_simulator|btn_edit_architecture,btn_save_architecture||btn_configuration,btn_information"
           :browser="browser"
           :os="os"
+          :dark="dark"
           :arch_available="arch_available"
         />
 

@@ -100,6 +100,9 @@ export default {
 </template>
 
 <style lang="scss" scoped>
+
+@import "bootstrap/scss/bootstrap";
+
 .header {
   width: 100%;
   align-items: center;
@@ -132,11 +135,11 @@ export default {
     background-color: #2f2f2f;
   }
   .headerName {
-    color: #818a8d;
+    color: $secondary;
   }
   .linkButton {
     background-color: #212529;
-    color: #818a8d;
+    color: $secondary;
   }
   .linkButton:hover {
     background-color: #424649;

@@ -20,7 +20,6 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 
 <script>
 import CardAuthor from "./CardAuthor.vue"
-// import dcamarmas from '@/web/assetsimg/author_dcamarmas.png'
 
 export default {
   props: {
@@ -72,10 +71,10 @@ export default {
 
     <b-list-group class="my-3">
       <b-list-group-item style="text-align: center">
-        <a href="mailto: creator.arcos.inf.uc3m.es@gmail.com">
-          <span class="fa-solid fa-envelope" />
+        <b-link href="mailto: creator.arcos.inf.uc3m.es@gmail.com">
+          <font-awesome-icon icon="fa-solid fa-envelope" />
           creator.arcos.inf.uc3m.es@gmail.com
-        </a>
+        </b-link>
       </b-list-group-item>
     </b-list-group>
 

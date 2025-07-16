@@ -38,6 +38,8 @@ export default {
     browser: String,
     os: { type: String, required: true },
     dark: { type: Boolean, required: true },
+    windowHeight: { type: Number, required: true },
+    windowWidth: { type: Number, required: true },
     arch_available: Array,
     architecture_name: String,
     data_mode: String,
@@ -48,7 +50,6 @@ export default {
     stat_type: { type: String, required: true },
     memory_segment: { type: String, required: true },
     enter: [Boolean, null],
-    stack_total_list: Number,
     main_memory_busy: Boolean,
     display: String,
     keyboard: String,
@@ -70,15 +71,6 @@ export default {
   data() {
     return {
       architecture,
-
-      // stack
-      callee_subrutine: "",
-      caller_subrutine: "",
-      stack_pointer: 0,
-      begin_caller: 0,
-      end_caller: 0,
-      begin_callee: 0,
-      end_callee: 0,
     }
   },
 }
@@ -94,6 +86,7 @@ export default {
           components="btn_architecture,btn_assembly|btn_reset,btn_instruction,btn_run,btn_flash,btn_stop|btn_examples,btn_calculator|btn_configuration,btn_information"
           :browser="browser"
           :os="os"
+          :dark="dark"
           :arch_available="arch_available"
           :show_instruction_help="true"
           :instructions="instructions"
@@ -122,94 +115,81 @@ export default {
         <!-- Calculator -->
         <Calculator id="calculator" />
 
-        <b-container fluid align-h="center" class="mx-0 px-0">
-          <b-row align-h="center">
-            <!-- Execution instruction -->
-            <b-col lg="7" cols="12">
-              <TableExecution
-                :instructions="instructions"
-                :enter="enter"
-                ref="tableExecution"
-              />
-            </b-col>
+        <b-row align-h="center">
+          <!-- Execution instruction -->
+          <b-col lg="7" cols="12">
+            <TableExecution
+              :instructions="instructions"
+              :enter="enter"
+              ref="tableExecution"
+            />
+          </b-col>
 
-            <!-- Execution data -->
-            <b-col lg="5" cols="12">
-              <!-- View selector -->
-              <DataViewSelector
-                :data_mode="data_mode"
-                :register_file_num="architecture.components.length"
-                :dark="dark"
-              />
+          <!-- Execution data -->
+          <b-col lg="5" cols="12">
+            <!-- View selector -->
+            <DataViewSelector
+              :data_mode="data_mode"
+              :register_file_num="architecture.components.length"
+              :dark="dark"
+            />
 
-              <!-- Registers view -->
-              <RegisterFile
-                v-if="
-                  data_mode == 'int_registers' || data_mode == 'fp_registers'
-                "
-                id="register_file"
-                :data_mode="data_mode"
-                :reg_representation_int="reg_representation_int"
-                :reg_representation_float="reg_representation_float"
-                :reg_name_representation="reg_name_representation"
-                :dark="dark"
-                ref="registerFile"
-              />
+            <!-- Registers view -->
+            <RegisterFile
+              v-if="data_mode == 'int_registers' || data_mode == 'fp_registers'"
+              id="register_file"
+              :data_mode="data_mode"
+              :reg_representation_int="reg_representation_int"
+              :reg_representation_float="reg_representation_float"
+              :reg_name_representation="reg_name_representation"
+              :dark="dark"
+              ref="registerFile"
+            />
 
-              <!-- Memory view-->
-              <Memory
-                v-if="data_mode === 'memory'"
-                ref="memory"
-                id="memory"
-                :callee_subrutine="callee_subrutine"
-                :caller_subrutine="caller_subrutine"
-                :stack_total_list="stack_total_list"
-                :selectedSegment="memory_segment"
-                :memory_layout="architecture.memory_layout"
-                :end_callee="end_callee"
-                :dark="dark"
-              />
+            <!-- Memory view-->
+            <Memory
+              v-if="data_mode === 'memory'"
+              ref="memory"
+              :selectedSegment="memory_segment"
+              :dark="dark"
+            />
 
-              <!-- Stats view--->
-              <Stats
-                v-if="data_mode === 'stats'"
-                ref="stats"
-                :dark="dark"
-                :representation="stat_representation"
-                :type="stat_type"
-              />
-            </b-col>
+            <!-- Stats view--->
+            <Stats
+              v-if="data_mode === 'stats'"
+              ref="stats"
+              :dark="dark"
+              :representation="stat_representation"
+              :type="stat_type"
+            />
+          </b-col>
+        </b-row>
 
-            <!-- Monitor & keyboard -->
-            <b-col lg="12" cols="12">
-              <b-container
-                fluid
-                align-h="center"
-                class="mx-0 px-0"
-                id="simulator"
-              >
-                <b-row
-                  cols-xl="2"
-                  cols-lg="2"
-                  cols-md="1"
-                  cols-sm="1"
-                  cols-xs="1"
-                  cols="1"
-                >
-                  <b-col>
-                    <!-- Monitor -->
-                    <Monitor :display="display" />
-                  </b-col>
+        <!-- Monitor & keyboard -->
+        <b-row
+          cols-xl="2"
+          cols-lg="2"
+          cols-md="1"
+          cols-sm="1"
+          cols-xs="1"
+          cols="1"
+          align-h="center"
+          :class="{
+            'mx-0': true,
+            'pb-2': true,
+            'fixed-bottom': windowHeight > 900,
+          }"
+        >
+          <!-- Monitor -->
+          <b-col>
+            <Monitor :display="display" />
+          </b-col>
 
-                  <b-col>
-                    <!-- Keyboard -->
-                    <Keyboard :keyboard="keyboard" :enter="enter" />
-                  </b-col>
-                </b-row>
-              </b-container>
-            </b-col>
-          </b-row>
-        </b-container>
+          <!-- Keyboard -->
+          <b-col>
+            <Keyboard :keyboard="keyboard" :enter="enter" />
+          </b-col>
+        </b-row>
       </b-col>
     </b-row>
   </b-container>
@@ -218,7 +198,7 @@ export default {
 <style lang="scss" scoped>
 :deep() {
   .consoleIcon {
-    height: 5vh;
+    height: 3em;
     opacity: 0.6;
   }
 
@@ -227,13 +207,5 @@ export default {
     position: relative;
     top: -0.6vw;
   }
-}
-
-.popoverFooter {
-  padding: 2px;
-}
-
-.popoverText {
-  font-size: 1.2em;
 }
 </style>
