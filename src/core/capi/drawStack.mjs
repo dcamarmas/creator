@@ -31,6 +31,7 @@ export const DRAW_STACK = {
     begin: function (addr) {
         let function_name = "";
 
+        // TODO: fix this
         // 1.- get function name
         if (typeof REGISTERS[0] !== "undefined") {
             if (typeof tag_instructions[addr] === "undefined")

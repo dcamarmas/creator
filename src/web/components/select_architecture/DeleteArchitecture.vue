@@ -19,41 +19,42 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <script>
+import { show_notification } from "@/web/utils.mjs"
+
 export default {
   props: {
     id: { type: String, required: true },
-    index: { type: Number, required: true },
+    arch: { type: [String, null], required: true },
   },
 
   methods: {
     //Remove architecture
-    remove_cache_arch(index) {
-      //Get architecture name
-      const id = architecture_available[index].name
+    removeArch(name) {
+      // remove from root
+      this.$root.arch_available.splice(
+        this.$root.arch_available.findIndex(a => a.name === name),
+        1,
+      )
 
-      //Delete architecture on CREATOR
-      for (let i = 0; i < load_architectures.length; i++) {
-        if (load_architectures[i].id == id) {
-          load_architectures.splice(i, 1)
-        }
-      }
+      // remove from localstorage
+      const customArchitectures = JSON.parse(
+        localStorage.getItem("customArchitectures"),
+      )
 
-      for (let i = 0; i < load_architectures_available.length; i++) {
-        if (load_architectures_available[i].name == id) {
-          load_architectures_available.splice(i, 1)
-        }
-      }
+      localStorage.setItem(
+        "customArchitectures",
+        JSON.stringify(
+          customArchitectures.toSpliced(
+            customArchitectures.findIndex(a => a.name === name),
+            1,
+          ),
+        ),
+      )
 
-      architecture_available.splice(index, 1)
+      // refresh view
+      this.$root.$refs.selectArchitectureView.refresh()
 
-      // Reload cache values
-      let aux_arch = JSON.stringify(load_architectures, null, 2)
-      localStorage.setItem('load_architectures', aux_arch)
-
-      aux_arch = JSON.stringify(load_architectures_available, null, 2)
-      localStorage.setItem('load_architectures_available', aux_arch)
-
-      show_notification('Architecture deleted successfully', 'success')
+      show_notification("Architecture deleted successfully", "success")
     },
   },
 }
@@ -65,8 +66,9 @@ export default {
     title="Delete Architecture"
     ok-variant="danger"
     ok-title="Delete"
-    @ok="remove_cache_arch(index)"
+    @ok="removeArch(arch)"
   >
-    <span class="h6"> Are you sure you want to delete the architecture? </span>
+    Are you sure you want to delete the '<i>{{ arch }}</i
+    >' architecture?
   </b-modal>
 </template>

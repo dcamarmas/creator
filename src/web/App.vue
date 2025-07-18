@@ -31,7 +31,7 @@ import arch_available from "/architecture/available_arch.json"
 import {
   notifications,
   show_notification,
-  loadArchitecture,
+  loadDefaultArchitecture,
   loadExample,
 } from "./utils.mjs"
 
@@ -171,8 +171,6 @@ export default {
       // Available architectures
       //
 
-      arch_available, //TODO: copy or only in app?
-
       /****************/
       /* Architecture */
       /****************/
@@ -264,6 +262,21 @@ export default {
       target_port: "", //TODO: include into flash component - modal info
       flash_url: "http://localhost:8080", //TODO: include into flash component - modal info
     }
+  },
+
+  computed: {
+    arch_available() {
+      const architectures = arch_available.map(a => ({ ...a, default: true }))
+      const customArchs = JSON.parse(
+        localStorage.getItem("customArchitectures"),
+      )
+
+      if (customArchs) {
+        architectures.push(...customArchs)
+      }
+
+      return architectures
+    },
   },
 
   /************************
@@ -400,7 +413,7 @@ export default {
       // (App) in `document.app` once its mounted. But in this point of the
       // code, App is still not mounted, so `document.app` is undefined.
       // The hack is to pass the component to the function so it can use it.
-      loadArchitecture(arch, this)
+      loadDefaultArchitecture(arch, this)
 
       // load assembly code
       if (asm !== null) {

@@ -82,13 +82,12 @@ export default {
           :dark="dark"
         />
 
-        <!-- Save architecture modal -->
+        <!-- Download architecture modal -->
 
-        <!-- TODO: add to saved architectures (localStorage) -->
         <DownloadPopup
           id="save_architecture"
           type="architecture"
-          title="Save Architecture"
+          title="Download Architecture"
           extension=".yml"
           :fileData="arch_code"
           default-filename="architecture"
