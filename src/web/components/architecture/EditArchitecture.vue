@@ -19,8 +19,31 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <script>
+/* Codemirror */
 import Codemirror from "vue-codemirror6"
-import { EditorView } from "codemirror"
+import {
+  EditorView,
+  keymap,
+  highlightSpecialChars,
+  drawSelection,
+  highlightActiveLine,
+  dropCursor,
+  highlightActiveLineGutter,
+} from "@codemirror/view"
+import {
+  defaultHighlightStyle,
+  syntaxHighlighting,
+  indentOnInput,
+  bracketMatching,
+  foldGutter,
+  foldKeymap,
+} from "@codemirror/language"
+import { defaultKeymap, history, historyKeymap } from "@codemirror/commands"
+import { searchKeymap } from "@codemirror/search"
+import { closeBrackets, closeBracketsKeymap } from "@codemirror/autocomplete"
+import { tags as t } from "@lezer/highlight"
+import { createTheme } from "@uiw/codemirror-themes"
+import { yaml } from "@codemirror/lang-yaml"
 
 import {
   architecture,
@@ -41,6 +64,12 @@ export default {
     Codemirror,
   },
 
+  setup() {
+    const lang = yaml()
+
+    return { lang }
+  },
+
   computed: {
     architecture_value: {
       // sync w/ App's
@@ -54,7 +83,64 @@ export default {
 
     extensions() {
       return [
-        // basicSetup covers most of the required extensions
+        // modified basicSetup
+
+        // A gutter with code folding markers
+        foldGutter(),
+        // Replace non-printable characters with placeholders
+        highlightSpecialChars(),
+        // The undo history
+        history(),
+        // Replace native cursor/selection with our own
+        drawSelection(),
+        // Show a drop cursor when dragging over the editor
+        dropCursor(),
+        // Re-indent lines when typing specific input
+        indentOnInput(),
+        // Highlight syntax with a default style
+        syntaxHighlighting(defaultHighlightStyle),
+        // Highlight matching brackets near cursor
+        bracketMatching(),
+        // Automatically close brackets
+        closeBrackets(),
+        // Style the current line specially
+        highlightActiveLine(),
+        // Style the gutter for current line specially
+        highlightActiveLineGutter(),
+        keymap.of([
+          // Closed-brackets aware backspace
+          ...closeBracketsKeymap,
+          // A large set of basic bindings
+          ...defaultKeymap,
+          // Search-related keys
+          ...searchKeymap,
+          // Redo/undo keys
+          ...historyKeymap,
+          // Code folding bindings
+          ...foldKeymap,
+        ]),
+
+        // FIXME: dark theme is horrible, because the keys are in blue (#0000cc)
+        // and have too little contrast. I tried, but wasn't able to change it
+        // with a theme, as I can't find the hightlight group for them.
+        // Therefore, light theme it is
+        createTheme({
+          theme: "light",
+          settings: {
+            background: "#ffffff",
+            backgroundImage: "",
+            foreground: "#202020",
+            caret: "#222222",
+            selection: "#33333340",
+            selectionMatch: "#33333340",
+            lineHighlight: "#8a91991a",
+            gutterBorder: "1px solid #33333310",
+            gutterBackground: "#f5f5f5",
+            gutterForeground: "#6c6c6c",
+          },
+          // it _should_ be this hightlight group...
+          styles: [{ tag: t.definition(t.propertyName), color: "#ffff00" }],
+        }),
 
         // fixed height editor
         EditorView.theme({
@@ -113,12 +199,11 @@ export default {
       class="codeArea"
       placeholder="Architecture definition..."
       v-model="architecture_value"
-      minimal
       autofocus
       wrap
       tab
-      :dark="dark"
       :tab-size="2"
+      :lang="lang"
       :extensions="extensions"
       @ready="handleReady"
     />

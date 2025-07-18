@@ -16,6 +16,7 @@
     "test": "deno test -A --unstable-node-globals --parallel"
   },
   "dependencies": {
+    "@codemirror/lang-yaml": "^6.1.2",
     "@codemirror/language": "^6.11.2",
     "@codemirror/legacy-modes": "^6.5.1",
     "@fortawesome/fontawesome-svg-core": "^6.7.2",

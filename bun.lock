@@ -4,6 +4,7 @@
     "": {
       "name": "creator",
       "dependencies": {
+        "@codemirror/lang-yaml": "^6.1.2",
         "@codemirror/language": "^6.11.2",
         "@codemirror/legacy-modes": "^6.5.1",
         "@fortawesome/fontawesome-svg-core": "^6.7.2",
@@ -138,6 +139,8 @@
 
     "@codemirror/commands": ["@codemirror/commands@6.8.1", "", { "dependencies": { "@codemirror/language": "^6.0.0", "@codemirror/state": "^6.4.0", "@codemirror/view": "^6.27.0", "@lezer/common": "^1.1.0" } }, "sha512-KlGVYufHMQzxbdQONiLyGQDUW0itrLZwq3CcY7xpv9ZLRHqzkBSoteocBHtMCoY7/Ci4xhzSrToIeLg7FxHuaw=="],
 
+    "@codemirror/lang-yaml": ["@codemirror/lang-yaml@6.1.2", "", { "dependencies": { "@codemirror/autocomplete": "^6.0.0", "@codemirror/language": "^6.0.0", "@codemirror/state": "^6.0.0", "@lezer/common": "^1.2.0", "@lezer/highlight": "^1.2.0", "@lezer/lr": "^1.0.0", "@lezer/yaml": "^1.0.0" } }, "sha512-dxrfG8w5Ce/QbT7YID7mWZFKhdhsaTNOYjOkSIMt1qmC4VQnXSDSYVHHHn8k6kJUfIhtLo8t1JJgltlxWdsITw=="],
+
     "@codemirror/language": ["@codemirror/language@6.11.2", "", { "dependencies": { "@codemirror/state": "^6.0.0", "@codemirror/view": "^6.23.0", "@lezer/common": "^1.1.0", "@lezer/highlight": "^1.0.0", "@lezer/lr": "^1.0.0", "style-mod": "^4.0.0" } }, "sha512-p44TsNArL4IVXDTbapUmEkAlvWs2CFQbcfc0ymDsis1kH2wh0gcY96AS29c/vp2d0y2Tquk1EDSaawpzilUiAw=="],
 
     "@codemirror/legacy-modes": ["@codemirror/legacy-modes@6.5.1", "", { "dependencies": { "@codemirror/language": "^6.0.0" } }, "sha512-DJYQQ00N1/KdESpZV7jg9hafof/iBNp9h7TYo1SLMk86TWl9uDsVdho2dzd81K+v4retmK6mdC7WpuOQDytQqw=="],
@@ -267,6 +270,8 @@
     "@lezer/highlight": ["@lezer/highlight@1.2.1", "", { "dependencies": { "@lezer/common": "^1.0.0" } }, "sha512-Z5duk4RN/3zuVO7Jq0pGLJ3qynpxUVsh7IbUbGj88+uV2ApSAn6kWg2au3iJb+0Zi7kKtqffIESgNcRXWZWmSA=="],
 
     "@lezer/lr": ["@lezer/lr@1.4.2", "", { "dependencies": { "@lezer/common": "^1.0.0" } }, "sha512-pu0K1jCIdnQ12aWNaAVU5bzi7Bd1w54J3ECgANPmYLtQKP0HBj2cE/5coBD66MT10xbtIuUr7tg0Shbsvk0mDA=="],
+
+    "@lezer/yaml": ["@lezer/yaml@1.0.3", "", { "dependencies": { "@lezer/common": "^1.2.0", "@lezer/highlight": "^1.0.0", "@lezer/lr": "^1.4.0" } }, "sha512-GuBLekbw9jDBDhGur82nuwkxKQ+a3W5H0GfaAthDXcAu+XdpS43VlnxA9E9hllkpSP5ellRDKjLLj7Lu9Wr6xA=="],
 
     "@marijn/find-cluster-break": ["@marijn/find-cluster-break@1.0.2", "", {}, "sha512-l0h88YhZFyKdXIFNfSWpyjStDjGHwZ/U7iobcK1cQQD8sejsONdQtTVU+1wVN1PBw40PiiHB1vA5S7VTfQiP9g=="],
 
