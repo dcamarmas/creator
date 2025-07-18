@@ -91,11 +91,6 @@
         "command": "creator-debugger.showMemoryHexDump",
         "title": "CREATOR: Open Memory Hex Viewer",
         "icon": "$(file-binary)"
-      },
-      {
-        "command": "creator-debugger.memoryNavigation",
-        "title": "CREATOR: Memory Navigation",
-        "icon": "$(arrow-right)"
       }
     ],
     "menus": {
@@ -104,26 +99,6 @@
           "when": "resourceExtname == .s || resourceExtname == .asm || resourceExtname == .S",
           "command": "creator-debugger.start",
           "group": "navigation@1"
-        },
-        {
-          "when": "creator-debugger.active",
-          "command": "creator-debugger.stop",
-          "group": "navigation@1"
-        },
-        {
-          "when": "creator-debugger.active",
-          "command": "creator-debugger.step",
-          "group": "navigation@2"
-        },
-        {
-          "when": "creator-debugger.active",
-          "command": "creator-debugger.continue",
-          "group": "navigation@3"
-        },
-        {
-          "when": "creator-debugger.active",
-          "command": "creator-debugger.reset",
-          "group": "navigation@4"
         }
       ],
       "editor/context": [
@@ -161,8 +136,7 @@
               },
               "architecture": {
                 "type": "string",
-                "description": "Target architecture (RISC-V, MIPS, Z80, etc.)",
-                "default": "RISC-V"
+                "description": "Target architecture (RISC-V, MIPS, Z80, etc.)"
               },
               "rpcServerUrl": {
                 "type": "string",
@@ -177,31 +151,11 @@
             "type": "creator-assembly",
             "request": "launch",
             "name": "Debug Assembly",
-            "program": "${file}",
-            "architecture": "RISC-V"
+            "program": "${file}"
           }
         ]
       }
     ],
-    "views": {
-      "debug": [
-        {
-          "id": "creator-registers",
-          "name": "Registers",
-          "when": "creator-debugger.active"
-        },
-        {
-          "id": "creator-memory",
-          "name": "Memory",
-          "when": "creator-debugger.active"
-        },
-        {
-          "id": "creator-instructions",
-          "name": "Instructions",
-          "when": "creator-debugger.active"
-        }
-      ]
-    },
     "viewsWelcome": [
       {
         "view": "creator-registers",
@@ -215,18 +169,6 @@
           "type": "string",
           "default": "http://localhost:8080",
           "description": "URL of the CREATOR RPC server"
-        },
-        "creator-debugger.defaultArchitecture": {
-          "type": "string",
-          "default": "RISC-V",
-          "enum": [
-            "RISC-V",
-            "MIPS",
-            "Z80",
-            "6502",
-            "PowerPC"
-          ],
-          "description": "Default target architecture (deprecated - use defaultArchitectureFile instead)"
         },
         "creator-debugger.defaultArchitectureFile": {
           "type": "string",

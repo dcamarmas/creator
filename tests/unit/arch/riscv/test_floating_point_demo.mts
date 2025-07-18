@@ -39,9 +39,9 @@ main:
 
 Deno.test(
     "RISC-V Floating Point Operations Demo - Addition, Multiplication, and Conversion",
-    () => {
+    async () => {
         // Setup simulator with RISC-V architecture that supports floating point
-        setupSimulator(FLOATING_POINT_DEMO_ASSEMBLY, RISCV_ARCH_PATH);
+        await setupSimulator(FLOATING_POINT_DEMO_ASSEMBLY, RISCV_ARCH_PATH);
 
         // Execute the program
         const result = executeN(1000);

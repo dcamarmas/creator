@@ -16,8 +16,8 @@
  *  You should have received a copy of the GNU Lesser General Public License
  *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  */
-"use strict";
-import { instructions } from "../compiler/compiler.mjs";
+
+import { instructions, tag_instructions } from "../compiler/compiler.mjs";
 import {
     status,
     WORDSIZE,
@@ -31,7 +31,7 @@ import {
     readRegister,
     writeRegister,
 } from "../register/registerOperations.mjs";
-import { track_stack_setsp } from "../memory/stackTracker.mjs";
+import { track_stack_setsp, track_stack_enter } from "../memory/stackTracker.mjs";
 import { creator_ga } from "../utils/creator_ga.mjs";
 import { logger } from "../utils/creator_logger.mjs";
 import { decode_instruction } from "./decoder.mjs";
@@ -331,6 +331,11 @@ function executeInstructionCycle(draw) {
     // Log debug information
     logger.debug("Execution Index:" + status.execution_index);
     logger.debug("PC Register: " + readRegister(0, 0));
+
+    // Special check for stack visualization purposes
+    if (status.execution_index === 0) {
+        track_stack_enter(tag_instructions[getPC()] || "");
+    }
 
     // Check for conditions that would stop execution
     const inLoopCheckResult = performExecutionChecks();

@@ -1,5 +1,6 @@
 /*
- *  Copyright 2018-2025 Felix Garcia Carballeira, Alejandro Calderon Mateos, Diego Camarmas Alonso
+ *  Copyright 2018-2025 Felix Garcia Carballeira, Alejandro Calderon Mateos,
+ *  Diego Camarmas Alonso, Jorge Ramos Santana
  *
  *  This file is part of CREATOR.
  *
@@ -17,98 +18,149 @@
  *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-"use strict";
+
 import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { main_memory } from "../../../core.mjs";
-import { parseDebugSymbols, precomputeInstructions } from "../../compiler.mjs";
+import {
+    precomputeInstructions,
+    set_tag_instructions,
+} from "../../compiler.mjs";
+import { parseDebugSymbolsRASM, toTagInstructions } from "../utils.mjs";
 
-export function assembly_compiler_rasm(code) {
-  // Create a temporary directory
-  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "rasm-"));
-  const tmp = path.join(tmpDir, "temp.asm");
-  fs.writeFileSync(tmp, code, "utf8");
+/**
+ * Parses the console output from RASM's -map flag to extract a simple
+ * instruction-address-to-source-line-number mapping.
+ *
+ * @param {string} rawRasmOutput The multi-line string captured from RASM's console output.
+ * @returns {object} An object mapping a numeric address to its source line number.
+ *                   Example: { 11: 16, 9: 15 } (where 11 is 0x000B)
+ */
+function parseSourceLineMapping(rawRasmOutput) {
+    const sourceMap = {};
+    const ansiColorRegex = /\u001b\[[0-9;]*m/g;
+    const instructionRegex = /^[^|]+\|([^|]+)\|.*\(L(\d+):[^)]+\)/;
 
-  // Output file
-  const outFile = tmp.replace(/\.asm$/, ".bin");
-  const symFile = tmp.replace(/\.asm$/, ".sym");
+    const allLines = rawRasmOutput.split("\n");
 
-  // Run rasm (needs to be installed in the system)
-  const result = spawnSync(
-    "rasm",
-    ["-o", outFile, "-s", symFile, tmp],
-    {
-      encoding: "utf8",
-      maxBuffer: 10 * 1024 * 1024,
+    for (const line of allLines) {
+        const cleanLine = line.replace(ansiColorRegex, "");
+        const match = cleanLine.match(instructionRegex);
+
+        if (match) {
+            const addressString = match[1].trim();
+            const lineNumber = parseInt(match[2], 10);
+
+            // Convert the hex address string to a number for the key
+            const addressNumber = parseInt(addressString, 16);
+
+            sourceMap[addressNumber] = lineNumber;
+        }
     }
-  );
+    return sourceMap;
+}
 
-  if (result.status !== 0) {
-    // Clean up temp files
+// eslint-disable-next-line max-lines-per-function
+export function assembly_compiler_rasm(code) {
+    // --- Setup temporary files ---
+    const filename = "program";
+    const asmFilename = filename + ".asm";
+    const binFilename = filename + ".bin";
+    const symFilename = filename + ".sym"; // For old-style labels
+    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "rasm-"));
+    const tempAsmPath = path.join(tmpDir, asmFilename);
+    const tempBinPath = path.join(tmpDir, binFilename);
+    const tempSymPath = path.join(tmpDir, symFilename);
+
+    fs.writeFileSync(tempAsmPath, code, "utf8");
+
+    // --- Run rasm with ALL required flags ---
+    // We need '-sp' for labels, '-os' for the label file,
+    // '-map' for source-line info, and '-ob' for the binary.
+    const result = spawnSync(
+        "rasm",
+        [tempAsmPath, "-sp", "-os", tempSymPath, "-ob", tempBinPath, "-map"],
+        {
+            encoding: "utf8",
+            maxBuffer: 10 * 1024 * 1024,
+            cwd: tmpDir,
+        },
+    );
+
+    // Combine stdout and stderr to capture the full "-map" output
+    const rasmConsoleOutput = (result.stdout || "") + (result.stderr || "");
+
+    if (result.status !== 0) {
+        // Clean up temp files
+        try {
+            fs.unlinkSync(tempAsmPath);
+        } catch {}
+        try {
+            fs.unlinkSync(tempSymPath);
+        } catch {}
+        try {
+            fs.rmdirSync(tmpDir);
+        } catch {}
+        return {
+            errorcode: "rasm",
+            type: "error",
+            bgcolor: "danger",
+            status: "error",
+            msg: rasmConsoleOutput || "rasm failed",
+        };
+    }
+
+    // --- EXISTING LOGIC (UNCHANGED) ---
+    // Read the output binary
+    const binary = fs.readFileSync(tempBinPath);
+
+    // Read debug symbols (labels only) if available
+    let debugSymbols = null;
     try {
-      fs.unlinkSync(tmp);
-    } catch { }
+        debugSymbols = fs.readFileSync(tempSymPath, "utf8");
+    } catch {}
+
+    // Parse debug symbols (labels only) if available
+    const parsedSymbols = parseDebugSymbolsRASM(debugSymbols);
+    const sourceMap = parseSourceLineMapping(rasmConsoleOutput);
+
+    main_memory.loadROM(binary);
+    precomputeInstructions(code, sourceMap, parsedSymbols);
+
+    // Add hints to memory based on the parsed labels
+    for (const [name, addr] of Object.entries(parsedSymbols)) {
+        main_memory.addHint(addr, name);
+    }
+
+    // Set the tag instructions for the parsed symbols
+    // This is a new step to ensure that the tag_instructions map is updated
+    set_tag_instructions(toTagInstructions(parsedSymbols));
+
+    // --- Clean up all temp files ---
     try {
-      fs.unlinkSync(outFile);
-    } catch { }
+        fs.unlinkSync(tempAsmPath);
+    } catch {}
     try {
-      fs.unlinkSync(symFile);
-    } catch { }
+        fs.unlinkSync(tempBinPath);
+    } catch {}
     try {
-      fs.rmdirSync(tmpDir);
-    } catch { }
+        fs.unlinkSync(tempSymPath);
+    } catch {}
+    try {
+        fs.rmdirSync(tmpDir);
+    } catch {}
+
+    // --- Return all data ---
     return {
-      errorcode: "rasm",
-      type: "error",
-      bgcolor: "danger",
-      status: "error",
-      msg: result.stderr || "rasm failed",
+        errorcode: "",
+        token: "",
+        type: "",
+        update: "",
+        status: "ok",
+        binary,
+        stdout: rasmConsoleOutput,
+        sourceMap,
     };
-  }
-
-  // Read the output binary
-  const binary = fs.readFileSync(outFile);
-
-  // Read debug symbols if available
-  let debugSymbols = null;
-  try {
-    debugSymbols = fs.readFileSync(symFile, "utf8");
-  } catch { }
-
-  // Parse debug symbols if available
-  const parsedSymbols = parseDebugSymbols(debugSymbols);
-
-  main_memory.loadROM(binary);
-  precomputeInstructions(parsedSymbols);
-
-  // Now add hints to memory based on the parsed symbols (its a dictionary)
-  for (const [name, addr] of Object.entries(parsedSymbols)) {
-    main_memory.addHint(addr, name);
-  }
-
-  // Clean up temp files
-  try {
-    fs.unlinkSync(tmp);
-  } catch { }
-  try {
-    fs.unlinkSync(outFile);
-  } catch { }
-  try {
-    fs.unlinkSync(symFile);
-  } catch { }
-  try {
-    fs.rmdirSync(tmpDir);
-  } catch { }
-
-  return {
-    errorcode: "",
-    token: "",
-    type: "",
-    update: "",
-    status: "ok",
-    binary,
-    stdout: result.stdout,
-  };
 }

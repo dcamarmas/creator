@@ -3,21 +3,31 @@ import {
     InitializedEvent,
     TerminatedEvent,
     StoppedEvent,
-    ContinuedEvent,
-    OutputEvent,
     Thread,
+    OutputEvent,
     StackFrame,
     Source,
     Handles,
-    Breakpoint,
+    Breakpoint
 } from "vscode-debugadapter";
 import { DebugProtocol } from "vscode-debugprotocol";
 import * as fs from "node:fs";
 import * as path from "node:path";
-import { Buffer } from "node:buffer";
-import { CreatorRpcClient } from "./creatorRpcClient";
+import { debuggerEvents } from "./debuggerEvents";
+import {
+    CreatorRpcClient,
+    ExecutionContext,
+    ExecutionResult,
+} from "./creatorRpcClient";
 
-// Simple logging utility using OutputEvent for debug console
+interface CreatorLaunchRequestArguments
+    extends DebugProtocol.LaunchRequestArguments {
+    program: string;
+    architectureFile?: string;
+    compiler?: string;
+    rpcServerUrl?: string;
+}
+
 interface LoggingSession {
     sendEvent(event: OutputEvent): void;
 }
@@ -29,11 +39,7 @@ const log = {
         debugSessionInstance = session;
     },
     info: (message: string) => {
-        if (debugSessionInstance) {
-            debugSessionInstance.sendEvent(
-                new OutputEvent(`[INFO] ${message}\n`, "console"),
-            );
-        }
+        console.log(`[INFO] ${message}`);
     },
     warn: (message: string) => {
         if (debugSessionInstance) {
@@ -53,42 +59,19 @@ const log = {
         }
     },
 };
-
-interface CreatorLaunchRequestArguments
-    extends DebugProtocol.LaunchRequestArguments {
-    program: string;
-    architectureFile?: string;
-    rpcServerUrl?: string;
-    compiler?: string;
-}
-
-interface CallStackFrame {
-    address: string;
-    functionName: string;
-    lineNumber: number;
-    instruction: string;
-}
-
-interface MemoryHint {
-    hint: string;
-    offset: number;
-    sizeInBits?: number;
-}
-
 export class CreatorDebugSession extends DebugSession {
     private static THREAD_ID = 1;
     private rpcClient: CreatorRpcClient;
+    private lastDisplayContent: string = "";
+    private _isStepping: boolean = false;
+    private _sourceFile?: string;
+    private _lastExecutionContext?: ExecutionContext;
     private sourceLines: string[] = [];
     private addressToLineMap = new Map<string, number>();
     private lineToAddressMap = new Map<number, string>();
-    private breakpoints = new Set<number>();
-    private variableHandles = new Handles<string>();
-    private isRunning = false;
-    private programPath: string = "";
-    private lastDisplayContent: string = "";
-    private callStack: CallStackFrame[] = [];
     private functionLabels = new Map<string, string>(); // address -> function name
-    private lastPC: string = "";
+    private variableHandles = new Handles<string>();
+    private breakpoints = new Set<number>();
 
     constructor() {
         super();
@@ -96,66 +79,246 @@ export class CreatorDebugSession extends DebugSession {
         this.setDebuggerLinesStartAt1(false);
         this.setDebuggerColumnsStartAt1(false);
 
-        // Set up logging session
-        log.setSession(this);
+        debuggerEvents.on("requestMemoryRefresh", async () => {
+            console.log("DebugSession received request for memory refresh.");
+            await this.refreshAndEmitMemory();
+        });
     }
 
-    protected initializeRequest(
+    private async refreshAndEmitMemory(): Promise<void> {
+        try {
+            const memoryDump = await this.rpcClient.getMemoryDump();
+            // Emit the event with the data as the payload.
+            debuggerEvents.emit("memoryUpdated", memoryDump);
+        } catch (error) {
+            log.error("Failed to refresh and emit memory dump:", error);
+            // Optionally emit an empty dump on error
+            debuggerEvents.emit("memoryUpdated", {
+                addresses: [],
+                values: [],
+                hints: [],
+                wordSize: 4,
+                highestAddress: 0,
+            });
+        }
+    }
+    /**
+     * Send output to the debug console
+     */
+    private sendOutput(
+        text: string,
+        category: "stdout" | "stderr" | "console" = "stdout",
+    ): void {
+        if (text.trim()) {
+            this.sendEvent(new OutputEvent(text + "\n", category));
+        }
+    }
+
+    /**
+     * Update console output by checking for changes in display content
+     */
+    private async updateConsoleOutput(): Promise<void> {
+        try {
+            const state = await this.rpcClient.getState();
+            const currentDisplay = state.status.display;
+
+            if (currentDisplay !== this.lastDisplayContent) {
+                // Send the new content to debug console
+                if (currentDisplay) {
+                    this.sendOutput(currentDisplay, "stdout");
+                }
+                this.lastDisplayContent = currentDisplay;
+            }
+        } catch (error) {
+            // Ignore errors in console update to avoid breaking debugging
+            console.error("Failed to update console output:", error);
+        }
+    }
+
+    protected override initializeRequest(
         response: DebugProtocol.InitializeResponse,
         args: DebugProtocol.InitializeRequestArguments,
     ): void {
         response.body = response.body || {};
-
-        // Set the capabilities of this debug adapter
         response.body.supportsConfigurationDoneRequest = true;
         response.body.supportsEvaluateForHovers = true;
-        response.body.supportsStepBack = false;
-        response.body.supportsDataBreakpoints = false;
-        response.body.supportsCompletionsRequest = false;
-        response.body.supportsCancelRequest = false;
-        response.body.supportsBreakpointLocationsRequest = false;
-        response.body.supportsStepInTargetsRequest = false;
-        response.body.supportsGotoTargetsRequest = false;
-        response.body.supportsModulesRequest = false;
-        response.body.supportsRestartRequest = false;
-        response.body.supportsExceptionOptions = false;
-        response.body.supportsValueFormattingOptions = true;
-        response.body.supportsExceptionInfoRequest = false;
-        response.body.supportTerminateDebuggee = true;
-        response.body.supportSuspendDebuggee = false;
-        response.body.supportsDelayedStackTraceLoading = false;
-        response.body.supportsLoadedSourcesRequest = false;
-        response.body.supportsLogPoints = false;
-        response.body.supportsTerminateThreadsRequest = false;
-        response.body.supportsSetVariable = false;
-        response.body.supportsRestartFrame = false;
-        response.body.supportsSteppingGranularity = false;
         response.body.supportsInstructionBreakpoints = true;
-        response.body.supportsReadMemoryRequest = true;
-        response.body.supportsWriteMemoryRequest = false;
-
+        response.body.supportsStepInTargetsRequest = false;
+        response.body.supportsStepBack = false;
         this.sendResponse(response);
         this.sendEvent(new InitializedEvent());
     }
 
-    protected async launchRequest(
+    protected override async continueRequest(
+        response: DebugProtocol.ContinueResponse,
+        _args: DebugProtocol.ContinueArguments,
+    ): Promise<void> {
+        this.sendResponse(response);
+
+        // If another stepping/running command is already in progress, do nothing.
+        if (this._isStepping) {
+            return;
+        }
+        this._isStepping = true; // Set the "running" state
+
+        // Start the execution loop in the background, don't await it.
+        // This allows the debug adapter to remain responsive to other requests (like 'pause').
+        (async () => {
+            try {
+                // Loop until a stop condition is met or a pause is requested.
+                // The `this._isStepping` flag can be set to false by a `pauseRequest`.
+                while (this._isStepping) {
+                    // Get the current execution context *before* executing the next instruction.
+                    const context = await this.rpcClient.getExecutionContext();
+                    this._lastExecutionContext = context;
+
+                    // 1. Check for program completion or an error state.
+                    if (context.completed || context.error) {
+                        if (context.error) {
+                            log.error(
+                                `Execution terminated with error: ${context.error}`,
+                            );
+                        }
+                        this.sendEvent(new TerminatedEvent());
+                        break; // Exit the execution loop
+                    }
+
+                    // 2. Check if the current instruction is at a breakpoint.
+                    const pcAddress = "0x" + context.pc.toUpperCase();
+                    const lineIndex = this.addressToLineMap.get(pcAddress);
+
+                    if (
+                        lineIndex !== undefined &&
+                        this.breakpoints.has(lineIndex)
+                    ) {
+                        log.info(
+                            `Breakpoint hit at address ${pcAddress}, line ${lineIndex + 1}`,
+                        );
+                        this.sendEvent(
+                            new StoppedEvent(
+                                "breakpoint",
+                                CreatorDebugSession.THREAD_ID,
+                            ),
+                        );
+                        await this.refreshAndEmitMemory();
+                        break; // Exit the execution loop
+                    }
+
+                    // 3. If no reason to stop, execute a single step.
+                    const stepResult = await this.rpcClient.executeStep();
+
+                    // Process any output generated by the step.
+                    if (stepResult && stepResult.output) {
+                        this.sendOutput(stepResult.output, "stdout");
+                    }
+                }
+            } catch (error) {
+                log.error(
+                    "An error occurred during 'continue' execution:",
+                    error,
+                );
+                this.sendEvent(
+                    new StoppedEvent(
+                        "exception",
+                        CreatorDebugSession.THREAD_ID,
+                    ),
+                );
+            } finally {
+                // Once the loop stops (for any reason), reset the running state.
+                this._isStepping = false;
+                // Update the console with any final output.
+                await this.updateConsoleOutput();
+            }
+        })();
+    }
+
+    protected override async pauseRequest(
+        response: DebugProtocol.PauseResponse,
+        _args: DebugProtocol.PauseArguments,
+    ): Promise<void> {
+        log.info("Pause request received. Halting execution.");
+
+        // Set the flag to false. This will cause the execution loop
+        // in `continueRequest` to terminate after its current iteration.
+        this._isStepping = false;
+
+        // Immediately respond to the client to acknowledge the pause request.
+        this.sendResponse(response);
+
+        // Send a 'stopped' event to the client to update the UI,
+        // indicating that the execution has been paused by the user.
+        this.sendEvent(new StoppedEvent("pause", CreatorDebugSession.THREAD_ID));
+
+        // After stopping, it's a good practice to refresh the state for the UI.
+        await this.refreshAndEmitMemory();
+    }
+
+    protected setBreakPointsRequest(
+        response: DebugProtocol.SetBreakpointsResponse,
+        args: DebugProtocol.SetBreakpointsArguments,
+    ): void {
+        const clientLines = args.lines || [];
+
+        // Clear existing breakpoints from RPC server
+        this.breakpoints.forEach(lineIndex => {
+            const address = this.lineToAddressMap.get(lineIndex);
+            if (address) {
+                this.rpcClient
+                    .setBreakpoint({index: lineIndex, address, enabled: false})
+                    .catch((error: unknown) => {
+                        log.error("Failed to clear breakpoint:", error);
+                    });
+            }
+        });
+
+        // Clear local breakpoints
+        this.breakpoints.clear();
+
+        // Convert client lines to our internal format and set breakpoints
+        const breakpoints: Breakpoint[] = clientLines.map(line => {
+            const lineIndex = line - 1; // Convert to 0-based
+            this.breakpoints.add(lineIndex);
+
+            // Set breakpoint via RPC if we have an address mapping
+            const address = this.lineToAddressMap.get(lineIndex);
+            if (address) {
+                this.rpcClient
+                    .setBreakpoint({index: lineIndex, address, enabled: true})
+                    .then(() => {
+                        log.info(
+                            `Breakpoint set at address ${address}, line ${line}`,
+                        );
+                    })
+                    .catch((error: unknown) => {
+                        log.error("Failed to set breakpoint:", error);
+                    });
+            } else {
+                log.warn(`No address mapping found for line ${line}`);
+            }
+
+            return new Breakpoint(true, line);
+        });
+
+        response.body = {
+            breakpoints,
+        };
+        this.sendResponse(response);
+    }
+
+    protected override async launchRequest(
         response: DebugProtocol.LaunchResponse,
         args: CreatorLaunchRequestArguments,
     ): Promise<void> {
         try {
+            console.log("Starting CREATOR Assembly Debugger...");
+            this._sourceFile = args.program;
+            log.setSession(this);
+
             // Set up RPC client
             if (args.rpcServerUrl) {
                 this.rpcClient = new CreatorRpcClient(args.rpcServerUrl);
+                console.log(`Connecting to RPC server at ${args.rpcServerUrl}`);
             }
-
-            // Check server connectivity
-            const isAlive = await this.rpcClient.isServerAlive();
-            if (!isAlive) {
-                throw new Error("CREATOR RPC server is not running");
-            }
-
-            // Store the program path for source mapping
-            this.programPath = args.program;
 
             // Load assembly source
             if (!fs.existsSync(args.program)) {
@@ -163,49 +326,53 @@ export class CreatorDebugSession extends DebugSession {
             }
 
             const assemblySource = fs.readFileSync(args.program, "utf8");
+            console.log(`Loaded assembly file: ${args.program}`);
             this.sourceLines = assemblySource.split("\n");
 
             // Load architecture and compile
-            let architecturePath: string;
-            if (args.architectureFile) {
-                // Use user-selected architecture file
-                architecturePath = args.architectureFile;
-            } else {
-                // Fallback to default RISC-V
-                architecturePath = this.getArchitecturePath("RISC-V");
+            if (!args.architectureFile) {
+                throw new Error("No architecture file provided");
             }
-            await this.rpcClient.loadArchitecture(architecturePath, []);
 
-            const compileResult =
-                await this.rpcClient.compileAssembly(assemblySource, args.compiler);
-            if (compileResult.status !== "ok") {
+            console.log(`Loading architecture: ${args.architectureFile}`);
+            await this.rpcClient.loadArchitecture(args.architectureFile, []);
+
+            console.log("Compiling assembly code...");
+            try {
+                await this.rpcClient.compileAssembly(
+                    assemblySource,
+                    args.compiler,
+                );
+            } catch (error) {
+                console.error("Compilation error:", error);
+                this.sendOutput(`${String(error)}`, "stderr");
                 throw new Error(
-                    `Compilation failed: ${compileResult.msg || "Unknown error"}`,
+                    `Compilation failed. For details, check the debug console.`,
                 );
             }
 
+            console.log("Assembly compiled successfully!");
+            console.log(
+                "Ready to debug. Use step commands to execute instructions.",
+            );
+
             // Build source-to-instruction mapping
             await this.buildSourceMapping();
+
+            this._lastExecutionContext =
+                await this.rpcClient.getExecutionContext();
 
             this.sendResponse(response);
             this.sendEvent(
                 new StoppedEvent("entry", CreatorDebugSession.THREAD_ID),
             );
         } catch (error: unknown) {
+            this.sendOutput(`Launch failed: ${String(error)}`, "stderr");
             response.success = false;
             response.message = String(error);
             this.sendResponse(response);
             this.sendEvent(new TerminatedEvent());
         }
-    }
-
-    private getArchitecturePath(architecture: string): string {
-        const architectureMap: Record<string, string> = {
-            "RISC-V": "../architecture/RISCV/RV32IMFD.yml",
-            MIPS: "../architecture/MIPS/MIPS32.yml",
-            Z80: "../architecture/miniZ80.yml",
-        };
-        return architectureMap[architecture] || architectureMap["RISC-V"];
     }
 
     private async buildSourceMapping(): Promise<void> {
@@ -234,10 +401,9 @@ export class CreatorDebugSession extends DebugSession {
                     lineIdx < this.sourceLines.length;
                     lineIdx++
                 ) {
-                    let srcLine = stripComments(
+                    const srcLine = stripComments(
                         this.sourceLines[lineIdx],
                     ).replace(/\s+/g, " ");
-                    // Allow for label prefixes (e.g., "label: addi sp, sp, -16")
                     if (srcLine.includes(userText)) {
                         this.addressToLineMap.set(instr.address, lineIdx);
                         this.lineToAddressMap.set(lineIdx, instr.address);
@@ -246,18 +412,6 @@ export class CreatorDebugSession extends DebugSession {
                         log.info(
                             `Mapped instruction at address ${instr.address} to line ${lineIdx + 1}: ${this.sourceLines[lineIdx]} [user: "${instr.user}"]`,
                         );
-                        // Optionally, map function labels if the line is a label
-                        if (srcLine.endsWith(":")) {
-                            const labelName = srcLine
-                                .substring(0, srcLine.length - 1)
-                                .trim();
-                            if (/[a-zA-Z]/.test(labelName)) {
-                                this.functionLabels.set(
-                                    instr.address,
-                                    labelName,
-                                );
-                            }
-                        }
                         break;
                     }
                 }
@@ -266,334 +420,53 @@ export class CreatorDebugSession extends DebugSession {
                         `Could not map instruction at address ${instr.address} with user text "${instr.user}"`,
                     );
                 }
-            } else {
+            } else if (i > 0) {
                 // Pseudoinstruction expansion: map to previous matched line
-                if (i > 0) {
-                    const prevAddr = instructions[i - 1].address;
-                    const prevLine = this.addressToLineMap.get(prevAddr);
-                    if (prevLine !== undefined) {
-                        this.addressToLineMap.set(instr.address, prevLine);
-                        log.info(
-                            `Mapped expanded instruction at address ${instr.address} to line ${prevLine + 1} (pseudoinstruction expansion)`,
-                        );
-                    }
+                const prevAddr = instructions[i - 1].address;
+                const prevLine = this.addressToLineMap.get(prevAddr);
+                if (prevLine !== undefined) {
+                    this.addressToLineMap.set(instr.address, prevLine);
+                    log.info(
+                        `Mapped expanded instruction at address ${instr.address} to line ${prevLine + 1} (pseudoinstruction expansion)`,
+                    );
                 }
             }
         }
-
-        log.info(
-            `Address to line mapping: ${JSON.stringify(Array.from(this.addressToLineMap.entries()))}`,
-        );
-        log.info(
-            `Line to address mapping: ${JSON.stringify(Array.from(this.lineToAddressMap.entries()))}`,
-        );
-        log.info(
-            `Function labels: ${JSON.stringify(Array.from(this.functionLabels.entries()))}`,
-        );
     }
 
-    protected setBreakPointsRequest(
-        response: DebugProtocol.SetBreakpointsResponse,
-        args: DebugProtocol.SetBreakpointsArguments,
-    ): void {
-        const path = args.source.path;
-        const clientLines = args.lines || [];
-
-        // Clear existing breakpoints from RPC server
-        this.breakpoints.forEach(lineIndex => {
-            const address = this.lineToAddressMap.get(lineIndex);
-            if (address) {
-                this.rpcClient
-                    .setBreakpoint(undefined, address, false)
-                    .catch((error: unknown) => {
-                        log.error("Failed to clear breakpoint:", error);
-                    });
-            }
-        });
-
-        // Clear local breakpoints
-        this.breakpoints.clear();
-
-        // Convert client lines to our internal format and set breakpoints
-        const breakpoints: Breakpoint[] = clientLines.map(line => {
-            const lineIndex = line - 1; // Convert to 0-based
-            this.breakpoints.add(lineIndex);
-
-            // Set breakpoint via RPC if we have an address mapping
-            const address = this.lineToAddressMap.get(lineIndex);
-            if (address) {
-                this.rpcClient
-                    .setBreakpoint(undefined, address, true)
-                    .then(() => {
-                        log.info(
-                            `Breakpoint set at address ${address}, line ${line}`,
-                        );
-                    })
-                    .catch((error: unknown) => {
-                        log.error("Failed to set breakpoint:", error);
-                    });
-            } else {
-                log.warn(`No address mapping found for line ${line}`);
-            }
-
-            return new Breakpoint(true, line);
-        });
-
-        response.body = {
-            breakpoints,
-        };
-        this.sendResponse(response);
-    }
-
-    protected threadsRequest(response: DebugProtocol.ThreadsResponse): void {
-        response.body = {
-            threads: [new Thread(CreatorDebugSession.THREAD_ID, "main")],
-        };
-        this.sendResponse(response);
-    }
-
-    protected async stackTraceRequest(
-        response: DebugProtocol.StackTraceResponse,
-        _args: DebugProtocol.StackTraceArguments,
+    protected override async evaluateRequest(
+        response: DebugProtocol.EvaluateResponse,
+        args: DebugProtocol.EvaluateArguments,
     ): Promise<void> {
         try {
-            const context = await this.rpcClient.getExecutionContext();
-            this.updateCallStack(context);
+            // Check if this is a hover request for a register
+            if (args.context === "hover") {
+                const expression = args.expression.trim();
 
-            const stackFrames: StackFrame[] = [];
-
-            // ALWAYS create the first frame from the current PC location
-            if (context.currentInstruction) {
-                const currentAddress = context.currentInstruction.address;
-                const currentLineNumber =
-                    this.addressToLineMap.get(currentAddress);
-                const currentFunctionName =
-                    this.functionLabels.get(currentAddress) || "main";
-
-                // Only add a stack frame if the current address maps to a source line
-                if (currentLineNumber !== undefined) {
-                    const currentFrame = new StackFrame(
-                        0,
-                        `${currentFunctionName}: ${context.currentInstruction.asm}`,
-                        new Source(
-                            path.basename(this.programPath),
-                            this.programPath,
-                        ),
-                        currentLineNumber + 1, // Convert to 1-based
-                        0,
-                    );
-                    stackFrames.push(currentFrame);
-
-                    // Add the rest of the call stack (excluding the current frame if it's already in the call stack)
-                    for (let i = 0; i < this.callStack.length; i++) {
-                        const frame = this.callStack[i];
-
-                        // Skip the current frame if it's already added above
-                        if (frame.address === currentAddress) {
-                            continue;
-                        }
-
-                        const stackFrame = new StackFrame(
-                            stackFrames.length, // Use current length as frame ID
-                            `${frame.functionName}: ${frame.instruction}`,
-                            new Source(
-                                path.basename(this.programPath),
-                                this.programPath,
-                            ),
-                            frame.lineNumber + 1, // Convert to 1-based
-                            0,
-                        );
-                        stackFrames.push(stackFrame);
-                    }
+                // Try to get register value
+                const registerValue =
+                    await this.rpcClient.getRegister(expression);
+                if (registerValue !== null) {
+                    response.body = {
+                        result: `0x${registerValue.value}`,
+                        type: "register",
+                        variablesReference: 0,
+                    };
+                    this.sendResponse(response);
+                    return;
                 }
-                // If the PC is not mapped to a code line (e.g., in .data), do not highlight any line.
             }
 
-            response.body = {
-                stackFrames,
-                totalFrames: stackFrames.length,
-            };
+            // If not a register or not found, return error
+            response.success = false;
+            response.message = `Unable to evaluate '${args.expression}'`;
             this.sendResponse(response);
         } catch (error: unknown) {
             response.success = false;
-            response.message = String(error);
+            response.message = `Evaluation error: ${error}`;
             this.sendResponse(response);
         }
     }
-
-    /**
-     * Update the call stack based on the current execution context
-     */
-    private updateCallStack(context: {
-        currentInstruction?: { address: string; asm: string };
-    }): void {
-        if (!context.currentInstruction) {
-            return;
-        }
-
-        const currentPC = context.currentInstruction.address;
-        const currentInstruction = context.currentInstruction.asm.toLowerCase();
-        const lineNumber = this.addressToLineMap.get(currentPC);
-        const functionName = this.functionLabels.get(currentPC) || "main";
-
-        // Check if this is a completely different location (indicates a jump happened)
-        const pcChanged = this.lastPC !== "" && this.lastPC !== currentPC;
-
-        // Detect function calls (jal, jalr with link, call instructions)
-        if (CreatorDebugSession.isCallInstruction(currentInstruction)) {
-            // For function calls, push the call site to call stack
-            if (lineNumber !== undefined) {
-                // Push the calling location to stack (before the jump)
-                const callerPC = this.lastPC;
-                const callerLine = this.addressToLineMap.get(callerPC);
-                const callerFunction =
-                    this.functionLabels.get(callerPC) || "main";
-
-                if (callerLine !== undefined && callerPC !== "") {
-                    this.callStack.unshift({
-                        address: callerPC,
-                        functionName: callerFunction,
-                        lineNumber: callerLine,
-                        instruction: `call ${functionName}`,
-                    });
-                }
-            }
-        }
-        // Detect returns (ret, jr ra, etc.)
-        else if (CreatorDebugSession.isReturnInstruction(currentInstruction)) {
-            // Pop from call stack when returning
-            if (this.callStack.length > 0) {
-                this.callStack.shift();
-            }
-        }
-        // Handle any other location changes (jumps, branches, etc.)
-        else if (pcChanged && lineNumber !== undefined) {
-            // Update the current frame location regardless of how we got here
-            if (this.callStack.length > 0) {
-                const currentFrame = this.callStack[0];
-                currentFrame.address = currentPC;
-                currentFrame.lineNumber = lineNumber;
-                currentFrame.instruction = context.currentInstruction.asm;
-                currentFrame.functionName = functionName;
-            } else {
-                // Initialize call stack if empty
-                this.callStack.push({
-                    address: currentPC,
-                    functionName,
-                    lineNumber,
-                    instruction: context.currentInstruction.asm,
-                });
-            }
-        }
-        // Initialize call stack if empty and we have location info
-        else if (this.callStack.length === 0 && lineNumber !== undefined) {
-            this.callStack.push({
-                address: currentPC,
-                functionName,
-                lineNumber,
-                instruction: context.currentInstruction.asm,
-            });
-        }
-
-        this.lastPC = currentPC;
-
-        // Debug logging
-        log.info(
-            `PC: ${currentPC}, Instruction: ${currentInstruction}, Line: ${lineNumber}, Function: ${functionName}`,
-        );
-        if (pcChanged) {
-            log.info(`PC changed from ${this.lastPC} to ${currentPC}`);
-            if (CreatorDebugSession.isJumpOrBranch(currentInstruction)) {
-                log.info(
-                    `Detected jump/branch instruction: ${currentInstruction}`,
-                );
-            }
-        }
-    }
-
-    /**
-     * Check if instruction is a function call
-     */
-    private static isCallInstruction(instruction: string): boolean {
-        const callPatterns = [
-            /^jal\s+ra,/, // RISC-V jump and link to ra (function call)
-            /^jalr\s+ra,/, // RISC-V jump and link register to ra
-            /^call\s+/, // RISC-V pseudo-instruction for call
-            /^bl\s+/, // ARM branch with link
-            /^blx\s+/, // ARM branch with link and exchange
-            /^jsr\s+/, // 68k/others jump to subroutine
-            /^bsr\s+/, // 68k/others branch to subroutine
-        ];
-
-        return callPatterns.some(pattern => pattern.test(instruction));
-    }
-
-    /**
-     * Check if instruction is a function return
-     */
-    private static isReturnInstruction(instruction: string): boolean {
-        const returnPatterns = [
-            /^ret$/, // RISC-V return (pseudo-instruction)
-            /^jr\s+ra$/, // RISC-V jump register to return address
-            /^jalr\s+x0,\s*ra/, // RISC-V explicit return
-            /^jalr\s+zero,\s*ra/, // RISC-V explicit return with zero
-            /^jalr\s+x0,\s*0\(ra\)/, // RISC-V explicit return with offset
-            /^bx\s+lr$/, // ARM return
-            /^pop\s+.*pc/, // ARM return via pop
-            /^rts$/, // 68k/others return from subroutine
-            /^ret$/, // x86 return
-        ];
-
-        return returnPatterns.some(pattern => pattern.test(instruction));
-    }
-
-    /**
-     * Check if instruction is a jump or branch (but not a call/return)
-     */
-    private static isJumpOrBranch(instruction: string): boolean {
-        const jumpPatterns = [
-            /^j\s+/, // RISC-V unconditional jump
-            /^jr\s+(?!ra)/, // RISC-V jump register (but not return)
-            /^jal\s+x0,/, // RISC-V jump without linking
-            /^beq\s+/, // RISC-V branch equal
-            /^bne\s+/, // RISC-V branch not equal
-            /^blt\s+/, // RISC-V branch less than
-            /^bge\s+/, // RISC-V branch greater equal
-            /^bltu\s+/, // RISC-V branch less than unsigned
-            /^bgeu\s+/, // RISC-V branch greater equal unsigned
-            /^b\s+/, // ARM unconditional branch
-            /^beq\s+/, // ARM branch equal
-            /^bne\s+/, // ARM branch not equal
-            /^bmi\s+/, // ARM branch minus
-            /^bpl\s+/, // ARM branch plus
-        ];
-
-        return jumpPatterns.some(pattern => pattern.test(instruction));
-    }
-
-    protected async scopesRequest(
-        response: DebugProtocol.ScopesResponse,
-        args: DebugProtocol.ScopesArguments,
-    ): Promise<void> {
-        const scopes = [
-            {
-                name: "Registers",
-                variablesReference: this.variableHandles.create("registers"),
-                expensive: false,
-            },
-            {
-                name: "Memory",
-                variablesReference: this.variableHandles.create("memory"),
-                expensive: true,
-            },
-        ];
-
-        response.body = {
-            scopes,
-        };
-        this.sendResponse(response);
-    }
-
     protected async variablesRequest(
         response: DebugProtocol.VariablesResponse,
         args: DebugProtocol.VariablesArguments,
@@ -637,67 +510,6 @@ export class CreatorDebugSession extends DebugSession {
                         );
                     }
                 }
-            } else if (handle === "memory") {
-                const pc = await this.rpcClient.getPC();
-                const pcAddr = parseInt(pc.value, 16);
-
-                // Get memory with hints for better display
-                try {
-                    const memoryWithHints =
-                        await this.rpcClient.getMemoryWithHints(
-                            `0x${pcAddr.toString(16)}`,
-                            32, // Show 32 bytes by default
-                        );
-
-                    for (const entry of memoryWithHints.entries) {
-                        const displayValue = entry.value;
-                        let description = "";
-
-                        // Add hints to the description if available
-                        if (entry.hints.length > 0) {
-                            const hintDescriptions = entry.hints.map(
-                                (hint: MemoryHint) => {
-                                    const shortHint = hint.hint
-                                        .replace("<", "")
-                                        .replace(">", "");
-                                    const sizeInfo = hint.sizeInBits
-                                        ? ` (${hint.sizeInBits}b)`
-                                        : "";
-                                    const offsetInfo =
-                                        entry.hints.length > 1
-                                            ? ` @+${hint.offset}`
-                                            : "";
-                                    return `${shortHint}${sizeInfo}${offsetInfo}`;
-                                },
-                            );
-                            description = ` // ${hintDescriptions.join(", ")}`;
-                        }
-
-                        variables.push({
-                            name: entry.address,
-                            value: `${displayValue}${description}`,
-                            variablesReference: 0,
-                        });
-                    }
-                } catch {
-                    // Fallback to basic memory display
-                    for (let i = 0; i < 8; i++) {
-                        const addr = pcAddr + i * 4;
-                        try {
-                            const memory = await this.rpcClient.getMemory(
-                                `0x${addr.toString(16)}`,
-                                4,
-                            );
-                            variables.push({
-                                name: `0x${addr.toString(16).toUpperCase()}`,
-                                value: `0x${memory.data.join("")}`,
-                                variablesReference: 0,
-                            });
-                        } catch {
-                            // Skip failed memory reads
-                        }
-                    }
-                }
             }
         } catch (error: unknown) {
             log.error("Failed to get variables:", error);
@@ -709,324 +521,162 @@ export class CreatorDebugSession extends DebugSession {
         this.sendResponse(response);
     }
 
-    protected async continueRequest(
-        response: DebugProtocol.ContinueResponse,
-        args: DebugProtocol.ContinueArguments,
-    ): Promise<void> {
-        this.isRunning = true;
-        this.sendEvent(new ContinuedEvent(CreatorDebugSession.THREAD_ID));
-
-        try {
-            // Continue execution until breakpoint or completion
-            let stepCount = 0;
-            const maxSteps = 10000; // Safety limit
-
-            while (stepCount < maxSteps && this.isRunning) {
-                // Execute one step
-                await this.rpcClient.executeStep();
-                stepCount++;
-
-                // Get the new context after the step
-                const context = await this.rpcClient.getExecutionContext();
-
-                // Check for completion or error first
-                if (context.completed || context.error) {
-                    this.isRunning = false;
-                    await this.updateConsoleOutput();
-                    this.sendEvent(new TerminatedEvent());
-                    break;
-                }
-
-                // Update call stack
-                this.updateCallStack(context);
-
-                // Check if current instruction has breakpoint
-                if (context.currentInstruction?.address) {
-                    const lineNumber = this.addressToLineMap.get(
-                        context.currentInstruction.address,
-                    );
-                    if (
-                        lineNumber !== undefined &&
-                        this.breakpoints.has(lineNumber)
-                    ) {
-                        this.isRunning = false;
-                        await this.updateConsoleOutput();
-                        this.sendEvent(
-                            new StoppedEvent(
-                                "breakpoint",
-                                CreatorDebugSession.THREAD_ID,
-                            ),
-                        );
-                        break;
-                    }
-                }
-
-                // Update console output periodically
-                if (stepCount % 10 === 0) {
-                    await this.updateConsoleOutput();
-                }
-            }
-
-            if (stepCount >= maxSteps && this.isRunning) {
-                this.isRunning = false;
-                this.sendEvent(
-                    new StoppedEvent("pause", CreatorDebugSession.THREAD_ID),
-                );
-            }
-        } catch (error: unknown) {
-            log.error("Continue execution failed:", error);
-            this.isRunning = false;
-            this.sendEvent(
-                new StoppedEvent("exception", CreatorDebugSession.THREAD_ID),
-            );
-        }
-
-        response.body = { allThreadsContinued: false };
+    protected override threadsRequest(
+        response: DebugProtocol.ThreadsResponse,
+    ): void {
+        response.body = {
+            threads: [new Thread(CreatorDebugSession.THREAD_ID, "main")],
+        };
         this.sendResponse(response);
     }
 
-    protected async nextRequest(
+    protected stackTraceRequest(
+        response: DebugProtocol.StackTraceResponse,
+        _args: DebugProtocol.StackTraceArguments,
+    ): void {
+        if (!this._sourceFile || !this._lastExecutionContext) {
+            response.body = { stackFrames: [], totalFrames: 0 };
+            this.sendResponse(response);
+            return;
+        }
+
+        const context = this._lastExecutionContext;
+        const pc = parseInt(context.pc, 16);
+
+        // Use the mapping to get the correct source line
+        const pcAddress = "0x" + context.pc.toUpperCase(); // Ensure consistent case
+        const mappedLine = this.addressToLineMap.get(pcAddress);
+        const line = mappedLine !== undefined ? mappedLine + 1 : 1; // Convert to 1-based line numbering
+
+        const frame = new StackFrame(
+            0,
+            `PC: 0x${pc.toString(16)}`,
+            new Source(path.basename(this._sourceFile), this._sourceFile),
+            line,
+            0,
+        );
+
+        response.body = {
+            stackFrames: [frame],
+            totalFrames: 1,
+        };
+        this.sendResponse(response);
+    }
+
+    protected override async nextRequest(
         response: DebugProtocol.NextResponse,
         _args: DebugProtocol.NextArguments,
     ): Promise<void> {
+        const requestId = Math.random().toString(36).substr(2, 9);
+        console.log(`[DEBUG-${requestId}] nextRequest started`);
+        if (this._isStepping) {
+            this.sendResponse(response);
+            return;
+        }
+        this._isStepping = true;
         try {
-            // Get current state before step
-            const beforeContext = await this.rpcClient.getExecutionContext();
-            log.info(
-                `Before step - PC: ${beforeContext.pc}, completed: ${beforeContext.completed}, error: ${beforeContext.error}`,
-            );
-
             // Execute the step
-            const stepResult = await this.rpcClient.executeStep();
-            log.info(`Step result: ${JSON.stringify(stepResult)}`);
+            const stepResult =
+                (await this.rpcClient.executeStep()) as ExecutionResult;
 
-            // Get state after step
-            const afterContext = await this.rpcClient.getExecutionContext();
-            log.info(
-                `After step - PC: ${afterContext.pc}, completed: ${afterContext.completed}, error: ${afterContext.error}`,
-            );
+            // Check for any output from the step
+            if (stepResult && stepResult.output) {
+                this.sendOutput(stepResult.output, "stdout");
+            }
 
-            // Update call stack
-            this.updateCallStack(afterContext);
-
-            // Check for console output changes
             await this.updateConsoleOutput();
 
-            // Check if program has completed or errored
-            if (afterContext.completed || afterContext.error) {
+            const context = await this.rpcClient.getExecutionContext();
+            this._lastExecutionContext = context;
+
+            // Log current instruction info
+            if (context.currentInstruction) {
+                console.log(
+                    `[DEBUG-${requestId}] Current instruction:`,
+                    context.currentInstruction,
+                );
+            }
+
+            this.sendResponse(response);
+
+            if (context.completed || context.error) {
                 this.sendEvent(new TerminatedEvent());
             } else {
+                console.log(
+                    `[DEBUG-${requestId}] Sending StoppedEvent with reason 'step'`,
+                );
+
                 this.sendEvent(
                     new StoppedEvent("step", CreatorDebugSession.THREAD_ID),
                 );
+
+                await this.refreshAndEmitMemory();
             }
         } catch (error: unknown) {
-            log.error("Step execution failed:", error);
+            console.error(`[DEBUG-${requestId}] Step execution failed:`, error);
+            this.sendResponse(response);
             this.sendEvent(
                 new StoppedEvent("exception", CreatorDebugSession.THREAD_ID),
             );
+            return;
+        } finally {
+            this._isStepping = false;
+            console.log(`[DEBUG-${requestId}] nextRequest completed`);
         }
+    }
 
+    protected async scopesRequest(
+        response: DebugProtocol.ScopesResponse,
+        args: DebugProtocol.ScopesArguments,
+    ): Promise<void> {
+        const scopes = [
+            {
+                name: "Registers",
+                variablesReference: this.variableHandles.create("registers"),
+                expensive: false,
+            },
+            {
+                name: "Memory",
+                variablesReference: this.variableHandles.create("memory"),
+                expensive: true,
+            },
+        ];
+
+        response.body = {
+            scopes,
+        };
         this.sendResponse(response);
     }
 
-    protected async stepInRequest(
-        response: DebugProtocol.StepInResponse,
-        args: DebugProtocol.StepInArguments,
-    ): Promise<void> {
-        // For assembly, step in is the same as step over
-        await this.nextRequest(
-            response as DebugProtocol.NextResponse,
-            args as DebugProtocol.NextArguments,
-        );
-    }
-
-    protected async stepOutRequest(
-        response: DebugProtocol.StepOutResponse,
-        args: DebugProtocol.StepOutArguments,
-    ): Promise<void> {
-        // For assembly, step out is the same as step over
-        await this.nextRequest(
-            response as DebugProtocol.NextResponse,
-            args as DebugProtocol.NextArguments,
-        );
-    }
-
-    protected async pauseRequest(
-        response: DebugProtocol.PauseResponse,
-        args: DebugProtocol.PauseArguments,
-    ): Promise<void> {
-        this.isRunning = false;
-        this.sendEvent(
-            new StoppedEvent("pause", CreatorDebugSession.THREAD_ID),
-        );
-        this.sendResponse(response);
-    }
-
-    protected async disconnectRequest(
+    protected override async disconnectRequest(
         response: DebugProtocol.DisconnectResponse,
         args: DebugProtocol.DisconnectArguments,
     ): Promise<void> {
-        await this.rpcClient.reset();
+        try {
+            await this.rpcClient.reset();
+        } catch (error) {
+            console.error("Error during disconnect:", error);
+        }
         this.sendResponse(response);
     }
 
-    protected async terminateRequest(
+    protected override async terminateRequest(
         response: DebugProtocol.TerminateResponse,
         args: DebugProtocol.TerminateArguments,
     ): Promise<void> {
-        await this.rpcClient.reset();
+        try {
+            await this.rpcClient.reset();
+        } catch (error) {
+            console.error("Error during terminate:", error);
+        }
         this.sendEvent(new TerminatedEvent());
         this.sendResponse(response);
     }
 
-    protected configurationDoneRequest(
+    protected override configurationDoneRequest(
         response: DebugProtocol.ConfigurationDoneResponse,
         args: DebugProtocol.ConfigurationDoneArguments,
     ): void {
         super.configurationDoneRequest(response, args);
-    }
-
-    /**
-     * Check for changes in the CREATOR display and send output events
-     */
-    private async updateConsoleOutput(): Promise<void> {
-        try {
-            const state = await this.rpcClient.getState();
-            const currentDisplay = state.status.display || "";
-
-            // Only send output if display content has changed
-            if (currentDisplay !== this.lastDisplayContent) {
-                const newContent = currentDisplay.substring(
-                    this.lastDisplayContent.length,
-                );
-                if (newContent) {
-                    this.sendEvent(new OutputEvent(newContent, "stdout"));
-                }
-                this.lastDisplayContent = currentDisplay;
-            }
-        } catch (error) {
-            // Silently fail - console output is not critical
-        }
-    }
-
-    // Custom methods for external control
-    public async stepOver(): Promise<void> {
-        if (!this.isRunning) {
-            const request = {
-                arguments: { threadId: CreatorDebugSession.THREAD_ID },
-            };
-            const response = {} as DebugProtocol.NextResponse;
-            await this.nextRequest(response, request.arguments);
-        }
-    }
-
-    public async continue(): Promise<void> {
-        if (!this.isRunning) {
-            const request = {
-                arguments: { threadId: CreatorDebugSession.THREAD_ID },
-            };
-            const response = {} as DebugProtocol.ContinueResponse;
-            await this.continueRequest(response, request.arguments);
-        }
-    }
-
-    public async reset(): Promise<void> {
-        this.isRunning = false;
-        await this.rpcClient.reset();
-        // Clear breakpoints, call stack, and rebuild mapping
-        this.breakpoints.clear();
-        this.callStack = [];
-        this.lastPC = "";
-        await this.buildSourceMapping();
-        this.sendEvent(
-            new StoppedEvent("entry", CreatorDebugSession.THREAD_ID),
-        );
-    }
-
-    public async terminate(): Promise<void> {
-        this.isRunning = false;
-        await this.rpcClient.reset();
-        this.sendEvent(new TerminatedEvent());
-    }
-
-    protected override async evaluateRequest(
-        response: DebugProtocol.EvaluateResponse,
-        args: DebugProtocol.EvaluateArguments,
-    ): Promise<void> {
-        try {
-            // Check if this is a hover request for a register
-            if (args.context === "hover") {
-                const expression = args.expression.trim();
-
-                // Try to get register value
-                const registerValue = await this.getRegisterValue(expression);
-                if (registerValue !== null) {
-                    response.body = {
-                        result: `0x${registerValue}`,
-                        type: "register",
-                        variablesReference: 0,
-                    };
-                    this.sendResponse(response);
-                    return;
-                }
-            }
-
-            // If not a register or not found, return error
-            response.success = false;
-            response.message = `Unable to evaluate '${args.expression}'`;
-            this.sendResponse(response);
-        } catch (error: unknown) {
-            response.success = false;
-            response.message = `Evaluation error: ${error}`;
-            this.sendResponse(response);
-        }
-    }
-
-    /**
-     * Try to get the value of a register by name, checking common naming patterns
-     */
-    private async getRegisterValue(name: string): Promise<string | null> {
-        try {
-            // Try direct register lookup first
-            const result = await this.rpcClient.getRegister(name);
-            return result.value;
-        } catch (_error) {
-            return null;
-        }
-    }
-
-    protected override async readMemoryRequest(
-        response: DebugProtocol.ReadMemoryResponse,
-        args: DebugProtocol.ReadMemoryArguments,
-    ): Promise<void> {
-        try {
-            const address = args.memoryReference;
-            const count = args.count || 16;
-            const offset = args.offset || 0;
-
-            // Calculate the actual address to read from
-            const actualAddress = `0x${(parseInt(address, 16) + offset).toString(16)}`;
-
-            const memory = await this.rpcClient.getMemory(actualAddress, count);
-
-            // Convert the data array to a base64 encoded string
-            const buffer = Buffer.from(
-                memory.data.map((hex: string) => parseInt(hex, 16)),
-            );
-            const base64Data = buffer.toString("base64");
-
-            response.body = {
-                address: actualAddress,
-                data: base64Data,
-                unreadableBytes: 0,
-            };
-
-            this.sendResponse(response);
-        } catch (error: unknown) {
-            response.success = false;
-            response.message = `Failed to read memory: ${error instanceof Error ? error.message : String(error)}`;
-            this.sendResponse(response);
-        }
     }
 }

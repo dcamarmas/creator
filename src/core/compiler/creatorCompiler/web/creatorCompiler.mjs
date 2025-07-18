@@ -1,5 +1,6 @@
 /*
- *  Copyright 2018-2025 Felix Garcia Carballeira, Alejandro Calderon Mateos, Diego Camarmas Alonso
+ *  Copyright 2018-2025 Felix Garcia Carballeira, Alejandro Calderon Mateos,
+ *  Diego Camarmas Alonso, Jorge Ramos Santana
  *
  *  This file is part of CREATOR.
  *
@@ -22,7 +23,7 @@ import { assembly_compiler_base } from "../creatorCompilerBase.mjs";
 
 import wasm_web_init, {
     ArchitectureJS,
-    DataCategoryJS
+    DataCategoryJS,
 } from "./wasm/creator_compiler.js";
 
 /**
@@ -32,15 +33,15 @@ import wasm_web_init, {
  * @returns {Object} Compilation result
  */
 export async function assembly_compiler_default(code, library) {
-  // In the web, we MUST call the default WASM initialization
-  await wasm_web_init();
-  
-  // Prepare WASM modules for the base compiler
-  const wasmModules = {
-    ArchitectureJS,
-    DataCategoryJS
-  };
-  
-  // Call the common base implementation
-  return assembly_compiler_base(code, library, wasmModules);
+    // In the web, we MUST call the default WASM initialization
+    await wasm_web_init();
+
+    // Prepare WASM modules for the base compiler
+    const wasmModules = {
+        ArchitectureJS,
+        DataCategoryJS,
+    };
+
+    // Call the common base implementation
+    return assembly_compiler_base(code, library, wasmModules);
 }

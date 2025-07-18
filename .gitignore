@@ -33,3 +33,4 @@ coverage
 # others
 /components.d.ts
 out/
+vscode-extension/.vscode/*

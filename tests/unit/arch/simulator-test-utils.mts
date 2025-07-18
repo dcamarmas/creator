@@ -9,6 +9,9 @@ import { logger } from "../../../src/core/utils/creator_logger.mjs";
 import { assertEquals } from "https://deno.land/std/assert/mod.ts";
 import { RISCV } from "@/core/capi/arch/riscv.mjs";
 import fs from "node:fs";
+import { assembly_compiler_rasm } from "@/core/compiler/rasm/web/rasm.mjs";
+import { assembly_compiler_sjasmplus } from "@/core/compiler/sjasmplus/web/sjasmplus.mjs";
+import { assembly_compiler_default } from "@/core/compiler/creatorCompiler/web/creatorCompiler.mjs";
 
 export interface ArchResult {
     status: string;
@@ -28,6 +31,12 @@ export interface ExecutionResult {
     completed: boolean;
     error: boolean;
 }
+
+const compiler_map = {
+    default: assembly_compiler_default,
+    sjasmplus: assembly_compiler_sjasmplus,
+    rasm: assembly_compiler_rasm,
+};
 
 /**
  * Helper function to get register value by name
@@ -84,13 +93,14 @@ export function getByteAtAddress(address: bigint): bigint {
  * @param yamlPath - Path to the YAML architecture configuration file
  * @returns Setup results including architecture and compilation status
  */
-export function setupSimulator(
+export async function setupSimulator(
     testAssembly: string,
     yamlPath: string,
-): {
-    archResult: ArchResult;
-    compileResult: CompileResult;
-} {
+    assembler: string = "default",
+): Promise<{
+  archResult: ArchResult;
+  compileResult: CompileResult;
+}> {
     logger.disable();
 
     // Load architecture configuration from file synchronously
@@ -106,11 +116,12 @@ export function setupSimulator(
             `Failed to load architecture from ${yamlPath}: ${archResult.token}`,
         );
     }
-
+    const compilerKey = assembler || "default";
+    const compilerFunction = compiler_map[compilerKey];
     // Compile assembly code
-    const compileResult = creator.assembly_compile(
+    const compileResult = await creator.assembly_compile(
         testAssembly,
-        false,
+        compilerFunction
     ) as CompileResult;
     if (compileResult.status !== "ok") {
         throw new Error(`Failed to compile assembly: ${compileResult.msg}`);
