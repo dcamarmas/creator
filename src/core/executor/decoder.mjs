@@ -1,6 +1,6 @@
 /*
- *  Copyright 2018-2025 Felix Garcia Carballeira, Alejandro Calderon Mateos, Diego Camarmas Alonso,
- *  Jorge Ramos Santana
+ *  Copyright 2018-2025 Felix Garcia Carballeira, Alejandro Calderon Mateos,
+ *  Diego Camarmas Alonso, Jorge Ramos Santana
  *
  *  This file is part of CREATOR.
  *
@@ -16,6 +16,7 @@
  *
  *  You should have received a copy of the GNU Lesser General Public License
  *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
+ *
  */
 
 import { architecture, REGISTERS, WORDSIZE } from "../core.mjs";
@@ -23,6 +24,16 @@ import { logger } from "../utils/creator_logger.mjs";
 const BINARY_BASE = 2;
 const DECIMAL_BASE = 10;
 let instructionLookupCache = null;
+
+/** 
+ * Resets the instruction lookup cache
+ * 
+ * @function resetCache
+ * @returns {void}
+ */
+export function resetCache() {
+    instructionLookupCache = null;
+}
 
 /**
  * Returns the register name given its binary representation and type

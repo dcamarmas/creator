@@ -16,8 +16,8 @@
  *  You should have received a copy of the GNU Lesser General Public License
  *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  */
-"use strict";
-import { instructions } from "../compiler/compiler.mjs";
+
+import { instructions, tag_instructions } from "../compiler/compiler.mjs";
 import {
     status,
     WORDSIZE,
@@ -31,7 +31,7 @@ import {
     readRegister,
     writeRegister,
 } from "../register/registerOperations.mjs";
-import { track_stack_setsp } from "../memory/stackTracker.mjs";
+import { track_stack_setsp, track_stack_enter } from "../memory/stackTracker.mjs";
 import { creator_ga } from "../utils/creator_ga.mjs";
 import { logger } from "../utils/creator_logger.mjs";
 import { decode_instruction } from "./decoder.mjs";
@@ -75,7 +75,7 @@ export function hasVirtualPCChanged(oldVirtualPC) {
 }
 
 /**
- * Performs validation checks to determine if execution should continue
+ * Performs validation checks to determine if execution should continue. This is used to prevent the execution from continuing AFTER it has already finished, but the user tries to step again.
  * @param {boolean} includeLogging - Whether to include debug logging statements
  * @returns {Object|null} - Returns execution result object if validation fails, or null if validation passes
  */
@@ -146,6 +146,11 @@ function updateExecutionStatus(draw) {
     // Check for program termination due to error
     if (status.execution_index === -1) {
         status.error = 1;
+        return packExecute(false, "", "info", null);
+    }
+
+    else if (status.execution_index === -2) {
+        // Normal program termination
         return packExecute(false, "", "info", null);
     }
 
@@ -327,6 +332,11 @@ function executeInstructionCycle(draw) {
     logger.debug("Execution Index:" + status.execution_index);
     logger.debug("PC Register: " + readRegister(0, 0));
 
+    // Special check for stack visualization purposes
+    if (status.execution_index === 0) {
+        track_stack_enter(tag_instructions[getPC()] || "");
+    }
+
     // Check for conditions that would stop execution
     const inLoopCheckResult = performExecutionChecks();
     if (inLoopCheckResult !== null) {
@@ -391,9 +401,6 @@ export function step() {
     const pc_address = getPC();
     const currentSegment = main_memory.getSegmentForAddress(pc_address);
 
-    // TODO: This check does not make sense at the architecture level. This is an
-    // operating system check, not an architecture check.
-    // Check if we can execute at this address
     if (!main_memory.isValidAccess(pc_address, "execute")) {
         status.execution_index = -2;
         const result = packExecute(
@@ -407,6 +414,33 @@ export function step() {
             result.instructionData = instructionData;
         }
         return result;
+    }
+
+    const segments = main_memory.getMemorySegments();
+    const textSegment = segments.get("text");
+    if (textSegment) {
+        const written = main_memory.getWrittenAddresses();
+        // Only consider addresses within the text segment
+        const textWritten = written.filter(addr =>
+            addr >= Number(textSegment.startAddress) &&
+            addr <= Number(textSegment.endAddress)
+        );
+        if (textWritten.length > 0) {
+            const maxTextAddr = Math.max(...textWritten);
+            if (pc_address > BigInt(maxTextAddr)) {
+                status.execution_index = -2;
+                const result = packExecute(
+                    false,
+                    `The execution of the program has finished - PC (${pc_address}) is higher than the highest written address (${maxTextAddr}) in the text segment`,
+                    "success",
+                    draw,
+                );
+                if (instructionData) {
+                    result.instructionData = instructionData;
+                }
+                return result;
+            }
+        }
     }
 
     // Return execution result with instruction data
@@ -453,7 +487,7 @@ export function creator_executor_exit(error) {
     if (error) {
         status.execution_index = -1;
     } else {
-        status.execution_index = instructions.length + 1;
+        status.execution_index = -2; // Set to -2 to indicate normal exit
     }
 }
 /*

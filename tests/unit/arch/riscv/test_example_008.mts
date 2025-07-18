@@ -9,7 +9,7 @@ import {
 Deno.test(
     "Architecture-agnostic testing - RISC-V Matrix Copy with Floating Point",
     // eslint-disable-next-line max-lines-per-function
-    () => {
+    async () => {
         const testAssembly = `
 
 #
@@ -57,7 +57,7 @@ end1:
     `;
         const RISCV_ARCH_PATH = "../../../architecture/RISCV/RV32IMFD.yml";
         // Setup simulator with RISC-V architecture
-        setupSimulator(testAssembly, RISCV_ARCH_PATH);
+        await setupSimulator(testAssembly, RISCV_ARCH_PATH);
 
         // Execute the program
         const result = executeN(1000);

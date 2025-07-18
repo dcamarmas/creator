@@ -128,7 +128,7 @@ export function loadArchitecture(arch, root = document.app) {
     $.ajaxSetup({ async: false })
 
     $.get("architecture/" + arch.file + ".yml", cfg => {
-        const { status, errorcode, token } = newArchitectureLoad(cfg);
+        const { status, errorcode, token } = newArchitectureLoad(cfg, true);
 
         if (status === "ko") {
             show_notification(`[${errorcode}] ${token}`, "danger", root);
