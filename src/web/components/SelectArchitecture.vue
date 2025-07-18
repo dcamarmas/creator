@@ -2,8 +2,8 @@
 import UIeltoToolbar from "./general/UIeltoToolbar.vue"
 import PreloadArchitecture from "./select_architecture/PreloadArchitecture.vue"
 import LoadArchitecture from "./select_architecture/LoadArchitecture.vue"
-// import NewArchitecture from "./select_architecture/NewArchitecture.vue"
 import DeleteArchitecture from "./select_architecture/DeleteArchitecture.vue"
+import { useModal } from "bootstrap-vue-next"
 
 export default {
   props: {
@@ -20,107 +20,112 @@ export default {
     UIeltoToolbar,
     PreloadArchitecture,
     LoadArchitecture,
-    // NewArchitecture,
     DeleteArchitecture,
+  },
+
+  setup() {
+    const showDeleteModal = useModal("modal-delete-arch").show
+
+    return { showDeleteModal }
+  },
+
+  data() {
+    return {
+      contactMail: "creator.arcos.inf.uc3m.es@gmail.com",
+      archToDelete: null,
+
+      render: 0n, // dummy variable to force components with this as key to refresh
+    }
+  },
+
+  methods: {
+    refresh() {
+      // refreshes children components with `:key="render"`
+      this.render++
+    },
   },
 }
 </script>
 
 <template>
   <b-container fluid align-h="center" id="load_menu">
-    <b-row>
-      <b-col>
-        <!-- Navbar -->
-        <UIeltoToolbar
-          id="navbar_load_architecture"
-          :components="' | | |btn_configuration,btn_information'"
-          :browser="browser"
-          :os="os"
-          :dark="dark"
-          :arch_available="arch_available"
-          ref="toolbar"
-        />
+    <!-- Navbar -->
+    <UIeltoToolbar
+      id="navbar_load_architecture"
+      :components="' | | |btn_configuration,btn_information'"
+      :browser="browser"
+      :os="os"
+      :dark="dark"
+      :arch_available="arch_available"
+      ref="toolbar"
+    />
 
-        <!-- Architecture menu -->
-        <b-container
-          fluid
-          align-h="center"
-          class="mx-0 px-1"
-          id="load_menu_arch"
+    <!-- Architecture menu -->
+    <b-card-group deck id="load_menu_arch" :key="render">
+      <!-- Preload architecture card -->
+      <PreloadArchitecture
+        v-for="arch in arch_available.filter(a => a.available)"
+        :architecture="arch"
+        :dark="dark"
+        @select-architecture="
+          arch_name => {
+            this.$emit('select-architecture', arch_name) // emit to our grandparent
+          }
+        "
+        @delete-architecture="
+          arch_name => {
+            this.archToDelete = arch_name
+            showDeleteModal()
+          }
+        "
+      />
+
+      <!-- Load new architecture card -->
+      <LoadArchitecture
+        @select-architecture="
+          arch_name => {
+            this.$emit('select-architecture', arch_name) // emit to our grandparent
+          }
+        "
+      />
+    </b-card-group>
+
+    <!-- Delete architecture modal -->
+    <DeleteArchitecture id="modal-delete-arch" :arch="archToDelete" />
+
+    <!-- CREATOR Information -->
+    <b-list-group
+      align-h="center"
+      :class="{
+        'mx-3': true,
+        'my-2': true,
+        'fixed-bottom':
+          // we put the info at the bottom, unless it overlaps w/ the
+          // architecture cards
+          // if we have fewer than 3 cards, the card height starts to overlap,
+          // so we have to disable the fixed bottom earlier
+          windowHeight > 800 + 160 * Math.max(3 - arch_available.length, 0),
+      }"
+    >
+      <b-list-group-item class="text-center">
+        <b-link
+          underline-opacity="0"
+          underline-opacity-hover="75"
+          :href="`mailto: ${contactMail}`"
         >
-          <b-row>
-            <b-col>
-              <b-card-group deck>
-                <!-- Preload architecture card -->
-                <PreloadArchitecture
-                  v-for="(item, index) in arch_available"
-                  :arch_available="arch_available"
-                  :architecture="item"
-                  :index="index"
-                  @select-architecture="
-                    arch_name => {
-                      this.$emit('select-architecture', arch_name) // emit to our grandparent
-                    }
-                  "
-                />
-
-                <!-- Load new architecture card -->
-                <!-- <LoadArchitecture /> -->
-
-                <!-- New architecture card -->
-                <!-- <NewArchitecture /> -->
-              </b-card-group>
-            </b-col>
-          </b-row>
-        </b-container>
-
-        <!-- CREATOR Information -->
-        <b-list-group
-          align-h="center"
-          :class="{
-            'mx-3': true,
-            'my-2': true,
-            'fixed-bottom': windowHeight > 800,
-          }"
-        >
-          <b-list-group-item class="text-center">
-            <b-link
-              underline-opacity="0"
-              underline-opacity-hover="75"
-              href="mailto: creator.arcos.inf.uc3m.es@gmail.com"
-            >
-              <font-awesome-icon icon="fa-solid fa-envelope" />
-              creator.arcos.inf.uc3m.es@gmail.com
-            </b-link>
-          </b-list-group-item>
-        </b-list-group>
-
-        <!-- Architecture selector modals -->
-
-        <!-- Delete architecture modal -->
-        <!-- <DeleteArchitecture
-          id="modalDeletArch"
-          :index="modal_delete_arch_index"
-        /> -->
-      </b-col>
-    </b-row>
+          <font-awesome-icon icon="fa-solid fa-envelope" />
+          {{ contactMail }}
+        </b-link>
+      </b-list-group-item>
+    </b-list-group>
   </b-container>
 </template>
 
 <style lang="scss" scoped>
+@import "bootstrap/scss/bootstrap";
 :deep() {
-  .architectureCard {
-    cursor: pointer;
-    margin-bottom: 3px;
-  }
-
-  .architectureImg {
-    width: 50%;
-    height: auto;
-  }
-
-  .arch_delete {
-    margin-top: 50%;
+  .selectedCard {
+    border-color: $secondary;
   }
 }
 </style>

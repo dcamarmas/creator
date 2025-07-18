@@ -19,113 +19,149 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <script>
-import { hide_loading, show_loading } from "@/web/utils.mjs"
+import {
+  hide_loading,
+  show_loading,
+  loadCustomArchitecture,
+  show_notification,
+} from "@/web/utils.mjs"
 
 export default {
+  emits: [
+    "select-architecture", // architecture has been selected
+  ],
+
   data() {
     return {
       //Form inputs
-      name_arch: "",
-      description_arch: "",
-      load_arch: "",
+      name: "",
+      description: "",
+      file: null,
 
-      //Show modal
-      show_modal: false,
+      selected: false,
     }
   },
 
   methods: {
-    //Read the JSON of new architecture
-    // eslint-disable-next-line max-lines-per-function
-    read_arch(e) {
-      show_loading()
-      e.preventDefault()
+    loadArch(event) {
+      // show_loading()
 
-      //Verify all form fields
-      if (!this.name_arch || !this.load_arch) {
-        hide_loading()
-        show_notification("Please complete all fields", "danger")
-        return
-      }
+      event.preventDefault()
 
-      this.show_modal = false
+      // read file
+      const reader = new FileReader()
+      reader.onload = event => {
+        const archDefinition = event.currentTarget.result
 
-      //Read JSON and add the new architecture on CREATOR
-      let file
-      let reader
-      const files = document.getElementById("arch_file").files
+        // TODO: parse and verify schema
 
-      //Read one or more files
-      for (let i = 0; i < files.length; i++) {
-        file = files[i]
-        reader = new FileReader()
-
-        reader.onloadend = (function (name_arch, description_arch) {
-          return function (e) {
-            //Add the new architecture on CREATOR
-            architecture_available.push({
-              name: name_arch,
-              img: "./images/personalized_logo.png",
-              alt: name_arch + " logo",
-              id: "select_conf" + name_arch,
-              description: description_arch,
-              available: 1,
-            })
-            load_architectures_available.push({
-              name: name_arch,
-              img: "./images/personalized_logo.png",
-              alt: name_arch + " logo",
-              id: "select_conf" + name_arch,
-              description: description_arch,
-              available: 1,
-            })
-            back_card.push({
-              name: architecture_available[architecture_available.length - 1]
-                .name,
-              background: "default",
-            })
-            load_architectures.push({
-              id: name_arch,
-              architecture: event.currentTarget.result,
-            })
-
-            //Refresh cache values
-            if (typeof Storage !== "undefined") {
-              let auxArch = JSON.stringify(load_architectures, null, 2)
-              localStorage.setItem("load_architectures", auxArch)
-
-              auxArch = JSON.stringify(load_architectures_available, null, 2)
-              localStorage.setItem("load_architectures_available", auxArch)
-            }
-
-            show_notification(
-              "The selected architecture has been loaded correctly",
-              "success",
-            )
-            hide_loading()
-          }
-        })(this.name_arch, this.description_arch)
-
-        reader.readAsArrayBuffer(file)
-      }
-
-      //Clean form
-      this.name_arch = ""
-      this.description_arch = ""
-      this.load_arch = ""
-    },
-
-    //Form validator
-    valid(value) {
-      if (parseInt(value, 10) !== 0) {
-        if (!value) {
-          return false
-        } else {
-          return true
+        const architecture = {
+          name: this.name,
+          alias: [],
+          img: "/img/personalized_logo.png",
+          id: `select_conf${this.name}`,
+          examples: [],
+          description: this.description,
+          definition: archDefinition,
+          available: true,
         }
-      } else {
-        return true
+
+        // add to localStorage
+        localStorage.setItem(
+          "customArchitectures",
+          JSON.stringify(
+            // add to the list of custom architectures
+            (
+              JSON.parse(localStorage.getItem("customArchitectures")) ?? []
+            ).toSpliced(0, 0, architecture),
+          ),
+        )
+
+        // load architecture
+        loadCustomArchitecture(architecture)
+
+        // hide_loading()
+
+        // notify architecture has been selected
+        this.$emit("select-architecture", this.name)
+
+        // Clean form
+        this.name = ""
+        this.description = ""
+        this.file = null
       }
+
+      reader.onerror = () => show_notification("Error loading file", "danger")
+
+      reader.readAsText(this.file)
+
+      // //Verify all form fields
+      // if (!this.name || !this.file) {
+      //   hide_loading()
+      //   show_notification("Please complete all fields", "danger")
+      //   return
+      // }
+
+      // this.show_modal = false
+
+      // //Read JSON and add the new architecture on CREATOR
+      // let file
+      // let reader
+      // const files = document.getElementById("arch_file").files
+
+      // //Read one or more files
+      // for (let i = 0; i < files.length; i++) {
+      //   file = files[i]
+      //   reader = new FileReader()
+
+      //   reader.onloadend = (function (name_arch, description_arch) {
+      //     return function (e) {
+      //       //Add the new architecture on CREATOR
+      //       architecture_available.push({
+      //         name: name_arch,
+      //         img: "./images/personalized_logo.png",
+      //         alt: name_arch + " logo",
+      //         id: "select_conf" + name_arch,
+      //         description: description_arch,
+      //         available: 1,
+      //       })
+      //       load_architectures_available.push({
+      //         name: name_arch,
+      //         img: "./images/personalized_logo.png",
+      //         alt: name_arch + " logo",
+      //         id: "select_conf" + name_arch,
+      //         description: description_arch,
+      //         available: 1,
+      //       })
+      //       back_card.push({
+      //         name: architecture_available[architecture_available.length - 1]
+      //           .name,
+      //         background: "default",
+      //       })
+      //       load_architectures.push({
+      //         id: name_arch,
+      //         architecture: event.currentTarget.result,
+      //       })
+
+      //       //Refresh cache values
+      //       if (typeof Storage !== "undefined") {
+      //         let auxArch = JSON.stringify(load_architectures, null, 2)
+      //         localStorage.setItem("load_architectures", auxArch)
+
+      //         auxArch = JSON.stringify(load_architectures_available, null, 2)
+      //         localStorage.setItem("load_architectures_available", auxArch)
+      //       }
+
+      //       show_notification(
+      //         "The selected architecture has been loaded correctly",
+      //         "success",
+      //       )
+      //       hide_loading()
+      //     }
+      //   })(this.name, this.description)
+
+      //   reader.readAsArrayBuffer(file)
+      // }
     },
   },
 }
@@ -133,57 +169,60 @@ export default {
 
 <template>
   <b-card
-    no-body
-    class="overflow-hidden arch_card architectureCard"
     v-b-modal.load_arch
+    :class="{ selectedCard: selected }"
+    title="Load Custom Architecture"
+    style="cursor: pointer"
+    @mouseover="selected = true"
+    @mouseleave="selected = false"
   >
-    <b-row no-gutters>
-      <b-col sm="12" class="center w-100 my-2">
-        <b-card-img
-          src="@/web/assets/img/load_icon.png"
-          alt="load icon"
-          class="w-75 rounded-0 architectureImg"
-        />
-      </b-col>
+    <template #img>
+      <b-img
+        class="mt-2 w-75 load-img"
+        style="padding-bottom: 1.2vh"
+        placement="center"
+        src="@/web/assets/img/load_icon.png"
+        alt="load icon"
+      />
+    </template>
+    <b-card-text class="justify">
+      Allows to load the definition of an already created architecture.
+    </b-card-text>
 
-      <b-col sm="12">
-        <b-card-body title="Load Architecture" title-tag="h2">
-          <b-card-text class="justify">
-            Allows to load the definition of an already created architecture.
-          </b-card-text>
-        </b-card-body>
-      </b-col>
-    </b-row>
+    <b-modal id="load_arch" title="Load Architecture" @ok="loadArch">
+      <!-- TODO: link to template arch -->
 
-    <b-modal
-      id="load_arch"
-      title="Load Architecture"
-      v-model="show_modal"
-      @ok="read_arch"
-    >
-      <b-form>
+      <b-form :valid="name.length > 0 && file !== null">
         <b-form-input
-          v-model="name_arch"
+          v-model="name"
           placeholder="Enter the name of the architecture"
-          :state="valid(name_arch)"
+          :state="name.length > 0"
           title="Architecture Name"
         />
         <br />
         <b-form-textarea
-          v-model="description_arch"
+          v-model="description"
           placeholder="Enter a description of the architecture"
           rows="3"
           title="Architecture Description"
         />
         <br />
         <b-form-file
-          v-model="load_arch"
+          v-model="file"
           placeholder="Choose a file..."
           id="arch_file"
-          accept=".json"
-          :state="valid(load_arch)"
+          accept=".yml"
+          :state="file !== null"
         />
       </b-form>
     </b-modal>
   </b-card>
 </template>
+
+<style lang="scss" scoped>
+[data-bs-theme="dark"] {
+  .load-img {
+    filter: invert(70%);
+  }
+}
+</style>
