@@ -24,8 +24,45 @@ import CardAuthor from "./CardAuthor.vue"
 export default {
   props: {
     id: { type: String, required: true },
+    dark: { type: Boolean, required: true },
   },
   components: { CardAuthor },
+
+  data() {
+    return {
+      contactMail: "creator.arcos.inf.uc3m.es@gmail.com",
+
+      authors: [
+        {
+          id: "dcamarmas",
+          name: "Diego Camarmas Alonso",
+          linkedin: "dcamarmas",
+          rgate: "Diego-Camarmas-Alonso",
+          github: "dcamarmas",
+        },
+        {
+          id: "fgarcia",
+          name: "Félix García Carballeira",
+          linkedin: "f%C3%A9lix-garc%C3%ADa-carballeira-4ab48a14",
+          rgate: "Felix_Garcia-Carballeira",
+        },
+        {
+          id: "acaldero",
+          name: "Alejandro Calderón Mateos",
+          linkedin: "alejandro-calderon-mateos",
+          rgate: "Alejandro_Calderon2",
+          github: "acaldero",
+        },
+        {
+          id: "edelpozo",
+          name: "Elías del Pozo Puñal",
+          linkedin: "edelpozop",
+          rgate: "Elias-Del-Pozo-Punal-2",
+          github: "edelpozop",
+        },
+      ],
+    }
+  },
 }
 </script>
 
@@ -33,75 +70,62 @@ export default {
   <b-modal :id="id" title="About us" scrollable no-footer>
     <b-card-group>
       <CardAuthor
-        author_img="@/web/assets/img/author_dcamarmas.png"
-        author_alt="author_dcamarmas"
-        author_full_name="Diego Camarmas Alonso"
-        author_href_linked="https://www.linkedin.com/in/dcamarmas"
-        author_href_rgate="https://www.researchgate.net/profile/Diego-Camarmas-Alonso"
-        author_href_github="https://github.com/dcamarmas"
-      />
-
-      <CardAuthor
-        author_img="@/web/assets/img/author_fgarcia.png"
-        author_alt="author_fgarcia"
-        author_full_name="Félix García Carballeira"
-        author_href_linked="https://es.linkedin.com/in/f%C3%A9lix-garc%C3%ADa-carballeira-4ab48a14"
-        author_href_rgate="https://www.researchgate.net/profile/Felix_Garcia-Carballeira"
-        author_href_github=""
-      />
-
-      <CardAuthor
-        author_img="@/web/assets/img/author_acaldero.png"
-        author_alt="author_acaldero"
-        author_full_name="Alejandro Calderón Mateos"
-        author_href_linked="https://www.linkedin.com/in/alejandro-calderon-mateos/"
-        author_href_rgate="https://www.researchgate.net/profile/Alejandro_Calderon2"
-        author_href_github="https://github.com/acaldero"
-      />
-
-      <CardAuthor
-        author_img="@/web/assets/img/author_edelpozo.png"
-        author_alt="author_edelpozo"
-        author_full_name="Elías del Pozo Puñal"
-        author_href_linked="https://www.linkedin.com/in/edelpozop/"
-        author_href_rgate="https://www.researchgate.net/profile/Elias-Del-Pozo-Punal-2"
-        author_href_github="https://github.com/edelpozop"
+        v-for="author in authors"
+        :img-src="`/img/authors/${author.id}.png`"
+        :img-alt="`author_${author.id}`"
+        :full-name="author.name"
+        :linkedin="author.linkedin"
+        :rgate="author.rgate"
+        :github="author.github"
+        :dark="dark"
       />
     </b-card-group>
 
     <b-list-group class="my-3">
-      <b-list-group-item style="text-align: center">
-        <b-link href="mailto: creator.arcos.inf.uc3m.es@gmail.com">
+      <b-list-group-item class="text-center">
+        <b-link
+          underline-opacity="0"
+          underline-opacity-hover="75"
+          :href="`mailto: ${contactMail}`"
+        >
           <font-awesome-icon icon="fa-solid fa-envelope" />
-          creator.arcos.inf.uc3m.es@gmail.com
+          {{ contactMail }}
         </b-link>
       </b-list-group-item>
     </b-list-group>
 
     <b-list-group>
       <b-list-group-item style="text-align: center">
-        <b-row align-h="center">
+        <b-row align-h="center" align-v="center">
           <b-col cols="4">
-            <a target="_blank" href="https://www.arcos.inf.uc3m.es/">
-              <img
-                alt="ARCOS"
-                class="p-0 headerLogo"
+            <b-link target="_blank" href="https://www.arcos.inf.uc3m.es/">
+              <b-img
                 src="@/web/assets/img/arcos.svg"
+                alt="ARCOS Group"
+                class="mx-2"
               />
-            </a>
+            </b-link>
           </b-col>
           <b-col cols="8">
-            <a target="_blank" href="https://www.inf.uc3m.es/">
-              <img
-                alt="Computer Science and Engineering Departament"
-                class="p-0 headerLogo"
+            <b-link target="_blank" href="https://www.inf.uc3m.es/">
+              <b-img
                 src="@/web/assets/img/dptoinf.png"
-                style="width: 90%; height: auto"
+                alt="Computer Science and Engineering Departament - UC3M"
+                class="ms-4 dark-white-img"
+                style="width: 93%"
               />
-            </a>
+            </b-link>
           </b-col>
         </b-row>
       </b-list-group-item>
     </b-list-group>
   </b-modal>
 </template>
+
+<style lang="scss" scoped>
+[data-bs-theme="dark"] {
+  .dark-white-img {
+    filter: brightness(0) invert(1); // white
+  }
+}
+</style>
