@@ -522,7 +522,7 @@ export default {
     <UIeltoInstitutions id="institutions" />
 
     <!-- About modal -->
-    <UIeltoAbout id="about" />
+    <UIeltoAbout id="about" :dark="dark"/>
 
     <!-- Instruction Help sidebar -->
     <!-- we don't want to load this unless we have selected an architecture -->

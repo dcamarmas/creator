@@ -17,51 +17,77 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
-<style lang="scss" scoped>
-.authorName {
-  height: 6vh;
-}
-</style>
 
 <script>
 export default {
   props: {
-    author_img: { type: String, required: true },
-    author_alt: { type: String, required: true },
-    author_full_name: { type: String, required: true },
-    author_href_linked: { type: String, required: false },
-    author_href_rgate: { type: String, required: false },
-    author_href_github: { type: String, required: false },
+    imgSrc: { type: String, required: true },
+    imgAlt: { type: String, required: true },
+    fullName: { type: String, required: true },
+    linkedin: { type: String, required: false },
+    rgate: { type: String, required: false },
+    github: { type: String, required: false },
+    dark: { type: Boolean, required: true },
   },
 }
 </script>
 
 <template>
-  <!-- <b-card :img-src="author_img" :img-alt="author_alt" img-top> -->
   <b-card>
     <template #img>
       <!-- we do this to use the custom class -->
-      <b-img class="author-img" :src="author_img" :alt="author_alt" />
+      <b-img
+        class="author-img"
+        :src="imgSrc"
+        :alt="`${dark ? 'evil_' : ''}${imgAlt}`"
+      />
     </template>
-    <b-card-text>
-      <div class="authorName">
-        <span class="h6">{{ author_full_name }}</span>
+    <b-card-text class="text-center">
+      {{ fullName }}
+      <hr />
+
+      <div v-if="linkedin">
+        <b-link
+          underline-opacity="0"
+          underline-opacity-hover="75"
+          aria-label="linkedin"
+          target="_blank"
+          :href="`https://www.linkedin.com/in/${this.linkedin}`"
+        >
+          <font-awesome-icon :icon="['fab', 'linkedin']" />
+          LinkedIn
+        </b-link>
       </div>
+      <br v-else />
       <hr />
-      <a aria-label="linkedin" target="_blank" :href="author_href_linked">
-        <span class="fab fa-linkedin"></span>
-        linkedin
-      </a>
+
+      <div v-if="rgate">
+        <b-link
+          underline-opacity="0"
+          underline-opacity-hover="75"
+          aria-label="researchgate"
+          target="_blank"
+          :href="`https://www.researchgate.net/profile/${this.rgate}`"
+        >
+          <font-awesome-icon :icon="['fab', 'researchgate']" />
+          R-Gate
+        </b-link>
+      </div>
+      <br v-else />
       <hr />
-      <a aria-label="r-gate" target="_blank" :href="author_href_rgate">
-        <span class="fab fa-researchgate"></span>
-        r-gate
-      </a>
-      <hr />
-      <a aria-label="github" target="_blank" :href="author_href_github">
-        <span class="fab fa-github"></span>
-        github
-      </a>
+
+      <div v-if="github">
+        <b-link
+          underline-opacity="0"
+          underline-opacity-hover="75"
+          aria-label="github"
+          target="_blank"
+          :href="`https://github.com/${this.github}`"
+        >
+          <font-awesome-icon :icon="['fab', 'github']" />
+          GitHub
+        </b-link>
+      </div>
     </b-card-text>
   </b-card>
 </template>
@@ -70,7 +96,7 @@ export default {
 // easter egg: evil mode
 [data-bs-theme="dark"] {
   .author-img {
-    filter: invert(88%) hue-rotate(160deg);
+    filter: invert(100%) hue-rotate(160deg);
   }
 }
 </style>
