@@ -273,8 +273,6 @@ export function assembly_compiler_base(code, library, wasmModules) {
                                     addr,
                                     wordTag,
                                     wordType,
-                                    wordTag,
-                                    wordType,
                                     newArchitecture.arch_conf.WordSize,
                                 );
                             }
@@ -420,8 +418,6 @@ export function assembly_compiler_base(code, library, wasmModules) {
                         startAddr,
                         stringTag,
                         stringType,
-                        stringTag,
-                        stringType,
                         stringLength * 8,
                     ); // stringLength in bytes * 8 bits per byte
                     break;
@@ -452,8 +448,6 @@ export function assembly_compiler_base(code, library, wasmModules) {
                             : "space";
                     main_memory.addHint(
                         addr,
-                        spaceTag,
-                        spaceType,
                         spaceTag,
                         spaceType,
                         Number(space_size) * 8,
