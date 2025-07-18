@@ -78,7 +78,7 @@ export function readRegister(indexComp, indexElem) {
         );
     }
 
-    return REGISTERS[indexComp].elements[indexElem].value;
+    return BigInt(REGISTERS[indexComp].elements[indexElem].value);
 }
 
 export function writeRegister(value, indexComp, indexElem) {

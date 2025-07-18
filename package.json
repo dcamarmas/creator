@@ -26,6 +26,7 @@
     "@replit/codemirror-vim": "^6.3.0",
     "@types/humanize-duration": "^3.27.4",
     "@uiw/codemirror-themes": "^4.24.0",
+    "ansicolor": "^2.0.3",
     "apexcharts": "^4.7.0",
     "bootstrap": "^5.3.7",
     "bootstrap-vue-next": "^0.30.4",

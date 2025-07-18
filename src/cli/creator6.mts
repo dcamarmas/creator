@@ -18,6 +18,9 @@ import yaml from "js-yaml";
 import path from "node:path";
 import { displayHelp } from "./utils.mts";
 import { Buffer } from "node:buffer";
+import { assembly_compiler_sjasmplus } from "../core/compiler/sjasmplus/deno/sjasmplus.mjs";
+import { assembly_compiler_default } from "../core/compiler/creatorCompiler/deno/creatorCompiler.mjs";
+import {assembly_compiler_rasm} from "../core/compiler/rasm/deno/rasm.mjs";
 
 const MAX_INSTRUCTIONS = 10000000000;
 const CLI_VERSION = "0.1.0";
@@ -50,6 +53,7 @@ interface ArgvOptions {
     bin: string;
     library: string;
     assembly: string;
+    compiler: string;
     debug: boolean;
     reference: string;
     state: string;
@@ -71,6 +75,14 @@ interface ReturnType {
         machineCode?: string;
         success?: boolean;
     };
+}
+
+interface Instruction {
+    Address: string;
+    Label: string | null;
+    loaded: string;
+    user: string;
+    Break: boolean;
 }
 interface ConfigType {
     settings: {
@@ -134,7 +146,7 @@ function loadConfiguration(configPath: string = CONFIG_PATH): ConfigType {
             shortcuts: { ...DEFAULT_CONFIG.shortcuts, ...config.shortcuts },
         };
     } catch (error) {
-        console.error(`Error loading configuration: ${error.message}`);
+        console.error(`Error loading configuration: ${(error as Error).message}`);
         return DEFAULT_CONFIG;
     }
 }
@@ -306,7 +318,7 @@ function loadBinaryFile(filePath: string, offset = 0n) {
     } catch (error) {
         return {
             status: "error",
-            msg: `Error loading binary file: ${error.message}`,
+            msg: `Error loading binary file: ${(error as Error).message}`,
         };
     }
 }
@@ -339,14 +351,21 @@ function loadLibrary(filePath: string) {
     creator.load_library(libraryFile);
     console.log("Library loaded successfully.");
 }
-
-function assemble(filePath: string, compiler?: string) {
+const compiler_map = {
+    default: assembly_compiler_default,
+    sjasmplus: assembly_compiler_sjasmplus,
+    rasm: assembly_compiler_rasm,
+};
+async function assemble(filePath: string, compiler?: string) {
     if (!filePath) {
         console.log("No assembly file specified.");
         return;
     }
+    // get function from the compiler map, with type safety
+    const compilerKey = (compiler && compiler in compiler_map) ? compiler as keyof typeof compiler_map : "default";
+    const compilerFunction = compiler_map[compilerKey];
     const assemblyFile = fs.readFileSync(filePath, "utf8");
-    const ret: ReturnType = creator.assembly_compile(assemblyFile, true, compiler);
+    const ret: ReturnType = await creator.assembly_compile(assemblyFile, compilerFunction);
     if (ret && ret.status !== "ok") {
         console.error(ret.msg);
         process.exit(1);
@@ -386,7 +405,7 @@ function displayInstructionsHeader() {
     );
 }
 
-function displayInstruction(instr, currentPC, hideLibrary = false) {
+function displayInstruction(instr: Instruction, currentPC: string, hideLibrary = false) {
     const address = instr.Address.padEnd(8);
     const label = (instr.Label || "").padEnd(11);
     let loaded = (instr.loaded || "").padEnd(23);
@@ -1039,6 +1058,7 @@ function applyHintHighlighting(
         hint: { tag: string; type: string; sizeInBits?: number };
         offset: number;
     }>,
+    wordSize: number,
 ): string {
     let highlightedValue = memValue;
     const colors = getHintColors();
@@ -1052,8 +1072,8 @@ function applyHintHighlighting(
         const startChar = 2 + offset * 2; // Skip "0x" and account for byte position
         const endChar = startChar + sizeInBytes * 2;
 
-        // Only highlight if the hint fits within this 4-byte word
-        if (offset + sizeInBytes <= 4) {
+        // Only highlight if the hint fits within this word
+        if (offset + sizeInBytes <= wordSize) {
             const before = highlightedValue.substring(0, startChar);
             const toHighlight = highlightedValue.substring(startChar, endChar);
             const after = highlightedValue.substring(endChar);
@@ -1067,20 +1087,21 @@ function applyHintHighlighting(
 }
 
 function displayMemory(address: number, count: number) {
+    // Get word size from architecture instead of hardcoding 4 bytes
+    const wordSize = creator.main_memory.getWordSize();
+
     // Display memory contents with hints
-    for (let i = 0; i < count; i += 4) {
+    for (let i = 0; i < count; i += wordSize) {
         const currentAddr = address + i;
-        const bytes = creator.dumpAddress(currentAddr, 4);
+        const bytes = creator.dumpAddress(currentAddr, wordSize);
         const formattedAddr = `0x${currentAddr.toString(16).padStart(8, "0")}`;
 
-        // Check for hints at this address and collect all hints in this 4-byte range
+        // Check for hints at this address and collect all hints in this word-sized range
         const hintsInRange: Array<{
             hint: { tag: string; type: string; sizeInBits?: number };
             offset: number;
-            hint: { tag: string; type: string; sizeInBits?: number };
-            offset: number;
         }> = [];
-        for (let j = 0; j < 4; j++) {
+        for (let j = 0; j < wordSize; j++) {
             const byteAddr = BigInt(currentAddr + j);
             const hint = creator.main_memory.getHint(byteAddr);
             if (hint) {
@@ -1097,7 +1118,11 @@ function displayMemory(address: number, count: number) {
 
             // Apply highlighting for each hint (if not in accessible mode)
             if (!ACCESSIBLE) {
-                memValue = applyHintHighlighting(memValue, hintsInRange);
+                memValue = applyHintHighlighting(
+                    memValue,
+                    hintsInRange,
+                    wordSize,
+                );
             }
 
             // Collect all hint descriptions with matching colors
@@ -1142,7 +1167,9 @@ function displayMemory(address: number, count: number) {
 function handleMemCommand(args: string[]) {
     if (args.length > 1) {
         const address = parseInt(args[1], 16);
-        const count = args.length > 2 ? parseInt(args[2], 10) : 4;
+        // Default to showing one word of memory
+        const wordSize = creator.main_memory.getWordSize();
+        const count = args.length > 2 ? parseInt(args[2], 10) : wordSize;
         displayMemory(address, count);
     } else {
         console.log("Usage: mem <address> [count]");
@@ -1158,24 +1185,6 @@ function handleHexViewCommand(args: string[]) {
     } else {
         console.log("Usage: hexview <address> [count] [bytesPerLine]");
     }
-}
-
-// Helper function to find a label for a memory address
-function findLabelForAddress(address: string): string {
-    // Convert input address to standard format (lowercase with 0x prefix)
-    if (!address) return "unknown";
-
-    const normalizedAddress = address.toLowerCase();
-
-    // Search through instructions for a matching address
-    for (const instr of instructions) {
-        if (instr.Address.toLowerCase() === normalizedAddress && instr.Label) {
-            return instr.Label;
-        }
-    }
-
-    // Return the original address if no label is found
-    return address;
 }
 
 function getFrameColor(frameIndex: number, totalFrames: number): string {
@@ -1210,8 +1219,7 @@ function handleStackCommand(args: string[]) {
         for (let i = stackFrames.val.length - 1; i >= 0; i--) {
             const frame = stackFrames.val[i];
             // Get function name from label or fall back to address
-            const addressStr = stackNames.val[i] || "";
-            const functionName = findLabelForAddress(addressStr) || "unknown";
+            const functionName = stackNames.val[i].tag || "";
             const depth = stackFrames.val.length - 1 - i;
             const indent = "  ".repeat(depth);
             const frameSize = frame.begin_callee - frame.end_callee;
@@ -1238,9 +1246,7 @@ function handleStackCommand(args: string[]) {
         console.log(colorText("\nCurrent Frame Details:", "36"));
 
         // Get function name from label for current function
-        const currentAddrStr = stackNames.val[stackNames.val.length - 1] || "";
-        const currentFuncName =
-            findLabelForAddress(currentAddrStr) || "unknown";
+        const currentFuncName = stackNames.val[stackNames.val.length - 1].tag || "";
 
         console.log(`Function: ${currentFuncName}`);
 
@@ -1260,10 +1266,8 @@ function handleStackCommand(args: string[]) {
             stackTop.begin_caller !== stackTop.begin_callee
         ) {
             // Get function name from label for caller
-            const callerAddrStr =
-                stackNames.val[stackNames.val.length - 2] || "";
             const callerFuncName =
-                findLabelForAddress(callerAddrStr) || "unknown";
+                stackNames.val[stackNames.val.length - 2].tag || "";
 
             const callerBeginAddress = BigInt(stackTop.begin_callee);
             const callerBeginAddressHex = `0x${callerBeginAddress.toString(16).toUpperCase()}`;
@@ -1304,9 +1308,15 @@ function handleStackCommand(args: string[]) {
         }
 
         // Show memory contents with frame boundary annotations
-        for (let addr = startAddress; addr < stackEndAddress; addr += 4n) {
-            const bytes = creator.dumpAddress(addr, 4);
-            const valueStr = "0x" + bytes.padStart(8, "0").toUpperCase();
+        const wordSize = creator.main_memory.getWordSize();
+        for (
+            let addr = startAddress;
+            addr < stackEndAddress;
+            addr += BigInt(wordSize)
+        ) {
+            const bytes = creator.dumpAddress(addr, wordSize);
+            const valueStr =
+                "0x" + bytes.padStart(wordSize * 2, "0").toUpperCase();
             const formattedAddr = `0x${addr.toString(16).padStart(8, "0").toUpperCase()}`;
 
             // Identify which frame this address belongs to and add annotations
@@ -1351,9 +1361,7 @@ function handleStackCommand(args: string[]) {
                 // Mark frame start (at the end_callee address, which is the low address/stack pointer)
                 if (addr === frameEndCallee) {
                     // Get function name from label
-                    const funcName =
-                        findLabelForAddress(stackNames.val[i] || "") ||
-                        "unknown";
+                    const funcName = stackNames.val[i].tag || "";
                     annotation +=
                         (annotation ? ", " : "") + `← ${funcName} frame start`;
                 }
@@ -1361,9 +1369,7 @@ function handleStackCommand(args: string[]) {
                 // Mark frame end (at the begin_callee address, which is the high address)
                 if (addr === frameBeginCallee) {
                     // Get function name from label
-                    const funcName =
-                        findLabelForAddress(stackNames.val[i] || "") ||
-                        "unknown";
+                    const funcName = stackNames.val[i].tag || "";
                     annotation +=
                         (annotation ? ", " : "") + `← ${funcName} frame end`;
                 }
@@ -1742,7 +1748,7 @@ function checkTerminalSize() {
     }
 }
 
-function main() {
+async function main() {
     // Check terminal size
     checkTerminalSize();
     // Parse command line arguments
@@ -1789,7 +1795,7 @@ function main() {
             loadLibrary(argv.library);
         }
         if (argv.assembly) {
-            assemble(argv.assembly, argv.compiler);
+            await assemble(argv.assembly, argv.compiler);
         }
     }
 

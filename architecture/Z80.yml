@@ -1,384 +1,757 @@
 version: 2.0.0
 
 arch_conf:
-    Name: Z80
-    WordSize: 8 # 8-bit word size, which is the same as the byte size
-    ByteSize: 8
-    Description: Z80
-    Endianness: little_endian
-    Memory Alignment: true
-    Main Function: main
-    Passing Convention: true
-    Sensitive Register Name: true
-    CommentPrefix: ";"
-    StartAddress: 0x0
-    PCOffset: 0
+  Name: Z80
+  WordSize: 8 # 8-bit word size, which is the same as the byte size
+  ByteSize: 8
+  Description: Z80
+  Endianness: little_endian
+  Memory Alignment: true
+  Main Function: main
+  Passing Convention: true
+  Sensitive Register Name: true
+  CommentPrefix: ";"
+  StartAddress: 0x0
+  PCOffset: 0
+  Assemblers:
+    - name: "SjasmPlus" # The first element is the default assembler
+      description: "SjasmPlus Z80 Assembler"
+    - name: "RASM"
+      description: "RASM Z80 Assembler"
 
 components:
-    - name: Control registers
-      type: ctrl_registers
-      double_precision: false
-      elements:
-          - name:
-                - PC
-            nbits: "16"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-                - program_counter
-    - name: Integer registers
-      type: int_registers
-      double_precision: false
-      elements:
-          - name:
-                - A
-            nbits: "8"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-          - name:
-                - B
-            nbits: "8"
-            value: 1
-            default_value: 1
-            properties:
-                - read
-                - write
-          - name:
-                - C
-            nbits: "8"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-          - name:
-                - D
-            nbits: "8"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-          - name:
-                - E
-            nbits: "8"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-                - write
-          - name:
-                - H
-            nbits: "8"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-                - write
-          - name:
-                - L
-            nbits: "8"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-                - write
-          - name:
-                - A'
-            nbits: "8"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-          - name:
-                - B'
-            nbits: "8"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-          - name:
-                - C'
-            nbits: "8"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-          - name:
-                - D'
-            nbits: "8"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-          - name:
-                - E'
-            nbits: "8"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-                - write
-          - name:
-                - H'
-            nbits: "8"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-                - write
-          - name:
-                - L'
-            nbits: "8"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-                - write
-          - name:
-                - SP
-            nbits: "16"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-                - stack_pointer
-          - name:
-                - IX
-            nbits: "16"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
-          - name:
-                - IY
-            nbits: "16"
-            value: 0
-            default_value: 0
-            properties:
-                - read
-                - write
+  - name: Control registers
+    type: ctrl_registers
+    double_precision: false
+    elements:
+      - name:
+          - PC
+        nbits: "16"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+          - program_counter
+  - name: Integer registers
+    type: int_registers
+    double_precision: false
+    elements:
+      - name:
+          - A
+        nbits: "8"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - B
+        nbits: "8"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - C
+        nbits: "8"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - D
+        nbits: "8"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - E
+        nbits: "8"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+          - write
+      - name:
+          - H
+        nbits: "8"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+          - write
+      - name:
+          - L
+        nbits: "8"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+          - write
+      - name:
+          - A'
+        nbits: "8"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - B'
+        nbits: "8"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - C'
+        nbits: "8"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - D'
+        nbits: "8"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - E'
+        nbits: "8"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+          - write
+      - name:
+          - H'
+        nbits: "8"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+          - write
+      - name:
+          - L'
+        nbits: "8"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+          - write
+      - name:
+          - SP
+        nbits: "16"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+          - stack_pointer
+      - name:
+          - IX
+        nbits: "16"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - IY
+        nbits: "16"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - F
+        nbits: "8"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
 
 memory_layout:
-    - name: text start
-      value: "0x0000"
-    - name: text end
-      value: "0x3FFF"
-    - name: data start
-      value: "0x4000"
-    - name: data end
-      value: "0x7FFF"
-    - name: stack start
-      value: "0xFFFE"
-    - name: stack end
-      value: "0xFFFF"
+  - name: text start
+    value: "0x0000"
+  - name: text end
+    value: "0x3FFF"
+  - name: data start
+    value: "0x4000"
+  - name: data end
+    value: "0x7FFF"
+  - name: stack start
+    value: "0xFFFE"
+  - name: stack end
+    value: "0xFFFF"
 
 templates:
-    # Main Instructions
-    - name: standard
-      nwords: 1
-      clk_cycles: 1
-      fields:
-          - name: opcode
-            type: co
-            startbit: 7
-            stopbit: 0
-            order: 0
-            word: 0
+  # Main Instructions
+  - name: standard
+    nwords: 1
+    clk_cycles: 1
+    fields:
+      - name: opcode
+        type: co
+        startbit: 7
+        stopbit: 0
+        order: 0
+        word: 0
 
-    # IX Bit Instructions
-    - name: DDCB
-      nwords: 4
-      clk_cycles: 1
-      fields:
-          - name: opcode1
-            type: co
-            startbit: 7
-            stopbit: 0
-            order: 0
-            word: 0
-            valueField: "11011101"
-          - name: opcode2
-            type: cop
-            startbit: 7
-            stopbit: 0
-            word: 1
-            valueField: "11001011"
-          - name: imm
-            type: inm-unsigned
-            startbit: 7
-            stopbit: 0
-            prefix: "("
-            suffix: ")"
-            order: 1
-            word: 2
-          - name: opcode3
-            type: cop
-            startbit: 7
-            stopbit: 0
-            word: 3
+  # IX Bit Instructions
+  - name: DDCB
+    nwords: 4
+    clk_cycles: 1
+    fields:
+      - name: opcode1
+        type: co
+        startbit: 7
+        stopbit: 0
+        order: 0
+        word: 0
+        valueField: "11011101"
+      - name: opcode2
+        type: cop
+        startbit: 7
+        stopbit: 0
+        word: 1
+        valueField: "11001011"
+      - name: imm
+        type: inm-unsigned
+        startbit: 7
+        stopbit: 0
+        prefix: "("
+        suffix: ")"
+        order: 1
+        word: 2
+      - name: opcode3
+        type: cop
+        startbit: 7
+        stopbit: 0
+        word: 3
 
-    # Misc. Instructions
-    - name: ED
-      nwords: 2
-      clk_cycles: 1
-      fields:
-          - name: opcode1
-            type: co
-            startbit: 7
-            stopbit: 0
-            order: 0
-            word: 0
-            valueField: "11101101"
-          - name: opcode2
-            type: cop
-            startbit: 7
-            stopbit: 0
-            word: 1
+  # Misc. Instructions
+  - name: ED
+    nwords: 2
+    clk_cycles: 1
+    fields:
+      - name: opcode1
+        type: co
+        startbit: 7
+        stopbit: 0
+        order: 0
+        word: 0
+        valueField: "11101101"
+      - name: opcode2
+        type: cop
+        startbit: 7
+        stopbit: 0
+        word: 1
 
-    # Bit Instructions
-    - name: CB
-      nwords: 2
-      clk_cycles: 1
-      fields:
-          - name: opcode1
-            type: co
-            startbit: 7
-            stopbit: 0
-            order: 0
-            word: 0
-            valueField: "11101101"
-          - name: opcode2
-            type: cop
-            startbit: 7
-            stopbit: 0
-            word: 1
+  # Bit Instructions
+  - name: CB
+    nwords: 2
+    clk_cycles: 1
+    fields:
+      - name: opcode1
+        type: co
+        startbit: 7
+        stopbit: 0
+        order: 0
+        word: 0
+        valueField: "11101101"
+      - name: opcode2
+        type: cop
+        startbit: 7
+        stopbit: 0
+        word: 1
 
 instructions:
-    base:
-        - name: nop
-          type: standard
-          fields:
-              - field: opcode
-                value: "0x00"
-          definition: ""
+  base:
+    - name: nop
+      template: standard
+      fields:
+        - field: opcode
+          value: "0x00"
+      definition: ""
 
-        - name: ld
-          type: standard
-          nwords: 3
-          fields:
-              - field: opcode
-                value: "0x01"
-              - field: nn
-                type: inm-unsigned
-                startbit: 15
-                stopbit: 0
-                prefix: "("
-                suffix: ")"
-                order: 1
-                word: [1, 2]
-          definition: "console.log('Loads the value pointed to by nn into BC.')"
+    - name: ld
+      template: standard
+      nwords: 3
+      fields:
+        - field: opcode
+          value: "0x01"
+        - field: nn
+          type: inm-unsigned
+          startbit: 15
+          stopbit: 0
+          prefix: "("
+          suffix: ")"
+          order: 1
+          word: [1, 2]
+      definition: "console.log('Loads the value pointed to by nn into BC.')"
 
-        - name: jp
-          type: standard
-          nwords: 3
-          fields:
-              - field: opcode
-                value: "0xC3"
-              - field: nn
-                type: inm-unsigned
-                startbit: 15
-                stopbit: 0
-                prefix: "("
-                suffix: ")"
-                order: 1
-                word: [1, 2]
-          definition: "PC = nn"
+    - name: jp
+      template: standard
+      nwords: 3
+      fields:
+        - field: opcode
+          value: "0xC3"
+        - field: nn
+          type: inm-unsigned
+          startbit: 15
+          stopbit: 0
+          prefix: "("
+          suffix: ")"
+          order: 1
+          word: [2, 1]
+      definition: "PC = nn"
 
-        - name: add
-          type: standard
-          fields:
-              - field: opcode
-                value: "0x80"
-          definition: "A = A + B"
+    - name: add a, b
+      template: standard
+      fields:
+        - field: opcode
+          value: "0x80"
+      definition: |
+        const value = B;
+        const sum = (A + value) & 0xFFn;
+        const carry = (A + value) > 0xFFn;
+        const halfCarry = ((A & 0xFn) + (value & 0xFn)) > 0xFn;
+        const overflow = (~(A ^ value) & (A ^ sum) & 0x80n) !== 0n;
+        F = 0n;
+        if (sum & 0x80n) F |= 0x80n;      // S
+        if (sum === 0n) F |= 0x40n;       // Z
+        if (halfCarry) F |= 0x10n;       // H
+        if (overflow) F |= 0x04n;        // P/V
+        // N is always reset for ADD
+        if (carry) F |= 0x01n;           // C
+        A = sum;
 
-        - name: ld
-          type: standard
-          nwords: 2
-          fields:
-              - field: opcode
-                value: "0x06"
-              - field: n
-                type: inm-unsigned
-                startbit: 7
-                stopbit: 0
-                order: 1
-                word: 1
-          definition: "B = n"
+    - name: add a, c
+      template: standard
+      fields:
+        - field: opcode
+          value: "0x81"
+      definition: |
+        const value = C;
+        const sum = (A + value) & 0xFFn;
+        const carry = (A + value) > 0xFFn;
+        const halfCarry = ((A & 0xFn) + (value & 0xFn)) > 0xFn;
+        const overflow = (~(A ^ value) & (A ^ sum) & 0x80n) !== 0n;
+        F = 0n;
+        if (sum & 0x80n) F |= 0x80n;
+        if (sum === 0n) F |= 0x40n;
+        if (halfCarry) F |= 0x10n;
+        if (overflow) F |= 0x04n;
+        if (carry) F |= 0x01n;
+        A = sum;
 
-        - name: di
-          type: standard
-          fields:
-              - field: opcode
-                value: "0xF3"
-          definition: "console.log('Resets both interrupt flip-flops, thus preventing maskable interrupts from triggering.')"
+    - name: add a, d
+      template: standard
+      fields:
+        - field: opcode
+          value: "0x82"
+      definition: |
+        const value = D;
+        const sum = (A + value) & 0xFFn;
+        const carry = (A + value) > 0xFFn;
+        const halfCarry = ((A & 0xFn) + (value & 0xFn)) > 0xFn;
+        const overflow = (~(A ^ value) & (A ^ sum) & 0x80n) !== 0n;
+        F = 0n;
+        if (sum & 0x80n) F |= 0x80n;
+        if (sum === 0n) F |= 0x40n;
+        if (halfCarry) F |= 0x10n;
+        if (overflow) F |= 0x04n;
+        if (carry) F |= 0x01n;
+        A = sum;
 
-        - name: slp
-          type: ED
-          fields:
-              - field: opcode2
-                value: "0x76"
-          definition: "console.log('slp example')"
+    - name: add a, e
+      template: standard
+      fields:
+        - field: opcode
+          value: "0x83"
+      definition: |
+        const value = E;
+        const sum = (A + value) & 0xFFn;
+        const carry = (A + value) > 0xFFn;
+        const halfCarry = ((A & 0xFn) + (value & 0xFn)) > 0xFn;
+        const overflow = (~(A ^ value) & (A ^ sum) & 0x80n) !== 0n;
+        F = 0n;
+        if (sum & 0x80n) F |= 0x80n;
+        if (sum === 0n) F |= 0x40n;
+        if (halfCarry) F |= 0x10n;
+        if (overflow) F |= 0x04n;
+        if (carry) F |= 0x01n;
+        A = sum;
 
-        - name: ld bc
-          type: ED
-          nwords: 4
-          fields:
-              - field: opcode2
-                value: "0x4B"
-              - field: nn
-                type: inm-unsigned
-                startbit: 16
-                stopbit: 0
-                prefix: "("
-                suffix: ")"
-                order: 1
-                word: [2, 3]
-          definition: "console.log('Loads the value pointed to by nn into BC.')"
+    - name: add a, h
+      template: standard
+      fields:
+        - field: opcode
+          value: "0x84"
+      definition: |
+        const value = H;
+        const sum = (A + value) & 0xFFn;
+        const carry = (A + value) > 0xFFn;
+        const halfCarry = ((A & 0xFn) + (value & 0xFn)) > 0xFn;
+        const overflow = (~(A ^ value) & (A ^ sum) & 0x80n) !== 0n;
+        F = 0n;
+        if (sum & 0x80n) F |= 0x80n;
+        if (sum === 0n) F |= 0x40n;
+        if (halfCarry) F |= 0x10n;
+        if (overflow) F |= 0x04n;
+        if (carry) F |= 0x01n;
+        A = sum;
 
-        - name: rlc
-          type: DDCB
-          nwords: 4
-          fields:
-              - field: opcode3
-                value: "0x06"
+    - name: add a, l
+      template: standard
+      fields:
+        - field: opcode
+          value: "0x85"
+      definition: |
+        const value = L;
+        const sum = (A + value) & 0xFFn;
+        const carry = (A + value) > 0xFFn;
+        const halfCarry = ((A & 0xFn) + (value & 0xFn)) > 0xFn;
+        const overflow = (~(A ^ value) & (A ^ sum) & 0x80n) !== 0n;
+        F = 0n;
+        if (sum & 0x80n) F |= 0x80n;
+        if (sum === 0n) F |= 0x40n;
+        if (halfCarry) F |= 0x10n;
+        if (overflow) F |= 0x04n;
+        if (carry) F |= 0x01n;
+        A = sum;
 
-        - name: rlc
-          type: DDCB
-          nwords: 4
-          fields:
-              - field: opcode3
-                value: "0x00"
-              - field: regname
-                type: skip # This is ONLY for visualization purposes, it is not a real field
-                value: "b"
-                order: 2
-          definition: "console.log('rlc (ix+d), b')" #placeholder for actual instruction definition
+    - name: add a, (hl)
+      template: standard
+      clk_cycles: 2
+      fields:
+        - field: opcode
+          value: "0x86"
+      definition: |
+        const value = CAPI.MEM.read((H << 8n) | L); // Read memory at address HL
+        const sum = (A + value) & 0xFFn;
+        const carry = (A + value) > 0xFFn;
+        const halfCarry = ((A & 0xFn) + (value & 0xFn)) > 0xFn;
+        const overflow = (~(A ^ value) & (A ^ sum) & 0x80n) !== 0n;
+        F = 0n;
+        if (sum & 0x80n) F |= 0x80n;
+        if (sum === 0n) F |= 0x40n;
+        if (halfCarry) F |= 0x10n;
+        if (overflow) F |= 0x04n;
+        if (carry) F |= 0x01n;
+        A = sum;
 
+    - name: add a, a
+      template: standard
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          value: "0x87"
+      definition: |
+        const value = A;
+        const sum = (A + value) & 0xFFn;
+        const carry = (A + value) > 0xFFn;
+        const halfCarry = ((A & 0xFn) + (value & 0xFn)) > 0xFn;
+        const overflow = (~(A ^ value) & (A ^ sum) & 0x80n) !== 0n;
+        F = 0n;
+        if (sum & 0x80n) F |= 0x80n;
+        if (sum === 0n) F |= 0x40n;
+        if (halfCarry) F |= 0x10n;
+        if (overflow) F |= 0x04n;
+        if (carry) F |= 0x01n;
+        A = sum;
+
+    - name: adc a, b
+      template: standard
+      fields:
+        - field: opcode
+          value: "0x88"
+      definition: |
+        const value = B;
+        const sum = (A + value + (F & 0x01n)) & 0xFFn; // F & 0x01n is the carry flag
+        const carry = (A + value + (F & 0x01n)) > 0xFFn;
+        const halfCarry = ((A & 0xFn) + (value & 0xFn) + (F & 0x01n)) > 0xFn;
+        const overflow = (~(A ^ value) & (A ^ sum) & 0x80n) !== 0n;
+        F = 0n;
+        if (sum & 0x80n) F |= 0x80n;
+        if (sum === 0n) F |= 0x40n;
+        if (halfCarry) F |= 0x10n;
+        if (overflow) F |= 0x04n;
+        if (carry) F |= 0x01n;
+        A = sum;
+
+    - name: adc a, c
+      template: standard
+      fields:
+        - field: opcode
+          value: "0x89"
+      definition: |
+        const value = C;
+        const sum = (A + value + (F & 0x01n)) & 0xFFn;
+        const carry = (A + value + (F & 0x01n)) > 0xFFn;
+        const halfCarry = ((A & 0xFn) + (value & 0xFn) + (F & 0x01n)) > 0xFn;
+        const overflow = (~(A ^ value) & (A ^ sum) & 0x80n) !== 0n;
+        F = 0n;
+        if (sum & 0x80n) F |= 0x80n;
+        if (sum === 0n) F |= 0x40n;
+        if (halfCarry) F |= 0x10n;
+        if (overflow) F |= 0x04n;
+        if (carry) F |= 0x01n;
+        A = sum;
+
+    - name: adc a, d
+      template: standard
+      fields:
+        - field: opcode
+          value: "0x8A"
+      definition: |
+        const value = D;
+        const sum = (A + value + (F & 0x01n)) & 0xFFn;
+        const carry = (A + value + (F & 0x01n)) > 0xFFn;
+        const halfCarry = ((A & 0xFn) + (value & 0xFn) + (F & 0x01n)) > 0xFn;
+        const overflow = (~(A ^ value) & (A ^ sum) & 0x80n) !== 0n;
+        F = 0n;
+        if (sum & 0x80n) F |= 0x80n;
+        if (sum === 0n) F |= 0x40n;
+        if (halfCarry) F |= 0x10n;
+        if (overflow) F |= 0x04n;
+        if (carry) F |= 0x01n;
+        A = sum;
+
+    - name: adc a, e
+      template: standard
+      fields:
+        - field: opcode
+          value: "0x8B"
+      definition: |
+        const value = E;
+        const sum = (A + value + (F & 0x01n)) & 0xFFn;
+        const carry = (A + value + (F & 0x01n)) > 0xFFn;
+        const halfCarry = ((A & 0xFn) + (value & 0xFn) + (F & 0x01n)) > 0xFn;
+        const overflow = (~(A ^ value) & (A ^ sum) & 0x80n) !== 0n;
+        F = 0n;
+        if (sum & 0x80n) F |= 0x80n;
+        if (sum === 0n) F |= 0x40n;
+        if (halfCarry) F |= 0x10n;
+        if (overflow) F |= 0x04n;
+        if (carry) F |= 0x01n;
+        A = sum;
+
+    - name: adc a, h
+      template: standard
+      fields:
+        - field: opcode
+          value: "0x8C"
+      definition: |
+        const value = H;
+        const sum = (A + value + (F & 0x01n)) & 0xFFn;
+        const carry = (A + value + (F & 0x01n)) > 0xFFn;
+        const halfCarry = ((A & 0xFn) + (value & 0xFn) + (F & 0x01n)) > 0xFn;
+        const overflow = (~(A ^ value) & (A ^ sum) & 0x80n) !== 0n;
+        F = 0n;
+        if (sum & 0x80n) F |= 0x80n;
+        if (sum === 0n) F |= 0x40n;
+        if (halfCarry) F |= 0x10n;
+        if (overflow) F |= 0x04n;
+        if (carry) F |= 0x01n;
+        A = sum;
+
+    - name: adc a, l
+      template: standard
+      fields:
+        - field: opcode
+          value: "0x8D"
+      definition: |
+        const value = L;
+        const sum = (A + value + (F & 0x01n)) & 0xFFn;
+        const carry = (A + value + (F & 0x01n)) > 0xFFn;
+        const halfCarry = ((A & 0xFn) + (value & 0xFn) + (F & 0x01n)) > 0xFn;
+        const overflow = (~(A ^ value) & (A ^ sum) & 0x80n) !== 0n;
+        F = 0n;
+        if (sum & 0x80n) F |= 0x80n;
+        if (sum === 0n) F |= 0x40n;
+        if (halfCarry) F |= 0x10n;
+        if (overflow) F |= 0x04n;
+        if (carry) F |= 0x01n;
+        A = sum;
+
+    - name: adc a, (hl)
+      template: standard
+      clk_cycles: 2
+      fields:
+        - field: opcode
+          value: "0x8E"
+      definition: |
+        const addr = (H << 8n) | L;
+        const value = CAPI.MEM.read(addr); // Read memory at address HL
+        const sum = (A + value + (F & 0x01n)) & 0xFFn;
+        const carry = (A + value + (F & 0x01n)) > 0xFFn;
+        const halfCarry = ((A & 0xFn) + (value & 0xFn) + (F & 0x01n)) > 0xFn;
+        const overflow = (~(A ^ value) & (A ^ sum) & 0x80n) !== 0n;
+        F = 0n;
+        if (sum & 0x80n) F |= 0x80n;
+        if (sum === 0n) F |= 0x40n;
+        if (halfCarry) F |= 0x10n;
+        if (overflow) F |= 0x04n;
+        if (carry) F |= 0x01n;
+        A = sum;
+
+    - name: adc a, a
+      template: standard
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          value: "0x8F"
+      definition: |
+        const value = A;
+        const sum = (A + value + (F & 0x01n)) & 0xFFn;
+        const carry = (A + value + (F & 0x01n)) > 0xFFn;
+        const halfCarry = ((A & 0xFn) + (value & 0xFn) + (F & 0x01n)) > 0xFn;
+        const overflow = (~(A ^ value) & (A ^ sum) & 0x80n) !== 0n;
+        F = 0n;
+        if (sum & 0x80n) F |= 0x80n;
+        if (sum === 0n) F |= 0x40n;
+        if (halfCarry) F |= 0x10n;
+        if (overflow) F |= 0x04n;
+        if (carry) F |= 0x01n;
+        A = sum;
+
+    - name: adc a, n
+      template: standard
+      nwords: 2
+      clk_cycles: 2
+      fields:
+        - field: opcode
+          value: "0xCE"
+        - field: n
+          type: inm-unsigned
+          startbit: 7
+          stopbit: 0
+          order: 1
+          word: 1
+      definition: |
+        const value = n;
+        const sum = (A + value + (F & 0x01n)) & 0xFFn;
+        const carry = (A + value + (F & 0x01n)) > 0xFFn;
+        const halfCarry = ((A & 0xFn) + (value & 0xFn) + (F & 0x01n)) > 0xFn;
+        const overflow = (~(A ^ value) & (A ^ sum) & 0x80n) !== 0n;
+        F = 0n;
+        if (sum & 0x80n) F |= 0x80n;
+        if (sum === 0n) F |= 0x40n;
+        if (halfCarry) F |= 0x10n;
+        if (overflow) F |= 0x04n;
+        if (carry) F |= 0x01n;
+        A = sum;
+
+    - name: add # add a, n
+      template: standard
+      nwords: 2
+      clk_cycles: 2
+      fields:
+        - field: opcode
+          value: "0xC6"
+        - field: instructionFormatting
+          type: skip
+          value: "a,"
+          order: 1
+        - field: number
+          type: inm-unsigned
+          startbit: 7
+          stopbit: 0
+          order: 2
+          word: 1
+
+      definition: |
+        const value = number;
+        const sum = (A + value) & 0xFFn;
+        const carry = (A + value) > 0xFFn;
+        const halfCarry = ((A & 0xFn) + (value & 0xFn)) > 0xFn;
+        const overflow = (~(A ^ value) & (A ^ sum) & 0x80n) !== 0n;
+        F = 0n;
+        if (sum & 0x80n) F |= 0x80n;
+        if (sum === 0n) F |= 0x40n;
+        if (halfCarry) F |= 0x10n;
+        if (overflow) F |= 0x04n;
+        if (carry) F |= 0x01n;
+        A = sum;
+
+    - name: ld
+      template: standard
+      nwords: 2
+      fields:
+        - field: opcode
+          value: "0x06"
+        - field: n
+          type: inm-unsigned
+          startbit: 7
+          stopbit: 0
+          order: 1
+          word: 1
+      definition: "B = n"
+
+    - name: ld
+      template: standard
+      nwords: 1
+      fields:
+        - field: opcode
+          value: "0x02"
+      definition: "CAPI.MEM.write((B << 8n) | C, 1, A);"
+
+    - name: ld bc, #(nn). The comma is not an accident. It's for display purposes.
+      template: ED
+      nwords: 4
+      fields:
+        - field: opcode2
+          value: "0x4B"
+        - field: nn
+          type: inm-unsigned
+          startbit: 16
+          stopbit: 0
+          prefix: "("
+          suffix: ")"
+          order: 1
+          word: [3, 2]
+      definition: |
+        // Loads the value pointed to by nn into BC.
+        let value = CAPI.MEM.read(nn, 2);
+        B = value & 0xFFn; // Low byte
+        C = (value >> 8n)  & 0xFFn; // High byte
+
+
+    - name: rlc
+      template: DDCB
+      nwords: 4
+      fields:
+        - field: opcode3
+          value: "0x06"
+
+    - name: rlc
+      template: DDCB
+      nwords: 4
+      fields:
+        - field: opcode3
+          value: "0x00"
+        - field: regname
+          type: skip # This is ONLY for visualization purposes, it is not a real field
+          value: "b"
+          order: 2
+      definition: "console.log('rlc (ix+d), b')" #placeholder for actual instruction definition

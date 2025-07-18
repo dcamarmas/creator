@@ -106,7 +106,6 @@ export function track_stack_create() {
     // initialize array
     track_stack_names = [];
     track_stack_limits = [];
-    track_stack_enter("main");
 
     return ret;
 }
@@ -366,7 +365,6 @@ export function track_stack_reset() {
     track_stack_names = [];
     track_stack_limits = [];
     stack_hints = {}; // Clear hints
-    track_stack_enter("main");
 
     // draw new limits
     if (typeof window !== "undefined") {
