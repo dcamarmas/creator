@@ -3,22 +3,26 @@ import axios, { AxiosInstance } from "axios";
 export interface JsonRpcRequest {
     jsonrpc: "2.0";
     method: string;
-    params?: any;
+    params?: Record<string, unknown> | unknown[];
     id: number;
 }
 
 export interface JsonRpcResponse {
     jsonrpc: "2.0";
-    result?: any;
+    result?: unknown;
     error?: {
         code: number;
         message: string;
-        data?: any;
+        data?: unknown;
     };
     id: number;
 }
 
 export interface ExecutionContext {
+    pc: string;
+    executionIndex: number;
+    completed: boolean;
+    error: boolean;
     currentInstruction?: {
         index: number;
         address: string;
@@ -34,36 +38,69 @@ export interface ExecutionContext {
         asm: string;
         machineCode: string;
     };
-    pc: string;
-    executionIndex: number;
-    completed: boolean;
-    error: boolean;
-}
-
-export interface Instruction {
-    index: number;
-    address: string;
-    label?: string;
-    asm: string;
-    user: string;
-    loaded: string;
-    machineCode: string;
-    visible: boolean;
-    hide: boolean;
-    isBreakpoint?: boolean;
-    isCurrentInstruction: boolean;
-}
-
-export interface Register {
-    name: string;
-    value: string;
-    nbits: number;
 }
 
 export interface RegisterBank {
     name: string;
     type: string;
-    registers: Register[];
+    registers: Array<{
+        name: string;
+        value: string;
+        nbits: number;
+    }>;
+}
+
+export interface MemoryData {
+    address: string;
+    data: string[];
+}
+
+export interface MemoryWithHints {
+    address: string;
+    wordSize: number;
+    entries: Array<{
+        address: string;
+        value: string;
+        hints: Array<{
+            tag: string;
+            type: string;
+            offset: number;
+            sizeInBits?: number;
+        }>;
+    }>;
+}
+
+export interface Instruction {
+    user: string;
+    index: number;
+    address: string;
+    label?: string;
+    asm: string;
+    machineCode: string;
+    visible: boolean;
+    isBreakpoint?: boolean;
+}
+
+export interface StackFrame {
+    function: string;
+    address: string;
+    level: number;
+}
+
+export interface CompileResult {
+    status: string;
+    msg?: string;
+}
+
+export interface ExecutionResult {
+    output: string;
+    completed: boolean;
+    error: boolean;
+    instructionData?: {
+        asm?: string;
+        machineCode?: string;
+        success?: boolean;
+    };
 }
 
 export class CreatorRpcClient {
@@ -73,115 +110,150 @@ export class CreatorRpcClient {
     constructor(private baseUrl: string = "http://localhost:8080") {
         this.httpClient = axios.create({
             baseURL: this.baseUrl,
-            timeout: 10000,
+            timeout: 10000, // Increased timeout to 10 seconds
             headers: {
                 "Content-Type": "application/json",
             },
         });
     }
 
-    private async sendRequest(method: string, params?: any): Promise<any> {
+    private async sendRequest(
+        method: string,
+        params?: Record<string, unknown> | unknown[],
+    ): Promise<unknown> {
+        const requestId = this.requestId++;
         const request: JsonRpcRequest = {
             jsonrpc: "2.0",
             method,
             params,
-            id: this.requestId++,
+            id: requestId,
         };
+
+        console.log(`[RPC-${requestId}] Sending request: ${method}`, params);
 
         try {
             const response = await this.httpClient.post("/", request);
+            console.log(
+                `[RPC-${requestId}] Received response for ${method}:`,
+                response.data,
+            );
+
             const jsonResponse: JsonRpcResponse = response.data;
 
             if (jsonResponse.error) {
+                console.error(
+                    `[RPC-${requestId}] RPC Error for ${method}:`,
+                    jsonResponse.error,
+                );
                 throw new Error(
                     `RPC Error ${jsonResponse.error.code}: ${jsonResponse.error.message}`,
                 );
             }
 
+            console.log(
+                `[RPC-${requestId}] Request ${method} completed successfully`,
+            );
             return jsonResponse.result;
-        } catch (error: any) {
-            if (error.response) {
-                throw new Error(
-                    `HTTP ${error.response.status}: ${error.response.statusText}`,
-                );
-            } else if (error.request) {
-                throw new Error(
-                    "No response from CREATOR RPC server. Make sure it is running.",
-                );
-            } else {
-                throw error;
-            }
+        } catch (error) {
+            console.error(
+                `[RPC-${requestId}] Request ${method} failed:`,
+                error,
+            );
+            throw error;
         }
     }
 
     async loadArchitecture(yamlPath: string, isaExtensions?: string[]) {
-        return this.sendRequest("loadArchitecture", {
+        return await this.sendRequest("loadArchitecture", {
             yamlPath,
             isaExtensions,
         });
     }
 
-    async compileAssembly(assembly: string, compiler?: string, enableColor = false) {
-        return this.sendRequest("compileAssembly", {
+    async compileAssembly(assembly: string, compiler?: string) {
+        return await this.sendRequest("compileAssembly", {
             assembly,
             compiler,
-            enableColor,
         });
     }
 
-    async getAvailableCompilers(): Promise<{
-        compilers: Array<{
-            name: string;
-            displayName: string;
-            description: string;
-        }>;
-        default: string;
-    }> {
-        return this.sendRequest("getAvailableCompilers");
-    }
-
     async executeStep() {
-        return this.sendRequest("executeStep");
-    }
-
-    async executeN(steps: number) {
-        return this.sendRequest("executeN", { steps });
+        console.log("[RPC-CLIENT] executeStep() called");
+        const result = await this.sendRequest("executeStep");
+        console.log("[RPC-CLIENT] executeStep() completed:", result);
+        return result;
     }
 
     async getExecutionContext(): Promise<ExecutionContext> {
-        return this.sendRequest("getExecutionContext");
+        console.log("[RPC-CLIENT] getExecutionContext() called");
+        const result = await this.sendRequest("getExecutionContext");
+        console.log("[RPC-CLIENT] getExecutionContext() completed:", result);
+        return result as ExecutionContext;
     }
 
-    async getInstructions(): Promise<Instruction[]> {
-        return this.sendRequest("getInstructions");
+    async reset() {
+        return await this.sendRequest("reset");
     }
 
-    async getInstruction(index?: number, address?: string) {
-        return this.sendRequest("getInstruction", { index, address });
+    async getState(): Promise<{
+        status: {
+            display: string;
+            keyboard: string;
+            execution_index: number;
+            error: number;
+        };
+    }> {
+        return (await this.sendRequest("getState")) as {
+            status: {
+                display: string;
+                keyboard: string;
+                execution_index: number;
+                error: number;
+            };
+        };
     }
 
-    async setBreakpoint(
-        index?: number,
-        address?: string,
-        enabled: boolean = true,
-    ) {
-        return this.sendRequest("setBreakpoint", { index, address, enabled });
+    async loadBinary(
+        filePath: string,
+        offset?: string,
+    ): Promise<{ status: string; msg: string }> {
+        return (await this.sendRequest("loadBinary", {
+            filePath,
+            offset,
+        })) as { status: string; msg: string };
     }
 
-    async getRegister(name: string) {
-        return this.sendRequest("getRegister", { name });
+    async executeN(steps: number): Promise<ExecutionResult> {
+        return (await this.sendRequest("executeN", { steps })) as ExecutionResult;
+    }
+
+    async getRegister(name: string): Promise<{ value: string }> {
+        return (await this.sendRequest("getRegister", { name })) as {
+            value: string;
+        };
     }
 
     async getRegisterBank(type: string): Promise<RegisterBank> {
-        return this.sendRequest("getRegisterBank", { type });
+        return (await this.sendRequest("getRegisterBank", {
+            type,
+        })) as RegisterBank;
     }
 
-    async getMemory(address: string, count?: number) {
-        return this.sendRequest("getMemory", { address, count });
+    async getMemory(address: string, count?: number): Promise<MemoryData> {
+        return (await this.sendRequest("getMemory", {
+            address,
+            count,
+        })) as MemoryData;
     }
 
-    async getMemoryWithHints(address: string, count?: number) {
-        return this.sendRequest("getMemoryWithHints", { address, count });
+    async getMemoryWithHints(
+        address: string,
+        count?: number,
+    ): Promise<MemoryWithHints> {
+        return (await this.sendRequest("getMemoryWithHints", {
+            address,
+            count,
+        })) as MemoryWithHints;
     }
 
     async getMemoryHexDump(
@@ -189,54 +261,87 @@ export class CreatorRpcClient {
         count?: number,
         bytesPerLine?: number,
     ): Promise<{ dump: string }> {
-        return this.sendRequest("getMemoryHexDump", {
+        return (await this.sendRequest("getMemoryHexDump", {
             address,
             count,
             bytesPerLine,
-        });
+        })) as { dump: string };
     }
 
     async getMemoryDump(): Promise<{
         addresses: number[];
         values: number[];
-        hints: Array<{
-            address: string;
-            hint: string;
-            sizeInBits?: number;
-        }>;
+        hints: any[];
         wordSize: number;
         highestAddress: number;
     }> {
-        return this.sendRequest("getMemoryDump", {});
+        return (await this.sendRequest("getMemoryDump")) as {
+            addresses: number[];
+            values: number[];
+            hints: any[];
+            wordSize: number;
+            highestAddress: number;
+        };
     }
 
-    async getPC() {
-        return this.sendRequest("getPC");
+    async getPC(): Promise<{ value: string }> {
+        return (await this.sendRequest("getPC")) as { value: string };
     }
 
-    async getState() {
-        return this.sendRequest("getState");
+    async getStack(): Promise<{ frames: StackFrame[] }> {
+        return (await this.sendRequest("getStack")) as { frames: StackFrame[] };
     }
 
-    async reset() {
-        return this.sendRequest("reset");
+    async getInstruction(params: {
+        index?: number;
+        address?: string;
+    }): Promise<Instruction | null> {
+        return (await this.sendRequest(
+            "getInstruction",
+            params,
+        )) as Instruction | null;
     }
 
-    async getStack() {
-        return this.sendRequest("getStack");
+    async setBreakpoint(params: {
+        index?: number;
+        address?: string;
+        enabled: boolean;
+    }): Promise<{ success: boolean; instruction?: Instruction }> {
+        return (await this.sendRequest("setBreakpoint", params)) as {
+            success: boolean;
+            instruction?: Instruction;
+        };
     }
 
-    async setDebug(enabled: boolean) {
-        return this.sendRequest("setDebug", { enabled });
+    async getInstructions(): Promise<Instruction[]> {
+        return (await this.sendRequest("getInstructions")) as Instruction[];
     }
 
-    // Health check method
-    async isServerAlive(): Promise<boolean> {
-        try {
-            await this.setDebug(false); // Simple call to test connectivity
-            return true;
-        } catch {
-            return false;
-        }
+    static async getAvailableCompilers(): Promise<{
+        compilers: Array<{
+            name: string;
+            description: string;
+            displayName: string;
+        }>;
+        default: string;
+    }> {
+        // This is a static method on the server, but we need an instance to make the request
+        const client = new CreatorRpcClient();
+        return (await client.sendRequest("getAvailableCompilers")) as {
+            compilers: Array<{
+                name: string;
+                description: string;
+                displayName: string;
+            }>;
+            default: string;
+        };
+    }
+
+    static async setDebug(enabled: boolean): Promise<{ status: string }> {
+        // This is a static method on the server, but we need an instance to make the request
+        const client = new CreatorRpcClient();
+        return (await client.sendRequest("setDebug", { enabled })) as {
+            status: string;
+        };
     }
 }

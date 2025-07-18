@@ -13,6 +13,11 @@ arch_conf:
   CommentPrefix: ";"
   StartAddress: 0x0
   PCOffset: 0
+  Assemblers:
+    - name: "SjasmPlus" # The first element is the default assembler
+      description: "SjasmPlus Z80 Assembler"
+    - name: "RASM"
+      description: "RASM Z80 Assembler"
 
 components:
   - name: Control registers

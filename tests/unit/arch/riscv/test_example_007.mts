@@ -6,7 +6,7 @@ import {
     assertSimulatorState,
 } from "../simulator-test-utils.mts";
 
-Deno.test("Architecture-agnostic testing - RISC-V Array Sum Loop", () => {
+Deno.test("Architecture-agnostic testing - RISC-V Array Sum Loop", async () => {
     const testAssembly = `
 
 #
@@ -51,7 +51,7 @@ end1:
     const RISCV_ARCH_PATH = "../../../architecture/RISCV/RV32IMFD.yml";
 
     // Setup simulator with RISC-V architecture
-    setupSimulator(testAssembly, RISCV_ARCH_PATH);
+    await setupSimulator(testAssembly, RISCV_ARCH_PATH);
 
     // Execute the program
     const result = executeN(1000);

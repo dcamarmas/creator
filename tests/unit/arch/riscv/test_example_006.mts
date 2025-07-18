@@ -8,7 +8,7 @@ import {
 
 Deno.test(
     "Architecture-agnostic testing - RISC-V Branch and Jump Operations",
-    () => {
+    async () => {
         const testAssembly = `
 
 #
@@ -41,7 +41,7 @@ Deno.test(
         const RISCV_ARCH_PATH = "../../../architecture/RISCV/RV32IMFD.yml";
 
         // Setup simulator with RISC-V architecture
-        setupSimulator(testAssembly, RISCV_ARCH_PATH);
+        await setupSimulator(testAssembly, RISCV_ARCH_PATH);
 
         // Execute the program
         const result = executeN(1000);

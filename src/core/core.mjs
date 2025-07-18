@@ -26,13 +26,7 @@ import {
     register_value_deserialize,
 } from "./utils/bigint.mjs";
 import {
-    bin2hex,
-    double2bin,
-    float2bin,
     getHexTwosComplement,
-    hex2double,
-    isDeno,
-    isWeb,
 } from "./utils/utils.mjs";
 
 import { logger } from "./utils/creator_logger.mjs";
@@ -42,7 +36,6 @@ import {
     precomputeInstructions,
     setInstructions,
 } from "./compiler/compiler.mjs";
-import { executeProgramOneShot } from "./executor/executor.mjs";
 import { Memory } from "./memory/Memory.mts";
 import yaml from "js-yaml";
 import { crex_findReg } from "./register/registerLookup.mjs";
@@ -55,21 +48,8 @@ import {
 import { creator_ga } from "./utils/creator_ga.mjs";
 import { creator_callstack_reset } from "./sentinel/sentinel.mjs";
 import { resetStats } from "./executor/stats.mts";
+import { resetCache } from "./executor/decoder.mjs";
 
-// Conditional import for the WASM compiler based on the environment (web or Deno)
-
-// import {
-//     Color as Color_deno,
-//     ArchitectureJS as ArchitectureJS_deno,
-// } from "./compiler/creatorCompiler/deno/creator_compiler.js";
-
-// let Color;
-// let ArchitectureJS;
-// if (isDeno) {
-//     // Deno HAS to be imported like this, as it doesn't provide a default
-//     Color = Color_deno;
-//     ArchitectureJS = ArchitectureJS_deno;
-// }
 
 export let code_assembly = "";
 export let update_binary = "";
@@ -1037,6 +1017,9 @@ function transformArchConf(architectureObj) {
         if (key === "ByteSize") {
             return;
         }
+        if (key === "Assemblers"){
+            return;
+        }
         // Add remaining properties as individual entries
         oldArchConf.push({
             name: key,
@@ -1190,6 +1173,9 @@ export function reset() {
 
     // Reset stats
     resetStats()
+
+    // Reset decoder cache
+    resetCache();
 
     status.executedInstructions = 0;
     status.clkCycles = 0;

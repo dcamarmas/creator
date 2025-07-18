@@ -20,6 +20,7 @@ import { displayHelp } from "./utils.mts";
 import { Buffer } from "node:buffer";
 import { assembly_compiler_sjasmplus } from "../core/compiler/sjasmplus/deno/sjasmplus.mjs";
 import { assembly_compiler_default } from "../core/compiler/creatorCompiler/deno/creatorCompiler.mjs";
+import {assembly_compiler_rasm} from "../core/compiler/rasm/deno/rasm.mjs";
 
 const MAX_INSTRUCTIONS = 10000000000;
 const CLI_VERSION = "0.1.0";
@@ -353,6 +354,7 @@ function loadLibrary(filePath: string) {
 const compiler_map = {
     default: assembly_compiler_default,
     sjasmplus: assembly_compiler_sjasmplus,
+    rasm: assembly_compiler_rasm,
 };
 async function assemble(filePath: string, compiler?: string) {
     if (!filePath) {
@@ -1185,24 +1187,6 @@ function handleHexViewCommand(args: string[]) {
     }
 }
 
-// Helper function to find a label for a memory address
-function findLabelForAddress(address: string): string {
-    // Convert input address to standard format (lowercase with 0x prefix)
-    if (!address) return "unknown";
-
-    const normalizedAddress = address.toLowerCase();
-
-    // Search through instructions for a matching address
-    for (const instr of instructions) {
-        if (instr.Address.toLowerCase() === normalizedAddress && instr.Label) {
-            return instr.Label;
-        }
-    }
-
-    // Return the original address if no label is found
-    return address;
-}
-
 function getFrameColor(frameIndex: number, totalFrames: number): string {
     const colorCodes = ["32", "33", "36", "35", "34"]; // green, yellow, cyan, magenta, blue
 
@@ -1235,8 +1219,7 @@ function handleStackCommand(args: string[]) {
         for (let i = stackFrames.val.length - 1; i >= 0; i--) {
             const frame = stackFrames.val[i];
             // Get function name from label or fall back to address
-            const addressStr = stackNames.val[i] || "";
-            const functionName = findLabelForAddress(addressStr) || "unknown";
+            const functionName = stackNames.val[i].tag || "";
             const depth = stackFrames.val.length - 1 - i;
             const indent = "  ".repeat(depth);
             const frameSize = frame.begin_callee - frame.end_callee;
@@ -1263,9 +1246,7 @@ function handleStackCommand(args: string[]) {
         console.log(colorText("\nCurrent Frame Details:", "36"));
 
         // Get function name from label for current function
-        const currentAddrStr = stackNames.val[stackNames.val.length - 1] || "";
-        const currentFuncName =
-            findLabelForAddress(currentAddrStr) || "unknown";
+        const currentFuncName = stackNames.val[stackNames.val.length - 1].tag || "";
 
         console.log(`Function: ${currentFuncName}`);
 
@@ -1285,10 +1266,8 @@ function handleStackCommand(args: string[]) {
             stackTop.begin_caller !== stackTop.begin_callee
         ) {
             // Get function name from label for caller
-            const callerAddrStr =
-                stackNames.val[stackNames.val.length - 2] || "";
             const callerFuncName =
-                findLabelForAddress(callerAddrStr) || "unknown";
+                stackNames.val[stackNames.val.length - 2].tag || "";
 
             const callerBeginAddress = BigInt(stackTop.begin_callee);
             const callerBeginAddressHex = `0x${callerBeginAddress.toString(16).toUpperCase()}`;
@@ -1382,9 +1361,7 @@ function handleStackCommand(args: string[]) {
                 // Mark frame start (at the end_callee address, which is the low address/stack pointer)
                 if (addr === frameEndCallee) {
                     // Get function name from label
-                    const funcName =
-                        findLabelForAddress(stackNames.val[i] || "") ||
-                        "unknown";
+                    const funcName = stackNames.val[i].tag || "";
                     annotation +=
                         (annotation ? ", " : "") + `← ${funcName} frame start`;
                 }
@@ -1392,9 +1369,7 @@ function handleStackCommand(args: string[]) {
                 // Mark frame end (at the begin_callee address, which is the high address)
                 if (addr === frameBeginCallee) {
                     // Get function name from label
-                    const funcName =
-                        findLabelForAddress(stackNames.val[i] || "") ||
-                        "unknown";
+                    const funcName = stackNames.val[i].tag || "";
                     annotation +=
                         (annotation ? ", " : "") + `← ${funcName} frame end`;
                 }

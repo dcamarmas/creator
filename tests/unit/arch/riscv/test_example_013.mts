@@ -10,7 +10,7 @@ import * as creator from "@/core/core.mjs";
 Deno.test(
     "Architecture-agnostic testing - RISC-V Nested Function Calls with Stack",
     // eslint-disable-next-line max-lines-per-function
-    () => {
+    async () => {
         const testAssembly = `
 #
 # Creator (https://creatorsim.github.io/creator/)
@@ -131,7 +131,7 @@ sub:
         const RISCV_ARCH_PATH = "../../../architecture/RISCV/RV32IMFD.yml";
 
         // Setup simulator with RISC-V architecture
-        setupSimulator(testAssembly, RISCV_ARCH_PATH);
+        await setupSimulator(testAssembly, RISCV_ARCH_PATH);
 
         // Execute the program
         const result = executeN(1000);

@@ -11,6 +11,11 @@ start:
         nop
         nop
 
+        ORG 0x4000         ; Start data at address 0x4000
+        
 test:
         ADD A, 42    ; Add 42 to the accumulator
         LD BC, (0x4000) ; Load the contents of memory address 0x4000 into BC
+
+mydata:
+        DW 0xBEEF          ; Example word (2 bytes)

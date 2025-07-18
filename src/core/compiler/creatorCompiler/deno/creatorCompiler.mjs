@@ -1,5 +1,6 @@
 /*
- *  Copyright 2018-2025 Felix Garcia Carballeira, Alejandro Calderon Mateos, Diego Camarmas Alonso
+ *  Copyright 2018-2025 Felix Garcia Carballeira, Alejandro Calderon Mateos,
+ *  Diego Camarmas Alonso, Jorge Ramos Santana
  *
  *  This file is part of CREATOR.
  *
@@ -17,13 +18,10 @@
  *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-"use strict";
+
 import { assembly_compiler_base } from "../creatorCompilerBase.mjs";
 
-import {
-    ArchitectureJS,
-    DataCategoryJS
-} from "./wasm/creator_compiler.js";
+import { ArchitectureJS, DataCategoryJS } from "./wasm/creator_compiler.js";
 
 /**
  * Deno-specific assembly compiler that uses ANSI color configuration
@@ -33,13 +31,12 @@ import {
  * @returns {Object} Compilation result
  */
 export function assembly_compiler_default(code, library) {
-  
-  // Prepare WASM modules for the base compiler
-  const wasmModules = {
-    ArchitectureJS,
-    DataCategoryJS
-  };
-  
-  // Call the common base implementation
-  return assembly_compiler_base(code, library, wasmModules);
+    // Prepare WASM modules for the base compiler
+    const wasmModules = {
+        ArchitectureJS,
+        DataCategoryJS,
+    };
+
+    // Call the common base implementation
+    return assembly_compiler_base(code, library, wasmModules);
 }

@@ -13,6 +13,9 @@ arch_conf:
   StartAddress: 0x0
   PCOffset: -4
   ByteSize: 8
+  Assemblers:
+    - name: "CreatorCompiler"
+      description: "Default Creator Compiler"
 
 extensions:
   I:

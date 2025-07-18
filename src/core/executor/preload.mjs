@@ -341,13 +341,13 @@ export function buildInstructionPreload(decoded) {
     ].join("");
 
     // Create and return preload function
-    const preloadFunction = function () {
+    function preloadFunction() {
         try {
             eval(finalDef);
         } catch (e) {
             throw e;
         }
-    };
+    }
 
     return preloadFunction;
 }
