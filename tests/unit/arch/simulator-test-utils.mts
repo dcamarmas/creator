@@ -9,9 +9,8 @@ import { logger } from "../../../src/core/utils/creator_logger.mjs";
 import { assertEquals } from "https://deno.land/std/assert/mod.ts";
 import { RISCV } from "@/core/capi/arch/riscv.mjs";
 import fs from "node:fs";
-import { assembly_compiler_rasm } from "@/core/compiler/rasm/web/rasm.mjs";
-import { assembly_compiler_sjasmplus } from "@/core/compiler/sjasmplus/web/sjasmplus.mjs";
-import { assembly_compiler_default } from "@/core/compiler/creatorCompiler/web/creatorCompiler.mjs";
+import { rasmAssemble } from "@/core/assembler/rasm/deno/rasm.mjs";
+import { assembleCreator } from "@/core/assembler/creatorAssembler/deno/creatorAssembler.mjs";
 
 export interface ArchResult {
     status: string;
@@ -33,9 +32,8 @@ export interface ExecutionResult {
 }
 
 const compiler_map = {
-    default: assembly_compiler_default,
-    sjasmplus: assembly_compiler_sjasmplus,
-    rasm: assembly_compiler_rasm,
+    default: assembleCreator,
+    rasm: rasmAssemble,
 };
 
 /**
