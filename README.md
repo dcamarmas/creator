@@ -12,8 +12,8 @@ bun install
 ```
 
 > [!IMPORTANT]
-> You must build the compiler (assembler) before executing for the first time.  
-> See [compiler README](src/core/compiler/README.md).
+> You must build the CREATOR assembler before executing for the first time.  
+> See [CREATOR Assembler README](src/core/assembler/creatorAssembler/README.md).
 
 
 ### Compile Web and Hot-Reload for Development (with [Vite](https://vite.dev/))
@@ -60,14 +60,17 @@ bun format
 ```
 
 ### Run Tests
-- Unit tests (with [Deno](https://deno.com/))
-  ```sh
-  deno run test
-  ```
-- Architecture Tests for RISC-V (with [Python 3](https://www.python.org/))
-  ```sh
-  bun simtest --arch riscv
-  ```
+Unit tests (with [Deno](https://deno.com/))
+```sh
+deno test -A --unstable-node-globals --parallel
+```
+
+
+### Backend RPC Server
+
+This project includes a JSON RPC server that exposes the CREATOR emulator's core functionalities.
+
+For more details, see the [RPC Server README](src/rpc/README.md).
 
 
 ### VS Code Setup

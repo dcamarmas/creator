@@ -1,5 +1,5 @@
 import { decode_test } from "../common.mjs";
-    Deno.test("decode_instruction - fnmsub.d instruction 1", () =>
+Deno.test("decode_instruction - fnmsub.d instruction 1", () =>
     decode_test("00011010001000001000000001001011", "fnmsub.d f0 f1 f2 f3 rne"),
 );
 
@@ -8,15 +8,24 @@ Deno.test("decode_instruction - fnmsub.d instruction 2", () =>
 );
 
 Deno.test("decode_instruction - fnmsub.d instruction 3", () =>
-    decode_test("01011010101001001010010001001011", "fnmsub.d f8 f9 f10 f11 rdn"),
+    decode_test(
+        "01011010101001001010010001001011",
+        "fnmsub.d f8 f9 f10 f11 rdn",
+    ),
 );
 
 Deno.test("decode_instruction - fnmsub.d instruction 4", () =>
-    decode_test("01111010111001101011011001001011", "fnmsub.d f12 f13 f14 f15 rup"),
+    decode_test(
+        "01111010111001101011011001001011",
+        "fnmsub.d f12 f13 f14 f15 rup",
+    ),
 );
 
 Deno.test("decode_instruction - fnmsub.d instruction 5", () =>
-    decode_test("10011011001010001100100001001011", "fnmsub.d f16 f17 f18 f19 rmm"),
+    decode_test(
+        "10011011001010001100100001001011",
+        "fnmsub.d f16 f17 f18 f19 rmm",
+    ),
 );
 
 Deno.test("decode_instruction - fnmsub.d instruction 6", () =>
@@ -44,19 +53,31 @@ Deno.test("decode_instruction - fnmsub.d instruction 11", () =>
 );
 
 Deno.test("decode_instruction - fnmsub.d instruction 12", () =>
-    decode_test("11110010010101010001101001001011", "fnmsub.d f20 f10 f5 f30 rtz"),
+    decode_test(
+        "11110010010101010001101001001011",
+        "fnmsub.d f20 f10 f5 f30 rtz",
+    ),
 );
 
 Deno.test("decode_instruction - fnmsub.d instruction 13", () =>
-    decode_test("11001010111100101010110011001011", "fnmsub.d f25 f5 f15 f25 rdn"),
+    decode_test(
+        "11001010111100101010110011001011",
+        "fnmsub.d f25 f5 f15 f25 rdn",
+    ),
 );
 
 Deno.test("decode_instruction - fnmsub.d instruction 14", () =>
-    decode_test("10000010100011000011100001001011", "fnmsub.d f16 f24 f8 f16 rup"),
+    decode_test(
+        "10000010100011000011100001001011",
+        "fnmsub.d f16 f24 f8 f16 rup",
+    ),
 );
 
 Deno.test("decode_instruction - fnmsub.d instruction 15", () =>
-    decode_test("01000011000000000100111111001011", "fnmsub.d f31 f0 f16 f8 rmm"),
+    decode_test(
+        "01000011000000000100111111001011",
+        "fnmsub.d f31 f0 f16 f8 rmm",
+    ),
 );
 
 Deno.test("decode_instruction - fnmsub.d instruction 16", () =>
@@ -70,4 +91,3 @@ Deno.test("decode_instruction - fnmsub.d instruction 17", () =>
 Deno.test("decode_instruction - fnmsub.d instruction 18", () =>
     decode_test("00010011110100010111111011001011", "fnmsub.d f29 f2 f29 f2"),
 );
-

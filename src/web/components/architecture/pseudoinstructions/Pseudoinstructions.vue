@@ -50,8 +50,8 @@ export default {
     //Show pseudoinstruction fields modal
     view_pseudoinstruction_modal(name, index) {
       this.modal_field_pseudoinstruction = {
-        name: name,
-        index: index,
+        name,
+        index,
       }
     },
   },

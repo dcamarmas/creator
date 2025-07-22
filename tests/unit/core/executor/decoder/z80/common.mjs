@@ -5,7 +5,7 @@ import { decode_instruction } from "../../../../../../src/core/executor/decoder.
 
 export function setupArchitecture(architecturePath = "./architecture/Z80.yml") {
     const architectureFile = fs.readFileSync(architecturePath, "utf8");
-    newArchitectureLoad(architectureFile, true, false);
+    newArchitectureLoad(architectureFile);
 }
 
 export function decode_test(instruction, expected) {

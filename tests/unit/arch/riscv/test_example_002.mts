@@ -8,7 +8,7 @@ import {
 
 Deno.test(
     "Architecture-agnostic testing - RISC-V Store Hello World without Data Segment",
-    // eslint-disable-next-line max-lines-per-function
+
     async () => {
         const testAssembly = `
 #

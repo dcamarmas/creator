@@ -1,5 +1,6 @@
-/*
- *  Copyright 2018-2025 Felix Garcia Carballeira, Alejandro Calderon Mateos, Diego Camarmas Alonso
+/**
+ *  Copyright 2018-2025 Felix Garcia Carballeira, Alejandro Calderon Mateos,
+ *                      Diego Camarmas Alonso
  *
  *  This file is part of CREATOR.
  *
@@ -17,7 +18,7 @@
  *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-"use strict";
+
 import { main_memory, REGISTERS } from "../core.mjs";
 
 /*
@@ -28,7 +29,7 @@ import { main_memory, REGISTERS } from "../core.mjs";
  * Gets the stack start address from the memory object
  * @returns {string} Stack start address as hex string
  */
-function getStackStartAddress() {
+export function getStackStartAddress() {
     const segments = main_memory.getMemorySegments();
     const stackSegment = segments.get("stack");
     return stackSegment.start;
@@ -36,7 +37,7 @@ function getStackStartAddress() {
 
 /**
  * Gets the current stack pointer value from the registers
- * @returns {string} Current stack pointer value as hex string
+ * @returns {string, undefined} Current stack pointer value as hex string
  */
 function getCurrentStackPointer() {
     // Find the register with stack_pointer property
@@ -60,6 +61,7 @@ function getCurrentStackPointer() {
             }
         }
     }
+    return undefined;
 }
 
 /*
@@ -68,7 +70,7 @@ function getCurrentStackPointer() {
 /*
  *  track_stack_names = [ "PC=xxx", "main" ] ;
  */
-export let track_stack_names = [];  // FIXME: the order is broken
+export let track_stack_names = []; // FIXME: the order is broken
 /*
  *  track_stack_limits = [
  *		               {
@@ -109,6 +111,39 @@ export function track_stack_create() {
 
     return ret;
 }
+
+//
+// Get the last element
+// Example: var elto = track_stack_getTop() ;
+//
+export function track_stack_getTop() {
+    const ret = {
+        ok: true,
+        val: {
+            begin_caller: getCurrentStackPointer(),
+            end_caller: getCurrentStackPointer(),
+            begin_callee: getCurrentStackPointer(),
+            end_callee: getCurrentStackPointer(),
+        },
+        msg: "",
+    };
+
+    // check params
+    if (track_stack_limits.length === 0) {
+        ret.ok = false;
+        ret.msg = "track_stack_getTop: empty track_stack_limits !!.\n";
+        return ret;
+    }
+
+    // return the last element in the array
+    ret.val = track_stack_limits[track_stack_limits.length - 1];
+    if (typeof ret.val.begin_caller === "undefined") {
+        ret.val.begin_caller = getCurrentStackPointer();
+    }
+
+    return ret;
+}
+
 //
 // "jal X, ..." -> add new element (at the end)
 // Example: track_stack_Enter("main")
@@ -124,7 +159,7 @@ export function track_stack_enter(function_name) {
 
     // 2.- new call element
     const new_elto = {
-        function_name: function_name,
+        function_name,
         begin_caller: track_stack_getTop().val.begin_callee, // llamante: FFFFFFFC, FFFFFFF0
         end_caller: track_stack_getTop().val.end_callee, // llamante: FFFFFFF0, FFFFFF00
         begin_callee: getCurrentStackPointer(), // llamado: current SP when function enters
@@ -184,37 +219,7 @@ export function track_stack_leave() {
 
     return ret;
 }
-//
-// Get the last element
-// Example: var elto = track_stack_getTop() ;
-//
-export function track_stack_getTop() {
-    const ret = {
-        ok: true,
-        val: {
-            begin_caller: getCurrentStackPointer(),
-            end_caller: getCurrentStackPointer(),
-            begin_callee: getCurrentStackPointer(),
-            end_callee: getCurrentStackPointer(),
-        },
-        msg: "",
-    };
 
-    // check params
-    if (track_stack_limits.length === 0) {
-        ret.ok = false;
-        ret.msg = "track_stack_getTop: empty track_stack_limits !!.\n";
-        return ret;
-    }
-
-    // return the last element in the array
-    ret.val = track_stack_limits[track_stack_limits.length - 1];
-    if (typeof ret.val.begin_caller === "undefined") {
-        ret.val.begin_caller = getCurrentStackPointer();
-    }
-
-    return ret;
-}
 //
 // Get all stack frames
 // Example: var frames = track_stack_getFrames() ;
@@ -318,7 +323,6 @@ export function track_stack_addHint(address, name) {
     return ret;
 }
 
-
 //
 // Get all hints
 // Example: var allHints = track_stack_getAllHints() ;
@@ -383,9 +387,9 @@ export function track_stack_reset() {
 
 export function dumpStack() {
     return {
-        stack_hints: stack_hints,
-        track_stack_names: track_stack_names,
-        track_stack_limits: track_stack_limits,
+        stack_hints,
+        track_stack_names,
+        track_stack_limits,
     };
 }
 

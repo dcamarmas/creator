@@ -540,14 +540,14 @@ export default {
     <b-container fluid align-h="start" class="mx-0 px-0 text-center">
       <b-row cols="4" align-h="start">
         <b-col lg="1" cols="2" offset-lg="1" class="p-1">
-          <font-awesome-icon icon="fas fa-long-arrow-alt-down" class="p-1" />
+          <font-awesome-icon :icon="['fas', 'down-long']" class="p-1" />
           <br />
           <span class="h5">
             -1<sup>{{ calculator.sign }}</sup> *
           </span>
         </b-col>
         <b-col lg="3" cols="4" class="p-1">
-          <font-awesome-icon icon="fas fa-long-arrow-alt-down" class="p-1" />
+          <font-awesome-icon :icon="['fas', 'down-long']" class="p-1" />
           <br />
           <span class="h5" v-if="calculator.bits == 32">
             2
@@ -583,7 +583,7 @@ export default {
           </span>
         </b-col>
         <b-col lg="4" cols="6" class="p-1">
-          <font-awesome-icon icon="fas fa-long-arrow-alt-down" />
+          <font-awesome-icon :icon="['fas', 'down-long']" />
           <br />
           <span class="h6"> {{ calculator.mantissaDec }} = </span>
         </b-col>

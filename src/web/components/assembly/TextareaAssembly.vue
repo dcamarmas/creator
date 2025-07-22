@@ -244,7 +244,7 @@ export default {
     @click="toggleVim()"
     title="Enable Vim mode"
   >
-    <font-awesome-icon icon="fa-brands fa-vimeo-v" /> Vim
+    <font-awesome-icon :icon="['fab', 'vimeo-v']" /> Vim
   </b-button>
 
   <br />

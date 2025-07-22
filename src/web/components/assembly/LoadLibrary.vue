@@ -27,7 +27,7 @@ export default {
   data() {
     return {
       //Binary code loaded
-      name_binary_load: '',
+      name_binary_load: "",
     }
   },
 
@@ -36,12 +36,15 @@ export default {
       if (code_binary.length !== 0) {
         update_binary = JSON.parse(code_binary)
         load_binary = true
-        $('#divAssembly').attr('class', 'col-lg-10 col-sm-12')
-        $('#divTags').attr('class', 'col-lg-2 col-sm-12')
-        $('#divTags').show()
-        show_notification('The selected library has been loaded correctly', 'success')
+        $("#divAssembly").attr("class", "col-lg-10 col-sm-12")
+        $("#divTags").attr("class", "col-lg-2 col-sm-12")
+        $("#divTags").show()
+        show_notification(
+          "The selected library has been loaded correctly",
+          "success",
+        )
       } else {
-        show_notification('Please select one library', 'danger')
+        show_notification("Please select one library", "danger")
       }
     },
 
@@ -49,7 +52,7 @@ export default {
     library_load(e) {
       let file
       let reader
-      const files = document.getElementById('binary_file').files
+      const files = document.getElementById("binary_file").files
 
       for (let i = 0; i < files.length; i++) {
         file = files[i]
@@ -67,7 +70,12 @@ export default {
 </script>
 
 <template>
-  <b-modal :id="id" title="Load Binary" ok-title="Load from this File" @ok="library_update">
+  <b-modal
+    :id="id"
+    title="Load Binary"
+    ok-title="Load from this File"
+    @ok="library_update"
+  >
     <p>Please select the binary file to be loaded</p>
     <b-form-file
       v-model="name_binary_load"

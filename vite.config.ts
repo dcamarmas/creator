@@ -1,11 +1,11 @@
-import { fileURLToPath, URL } from "node:url"
+import { fileURLToPath, URL } from "node:url";
 
-import { defineConfig } from "vite"
-import vue from "@vitejs/plugin-vue"
-import vueDevTools from "vite-plugin-vue-devtools"
-import Components from "unplugin-vue-components/vite"
-import { BootstrapVueNextResolver } from "bootstrap-vue-next"
-import wasm from "vite-plugin-wasm"
+import { defineConfig } from "vite";
+import vue from "@vitejs/plugin-vue";
+import vueDevTools from "vite-plugin-vue-devtools";
+import Components from "unplugin-vue-components/vite";
+import { BootstrapVueNextResolver } from "bootstrap-vue-next";
+import wasm from "vite-plugin-wasm";
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -39,7 +39,7 @@ export default defineConfig({
   build: {
     outDir: "dist/web",
     emptyOutDir: true,
-    target: 'esnext' //browsers can handle the latest ES features
+    target: "esnext", //browsers can handle the latest ES features
     // set codemirror output as a separate file
   },
   // Silence Sass deprecation warnings (due to bootstrap-vue-next)
@@ -55,4 +55,4 @@ export default defineConfig({
       },
     },
   },
-})
+});

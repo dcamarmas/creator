@@ -1,6 +1,6 @@
-/*
+/**
  *  Copyright 2018-2025 Felix Garcia Carballeira, Alejandro Calderon Mateos,
- *  Diego Camarmas Alonso, Jorge Ramos Santana
+ *                      Diego Camarmas Alonso, Jorge Ramos Santana
  *
  *  This file is part of CREATOR.
  *

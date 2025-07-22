@@ -5,33 +5,33 @@
  * exposing key functionality for VSCode extension integration.
  */
 
-import * as creator from "../src/core/core.mjs";
-import { step } from "../src/core/executor/executor.mjs";
-import { readRegister } from "../src/core/register/registerOperations.mjs";
+import * as creator from "../core/core.mjs";
+import { step } from "../core/executor/executor.mjs";
+import { readRegister } from "../core/register/registerOperations.mjs";
 import {
     crex_findReg_bytag,
     crex_findReg,
-} from "../src/core/register/registerLookup.mjs";
-import { logger } from "../src/core/utils/creator_logger.mjs";
-import { instructions } from "../src/core/compiler/compiler.mjs";
-import { assembly_compiler_sjasmplus } from "../src/core/compiler/sjasmplus/deno/sjasmplus.mjs";
-import { assembly_compiler_default } from "../src/core/compiler/creatorCompiler/deno/creatorCompiler.mjs";
-import { assembly_compiler_rasm } from "../src/core/compiler/rasm/deno/rasm.mjs";
+} from "../core/register/registerLookup.mjs";
+import { logger } from "../core/utils/creator_logger.mjs";
+import { instructions } from "../core/assembler/assembler.mjs";
+import { sjasmplusAssemble } from "../core/assembler/sjasmplus/deno/sjasmplus.mjs";
+import { assembleCreator } from "../core/assembler/creatorAssembler/deno/creatorAssembler.mjs";
+import { rasmAssemble } from "../core/assembler/rasm/deno/rasm.mjs";
 import {
     track_stack_getFrames,
     track_stack_getNames,
     track_stack_getAllHints,
-} from "../src/core/memory/stackTracker.mjs";
+} from "../core/memory/stackTracker.mjs";
 import fs from "node:fs";
 
 // Compiler map similar to CLI version
-const compiler_map = {
-    default: assembly_compiler_default,
-    sjasmplus: assembly_compiler_sjasmplus,
-    rasm: assembly_compiler_rasm,
+const assembler_map = {
+    default: assembleCreator,
+    sjasmplus: sjasmplusAssemble,
+    rasm: rasmAssemble,
 } as const;
 
-type CompilerType = keyof typeof compiler_map;
+type CompilerType = keyof typeof assembler_map;
 
 // JSON RPC Types
 interface JsonRpcRequest {
@@ -145,7 +145,6 @@ class CreatorRpcServer {
             const result = creator.newArchitectureLoad(
                 architectureContent,
                 false,
-                false,
                 params.isaExtensions || [],
             ) as ArchitectureLoadResult;
 
@@ -179,17 +178,20 @@ class CreatorRpcServer {
         }
 
         try {
-            console.log(`Compiling assembly with compiler: ${params.compiler || "default"}`);
+            console.log(
+                `Compiling assembly with compiler: ${params.compiler || "default"}`,
+            );
             // Get compiler function from the map, with type safety
-            const compilerKey = (params.compiler && params.compiler in compiler_map) 
-                ? params.compiler as CompilerType 
-                : "default";
-            const compilerFunction = compiler_map[compilerKey];
+            const compilerKey =
+                params.compiler && params.compiler in assembler_map
+                    ? (params.compiler as CompilerType)
+                    : "default";
+            const compilerFunction = assembler_map[compilerKey];
 
-            const result = await creator.assembly_compile(
+            const result = (await creator.assembly_compile(
                 params.assembly,
                 compilerFunction,
-            ) as CompileResult;
+            )) as CompileResult;
 
             if (result.status === "ok") {
                 this.codeCompiled = true;
@@ -214,10 +216,10 @@ class CreatorRpcServer {
     /**
      * Load a binary file into memory
      */
-    loadBinary(params: {
-        filePath: string;
-        offset?: string;
-    }): { status: string; msg: string } {
+    loadBinary(params: { filePath: string; offset?: string }): {
+        status: string;
+        msg: string;
+    } {
         if (!this.architectureLoaded) {
             throw {
                 code: RPC_ERRORS.ARCHITECTURE_NOT_LOADED,
@@ -248,7 +250,7 @@ class CreatorRpcServer {
      */
     executeStep(): ExecutionResult {
         console.log(`[SERVER] executeStep called`);
-        
+
         if (!this.codeCompiled) {
             console.log(`[SERVER] executeStep failed: code not compiled`);
             throw {
@@ -259,10 +261,14 @@ class CreatorRpcServer {
         }
 
         try {
-            console.log(`[SERVER] Current execution_index: ${creator.status.execution_index}`);
-            
+            console.log(
+                `[SERVER] Current execution_index: ${creator.status.execution_index}`,
+            );
+
             if (creator.status.execution_index === -2) {
-                console.log(`[SERVER] executeStep: execution already completed`);
+                console.log(
+                    `[SERVER] executeStep: execution already completed`,
+                );
                 return { output: "", completed: true, error: false };
             }
 
@@ -278,7 +284,7 @@ class CreatorRpcServer {
                     success?: boolean;
                 };
             };
-            
+
             console.log(`[SERVER] step() returned:`, ret);
 
             if (ret.error) {
@@ -293,7 +299,7 @@ class CreatorRpcServer {
                 error: ret.error || false,
                 instructionData: ret.instructionData,
             };
-            
+
             console.log(`[SERVER] executeStep returning:`, result);
             return result;
         } catch (error: unknown) {
@@ -337,7 +343,8 @@ class CreatorRpcServer {
 
             return { output, completed, error };
         } catch (error: unknown) {
-            if (error && typeof error === 'object' && 'code' in error) throw error;
+            if (error && typeof error === "object" && "code" in error)
+                throw error;
             throw {
                 code: RPC_ERRORS.EXECUTION_ERROR,
                 message: `Multi-step execution error: ${error instanceof Error ? error.message : String(error)}`,
@@ -477,7 +484,10 @@ class CreatorRpcServer {
     /**
      * Get memory at specific address with hints and labels
      */
-    async getMemoryWithHints(params: { address: string; count?: number }): Promise<{
+    async getMemoryWithHints(params: {
+        address: string;
+        count?: number;
+    }): Promise<{
         address: string;
         wordSize: number;
         entries: Array<{
@@ -758,9 +768,11 @@ class CreatorRpcServer {
         error: boolean;
     }> {
         console.log(`[SERVER] getExecutionContext called`);
-        
+
         if (!this.architectureLoaded) {
-            console.log(`[SERVER] getExecutionContext failed: architecture not loaded`);
+            console.log(
+                `[SERVER] getExecutionContext failed: architecture not loaded`,
+            );
             throw {
                 code: RPC_ERRORS.ARCHITECTURE_NOT_LOADED,
                 message: "Architecture must be loaded to get execution context",
@@ -771,11 +783,13 @@ class CreatorRpcServer {
             console.log(`[SERVER] About to call getPC()`);
             const pcResult = await this.getPC();
             console.log(`[SERVER] getPC() returned:`, pcResult);
-            
+
             const pc = BigInt("0x" + pcResult.value);
             const executionIndex = creator.status.execution_index;
-            
-            console.log(`[SERVER] PC: 0x${pc.toString(16)}, executionIndex: ${executionIndex}, instructions.length: ${instructions.length}`);
+
+            console.log(
+                `[SERVER] PC: 0x${pc.toString(16)}, executionIndex: ${executionIndex}, instructions.length: ${instructions.length}`,
+            );
 
             // Find current instruction by PC address
             let currentInstruction = null;
@@ -786,7 +800,10 @@ class CreatorRpcServer {
                 const instrAddr = BigInt(instr.Address);
 
                 if (instrAddr === pc) {
-                    console.log(`[SERVER] Found current instruction at index ${i}:`, instr);
+                    console.log(
+                        `[SERVER] Found current instruction at index ${i}:`,
+                        instr,
+                    );
                     currentInstruction = {
                         index: i,
                         address: instr.Address,
@@ -822,7 +839,7 @@ class CreatorRpcServer {
                     executionIndex >= instructions.length,
                 error: creator.status.error !== 0,
             };
-            
+
             console.log(`[SERVER] getExecutionContext returning:`, result);
             return result;
         } catch (error: any) {
@@ -1173,7 +1190,9 @@ class CreatorRpcServer {
     /**
      * Enable or disable debug logging
      */
-    static async setDebug(params: { enabled: boolean }): Promise<{ status: string }> {
+    static async setDebug(params: {
+        enabled: boolean;
+    }): Promise<{ status: string }> {
         await Promise.resolve();
         try {
             creator.set_debug(params.enabled);
@@ -1243,7 +1262,7 @@ class CreatorRpcServer {
      */
     async handleMethod(method: string, params: any): Promise<any> {
         console.log(`[SERVER] handleMethod called: ${method}`, params);
-        
+
         switch (method) {
             case "loadArchitecture":
                 return this.loadArchitecture(params);

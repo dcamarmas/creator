@@ -1,6 +1,6 @@
-/*
+/**
  *  Copyright 2018-2025 Felix Garcia Carballeira, Alejandro Calderon Mateos,
- *  Diego Camarmas Alonso, Jorge Ramos Santana
+ *                      Diego Camarmas Alonso, Jorge Ramos Santana
  *
  *  This file is part of CREATOR.
  *
@@ -19,14 +19,14 @@
  *
  */
 
-import {SjasmPlus} from "./wasm/sjasmplus.js";
+import { SjasmPlus } from "./wasm/sjasmplus.js";
 import { main_memory } from "../../../core.mjs";
 import { parseDebugSymbols, precomputeInstructions } from "../../compiler.mjs";
-// eslint-disable-next-line max-lines-per-function
-export async function assembly_compiler_sjasmplus(code) {
+ 
+export async function sjasmplusAssemble(code) {
     // Re-initialize WASM module every time
-    let sjasmModule = null;
-    let result = {
+    let sjasmModule;
+    const result = {
         errorcode: "",
         token: "",
         type: "",
@@ -38,9 +38,9 @@ export async function assembly_compiler_sjasmplus(code) {
     try {
         // Load the sjasmplus WebAssembly module
         sjasmModule = await SjasmPlus({
-            locateFile: (file) => {
+            locateFile: file => {
                 return new URL(`./wasm/${file}`, import.meta.url).href;
-            }
+            },
         });
 
         if (!sjasmModule.FS) {
@@ -65,7 +65,7 @@ export async function assembly_compiler_sjasmplus(code) {
         }
 
         // Run the assembler using callMain
-        let output = "";
+        const output = "";
 
         const exitCode = sjasmModule.callMain([
             "--nologo",
@@ -74,7 +74,7 @@ export async function assembly_compiler_sjasmplus(code) {
             "--raw=" + binFilename,
         ]);
 
-        // Due to a bug that occurs when compiling sjasmplus to wasm, it always exits with code 1, even for successful builds. 
+        // Due to a bug that occurs when compiling sjasmplus to wasm, it always exits with code 1, even for successful builds.
 
         // Read the output file
         // If the assembler was successful, it should create a binary file
@@ -85,12 +85,16 @@ export async function assembly_compiler_sjasmplus(code) {
             result.status = "ko";
         }
 
-        const binary = sjasmModule.FS.readFile(binFilename, { encoding: "binary" });
+        const binary = sjasmModule.FS.readFile(binFilename, {
+            encoding: "binary",
+        });
 
         // Debug symbols
         let parsedSymbols = null;
         if (sjasmModule.FS.analyzePath("./program.sym").exists) {
-            const debugSymbols = sjasmModule.FS.readFile("./program.sym", { encoding: "utf8" });
+            const debugSymbols = sjasmModule.FS.readFile("./program.sym", {
+                encoding: "utf8",
+            });
             // Parse debug symbols if available
             parsedSymbols = parseDebugSymbols(debugSymbols);
         } else {
@@ -100,11 +104,7 @@ export async function assembly_compiler_sjasmplus(code) {
         main_memory.loadROM(binary);
         precomputeInstructions(parsedSymbols);
 
-        
-  
         result.status = "ok";
-        
-
     } catch (error) {
         console.error("Assembly error:", error);
     }

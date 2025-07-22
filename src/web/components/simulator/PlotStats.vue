@@ -212,11 +212,11 @@ export default {
     height="180%"
   />
 
-    <b-row v-if="type === 'cycles'">
-      <b-list-group class="align-items-center">
-        <b-list-group-item>
-          Total CLK Cycles: {{ totalExecuted }}
-        </b-list-group-item>
-      </b-list-group>
-    </b-row>
+  <b-row v-if="type === 'cycles'">
+    <b-list-group class="align-items-center">
+      <b-list-group-item>
+        Total CLK Cycles: {{ totalExecuted }}
+      </b-list-group-item>
+    </b-list-group>
+  </b-row>
 </template>

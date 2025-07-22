@@ -69,7 +69,7 @@ export default {
 
     <br />
     <a v-if="architecture_guide" target="_blank" :href="architecture_guide">
-      <font-awesome-icon icon="fa-solid fa-file-pdf" />
+      <font-awesome-icon :icon="['fas', 'file-pdf']" />
       {{ architecture_name }} Guide
     </a>
     <br />

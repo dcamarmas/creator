@@ -88,7 +88,7 @@ export default {
           underline-opacity-hover="75"
           :href="`mailto: ${contactMail}`"
         >
-          <font-awesome-icon icon="fa-solid fa-envelope" />
+          <font-awesome-icon :icon="['fas', 'envelope']" />
           {{ contactMail }}
         </b-link>
       </b-list-group-item>

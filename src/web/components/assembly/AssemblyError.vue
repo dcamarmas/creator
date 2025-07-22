@@ -25,13 +25,13 @@ export default {
     reff: { type: String, required: true },
     modal_assembly_error: { type: Object, required: true },
   },
-};
+}
 </script>
 
 <template>
   <b-modal :id="id" title="Assembly Code Error" :ref="reff" no-footer size="lg">
     <div class="errorAssembly">
-      <span class="font-monospace lh-1" v-html="modal_assembly_error.error"/>
+      <span class="font-monospace lh-1" v-html="modal_assembly_error.error" />
     </div>
   </b-modal>
 </template>

@@ -8,7 +8,7 @@ import {
     StackFrame,
     Source,
     Handles,
-    Breakpoint
+    Breakpoint,
 } from "vscode-debugadapter";
 import { DebugProtocol } from "vscode-debugprotocol";
 import * as fs from "node:fs";
@@ -247,7 +247,9 @@ export class CreatorDebugSession extends DebugSession {
 
         // Send a 'stopped' event to the client to update the UI,
         // indicating that the execution has been paused by the user.
-        this.sendEvent(new StoppedEvent("pause", CreatorDebugSession.THREAD_ID));
+        this.sendEvent(
+            new StoppedEvent("pause", CreatorDebugSession.THREAD_ID),
+        );
 
         // After stopping, it's a good practice to refresh the state for the UI.
         await this.refreshAndEmitMemory();
@@ -264,7 +266,11 @@ export class CreatorDebugSession extends DebugSession {
             const address = this.lineToAddressMap.get(lineIndex);
             if (address) {
                 this.rpcClient
-                    .setBreakpoint({index: lineIndex, address, enabled: false})
+                    .setBreakpoint({
+                        index: lineIndex,
+                        address,
+                        enabled: false,
+                    })
                     .catch((error: unknown) => {
                         log.error("Failed to clear breakpoint:", error);
                     });
@@ -283,7 +289,7 @@ export class CreatorDebugSession extends DebugSession {
             const address = this.lineToAddressMap.get(lineIndex);
             if (address) {
                 this.rpcClient
-                    .setBreakpoint({index: lineIndex, address, enabled: true})
+                    .setBreakpoint({ index: lineIndex, address, enabled: true })
                     .then(() => {
                         log.info(
                             `Breakpoint set at address ${address}, line ${line}`,

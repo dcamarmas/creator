@@ -27,7 +27,7 @@ export default {
   data() {
     return {
       // Directives table fields
-      directivesFields: ['name', 'action', 'size'],
+      directivesFields: ["name", "action", "size"],
     }
   },
 }

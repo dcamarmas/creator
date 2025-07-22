@@ -1,6 +1,6 @@
-/*
+/**
  *  Copyright 2018-2025 Felix Garcia Carballeira, Alejandro Calderon Mateos,
- *  Diego Camarmas Alonso, Jorge Ramos Santana
+ *                      Diego Camarmas Alonso, Jorge Ramos Santana
  *
  *  This file is part of CREATOR.
  *
@@ -27,7 +27,7 @@ import { main_memory } from "../../../core.mjs";
 import {
     precomputeInstructions,
     set_tag_instructions,
-} from "../../compiler.mjs";
+} from "../../assembler.mjs";
 import { parseDebugSymbolsRASM, toTagInstructions } from "../utils.mjs";
 
 /**
@@ -62,8 +62,8 @@ function parseSourceLineMapping(rawRasmOutput) {
     return sourceMap;
 }
 
-// eslint-disable-next-line max-lines-per-function
-export function assembly_compiler_rasm(code) {
+ 
+export function rasmAssemble(code) {
     // --- Setup temporary files ---
     const filename = "program";
     const asmFilename = filename + ".asm";

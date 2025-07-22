@@ -1,6 +1,6 @@
-/*
+/**
  *  Copyright 2018-2025 Felix Garcia Carballeira, Alejandro Calderon Mateos,
- *  Diego Camarmas Alonso, Jorge Ramos Santana
+ *                      Diego Camarmas Alonso, Jorge Ramos Santana
  *
  *  This file is part of CREATOR.
  *
@@ -25,9 +25,9 @@ const BINARY_BASE = 2;
 const DECIMAL_BASE = 10;
 let instructionLookupCache = null;
 
-/** 
+/**
  * Resets the instruction lookup cache
- * 
+ *
  * @function resetCache
  * @returns {void}
  */
@@ -97,7 +97,7 @@ function extractOpcode(fields) {
 function convertToSignedValue(binaryValue) {
     let value = parseInt(binaryValue, BINARY_BASE);
     if (binaryValue.charAt(0) === "1") {
-        value -= Math.pow(BINARY_BASE, binaryValue.length);
+        value -= BINARY_BASE**binaryValue.length;
     }
     return value;
 }
@@ -792,7 +792,7 @@ export function decode_instruction(toDecode, newFormat = false) {
     const instructionExecParts = instruction_loaded.split(" ");
     const instructionAltNames = replaceRegisterNames(instructionExecParts);
 
-    let finalInstruction = {
+    const finalInstruction = {
         instruction: instructionExecParts,
         instructionAltNames,
         nwords: matchedInstruction.nwords,

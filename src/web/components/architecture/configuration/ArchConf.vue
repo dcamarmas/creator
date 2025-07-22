@@ -27,7 +27,7 @@ export default {
   data() {
     return {
       //Architecture configuration table fields
-      arch_fields: ['field', 'value'],
+      arch_fields: ["field", "value"],
     }
   },
 
@@ -37,7 +37,7 @@ export default {
 
 <template>
   <div class="col-lg-12 col-sm-12 row memoryLayoutDiv mx-0 px-0">
-    <div class="col-lg-3 col-sm-12"/>
+    <div class="col-lg-3 col-sm-12" />
 
     <!-- Architecture configuration table -->
     <div class="col-lg-12 col-sm-12 mt-3">

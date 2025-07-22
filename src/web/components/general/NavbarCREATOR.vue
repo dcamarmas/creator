@@ -65,7 +65,7 @@ export default {
           target="_blank"
         >
           <b-button size="sm" class="linkButton">
-            <font-awesome-icon icon="fa-solid fa-star" />
+            <font-awesome-icon :icon="['fas', 'star']" />
             Feedback
           </b-button>
         </b-nav-item>
@@ -76,21 +76,21 @@ export default {
           target="_blank"
         >
           <b-button size="sm" class="linkButton">
-            <font-awesome-icon icon="fa-solid fa-lightbulb" />
+            <font-awesome-icon :icon="['fas', 'lightbulb']" />
             Suggestions
           </b-button>
         </b-nav-item>
 
         <b-nav-item>
           <b-button size="sm" class="linkButton" v-b-modal.institutions>
-            <font-awesome-icon icon="fa-solid fa-building-columns" />
+            <font-awesome-icon :icon="['fas', 'building-columns']" />
             Community
           </b-button>
         </b-nav-item>
 
         <b-nav-item>
           <b-button size="sm" class="linkButton" v-b-modal.about>
-            <font-awesome-icon icon="fa-solid fa-address-card" />
+            <font-awesome-icon :icon="['fas', 'address-card']" />
             About Us
           </b-button>
         </b-nav-item>
@@ -100,7 +100,6 @@ export default {
 </template>
 
 <style lang="scss" scoped>
-
 @import "bootstrap/scss/bootstrap";
 
 .header {

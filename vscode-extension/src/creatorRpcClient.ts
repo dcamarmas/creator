@@ -224,7 +224,9 @@ export class CreatorRpcClient {
     }
 
     async executeN(steps: number): Promise<ExecutionResult> {
-        return (await this.sendRequest("executeN", { steps })) as ExecutionResult;
+        return (await this.sendRequest("executeN", {
+            steps,
+        })) as ExecutionResult;
     }
 
     async getRegister(name: string): Promise<{ value: string }> {

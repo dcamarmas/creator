@@ -1,5 +1,6 @@
-/*
- *  Copyright 2018-2025 Felix Garcia Carballeira, Alejandro Calderon Mateos, Diego Camarmas Alonso
+/**
+ *  Copyright 2018-2025 Felix Garcia Carballeira, Alejandro Calderon Mateos,
+ *                      Diego Camarmas Alonso
  *
  *  This file is part of CREATOR.
  *
@@ -17,7 +18,7 @@
  *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-"use strict";
+
 import { status, main_memory } from "../core.mjs";
 import { crex_findReg } from "../register/registerLookup.mjs";
 import { creator_executor_exit, packExecute } from "../executor/executor.mjs";
@@ -38,12 +39,12 @@ import { full_print } from "../utils/utils.mjs";
 import { creator_ga } from "../utils/creator_ga.mjs";
 
 export const SYSCALL = {
-    exit: function () {
+    exit () {
         creator_ga("execute", "execute.syscall", "execute.syscall.exit");
         return creator_executor_exit(false);
     },
 
-    print: function (value, type) {
+    print (value, type) {
         creator_ga(
             "execute",
             "execute.syscall",
@@ -88,7 +89,7 @@ export const SYSCALL = {
         }
     },
 
-    read: function (dest_reg_info, type, aux_info) {
+    read (dest_reg_info, type, aux_info) {
         creator_ga(
             "execute",
             "execute.syscall",
@@ -133,10 +134,10 @@ export const SYSCALL = {
                         auxreg.indexComp,
                         auxreg.indexElem,
                     );
-                    let funct_params = {
+                    const funct_params = {
                         indexComp: register.indexComp,
                         indexElem: register.indexElem,
-                        size: size,
+                        size,
                     };
                     return keyboard_read(kbd_read_string, funct_params);
                 }
@@ -154,7 +155,8 @@ export const SYSCALL = {
         }
     },
 
-    sbrk: function (value1, value2) {
+    sbrk (value1, value2) {
+        // TODO: this is (probably) broken
         /* Google Analytics */
         creator_ga("execute", "execute.syscall", "execute.syscall.sbrk");
 
@@ -180,7 +182,7 @@ export const SYSCALL = {
         }
 
         /* Request more memory */
-        const new_size = parseInt(readRegister(ret1.indexComp, ret1.indexElem));
+        const new_size = readRegister(ret1.indexComp, ret1.indexElem);
         if (new_size < 0) {
             throw packExecute(
                 true,
@@ -194,7 +196,7 @@ export const SYSCALL = {
         writeRegister(new_addr, ret2.indexComp, ret2.indexElem);
     },
 
-    get_clk_cycles: function () {
+    get_clk_cycles () {
         /* Google Analytics */
         creator_ga(
             "execute",

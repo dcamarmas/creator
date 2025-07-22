@@ -1,5 +1,5 @@
 import { decode_test } from "../common.mjs";
-    Deno.test("decode_instruction - fsgnj.d instruction 1", () =>
+Deno.test("decode_instruction - fsgnj.d instruction 1", () =>
     decode_test("00100010001000001000000001010011", "fsgnj.d f0 f1 f2"),
 );
 
@@ -86,4 +86,3 @@ Deno.test("decode_instruction - fsgnj.d instruction 21", () =>
 Deno.test("decode_instruction - fsgnj.d instruction 22", () =>
     decode_test("00100010101100010000010111010011", "fsgnj.d f11 f2 f11"),
 );
-

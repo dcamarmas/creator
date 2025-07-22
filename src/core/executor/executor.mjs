@@ -1,5 +1,6 @@
-/*
- *  Copyright 2018-2025 Felix Garcia Carballeira, Alejandro Calderon Mateos, Diego Camarmas Alonso
+/**
+ *  Copyright 2018-2025 Felix Garcia Carballeira, Alejandro Calderon Mateos,
+ *                      Diego Camarmas Alonso
  *
  *  This file is part of CREATOR.
  *
@@ -17,7 +18,7 @@
  *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { instructions, tag_instructions } from "../compiler/compiler.mjs";
+import { instructions, tag_instructions } from "../assembler/assembler.mjs";
 import {
     status,
     WORDSIZE,
@@ -31,13 +32,15 @@ import {
     readRegister,
     writeRegister,
 } from "../register/registerOperations.mjs";
-import { track_stack_setsp, track_stack_enter } from "../memory/stackTracker.mjs";
+import {
+    track_stack_setsp,
+    track_stack_enter,
+} from "../memory/stackTracker.mjs";
 import { creator_ga } from "../utils/creator_ga.mjs";
 import { logger } from "../utils/creator_logger.mjs";
 import { decode_instruction } from "./decoder.mjs";
 import { buildInstructionPreload } from "./preload.mjs";
 import { show_notification } from "@/web/utils.mjs";
-import { dumpMemory } from "../core.mjs"; // To use with debugger
 import { updateStats } from "./stats.mts";
 
 export function packExecute(error, err_msg, err_type, draw) {
@@ -114,12 +117,12 @@ function initialize_execution() {
 }
 function handle_interruptions(draw) {
     const i_reg = crex_findReg_bytag("event_cause");
-    if (i_reg.match == 0) {
+    if (i_reg.match === 0) {
         return;
     }
 
     const i_reg_value = readRegister(i_reg.indexComp, i_reg.indexElem);
-    if (i_reg_value == 0) {
+    if (i_reg_value === 0) {
         return;
     }
 
@@ -147,9 +150,7 @@ function updateExecutionStatus(draw) {
     if (status.execution_index === -1) {
         status.error = 1;
         return packExecute(false, "", "info", null);
-    }
-
-    else if (status.execution_index === -2) {
+    } else if (status.execution_index === -2) {
         // Normal program termination
         return packExecute(false, "", "info", null);
     }
@@ -161,7 +162,7 @@ function updateExecutionStatus(draw) {
         let found = false;
 
         // mark previous instruction
-        draw.info.push(status.execution_index)
+        draw.info.push(status.execution_index);
 
         for (let i = 0; i < instructions.length; i++) {
             const address = BigInt(instructions[i].Address);
@@ -298,7 +299,7 @@ function processCurrentInstruction(draw) {
     }
 
     // 6. Update execution statistics
-    updateStats(type, instruction.clk_cycles)
+    updateStats(type, instruction.clk_cycles);
 
     // Return instruction data for CLI display
     return {
@@ -421,9 +422,10 @@ export function step() {
     if (textSegment) {
         const written = main_memory.getWrittenAddresses();
         // Only consider addresses within the text segment
-        const textWritten = written.filter(addr =>
-            addr >= Number(textSegment.startAddress) &&
-            addr <= Number(textSegment.endAddress)
+        const textWritten = written.filter(
+            addr =>
+                addr >= Number(textSegment.startAddress) &&
+                addr <= Number(textSegment.endAddress),
         );
         if (textWritten.length > 0) {
             const maxTextAddr = Math.max(...textWritten);
@@ -453,7 +455,7 @@ export function step() {
 }
 
 export function executeProgramOneShot(limit_n_instructions) {
-    let ret = null;
+    let ret;
 
     // Google Analytics
     creator_ga("execute", "execute.run");

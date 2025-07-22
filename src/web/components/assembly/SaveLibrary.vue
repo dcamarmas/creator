@@ -19,130 +19,141 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <script>
-import { console_log } from "../../utils.mjs";
+import { console_log } from "../../utils.mjs"
 
 export default {
-    props: {
-        id: { type: String, required: true },
+  props: {
+    id: { type: String, required: true },
+  },
+
+  data() {
+    return {
+      /*Saved file name*/
+      name_binary_save: "",
+    }
+  },
+
+  methods: {
+    //Save a binary in a local file
+    library_save() {
+      if (assembly_compiler() == -1) {
+        return
+      }
+
+      promise.then(message => {
+        if (message == "-1") {
+          return
+        }
+
+        if (creator_memory_is_segment_empty(memory_hash[3]) === false) {
+          show_notification("You can not enter data in a library", "danger")
+          return
+        }
+
+        for (let i = 0; i < instructions_binary.length; i++) {
+          console_log(instructions_binary[i].Label)
+          if (instructions_binary[i].Label == "main_symbol") {
+            show_notification(
+              'You can not use the "main" tag in a library',
+              "danger",
+            )
+            return
+          }
+        }
+
+        const aux = {
+          instructions_binary,
+          instructions_tag,
+        }
+
+        const textToWrite = JSON.stringify(aux, null, 2)
+        const textFileAsBlob = new Blob([textToWrite], { type: "text/json" })
+        let fileNameToSaveAs
+
+        if (this.name_binary_save == "") {
+          fileNameToSaveAs = "binary.o"
+        } else {
+          fileNameToSaveAs = this.name_binary_save + ".o"
+        }
+
+        const downloadLink = document.createElement("a")
+        downloadLink.download = fileNameToSaveAs
+        downloadLink.innerHTML = "My Hidden Link"
+
+        window.URL = window.URL || window.webkitURL
+
+        downloadLink.href = window.URL.createObjectURL(textFileAsBlob)
+        downloadLink.onclick = destroyClickedElement
+        downloadLink.style.display = "none"
+        document.body.appendChild(downloadLink)
+
+        downloadLink.click()
+
+        this.name_binary_save = ""
+
+        show_notification("Save binary", "success")
+      })
     },
 
-    data() {
-        return {
-            /*Saved file name*/
-            name_binary_save: "",
-        };
+    getDebounceTime() {
+      // Determines the refresh timeout depending on the device being used
+      if (screen.width > 768) {
+        return 500
+      } else {
+        return 1000
+      }
     },
 
-    methods: {
-        //Save a binary in a local file
-        library_save() {
-            if (assembly_compiler() == -1) {
-                return;
-            }
+    //Stop user interface refresh
+    debounce: _.debounce(function (param, e) {
+      console_log(param)
+      console_log(e)
 
-            promise.then(message => {
-                if (message == "-1") {
-                    return;
-                }
+      e.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+      let re = new RegExp("'", "g")
+      e = e.replace(re, '"')
+      re = new RegExp("[\f]", "g")
+      e = e.replace(re, "\\f")
+      re = new RegExp("[\n\]", "g")
+      e = e.replace(re, "\\n")
+      re = new RegExp("[\r]", "g")
+      e = e.replace(re, "\\r")
+      re = new RegExp("[\t]", "g")
+      e = e.replace(re, "\\t")
+      re = new RegExp("[\v]", "g")
+      e = e.replace(re, "\\v")
 
-                if (creator_memory_is_segment_empty(memory_hash[3]) === false) {
-                    show_notification("You can not enter data in a library", "danger");
-                    return;
-                }
+      if (e == "") {
+        this[param] = null
+        return
+      }
 
-                for (let i = 0; i < instructions_binary.length; i++) {
-                    console_log(instructions_binary[i].Label);
-                    if (instructions_binary[i].Label == "main_symbol") {
-                        show_notification('You can not use the "main" tag in a library', "danger");
-                        return;
-                    }
-                }
+      console_log("this." + param + "= '" + e + "'")
 
-                const aux = { instructions_binary: instructions_binary, instructions_tag: instructions_tag };
+      eval("this." + param + "= '" + e + "'")
 
-                const textToWrite = JSON.stringify(aux, null, 2);
-                const textFileAsBlob = new Blob([textToWrite], { type: "text/json" });
-                let fileNameToSaveAs;
-
-                if (this.name_binary_save == "") {
-                    fileNameToSaveAs = "binary.o";
-                } else {
-                    fileNameToSaveAs = this.name_binary_save + ".o";
-                }
-
-                const downloadLink = document.createElement("a");
-                downloadLink.download = fileNameToSaveAs;
-                downloadLink.innerHTML = "My Hidden Link";
-
-                window.URL = window.URL || window.webkitURL;
-
-                downloadLink.href = window.URL.createObjectURL(textFileAsBlob);
-                downloadLink.onclick = destroyClickedElement;
-                downloadLink.style.display = "none";
-                document.body.appendChild(downloadLink);
-
-                downloadLink.click();
-
-                this.name_binary_save = "";
-
-                show_notification("Save binary", "success");
-            });
-        },
-
-        getDebounceTime() {
-            // Determines the refresh timeout depending on the device being used
-            if (screen.width > 768) {
-                return 500;
-            } else {
-                return 1000;
-            }
-        },
-
-        //Stop user interface refresh
-        debounce: _.debounce(function (param, e) {
-            console_log(param);
-            console_log(e);
-
-            e.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-            let re = new RegExp("'", "g");
-            e = e.replace(re, '"');
-            re = new RegExp("[\f]", "g");
-            e = e.replace(re, "\\f");
-            re = new RegExp("[\n\]", "g");
-            e = e.replace(re, "\\n");
-            re = new RegExp("[\r]", "g");
-            e = e.replace(re, "\\r");
-            re = new RegExp("[\t]", "g");
-            e = e.replace(re, "\\t");
-            re = new RegExp("[\v]", "g");
-            e = e.replace(re, "\\v");
-
-            if (e == "") {
-                this[param] = null;
-                return;
-            }
-
-            console_log("this." + param + "= '" + e + "'");
-
-            eval("this." + param + "= '" + e + "'");
-
-            //this[param] = e.toString();
-            app.$forceUpdate();
-        }, this.getDebounceTime()),
-    },
-};
+      //this[param] = e.toString();
+      app.$forceUpdate()
+    }, this.getDebounceTime()),
+  },
+}
 </script>
 
 <template>
-    <b-modal :id="id" title="Save Binary" ok-title="Save to File" @ok="library_save">
-        <p>Please write the file name:</p>
-        <b-form-input
-            v-on:input="debounce('name_binary_save', $event)"
-            :value="name_binary_save"
-            type="text"
-            placeholder="File name where binary will be saved"
-            title="File name"
-        >
-        </b-form-input>
-    </b-modal>
+  <b-modal
+    :id="id"
+    title="Save Binary"
+    ok-title="Save to File"
+    @ok="library_save"
+  >
+    <p>Please write the file name:</p>
+    <b-form-input
+      v-on:input="debounce('name_binary_save', $event)"
+      :value="name_binary_save"
+      type="text"
+      placeholder="File name where binary will be saved"
+      title="File name"
+    >
+    </b-form-input>
+  </b-modal>
 </template>

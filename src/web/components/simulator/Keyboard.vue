@@ -61,7 +61,7 @@ export default {
     <b-container fluid align-h="start" class="mx-0 px-0">
       <b-row cols="2" align-h="start">
         <b-col cols="1">
-          <font-awesome-icon icon="fa-solid fa-keyboard" class="consoleIcon" />
+          <font-awesome-icon :icon="['fas', 'keyboard']" class="consoleIcon" />
         </b-col>
         <b-col lg="11" cols="12">
           <b-form-textarea
@@ -82,7 +82,7 @@ export default {
             class="menuGroup keyboardButton"
             @click="consoleClear"
           >
-            <font-awesome-icon icon="fa-solid fa-broom" />
+            <font-awesome-icon :icon="['fas', 'broom']" />
             Clear
           </b-button>
           <b-button
@@ -92,8 +92,8 @@ export default {
             @click="consoleEnter"
           >
             <font-awesome-icon
-              icon="fa-solid fa-level-down-alt"
-              class="enterIcon"
+              :icon="['fas', 'turn-down']"
+              style="transform: rotate(90deg)"
             />
             Enter
           </b-button>
@@ -107,9 +107,5 @@ export default {
 .keyboardButton {
   margin-top: 5%;
   float: right;
-}
-
-.enterIcon {
-  transform: rotate(90deg);
 }
 </style>

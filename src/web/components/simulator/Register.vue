@@ -27,6 +27,7 @@ import {
   hex2double,
   bin2hex,
   float2bin,
+  float2int_v2,
   double2int_v2,
 } from "@/core/utils/utils.mjs"
 
@@ -104,7 +105,6 @@ export default {
       return value.toString(2).padStart(nbits, "0").charAt(0) === "0"
     },
 
-    // eslint-disable-next-line max-lines-per-function
     show_value(register, representation = this.value_representation) {
       let ret
 
@@ -118,6 +118,7 @@ export default {
             }
           } else {
             // ret = parseInt(register.value.toString(), 10) >> 0;
+            // eslint-disable-next-line no-lonely-if
             if (this.double_precision_type === null) {
               ret = float2int_v2(bi_BigIntTofloat(register.value))
             } else {
@@ -131,6 +132,7 @@ export default {
             ret = parseInt(register.value.toString(10), 10) >>> 0
           } else {
             //ret = parseInt(register.value.toString(), 10) >>> 0;
+            // eslint-disable-next-line no-lonely-if
             if (this.double_precision_type === null) {
               ret = float2int_v2(bi_BigIntTofloat(register.value)) >>> 0
             } else {
@@ -163,24 +165,20 @@ export default {
               .toString(16)
               .padStart(register.nbits / 4, "0")
               .toUpperCase()
+          } else if (this.double_precision_type !== null) {
+            ret = bin2hex(float2bin(bi_BigIntTofloat(register.value)))
           } else {
-            if (this.double_precision_type !== null) {
-              ret = bin2hex(float2bin(bi_BigIntTofloat(register.value)))
-            } else {
-              ret = bin2hex(double2bin(bi_BigIntTodouble(register.value)))
-            }
+            ret = bin2hex(double2bin(bi_BigIntTodouble(register.value)))
           }
           break
 
         case "bin":
           if (this.type === "ctrl_registers" || this.type === "int_registers") {
             ret = register.value.toString(2).padStart(register.nbits, "0")
+          } else if (this.double_precision_type !== null) {
+            ret = float2bin(bi_BigIntTofloat(register.value))
           } else {
-            if (this.double_precision_type !== null) {
-              ret = float2bin(bi_BigIntTofloat(register.value))
-            } else {
-              ret = double2bin(bi_BigIntTodouble(register.value))
-            }
+            ret = double2bin(bi_BigIntTodouble(register.value))
           }
           break
 

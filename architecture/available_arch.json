@@ -43,7 +43,7 @@
     "guide": "",
     "available": 1
   },
-    {
+  {
     "name": "Z80",
     "alias": ["Z80"],
     "file": "Z80",

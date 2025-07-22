@@ -1,5 +1,6 @@
-/*
- *  Copyright 2018-2025 Felix Garcia Carballeira, Alejandro Calderon Mateos, Diego Camarmas Alonso
+/**
+ *  Copyright 2018-2025 Felix Garcia Carballeira, Alejandro Calderon Mateos,
+ *                      Diego Camarmas Alonso
  *
  *  This file is part of CREATOR.
  *
@@ -17,9 +18,8 @@
  *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-"use strict";
+
 // import { creator_memory_type2size } from "../memory/memoryManager.mjs";
-import { app } from "../core.mjs";
 import { capi_uint2int } from "./fp.mjs";
 
 export function raise(msg) {
@@ -49,7 +49,7 @@ export function isMisaligned(addr, type) {
 
 // Object export for initCAPI spreading
 export const VALIDATION = {
-    raise: raise,
-    isOverflow: isOverflow,
-    isMisaligned: isMisaligned,
+    raise,
+    isOverflow,
+    isMisaligned,
 };

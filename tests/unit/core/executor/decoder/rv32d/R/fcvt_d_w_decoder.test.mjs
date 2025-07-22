@@ -1,5 +1,5 @@
 import { decode_test } from "../common.mjs";
-    Deno.test("decode_instruction - fcvt.d.w instruction 1", () =>
+Deno.test("decode_instruction - fcvt.d.w instruction 1", () =>
     decode_test("11010010000000001000000001010011", "fcvt.d.w f0 x1"),
 );
 
@@ -74,4 +74,3 @@ Deno.test("decode_instruction - fcvt.d.w instruction 18", () =>
 Deno.test("decode_instruction - fcvt.d.w instruction 19", () =>
     decode_test("11010010000000010000111011010011", "fcvt.d.w f29 x2"),
 );
-

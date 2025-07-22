@@ -100,7 +100,7 @@ export default {
               for (let i = 1; i < this_env.remote_target_boards.length; i++) {
                 if (
                   !available_boards.includes(
-                    this_env.remote_target_boards[i]["value"],
+                    this_env.remote_target_boards[i].value,
                   )
                 ) {
                   this_env.remote_target_boards.splice(i, 1)

@@ -1,6 +1,6 @@
-/*
+/**
  *  Copyright 2018-2025 Felix Garcia Carballeira, Alejandro Calderon Mateos,
- *  Diego Camarmas Alonso, Jorge Ramos Santana
+ *                      Diego Camarmas Alonso, Jorge Ramos Santana
  *
  *  This file is part of CREATOR.
  *
@@ -24,9 +24,9 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { main_memory } from "../../../core.mjs";
-import { parseDebugSymbols, precomputeInstructions } from "../../compiler.mjs";
+import { parseDebugSymbols, precomputeInstructions } from "../../assembler.mjs";
 
-export function assembly_compiler_sjasmplus(code) {
+export function sjasmplusAssemble(code) {
     // Create a temporary directory
     const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "sjasmplus-"));
     const tmp = path.join(tmpDir, "temp.asm");

@@ -1,5 +1,6 @@
-/*
- *  Copyright 2018-2025 Felix Garcia Carballeira, Alejandro Calderon Mateos, Diego Camarmas Alonso
+/**
+ *  Copyright 2018-2025 Felix Garcia Carballeira, Alejandro Calderon Mateos,
+ *                      Diego Camarmas Alonso
  *
  *  This file is part of CREATOR.
  *
@@ -17,10 +18,10 @@
  *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-"use strict";
+
 import { architecture, REGISTERS } from "../core.mjs";
 import { crex_show_notification } from "../executor/executor.mjs";
-import { tag_instructions } from "../compiler/compiler.mjs";
+import { tag_instructions } from "../assembler/assembler.mjs";
 import {
     creator_callstack_enter,
     creator_callstack_leave,
@@ -28,7 +29,7 @@ import {
 import { creator_ga } from "../utils/creator_ga.mjs";
 
 export const CHECK_STACK = {
-    begin: function (addr) {
+    begin (addr) {
         let function_name = "";
 
         // 1) Passing Convection enable?
@@ -46,7 +47,7 @@ export const CHECK_STACK = {
         // 3) callstack_enter
         creator_callstack_enter(function_name);
     },
-    end: function () {
+    end () {
         // 1) Passing Convection enable?
         if (architecture.arch_conf[6].value === 0) {
             return;

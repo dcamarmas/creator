@@ -98,8 +98,8 @@ export async function setupSimulator(
     yamlPath: string,
     assembler: string = "default",
 ): Promise<{
-  archResult: ArchResult;
-  compileResult: CompileResult;
+    archResult: ArchResult;
+    compileResult: CompileResult;
 }> {
     logger.disable();
 
@@ -119,10 +119,10 @@ export async function setupSimulator(
     const compilerKey = assembler || "default";
     const compilerFunction = compiler_map[compilerKey];
     // Compile assembly code
-    const compileResult = await creator.assembly_compile(
+    const compileResult = (await creator.assembly_compile(
         testAssembly,
-        compilerFunction
-    ) as CompileResult;
+        compilerFunction,
+    )) as CompileResult;
     if (compileResult.status !== "ok") {
         throw new Error(`Failed to compile assembly: ${compileResult.msg}`);
     }

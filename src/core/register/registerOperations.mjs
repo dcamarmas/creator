@@ -1,5 +1,6 @@
-/*
- *  Copyright 2018-2025 Felix Garcia Carballeira, Alejandro Calderon Mateos, Diego Camarmas Alonso
+/**
+ *  Copyright 2018-2025 Felix Garcia Carballeira, Alejandro Calderon Mateos,
+ *                      Diego Camarmas Alonso
  *
  *  This file is part of CREATOR.
  *
@@ -19,7 +20,7 @@
 
 import { architecture, status, REGISTERS } from "../core.mjs";
 import { packExecute, writeStackLimit } from "../executor/executor.mjs";
-import { instructions } from "../compiler/compiler.mjs";
+import { instructions } from "../assembler/assembler.mjs";
 import { creator_callstack_writeRegister } from "../sentinel/sentinel.mjs";
 
 /**

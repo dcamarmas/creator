@@ -1,5 +1,6 @@
-/*
- *  Copyright 2018-2025 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
+/**
+ *  Copyright 2018-2025 Felix Garcia Carballeira, Diego Camarmas Alonso,
+ *                      Alejandro Calderon Mateos
  *
  *  This file is part of CREATOR.
  *
@@ -16,7 +17,7 @@
  *  You should have received a copy of the GNU Lesser General Public License
  *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  */
-"use strict";
+
 /*
  * Representation
  */
@@ -43,7 +44,7 @@ export const isWeb =
  *      512 -> +NaN
  */
 export function checkTypeIEEE(s, e, m) {
-    let rd = 0;
+    let rd;
 
     if (!m && !e) rd = s ? 1 << 3 : 1 << 4;
     else if (!e) rd = s ? 1 << 2 : 1 << 5;
@@ -64,7 +65,6 @@ function validInteger(value) {
  */
 export function hex2char8(hexvalue) {
     const num_char = hexvalue.toString().length / 2;
-    const exponent = 0;
     let pos = 0;
 
     const valuec = [];
@@ -124,7 +124,7 @@ export function uint_to_float64(value0, value1) {
     const arr = new Uint32Array(buf);
 
     // Case 1: Single BigInt argument
-    if (arguments[1] === undefined && typeof value0 === "bigint") {
+    if (value1 === undefined && typeof value0 === "bigint") {
         arr[0] = Number(value0 & 0xffffffffn); // Lower 32 bits
         arr[1] = Number(value0 >> 32n); // Upper 32 bits
         return new Float64Array(buf)[0];
@@ -253,27 +253,30 @@ export function hex2SignedInt(hexvalue) {
     }
 }
 
-function float2int_v2(value) {
+export function float2int_v2(value) {
     return parseInt(float2bin(value), 2);
 }
+
 export function double2int_v2(value) {
     return parseInt(double2bin(value), 2);
 }
-function int2float_v2(value) {
+
+export function int2float_v2(value) {
     return hex2float("0x" + bin2hex(value.toString(2)));
 }
+
 export function full_print(value, bin_value, add_dot_zero) {
     let print_value = value;
 
     //Add - if the number is -0.0
-    if (bin_value != null && value === 0 && bin_value[0] === 1) {
+    if (bin_value !== null && value === 0 && bin_value[0] === 1) {
         print_value = "-" + print_value;
     }
 
     //Add .0 if the number is 0.0 or similar
     if (add_dot_zero) {
         const aux_value = value.toString();
-        if (aux_value.indexOf(".") == -1 && Number.isInteger(aux_value)) {
+        if (aux_value.indexOf(".") === -1 && Number.isInteger(aux_value)) {
             print_value += ".0";
         }
     }
@@ -287,7 +290,7 @@ export function clean_string(value, prefix) {
     let value2 = value.replace(/[&/\\#,+()$~%.'":*?<>{}]/g, "_");
 
     const re = /^[0-9]+$/;
-    if (value2.search(re) != -1 && prefix != "undefined") {
+    if (value2.search(re) !== -1 && prefix !== "undefined") {
         value2 = prefix + value2;
     }
 
@@ -327,7 +330,6 @@ export function obj_arraysTOarray_objs(object_arrays) {
     return final_array;
 }
 
-
 /**
  * Splits an array into chunks.
  *
@@ -358,7 +360,6 @@ export function chunks(arr, chunkSize) {
         return acc;
     }, []);
 }
-
 
 /**
  * Returns a range [`start`, `stop`), if `stop` is specified. Otherwise, it
