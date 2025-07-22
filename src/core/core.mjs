@@ -1,5 +1,6 @@
-/*
- *  Copyright 2018-2025 Felix Garcia Carballeira, Alejandro Calderon Mateos, Diego Camarmas Alonso
+/**
+ *  Copyright 2018-2025 Felix Garcia Carballeira, Alejandro Calderon Mateos,
+ *                      Diego Camarmas Alonso
  *
  *  This file is part of CREATOR.
  *
@@ -16,18 +17,11 @@
  *  You should have received a copy of the GNU Lesser General Public License
  *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  */
-"use strict";
 
 import { initCAPI } from "./capi/initCAPI.mjs";
 
-import {
-    bi_BigIntTodouble,
-    bi_BigIntTofloat,
-    register_value_deserialize,
-} from "./utils/bigint.mjs";
-import {
-    getHexTwosComplement,
-} from "./utils/utils.mjs";
+import { register_value_deserialize } from "./utils/bigint.mjs";
+import { getHexTwosComplement } from "./utils/utils.mjs";
 
 import { logger } from "./utils/creator_logger.mjs";
 import {
@@ -35,7 +29,7 @@ import {
     instructions,
     precomputeInstructions,
     setInstructions,
-} from "./compiler/compiler.mjs";
+} from "./assembler/assembler.mjs";
 import { Memory } from "./memory/Memory.mts";
 import yaml from "js-yaml";
 import { crex_findReg } from "./register/registerLookup.mjs";
@@ -50,8 +44,7 @@ import { creator_callstack_reset } from "./sentinel/sentinel.mjs";
 import { resetStats } from "./executor/stats.mts";
 import { resetCache } from "./executor/decoder.mjs";
 
-
-export let code_assembly = "";
+export const code_assembly = "";
 export let update_binary = "";
 export let backup_stack_address;
 export let backup_data_address;
@@ -72,7 +65,7 @@ export let status = {
     execution_init: 1,
     executedInstructions: 0,
     clkCycles: 0,
-    run_program: 0,  // 0: stopped, 1: running, 2: stopped-by-breakpoint, 3: stopped-by-mutex-read
+    run_program: 0, // 0: stopped, 1: running, 2: stopped-by-breakpoint, 3: stopped-by-mutex-read
 
     keyboard: "",
     display: "",
@@ -80,7 +73,6 @@ export let status = {
     virtual_PC: 0n, // This is the PC the instructions see.
     error: 0,
 };
-
 
 export let arch;
 export const ARCHITECTURE_VERSION = "2.0";
@@ -93,13 +85,15 @@ export let REGISTERS_BACKUP = [];
 export const register_size_bits = 64; //TODO: load from architecture
 export let main_memory;
 export let main_memory_backup;
-export function updateMainMemoryBackup(value) { main_memory_backup = value }
+export function updateMainMemoryBackup(value) {
+    main_memory_backup = value;
+}
 
 export let execution_mode = 0; // 0: instruction by instruction, 1: run program
 export function set_execution_mode(value) {
     execution_mode = value;
 } // it's the only way
-export let instructions_packed = 100;
+export const instructions_packed = 100;
 
 let code_binary = "";
 
@@ -316,7 +310,7 @@ function mergeTemplateAndInstructionFields(template, instruction) {
  * @param {boolean} legacy - Flag for legacy support
  * @returns {Object} - The complete instruction object
  */
-// eslint-disable-next-line max-lines-per-function
+
 function buildCompleteInstruction(
     instruction,
     template,
@@ -333,15 +327,14 @@ function buildCompleteInstruction(
     result.name = instruction.name;
     result.fields = mergedFields;
     result.definition = instruction.definition;
-    result.type = instruction.type || "Other"
-    result.help = instruction.help ?? ""
+    result.type = instruction.type || "Other";
+    result.help = instruction.help ?? "";
 
     if (legacy) {
         // This will eventually be removed!!
 
         result.description = "";
         result.separated = [];
-        let breakpoint = instruction.name;
         // Create arrays to hold ordered fields
         const orderedFields = [];
 
@@ -498,8 +491,10 @@ function processInstructions(architectureObj) {
 
             // This works for 1 optional field, but not for 2 or more. Supporting more
             // than 1 optional field is not in the roadmap.
-            let mergedFieldsOriginal = JSON.parse(JSON.stringify(mergedFields));
-            let optionalFields = mergedFields.filter(
+            const mergedFieldsOriginal = JSON.parse(
+                JSON.stringify(mergedFields),
+            );
+            const optionalFields = mergedFields.filter(
                 field => field.optional === true,
             );
             if (optionalFields.length === 1) {
@@ -647,7 +642,7 @@ function processPseudoInstructions(architectureObj, legacy = true) {
                 help: "",
                 properties: [],
                 nwords: 1,
-                fields: fields,
+                fields,
                 definition: pseudoinstruction.definition,
             };
 
@@ -680,121 +675,6 @@ function parseArchitectureYaml(architectureYaml) {
 }
 
 /**
- * Determine which instruction sets to load based on user selections
- * @param {Object} architectureObj - The architecture object
- * @param {Array} requestedISAs - User-requested instruction sets to load
- * @returns {Object} - Object with selected ISAs and status
- */
-//eslint-disable-next-line max-lines-per-function
-function determineInstructionSetsToLoad(architectureObj, requestedISAs = []) {
-    // Get all available instruction sets in the architecture
-    const availableInstructionSets = [
-        ...new Set([
-            ...Object.keys(architectureObj.instructions || {}),
-            ...Object.keys(architectureObj.pseudoinstructions || {}),
-        ]),
-    ];
-
-    // If no ISAs specified, use all available ones
-    if (!requestedISAs || requestedISAs.length === 0) {
-        return {
-            instructionSets: [...availableInstructionSets],
-            status: "ok",
-        };
-    }
-
-    // Get extensions and find base ISA
-    const extensions = architectureObj.extensions || {};
-
-    const baseISA = findBaseISA(extensions);
-    if (!baseISA) {
-        return {
-            instructionSets: [],
-            status: "error",
-            message: "Base ISA not found in the architecture definition.",
-        };
-    }
-
-    // Validate all requested ISAs exist
-    const invalidISAs = findInvalidISAs(
-        requestedISAs,
-        availableInstructionSets,
-    );
-    if (invalidISAs.length > 0) {
-        const message = `The following requested ISAs do not exist: ${invalidISAs.join(
-            ", ",
-        )}`;
-        logger.error(message);
-        return {
-            instructionSets: [],
-            status: "error",
-            message: message,
-        };
-    }
-
-    // Calculate all required ISAs including dependencies
-    const { requiredISAs, missingDependencies, status, message } =
-        calculateRequiredISAs(
-            requestedISAs,
-            extensions,
-            baseISA,
-            availableInstructionSets,
-        );
-    if (status === "ko") {
-        return {
-            instructionSets: [],
-            status: "error",
-            message: message,
-        };
-    }
-
-    // Check if any dependencies are missing from the user request
-    if (missingDependencies.length > 0) {
-        let message = `Missing required dependencies. To use the requested ISA(s), you must also include: ${missingDependencies.join(
-            ", ",
-        )}`;
-        logger.error(message);
-
-        return {
-            instructionSets: [],
-            status: "error",
-            message: message,
-        };
-    }
-
-    // Log which ISAs were selected
-    logger.info(`Loading ISAs: ${[...requiredISAs].join(", ")}`);
-
-    return {
-        instructionSets: [...requiredISAs],
-        status: "ok",
-    };
-}
-
-/**
- * Find the base ISA from the extensions
- * @param {Object} extensions - The extensions object
- * @returns {string} - The base ISA
- */
-function findBaseISA(extensions) {
-    let baseISA;
-
-    // Try to find it from the extensions definition
-    for (const [name, value] of Object.entries(extensions)) {
-        if (value && value.type === "base") {
-            baseISA = name;
-            break;
-        }
-    }
-    // If not found, raise an error
-    if (!baseISA) {
-        logger.error("Base ISA not found in the architecture definition.");
-        return null;
-    }
-    return baseISA;
-}
-
-/**
  * Find any requested ISAs that don't exist in the available sets
  * @param {Array} requestedISAs - The ISAs requested by the user
  * @param {Array} availableInstructionSets - All available instruction sets
@@ -802,6 +682,29 @@ function findBaseISA(extensions) {
  */
 function findInvalidISAs(requestedISAs, availableInstructionSets) {
     return requestedISAs.filter(isa => !availableInstructionSets.includes(isa));
+}
+
+/**
+ * Recursively gather all dependencies of an ISA
+ * @param {string} isa - The ISA to gather dependencies for
+ * @param {Object} extensions - The extensions object with dependency info
+ * @param {Set} requiredISAs - Set to collect all required ISAs
+ * @param {Set} visited - Set to track visited ISAs
+ */
+function gatherDependencies(isa, extensions, requiredISAs, visited) {
+    if (visited.has(isa)) return; // Prevent circular dependencies
+
+    visited.add(isa);
+    requiredISAs.add(isa);
+
+    // Get dependencies from extension
+    const extension = extensions[isa];
+    if (extension && extension.implies && Array.isArray(extension.implies)) {
+        for (const dependentISA of extension.implies) {
+            requiredISAs.add(dependentISA);
+            gatherDependencies(dependentISA, extensions, requiredISAs, visited);
+        }
+    }
 }
 
 /**
@@ -849,7 +752,7 @@ function calculateRequiredISAs(
             requiredISAs: [],
             missingDependencies: [],
             status: "ko",
-            message: message,
+            message,
         };
     }
 
@@ -860,28 +763,119 @@ function calculateRequiredISAs(
 }
 
 /**
- * Recursively gather all dependencies of an ISA
- * @param {string} isa - The ISA to gather dependencies for
- * @param {Object} extensions - The extensions object with dependency info
- * @param {Set} requiredISAs - Set to collect all required ISAs
- * @param {Set} visited - Set to track visited ISAs
+ * Find the base ISA from the extensions
+ * @param {Object} extensions - The extensions object
+ * @returns {string} - The base ISA
  */
-function gatherDependencies(isa, extensions, requiredISAs, visited) {
-    if (visited.has(isa)) return; // Prevent circular dependencies
+function findBaseISA(extensions) {
+    let baseISA;
 
-    visited.add(isa);
-    requiredISAs.add(isa);
-
-    // Get dependencies from extension
-    const extension = extensions[isa];
-    if (extension && extension.implies && Array.isArray(extension.implies)) {
-        for (const dependentISA of extension.implies) {
-            requiredISAs.add(dependentISA);
-            gatherDependencies(dependentISA, extensions, requiredISAs, visited);
+    // Try to find it from the extensions definition
+    for (const [name, value] of Object.entries(extensions)) {
+        if (value && value.type === "base") {
+            baseISA = name;
+            break;
         }
     }
+    // If not found, raise an error
+    if (!baseISA) {
+        logger.error("Base ISA not found in the architecture definition.");
+        return null;
+    }
+    return baseISA;
 }
 
+/**
+ * Determine which instruction sets to load based on user selections
+ * @param {Object} architectureObj - The architecture object
+ * @param {Array} requestedISAs - User-requested instruction sets to load
+ * @returns {Object} - Object with selected ISAs and status
+ */
+
+function determineInstructionSetsToLoad(architectureObj, requestedISAs = []) {
+    // Get all available instruction sets in the architecture
+    const availableInstructionSets = [
+        ...new Set([
+            ...Object.keys(architectureObj.instructions || {}),
+            ...Object.keys(architectureObj.pseudoinstructions || {}),
+        ]),
+    ];
+
+    // If no ISAs specified, use all available ones
+    if (!requestedISAs || requestedISAs.length === 0) {
+        return {
+            instructionSets: [...availableInstructionSets],
+            status: "ok",
+        };
+    }
+
+    // Get extensions and find base ISA
+    const extensions = architectureObj.extensions || {};
+
+    const baseISA = findBaseISA(extensions);
+    if (!baseISA) {
+        return {
+            instructionSets: [],
+            status: "error",
+            message: "Base ISA not found in the architecture definition.",
+        };
+    }
+
+    // Validate all requested ISAs exist
+    const invalidISAs = findInvalidISAs(
+        requestedISAs,
+        availableInstructionSets,
+    );
+    if (invalidISAs.length > 0) {
+        const message = `The following requested ISAs do not exist: ${invalidISAs.join(
+            ", ",
+        )}`;
+        logger.error(message);
+        return {
+            instructionSets: [],
+            status: "error",
+            message,
+        };
+    }
+
+    // Calculate all required ISAs including dependencies
+    const { requiredISAs, missingDependencies, status, message } =
+        calculateRequiredISAs(
+            requestedISAs,
+            extensions,
+            baseISA,
+            availableInstructionSets,
+        );
+    if (status === "ko") {
+        return {
+            instructionSets: [],
+            status: "error",
+            message,
+        };
+    }
+
+    // Check if any dependencies are missing from the user request
+    if (missingDependencies.length > 0) {
+        const message = `Missing required dependencies. To use the requested ISA(s), you must also include: ${missingDependencies.join(
+            ", ",
+        )}`;
+        logger.error(message);
+
+        return {
+            instructionSets: [],
+            status: "error",
+            message,
+        };
+    }
+
+    // Log which ISAs were selected
+    logger.info(`Loading ISAs: ${[...requiredISAs].join(", ")}`);
+
+    return {
+        instructionSets: [...requiredISAs],
+        status: "ok",
+    };
+}
 /**
  * Collect instructions and pseudoinstructions from selected instruction sets
  * @param {Object} architectureObj - The architecture object
@@ -928,11 +922,7 @@ function collectInstructionsFromSets(architectureObj, instructionSetsToLoad) {
  * @param {boolean} dump - Whether to dump architecture to file for debugging
  * @returns {Object} - The processed architecture object
  */
-function prepareArchitecture(
-    architectureObj,
-    skipCompiler = false,
-    dump = false,
-) {
+function prepareArchitecture(architectureObj, dump = false) {
     // Process the selected instructions and pseudoinstructions
     processInstructions(architectureObj);
     processPseudoInstructions(architectureObj, true);
@@ -1011,13 +1001,13 @@ function transformArchConf(architectureObj) {
         if (key === "ByteSize") {
             return;
         }
-        if (key === "Assemblers"){
+        if (key === "Assemblers") {
             return;
         }
         // Add remaining properties as individual entries
         oldArchConf.push({
             name: key,
-            value: value,
+            value,
         });
     });
 
@@ -1030,17 +1020,11 @@ function transformArchConf(architectureObj) {
 /**
  * Load architecture from YAML string and prepare for use
  * @param {string} architectureYaml - YAML string containing architecture definition
- * @param {boolean} skipCompiler - Whether to skip initializing the WASM compiler
  * @param {boolean} dump - Whether to dump architecture to file for debugging
  * @param {Array} isa - Array of instruction set names to load
  * @returns {Object} - Result object with load status
  */
-export function newArchitectureLoad(
-    architectureYaml,
-    skipCompiler = false,
-    dump = false,
-    isa = [],
-) {
+export function newArchitectureLoad(architectureYaml, dump = false, isa = []) {
     try {
         // Parse YAML to object
         const architectureObj = parseArchitectureYaml(architectureYaml);
@@ -1082,11 +1066,7 @@ export function newArchitectureLoad(
         );
 
         // Prepare architecture (process instructions, initialize WASM)
-        const preparedArchObj = prepareArchitecture(
-            updatedArchObj,
-            skipCompiler,
-            dump,
-        );
+        const preparedArchObj = prepareArchitecture(updatedArchObj, dump);
 
         // Load the architecture into the system
         return load_arch_select(preparedArchObj);
@@ -1128,11 +1108,7 @@ export function load_library(lib_str) {
 // compilation
 
 export async function assembly_compile(code, compiler) {
-    const ret = await assembly_compiler(
-        code,
-        false,
-        compiler,
-    );
+    const ret = await assembly_compiler(code, false, compiler);
     switch (ret.status) {
         case "error":
             break;
@@ -1156,7 +1132,6 @@ export async function assembly_compile(code, compiler) {
 
 // execution
 
-
 export function reset() {
     // Google Analytics
     creator_ga("execute", "execute.reset");
@@ -1166,7 +1141,7 @@ export function reset() {
     status.run_program = 0;
 
     // Reset stats
-    resetStats()
+    resetStats();
 
     // Reset decoder cache
     resetCache();
@@ -1232,7 +1207,7 @@ export function snapshot(extraData) {
         status: statusJson,
         registers: registersJson,
         stack: stackData,
-        extraData: extraData,
+        extraData,
     });
 
     // Return the snapshot string
@@ -1360,23 +1335,23 @@ export function dumpRegister(register, format = "hex") {
 
     if (result.match === 1) {
         if (format === "hex") {
-            let value = readRegister(
+            const value = readRegister(
                 result.indexComp,
                 result.indexElem,
             ).toString(16);
             return value;
         } else if (format === "twoscomplement") {
-            let value = readRegister(result.indexComp, result.indexElem);
-            let twosComplement = getHexTwosComplement(value, registerSize);
+            const value = readRegister(result.indexComp, result.indexElem);
+            const twosComplement = getHexTwosComplement(value, registerSize);
             return twosComplement;
         } else if (format === "raw") {
-            let value =
+            const value =
                 REGISTERS[result.indexComp].elements[
                     result.indexElem
                 ].value.toString(16);
             return value;
         } else if (format === "decimal") {
-            let value = readRegister(result.indexComp, result.indexElem);
+            const value = readRegister(result.indexComp, result.indexElem);
             return value;
         }
     }

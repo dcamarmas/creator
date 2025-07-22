@@ -38,7 +38,7 @@ import {
 import { set_debug } from "@/core/core.mjs"
 import { stats } from "@/core/executor/stats.mts"
 
-import { instructions } from "@/core/compiler/compiler.mjs"
+import { instructions } from "@/core/assembler/assembler.mjs"
 
 import SpinnerLoading from "./components/general/SpinnerLoading.vue"
 import SupportedBrowsers from "./components/general/SupportedBrowsers.vue"
@@ -522,7 +522,7 @@ export default {
     <UIeltoInstitutions id="institutions" />
 
     <!-- About modal -->
-    <UIeltoAbout id="about" :dark="dark"/>
+    <UIeltoAbout id="about" :dark="dark" />
 
     <!-- Instruction Help sidebar -->
     <!-- we don't want to load this unless we have selected an architecture -->

@@ -1271,7 +1271,8 @@ instructions:
           value: "1100011"
         - field: funct3
           value: "000"
-      definition: "if (rs1 === rs2)\n PC = PC + imm;"
+      definition: |
+        if (rs1 === rs2) PC = PC + imm;
       help: Take the branch if registers rs1 and rs2 are equal.
 
     - name: bge
@@ -1281,8 +1282,11 @@ instructions:
           value: "1100011"
         - field: funct3
           value: "101"
-      definition: "if (CAPI.FP.uint2int(rs1) >= CAPI.FP.uint2int(rs2))\n PC = PC + imm;"
-      help: Take the branch if registers rs1 is greater than or equal to rs2, using signed comparison.
+      definition: |
+        if (CAPI.FP.uint2int(rs1) >= CAPI.FP.uint2int(rs2))
+         PC = PC + imm;
+      help: Take the branch if registers rs1 is greater than or equal to rs2,
+        using signed comparison.
 
     - name: bgeu
       template: B
@@ -1291,8 +1295,11 @@ instructions:
           value: "1100011"
         - field: funct3
           value: "111"
-      definition: "if (CAPI.FP.int2uint(rs1) > CAPI.FP.int2uint(rs2))\n PC = PC + imm;"
-      help: Take the branch if registers rs1 is greater than or equal to rs2, using unsigned comparison.
+      definition: |
+        if (CAPI.FP.int2uint(rs1) > CAPI.FP.int2uint(rs2))
+         PC = PC + imm;
+      help: Take the branch if registers rs1 is greater than or equal to rs2,
+        using unsigned comparison.
 
     - name: blt
       template: B
@@ -1301,8 +1308,11 @@ instructions:
           value: "1100011"
         - field: funct3
           value: "100"
-      definition: "if (CAPI.FP.uint2int(rs1) < CAPI.FP.uint2int(rs2))\n PC = PC + imm;"
-      help: Take the branch if registers rs1 is less than rs2, using signed comparison.
+      definition: |
+        if (CAPI.FP.uint2int(rs1) < CAPI.FP.uint2int(rs2))
+         PC = PC + imm;
+      help: Take the branch if registers rs1 is less than rs2, using signed
+        comparison.
 
     - name: bltu
       template: B
@@ -1311,8 +1321,11 @@ instructions:
           value: "1100011"
         - field: funct3
           value: "110"
-      definition: "if (CAPI.FP.int2uint(rs1) < CAPI.FP.int2uint(rs2))\n PC = PC + imm;"
-      help: Take the branch if registers rs1 is less than rs2, using unsigned comparison.
+      definition: |
+        if (CAPI.FP.int2uint(rs1) < CAPI.FP.int2uint(rs2))
+         PC = PC + imm;
+      help: Take the branch if registers rs1 is less than rs2, using unsigned
+        comparison.
 
     - name: bne
       template: B
@@ -1321,7 +1334,8 @@ instructions:
           value: "1100011"
         - field: funct3
           value: "001"
-      definition: "if (rs1 !== rs2)\n PC = PC + imm;"
+      definition: |
+        if (rs1 !== rs2) PC = PC + imm;
       help: Take the branch if registers rs1 and rs2 are not equal.
 
     # I-type instructions
@@ -1340,8 +1354,11 @@ instructions:
           value: "0010011"
         - field: funct3
           value: "000"
-      definition: "rd = rs1 + imm;"
-      help: Adds the sign-extended 12-bit immediate to register rs1. Arithmetic overflow is ignored and the result is simply the low XLEN bits of the result.
+      definition: |
+        rd = rs1 + imm;
+      help: Adds the sign-extended 12-bit immediate to register rs1. Arithmetic
+        overflow is ignored and the result is simply the low XLEN bits of the
+        result.
 
     - name: andi
       template: I
@@ -1351,8 +1368,10 @@ instructions:
           value: "0010011"
         - field: funct3
           value: "111"
-      definition: "rd = rs1 & CAPI.FP.int2uint(imm);"
-      help: Performs bitwise AND on register rs1 and the sign-extended 12-bit immediate and place the result in rd.
+      definition: |
+        rd = rs1 & CAPI.FP.int2uint(imm);
+      help: Performs bitwise AND on register rs1 and the sign-extended 12-bit
+        immediate and place the result in rd.
 
     - name: jalr
       template: I-Offset
@@ -1362,7 +1381,10 @@ instructions:
           value: "1100111"
         - field: funct3
           value: "000"
-      definition: "rd = PC + 4n;\n PC = (rs1+imm)&~1n;\n CAPI.CHECK_STACK.end(); CAPI.DRAW_STACK.end(PC);"
+      definition: |
+        rd = PC + 4n;
+        PC = (rs1 + imm) & ~1n;
+        CAPI.CHECK_STACK.end(); CAPI.DRAW_STACK.end(PC);
       help: Jump to address and place return address in rd.
 
     - name: lb
@@ -1373,8 +1395,10 @@ instructions:
           value: "0000011"
         - field: funct3
           value: "000"
-      definition: "rd = CAPI.MEM.read(imm+rs1, 1, rd_name);"
-      help: Loads a 8-bit value from memory and sign-extends this to XLEN bits before storing it in register rd.
+      definition: |
+        rd = CAPI.MEM.read(imm + rs1, 1, rd_name);
+      help: Loads a 8-bit value from memory and sign-extends this to XLEN bits
+        before storing it in register rd.
 
     - name: lbu
       template: I-Offset
@@ -1384,8 +1408,12 @@ instructions:
           value: "0000011"
         - field: funct3
           value: "100"
-      definition: "var addr = CAPI.FP.int2uint(rs1)+imm;\n rd = CAPI.MEM.read(addr, 1, rd_name);\n rd = CAPI.FP.int2uint(rd);"
-      help: Loads a 8-bit value from memory and zero-extends this to XLEN bits before storing it in register rd.
+      definition: |
+        let addr = CAPI.FP.int2uint(rs1) + imm;
+        rd = CAPI.MEM.read(addr, 1, rd_name);
+        rd = CAPI.FP.int2uint(rd);
+      help: Loads a 8-bit value from memory and zero-extends this to XLEN bits
+        before storing it in register rd.
 
     - name: lh
       template: I-Offset
@@ -1395,8 +1423,10 @@ instructions:
           value: "0000011"
         - field: funct3
           value: "001"
-      definition: "rd = CAPI.MEM.read(imm+rs1, 2, rd_name);"
-      help: Loads a 16-bit value from memory and sign-extends this to XLEN bits before storing it in register rd.
+      definition: |
+        rd = CAPI.MEM.read(imm + rs1, 2, rd_name);
+      help: Loads a 16-bit value from memory and sign-extends this to XLEN bits
+        before storing it in register rd.
 
     - name: lhu
       template: I-Offset
@@ -1406,8 +1436,12 @@ instructions:
           value: "0000011"
         - field: funct3
           value: "101"
-      definition: "var addr = CAPI.FP.int2uint(rs1,32)+imm;\n rd = CAPI.MEM.read(addr, 2, rd_name);\n rd = CAPI.FP.int2uint(rd);"
-      help: Loads a 16-bit value from memory and zero-extends this to XLEN bits before storing it in register rd.
+      definition: |
+        let addr = CAPI.FP.int2uint(rs1, 32) + imm;
+        rd = CAPI.MEM.read(addr, 2, rd_name);
+        rd = CAPI.FP.int2uint(rd);
+      help: Loads a 16-bit value from memory and zero-extends this to XLEN bits
+        before storing it in register rd.
 
     - name: lw
       template: I-Offset
@@ -1417,8 +1451,11 @@ instructions:
           value: "0000011"
         - field: funct3
           value: "010"
-      definition: "var addr = CAPI.FP.int2uint(rs1,32)+imm;\n rd = CAPI.MEM.read(addr, 4, rd_name);"
-      help: Loads a 32-bit value from memory and sign-extends this to XLEN bits before storing it in register rd.
+      definition: |
+        let addr = CAPI.FP.int2uint(rs1, 32) + imm;
+        rd = CAPI.MEM.read(addr, 4, rd_name);
+      help: Loads a 32-bit value from memory and sign-extends this to XLEN bits
+        before storing it in register rd.
 
     - name: ori
       template: I
@@ -1428,8 +1465,10 @@ instructions:
           value: "0010011"
         - field: funct3
           value: "110"
-      definition: "rd = rs1 | imm;"
-      help: Performs bitwise OR on register rs1 and the sign-extended 12-bit immediate and place the result in rd.
+      definition: |
+        rd = rs1 | imm;
+      help: Performs bitwise OR on register rs1 and the sign-extended 12-bit
+        immediate and place the result in rd.
 
     - name: slli
       template: I-Shift
@@ -1441,8 +1480,10 @@ instructions:
           value: "001"
         - field: funct7
           value: "0000000"
-      definition: "if (shamt > 0) {rd = CAPI.FP.int2uint(rs1 << shamt);}"
-      help: Performs logical left shift on the value in register rs1 by the shift amount held in the lower 5 bits of the immediate.
+      definition: |
+        if (shamt > 0) rd = CAPI.FP.int2uint(rs1 << shamt);
+      help: Performs logical left shift on the value in register rs1 by the
+        shift amount held in the lower 5 bits of the immediate.
 
     - name: slti
       template: I
@@ -1452,8 +1493,11 @@ instructions:
           value: "0010011"
         - field: funct3
           value: "010"
-      definition: "rd = (CAPI.FP.uint2int(rs1) < CAPI.FP.uint2int(imm)) ? 1 : 0;"
-      help: Place the value 1 in register rd if register rs1 is less than the signextended immediate when both are treated as signed numbers, else 0 is written to rd.
+      definition: |
+        rd = (CAPI.FP.uint2int(rs1) < CAPI.FP.uint2int(imm)) ? 1 : 0;
+      help: Place the value 1 in register rd if register rs1 is less than the
+        signextended immediate when both are treated as signed numbers, else 0
+        is written to rd.
 
     - name: sltiu
       template: I
@@ -1463,8 +1507,11 @@ instructions:
           value: "0010011"
         - field: funct3
           value: "011"
-      definition: "rd = (CAPI.FP.int2uint(rs1) < CAPI.FP.int2uint(imm)) ? 1 : 0;"
-      help: Place the value 1 in register rd if register rs1 is less than the immediate when both are treated as unsigned numbers, else 0 is written to rd.
+      definition: |
+        rd = (CAPI.FP.int2uint(rs1) < CAPI.FP.int2uint(imm)) ? 1 : 0;
+      help: Place the value 1 in register rd if register rs1 is less than the
+        immediate when both are treated as unsigned numbers, else 0 is written
+        to rd.
 
     - name: srai
       template: I-Shift
@@ -1476,8 +1523,10 @@ instructions:
           value: "101"
         - field: funct7
           value: "0100000"
-      definition: "if (shamt > 0) {rd = CAPI.FP.int2uint(rs1 >> shamt);}"
-      help: Performs arithmetic right shift on the value in register rs1 by the shift amount held in the lower 5 bits of the immediate.
+      definition: |
+        if (shamt > 0) rd = CAPI.FP.int2uint(rs1 >> shamt);
+      help: Performs arithmetic right shift on the value in register rs1 by the
+        shift amount held in the lower 5 bits of the immediate.
 
     - name: srli
       template: I-Shift
@@ -1489,8 +1538,10 @@ instructions:
           value: "101"
         - field: funct7
           value: "0000000"
-      definition: "if (shamt > 0) {rd = CAPI.FP.int2uint(rs1 >> shamt);}"
-      help: Performs logical right shift on the value in register rs1 by the shift amount held in the lower 5 bits of the immediate.
+      definition: |
+        if (shamt > 0) rd = CAPI.FP.int2uint(rs1 >> shamt);
+      help: Performs logical right shift on the value in register rs1 by the
+        shift amount held in the lower 5 bits of the immediate.
 
     - name: xori
       template: I
@@ -1500,8 +1551,12 @@ instructions:
           value: "0010011"
         - field: funct3
           value: "100"
-      definition: "rd = rs1 ^ imm;"
-      help: Performs bitwise XOR on register rs1 and the sign-extended 12-bit immediate and place the result in rd. Note, 'XORI rd, rs1, -1' performs a bitwise logical inversion of register rs1(assembler pseudo-instruction NOT rd, rs).
+      definition: |
+        rd = rs1 ^ imm;
+      help: Performs bitwise XOR on register rs1 and the sign-extended 12-bit
+        immediate and place the result in rd. Note, 'XORI rd, rs1, -1' performs
+        a bitwise logical inversion of register rs1(assembler pseudo-instruction
+        NOT rd, rs).
 
     # J-type instructions
     #     31    30-21     20     19-12   11-7    6-0
@@ -1516,7 +1571,11 @@ instructions:
       fields:
         - field: opcode
           value: "1101111"
-      definition: "rd = PC + 4n;\n PC = PC + imm;\n CAPI.CHECK_STACK.begin(PC); CAPI.DRAW_STACK.begin(PC);"
+      definition: |
+        rd = PC + 4n;
+        PC = PC + imm;
+        CAPI.CHECK_STACK.begin(PC);
+        CAPI.DRAW_STACK.begin(PC);
       help: Jump to address and place return address in rd.
 
     # R-type instructions
@@ -1536,8 +1595,11 @@ instructions:
           value: "0000000"
         - field: funct3
           value: "000"
-      definition: "rd = rs2 + rs1;"
-      help: Adds the registers rs1 and rs2 and stores the result in rd. Arithmetic overflow is ignored and the result is simply the low XLEN bits of the result.
+      definition: |
+        rd = rs2 + rs1;
+      help: Adds the registers rs1 and rs2 and stores the result in rd.
+        Arithmetic overflow is ignored and the result is simply the low XLEN
+        bits of the result.
 
     - name: and
       template: R
@@ -1548,8 +1610,10 @@ instructions:
           value: "0000000"
         - field: funct3
           value: "111"
-      definition: "rd = rs1 & rs2;"
-      help: Performs bitwise AND on registers rs1 and rs2 and place the result in rd.
+      definition: |
+        rd = rs1 & rs2;
+      help: Performs bitwise AND on registers rs1 and rs2 and place the result
+        in rd.
 
     - name: or
       template: R
@@ -1560,8 +1624,10 @@ instructions:
           value: "0000000"
         - field: funct3
           value: "110"
-      definition: "rd = rs1 | rs2;"
-      help: Performs bitwise OR on registers rs1 and rs2 and place the result in rd.
+      definition: |
+        rd = rs1 | rs2;
+      help: Performs bitwise OR on registers rs1 and rs2 and place the result in
+        rd.
 
     - name: sll
       template: R
@@ -1572,8 +1638,11 @@ instructions:
           value: "0000000"
         - field: funct3
           value: "001"
-      definition: "const shiftAmount = rs2 & 0x1Fn; rd = (rs1 << shiftAmount) & 0xFFFFFFFFn;"
-      help: Performs logical left shift on the value in register rs1 by the shift amount held in the lower 5 bits of register rs2.
+      definition: |
+        const shiftAmount = rs2 & 0x1Fn;
+        rd = (rs1 << shiftAmount) & 0xFFFFFFFFn;
+      help: Performs logical left shift on the value in register rs1 by the
+        shift amount held in the lower 5 bits of register rs2.
 
     - name: slt
       template: R
@@ -1584,8 +1653,11 @@ instructions:
           value: "0000000"
         - field: funct3
           value: "010"
-      definition: "rd = (CAPI.FP.uint2int(rs1) < CAPI.FP.uint2int(rs2)) ? 1 : 0;"
-      help: Place the value 1 in register rd if register rs1 is less than register rs2 when both are treated as signed numbers, else 0 is written to rd.
+      definition: |
+        rd = (CAPI.FP.uint2int(rs1) < CAPI.FP.uint2int(rs2)) ? 1 : 0;
+      help: Place the value 1 in register rd if register rs1 is less than
+        register rs2 when both are treated as signed numbers, else 0 is written
+        to rd.
 
     - name: sltu
       template: R
@@ -1596,8 +1668,11 @@ instructions:
           value: "0000000"
         - field: funct3
           value: "011"
-      definition: "rd = ((rs1 & 0xFFFFFFFFn) < (rs2 & 0xFFFFFFFFn)) ? 1n : 0n;"
-      help: Place the value 1 in register rd if register rs1 is less than register rs2 when both are treated as unsigned numbers, else 0 is written to rd.
+      definition: |
+        rd = ((rs1 & 0xFFFFFFFFn) < (rs2 & 0xFFFFFFFFn)) ? 1n : 0n;
+      help: Place the value 1 in register rd if register rs1 is less than
+        register rs2 when both are treated as unsigned numbers, else 0 is
+        written to rd.
 
     - name: sra
       template: R
@@ -1608,8 +1683,11 @@ instructions:
           value: "0100000"
         - field: funct3
           value: "101"
-      definition: "const temp = BigInt.asIntN(32, BigInt(rs1)) >> BigInt(rs2); rd = CAPI.FP.int2uint(temp)"
-      help: Performs arithmetic right shift on the value in register rs1 by the shift amount held in the lower 5 bits of register rs2.
+      definition: |
+        const temp = BigInt.asIntN(32, BigInt(rs1)) >> BigInt(rs2);
+        rd = CAPI.FP.int2uint(temp);
+      help: Performs arithmetic right shift on the value in register rs1 by the
+        shift amount held in the lower 5 bits of register rs2.
 
     - name: srl
       template: R
@@ -1620,8 +1698,11 @@ instructions:
           value: "0000000"
         - field: funct3
           value: "101"
-      definition: "const shiftAmount = rs2 & 0x1Fn; rd = (rs1 >> shiftAmount) & 0xFFFFFFFFn;"
-      help: Logical right shift on the value in register rs1 by the shift amount held in the lower 5 bits of register rs2.
+      definition: |
+        const shiftAmount = rs2 & 0x1Fn;
+        rd = (rs1 >> shiftAmount) & 0xFFFFFFFFn;
+      help: Logical right shift on the value in register rs1 by the shift amount
+        held in the lower 5 bits of register rs2.
 
     - name: sub
       template: R
@@ -1632,8 +1713,11 @@ instructions:
           value: "0100000"
         - field: funct3
           value: "000"
-      definition: "rd = rs1 - rs2;"
-      help: Subs the register rs2 from rs1 and stores the result in rd. Arithmetic overflow is ignored and the result is simply the low XLEN bits of the result.
+      definition: |
+        rd = rs1 - rs2;
+      help: Subs the register rs2 from rs1 and stores the result in rd.
+        Arithmetic overflow is ignored and the result is simply the low XLEN
+        bits of the result.
 
     - name: xor
       template: R
@@ -1644,8 +1728,10 @@ instructions:
           value: "0000000"
         - field: funct3
           value: "100"
-      definition: "rd = (rs1 ^ rs2);"
-      help: Performs bitwise XOR on registers rs1 and rs2 and place the result in rd.
+      definition: |
+        rd = (rs1 ^ rs2);
+      help: Performs bitwise XOR on registers rs1 and rs2 and place the result
+        in rd.
 
     # S-type instructions
     #     31-25    24-20   19-15   14-12   11-7    6-0
@@ -1662,7 +1748,8 @@ instructions:
           value: "0100011"
         - field: funct3
           value: "000"
-      definition: "CAPI.MEM.write(rs1+imm, 1, BigInt.asUintN(8,rs2), rs2_name, 'byte');"
+      definition: |
+        CAPI.MEM.write(rs1 + imm, 1, BigInt.asUintN(8, rs2), rs2_name, 'byte');
       help: Store 8-bit, values from the low bits of register rs2 to memory.
 
     - name: sh
@@ -1672,7 +1759,8 @@ instructions:
           value: "0100011"
         - field: funct3
           value: "001"
-      definition: "CAPI.MEM.write(imm+rs1, 2, BigInt.asUintN(16,rs2), rs2_name, 'half');"
+      definition: |
+        CAPI.MEM.write(imm + rs1, 2, BigInt.asUintN(16, rs2), rs2_name, 'half');
       help: Store 16-bit, values from the low bits of register rs2 to memory.
 
     # The check for the
@@ -1683,7 +1771,8 @@ instructions:
           value: "0100011"
         - field: funct3
           value: "010"
-      definition: "CAPI.MEM.write(imm+rs1, 4, BigInt.asUintN(32,rs2), rs2_name, 'word');"
+      definition: |
+        CAPI.MEM.write(imm + rs1, 4, BigInt.asUintN(32, rs2), rs2_name, 'word');
       help: Store 32-bit, values from the low bits of register rs2 to memory.
 
     # U-type instructions
@@ -1701,8 +1790,12 @@ instructions:
           value: "0010111"
         - field: imm
           type: offset_bytes
-      definition: "rd = PC + (imm << 12n);"
-      help: Build pc-relative addresses and uses the U-type format. AUIPC forms a 32-bit offset from the 20-bit U-immediate, filling in the lowest 12 bits with zeros, adds this offset to the pc, then places the result in register rd.
+      definition: |
+        rd = PC + (imm << 12n);
+      help: Build pc-relative addresses and uses the U-type format. AUIPC forms
+        a 32-bit offset from the 20-bit U-immediate, filling in the lowest 12
+        bits with zeros, adds this offset to the pc, then places the result in
+        register rd.
 
     - name: lui
       template: U
@@ -1711,8 +1804,11 @@ instructions:
           value: "0110111"
         - field: imm
           type: inm-unsigned
-      definition: "rd = imm << 12n;"
-      help: Build 32-bit constants and uses the U-type format. LUI places the U-immediate value in the top 20 bits of the destination register rd, filling in the lowest 12 bits with zeros.
+      definition: |
+        rd = imm << 12n;
+      help: Build 32-bit constants and uses the U-type format. LUI places the
+        U-immediate value in the top 20 bits of the destination register rd,
+        filling in the lowest 12 bits with zeros.
 
       # Special instructions
     - name: ecall
@@ -1726,9 +1822,50 @@ instructions:
           startbit: 31
           stopbit: 7
           value: "0000000000000000000000000"
-      preoperation: "let fa0Value, fa0Type; [fa0Value, fa0Type] = CAPI.RISCV.toJSNumberD(fa0);"
-      definition: "switch(a7){\ncase 1n:\nCAPI.SYSCALL.print(a0,'int');\nbreak;\ncase 2n:\ncase 3n:\nCAPI.SYSCALL.print(fa0Value,'float');\nbreak;\ncase 4n:\nCAPI.SYSCALL.print(a0,'string');\nbreak;\ncase 5n:\nCAPI.SYSCALL.read('a0','int');\nbreak;\ncase 6n:\nCAPI.SYSCALL.read(fa0Value,'float');\nbreak;\ncase 7n:\nCAPI.SYSCALL.read(fa0Value,'double');\nbreak;\ncase 8n:\nCAPI.SYSCALL.read('a0', 'string', 'a1',);\nbreak;\ncase 9n:\nCAPI.SYSCALL.sbrk('a0','a0');\nbreak;\ncase 10n:\nCAPI.SYSCALL.exit();\nbreak;\ncase 11n:\nCAPI.SYSCALL.print(a0,'char');\nbreak;\ncase 12n:\nCAPI.SYSCALL.read('a0','char');\nbreak;\n}"
-      help: Make a request to the supporting execution environment. When executed in U-mode, S-mode, or M-mode, it generates an environment-call-from-U-mode exception, environment-call-from-S-mode exception, or environment-call-from-M-mode exception, respectively, and performs no other operation.
+      preoperation: |
+        let [fa0Value, fa0Type] = CAPI.RISCV.toJSNumberD(fa0);
+      definition: |
+        switch (a7) {
+          case 1n:
+            CAPI.SYSCALL.print(a0, 'int');
+            break;
+          case 2n:
+          case 3n:
+            CAPI.SYSCALL.print(fa0Value, 'float');
+            break;
+          case 4n:
+            CAPI.SYSCALL.print(a0, 'string');
+            break;
+          case 5n:
+            CAPI.SYSCALL.read('a0', 'int');
+            break;
+          case 6n:
+            CAPI.SYSCALL.read(fa0Value, 'float');
+            break;
+          case 7n:
+            CAPI.SYSCALL.read(fa0Value, 'double');
+            break;
+          case 8n:
+            CAPI.SYSCALL.read('a0', 'string', 'a1');
+            break;
+          case 9n:
+            CAPI.SYSCALL.sbrk('a0', 'a0');
+            break;
+          case 10n:
+            CAPI.SYSCALL.exit();
+            break;
+          case 11n:
+            CAPI.SYSCALL.print(a0, 'char');
+            break;
+          case 12n:
+            CAPI.SYSCALL.read('a0', 'char');
+            break;
+        }
+      help: Make a request to the supporting execution environment. When
+        executed in U-mode, S-mode, or M-mode, it generates an
+        environment-call-from-U-mode exception, environment-call-from-S-mode
+        exception, or environment-call-from-M-mode exception, respectively, and
+        performs no other operation.
 
     - name: ebreak
       template: Custom
@@ -1746,8 +1883,12 @@ instructions:
           startbit: 19
           stopbit: 7
           value: "0000000000000"
-      definition: "console.log('Not implemented: ebreak');\n CAPI.VALIDATION.raise('ebreak not implemented');"
-      help: Used by debuggers to cause control to be transferred back to a debugging environment. It generates a breakpoint exception and performs no other operation.
+      definition: |
+        console.log('Not implemented: ebreak');
+        CAPI.VALIDATION.raise('ebreak not implemented');
+      help: Used by debuggers to cause control to be transferred back to a
+        debugging environment. It generates a breakpoint exception and performs
+        no other operation.
 
   M:
     #   ____ __     __ _____ ____   __  __
@@ -1767,8 +1908,16 @@ instructions:
           value: "0000001"
         - field: funct3
           value: "100"
-      definition: "if (rs2 != 0)\n { rd = BigInt.asIntN(32, (BigInt.asIntN(32, BigInt(rs1)) / BigInt.asIntN(32, BigInt(rs2)))); }\n else { CAPI.VALIDATION.raise('Division by zero not allowed'); }"
-      help: Perform an XLEN bits by XLEN bits signed integer division of rs1 by rs2, rounding towards zero.
+      definition: |
+        if (rs2 != 0) {
+          rd = BigInt.asIntN(
+            32,
+            (BigInt.asIntN(32, BigInt(rs1)) / BigInt.asIntN(32, BigInt(rs2)))
+          );
+        }
+        else CAPI.VALIDATION.raise('Division by zero not allowed');
+      help: Perform an XLEN bits by XLEN bits signed integer division of rs1 by
+        rs2, rounding towards zero.
 
     - name: divu
       template: R
@@ -1779,8 +1928,16 @@ instructions:
           value: "0000001"
         - field: funct3
           value: "101"
-      definition: "if (rs2 != 0)\n { rd = BigInt.asIntN(32, (BigInt.asUintN(32, BigInt(rs1)) / BigInt.asUintN(32, BigInt(rs2)))); }\n else { CAPI.VALIDATION.raise('Division by zero not allowed'); }"
-      help: Perform an XLEN-bit by XLEN-bit unsigned integer division of rs1 by rs2, rounding towards zero.
+      definition: |
+        if (rs2 != 0) {
+          rd = BigInt.asIntN(
+            32,
+            (BigInt.asUintN(32, BigInt(rs1)) / BigInt.asUintN(32, BigInt(rs2)))
+          );
+        }
+         else CAPI.VALIDATION.raise('Division by zero not allowed');
+      help: Perform an XLEN-bit by XLEN-bit unsigned integer division of rs1 by
+        rs2, rounding towards zero.
 
     - name: mul
       template: R
@@ -1791,8 +1948,10 @@ instructions:
           value: "0000001"
         - field: funct3
           value: "000"
-      definition: "rd = CAPI.FP.uint2int(rs1) * CAPI.FP.uint2int(rs2);"
-      help: Performs an XLEN-bit by XLEN-bit multiplication of signed rs1 by signed rs2 and places the lower XLEN bits in the destination register.
+      definition: |
+        rd = CAPI.FP.uint2int(rs1) * CAPI.FP.uint2int(rs2);
+      help: Performs an XLEN-bit by XLEN-bit multiplication of signed rs1 by
+        signed rs2 and places the lower XLEN bits in the destination register.
 
     - name: mulh
       template: R
@@ -1803,8 +1962,16 @@ instructions:
           value: "0000001"
         - field: funct3
           value: "001"
-      definition: "rd = BigInt.asIntN(32, (BigInt.asIntN(64, BigInt.asIntN(32, BigInt(rs1)) * BigInt.asIntN(32, BigInt(rs2))) >> 32n));"
-      help: Performs an XLEN-bit by XLEN-bit multiplication of signed rs1 by signed rs2 and places the lower XLEN bits in the destination register.
+      definition: |
+        rd = BigInt.asIntN(
+          32,
+          BigInt.asIntN(
+            64,
+            BigInt.asIntN(32, BigInt(rs1)) * BigInt.asIntN(32, BigInt(rs2)),
+          ) >> 32n,
+        );
+      help: Performs an XLEN-bit by XLEN-bit multiplication of signed rs1 by
+        signed rs2 and places the lower XLEN bits in the destination register.
 
     - name: mulhsu
       template: R
@@ -1815,8 +1982,16 @@ instructions:
           value: "0000001"
         - field: funct3
           value: "010"
-      definition: "rd = BigInt.asIntN(32, (BigInt.asIntN(64, BigInt.asIntN(32, BigInt(rs1)) * BigInt.asUintN(32, BigInt(rs2))) >> 32n))"
-      help: Performs an XLEN-bit by XLEN-bit multiplication of signed rs1 by unsigned rs2 and places the upper XLEN bits in the destination register.
+      definition: |
+        rd = BigInt.asIntN(
+          32,
+          BigInt.asIntN(
+            64,
+            BigInt.asIntN(32, BigInt(rs1)) * BigInt.asUintN(32, BigInt(rs2)),
+          ) >> 32n,
+        );
+      help: Performs an XLEN-bit by XLEN-bit multiplication of signed rs1 by
+        unsigned rs2 and places the upper XLEN bits in the destination register.
 
     - name: mulhu
       template: R
@@ -1827,8 +2002,16 @@ instructions:
           value: "0000001"
         - field: funct3
           value: "011"
-      definition: "rd = BigInt.asIntN(32, (BigInt.asUintN(64, BigInt.asUintN(32, BigInt(rs1)) * BigInt.asUintN(32, BigInt(rs2))) >> 32n));"
-      help: Performs an XLEN-bit by XLEN-bit multiplication of unsigned rs1 by unsigned rs2 and places the upper XLEN bits in the destination register.
+      definition: |
+        rd = BigInt.asIntN(
+          32,
+          BigInt.asUintN(
+            64,
+            BigInt.asUintN(32, BigInt(rs1)) * BigInt.asUintN(32, BigInt(rs2)),
+          ) >> 32n,
+        );
+      help: Performs an XLEN-bit by XLEN-bit multiplication of unsigned rs1 by
+        unsigned rs2 and places the upper XLEN bits in the destination register.
 
     - name: rem
       template: R
@@ -1839,8 +2022,10 @@ instructions:
           value: "0000001"
         - field: funct3
           value: "110"
-      definition: "rd = rs1 % rs2;"
-      help: Perform an XLEN-bit by XLEN-bit signed integer reminder of rs1 by rs2.
+      definition: |
+        rd = rs1 % rs2;
+      help: Perform an XLEN-bit by XLEN-bit signed integer reminder of rs1 by
+        rs2.
 
     - name: remu
       template: R
@@ -1851,8 +2036,10 @@ instructions:
           value: "0000001"
         - field: funct3
           value: "111"
-      definition: "rd = rs1 % rs2;"
-      help: Perform an XLEN-bit by XLEN-bit unsigned integer reminder of rs1 by rs2.
+      definition: |
+        rd = rs1 % rs2;
+      help: Perform an XLEN-bit by XLEN-bit unsigned integer reminder of rs1 by
+        rs2.
 
   F:
     #   ____ __     __ _____ ____   _____
@@ -1872,9 +2059,12 @@ instructions:
           value: "010"
         - field: rd # We're overriding the rd field from the template
           type: SFP-Reg
-      definition: "rd = CAPI.MEM.read(rs1+imm, 4, rd_name);"
-      postoperation: "rd = CAPI.RISCV.NaNBox(rd);"
-      help: Load a single-precision floating-point value from memory into floating-point register rd.
+      definition: |
+        rd = CAPI.MEM.read(rs1 + imm, 4, rd_name);
+      postoperation: |
+        rd = CAPI.RISCV.NaNBox(rd);
+      help: Load a single-precision floating-point value from memory into
+        floating-point register rd.
 
       # R-type instructions
     - name: fadd.s
@@ -1889,9 +2079,20 @@ instructions:
           enum_name: rounding_mode
           optional: true
           order: 4
-      preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2);"
-      postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN32'); } else { rd = CAPI.RISCV.toBigInt(rd,'NaNBfloat32_64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2);"
-      definition: "rd = rs2 + rs1;"
+      preoperation: |
+        let type_rs1, type_rs2;
+        [rs1, type_rs1] = CAPI.RISCV.toJSNumberD(rs1);
+        [rs2, type_rs2] = CAPI.RISCV.toJSNumberD(rs2);
+      postoperation: |
+        if (isNaN(rd)) {
+          rd = CAPI.RISCV.toBigInt(rd, "NaN32");
+        } else {
+          rd = CAPI.RISCV.toBigInt(rd, "NaNBfloat32_64");
+        }
+        rs1 = CAPI.RISCV.toBigInt(rs1, type_rs1);
+        rs2 = CAPI.RISCV.toBigInt(rs2, type_rs2);
+      definition: |
+        rd = rs2 + rs1;
       help: Perform single-precision floating-point addition.
 
     - name: fclass.s
@@ -1909,10 +2110,35 @@ instructions:
           order: null
         - field: rd
           type: INT-Reg
-      preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); if (typeof rs2 !== 'undefined') { [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2); }"
-      postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN32'); } else { rd = CAPI.RISCV.toBigInt(rd,'NaNBfloat32_64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); if (typeof rs2 !== 'undefined') { rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2); }"
-      definition: "let a = CAPI.FP.float2bin(rs1);\nrd=CAPI.FP.check_ieee(parseInt(a[0]), parseInt(a.slice(1,9), 2), parseInt(a.slice(10), 2));"
-      help: Examines the value in floating-point register rs1 and writes to integer register rd a 10-bit mask that indicates the class of the floating-point number. The corresponding bit in rd will be set if the property is true and clear otherwise. All other bits in rd are cleared. Note that exactly one bit in rd will be set.
+      preoperation: |
+        let type_rs1, type_rs2;
+        [rs1, type_rs1] = CAPI.RISCV.toJSNumberD(rs1);
+        if (typeof rs2 !== "undefined") {
+          [rs2, type_rs2] = CAPI.RISCV.toJSNumberD(rs2);
+        }
+      postoperation: |
+        if (isNaN(rd)) {
+          rd = CAPI.RISCV.toBigInt(rd, "NaN32");
+        } else {
+          rd = CAPI.RISCV.toBigInt(rd, "NaNBfloat32_64");
+        }
+
+        rs1 = CAPI.RISCV.toBigInt(rs1, type_rs1);
+        if (typeof rs2 !== "undefined") {
+          rs2 = CAPI.RISCV.toBigInt(rs2, type_rs2);
+        }
+      definition: |
+        let a = CAPI.FP.float2bin(rs1);
+        rd = CAPI.FP.check_ieee(
+          parseInt(a[0]),
+          parseInt(a.slice(1, 9), 2),
+          parseInt(a.slice(10), 2),
+        );
+      help: Examines the value in floating-point register rs1 and writes to
+        integer register rd a 10-bit mask that indicates the class of the
+        floating-point number. The corresponding bit in rd will be set if the
+        property is true and clear otherwise. All other bits in rd are cleared.
+        Note that exactly one bit in rd will be set.
 
     - name: fcvt.s.w
       # There's quite a bit of overriding here, but RISC-V
@@ -1926,14 +2152,17 @@ instructions:
           value: "1101000"
         - field: funct5
           value: "00000"
-        - field: funct3
+        - field: funct3 # In this instruction, there is no "funct3", instead we have a rounding mode field.
           type: enum
           enum_name: rounding_mode
           optional: true
           order: 3
-      postoperation: "rd = CAPI.RISCV.toBigInt(rd,'NaNBfloat32_64');"
-      definition: "rd = CAPI.FP.uint2int(rs1)"
-      help: Converts a 32-bit signed integer, in integer register rs1 into a floating-point number in floating-point register rd.
+      postoperation: |
+        rd = CAPI.RISCV.toBigInt(rd,'NaNBfloat32_64');
+      definition: |
+        rd = CAPI.FP.uint2int(rs1)
+      help: Converts a 32-bit signed integer, in integer register rs1 into a
+        floating-point number in floating-point register rd.
 
     - name: fcvt.s.wu
       template: R-IntToFloat
@@ -1949,8 +2178,10 @@ instructions:
           enum_name: rounding_mode
           optional: true
           order: 3
-      definition: "rd = CAPI.FP.int2uint(rs1)"
-      help: Converts a 32-bit unsigned integer, in integer register rs1 into a floating-point number in floating-point register rd.
+      definition: |
+        rd = CAPI.FP.int2uint(rs1)
+      help: Converts a 32-bit unsigned integer, in integer register rs1 into a
+        floating-point number in floating-point register rd.
 
     - name: fcvt.w.s
       template: R-FloatToInt
@@ -1966,10 +2197,26 @@ instructions:
           enum_name: rounding_mode
           optional: true
           order: 3
-      preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); if (typeof rs2 !== 'undefined') { [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2); }"
-      postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN32'); } else { rd = CAPI.RISCV.toBigInt(rd,'NaNBfloat32_64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); if (typeof rs2 !== 'undefined') { rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2); }"
-      definition: "rd = parseInt(rs1);"
-      help: Convert a floating-point number in floating-point register rs1 to a signed 32-bit in integer register rd.
+      preoperation: |
+        let type_rs1, type_rs2;
+        [rs1, type_rs1] = CAPI.RISCV.toJSNumberD(rs1);
+        if (typeof rs2 !== "undefined") {
+          [rs2, type_rs2] = CAPI.RISCV.toJSNumberD(rs2);
+        }
+      postoperation: |
+        if (isNaN(rd)) {
+          rd = CAPI.RISCV.toBigInt(rd, "NaN32");
+        } else {
+          rd = CAPI.RISCV.toBigInt(rd, "NaNBfloat32_64");
+        }
+        rs1 = CAPI.RISCV.toBigInt(rs1, type_rs1);
+        if (typeof rs2 !== "undefined") {
+          rs2 = CAPI.RISCV.toBigInt(rs2, type_rs2);
+        }
+      definition: |
+        rd = parseInt(rs1);
+      help: Convert a floating-point number in floating-point register rs1 to a
+        signed 32-bit in integer register rd.
 
     - name: fcvt.wu.s
       template: R-FloatToInt
@@ -1985,10 +2232,26 @@ instructions:
           enum_name: rounding_mode
           optional: true
           order: 3
-      preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); if (typeof rs2 !== 'undefined') { [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2); }"
-      postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN32'); } else { rd = CAPI.RISCV.toBigInt(rd,'NaNBfloat32_64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); if (typeof rs2 !== 'undefined') { rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2); }"
-      definition: "rd = CAPI.FP.int2uint(parseInt(rs1));"
-      help: Convert a floating-point number in floating-point register rs1 to a signed 32-bit in unsigned integer register rd.
+      preoperation: |
+        let type_rs1, type_rs2;
+        [rs1, type_rs1] = CAPI.RISCV.toJSNumberD(rs1);
+        if (typeof rs2 !== "undefined") {
+          [rs2, type_rs2] = CAPI.RISCV.toJSNumberD(rs2);
+        }
+      postoperation: |
+        if (isNaN(rd)) {
+          rd = CAPI.RISCV.toBigInt(rd, "NaN32");
+        } else {
+          rd = CAPI.RISCV.toBigInt(rd, "NaNBfloat32_64");
+        }
+        rs1 = CAPI.RISCV.toBigInt(rs1, type_rs1);
+        if (typeof rs2 !== "undefined") {
+          rs2 = CAPI.RISCV.toBigInt(rs2, type_rs2);
+        }
+      definition: |
+        rd = CAPI.FP.int2uint(parseInt(rs1));
+      help: Convert a floating-point number in floating-point register rs1 to a
+        signed 32-bit in unsigned integer register rd.
 
     - name: fdiv.s
       template: R-Floating
@@ -2002,9 +2265,21 @@ instructions:
           enum_name: rounding_mode
           optional: true
           order: 4
-      preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2);"
-      postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN32'); } else { rd = CAPI.RISCV.toBigInt(rd,'NaNBfloat32_64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2);"
-      definition: "if (rs2 != 0)\n { rd = rs1 / rs2; }\n else { CAPI.VALIDATION.raise('Division by zero not allowed'); }"
+      preoperation: |
+        let type_rs1, type_rs2;
+        [rs1, type_rs1] = CAPI.RISCV.toJSNumberD(rs1);
+        [rs2, type_rs2] = CAPI.RISCV.toJSNumberD(rs2);
+      postoperation: |
+        if (isNaN(rd)) {
+          rd = CAPI.RISCV.toBigInt(rd, "NaN32");
+        } else {
+          rd = CAPI.RISCV.toBigInt(rd, "NaNBfloat32_64");
+        }
+        rs1 = CAPI.RISCV.toBigInt(rs1, type_rs1);
+        rs2 = CAPI.RISCV.toBigInt(rs2, type_rs2);
+      definition: |
+        if (rs2 != 0) { rd = rs1 / rs2; }
+        else CAPI.VALIDATION.raise('Division by zero not allowed');
       help: Perform single-precision floating-point division.
 
     - name: feq.s
@@ -2018,10 +2293,19 @@ instructions:
           value: "010"
         - field: rd
           type: INT-Reg
-      preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2);"
-      postoperation: "rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2);"
-      definition: "rd = (rs1 === rs2) ? 1 : 0;"
-      help: Performs a quiet equal comparison between floating-point registers rs1 and rs2 and record the Boolean result in integer register rd. Only signaling NaN inputs cause an Invalid Operation exception. The result is 0 if either operand is NaN.
+      preoperation: |
+        let type_rs1, type_rs2;
+        [rs1, type_rs1] = CAPI.RISCV.toJSNumberD(rs1);
+        [rs2, type_rs2] = CAPI.RISCV.toJSNumberD(rs2);
+      postoperation: |
+        rs1 = CAPI.RISCV.toBigInt(rs1, type_rs1);
+        rs2 = CAPI.RISCV.toBigInt(rs2, type_rs2);
+      definition: |
+        rd = (rs1 === rs2) ? 1 : 0;
+      help: Performs a quiet equal comparison between floating-point registers
+        rs1 and rs2 and record the Boolean result in integer register rd. Only
+        signaling NaN inputs cause an Invalid Operation exception. The result is
+        0 if either operand is NaN.
 
     - name: fle.s
       template: R-Floating
@@ -2034,10 +2318,19 @@ instructions:
           value: "000"
         - field: rd
           type: INT-Reg
-      preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2);"
-      postoperation: "rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2);"
-      definition: "rd = (rs1 <= rs2) ? 1 : 0;"
-      help: Performs a quiet less or equal comparison between floating-point registers rs1 and rs2 and record the Boolean result in integer register rd. Only signaling NaN inputs cause an Invalid Operation exception. The result is 0 if either operand is NaN.
+      preoperation: |
+        let type_rs1, type_rs2;
+        [rs1, type_rs1] = CAPI.RISCV.toJSNumberD(rs1);
+        [rs2, type_rs2] = CAPI.RISCV.toJSNumberD(rs2);
+      postoperation: |
+        rs1 = CAPI.RISCV.toBigInt(rs1, type_rs1);
+        rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2);
+      definition: |
+        rd = (rs1 <= rs2) ? 1 : 0;
+      help: Performs a quiet less or equal comparison between floating-point
+        registers rs1 and rs2 and record the Boolean result in integer register
+        rd. Only signaling NaN inputs cause an Invalid Operation exception. The
+        result is 0 if either operand is NaN.
 
     - name: flt.s
       template: R-Floating
@@ -2050,10 +2343,19 @@ instructions:
           value: "001"
         - field: rd
           type: INT-Reg
-      preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2);"
-      postoperation: "rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2);"
-      definition: "rd = (rs1 < rs2) ? 1 : 0;"
-      help: Performs a quiet less comparison between floating-point registers rs1 and rs2 and record the Boolean result in integer register rd. Only signaling NaN inputs cause an Invalid Operation exception. The result is 0 if either operand is NaN.
+      preoperation: |
+        let type_rs1, type_rs2;
+        [rs1, type_rs1] = CAPI.RISCV.toJSNumberD(rs1);
+        [rs2, type_rs2] = CAPI.RISCV.toJSNumberD(rs2);
+      postoperation: |
+        rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1);
+        rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2);
+      definition: |
+        rd = (rs1 < rs2) ? 1 : 0;
+      help: Performs a quiet less comparison between floating-point registers
+        rs1 and rs2 and record the Boolean result in integer register rd. Only
+        signaling NaN inputs cause an Invalid Operation exception. The result is
+        0 if either operand is NaN.
 
     - name: fmax.s
       template: R-Floating
@@ -2064,9 +2366,20 @@ instructions:
           value: "0010100"
         - field: funct3
           value: "001"
-      preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2);"
-      postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN32'); } else { rd = CAPI.RISCV.toBigInt(rd,'NaNBfloat32_64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2);"
-      definition: "rd = Math.max(rs1, rs2);"
+      preoperation: |
+        let type_rs1, type_rs2;
+        [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1);
+        [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2);
+      postoperation: |
+        if (isNaN(rd)) {
+          rd = CAPI.RISCV.toBigInt(rd, "NaN32");
+        } else {
+          rd = CAPI.RISCV.toBigInt(rd, "NaNBfloat32_64");
+        }
+        rs1 = CAPI.RISCV.toBigInt(rs1, type_rs1);
+        rs2 = CAPI.RISCV.toBigInt(rs2, type_rs2);
+      definition: |
+        rd = Math.max(rs1, rs2);
       help: Write the larger of single precision data in rs1 and rs2 to rd.
 
     - name: fmin.s
@@ -2078,9 +2391,20 @@ instructions:
           value: "0010100"
         - field: funct3
           value: "000"
-      preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2);"
-      postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN32'); } else { rd = CAPI.RISCV.toBigInt(rd,'NaNBfloat32_64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2);"
-      definition: "rd = Math.min(rs1, rs2);"
+      preoperation: |
+        let type_rs1, type_rs2;
+        [rs1, type_rs1] = CAPI.RISCV.toJSNumberD(rs1);
+        [rs2, type_rs2] = CAPI.RISCV.toJSNumberD(rs2);"
+      postoperation: |
+        if (isNaN(rd)) {
+          rd = CAPI.RISCV.toBigInt(rd, "NaN32");
+        } else {
+          rd = CAPI.RISCV.toBigInt(rd, "NaNBfloat32_64");
+        }
+        rs1 = CAPI.RISCV.toBigInt(rs1, type_rs1);
+        rs2 = CAPI.RISCV.toBigInt(rs2, type_rs2);
+      definition: |
+        rd = Math.min(rs1, rs2);
       help: Write the smaller of single precision data in rs1 and rs2 to rd.
 
     - name: fmul.s
@@ -2095,9 +2419,19 @@ instructions:
           enum_name: rounding_mode
           optional: true
           order: 4
-      preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2);"
-      postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN32'); } else { rd = CAPI.RISCV.toBigInt(rd,'NaNBfloat32_64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2);"
-      definition: "rd = rs2 * rs1;"
+      preoperation: let type_rs1, type_rs2;
+        [rs1, type_rs1] = CAPI.RISCV.toJSNumberD(rs1);
+        [rs2, type_rs2] = CAPI.RISCV.toJSNumberD(rs2);
+      postoperation: |
+        if (isNaN(rd)) {
+          rd = CAPI.RISCV.toBigInt(rd, "NaN32");
+        } else {
+          rd = CAPI.RISCV.toBigInt(rd, "NaNBfloat32_64");
+        }
+        rs1 = CAPI.RISCV.toBigInt(rs1, type_rs1);
+        rs2 = CAPI.RISCV.toBigInt(rs2, type_rs2);
+      definition: |
+        rd = rs2 * rs1;
       help: Perform single-precision floating-point multiplication.
 
     - name: fmv.w.x
@@ -2111,10 +2445,23 @@ instructions:
           value: "00000"
         - field: funct3
           value: "000"
-      preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2);"
-      postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN32'); } else { rd = CAPI.RISCV.toBigInt(rd,'NaNBfloat32_64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2);"
-      definition: "rd = CAPI.FP.uint2float32(rs1);"
-      help: Move the single-precision value encoded in IEEE 754-2008 standard encoding from the lower 32 bits of integer register rs1 to the floating-point register rd.
+      preoperation: |
+        let type_rs1, type_rs2;
+        [rs1, type_rs1] = CAPI.RISCV.toJSNumberD(rs1);
+        [rs2, type_rs2] = CAPI.RISCV.toJSNumberD(rs2);
+      postoperation: |
+        if (isNaN(rd)) {
+          rd = CAPI.RISCV.toBigInt(rd, "NaN32");
+        } else {
+          rd = CAPI.RISCV.toBigInt(rd, "NaNBfloat32_64");
+        }
+        rs1 = CAPI.RISCV.toBigInt(rs1, type_rs1);
+        rs2 = CAPI.RISCV.toBigInt(rs2, type_rs2);
+      definition: |
+        rd = CAPI.FP.uint2float32(rs1);
+      help: Move the single-precision value encoded in IEEE 754-2008 standard
+        encoding from the lower 32 bits of integer register rs1 to the
+        floating-point register rd.
 
     - name: fmv.x.w
       template: R-FloatToInt
@@ -2127,10 +2474,16 @@ instructions:
           value: "00000"
         - field: funct3
           value: "000"
-      preoperation: "let type_rs1; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1);"
-      postoperation: "rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1);"
-      definition: "rd = CAPI.FP.float322uint(rs1);"
-      help: Move the single-precision value in floating-point register rs1 represented in IEEE 754-2008 encoding to the lower 32 bits of integer register rd.
+      preoperation: |
+        let type_rs1;
+        [rs1, type_rs1] = CAPI.RISCV.toJSNumberD(rs1);
+      postoperation: |
+        rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1);
+      definition: |
+        rd = CAPI.FP.float322uint(rs1);
+      help: Move the single-precision value in floating-point register rs1
+        represented in IEEE 754-2008 encoding to the lower 32 bits of integer
+        register rd.
 
     - name: fsgnj.s
       template: R-Floating
@@ -2141,10 +2494,22 @@ instructions:
           value: "0010000"
         - field: funct3
           value: "000"
-      preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2);"
-      postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN32'); } else { rd = CAPI.RISCV.toBigInt(rd,'NaNBfloat32_64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2);"
-      definition: "rd = (rs2 >= 0) ? Math.abs(rs1) : -Math.abs(rs1);"
-      help: Produce a result that takes all bits except the sign bit from rs1. The result's sign bit is rs2's sign bit.
+      preoperation: |
+        let type_rs1, type_rs2;
+        [rs1, type_rs1] = CAPI.RISCV.toJSNumberD(rs1);
+        [rs2, type_rs2] = CAPI.RISCV.toJSNumberD(rs2);
+      postoperation: |
+        if (isNaN(rd)) {
+          rd = CAPI.RISCV.toBigInt(rd, "NaN32");
+        } else {
+          rd = CAPI.RISCV.toBigInt(rd, "NaNBfloat32_64");
+        }
+        rs1 = CAPI.RISCV.toBigInt(rs1, type_rs1);
+        rs2 = CAPI.RISCV.toBigInt(rs2, type_rs2);
+      definition: |
+        rd = (rs2 >= 0) ? Math.abs(rs1) : -Math.abs(rs1);
+      help: Produce a result that takes all bits except the sign bit from rs1.
+        The result's sign bit is rs2's sign bit.
 
     - name: fsgnjn.s
       template: R-Floating
@@ -2155,10 +2520,21 @@ instructions:
           value: "0010000"
         - field: funct3
           value: "001"
-      preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2);"
-      postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN32'); } else { rd = CAPI.RISCV.toBigInt(rd,'NaNBfloat32_64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2);"
-      definition: "rd = (rs2 <= 0) ? Math.abs(rs1) : -Math.abs(rs1);"
-      help: Produce a result that takes all bits except the sign bit from rs1. The result's sign bit is rs2's sign bit.
+      preoperation: let type_rs1, type_rs2;
+        [rs1, type_rs1] = CAPI.RISCV.toJSNumberD(rs1);
+        [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2);
+      postoperation: |
+        if (isNaN(rd)) {
+          rd = CAPI.RISCV.toBigInt(rd, "NaN32");
+        } else {
+          rd = CAPI.RISCV.toBigInt(rd, "NaNBfloat32_64");
+        }
+        rs1 = CAPI.RISCV.toBigInt(rs1, type_rs1);
+        rs2 = CAPI.RISCV.toBigInt(rs2, type_rs2);
+      definition: |
+        rd = (rs2 <= 0) ? Math.abs(rs1) : -Math.abs(rs1);
+      help: Produce a result that takes all bits except the sign bit from rs1.
+        The result's sign bit is rs2's sign bit.
 
     - name: fsgnjx.s
       template: R-Floating
@@ -2169,10 +2545,24 @@ instructions:
           value: "0010000"
         - field: funct3
           value: "010"
-      preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2);"
-      postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN32'); } else { rd = CAPI.RISCV.toBigInt(rd,'NaNBfloat32_64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2);"
-      definition: "let a = rs1<0; let b = rs2<0;\nrd = (a^b) ? -Math.abs(rs1) : Math.abs(rs1);"
-      help: Produce a result that takes all bits except the sign bit from rs1. The result's sign bit is XOR of sign bit of rs1 and rs2.
+      preoperation: |
+        let type_rs1, type_rs2;
+        [rs1, type_rs1] = CAPI.RISCV.toJSNumberD(rs1);
+        [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2);
+      postoperation: |
+        if (isNaN(rd)) {
+          rd = CAPI.RISCV.toBigInt(rd, "NaN32");
+        } else {
+          rd = CAPI.RISCV.toBigInt(rd, "NaNBfloat32_64");
+        }
+        rs1 = CAPI.RISCV.toBigInt(rs1, type_rs1);
+        rs2 = CAPI.RISCV.toBigInt(rs2, type_rs2);
+      definition: |
+        let a = rs1 < 0;
+        let b = rs2 < 0;
+        rd = a ^ b ? -Math.abs(rs1) : Math.abs(rs1);
+      help: Produce a result that takes all bits except the sign bit from rs1.
+        The result's sign bit is XOR of sign bit of rs1 and rs2.
 
     - name: fsqrt.s
       template: R-Floating
@@ -2181,7 +2571,7 @@ instructions:
           value: "1010011"
         - field: funct7
           value: "0101100"
-        - field: rs2
+        - field: rs2 # In this instruction, rs2 is more like a funct5
           type: cop
           value: "00000"
           order: null
@@ -2190,9 +2580,30 @@ instructions:
           enum_name: rounding_mode
           optional: true
           order: 3
-      preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); if (typeof rs2 !== 'undefined') { [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2); }"
-      postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN32'); } else { rd = CAPI.RISCV.toBigInt(rd,'NaNBfloat32_64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); if (typeof rs2 !== 'undefined') { rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2); }"
-      definition: "if (rs1 >= 0)\n { rd = Math.sqrt(rs1); }\n else { CAPI.VALIDATION.raise('Square root of a negative number is not allowed.'); }"
+      preoperation: |
+        let type_rs1, type_rs2;
+        [rs1, type_rs1] = CAPI.RISCV.toJSNumberD(rs1);
+        if (typeof rs2 !== 'undefined') {
+          [rs2, type_rs2] = CAPI.RISCV.toJSNumberD(rs2);
+        }
+      postoperation: |
+        if (isNaN(rd)) {
+          rd = CAPI.RISCV.toBigInt(rd, "NaN32");
+        } else {
+          rd = CAPI.RISCV.toBigInt(rd, "NaNBfloat32_64");
+        }
+        rs1 = CAPI.RISCV.toBigInt(rs1, type_rs1);
+        if (typeof rs2 !== "undefined") {
+          rs2 = CAPI.RISCV.toBigInt(rs2, type_rs2);
+        }
+      definition: |
+        if (rs1 >= 0) {
+          rd = Math.sqrt(rs1);
+        } else {
+          CAPI.VALIDATION.raise(
+            'Square root of a negative number is not allowed.'
+          );
+        }
       help: Perform single-precision square root.
 
     - name: fsub.s
@@ -2207,9 +2618,20 @@ instructions:
           enum_name: rounding_mode
           optional: true
           order: 4
-      preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2);"
-      postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN32'); } else { rd = CAPI.RISCV.toBigInt(rd,'NaNBfloat32_64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2);"
-      definition: "rd = rs1 - rs2;"
+      preoperation: |
+        let type_rs1, type_rs2;
+        [rs1, type_rs1] = CAPI.RISCV.toJSNumberD(rs1);
+        [rs2, type_rs2] = CAPI.RISCV.toJSNumberD(rs2);
+      postoperation: |
+        if (isNaN(rd)) {
+          rd = CAPI.RISCV.toBigInt(rd, "NaN32");
+        } else {
+          rd = CAPI.RISCV.toBigInt(rd, "NaNBfloat32_64");
+        }
+        rs1 = CAPI.RISCV.toBigInt(rs1, type_rs1);
+        rs2 = CAPI.RISCV.toBigInt(rs2, type_rs2);
+      definition: |
+        rd = rs1 - rs2;
       help: Perform single-precision floating-point substraction.
 
     # R4-type instructions
@@ -2225,9 +2647,22 @@ instructions:
           enum_name: rounding_mode
           optional: true
           order: 5
-      preoperation: "let type_rs1, type_rs2, type_rs3; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2); [rs3,type_rs3] = CAPI.RISCV.toJSNumberD(rs3);"
-      postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN32'); } else { rd = CAPI.RISCV.toBigInt(rd,'NaNBfloat32_64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2); rs3 = CAPI.RISCV.toBigInt(rs3,type_rs3);"
-      definition: "rd = rs1 * rs2 + rs3;"
+      preoperation: |
+        let type_rs1, type_rs2, type_rs3;
+        [rs1, type_rs1] = CAPI.RISCV.toJSNumberD(rs1);
+        [rs2, type_rs2] = CAPI.RISCV.toJSNumberD(rs2);
+        [rs3, type_rs3] = CAPI.RISCV.toJSNumberD(rs3);
+      postoperation: |
+        if (isNaN(rd)) {
+          rd = CAPI.RISCV.toBigInt(rd, "NaN32");
+        } else {
+          rd = CAPI.RISCV.toBigInt(rd, "NaNBfloat32_64");
+        }
+        rs1 = CAPI.RISCV.toBigInt(rs1, type_rs1);
+        rs2 = CAPI.RISCV.toBigInt(rs2, type_rs2);
+        rs3 = CAPI.RISCV.toBigInt(rs3, type_rs3);
+      definition: |
+        rd = rs1 * rs2 + rs3;
       help: Perform single-precision fused multiply addition.
 
     - name: fmsub.s
@@ -2242,9 +2677,22 @@ instructions:
           enum_name: rounding_mode
           optional: true
           order: 5
-      preoperation: "let type_rs1, type_rs2, type_rs3; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2); [rs3,type_rs3] = CAPI.RISCV.toJSNumberD(rs3);"
-      postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN32'); } else { rd = CAPI.RISCV.toBigInt(rd,'NaNBfloat32_64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2); rs3 = CAPI.RISCV.toBigInt(rs3,type_rs3);"
-      definition: "rd = rs1 * rs2 - rs3;"
+      preoperation: |
+        let type_rs1, type_rs2, type_rs3;
+        [rs1, type_rs1] = CAPI.RISCV.toJSNumberD(rs1);
+        [rs2, type_rs2] = CAPI.RISCV.toJSNumberD(rs2);
+        [rs3, type_rs3] = CAPI.RISCV.toJSNumberD(rs3);
+      postoperation: |
+        if (isNaN(rd)) {
+          rd = CAPI.RISCV.toBigInt(rd, "NaN32");
+        } else {
+          rd = CAPI.RISCV.toBigInt(rd, "NaNBfloat32_64");
+        }
+        rs1 = CAPI.RISCV.toBigInt(rs1, type_rs1);
+        rs2 = CAPI.RISCV.toBigInt(rs2, type_rs2);
+        rs3 = CAPI.RISCV.toBigInt(rs3, type_rs3);
+      definition: |
+        rd = rs1 * rs2 - rs3;
       help: Perform single-precision fused multiply addition.
 
     - name: fnmadd.s
@@ -2259,9 +2707,22 @@ instructions:
           enum_name: rounding_mode
           optional: true
           order: 5
-      preoperation: "let type_rs1, type_rs2, type_rs3; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2); [rs3,type_rs3] = CAPI.RISCV.toJSNumberD(rs3);"
-      postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN32'); } else { rd = CAPI.RISCV.toBigInt(rd,'NaNBfloat32_64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2); rs3 = CAPI.RISCV.toBigInt(rs3,type_rs3);"
-      definition: "rd = -rs1 * rs2 - rs3;"
+      preoperation: |
+        let type_rs1, type_rs2, type_rs3;
+        [rs1, type_rs1] = CAPI.RISCV.toJSNumberD(rs1);
+        [rs2, type_rs2] = CAPI.RISCV.toJSNumberD(rs2);
+        [rs3, type_rs3] = CAPI.RISCV.toJSNumberD(rs3);
+      postoperation: |
+        if (isNaN(rd)) {
+          rd = CAPI.RISCV.toBigInt(rd, "NaN32");
+        } else {
+          rd = CAPI.RISCV.toBigInt(rd, "NaNBfloat32_64");
+        }
+        rs1 = CAPI.RISCV.toBigInt(rs1, type_rs1);
+        rs2 = CAPI.RISCV.toBigInt(rs2, type_rs2);
+        rs3 = CAPI.RISCV.toBigInt(rs3, type_rs3);
+      definition: |
+        rd = -rs1 * rs2 - rs3;
       help: Perform negated single-precision fused multiply addition.
 
     - name: fnmsub.s
@@ -2276,9 +2737,22 @@ instructions:
           enum_name: rounding_mode
           optional: true
           order: 5
-      preoperation: "let type_rs1, type_rs2, type_rs3; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2); [rs3,type_rs3] = CAPI.RISCV.toJSNumberD(rs3);"
-      postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN32'); } else { rd = CAPI.RISCV.toBigInt(rd,'NaNBfloat32_64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2); rs3 = CAPI.RISCV.toBigInt(rs3,type_rs3);"
-      definition: "rd = -rs1 * rs2 + rs3;"
+      preoperation: |
+        let type_rs1, type_rs2, type_rs3;
+        [rs1, type_rs1] = CAPI.RISCV.toJSNumberD(rs1);
+        [rs2, type_rs2] = CAPI.RISCV.toJSNumberD(rs2);
+        [rs3, type_rs3] = CAPI.RISCV.toJSNumberD(rs3);
+      postoperation: |
+        if (isNaN(rd)) {
+          rd = CAPI.RISCV.toBigInt(rd, "NaN32");
+        } else {
+          rd = CAPI.RISCV.toBigInt(rd, "NaNBfloat32_64");
+        }
+        rs1 = CAPI.RISCV.toBigInt(rs1, type_rs1);
+        rs2 = CAPI.RISCV.toBigInt(rs2, type_rs2);
+        rs3 = CAPI.RISCV.toBigInt(rs3, type_rs3);
+      definition: |
+        rd = -rs1 * rs2 + rs3;
       help: Perform negated single-precision fused multiply addition.
 
     # S-type instructions
@@ -2291,8 +2765,11 @@ instructions:
           value: "010"
         - field: rs2
           type: SFP-Reg
-      definition: "let value = rs2 & 0xFFFFFFFFn; CAPI.MEM.write(rs1+imm, 4, value, rs2_name, 'float32');"
-      help: Store a single-precision value from floating-point register rs2 to memory.
+      definition: |
+        let value = rs2 & 0xFFFFFFFFn;
+        CAPI.MEM.write(rs1 + imm, 4, value, rs2_name, 'float32');
+      help: Store a single-precision value from floating-point register rs2 to
+        memory.
 
   D:
     #   ____ __     __ _____ ____   ____
@@ -2312,8 +2789,13 @@ instructions:
           value: "011"
         - field: rd # We're overriding the rd field from the template
           type: DFP-Reg
-      definition: "if (CAPI.VALIDATION.isMisaligned(rs1+imm, 'd')) { CAPI.VALIDATION.raise('The memory must be align'); }\nrd = CAPI.MEM.read(rs1+imm, 8, rd_name);"
-      help: Load a double-precision floating-point value from memory into floating-point register rd.
+      definition: |
+        if (CAPI.VALIDATION.isMisaligned(rs1 + imm, 'd')) {
+          CAPI.VALIDATION.raise('The memory must be align');
+        }
+        rd = CAPI.MEM.read(rs1 + imm, 8, rd_name);
+      help: Load a double-precision floating-point value from memory into
+        floating-point register rd.
 
       # R-type instructions
     - name: fadd.d
@@ -2328,9 +2810,20 @@ instructions:
           enum_name: rounding_mode
           optional: true
           order: 4
-      preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2);"
-      postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN64'); } else { rd = CAPI.RISCV.toBigInt(rd,'float64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2);"
-      definition: "rd = rs2 + rs1;"
+      preoperation: |
+        let type_rs1, type_rs2;
+        [rs1, type_rs1] = CAPI.RISCV.toJSNumberD(rs1);
+        [rs2, type_rs2] = CAPI.RISCV.toJSNumberD(rs2);
+      postoperation: |
+        if (isNaN(rd)) {
+          rd = CAPI.RISCV.toBigInt(rd, "NaN64");
+        } else {
+          rd = CAPI.RISCV.toBigInt(rd, "float64");
+        }
+        rs1 = CAPI.RISCV.toBigInt(rs1, type_rs1);
+        rs2 = CAPI.RISCV.toBigInt(rs2, type_rs2);
+      definition: |
+        rd = rs2 + rs1;
       help: Perform double-precision floating-point addition.
 
     - name: fclass.d
@@ -2348,10 +2841,34 @@ instructions:
           order: null
         - field: rd
           type: INT-Reg
-      preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); if (typeof rs2 !== 'undefined') { [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2); }"
-      postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN32'); } else { rd = CAPI.RISCV.toBigInt(rd,'NaNBfloat32_64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); if (typeof rs2 !== 'undefined') { rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2); }"
-      definition: "let a = CAPI.FP.float2bin(rs1);\nrd=CAPI.FP.check_ieee(parseInt(a[0]), parseInt(a.slice(1,12), 2), parseInt(a.slice(13), 2));"
-      help: Examines the value in double-precision floating-point register rs1 and writes to integer register rd a 10-bit mask that indicates the class of the floating-point number. The corresponding bit in rd will be set if the property is true and clear otherwise. All other bits in rd are cleared. Note that exactly one bit in rd will be set.
+      preoperation: |
+        let type_rs1, type_rs2;
+        [rs1, type_rs1] = CAPI.RISCV.toJSNumberD(rs1);
+        if (typeof rs2 !== "undefined") {
+          [rs2, type_rs2] = CAPI.RISCV.toJSNumberD(rs2);
+        }
+      postoperation: |
+        if (isNaN(rd)) {
+          rd = CAPI.RISCV.toBigInt(rd, "NaN32");
+        } else {
+          rd = CAPI.RISCV.toBigInt(rd, "NaNBfloat32_64");
+        }
+        rs1 = CAPI.RISCV.toBigInt(rs1, type_rs1);
+        if (typeof rs2 !== "undefined") {
+          rs2 = CAPI.RISCV.toBigInt(rs2, type_rs2);
+        }
+      definition: |
+        let a = CAPI.FP.float2bin(rs1);
+        rd = CAPI.FP.check_ieee(
+          parseInt(a[0]),
+          parseInt(a.slice(1, 12), 2),
+          parseInt(a.slice(13), 2),
+        );
+      help: Examines the value in double-precision floating-point register rs1
+        and writes to integer register rd a 10-bit mask that indicates the class
+        of the floating-point number. The corresponding bit in rd will be set if
+        the property is true and clear otherwise. All other bits in rd are
+        cleared. Note that exactly one bit in rd will be set.
 
     - name: fcvt.d.s
       template: R-Conversion
@@ -2373,10 +2890,26 @@ instructions:
           enum_name: rounding_mode
           optional: true
           order: null
-      preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); if (typeof rs2 !== 'undefined') { [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2); }"
-      postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN32'); } else { rd = CAPI.RISCV.toBigInt(rd,'NaNBfloat32_64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); if (typeof rs2 !== 'undefined') { rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2); }"
-      definition: "rd = rs1;" # TODO: This doesn't seem right, check the RISC-V manual
-      help: Converts double floating-point register in rs1 into a double floating-point number in floating-point register rd.
+      preoperation: |
+        let type_rs1, type_rs2;
+        [rs1, type_rs1] = CAPI.RISCV.toJSNumberD(rs1);
+        if (typeof rs2 !== "undefined") {
+          [rs2, type_rs2] = CAPI.RISCV.toJSNumberD(rs2);
+        }
+      postoperation: |
+        if (isNaN(rd)) {
+          rd = CAPI.RISCV.toBigInt(rd, "NaN32");
+        } else {
+          rd = CAPI.RISCV.toBigInt(rd, "NaNBfloat32_64");
+        }
+        rs1 = CAPI.RISCV.toBigInt(rs1, type_rs1);
+        if (typeof rs2 !== "undefined") {
+          rs2 = CAPI.RISCV.toBigInt(rs2, type_rs2);
+        }
+      definition: |
+        rd = rs1; # TODO: This doesn't seem right, check the RISC-V manual
+      help: Converts double floating-point register in rs1 into a double
+        floating-point number in floating-point register rd.
 
     - name: fcvt.d.w
       template: R-Conversion
@@ -2398,9 +2931,12 @@ instructions:
           type: DFP-Reg
         - field: rs1
           type: INT-Reg
-      postoperation: "rd = CAPI.RISCV.toBigInt(rd,'float64');"
-      definition: "rd = CAPI.FP.uint2int(rs1);"
-      help: Converts a 32-bit signed integer, in integer register rs1 into a double-precision floating-point number in floating-point register rd.
+      postoperation: |
+        rd = CAPI.RISCV.toBigInt(rd, 'float64');
+      definition: |
+        rd = CAPI.FP.uint2int(rs1);
+      help: Converts a 32-bit signed integer, in integer register rs1 into a
+        double-precision floating-point number in floating-point register rd.
 
     - name: fcvt.d.wu
       template: R-Conversion
@@ -2422,10 +2958,26 @@ instructions:
           type: DFP-Reg
         - field: rs1
           type: INT-Reg
-      preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); if (typeof rs2 !== 'undefined') { [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2); }"
-      postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN32'); } else { rd = CAPI.RISCV.toBigInt(rd,'NaNBfloat32_64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); if (typeof rs2 !== 'undefined') { rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2); }"
-      definition: "rd = CAPI.FP.int2uint(parseFloat(rs1));"
-      help: Converts a 32-bit unsigned integer, in integer register rs1 into a double-precision floating-point number in floating-point register rd.
+      preoperation: |
+        let type_rs1, type_rs2;
+        [rs1, type_rs1] = CAPI.RISCV.toJSNumberD(rs1);
+        if (typeof rs2 !== "undefined") {
+          [rs2, type_rs2] = CAPI.RISCV.toJSNumberD(rs2);
+        }
+      postoperation: |
+        if (isNaN(rd)) {
+          rd = CAPI.RISCV.toBigInt(rd, "NaN32");
+        } else {
+          rd = CAPI.RISCV.toBigInt(rd, "NaNBfloat32_64");
+        }
+        rs1 = CAPI.RISCV.toBigInt(rs1, type_rs1);
+        if (typeof rs2 !== "undefined") {
+          rs2 = CAPI.RISCV.toBigInt(rs2, type_rs2);
+        }
+      definition: |
+        rd = CAPI.FP.int2uint(parseFloat(rs1));
+      help: Converts a 32-bit unsigned integer, in integer register rs1 into a
+        double-precision floating-point number in floating-point register rd.
 
     - name: fcvt.s.d
       template: R-Conversion
@@ -2445,10 +2997,26 @@ instructions:
           type: SFP-Reg
         - field: rs1
           type: DFP-Reg
-      preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); if (typeof rs2 !== 'undefined') { [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2); }"
-      postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN32'); } else { rd = CAPI.RISCV.toBigInt(rd,'NaNBfloat32_64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); if (typeof rs2 !== 'undefined') { rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2); }"
-      definition: "rd = rs1;" # TODO: This doesn't seem right, check the RISC-V manual
-      help: Converts double floating-point register in rs1 into a floating-point number in floating-point register rd.
+      preoperation: |
+        let type_rs1, type_rs2;
+        [rs1, type_rs1] = CAPI.RISCV.toJSNumberD(rs1);
+        if (typeof rs2 !== 'undefined') {
+          [rs2, type_rs2] = CAPI.RISCV.toJSNumberD(rs2);
+        }
+      postoperation: |
+        if (isNaN(rd)) {
+          rd = CAPI.RISCV.toBigInt(rd, "NaN32");
+        } else {
+          rd = CAPI.RISCV.toBigInt(rd, "NaNBfloat32_64");
+        }
+        rs1 = CAPI.RISCV.toBigInt(rs1, type_rs1);
+        if (typeof rs2 !== "undefined") {
+          rs2 = CAPI.RISCV.toBigInt(rs2, type_rs2);
+        }
+      definition: |
+        rd = rs1; # TODO: This doesn't seem right, check the RISC-V manual
+      help: Converts double floating-point register in rs1 into a floating-point
+        number in floating-point register rd.
 
     - name: fcvt.w.d
       template: R-Conversion
@@ -2468,10 +3036,26 @@ instructions:
           type: INT-Reg
         - field: rs1
           type: DFP-Reg
-      preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); if (typeof rs2 !== 'undefined') { [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2); }"
-      postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN32'); } else { rd = CAPI.RISCV.toBigInt(rd,'NaNBfloat32_64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); if (typeof rs2 !== 'undefined') { rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2); }"
-      definition: "rd = parseInt(rs1);"
-      help: Converts a double-precision floating-point number in floating-point register rs1 to a signed 32-bit integer, in integer register rd.
+      preoperation: |
+        let type_rs1, type_rs2;
+        [rs1, type_rs1] = CAPI.RISCV.toJSNumberD(rs1);
+        if (typeof rs2 !== "undefined") {
+          [rs2, type_rs2] = CAPI.RISCV.toJSNumberD(rs2);
+        }
+      postoperation: |
+        if (isNaN(rd)) {
+          rd = CAPI.RISCV.toBigInt(rd, "NaN32");
+        } else {
+          rd = CAPI.RISCV.toBigInt(rd, "NaNBfloat32_64");
+        }
+        rs1 = CAPI.RISCV.toBigInt(rs1, type_rs1);
+        if (typeof rs2 !== "undefined") {
+          rs2 = CAPI.RISCV.toBigInt(rs2, type_rs2);
+        }
+      definition: |
+        rd = parseInt(rs1);
+      help: Converts a double-precision floating-point number in floating-point
+        register rs1 to a signed 32-bit integer, in integer register rd.
 
     - name: fcvt.wu.d
       template: R-Conversion
@@ -2491,10 +3075,26 @@ instructions:
           type: INT-Reg
         - field: rs1
           type: DFP-Reg
-      preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); if (typeof rs2 !== 'undefined') { [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2); }"
-      postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN32'); } else { rd = CAPI.RISCV.toBigInt(rd,'NaNBfloat32_64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); if (typeof rs2 !== 'undefined') { rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2); }"
-      definition: "rd = CAPI.FP.int2uint(parseInt(rs1));"
-      help: Converts a double-precision floating-point number in floating-point register rs1 to a unsigned 32-bit integer, in integer register rd.
+      preoperation: |
+        let type_rs1, type_rs2;
+        [rs1, type_rs1] = CAPI.RISCV.toJSNumberD(rs1);
+        if (typeof rs2 !== "undefined") {
+          [rs2, type_rs2] = CAPI.RISCV.toJSNumberD(rs2);
+        }
+      postoperation: |
+        if (isNaN(rd)) {
+          rd = CAPI.RISCV.toBigInt(rd, "NaN32");
+        } else {
+          rd = CAPI.RISCV.toBigInt(rd, "NaNBfloat32_64");
+        }
+        rs1 = CAPI.RISCV.toBigInt(rs1, type_rs1);
+        if (typeof rs2 !== "undefined") {
+          rs2 = CAPI.RISCV.toBigInt(rs2, type_rs2);
+        }
+      definition: |
+        rd = CAPI.FP.int2uint(parseInt(rs1));
+      help: Converts a double-precision floating-point number in floating-point
+        register rs1 to a unsigned 32-bit integer, in integer register rd.
 
     - name: fdiv.d
       template: R-Double
@@ -2508,9 +3108,24 @@ instructions:
           enum_name: rounding_mode
           optional: true
           order: 4
-      preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2);"
-      postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN64'); } else { rd = CAPI.RISCV.toBigInt(rd,'float64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2);"
-      definition: "if (rs2 != 0)\n { rd = rs1 / rs2; }\n else { CAPI.VALIDATION.raise('Division by zero not allowed'); }"
+      preoperation: |
+        let type_rs1, type_rs2;
+        [rs1, type_rs1] = CAPI.RISCV.toJSNumberD(rs1);
+        [rs2, type_rs2] = CAPI.RISCV.toJSNumberD(rs2);
+      postoperation: |
+        if (isNaN(rd)) {
+          rd = CAPI.RISCV.toBigInt(rd, "NaN64");
+        } else {
+          rd = CAPI.RISCV.toBigInt(rd, "float64");
+        }
+        rs1 = CAPI.RISCV.toBigInt(rs1, type_rs1);
+        rs2 = CAPI.RISCV.toBigInt(rs2, type_rs2);
+      definition: |
+        if (rs2 != 0) {
+          rd = rs1 / rs2;
+        } else {
+          CAPI.VALIDATION.raise("Division by zero not allowed");
+        }
       help: Perform double-precision floating-point division.
 
     - name: feq.d
@@ -2524,10 +3139,19 @@ instructions:
           value: "010"
         - field: rd
           type: INT-Reg
-      preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2);"
-      postoperation: "rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2);"
-      definition: "rd = (rs1 == rs2) ? 1 : 0;"
-      help: Performs a quiet equal comparison between double-precision floating-point registers rs1 and rs2 and record the Boolean result in integer register rd. Only signaling NaN inputs cause an Invalid Operation exception. The result is 0 if either operand is NaN.
+      preoperation: |
+        let type_rs1, type_rs2;
+        [rs1, type_rs1] = CAPI.RISCV.toJSNumberD(rs1);
+        [rs2, type_rs2] = CAPI.RISCV.toJSNumberD(rs2);
+      postoperation: |
+        rs1 = CAPI.RISCV.toBigInt(rs1, type_rs1);
+        rs2 = CAPI.RISCV.toBigInt(rs2, type_rs2);
+      definition: |
+        rd = (rs1 == rs2) ? 1 : 0;
+      help: Performs a quiet equal comparison between double-precision
+        floating-point registers rs1 and rs2 and record the Boolean result in
+        integer register rd. Only signaling NaN inputs cause an Invalid
+        Operation exception. The result is 0 if either operand is NaN.
 
     - name: fle.d
       template: R-Double
@@ -2540,10 +3164,19 @@ instructions:
           value: "000"
         - field: rd
           type: INT-Reg
-      preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2);"
-      postoperation: "rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2);"
-      definition: "rd = (rs1 <= rs2) ? 1 : 0;"
-      help: Performs a quiet less or equal comparison between double-precision floating-point registers rs1 and rs2 and record the Boolean result in integer register rd. Only signaling NaN inputs cause an Invalid Operation exception. The result is 0 if either operand is NaN.
+      preoperation: |
+        let type_rs1, type_rs2;
+        [rs1, type_rs1] = CAPI.RISCV.toJSNumberD(rs1);
+        [rs2, type_rs2] = CAPI.RISCV.toJSNumberD(rs2);
+      postoperation: |
+        rs1 = CAPI.RISCV.toBigInt(rs1, type_rs1);
+        rs2 = CAPI.RISCV.toBigInt(rs2, type_rs2);
+      definition: |
+        rd = (rs1 <= rs2) ? 1 : 0;
+      help: Performs a quiet less or equal comparison between double-precision
+        floating-point registers rs1 and rs2 and record the Boolean result in
+        integer register rd. Only signaling NaN inputs cause an Invalid
+        Operation exception. The result is 0 if either operand is NaN.
 
     - name: flt.d
       template: R-Double
@@ -2556,10 +3189,19 @@ instructions:
           value: "001"
         - field: rd
           type: INT-Reg
-      preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2);"
-      postoperation: "rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2);"
-      definition: "rd = (rs1 < rs2) ? 1 : 0;"
-      help: Performs a quiet less comparison between double-precision floating-point registers rs1 and rs2 and record the Boolean result in integer register rd. Only signaling NaN inputs cause an Invalid Operation exception. The result is 0 if either operand is NaN.
+      preoperation: |
+        let type_rs1, type_rs2;
+        [rs1, type_rs1] = CAPI.RISCV.toJSNumberD(rs1);
+        [rs2, type_rs2] = CAPI.RISCV.toJSNumberD(rs2);
+      postoperation: |
+        rs1 = CAPI.RISCV.toBigInt(rs1, type_rs1);
+        rs2 = CAPI.RISCV.toBigInt(rs2, type_rs2);
+      definition: |
+        rd = (rs1 < rs2) ? 1 : 0;
+      help: Performs a quiet less comparison between double-precision
+        floating-point registers rs1 and rs2 and record the Boolean result in
+        integer register rd. Only signaling NaN inputs cause an Invalid
+        Operation exception. The result is 0 if either operand is NaN.
 
     - name: fmax.d
       template: R-Double
@@ -2570,9 +3212,20 @@ instructions:
           value: "0010101"
         - field: funct3
           value: "001"
-      preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2);"
-      postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN64'); } else { rd = CAPI.RISCV.toBigInt(rd,'float64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2);"
-      definition: "rd = Math.max(rs1,rs2);"
+      preoperation: |
+        let type_rs1, type_rs2;
+        [rs1, type_rs1] = CAPI.RISCV.toJSNumberD(rs1);
+        [rs2, type_rs2] = CAPI.RISCV.toJSNumberD(rs2);
+      postoperation: |
+        if (isNaN(rd)) {
+          rd = CAPI.RISCV.toBigInt(rd, "NaN64");
+        } else {
+          rd = CAPI.RISCV.toBigInt(rd, "float64");
+        }
+        rs1 = CAPI.RISCV.toBigInt(rs1, type_rs1);
+        rs2 = CAPI.RISCV.toBigInt(rs2, type_rs2);
+      definition: |
+        rd = Math.max(rs1,rs2);
       help: Write the larger of double precision data in rs1 and rs2 to rd.
 
     - name: fmin.d
@@ -2584,9 +3237,20 @@ instructions:
           value: "0010101"
         - field: funct3
           value: "000"
-      preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2);"
-      postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN64'); } else { rd = CAPI.RISCV.toBigInt(rd,'float64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2);"
-      definition: "rd = Math.min(rs1, rs2);"
+      preoperation: |
+        let type_rs1, type_rs2;
+        [rs1, type_rs1] = CAPI.RISCV.toJSNumberD(rs1);
+        [rs2, type_rs2] = CAPI.RISCV.toJSNumberD(rs2);
+      postoperation: |
+        if (isNaN(rd)) {
+          rd = CAPI.RISCV.toBigInt(rd, "NaN64");
+        } else {
+          rd = CAPI.RISCV.toBigInt(rd, "float64");
+        }
+        rs1 = CAPI.RISCV.toBigInt(rs1, type_rs1);
+        rs2 = CAPI.RISCV.toBigInt(rs2, type_rs2);
+      definition: |
+        rd = Math.min(rs1, rs2);
       help: Write the smaller of double precision data in rs1 and rs2 to rd.
 
     - name: fmul.d
@@ -2601,9 +3265,20 @@ instructions:
           enum_name: rounding_mode
           optional: true
           order: 4
-      preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2);"
-      postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN64'); } else { rd = CAPI.RISCV.toBigInt(rd,'float64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2);"
-      definition: "rd = rs1 * rs2;"
+      preoperation: |
+        let type_rs1, type_rs2;
+        [rs1, type_rs1] = CAPI.RISCV.toJSNumberD(rs1);
+        [rs2, type_rs2] = CAPI.RISCV.toJSNumberD(rs2);
+      postoperation: |
+        if (isNaN(rd)) {
+          rd = CAPI.RISCV.toBigInt(rd, "NaN64");
+        } else {
+          rd = CAPI.RISCV.toBigInt(rd, "float64");
+        }
+        rs1 = CAPI.RISCV.toBigInt(rs1, type_rs1);
+        rs2 = CAPI.RISCV.toBigInt(rs2, type_rs2);
+      definition: |
+        rd = rs1 * rs2;
       help: Perform double-precision floating-point addition.
 
     - name: fsgnj.d
@@ -2615,9 +3290,20 @@ instructions:
           value: "0010001"
         - field: funct3
           value: "000"
-      preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2);"
-      postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN64'); } else { rd = CAPI.RISCV.toBigInt(rd,'float64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2);"
-      definition: "rd = (rs2 > 0) ? Math.abs(rs1) : -Math.abs(rs1);"
+      preoperation: |
+        let type_rs1, type_rs2;
+        [rs1, type_rs1] = CAPI.RISCV.toJSNumberD(rs1);
+        [rs2, type_rs2] = CAPI.RISCV.toJSNumberD(rs2);
+      postoperation: |
+        if (isNaN(rd)) {
+          rd = CAPI.RISCV.toBigInt(rd, "NaN64");
+        } else {
+          rd = CAPI.RISCV.toBigInt(rd, "float64");
+        }
+        rs1 = CAPI.RISCV.toBigInt(rs1, type_rs1);
+        rs2 = CAPI.RISCV.toBigInt(rs2, type_rs2);
+      definition: |
+        rd = (rs2 > 0) ? Math.abs(rs1) : -Math.abs(rs1);
       help: Perform double-precision floating-point multiplication.
 
     - name: fsgnjn.d
@@ -2629,10 +3315,22 @@ instructions:
           value: "0010001"
         - field: funct3
           value: "001"
-      preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2);"
-      postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN64'); } else { rd = CAPI.RISCV.toBigInt(rd,'float64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2);"
-      definition: "rd = (rs2 > 0) ? -Math.abs(rs1) : +Math.abs(rs1);"
-      help: Produce a result that takes all bits except the sign bit from rs1. The result's sign bit is opposite of rs2's sign bit.
+      preoperation: |
+        let type_rs1, type_rs2;
+        [rs1, type_rs1] = CAPI.RISCV.toJSNumberD(rs1);
+        [rs2, type_rs2] = CAPI.RISCV.toJSNumberD(rs2);
+      postoperation: |
+        if (isNaN(rd)) {
+          rd = CAPI.RISCV.toBigInt(rd, "NaN64");
+        } else {
+          rd = CAPI.RISCV.toBigInt(rd, "float64");
+        }
+        rs1 = CAPI.RISCV.toBigInt(rs1, type_rs1);
+        rs2 = CAPI.RISCV.toBigInt(rs2, type_rs2);
+      definition: |
+        rd = (rs2 > 0) ? -Math.abs(rs1) : +Math.abs(rs1);
+      help: Produce a result that takes all bits except the sign bit from rs1.
+        The result's sign bit is opposite of rs2's sign bit.
 
     - name: fsgnjx.d
       template: R-Double
@@ -2643,10 +3341,24 @@ instructions:
           value: "0010001"
         - field: funct3
           value: "010"
-      preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2);"
-      postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN64'); } else { rd = CAPI.RISCV.toBigInt(rd,'float64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2);"
-      definition: "let a = rs1<0; let b = rs2<0;\nrd = (a^b) ? -Math.abs(rs1) : Math.abs(rs1);"
-      help: Produce a result that takes all bits except the sign bit from rs1. The result's sign bit is XOR of sign bit of rs1 and rs2.
+      preoperation: |
+        let type_rs1, type_rs2;
+        [rs1, type_rs1] = CAPI.RISCV.toJSNumberD(rs1);
+        [rs2, type_rs2] = CAPI.RISCV.toJSNumberD(rs2);
+      postoperation: |
+        if (isNaN(rd)) {
+          rd = CAPI.RISCV.toBigInt(rd, "NaN64");
+        } else {
+          rd = CAPI.RISCV.toBigInt(rd, "float64");
+        }
+        rs1 = CAPI.RISCV.toBigInt(rs1, type_rs1);
+        rs2 = CAPI.RISCV.toBigInt(rs2, type_rs2);
+      definition: |
+        let a = rs1 < 0;
+        let b = rs2 < 0;
+        rd = a ^ b ? -Math.abs(rs1) : Math.abs(rs1);
+      help: Produce a result that takes all bits except the sign bit from rs1.
+        The result's sign bit is XOR of sign bit of rs1 and rs2.
 
     - name: fsqrt.d
       template: R-Double
@@ -2655,7 +3367,7 @@ instructions:
           value: "1010011"
         - field: funct7
           value: "0101101"
-        - field: rs2
+        - field: rs2 # In this instruction, rs2 is more like a funct5
           type: cop
           value: "00000"
           order: null
@@ -2664,9 +3376,30 @@ instructions:
           enum_name: rounding_mode
           optional: true
           order: 3
-      preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); if (typeof rs2 !== 'undefined') { [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2); }"
-      postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN32'); } else { rd = CAPI.RISCV.toBigInt(rd,'NaNBfloat32_64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); if (typeof rs2 !== 'undefined') { rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2); }"
-      definition: "if (rs1 >= 0)\n { rd = Math.sqrt(rs1); }\n else { CAPI.VALIDATION.raise('Square root of a negative number is not allowed.'); }"
+      preoperation: |
+        let type_rs1, type_rs2;
+        [rs1, type_rs1] = CAPI.RISCV.toJSNumberD(rs1);
+        if (typeof rs2 !== "undefined") {
+          [rs2, type_rs2] = CAPI.RISCV.toJSNumberD(rs2);
+        }
+      postoperation: |
+        if (isNaN(rd)) {
+          rd = CAPI.RISCV.toBigInt(rd, "NaN32");
+        } else {
+          rd = CAPI.RISCV.toBigInt(rd, "NaNBfloat32_64");
+        }
+        rs1 = CAPI.RISCV.toBigInt(rs1, type_rs1);
+        if (typeof rs2 !== "undefined") {
+          rs2 = CAPI.RISCV.toBigInt(rs2, type_rs2);
+        }
+      definition: |
+        if (rs1 >= 0) {
+          rd = Math.sqrt(rs1);
+        } else {
+          CAPI.VALIDATION.raise(
+            "Square root of a negative number is not allowed."
+          );
+        }
       help: Perform double-precision square root.
 
     - name: fsub.d
@@ -2681,9 +3414,20 @@ instructions:
           enum_name: rounding_mode
           optional: true
           order: 4
-      preoperation: "let type_rs1, type_rs2; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2);"
-      postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN64'); } else { rd = CAPI.RISCV.toBigInt(rd,'float64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2);"
-      definition: "rd = rs1 - rs2;"
+      preoperation: |
+        let type_rs1, type_rs2;
+        [rs1, type_rs1] = CAPI.RISCV.toJSNumberD(rs1);
+        [rs2, type_rs2] = CAPI.RISCV.toJSNumberD(rs2);
+      postoperation: |
+        if (isNaN(rd)) {
+          rd = CAPI.RISCV.toBigInt(rd, "NaN64");
+        } else {
+          rd = CAPI.RISCV.toBigInt(rd, "float64");
+        }
+        rs1 = CAPI.RISCV.toBigInt(rs1, type_rs1);
+        rs2 = CAPI.RISCV.toBigInt(rs2, type_rs2);
+      definition: |
+        rd = rs1 - rs2;
       help: Perform double-precision floating-point addition.
 
     # R4-type instructions
@@ -2699,9 +3443,22 @@ instructions:
           enum_name: rounding_mode
           optional: true
           order: 5
-      preoperation: "let type_rs1, type_rs2, type_rs3; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2); [rs3,type_rs3] = CAPI.RISCV.toJSNumberD(rs3);"
-      postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN64'); } else { rd = CAPI.RISCV.toBigInt(rd,'float64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2); rs3 = CAPI.RISCV.toBigInt(rs3,type_rs3);"
-      definition: "rd = rs1 * rs2 + rs3;"
+      preoperation: |
+        let type_rs1, type_rs2, type_rs3;
+        [rs1, type_rs1] = CAPI.RISCV.toJSNumberD(rs1);
+        [rs2, type_rs2] = CAPI.RISCV.toJSNumberD(rs2);
+        [rs3, type_rs3] = CAPI.RISCV.toJSNumberD(rs3);
+      postoperation: |
+        if (isNaN(rd)) {
+          rd = CAPI.RISCV.toBigInt(rd, "NaN64");
+        } else {
+          rd = CAPI.RISCV.toBigInt(rd, "float64");
+        }
+        rs1 = CAPI.RISCV.toBigInt(rs1, type_rs1);
+        rs2 = CAPI.RISCV.toBigInt(rs2, type_rs2);
+        rs3 = CAPI.RISCV.toBigInt(rs3, type_rs3);
+      definition: |
+        rd = rs1 * rs2 + rs3;
       help: Perform double-precision fused multiply addition.
 
     - name: fmsub.d
@@ -2716,9 +3473,22 @@ instructions:
           enum_name: rounding_mode
           optional: true
           order: 5
-      preoperation: "let type_rs1, type_rs2, type_rs3; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2); [rs3,type_rs3] = CAPI.RISCV.toJSNumberD(rs3);"
-      postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN64'); } else { rd = CAPI.RISCV.toBigInt(rd,'float64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2); rs3 = CAPI.RISCV.toBigInt(rs3,type_rs3);"
-      definition: "rd = rs1 * rs2 - rs3;"
+      preoperation: |
+        let type_rs1, type_rs2, type_rs3;
+        [rs1, type_rs1] = CAPI.RISCV.toJSNumberD(rs1);
+        [rs2, type_rs2] = CAPI.RISCV.toJSNumberD(rs2);
+        [rs3, type_rs3] = CAPI.RISCV.toJSNumberD(rs3);
+      postoperation: |
+        if (isNaN(rd)) {
+          rd = CAPI.RISCV.toBigInt(rd, "NaN64");
+        } else {
+          rd = CAPI.RISCV.toBigInt(rd, "float64");
+        }
+        rs1 = CAPI.RISCV.toBigInt(rs1, type_rs1);
+        rs2 = CAPI.RISCV.toBigInt(rs2, type_rs2);
+        rs3 = CAPI.RISCV.toBigInt(rs3, type_rs3);
+      definition: |
+        rd = rs1 * rs2 - rs3;
       help: Perform double-precision fused multiply subtraction.
 
     - name: fnmadd.d
@@ -2733,9 +3503,22 @@ instructions:
           enum_name: rounding_mode
           optional: true
           order: 5
-      preoperation: "let type_rs1, type_rs2, type_rs3; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2); [rs3,type_rs3] = CAPI.RISCV.toJSNumberD(rs3);"
-      postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN64'); } else { rd = CAPI.RISCV.toBigInt(rd,'float64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2); rs3 = CAPI.RISCV.toBigInt(rs3,type_rs3);"
-      definition: "rd = -rs1 * rs2 - rs3;"
+      preoperation: |
+        let type_rs1, type_rs2, type_rs3;
+        [rs1, type_rs1] = CAPI.RISCV.toJSNumberD(rs1);
+        [rs2, type_rs2] = CAPI.RISCV.toJSNumberD(rs2);
+        [rs3, type_rs3] = CAPI.RISCV.toJSNumberD(rs3);
+      postoperation: |
+        if (isNaN(rd)) {
+          rd = CAPI.RISCV.toBigInt(rd, "NaN64");
+        } else {
+          rd = CAPI.RISCV.toBigInt(rd, "float64");
+        }
+        rs1 = CAPI.RISCV.toBigInt(rs1, type_rs1);
+        rs2 = CAPI.RISCV.toBigInt(rs2, type_rs2);
+        rs3 = CAPI.RISCV.toBigInt(rs3, type_rs3);
+      definition: |
+        rd = -rs1 * rs2 - rs3;
       help: Perform negated double-precision fused multiply addition.
 
     - name: fnmsub.d
@@ -2750,9 +3533,22 @@ instructions:
           enum_name: rounding_mode
           optional: true
           order: 5
-      preoperation: "let type_rs1, type_rs2, type_rs3; [rs1,type_rs1] = CAPI.RISCV.toJSNumberD(rs1); [rs2,type_rs2] = CAPI.RISCV.toJSNumberD(rs2); [rs3,type_rs3] = CAPI.RISCV.toJSNumberD(rs3);"
-      postoperation: "if (isNaN(rd)) { rd = CAPI.RISCV.toBigInt(rd,'NaN64'); } else { rd = CAPI.RISCV.toBigInt(rd,'float64'); }; rs1 = CAPI.RISCV.toBigInt(rs1,type_rs1); rs2 = CAPI.RISCV.toBigInt(rs2,type_rs2); rs3 = CAPI.RISCV.toBigInt(rs3,type_rs3);"
-      definition: "rd = -rs1 * rs2 + rs3;"
+      preoperation: |
+        let type_rs1, type_rs2, type_rs3;
+        [rs1, type_rs1] = CAPI.RISCV.toJSNumberD(rs1);
+        [rs2, type_rs2] = CAPI.RISCV.toJSNumberD(rs2);
+        [rs3, type_rs3] = CAPI.RISCV.toJSNumberD(rs3);
+      postoperation: |
+        if (isNaN(rd)) {
+          rd = CAPI.RISCV.toBigInt(rd, "NaN64");
+        } else {
+          rd = CAPI.RISCV.toBigInt(rd, "float64");
+        }
+        rs1 = CAPI.RISCV.toBigInt(rs1, type_rs1);
+        rs2 = CAPI.RISCV.toBigInt(rs2, type_rs2);
+        rs3 = CAPI.RISCV.toBigInt(rs3, type_rs3);
+      definition: |
+        rd = -rs1 * rs2 + rs3;
       help: Perform negated double-precision fused multiply subtraction.
 
     # S-type instructions
@@ -2765,8 +3561,14 @@ instructions:
           value: "011"
         - field: rs2 # We're overriding the rs2 field from the template
           type: DFP-Reg
-      definition: "var val = BigInt('0x' + CAPI.FP.split_double(rs2, 0));\n CAPI.MEM.write(rs1+imm, 4, val, rs2_name);\n val = BigInt('0x' + CAPI.FP.split_double(rs2, 1));\n CAPI.MEM.write(rs1+imm+4n, 4, val, rs2_name); CAPI.MEM.addHint(rs1+imm, 'float64', 64);"
-      help: Store a double-precision value from the floating-point registers to memory.
+      definition: |
+        let val = BigInt("0x" + CAPI.FP.split_double(rs2, 0));
+        CAPI.MEM.write(rs1 + imm, 4, val, rs2_name);
+        val = BigInt("0x" + CAPI.FP.split_double(rs2, 1));
+        CAPI.MEM.write(rs1 + imm + 4n, 4, val, rs2_name);
+        CAPI.MEM.addHint(rs1 + imm, "float64", 64);
+      help: Store a double-precision value from the floating-point registers to
+        memory.
 
   Zicsr:
     #   _____ _
@@ -2777,6 +3579,7 @@ instructions:
     # RV32/64 Zicsr Standard Extension
 
     # TODO: Implement CSR instructions
+
   Zifencei:
     #   _____ _   __                          _
     #  |__  /(_) / _|  ___  _ __    ___  ___ (_)
@@ -2806,8 +3609,11 @@ instructions:
           startbit: 11
           stopbit: 7
           value: "00000"
-      definition: "console.log('Not implemented: fence.i');\n CAPI.VALIDATION.raise('fence.i not implemented');"
-      help: Provides explicit synchronization between writes to instruction memory and instruction fetches on the same hart.
+      definition: |
+        console.log('Not implemented: fence.i');
+        CAPI.VALIDATION.raise('fence.i not implemented');
+      help: Provides explicit synchronization between writes to instruction
+        memory and instruction fetches on the same hart.
 
 pseudoinstructions:
   # Make sure the definitions correspond with those in the RISC-V ASM manual (TODO: Check these!)
@@ -2820,7 +3626,8 @@ pseudoinstructions:
           type: INT-Reg
         - field: off
           type: offset_bytes
-      definition: "beq rs1, x0, off;"
+      definition: |
+        beq rs1, x0, off;
 
     - name: bgez
       fields:
@@ -2828,7 +3635,8 @@ pseudoinstructions:
           type: INT-Reg
         - field: off
           type: offset_bytes
-      definition: "bge reg1, x0, off;"
+      definition: |
+        bge reg1, x0, off;
       help: Take the branch if the value in register rs1 is zero.
 
     - name: bgt
@@ -2839,7 +3647,8 @@ pseudoinstructions:
           type: INT-Reg
         - field: off
           type: offset_bytes
-      definition: "blt rs2, rs1, off;"
+      definition: |
+        blt rs2, rs1, off;
 
     - name: bgtu
       fields:
@@ -2849,7 +3658,8 @@ pseudoinstructions:
           type: INT-Reg
         - field: off
           type: offset_bytes
-      definition: "bltu rs2, rs1, off;"
+      definition: |
+        bltu rs2, rs1, off;
 
     - name: bgtz
       fields:
@@ -2857,7 +3667,8 @@ pseudoinstructions:
           type: INT-Reg
         - field: off
           type: offset_bytes
-      definition: "bgt rs1, x0, off;"
+      definition: |
+        bgt rs1, x0, off;
 
     - name: ble
       fields:
@@ -2867,7 +3678,8 @@ pseudoinstructions:
           type: INT-Reg
         - field: off
           type: offset_bytes
-      definition: "bge rs2, rs1, off;"
+      definition: |
+        bge rs2, rs1, off;
 
     - name: bleu
       fields:
@@ -2877,7 +3689,8 @@ pseudoinstructions:
           type: INT-Reg
         - field: off
           type: offset_bytes
-      definition: "bgeu rs2, rs1, off;"
+      definition: |
+        bgeu rs2, rs1, off;
 
     - name: blez
       fields:
@@ -2885,7 +3698,8 @@ pseudoinstructions:
           type: INT-Reg
         - field: off
           type: offset_bytes
-      definition: "ble x0, rs1, off;"
+      definition: |
+        ble x0, rs1, off;
 
     - name: bltz
       fields:
@@ -2893,7 +3707,8 @@ pseudoinstructions:
           type: INT-Reg
         - field: off
           type: offset_bytes
-      definition: "blt rs1, x0, off;"
+      definition: |
+        blt rs1, x0, off;
 
     - name: bnez
       fields:
@@ -2901,25 +3716,29 @@ pseudoinstructions:
           type: INT-Reg
         - field: off
           type: offset_bytes
-      definition: "bne rs1, x0, off;"
+      definition: |
+        bne rs1, x0, off;
 
     - name: j
       fields:
         - field: off
           type: offset_bytes
-      definition: "beq zero, zero, off;"
+      definition: |
+        beq zero, zero, off;
 
     - name: jalr
       fields:
         - field: rs
           type: INT-Reg
-      definition: "jalr x1, 0(rs);"
+      definition: |
+        jalr x1, 0(rs);
 
     - name: jr
       fields:
         - field: rs
           type: INT-Reg
-      definition: "jalr x0, 0(rs);"
+      definition: |
+        jalr x0, 0(rs);
 
     - name: la
       fields:
@@ -2927,7 +3746,15 @@ pseudoinstructions:
           type: INT-Reg
         - field: addr
           type: inm-unsigned
-      definition: "no_ret_op{tmp=Field.2.(31,0).int;\ntmp_pc_offset=(reg.pc-4)&0xFFF;\ntmp_low=tmp&0x00000FFF;\ntmp_hi=tmp>>12};\nauipc rd, op{tmp_hi};\naddi rd, rd, op{tmp_low-(tmp_pc_offset)};"
+      definition: |
+        no_ret_op{
+          tmp = Field.2.(31,0).int;
+          tmp_pc_offset = (reg.pc - 4) & 0xFFF;
+          tmp_low = tmp & 0x00000FFF;
+          tmp_hi = tmp >> 12;
+        };
+        auipc rd, op{tmp_hi};
+        addi rd, rd, op{tmp_low - (tmp_pc_offset)};
 
     - name: li
       fields:
@@ -2935,7 +3762,20 @@ pseudoinstructions:
           type: INT-Reg
         - field: val
           type: inm-signed
-      definition: "no_ret_op{tmp=Field.2.(31,0).int;\ntmp_low=tmp&0x00000FFF;\ntmp_low-=tmp_low>0x7FF? 0x1000 : 0;\ntmp_hi=(tmp - tmp_low)>>>12};\nif(tmp_hi === 0){addi rd, x0, op{tmp_low};}\nelse{lui rd, op{tmp_hi};\naddi rd, rd, op{tmp_low};}"
+      definition: |
+        no_ret_op{
+          tmp = Field.2.(31,0).int;
+          tmp_low = tmp & 0x00000FFF;
+          tmp_low -= tmp_low > 0x7FF ? 0x1000 : 0;
+          tmp_hi = (tmp - tmp_low) >>> 12;
+        };
+        if (tmp_hi === 0) {
+          addi rd, x0, op{tmp_low};
+        }
+        else {
+          lui rd, op{tmp_hi};
+          addi rd, rd, op{tmp_low};
+        };
       help: Load the sign-extended 6-bit immediate, imm, into register rd.
 
     - name: mv
@@ -2944,7 +3784,8 @@ pseudoinstructions:
           type: INT-Reg
         - field: reg2
           type: INT-Reg
-      definition: "addi reg1, reg2, 0;"
+      definition: |
+        addi reg1, reg2, 0;
       help: Copy the value in register rs2 into register rd.
 
     - name: neg
@@ -2953,10 +3794,12 @@ pseudoinstructions:
           type: INT-Reg
         - field: reg2
           type: INT-Reg
-      definition: "sub reg1, x0, reg2;"
+      definition: |
+        sub reg1, x0, reg2;
 
     - name: nop
-      definition: "addi x0, x0, 0;"
+      definition: |
+        addi x0, x0, 0;
       help: Does not change any user-visible state, except for advancing the pc.
 
     - name: not
@@ -2965,10 +3808,12 @@ pseudoinstructions:
           type: INT-Reg
         - field: reg2
           type: INT-Reg
-      definition: "xori reg1, reg2, -1;"
+      definition: |
+        xori reg1, reg2, -1;
 
     - name: ret
-      definition: "jalr x0, 0(x1);" #TODO: check this!
+      definition: |
+        jalr x0, 0(x1); # TODO: check this!
 
     - name: seqz
       fields:
@@ -2976,7 +3821,8 @@ pseudoinstructions:
           type: INT-Reg
         - field: reg2
           type: INT-Reg
-      definition: "sltiu reg1, reg2, 1;"
+      definition: |
+        sltiu reg1, reg2, 1;
 
     - name: sgtz
       fields:
@@ -2984,7 +3830,8 @@ pseudoinstructions:
           type: INT-Reg
         - field: reg2
           type: INT-Reg
-      definition: "slt reg1, x0, reg2;"
+      definition: |
+        slt reg1, x0, reg2;
 
     - name: sltz
       fields:
@@ -2992,7 +3839,8 @@ pseudoinstructions:
           type: INT-Reg
         - field: reg2
           type: INT-Reg
-      definition: "slt reg1, reg2, x0;"
+      definition: |
+        slt reg1, reg2, x0;
 
     - name: snez
       fields:
@@ -3000,7 +3848,8 @@ pseudoinstructions:
           type: INT-Reg
         - field: reg2
           type: INT-Reg
-      definition: "sltu reg1, x0, reg2;"
+      definition: |
+        sltu reg1, x0, reg2;
   F:
     # RV32F Pseudoinstructions
     - name: fabs.s
@@ -3009,7 +3858,8 @@ pseudoinstructions:
           type: SFP-Reg
         - field: rs2
           type: SFP-Reg
-      definition: "fsgnjx.s rs1, rs2, rs2;"
+      definition: |
+        fsgnjx.s rs1, rs2, rs2;
 
     - name: fmv.s
       fields:
@@ -3017,7 +3867,8 @@ pseudoinstructions:
           type: SFP-Reg
         - field: rs2
           type: SFP-Reg
-      definition: "fsgnj.s rs1, rs2, rs2;"
+      definition: |
+        fsgnj.s rs1, rs2, rs2;
 
     - name: fneg.s
       fields:
@@ -3025,7 +3876,8 @@ pseudoinstructions:
           type: SFP-Reg
         - field: rs2
           type: SFP-Reg
-      definition: "fsgnjn.s rs1, rs2, rs2;"
+      definition: |
+        fsgnjn.s rs1, rs2, rs2;
   D:
     # RV32D Pseudoinstructions
     - name: fabs.d
@@ -3034,7 +3886,8 @@ pseudoinstructions:
           type: DFP-Reg
         - field: rs2
           type: DFP-Reg
-      definition: "fsgnjx.d rs1, rs2, rs2;"
+      definition: |
+        fsgnjx.d rs1, rs2, rs2;
 
     - name: fmv.d
       fields:
@@ -3042,7 +3895,8 @@ pseudoinstructions:
           type: DFP-Reg
         - field: rs2
           type: DFP-Reg
-      definition: "fsgnj.d rs1, rs2, rs2;"
+      definition: |
+        fsgnj.d rs1, rs2, rs2;
 
     - name: fneg.d
       fields:
@@ -3050,7 +3904,8 @@ pseudoinstructions:
           type: DFP-Reg
         - field: rs2
           type: DFP-Reg
-      definition: "fsgnjn.d rs1, rs2, rs2;"
+      definition: |
+        fsgnjn.d rs1, rs2, rs2;
 
 enums:
   rounding_mode:

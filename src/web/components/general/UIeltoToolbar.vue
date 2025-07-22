@@ -35,7 +35,7 @@ export default {
   },
 
   computed: {
-    components_array: function () {
+    components_array () {
       return this.components.split("|")
     },
   },

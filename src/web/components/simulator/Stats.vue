@@ -91,11 +91,11 @@ export default {
             buttons
           >
             <b-form-radio value="instructions">
-              <font-awesome-icon icon="fa-solid fa-bars" />
+              <font-awesome-icon :icon="['fas', 'bars']" />
               Instructions
             </b-form-radio>
             <b-form-radio value="cycles">
-              <font-awesome-icon icon="fa-regular fa-clock" />
+              <font-awesome-icon :icon="['far', 'clock']" />
               Cycles
             </b-form-radio>
           </b-form-radio-group>

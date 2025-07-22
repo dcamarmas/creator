@@ -34,7 +34,7 @@ export default {
   components: {
     Register,
   },
-  
+
   data() {
     return {
       register_file: REGISTERS,
@@ -201,4 +201,3 @@ export default {
     </b-container>
   </div>
 </template>
-

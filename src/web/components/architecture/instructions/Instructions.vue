@@ -55,8 +55,8 @@ export default {
     // Show instruction fields modal
     view_instructions_modal(name, index) {
       this.modal_field_instruction = {
-        name: name,
-        index: index,
+        name,
+        index,
       }
     },
   },
@@ -79,7 +79,6 @@ export default {
       class="text-center"
       sticky-header="60vh"
     >
-
       <!-- For each instruction -->
 
       <template v-slot:cell(properties)="row">

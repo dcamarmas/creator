@@ -30,7 +30,10 @@ export default {
   <div>
     <span class="h5">Library tags:</span>
     <b-list-group>
-      <b-list-group-item v-for="item in instructions_tag" v-if="item.globl == true">
+      <b-list-group-item
+        v-for="item in instructions_tag"
+        v-if="item.globl == true"
+      >
         <b-badge pill variant="primary">
           {{ item.tag }}
         </b-badge>

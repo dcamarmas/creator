@@ -88,13 +88,31 @@ function getWebviewContent(
 ): string {
     // Get URIs for the local resources
     const cssUri = webview.asWebviewUri(
-        vscode.Uri.joinPath(extensionUri, "src", "webViews", "hexViewer", "hexViewer.css"),
+        vscode.Uri.joinPath(
+            extensionUri,
+            "src",
+            "webViews",
+            "hexViewer",
+            "hexViewer.css",
+        ),
     );
     const hexViewerScriptUri = webview.asWebviewUri(
-        vscode.Uri.joinPath(extensionUri, "src", "webViews", "hexViewer", "hexViewer.js"),
+        vscode.Uri.joinPath(
+            extensionUri,
+            "src",
+            "webViews",
+            "hexViewer",
+            "hexViewer.js",
+        ),
     );
     const mainScriptUri = webview.asWebviewUri(
-        vscode.Uri.joinPath(extensionUri, "src", "webViews", "hexViewer", "main.js"),
+        vscode.Uri.joinPath(
+            extensionUri,
+            "src",
+            "webViews",
+            "hexViewer",
+            "main.js",
+        ),
     );
 
     // Use a nonce to only allow specific scripts to be run

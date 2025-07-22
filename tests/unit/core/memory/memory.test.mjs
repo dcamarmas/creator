@@ -5,7 +5,6 @@ import {
 } from "https://deno.land/std/assert/mod.ts";
 
 import { Memory } from "../../../../src/core/memory/Memory.mts";
-import { writeFileSync, unlinkSync } from "node:fs";
 
 Deno.test("Memory - constructor with default 8-bit bytes", () => {
     const memory = new Memory({ sizeInBytes: 100 });

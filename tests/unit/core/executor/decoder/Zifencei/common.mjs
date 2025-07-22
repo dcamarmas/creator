@@ -7,7 +7,7 @@ export function setupArchitecture(
     architecturePath = "./architecture/RISCV/RV32IMFD.yml",
 ) {
     const architectureFile = fs.readFileSync(architecturePath, "utf8");
-    newArchitectureLoad(architectureFile, true);
+    newArchitectureLoad(architectureFile);
 }
 
 export function decode_test(instruction, expected) {

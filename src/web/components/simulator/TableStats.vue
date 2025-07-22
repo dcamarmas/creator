@@ -54,7 +54,7 @@ export default {
     },
 
     fields() {
-      return  [
+      return [
         {
           key: "type",
           label: "Type",
@@ -71,7 +71,7 @@ export default {
           sortable: true,
         },
       ]
-    }
+    },
   },
 }
 </script>

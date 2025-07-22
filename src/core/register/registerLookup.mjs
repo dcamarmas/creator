@@ -1,5 +1,6 @@
-/*
- *  Copyright 2018-2025 Felix Garcia Carballeira, Alejandro Calderon Mateos, Diego Camarmas Alonso
+/**
+ *  Copyright 2018-2025 Felix Garcia Carballeira, Alejandro Calderon Mateos,
+ *                      Diego Camarmas Alonso
  *
  *  This file is part of CREATOR.
  *
@@ -17,8 +18,8 @@
  *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-"use strict";
-import { architecture, REGISTERS } from "../core.mjs";
+
+import { REGISTERS } from "../core.mjs";
 
 /*
  *  Register operations
@@ -30,7 +31,7 @@ export function crex_findReg(value1) {
     ret.indexComp = null;
     ret.indexElem = null;
 
-    if (value1 == "") {
+    if (value1 === "") {
         return ret;
     }
 
@@ -54,7 +55,7 @@ export function crex_findReg_bytag(value1) {
     ret.indexComp = null;
     ret.indexElem = null;
 
-    if (value1 == "") {
+    if (value1 === "") {
         return ret;
     }
 

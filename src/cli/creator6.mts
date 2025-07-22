@@ -7,7 +7,7 @@ import { decode_instruction } from "../core/executor/decoder.mjs";
 import process from "node:process";
 import { logger } from "../core/utils/creator_logger.mjs";
 import readline from "node:readline";
-import { instructions } from "../core/compiler/compiler.mjs";
+import { instructions } from "../core/assembler/assembler.mjs";
 import {
     track_stack_getFrames,
     track_stack_getNames,
@@ -18,9 +18,9 @@ import yaml from "js-yaml";
 import path from "node:path";
 import { displayHelp } from "./utils.mts";
 import { Buffer } from "node:buffer";
-import { assembly_compiler_sjasmplus } from "../core/compiler/sjasmplus/deno/sjasmplus.mjs";
-import { assembly_compiler_default } from "../core/compiler/creatorCompiler/deno/creatorCompiler.mjs";
-import {assembly_compiler_rasm} from "../core/compiler/rasm/deno/rasm.mjs";
+import { sjasmplusAssemble } from "../core/assembler/sjasmplus/deno/sjasmplus.mjs";
+import { assembleCreator } from "../core/assembler/creatorAssembler/deno/creatorAssembler.mjs";
+import { rasmAssemble } from "../core/assembler/rasm/deno/rasm.mjs";
 
 const MAX_INSTRUCTIONS = 10000000000;
 const CLI_VERSION = "0.1.0";
@@ -146,7 +146,9 @@ function loadConfiguration(configPath: string = CONFIG_PATH): ConfigType {
             shortcuts: { ...DEFAULT_CONFIG.shortcuts, ...config.shortcuts },
         };
     } catch (error) {
-        console.error(`Error loading configuration: ${(error as Error).message}`);
+        console.error(
+            `Error loading configuration: ${(error as Error).message}`,
+        );
         return DEFAULT_CONFIG;
     }
 }
@@ -351,10 +353,10 @@ function loadLibrary(filePath: string) {
     creator.load_library(libraryFile);
     console.log("Library loaded successfully.");
 }
-const compiler_map = {
-    default: assembly_compiler_default,
-    sjasmplus: assembly_compiler_sjasmplus,
-    rasm: assembly_compiler_rasm,
+const assembler_map = {
+    default: assembleCreator,
+    sjasmplus: sjasmplusAssemble,
+    rasm: rasmAssemble,
 };
 async function assemble(filePath: string, compiler?: string) {
     if (!filePath) {
@@ -362,10 +364,16 @@ async function assemble(filePath: string, compiler?: string) {
         return;
     }
     // get function from the compiler map, with type safety
-    const compilerKey = (compiler && compiler in compiler_map) ? compiler as keyof typeof compiler_map : "default";
-    const compilerFunction = compiler_map[compilerKey];
+    const compilerKey =
+        compiler && compiler in assembler_map
+            ? (compiler as keyof typeof assembler_map)
+            : "default";
+    const compilerFunction = assembler_map[compilerKey];
     const assemblyFile = fs.readFileSync(filePath, "utf8");
-    const ret: ReturnType = await creator.assembly_compile(assemblyFile, compilerFunction);
+    const ret: ReturnType = await creator.assembly_compile(
+        assemblyFile,
+        compilerFunction,
+    );
     if (ret && ret.status !== "ok") {
         console.error(ret.msg);
         process.exit(1);
@@ -384,7 +392,10 @@ function handleInstructionsCommand(limit?: number) {
 
     displayInstructionsHeader();
 
-    const count = typeof limit === "number" && limit > 0 ? Math.min(limit, instructions.length) : instructions.length;
+    const count =
+        typeof limit === "number" && limit > 0
+            ? Math.min(limit, instructions.length)
+            : instructions.length;
     for (let i = 0; i < count; i++) {
         displayInstruction(instructions[i], currentPC);
     }
@@ -405,12 +416,16 @@ function displayInstructionsHeader() {
     );
 }
 
-function displayInstruction(instr: Instruction, currentPC: string, hideLibrary = false) {
+function displayInstruction(
+    instr: Instruction,
+    currentPC: string,
+    hideLibrary = false,
+) {
     const address = instr.Address.padEnd(8);
     const label = (instr.Label || "").padEnd(11);
     let loaded = (instr.loaded || "").padEnd(23);
     const loadedIsBinary = /^[01]+$/.test(loaded);
-    let rightColumn = instr.user || "";
+    const rightColumn = instr.user || "";
     const breakpointMark = instr.Break ? "●" : " ";
 
     // If the loaded instruction is binary, convert it to hex. This is only
@@ -1131,7 +1146,7 @@ function displayMemory(address: number, count: number) {
                 const { hint, offset } = hintsInRange[k];
                 const tag = hint.tag || "";
                 const type = hint.type || "";
-                const shortHint = type && tag ? `${tag}:${type}` : (type || tag);
+                const shortHint = type && tag ? `${tag}:${type}` : type || tag;
                 const sizeInfo = hint.sizeInBits
                     ? ` (${hint.sizeInBits}b)`
                     : "";
@@ -1246,7 +1261,8 @@ function handleStackCommand(args: string[]) {
         console.log(colorText("\nCurrent Frame Details:", "36"));
 
         // Get function name from label for current function
-        const currentFuncName = stackNames.val[stackNames.val.length - 1].tag || "";
+        const currentFuncName =
+            stackNames.val[stackNames.val.length - 1].tag || "";
 
         console.log(`Function: ${currentFuncName}`);
 
@@ -1457,7 +1473,7 @@ function handleUntilCommand(args: string[]) {
     handleBreakpointAtCurrentPC();
 }
 
-// eslint-disable-next-line max-lines-per-function
+ 
 function parseArguments(): ArgvOptions {
     return yargs(hideBin(process.argv))
         .usage("Usage: $0 [options]")
@@ -1537,7 +1553,7 @@ function parseArguments(): ArgvOptions {
         })
         .help().argv as ArgvOptions;
 }
-// eslint-disable-next-line max-lines-per-function
+ 
 function processCommand(cmd: string, args: string[]): boolean {
     // Apply alias substitution
     const resolved = applyAlias(cmd, args);
@@ -1631,7 +1647,7 @@ function processCommand(cmd: string, args: string[]): boolean {
     return false;
 }
 
-// eslint-disable-next-line max-lines-per-function
+ 
 function interactiveMode() {
     const rl = readline.createInterface({
         input: process.stdin,

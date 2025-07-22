@@ -8,7 +8,7 @@ import {
 
 Deno.test(
     "Architecture-agnostic testing - RISC-V Recursive Factorial Function",
-    // eslint-disable-next-line max-lines-per-function
+     
     async () => {
         const testAssembly = `
 

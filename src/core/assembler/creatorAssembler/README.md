@@ -1,4 +1,4 @@
-# Creator Compiler (assembler)
+# CREATOR Assembler
 The source code is located at [ALVAROPING1/CreatorCompiler](https://github.com/ALVAROPING1/CreatorCompiler), and must be built for both the CLI and Web versions.
 
 Building requires [rustup](https://rustup.rs/).
@@ -10,7 +10,7 @@ Compilation is done through [Deno](https://deno.com/):
 deno run -A jsr:@deno/wasmbuild
 ```
 
-The generated files (inside `lib/` subdirectory) must be placed inside `src/core/compiler/deno`.
+The generated files (inside `lib/` subdirectory) must be placed inside `src/core/assembler/creatorAssembler/deno/wasm/`.
 
 
 ## Web
@@ -24,4 +24,4 @@ wasm-pack build --target web
 > [!NOTE]
 > If you're building for development purposes, you can add the `--dev` flag to generate a debug mode with a shorter compile time.
 
-The generated files (inside `pkg/` subdirectory) must be placed inside `src/core/compiler/web`.
+The generated files (inside `pkg/` subdirectory) must be placed inside `src/core/assembler/creatorAssembler/web/wasm/`.

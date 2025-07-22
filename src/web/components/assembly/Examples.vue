@@ -204,7 +204,7 @@ export default {
           @click="selected_example = example.id"
           size="sm"
         >
-          <font-awesome-icon icon="fa-link" />
+          <font-awesome-icon :icon="['fas', 'link']" />
         </b-button>
       </b-button-group>
     </b-list-group>

@@ -1,5 +1,6 @@
-/*
- *  Copyright 2018-2025 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos, Jorge Ramos Santana
+/**
+ *  Copyright 2018-2025 Felix Garcia Carballeira, Diego Camarmas Alonso,
+ *                      Alejandro Calderon Mateos, Jorge Ramos Santana
  *
  *  This file is part of CREATOR.
  *
@@ -17,7 +18,7 @@
  *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-"use strict";
+
 
 export const LOG_LEVELS = {
     ERROR: 0,

@@ -119,7 +119,7 @@ export default {
             :variant="dark ? 'dark' : 'outline-secondary'"
             @click="change_data_view(register_type.value)"
           >
-            <font-awesome-icon icon="fa-solid fa-microchip" />
+            <font-awesome-icon :icon="['fas', 'microchip']" />
             {{ register_type.text }}
           </b-button>
 
@@ -131,7 +131,7 @@ export default {
             :variant="dark ? 'dark' : 'outline-secondary'"
             @click="change_data_view('memory')"
           >
-            <font-awesome-icon icon="fa-solid fa-memory" />
+            <font-awesome-icon :icon="['fas', 'memory']" />
             Memory
           </b-button>
 
@@ -143,7 +143,7 @@ export default {
             :variant="dark ? 'dark' : 'outline-secondary'"
             @click="change_data_view('stats')"
           >
-            <font-awesome-icon icon="fa-solid fa-chart-line" />
+            <font-awesome-icon :icon="['fas', 'chart-line']" />
             Statistics
           </b-button>
         </b-button-group>

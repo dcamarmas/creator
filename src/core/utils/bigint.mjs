@@ -1,5 +1,6 @@
-/*
- *  Copyright 2018-2025 Felix Garcia Carballeira, Alejandro Calderon Mateos, Diego Camarmas Alonso
+/**
+ *  Copyright 2018-2025 Felix Garcia Carballeira, Alejandro Calderon Mateos,
+ *                      Diego Camarmas Alonso
  *
  *  This file is part of CREATOR.
  *
@@ -16,7 +17,7 @@
  *  You should have received a copy of the GNU Lesser General Public License
  *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  */
-"use strict";
+
 import { register_size_bits } from "../core.mjs";
 import {
     bi_BigIntTofloat,

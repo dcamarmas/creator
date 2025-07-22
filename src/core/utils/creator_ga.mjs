@@ -1,5 +1,6 @@
-/*
- *  Copyright 2018-2025 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
+/**
+ *  Copyright 2018-2025 Felix Garcia Carballeira, Diego Camarmas Alonso,
+ *                      Alejandro Calderon Mateos
  *
  *  This file is part of CREATOR.
  *
@@ -17,15 +18,15 @@
  *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-"use strict"
-const is_ga_initialize = false
+
+const is_ga_initialize = false;
 export function creator_ga(category, action, label) {
-    return // TODO: remove this
+    return; // TODO: remove this
     if (typeof gtag !== "undefined") {
         gtag("event", label, {
             event_category: "creator_" + category,
             event_action: action,
             event_label: label,
-        })
+        });
     }
 }

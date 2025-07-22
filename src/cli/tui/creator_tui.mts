@@ -7,7 +7,7 @@ import * as creator from "../../core/core.mjs";
 import { step } from "../../core/executor/executor.mjs";
 import { decode_instruction } from "../../core/executor/decoder.mjs";
 import { logger } from "../../core/utils/creator_logger.mjs";
-import { instructions } from "../../core/compiler/compiler.mjs";
+import { instructions } from "../../core/assembler/assembler.mjs";
 import {
     track_stack_getFrames,
     track_stack_getNames,
@@ -27,7 +27,7 @@ let BINARY_LOADED = false;
 let EXECUTION_PAUSED = false;
 let previousStates: string[] = [];
 // Anti-flicker settings
-let RENDER_THROTTLE_MS = 50; // Minimum time between renders
+const RENDER_THROTTLE_MS = 50; // Minimum time between renders
 let lastRenderTime = 0;
 let pendingRender = false;
 export let CONFIG: ConfigType = { settings: {}, aliases: {}, shortcuts: {} };
@@ -256,7 +256,7 @@ let currentRegisterBankIndex = 0;
 // Command mode state
 let commandMode = false;
 let currentCommand = "";
-let commandHistory: string[] = [];
+const commandHistory: string[] = [];
 let commandHistoryIndex = -1;
 let lastCommandError = "";
 
@@ -609,7 +609,7 @@ function listBreakpoints() {
         message += `${bp.Address}${bp.Label ? ` (${bp.Label})` : ""}`;
         if (index >= 2 && breakpoints.length > 3) {
             message += `, and ${breakpoints.length - 3} more...`;
-            return;
+            
         }
     });
 
@@ -657,8 +657,7 @@ function getInstructionsContent(width: number): string[] {
     if (width < 60) {
         lines.push("Addr | Instruction");
         lines.push("-----|------------");
-    } else {
-        if (BINARY_LOADED) {
+    } else if (BINARY_LOADED) {
             lines.push(
                 "B | Address | Label      | Instruction          | Machine Code",
             );
@@ -673,7 +672,6 @@ function getInstructionsContent(width: number): string[] {
                 "--|---------|------------|---------------------|---------------",
             );
         }
-    }
 
     // Find current instruction index to center the view
     const currentIndex = instructions.findIndex(
@@ -1592,7 +1590,6 @@ function loadArchitecture(filePath: string, isaExtensions: string[]) {
         const architectureFile = fs.readFileSync(filePath, "utf8");
         const ret: ReturnType = creator.newArchitectureLoad(
             architectureFile,
-            false,
             false,
             isaExtensions,
         );

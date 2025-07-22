@@ -456,13 +456,13 @@ export default {
                   v-b-toggle.modal-vim-edit
                   @click="selected_vim_keybind = keybind.index"
                 >
-                  <font-awesome-icon icon="fa-solid fa-pen-to-square" />
+                  <font-awesome-icon :icon="['fas', 'pen-to-square']" />
                 </b-button>
                 <b-button
                   variant="danger"
                   @click="removeVimKeybind(keybind.index)"
                 >
-                  <font-awesome-icon icon="fa-solid fa-trash" />
+                  <font-awesome-icon :icon="['fas', 'trash']" />
                 </b-button>
               </b-button-group>
             </template>
@@ -471,7 +471,7 @@ export default {
           <b-container fluid>
             <b-row align-h="end">
               <b-button v-b-toggle.modal-vim-new variant="primary" size="sm">
-                <font-awesome-icon icon="fa-solid fa-plus" />
+                <font-awesome-icon :icon="['fas', 'plus']" />
               </b-button>
             </b-row>
           </b-container>

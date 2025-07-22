@@ -1,6 +1,6 @@
-/*
+/**
  *  Copyright 2018-2025 Felix Garcia Carballeira, Alejandro Calderon Mateos,
- *  Diego Camarmas Alonso, Jorge Ramos Santana
+ *                      Diego Camarmas Alonso, Jorge Ramos Santana
  *
  *  This file is part of CREATOR.
  *
@@ -19,23 +19,18 @@
  *
  */
 
-import { assembly_compiler_base } from "../creatorCompilerBase.mjs";
+import { assembleCreatorBase } from "../creatorAssemblerBase.mjs";
 
-import wasm_web_init, {
-    ArchitectureJS,
-    DataCategoryJS,
-} from "./wasm/creator_compiler.js";
+import { ArchitectureJS, DataCategoryJS } from "./wasm/creator_compiler.js";
 
 /**
- * Web-specific assembly compiler that initializes WASM
+ * Deno-specific assembly compiler that uses ANSI color configuration
+ * WASM is automatically initialized in Deno version
  * @param {string} code - Assembly code to compile
  * @param {boolean} library - Whether this is a library compilation
  * @returns {Object} Compilation result
  */
-export async function assembly_compiler_default(code, library) {
-    // In the web, we MUST call the default WASM initialization
-    await wasm_web_init();
-
+export function assembleCreator(code, library) {
     // Prepare WASM modules for the base compiler
     const wasmModules = {
         ArchitectureJS,
@@ -43,5 +38,5 @@ export async function assembly_compiler_default(code, library) {
     };
 
     // Call the common base implementation
-    return assembly_compiler_base(code, library, wasmModules);
+    return assembleCreatorBase(code, library, wasmModules);
 }

@@ -1,5 +1,6 @@
-/*
- *  Copyright 2018-2025 Felix Garcia Carballeira, Alejandro Calderon Mateos, Diego Camarmas Alonso
+/**
+ *  Copyright 2018-2025 Felix Garcia Carballeira, Alejandro Calderon Mateos,
+ *                      Diego Camarmas Alonso
  *
  *  This file is part of CREATOR.
  *
@@ -16,7 +17,7 @@
  *  You should have received a copy of the GNU Lesser General Public License
  *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  */
-"use strict";
+
 import {
     bi_BigIntTofloat,
     bi_BigIntTodouble,
@@ -104,12 +105,12 @@ function generateInstructionsImpl(value, instructions, destReg) {
 }
 
 export const RISCV = {
-    generateLoadImmediate: function (val, destReg) {
+    generateLoadImmediate (val, destReg) {
         const instructions = [];
         generateInstructionsImpl(BigInt(val), instructions, destReg);
         return instructions.join(";");
     },
-    toJSNumberD: function (bigIntValue) {
+    toJSNumberD (bigIntValue) {
         //  Used when the D extension is enabled
         //  These are the possible cases:
         //  1. The value is a float64 NaN
@@ -146,7 +147,7 @@ export const RISCV = {
             return [bi_BigIntTodouble(bigIntValue), "float64"];
         }
     },
-    toJSNumberS: function (bigIntValue) {
+    toJSNumberS (bigIntValue) {
         //  Used when ONLY the S extension is enabled
         bigIntValue = BigInt(bigIntValue);
         const bitString = bigIntValue.toString(2);
@@ -167,7 +168,7 @@ export const RISCV = {
         }
         return [bi_BigIntTofloat(bigIntValue), "float32"];
     },
-    toBigInt: function (number, type) {
+    toBigInt (number, type) {
         number = Number(number);
 
         switch (type) {
@@ -216,7 +217,7 @@ export const RISCV = {
                 throw new Error("Unknown type for toBigInt: " + type);
         }
     },
-    NaNBox: function (bigIntValue) {
+    NaNBox (bigIntValue) {
         //  Used when the D extension is enabled
         //  Simply NaN-boxes the value
         //  See RISC-V Spec, section 21.2

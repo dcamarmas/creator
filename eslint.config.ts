@@ -30,7 +30,7 @@ export default defineConfigWithVueTs(
       "max-lines-per-function": [
         "warn",
         {
-          max: 60,
+          max: 100,
           skipBlankLines: true,
           skipComments: true,
         },

@@ -91,7 +91,7 @@ export default {
     <b-input-group>
       <b-form-input v-model="uri" readonly />
       <b-button variant="info" @click="copyURI">
-        <font-awesome-icon icon="fa-solid fa-copy" /> Copy
+        <font-awesome-icon :icon="['fas', 'copy']" /> Copy
       </b-button>
     </b-input-group>
   </b-modal>

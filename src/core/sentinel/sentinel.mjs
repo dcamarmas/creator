@@ -1,5 +1,6 @@
-/*
- *  Copyright 2018-2025 Felix Garcia Carballeira, Alejandro Calderon Mateos, Diego Camarmas Alonso
+/**
+ *  Copyright 2018-2025 Felix Garcia Carballeira, Alejandro Calderon Mateos,
+ *                      Diego Camarmas Alonso
  *
  *  This file is part of CREATOR.
  *
@@ -17,9 +18,9 @@
  *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-"use strict";
+
 import { architecture, REGISTERS } from "../core.mjs";
-import { address } from "../compiler/compiler.mjs";
+import { address } from "../assembler/assembler.mjs";
 import { console_log } from "../utils/creator_logger.mjs";
 
 /*
@@ -141,7 +142,7 @@ export function creator_callstack_enter(function_name) {
     }
 
     const new_elto = {
-        function_name: function_name,
+        function_name,
         enter_stack_pointer: architecture.memory_layout[4].value,
         register_sm: arr_sm,
         register_value: arr_value,
@@ -463,7 +464,7 @@ export function creator_callstack_reset() {
 // do state transition
 // Example: creator_callstack_do_transition("wm", 1, 2, 0x12345678)
 //
-// eslint-disable-next-line max-lines-per-function
+ 
 function creator_callstack_do_transition(
     doAction,
     indexComponent,

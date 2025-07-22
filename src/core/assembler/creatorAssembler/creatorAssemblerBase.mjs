@@ -1,6 +1,6 @@
-/*
+/**
  *  Copyright 2018-2025 Felix Garcia Carballeira, Alejandro Calderon Mateos,
- *  Diego Camarmas Alonso, Jorge Ramos Santana
+ *                      Diego Camarmas Alonso, Jorge Ramos Santana
  *
  *  This file is part of CREATOR.
  *
@@ -38,7 +38,7 @@ import {
     setAddress,
     setInstructions,
     formatErrorWithColors,
-} from "../compiler.mjs";
+} from "../assembler.mjs";
 import { logger } from "../../utils/creator_logger.mjs";
 
 let instructions_binary = [];
@@ -51,7 +51,7 @@ let instructions_binary = [];
  * @returns {Object} Compilation result
  */
 // eslint-disable-next-line max-lines-per-function
-export function assembly_compiler_base(code, library, wasmModules) {
+export function assembleCreatorBase(code, library, wasmModules) {
     /* Google Analytics */
     creator_ga("compile", "compile.assembly");
     const color = 1;
@@ -151,7 +151,7 @@ export function assembly_compiler_base(code, library, wasmModules) {
         const data_mem = compiled.data;
         for (let i = 0; i < data_mem.length; i++) {
             const data = compiled.data[i];
-            const size = BigInt(data.size());
+            // const size = BigInt(data.size());
             const addr = BigInt(data.address());
             const labels = data.labels();
 
@@ -184,8 +184,8 @@ export function assembly_compiler_base(code, library, wasmModules) {
                             );
 
                             // Add memory hint for the float
-                            let floatTag = labels[0] ?? "";
-                            let floatType = "float32";
+                            const floatTag = labels[0] ?? "";
+                            const floatType = "float32";
                             main_memory.addHint(addr, floatTag, floatType, 32);
                             break;
                         }
@@ -215,8 +215,8 @@ export function assembly_compiler_base(code, library, wasmModules) {
                             );
 
                             // Add memory hint for the double
-                            let doubleTag = labels[0] ?? "";
-                            let doubleType = "float64";
+                            const doubleTag = labels[0] ?? "";
+                            const doubleType = "float64";
                             main_memory.addHint(
                                 addr,
                                 doubleTag,
@@ -230,8 +230,8 @@ export function assembly_compiler_base(code, library, wasmModules) {
                             main_memory.write(addr, byteValue);
 
                             // Add memory hint for the byte
-                            let byteTag = labels[0] ?? "";
-                            let byteType = "byte";
+                            const byteTag = labels[0] ?? "";
+                            const byteType = "byte";
                             main_memory.addHint(addr, byteTag, byteType, 8);
                             break;
                         }
@@ -267,8 +267,8 @@ export function assembly_compiler_base(code, library, wasmModules) {
                                 main_memory.writeWord(addr, wordBytes);
 
                                 // Add memory hint for the word
-                                let wordTag = labels[0] ?? "";
-                                let wordType = "word";
+                                const wordTag = labels[0] ?? "";
+                                const wordType = "word";
                                 main_memory.addHint(
                                     addr,
                                     wordTag,
@@ -337,8 +337,8 @@ export function assembly_compiler_base(code, library, wasmModules) {
                             );
 
                             // Add memory hint for the dword
-                            let dwordTag = labels[0] ?? "";
-                            let dwordType = "dword";
+                            const dwordTag = labels[0] ?? "";
+                            const dwordType = "dword";
                             main_memory.addHint(addr, dwordTag, dwordType, 64);
                             break;
                         }
@@ -381,8 +381,8 @@ export function assembly_compiler_base(code, library, wasmModules) {
                             main_memory.write(addr + 1n, orderedBytes[1]);
 
                             // Add memory hint for the half-word
-                            let halfTag = labels[0] ?? "";
-                            let halfType = "half";
+                            const halfTag = labels[0] ?? "";
+                            const halfType = "half";
                             main_memory.addHint(addr, halfTag, halfType, 16);
 
                             break;
@@ -412,8 +412,8 @@ export function assembly_compiler_base(code, library, wasmModules) {
 
                     // Add memory hint for the string
                     const stringLength = Number(currentAddr - startAddr);
-                    let stringTag = labels[0] ?? "";
-                    let stringType = "string";
+                    const stringTag = labels[0] ?? "";
+                    const stringType = "string";
                     main_memory.addHint(
                         startAddr,
                         stringTag,
@@ -441,8 +441,8 @@ export function assembly_compiler_base(code, library, wasmModules) {
                     }
 
                     // Add memory hint for the space/padding
-                    let spaceTag = labels[0] ?? "";
-                    let spaceType =
+                    const spaceTag = labels[0] ?? "";
+                    const spaceType =
                         data.data_category() === DataCategoryJS.Padding
                             ? "padding"
                             : "space";

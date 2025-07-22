@@ -305,8 +305,13 @@ export class Memory {
      * @private
      */
     private initializeBasicProperties(config: RequiredMemoryConfig): void {
-        if (!Number.isSafeInteger(config.sizeInBytes) || config.sizeInBytes <= 0) {
-            throw new Error("sizeInBytes must be a positive safe integer (<= Number.MAX_SAFE_INTEGER)");
+        if (
+            !Number.isSafeInteger(config.sizeInBytes) ||
+            config.sizeInBytes <= 0
+        ) {
+            throw new Error(
+                "sizeInBytes must be a positive safe integer (<= Number.MAX_SAFE_INTEGER)",
+            );
         }
         if (config.bitsPerByte < 1 || config.bitsPerByte > 32) {
             throw new Error("bitsPerByte must be between 1 and 32");
@@ -726,7 +731,12 @@ export class Memory {
         values: number[];
         bitsPerByte: number;
         size: number;
-        hints: { address: string; tag: string; type: string; sizeInBits?: number }[];
+        hints: {
+            address: string;
+            tag: string;
+            type: string;
+            sizeInBits?: number;
+        }[];
     } {
         const addresses: number[] = [];
         const values: number[] = [];
@@ -742,8 +752,12 @@ export class Memory {
         }
 
         // Include hints in the dump
-        const hints: { address: string; tag: string; type: string; sizeInBits?: number }[] =
-            [];
+        const hints: {
+            address: string;
+            tag: string;
+            type: string;
+            sizeInBits?: number;
+        }[] = [];
         for (const hint of this.hints.values()) {
             hints.push({
                 address: hint.address.toString(),
@@ -785,7 +799,13 @@ export class Memory {
         values: number[];
         bitsPerByte: number;
         size: number;
-        hints?: { address: string; tag?: string; type?: string; hint?: string; sizeInBits?: number }[];
+        hints?: {
+            address: string;
+            tag?: string;
+            type?: string;
+            hint?: string;
+            sizeInBits?: number;
+        }[];
     }): void {
         if (dump.bitsPerByte !== this.bitsPerByte || dump.size !== this.size) {
             throw new Error(
@@ -1379,7 +1399,12 @@ export class Memory {
      * memory.addHint(0x300n, "myString", "string"); // No size specified
      * ```
      */
-    addHint(address: bigint, tag: string, type: string, sizeInBits?: number): void {
+    addHint(
+        address: bigint,
+        tag: string,
+        type: string,
+        sizeInBits?: number,
+    ): void {
         // If no tag is provided and a hint exists, preserve the existing tag
         let finalTag = tag;
         const existing = this.hints.get(address);

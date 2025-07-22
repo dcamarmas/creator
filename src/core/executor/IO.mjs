@@ -1,5 +1,6 @@
-/*
- *  Copyright 2018-2025 Felix Garcia Carballeira, Alejandro Calderon Mateos, Diego Camarmas Alonso
+/**
+ *  Copyright 2018-2025 Felix Garcia Carballeira, Alejandro Calderon Mateos,
+ *                      Diego Camarmas Alonso
  *
  *  This file is part of CREATOR.
  *
@@ -25,7 +26,7 @@ import process from "node:process";
 import { packExecute } from "./executor.mjs";
 import os from "node:os";
 import { show_notification } from "@/web/utils.mjs";
-import { instructions } from "../compiler/compiler.mjs";
+import { instructions } from "../assembler/assembler.mjs";
 
 export function display_print(info) {
     if (typeof document !== "undefined") {

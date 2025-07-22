@@ -736,7 +736,6 @@ instructions:
         B = value & 0xFFn; // Low byte
         C = (value >> 8n)  & 0xFFn; // High byte
 
-
     - name: rlc
       template: DDCB
       nwords: 4

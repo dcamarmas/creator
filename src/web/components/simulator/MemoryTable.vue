@@ -426,7 +426,7 @@ export default {
                   >
                     {{ name }}
                   </b-badge>
-                  <font-awesome-icon icon="fa-solid fa-right-long" />
+                  <font-awesome-icon :icon="['fas', 'right-long']" />
                 </div>
               </div>
             </template>

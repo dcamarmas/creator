@@ -1,5 +1,6 @@
-/*
- *  Copyright 2018-2025 Felix Garcia Carballeira, Alejandro Calderon Mateos, Diego Camarmas Alonso
+/**
+ *  Copyright 2018-2025 Felix Garcia Carballeira, Alejandro Calderon Mateos,
+ *                      Diego Camarmas Alonso
  *
  *  This file is part of CREATOR.
  *
@@ -17,10 +18,10 @@
  *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-"use strict";
+
 import { REGISTERS } from "../core.mjs";
 import { crex_show_notification } from "../executor/executor.mjs";
-import { tag_instructions } from "../compiler/compiler.mjs";
+import { tag_instructions } from "../assembler/assembler.mjs";
 import {
     track_stack_enter,
     track_stack_leave,
@@ -28,10 +29,9 @@ import {
 } from "../memory/stackTracker.mjs";
 
 export const DRAW_STACK = {
-    begin: function (addr) {
+    begin (addr) {
         let function_name = "";
 
-        // TODO: fix this
         // 1.- get function name
         if (typeof REGISTERS[0] !== "undefined") {
             if (typeof tag_instructions[addr] === "undefined")
@@ -42,7 +42,7 @@ export const DRAW_STACK = {
         // 2.- callstack_enter
         track_stack_enter(function_name);
     },
-    end: function () {
+    end () {
         // track leave
         const ret = track_stack_leave();
 
@@ -57,7 +57,7 @@ export const DRAW_STACK = {
 
     // Add a hint for a specific memory address
     // Example: drawstack_add_hint(0xFFFFFFFC, "whatever register");
-    addHint: function (address, name) {
+    addHint (address, name) {
         const ret = track_stack_addHint(address, name);
         if (!ret.ok) {
             crex_show_notification(ret.msg, "warning");

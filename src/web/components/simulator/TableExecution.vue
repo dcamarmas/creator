@@ -19,7 +19,6 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <script>
-import { status } from "@/core/core.mjs"
 import { creator_ga } from "@/core/utils/creator_ga.mjs"
 
 export default {

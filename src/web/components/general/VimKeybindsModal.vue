@@ -89,9 +89,9 @@ export default {
       Vim.map(lhs, rhs, mode)
 
       this.vim_custom_keybinds_value.push({
-        mode: mode,
-        lhs: lhs,
-        rhs: rhs,
+        mode,
+        lhs,
+        rhs,
       })
 
       this.resetNewKeybind()

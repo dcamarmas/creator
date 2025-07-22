@@ -11,9 +11,7 @@
     "type-check": "vue-tsc --build",
     "build:cli": "deno compile --no-check -A --include ./src/core/compiler/deno ./src/cli/creator6.mts",
     "lint": "eslint",
-    "format": "prettier --write src/",
-    "simtest": "python ./tests/arch_tests.py",
-    "test": "deno test -A --unstable-node-globals --parallel"
+    "format": "prettier --write"
   },
   "dependencies": {
     "@codemirror/lang-yaml": "^6.1.2",

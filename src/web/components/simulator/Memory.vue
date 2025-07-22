@@ -27,7 +27,7 @@ import { main_memory } from "@/core/core.mjs"
 export default {
   props: {
     dark: { type: Boolean, required: true },
-    selectedSegment: { type: String, required: true }
+    selectedSegment: { type: String, required: true },
   },
 
   components: { MemoryTable },
@@ -45,17 +45,16 @@ export default {
   },
 
   computed: {
-
     // sync w/ root
     segment: {
       get() {
         return this.selectedSegment
       },
       set(value) {
-          this.$root.memory_segment = value
+        this.$root.memory_segment = value
       },
     },
-  }
+  },
 }
 </script>
 
@@ -99,4 +98,3 @@ export default {
     </b-row>
   </b-container>
 </template>
-

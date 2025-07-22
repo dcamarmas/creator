@@ -1,5 +1,6 @@
-/*
- *  Copyright 2018-2025 Felix Garcia Carballeira, Alejandro Calderon Mateos, Diego Camarmas Alonso
+/**
+ *  Copyright 2018-2025 Felix Garcia Carballeira, Alejandro Calderon Mateos,
+ *                      Diego Camarmas Alonso
  *
  *  This file is part of CREATOR.
  *
@@ -16,23 +17,28 @@
  *  You should have received a copy of the GNU Lesser General Public License
  *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  *
- */
-"use strict";
-import { architecture, status, REGISTERS, main_memory } from "../core.mjs";
+*/
+
+import { REGISTERS } from "../core.mjs";
 import { clean_string } from "../utils/utils.mjs";
-import { console_log, logger } from "../utils/creator_logger.mjs";
+import { console_log } from "../utils/creator_logger.mjs";
 
 // --------------------------------------------------------------
-// These two can be used used by the eval in buildInstructionPreload, but the linter doesn't know that
-import { instructions } from "../compiler/compiler.mjs";
+// These can be used used by the eval in buildInstructionPreload, but the linter doesn't know that
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { instructions } from "../assembler/assembler.mjs";
 import {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     readRegister,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     writeRegister,
 } from "../register/registerOperations.mjs";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { status } from "@/core/core.mjs"
 // --------------------------------------------------------------
 
 export function handleIntOrCtrlReg(
-    signaturePart,
+    _signaturePart,
     signatureRawPart,
     instructionExecPart,
     signatureType,
@@ -56,7 +62,7 @@ export function handleIntOrCtrlReg(
                     `(?:\\W|^)((${signatureRawPart}) *=)[^=]`,
                     "g",
                 );
-                if (auxDef.search(re) != -1) {
+                if (auxDef.search(re) !== -1) {
                     result.writing = `writeRegister(${signatureRawPart}, ${j}, ${z}, "${signatureType}");\n`;
                 } else {
                     result.writing = `if(${signatureRawPart} != ${signatureRawPart}_prev) { writeRegister(${signatureRawPart} ,${j} ,${z}, "${signatureType}"); }\n`;
@@ -67,7 +73,7 @@ export function handleIntOrCtrlReg(
     return result;
 }
 export function handleFloatingPointReg(
-    signaturePart,
+    _signaturePart,
     signatureRawPart,
     instructionExecPart,
     signatureType,
@@ -91,7 +97,7 @@ export function handleFloatingPointReg(
                     `(?:\\W|^)((${signatureRawPart}) *=)[^=]`,
                     "g",
                 );
-                if (auxDef.search(re) != -1) {
+                if (auxDef.search(re) !== -1) {
                     result.writing = `writeRegister(${signatureRawPart}, ${j}, ${z}, "${signatureType}");\n`;
                 } else {
                     result.writing = `if(Math.abs(${signatureRawPart} != ${signatureRawPart}_prev)) { writeRegister(${signatureRawPart} ,${j} ,${z}, "${signatureType}"); }\n`;
@@ -105,7 +111,7 @@ export function handleOtherTypes(
     signaturePart,
     signatureRawPart,
     instructionExecPart,
-    auxDef,
+    _auxDef,
 ) {
     const result = {
         reading: "",
@@ -123,7 +129,7 @@ export function handleOtherTypes(
 
     if (signaturePart === "offset_words") {
         if (instructionExecPart.startsWith("0x")) {
-            let value = parseInt(instructionExecPart);
+            let value = parseInt(instructionExecPart, 16);
             const nbits = 4 * (instructionExecPart.length - 2);
             let value_bin = value.toString(2).padStart(nbits, "0");
 
@@ -147,23 +153,13 @@ export function handleOtherTypes(
 }
 
 export function buildDescriptions(definitions) {
-    let readings = "";
-    let writings = "";
-
-    for (const key in definitions.readings) {
-        readings += definitions.readings[key];
-    }
-    for (const key in definitions.readings_prev) {
-        readings += definitions.readings_prev[key];
-    }
-    for (const key in definitions.readings_name) {
-        readings += definitions.readings_name[key];
-    }
-    for (const key in definitions.writings) {
-        writings += definitions.writings[key];
-    }
-
-    return { readings, writings };
+    return {
+        readings:
+            Object.values(definitions.readings).join("") +
+            Object.values(definitions.readings_prev).join("") +
+            Object.values(definitions.readings_name).join(""),
+        writings: Object.values(definitions.writings).join(""),
+    };
 }
 
 export function processRegisterOperations(auxDef, signatureParts) {
@@ -187,7 +183,7 @@ export function processRegisterOperations(auxDef, signatureParts) {
                 "(?:\\W|^)(((" + clean_aliases + ") *=)[^=])",
                 "g",
             );
-            if (auxDef.search(re) != -1) {
+            if (auxDef.search(re) !== -1) {
                 re = new RegExp("(" + clean_aliases + ")");
                 const reg_name = re.exec(auxDef)[0];
                 clean_name = clean_string(reg_name, "reg_");
@@ -203,7 +199,7 @@ export function processRegisterOperations(auxDef, signatureParts) {
 
             // Handle read operations
             re = new RegExp("([^a-zA-Z0-9])(?:" + clean_aliases + ")");
-            if (auxDef.search(re) != -1) {
+            if (auxDef.search(re) !== -1) {
                 re = new RegExp("(" + clean_aliases + ")");
                 const reg_name = re.exec(auxDef)[0];
                 clean_name = clean_string(reg_name, "reg_");
@@ -227,7 +223,7 @@ export function processRegisterOperations(auxDef, signatureParts) {
 export function handleInstructionMatch(instructionExec, signatureDef) {
     const re = new RegExp(signatureDef + "$");
     const match = re.exec(instructionExec);
-    let instructionExecParts = [];
+    const instructionExecParts = [];
 
     for (let j = 1; j < match.length; j++) {
         instructionExecParts.push(match[j]);
@@ -256,7 +252,7 @@ export function collectDefinitions(
             signatureRawPart: signatureRawParts[i],
             instructionExecPart: instructionExecParts[i],
             signatureType: signatureParts[i],
-            auxDef: auxDef,
+            auxDef,
         };
 
         if (

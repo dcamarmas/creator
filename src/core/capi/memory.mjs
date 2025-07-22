@@ -1,5 +1,6 @@
-/*
- *  Copyright 2018-2025 Felix Garcia Carballeira, Alejandro Calderon Mateos, Diego Camarmas Alonso
+/**
+ *  Copyright 2018-2025 Felix Garcia Carballeira, Alejandro Calderon Mateos,
+ *                      Diego Camarmas Alonso
  *
  *  This file is part of CREATOR.
  *
@@ -17,7 +18,7 @@
  *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-"use strict";
+
 import { main_memory, BYTESIZE } from "../core.mjs";
 import { creator_executor_exit } from "../executor/executor.mjs";
 import { raise } from "./validation.mjs";
@@ -160,7 +161,7 @@ function readValueFromMemory(addr, bytes) {
  */
 // Memory operations
 export const MEM = {
-    write: function (address, bytes, value, reg_name, hint) {
+    write (address, bytes, value, reg_name, hint) {
         // Check if the address is in a writable segment using memory functions
         const segment = main_memory.getSegmentForAddress(address);
         if (segment === "text") {
@@ -221,7 +222,7 @@ export const MEM = {
         creator_callstack_newWrite(i, j, address, byteArray.length);
     },
 
-    read: function (addr, bytes, reg_name) {
+    read (addr, bytes, reg_name) {
         // Implementation of capi_mem_read
         let val = 0n;
 
@@ -276,7 +277,7 @@ export const MEM = {
      * @param {number} [sizeInBits] - Optional size of the type in bits (e.g., 64 for double, 32 for int32)
      * @returns {boolean} - True if the hint was successfully added
      */
-    addHint: function (address, hint, sizeInBits) {
+    addHint (address, hint, sizeInBits) {
         try {
             main_memory.addHint(address, "", hint, sizeInBits);
             return true;

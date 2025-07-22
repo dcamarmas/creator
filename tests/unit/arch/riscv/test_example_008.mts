@@ -8,7 +8,7 @@ import {
 
 Deno.test(
     "Architecture-agnostic testing - RISC-V Matrix Copy with Floating Point",
-    // eslint-disable-next-line max-lines-per-function
+
     async () => {
         const testAssembly = `
 

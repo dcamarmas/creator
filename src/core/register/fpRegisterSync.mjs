@@ -1,5 +1,6 @@
-/*
- *  Copyright 2018-2025 Felix Garcia Carballeira, Alejandro Calderon Mateos, Diego Camarmas Alonso
+/**
+ *  Copyright 2018-2025 Felix Garcia Carballeira, Alejandro Calderon Mateos,
+ *                      Diego Camarmas Alonso
  *
  *  This file is part of CREATOR.
  *
@@ -17,9 +18,9 @@
  *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-"use strict";
+
 import { bi_doubleToBigInt, bi_floatToBigInt } from "../utils/bigint.mjs";
-import { architecture, REGISTERS } from "../core.mjs";
+import { REGISTERS } from "../core.mjs";
 import { readRegister } from "./registerOperations.mjs";
 import {
     bin2hex,
@@ -34,7 +35,7 @@ export function updateDouble(comp, elem) {
     for (let i = 0; i < REGISTERS.length; i++) {
         if (
             REGISTERS[i].double_precision === true &&
-            REGISTERS[i].double_precision_type == "linked"
+            REGISTERS[i].double_precision_type === "linked"
         ) {
             for (let j = 0; j < REGISTERS[i].elements.length; j++) {
                 if (
@@ -73,7 +74,7 @@ export function updateDouble(comp, elem) {
 }
 /*Modifies single precision registers according to double precision registers*/
 export function updateSimple(comp, elem) {
-    if (REGISTERS[comp].double_precision_type == "linked") {
+    if (REGISTERS[comp].double_precision_type === "linked") {
         const part1 = bin2hex(double2bin(readRegister(comp, elem))).substr(
             0,
             8,
@@ -88,7 +89,7 @@ export function updateSimple(comp, elem) {
                 if (
                     REGISTERS[i].elements[j].name.includes(
                         REGISTERS[comp].elements[elem].simple_reg[0],
-                    ) !== false
+                    )
                 ) {
                     REGISTERS[i].elements[j].value = bi_floatToBigInt(
                         hex2float("0x" + part1),
@@ -97,7 +98,7 @@ export function updateSimple(comp, elem) {
                 if (
                     REGISTERS[i].elements[j].name.includes(
                         REGISTERS[comp].elements[elem].simple_reg[1],
-                    ) !== false
+                    )
                 ) {
                     REGISTERS[i].elements[j].value = bi_floatToBigInt(
                         hex2float("0x" + part2),

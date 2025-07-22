@@ -89,7 +89,7 @@ export default {
         variant="outline-danger"
         @click="this.$emit('delete-architecture', this.architecture.name)"
       >
-        <font-awesome-icon icon="fa-regular fa-trash-alt" />
+        <font-awesome-icon :icon="['fas', 'trash-can']" />
         Delete
       </b-button>
     </template>

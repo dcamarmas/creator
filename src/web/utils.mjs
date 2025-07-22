@@ -1,4 +1,4 @@
-/*
+/**
  *  Copyright 2018-2025 Felix Garcia Carballeira, Alejandro Calderon Mateos,
  *                      Diego Camarmas Alonso, Luis Daniel Casais Mezquida
  *
@@ -19,22 +19,21 @@
  *
  */
 
-import $ from "jquery"
+import $ from "jquery";
 
 import humanizeDuration from "humanize-duration";
 
-import { creator_ga } from "@/core/utils/creator_ga.mjs"
-import { newArchitectureLoad } from "@/core/core.mjs"
+import { creator_ga } from "@/core/utils/creator_ga.mjs";
+import { newArchitectureLoad } from "@/core/core.mjs";
 import { console_log as clog } from "@/core/utils/creator_logger.mjs";
-
 
 /*Stop the transmission of events to children*/
 export function destroyClickedElement(event) {
-    document.body.removeChild(event.target)
+    document.body.removeChild(event.target);
 }
 
 export function confirmExit() {
-    return "He's tried to get off this page. Changes may not be saved."
+    return "He's tried to get off this page. Changes may not be saved.";
 }
 
 export function console_log(msg, level = "INFO") {
@@ -44,7 +43,7 @@ export function console_log(msg, level = "INFO") {
 }
 
 // eslint-disable-next-line prefer-const
-export let notifications = []
+export let notifications = [];
 
 /**
  * Shows a notification on the UI and.
@@ -58,58 +57,55 @@ export function show_notification(msg, type, root = document.app) {
     // show notification
     root.createToast({
         props: {
-            title: " ",  // TODO: use fontawesome icons here
+            title: " ", // TODO: use fontawesome icons here
             body: msg,
             variant: type,
             position: "bottom-end",
             value: root.notification_time,
             // TODO: don't dismiss toast when type is danger
-        }
-    })
+        },
+    });
 
     // add notification to the notification summary
-    const date = new Date()
+    const date = new Date();
     notifications.push({
         mess: msg,
         color: type,
-        time:
-            date.toLocaleTimeString('es-ES'),
-        date:
-            date.toLocaleDateString('es-ES')
-    })
+        time: date.toLocaleTimeString("es-ES"),
+        date: date.toLocaleDateString("es-ES"),
+    });
 
-    return true
+    return true;
 }
 
 /*
  *  Loading
  */
 
-let loading_handler = null
+let loading_handler = null;
 
 export function show_loading() {
     // if loading is programmed, skip
     if (loading_handler !== null) {
-        return
+        return;
     }
 
     // after half second show the loading spinner
     loading_handler = setTimeout(function () {
-        $("#loading").show()
-        loading_handler = null
-    }, 500)
+        $("#loading").show();
+        loading_handler = null;
+    }, 500);
 }
 
 export function hide_loading() {
-
     // if loading is programmed, cancel it
     if (loading_handler !== null) {
-        clearTimeout(loading_handler)
-        loading_handler = null
+        clearTimeout(loading_handler);
+        loading_handler = null;
     }
 
     // disable loading spinner
-    $("#loading").hide()
+    $("#loading").hide();
 }
 
 /**
@@ -121,8 +117,8 @@ export function hide_loading() {
  * @property {string} alt Alternative name
  * @property {string} id ID (select_conf<something>)
  * @property {Array<string>} examples List of example sets
- * @property {string} description 
- * @property {string} guide Path to guide file (absolute) 
+ * @property {string} description
+ * @property {string} guide Path to guide file (absolute)
  * @property {boolean} available Whether it's available or not
  * @property {boolean} [default=true]
  */
@@ -139,10 +135,10 @@ export function loadDefaultArchitecture(arch, root = document.app) {
     // https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
 
     //Synchronous JSON read
-    $.ajaxSetup({ async: false })
+    $.ajaxSetup({ async: false });
 
     $.get("architecture/" + arch.file + ".yml", cfg => {
-        const { status, errorcode, token } = newArchitectureLoad(cfg, true);
+        const { status, errorcode, token } = newArchitectureLoad(cfg);
 
         if (status === "ko") {
             show_notification(`[${errorcode}] ${token}`, "danger", root);
@@ -186,8 +182,8 @@ export function loadDefaultArchitecture(arch, root = document.app) {
  * @property {string} img Architecture image file location (absolute)
  * @property {string} id ID (select_conf<something>)
  * @property {Array<string>} examples List of example sets
- * @property {string} description 
- * @property {string} definition Architection definition (YAML) 
+ * @property {string} description
+ * @property {string} definition Architection definition (YAML)
  * @property {boolean} available Whether it's available or not
  */
 
@@ -238,7 +234,7 @@ export function loadExample(
     example_id,
     root = document.app,
 ) {
-    $.ajaxSetup({ async: false })
+    $.ajaxSetup({ async: false });
 
     $.getJSON(
         // get specified example set
@@ -250,7 +246,7 @@ export function loadExample(
         .done(
             // load list of examples of the set
             example_list => {
-                $.ajaxSetup({ async: false })
+                $.ajaxSetup({ async: false });
                 // load code
                 $.get(
                     // get code uri
@@ -258,17 +254,17 @@ export function loadExample(
                         ?.url,
                 )
                     .done(code => {
-                        root.assembly_code = code
+                        root.assembly_code = code;
 
                         // FIXME: as we can't compile (see above), we go to the
                         // assembly view, when we should go to simulator view
-                        root.creator_mode = "assembly"
+                        root.creator_mode = "assembly";
 
                         show_notification(
                             `Loaded example '${set_name}-${example_id}'`,
                             "success",
                             root,
-                        )
+                        );
                     })
                     .fail(() =>
                         show_notification(
@@ -276,12 +272,12 @@ export function loadExample(
                             "danger",
                             root,
                         ),
-                    )
+                    );
             },
         )
         .fail(() =>
             show_notification(`'${set_name}' set not found`, "danger", root),
-        )
+        );
 }
 
 /**
@@ -320,10 +316,10 @@ export function formatRelativeDate(date) {
 
 /**
  * Downloads a plain text file with the specified filename.
- * 
+ *
  * @param {String} data TXT data to store in file
  * @param {String} filename Name of the file
- * 
+ *
  */
 export function downloadToTXTFile(data, filename) {
     // yes, this is actually the way to do it in JS...
