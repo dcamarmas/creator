@@ -71,7 +71,7 @@ export default {
     <b-card-group>
       <CardAuthor
         v-for="author in authors"
-        :img-src="`/img/authors/${author.id}.png`"
+        :img-src="`/img/authors/${author.id}.webp`"
         :img-alt="`author_${author.id}`"
         :full-name="author.name"
         :linkedin="author.linkedin"
@@ -109,7 +109,7 @@ export default {
           <b-col cols="8">
             <b-link target="_blank" href="https://www.inf.uc3m.es/">
               <b-img
-                src="@/web/assets/img/dptoinf.png"
+                src="@/web/assets/img/dptoinf.webp"
                 alt="Computer Science and Engineering Departament - UC3M"
                 class="ms-4 dark-white-img"
                 style="width: 93%"
