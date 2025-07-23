@@ -494,7 +494,7 @@ export default {
         <b-col lg="8" offset-lg="1" class="p-1">
           <b-img
             class="calculatorImg"
-            src="@/web/assets/img/calculator.png"
+            src="@/web/assets/img/calculator.webp"
             fluid
             alt="calculator"
           />

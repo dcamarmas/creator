@@ -128,7 +128,7 @@ export default {
           <div class="break" :id="row.index">
             <b-img
               alt="Break"
-              src="@/web/assets/img/stop_classic.gif"
+              src="@/web/assets/img/stop_classic.webp"
               class="shadow breakPoint"
               rounded="circle"
               v-if="row.item.Break"

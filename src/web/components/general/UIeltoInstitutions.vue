@@ -36,7 +36,7 @@ export default {
               alt="Universidad Carlos III de Madrid Logo"
               class="p-0"
               style="width: 100%"
-              src="@/web/assets/img/institutions/uc3m.jpg"
+              src="@/web/assets/img/institutions/uc3m.webp"
             />
           </a>
         </b-col>
@@ -47,7 +47,7 @@ export default {
               alt="Universidad de Castilla La - Mancha Logo"
               class="p-0"
               style="width: 55%"
-              src="@/web/assets/img/institutions/uclm.png"
+              src="@/web/assets/img/institutions/uclm.webp"
             />
           </a>
         </b-col>
@@ -58,7 +58,7 @@ export default {
               alt="Universidad de Leon Logo"
               class="p-0"
               style="width: 75%"
-              src="@/web/assets/img/institutions/unileon.png"
+              src="@/web/assets/img/institutions/unileon.webp"
             />
           </a>
         </b-col>

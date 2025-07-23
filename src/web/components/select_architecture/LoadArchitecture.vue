@@ -58,7 +58,6 @@ export default {
         const architecture = {
           name: this.name,
           alias: [],
-          img: "/img/personalized_logo.png",
           id: `select_conf${this.name}`,
           examples: [],
           description: this.description,
@@ -94,74 +93,6 @@ export default {
       reader.onerror = () => show_notification("Error loading file", "danger")
 
       reader.readAsText(this.file)
-
-      // //Verify all form fields
-      // if (!this.name || !this.file) {
-      //   hide_loading()
-      //   show_notification("Please complete all fields", "danger")
-      //   return
-      // }
-
-      // this.show_modal = false
-
-      // //Read JSON and add the new architecture on CREATOR
-      // let file
-      // let reader
-      // const files = document.getElementById("arch_file").files
-
-      // //Read one or more files
-      // for (let i = 0; i < files.length; i++) {
-      //   file = files[i]
-      //   reader = new FileReader()
-
-      //   reader.onloadend = (function (name_arch, description_arch) {
-      //     return function (e) {
-      //       //Add the new architecture on CREATOR
-      //       architecture_available.push({
-      //         name: name_arch,
-      //         img: "./images/personalized_logo.png",
-      //         alt: name_arch + " logo",
-      //         id: "select_conf" + name_arch,
-      //         description: description_arch,
-      //         available: 1,
-      //       })
-      //       load_architectures_available.push({
-      //         name: name_arch,
-      //         img: "./images/personalized_logo.png",
-      //         alt: name_arch + " logo",
-      //         id: "select_conf" + name_arch,
-      //         description: description_arch,
-      //         available: 1,
-      //       })
-      //       back_card.push({
-      //         name: architecture_available[architecture_available.length - 1]
-      //           .name,
-      //         background: "default",
-      //       })
-      //       load_architectures.push({
-      //         id: name_arch,
-      //         architecture: event.currentTarget.result,
-      //       })
-
-      //       //Refresh cache values
-      //       if (typeof Storage !== "undefined") {
-      //         let auxArch = JSON.stringify(load_architectures, null, 2)
-      //         localStorage.setItem("load_architectures", auxArch)
-
-      //         auxArch = JSON.stringify(load_architectures_available, null, 2)
-      //         localStorage.setItem("load_architectures_available", auxArch)
-      //       }
-
-      //       show_notification(
-      //         "The selected architecture has been loaded correctly",
-      //         "success",
-      //       )
-      //       hide_loading()
-      //     }
-      //   })(this.name, this.description)
-
-      //   reader.readAsArrayBuffer(file)
-      // }
     },
   },
 }
@@ -181,7 +112,7 @@ export default {
         class="mt-2 w-75 load-img"
         style="padding-bottom: 1.2vh"
         placement="center"
-        src="@/web/assets/img/load_icon.png"
+        src="@/web/assets/img/load_icon.webp"
         alt="load icon"
       />
     </template>

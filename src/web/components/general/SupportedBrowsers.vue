@@ -71,7 +71,7 @@ export default {
         Google Chrome 70+
         <b-badge pill class="browserBadge">
           <b-img
-            src="@/web/assets/img/chrome.png"
+            src="@/web/assets/img/browsers/chrome.webp"
             class="shadow broserIcon"
             rounded="circle"
             fluid
@@ -86,7 +86,7 @@ export default {
         Mozilla Firefox 60+
         <b-badge pill class="browserBadge">
           <b-img
-            src="@/web/assets/img/firefox.png"
+            src="@/web/assets/img/browsers/firefox.webp"
             class="shadow broserIcon"
             rounded="circle"
             fluid
@@ -101,7 +101,7 @@ export default {
         Apple Safari 12+
         <b-badge pill class="browserBadge">
           <b-img
-            src="@/web/assets/img/safari.png"
+            src="@/web/assets/img/browsers/safari.webp"
             class="shadow broserIcon"
             rounded="circle"
             fluid
