@@ -137,7 +137,6 @@ export default {
             <!-- Registers view -->
             <RegisterFile
               v-if="data_mode == 'int_registers' || data_mode == 'fp_registers'"
-              id="register_file"
               :data_mode="data_mode"
               :reg_representation_int="reg_representation_int"
               :reg_representation_float="reg_representation_float"
