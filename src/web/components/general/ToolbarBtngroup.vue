@@ -673,7 +673,7 @@ export default {
             <font-awesome-icon :icon="['fas', 'download']" />
             Save
           </b-dropdown-item>
-          <b-dropdown-item v-b-modal.examples>
+          <b-dropdown-item v-b-modal.examples-assembly>
             <font-awesome-icon :icon="['fas', 'file-lines']" />
             Examples
           </b-dropdown-item>
@@ -842,7 +842,7 @@ export default {
           class="menuButton h-100 text-truncate"
           size="sm"
           variant="outline-secondary"
-          v-b-modal.examples2
+          v-b-modal.examples-simulator
         >
           <font-awesome-icon :icon="['fas', 'file-lines']" />
           Examples

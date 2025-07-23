@@ -107,7 +107,7 @@ export default {
 
         <!-- Examples modal -->
         <Examples
-          id="examples2"
+          id="examples-simulator"
           :architecture_name="architecture_name"
           :compile="true"
         />

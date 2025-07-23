@@ -19,7 +19,7 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <script>
-import { useModalController } from "bootstrap-vue-next"
+import { useModal, useModalController } from "bootstrap-vue-next"
 
 import { creator_ga } from "@/core/utils/creator_ga.mjs"
 import { show_notification } from "@/web/utils.mjs"
@@ -37,10 +37,16 @@ export default {
 
   components: { MakeURI },
 
-  setup() {
+  setup(props) {
     // this HAS to be defined here
     const { hide } = useModalController()
-    return { hide }
+
+    // as we can have various of these components almost simultaneately (when
+    // transitioning from simulator to assembly, for example), we'll set an ID
+    // for the URI modal that is based on this component's own ID
+    const { show } = useModal(`${props.id}_uri`)
+
+    return { showLink: show, hide }
   },
 
   computed: {
@@ -200,8 +206,12 @@ export default {
           </b-list-group-item>
         </b-col>
         <b-button
-          v-b-modal.example_uri
-          @click="selected_example = example.id"
+          @click="
+            () => {
+              selected_example = example.id
+              showLink()
+            }
+          "
           size="sm"
         >
           <font-awesome-icon :icon="['fas', 'link']" />
@@ -211,7 +221,7 @@ export default {
   </b-modal>
 
   <MakeURI
-    id="example_uri"
+    :id="`${id}_uri`"
     :architecture_name="architecture_name"
     :example_set="selected_set"
     :example_id="selected_example"

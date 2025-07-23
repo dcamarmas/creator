@@ -85,7 +85,7 @@ export default {
 
         <!-- Examples modal -->
         <Examples
-          id="examples"
+          id="examples-assembly"
           :architecture_name="architecture_name"
           :compile="false"
         />
