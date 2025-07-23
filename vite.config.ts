@@ -7,6 +7,7 @@ import Components from "unplugin-vue-components/vite";
 import { BootstrapVueNextResolver } from "bootstrap-vue-next";
 import wasm from "vite-plugin-wasm";
 import { DynamicPublicDirectory } from "vite-multiple-assets";
+import { ViteImageOptimizer } from "vite-plugin-image-optimizer";
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -25,11 +26,16 @@ export default defineConfig({
         },
       },
     }),
+
     vueDevTools(),
+
     Components({
       resolvers: [BootstrapVueNextResolver()],
     }),
+
     wasm(),
+
+    ViteImageOptimizer(),
 
     // bundle assets with the build, that is, if we have /public/foo.png, it is
     // served in /foo.png
@@ -61,6 +67,32 @@ export default defineConfig({
     outDir: "dist/web",
     emptyOutDir: true,
     target: "esnext", // browsers can handle the latest ES features
+
+    rollupOptions: {
+      output: {
+        // group libraries in chunks to reduce its size
+        manualChunks: {
+          apexcharts: ["apexcharts", "vue3-apexcharts"],
+          fontawesome: [
+            "@fortawesome/fontawesome-svg-core",
+            "@fortawesome/free-brands-svg-icons",
+            "@fortawesome/free-regular-svg-icons",
+            "@fortawesome/free-solid-svg-icons",
+            "@fortawesome/vue-fontawesome",
+          ],
+          bootstrap: ["bootstrap", "bootstrap-vue-next"],
+          codemirror: [
+            "codemirror",
+            "vue-codemirror6",
+            "@replit/codemirror-vim",
+            "@uiw/codemirror-themes",
+            "@codemirror/lang-yaml",
+            "@codemirror/language",
+          ],
+          jquery: ["jquery"],
+        },
+      },
+    },
   },
 
   // Silence Sass deprecation warnings (due to bootstrap-vue-next)
