@@ -33,14 +33,16 @@ bun dev:cli
 > ```
 
 ### Building Web version for production
-- With type-checking:
-  ```sh
-  bun run build:web
-  ```
-- Without type-checking:
-  ```sh
-  bun run build-only
-  ```
+```sh
+bun run build:web
+```
+<!--
+TODO: when the code is type-safe, replace build:web to:
+```
+"build:web": "run-p type-check \"build-only {@}\" --",
+"build-only": "vite build",
+```
+-->
 
 ### Building CLI version
 ```sh
