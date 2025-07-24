@@ -68,11 +68,11 @@ export default {
 </script>
 
 <template>
-  <div class="col-lg-12 col-sm-12 row memoryLayoutDiv mt-5 mx-0 px-0">
-    <div class="col-lg-4 col-sm-12" />
+  <b-row class="mt-5 mx-0 px-0">
+    <b-col lg="5" sm="12" />
 
     <!-- Memory layout sketch -->
-    <div class="col-lg-5 col-sm-10">
+    <b-col lg="4" sm="10">
       <b-list-group>
         <!-- main memory -->
 
@@ -135,8 +135,8 @@ export default {
           </span>
         </b-list-group-item>
       </b-list-group>
-    </div>
-  </div>
+    </b-col>
+  </b-row>
 </template>
 
 <style lang="scss" scoped>

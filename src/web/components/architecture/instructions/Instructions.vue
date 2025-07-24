@@ -71,55 +71,53 @@ export default {
   />
 
   <!-- Instruction set table -->
-  <div class="col-lg-12 col-sm-12 mt-3">
-    <b-table
-      small
-      :items="instructions"
-      :fields="instructions_fields"
-      class="text-center"
-      sticky-header="60vh"
-    >
-      <!-- For each instruction -->
+  <b-table
+    small
+    :items="instructions"
+    :fields="instructions_fields"
+    class="text-center mt-3"
+    sticky-header="78vh"
+  >
+    <!-- For each instruction -->
 
-      <template v-slot:cell(properties)="row">
-        <b-badge
-          class="m-1"
-          v-for="property in row.item.properties"
-          pill
-          variant="primary"
-        >
-          {{ property }}
-        </b-badge>
-      </template>
+    <template v-slot:cell(properties)="row">
+      <b-badge
+        class="m-1"
+        v-for="property in row.item.properties"
+        pill
+        variant="primary"
+      >
+        {{ property }}
+      </b-badge>
+    </template>
 
-      <template v-slot:cell(signatureRaw)="row">
-        {{ row.item.signatureRaw }}
-        <br />
-        {{ row.item.signature }}
-      </template>
+    <template v-slot:cell(signatureRaw)="row">
+      {{ row.item.signatureRaw }}
+      <br />
+      {{ row.item.signature }}
+    </template>
 
-      <template v-slot:cell(fields)="row">
-        <b-button
-          @click.stop="view_instructions_modal(row.item.name, row.index)"
-          variant="outline-secondary"
-          size="sm"
-          v-b-toggle.fields_instructions
-        >
-          View Fields
-        </b-button>
-      </template>
+    <template v-slot:cell(fields)="row">
+      <b-button
+        @click.stop="view_instructions_modal(row.item.name, row.index)"
+        variant="outline-secondary"
+        size="sm"
+        v-b-toggle.fields_instructions
+      >
+        View Fields
+      </b-button>
+    </template>
 
-      <template v-slot:cell(definition)="row">
-        <b-form-textarea
-          v-model="row.item.definition"
-          readonly
-          no-resize
-          rows="1"
-          max-rows="4"
-          title="Instruction Definition"
-        >
-        </b-form-textarea>
-      </template>
-    </b-table>
-  </div>
+    <template v-slot:cell(definition)="row">
+      <b-form-textarea
+        v-model="row.item.definition"
+        readonly
+        no-resize
+        rows="1"
+        max-rows="4"
+        title="Instruction Definition"
+      >
+      </b-form-textarea>
+    </template>
+  </b-table>
 </template>
