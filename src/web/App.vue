@@ -55,6 +55,16 @@ import ArchitectureView from "./components/ArchitectureView.vue"
 import SimulatorView from "./components/SimulatorView.vue"
 import AssemblyView from "./components/AssemblyView.vue"
 
+const creatorASCII = `
+ ██████╗██████╗ ███████╗ █████╗ ████████╗ ██████╗ ██████╗ 
+██╔════╝██╔══██╗██╔════╝██╔══██╗╚══██╔══╝██╔═══██╗██╔══██╗
+██║     ██████╔╝█████╗  ███████║   ██║   ██║   ██║██████╔╝
+██║     ██╔══██╗██╔══╝  ██╔══██║   ██║   ██║   ██║██╔══██╗
+╚██████╗██║  ██║███████╗██║  ██║   ██║   ╚██████╔╝██║  ██║
+ ╚═════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝   ╚═╝    ╚═════╝ ╚═╝  ╚═╝
+  didaCtic and geneRic assEmbly progrAmming simulaTOR
+`
+
 export default {
   name: "app",
   components: {
@@ -301,6 +311,8 @@ export default {
 
     // listener for window size changes
     window.addEventListener("resize", this.resizeHandler)
+
+    console.log(creatorASCII)
   },
 
   unmounted() {
