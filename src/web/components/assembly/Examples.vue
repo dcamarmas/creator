@@ -157,22 +157,19 @@ export default {
     <!-- set selector -->
     <b-form-radio-group
       v-if="example_set_options.length > 0 && example_set_options.length < 3"
-      id="example_set"
       class="w-100 mb-3"
       v-model="selected_set"
       :options="example_set_options"
       button-variant="outline-secondary"
       size="sm"
-      name="radios-btn-default"
       buttons
     />
 
     <b-dropdown
+      v-if="example_set_options.length > 2"
       id="examples_dropdown"
       class="w-100 mb-3"
       size="sm"
-      text="Example sets available"
-      v-if="example_set_options.length > 2"
     >
       <b-dropdown-item
         v-for="item in example_set_options"
@@ -183,14 +180,16 @@ export default {
     </b-dropdown>
 
     <span
-      class="h6"
       v-if="
         example_set_options.length === 0 ||
         available_sets[selected_set]?.examples.length === 0
       "
+      class="h6"
     >
       There\'s no examples at the moment
     </span>
+
+    <!-- examples -->
 
     <b-list-group>
       <b-button-group
