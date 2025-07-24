@@ -144,27 +144,12 @@ export default {
     },
 
     //
-    //Screen change
+    // Screen change
     //
 
     change_UI_mode(e) {
       if (this.$root.creator_mode !== e) {
-        // slow transition <any> => "architecture"
-        // if (e === "architecture") {
-        //   $(".loading").show()
-        //   setTimeout(function () {
-        //     app._data.creator_mode = e
-        //     app.$forceUpdate()
-        //     $(".loading").hide()
-        //   }, 50)
-        //   return
-        // }
-
-        // fast transition <any> => <any> - "architecture"
         this.$root.creator_mode = e
-
-        //Close all toast and refresh
-        // this.$root.$bvToast.hide()
       }
     },
 
@@ -229,10 +214,10 @@ export default {
 
         default:
           // put rowVariant in entrypoint
-          // TODO: use PC, or entrypoint label defined in architecture
-          const main_inst = instructions.find(inst => inst.Label === "main")
-          if (main_inst) {
-            main_inst._rowVariant = "success"
+          const entrypoint = instructions.at(status.execution_index)
+          console.log(status.execution_index)
+          if (entrypoint) {
+            entrypoint._rowVariant = "success"
           }
           show_notification("Compilation completed successfully", "success")
           this.change_UI_mode("simulator")
@@ -383,12 +368,8 @@ export default {
         draw.space.push(i)
       }
 
-      // UI: set default row color...
-      for (let i = 0; i < this.instructions.length; i++) {
-        if (this.instructions[i].Label === "main") {
-          draw.success.push(i)
-        }
-      }
+      // put rowVariant in entrypoint
+      draw.success.push(status.execution_index)
 
       this.execution_UI_update(packExecute(false, null, null, draw))
     },
