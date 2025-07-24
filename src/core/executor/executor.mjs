@@ -335,7 +335,7 @@ function executeInstructionCycle(draw) {
 
     // Special check for stack visualization purposes
     if (status.execution_index === 0) {
-        track_stack_enter(tag_instructions[getPC()] || "");
+        track_stack_enter(tag_instructions[getPC()].tag || "");
     }
 
     // Check for conditions that would stop execution

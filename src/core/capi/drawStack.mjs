@@ -29,20 +29,20 @@ import {
 } from "../memory/stackTracker.mjs";
 
 export const DRAW_STACK = {
-    begin (addr) {
+    begin(addr) {
         let function_name = "";
 
         // 1.- get function name
         if (typeof REGISTERS[0] !== "undefined") {
             if (typeof tag_instructions[addr] === "undefined")
                 function_name = "0x" + parseInt(addr, 10).toString(16);
-            else function_name = tag_instructions[addr];
+            else function_name = tag_instructions[addr].tag;
         }
 
         // 2.- callstack_enter
         track_stack_enter(function_name);
     },
-    end () {
+    end() {
         // track leave
         const ret = track_stack_leave();
 
@@ -57,7 +57,7 @@ export const DRAW_STACK = {
 
     // Add a hint for a specific memory address
     // Example: drawstack_add_hint(0xFFFFFFFC, "whatever register");
-    addHint (address, name) {
+    addHint(address, name) {
         const ret = track_stack_addHint(address, name);
         if (!ret.ok) {
             crex_show_notification(ret.msg, "warning");

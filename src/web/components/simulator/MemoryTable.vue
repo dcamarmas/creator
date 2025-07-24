@@ -558,7 +558,7 @@ export default {
 
           <!-- System -->
           <b-col class="border rounded ms-1 me-2">
-            <b-badge variant="white" class="text-secondary">
+            <b-badge variant="white" class="text-body">
               System<br />stack
             </b-badge>
           </b-col>
