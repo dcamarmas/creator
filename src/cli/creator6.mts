@@ -1234,7 +1234,7 @@ function handleStackCommand(args: string[]) {
         for (let i = stackFrames.val.length - 1; i >= 0; i--) {
             const frame = stackFrames.val[i];
             // Get function name from label or fall back to address
-            const functionName = stackNames.val[i].tag || "";
+            const functionName = stackNames.val[i] || "";
             const depth = stackFrames.val.length - 1 - i;
             const indent = "  ".repeat(depth);
             const frameSize = frame.begin_callee - frame.end_callee;
@@ -1261,8 +1261,7 @@ function handleStackCommand(args: string[]) {
         console.log(colorText("\nCurrent Frame Details:", "36"));
 
         // Get function name from label for current function
-        const currentFuncName =
-            stackNames.val[stackNames.val.length - 1].tag || "";
+        const currentFuncName = stackNames.val[stackNames.val.length - 1] || "";
 
         console.log(`Function: ${currentFuncName}`);
 
@@ -1283,7 +1282,7 @@ function handleStackCommand(args: string[]) {
         ) {
             // Get function name from label for caller
             const callerFuncName =
-                stackNames.val[stackNames.val.length - 2].tag || "";
+                stackNames.val[stackNames.val.length - 2] || "";
 
             const callerBeginAddress = BigInt(stackTop.begin_callee);
             const callerBeginAddressHex = `0x${callerBeginAddress.toString(16).toUpperCase()}`;
@@ -1377,7 +1376,7 @@ function handleStackCommand(args: string[]) {
                 // Mark frame start (at the end_callee address, which is the low address/stack pointer)
                 if (addr === frameEndCallee) {
                     // Get function name from label
-                    const funcName = stackNames.val[i].tag || "";
+                    const funcName = stackNames.val[i] || "";
                     annotation +=
                         (annotation ? ", " : "") + `← ${funcName} frame start`;
                 }
@@ -1385,7 +1384,7 @@ function handleStackCommand(args: string[]) {
                 // Mark frame end (at the begin_callee address, which is the high address)
                 if (addr === frameBeginCallee) {
                     // Get function name from label
-                    const funcName = stackNames.val[i].tag || "";
+                    const funcName = stackNames.val[i] || "";
                     annotation +=
                         (annotation ? ", " : "") + `← ${funcName} frame end`;
                 }
@@ -1473,7 +1472,6 @@ function handleUntilCommand(args: string[]) {
     handleBreakpointAtCurrentPC();
 }
 
- 
 function parseArguments(): ArgvOptions {
     return yargs(hideBin(process.argv))
         .usage("Usage: $0 [options]")
@@ -1553,7 +1551,7 @@ function parseArguments(): ArgvOptions {
         })
         .help().argv as ArgvOptions;
 }
- 
+
 function processCommand(cmd: string, args: string[]): boolean {
     // Apply alias substitution
     const resolved = applyAlias(cmd, args);
@@ -1647,7 +1645,6 @@ function processCommand(cmd: string, args: string[]): boolean {
     return false;
 }
 
- 
 function interactiveMode() {
     const rl = readline.createInterface({
         input: process.stdin,
