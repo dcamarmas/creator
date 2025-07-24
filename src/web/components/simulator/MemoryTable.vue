@@ -22,6 +22,7 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 import { REGISTERS } from "@/core/core.mjs"
 import { stack_hints, track_stack_limits } from "@/core/memory/stackTracker.mjs"
 import { chunks, range } from "@/core/utils/utils.mjs"
+import { toHex } from "@/web/utils.mjs"
 
 export default {
   props: {
@@ -50,6 +51,8 @@ export default {
   },
 
   methods: {
+    toHex,
+
     /**
      * Refreshes the memory table
      */
@@ -90,22 +93,6 @@ export default {
           item.start < this.$root.begin_caller &&
           item.start >= this.$root.end_caller,
       }
-    },
-
-    /**
-     *
-     * Transforms a value into a hextring.
-     *
-     * @param {number} value
-     * @param {number} padding Padding, in bytes
-     *
-     * @returns {string}
-     */
-    toHex(value, padding) {
-      return value
-        .toString(16)
-        .padStart(padding * 2, "0")
-        .toUpperCase()
     },
 
     /**
@@ -201,16 +188,31 @@ export default {
       }
     },
 
-  computed: {
-    hints() {
-      return this.main_memory
-        .getAllHints()
-        .map(({ address, tag, type, sizeInBits }) => ({
-          address: Number(address),
-          tag,
-          type,
-          size: sizeInBits / this.main_memory.getBitsPerByte(),
-        }))
+    /**
+     * Checks if any of the special control registers are pointing to this
+     * address, and returns its types and names.
+     *
+     * @param {Number} addr Adress to check
+     *
+     * @returns {Array<{type: string, name: string}>}
+     */
+    get_pointers(addr) {
+      return REGISTERS.flatMap(bank =>
+        bank.elements
+          .filter(
+            register =>
+              // check it's one of the control registers
+              register.properties.some(p =>
+                this.ctrl_register_tags.includes(p),
+              ) &&
+              // check value is correct
+              (register.value & 0xfffffffcn) === (BigInt(addr) & 0xfffffffcn),
+          )
+          .map(reg => ({
+            type: reg.properties.find(p => this.ctrl_register_tags.includes(p)),
+            name: reg.name[1] ?? reg.name[0],
+          })),
+      )
     },
 
     // I'd _like_ for these to be a computed method but, as none of the
@@ -492,6 +494,7 @@ export default {
 
         <!-- secondary view -->
         <b-popover
+          v-if="stackFrames().length > 0"
           target="stack_funct_popover"
           triggers="hover"
           placement="top"
@@ -533,7 +536,7 @@ export default {
           </b-col>
 
           <!-- Callee -->
-          <b-col class="border rounded ms-1">
+          <b-col v-if="stackFrames().length > 0" class="border rounded ms-1">
             <b-badge variant="white" class="text-success">
               Callee: <br />{{ this.$root.callee_subrutine }}
             </b-badge>

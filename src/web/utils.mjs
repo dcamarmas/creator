@@ -339,3 +339,19 @@ export function downloadToTXTFile(data, filename) {
 
     downloadLink.click();
 }
+
+/**
+ *
+ * Transforms a value into a hextring.
+ *
+ * @param {number} value
+ * @param {number} padding Padding, in bytes
+ *
+ * @returns {string}
+ */
+export function toHex(value, padding) {
+    return value
+        .toString(16)
+        .padStart(padding * 2, "0")
+        .toUpperCase();
+}

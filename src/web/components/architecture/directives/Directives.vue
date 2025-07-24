@@ -33,15 +33,11 @@ export default {
 }
 </script>
 <template>
-  <div>
-    <div class="col-lg-12 col-sm-12 mt-3">
-      <b-table
-        small
-        :items="directives"
-        :fields="directivesFields"
-        class="text-center"
-        sticky-header="60vh"
-      />
-    </div>
-  </div>
+  <b-table
+    small
+    :items="directives"
+    :fields="directivesFields"
+    class="text-center mt-3"
+    sticky-header="78vh"
+  />
 </template>

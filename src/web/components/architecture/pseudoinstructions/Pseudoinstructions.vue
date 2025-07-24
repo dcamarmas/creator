@@ -68,43 +68,41 @@ export default {
   />
 
   <!-- Pseudoinstruction set table -->
-  <div class="col-lg-12 col-sm-12 mt-3">
-    <b-table
-      small
-      :items="pseudoinstructions"
-      :fields="pseudoinstructions_fields"
-      class="text-center"
-      sticky-header="60vh"
-    >
-      <!-- For each pseudoinstruction -->
+  <b-table
+    small
+    :items="pseudoinstructions"
+    :fields="pseudoinstructions_fields"
+    class="text-center mt-3"
+    sticky-header="78vh"
+  >
+    <!-- For each pseudoinstruction -->
 
-      <template v-slot:cell(signatureRaw)="row">
-        {{ row.item.signatureRaw }}
-        <br />
-        {{ row.item.signature }}
-      </template>
+    <template v-slot:cell(signatureRaw)="row">
+      {{ row.item.signatureRaw }}
+      <br />
+      {{ row.item.signature }}
+    </template>
 
-      <template v-slot:cell(fields)="row">
-        <b-button
-          @click.stop="view_pseudoinstruction_modal(row.item.name, row.index)"
-          v-b-toggle.fields_pseudoinstructions
-          variant="outline-secondary"
-          size="sm"
-        >
-          View Fields
-        </b-button>
-      </template>
+    <template v-slot:cell(fields)="row">
+      <b-button
+        @click.stop="view_pseudoinstruction_modal(row.item.name, row.index)"
+        v-b-toggle.fields_pseudoinstructions
+        variant="outline-secondary"
+        size="sm"
+      >
+        View Fields
+      </b-button>
+    </template>
 
-      <template v-slot:cell(definition)="row">
-        <b-form-textarea
-          v-model="row.item.definition"
-          readonly
-          no-resize
-          rows="1"
-          max-rows="4"
-          title="Pseudoinstruction Definition"
-        />
-      </template>
-    </b-table>
-  </div>
+    <template v-slot:cell(definition)="row">
+      <b-form-textarea
+        v-model="row.item.definition"
+        readonly
+        no-resize
+        rows="1"
+        max-rows="4"
+        title="Pseudoinstruction Definition"
+      />
+    </template>
+  </b-table>
 </template>

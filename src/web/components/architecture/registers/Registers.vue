@@ -19,6 +19,8 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <script>
+import { toHex } from "@/web/utils.mjs"
+
 export default {
   props: {
     registers: { type: Array, required: true },
@@ -31,6 +33,8 @@ export default {
       registers_fields: ["name", "ID", "nbits", "default_value", "properties"],
     }
   },
+
+  methods: { toHex },
 }
 </script>
 
@@ -53,14 +57,21 @@ export default {
       {{ row.index }}
     </template>
 
+    <template v-slot:cell(default_value)="row">
+      <span class="font-monospace">
+        0x{{ toHex(row.item.default_value, 4) }}
+      </span>
+    </template>
+
     <template v-slot:cell(properties)="row">
       <b-badge
         class="m-1"
         v-for="property in registers[row.index].properties"
         pill
         variant="primary"
-        >{{ property }}</b-badge
       >
+        {{ property }}
+      </b-badge>
     </template>
   </b-table>
 </template>

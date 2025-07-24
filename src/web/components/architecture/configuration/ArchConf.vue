@@ -24,55 +24,48 @@ export default {
     arch_conf: { type: Array, required: true },
   },
 
-  data() {
-    return {
-      //Architecture configuration table fields
-      arch_fields: ["field", "value"],
-    }
-  },
+  computed: {
+    config() {
+      return this.arch_conf.map(({ name, value }) => {
+        // format values
+        if (name === "Data Format") {
+          if (value === "big_endian") {
+            return {
+              name,
+              value: "Big Endian",
+            }
+          } else if (value === "little_endian") {
+            return {
+              name,
+              value: "Little Endian",
+            }
+          }
+        } else if (
+          [
+            "Passing Convention",
+            "Memory Alignment",
+            "Sensitive Register Name",
+          ].includes(name)
+        ) {
+          return {
+            name,
+            value: value === "1" ? "Enabled" : "Disabled",
+          }
+        }
 
-  methods: {},
+        return { name, value }
+      })
+    },
+  },
 }
 </script>
 
 <template>
-  <div class="col-lg-12 col-sm-12 row memoryLayoutDiv mx-0 px-0">
-    <div class="col-lg-3 col-sm-12" />
-
-    <!-- Architecture configuration table -->
-    <div class="col-lg-12 col-sm-12 mt-3">
-      <b-table
-        small
-        :items="arch_conf"
-        :fields="arch_fields"
-        class="text-center"
-        sticky-header="60vh"
-      >
-        <!-- For each instruction -->
-
-        <template v-slot:cell(field)="row">
-          <span>{{ row.item.name }}</span>
-        </template>
-
-        <template v-slot:cell(value)="row">
-          <span
-            v-if="
-              row.item.name == 'Name' ||
-              row.item.name == 'Bits' ||
-              row.item.name == 'Description' ||
-              row.item.name == 'Main Function'
-            "
-          >
-            {{ row.item.value }}
-          </span>
-          <span v-if="row.item.value == 'big_endian'"> Big Endian </span>
-          <span v-if="row.item.value == 'little_endian'"> Little Endian </span>
-          <span v-if="row.item.value == '0'"> Disabled </span>
-          <span v-if="row.item.value == '1'"> Enabled </span>
-        </template>
-      </b-table>
-    </div>
-
-    <div class="col-lg-3 col-sm-12"></div>
-  </div>
+  <b-table
+    small
+    :items="config"
+    :fields="[{ key: 'name', label: 'Field' }, 'value']"
+    class="text-center mt-3"
+    sticky-header="60vh"
+  />
 </template>

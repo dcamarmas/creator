@@ -32,51 +32,42 @@ export default {
 </script>
 
 <template>
-  <div>
-    <!-- Register File table -->
-    <div class="col-lg-12 col-sm-12 p-0">
-      <br />
-      <div
-        class="col-lg-12 col-sm-12 px-0"
-        v-for="(item, index) in register_file"
-        :key="item.type"
+  <!-- Register File table -->
+  <div class="mt-3" />
+  <!-- For each register file -->
+  <b-card
+    v-for="(item, index) in register_file"
+    :key="item.type"
+    no-body
+    class="mb-1"
+  >
+    <b-card-header header-tag="header" class="p-1 d-grid gap-2" role="tab">
+      <b-button
+        block
+        href="#"
+        v-b-toggle="`registerfile${index}`"
+        class="buttonBackground"
+        variant="outline-secondary"
+        size="sm"
       >
-        <!-- For each register file -->
-        <b-card no-body class="mb-1">
-          <b-card-header
-            header-tag="header"
-            class="p-1 d-grid gap-2"
-            role="tab"
-          >
-            <b-button
-              block
-              href="#"
-              v-b-toggle="'registerfile' + index.toString()"
-              class="buttonBackground"
-              variant="outline-secondary"
-              size="sm"
-            >
-              {{ item.name }}
-            </b-button>
-          </b-card-header>
-          <b-collapse
-            :id="'registerfile' + index.toString()"
-            accordion="my-accordion"
-            role="tabpanel"
-            class="architecture-scroll-y"
-          >
-            <b-card-body>
-              <Registers
-                :registers="register_file[index].elements"
-                :register_file_index="index"
-              >
-              </Registers>
-            </b-card-body>
-          </b-collapse>
-        </b-card>
-      </div>
-    </div>
-  </div>
+        {{ item.name }}
+      </b-button>
+    </b-card-header>
+    <b-collapse
+      :id="'registerfile' + index.toString()"
+      accordion="my-accordion"
+      role="tabpanel"
+      class="architecture-scroll-y"
+    >
+      <b-card-body>
+        <Registers
+          :registers="register_file[index].elements"
+          :register_file_index="index"
+        >
+        </Registers>
+      </b-card-body>
+    </b-collapse>
+  </b-card>
 </template>
 
 <style lang="scss" scoped>
