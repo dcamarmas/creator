@@ -25,6 +25,7 @@ import { CHECK_STACK } from "./checkStack.mjs";
 import { DRAW_STACK } from "./drawStack.mjs";
 import { FP } from "./fp.mjs";
 import { RISCV } from "./arch/riscv.mjs";
+import { Z80 } from "./arch/z80.mjs";
 import { REG } from "./registers.mts";
 import { INTERRUPTS } from "./interrupts.mts";
 
@@ -43,6 +44,8 @@ export function initCAPI() {
         DRAW_STACK,
         FP,
         RISCV,
+        Z80,
+
         REG,
         INTERRUPTS,
     };

@@ -296,7 +296,19 @@ function processCurrentInstruction(draw) {
     const word = words.join("");
 
     // 2. Decode instruction
-    const instruction = decode_instruction("0x" + word);
+    const returnValue = decode_instruction("0x" + word);
+    if (returnValue.status === "error") {
+        // If decoding fails, return an error
+        draw.danger.push(status.execution_index);
+        status.execution_index = -1; // Set execution index to -1 to indicate error
+        return packExecute(
+            true,
+            "Error decoding instruction: " + returnValue.reason,
+            "danger",
+            draw
+        );
+    }
+    const instruction = returnValue.value;
 
     const asm = instruction.instructionExecPartsWithProperNames.join(" ");
     const machineCode = words.slice(0, instruction.nwords).join("");
@@ -434,84 +446,58 @@ export function step() {
 
     // Check if the PC is outside valid execution segments
     const pc_address = getPC();
-    const currentSegment = main_memory.getSegmentForAddress(pc_address);
+    // const currentSegment = main_memory.getSegmentForAddress(pc_address);
 
-    if (!main_memory.isValidAccess(pc_address, "execute")) {
-        status.execution_index = -2;
-        const result = packExecute(
-            false,
-            `The execution of the program has finished - PC in non-executable segment '${currentSegment}'`,
-            "success",
-            draw,
-        );
-        // Include the instruction data from the last executed instruction
-        if (instructionData) {
-            result.instructionData = instructionData;
-        }
-        return result;
-    }
+    // if (!main_memory.isValidAccess(pc_address, "execute")) {
+    //     status.execution_index = -2;
+    //     const result = packExecute(
+    //         false,
+    //         `The execution of the program has finished - PC in non-executable segment '${currentSegment}'`,
+    //         "success",
+    //         draw,
+    //     );
+    //     // Include the instruction data from the last executed instruction
+    //     if (instructionData) {
+    //         result.instructionData = instructionData;
+    //     }
+    //     return result;
+    // }
 
-    const segments = main_memory.getMemorySegments();
-    const textSegment = segments.get("text");
-    if (textSegment) {
-        const written = main_memory.getWrittenAddresses();
-        // Only consider addresses within the text segment
-        const textWritten = written.filter(
-            addr =>
-                addr >= Number(textSegment.start) &&
-                addr <= Number(textSegment.end),
-        );
-        if (textWritten.length > 0) {
-            const maxTextAddr = Math.max(...textWritten);
-            if (pc_address > BigInt(maxTextAddr)) {
-                status.execution_index = -2;
-                const result = packExecute(
-                    false,
-                    `The execution of the program has finished - PC (${pc_address}) is higher than the highest written address (${maxTextAddr}) in the text segment`,
-                    "success",
-                    draw,
-                );
-                if (instructionData) {
-                    result.instructionData = instructionData;
-                }
-                return result;
-            }
-        }
-    }
+    // const segments = main_memory.getMemorySegments();
+    // const textSegment = segments.get("text");
+    // if (textSegment) {
+    //     const written = main_memory.getWrittenAddresses();
+    //     // Only consider addresses within the text segment
+    //     const textWritten = written.filter(
+    //         addr =>
+    //             addr >= Number(textSegment.start) &&
+    //             addr <= Number(textSegment.end),
+    //     );
+    //     if (textWritten.length > 0) {
+    //         const maxTextAddr = Math.max(...textWritten);
+    //         if (pc_address > BigInt(maxTextAddr)) {
+    //             status.execution_index = -2;
+    //             const result = packExecute(
+    //                 false,
+    //                 `The execution of the program has finished - PC (${pc_address}) is higher than the highest written address (${maxTextAddr}) in the text segment`,
+    //                 "success",
+    //                 draw,
+    //             );
+    //             if (instructionData) {
+    //                 result.instructionData = instructionData;
+    //             }
+    //             return result;
+    //         }
+    //     }
+    // }
 
     // Return execution result with instruction data
-    const result = packExecute(status.error, null, null, draw);
+    const result = packExecute(status.error, cycleResult.msg, null, draw);
     if (instructionData) {
         result.instructionData = instructionData;
     }
 
     return result;
-}
-
-export function executeProgramOneShot(limit_n_instructions) {
-    let ret;
-
-    // Google Analytics
-    creator_ga("execute", "execute.run");
-
-    // execute program
-    for (let i = 0; i < limit_n_instructions; i++) {
-        ret = step();
-
-        if (ret.error === true) {
-            return ret;
-        }
-        if (status.execution_index < -1) {
-            return ret;
-        }
-    }
-
-    return packExecute(
-        true,
-        '"ERROR:" number of instruction limit reached :-(',
-        null,
-        null,
-    );
 }
 
 //Exit syscall
@@ -562,35 +548,35 @@ export function writeStackLimit(stackLimit) {
     const dataSegment = segments.get("data");
     const textSegment = segments.get("text");
 
-    // Check if stack pointer would be placed in data segment
-    if (
-        dataSegment &&
-        stackLimitBigInt <= dataSegment.end &&
-        stackLimitBigInt >= dataSegment.start
-    ) {
-        draw.danger.push(status.execution_index);
-        throw packExecute(
-            true,
-            "Stack pointer cannot be placed in the data segment",
-            "danger",
-            null,
-        );
-    }
+    // // Check if stack pointer would be placed in data segment
+    // if (
+    //     dataSegment &&
+    //     stackLimitBigInt <= dataSegment.end &&
+    //     stackLimitBigInt >= dataSegment.start
+    // ) {
+    //     draw.danger.push(status.execution_index);
+    //     throw packExecute(
+    //         true,
+    //         "Stack pointer cannot be placed in the data segment",
+    //         "danger",
+    //         null,
+    //     );
+    // }
 
-    // Check if stack pointer would be placed in text segment
-    if (
-        textSegment &&
-        stackLimitBigInt <= textSegment.end &&
-        stackLimitBigInt >= textSegment.start
-    ) {
-        draw.danger.push(status.execution_index);
-        throw packExecute(
-            true,
-            "Stack pointer cannot be placed in the text segment",
-            "danger",
-            null,
-        );
-    }
+    // // Check if stack pointer would be placed in text segment
+    // if (
+    //     textSegment &&
+    //     stackLimitBigInt <= textSegment.end &&
+    //     stackLimitBigInt >= textSegment.start
+    // ) {
+    //     draw.danger.push(status.execution_index);
+    //     throw packExecute(
+    //         true,
+    //         "Stack pointer cannot be placed in the text segment",
+    //         "danger",
+    //         null,
+    //     );
+    // }
 
     // Get current stack pointer from memory segments
     const stackSegment = segments.get("stack");

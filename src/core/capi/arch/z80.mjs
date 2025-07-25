@@ -1,0 +1,245 @@
+/**
+ *  Copyright 2018-2025 Felix Garcia Carballeira, Alejandro Calderon Mateos,
+ *                      Diego Camarmas Alonso, Jorge Ramos Santana
+ *
+ *  This file is part of CREATOR.
+ *
+ *  CREATOR is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Lesser General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  CREATOR is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+
+export let keyboardBuffer = [] //[0x3f, 0x0d]; // Default buffer with '?' and Enter key
+
+// 2. Setup the host listener for Node.js standard input.
+//    This code runs once when the emulator module is loaded.
+
+// A private helper function to efficiently check for even parity using BigInts.
+function _isEvenParity(value) {
+    let v = BigInt(value) & 0xFFn;
+    v ^= v >> 4n;
+    v ^= v >> 2n;
+    v ^= v >> 1n;
+    return (v & 1n) === 0n;
+}
+export const Z80 = {
+    // Flag bitmasks
+    S_FLAG: 0x80n,
+    Z_FLAG: 0x40n,
+    H_FLAG: 0x10n,
+    PV_FLAG: 0x04n,
+    N_FLAG: 0x02n,
+    C_FLAG: 0x01n,
+
+    /**
+     * Calculates flags for an 8-bit INC operation.
+     * @param {BigInt} oldValue - The 8-bit value before incrementing.
+     * @param {BigInt} initialF - The current value of the F register.
+     * @returns {BigInt} The new 8-bit flag register value.
+     */
+    calculateFlags_INC(oldValue, initialF) {
+        const newValue = (oldValue + 1n) & 0xFFn;
+        let newF = initialF & this.C_FLAG; // Preserve the C flag
+
+        if (newValue & this.S_FLAG) newF |= this.S_FLAG;
+        if (newValue === 0n) newF |= this.Z_FLAG;
+        if ((oldValue & 0x0Fn) === 0x0Fn) newF |= this.H_FLAG;
+        if (oldValue === 0x7Fn) newF |= this.PV_FLAG; // Overflow 7Fh -> 80h
+        // N is reset
+        return newF;
+    },
+
+    /**
+     * Calculates flags for an 8-bit DEC operation.
+     * @param {BigInt} oldValue - The 8-bit value before decrementing.
+     * @param {BigInt} initialF - The current value of the F register.
+     * @returns {BigInt} The new 8-bit flag register value.
+     */
+    calculateFlags_DEC(oldValue, initialF) {
+        const newValue = (oldValue - 1n) & 0xFFn;
+        let newF = (initialF & this.C_FLAG) | this.N_FLAG; // Preserve C, set N
+
+        if (newValue & this.S_FLAG) newF |= this.S_FLAG;
+        if (newValue === 0n) newF |= this.Z_FLAG;
+        if ((oldValue & 0x0Fn) === 0n) newF |= this.H_FLAG; // Borrow from bit 4
+        if (oldValue === 0x80n) newF |= this.PV_FLAG; // Overflow 80h -> 7Fh
+        return newF;
+    },
+    
+    /**
+     * Calculates flags for 8-bit addition (ADD).
+     * @param {BigInt} val1 - The first operand.
+     * @param {BigInt} val2 - The second operand.
+     * @returns {BigInt} The new 8-bit flag register value.
+     */
+    calculateFlags_ADD(val1, val2) {
+        const result = val1 + val2;
+        const resultByte = result & 0xFFn;
+        let newF = 0n;
+
+        if (resultByte & this.S_FLAG) newF |= this.S_FLAG;
+        if (resultByte === 0n) newF |= this.Z_FLAG;
+        if (((val1 & 0xFn) + (val2 & 0xFn)) > 0xFn) newF |= this.H_FLAG;
+        if (~(val1 ^ val2) & (val1 ^ result) & 0x80n) newF |= this.PV_FLAG;
+        if (result > 0xFFn) newF |= this.C_FLAG;
+        return newF;
+    },
+    
+    /**
+     * Calculates flags for 8-bit addition with carry (ADC).
+     * @param {BigInt} val1 - The first operand.
+     * @param {BigInt} val2 - The second operand.
+     * @param {BigInt} initialF - The current value of the F register.
+     * @returns {BigInt} The new 8-bit flag register value.
+     */
+    calculateFlags_ADC(val1, val2, initialF) {
+        const carry = initialF & this.C_FLAG;
+        const result = val1 + val2 + carry;
+        const resultByte = result & 0xFFn;
+        let newF = 0n;
+
+        if (resultByte & this.S_FLAG) newF |= this.S_FLAG;
+        if (resultByte === 0n) newF |= this.Z_FLAG;
+        if (((val1 & 0xFn) + (val2 & 0xFn) + carry) > 0xFn) newF |= this.H_FLAG;
+        if (~(val1 ^ val2) & (val1 ^ result) & 0x80n) newF |= this.PV_FLAG;
+        if (result > 0xFFn) newF |= this.C_FLAG;
+        return newF;
+    },
+    
+    /**
+     * Calculates flags for 8-bit subtraction (SUB).
+     * @param {BigInt} val1 - The first operand (minuend).
+     * @param {BigInt} val2 - The second operand (subtrahend).
+     * @returns {BigInt} The new 8-bit flag register value.
+     */
+    calculateFlags_SUB(val1, val2) {
+        const result = val1 - val2;
+        const resultByte = result & 0xFFn;
+        let newF = this.N_FLAG; // N is always set for subtraction
+
+        if (resultByte & this.S_FLAG) newF |= this.S_FLAG;
+        if (resultByte === 0n) newF |= this.Z_FLAG;
+        if ((val1 & 0xFn) < (val2 & 0xFn)) newF |= this.H_FLAG; // Half-borrow
+        if ((val1 ^ val2) & (val1 ^ result) & 0x80n) newF |= this.PV_FLAG; // Overflow
+        if (result < 0n) newF |= this.C_FLAG; // Borrow
+        return newF;
+    },
+
+    /**
+     * Calculates flags for 8-bit subtraction with carry (SBC).
+     * @param {BigInt} val1 - The first operand (minuend).
+     * @param {BigInt} val2 - The second operand (subtrahend).
+     * @param {BigInt} initialF - The current value of the F register.
+     * @returns {BigInt} The new 8-bit flag register value.
+     */
+    calculateFlags_SBC(val1, val2, initialF) {
+        const carry = initialF & this.C_FLAG;
+        const result = val1 - val2 - carry;
+        const resultByte = result & 0xFFn;
+        let newF = this.N_FLAG; // N is always set for subtraction
+
+        if (resultByte & this.S_FLAG) newF |= this.S_FLAG;
+        if (resultByte === 0n) newF |= this.Z_FLAG;
+        if ((val1 & 0xFn) < ((val2 & 0xFn) + carry)) newF |= this.H_FLAG; // Half-borrow
+        if ((val1 ^ val2) & (val1 ^ result) & 0x80n) newF |= this.PV_FLAG; // Overflow
+        if (result < 0n) newF |= this.C_FLAG; // Borrow
+        return newF;
+    },
+
+    /**
+     * Calculates flags for logical operations (AND, OR, XOR).
+     * @param {BigInt} result - The 8-bit result of the operation.
+     * @param {number} setH - 1 to set the H flag (for AND), 0 to reset it (for OR/XOR).
+     * @returns {BigInt} The new 8-bit flag register value.
+     */
+    calculateFlags_LOGICAL(result, setH) {
+        let newF = 0n;
+        if (result & this.S_FLAG) newF |= this.S_FLAG;
+        if (result === 0n) newF |= this.Z_FLAG;
+        if (setH === 1) newF |= this.H_FLAG; // Set H for AND
+        if (_isEvenParity(result)) newF |= this.PV_FLAG;
+        // N and C are always reset for logical operations
+        return newF;
+    },
+
+    /**
+     * Calculates flags for the compare (CP) operation.
+     * @param {BigInt} val1 - The accumulator value.
+     * @param {BigInt} val2 - The value to compare against.
+     * @returns {BigInt} The new 8-bit flag register value.
+     */
+    calculateFlags_CP(val1, val2) {
+        // CP is a subtraction for flag purposes, but doesn't store the result.
+        return this.calculateFlags_SUB(val1, val2);
+    },
+
+    /**
+     * Calculates flags for 16-bit addition (ADD HL, rr).
+     * @param {BigInt} val1 - The first 16-bit operand.
+     * @param {BigInt} val2 - The second 16-bit operand.
+     * @param {BigInt} initialF - The current value of the F register.
+     * @returns {BigInt} The new 8-bit flag register value.
+     */
+    calculateFlags_ADD16(val1, val2, initialF) {
+        const result = val1 + val2;
+        // Preserve S, Z, P/V flags
+        let newF = initialF & (this.S_FLAG | this.Z_FLAG | this.PV_FLAG);
+
+        // N is reset
+        if (((val1 & 0x0FFFn) + (val2 & 0x0FFFn)) > 0x0FFFn) newF |= this.H_FLAG;
+        if (result > 0xFFFFn) newF |= this.C_FLAG;
+        
+        return newF;
+    },
+
+    /**
+     * Reads a byte from an I/O port.
+     * Implements the non-blocking read from the keyboard buffer.
+     * @param {BigInt} port - The 8-bit port address.
+     * @returns {BigInt} The 8-bit value read from the port.
+     */
+      read(port) {
+          const portNum = Number(port);
+          if (portNum === 0x01) { // Keyboard Port
+              if (keyboardBuffer.length > 0) {
+                  return keyboardBuffer.shift();
+              }
+              // Return 0 if no key is available.
+              return 0n;
+          }
+          // Default for unhandled ports.
+          return 0xFFn;
+      },
+
+    /**
+     * Writes a byte to an I/O port.
+     * @param {BigInt} port - The 8-bit port address.
+     * @param {BigInt} value - The 8-bit value to write.
+     */
+    write(port, value) {
+        const portNum = Number(port);
+        
+        if (portNum === 0x02) { // Screen Port
+            const valNum = Number(value);
+            // Create a 1-byte buffer from the value and write it directly.
+            // process.stdout will correctly interpret control characters
+            // like \n, \r, \b, etc., when sent this way.
+            process.stdout.write(Buffer.from([valNum]));
+        }
+        else if (portNum === 0xfe) { // ZX Spectrum ULA
+            const valNum = Number(value);
+            // Write the value to the ULA (this is a placeholder, actual implementation may vary)
+            console.log(`Writing to ZX Spectrum ULA: ${valNum}`);
+        }
+    }
+};

@@ -134,7 +134,10 @@ export function precomputeInstructions(sourceCode, sourceMap, tags = null) {
         }
         const word = words.join("");
         const instruction = decode_instruction("0x" + word);
-
+        // const instruction = {
+        //     nwords: words.length,
+        //     instructionExec: ""
+        // };
         const machineCode = words
             .slice(0, instruction.nwords)
             .join("")
@@ -185,8 +188,6 @@ export function precomputeInstructions(sourceCode, sourceMap, tags = null) {
         }
     }
     setInstructions(instructions);
-
-    console.log("Instructions precomputed successfully");
 }
 
 export function parseDebugSymbols(debugSymbols) {
