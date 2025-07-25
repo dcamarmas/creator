@@ -937,22 +937,6 @@ function prepareArchitecture(architectureObj, dump = false) {
         return Math.max(max, instruction.nwords || 1);
     }, 1);
 
-    // // Convert to JSON for WASM
-    // const architectureJson = JSON.stringify(architectureObj);
-
-    // Dump the architecture JSON to a file for debugging
-    if (dump) {
-        try {
-            Deno.writeTextFileSync(
-                "./architecture/test.json",
-                architectureJson,
-            );
-        } catch (writeError) {
-            logger.error(
-                `Could not write architecture file: ${writeError.message}`,
-            );
-        }
-    }
 
     return architectureObj;
 }

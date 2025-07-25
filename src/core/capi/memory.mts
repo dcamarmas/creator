@@ -185,6 +185,7 @@ export const MEM = {
         value: bigint,
         reg_name: string,
         hint: string,
+        noSegFault: boolean = true
     ) {
         // get memory
         const deviceID = checkDeviceAddr(Number(address));
@@ -195,19 +196,23 @@ export const MEM = {
 
         // Check if the address is in a writable segment using memory functions
         const segment = memory.getSegmentForAddress(address);
-        if (segment === "text") {
-            raise("Segmentation fault. You tried to write in the text segment");
-            creator_executor_exit(true);
-        }
+        if (!noSegFault) {
+            if (segment === "text") {
+                raise(
+                    "Segmentation fault. You tried to write in the text segment",
+                );
+                creator_executor_exit(true);
+            }
 
-        // Validate that write access is allowed for this address
-        if (!memory.isValidAccess(address, "write")) {
-            raise(
-                "Segmentation fault. Write access denied for address '0x" +
-                    address.toString(16) +
-                    "'",
-            );
-            creator_executor_exit(true);
+            // Validate that write access is allowed for this address
+            if (!memory.isValidAccess(address, "write")) {
+                raise(
+                    "Segmentation fault. Write access denied for address '0x" +
+                        address.toString(16) +
+                        "'",
+                );
+                creator_executor_exit(true);
+            }
         }
 
         let byteArray = [];
@@ -253,7 +258,7 @@ export const MEM = {
         creator_callstack_newWrite(i, j, address, byteArray.length);
     },
 
-    read(address: bigint, bytes: number, reg_name: string) {
+    read(address: bigint, bytes: number, reg_name: string, noSegFault: boolean = true) {
         // get memory
         const deviceID = checkDeviceAddr(Number(address));
         const memory =
@@ -264,25 +269,28 @@ export const MEM = {
         // Implementation of capi_mem_read
         let val = 0n;
 
-        // Check if the address is in a readable segment using memory functions
-        const segment = memory.getSegmentForAddress(address);
-        if (segment === "text") {
-            raise(
+        if (!noSegFault) {
+            // Check if the address is in a readable segment using memory functions
+            const segment = memory.getSegmentForAddress(address);
+            if (segment === "text") {
+                raise(
+                    
                 `Segmentation fault. You tried to read in the text segment (${toHex(address, 4)})`,
-            );
-            creator_executor_exit(true);
-        }
+            ,
+                );
+                creator_executor_exit(true);
+            }
 
-        // Validate that read access is allowed for this address
-        if (!memory.isValidAccess(address, "read")) {
-            raise(
-                "Segmentation fault. Read access denied for address '0x" +
-                    address.toString(16) +
-                    "'",
-            );
-            creator_executor_exit(true);
+            // Validate that read access is allowed for this address
+            if (!memory.isValidAccess(address, "read")) {
+                raise(
+                    "Segmentation fault. Read access denied for address '0x" +
+                        address.toString(16) +
+                        "'",
+                );
+                creator_executor_exit(true);
+            }
         }
-
         try {
             val = readValueFromMemory(address, bytes);
         } catch (_e) {

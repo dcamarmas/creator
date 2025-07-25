@@ -572,7 +572,7 @@ function checkCandidateOpcode(candidate, instruction) {
  * @param {string} binaryInstruction - The binary instruction string to match
  * @returns {Object|null} The matching instruction object or null if no match found
  */
-function findMatchingInstruction(binaryInstruction) {
+function findMatchingInstruction(binaryInstruction, variableOpcodeSize = false) {
     const lookupTable = buildInstructionLookupTable();
     const nwords = binaryInstruction.length / WORDSIZE;
     if (binaryInstruction.length % WORDSIZE !== 0) {
@@ -651,6 +651,10 @@ function findMatchingInstruction(binaryInstruction) {
 
             // Return the single match found
             return matchingInstructions[0];
+        }
+        if (!variableOpcodeSize) {
+            // If variable opcode size is not allowed, we can stop here
+            break;
         }
     }
 
@@ -767,7 +771,7 @@ export function decode_instruction(toDecode, newFormat = false) {
         } else {
             errorValue = `"${toDecode}"`;
         }
-        throw new Error(`Illegal Instruction: ${errorValue}`);
+        return { status: "error", reason: `Illegal Instruction: ${errorValue}` };
     }
 
     // Process all fields efficiently
@@ -802,6 +806,6 @@ export function decode_instruction(toDecode, newFormat = false) {
     if (newFormat) {
         return instruction_loaded;
     } else {
-        return legacyFormat(matchedInstruction, instruction_loaded);
+        return { status: "ok", value: legacyFormat(matchedInstruction, instruction_loaded) };
     }
 }
