@@ -8,14 +8,10 @@ import { step } from "../../core/executor/executor.mjs";
 import { decode_instruction } from "../../core/executor/decoder.mjs";
 import { logger } from "../../core/utils/creator_logger.mjs";
 import { instructions } from "../../core/assembler/assembler.mjs";
-import {
-    track_stack_getFrames,
-    track_stack_getNames,
-    track_stack_getAllHints,
-} from "../../core/memory/stackTracker.mjs";
 import yaml from "js-yaml";
 import path from "node:path";
 import { displayHelp } from "../utils.mts";
+import type { StackTracker } from "@/core/memory/StackTracker.mjs";
 
 // --- Constants and Configuration ---
 const MAX_INSTRUCTIONS = 10000000000;
@@ -609,7 +605,6 @@ function listBreakpoints() {
         message += `${bp.Address}${bp.Label ? ` (${bp.Label})` : ""}`;
         if (index >= 2 && breakpoints.length > 3) {
             message += `, and ${breakpoints.length - 3} more...`;
-            
         }
     });
 
@@ -658,20 +653,20 @@ function getInstructionsContent(width: number): string[] {
         lines.push("Addr | Instruction");
         lines.push("-----|------------");
     } else if (BINARY_LOADED) {
-            lines.push(
-                "B | Address | Label      | Instruction          | Machine Code",
-            );
-            lines.push(
-                "--|---------|------------|---------------------|------------",
-            );
-        } else {
-            lines.push(
-                "B | Address | Label      | Loaded Instruction   | User Instruction",
-            );
-            lines.push(
-                "--|---------|------------|---------------------|---------------",
-            );
-        }
+        lines.push(
+            "B | Address | Label      | Instruction          | Machine Code",
+        );
+        lines.push(
+            "--|---------|------------|---------------------|------------",
+        );
+    } else {
+        lines.push(
+            "B | Address | Label      | Loaded Instruction   | User Instruction",
+        );
+        lines.push(
+            "--|---------|------------|---------------------|---------------",
+        );
+    }
 
     // Find current instruction index to center the view
     const currentIndex = instructions.findIndex(
@@ -973,15 +968,16 @@ function getMemoryContent(width: number, address: number): string[] {
     return lines;
 }
 
+// eslint-disable-next-line max-lines-per-function
 function getStackContent(width: number): string[] {
     const lines: string[] = [];
 
     try {
-        const stackFrames = track_stack_getFrames();
-        const stackNames = track_stack_getNames();
-        const stackHints = track_stack_getAllHints();
+        const stackTracker = creator.stackTracker as StackTracker;
+        const stackFrames = stackTracker.getAllFrames();
+        const stackTop = stackFrames.at(-1);
 
-        if (!stackFrames.ok || stackFrames.val.length === 0) {
+        if (stackTop === undefined) {
             lines.push("No stack information available.");
             return lines;
         }
@@ -990,9 +986,8 @@ function getStackContent(width: number): string[] {
         lines.push(colorText("Call Stack:", "36"));
         lines.push("");
 
-        for (let i = stackFrames.val.length - 1; i >= 0; i--) {
-            const frame = stackFrames.val[i];
-            const addressStr = stackNames.val[i] || "";
+        for (const [i, frame] of stackFrames.toReversed().entries()) {
+            const addressStr = frame.name ?? "";
 
             // Find label for address
             let functionName = "unknown";
@@ -1003,16 +998,14 @@ function getStackContent(width: number): string[] {
                 }
             }
 
-            const depth = stackFrames.val.length - 1 - i;
+            const depth = stackFrames.length - 1 - i;
             const indent = "  ".repeat(depth);
-            const frameSize =
-                parseInt(frame.begin_callee, 16) -
-                parseInt(frame.end_callee, 16);
-            const prefix = i === stackFrames.val.length - 1 ? "►" : "•";
-            const color = i === stackFrames.val.length - 1 ? "32" : "0";
+            const frameSize = frame.begin - frame.end;
+            const prefix = i === stackFrames.length - 1 ? "►" : "•";
+            const color = i === stackFrames.length - 1 ? "32" : "0";
 
-            const beginAddr = `0x${parseInt(frame.begin_callee, 16).toString(16).toUpperCase()}`;
-            const endAddr = `0x${parseInt(frame.end_callee, 16).toString(16).toUpperCase()}`;
+            const beginAddr = `0x${frame.begin.toString(16).toUpperCase()}`;
+            const endAddr = `0x${frame.end.toString(16).toUpperCase()}`;
 
             let frameInfo = `${indent}${prefix} ${functionName} (${beginAddr}-${endAddr}, ${frameSize} bytes)`;
 
@@ -1025,11 +1018,11 @@ function getStackContent(width: number): string[] {
         }
 
         // Current frame details
-        const stackTop = stackFrames.val[stackFrames.val.length - 1];
+
         lines.push("");
         lines.push(colorText("Current Frame Details:", "36"));
 
-        const currentAddrStr = stackNames.val[stackNames.val.length - 1] || "";
+        const currentAddrStr = stackTop.name ?? "";
         let currentFuncName = "unknown";
 
         for (const instr of instructions) {
@@ -1041,28 +1034,24 @@ function getStackContent(width: number): string[] {
 
         lines.push(`Function: ${currentFuncName}`);
 
-        const beginAddr = `0x${parseInt(stackTop.begin_callee, 16).toString(16).toUpperCase()}`;
-        const endAddr = `0x${parseInt(stackTop.end_callee, 16).toString(16).toUpperCase()}`;
+        const beginAddr = `0x${stackTop.begin.toString(16).toUpperCase()}`;
+        const endAddr = `0x${stackTop.end.toString(16).toUpperCase()}`;
 
         lines.push(`Frame: ${beginAddr} - ${endAddr}`);
-        lines.push(
-            `Size: ${parseInt(stackTop.begin_callee, 16) - parseInt(stackTop.end_callee, 16)} bytes`,
-        );
+        lines.push(`Size: ${stackTop.begin - stackTop.end} bytes`);
 
         // Stack memory contents (if space allows)
         if (width >= 60) {
             lines.push("");
             lines.push(colorText("Stack Memory Contents:", "36"));
 
-            const startAddr = parseInt(stackTop.end_callee, 16);
+            const startAddr = stackTop.end;
             const maxBytesToShow = 64; // Limit display size
 
             // Find bottom-most frame to get stack range
-            const bottomFrame = stackFrames.val[0];
-            const stackEndAddr = parseInt(
-                bottomFrame.begin_caller || bottomFrame.begin_callee,
-                16,
-            );
+            const bottomFrame = stackFrames[0];
+            const stackEndAddr = bottomFrame.begin;
+
             const bytesToShow = Math.min(
                 stackEndAddr - startAddr,
                 maxBytesToShow,
@@ -1082,21 +1071,21 @@ function getStackContent(width: number): string[] {
 
                     // Check for stack pointer
                     let annotation = "";
-                    if (addr === parseInt(stackTop.end_callee, 16)) {
+                    if (addr === stackTop.end) {
                         annotation = "← SP";
                     }
 
                     // Check for frame boundaries
-                    for (let i = 0; i < stackFrames.val.length; i++) {
-                        const frame = stackFrames.val[i];
+                    for (let i = 0; i < stackFrames.length; i++) {
+                        const frame = stackFrames[i];
                         if (
-                            addr === parseInt(frame.end_callee, 16) &&
-                            i !== stackFrames.val.length - 1
+                            addr === frame.end &&
+                            i !== stackFrames.length - 1
                         ) {
                             let funcName = "unknown";
                             for (const instr of instructions) {
                                 if (
-                                    instr.Address === stackNames.val[i] &&
+                                    instr.Address === frame.name &&
                                     instr.Label
                                 ) {
                                     funcName = instr.Label;
@@ -1109,11 +1098,11 @@ function getStackContent(width: number): string[] {
                                 `← ${funcName} frame start`;
                         }
 
-                        if (addr === parseInt(frame.begin_callee, 16) - 4) {
+                        if (addr === frame.begin - 4) {
                             let funcName = "unknown";
                             for (const instr of instructions) {
                                 if (
-                                    instr.Address === stackNames.val[i] &&
+                                    instr.Address === frame.name &&
                                     instr.Label
                                 ) {
                                     funcName = instr.Label;
@@ -1129,10 +1118,10 @@ function getStackContent(width: number): string[] {
 
                     // Find which frame this address belongs to for coloring
                     let frameIndex = -1;
-                    for (let i = 0; i < stackFrames.val.length; i++) {
-                        const frame = stackFrames.val[i];
-                        const endCallee = parseInt(frame.end_callee, 16);
-                        const beginCallee = parseInt(frame.begin_callee, 16);
+                    for (let i = 0; i < stackFrames.length; i++) {
+                        const frame = stackFrames[i];
+                        const endCallee = frame.end;
+                        const beginCallee = frame.begin;
 
                         if (addr >= endCallee && addr < beginCallee) {
                             frameIndex = i;

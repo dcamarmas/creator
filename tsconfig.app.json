@@ -1,5 +1,6 @@
 {
   "extends": "@vue/tsconfig/tsconfig.dom.json",
+
   "include": [
     "env.d.ts",
     "src/**/*.ts",
@@ -9,6 +10,8 @@
   ],
   "exclude": ["src/**/__tests__/*", "src/**/*.vue"],
   "compilerOptions": {
+    "target": "es2024",
+    "lib": ["dom", "es2024"],
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
     "allowJs": true,
     "types": ["node"],

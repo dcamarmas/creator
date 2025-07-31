@@ -34,11 +34,7 @@ import { Memory } from "./memory/Memory.mts";
 import yaml from "js-yaml";
 import { crex_findReg } from "./register/registerLookup.mjs";
 import { readRegister } from "./register/registerOperations.mjs";
-import {
-    dumpStack,
-    loadStack,
-    track_stack_reset,
-} from "./memory/stackTracker.mjs";
+import { StackTracker } from "./memory/StackTracker.mts";
 import { creator_ga } from "./utils/creator_ga.mjs";
 import { creator_callstack_reset } from "./sentinel/sentinel.mjs";
 import { resetStats } from "./executor/stats.mts";
@@ -84,6 +80,7 @@ export let REGISTERS;
 export let REGISTERS_BACKUP = [];
 export const register_size_bits = 64; //TODO: load from architecture
 export let main_memory;
+export let stackTracker;
 export let main_memory_backup;
 export function updateMainMemoryBackup(value) {
     main_memory_backup = value;
@@ -182,7 +179,7 @@ function load_arch_select(cfg) {
 
     // Initialize stack tracker and other related components
     // This must happen before creating the register backup
-    track_stack_reset();
+    stackTracker = new StackTracker();
 
     // Create deep copy backup of REGISTERS after all initialization is complete
     // This ensures the backup contains the correct values for all registers, including SP
@@ -1174,9 +1171,9 @@ export function reset() {
         main_memory.restore(main_memory_backup);
     }
 
-    //Stack Reset
+    // Stack Reset
+    stackTracker.reset();
     creator_callstack_reset();
-    track_stack_reset();
 
     return true;
 }
@@ -1197,7 +1194,7 @@ export function snapshot(extraData) {
     const registersJson = JSON.stringify(REGISTERS);
 
     // And the stack
-    const stackData = dumpStack();
+    const stackData = stackTracker.dump();
 
     // Combine all JSON strings into a single snapshot string
     const combinedState = JSON.stringify({
@@ -1240,7 +1237,8 @@ export function restore(snapshot) {
         REGISTERS = registersObj;
     }
     // Restore the stack
-    loadStack(stackData);
+    stackTracker.load(stackData);
+
     // Restore the status
     status = statusObj;
 }

@@ -56,7 +56,7 @@ export default defineConfigWithVueTs(
       "no-self-compare": "error",
       "no-template-curly-in-string": "warn",
       "no-unmodified-loop-condition": "error",
-      "no-use-before-define": "error",
+      "no-use-before-define": ["error", { functions: false }],
       "no-useless-assignment": "error",
       "require-atomic-updates": "warn",
       "class-methods-use-this": "warn",
@@ -103,6 +103,13 @@ export default defineConfigWithVueTs(
           destructuredArrayIgnorePattern: "^_",
           varsIgnorePattern: "^_",
           ignoreRestSiblings: true,
+        },
+      ],
+
+      "@typescript-eslint/ban-ts-comment": [
+        "warn",
+        {
+          "ts-ignore": "allow-with-description",
         },
       ],
 

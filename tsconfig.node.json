@@ -9,9 +9,10 @@
     "eslint.config.*"
   ],
   "compilerOptions": {
+    "target": "es2024",
+    "lib": ["dom", "es2024"],
     "noEmit": true,
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo",
-
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "types": ["node"]

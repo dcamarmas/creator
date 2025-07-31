@@ -19,7 +19,7 @@
  *
  */
 
-import { main_memory, BYTESIZE } from "../core.mjs";
+import { main_memory, stackTracker, BYTESIZE } from "../core.mjs";
 import { creator_executor_exit } from "../executor/executor.mjs";
 import { raise } from "./validation.mjs";
 import { crex_findReg } from "../register/registerLookup.mjs";
@@ -27,7 +27,6 @@ import {
     creator_callstack_newWrite,
     creator_callstack_newRead,
 } from "../sentinel/sentinel.mjs";
-import { track_stack_addHint } from "../memory/stackTracker.mjs";
 
 /*
  *  CREATOR instruction description API:
@@ -161,7 +160,7 @@ function readValueFromMemory(addr, bytes) {
  */
 // Memory operations
 export const MEM = {
-    write (address, bytes, value, reg_name, hint) {
+    write(address, bytes, value, reg_name, hint) {
         // Check if the address is in a writable segment using memory functions
         const segment = main_memory.getSegmentForAddress(address);
         if (segment === "text") {
@@ -216,13 +215,13 @@ export const MEM = {
 
         // Add stack hint if we're writing to the stack segment and have a register name
         if (segment === "stack" && reg_name) {
-            track_stack_addHint(address, reg_name);
+            stackTracker.addHint(address, reg_name);
         }
 
         creator_callstack_newWrite(i, j, address, byteArray.length);
     },
 
-    read (addr, bytes, reg_name) {
+    read(addr, bytes, reg_name) {
         // Implementation of capi_mem_read
         let val = 0n;
 
@@ -277,7 +276,7 @@ export const MEM = {
      * @param {number} [sizeInBits] - Optional size of the type in bits (e.g., 64 for double, 32 for int32)
      * @returns {boolean} - True if the hint was successfully added
      */
-    addHint (address, hint, sizeInBits) {
+    addHint(address, hint, sizeInBits) {
         try {
             main_memory.addHint(address, "", hint, sizeInBits);
             return true;

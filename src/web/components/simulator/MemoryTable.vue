@@ -19,8 +19,7 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <script>
-import { REGISTERS } from "@/core/core.mjs"
-import { stack_hints, track_stack_limits } from "@/core/memory/stackTracker.mjs"
+import { REGISTERS, stackTracker } from "@/core/core.mjs"
 import { chunks, range } from "@/core/utils/utils.mjs"
 import { toHex } from "@/web/utils.mjs"
 
@@ -28,6 +27,8 @@ export default {
   props: {
     main_memory: { type: Object, required: true },
     segment: { type: String, required: true },
+    caller_frame: Object,
+    callee_frame: Object,
   },
 
   data() {
@@ -81,17 +82,18 @@ export default {
 
     get_classes(item) {
       return {
-        h6Sm: this.segment !== "stack" || item.start >= this.$root.begin_caller,
-        "h6Sm text-secondary":
-          item.start < this.$root.end_callee &&
-          Math.abs(item.start - this.$root.end_callee) <
+        h6Sm:
+          this.segment !== "stack" || item.start >= this.caller_frame?.begin,
+        "text-secondary":
+          item.start < this.callee_frame?.end &&
+          Math.abs(item.start - this.callee_frame?.end) <
             this.$root.stack_total_list * 4,
-        "h6Sm text-success":
-          item.start < this.$root.begin_callee &&
-          item.start >= this.$root.end_callee,
-        "h6Sm text-info":
-          item.start < this.$root.begin_caller &&
-          item.start >= this.$root.end_caller,
+        "text-success":
+          item.start < this.callee_frame?.begin &&
+          item.start >= this.callee_frame?.end,
+        "text-info":
+          item.start < this.caller_frame?.begin &&
+          item.start >= this.caller_frame?.end,
       }
     },
 
@@ -323,19 +325,19 @@ export default {
         }))
     },
     stackTop() {
-      return parseInt(track_stack_limits.at(-1)?.end_callee, 16)
+      return stackTracker.getCurrentFrame()?.end
     },
 
     stackBottom() {
-      return parseInt(track_stack_limits.at(0)?.begin_caller, 16)
+      return stackTracker.getAllFrames().at(0)?.begin
     },
 
     getStackHint(addr) {
-      return stack_hints[addr]
+      return stackTracker.getHint(addr)
     },
 
     stackFrames() {
-      return track_stack_limits
+      return stackTracker.getAllFrames()
     },
   },
 
@@ -538,14 +540,14 @@ export default {
           <!-- Callee -->
           <b-col v-if="stackFrames().length > 0" class="border rounded ms-1">
             <b-badge variant="white" class="text-success">
-              Callee: <br />{{ this.$root.callee_subrutine }}
+              Callee: <br />{{ callee_frame.name }}
             </b-badge>
           </b-col>
 
           <!-- Caller -->
           <b-col v-if="stackFrames().length > 1" class="border rounded ms-1">
             <b-badge variant="white" class="text-info">
-              Caller: <br />{{ this.$root.caller_subrutine }}
+              Caller: <br />{{ caller_frame.name }}
             </b-badge>
           </b-col>
 

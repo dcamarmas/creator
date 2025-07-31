@@ -17,12 +17,8 @@ import { instructions } from "../core/assembler/assembler.mjs";
 import { sjasmplusAssemble } from "../core/assembler/sjasmplus/deno/sjasmplus.mjs";
 import { assembleCreator } from "../core/assembler/creatorAssembler/deno/creatorAssembler.mjs";
 import { rasmAssemble } from "../core/assembler/rasm/deno/rasm.mjs";
-import {
-    track_stack_getFrames,
-    track_stack_getNames,
-    track_stack_getAllHints,
-} from "../core/memory/stackTracker.mjs";
 import fs from "node:fs";
+import type { StackTracker } from "@/core/memory/StackTracker.mjs";
 
 // Compiler map similar to CLI version
 const assembler_map = {
@@ -1073,32 +1069,21 @@ class CreatorRpcServer {
         }
 
         try {
-            const stackFrames = track_stack_getFrames();
-            const stackNames = track_stack_getNames();
-            const stackHints = track_stack_getAllHints();
+            const stackTracker = creator.stackTracker as StackTracker;
+            const stackFrames = stackTracker.getAllFrames();
+            const stackHints = stackTracker.getAllHints();
 
             const frames: Array<{
                 function: string;
                 startAddress: string;
                 endAddress: string;
                 size: number;
-            }> = [];
-
-            if (stackFrames.ok && stackFrames.val.length > 0) {
-                for (let i = 0; i < stackFrames.val.length; i++) {
-                    const frame = stackFrames.val[i];
-                    const functionName = stackNames.val[i] || "unknown";
-
-                    frames.push({
-                        function: functionName,
-                        startAddress:
-                            "0x" + BigInt(frame.begin_callee).toString(16),
-                        endAddress:
-                            "0x" + BigInt(frame.end_callee).toString(16),
-                        size: frame.begin_callee - frame.end_callee,
-                    });
-                }
-            }
+            }> = stackFrames.map(frame => ({
+                function: frame.name ?? "unknown",
+                startAddress: "0x" + BigInt(frame.begin).toString(16),
+                endAddress: "0x" + BigInt(frame.end).toString(16),
+                size: frame.begin - frame.end,
+            }));
 
             // Get stack memory if we have frames
             const memory: Array<{
@@ -1108,9 +1093,14 @@ class CreatorRpcServer {
             }> = [];
 
             if (frames.length > 0) {
-                const topFrame = stackFrames.val[stackFrames.val.length - 1];
-                const startAddr = BigInt(topFrame.end_callee);
-                const endAddr = BigInt(topFrame.begin_callee);
+                const topFrame = stackFrames.at(-1);
+                if (topFrame === undefined) {
+                    // this should never happen, but it's to make the compiler happy
+                    return { frames, memory };
+                }
+
+                const startAddr = BigInt(topFrame.end);
+                const endAddr = BigInt(topFrame.begin);
                 const wordSize = creator.main_memory.getWordSize();
 
                 for (
@@ -1120,22 +1110,13 @@ class CreatorRpcServer {
                 ) {
                     try {
                         const bytes = creator.dumpAddress(addr, wordSize);
-                        const value =
-                            "0x" +
-                            bytes.padStart(wordSize * 2, "0").toUpperCase();
-
-                        let hint: string | undefined;
-                        if (stackHints.ok) {
-                            const addrString = addr.toString();
-                            hint = (stackHints.val as Record<string, string>)[
-                                addrString
-                            ];
-                        }
 
                         memory.push({
                             address: "0x" + addr.toString(16),
-                            value,
-                            hint,
+                            value:
+                                "0x" +
+                                bytes.padStart(wordSize * 2, "0").toUpperCase(),
+                            hint: stackHints.get(Number(addr)),
                         });
                     } catch {
                         // Skip addresses that can't be read

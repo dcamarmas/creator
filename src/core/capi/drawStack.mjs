@@ -19,14 +19,8 @@
  *
  */
 
-import { REGISTERS } from "../core.mjs";
-import { crex_show_notification } from "../executor/executor.mjs";
+import { REGISTERS, stackTracker } from "../core.mjs";
 import { tag_instructions } from "../assembler/assembler.mjs";
-import {
-    track_stack_enter,
-    track_stack_leave,
-    track_stack_addHint,
-} from "../memory/stackTracker.mjs";
 
 export const DRAW_STACK = {
     begin(addr) {
@@ -40,28 +34,16 @@ export const DRAW_STACK = {
         }
 
         // 2.- callstack_enter
-        track_stack_enter(function_name);
+        stackTracker.newFrame(function_name);
     },
     end() {
-        // track leave
-        const ret = track_stack_leave();
-
-        // 2) If everything is ok, just return
-        if (ret.ok) {
-            return;
-        }
-
-        // User notification
-        crex_show_notification(ret.msg, "warning");
+        // pop both frames
+        stackTracker.popFrame();
+        stackTracker.popFrame();
     },
 
     // Add a hint for a specific memory address
-    // Example: drawstack_add_hint(0xFFFFFFFC, "whatever register");
     addHint(address, name) {
-        const ret = track_stack_addHint(address, name);
-        if (!ret.ok) {
-            crex_show_notification(ret.msg, "warning");
-        }
-        return ret.ok;
+        stackTracker.addHint(address, name);
     },
 };
