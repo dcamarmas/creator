@@ -25,6 +25,7 @@ import {
     BYTESIZE,
     MAXNWORDS,
     main_memory,
+    stackTracker,
     newArchitecture,
 } from "../core.mjs";
 import { crex_findReg_bytag } from "../register/registerLookup.mjs";
@@ -32,10 +33,6 @@ import {
     readRegister,
     writeRegister,
 } from "../register/registerOperations.mjs";
-import {
-    track_stack_setsp,
-    track_stack_enter,
-} from "../memory/stackTracker.mjs";
 import { creator_ga } from "../utils/creator_ga.mjs";
 import { logger } from "../utils/creator_logger.mjs";
 import { decode_instruction } from "./decoder.mjs";
@@ -335,7 +332,7 @@ function executeInstructionCycle(draw) {
 
     // Special check for stack visualization purposes
     if (status.execution_index === 0) {
-        track_stack_enter(tag_instructions[getPC()].tag || "");
+        stackTracker.newFrame(tag_instructions[getPC()].tag || "");
     }
 
     // Check for conditions that would stop execution
@@ -557,7 +554,7 @@ export function writeStackLimit(stackLimit) {
     // Get current stack pointer from memory segments
     const stackSegment = segments.get("stack");
 
-    track_stack_setsp(Number(stackLimitBigInt));
+    stackTracker.updateCurrentFrame(stackLimit);
 
     // Update the stack segment in the memory layout if it exists
     if (stackSegment) {

@@ -53,6 +53,8 @@ export default {
     main_memory_busy: Boolean,
     display: String,
     keyboard: String,
+    caller_frame: Object,
+    callee_frame: Object,
   },
 
   components: {
@@ -151,6 +153,8 @@ export default {
               ref="memory"
               :selectedSegment="memory_segment"
               :dark="dark"
+              :callee_frame="callee_frame"
+              :caller_frame="caller_frame"
             />
 
             <!-- Stats view--->

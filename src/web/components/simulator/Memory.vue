@@ -21,13 +21,14 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 <script>
 import MemoryTable from "./MemoryTable.vue"
 
-import { track_stack_names } from "@/core/memory/stackTracker.mjs"
 import { main_memory } from "@/core/core.mjs"
 
 export default {
   props: {
     dark: { type: Boolean, required: true },
     selectedSegment: { type: String, required: true },
+    caller_frame: Object,
+    callee_frame: Object,
   },
 
   components: { MemoryTable },
@@ -35,7 +36,6 @@ export default {
   data() {
     return {
       main_memory,
-      track_stack_names,
       mem_representation_options: main_memory
         .getMemorySegments()
         .keys()
@@ -93,6 +93,8 @@ export default {
           ref="memory_table"
           :main_memory="main_memory"
           :segment="segment"
+          :callee_frame="callee_frame"
+          :caller_frame="caller_frame"
         />
       </b-col>
     </b-row>
