@@ -77,7 +77,7 @@ components:
         value: 0
         default_value: 0
         properties: [read, write]
-      - name: ["A'"]
+      - name: ["A_prime"]
         nbits: "8"
         value: 0
         default_value: 0
@@ -114,8 +114,8 @@ components:
         properties: [read, write]
       - name: [SP]
         nbits: "16"
-        value: 0
-        default_value: 0
+        value: 65535
+        default_value: 65535
         properties: [read, write, stack_pointer]
       - name: [IX]
         nbits: "16"
@@ -128,6 +128,11 @@ components:
         default_value: 0
         properties: [read, write]
       - name: [F]
+        nbits: "8"
+        value: 0
+        default_value: 0
+        properties: [read, write]
+      - name: [F_prime]
         nbits: "8"
         value: 0
         default_value: 0
@@ -228,6 +233,35 @@ templates:
         stopbit: 0
         word: 1
 
+  # IY Bit Instructions (IY-prefixed CB instructions)
+  - name: FDCB
+    nwords: 4
+    clk_cycles: 1 # Base, will be overridden by instruction
+    fields:
+      - name: opcode1
+        type: co
+        startbit: 7
+        stopbit: 0
+        order: 0
+        word: 0
+        valueField: "11111101" # 0xFD prefix
+      - name: opcode2
+        type: cop
+        startbit: 7
+        stopbit: 0
+        word: 1
+        valueField: "11001011" # 0xCB prefix
+      - name: d
+        type: inm-signed
+        startbit: 7
+        stopbit: 0
+        word: 2
+      - name: opcode3
+        type: cop
+        startbit: 7
+        stopbit: 0
+        word: 3
+
   # Bit Instructions
   - name: CB
     nwords: 2
@@ -275,6 +309,29 @@ instructions:
         // Loads 16-bit immediate into BC. Low byte to C, high byte to B.
         C = nn & 0xFFn;
         B = (nn >> 8n) & 0xFFn;
+
+    - name: ex
+      template: standard
+      nwords: 1
+      clk_cycles: 4
+      fields:
+        - field: opcode
+          value: "0x08"
+        - field: instructionFormatting
+          type: skip
+          value: "af,af'"
+          order: 1
+      definition: |
+        // Exchanges the 16-bit contents of AF and AF'.
+        let temp_reg;
+
+        temp_reg = A;
+        A = A_prime;
+        A_prime = temp_reg;
+
+        temp_reg = F;
+        F = F_prime;
+        F_prime = temp_reg;
 
     - name: ld
       template: standard
@@ -405,10 +462,10 @@ instructions:
           order: 2
           word: 1
       definition: |
+        // If the zero flag is unset, the signed value d is added to PC. 
+        // The jump is measured from the start of the instruction opcode. 
         if ((F & CAPI.Z80.Z_FLAG) === 0n) {
             PC = (PC + e) & 0xFFFFn;
-        } else {
-            PC = (PC + 2n) & 0xFFFFn;
         }
     - name: jr
       template: standard
@@ -430,8 +487,6 @@ instructions:
       definition: |
         if ((F & CAPI.Z80.Z_FLAG) !== 0n) {
             PC = (PC + e) & 0xFFFFn;
-        } else {
-            PC = (PC + 2n) & 0xFFFFn;
         }
     - name: jr
       template: standard
@@ -453,8 +508,6 @@ instructions:
       definition: |
         if ((F & CAPI.Z80.C_FLAG) === 0n) {
             PC = (PC + e) & 0xFFFFn;
-        } else {
-            PC = (PC + 2n) & 0xFFFFn;
         }
     - name: jr
       template: standard
@@ -476,8 +529,6 @@ instructions:
       definition: |
         if ((F & CAPI.Z80.C_FLAG) !== 0n) {
             PC = (PC + e) & 0xFFFFn;
-        } else {
-            PC = (PC + 2n) & 0xFFFFn;
         }
     - name: jp
       template: standard
@@ -499,8 +550,6 @@ instructions:
       definition: |
         if ((F & CAPI.Z80.Z_FLAG) === 0n) {
             PC = nn;
-        } else {
-            PC = (PC + 3n) & 0xFFFFn;
         }
     - name: jp
       template: standard
@@ -522,8 +571,6 @@ instructions:
       definition: |
         if ((F & CAPI.Z80.Z_FLAG) !== 0n) {
             PC = nn;
-        } else {
-            PC = (PC + 3n) & 0xFFFFn;
         }
     - name: jp
       template: standard
@@ -545,8 +592,6 @@ instructions:
       definition: |
         if ((F & CAPI.Z80.C_FLAG) === 0n) {
             PC = nn;
-        } else {
-            PC = (PC + 3n) & 0xFFFFn;
         }
 
     - name: out
@@ -571,6 +616,66 @@ instructions:
       definition: |
         // Writes the value of the Accumulator to the I/O port specified by n.
         CAPI.Z80.write(n, A);
+
+    - name: rst 00h
+      template: standard
+      clk_cycles: 11
+      fields:
+        - field: opcode
+          value: "0xC7"
+      definition: |
+        // Push the address of the next instruction onto the stack.
+        SP = (SP - 1n) & 0xFFFFn;
+        CAPI.MEM.write(SP, 1, (PC >> 8n) & 0xFFn);
+        SP = (SP - 1n) & 0xFFFFn;
+        CAPI.MEM.write(SP, 1, PC & 0xFFn);
+        // Jump to the RST address.
+        PC = 0x00n;
+
+    - name: rst 10h
+      template: standard
+      clk_cycles: 11
+      fields:
+        - field: opcode
+          value: "0xD7"
+      definition: |
+        // Push the address of the next instruction onto the stack.
+        SP = (SP - 1n) & 0xFFFFn;
+        CAPI.MEM.write(SP, 1, (PC >> 8n) & 0xFFn);
+        SP = (SP - 1n) & 0xFFFFn;
+        CAPI.MEM.write(SP, 1, PC & 0xFFn);
+        // Jump to the RST address.
+        PC = 0x10n;
+
+    - name: rst 20h
+      template: standard
+      clk_cycles: 11
+      fields:
+        - field: opcode
+          value: "0xE7"
+      definition: |
+        // Push the address of the next instruction onto the stack.
+        SP = (SP - 1n) & 0xFFFFn;
+        CAPI.MEM.write(SP, 1, (PC >> 8n) & 0xFFn);
+        SP = (SP - 1n) & 0xFFFFn;
+        CAPI.MEM.write(SP, 1, PC & 0xFFn);
+        // Jump to the RST address.
+        PC = 0x20n;
+
+    - name: rst 30h
+      template: standard
+      clk_cycles: 11
+      fields:
+        - field: opcode
+          value: "0xF7"
+      definition: |
+        // Push the address of the next instruction onto the stack.
+        SP = (SP - 1n) & 0xFFFFn;
+        CAPI.MEM.write(SP, 1, (PC >> 8n) & 0xFFn);
+        SP = (SP - 1n) & 0xFFFFn;
+        CAPI.MEM.write(SP, 1, PC & 0xFFn);
+        // Jump to the RST address.
+        PC = 0x30n;
 
     - name: in
       template: standard
@@ -637,6 +742,31 @@ instructions:
         if ((F & CAPI.Z80.PV_FLAG) === 0n) {
             PC = nn;
         }
+
+    - name: ex
+      template: standard
+      nwords: 1
+      clk_cycles: 19
+      fields:
+        - field: opcode
+          value: "0xE3"
+        - field: instructionFormatting
+          type: skip
+          value: "(sp),hl"
+          order: 1
+      definition: |
+        // Exchanges (SP) with L, and (SP+1) with H.
+        const temp_L = L;
+        const temp_H = H;
+        const stack_low = CAPI.MEM.read(SP, 1);
+        const stack_high = CAPI.MEM.read(SP + 1n, 1);
+
+        L = stack_low;
+        H = stack_high;
+
+        CAPI.MEM.write(SP, 1, temp_L);
+        CAPI.MEM.write(SP + 1n, 1, temp_H);
+
     - name: jp
       template: standard
       nwords: 3
@@ -1915,10 +2045,19 @@ instructions:
         - field: opcode
           value: "0x9F"
       definition: |
-        const oldValueA = A;
-        const carry = F & 0x01n;
-        A = (oldValueA - oldValueA - carry) & 0xFFn;
-        F = CAPI.Z80.calculateFlags_SBC(oldValueA, oldValueA, F);
+        const carry = F & CAPI.Z80.C_FLAG;
+        
+        if (carry === 0n) {
+            // Operation is A - A - 0. Result is 0.
+            A = 0n;
+            // Flags: S=0, Z=1, H=0, P/V=0, N=1, C=0
+            F = CAPI.Z80.Z_FLAG | CAPI.Z80.N_FLAG; 
+        } else {
+            // Operation is A - A - 1. Result is -1 (0xFF).
+            A = 0xFFn;
+            // Flags: S=1, Z=0, H=1, P/V=0, N=1, C=1
+            F = CAPI.Z80.S_FLAG | CAPI.Z80.H_FLAG | CAPI.Z80.N_FLAG | CAPI.Z80.C_FLAG;
+        }
     - name: and b
       template: standard
       clk_cycles: 4
@@ -2488,13 +2627,13 @@ instructions:
           value: "hl, bc"
           order: 1
       definition: |
-        // Adds the value of BC to HL.
         const hlValue = (H << 8n) | L;
         const bcValue = (B << 8n) | C;
-        const result = (hlValue + bcValue) & 0xFFFFn;
-        H = (result >> 8n) & 0xFFn;
-        L = result & 0xFFn;
-        F = CAPI.Z80.calculateFlags_ADD(hlValue, bcValue);
+        const result = hlValue + bcValue;
+        F = CAPI.Z80.calculateFlags_ADD16(hlValue, bcValue, F);
+        const resultWord = result & 0xFFFFn;
+        H = (resultWord >> 8n) & 0xFFn;
+        L = resultWord & 0xFFn;
 
     - name: add
       template: standard
@@ -2510,10 +2649,10 @@ instructions:
         // Adds the value of DE to HL.
         const hlValue = (H << 8n) | L;
         const deValue = (D << 8n) | E;
+        F = CAPI.Z80.calculateFlags_ADD16(hlValue, deValue, F);
         const result = (hlValue + deValue) & 0xFFFFn;
         H = (result >> 8n) & 0xFFn;
         L = result & 0xFFn;
-        F = CAPI.Z80.calculateFlags_ADD(hlValue, deValue);
 
     - name: add
       template: standard
@@ -2526,12 +2665,12 @@ instructions:
           value: "hl, hl"
           order: 1
       definition: |
-        // Adds the value of HL to HL.
         const hlValue = (H << 8n) | L;
-        const result = (hlValue + hlValue) & 0xFFFFn;
-        H = (result >> 8n) & 0xFFn;
-        L = result & 0xFFn;
-        F = CAPI.Z80.calculateFlags_ADD(hlValue, hlValue);
+        const result = hlValue + hlValue;
+        F = CAPI.Z80.calculateFlags_ADD16(hlValue, hlValue, F);
+        const resultWord = result & 0xFFFFn;
+        H = (resultWord >> 8n) & 0xFFn;
+        L = resultWord & 0xFFn;
 
     - name: add
       template: standard
@@ -2544,12 +2683,12 @@ instructions:
           value: "hl, sp"
           order: 1
       definition: |
-        // Adds the value of HL to SP.
         const hlValue = (H << 8n) | L;
-        const result = (hlValue + SP) & 0xFFFFn;
-        H = (result >> 8n) & 0xFFn;
-        L = result & 0xFFn;
-        F = CAPI.Z80.calculateFlags_ADD(hlValue, SP);
+        const result = hlValue + SP;
+        F = CAPI.Z80.calculateFlags_ADD16(hlValue, SP, F);
+        const resultWord = result & 0xFFFFn;
+        H = (resultWord >> 8n) & 0xFFn;
+        L = resultWord & 0xFFn;
 
     - name: ld
       template: standard
@@ -2600,10 +2739,8 @@ instructions:
           word: [2, 1]
       definition: |
         // Loads the value pointed to by nn into HL.
-        const value = CAPI.MEM.read(nn, 2);
-        L = value & 0xFFn;
-        H = (value >> 8n) & 0xFFn;
-
+        L = CAPI.MEM.read(nn, 1); // little endian
+        H = CAPI.MEM.read(nn + 1n, 1);
 
     - name: ld
       template: standard
@@ -2683,7 +2820,6 @@ instructions:
         const oldValue = C;
         C = (oldValue - 1n) & 0xFFn;
         F = CAPI.Z80.calculateFlags_DEC(oldValue, F);
-# Add these anywhere in your instructions:base list
 
     - name: rrca
       template: standard
@@ -2697,6 +2833,25 @@ instructions:
         let newF = F & (CAPI.Z80.S_FLAG | CAPI.Z80.Z_FLAG | CAPI.Z80.PV_FLAG); // Preserve S, Z, P/V
         if (lsb) newF |= CAPI.Z80.C_FLAG; // Set C if bit 0 was 1
         // N and H are reset
+        F = newF;
+      
+    - name: rra
+      template: standard
+      clk_cycles: 4
+      fields:
+        - field: opcode
+          value: "0x1F"
+      definition: |
+        // The contents of A are rotated right one bit position.
+        // Bit 0 is copied to the Carry flag, and the old Carry flag is copied to bit 7.
+        const oldCarry = F & CAPI.Z80.C_FLAG;
+        const newCarry = A & 0x01n;
+
+        A = ((A >> 1n) | (oldCarry << 7n)) & 0xFFn;
+
+        // Preserve S, Z, P/V. Reset H, N. Set C from bit 0 of original A.
+        let newF = F & (CAPI.Z80.S_FLAG | CAPI.Z80.Z_FLAG | CAPI.Z80.PV_FLAG);
+        newF |= newCarry; // newCarry is 0n or 1n, which corresponds to C_FLAG value
         F = newF;
 
     - name: dec e
@@ -2837,6 +2992,48 @@ instructions:
         CAPI.MEM.write(addr, 1, (oldValue - 1n) & 0xFFn);
         F = CAPI.Z80.calculateFlags_DEC(oldValue, F);
 
+    - name: ccf
+      template: standard
+      clk_cycles: 4
+      fields:
+        - field: opcode
+          value: "0x3F"
+      definition: |
+        // Complement Carry Flag.
+        const oldCarrySet = (F & CAPI.Z80.C_FLAG) !== 0n;
+        // Preserve S, Z, and P/V flags from the original F register.
+        let newF = F & (CAPI.Z80.S_FLAG | CAPI.Z80.Z_FLAG | CAPI.Z80.PV_FLAG);
+
+        if (oldCarrySet) {
+            // If the old carry was set (1), the H flag is set to 1, and the new carry is reset (0).
+            newF |= CAPI.Z80.H_FLAG;
+        } else {
+            // If the old carry was reset (0), the H flag is reset (0), and the new carry is set (1).
+            newF |= CAPI.Z80.C_FLAG;
+        }
+
+        // The N flag is reset.
+        F = newF;
+
+    - name: or
+      template: standard
+      nwords: 2
+      clk_cycles: 7
+      fields:
+        - field: opcode
+          value: "0xF6"
+        - field: n
+          type: inm-unsigned
+          startbit: 7
+          stopbit: 0
+          order: 1
+          word: 1
+      definition: |
+        // Performs a bitwise logical OR between the accumulator and the immediate value n.
+        A = A | n;
+        // H, N, and C flags are reset. S, Z, and P/V are set based on the result.
+        F = CAPI.Z80.calculateFlags_LOGICAL(A, 0);
+
     - name: ld
       template: ED
       nwords: 4
@@ -2857,8 +3054,8 @@ instructions:
           word: [3, 2]
       definition: |
         // Stores BC into the memory location pointed to by nn.
-        const value = (B << 8n) | C;
-        CAPI.MEM.write(nn, 2, value);
+        CAPI.MEM.write(nn, 1, C);
+        CAPI.MEM.write(nn + 1n, 1, B);
 
     - name: ld
       template: ED
@@ -2880,8 +3077,8 @@ instructions:
           word: [3, 2]
       definition: |
         // Stores DE into the memory location pointed to by nn.
-        const value = (D << 8n) | E;
-        CAPI.MEM.write(nn, 2, value);
+        CAPI.MEM.write(nn, 1, E);
+        CAPI.MEM.write(nn + 1n, 1, D);
 
     - name: ld
       template: ED
@@ -2903,8 +3100,8 @@ instructions:
           word: [3, 2]
       definition: |
         // Stores HL into the memory location pointed to by nn.
-        const value = (H << 8n) | L;
-        CAPI.MEM.write(nn, 2, value);
+        CAPI.MEM.write(nn, 1, L);
+        CAPI.MEM.write(nn + 1n, 1, H);
 
     - name: ld
       template: ED
@@ -2928,25 +3125,27 @@ instructions:
         // Stores SP into the memory location pointed to by nn.
         CAPI.MEM.write(nn, 2, SP);
 
-    - name: ld bc, (nn)
+    - name: ld
       template: ED
       nwords: 4
       fields:
         - field: opcode2
           value: "0x4B"
+        - field: instructionFormatting
+          type: skip
+          value: "bc,"
+          order: 1
         - field: nn
           type: inm-unsigned
           startbit: 15
           stopbit: 0
           prefix: "("
           suffix: ")"
-          order: 1
+          order: 2
           word: [3, 2]
       definition: |
-        // Loads the value pointed to by nn into BC.
-        const value = CAPI.MEM.read(nn, 2);
-        C = value & 0xFFn;
-        B = (value >> 8n)  & 0xFFn;
+        C = CAPI.MEM.read(nn, 1);
+        B = CAPI.MEM.read(nn + 1n, 1);
 
     - name: scf
       template: standard
@@ -3109,6 +3308,7 @@ instructions:
         CAPI.MEM.write(SP, 1, B);
         SP = (SP - 1n) & 0xFFFFn;
         CAPI.MEM.write(SP, 1, C);
+
     - name: rst 00h
       template: standard
       clk_cycles: 11
@@ -3337,10 +3537,8 @@ instructions:
       definition: |
         // Exchanges the contents of the BC, DE, and HL register pairs 
         // with the contents of BC', DE', and HL'.
-        // NOTE: This implementation assumes alternate registers (e.g., "B'") are mapped
         // to variables with a "_prime" suffix (e.g., B_prime).
         let temp_reg;
-
         temp_reg = B;
         B = B_prime;
         B_prime = temp_reg;
@@ -3545,15 +3743,16 @@ instructions:
         CAPI.MEM.write(SP, 1, A);
         SP = (SP - 1n) & 0xFFFFn;
         CAPI.MEM.write(SP, 1, F);
-    - name: di
+    - name: ei
       template: standard
+      nwords: 1
       clk_cycles: 4
       fields:
         - field: opcode
-          value: "0xF3"
+          value: "0xFB"
       definition: |
-        // Disable interrupts. This is a no-op in the current implementation.
-        // In a real Z80, this would disable the interrupt system until EI is executed.
+        // Enable interrupts. This is a no-op in the current implementation.
+        // In a real Z80, this would enable the interrupt system.
     - name: ret m
       template: standard
       clk_cycles: 11 # 5 if not taken
@@ -3605,10 +3804,11 @@ instructions:
       clk_cycles: 4
       fields:
         - field: opcode
-          value: "0xFB"
+          value: "0xF3"
       definition: |
         // Enable interrupts. This is a no-op in the current implementation.
         // In a real Z80, this would enable the interrupt system.
+        
     - name: rst 38h
       template: standard
       clk_cycles: 11
@@ -3622,24 +3822,2767 @@ instructions:
         CAPI.MEM.write(SP, 1, PC & 0xFFn);
         PC = 0x38n;
 
-    - name: rlc (ix+d) # Example placeholder
-      template: DDCB
-      nwords: 4
+    # BIT b, r instructions
+    - name: bit
+      template: CB
+      clk_cycles: 8
       fields:
-        - field: opcode3
-          value: "0x06"
+        - field: opcode2
+          value: "0x40"
+        - field: instructionFormatting
+          type: skip
+          value: "0,b"
+          order: 1
+      definition: F = CAPI.Z80.calculateFlags_BIT(B, 0, F);
+    - name: bit
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x41"
+        - field: instructionFormatting
+          type: skip
+          value: "0,c"
+          order: 1
+      definition: F = CAPI.Z80.calculateFlags_BIT(C, 0, F);
+    - name: bit
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x42"
+        - field: instructionFormatting
+          type: skip
+          value: "0,d"
+          order: 1
+      definition: F = CAPI.Z80.calculateFlags_BIT(D, 0, F);
+    - name: bit
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x43"
+        - field: instructionFormatting
+          type: skip
+          value: "0,e"
+          order: 1
+      definition: F = CAPI.Z80.calculateFlags_BIT(E, 0, F);
+    - name: bit
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x44"
+        - field: instructionFormatting
+          type: skip
+          value: "0,h"
+          order: 1
+      definition: F = CAPI.Z80.calculateFlags_BIT(H, 0, F);
+    - name: bit
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x45"
+        - field: instructionFormatting
+          type: skip
+          value: "0,l"
+          order: 1
+      definition: F = CAPI.Z80.calculateFlags_BIT(L, 0, F);
+    - name: bit
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x47"
+        - field: instructionFormatting
+          type: skip
+          value: "0,a"
+          order: 1
+      definition: F = CAPI.Z80.calculateFlags_BIT(A, 0, F);
+    - name: bit
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x48"
+        - field: instructionFormatting
+          type: skip
+          value: "1,b"
+          order: 1
+      definition: F = CAPI.Z80.calculateFlags_BIT(B, 1, F);
+    - name: bit
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x49"
+        - field: instructionFormatting
+          type: skip
+          value: "1,c"
+          order: 1
+      definition: F = CAPI.Z80.calculateFlags_BIT(C, 1, F);
+    - name: bit
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x4A"
+        - field: instructionFormatting
+          type: skip
+          value: "1,d"
+          order: 1
+      definition: F = CAPI.Z80.calculateFlags_BIT(D, 1, F);
+    - name: bit
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x4B"
+        - field: instructionFormatting
+          type: skip
+          value: "1,e"
+          order: 1
+      definition: F = CAPI.Z80.calculateFlags_BIT(E, 1, F);
+    - name: bit
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x4C"
+        - field: instructionFormatting
+          type: skip
+          value: "1,h"
+          order: 1
+      definition: F = CAPI.Z80.calculateFlags_BIT(H, 1, F);
+    - name: bit
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x4D"
+        - field: instructionFormatting
+          type: skip
+          value: "1,l"
+          order: 1
+      definition: F = CAPI.Z80.calculateFlags_BIT(L, 1, F);
+    - name: bit
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x4F"
+        - field: instructionFormatting
+          type: skip
+          value: "1,a"
+          order: 1
+      definition: F = CAPI.Z80.calculateFlags_BIT(A, 1, F);
+    - name: bit
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x50"
+        - field: instructionFormatting
+          type: skip
+          value: "2,b"
+          order: 1
+      definition: F = CAPI.Z80.calculateFlags_BIT(B, 2, F);
+    - name: bit
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x51"
+        - field: instructionFormatting
+          type: skip
+          value: "2,c"
+          order: 1
+      definition: F = CAPI.Z80.calculateFlags_BIT(C, 2, F);
+    - name: bit
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x52"
+        - field: instructionFormatting
+          type: skip
+          value: "2,d"
+          order: 1
+      definition: F = CAPI.Z80.calculateFlags_BIT(D, 2, F);
+    - name: bit
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x53"
+        - field: instructionFormatting
+          type: skip
+          value: "2,e"
+          order: 1
+      definition: F = CAPI.Z80.calculateFlags_BIT(E, 2, F);
+    - name: bit
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x54"
+        - field: instructionFormatting
+          type: skip
+          value: "2,h"
+          order: 1
+      definition: F = CAPI.Z80.calculateFlags_BIT(H, 2, F);
+    - name: bit
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x55"
+        - field: instructionFormatting
+          type: skip
+          value: "2,l"
+          order: 1
+      definition: F = CAPI.Z80.calculateFlags_BIT(L, 2, F);
+    - name: bit
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x57"
+        - field: instructionFormatting
+          type: skip
+          value: "2,a"
+          order: 1
+      definition: F = CAPI.Z80.calculateFlags_BIT(A, 2, F);
+    - name: bit
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x58"
+        - field: instructionFormatting
+          type: skip
+          value: "3,b"
+          order: 1
+      definition: F = CAPI.Z80.calculateFlags_BIT(B, 3, F);
+    - name: bit
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x59"
+        - field: instructionFormatting
+          type: skip
+          value: "3,c"
+          order: 1
+      definition: F = CAPI.Z80.calculateFlags_BIT(C, 3, F);
+    - name: bit
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x5A"
+        - field: instructionFormatting
+          type: skip
+          value: "3,d"
+          order: 1
+      definition: F = CAPI.Z80.calculateFlags_BIT(D, 3, F);
+    - name: bit
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x5B"
+        - field: instructionFormatting
+          type: skip
+          value: "3,e"
+          order: 1
+      definition: F = CAPI.Z80.calculateFlags_BIT(E, 3, F);
+    - name: bit
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x5C"
+        - field: instructionFormatting
+          type: skip
+          value: "3,h"
+          order: 1
+      definition: F = CAPI.Z80.calculateFlags_BIT(H, 3, F);
+    - name: bit
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x5D"
+        - field: instructionFormatting
+          type: skip
+          value: "3,l"
+          order: 1
+      definition: F = CAPI.Z80.calculateFlags_BIT(L, 3, F);
+    - name: bit
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x5F"
+        - field: instructionFormatting
+          type: skip
+          value: "3,a"
+          order: 1
+      definition: F = CAPI.Z80.calculateFlags_BIT(A, 3, F);
+    - name: bit
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x60"
+        - field: instructionFormatting
+          type: skip
+          value: "4,b"
+          order: 1
+      definition: F = CAPI.Z80.calculateFlags_BIT(B, 4, F);
+    - name: bit
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x61"
+        - field: instructionFormatting
+          type: skip
+          value: "4,c"
+          order: 1
+      definition: F = CAPI.Z80.calculateFlags_BIT(C, 4, F);
+    - name: bit
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x62"
+        - field: instructionFormatting
+          type: skip
+          value: "4,d"
+          order: 1
+      definition: F = CAPI.Z80.calculateFlags_BIT(D, 4, F);
+    - name: bit
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x63"
+        - field: instructionFormatting
+          type: skip
+          value: "4,e"
+          order: 1
+      definition: F = CAPI.Z80.calculateFlags_BIT(E, 4, F);
+    - name: bit
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x64"
+        - field: instructionFormatting
+          type: skip
+          value: "4,h"
+          order: 1
+      definition: F = CAPI.Z80.calculateFlags_BIT(H, 4, F);
+    - name: bit
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x65"
+        - field: instructionFormatting
+          type: skip
+          value: "4,l"
+          order: 1
+      definition: F = CAPI.Z80.calculateFlags_BIT(L, 4, F);
+    - name: bit
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x67"
+        - field: instructionFormatting
+          type: skip
+          value: "4,a"
+          order: 1
+      definition: F = CAPI.Z80.calculateFlags_BIT(A, 4, F);
+    - name: bit
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x68"
+        - field: instructionFormatting
+          type: skip
+          value: "5,b"
+          order: 1
+      definition: F = CAPI.Z80.calculateFlags_BIT(B, 5, F);
+    - name: bit
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x69"
+        - field: instructionFormatting
+          type: skip
+          value: "5,c"
+          order: 1
+      definition: F = CAPI.Z80.calculateFlags_BIT(C, 5, F);
+    - name: bit
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x6A"
+        - field: instructionFormatting
+          type: skip
+          value: "5,d"
+          order: 1
+      definition: F = CAPI.Z80.calculateFlags_BIT(D, 5, F);
+    - name: bit
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x6B"
+        - field: instructionFormatting
+          type: skip
+          value: "5,e"
+          order: 1
+      definition: F = CAPI.Z80.calculateFlags_BIT(E, 5, F);
+    - name: bit
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x6C"
+        - field: instructionFormatting
+          type: skip
+          value: "5,h"
+          order: 1
+      definition: F = CAPI.Z80.calculateFlags_BIT(H, 5, F);
+    - name: bit
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x6D"
+        - field: instructionFormatting
+          type: skip
+          value: "5,l"
+          order: 1
+      definition: F = CAPI.Z80.calculateFlags_BIT(L, 5, F);
+    - name: bit
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x6F"
+        - field: instructionFormatting
+          type: skip
+          value: "5,a"
+          order: 1
+      definition: F = CAPI.Z80.calculateFlags_BIT(A, 5, F);
+    - name: bit
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x70"
+        - field: instructionFormatting
+          type: skip
+          value: "6,b"
+          order: 1
+      definition: F = CAPI.Z80.calculateFlags_BIT(B, 6, F);
+    - name: bit
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x71"
+        - field: instructionFormatting
+          type: skip
+          value: "6,c"
+          order: 1
+      definition: F = CAPI.Z80.calculateFlags_BIT(C, 6, F);
+    - name: bit
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x72"
+        - field: instructionFormatting
+          type: skip
+          value: "6,d"
+          order: 1
+      definition: F = CAPI.Z80.calculateFlags_BIT(D, 6, F);
+    - name: bit
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x73"
+        - field: instructionFormatting
+          type: skip
+          value: "6,e"
+          order: 1
+      definition: F = CAPI.Z80.calculateFlags_BIT(E, 6, F);
+    - name: bit
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x74"
+        - field: instructionFormatting
+          type: skip
+          value: "6,h"
+          order: 1
+      definition: F = CAPI.Z80.calculateFlags_BIT(H, 6, F);
+    - name: bit
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x75"
+        - field: instructionFormatting
+          type: skip
+          value: "6,l"
+          order: 1
+      definition: F = CAPI.Z80.calculateFlags_BIT(L, 6, F);
+    - name: bit
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x77"
+        - field: instructionFormatting
+          type: skip
+          value: "6,a"
+          order: 1
+      definition: F = CAPI.Z80.calculateFlags_BIT(A, 6, F);
+    - name: bit
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x78"
+        - field: instructionFormatting
+          type: skip
+          value: "7,b"
+          order: 1
+      definition: F = CAPI.Z80.calculateFlags_BIT(B, 7, F);
+    - name: bit
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x79"
+        - field: instructionFormatting
+          type: skip
+          value: "7,c"
+          order: 1
+      definition: F = CAPI.Z80.calculateFlags_BIT(C, 7, F);
+    - name: bit
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x7A"
+        - field: instructionFormatting
+          type: skip
+          value: "7,d"
+          order: 1
+      definition: F = CAPI.Z80.calculateFlags_BIT(D, 7, F);
+    - name: bit
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x7B"
+        - field: instructionFormatting
+          type: skip
+          value: "7,e"
+          order: 1
+      definition: F = CAPI.Z80.calculateFlags_BIT(E, 7, F);
+    - name: bit
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x7C"
+        - field: instructionFormatting
+          type: skip
+          value: "7,h"
+          order: 1
+      definition: F = CAPI.Z80.calculateFlags_BIT(H, 7, F);
+    - name: bit
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x7D"
+        - field: instructionFormatting
+          type: skip
+          value: "7,l"
+          order: 1
+      definition: F = CAPI.Z80.calculateFlags_BIT(L, 7, F);
+    - name: bit
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x7F"
+        - field: instructionFormatting
+          type: skip
+          value: "7,a"
+          order: 1
+      definition: F = CAPI.Z80.calculateFlags_BIT(A, 7, F);
+      
+    # BIT b, (HL)
+    - name: bit
+      template: CB
+      clk_cycles: 12
+      fields:
+        - field: opcode2
+          value: "0x46"
+        - field: instructionFormatting
+          type: skip
+          value: "0,(hl)"
+          order: 1
+      definition: |
+        const addr = (H << 8n) | L;
+        const value = CAPI.MEM.read(addr, 1);
+        F = CAPI.Z80.calculateFlags_BIT(value, 0, F);
+    - name: bit
+      template: CB
+      clk_cycles: 12
+      fields:
+        - field: opcode2
+          value: "0x4E"
+        - field: instructionFormatting
+          type: skip
+          value: "1,(hl)"
+          order: 1
+      definition: |
+        const addr = (H << 8n) | L;
+        const value = CAPI.MEM.read(addr, 1);
+        F = CAPI.Z80.calculateFlags_BIT(value, 1, F);
+    - name: bit
+      template: CB
+      clk_cycles: 12
+      fields:
+        - field: opcode2
+          value: "0x56"
+        - field: instructionFormatting
+          type: skip
+          value: "2,(hl)"
+          order: 1
+      definition: |
+        const addr = (H << 8n) | L;
+        const value = CAPI.MEM.read(addr, 1);
+        F = CAPI.Z80.calculateFlags_BIT(value, 2, F);
+    - name: bit
+      template: CB
+      clk_cycles: 12
+      fields:
+        - field: opcode2
+          value: "0x5E"
+        - field: instructionFormatting
+          type: skip
+          value: "3,(hl)"
+          order: 1
+      definition: |
+        const addr = (H << 8n) | L;
+        const value = CAPI.MEM.read(addr, 1);
+        F = CAPI.Z80.calculateFlags_BIT(value, 3, F);
+    - name: bit
+      template: CB
+      clk_cycles: 12
+      fields:
+        - field: opcode2
+          value: "0x66"
+        - field: instructionFormatting
+          type: skip
+          value: "4,(hl)"
+          order: 1
+      definition: |
+        const addr = (H << 8n) | L;
+        const value = CAPI.MEM.read(addr, 1);
+        F = CAPI.Z80.calculateFlags_BIT(value, 4, F);
+    - name: bit
+      template: CB
+      clk_cycles: 12
+      fields:
+        - field: opcode2
+          value: "0x6E"
+        - field: instructionFormatting
+          type: skip
+          value: "5,(hl)"
+          order: 1
+      definition: |
+        const addr = (H << 8n) | L;
+        const value = CAPI.MEM.read(addr, 1);
+        F = CAPI.Z80.calculateFlags_BIT(value, 5, F);
+    - name: bit
+      template: CB
+      clk_cycles: 12
+      fields:
+        - field: opcode2
+          value: "0x76"
+        - field: instructionFormatting
+          type: skip
+          value: "6,(hl)"
+          order: 1
+      definition: |
+        const addr = (H << 8n) | L;
+        const value = CAPI.MEM.read(addr, 1);
+        F = CAPI.Z80.calculateFlags_BIT(value, 6, F);
+    - name: bit
+      template: CB
+      clk_cycles: 12
+      fields:
+        - field: opcode2
+          value: "0x7E"
+        - field: instructionFormatting
+          type: skip
+          value: "7,(hl)"
+          order: 1
+      definition: |
+        const addr = (H << 8n) | L;
+        const value = CAPI.MEM.read(addr, 1);
+        F = CAPI.Z80.calculateFlags_BIT(value, 7, F);
+    
+    # SET b, (HL)
+    - name: set
+      template: CB
+      clk_cycles: 15
+      fields:
+        - field: opcode2
+          value: "0xC6"
+        - field: instructionFormatting
+          type: skip
+          value: "0,(hl)"
+          order: 1
+      definition: |
+        const addr = (H << 8n) | L;
+        const value = CAPI.MEM.read(addr, 1);
+        CAPI.MEM.write(addr, 1, value | 0x01n);
+    - name: set
+      template: CB
+      clk_cycles: 15
+      fields:
+        - field: opcode2
+          value: "0xCE"
+        - field: instructionFormatting
+          type: skip
+          value: "1,(hl)"
+          order: 1
+      definition: |
+        const addr = (H << 8n) | L;
+        const value = CAPI.MEM.read(addr, 1);
+        CAPI.MEM.write(addr, 1, value | 0x02n);
+    - name: set
+      template: CB
+      clk_cycles: 15
+      fields:
+        - field: opcode2
+          value: "0xD6"
+        - field: instructionFormatting
+          type: skip
+          value: "2,(hl)"
+          order: 1
+      definition: |
+        const addr = (H << 8n) | L;
+        const value = CAPI.MEM.read(addr, 1);
+        CAPI.MEM.write(addr, 1, value | 0x04n);
+    - name: set
+      template: CB
+      clk_cycles: 15
+      fields:
+        - field: opcode2
+          value: "0xDE"
+        - field: instructionFormatting
+          type: skip
+          value: "3,(hl)"
+          order: 1
+      definition: |
+        const addr = (H << 8n) | L;
+        const value = CAPI.MEM.read(addr, 1);
+        CAPI.MEM.write(addr, 1, value | 0x08n);
+    - name: set
+      template: CB
+      clk_cycles: 15
+      fields:
+        - field: opcode2
+          value: "0xE6"
+        - field: instructionFormatting
+          type: skip
+          value: "4,(hl)"
+          order: 1
+      definition: |
+        const addr = (H << 8n) | L;
+        const value = CAPI.MEM.read(addr, 1);
+        CAPI.MEM.write(addr, 1, value | 0x10n);
+    - name: set
+      template: CB
+      clk_cycles: 15
+      fields:
+        - field: opcode2
+          value: "0xEE"
+        - field: instructionFormatting
+          type: skip
+          value: "5,(hl)"
+          order: 1
+      definition: |
+        const addr = (H << 8n) | L;
+        const value = CAPI.MEM.read(addr, 1);
+        CAPI.MEM.write(addr, 1, value | 0x20n);
+    - name: set
+      template: CB
+      clk_cycles: 15
+      fields:
+        - field: opcode2
+          value: "0xF6"
+        - field: instructionFormatting
+          type: skip
+          value: "6,(hl)"
+          order: 1
+      definition: |
+        const addr = (H << 8n) | L;
+        const value = CAPI.MEM.read(addr, 1);
+        CAPI.MEM.write(addr, 1, value | 0x40n);
+    - name: set
+      template: CB
+      clk_cycles: 15
+      fields:
+        - field: opcode2
+          value: "0xFE"
+        - field: instructionFormatting
+          type: skip
+          value: "7,(hl)"
+          order: 1
+      definition: |
+        const addr = (H << 8n) | L;
+        const value = CAPI.MEM.read(addr, 1);
+        CAPI.MEM.write(addr, 1, value | 0x80n);
 
-    - name: rlc (ix+d),b # Example placeholder
+    # RES b, (HL)
+    - name: res
+      template: CB
+      clk_cycles: 15
+      fields:
+        - field: opcode2
+          value: "0x86"
+        - field: instructionFormatting
+          type: skip
+          value: "0,(hl)"
+          order: 1
+      definition: |
+        const addr = (H << 8n) | L;
+        const value = CAPI.MEM.read(addr, 1);
+        CAPI.MEM.write(addr, 1, value & ~0x01n);
+    - name: res
+      template: CB
+      clk_cycles: 15
+      fields:
+        - field: opcode2
+          value: "0x8E"
+        - field: instructionFormatting
+          type: skip
+          value: "1,(hl)"
+          order: 1
+      definition: |
+        const addr = (H << 8n) | L;
+        const value = CAPI.MEM.read(addr, 1);
+        CAPI.MEM.write(addr, 1, value & ~0x02n);
+    - name: res
+      template: CB
+      clk_cycles: 15
+      fields:
+        - field: opcode2
+          value: "0x96"
+        - field: instructionFormatting
+          type: skip
+          value: "2,(hl)"
+          order: 1
+      definition: |
+        const addr = (H << 8n) | L;
+        const value = CAPI.MEM.read(addr, 1);
+        CAPI.MEM.write(addr, 1, value & ~0x04n);
+    - name: res
+      template: CB
+      clk_cycles: 15
+      fields:
+        - field: opcode2
+          value: "0x9E"
+        - field: instructionFormatting
+          type: skip
+          value: "3,(hl)"
+          order: 1
+      definition: |
+        const addr = (H << 8n) | L;
+        const value = CAPI.MEM.read(addr, 1);
+        CAPI.MEM.write(addr, 1, value & ~0x08n);
+    - name: res
+      template: CB
+      clk_cycles: 15
+      fields:
+        - field: opcode2
+          value: "0xA6"
+        - field: instructionFormatting
+          type: skip
+          value: "4,(hl)"
+          order: 1
+      definition: |
+        const addr = (H << 8n) | L;
+        const value = CAPI.MEM.read(addr, 1);
+        CAPI.MEM.write(addr, 1, value & ~0x10n);
+    - name: res
+      template: CB
+      clk_cycles: 15
+      fields:
+        - field: opcode2
+          value: "0xAE"
+        - field: instructionFormatting
+          type: skip
+          value: "5,(hl)"
+          order: 1
+      definition: |
+        const addr = (H << 8n) | L;
+        const value = CAPI.MEM.read(addr, 1);
+        CAPI.MEM.write(addr, 1, value & ~0x20n);
+    - name: res
+      template: CB
+      clk_cycles: 15
+      fields:
+        - field: opcode2
+          value: "0xB6"
+        - field: instructionFormatting
+          type: skip
+          value: "6,(hl)"
+          order: 1
+      definition: |
+        const addr = (H << 8n) | L;
+        const value = CAPI.MEM.read(addr, 1);
+        CAPI.MEM.write(addr, 1, value & ~0x40n);
+    - name: res
+      template: CB
+      clk_cycles: 15
+      fields:
+        - field: opcode2
+          value: "0xBE"
+        - field: instructionFormatting
+          type: skip
+          value: "7,(hl)"
+          order: 1
+      definition: |
+        const addr = (H << 8n) | L;
+        const value = CAPI.MEM.read(addr, 1);
+        CAPI.MEM.write(addr, 1, value & ~0x80n);
+
+    # BIT b, (IX+d)
+    - name: bit
       template: DDCB
-      nwords: 4
+      clk_cycles: 20
       fields:
         - field: opcode3
-          value: "0x00"
-        - field: regname
-          type: skip # This is ONLY for visualization purposes, it is not a real field
-          value: "b"
-          order: 2
-      definition: "console.log('rlc (ix+d), b')" #placeholder for actual instruction definition
+          value: "0x46"
+        - field: imm
+          order: 3
+          suffix: ")"
+        - field: instructionFormatting
+          type: skip
+          value: "0,(ix+"
+          order: 1
+      definition: |
+        const addr = (IX + imm) & 0xFFFFn;
+        const value = CAPI.MEM.read(addr, 1);
+        F = CAPI.Z80.calculateFlags_BIT(value, 0, F);
+    - name: bit
+      template: DDCB
+      clk_cycles: 20
+      fields:
+        - field: opcode3
+          value: "0x4E"
+        - field: imm
+          order: 3
+          suffix: ")"
+        - field: instructionFormatting
+          type: skip
+          value: "1,(ix+"
+          order: 1
+      definition: |
+        const addr = (IX + imm) & 0xFFFFn;
+        const value = CAPI.MEM.read(addr, 1);
+        F = CAPI.Z80.calculateFlags_BIT(value, 1, F);
+    - name: bit
+      template: DDCB
+      clk_cycles: 20
+      fields:
+        - field: opcode3
+          value: "0x56"
+        - field: imm
+          order: 3
+          suffix: ")"
+        - field: instructionFormatting
+          type: skip
+          value: "2,(ix+"
+          order: 1
+      definition: |
+        const addr = (IX + imm) & 0xFFFFn;
+        const value = CAPI.MEM.read(addr, 1);
+        F = CAPI.Z80.calculateFlags_BIT(value, 2, F);
+    - name: bit
+      template: DDCB
+      clk_cycles: 20
+      fields:
+        - field: opcode3
+          value: "0x5E"
+        - field: imm
+          order: 3
+          suffix: ")"
+        - field: instructionFormatting
+          type: skip
+          value: "3,(ix+"
+          order: 1
+      definition: |
+        const addr = (IX + imm) & 0xFFFFn;
+        const value = CAPI.MEM.read(addr, 1);
+        F = CAPI.Z80.calculateFlags_BIT(value, 3, F);
+    - name: bit
+      template: DDCB
+      clk_cycles: 20
+      fields:
+        - field: opcode3
+          value: "0x66"
+        - field: imm
+          order: 3
+          suffix: ")"
+        - field: instructionFormatting
+          type: skip
+          value: "4,(ix+"
+          order: 1
+      definition: |
+        const addr = (IX + imm) & 0xFFFFn;
+        const value = CAPI.MEM.read(addr, 1);
+        F = CAPI.Z80.calculateFlags_BIT(value, 4, F);
+    - name: bit
+      template: DDCB
+      clk_cycles: 20
+      fields:
+        - field: opcode3
+          value: "0x6E"
+        - field: imm
+          order: 3
+          suffix: ")"
+        - field: instructionFormatting
+          type: skip
+          value: "5,(ix+"
+          order: 1
+      definition: |
+        const addr = (IX + imm) & 0xFFFFn;
+        const value = CAPI.MEM.read(addr, 1);
+        F = CAPI.Z80.calculateFlags_BIT(value, 5, F);
+    - name: bit
+      template: DDCB
+      clk_cycles: 20
+      fields:
+        - field: opcode3
+          value: "0x76"
+        - field: imm
+          order: 3
+          suffix: ")"
+        - field: instructionFormatting
+          type: skip
+          value: "6,(ix+"
+          order: 1
+      definition: |
+        const addr = (IX + imm) & 0xFFFFn;
+        const value = CAPI.MEM.read(addr, 1);
+        F = CAPI.Z80.calculateFlags_BIT(value, 6, F);
+    - name: bit
+      template: DDCB
+      clk_cycles: 20
+      fields:
+        - field: opcode3
+          value: "0x7E"
+        - field: imm
+          order: 3
+          suffix: ")"
+        - field: instructionFormatting
+          type: skip
+          value: "7,(ix+"
+          order: 1
+      definition: |
+        const addr = (IX + imm) & 0xFFFFn;
+        const value = CAPI.MEM.read(addr, 1);
+        F = CAPI.Z80.calculateFlags_BIT(value, 7, F);
+
+    # BIT b, (IY+d)
+    - name: bit
+      template: FDCB
+      clk_cycles: 20
+      fields:
+        - field: opcode3
+          value: "0x46"
+        - field: d
+          order: 3
+          suffix: ")"
+        - field: instructionFormatting
+          type: skip
+          value: "0,(iy+"
+          order: 1
+      definition: |
+        const addr = (IY + d) & 0xFFFFn;
+        const value = CAPI.MEM.read(addr, 1);
+        F = CAPI.Z80.calculateFlags_BIT(value, 0, F);
+    - name: bit
+      template: FDCB
+      clk_cycles: 20
+      fields:
+        - field: opcode3
+          value: "0x4E"
+        - field: d
+          order: 3
+          suffix: ")"
+        - field: instructionFormatting
+          type: skip
+          value: "1,(iy+"
+          order: 1
+      definition: |
+        const addr = (IY + d) & 0xFFFFn;
+        const value = CAPI.MEM.read(addr, 1);
+        F = CAPI.Z80.calculateFlags_BIT(value, 1, F);
+    - name: bit
+      template: FDCB
+      clk_cycles: 20
+      fields:
+        - field: opcode3
+          value: "0x56"
+        - field: d
+          order: 3
+          suffix: ")"
+        - field: instructionFormatting
+          type: skip
+          value: "2,(iy+"
+          order: 1
+      definition: |
+        const addr = (IY + d) & 0xFFFFn;
+        const value = CAPI.MEM.read(addr, 1);
+        F = CAPI.Z80.calculateFlags_BIT(value, 2, F);
+    - name: bit
+      template: FDCB
+      clk_cycles: 20
+      fields:
+        - field: opcode3
+          value: "0x5E"
+        - field: d
+          order: 3
+          suffix: ")"
+        - field: instructionFormatting
+          type: skip
+          value: "3,(iy+"
+          order: 1
+      definition: |
+        const addr = (IY + d) & 0xFFFFn;
+        const value = CAPI.MEM.read(addr, 1);
+        F = CAPI.Z80.calculateFlags_BIT(value, 3, F);
+    - name: bit
+      template: FDCB
+      clk_cycles: 20
+      fields:
+        - field: opcode3
+          value: "0x66"
+        - field: d
+          order: 3
+          suffix: ")"
+        - field: instructionFormatting
+          type: skip
+          value: "4,(iy+"
+          order: 1
+      definition: |
+        const addr = (IY + d) & 0xFFFFn;
+        const value = CAPI.MEM.read(addr, 1);
+        F = CAPI.Z80.calculateFlags_BIT(value, 4, F);
+    - name: bit
+      template: FDCB
+      clk_cycles: 20
+      fields:
+        - field: opcode3
+          value: "0x6E"
+        - field: d
+          order: 3
+          suffix: ")"
+        - field: instructionFormatting
+          type: skip
+          value: "5,(iy+"
+          order: 1
+      definition: |
+        const addr = (IY + d) & 0xFFFFn;
+        const value = CAPI.MEM.read(addr, 1);
+        F = CAPI.Z80.calculateFlags_BIT(value, 5, F);
+    - name: bit
+      template: FDCB
+      clk_cycles: 20
+      fields:
+        - field: opcode3
+          value: "0x76"
+        - field: d
+          order: 3
+          suffix: ")"
+        - field: instructionFormatting
+          type: skip
+          value: "6,(iy+"
+          order: 1
+      definition: |
+        const addr = (IY + d) & 0xFFFFn;
+        const value = CAPI.MEM.read(addr, 1);
+        F = CAPI.Z80.calculateFlags_BIT(value, 6, F);
+    - name: bit
+      template: FDCB
+      clk_cycles: 20
+      fields:
+        - field: opcode3
+          value: "0x7E"
+        - field: d
+          order: 3
+          suffix: ")"
+        - field: instructionFormatting
+          type: skip
+          value: "7,(iy+"
+          order: 1
+      definition: |
+        const addr = (IY + d) & 0xFFFFn;
+        const value = CAPI.MEM.read(addr, 1);
+        F = CAPI.Z80.calculateFlags_BIT(value, 7, F);
+
+    # SET b, (IX+d)
+    - name: set
+      template: DDCB
+      clk_cycles: 23
+      fields:
+        - field: opcode3
+          value: "0xC6"
+        - field: imm
+          order: 3
+          suffix: ")"
+        - field: instructionFormatting
+          type: skip
+          value: "0,(ix+"
+          order: 1
+      definition: |
+        const addr = (IX + imm) & 0xFFFFn;
+        const value = CAPI.MEM.read(addr, 1);
+        CAPI.MEM.write(addr, 1, value | 0x01n);
+    - name: set
+      template: DDCB
+      clk_cycles: 23
+      fields:
+        - field: opcode3
+          value: "0xCE"
+        - field: imm
+          order: 3
+          suffix: ")"
+        - field: instructionFormatting
+          type: skip
+          value: "1,(ix+"
+          order: 1
+      definition: |
+        const addr = (IX + imm) & 0xFFFFn;
+        const value = CAPI.MEM.read(addr, 1);
+        CAPI.MEM.write(addr, 1, value | 0x02n);
+    - name: set
+      template: DDCB
+      clk_cycles: 23
+      fields:
+        - field: opcode3
+          value: "0xD6"
+        - field: imm
+          order: 3
+          suffix: ")"
+        - field: instructionFormatting
+          type: skip
+          value: "2,(ix+"
+          order: 1
+      definition: |
+        const addr = (IX + imm) & 0xFFFFn;
+        const value = CAPI.MEM.read(addr, 1);
+        CAPI.MEM.write(addr, 1, value | 0x04n);
+    - name: set
+      template: DDCB
+      clk_cycles: 23
+      fields:
+        - field: opcode3
+          value: "0xDE"
+        - field: imm
+          order: 3
+          suffix: ")"
+        - field: instructionFormatting
+          type: skip
+          value: "3,(ix+"
+          order: 1
+      definition: |
+        const addr = (IX + imm) & 0xFFFFn;
+        const value = CAPI.MEM.read(addr, 1);
+        CAPI.MEM.write(addr, 1, value | 0x08n);
+    - name: set
+      template: DDCB
+      clk_cycles: 23
+      fields:
+        - field: opcode3
+          value: "0xE6"
+        - field: imm
+          order: 3
+          suffix: ")"
+        - field: instructionFormatting
+          type: skip
+          value: "4,(ix+"
+          order: 1
+      definition: |
+        const addr = (IX + imm) & 0xFFFFn;
+        const value = CAPI.MEM.read(addr, 1);
+        CAPI.MEM.write(addr, 1, value | 0x10n);
+    - name: set
+      template: DDCB
+      clk_cycles: 23
+      fields:
+        - field: opcode3
+          value: "0xEE"
+        - field: imm
+          order: 3
+          suffix: ")"
+        - field: instructionFormatting
+          type: skip
+          value: "5,(ix+"
+          order: 1
+      definition: |
+        const addr = (IX + imm) & 0xFFFFn;
+        const value = CAPI.MEM.read(addr, 1);
+        CAPI.MEM.write(addr, 1, value | 0x20n);
+    - name: set
+      template: DDCB
+      clk_cycles: 23
+      fields:
+        - field: opcode3
+          value: "0xF6"
+        - field: imm
+          order: 3
+          suffix: ")"
+        - field: instructionFormatting
+          type: skip
+          value: "6,(ix+"
+          order: 1
+      definition: |
+        const addr = (IX + imm) & 0xFFFFn;
+        const value = CAPI.MEM.read(addr, 1);
+        CAPI.MEM.write(addr, 1, value | 0x40n);
+    - name: set
+      template: DDCB
+      clk_cycles: 23
+      fields:
+        - field: opcode3
+          value: "0xFE"
+        - field: imm
+          order: 3
+          suffix: ")"
+        - field: instructionFormatting
+          type: skip
+          value: "7,(ix+"
+          order: 1
+      definition: |
+        const addr = (IX + imm) & 0xFFFFn;
+        const value = CAPI.MEM.read(addr, 1);
+        CAPI.MEM.write(addr, 1, value | 0x80n);
+
+    # RES b, (IX+d)
+    - name: res
+      template: DDCB
+      clk_cycles: 23
+      fields:
+        - field: opcode3
+          value: "0x86"
+        - field: imm
+          order: 3
+          suffix: ")"
+        - field: instructionFormatting
+          type: skip
+          value: "0,(ix+"
+          order: 1
+      definition: |
+        const addr = (IX + imm) & 0xFFFFn;
+        const value = CAPI.MEM.read(addr, 1);
+        CAPI.MEM.write(addr, 1, value & ~0x01n);
+    - name: res
+      template: DDCB
+      clk_cycles: 23
+      fields:
+        - field: opcode3
+          value: "0x8E"
+        - field: imm
+          order: 3
+          suffix: ")"
+        - field: instructionFormatting
+          type: skip
+          value: "1,(ix+"
+          order: 1
+      definition: |
+        const addr = (IX + imm) & 0xFFFFn;
+        const value = CAPI.MEM.read(addr, 1);
+        CAPI.MEM.write(addr, 1, value & ~0x02n);
+    - name: res
+      template: DDCB
+      clk_cycles: 23
+      fields:
+        - field: opcode3
+          value: "0x96"
+        - field: imm
+          order: 3
+          suffix: ")"
+        - field: instructionFormatting
+          type: skip
+          value: "2,(ix+"
+          order: 1
+      definition: |
+        const addr = (IX + imm) & 0xFFFFn;
+        const value = CAPI.MEM.read(addr, 1);
+        CAPI.MEM.write(addr, 1, value & ~0x04n);
+    - name: res
+      template: DDCB
+      clk_cycles: 23
+      fields:
+        - field: opcode3
+          value: "0x9E"
+        - field: imm
+          order: 3
+          suffix: ")"
+        - field: instructionFormatting
+          type: skip
+          value: "3,(ix+"
+          order: 1
+      definition: |
+        const addr = (IX + imm) & 0xFFFFn;
+        const value = CAPI.MEM.read(addr, 1);
+        CAPI.MEM.write(addr, 1, value & ~0x08n);
+    - name: res
+      template: DDCB
+      clk_cycles: 23
+      fields:
+        - field: opcode3
+          value: "0xA6"
+        - field: imm
+          order: 3
+          suffix: ")"
+        - field: instructionFormatting
+          type: skip
+          value: "4,(ix+"
+          order: 1
+      definition: |
+        const addr = (IX + imm) & 0xFFFFn;
+        const value = CAPI.MEM.read(addr, 1);
+        CAPI.MEM.write(addr, 1, value & ~0x10n);
+    - name: res
+      template: DDCB
+      clk_cycles: 23
+      fields:
+        - field: opcode3
+          value: "0xAE"
+        - field: imm
+          order: 3
+          suffix: ")"
+        - field: instructionFormatting
+          type: skip
+          value: "5,(ix+"
+          order: 1
+      definition: |
+        const addr = (IX + imm) & 0xFFFFn;
+        const value = CAPI.MEM.read(addr, 1);
+        CAPI.MEM.write(addr, 1, value & ~0x20n);
+    - name: res
+      template: DDCB
+      clk_cycles: 23
+      fields:
+        - field: opcode3
+          value: "0xB6"
+        - field: imm
+          order: 3
+          suffix: ")"
+        - field: instructionFormatting
+          type: skip
+          value: "6,(ix+"
+          order: 1
+      definition: |
+        const addr = (IX + imm) & 0xFFFFn;
+        const value = CAPI.MEM.read(addr, 1);
+        CAPI.MEM.write(addr, 1, value & ~0x40n);
+    - name: res
+      template: DDCB
+      clk_cycles: 23
+      fields:
+        - field: opcode3
+          value: "0xBE"
+        - field: imm
+          order: 3
+          suffix: ")"
+        - field: instructionFormatting
+          type: skip
+          value: "7,(ix+"
+          order: 1
+      definition: |
+        const addr = (IX + imm) & 0xFFFFn;
+        const value = CAPI.MEM.read(addr, 1);
+        CAPI.MEM.write(addr, 1, value & ~0x80n);
+        
+    # SET b, r
+    - name: set
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xC0"
+        - field: instructionFormatting
+          type: skip
+          value: "0,b"
+          order: 1
+      definition: B |= 0x01n;
+    - name: set
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xC1"
+        - field: instructionFormatting
+          type: skip
+          value: "0,c"
+          order: 1
+      definition: C |= 0x01n;
+    - name: set
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xC2"
+        - field: instructionFormatting
+          type: skip
+          value: "0,d"
+          order: 1
+      definition: D |= 0x01n;
+    - name: set
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xC3"
+        - field: instructionFormatting
+          type: skip
+          value: "0,e"
+          order: 1
+      definition: E |= 0x01n;
+    - name: set
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xC4"
+        - field: instructionFormatting
+          type: skip
+          value: "0,h"
+          order: 1
+      definition: H |= 0x01n;
+    - name: set
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xC5"
+        - field: instructionFormatting
+          type: skip
+          value: "0,l"
+          order: 1
+      definition: L |= 0x01n;
+    - name: set
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xC7"
+        - field: instructionFormatting
+          type: skip
+          value: "0,a"
+          order: 1
+      definition: A |= 0x01n;
+    - name: set
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xC8"
+        - field: instructionFormatting
+          type: skip
+          value: "1,b"
+          order: 1
+      definition: B |= 0x02n;
+    - name: set
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xC9"
+        - field: instructionFormatting
+          type: skip
+          value: "1,c"
+          order: 1
+      definition: C |= 0x02n;
+    - name: set
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xCA"
+        - field: instructionFormatting
+          type: skip
+          value: "1,d"
+          order: 1
+      definition: D |= 0x02n;
+    - name: set
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xCB"
+        - field: instructionFormatting
+          type: skip
+          value: "1,e"
+          order: 1
+      definition: E |= 0x02n;
+    - name: set
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xCC"
+        - field: instructionFormatting
+          type: skip
+          value: "1,h"
+          order: 1
+      definition: H |= 0x02n;
+    - name: set
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xCD"
+        - field: instructionFormatting
+          type: skip
+          value: "1,l"
+          order: 1
+      definition: L |= 0x02n;
+    - name: set
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xCF"
+        - field: instructionFormatting
+          type: skip
+          value: "1,a"
+          order: 1
+      definition: A |= 0x02n;
+    - name: set
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xD0"
+        - field: instructionFormatting
+          type: skip
+          value: "2,b"
+          order: 1
+      definition: B |= 0x04n;
+    - name: set
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xD1"
+        - field: instructionFormatting
+          type: skip
+          value: "2,c"
+          order: 1
+      definition: C |= 0x04n;
+    - name: set
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xD2"
+        - field: instructionFormatting
+          type: skip
+          value: "2,d"
+          order: 1
+      definition: D |= 0x04n;
+    - name: set
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xD3"
+        - field: instructionFormatting
+          type: skip
+          value: "2,e"
+          order: 1
+      definition: E |= 0x04n;
+    - name: set
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xD4"
+        - field: instructionFormatting
+          type: skip
+          value: "2,h"
+          order: 1
+      definition: H |= 0x04n;
+    - name: set
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xD5"
+        - field: instructionFormatting
+          type: skip
+          value: "2,l"
+          order: 1
+      definition: L |= 0x04n;
+    - name: set
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xD7"
+        - field: instructionFormatting
+          type: skip
+          value: "2,a"
+          order: 1
+      definition: A |= 0x04n;
+    - name: set
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xD8"
+        - field: instructionFormatting
+          type: skip
+          value: "3,b"
+          order: 1
+      definition: B |= 0x08n;
+    - name: set
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xD9"
+        - field: instructionFormatting
+          type: skip
+          value: "3,c"
+          order: 1
+      definition: C |= 0x08n;
+    - name: set
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xDA"
+        - field: instructionFormatting
+          type: skip
+          value: "3,d"
+          order: 1
+      definition: D |= 0x08n;
+    - name: set
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xDB"
+        - field: instructionFormatting
+          type: skip
+          value: "3,e"
+          order: 1
+      definition: E |= 0x08n;
+    - name: set
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xDC"
+        - field: instructionFormatting
+          type: skip
+          value: "3,h"
+          order: 1
+      definition: H |= 0x08n;
+    - name: set
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xDD"
+        - field: instructionFormatting
+          type: skip
+          value: "3,l"
+          order: 1
+      definition: L |= 0x08n;
+    - name: set
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xDF"
+        - field: instructionFormatting
+          type: skip
+          value: "3,a"
+          order: 1
+      definition: A |= 0x08n;
+    - name: set
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xE0"
+        - field: instructionFormatting
+          type: skip
+          value: "4,b"
+          order: 1
+      definition: B |= 0x10n;
+    - name: set
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xE1"
+        - field: instructionFormatting
+          type: skip
+          value: "4,c"
+          order: 1
+      definition: C |= 0x10n;
+    - name: set
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xE2"
+        - field: instructionFormatting
+          type: skip
+          value: "4,d"
+          order: 1
+      definition: D |= 0x10n;
+    - name: set
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xE3"
+        - field: instructionFormatting
+          type: skip
+          value: "4,e"
+          order: 1
+      definition: E |= 0x10n;
+    - name: set
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xE4"
+        - field: instructionFormatting
+          type: skip
+          value: "4,h"
+          order: 1
+      definition: H |= 0x10n;
+    - name: set
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xE5"
+        - field: instructionFormatting
+          type: skip
+          value: "4,l"
+          order: 1
+      definition: L |= 0x10n;
+    - name: set
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xE7"
+        - field: instructionFormatting
+          type: skip
+          value: "4,a"
+          order: 1
+      definition: A |= 0x10n;
+    - name: set
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xE8"
+        - field: instructionFormatting
+          type: skip
+          value: "5,b"
+          order: 1
+      definition: B |= 0x20n;
+    - name: set
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xE9"
+        - field: instructionFormatting
+          type: skip
+          value: "5,c"
+          order: 1
+      definition: C |= 0x20n;
+    - name: set
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xEA"
+        - field: instructionFormatting
+          type: skip
+          value: "5,d"
+          order: 1
+      definition: D |= 0x20n;
+    - name: set
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xEB"
+        - field: instructionFormatting
+          type: skip
+          value: "5,e"
+          order: 1
+      definition: E |= 0x20n;
+    - name: set
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xEC"
+        - field: instructionFormatting
+          type: skip
+          value: "5,h"
+          order: 1
+      definition: H |= 0x20n;
+    - name: set
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xED"
+        - field: instructionFormatting
+          type: skip
+          value: "5,l"
+          order: 1
+      definition: L |= 0x20n;
+    - name: set
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xEF"
+        - field: instructionFormatting
+          type: skip
+          value: "5,a"
+          order: 1
+      definition: A |= 0x20n;
+    - name: set
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xF0"
+        - field: instructionFormatting
+          type: skip
+          value: "6,b"
+          order: 1
+      definition: B |= 0x40n;
+    - name: set
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xF1"
+        - field: instructionFormatting
+          type: skip
+          value: "6,c"
+          order: 1
+      definition: C |= 0x40n;
+    - name: set
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xF2"
+        - field: instructionFormatting
+          type: skip
+          value: "6,d"
+          order: 1
+      definition: D |= 0x40n;
+    - name: set
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xF3"
+        - field: instructionFormatting
+          type: skip
+          value: "6,e"
+          order: 1
+      definition: E |= 0x40n;
+    - name: set
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xF4"
+        - field: instructionFormatting
+          type: skip
+          value: "6,h"
+          order: 1
+      definition: H |= 0x40n;
+    - name: set
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xF5"
+        - field: instructionFormatting
+          type: skip
+          value: "6,l"
+          order: 1
+      definition: L |= 0x40n;
+    - name: set
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xF7"
+        - field: instructionFormatting
+          type: skip
+          value: "6,a"
+          order: 1
+      definition: A |= 0x40n;
+    - name: set
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xF8"
+        - field: instructionFormatting
+          type: skip
+          value: "7,b"
+          order: 1
+      definition: B |= 0x80n;
+    - name: set
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xF9"
+        - field: instructionFormatting
+          type: skip
+          value: "7,c"
+          order: 1
+      definition: C |= 0x80n;
+    - name: set
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xFA"
+        - field: instructionFormatting
+          type: skip
+          value: "7,d"
+          order: 1
+      definition: D |= 0x80n;
+    - name: set
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xFB"
+        - field: instructionFormatting
+          type: skip
+          value: "7,e"
+          order: 1
+      definition: E |= 0x80n;
+    - name: set
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xFC"
+        - field: instructionFormatting
+          type: skip
+          value: "7,h"
+          order: 1
+      definition: H |= 0x80n;
+    - name: set
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xFD"
+        - field: instructionFormatting
+          type: skip
+          value: "7,l"
+          order: 1
+      definition: L |= 0x80n;
+    - name: set
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xFF"
+        - field: instructionFormatting
+          type: skip
+          value: "7,a"
+          order: 1
+      definition: A |= 0x80n;
+
+    # RES b, r
+    - name: res
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x80"
+        - field: instructionFormatting
+          type: skip
+          value: "0,b"
+          order: 1
+      definition: B &= ~0x01n;
+    - name: res
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x81"
+        - field: instructionFormatting
+          type: skip
+          value: "0,c"
+          order: 1
+      definition: C &= ~0x01n;
+    - name: res
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x82"
+        - field: instructionFormatting
+          type: skip
+          value: "0,d"
+          order: 1
+      definition: D &= ~0x01n;
+    - name: res
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x83"
+        - field: instructionFormatting
+          type: skip
+          value: "0,e"
+          order: 1
+      definition: E &= ~0x01n;
+    - name: res
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x84"
+        - field: instructionFormatting
+          type: skip
+          value: "0,h"
+          order: 1
+      definition: H &= ~0x01n;
+    - name: res
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x85"
+        - field: instructionFormatting
+          type: skip
+          value: "0,l"
+          order: 1
+      definition: L &= ~0x01n;
+    - name: res
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x87"
+        - field: instructionFormatting
+          type: skip
+          value: "0,a"
+          order: 1
+      definition: A &= ~0x01n;
+    - name: res
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x88"
+        - field: instructionFormatting
+          type: skip
+          value: "1,b"
+          order: 1
+      definition: B &= ~0x02n;
+    - name: res
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x89"
+        - field: instructionFormatting
+          type: skip
+          value: "1,c"
+          order: 1
+      definition: C &= ~0x02n;
+    - name: res
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x8A"
+        - field: instructionFormatting
+          type: skip
+          value: "1,d"
+          order: 1
+      definition: D &= ~0x02n;
+    - name: res
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x8B"
+        - field: instructionFormatting
+          type: skip
+          value: "1,e"
+          order: 1
+      definition: E &= ~0x02n;
+    - name: res
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x8C"
+        - field: instructionFormatting
+          type: skip
+          value: "1,h"
+          order: 1
+      definition: H &= ~0x02n;
+    - name: res
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x8D"
+        - field: instructionFormatting
+          type: skip
+          value: "1,l"
+          order: 1
+      definition: L &= ~0x02n;
+    - name: res
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x8F"
+        - field: instructionFormatting
+          type: skip
+          value: "1,a"
+          order: 1
+      definition: A &= ~0x02n;
+    - name: res
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x90"
+        - field: instructionFormatting
+          type: skip
+          value: "2,b"
+          order: 1
+      definition: B &= ~0x04n;
+    - name: res
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x91"
+        - field: instructionFormatting
+          type: skip
+          value: "2,c"
+          order: 1
+      definition: C &= ~0x04n;
+    - name: res
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x92"
+        - field: instructionFormatting
+          type: skip
+          value: "2,d"
+          order: 1
+      definition: D &= ~0x04n;
+    - name: res
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x93"
+        - field: instructionFormatting
+          type: skip
+          value: "2,e"
+          order: 1
+      definition: E &= ~0x04n;
+    - name: res
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x94"
+        - field: instructionFormatting
+          type: skip
+          value: "2,h"
+          order: 1
+      definition: H &= ~0x04n;
+    - name: res
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x95"
+        - field: instructionFormatting
+          type: skip
+          value: "2,l"
+          order: 1
+      definition: L &= ~0x04n;
+    - name: res
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x97"
+        - field: instructionFormatting
+          type: skip
+          value: "2,a"
+          order: 1
+      definition: A &= ~0x04n;
+    - name: res
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x98"
+        - field: instructionFormatting
+          type: skip
+          value: "3,b"
+          order: 1
+      definition: B &= ~0x08n;
+    - name: res
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x99"
+        - field: instructionFormatting
+          type: skip
+          value: "3,c"
+          order: 1
+      definition: C &= ~0x08n;
+    - name: res
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x9A"
+        - field: instructionFormatting
+          type: skip
+          value: "3,d"
+          order: 1
+      definition: D &= ~0x08n;
+    - name: res
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x9B"
+        - field: instructionFormatting
+          type: skip
+          value: "3,e"
+          order: 1
+      definition: E &= ~0x08n;
+    - name: res
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x9C"
+        - field: instructionFormatting
+          type: skip
+          value: "3,h"
+          order: 1
+      definition: H &= ~0x08n;
+    - name: res
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x9D"
+        - field: instructionFormatting
+          type: skip
+          value: "3,l"
+          order: 1
+      definition: L &= ~0x08n;
+    - name: res
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x9F"
+        - field: instructionFormatting
+          type: skip
+          value: "3,a"
+          order: 1
+      definition: A &= ~0x08n;
+    - name: res
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xA0"
+        - field: instructionFormatting
+          type: skip
+          value: "4,b"
+          order: 1
+      definition: B &= ~0x10n;
+    - name: res
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xA1"
+        - field: instructionFormatting
+          type: skip
+          value: "4,c"
+          order: 1
+      definition: C &= ~0x10n;
+    - name: res
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xA2"
+        - field: instructionFormatting
+          type: skip
+          value: "4,d"
+          order: 1
+      definition: D &= ~0x10n;
+    - name: res
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xA3"
+        - field: instructionFormatting
+          type: skip
+          value: "4,e"
+          order: 1
+      definition: E &= ~0x10n;
+    - name: res
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xA4"
+        - field: instructionFormatting
+          type: skip
+          value: "4,h"
+          order: 1
+      definition: H &= ~0x10n;
+    - name: res
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xA5"
+        - field: instructionFormatting
+          type: skip
+          value: "4,l"
+          order: 1
+      definition: L &= ~0x10n;
+    - name: res
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xA7"
+        - field: instructionFormatting
+          type: skip
+          value: "4,a"
+          order: 1
+      definition: A &= ~0x10n;
+    - name: res
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xA8"
+        - field: instructionFormatting
+          type: skip
+          value: "5,b"
+          order: 1
+      definition: B &= ~0x20n;
+    - name: res
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xA9"
+        - field: instructionFormatting
+          type: skip
+          value: "5,c"
+          order: 1
+      definition: C &= ~0x20n;
+    - name: res
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xAA"
+        - field: instructionFormatting
+          type: skip
+          value: "5,d"
+          order: 1
+      definition: D &= ~0x20n;
+    - name: res
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xAB"
+        - field: instructionFormatting
+          type: skip
+          value: "5,e"
+          order: 1
+      definition: E &= ~0x20n;
+    - name: res
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xAC"
+        - field: instructionFormatting
+          type: skip
+          value: "5,h"
+          order: 1
+      definition: H &= ~0x20n;
+    - name: res
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xAD"
+        - field: instructionFormatting
+          type: skip
+          value: "5,l"
+          order: 1
+      definition: L &= ~0x20n;
+    - name: res
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xAF"
+        - field: instructionFormatting
+          type: skip
+          value: "5,a"
+          order: 1
+      definition: A &= ~0x20n;
+    - name: res
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xB0"
+        - field: instructionFormatting
+          type: skip
+          value: "6,b"
+          order: 1
+      definition: B &= ~0x40n;
+    - name: res
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xB1"
+        - field: instructionFormatting
+          type: skip
+          value: "6,c"
+          order: 1
+      definition: C &= ~0x40n;
+    - name: res
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xB2"
+        - field: instructionFormatting
+          type: skip
+          value: "6,d"
+          order: 1
+      definition: D &= ~0x40n;
+    - name: res
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xB3"
+        - field: instructionFormatting
+          type: skip
+          value: "6,e"
+          order: 1
+      definition: E &= ~0x40n;
+    - name: res
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xB4"
+        - field: instructionFormatting
+          type: skip
+          value: "6,h"
+          order: 1
+      definition: H &= ~0x40n;
+    - name: res
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xB5"
+        - field: instructionFormatting
+          type: skip
+          value: "6,l"
+          order: 1
+      definition: L &= ~0x40n;
+    - name: res
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xB7"
+        - field: instructionFormatting
+          type: skip
+          value: "6,a"
+          order: 1
+      definition: A &= ~0x40n;
+    - name: res
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xB8"
+        - field: instructionFormatting
+          type: skip
+          value: "7,b"
+          order: 1
+      definition: B &= ~0x80n;
+    - name: res
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xB9"
+        - field: instructionFormatting
+          type: skip
+          value: "7,c"
+          order: 1
+      definition: C &= ~0x80n;
+    - name: res
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xBA"
+        - field: instructionFormatting
+          type: skip
+          value: "7,d"
+          order: 1
+      definition: D &= ~0x80n;
+    - name: res
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xBB"
+        - field: instructionFormatting
+          type: skip
+          value: "7,e"
+          order: 1
+      definition: E &= ~0x80n;
+    - name: res
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xBC"
+        - field: instructionFormatting
+          type: skip
+          value: "7,h"
+          order: 1
+      definition: H &= ~0x80n;
+    - name: res
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xBD"
+        - field: instructionFormatting
+          type: skip
+          value: "7,l"
+          order: 1
+      definition: L &= ~0x80n;
+    - name: res
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xBF"
+        - field: instructionFormatting
+          type: skip
+          value: "7,a"
+          order: 1
+      definition: A &= ~0x80n;
+
+    - name: neg
+      template: ED
+      nwords: 2
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x44"
+      definition: |
+        // The contents of A are negated (two's complement).
+        // This is equivalent to 0 - A.
+        const oldValueA = A;
+        A = (0n - oldValueA) & 0xFFn;
+        F = CAPI.Z80.calculateFlags_SUB(0n, oldValueA);
 
     - name: ld
       template: ED
@@ -3656,106 +6599,164 @@ instructions:
         // Loads the value of A into the I register.
         I = A;
 
+    - name: ld
+      template: ED
+      nwords: 4
+      clk_cycles: 20
+      fields:
+        - field: opcode2
+          value: "0x5B"
+        - field: instructionFormatting
+          type: skip
+          value: "de,"
+          order: 1
+        - field: nn
+          type: inm-unsigned
+          startbit: 15
+          stopbit: 0
+          prefix: "("
+          suffix: ")"
+          order: 2
+          word: [3, 2]
+      definition: |
+        // Loads the value pointed to by nn into DE.
+        E = CAPI.MEM.read(nn, 1);
+        D = CAPI.MEM.read(nn + 1n, 1);
+
+    - name: ld
+      template: ED
+      nwords: 4
+      clk_cycles: 20
+      fields:
+        - field: opcode2
+          value: "0x6B"
+        - field: instructionFormatting
+          type: skip
+          value: "hl,"
+          order: 1
+        - field: nn
+          type: inm-unsigned
+          startbit: 15
+          stopbit: 0
+          prefix: "("
+          suffix: ")"
+          order: 2
+          word: [3, 2]
+      definition: |
+        // Loads the value pointed to by nn into HL.
+        L = CAPI.MEM.read(nn, 1);
+        H = CAPI.MEM.read(nn + 1n, 1);
+
+    - name: ld
+      template: ED
+      nwords: 4
+      clk_cycles: 20
+      fields:
+        - field: opcode2
+          value: "0x7B"
+        - field: instructionFormatting
+          type: skip
+          value: "sp,"
+          order: 1
+        - field: nn
+          type: inm-unsigned
+          startbit: 15
+          stopbit: 0
+          prefix: "("
+          suffix: ")"
+          order: 2
+          word: [3, 2]
+      definition: |
+        // Loads the value pointed to by nn into SP
+        lowSP = CAPI.MEM.read(nn, 1);
+        highSP = CAPI.MEM.read(nn + 1n, 1);
+        SP = (highSP << 8n) | lowSP;
     - name: lddr
       template: ED
-      clk_cycles: 16 # Takes 21 clock cycles if BC is not zero after execution, 16 otherwise.
+      # Cycles: 21 if BC != 0, 16 if BC = 0. Handled in definition.
       fields:
         - field: opcode2
           value: "0xB8"
       definition: |
-        // Transfers a byte from the location at HL to the location at DE.
-        // Then, it decrements HL, DE, and the byte counter BC.
-        // If BC becomes zero, the instruction terminates.
-        // If BC is not zero, the process is repeated.
-        
-        // 1. Get 16-bit values for DE, HL, and BC
-        const deAddr = (D << 8n) | E;
+        // 1. Combine registers into 16-bit values
         const hlAddr = (H << 8n) | L;
+        const deAddr = (D << 8n) | E;
         let bcCount = (B << 8n) | C;
 
-        // 2. Perform the single-byte transfer
+        // 2. Perform the single-byte transfer. This happens even if bcCount is 1.
         const byteToCopy = CAPI.MEM.read(hlAddr, 1);
         CAPI.MEM.write(deAddr, 1, byteToCopy);
 
-        // 3. Decrement all three 16-bit registers
-        const newDE = (deAddr - 1n) & 0xFFFFn;
+        // 3. Update registers
         const newHL = (hlAddr - 1n) & 0xFFFFn;
+        const newDE = (deAddr - 1n) & 0xFFFFn;
         bcCount = (bcCount - 1n) & 0xFFFFn;
-
-        // 4. Update the 8-bit component registers
-        D = (newDE >> 8n) & 0xFFn;
-        E = newDE & 0xFFn;
+        
         H = (newHL >> 8n) & 0xFFn;
         L = newHL & 0xFFn;
+        D = (newDE >> 8n) & 0xFFn;
+        E = newDE & 0xFFn;
         B = (bcCount >> 8n) & 0xFFn;
         C = bcCount & 0xFFn;
         
-        // 5. Update Flags: H and N are reset. P/V reflects (BC != 0).
-        // S, Z, and C flags are not affected by this instruction.
+        // 4. Update flags according to Z80 specification
+        // S, Z, C are unaffected. H and N are reset. P/V is set if BC != 0.
         let newF = F & (CAPI.Z80.S_FLAG | CAPI.Z80.Z_FLAG | CAPI.Z80.C_FLAG);
 
+        // 5. Check for repeat condition
         if (bcCount !== 0n) {
-            // If BC is not zero, the transfer continues. Set the P/V flag.
             newF |= CAPI.Z80.PV_FLAG;
-            // The PC is currently pointing at the instruction AFTER lddr.
-            // We must rewind it by 2 bytes to re-execute this instruction.
+            // Rewind PC to re-execute this instruction
             PC = (PC - 2n) & 0xFFFFn;
+            // set_private_field("clk_cycles", 21); // Optional: for accurate timing
         } else {
-            // If BC is zero, the transfer is done. Reset the P/V flag.
-            // PC will advance normally to the next instruction.
-            newF &= ~CAPI.Z80.PV_FLAG;
+            // P/V is reset when BC becomes 0.
+            // set_private_field("clk_cycles", 16); // Optional: for accurate timing
         }
         
         F = newF;
   
     - name: ldir
       template: ED
-      clk_cycles: 16 # Takes 21 clock cycles if BC is not zero after execution, 16 otherwise.
+      # Cycles: 21 if BC != 0, 16 if BC = 0. Handled in definition.
       fields:
         - field: opcode2
           value: "0xB0"
       definition: |
-        // Transfers a byte from the location at HL to the location at DE.
-        // Then, it increments HL, DE, and decrements the byte counter BC.
-        // If BC becomes zero, the instruction terminates.
-        // If BC is not zero, the process is repeated.
-        
-        // 1. Get 16-bit values for DE, HL, and BC
-        const deAddr = (D << 8n) | E;
+        // 1. Combine registers into 16-bit values
         const hlAddr = (H << 8n) | L;
+        const deAddr = (D << 8n) | E;
         let bcCount = (B << 8n) | C;
 
-        // 2. Perform the single-byte transfer
+        // 2. Perform the single-byte transfer. This happens even if bcCount is 1.
         const byteToCopy = CAPI.MEM.read(hlAddr, 1);
         CAPI.MEM.write(deAddr, 1, byteToCopy);
 
-        // 3. Increment HL/DE and decrement BC
-        const newDE = (deAddr + 1n) & 0xFFFFn;
+        // 3. Update registers
         const newHL = (hlAddr + 1n) & 0xFFFFn;
+        const newDE = (deAddr + 1n) & 0xFFFFn;
         bcCount = (bcCount - 1n) & 0xFFFFn;
-
-        // 4. Update the 8-bit component registers
-        D = (newDE >> 8n) & 0xFFn;
-        E = newDE & 0xFFn;
+        
         H = (newHL >> 8n) & 0xFFn;
         L = newHL & 0xFFn;
+        D = (newDE >> 8n) & 0xFFn;
+        E = newDE & 0xFFn;
         B = (bcCount >> 8n) & 0xFFn;
         C = bcCount & 0xFFn;
         
-        // 5. Update Flags: H and N are reset. P/V reflects (BC != 0).
-        // S, Z, F5, F3, and C flags are not affected by this instruction.
-        let newF = F & (CAPI.Z80.S_FLAG | CAPI.Z80.Z_FLAG | CAPI.Z80.C_FLAG);
+        // 4. Update flags according to Z80 specification
+        // S, Z, C are unaffected. H and N are reset. P/V is set if BC != 0.
+        let newF = F & (CAPI.Z80.S_FLAG | CAPI.Z80.Z_FLAG | CAPI.Z80.C_FLAG); 
 
+        // 5. Check for repeat condition
         if (bcCount !== 0n) {
-            // If BC is not zero, the transfer continues. Set the P/V flag.
             newF |= CAPI.Z80.PV_FLAG;
-            // The PC is currently pointing at the instruction AFTER ldir.
-            // We must rewind it by 2 bytes to re-execute this instruction.
+            // Rewind PC to re-execute this instruction
             PC = (PC - 2n) & 0xFFFFn;
+            // set_private_field("clk_cycles", 21); // Optional: for accurate timing
         } else {
-            // If BC is zero, the transfer is done. Reset the P/V flag.
-            // PC will advance normally to the next instruction.
-            newF &= ~CAPI.Z80.PV_FLAG;
+            // P/V is reset when BC becomes 0.
+            // set_private_field("clk_cycles", 16); // Optional: for accurate timing
         }
         
         F = newF;
@@ -3768,13 +6769,13 @@ instructions:
         - field: opcode2
           value: "0x56"
         - field: instructionFormatting
-          type: skip # This is ONLY for visualization purposes, it is not a real field
+          type: skip
           value: "1"
           order: 1
       definition: |
         // Set the interrupt mode (IM)
         // not implemented
-        console.log("Set IM to 1 (not implemented)");
+        // console.log("Set IM to 1 (not implemented)");
 
     - name: ld
       template: FD
@@ -3796,3 +6797,930 @@ instructions:
         // Loads the 16-bit value nn into the IY register.
         // nn is a 16-bit unsigned integer.
         IY = nn;
+
+    - name: ld
+      template: FD
+      nwords: 4
+      clk_cycles: 19
+      fields:
+        - field: opcode2
+          value: "0x36"
+        - field: instructionFormatting
+          type: skip
+          value: "(iy+"
+          order: 1
+        - field: d
+          type: inm-signed
+          startbit: 7
+          stopbit: 0
+          order: 2
+          word: 2
+        - field: instructionFormatting
+          type: skip
+          value: "),"
+          order: 3
+        - field: n
+          type: inm-unsigned
+          startbit: 7
+          stopbit: 0
+          order: 4
+          word: 3
+      definition: |
+        // Loads the immediate value n into the memory location (IY + d).
+        const addr = (IY + d) & 0xFFFFn;
+        CAPI.MEM.write(addr, 1, n);
+
+    - name: inc
+      template: FD
+      nwords: 3
+      clk_cycles: 23
+      fields:
+        - field: opcode2
+          value: "0x34"
+        - field: instructionFormatting
+          type: skip
+          value: "(iy+"
+          order: 1
+        - field: d
+          type: inm-signed
+          startbit: 7
+          stopbit: 0
+          order: 2
+          word: 2
+        - field: instructionFormatting
+          type: skip
+          value: ")"
+          order: 3
+      definition: |
+        // Increments the byte at memory location (IY + d).
+        const addr = (IY + d) & 0xFFFFn;
+        const oldValue = CAPI.MEM.read(addr, 1);
+        CAPI.MEM.write(addr, 1, (oldValue + 1n) & 0xFFn);
+        F = CAPI.Z80.calculateFlags_INC(oldValue, F);
+
+    - name: dec
+      template: FD
+      nwords: 3
+      clk_cycles: 23
+      fields:
+        - field: opcode2
+          value: "0x35"
+        - field: instructionFormatting
+          type: skip
+          value: "(iy+"
+          order: 1
+        - field: d
+          type: inm-signed
+          startbit: 7
+          stopbit: 0
+          order: 2
+          word: 2
+        - field: instructionFormatting
+          type: skip
+          value: ")"
+          order: 3
+      definition: |
+        // Decrements the byte at memory location (IY + d).
+        const addr = (IY + d) & 0xFFFFn;
+        const oldValue = CAPI.MEM.read(addr, 1);
+        CAPI.MEM.write(addr, 1, (oldValue - 1n) & 0xFFn);
+        F = CAPI.Z80.calculateFlags_DEC(oldValue, F);
+
+    - name: ld
+      template: FD
+      nwords: 3
+      clk_cycles: 19
+      fields:
+        - field: opcode2
+          value: "0x70"
+        - field: instructionFormatting
+          type: skip
+          value: "(iy+"
+          order: 1
+        - field: displacement
+          type: inm-signed
+          startbit: 7
+          stopbit: 0
+          order: 2
+          word: 2
+        - field: instructionFormatting2
+          type: skip
+          value: "),b"
+          order: 3
+      definition: |
+        // Stores B to the memory location pointed to by IY plus d.
+        const addr = (IY + displacement) & 0xFFFFn;
+        CAPI.MEM.write(addr, 1, B);
+
+    - name: ld
+      template: FD
+      nwords: 3
+      clk_cycles: 19
+      fields:
+        - field: opcode2
+          value: "0x71"
+        - field: instructionFormatting
+          type: skip
+          value: "(iy+"
+          order: 1
+        - field: displacement
+          type: inm-signed
+          startbit: 7
+          stopbit: 0
+          order: 2
+          word: 2
+        - field: instructionFormatting2
+          type: skip
+          value: "),c"
+          order: 3
+      definition: |
+        // Stores C to the memory location pointed to by IY plus d.
+        const addr = (IY + displacement) & 0xFFFFn;
+        CAPI.MEM.write(addr, 1, C);
+
+    - name: ld
+      template: FD
+      nwords: 3
+      clk_cycles: 19
+      fields:
+        - field: opcode2
+          value: "0x72"
+        - field: instructionFormatting
+          type: skip
+          value: "(iy+"
+          order: 1
+        - field: displacement
+          type: inm-signed
+          startbit: 7
+          stopbit: 0
+          order: 2
+          word: 2
+        - field: instructionFormatting2
+          type: skip
+          value: "),d"
+          order: 3
+      definition: |
+        // Stores D to the memory location pointed to by IY plus d.
+        const addr = (IY + displacement) & 0xFFFFn;
+        CAPI.MEM.write(addr, 1, D);
+
+    - name: ld
+      template: FD
+      nwords: 3
+      clk_cycles: 19
+      fields:
+        - field: opcode2
+          value: "0x73"
+        - field: instructionFormatting
+          type: skip
+          value: "(iy+"
+          order: 1
+        - field: displacement
+          type: inm-signed
+          startbit: 7
+          stopbit: 0
+          order: 2
+          word: 2
+        - field: instructionFormatting2
+          type: skip
+          value: "),d"
+          order: 3
+      definition: |
+        // Stores D to the memory location pointed to by IY plus d.
+        const addr = (IY + displacement) & 0xFFFFn;
+        CAPI.MEM.write(addr, 1, D);
+
+    - name: ld
+      template: FD
+      nwords: 3
+      clk_cycles: 19
+      fields:
+        - field: opcode2
+          value: "0x74"
+        - field: instructionFormatting
+          type: skip
+          value: "(iy+"
+          order: 1
+        - field: displacement
+          type: inm-signed
+          startbit: 7
+          stopbit: 0
+          order: 2
+          word: 2
+        - field: instructionFormatting2
+          type: skip
+          value: "),h"
+          order: 3
+      definition: |
+        // Stores H to the memory location pointed to by IY plus d.
+        const addr = (IY + displacement) & 0xFFFFn;
+        CAPI.MEM.write(addr, 1, H);
+
+    - name: ld
+      template: FD
+      nwords: 3
+      clk_cycles: 19
+      fields:
+        - field: opcode2
+          value: "0x75"
+        - field: instructionFormatting
+          type: skip
+          value: "(iy+"
+          order: 1
+        - field: displacement
+          type: inm-signed
+          startbit: 7
+          stopbit: 0
+          order: 2
+          word: 2
+        - field: instructionFormatting2
+          type: skip
+          value: "),l"
+          order: 3
+      definition: |
+        // Stores L to the memory location pointed to by IY plus d.
+        const addr = (IY + displacement) & 0xFFFFn;
+        CAPI.MEM.write(addr, 1, L);
+
+    - name: ld
+      template: FD
+      nwords: 3
+      clk_cycles: 19
+      fields:
+        - field: opcode2
+          value: "0x77"
+        - field: instructionFormatting
+          type: skip
+          value: "(iy+"
+          order: 1
+        - field: displacement
+          type: inm-signed
+          startbit: 7
+          stopbit: 0
+          order: 2
+          word: 2
+        - field: instructionFormatting2
+          type: skip
+          value: "),a"
+          order: 3
+      definition: |
+        // Stores A to the memory location pointed to by IY plus d.
+        const addr = (IY + displacement) & 0xFFFFn;
+        CAPI.MEM.write(addr, 1, A);
+
+    - name: ld
+      template: FD
+      nwords: 3
+      clk_cycles: 19
+      fields:
+        - field: opcode2
+          value: "0x4E"
+        - field: instructionFormatting
+          type: skip
+          value: "c,"
+          order: 1
+        - field: d
+          type: inm-signed
+          startbit: 7
+          stopbit: 0
+          prefix: "(iy+"
+          suffix: ")"
+          order: 2
+          word: 2
+      definition: |
+        // Loads the value pointed to by IY plus d into C.
+        const addr = (IY + d) & 0xFFFFn;
+        C = CAPI.MEM.read(addr, 1);
+
+    - name: ld
+      template: FD
+      nwords: 3
+      clk_cycles: 19
+      fields:
+        - field: opcode2
+          value: "0x5E"
+        - field: instructionFormatting
+          type: skip
+          value: "e,"
+          order: 1
+        - field: d
+          type: inm-signed
+          startbit: 7
+          stopbit: 0
+          prefix: "(iy+"
+          suffix: ")"
+          order: 2
+          word: 2
+      definition: |
+        // Loads the value pointed to by IY plus d into E.
+        const addr = (IY + d) & 0xFFFFn;
+        E = CAPI.MEM.read(addr, 1);
+
+    - name: ld
+      template: FD
+      nwords: 3
+      clk_cycles: 19
+      fields:
+        - field: opcode2
+          value: "0x6E"
+        - field: instructionFormatting
+          type: skip
+          value: "l,"
+          order: 1
+        - field: d
+          type: inm-signed
+          startbit: 7
+          stopbit: 0
+          prefix: "(iy+"
+          suffix: ")"
+          order: 2
+          word: 2
+      definition: |
+        // Loads the value pointed to by IY plus d into L.
+        const addr = (IY + d) & 0xFFFFn;
+        L = CAPI.MEM.read(addr, 1);
+      
+    - name: ld
+      template: FD
+      nwords: 3
+      clk_cycles: 19
+      fields:
+        - field: opcode2
+          value: "0x7E"
+        - field: instructionFormatting
+          type: skip
+          value: "a,"
+          order: 1
+        - field: d
+          type: inm-signed
+          startbit: 7
+          stopbit: 0
+          prefix: "(iy+"
+          suffix: ")"
+          order: 2
+          word: 2
+      definition: |
+        // Loads the value pointed to by IY plus d into A.
+        const addr = (IY + d) & 0xFFFFn;
+        A = CAPI.MEM.read(addr, 1);
+
+    - name: ld
+      template: FD
+      nwords: 3
+      clk_cycles: 19
+      fields:
+        - field: opcode2
+          value: "0x46"
+        - field: instructionFormatting
+          type: skip
+          value: "b,"
+          order: 1
+        - field: d
+          type: inm-signed
+          startbit: 7
+          stopbit: 0
+          prefix: "(iy+"
+          suffix: ")"
+          order: 2
+          word: 2
+      definition: |
+        // Loads the value pointed to by IY plus d into B.
+        const addr = (IY + d) & 0xFFFFn;
+        B = CAPI.MEM.read(addr, 1);
+
+    - name: ld
+      template: FD
+      nwords: 3
+      clk_cycles: 19
+      fields:
+        - field: opcode2
+          value: "0x56"
+        - field: instructionFormatting
+          type: skip
+          value: "d,"
+          order: 1
+        - field: d
+          type: inm-signed
+          startbit: 7
+          stopbit: 0
+          prefix: "(iy+"
+          suffix: ")"
+          order: 2
+          word: 2
+      definition: |
+        // Loads the value pointed to by IY plus d into D.
+        const addr = (IY + d) & 0xFFFFn;
+        D = CAPI.MEM.read(addr, 1);
+
+    - name: ld
+      template: FD
+      nwords: 3
+      clk_cycles: 19
+      fields:
+        - field: opcode2
+          value: "0x66"
+        - field: instructionFormatting
+          type: skip
+          value: "h,"
+          order: 1
+        - field: d
+          type: inm-signed
+          startbit: 7
+          stopbit: 0
+          prefix: "(iy+"
+          suffix: ")"
+          order: 2
+          word: 2
+      definition: |
+        // Loads the value pointed to by IY plus d into H.
+        const addr = (IY + d) & 0xFFFFn;
+        H = CAPI.MEM.read(addr, 1);
+
+    - name: add
+      template: FD
+      nwords: 3
+      clk_cycles: 19
+      fields:
+        - field: opcode2
+          value: "0x86"
+        - field: instructionFormatting
+          type: skip
+          value: "a,"
+          order: 1
+        - field: d
+          type: inm-signed
+          startbit: 7
+          stopbit: 0
+          prefix: "(iy+"
+          suffix: ")"
+          order: 2
+          word: 2
+      definition: |
+        // Adds the value pointed to by IY plus d to A.
+        const addr = (IY + d) & 0xFFFFn;
+        const value = CAPI.MEM.read(addr, 1);
+        const oldValueA = A;
+        A = (oldValueA + value) & 0xFFn;
+        F = CAPI.Z80.calculateFlags_ADD(oldValueA, value);
+
+    - name: sub
+      template: FD
+      nwords: 3
+      clk_cycles: 19
+      fields:
+        - field: opcode2
+          value: "0x96"
+        - field: instructionFormatting
+          type: skip
+          value: "a,"
+          order: 1
+        - field: d
+          type: inm-signed
+          startbit: 7
+          stopbit: 0
+          prefix: "(iy+"
+          suffix: ")"
+          order: 2
+          word: 2
+      definition: |
+        // Subtracts the value pointed to by IY plus d from A.
+        const addr = (IY + d) & 0xFFFFn;
+        const value = CAPI.MEM.read(addr, 1);
+        const oldValueA = A;
+        A = (oldValueA - value) & 0xFFn;
+        F = CAPI.Z80.calculateFlags_SUB(oldValueA, value);
+
+    - name: and
+      template: FD
+      nwords: 3
+      clk_cycles: 19
+      fields:
+        - field: opcode2
+          value: "0xA6"
+        - field: instructionFormatting
+          type: skip
+          value: "a,"
+          order: 1
+        - field: d
+          type: inm-signed
+          startbit: 7
+          stopbit: 0
+          prefix: "(iy+"
+          suffix: ")"
+          order: 2
+          word: 2
+      definition: |
+        // Bitwise AND on A with the value pointed to by IY plus d.
+        const addr = (IY + d) & 0xFFFFn;
+        const value = CAPI.MEM.read(addr, 1);
+        A = A & value;
+        F = CAPI.Z80.calculateFlags_LOGICAL(A, 1);
+
+    - name: or
+      template: FD
+      nwords: 3
+      clk_cycles: 19
+      fields:
+        - field: opcode2
+          value: "0xB6"
+        - field: instructionFormatting
+          type: skip
+          value: "a,"
+          order: 1
+        - field: d
+          type: inm-signed
+          startbit: 7
+          stopbit: 0
+          prefix: "(iy+"
+          suffix: ")"
+          order: 2
+          word: 2
+      definition: |
+        // Bitwise OR on A with the value pointed to by IY plus d.
+        const addr = (IY + d) & 0xFFFFn;
+        const value = CAPI.MEM.read(addr, 1);
+        A = A | value;
+        F = CAPI.Z80.calculateFlags_LOGICAL(A, 0);
+
+    - name: sbc
+      template: ED
+      clk_cycles: 15
+      fields:
+        - field: opcode2
+          value: "0x42"
+        - field: instructionFormatting
+          type: skip
+          value: "hl, bc"
+          order: 1
+      definition: |        
+        // 1. Get 16-bit operands
+        const hlValue = (H << 8n) | L;
+        const bcValue = (B << 8n) | C;
+        
+        // 2. Perform the subtraction
+        const carry = F & CAPI.Z80.C_FLAG;
+        const result = (hlValue - bcValue - carry) & 0xFFFFn;
+        
+        // 3. Call the helper function to calculate all flags.
+        //    We pass the original values to it.
+        F = CAPI.Z80.calculateFlags_SBC16(hlValue, bcValue, F);
+        
+        // 4. Update the destination register pair (HL) with the result.
+        H = (result >> 8n) & 0xFFn;
+        L = result & 0xFFn;
+
+    - name: sbc
+      template: ED
+      clk_cycles: 15
+      fields:
+        - field: opcode2
+          value: "0x52"
+        - field: instructionFormatting
+          type: skip
+          value: "hl, de"
+          order: 1
+      definition: |        
+        // 1. Get 16-bit operands
+        const hlValue = (H << 8n) | L;
+        const deValue = (D << 8n) | E;
+        
+        // 2. Perform the subtraction
+        const carry = F & CAPI.Z80.C_FLAG;
+        const result = (hlValue - deValue - carry) & 0xFFFFn;
+
+        // 3. Call the helper function to calculate all flags.
+        //    We pass the original values to it.
+        F = CAPI.Z80.calculateFlags_SBC16(hlValue, deValue, F);
+
+        // 4. Update the destination register pair (HL) with the result.
+        H = (result >> 8n) & 0xFFn;
+        L = result & 0xFFn;
+      
+    - name: sbc
+      template: ED
+      clk_cycles: 15
+      fields:
+        - field: opcode2
+          value: "0x62"
+        - field: instructionFormatting
+          type: skip
+          value: "hl, hl"
+          order: 1
+      definition: |        
+        // 1. Get 16-bit operands
+        const hlValue = (H << 8n) | L;
+        const hlValue2 = (H << 8n) | L;
+
+        // 2. Perform the subtraction
+        const carry = F & CAPI.Z80.C_FLAG;
+        const result = (hlValue - hlValue2 - carry) & 0xFFFFn;
+
+        // 3. Call the helper function to calculate all flags.
+        //    We pass the original values to it.
+        F = CAPI.Z80.calculateFlags_SBC16(hlValue, hlValue2, F);
+
+        // 4. Update the destination register pair (HL) with the result.
+        H = (result >> 8n) & 0xFFn;
+        L = result & 0xFFn;
+
+    - name: sbc
+      template: ED
+      clk_cycles: 15
+      fields:
+        - field: opcode2
+          value: "0x72"
+        - field: instructionFormatting
+          type: skip
+          value: "hl, sp"
+          order: 1
+      definition: |        
+        // 1. Get 16-bit operands
+        const hlValue = (H << 8n) | L;
+        
+        // 2. Perform the subtraction
+        const carry = F & CAPI.Z80.C_FLAG;
+        const result = (hlValue - SP - carry) & 0xFFFFn;
+
+        // 3. Call the helper function to calculate all flags.
+        //    We pass the original values to it.
+        F = CAPI.Z80.calculateFlags_SBC16(hlValue, SP, F);
+
+        // 4. Update the destination register pair (HL) with the result.
+        H = (result >> 8n) & 0xFFn;
+        L = result & 0xFFn;
+
+    # SET b, (IY+d)
+    - name: set
+      template: FDCB
+      clk_cycles: 23
+      fields:
+        - field: opcode3
+          value: "0xC6"
+        - field: d
+          order: 3
+          suffix: ")"
+        - field: instructionFormatting
+          type: skip
+          value: "0,(iy+"
+          order: 1
+      definition: |
+        const addr = (IY + d) & 0xFFFFn;
+        const value = CAPI.MEM.read(addr, 1);
+        CAPI.MEM.write(addr, 1, value | 0x01n);
+    - name: set
+      template: FDCB
+      clk_cycles: 23
+      fields:
+        - field: opcode3
+          value: "0xCE"
+        - field: d
+          order: 3
+          suffix: ")"
+        - field: instructionFormatting
+          type: skip
+          value: "1,(iy+"
+          order: 1
+      definition: |
+        const addr = (IY + d) & 0xFFFFn;
+        const value = CAPI.MEM.read(addr, 1);
+        CAPI.MEM.write(addr, 1, value | 0x02n);
+    - name: set
+      template: FDCB
+      clk_cycles: 23
+      fields:
+        - field: opcode3
+          value: "0xD6"
+        - field: d
+          order: 3
+          suffix: ")"
+        - field: instructionFormatting
+          type: skip
+          value: "2,(iy+"
+          order: 1
+      definition: |
+        const addr = (IY + d) & 0xFFFFn;
+        const value = CAPI.MEM.read(addr, 1);
+        CAPI.MEM.write(addr, 1, value | 0x04n);
+    - name: set
+      template: FDCB
+      clk_cycles: 23
+      fields:
+        - field: opcode3
+          value: "0xDE"
+        - field: d
+          order: 3
+          suffix: ")"
+        - field: instructionFormatting
+          type: skip
+          value: "3,(iy+"
+          order: 1
+      definition: |
+        const addr = (IY + d) & 0xFFFFn;
+        const value = CAPI.MEM.read(addr, 1);
+        CAPI.MEM.write(addr, 1, value | 0x08n);
+    - name: set
+      template: FDCB
+      clk_cycles: 23
+      fields:
+        - field: opcode3
+          value: "0xE6"
+        - field: d
+          order: 3
+          suffix: ")"
+        - field: instructionFormatting
+          type: skip
+          value: "4,(iy+"
+          order: 1
+      definition: |
+        const addr = (IY + d) & 0xFFFFn;
+        const value = CAPI.MEM.read(addr, 1);
+        CAPI.MEM.write(addr, 1, value | 0x10n);
+    - name: set
+      template: FDCB
+      clk_cycles: 23
+      fields:
+        - field: opcode3
+          value: "0xEE"
+        - field: d
+          order: 3
+          suffix: ")"
+        - field: instructionFormatting
+          type: skip
+          value: "5,(iy+"
+          order: 1
+      definition: |
+        const addr = (IY + d) & 0xFFFFn;
+        const value = CAPI.MEM.read(addr, 1);
+        CAPI.MEM.write(addr, 1, value | 0x20n);
+    - name: set
+      template: FDCB
+      clk_cycles: 23
+      fields:
+        - field: opcode3
+          value: "0xF6"
+        - field: d
+          order: 3
+          suffix: ")"
+        - field: instructionFormatting
+          type: skip
+          value: "6,(iy+"
+          order: 1
+      definition: |
+        const addr = (IY + d) & 0xFFFFn;
+        const value = CAPI.MEM.read(addr, 1);
+        CAPI.MEM.write(addr, 1, value | 0x40n);
+    - name: set
+      template: FDCB
+      clk_cycles: 23
+      fields:
+        - field: opcode3
+          value: "0xFE"
+        - field: d
+          order: 3
+          suffix: ")"
+        - field: instructionFormatting
+          type: skip
+          value: "7,(iy+"
+          order: 1
+      definition: |
+        const addr = (IY + d) & 0xFFFFn;
+        const value = CAPI.MEM.read(addr, 1);
+        CAPI.MEM.write(addr, 1, value | 0x80n);
+
+    # RES b, (IY+d)
+    - name: res
+      template: FDCB
+      clk_cycles: 23
+      fields:
+        - field: opcode3
+          value: "0x86"
+        - field: d
+          order: 3
+          suffix: ")"
+        - field: instructionFormatting
+          type: skip
+          value: "0,(iy+"
+          order: 1
+      definition: |
+        const addr = (IY + d) & 0xFFFFn;
+        const value = CAPI.MEM.read(addr, 1);
+        CAPI.MEM.write(addr, 1, value & ~0x01n);
+    - name: res
+      template: FDCB
+      clk_cycles: 23
+      fields:
+        - field: opcode3
+          value: "0x8E"
+        - field: d
+          order: 3
+          suffix: ")"
+        - field: instructionFormatting
+          type: skip
+          value: "1,(iy+"
+          order: 1
+      definition: |
+        const addr = (IY + d) & 0xFFFFn;
+        const value = CAPI.MEM.read(addr, 1);
+        CAPI.MEM.write(addr, 1, value & ~0x02n);
+    - name: res
+      template: FDCB
+      clk_cycles: 23
+      fields:
+        - field: opcode3
+          value: "0x96"
+        - field: d
+          order: 3
+          suffix: ")"
+        - field: instructionFormatting
+          type: skip
+          value: "2,(iy+"
+          order: 1
+      definition: |
+        const addr = (IY + d) & 0xFFFFn;
+        const value = CAPI.MEM.read(addr, 1);
+        CAPI.MEM.write(addr, 1, value & ~0x04n);
+    - name: res
+      template: FDCB
+      clk_cycles: 23
+      fields:
+        - field: opcode3
+          value: "0x9E"
+        - field: d
+          order: 3
+          suffix: ")"
+        - field: instructionFormatting
+          type: skip
+          value: "3,(iy+"
+          order: 1
+      definition: |
+        const addr = (IY + d) & 0xFFFFn;
+        const value = CAPI.MEM.read(addr, 1);
+        CAPI.MEM.write(addr, 1, value & ~0x08n);
+    - name: res
+      template: FDCB
+      clk_cycles: 23
+      fields:
+        - field: opcode3
+          value: "0xA6"
+        - field: d
+          order: 3
+          suffix: ")"
+        - field: instructionFormatting
+          type: skip
+          value: "4,(iy+"
+          order: 1
+      definition: |
+        const addr = (IY + d) & 0xFFFFn;
+        const value = CAPI.MEM.read(addr, 1);
+        CAPI.MEM.write(addr, 1, value & ~0x10n);
+    - name: res
+      template: FDCB
+      clk_cycles: 23
+      fields:
+        - field: opcode3
+          value: "0xAE"
+        - field: d
+          order: 3
+          suffix: ")"
+        - field: instructionFormatting
+          type: skip
+          value: "5,(iy+"
+          order: 1
+      definition: |
+        const addr = (IY + d) & 0xFFFFn;
+        const value = CAPI.MEM.read(addr, 1);
+        CAPI.MEM.write(addr, 1, value & ~0x20n);
+    - name: res
+      template: FDCB
+      clk_cycles: 23
+      fields:
+        - field: opcode3
+          value: "0xB6"
+        - field: d
+          order: 3
+          suffix: ")"
+        - field: instructionFormatting
+          type: skip
+          value: "6,(iy+"
+          order: 1
+      definition: |
+        const addr = (IY + d) & 0xFFFFn;
+        const value = CAPI.MEM.read(addr, 1);
+        CAPI.MEM.write(addr, 1, value & ~0x40n);
+    - name: res
+      template: FDCB
+      clk_cycles: 23
+      fields:
+        - field: opcode3
+          value: "0xBE"
+        - field: d
+          order: 3
+          suffix: ")"
+        - field: instructionFormatting
+          type: skip
+          value: "7,(iy+"
+          order: 1
+      definition: |
+        const addr = (IY + d) & 0xFFFFn;
+        const value = CAPI.MEM.read(addr, 1);
+        CAPI.MEM.write(addr, 1, value & ~0x80n);

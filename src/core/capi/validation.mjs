@@ -23,7 +23,7 @@
 import { capi_uint2int } from "./fp.mjs";
 
 export function raise(msg) {
-    if (typeof document !== "undefined") {
+    if (typeof document !== "undefined" && document.app) {
         document.app.exception(msg);
     } else {
         console.log(msg);

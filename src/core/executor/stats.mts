@@ -71,7 +71,7 @@ export function updateStats(type: string, cycles: number = 1): void {
     status.clkCycles += cycles;
     status.executedInstructions += 1;
 
-    if (typeof document !== "undefined") {
+    if (typeof document !== "undefined" && document.app) {
         updateUI();
     }
 }

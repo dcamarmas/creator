@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import fs from "node:fs";
 import process from "node:process";
 import yargs from "yargs";
@@ -35,6 +36,7 @@ async function main() {
     const argv = await parseArguments();
 
     logger.disable();
+    creator.initCAPI();
 
     // --- Setup Host Input Listener (stdin) ---
     // The callback will be executed by the Deno
@@ -65,12 +67,7 @@ async function main() {
     // --- 1. Load the Architecture ---
     try {
         const architectureFile = fs.readFileSync(argv.architecture, "utf8");
-        const ret = creator.newArchitectureLoad(
-            architectureFile,
-            false,
-            false,
-            [],
-        );
+        const ret = creator.newArchitectureLoad(architectureFile);
         if (ret.status !== "ok") {
             console.error(`Error loading architecture: ${ret.token}.`);
             process.exit(1);
@@ -113,17 +110,59 @@ async function main() {
 
         try {
             for (let i = 0; i < INSTRUCTIONS_PER_CHUNK; i++) {
-                let ret = step();
+                let pc_value = creator.getRegisterInfo("PC").value;
+                // const breakpoint = 0x0E4D;
+                // if (creator.getRegisterInfo("PC").value === BigInt(breakpoint)) {
+                //     console.log(
+                //         `Breakpoint hit at PC = 0x${breakpoint.toString(16).padStart(4, "0").toUpperCase()}`,
+                //     );
+                //     // for each element in in creator.getRegistersByBank("int_registers").elements, print:
+                //     // name[0], value
+                //     creator
+                //         .getRegistersByBank("int_registers")
+                //         .elements.forEach(reg => {
+                //             console.log(
+                //                 `${reg.name[0]}: 0x${reg.value.toString(16)}`,
+                //             );
+                //         });
+                //     process.exit(0);
+                // }
+
+
+                // if (totalInstructions === 1000000) {
+                //     process.exit(0);
+                // }
+                // if (totalInstructions === 0) {
+                //     creator
+                //         .getRegistersByBank("int_registers")
+                //         .elements.forEach(reg => {
+                //             console.log(
+                //                 `    ${reg.name[0]}: 0x${reg.value.toString(16)}`,
+                //             );
+                //         });
+                // }
+                const ret = step();
+                // if (totalInstructions > 0) {
+                //     creator
+                //         .getRegistersByBank("int_registers")
+                //         .elements.forEach(reg => {
+                //             console.log(
+                //                 `    ${reg.name[0]}: 0x${reg.value.toString(16)}`,
+                //             );
+                //         });
+                // }
                 if (ret.error === 1) {
                     console.error(ret.msg);
                     process.exit(1);
                 }
                 totalInstructions++;
-                console.log(
-                    "Executed:",
-                    ret.instructionData,
-                    totalInstructions,
-                );
+                // console.log(
+                //     totalInstructions,
+                //     pc_value.toString(16).padStart(4, "0").toUpperCase(),
+                //     ret.instructionData.asm,
+                //     "|",
+                //     ret.instructionData.machineCode,
+                // );
                 if (creator.status.execution_index === -2) {
                     break;
                 }

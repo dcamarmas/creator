@@ -126,7 +126,7 @@ export function writeRegister(value, indexComp, indexElem) {
         writeStackLimit(value);
     }
 
-    if (typeof window !== "undefined") {
+    if (typeof window !== "undefined" && document.app) {
         updateRegisterUI(indexComp, indexElem);
     }
 }

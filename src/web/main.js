@@ -36,6 +36,7 @@ library.add(fas, far, fab);
 
 import { confirmExit, show_notification } from "./utils.mjs";
 import { creator_ga } from "../core/utils/creator_ga.mjs";
+import { initCAPI } from "@/core/core.mjs";
 
 /*Closing alert*/
 window.onbeforeunload = confirmExit;
