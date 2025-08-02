@@ -521,7 +521,7 @@ export function assembleCreatorBase(code, library, wasmModules) {
         }
     }
 
-    if (typeof document !== "undefined")
+    if (typeof document !== "undefined" && document.app)
         document.app.$data.instructions = instructions;
 
     const tag_instructions = {};

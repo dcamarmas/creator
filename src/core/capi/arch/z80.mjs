@@ -18,15 +18,14 @@
  *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-export let keyboardBuffer = [] //[0x3f, 0x0d]; // Default buffer with '?' and Enter key
+export const keyboardBuffer = [];
 
 // 2. Setup the host listener for Node.js standard input.
 //    This code runs once when the emulator module is loaded.
 
 // A private helper function to efficiently check for even parity using BigInts.
 function _isEvenParity(value) {
-    let v = BigInt(value) & 0xFFn;
+    let v = BigInt(value) & 0xffn;
     v ^= v >> 4n;
     v ^= v >> 2n;
     v ^= v >> 1n;
@@ -41,6 +40,8 @@ export const Z80 = {
     N_FLAG: 0x02n,
     C_FLAG: 0x01n,
 
+    borderColor: 0n,
+
     /**
      * Calculates flags for an 8-bit INC operation.
      * @param {BigInt} oldValue - The 8-bit value before incrementing.
@@ -48,13 +49,13 @@ export const Z80 = {
      * @returns {BigInt} The new 8-bit flag register value.
      */
     calculateFlags_INC(oldValue, initialF) {
-        const newValue = (oldValue + 1n) & 0xFFn;
+        const newValue = (oldValue + 1n) & 0xffn;
         let newF = initialF & this.C_FLAG; // Preserve the C flag
 
         if (newValue & this.S_FLAG) newF |= this.S_FLAG;
         if (newValue === 0n) newF |= this.Z_FLAG;
-        if ((oldValue & 0x0Fn) === 0x0Fn) newF |= this.H_FLAG;
-        if (oldValue === 0x7Fn) newF |= this.PV_FLAG; // Overflow 7Fh -> 80h
+        if ((oldValue & 0x0fn) === 0x0fn) newF |= this.H_FLAG;
+        if (oldValue === 0x7fn) newF |= this.PV_FLAG; // Overflow 7Fh -> 80h
         // N is reset
         return newF;
     },
@@ -66,16 +67,16 @@ export const Z80 = {
      * @returns {BigInt} The new 8-bit flag register value.
      */
     calculateFlags_DEC(oldValue, initialF) {
-        const newValue = (oldValue - 1n) & 0xFFn;
+        const newValue = (oldValue - 1n) & 0xffn;
         let newF = (initialF & this.C_FLAG) | this.N_FLAG; // Preserve C, set N
 
         if (newValue & this.S_FLAG) newF |= this.S_FLAG;
         if (newValue === 0n) newF |= this.Z_FLAG;
-        if ((oldValue & 0x0Fn) === 0n) newF |= this.H_FLAG; // Borrow from bit 4
+        if ((oldValue & 0x0fn) === 0n) newF |= this.H_FLAG; // Borrow from bit 4
         if (oldValue === 0x80n) newF |= this.PV_FLAG; // Overflow 80h -> 7Fh
         return newF;
     },
-    
+
     /**
      * Calculates flags for 8-bit addition (ADD).
      * @param {BigInt} val1 - The first operand.
@@ -84,17 +85,17 @@ export const Z80 = {
      */
     calculateFlags_ADD(val1, val2) {
         const result = val1 + val2;
-        const resultByte = result & 0xFFn;
+        const resultByte = result & 0xffn;
         let newF = 0n;
 
         if (resultByte & this.S_FLAG) newF |= this.S_FLAG;
         if (resultByte === 0n) newF |= this.Z_FLAG;
-        if (((val1 & 0xFn) + (val2 & 0xFn)) > 0xFn) newF |= this.H_FLAG;
+        if ((val1 & 0xfn) + (val2 & 0xfn) > 0xfn) newF |= this.H_FLAG;
         if (~(val1 ^ val2) & (val1 ^ result) & 0x80n) newF |= this.PV_FLAG;
-        if (result > 0xFFn) newF |= this.C_FLAG;
+        if (result > 0xffn) newF |= this.C_FLAG;
         return newF;
     },
-    
+
     /**
      * Calculates flags for 8-bit addition with carry (ADC).
      * @param {BigInt} val1 - The first operand.
@@ -105,17 +106,17 @@ export const Z80 = {
     calculateFlags_ADC(val1, val2, initialF) {
         const carry = initialF & this.C_FLAG;
         const result = val1 + val2 + carry;
-        const resultByte = result & 0xFFn;
+        const resultByte = result & 0xffn;
         let newF = 0n;
 
         if (resultByte & this.S_FLAG) newF |= this.S_FLAG;
         if (resultByte === 0n) newF |= this.Z_FLAG;
-        if (((val1 & 0xFn) + (val2 & 0xFn) + carry) > 0xFn) newF |= this.H_FLAG;
+        if ((val1 & 0xfn) + (val2 & 0xfn) + carry > 0xfn) newF |= this.H_FLAG;
         if (~(val1 ^ val2) & (val1 ^ result) & 0x80n) newF |= this.PV_FLAG;
-        if (result > 0xFFn) newF |= this.C_FLAG;
+        if (result > 0xffn) newF |= this.C_FLAG;
         return newF;
     },
-    
+
     /**
      * Calculates flags for 8-bit subtraction (SUB).
      * @param {BigInt} val1 - The first operand (minuend).
@@ -124,12 +125,12 @@ export const Z80 = {
      */
     calculateFlags_SUB(val1, val2) {
         const result = val1 - val2;
-        const resultByte = result & 0xFFn;
+        const resultByte = result & 0xffn;
         let newF = this.N_FLAG; // N is always set for subtraction
 
         if (resultByte & this.S_FLAG) newF |= this.S_FLAG;
         if (resultByte === 0n) newF |= this.Z_FLAG;
-        if ((val1 & 0xFn) < (val2 & 0xFn)) newF |= this.H_FLAG; // Half-borrow
+        if ((val1 & 0xfn) < (val2 & 0xfn)) newF |= this.H_FLAG; // Half-borrow
         if ((val1 ^ val2) & (val1 ^ result) & 0x80n) newF |= this.PV_FLAG; // Overflow
         if (result < 0n) newF |= this.C_FLAG; // Borrow
         return newF;
@@ -145,12 +146,12 @@ export const Z80 = {
     calculateFlags_SBC(val1, val2, initialF) {
         const carry = initialF & this.C_FLAG;
         const result = val1 - val2 - carry;
-        const resultByte = result & 0xFFn;
+        const resultByte = result & 0xffn;
         let newF = this.N_FLAG; // N is always set for subtraction
 
         if (resultByte & this.S_FLAG) newF |= this.S_FLAG;
         if (resultByte === 0n) newF |= this.Z_FLAG;
-        if ((val1 & 0xFn) < ((val2 & 0xFn) + carry)) newF |= this.H_FLAG; // Half-borrow
+        if ((val1 & 0xfn) < (val2 & 0xfn) + carry) newF |= this.H_FLAG; // Half-borrow
         if ((val1 ^ val2) & (val1 ^ result) & 0x80n) newF |= this.PV_FLAG; // Overflow
         if (result < 0n) newF |= this.C_FLAG; // Borrow
         return newF;
@@ -196,9 +197,87 @@ export const Z80 = {
         let newF = initialF & (this.S_FLAG | this.Z_FLAG | this.PV_FLAG);
 
         // N is reset
-        if (((val1 & 0x0FFFn) + (val2 & 0x0FFFn)) > 0x0FFFn) newF |= this.H_FLAG;
-        if (result > 0xFFFFn) newF |= this.C_FLAG;
+        if ((val1 & 0x0fffn) + (val2 & 0x0fffn) > 0x0fffn) newF |= this.H_FLAG;
+        if (result > 0xffffn) newF |= this.C_FLAG;
+
+        return newF;
+    },
+
+    /**
+     * Calculates flags for 16-bit subtraction with carry (SBC HL, rr).
+     * @param {BigInt} val1 - The first 16-bit operand (minuend, e.g., HL).
+     * @param {BigInt} val2 - The second 16-bit operand (subtrahend, e.g., BC).
+     * @param {BigInt} initialF - The current value of the F register to get the carry from.
+     * @returns {BigInt} The new 8-bit flag register value.
+     */
+    calculateFlags_SBC16(val1, val2, initialF) {
+        // Get the current carry flag value (1n if set, 0n otherwise)
+        const carry = initialF & this.C_FLAG;
+
+        // Perform the full subtraction to use for overflow and carry checks
+        const result = val1 - val2 - carry;
+        const resultWord = result & 0xffffn;
+
+        // Start with the N flag set, as this is a subtraction
+        let newF = this.N_FLAG;
+
+        // S (Sign) flag is set if the result is negative (bit 15 is 1)
+        if (resultWord & 0x8000n) {
+            newF |= this.S_FLAG;
+        }
+
+        // Z (Zero) flag is set if the 16-bit result is 0
+        if (resultWord === 0n) {
+            newF |= this.Z_FLAG;
+        }
+
+        // H (Half Carry/Borrow) flag is set if there was a borrow from bit 12
+        if ((val1 & 0x0fffn) < (val2 & 0x0fffn) + carry) {
+            newF |= this.H_FLAG;
+        }
+
+        // P/V (Overflow) flag detects 2's complement overflow.
+        // This occurs if the signs of the operands were different AND the sign
+        // of the result is different from the sign of the first operand (val1).
+        if ((val1 ^ val2) & (val1 ^ resultWord) & 0x8000n) {
+            newF |= this.PV_FLAG;
+        }
+
+        // C (Carry/Borrow) flag is set if the unmasked result was negative.
+        if (result < 0n) {
+            newF |= this.C_FLAG;
+        }
+
+        return newF;
+    },
+
+    /**
+     * Calculates flags for the BIT instruction.
+     * @param {BigInt} value - The value of the byte being tested.
+     * @param {number} bit - The bit number to test (0-7).
+     * @param {BigInt} initialF - The current value of the F register.
+     * @returns {BigInt} The new 8-bit flag register value.
+     */
+    calculateFlags_BIT(value, bit, initialF) {
+        let newF = initialF & this.C_FLAG; // Only C is unaffected
+
+        const bitIsZero = !((value >> BigInt(bit)) & 1n);
+
+        if (bitIsZero) {
+            newF |= this.Z_FLAG;
+            newF |= this.PV_FLAG; // P/V is set when Z is set
+        }
+
+        if (bit === 7 && !bitIsZero) {
+            newF |= this.S_FLAG; // S is set if bit 7 is 1
+        }
+
+        newF |= this.H_FLAG; // H is always set
+        // N is always reset
         
+        // For better accuracy, you might want to copy undocumented flags
+        // newF |= (value & 0x28n); // Copy bits 5 and 3 from the operand
+
         return newF;
     },
 
@@ -208,18 +287,19 @@ export const Z80 = {
      * @param {BigInt} port - The 8-bit port address.
      * @returns {BigInt} The 8-bit value read from the port.
      */
-      read(port) {
-          const portNum = Number(port);
-          if (portNum === 0x01) { // Keyboard Port
-              if (keyboardBuffer.length > 0) {
-                  return keyboardBuffer.shift();
-              }
-              // Return 0 if no key is available.
-              return 0n;
-          }
-          // Default for unhandled ports.
-          return 0xFFn;
-      },
+    read(port) {
+        const portNum = Number(port);
+        if (portNum === 0x01) {
+            // Keyboard Port
+            if (keyboardBuffer.length > 0) {
+                return keyboardBuffer.shift();
+            }
+            // Return 0 if no key is available.
+            return 0n;
+        }
+        // Default for unhandled ports.
+        return 0xffn;
+    },
 
     /**
      * Writes a byte to an I/O port.
@@ -228,18 +308,18 @@ export const Z80 = {
      */
     write(port, value) {
         const portNum = Number(port);
-        
-        if (portNum === 0x02) { // Screen Port
+
+        if (portNum === 0x02) {
+            // Screen Port
             const valNum = Number(value);
             // Create a 1-byte buffer from the value and write it directly.
             // process.stdout will correctly interpret control characters
             // like \n, \r, \b, etc., when sent this way.
             process.stdout.write(Buffer.from([valNum]));
+        } else if (portNum === 0xfe) {
+            // ZX Spectrum ULA port.
+            // Bits 0-2 (the lower 3 bits) of the written value set the border color.
+            this.borderColor = value & 0x07n;
         }
-        else if (portNum === 0xfe) { // ZX Spectrum ULA
-            const valNum = Number(value);
-            // Write the value to the ULA (this is a placeholder, actual implementation may vary)
-            console.log(`Writing to ZX Spectrum ULA: ${valNum}`);
-        }
-    }
+    },
 };

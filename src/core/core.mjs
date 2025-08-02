@@ -102,7 +102,7 @@ export const instructions_packed = 100;
 
 let code_binary = "";
 
-initCAPI();
+export { initCAPI }; // Instead of calling it here, which causes circular dependencies, we re-export it so it can be called by the main application.
 let creator_debug = false;
 
 BigInt.prototype.toJSON = function () {
@@ -1095,7 +1095,7 @@ export function reset() {
     status.display = "";
 
     // reset registers
-    if (typeof document !== "undefined") {
+    if (typeof document !== "undefined" && document.app) {
         // I'd _like_ to use REGISTERS_BACKUP and call it a day... but if I do
         // that Vue doesn't notice the change and it doesn't update visually
         for (const bank of REGISTERS) {

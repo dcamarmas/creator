@@ -24,7 +24,7 @@ import $ from "jquery";
 import humanizeDuration from "humanize-duration";
 
 import { creator_ga } from "@/core/utils/creator_ga.mjs";
-import { newArchitectureLoad } from "@/core/core.mjs";
+import { newArchitectureLoad, initCAPI } from "@/core/core.mjs";
 import { console_log as clog } from "@/core/utils/creator_logger.mjs";
 
 /*Stop the transmission of events to children*/

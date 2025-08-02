@@ -23,8 +23,8 @@
  */
 
 export const isDeno = typeof Deno !== "undefined";
-export const isWeb =
-    typeof window !== "undefined" && typeof document !== "undefined";
+export const isVue =
+    typeof window !== "undefined" && typeof document !== "undefined" && document.app;
 
 /**
  * Check the type of a number in IEEE 754 format.
