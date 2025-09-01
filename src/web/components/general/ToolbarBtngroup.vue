@@ -215,7 +215,6 @@ export default {
         default:
           // put rowVariant in entrypoint
           const entrypoint = instructions.at(status.execution_index)
-          console.log(status.execution_index)
           if (entrypoint) {
             entrypoint._rowVariant = "success"
           }
