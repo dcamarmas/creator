@@ -150,7 +150,7 @@ export function assembleCreatorBase(code, library, wasmModules) {
         // Extract data elements and load them on memory
         const data_mem = compiled.data;
         for (let i = 0; i < data_mem.length; i++) {
-            const data = compiled.data[i];
+            const data = data_mem[i];
             // const size = BigInt(data.size());
             const addr = BigInt(data.address());
             const labels = data.labels();
