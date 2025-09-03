@@ -20,10 +20,11 @@
  */
 
 import { raise } from "../capi/validation.mjs";
-import { main_memory, MAXNWORDS, status } from "../core.mjs";
+import { main_memory, MAXNWORDS, status, architecture } from "../core.mjs";
 import { decode_instruction } from "../executor/decoder.mjs";
 import ansicolor from "ansicolor";
 import { resetStats } from "../executor/stats.mts";
+import { enableInterrupts } from "@/core/executor/interrupts.mts";
 
 /*Instructions memory address*/
 export let address;
@@ -219,8 +220,14 @@ export function assembly_compiler(code, library, compiler) {
     if (!compiler) {
         raise("No compiler specified for assembly compilation");
     }
+
+    // reset stats
     resetStats();
     status.executedInstructions = 0;
     status.clkCycles = 0;
+
+    // enable interrupts
+    if (architecture.interrupts?.enabled) enableInterrupts();
+
     return compiler(code, library);
 }

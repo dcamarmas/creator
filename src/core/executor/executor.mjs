@@ -39,6 +39,11 @@ import { decode_instruction } from "./decoder.mjs";
 import { buildInstructionPreload } from "./preload.mjs";
 import { show_notification } from "@/web/utils.mjs";
 import { updateStats } from "./stats.mts";
+import {
+    checkInterrupt,
+    handleInterrupt,
+    ExecutionMode,
+} from "./interrupts.mts";
 
 export function packExecute(error, err_msg, err_type, draw) {
     const ret = {};
@@ -97,49 +102,61 @@ function performExecutionChecks() {
     return null;
 }
 
-function initialize_execution() {
-    if (status.execution_init === 1) {
-        // Set the PC to the entry point of the architecture. Specified in the architecture
-        const pc_reg = crex_findReg_bytag("program_counter");
-        const address = newArchitecture.arch_conf.StartAddress;
-        if (address === undefined || address === null) {
-            throw new Error(
-                "Start address not defined in architecture configuration",
-            );
-        }
-        writeRegister(address, pc_reg.indexComp, pc_reg.indexElem);
-        status.execution_init = 0;
-    }
-    return null;
+/**
+ * Returns the address of the program's entrypoint.
+ *
+ * @returns {Number | undefined}
+ */
+function get_entrypoint() {
+    // search main tag
+    const entrypoint = instructions.find(
+        i => i.Label === newArchitecture.arch_conf["Main Function"],
+    )?.Address;
+
+    return entrypoint
+        ? parseInt(entrypoint, 16)
+        : newArchitecture.arch_conf.StartAddress;
 }
-function handle_interruptions(draw) {
-    const i_reg = crex_findReg_bytag("event_cause");
-    if (i_reg.match === 0) {
+
+/**
+ * Initializes the execution, setting the PC to the desired address.
+ */
+export function initialize_execution() {
+    if (status.execution_init !== 1) {
         return;
     }
 
-    const i_reg_value = readRegister(i_reg.indexComp, i_reg.indexElem);
-    if (i_reg_value === 0) {
-        return;
+    // Set the PC to the entry point of the architecture. Specified in the architecture
+    const pc_reg = crex_findReg_bytag("program_counter");
+
+    const address = get_entrypoint();
+
+    if (address === undefined || address === null) {
+        throw new Error(
+            "Start address not defined in architecture configuration",
+        );
     }
+    writeRegister(address, pc_reg.indexComp, pc_reg.indexElem);
+    status.execution_init = 0;
 
-    logger.info("Interruption detected");
-    draw.warning.push(status.execution_index);
+    // set execution index
+    const entrypoint_index = instructions.findIndex(
+        i => parseInt(i.Address, 16) === Number(getPC()),
+    );
+    status.execution_index = entrypoint_index === -1 ? 0 : entrypoint_index;
+}
 
-    const epc_reg = crex_findReg_bytag("exception_program_counter");
+function handle_interrupts(draw) {
+    if (status.interrupts_enabled && checkInterrupt()) {
+        draw.warning.push(status.execution_index); // Print interrupt badge on instruction
+        handleInterrupt();
 
-    // Save current PC to EPC
-    writeRegister(pc_reg_value, epc_reg.indexComp, epc_reg.indexElem);
-
-    // Jump to handler
-    const handler_address = 0;
-    setPC(handler_address);
-
-    // Update execution index
-    // get_execution_index(draw); TODO: This is used for the UI
-
-    // Clear interrupt
-    writeRegister(0, i_reg.indexComp, i_reg.indexElem);
+        // update execution_index accordingly
+        const currentIndex = instructions.findIndex(
+            i => parseInt(i.Address, 16) === Number(getPC()),
+        );
+        status.execution_index = currentIndex === -1 ? 0 : currentIndex;
+    }
 }
 
 function updateExecutionStatus(draw) {
@@ -283,6 +300,19 @@ function processCurrentInstruction(draw) {
     const machineCode = words.slice(0, instruction.nwords).join("");
 
     const { type, nwords } = instruction;
+
+    // check privileged instructions
+    if (
+        status.execution_mode === ExecutionMode.User &&
+        instruction.properties?.includes("privileged")
+    ) {
+        throw new Error(
+            "💀 Can't execute privileged instruction '" +
+                instruction.name +
+                "' in User mode.",
+        );
+    }
+
     // 3. Increment PC based on instruction size
     incrementProgramCounter(nwords);
 
@@ -331,7 +361,12 @@ function executeInstructionCycle(draw) {
     logger.debug("PC Register: " + readRegister(0, 0));
 
     // Special check for stack visualization purposes
-    if (status.execution_index === 0) {
+    if (
+        status.execution_index ===
+        instructions.findIndex(
+            i => parseInt(i.Address, 16) === get_entrypoint(),
+        )
+    ) {
         stackTracker.newFrame(tag_instructions[getPC()].tag || "");
     }
 
@@ -341,17 +376,11 @@ function executeInstructionCycle(draw) {
         return inLoopCheckResult;
     }
 
-    // Initialize execution environment if needed
-    const initResult = initialize_execution(draw);
-    if (initResult !== null) {
-        return initResult;
-    }
+    // Handle any pending interruptions
+    handle_interrupts(draw);
 
     // Update execution index based on PC
     // get_execution_index(draw);
-
-    // Handle any pending interruptions
-    handle_interruptions(draw);
 
     // Process the current instruction
     const processingResult = processCurrentInstruction(draw);

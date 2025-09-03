@@ -1,6 +1,6 @@
 /**
  *  Copyright 2018-2025 Felix Garcia Carballeira, Alejandro Calderon Mateos,
- *                      Diego Camarmas Alonso
+ *                      Diego Camarmas Alonso, Luis Daniel Casais Mezquida
  *
  *  This file is part of CREATOR.
  *
@@ -17,30 +17,32 @@
  *  You should have received a copy of the GNU Lesser General Public License
  *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  */
-import { MEM } from "./memory.mjs";
-import { SYSCALL } from "./syscall.mjs";
-import { VALIDATION } from "./validation.mjs";
-import { CHECK_STACK } from "./checkStack.mjs";
-import { DRAW_STACK } from "./drawStack.mjs";
-import { FP } from "./fp.mjs";
-import { RISCV } from "./arch/riscv.mjs";
-import { REG } from "./registers.mts";
-import { INTERRUPTS } from "./interrupts.mts";
 
-// Export all CAPI functions and make them globally available
-export function initCAPI() {
-    const CAPI = {
-        MEM,
-        SYSCALL,
-        VALIDATION,
-        CHECK_STACK,
-        DRAW_STACK,
-        FP,
-        RISCV,
-        REG,
-        INTERRUPTS,
-    };
+import { crex_findReg } from "../register/registerLookup.mjs";
+import {
+    readRegister,
+    writeRegister,
+} from "../register/registerOperations.mjs";
 
-    // Make CAPI available as a global object
-    globalThis.CAPI = CAPI;
-}
+export const REG = {
+    read: (name: string): bigint => {
+        const reg = crex_findReg(name);
+
+        if (reg.match) {
+            return readRegister(reg.indexComp, reg.indexElem);
+        }
+
+        throw new Error(`Register '${name}' not found.`);
+    },
+
+    write: (value: bigint, name: string) => {
+        const reg = crex_findReg(name);
+
+        if (reg.match) {
+            writeRegister(value, reg.indexComp, reg.indexElem);
+            return;
+        }
+
+        throw new Error(`Register '${name}' not found.`);
+    },
+};

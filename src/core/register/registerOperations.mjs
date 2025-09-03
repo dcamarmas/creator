@@ -39,7 +39,7 @@ function updateRegisterUI(indexComp, indexElem) {
     ];
 
     // this is ugly, but it's the only way (I found)
-    document.app.$root.$refs.simulatorView.$refs.registerFile?.$refs[
+    document.app.$root.$refs.simulatorView?.$refs.registerFile?.$refs[
         `reg${register.name[0]}`
     ]
         ?.at(0)
@@ -47,7 +47,7 @@ function updateRegisterUI(indexComp, indexElem) {
 
     // check it's one of the control registers
     if (register.properties.some(p => ctrl_register_tags.includes(p))) {
-        document.app.$root.$refs.simulatorView.$refs.memory?.$refs?.memory_table?.refresh_tags();
+        document.app.$root.$refs.simulatorView?.$refs.memory?.$refs?.memory_table?.refresh_tags();
     }
 }
 
