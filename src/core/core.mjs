@@ -39,6 +39,8 @@ import { creator_ga } from "./utils/creator_ga.mjs";
 import { creator_callstack_reset } from "./sentinel/sentinel.mjs";
 import { resetStats } from "./executor/stats.mts";
 import { resetCache } from "./executor/decoder.mjs";
+import { enableInterrupts, ExecutionMode } from "./executor/interrupts.mts";
+import { initialize_execution } from "./executor/executor.mjs";
 
 export const code_assembly = "";
 export let update_binary = "";
@@ -52,6 +54,15 @@ export let architecture = {
     components: [],
     instructions: [],
     directives: [],
+    // we have to put these defaults, or Typescript screams at us
+    interrupts: {
+        enabled: false,
+        interrupt_enable: "",
+        interrupt_disable: "",
+        interrupt_check: "",
+        clear_interrupt: "",
+        get_handler_addr: "",
+    },
 };
 export let newArchitecture;
 
@@ -68,6 +79,8 @@ export let status = {
     execution_index: 0,
     virtual_PC: 0n, // This is the PC the instructions see.
     error: 0,
+    execution_mode: ExecutionMode.User,
+    interrupts_enabled: false,
 };
 
 export let arch;
@@ -1124,6 +1137,9 @@ export async function assembly_compile(code, compiler) {
             break;
     }
 
+    // Initialize execution environment
+    initialize_execution();
+
     return ret;
 }
 
@@ -1181,6 +1197,12 @@ export function reset() {
     while (id--) {
         clearTimeout(id); // will do nothing if no timeout with id is present
     }
+
+    // reset interrupts
+    if (architecture.interrupts?.enabled) enableInterrupts();
+
+    // Initialize execution environment
+    initialize_execution();
 
     return true;
 }

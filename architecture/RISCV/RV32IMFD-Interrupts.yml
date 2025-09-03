@@ -4,7 +4,7 @@ version: 2.0.0
 # instruction help text extracted from https://msyksphinz-self.github.io/riscv-isadoc/html/index.html
 
 arch_conf:
-  Name: RV32
+  Name: RV32-Interrupts
   WordSize: 32
   Description: RISC-V is an instruction set architecture (ISA) based on the RISC
     type and its hardware is free. This architecture was created in 2010 at the
@@ -45,6 +45,9 @@ extensions:
   Zicsr:
     description: "RV32/RV64 Zicsr Standard Extension"
     type: extension
+  Priv:
+    description: "RV32/RV64 Privileged instructions"
+    type: extension
 
 components:
   - name: Control registers
@@ -60,6 +63,63 @@ components:
           - read
           - write
           - program_counter
+      - name:
+          - MEPC
+        nbits: "32"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+          - exception_program_counter
+      - name:
+          - MCAUSE
+        nbits: "32"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - MTVEC
+        nbits: "32"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+      - name:
+          - MSTATUS
+        nbits: "32"
+        value: 8
+        default_value: 8
+        properties:
+          - read
+          - write
+      - name:
+          - MIP
+        nbits: "32"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - MIE
+        nbits: "32"
+        value: 2056
+        default_value: 2056
+        properties:
+          - read
+          - write
+      - name:
+          - MSCRATCH
+        nbits: "32"
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+
   - name: Integer registers
     type: int_registers
     double_precision: false
@@ -1241,6 +1301,35 @@ templates:
         stopbit: 12
         order: 2
 
+  - name: CSR
+    nwords: 1
+    clk_cycles: 1
+    fields:
+      - name: opcode
+        type: co
+        startbit: 6
+        stopbit: 0
+        order: 0
+      - name: rd
+        type: INT-Reg
+        startbit: 11
+        stopbit: 7
+        order: 1
+      - name: funct3
+        type: cop
+        startbit: 14
+        stopbit: 12
+      - name: rs1
+        type: INT-Reg
+        startbit: 19
+        stopbit: 15
+        order: 3
+      - name: csr
+        type: Ctrl-Reg
+        startbit: 31
+        stopbit: 20
+        order: 2
+
   - name: Custom
     nwords: 1
     clk_cycles: 1
@@ -1830,42 +1919,10 @@ instructions:
       preoperation: |
         let [fa0Value, fa0Type] = CAPI.RISCV.toJSNumberD(fa0);
       definition: |
-        switch (a7) {
-          case 1n:
-            CAPI.SYSCALL.print(a0, 'int');
-            break;
-          case 2n:
-          case 3n:
-            CAPI.SYSCALL.print(fa0Value, 'float');
-            break;
-          case 4n:
-            CAPI.SYSCALL.print(a0, 'string');
-            break;
-          case 5n:
-            CAPI.SYSCALL.read('a0', 'int');
-            break;
-          case 6n:
-            CAPI.SYSCALL.read(fa0Value, 'float');
-            break;
-          case 7n:
-            CAPI.SYSCALL.read(fa0Value, 'double');
-            break;
-          case 8n:
-            CAPI.SYSCALL.read('a0', 'string', 'a1');
-            break;
-          case 9n:
-            CAPI.SYSCALL.sbrk('a0', 'a0');
-            break;
-          case 10n:
-            CAPI.SYSCALL.exit();
-            break;
-          case 11n:
-            CAPI.SYSCALL.print(a0, 'char');
-            break;
-          case 12n:
-            CAPI.SYSCALL.read('a0', 'char');
-            break;
-        }
+        MIP = MIP | 2n**3n;
+        MCAUSE = 2n**8n;
+        CAPI.CHECK_STACK.begin(PC);
+        CAPI.DRAW_STACK.begin(PC);
       help: Make a request to the supporting execution environment. When
         executed in U-mode, S-mode, or M-mode, it generates an
         environment-call-from-U-mode exception, environment-call-from-S-mode
@@ -1894,6 +1951,25 @@ instructions:
       help: Used by debuggers to cause control to be transferred back to a
         debugging environment. It generates a breakpoint exception and performs
         no other operation.
+
+    # TODO: delete this when devices exist
+    - name: print_int
+      type: Syscall
+      template: Custom
+      fields:
+        - field: opcode
+          value: "1110011"
+        - field: funct12
+          type: cop
+          startbit: 31
+          stopbit: 20
+          value: "000000000010"
+        - field: zeros
+          type: cop
+          startbit: 19
+          stopbit: 7
+          value: "0000000000000"
+      definition: "CAPI.SYSCALL.print(a0, 'int');"
 
   M:
     #   ____ __     __ _____ ____   __  __
@@ -3575,6 +3651,41 @@ instructions:
       help: Store a double-precision value from the floating-point registers to
         memory.
 
+  Priv:
+    #   ____         _
+    #  |  _ \  _ __ (_)__   __
+    #  | |_) || '__|| |\ \ / /
+    #  |  __/ | |   | | \ V /
+    #  |_|    |_|   |_|  \_/
+    # RV32/64 Privileged instructions
+
+    - name: mret
+      type: Control
+      template: Custom
+      fields:
+        - field: opcode
+          value: "1110011"
+        - field: funct12
+          type: cop
+          startbit: 31
+          stopbit: 20
+          value: "001100000010"
+        - field: zeros
+          type: cop
+          startbit: 19
+          stopbit: 7
+          value: "0000000000000"
+      definition: |
+        PC = MEPC;
+        MIP = MIP & -2057n;
+        MCAUSE = 0;
+        CAPI.DRAW_STACK.end();
+        CAPI.INTERRUPTS.setUserMode();
+      help: Return from traps in M-mode, and MRET copies MPIE into MIE, then
+        sets MPIE.
+      properties:
+        - privileged
+
   Zicsr:
     #   _____ _
     #  |__  /(_)  ___  ___  _ __
@@ -3583,7 +3694,22 @@ instructions:
     #  /____||_| \___||___/|_|
     # RV32/64 Zicsr Standard Extension
 
-    # TODO: Implement CSR instructions
+    - name: csrrw
+      type: Transfer between registers
+      template: CSR
+      fields:
+        - field: opcode
+          value: "1110011"
+        - field: funct3
+          value: "001"
+      definition: |
+        rd = csr;
+        csr = rs1;
+      help: Atomically swaps values in the CSRs and integer registers. CSRRW
+        reads the old value of the CSR, then writes it to integer register rd.
+        The initial value in rs1 is written to the CSR.
+
+    # TODO: Implement rest of CSR instructions
 
   Zifencei:
     #   _____ _   __                          _
@@ -3921,3 +4047,37 @@ enums:
     rmm: 4
     dyn: 7
     DEFAULT: dyn
+
+interrupts:
+  enabled: true
+  interrupt_check: |
+    let MIP = CAPI.REG.read('MIP');
+    if (MIP & (2n ** 11n)) InterruptType.External;
+    else if (MIP & (2n ** 3n)) InterruptType.Software;
+    else null;
+  enable_check: |
+    !! (CAPI.REG.read('MSTATUS') & 2n ** 3n)
+  interrupt_enable: |
+    CAPI.REG.read('MSTATUS') | 2n ** 3n
+  interrupt_disable: |
+    !(CAPI.REG.read('MSTATUS') | (2n ** 3n));
+  get_handler_addr: |
+    CAPI.REG.read('MTVEC') >> 2n
+  clear_interrupt: |
+    CAPI.REG.write(CAPI.REG.read('MIP') & ~(2n ** 11n + 2n ** 3n), 'MIP');
+  set_interrupt_cause: |
+    (interrupt_type) => {
+      let val;
+      switch (interrupt_type) {
+        case InterruptType.Software:
+          val = 2n ** 3n;
+          break;
+        case InterruptType.External:
+          val = 2n ** 31n + 2n ** 11n;
+          break;
+        case InterruptType.EnvironmentCall:
+          val = 2n ** 8n;
+          break;
+      }
+      CAPI.REG.write(val, 'MCAUSE');
+    };
