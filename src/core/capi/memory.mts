@@ -27,6 +27,8 @@ import {
     creator_callstack_newWrite,
     creator_callstack_newRead,
 } from "../sentinel/sentinel.mjs";
+import { checkDeviceAddr, devices } from "../executor/devices.mts";
+import type { Memory } from "../memory/Memory.mts";
 
 /*
  *  CREATOR instruction description API:
@@ -35,26 +37,37 @@ import {
 
 /**
  * Writes a value to memory respecting endianness configuration
- * @param {bigint} address - Memory address to write to
- * @param {bigint} value - Value to write
- * @param {number} bytes - Number of bytes to write
- * @returns {number[]} - Array of bytes written
+ * @param address Memory address to write to
+ * @param value Value to write
+ * @param bytes Number of bytes to write
+ * @returns Array of bytes written
  */
-function writeValueToMemory(address, value, bytes) {
+function writeValueToMemory(
+    address: bigint,
+    value: bigint,
+    bytes: number,
+): number[] {
     if (value < 0n) {
         throw "The value to write must be a positive integer";
     }
 
-    const wordSize = main_memory.getWordSize();
+    // get memory
+    const deviceID = checkDeviceAddr(Number(address));
+    const memory =
+        deviceID === null
+            ? (main_memory as Memory)
+            : devices.get(deviceID)!.memory;
+
+    const wordSize = memory.getWordSize();
 
     if (bytes === 1) {
         // Single byte write
         const byteValue = Number(value & 0xffn);
-        main_memory.write(address, byteValue);
+        memory.write(address, byteValue);
         return [byteValue];
     } else if (bytes <= wordSize) {
         // Multi-byte value that fits within a word
-        const byteArray = main_memory.splitToBytes(value);
+        const byteArray = memory.splitToBytes(value);
 
         // Pad from the left (most significant bytes) to match requested size
         const paddedByteArray = new Array(bytes).fill(0);
@@ -65,17 +78,17 @@ function writeValueToMemory(address, value, bytes) {
 
         if (bytes === wordSize) {
             // Write as a full word
-            main_memory.writeWord(address, paddedByteArray);
+            memory.writeWord(address, paddedByteArray);
         } else {
             // Write individual bytes for partial word
             for (let i = 0; i < paddedByteArray.length; i++) {
-                main_memory.write(address + BigInt(i), paddedByteArray[i]);
+                memory.write(address + BigInt(i), paddedByteArray[i]);
             }
         }
         return paddedByteArray;
     } else {
         // Value spans multiple words
-        const byteArray = main_memory.splitToBytes(value);
+        const byteArray = memory.splitToBytes(value);
 
         // Pad from the left to match requested size
         const paddedByteArray = new Array(bytes).fill(0);
@@ -92,7 +105,7 @@ function writeValueToMemory(address, value, bytes) {
             while (wordBytes.length < wordSize) {
                 wordBytes.push(0);
             }
-            main_memory.writeWord(currentAddr, wordBytes);
+            memory.writeWord(currentAddr, wordBytes);
             currentAddr += BigInt(wordSize);
         }
         return paddedByteArray;
@@ -101,29 +114,35 @@ function writeValueToMemory(address, value, bytes) {
 
 /**
  * Reads a value from memory respecting endianness configuration
- * @param {bigint} addr - Memory address to read from
- * @param {bigint} bytes - Number of bytes to read
- * @returns {bigint} - The value read from memory
+ * @param address Memory address to read from
+ * @param bytes Number of bytes to read
+ * @returns The value read from memory
  */
-function readValueFromMemory(addr, bytes) {
-    const wordSize = main_memory.getWordSize();
-    bytes = BigInt(bytes);
-    if (bytes === 1n) {
+function readValueFromMemory(address: bigint, bytes: number): bigint {
+    // get memory
+    const deviceID = checkDeviceAddr(Number(address));
+    const memory =
+        deviceID === null
+            ? (main_memory as Memory)
+            : devices.get(deviceID)!.memory;
+
+    const wordSize = memory.getWordSize();
+    if (bytes === 1) {
         // Single byte - read directly
-        return BigInt(main_memory.read(addr));
+        return BigInt(memory.read(address));
     } else if (bytes <= wordSize) {
         // Multi-byte value that fits within a word - use readWord to respect endianness
-        const wordAddr = addr - (addr % BigInt(wordSize));
-        const word = main_memory.readWord(wordAddr);
-        const byteOffset = Number(addr % BigInt(wordSize));
+        const wordAddr = address - (address % BigInt(wordSize));
+        const word = memory.readWord(wordAddr);
+        const byteOffset = address % BigInt(wordSize);
 
         // Extract the relevant bytes from the word
         let val = 0n;
-        for (let i = 0; i < Number(bytes); i++) {
-            const byteIndex = byteOffset + i;
+        for (let i = 0; i < bytes; i++) {
+            const byteIndex = Number(byteOffset) + i;
             if (byteIndex < wordSize) {
                 val =
-                    (val << BigInt(main_memory.getBitsPerByte())) |
+                    (val << BigInt(memory.getBitsPerByte())) |
                     BigInt(word[byteIndex]);
             }
         }
@@ -131,19 +150,18 @@ function readValueFromMemory(addr, bytes) {
     } else {
         // Value spans multiple words - read as individual words
         let val = 0n;
-        let currentAddr = addr;
-        let remainingBytes = Number(bytes);
+        let currentAddr = address;
+        let remainingBytes = bytes;
 
         while (remainingBytes > 0) {
             const bytesThisWord = Math.min(wordSize, remainingBytes);
-            const word = main_memory.readWord(currentAddr);
+            const word = memory.readWord(currentAddr);
 
             // Extract bytes from this word (from the end for big-endian result)
             const startIdx = wordSize - bytesThisWord;
             for (let i = startIdx; i < wordSize; i++) {
                 val =
-                    (val << BigInt(main_memory.getBitsPerByte())) |
-                    BigInt(word[i]);
+                    (val << BigInt(memory.getBitsPerByte())) | BigInt(word[i]);
             }
 
             currentAddr += BigInt(wordSize);
@@ -160,16 +178,29 @@ function readValueFromMemory(addr, bytes) {
  */
 // Memory operations
 export const MEM = {
-    write(address, bytes, value, reg_name, hint) {
+    write(
+        address: bigint,
+        bytes: number,
+        value: bigint,
+        reg_name: string,
+        hint: string,
+    ) {
+        // get memory
+        const deviceID = checkDeviceAddr(Number(address));
+        const memory =
+            deviceID === null
+                ? (main_memory as Memory)
+                : devices.get(deviceID)!.memory;
+
         // Check if the address is in a writable segment using memory functions
-        const segment = main_memory.getSegmentForAddress(address);
+        const segment = memory.getSegmentForAddress(address);
         if (segment === "text") {
             raise("Segmentation fault. You tried to write in the text segment");
             creator_executor_exit(true);
         }
 
         // Validate that write access is allowed for this address
-        if (!main_memory.isValidAccess(address, "write")) {
+        if (!memory.isValidAccess(address, "write")) {
             raise(
                 "Segmentation fault. Write access denied for address '0x" +
                     address.toString(16) +
@@ -178,7 +209,7 @@ export const MEM = {
             creator_executor_exit(true);
         }
 
-        let byteArray;
+        let byteArray = [];
         try {
             byteArray = writeValueToMemory(address, value, bytes);
         } catch (_e) {
@@ -194,7 +225,7 @@ export const MEM = {
         if (hint) {
             try {
                 const sizeInBits = bytes * BYTESIZE;
-                main_memory.addHint(address, "", hint, sizeInBits);
+                memory.addHint(BigInt(address), "", hint, sizeInBits);
             } catch (e) {
                 raise(
                     "Failed to add hint for address '0x" +
@@ -221,33 +252,40 @@ export const MEM = {
         creator_callstack_newWrite(i, j, address, byteArray.length);
     },
 
-    read(addr, bytes, reg_name) {
+    read(address: bigint, bytes: number, reg_name: string) {
+        // get memory
+        const deviceID = checkDeviceAddr(Number(address));
+        const memory =
+            deviceID === null
+                ? (main_memory as Memory)
+                : devices.get(deviceID)!.memory;
+
         // Implementation of capi_mem_read
         let val = 0n;
 
         // Check if the address is in a readable segment using memory functions
-        const segment = main_memory.getSegmentForAddress(addr);
+        const segment = memory.getSegmentForAddress(address);
         if (segment === "text") {
             raise("Segmentation fault. You tried to read in the text segment");
             creator_executor_exit(true);
         }
 
         // Validate that read access is allowed for this address
-        if (!main_memory.isValidAccess(addr, "read")) {
+        if (!memory.isValidAccess(address, "read")) {
             raise(
                 "Segmentation fault. Read access denied for address '0x" +
-                    addr.toString(16) +
+                    address.toString(16) +
                     "'",
             );
             creator_executor_exit(true);
         }
 
         try {
-            val = readValueFromMemory(addr, bytes);
+            val = readValueFromMemory(address, bytes);
         } catch (_e) {
             raise(
                 "Invalid memory access to address '0x" +
-                    addr.toString(16) +
+                    address.toString(16) +
                     "'",
             );
             creator_executor_exit(true);
@@ -264,21 +302,34 @@ export const MEM = {
         const i = find_ret.indexComp;
         const j = find_ret.indexElem;
 
-        creator_callstack_newRead(i, j, addr, bytes);
+        creator_callstack_newRead(i, j, Number(address), bytes);
 
         return ret;
     },
 
+    alloc(_size: number): number {
+        // TODO
+        raise("MEM.alloc is not implemented");
+        return 0;
+    },
+
     /**
      * Adds a hint for a memory address. If a hint already exists at the specified address, it replaces it.
-     * @param {bigint} address - Memory address to add hint for
-     * @param {string} hint - Description of the data type or purpose (e.g., "<double>", "<int32>", "<string>")
-     * @param {number} [sizeInBits] - Optional size of the type in bits (e.g., 64 for double, 32 for int32)
-     * @returns {boolean} - True if the hint was successfully added
+     * @param address Memory address to add hint for
+     * @param hint Description of the data type or purpose (e.g., `"double"`, `"int32"`, `"string"`)
+     * @param sizeInBits Optional size of the type in bits (e.g., `64` for double, `32` for int32)
+     * @returns `true` if the hint was successfully added, else `false`
      */
-    addHint(address, hint, sizeInBits) {
+    addHint(address: bigint, hint: string, sizeInBits?: number): boolean {
+        // get memory
+        const deviceID = checkDeviceAddr(Number(address));
+        const memory =
+            deviceID === null
+                ? (main_memory as Memory)
+                : devices.get(deviceID)!.memory;
+
         try {
-            main_memory.addHint(address, "", hint, sizeInBits);
+            memory.addHint(address, "", hint, sizeInBits);
             return true;
         } catch (e) {
             raise(

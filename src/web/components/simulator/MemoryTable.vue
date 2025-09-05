@@ -77,6 +77,7 @@ export default {
       const segment = this.memorySegments.get(this.segment)
       if (segment === undefined) return false
 
+      // TODO: device memory
       return row.start >= segment.startAddress && row.end <= segment.endAddress
     },
 

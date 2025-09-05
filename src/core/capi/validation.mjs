@@ -44,7 +44,7 @@ export function isOverflow(op1, op2, res_u) {
 export function isMisaligned(addr, type) {
     return false;
     const size = creator_memory_type2size(type);
-    return addr % size !== 0n;
+    return BigInt(addr) % size !== 0n;
 }
 
 // Object export for initCAPI spreading
