@@ -17,7 +17,7 @@
  *  You should have received a copy of the GNU Lesser General Public License
  *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  */
-import { MEM } from "./memory.mjs";
+import { MEM } from "./memory.mts";
 import { SYSCALL } from "./syscall.mjs";
 import { VALIDATION } from "./validation.mjs";
 import { CHECK_STACK } from "./checkStack.mjs";

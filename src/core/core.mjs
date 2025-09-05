@@ -41,6 +41,7 @@ import { resetStats } from "./executor/stats.mts";
 import { resetCache } from "./executor/decoder.mjs";
 import { enableInterrupts, ExecutionMode } from "./executor/interrupts.mts";
 import { initialize_execution } from "./executor/executor.mjs";
+import { resetDevices } from "./executor/devices.mts";
 
 export const code_assembly = "";
 export let update_binary = "";
@@ -1200,6 +1201,9 @@ export function reset() {
 
     // reset interrupts
     if (architecture.interrupts?.enabled) enableInterrupts();
+
+    // reset devices
+    resetDevices();
 
     // Initialize execution environment
     initialize_execution();

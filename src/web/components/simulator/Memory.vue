@@ -42,6 +42,7 @@ export default {
         .toArray()
         .map(s => ({ text: s.charAt(0).toUpperCase() + s.slice(1), value: s })),
     }
+    // TODO: device memory
   },
 
   computed: {

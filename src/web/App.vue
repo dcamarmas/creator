@@ -31,10 +31,12 @@ import {
   loadExample,
 } from "./utils.mjs"
 
-import { set_debug } from "@/core/core.mjs"
+import { set_debug, status } from "@/core/core.mjs"
 import { stats } from "@/core/executor/stats.mts"
 
 import { instructions } from "@/core/assembler/assembler.mjs"
+
+import { creator_ga } from "@/core/utils/creator_ga.mjs"
 
 import SpinnerLoading from "./components/general/SpinnerLoading.vue"
 import SupportedBrowsers from "./components/general/SupportedBrowsers.vue"
@@ -451,8 +453,8 @@ export default {
         "danger",
       )
 
-      if (execution_index !== -1) {
-        instructions[execution_index]._rowVariant = "danger"
+      if (status.execution_index !== -1) {
+        instructions[status.execution_index]._rowVariant = "danger"
       }
 
       /* Google Analytics */

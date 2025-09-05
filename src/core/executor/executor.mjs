@@ -44,6 +44,7 @@ import {
     handleInterrupt,
     ExecutionMode,
 } from "./interrupts.mts";
+import { handleDevices } from "./devices.mts";
 
 export function packExecute(error, err_msg, err_type, draw) {
     const ret = {};
@@ -387,6 +388,9 @@ function executeInstructionCycle(draw) {
     if (processingResult !== null && !processingResult.success) {
         return processingResult;
     }
+
+    // Handle Devices
+    handleDevices();
 
     // Update execution status and determine next instruction
     const statusResult = updateExecutionStatus(draw);
