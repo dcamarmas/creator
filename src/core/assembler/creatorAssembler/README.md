@@ -14,7 +14,7 @@ The generated files (inside `lib/` subdirectory) must be placed inside `src/core
 
 
 ## Web
-Compilation is done through [wasm-pack](https://rustwasm.github.io/wasm-pack/installer/init.sh):
+Compilation is done through [wasm-pack](https://drager.github.io/wasm-pack/):
 ```
 wasm-pack build --target web
 ```
