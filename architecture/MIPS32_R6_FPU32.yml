@@ -1,0 +1,1249 @@
+version: 2.0.0
+
+arch_conf:
+  Name: MIPS-32
+  WordSize: 32
+  Description: The MIPS processor was developed by Dr.John Hennessey and his graduate students at Stanford University in the early 1980s. It is currently one of the major processors in the embedded processor market.
+  Endianness: big_endian
+  Memory Alignment: true
+  Main Function: main
+  Passing Convention: true
+  Sensitive Register Name: true
+  CommentPrefix: "#"
+  StartAddress: 0x0
+  PCOffset: -4
+  ByteSize: 8
+  Assemblers:
+    - name: "CreatorCompiler"
+      description: "Default Creator Compiler"
+
+components:
+  - name: Control registers
+    type: ctrl_registers
+    double_precision: false
+    elements:
+      - name:
+          - PC
+        nbits: '32'
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+          - program_counter
+      - name:
+          - EPC
+        nbits: '32'
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+          - exception_program_counter
+      - name:
+          - CAUSE
+        nbits: '32'
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+          - event_cause
+      - name:
+          - BADVADDR
+        nbits: '32'
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - STATUS
+        nbits: '32'
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+          - status_register
+      - name:
+          - HI
+        nbits: '32'
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - LO
+        nbits: '32'
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - FIR
+        nbits: '32'
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - FCSR
+        nbits: '32'
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - FCCR
+        nbits: '32'
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - FEXR
+        nbits: '32'
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+  - name: Integer registers
+    type: int_registers
+    double_precision: false
+    elements:
+      - name:
+          - r0
+          - zero
+        nbits: '32'
+        value: 0
+        default_value: 0
+        properties:
+          - read
+      - name:
+          - r1
+          - at
+        nbits: '32'
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - r2
+          - v0
+        nbits: '32'
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - r3
+          - v1
+        nbits: '32'
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - r4
+          - a0
+        nbits: '32'
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - r5
+          - a1
+        nbits: '32'
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - r6
+          - a2
+        nbits: '32'
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - r7
+          - a3
+        nbits: '32'
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - r8
+          - t0
+        nbits: '32'
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - r9
+          - t1
+        nbits: '32'
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - r10
+          - t2
+        nbits: '32'
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - r11
+          - t3
+        nbits: '32'
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - r12
+          - t4
+        nbits: '32'
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - r13
+          - t5
+        nbits: '32'
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - r14
+          - t6
+        nbits: '32'
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - r15
+          - t7
+        nbits: '32'
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - r16
+          - s0
+        nbits: '32'
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+          - saved
+      - name:
+          - r17
+          - s1
+        nbits: '32'
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+          - saved
+      - name:
+          - r18
+          - s2
+        nbits: '32'
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+          - saved
+      - name:
+          - r19
+          - s3
+        nbits: '32'
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+          - saved
+      - name:
+          - r20
+          - s4
+        nbits: '32'
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+          - saved
+      - name:
+          - r21
+          - s5
+        nbits: '32'
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+          - saved
+      - name:
+          - r22
+          - s6
+        nbits: '32'
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+          - saved
+      - name:
+          - r23
+          - s7
+        nbits: '32'
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+          - saved
+      - name:
+          - r24
+          - t8
+        nbits: '32'
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - r25
+          - t9
+        nbits: '32'
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - r26
+          - k0
+        nbits: '32'
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - r27
+          - k1
+        nbits: '32'
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - r28
+          - gp
+        nbits: '32'
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+          - global_pointer
+      - name:
+          - r29
+          - sp
+        nbits: '32'
+        value: 268435452
+        default_value: 268435452
+        properties:
+          - read
+          - write
+          - stack_pointer
+      - name:
+          - r30
+          - fp
+        nbits: '32'
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+          - frame_pointer
+      - name:
+          - r31
+          - ra
+        nbits: '32'
+        value: 4294967295
+        default_value: 4294967295
+        properties:
+          - read
+          - write
+  - name: 32-bit FP registers
+    type: fp_registers
+    double_precision: false
+    elements:
+      - name:
+          - f0
+        nbits: '32'
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f1
+        nbits: '32'
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f2
+        nbits: '32'
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f3
+        nbits: '32'
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f4
+        nbits: '32'
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f5
+        nbits: '32'
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f6
+        nbits: '32'
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f7
+        nbits: '32'
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f8
+        nbits: '32'
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f9
+        nbits: '32'
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f10
+        nbits: '32'
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f11
+        nbits: '32'
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f12
+        nbits: '32'
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f13
+        nbits: '32'
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f14
+        nbits: '32'
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f15
+        nbits: '32'
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f16
+        nbits: '32'
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f17
+        nbits: '32'
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f18
+        nbits: '32'
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f19
+        nbits: '32'
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f20
+        nbits: '32'
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f21
+        nbits: '32'
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f22
+        nbits: '32'
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f23
+        nbits: '32'
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f24
+        nbits: '32'
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f25
+        nbits: '32'
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f26
+        nbits: '32'
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f27
+        nbits: '32'
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f28
+        nbits: '32'
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f29
+        nbits: '32'
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f30
+        nbits: '32'
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f31
+        nbits: '32'
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+
+templates:
+  - name: I
+    type: Arithmetic integer
+    nwords: 1
+    clk_cycles: 1
+    fields:
+    # The order of these fields != the order in the ASSEMBLY
+    # That's what the "order" field is for.
+    #
+    # For the order of the fields in the instruction encoding,
+    # the "startbit" and "stopbit" fields are used
+      - name: opcode
+        type: co
+        startbit: 31
+        stopbit: 26
+        order: 0
+      - name: rs
+        type: INT-Reg
+        startbit: 25
+        stopbit: 21
+        order: 2 # Notice this 2 here, corresponding with the instruction format
+                 # Example: addi rt, rs, immediate
+        prefix: "$"
+      - name: rt
+        type: INT-Reg
+        startbit: 20
+        stopbit: 16
+        order: 1
+        prefix: "$"
+      - name: imm
+        type: inm-signed
+        startbit: 15
+        stopbit: 0
+        order: 3
+
+  - name: I_PCREL
+    type: Arithmetic integer
+    nwords: 1
+    clk_cycles: 1
+    fields:
+      - name: opcode
+        type: co
+        startbit: 31
+        stopbit: 26
+        order: 0
+        valueField: "111011"
+      - name: rs
+        type: INT-Reg
+        startbit: 25
+        stopbit: 21
+        order: 1
+        prefix: "$"
+      - name: funct
+        type: cop
+        startbit: 20
+        stopbit: 16
+      - name: imm
+        type: inm-signed
+        startbit: 15
+        stopbit: 0
+        order: 2
+
+  - name: R
+    nwords: 1
+    clk_cycles: 1
+    fields:
+      - name: opcode
+        type: co
+        startbit: 31
+        stopbit: 26
+        valueField: '000000'
+        order: 0
+      - name: rs
+        type: INT-Reg
+        startbit: 25
+        stopbit: 21
+        order: 3
+        prefix: "$"
+      - name: rt
+        type: INT-Reg
+        startbit: 20
+        stopbit: 16
+        order: 2
+        prefix: "$"
+      - name: rd
+        type: INT-Reg
+        startbit: 15
+        stopbit: 11
+        order: 1
+        prefix: "$"
+      - name: cop
+        type: cop
+        startbit: 5
+        stopbit: 0
+  
+  - name: Custom
+    nwords: 1
+    clk_cycles: 1
+    fields:
+      - name: opcode
+        type: co
+        startbit: 31
+        stopbit: 26
+        order: 0
+
+  - name: FPU_I # I-Type (Immediate) FPU Instruction Format
+    type: Arithmetic Floating Point
+    nwords: 1
+    clk_cycles: 1
+    fields:
+      - name: opcode # COP1 field, but it has to be called opcode here
+        type: co
+        startbit: 31
+        stopbit: 26
+        order: 0
+      - name: base # CPU register: base address for address calculations.
+        type: INT-Reg
+        startbit: 25
+        stopbit: 21
+        order: 2
+        prefix: "$"
+      - name: ft # FPU register: source (for stores, arithmetic) or destination (for loads).
+        type: SFP-Reg
+        startbit: 20
+        stopbit: 16
+        order: 1
+        prefix: "$"
+      - name: offset # Signed offset field used in address calculations.
+        type: inm-signed
+        startbit: 15
+        stopbit: 0
+        order: 3
+      
+  - name: FPU_R # R-Type (Register) FPU Instruction Format
+    type: Arithmetic Floating Point
+    nwords: 1
+    clk_cycles: 1
+    fields:
+      - name: opcode # Coprocessor 1 primary opcode value in op field
+        type: co
+        startbit: 31
+        stopbit: 26
+        order: 0
+        valueField: '010001'
+      - name: fmt # Destination and/or operand type (format) specifier
+        type: INT-Reg
+        startbit: 25
+        stopbit: 21
+        prefix: "$"
+      - name: ft # FPU register: source (for stores, arithmetic) or destination (for loads).
+        type: SFP-Reg
+        startbit: 20
+        stopbit: 16
+        order: 3
+        prefix: "$"
+      - name: fs # FPU register: source.
+        type: SFP-Reg
+        startbit: 15
+        stopbit: 11
+        order: 2
+        prefix: "$"
+      - name: fd # FPU register: destination (arithmetic, loads, move-to) or source (stores, move-from).
+        type: SFP-Reg
+        startbit: 10
+        stopbit: 6
+        order: 1
+        prefix: "$"
+      - name: function # Field specifying a function within a particular op operation code.
+        type: cop
+        startbit: 5
+        stopbit: 0
+
+  - name: FPU_RI # Register-Immediate FPU Instruction Format
+    type: Arithmetic Floating Point
+    nwords: 1
+    clk_cycles: 1
+    fields:
+      - name: opcode # Coprocessor 1 primary opcode value in op field.
+        type: co
+        startbit: 31
+        stopbit: 26
+        order: 0
+        valueField: '010001'
+      - name: sub # Operation subcode field for COP1 register immediate-mode instructions.
+        type: cop
+        startbit: 25
+        stopbit: 21
+        prefix: "$"
+      - name: rt #
+        type: SFP-Reg
+        startbit: 20
+        stopbit: 16
+        order: 3
+        prefix: "$"
+      - name: fs # FPU register: source.
+        type: SFP-Reg
+        startbit: 15
+        stopbit: 11
+        order: 2
+        prefix: "$"
+
+instructions:
+  MIPS32:
+    - name: abs.s
+      type: Arithmetic floating point
+      template: FPU_R
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: function
+          value: "000101"
+        - field: ft
+          order: null
+          value: "00000"
+      definition: |
+        fd = Math.abs(fs);
+
+    - name: add
+      template: R
+      help: Sum with overflow
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: cop
+          value: "100000"
+      definition: |
+        var isover = CAPI.VALIDATION.isOverflow(rs, rt, rs+rt);
+        if (!isover){ 
+          rd = rs + rt; 
+        } else { 
+          console.log('Integer Overflow'); 
+        }
+
+    - name: add.s
+      template: FPU_R
+      type: Arithmetic floating point
+      help: Add the register fs and ft and store the result in fd (float)
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: function
+          value: "000000"
+        - field: fmt
+          value: "00000"
+      definition: |
+        fd = fs + ft;
+
+    - name: addi
+      template: I
+      type: Arithmetic integer
+      help: Add an immediate number with overflow
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          value: "001000"
+      definition: |
+        var isover = CAPI.VALIDATION.isOverflow(rs, imm, rs+imm);
+        if (!isover){ 
+          rt = rs + imm; 
+        } else { 
+          console.log('Integer Overflow'); 
+        }
+
+    - name: addiu
+      template: I
+      type: Arithmetic integer
+      help: Add an immediate number without overflow
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          value: "001001"
+      definition: |
+        rt = rs + imm;
+
+    - name: addu
+      template: R
+      help: Add Unsigned Word
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: cop
+          value: "100001"
+      definition: |
+        rd = rs + rt;
+
+    - name: aluipc
+      template: I_PCREL
+      help: Aligned Add Upper Immediate to PC
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: funct
+          value: "11111"
+      definition: |
+        rs = ~0xFFFF & (PC + (immediate << 16));
+
+    - name: and
+      template: R
+      help: Bitwise AND
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: cop
+          value: "100100"
+      definition: |
+        rd = rs & rt;
+
+    - name: andi
+      template: I
+      help: Bitwise AND Immediate
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          value: "001100"
+      definition: |
+        rt = rs & (imm & 0xFFFF);
+
+    - name: aui
+      template: I
+      help: Add Immediate to Upper Bits
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          value: "001111"
+      definition: |
+        rt = rs + (imm & 0xFFFF);
+
+    - name: auipc
+      template: I_PCREL
+      help: Add Upper Immediate to PC
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: funct
+          value: "11110"
+      definition: |
+        rs = PC + (imm & 0xFFFF);
+
+    - name: balc
+      template: Custom
+      type: Conditional bifurcation
+      help: Branch and Link, Compact
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          value: "111010"
+        - field: offset
+          startbit: 25
+          stopbit: 0
+          type: inm-signed
+          order: 1
+      definition: |
+        // Not implemented
+
+
+    - name: bc
+      template: Custom
+      type: Conditional bifurcation
+      help: Branch, Compact
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          value: "110010"
+        - field: offset
+          startbit: 25
+          stopbit: 0
+          type: inm-signed
+          order: 1
+      definition: |
+        // Not implemented
+
+    - name: bc1eqz
+      template: FPU_I
+      type: Conditional bifurcation
+      help: Branch if Coprocessor 1 (FPU) Register Bit 0 is Equal to Zero
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          value: "010001"
+        - field: base # We're overriding this field since its part of the opcode in this instruction
+          value: "01001"
+          type: cop
+          order: null
+      definition: |
+        if (ft & 1 == 0){ 
+          PC = PC - 4 + offset
+        }
+
+    - name: bc1nez
+      template: FPU_I
+      type: Conditional bifurcation
+      help: Branch if Coprocessor 1 (FPU) Register Bit 0 is Not Equal to Zero
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          value: "010001"
+        - field: base # We're overriding this field since its part of the opcode in this instruction
+          value: "01101"
+          type: cop
+          order: null
+      definition: |
+        // Not Implemented
+        if (ft & 1 != 0){ 
+          PC = PC - 4 + offset
+        }
+
+    - name: beq
+      template: I
+      help: Branch if Equal
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          value: "000100"
+      definition: |
+        if (CAPI.FP.uint2int(rs) == CAPI.FP.uint2int(rt)) {
+          PC = PC - 4 + offset
+        }
+    
+    - name: begz
+      template: I
+      help: Branch on Greater Than or Equal to Zero
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          value: "000001"
+        - field: rt
+          value: "00001"
+          type: cop
+          order: null
+      definition: |
+        if (CAPI.FP.uint2int(rs) >= 0) {
+          PC = PC - 4 + offset
+        }
+      
+    - name: bgtz
+      template: I
+      help: Branch on Greater Than Zero
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          value: "000111"
+        - field: rt
+          value: "00000"
+          order: null
+      definition: |
+        if (CAPI.FP.uint2int(rs) > 0) {
+          PC = PC - 4 + offset
+        }
+
+    - name: bitswap
+      template: Custom
+      help: Each byte in input GPR rt is moved to the same byte position in output GPR rd, with bits in each byte reversed.
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          value: "011111"
+      definition: |
+        // Not implemented
+
+    - name: blez
+      template: I
+      help: Branch on Less Than or Equal to Zero
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          value: "000110"
+        - field: rt
+          value: "00000"
+          order: null
+      definition: |
+        if (CAPI.FP.uint2int(rs) <= 0) {
+          PC = PC - 4 + offset
+        }
+  
+    - name: bltz
+      template: I
+      help: Branch on Less Than Zero
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          value: "000001"
+        - field: rt
+          value: "00000"
+          type: cop # On this one it's actually part of the opcode, unlike the others
+          order: null
+      definition: |
+        if (CAPI.FP.uint2int(rs) < 0) {
+          PC = PC - 4 + offset
+        }
+
+    - name: bne
+      template: I
+      help: Branch if Not Equal
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          value: "000101"
+      definition: |
+        if (CAPI.FP.uint2int(rs) != CAPI.FP.uint2int(rt)) {
+          PC = PC - 4 + offset
+        }
+
+directives:
+  - name: .data
+    action: data_segment
+    size: null
+  - name: .text
+    action: code_segment
+    size: null
+  - name: .globl
+    action: global_symbol
+    size: null
+  - name: .byte
+    action: byte
+    size: 1
+  - name: .half
+    action: half_word
+    size: 2
+  - name: .word
+    action: word
+    size: 4
+  - name: .doubleword
+    action: double_word
+    size: 8
+  - name: .float
+    action: float
+    size: 4
+  - name: .double
+    action: double
+    size: 8
+  - name: .space
+    action: space
+    size: 1
+  - name: .ascii
+    action: ascii_not_null_end
+    size: null
+  - name: .asciiz
+    action: ascii_null_end
+    size: null
+  - name: .align
+    action: align
+    size: null
+memory_layout:
+  - name: text start
+    value: '0x00000000'
+  - name: text end
+    value: '0x001FFFFF'
+  - name: data start
+    value: '0x00200000'
+  - name: data end
+    value: '0x05BBFCBF'
+  - name: stack start
+    value: '0x0FFFFFFC'
+  - name: stack end
+    value: '0x0FFFFFFF'
