@@ -1,6 +1,6 @@
 
 
-[E21] Error: Negative values aren't allowed here
+[E22] Error: Negative values aren't allowed here
    ╭─[ assembly:7:11 ]
    │
  7 │     .zero -10
