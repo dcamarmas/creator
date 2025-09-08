@@ -7267,6 +7267,18 @@
       "size": 8
     }
   ],
+  "modifiers": {
+    "hi": {
+      "range": [12, 32],
+      "lower_signed": true,
+      "output_signed": false
+    },
+    "lo": {
+      "range": [0, 12],
+      "lower_signed": false,
+      "output_signed": true
+    }
+  },
   "memory_layout": [
     {
       "name": "text start",
