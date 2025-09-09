@@ -7,7 +7,7 @@
   },
   {
     "name": "Example 1",
-    "id": "example0",
+    "id": "example1",
     "url": "examples/RISCV-devices/example0.s",
     "description": "Echo"
   }

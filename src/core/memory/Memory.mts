@@ -738,6 +738,16 @@ export class Memory {
     }
 
     /**
+     * Returns all memory addreses and values.
+     */
+    getAll(): Array<{ addr: number; value: number }> {
+        return Array.from(this.uint8View).map((value, i) => ({
+            addr: Number(this.baseAddress) + i,
+            value,
+        }));
+    }
+
+    /**
      * Creates a memory dump containing only written addresses and their values.
      * Also includes memory hints for data type information.
      * This is much more efficient for large, sparse memory spaces.
