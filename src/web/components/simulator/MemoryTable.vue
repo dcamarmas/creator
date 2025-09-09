@@ -26,6 +26,7 @@ import { toHex } from "@/web/utils.mjs"
 export default {
   props: {
     main_memory: { type: Object, required: true },
+    devices: { type: Object, required: true },
     segment: { type: String, required: true },
     caller_frame: Object,
     callee_frame: Object,
@@ -38,6 +39,7 @@ export default {
       spaceItem: null,
       selected_stack_view: null,
       memorySegments: this.main_memory.getMemorySegments(),
+      deviceIDs: Array.from(this.devices.keys()),
 
       ctrl_register_tags: [
         "program_counter",
@@ -73,11 +75,10 @@ export default {
     /**
      * Filters which rows to show, depending on the data segment
      */
-    filter(row, _filter) {
+    mainMemoryFilter(row, _filter) {
       const segment = this.memorySegments.get(this.segment)
       if (segment === undefined) return false
 
-      // TODO: device memory
       return row.start >= segment.startAddress && row.end <= segment.endAddress
     },
 
@@ -209,7 +210,8 @@ export default {
                 this.ctrl_register_tags.includes(p),
               ) &&
               // check value is correct
-              (register.value & 0xfffffffcn) === (BigInt(addr) & 0xfffffffcn),
+              (BigInt(register.value) & 0xfffffffcn) ===
+                (BigInt(addr) & 0xfffffffcn),
           )
           .map(reg => ({
             type: reg.properties.find(p => this.ctrl_register_tags.includes(p)),
@@ -274,7 +276,9 @@ export default {
       // set human values, depending on hints
       let i = 0
       while (i < mem.length) {
-        const hint = this.hints().find(h => h.address === mem.at(i).addr)
+        const hint = this.mainMemoryHints().find(
+          h => h.address === mem.at(i).addr,
+        )
         if (hint === undefined) {
           i++
           continue
@@ -308,14 +312,36 @@ export default {
           bytes: bytes.map(b => ({
             addr: b.addr,
             value: b.value,
-            tag: this.hints().find(h => h.address === b.addr)?.tag,
+            tag: this.mainMemoryHints().find(h => h.address === b.addr)?.tag,
             human: b.human,
           })),
         }))
       )
     },
 
-    hints() {
+    deviceMemory() {
+      const mem = this.devices.get(this.segment).memory
+
+      return chunks(mem.getAll(), mem.getWordSize()).map(bytes => ({
+        start: bytes.at(0).addr,
+        end: bytes.at(-1).addr,
+        bytes: bytes.map((b, i, arr) => ({
+          addr: b.addr,
+          value: b.value,
+          tag: this.deviceMemoryHints().find(x => x.address === b.addr)?.tag,
+          // assume they are all words
+          human:
+            i === 0
+              ? this.computeHumanValues(
+                  arr.map(b => b.value),
+                  "word",
+                ).at(0)
+              : undefined,
+        })),
+      }))
+    },
+
+    mainMemoryHints() {
       return this.main_memory
         .getAllHints()
         .map(({ address, tag, type, sizeInBits }) => ({
@@ -325,6 +351,23 @@ export default {
           size: sizeInBits / this.main_memory.getBitsPerByte(),
         }))
     },
+
+    deviceMemoryHints() {
+      const device = this.devices.get(this.segment)
+      return [
+        {
+          address: device.ctrl_addr,
+          tag: "ctrl_addr",
+          size: 4,
+        },
+        {
+          address: device.status_addr,
+          tag: "status_addr",
+          size: 4,
+        },
+      ]
+    },
+
     stackTop() {
       return stackTracker.getCurrentFrame()?.end
     },
@@ -368,10 +411,10 @@ export default {
             ref="table"
             small
             hover
-            :items="memory()"
+            :items="deviceIDs.includes(segment) ? deviceMemory() : memory()"
             :fields="memFields"
-            :filter-function="filter"
-            filter=" "
+            :filter="!deviceIDs.includes(segment)"
+            :filter-function="mainMemoryFilter"
             class="memory_table align-items-start"
             @row-clicked="
               (item, _index, _event) => {
@@ -473,7 +516,7 @@ export default {
                 {{
                   row.item.bytes
                     .map(byte => byte.human) // get human values
-                    .filter(x => x) // remove `undefined`s
+                    .filter(x => x !== undefined)
                     .join(", ")
                 }}
               </span>
