@@ -1,6 +1,6 @@
 
 
-[E08] Error: Incorrect instruction syntax
+[E09] Error: Incorrect instruction syntax
    ╭─[ assembly:8:6 ]
    │
  8 │    j 0xhello
@@ -12,14 +12,14 @@
 ───╯
 
 The syntax `j off` failed with the following reason:
-Error: found `identifier (xhello)` but expected `\n` or `end of input`
+Error: found `identifier (xhello)` but expected `\n`, `binary operator`, or `end of input`
    ╭─[ assembly:8:7 ]
    │
  8 │    j 0xhello
-   │       ───┬──  
-   │          ╰──── Unexpected input
+   │      ┬───┬──  
+   │      ╰──────── While parsing this `expression`
    │          │    
-   │          ╰──── while parsing this expression
+   │          ╰──── Unexpected input
 ───╯
 
 Not executed
