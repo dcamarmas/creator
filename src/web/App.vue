@@ -19,11 +19,7 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <script>
-import {
-  BModalOrchestrator,
-  BToastOrchestrator,
-  useToastController,
-} from "bootstrap-vue-next"
+import { BOrchestrator, useToast } from "bootstrap-vue-next"
 
 import package_json from "/package.json" // package info
 import arch_available from "/architecture/available_arch.json"
@@ -68,8 +64,7 @@ const creatorASCII = `
 export default {
   name: "app",
   components: {
-    BToastOrchestrator,
-    BModalOrchestrator,
+    BOrchestrator,
     SpinnerLoading,
     SupportedBrowsers,
     FormConfiguration,
@@ -92,9 +87,9 @@ export default {
 
   setup() {
     // BV Composeables, such as these, should only be used inside setup
-    const createToast = useToastController().create
+    const createToast = useToast().create // shows a toast notification
 
-    return { createToast } // shows a toast notification
+    return { createToast }
   },
 
   data() {
@@ -196,12 +191,7 @@ export default {
       // Code error modal
       //
 
-      modalAssemblyError: {
-        code1: "",
-        code2: "",
-        code3: "",
-        error: "",
-      },
+      assemblyError: "",
 
       //
       // Assembly code
@@ -483,11 +473,8 @@ export default {
 </script>
 
 <template>
-  <!-- for showing toasts (notifications) from JS -->
-  <BToastOrchestrator />
-
-  <!-- for showing modals from JS -->
-  <BModalOrchestrator />
+  <!-- for showing bootstrap stuff from JS -->
+  <BOrchestrator />
 
   <!------------------------>
   <!-- General components -->
@@ -589,7 +576,7 @@ export default {
     :browser="browser"
     :os="os"
     :assembly_code="assembly_code"
-    :modal_assembly_error="modalAssemblyError"
+    :assembly_error="assemblyError"
     :vim_mode="vim_mode"
     :vim_custom_keybinds="vim_custom_keybinds"
     :dark="dark"

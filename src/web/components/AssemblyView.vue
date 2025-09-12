@@ -33,7 +33,7 @@ export default {
     arch_available: Array,
     architecture_name: String,
     assembly_code: String,
-    modal_assembly_error: Object,
+    assembly_error: { type: String, required: true },
     vim_mode: { type: Boolean, required: true },
     vim_custom_keybinds: { type: Array, required: true },
     dark: { type: Boolean, required: true },
@@ -130,7 +130,7 @@ export default {
         <AssemblyError
           id="modalAssemblyError"
           reff="errorAssembly"
-          :modal_assembly_error="modal_assembly_error"
+          :assembly_error="assembly_error"
         />
       </b-col>
     </b-row>

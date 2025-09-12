@@ -76,7 +76,6 @@ export function kbd_read_float(keystroke, params) {
         show_notification(
             `Invalid input: '${keystroke}' is not a float`,
             "danger",
-            useToastController,
         );
         return null;
     }
@@ -94,7 +93,6 @@ export function kbd_read_double(keystroke, params) {
         show_notification(
             `Invalid input: '${keystroke}' is not a double`,
             "danger",
-            useToastController,
         );
         return null;
     }

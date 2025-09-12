@@ -23,7 +23,7 @@ export default {
   props: {
     id: { type: String, required: true },
     reff: { type: String, required: true },
-    modal_assembly_error: { type: Object, required: true },
+    assembly_error: { type: String, required: true },
   },
 }
 </script>
@@ -31,7 +31,7 @@ export default {
 <template>
   <b-modal :id="id" title="Assembly Code Error" :ref="reff" no-footer size="lg">
     <div class="errorAssembly">
-      <span class="font-monospace lh-1" v-html="modal_assembly_error.error" />
+      <span class="font-monospace lh-1" v-html="assembly_error" />
     </div>
   </b-modal>
 </template>
