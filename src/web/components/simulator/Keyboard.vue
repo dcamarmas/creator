@@ -61,7 +61,11 @@ export default {
     <b-container fluid align-h="start" class="mx-0 px-0">
       <b-row cols="2" align-h="start">
         <b-col cols="1">
-          <font-awesome-icon :icon="['fas', 'keyboard']" class="consoleIcon" />
+          <font-awesome-icon
+            size="3x"
+            :icon="['fas', 'keyboard']"
+            class="consoleIcon"
+          />
         </b-col>
         <b-col lg="11" cols="12">
           <b-form-textarea

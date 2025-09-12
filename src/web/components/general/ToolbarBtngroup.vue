@@ -19,7 +19,7 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <script>
-import { useModal } from "bootstrap-vue-next"
+import { useToggle } from "bootstrap-vue-next"
 
 import {
   assembly_compile,
@@ -53,9 +53,9 @@ export default {
 
   setup() {
     // BV Composeables, such as these, should only be used inside setup
-    const modalAssemblyError = useModal("modalAssemblyError")
+    const showAssemblyError = useToggle("modalAssemblyError").show
 
-    return { modalAssemblyError }
+    return { showAssemblyError }
   },
 
   data() {
@@ -232,13 +232,13 @@ export default {
 
     // Show error message in the compilation
     compile_error(msg) {
-      this.change_UI_mode("assembly")
+      // this.change_UI_mode("assembly")
 
       // set compilation msg
-      this.$root.modalAssemblyError.error = msg
+      this.$root.assemblyError = msg
 
       // show assembly error modal
-      this.modalAssemblyError.show()
+      this.showAssemblyError()
     },
 
     //Remove a loaded binary
@@ -600,6 +600,7 @@ export default {
           variant="outline-secondary"
           id="sim_btn_arch"
           @click="change_UI_mode('simulator')"
+          icon=""
         >
           <font-awesome-icon :icon="['fas', 'gears']" />
           Simulator

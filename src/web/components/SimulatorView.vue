@@ -201,7 +201,6 @@ export default {
 <style lang="scss" scoped>
 :deep() {
   .consoleIcon {
-    height: 3em;
     opacity: 0.6;
   }
 
