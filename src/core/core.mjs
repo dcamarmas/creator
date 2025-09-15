@@ -1175,6 +1175,13 @@ export function reset() {
     stackTracker.reset();
     creator_callstack_reset();
 
+    // clear all read timeouts
+    // eslint-disable-next-line no-empty-function
+    let id = setTimeout(() => {}, 0); // dummy timeout to get max ID
+    while (id--) {
+        clearTimeout(id); // will do nothing if no timeout with id is present
+    }
+
     return true;
 }
 

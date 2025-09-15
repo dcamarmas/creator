@@ -287,7 +287,8 @@ export function loadExample(
  */
 export function storeBackup(root = document.app) {
     if (!root.assembly_code || !root.arch_code || !root.architecture_name) {
-        show_notification("Unable to store backup", "warning");
+        clog("Unable to store backup", "WARN");
+        return;
     }
 
     localStorage.setItem("backup_asm", root.assembly_code);

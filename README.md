@@ -5,7 +5,13 @@ The next evolution of [CREATOR](https://github.com/creatorsim/creator/).
 
 ## Project Setup
 
-This project uses [Bun](https://bun.sh) (for Web) and [Deno](https://deno.com/) (for CLI).
+This project uses [Bun](https://bun.sh) (for Web)[^1] and
+[Deno](https://deno.com/) (for CLI).
+
+[^1]: You can use any other Node.js package manager like
+[npm](https://www.npmjs.com/) to install the dependencies, but we recommend Bun.
+Not only for its speed and ease of use, but for its [`bun.lock`](bun.lock)
+lockfile, which explicitly states the package versions.
 
 ```sh
 bun install
