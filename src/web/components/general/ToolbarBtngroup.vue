@@ -126,13 +126,13 @@ export default {
       // enable execution buttons only if there are instructions to execute
       const prepared_for_execution = this.$root.instructions.length > 0
 
-      if (this.group.includes("btn_run")) {
+      if (this.group.includes("btn_run") && status.run_program !== 3) {
         this.run_disable = !prepared_for_execution
       }
-      if (this.group.includes("btn_reset")) {
+      if (this.group.includes("btn_reset") && status.run_program !== 3) {
         this.reset_disable = !prepared_for_execution
       }
-      if (this.group.includes("btn_instruction")) {
+      if (this.group.includes("btn_instruction") && status.run_program !== 3) {
         this.instruction_disable = !prepared_for_execution
       }
     }
@@ -398,6 +398,12 @@ export default {
       set_execution_mode(0)
 
       const ret = step()
+
+      if (status.run_program === 3) {
+        // mutex read
+        this.instruction_disable = true
+        this.run_disable = true
+      }
 
       if (typeof ret === "undefined") {
         console.log("Something weird happened :-S")
@@ -791,7 +797,6 @@ export default {
           size="sm"
           variant="outline-secondary"
           v-b-modal.flash
-          :disabled="run_disable"
         >
           <font-awesome-icon :icon="['fab', 'usb']" />
           Flash

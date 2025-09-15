@@ -93,8 +93,9 @@ export default {
         ]
       } else {
         return [
-          { text: "IEEE 754 (32 bits)", value: "ieee32" },
-          { text: "IEEE 754 (64 bits)", value: "ieee64" },
+          { text: "IEEE 754 (32b)", value: "ieee32" },
+          { text: "IEEE 754 (64b)", value: "ieee64" },
+          { text: "Hex", value: "hex" },
         ]
       }
     },

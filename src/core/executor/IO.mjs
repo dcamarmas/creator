@@ -230,5 +230,13 @@ export function keyboard_read(fn_post_read, fn_post_params) {
         $("#playExecution").trigger("click");
     }
 
+    // re-enable buttons
+    document.app.$root.$refs.simulatorView.$refs.toolbar.$refs.btngroup1.at(
+        0,
+    ).instruction_disable = false;
+    document.app.$root.$refs.simulatorView.$refs.toolbar.$refs.btngroup1.at(
+        0,
+    ).run_disable = false;
+
     return draw;
 }

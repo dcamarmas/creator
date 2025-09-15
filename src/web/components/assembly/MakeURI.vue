@@ -43,9 +43,9 @@ export default {
 
   data() {
     return {
-      // 40-M, Alphanumeric Mode (see
+      // version 32, ECL M, Alphanumeric Mode (see
       // https://www.thonky.com/qr-code-tutorial/character-capacities)
-      maxQRSize: 3391,
+      maxQRSize: 2238,
     }
   },
 
