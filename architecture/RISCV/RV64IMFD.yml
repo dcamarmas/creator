@@ -3002,7 +3002,7 @@ instructions:
           type: DFP-Reg
       definition: |
         if (CAPI.VALIDATION.isMisaligned(rs1 + imm, 'd')) {
-          CAPI.VALIDATION.raise('The memory must be align');
+          CAPI.VALIDATION.raise('The memory must be aligned');
         }
         rd = CAPI.MEM.read(rs1 + imm, 8, rd_name);
       help: Load a double-precision floating-point value from memory into

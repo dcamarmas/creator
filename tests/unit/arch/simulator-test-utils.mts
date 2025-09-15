@@ -104,6 +104,7 @@ export async function setupSimulator(
     // Load architecture configuration from file synchronously
     const archPath = new URL(yamlPath, import.meta.url);
     const architectureConfigContent = fs.readFileSync(archPath, "utf8");
+    creator.initCAPI();
 
     // Load architecture
     const archResult = creator.newArchitectureLoad(
