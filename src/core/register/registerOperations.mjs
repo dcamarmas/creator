@@ -93,6 +93,11 @@ export function writeRegister(value, indexComp, indexElem) {
 
     if (value === null) {
         return;
+    } else if (value === 0) {
+        value = BigInt(0);
+    }
+    if (typeof value === "number") {
+        throw new Error("Called writeRegister with a number, not BigInt");
     }
 
     const component = REGISTERS[indexComp];

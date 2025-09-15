@@ -266,26 +266,11 @@ function mergeTemplateAndInstructionFields(template, instruction) {
 
     // Process instruction fields if they exist
     if (instruction.fields && Array.isArray(instruction.fields)) {
-        instruction.fields.forEach(instructionField => {
+        for (const instructionField of instruction.fields) {
             // Skip null fields
-            if (instructionField === null) return;
+            if (instructionField === null) continue;
 
             const fieldName = instructionField.field;
-
-            // Check if any attribute in the field is null, indicating this field should be removed
-            const hasNullAttribute = Object.values(instructionField).some(
-                value => value === null,
-            );
-
-            if (hasNullAttribute) {
-                const existingFieldIndex = mergedFields.findIndex(
-                    field => field.name === fieldName,
-                );
-                if (existingFieldIndex !== -1) {
-                    mergedFields.splice(existingFieldIndex, 1);
-                }
-                return;
-            }
 
             const existingFieldIndex = mergedFields.findIndex(
                 field => field.name === fieldName,
@@ -301,7 +286,13 @@ function mergeTemplateAndInstructionFields(template, instruction) {
                 // Add new field
                 mergedFields.push(createNewField(instructionField));
             }
-        });
+            // Remove any null attributes from the merged field (they take precedence over the template)
+            for (const key in instructionField) {
+                if (instructionField[key] === null) {
+                    delete mergedFields[existingFieldIndex][key];
+                }
+            }
+        }
     }
 
     return mergedFields;
@@ -430,8 +421,7 @@ function buildCompleteInstruction(
 // eslint-disable-next-line max-lines-per-function
 function processInstructions(architectureObj) {
     architectureObj.instructionsProcessed = [];
-    // eslint-disable-next-line max-lines-per-function
-    architectureObj.instructions.forEach(instruction => {
+    for (const instruction of architectureObj.instructions) {
         const template = findTemplateForInstruction(
             architectureObj,
             instruction,
@@ -471,7 +461,7 @@ function processInstructions(architectureObj) {
                 delete instruction.postoperation;
             }
             // Check to convert (if needed) the "valueField" property from hex to binary
-            mergedFields.forEach(field => {
+            for (const field of mergedFields) {
                 if (field.valueField !== undefined) {
                     // If the valueField is a string, it might be in hex format
                     if (typeof field.valueField === "string") {
@@ -490,7 +480,7 @@ function processInstructions(architectureObj) {
                         }
                     }
                 }
-            });
+            }
             // We need to find if any field is optional, because if it is, we need to
             // construct two different instructions, one with the field and one without it
 
@@ -589,7 +579,7 @@ function processInstructions(architectureObj) {
                 `Template '${instruction.template}' not found for instruction '${instruction.name}'`,
             );
         }
-    });
+    }
     architectureObj.instructions = architectureObj.instructionsProcessed;
     delete architectureObj.instructionsProcessed;
     // If enums exist, for each enum, find whether there's a "DEFAULT" value.
@@ -617,25 +607,36 @@ function processPseudoInstructions(architectureObj, legacy = true) {
                 fields = pseudoinstruction.fields.map(field => ({
                     name: field.field,
                     type: field.type,
+                    ...(field.prefix && {prefix: field.prefix}),
+                    ...(field.suffix && {suffix: field.suffix}),
                 }));
             }
 
             // Create signature_definition: "name F0 F1 F2..."
             const signatureDefParts = [pseudoinstruction.name];
             for (let i = 0; i < fields.length; i++) {
-                signatureDefParts.push(`F${i}`);
+                let part = `F${i}`;
+                if (fields[i].prefix) part = fields[i].prefix + part;
+                if (fields[i].suffix) part += fields[i].suffix;
+                signatureDefParts.push(part);
             }
 
             // Create signature: "name,TYPE1,TYPE2,..."
             const signatureParts = [pseudoinstruction.name];
             fields.forEach(field => {
-                signatureParts.push(field.type);
+                let part = field.type;
+                if (field.prefix) part = field.prefix + part;
+                if (field.suffix) part += field.suffix;
+                signatureParts.push(part);
             });
 
             // Create signatureRaw: "name fieldname1 fieldname2..."
             const signatureRawParts = [pseudoinstruction.name];
             fields.forEach(field => {
-                signatureRawParts.push(field.name);
+                let part = field.name;
+                if (field.prefix) part = field.prefix + part;
+                if (field.suffix) part += field.suffix;
+                signatureRawParts.push(part);
             });
 
             // Create the full legacy pseudoinstruction object
