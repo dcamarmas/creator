@@ -100,7 +100,7 @@ export class StackTracker {
     }
 
     private updateUI() {
-        if (document === undefined || Object.hasOwn(document, "app") === false) return;
+        if (Object.hasOwn(document, "app") === false) return;
         // @ts-ignore app is injected by Vue
         document.app.$data.callee_frame = this.frames.at(-1);
         // @ts-ignore app is injected by Vue
@@ -126,7 +126,9 @@ export class StackTracker {
         this.frames.push(frame);
 
         // update UI
-        this.updateUI();
+        if (typeof document !== "undefined") {
+            this.updateUI();
+        }
     }
 
     /**
@@ -138,7 +140,9 @@ export class StackTracker {
         const frame = this.frames.pop();
 
         // update UI
-        this.updateUI();
+        if (typeof document !== "undefined") {
+            this.updateUI();
+        }
 
         return frame;
     }
