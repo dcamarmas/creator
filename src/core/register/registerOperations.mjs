@@ -99,7 +99,7 @@ export function writeRegister(value, indexComp, indexElem) {
     const element = component.elements[indexElem];
     const properties = element.properties;
     const elementName = element.name.join(" | ");
-    const stackStart = architecture.memory_layout[4].value;
+    const stackStart = architecture.memory_layout.stack.start;
 
     if (!properties.includes("write")) {
         if (properties.includes("ignore_write")) {
@@ -122,10 +122,7 @@ export function writeRegister(value, indexComp, indexElem) {
     element.value = value;
     creator_callstack_writeRegister(indexComp, indexElem);
 
-    if (
-        properties.includes("stack_pointer") &&
-        value !== parseInt(stackStart, 16)
-    ) {
+    if (properties.includes("stack_pointer") && value !== stackStart) {
         writeStackLimit(value);
     }
 

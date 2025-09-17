@@ -19,31 +19,23 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <script>
+import { toHex } from "@/web/utils.mjs"
 export default {
   props: {
-    memory_layout: { type: Array, required: true },
+    memory_layout: { type: Map, required: true },
   },
 
   computed: {
     layout() {
-      return (
-        this.memory_layout
-          // group in chunks of two so we get [[start0, end0], ...]
-          .reduce((resultArray, item, index) => {
-            const chunkIndex = Math.floor(index / 2)
-            if (!resultArray[chunkIndex]) {
-              resultArray[chunkIndex] = [] // start a new chunk
-            }
-            resultArray[chunkIndex].push(item)
-            return resultArray
-          }, [])
-          // remove empty segments
-          .filter(([start, end]) => end.value - start.value > 0)
-      )
+      return this.memory_layout
+        .entries()
+        .filter(([_, { start, end }]) => end - start > 0)
     },
   },
 
   methods: {
+    toHex,
+
     /*
      * Obtains the color depending on the memory segment
      */
@@ -78,24 +70,24 @@ export default {
 
         <b-list-group
           horizontal
-          v-for="[start, end] in this.layout.slice(0, -1)"
+          v-for="[name, { start, end }] in this.layout.slice(0, -1)"
         >
           <b-list-group-item
-            :variant="getVariant(start.name.split(' ').shift())"
+            :variant="getVariant(name)"
             class="memoryLayout font-monospace"
           >
             <br />
-            .{{ start.name.split(" ").shift() }}
+            .{{ name }}
             <br />
             <br />
           </b-list-group-item>
           <b-list-group-item class="memoryLayout noBorder left font-monospace">
             <!-- start -->
-            <span class="h6"> {{ start.value }} </span>
+            <span class="h6"> {{ toHex(start, 4) }} </span>
             <br />
             <br />
             <!-- end -->
-            <span class="h6"> {{ end.value }} </span>
+            <span class="h6"> {{ toHex(end, 4) }} </span>
           </b-list-group-item>
         </b-list-group>
       </b-list-group>
@@ -120,18 +112,18 @@ export default {
           class="memoryLayout font-monospace"
         >
           <br />
-          {{ layout.at(-1)[0].name.split(" ").shift() }}
+          {{ layout.at(-1)[0] }}
           <br />
           <br />
         </b-list-group-item>
         <b-list-group-item class="memoryLayout noBorder left font-monospace">
           <span class="h6">
-            {{ layout.at(-1)[0].value }}
+            {{ toHex(layout.at(-1)[1].start, 4) }}
           </span>
           <br />
           <br />
           <span class="h6">
-            {{ layout.at(-1)[1].value }}
+            {{ toHex(layout.at(-1)[1].end, 4) }}
           </span>
         </b-list-group-item>
       </b-list-group>

@@ -345,7 +345,7 @@ export function downloadToTXTFile(data, filename) {
  *
  * Transforms a value into a hextring.
  *
- * @param {number} value
+ * @param {number | bigint} value
  * @param {number} padding Padding, in bytes
  *
  * @returns {string}

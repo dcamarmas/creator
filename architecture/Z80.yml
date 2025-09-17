@@ -1,19 +1,19 @@
 version: 2.0.0
 
-arch_conf:
-  Name: Z80
-  WordSize: 8 # 8-bit word size, which is the same as the byte size
-  ByteSize: 8
-  Description: Z80
-  Endianness: little_endian
-  Memory Alignment: true
-  Main Function: main
-  Passing Convention: true
-  Sensitive Register Name: true
-  CommentPrefix: ";"
-  StartAddress: 0x0
-  PCOffset: 0
-  Assemblers:
+config:
+  name: Z80
+  word_size: 8 # 8-bit word size, which is the same as the byte size
+  byte_size: 8
+  description: Z80
+  endianness: little_endian
+  memory_alignment: true
+  main_function: main
+  passing_convention: true
+  sensitive_register_name: true
+  comment_prefix: ";"
+  start_address: 0x0
+  pc_offset: 0
+  assemblers:
     - name: "SjasmPlus" # The first element is the default assembler
       description: "SjasmPlus Z80 Assembler"
     - name: "RASM"

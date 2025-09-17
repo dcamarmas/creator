@@ -79,7 +79,7 @@ export default {
       const segment = this.memorySegments.get(this.segment)
       if (segment === undefined) return false
 
-      return row.start >= segment.startAddress && row.end <= segment.endAddress
+      return row.start >= segment.start && row.end <= segment.end
     },
 
     get_classes(item) {
@@ -231,9 +231,7 @@ export default {
         .getWritten()
         // we filter out the stack, we'll add it later bc not all values in the
         // stack are written values
-        .filter(
-          b => b.addr < Number(this.memorySegments.get("stack").startAddress),
-        )
+        .filter(b => b.addr < Number(this.memorySegments.get("stack").start))
       const addresses = mem.map(b => b.addr)
       const wordSize = this.main_memory.getWordSize()
 

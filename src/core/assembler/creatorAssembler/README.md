@@ -1,5 +1,5 @@
 # CREATOR Assembler
-The source code is located at [ALVAROPING1/CreatorCompiler](https://github.com/ALVAROPING1/CreatorCompiler), and must be built for both the CLI and Web versions.
+The source code is located at [ALVAROPING1/CreatorCompiler](https://github.com/ALVAROPING1/CreatorCompiler) (specifically, version 2), and must be built for both the CLI and Web versions.
 
 Building requires [rustup](https://rustup.rs/).
 
