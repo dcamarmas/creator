@@ -70,7 +70,7 @@ export function setPC(value) {
         "PC register updated to " +
             readRegister(pc_reg.indexComp, pc_reg.indexElem),
     );
-    const offset = BigInt(newArchitecture.arch_conf.PCOffset || 0n);
+    const offset = BigInt(newArchitecture.config.pc_offset || 0n);
     status.virtual_PC = BigInt(value + offset);
     logger.debug("Virtual PC register updated to " + status.virtual_PC);
     return null;
@@ -111,12 +111,12 @@ function performExecutionChecks() {
 function get_entrypoint() {
     // search main tag
     const entrypoint = instructions.find(
-        i => i.Label === newArchitecture.arch_conf["Main Function"],
+        i => i.Label === newArchitecture.config.main_function,
     )?.Address;
 
     return entrypoint
         ? parseInt(entrypoint, 16)
-        : newArchitecture.arch_conf.StartAddress;
+        : newArchitecture.config.start_address;
 }
 
 /**

@@ -165,7 +165,7 @@ export default {
       }
 
       // update architecture data
-      this.$root.architecture_name = architecture.arch_conf[0].value
+      this.$root.architecture_name = architecture.config.name
       this.$root.architecture = architecture
       this.$root.architecture_hash = architecture_hash
 

@@ -19,42 +19,55 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <script>
+const configMap = {
+  name: "Name",
+  word_size: "WordSize",
+  description: "Description",
+  endianness: "Endianness",
+  memory_alignment: "Memory Alignment",
+  main_function: "Main Function",
+  passing_convention: "Passing Convention",
+  sensitive_register_name: "Sensitive Register Name",
+  comment_prefix: "Comment Prefix",
+  start_address: "Start Address",
+  pc_offset: "PC Offset",
+  byte_size: "Byte Size",
+  assemblers: "Assemblers",
+}
+
+function formatValue(attr, value) {
+  if (attr === "endianness") {
+    if (value === "big_endian") {
+      return "Big Endian"
+    } else if (value === "little_endian") {
+      return "Little Endian"
+    }
+  } else if (
+    [
+      "passing_convention",
+      "memory_alignment",
+      "sensitive_register_name",
+    ].includes(attr)
+  ) {
+    return value ? "Enabled" : "Disabled"
+  }
+
+  return value
+}
+
 export default {
   props: {
-    arch_conf: { type: Array, required: true },
+    conf: { type: Object, required: true },
   },
 
   computed: {
     config() {
-      return this.arch_conf.map(({ name, value }) => {
-        // format values
-        if (name === "Data Format") {
-          if (value === "big_endian") {
-            return {
-              name,
-              value: "Big Endian",
-            }
-          } else if (value === "little_endian") {
-            return {
-              name,
-              value: "Little Endian",
-            }
-          }
-        } else if (
-          [
-            "Passing Convention",
-            "Memory Alignment",
-            "Sensitive Register Name",
-          ].includes(name)
-        ) {
-          return {
-            name,
-            value: value === "1" ? "Enabled" : "Disabled",
-          }
-        }
-
-        return { name, value }
-      })
+      return Object.entries(this.conf)
+        .filter(([attr, _v]) => attr !== "assemblers") // no assemblers
+        .map(([attr, value]) => ({
+          name: configMap[attr],
+          value: formatValue(attr, value),
+        }))
     },
   },
 }

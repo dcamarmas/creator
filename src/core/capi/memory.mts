@@ -29,6 +29,7 @@ import {
 } from "../sentinel/sentinel.mjs";
 import { checkDeviceAddr, devices } from "../executor/devices.mts";
 import type { Memory } from "../memory/Memory.mts";
+import { toHex } from "@/web/utils.mjs";
 
 /*
  *  CREATOR instruction description API:
@@ -266,7 +267,9 @@ export const MEM = {
         // Check if the address is in a readable segment using memory functions
         const segment = memory.getSegmentForAddress(address);
         if (segment === "text") {
-            raise("Segmentation fault. You tried to read in the text segment");
+            raise(
+                `Segmentation fault. You tried to read in the text segment (${toHex(address, 4)})`,
+            );
             creator_executor_exit(true);
         }
 

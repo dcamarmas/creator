@@ -50,8 +50,8 @@ export let backup_data_address;
 
 export let architecture_hash = [];
 export let architecture = {
-    arch_conf: [],
-    memory_layout: [],
+    config: { name: "" },
+    memory_layout: {},
     components: [],
     instructions: [],
     directives: [],
@@ -137,9 +137,9 @@ function load_arch_select(cfg) {
 
     const auxArchitecture = cfg;
     architecture = register_value_deserialize(auxArchitecture);
-    WORDSIZE = newArchitecture.arch_conf.WordSize;
-    BYTESIZE = newArchitecture.arch_conf.ByteSize;
-    const endianness = newArchitecture.arch_conf.Endianness;
+    WORDSIZE = newArchitecture.config.word_size;
+    BYTESIZE = newArchitecture.config.byte_size;
+    const endianness = newArchitecture.config.endianness;
 
     const bytesPerWord = WORDSIZE / BYTESIZE;
 
@@ -164,19 +164,19 @@ function load_arch_select(cfg) {
         });
     }
 
-    backup_stack_address = architecture.memory_layout[4].value;
-    backup_data_address = architecture.memory_layout[3].value;
+    backup_stack_address = architecture.memory_layout.stack.start;
+    backup_data_address = architecture.memory_layout.data.end;
 
     // Initialize main memory with architecture layout support
 
     // Calculate the total size of the memory
     // Get the smallest memory address in the memory layout
     const minMemoryAddress = Math.min(
-        ...architecture.memory_layout.map(el => parseInt(el.value, 16)),
+        ...Object.values(architecture.memory_layout).map(({ start }) => start),
     );
     // Get the largest memory address in the memory layout
     const maxMemoryAddress = Math.max(
-        ...architecture.memory_layout.map(el => parseInt(el.value, 16)),
+        ...Object.values(architecture.memory_layout).map(({ end }) => end),
     );
     // Calculate the total size
     const totalMemorySize = maxMemoryAddress - minMemoryAddress + 1;
@@ -186,7 +186,7 @@ function load_arch_select(cfg) {
         sizeInBytes: totalMemorySize,
         bitsPerByte: BYTESIZE,
         wordSize: WORDSIZE / BYTESIZE,
-        memoryLayout: architecture.memory_layout,
+        memoryLayout: Object.entries(architecture.memory_layout),
         baseAddress: BigInt(minMemoryAddress),
         endianness: ENDIANNESSARR,
     });
@@ -981,54 +981,6 @@ function isVersionSupported(architectureObj) {
 }
 
 /**
- * Transform architecture configuration from new format to old format
- * @param {Object} architectureObj - The architecture object to transform
- * @returns {Object} - Transformed architecture object
- */
-function transformArchConf(architectureObj) {
-    const transformed = { ...architectureObj };
-    const newArchConf = architectureObj.arch_conf;
-    const oldArchConf = [];
-    // Add other configuration elements that might be in the new format
-    // This converts any remaining properties to the old array format
-    Object.entries(newArchConf).forEach(([key, value]) => {
-        // If value is bool, convert to "1" or "0"
-        if (typeof value === "boolean") {
-            value = value ? "1" : "0";
-        }
-        // If key is "Word Size", convert it to "bits"
-        if (key === "WordSize") {
-            key = "Bits";
-        }
-        if (key === "Endianness") {
-            key = "Data Format";
-        }
-        if (key === "StartAddress") {
-            return;
-        }
-        if (key === "PCOffset") {
-            return;
-        }
-        if (key === "ByteSize") {
-            return;
-        }
-        if (key === "Assemblers") {
-            return;
-        }
-        // Add remaining properties as individual entries
-        oldArchConf.push({
-            name: key,
-            value,
-        });
-    });
-
-    // Replace with transformed arch_conf
-    transformed.arch_conf = oldArchConf;
-
-    return transformed;
-}
-
-/**
  * Load architecture from YAML string and prepare for use
  * @param {string} architectureYaml - YAML string containing architecture definition
  * @param {boolean} dump - Whether to dump architecture to file for debugging
@@ -1053,13 +1005,10 @@ export function newArchitectureLoad(architectureYaml, dump = false, isa = []) {
         }
 
         // Transform arch_conf to the format expected by the code
-        const transformedArchObj = transformArchConf(architectureObj);
+        // const transformedArchObj = transformArchConf(architectureObj);
 
         // Determine which instruction sets to load
-        const isaResult = determineInstructionSetsToLoad(
-            transformedArchObj,
-            isa,
-        );
+        const isaResult = determineInstructionSetsToLoad(architectureObj, isa);
         if (isaResult.status === "error") {
             return {
                 errorcode: "invalid_isa",
@@ -1072,7 +1021,7 @@ export function newArchitectureLoad(architectureYaml, dump = false, isa = []) {
 
         // Collect instructions from selected sets
         const updatedArchObj = collectInstructionsFromSets(
-            transformedArchObj,
+            architectureObj,
             isaResult.instructionSets,
         );
 
@@ -1180,8 +1129,8 @@ export function reset() {
         REGISTERS = JSON.parse(JSON.stringify(REGISTERS_BACKUP));
     }
 
-    architecture.memory_layout[4].value = backup_stack_address;
-    architecture.memory_layout[3].value = backup_data_address;
+    architecture.memory_layout.stack.start = backup_stack_address;
+    architecture.memory_layout.data.end = backup_data_address;
 
     // reset memory and restore initial hints from backup (if it exists)
     if (typeof main_memory_backup !== "undefined") {
@@ -1200,7 +1149,7 @@ export function reset() {
     }
 
     // reset interrupts
-    if (architecture.interrupts?.enabled) enableInterrupts();
+    if (newArchitecture.interrupts?.enabled) enableInterrupts();
 
     // reset devices
     resetDevices();

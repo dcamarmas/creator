@@ -1237,7 +1237,7 @@ function getSidebarLines(height: number): string[] {
         lines.push("Status");
         lines.push("------");
         lines.push(
-            `Processor: ${creator.architecture.arch_conf[0].value || "Not loaded"}`,
+            `Processor: ${creator.architecture.config.name || "Not loaded"}`,
         );
         if (instructions.length > 0) {
             const pc_value = creator.dumpRegister("PC");
