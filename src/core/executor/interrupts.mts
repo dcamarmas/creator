@@ -44,7 +44,7 @@ export enum ExecutionMode {
  */
 export function enableInterrupts() {
     status.interrupts_enabled = true;
-    return eval(architecture.interrupts.interrupt_enable);
+    return eval(architecture.interrupts.enable);
 }
 
 /**
@@ -52,15 +52,21 @@ export function enableInterrupts() {
  */
 export function disableInterrupts() {
     status.interrupts_enabled = false;
-    return eval(architecture.interrupts.interrupt_disable);
+    return eval(architecture.interrupts.disable);
 }
 
 /**
  * Checks if an interrupt has occured
- * @return {InterruptType, null}
  */
 export function checkInterrupt(): InterruptType | null {
-    return eval(architecture.interrupts.interrupt_check);
+    return eval(architecture.interrupts.check);
+}
+
+/**
+ * Creates an interrupt of the specified type.
+ */
+export function makeInterrupt(type: InterruptType): void {
+    return eval(architecture.interrupts.create)(type);
 }
 
 /**
@@ -82,5 +88,5 @@ export function handleInterrupt() {
     writeRegister(handler_address, pc_reg.indexComp, pc_reg.indexElem);
 
     // clear interruption
-    eval(architecture.interrupts.clear_interrupt);
+    eval(architecture.interrupts.clear);
 }

@@ -106,13 +106,29 @@ components:
       - name:
           - MIE
         nbits: 32
-        value: 2056
-        default_value: 2056
+        value: 0x00000888
+        default_value: 0x00000888 # MEIE + MTIE + MSIE
         properties:
           - read
           - write
       - name:
           - MSCRATCH
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - MTIME
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - MTIMECMP
         nbits: 32
         value: 0
         default_value: 0
@@ -4047,22 +4063,23 @@ enums:
 
 interrupts:
   enabled: true
-  interrupt_check: |
+  check: |
     let MIP = CAPI.REG.read('MIP');
     if (MIP & (2n ** 11n)) InterruptType.External;
     else if (MIP & (2n ** 3n)) InterruptType.Software;
+    else if (MIP & (2n ** 7n)) InterruptType.Timer;
     else null;
-  enable_check: |
+  is_enabled: |
     !! (CAPI.REG.read('MSTATUS') & 2n ** 3n)
-  interrupt_enable: |
+  enable: |
     CAPI.REG.read('MSTATUS') | 2n ** 3n
-  interrupt_disable: |
+  disable: |
     !(CAPI.REG.read('MSTATUS') | (2n ** 3n));
   get_handler_addr: |
     CAPI.REG.read('MTVEC') >> 2n
-  clear_interrupt: |
+  clear: |
     CAPI.REG.write(CAPI.REG.read('MIP') & ~(2n ** 11n + 2n ** 3n), 'MIP');
-  set_interrupt_cause: |
+  create: |
     (interrupt_type) => {
       let val;
       switch (interrupt_type) {
@@ -4075,6 +4092,23 @@ interrupts:
         case InterruptType.EnvironmentCall:
           val = 2n ** 8n;
           break;
+        case InterruptType.Timer:
+          break;
       }
       CAPI.REG.write(val, 'MCAUSE');
     };
+
+timer:
+  tick_cycles: 1
+  advance: |
+    CAPI.REG.write((CAPI.REG.read('MTIME') + 1n) % (2n**32n - 1n), 'MTIME')
+  handler: |
+    if (CAPI.REG.read('MTIME') === CAPI.REG.read('MTIMECMP')) {
+      CAPI.INTERRUPTS.make(CAPI.INTERRUPTS.Type.Timer)
+    }
+  is_enabled: |
+    !! (CAPI.REG.read('MIE') & 2n ** 7n)
+  enable: |
+    CAPI.REG.read('MIE') | 2n ** 7n
+  disable: |
+    !(CAPI.REG.read('MIE') | (2n ** 7n));

@@ -5,7 +5,7 @@
  * exposing key functionality for VSCode extension integration.
  */
 
-import * as creator from "../core/core.mjs";
+import * as creator from "../core/core";
 import { step } from "../core/executor/executor.mjs";
 import { readRegister } from "../core/register/registerOperations.mjs";
 import {
@@ -1069,7 +1069,7 @@ class CreatorRpcServer {
         }
 
         try {
-            const stackTracker = creator.stackTracker as StackTracker;
+            const stackTracker = creator.stackTracker;
             const stackFrames = stackTracker.getAllFrames();
             const stackHints = stackTracker.getAllHints();
 
