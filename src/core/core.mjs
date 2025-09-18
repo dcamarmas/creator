@@ -18,7 +18,7 @@
  *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { initCAPI } from "./capi/initCAPI.mjs";
+import { initCAPI } from "./capi/initCAPI.mts";
 
 import { register_value_deserialize } from "./utils/bigint.mjs";
 import { getHexTwosComplement } from "./utils/utils.mjs";
@@ -49,26 +49,14 @@ export let backup_stack_address;
 export let backup_data_address;
 
 export let architecture_hash = [];
-export let architecture = {
-    config: { name: "" },
-    memory_layout: {},
-    components: [],
-    instructions: [],
-    directives: [],
-    // we have to put these defaults, or Typescript screams at us
-    interrupts: {
-        enabled: false,
-        interrupt_enable: "",
-        interrupt_disable: "",
-        interrupt_check: "",
-        clear_interrupt: "",
-        get_handler_addr: "",
-    },
-};
+/** @type {import("./core").Architecture} */
+export let architecture = {};
 export let newArchitecture;
 
+/** @type {import("vue").ComponentPublicInstance}*/
 export let app;
 
+/** @type {import("./core").Status} */
 export let status = {
     execution_init: 1,
     executedInstructions: 0,
@@ -86,15 +74,21 @@ export let status = {
 
 export let arch;
 export const ARCHITECTURE_VERSION = "2.0";
+/** @type {number} */
 export let WORDSIZE;
+/** @type {number} */
 export let BYTESIZE;
 export let ENDIANNESSARR = [];
 export let MAXNWORDS;
+/** @type {import("./core").RegisterBank[]} */
 export let REGISTERS;
 export let REGISTERS_BACKUP = [];
 export const register_size_bits = 64; //TODO: load from architecture
+/** @type {Memory} */
 export let main_memory;
+/** @type {StackTracker} */
 export let stackTracker;
+/** @type {Memory} */
 export let main_memory_backup;
 export function updateMainMemoryBackup(value) {
     main_memory_backup = value;

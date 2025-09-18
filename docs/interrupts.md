@@ -4,7 +4,7 @@ Interrupts are handled in the `execute_instruction()` function, after
 fetching the instruction.
 Interrupts are marked as enabled through the `interruptsEnabled`
 flag in status, and checked through the `checkinterrupt()` function (which
-uses the architecture-defined `interrupt_check`).
+uses the architecture-defined `check`).
 
 When an interrupt is detected, and interrupts are enabled, the
 `handleInterrupt()` function is executed. This function changes the
@@ -12,7 +12,7 @@ execution mode to `ExecutionMode.Kernel`, stores the `program_counter`
 register in the `exception_program_counter` register, and jumps to the
 interruption handler address obtained through the architecture-defined
 `get_handler_addr`. Finally, it clears the interruption through the
-architechitecture-defined `clear_interrupt`.
+architechitecture-defined `clear`.
 
 The execution mode change is required for the execution of privileged
 instructions (see [Privileged instructions in CREATOR](privileged.md)).
@@ -23,20 +23,20 @@ For interrupts to be managed correctly, the architecture definition file
 must include the following properties:
 - `interrupts.enabled: boolean`: Controls whether interrupts are enabled
 by default.
-- `interrupts.interrupt_check: string`: JS code to be executed in order
+- `interrupts.check: string`: JS code to be executed in order
 to check whether an interrupt happened. It must return a
 `InterruptType` (if an interrupt happened) or `null` (if it didn't).
-- `interrupts.enable_check: string`: JS code to be executed in order to
+- `interrupts.is_enabled: string`: JS code to be executed in order to
 check whether interrupts are enabled.
-- `interrupts.interrupt_enable: string`: JS code to be executed in order
+- `interrupts.enable: string`: JS code to be executed in order
 to enable interrupts.
-- `interrupts.interrupt_disable: string`: JS code to be executed in order
+- `interrupts.disable: string`: JS code to be executed in order
 to disable interrupts.
 - `interrupts.get_handler_addr: string`: JS code to be executed in order
 to obtain the interrupt handler address.
-- `interrupts.clear_interrupt: string`: JS code to be executed in order
+- `interrupts.clear: string`: JS code to be executed in order
 to clear an interrupt.
-- `interrupts.set_interrupt_cause: (InterruptType) => null`: JS arrow
+- `interrupts.create: (InterruptType) => null`: JS arrow
 (lambda) function to be executed in order to set an interrupt given an
 interrupt type.
 
@@ -47,9 +47,9 @@ interrupt type.
 The following functions, belonging to
 [`core/executor/interrupts.mts`](../src/core/executor/interrupts.mts), were implemented:
 - `enableInterrupts(null) -> null`: Enables interrupts by calling
-`architecture.interrupts.interrupt_enable`.
+`architecture.interrupts.enable`.
 - `disableInterrupts(null) -> null`: Disables interrupts by calling
-`architecture.interrupts.interrupt_disable`.
+`architecture.interrupts.disable`.
 - `checkInterrupt(null) -> null`: Checks whether interrupts are enabled
 - `handleInterrupt(null) -> null`: Handles an interrupt.
 
@@ -82,7 +82,7 @@ Depending on the type of interrupt, it sets a different bit. For example:
 - Bit `3` (`MSIP`) is set to indicate a _software_ interrupt
 - Bit `11` (`MEIP`) is set to indicate an _external_ interrupt
 
-Therefore, `interrupt_check` must read these values in order to determine the
+Therefore, `check` must read these values in order to determine the
 type of the interrupt.
 
 Then, the value of the current instruction is stored in the `MEPC` control

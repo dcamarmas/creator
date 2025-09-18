@@ -45,6 +45,7 @@ import {
     ExecutionMode,
 } from "./interrupts.mts";
 import { handleDevices } from "./devices.mts";
+import { handleTimer } from "./timers.mts";
 
 export function packExecute(error, err_msg, err_type, draw) {
     const ret = {};
@@ -377,8 +378,11 @@ function executeInstructionCycle(draw) {
         return inLoopCheckResult;
     }
 
-    // Handle any pending interruptions
+    // Handle any pending interrupts
     handle_interrupts(draw);
+
+    // handle timer
+    handleTimer();
 
     // Update execution index based on PC
     // get_execution_index(draw);

@@ -19,25 +19,13 @@
  *
  */
 
-import { status } from "../core.mjs";
-import {
-    ExecutionMode,
-    InterruptType,
-    makeInterrupt,
-} from "../executor/interrupts.mts";
+import { architecture, status } from "../core.mjs";
 
-export const INTERRUPTS = {
-    setUserMode: () => {
-        status.execution_mode = ExecutionMode.User;
-    },
+export function handleTimer() {
+    if (!eval(architecture.timer?.is_enabled)) return;
 
-    setKernelMode: () => {
-        status.execution_mode = ExecutionMode.Kernel;
-    },
-
-    make: makeInterrupt,
-
-    Type: InterruptType,
-
-    // TODO: enable/disable interrupts
-};
+    if (status.clkCycles % architecture.timer.tick_cycles === 0) {
+        eval(architecture.timer.advance);
+        eval(architecture.timer.handler);
+    }
+}
