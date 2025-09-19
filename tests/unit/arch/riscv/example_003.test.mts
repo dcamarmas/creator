@@ -48,8 +48,9 @@ main:
     la t0, h2         # h2 address -> t0
     sh t5, 0(t0)      # t5 -> Memory[h2]
    
-    # return 
-    jr ra
+    # exit program
+    li a7, 10
+    ecall
 
     `;
 

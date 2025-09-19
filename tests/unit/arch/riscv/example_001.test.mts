@@ -7,7 +7,7 @@ import {
 } from "../simulator-test-utils.mts";
 
 Deno.test(
-    "Architecture-agnostic testing - RISC-V Branch and Jump Operations",
+    "Architecture-agnostic testing - RISC-V Basic Data Types and Print Operations",
     async () => {
         const testAssembly = `
 
@@ -15,26 +15,31 @@ Deno.test(
 # Creator (https://creatorsim.github.io/creator/)
 #
 
+.data
+ 
+   byte:       .byte    12
+    
+   .align 1
+   half:       .half    34
+   
 .text
-    main:
-
-      li  t0, 4
-      li  t1, 2
-      li  t3, 5
-      bge t3, t0, jump1
-      
-    jump2: 
-      li t3, 34
-      li a7, 10
+   main:
+            
+      # print byte value 
+      la a0, byte
+      lb a0, 0(a0)
+      li a7, 1
+      ecall
+   
+      # print half value
+      la a0, half
+      lh a0, 0(a0)
+      li a7, 1
       ecall
 
-    jump1:
-      li t4, 11
-      li t5, 555
-      beq x0, x0, jump2
-
-      #return
-      jr ra
+      # exit program
+      li a7, 10
+      ecall
 
     `;
 
@@ -50,14 +55,9 @@ Deno.test(
         // Assert all expected state using the wrapper function
         assertSimulatorState({
             registers: {
-                x5: 0x4n, // t0 should contain 0x4
-                x6: 0x2n, // t1 should contain 0x2
-                x17: 0xan, // a7 should contain 0xa (syscall 10 - exit)
-                x28: 0x22n, // t3 should contain 0x22 (34 in decimal)
-                x29: 0xbn, // t4 should contain 0xb (11 in decimal)
-                x30: 0x22bn, // t5 should contain 0x22b (555 in decimal)
+                x10: 0x22n, // a0 should contain 34 (0x22)
             },
-            display: "", // Display buffer should be empty
+            display: "1234", // Should show '1234' (12 followed by 34)
             keyboard: "", // Keyboard buffer should be empty
         });
 

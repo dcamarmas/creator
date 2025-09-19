@@ -44,8 +44,9 @@ main:
     addi x8, x8, 8
     fsd  f12, 0(x8)
 
-    #return 
-    jr ra
+    # exit program
+    li a7, 10
+    ecall
 
     `;
 
