@@ -34,7 +34,13 @@ export interface ExecutionResult {
 const compiler_map = {
     default: assembleCreator,
     rasm: rasmAssemble,
-};
+} as const;
+
+type CompilerKey = keyof typeof compiler_map;
+
+function isValidCompilerKey(key: string): key is CompilerKey {
+    return key in compiler_map;
+}
 
 /**
  * Helper function to get register value by name
@@ -116,6 +122,11 @@ export async function setupSimulator(
         );
     }
     const compilerKey = assembler || "default";
+
+    if (!isValidCompilerKey(compilerKey)) {
+        throw new Error(`Invalid assembler: ${compilerKey}. Valid options are: ${Object.keys(compiler_map).join(", ")}`);
+    }
+
     const compilerFunction = compiler_map[compilerKey];
     // Compile assembly code
     const compileResult = (await creator.assembly_compile(
@@ -148,7 +159,7 @@ export function executeStep(): ExecutionResult {
         completed?: boolean;
     };
     if (ret.error) {
-        return { output: "", completed: true, error: true };
+        return { output: ret.msg || "", completed: true, error: true };
     }
 
     return {
@@ -164,24 +175,17 @@ export function executeStep(): ExecutionResult {
  * @returns Combined execution result
  */
 export function executeN(n: number): ExecutionResult {
-    let completed = false;
-    let error = false;
-    let output = "";
+    let lastResult: ExecutionResult = { output: "", completed: false, error: false };
 
     for (let i = 0; i < n; i++) {
-        const stepResult = executeStep();
-        if (stepResult.completed) {
-            completed = true;
+        lastResult = executeStep();
+        
+        if (lastResult.error || lastResult.completed) {
             break;
         }
-        if (stepResult.error) {
-            error = true;
-            break;
-        }
-        output += stepResult.output;
     }
 
-    return { output, completed, error };
+    return lastResult;
 }
 
 /**

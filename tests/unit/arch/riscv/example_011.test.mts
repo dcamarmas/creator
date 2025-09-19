@@ -31,7 +31,9 @@ main:
 
     lw ra, 0(sp)
     addi sp, sp, 4
-    jr ra
+    # exit program
+    li a7, 10
+    ecall
 
 sum:
     add  t1, a0, a1
@@ -63,7 +65,6 @@ sub:
                 x10: BigInt.asIntN(32, 0xffffff70n), // a0 should contain 0xffffff70 (-144 in 2's complement)
                 x11: 0x5an, // a1 should contain 0x5a (90 in decimal)
                 x12: 0x2dn, // a2 should contain 0x2d (45 in decimal)
-                x17: 0x1n, // a7 should contain 0x1 (syscall for print_int)
             },
             display: "-144", // Display should show '-144'
             keyboard: "", // Keyboard buffer should be empty

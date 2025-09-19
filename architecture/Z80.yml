@@ -137,6 +137,16 @@ components:
         value: 0
         default_value: 0
         properties: [read, write]
+      - name: [IFF1]
+        nbits: "1"
+        value: 0
+        default_value: 0
+        properties: [read, write]
+      - name: [IFF2]
+        nbits: "1"
+        value: 0
+        default_value: 0
+        properties: [read, write]
 
 memory_layout:
   - name: text start
@@ -3751,8 +3761,8 @@ instructions:
         - field: opcode
           value: "0xFB"
       definition: |
-        // Enable interrupts. This is a no-op in the current implementation.
-        // In a real Z80, this would enable the interrupt system.
+        IFF1 = 1n;
+        IFF2 = 1n;
     - name: ret m
       template: standard
       clk_cycles: 11 # 5 if not taken
@@ -3806,8 +3816,8 @@ instructions:
         - field: opcode
           value: "0xF3"
       definition: |
-        // Enable interrupts. This is a no-op in the current implementation.
-        // In a real Z80, this would enable the interrupt system.
+        IFF1 = 0n;
+        IFF2 = 0n;
         
     - name: rst 38h
       template: standard

@@ -302,9 +302,20 @@ function processCurrentInstruction(draw, enableCache = true) {
         for (let i = 0; i < MAXNWORDS; i++) {
             // Calculate the target address based on the original pc_address and the loop index
             const target_address = pc_address + BigInt(i) * word_size_in_bytes;
-
-            // Read the word at the calculated address
-            const wordBytes = main_memory.readWord(target_address);
+            let wordBytes;
+            try {
+                // Read the word at the calculated address
+                wordBytes = main_memory.readWord(target_address);
+            } catch (e) {
+                draw.danger.push(status.execution_index);
+                status.execution_index = -1; // Set execution index to -1 to indicate error
+                return packExecute(
+                    true,
+                    "Error reading memory at address: " + target_address + " - " + e.message,
+                    "danger",
+                    draw,
+                );
+            }
             const word = Array.from(new Uint8Array(wordBytes))
                 .map(byte => byte.toString(16).padStart(2, "0"))
                 .join("");
