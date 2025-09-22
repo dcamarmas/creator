@@ -674,12 +674,40 @@
                     '               <b-container fluid align-h="center" class="mx-0 px-0">' +
                     '                 <b-row cols="1" align-h="center">' +
                     '                   <b-col class="pt-2">' +
-                    '                     <label for="range-6">(2) Install the ESP32 Software (only the first time):</label>' +
+                    '                     <label for="range-6">(2) Install ESP-IDF framework (only the first time):</label>' +
                     '                     <b-card class="text-center">' +
                     '                       <b-row no-gutters>' +
                     '                         <b-col md="12">' +
                     '                           <b-card-text style="text-align: left;margin:2%;">' +
-                    '                             <span>Follow the instructions from: <a href="https://docs.espressif.com/projects/esp-idf/en/latest/esp32/" target="_blank">https://docs.espressif.com/projects/esp-idf/en/latest/esp32/</a></span>' +
+                    '                             <span>Follow the instructions from: <a href="https://github.com/espressif/esp-idf/releases/tag/v5.3.2" target="_blank">https://github.com/espressif/esp-idf/releases/tag/v5.3.2</a></span>' +
+                    '                           </b-card-text>' +
+                    '                         </b-col>' +
+                    '                       </b-row>' +
+                    '                     </b-card>' +
+                    '                   </b-col>' +
+                    '                 </b-row>' +
+                    '               </b-container>' +
+                    ' ' +
+                                        '               <b-container fluid align-h="center" class="mx-0 px-0">' +
+                    '                 <b-row cols="1" align-h="center">' +
+                    '                   <b-col class="pt-2">' +
+                    '                     <label for="range-6">(!!) (NEW) Install the python version stable for this driver(python 3.9):</label>' +
+                    '                     <b-card class="text-center">' +
+                    '                       <b-row no-gutters>' +
+                    '                         <b-col md="12">' +
+                    '                           <b-card-text style="text-align: left;margin:2%;">' +
+                    '                                  <span><b>How to install Python 3.9:</b></span>' +
+                    '                                  <pre style="background-color:#f5f5f5; padding:10px; border-radius:5px; margin-top:5px;">' +
+                                                        'sudo apt install software-properties-common\n' +
+                                                        'sudo add-apt-repository ppa:deadsnakes/ppa\n' +
+                                                        'sudo apt install python3.9' +
+                    '                                  </pre>' +
+                    '                              </div>' +
+                    '                              <div style="margin-bottom:1em;">' +
+                    '                                  <span><b>How to change Python environment if you have another installed:</b></span>' +
+                    '                                  <code style="background-color:#f5f5f5; padding:5px 10px; border-radius:5px; display:block; margin-top:5px;">' +
+                    'sudo update-alternatives --set python3 /usr/bin/python3.9' +
+                    '                                  </code>' +
                     '                           </b-card-text>' +
                     '                         </b-col>' +
                     '                       </b-row>' +
@@ -708,7 +736,25 @@
                     '               <b-container fluid align-h="center" class="mx-0 px-0">' +
                     '                 <b-row cols="1" align-h="center">' +
                     '                   <b-col class="pt-2">' +
-                    '                     <label for="range-6">(4) Download the driver:</label>' +
+                    '                     <label for="range-6">(4) (NEW) Install additional packages for debug:</label>' +
+                    '                     <b-card class="text-center">' +
+                    '                       <b-row no-gutters>' +
+                    '                         <b-col md="12">' +
+                    '                           <b-card-text style="text-align: left;margin:2%;">' +
+                    '                              <span>Install </span><a href="https://docs.espressif.com/projects/esp-idf/en/v3.3.3/api-guides/jtag-debugging/setup-openocd-linux.html" target="_blank">Openocd</a><br>' +
+                    '                              <span>Install the GDB web interface: </span><code>pip3 install gdbgui</code> ' +
+                    '                           </b-card-text>' +
+                    '                         </b-col>' +
+                    '                       </b-row>' +
+                    '                     </b-card>' +
+                    '                   </b-col>' +
+                    '                 </b-row>' +
+                    '               </b-container>' +
+                    ' ' +
+                    '               <b-container fluid align-h="center" class="mx-0 px-0">' +
+                    '                 <b-row cols="1" align-h="center">' +
+                    '                   <b-col class="pt-2">' +
+                    '                     <label for="range-6">(5) Download the driver:</label>' +
                     '                     <b-button class="btn btn-sm btn-block" variant="outline-primary" @click="download_driver"><span class="fas fa-download"></span> Download Driver</b-button>' +
                     '                   </b-col>' +
                     '                 </b-row>' +
