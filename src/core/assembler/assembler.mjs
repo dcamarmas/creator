@@ -110,8 +110,8 @@ export function precomputeInstructions(sourceCode, sourceMap, tags = null) {
     let memory = main_memory.getWrittenAddresses();
     memory = memory.filter(
         addr =>
-            addr >= Number(textSegment.startAddress) &&
-            addr <= Number(textSegment.endAddress),
+            addr >= Number(textSegment.start) &&
+            addr <= Number(textSegment.end),
     );
     if (memory.length === 0) {
         console.error("No memory written, cannot precompute instructions");

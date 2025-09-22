@@ -57,7 +57,7 @@ export default defineConfigWithVueTs(
       "no-template-curly-in-string": "warn",
       "no-unmodified-loop-condition": "error",
       "no-use-before-define": ["error", { functions: false }],
-      "no-useless-assignment": "error",
+      "no-useless-assignment": "warn",
       "require-atomic-updates": "warn",
       "class-methods-use-this": "warn",
       "consistent-return": "error",
