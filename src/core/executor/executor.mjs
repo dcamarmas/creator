@@ -458,8 +458,8 @@ export function step() {
         // Only consider addresses within the text segment
         const textWritten = written.filter(
             addr =>
-                addr >= Number(textSegment.startAddress) &&
-                addr <= Number(textSegment.endAddress),
+                addr >= Number(textSegment.start) &&
+                addr <= Number(textSegment.end),
         );
         if (textWritten.length > 0) {
             const maxTextAddr = Math.max(...textWritten);
@@ -534,8 +534,12 @@ export function crex_show_notification(msg, level) {
     if (typeof window !== "undefined") show_notification(msg, level);
     else console.log(level.toUpperCase() + ": " + msg);
 }
-// Modify the stack limit
 
+/**
+ * Modifies the stack limit
+ *
+ * @param {bigint} stackLimit
+ */
 export function writeStackLimit(stackLimit) {
     const draw = {
         space: [],
@@ -561,8 +565,8 @@ export function writeStackLimit(stackLimit) {
     // Check if stack pointer would be placed in data segment
     if (
         dataSegment &&
-        stackLimitBigInt <= dataSegment.endAddress &&
-        stackLimitBigInt >= dataSegment.startAddress
+        stackLimitBigInt <= dataSegment.end &&
+        stackLimitBigInt >= dataSegment.start
     ) {
         draw.danger.push(status.execution_index);
         throw packExecute(
@@ -576,8 +580,8 @@ export function writeStackLimit(stackLimit) {
     // Check if stack pointer would be placed in text segment
     if (
         textSegment &&
-        stackLimitBigInt <= textSegment.endAddress &&
-        stackLimitBigInt >= textSegment.startAddress
+        stackLimitBigInt <= textSegment.end &&
+        stackLimitBigInt >= textSegment.start
     ) {
         draw.danger.push(status.execution_index);
         throw packExecute(
@@ -591,15 +595,24 @@ export function writeStackLimit(stackLimit) {
     // Get current stack pointer from memory segments
     const stackSegment = segments.get("stack");
 
+    // Check if stack pointer would be placed in stack segment
+    if (stackSegment && stackLimitBigInt > stackSegment.end) {
+        draw.danger.push(status.execution_index);
+        throw packExecute(
+            true,
+            "Stack pointer cannot be outside the stack segment",
+            "danger",
+            null,
+        );
+    }
+
     stackTracker.updateCurrentFrame(stackLimit);
 
     // Update the stack segment in the memory layout if it exists
     if (stackSegment) {
         // Update the memory segment's start address to reflect the new stack pointer
-        stackSegment.start =
-            "0x" + stackLimitBigInt.toString(16).padStart(8, "0").toUpperCase();
-        stackSegment.startAddress = stackLimitBigInt;
+        stackSegment.start = Number(stackLimitBigInt);
         // And update the size of the stack segment
-        stackSegment.size = stackSegment.endAddress - stackSegment.startAddress;
+        stackSegment.size = stackSegment.end - stackSegment.start;
     }
 }
