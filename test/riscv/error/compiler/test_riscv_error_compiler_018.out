@@ -1,6 +1,6 @@
 
 
-[E22] Error: Value `74565` is outside of the valid range of the field
+[E23] Error: Value `74565` is outside of the valid range of the field
    ╭─[ assembly:7:20 ]
    │
  7 │   example:   .half 0x12345

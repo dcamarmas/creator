@@ -259,7 +259,7 @@ function assembly_compiler(library)
             // Extract data elements and load them on memory
             const data_mem = compiled.data;
             for (var i = 0; i < data_mem.length; i++) {
-                let data = compiled.data[i]
+                let data = data_mem[i]
                 const size = Number(data.size());
                 const addr = Number(data.address());
                 switch (data.data_category()) {
