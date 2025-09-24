@@ -535,7 +535,7 @@
                     }
                     totalInstructions++;
                     footerTotalInstructionsEl.textContent = totalInstructions;
-                    logInstruction(pc_value, ret.instructionData);
+                    // logInstruction(pc_value, ret.instructionData);
                     if (creator.status.execution_index === -2) {
                         haltEmulation('Execution Halted (HALT instruction).', 'ok');
                     }
@@ -704,11 +704,17 @@
                 if (event.target === breakpointAddressInput) return;
                 if (!isLoaded) return;
                 event.preventDefault();
-                let charCode = event.key.charCodeAt(0);
-                if (event.key === "Enter") charCode = 13;
-                if (event.key === "Backspace") charCode = 8;
-                if (event.key.length > 1) return;
-                keyboardBuffer.push(BigInt(charCode));
+                
+                // Handle ZX Spectrum keyboard matrix
+                z80.Z80.pressKey(event.code);
+            });
+
+            document.addEventListener('keyup', (event) => {
+                if (event.target === breakpointAddressInput) return;
+                if (!isLoaded) return;
+                
+                // Handle ZX Spectrum keyboard matrix
+                z80.Z80.releaseKey(event.code);
             });
 
             clearSessionBtn.addEventListener('click', () => {

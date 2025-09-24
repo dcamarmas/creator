@@ -76,12 +76,14 @@ export function handleInterrupt() {
     console_log("Interruption detected");
     status.execution_mode = ExecutionMode.Kernel;
 
-    // save PC to EPC
+    // save PC to EPC (if EPC exists in the current architecture)
     const epc_reg = crex_findReg_bytag("exception_program_counter");
     const pc_reg = crex_findReg_bytag("program_counter");
 
     const pc_reg_value = readRegister(pc_reg.indexComp, pc_reg.indexElem);
-    writeRegister(pc_reg_value, epc_reg.indexComp, epc_reg.indexElem);
+    if (epc_reg.match === 1) {
+        writeRegister(pc_reg_value, epc_reg.indexComp, epc_reg.indexElem);
+    }
 
     // jump to interruption handler
     const handler_address = eval(architecture.interrupts.get_handler_addr);

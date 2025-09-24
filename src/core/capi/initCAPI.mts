@@ -48,8 +48,6 @@ export function initCAPI() {
         Z80,
         MIPS,
         REG,
-
-        REG,
         INTERRUPTS,
     };
 
