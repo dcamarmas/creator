@@ -238,9 +238,23 @@ function execute_instruction ( )
                 }
 
                 // value = get_number_binary(bin) ;
-                value     = (parseInt(bin, 2) << architecture.instructions[i].fields[f].padding).toString(16);
-                value_len = Math.abs(instruction_fields[f].startbit - instruction_fields[f].stopbit) ;
-                value     = '0x' + value.padStart(value_len/4, '0') ;
+                value = parseInt(bin, 2)
+                // If the value is signed and the MSB is 1 (negative), convert
+                // it to positive with two's complement and back to a negative
+                // js number
+                if (!["inm-unsigned", "address"].includes(instruction_fields[f].type) && bin[0] == "1") {
+                  // NOTE: we need to perform two's complement manually because
+                  // js numbers are 32 bits, but we usually want to use fewer
+
+                  // XOR mask to invert bits, `bin.length` 1s
+                  var mask = (1 << bin.length) - 1;
+                  // Apply two's complement again to transform the value to
+                  // positive preserving numeric value of the bits
+                  value = (value ^ mask) + 1;
+                  // Convert the value to negative
+                  value = -value
+                }
+                value     = value << architecture.instructions[i].fields[f].padding;
                 break; 
 
               default:
