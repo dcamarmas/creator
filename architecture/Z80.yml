@@ -149,18 +149,15 @@ components:
         properties: [read, write]
 
 memory_layout:
-  - name: text start
-    value: "0x0000"
-  - name: text end
-    value: "0x3FFF"
-  - name: data start
-    value: "0x4000"
-  - name: data end
-    value: "0x7FFF"
-  - name: stack start
-    value: "0xFFFE"
-  - name: stack end
-    value: "0xFFFF"
+  text:
+    start: 0x0000
+    end: 0x03FF
+  data:
+    start: 0x0400
+    end: 0x7FFF
+  stack:
+    start: 0xFFFE
+    end: 0xFFFF
 
 templates:
   # Main Instructions
@@ -206,6 +203,24 @@ templates:
         startbit: 7
         stopbit: 0
         word: 3
+
+  # IX Instructions
+  - name: DD
+    nwords: 2
+    clk_cycles: 1
+    fields:
+      - name: opcode1
+        type: co
+        startbit: 7
+        stopbit: 0
+        order: 0
+        word: 0
+        valueField: "11011101"
+      - name: opcode2
+        type: cop
+        startbit: 7
+        stopbit: 0
+        word: 1
 
   # Misc. Instructions
   - name: ED
@@ -342,6 +357,26 @@ instructions:
         temp_reg = F;
         F = F_prime;
         F_prime = temp_reg;
+  
+    - name: djnz
+      template: standard
+      nwords: 2
+      clk_cycles: 13 # 8 if not taken
+      fields:
+        - field: opcode
+          value: "0x10"
+        - field: e
+          type: inm-signed
+          startbit: 7
+          stopbit: 0
+          order: 1
+          word: 1
+      definition: |
+        B = (B - 1n) & 0xFFn;
+        if (B !== 0n) {
+            // PC is already at address of next instruction, so add offset.
+            PC = (PC + e) & 0xFFFFn;
+        }
 
     - name: ld
       template: standard
@@ -384,6 +419,17 @@ instructions:
         // Loads 16-bit immediate into HL. Low byte to L, high byte to H.
         L = nn & 0xFFn;
         H = (nn >> 8n) & 0xFFn;
+      
+    - name: cmp
+      template: standard
+      nwords: 1
+      clk_cycles: 4
+      fields:
+        - field: opcode
+          value: "0x2f"
+      definition: |
+        // The contents of A are inverted (one's complement)
+        A = (~A) & 0xFFn;
 
     - name: ld
       template: standard
@@ -419,25 +465,6 @@ instructions:
           word: [2, 1]
       definition: "PC = nn;"
 
-    - name: djnz
-      template: standard
-      nwords: 2
-      clk_cycles: 13 # 8 if not taken
-      fields:
-        - field: opcode
-          value: "0x10"
-        - field: e
-          type: inm-signed
-          startbit: 7
-          stopbit: 0
-          order: 1
-          word: 1
-      definition: |
-        B = (B - 1n) & 0xFFn;
-        if (B !== 0n) {
-            // PC is already at address of next instruction, so add offset.
-            PC = (PC + e) & 0xFFFFn;
-        }
     - name: jr
       template: standard
       nwords: 2
@@ -3157,6 +3184,23 @@ instructions:
         C = CAPI.MEM.read(nn, 1);
         B = CAPI.MEM.read(nn + 1n, 1);
 
+    - name: in
+      template: ED
+      nwords: 2
+      clk_cycles: 12
+      fields:
+        - field: opcode2
+          value: "0x78"
+        - field: port
+          type: inm-unsigned
+          startbit: 7
+          stopbit: 0
+          order: 1
+          word: 1
+      definition: |
+        // A byte from the port at the 16-bit address contained in the BC register pair is written to A.
+        A = CAPI.Z80.read((B << 8n) | C);
+
     - name: scf
       template: standard
       clk_cycles: 4
@@ -3682,6 +3726,26 @@ instructions:
             CAPI.MEM.write(SP, 1, PC & 0xFFn);
             PC = nn;
         }
+
+    - name: xor
+      template: standard
+      nwords: 2
+      clk_cycles: 7
+      fields:
+        - field: opcode
+          value: "0xEE"
+        - field: n
+          type: inm-unsigned
+          startbit: 7
+          stopbit: 0
+          order: 1
+          word: 1
+      definition: |
+        // Performs a bitwise logical XOR between the accumulator and the immediate value n.
+        A = A ^ n;
+        // H, N, and C flags are reset. S, Z, and P/V are set based on the result.
+        F = CAPI.Z80.calculateFlags_LOGICAL(A, 0);
+
     - name: rst 28h
       template: standard
       clk_cycles: 11
@@ -3831,6 +3895,367 @@ instructions:
         SP = (SP - 1n) & 0xFFFFn;
         CAPI.MEM.write(SP, 1, PC & 0xFFn);
         PC = 0x38n;
+
+    # RLC r
+    - name: rlc
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x00"
+        - field: instructionFormatting
+          type: skip
+          value: "b"
+          order: 1
+      definition: |
+        const msb = (B & 0x80n) >> 7n;
+        B = ((B << 1n) | msb) & 0xFFn;
+        F = CAPI.Z80.calculateFlags_ROTATE(B, msb);
+
+    - name: rlc
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x01"
+        - field: instructionFormatting
+          type: skip
+          value: "c"
+          order: 1
+      definition: |
+        const msb = (C & 0x80n) >> 7n;
+        C = ((C << 1n) | msb) & 0xFFn;
+        F = CAPI.Z80.calculateFlags_ROTATE(C, msb);
+
+    - name: rlc
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x02"
+        - field: instructionFormatting
+          type: skip
+          value: "d"
+          order: 1
+      definition: |
+        const msb = (D & 0x80n) >> 7n;
+        D = ((D << 1n) | msb) & 0xFFn;
+        F = CAPI.Z80.calculateFlags_ROTATE(D, msb);
+
+    - name: rlc
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x03"
+        - field: instructionFormatting
+          type: skip
+          value: "e"
+          order: 1
+      definition: |
+        const msb = (E & 0x80n) >> 7n;
+        E = ((E << 1n) | msb) & 0xFFn;
+        F = CAPI.Z80.calculateFlags_ROTATE(E, msb);
+
+    - name: rlc
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x04"
+        - field: instructionFormatting
+          type: skip
+          value: "h"
+          order: 1
+      definition: |
+        const msb = (H & 0x80n) >> 7n;
+        H = ((H << 1n) | msb) & 0xFFn;
+        F = CAPI.Z80.calculateFlags_ROTATE(H, msb);
+
+    - name: rlc
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x05"
+        - field: instructionFormatting
+          type: skip
+          value: "l"
+          order: 1
+      definition: |
+        const msb = (L & 0x80n) >> 7n;
+        L = ((L << 1n) | msb) & 0xFFn;
+        F = CAPI.Z80.calculateFlags_ROTATE(L, msb);
+        
+    - name: rlc
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x07"
+        - field: instructionFormatting
+          type: skip
+          value: "a"
+          order: 1
+      definition: |
+        const msb = (A & 0x80n) >> 7n;
+        A = ((A << 1n) | msb) & 0xFFn;
+        F = CAPI.Z80.calculateFlags_ROTATE(A, msb);
+
+    # RLC (HL)
+    - name: rlc
+      template: CB
+      clk_cycles: 15
+      fields:
+        - field: opcode2
+          value: "0x06"
+        - field: instructionFormatting
+          type: skip
+          value: "(hl)"
+          order: 1
+      definition: |
+        const addr = (H << 8n) | L;
+        const value = CAPI.MEM.read(addr, 1);
+        const msb = (value & 0x80n) >> 7n;
+        const result = ((value << 1n) | msb) & 0xFFn;
+        CAPI.MEM.write(addr, 1, result);
+        F = CAPI.Z80.calculateFlags_ROTATE(result, msb);
+
+    # SRL r
+    - name: srl
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x38"
+        - field: instructionFormatting
+          type: skip
+          value: "b"
+          order: 1
+      definition: |
+        const lsb = B & 0x01n;
+        B = B >> 1n;
+        F = CAPI.Z80.calculateFlags_SRL(B, lsb);
+
+    - name: srl
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x39"
+        - field: instructionFormatting
+          type: skip
+          value: "c"
+          order: 1
+      definition: |
+        const lsb = C & 0x01n;
+        C = C >> 1n;
+        F = CAPI.Z80.calculateFlags_SRL(C, lsb);
+
+    - name: srl
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x3A"
+        - field: instructionFormatting
+          type: skip
+          value: "d"
+          order: 1
+      definition: |
+        const lsb = D & 0x01n;
+        D = D >> 1n;
+        F = CAPI.Z80.calculateFlags_SRL(D, lsb);
+
+    - name: srl
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x3B"
+        - field: instructionFormatting
+          type: skip
+          value: "e"
+          order: 1
+      definition: |
+        const lsb = E & 0x01n;
+        E = E >> 1n;
+        F = CAPI.Z80.calculateFlags_SRL(E, lsb);
+
+    - name: srl
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x3C"
+        - field: instructionFormatting
+          type: skip
+          value: "h"
+          order: 1
+      definition: |
+        const lsb = H & 0x01n;
+        H = H >> 1n;
+        F = CAPI.Z80.calculateFlags_SRL(H, lsb);
+
+    - name: srl
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x3D"
+        - field: instructionFormatting
+          type: skip
+          value: "l"
+          order: 1
+      definition: |
+        const lsb = L & 0x01n;
+        L = L >> 1n;
+        F = CAPI.Z80.calculateFlags_SRL(L, lsb);
+
+    - name: srl
+      template: CB
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0x3F"
+        - field: instructionFormatting
+          type: skip
+          value: "a"
+          order: 1
+      definition: |
+        const lsb = A & 0x01n;
+        A = A >> 1n;
+        F = CAPI.Z80.calculateFlags_SRL(A, lsb);
+
+    # SRL (HL)
+    - name: srl
+      template: CB
+      clk_cycles: 15
+      fields:
+        - field: opcode2
+          value: "0x3E"
+        - field: instructionFormatting
+          type: skip
+          value: "(hl)"
+          order: 1
+      definition: |
+        const addr = (H << 8n) | L;
+        const value = CAPI.MEM.read(addr, 1);
+        const lsb = value & 0x01n;
+        const result = value >> 1n;
+        CAPI.MEM.write(addr, 1, result);
+        F = CAPI.Z80.calculateFlags_SRL(result, lsb);
+
+    - name: ld
+      template: DD
+      clk_cycles: 14
+      nwords: 4
+      fields:
+        - field: opcode2
+          value: "0x21"
+        - field: instructionFormatting
+          type: skip
+          value: "ix,"
+          order: 1
+        - field: nn
+          type: inm-unsigned
+          startbit: 15
+          stopbit: 0
+          order: 2
+          word: [3, 2]
+      definition: |
+        // Loads nn into register IX.
+        IX = nn;
+
+    - name: add
+      template: DD
+      clk_cycles: 15
+      fields:
+        - field: opcode2
+          value: "0x09"
+        - field: instructionFormatting
+          type: skip
+          value: "ix, bc"
+          order: 1
+      definition: |
+        // The value of BC is added to IX.
+        const value = (((B << 8n) | C) - 1n) & 0xFFFFn;
+        F = CAPI.Z80.calculateFlags_ADD16(IX, value, F);
+        IX = (IX + value) & 0xFFFFn;
+
+    - name: add
+      template: DD
+      clk_cycles: 15
+      fields:
+        - field: opcode2
+          value: "0x29"
+        - field: instructionFormatting
+          type: skip
+          value: "ix, ix"
+          order: 1
+      definition: |
+        // The value of IX is added to IX.
+        let prevIX = IX;
+        IX = (IX + IX) & 0xFFFFn;
+        F = CAPI.Z80.calculateFlags_ADD16(prevIX, prevIX, F)
+
+    - name: jp
+      template: DD
+      nwords: 2
+      clk_cycles: 8
+      fields:
+        - field: opcode2
+          value: "0xE9"
+        - field: instructionFormatting
+          type: skip
+          value: "(ix)"
+          order: 1
+      definition: |
+        PC = IX;
+
+    # SRL (IX+d)
+    - name: srl
+      template: DDCB
+      clk_cycles: 23
+      fields:
+        - field: opcode3
+          value: "0x3E"
+        - field: imm
+          order: 2
+          suffix: ")"
+        - field: instructionFormatting
+          type: skip
+          value: "(ix+"
+          order: 1
+      definition: |
+        const addr = (IX + imm) & 0xFFFFn;
+        const value = CAPI.MEM.read(addr, 1);
+        const lsb = value & 0x01n;
+        const result = value >> 1n;
+        CAPI.MEM.write(addr, 1, result);
+        F = CAPI.Z80.calculateFlags_SRL(result, lsb);
+
+    # SRL (IY+d)
+    - name: srl
+      template: FDCB
+      clk_cycles: 23
+      fields:
+        - field: opcode3
+          value: "0x3E"
+        - field: d
+          order: 2
+          suffix: ")"
+        - field: instructionFormatting
+          type: skip
+          value: "(iy+"
+          order: 1
+      definition: |
+        const addr = (IY + d) & 0xFFFFn;
+        const value = CAPI.MEM.read(addr, 1);
+        const lsb = value & 0x01n;
+        const result = value >> 1n;
+        CAPI.MEM.write(addr, 1, result);
+        F = CAPI.Z80.calculateFlags_SRL(result, lsb);
 
     # BIT b, r instructions
     - name: bit
@@ -6783,9 +7208,26 @@ instructions:
           value: "1"
           order: 1
       definition: |
-        // Set the interrupt mode (IM)
-        // not implemented
-        // console.log("Set IM to 1 (not implemented)");
+        // Set the interrupt mode to 1 (stored in internal CPU state)
+        if (typeof CAPI.Z80.interruptMode === 'undefined') {
+          CAPI.Z80.interruptMode = 0;
+        }
+        CAPI.Z80.interruptMode = 1;
+
+    - name: reti
+      template: ED
+      nwords: 2
+      clk_cycles: 14
+      fields:
+        - field: opcode2
+          value: "0x4D"
+      definition: |
+        // Return from interrupt
+        // Restore IFF1 from IFF2 (re-enable interrupts if they were enabled before)
+        IFF1 = IFF2;
+        // Pop return address from stack
+        PC = CAPI.MEM.read(SP, 1) | (CAPI.MEM.read((SP + 1n) & 0xFFFFn, 1) << 8n);
+        SP = (SP + 2n) & 0xFFFFn;
 
     - name: ld
       template: FD
@@ -7734,3 +8176,92 @@ instructions:
         const addr = (IY + d) & 0xFFFFn;
         const value = CAPI.MEM.read(addr, 1);
         CAPI.MEM.write(addr, 1, value & ~0x80n);
+
+interrupts:
+  enabled: true
+  check: |
+    if (CAPI.Z80.interruptPin) {
+      // If we have an interrupts request (INT pin is asserted)
+
+      // Save the current PC on the stack, so we know where to return
+      // Z80 pushes high byte first, then low byte (little endian)
+      let returnAddress = CAPI.REG.read('PC');
+      let sp = CAPI.REG.read('SP');
+      
+      // Push high byte first
+      sp = (sp - 1n) & 0xFFFFn;
+      CAPI.MEM.write(sp, 1, (returnAddress >> 8n) & 0xFFn);
+      
+      // Then push low byte
+      sp = (sp - 1n) & 0xFFFFn;
+      CAPI.MEM.write(sp, 1, returnAddress & 0xFFn);
+      
+      // Update SP
+      CAPI.REG.write(sp, 'SP');
+
+      InterruptType.External;
+    } else {
+      null;
+    }
+  is_enabled: |
+    // Check if interrupts are enabled (IFF1 flag)
+    !!(CAPI.REG.read('IFF1') & 1n)
+  enable: |
+    // Enable interrupts - set both IFF1 and IFF2
+    CAPI.REG.write(1n, 'IFF1');
+    CAPI.REG.write(1n, 'IFF2');
+  disable: |
+    // Disable interrupts - clear both IFF1 and IFF2  
+    CAPI.REG.write(0n, 'IFF1');
+    CAPI.REG.write(0n, 'IFF2');
+  get_handler_addr: |
+    if (CAPI.Z80.interruptMode === 1) {
+      // Mode 1: Always jump to RST 38h (0x0038)
+      0x0038n;
+    } else if (CAPI.Z80.interruptMode === 0) {
+      // Mode 0: Execute instruction from data bus (simplified as RST 38h)
+      0x0038n;
+    } else {
+      0x0038n;
+    }
+  clear: |
+    // Clear the simulated INT pin
+    if (typeof CAPI.Z80.interruptPin  !== 'undefined') {
+      CAPI.Z80.interruptPin = false;
+    }
+  create: |
+    (interrupt_type) => {
+      // Simulate asserting the INT pin (like external hardware would do)
+      if (typeof CAPI.Z80.interruptPin === 'undefined') {
+        CAPI.Z80.interruptPin = false;
+      }
+      
+      switch (interrupt_type) {
+        case InterruptType.External:
+          CAPI.Z80.interruptPin = true; // Assert INT pin
+          break;
+        case InterruptType.Timer:
+          CAPI.Z80.interruptPin = true; // Timer also uses maskable interrupt
+          break;
+        default:
+          CAPI.Z80.interruptPin = true;
+          break;
+      }
+    };
+
+timer:
+  tick_cycles: 1
+  advance: |
+    CAPI.Z80.timerCounter++;
+  handler: |
+    if (CAPI.Z80.timerCounter >= 70000n) { // Sinclair ZX Spectrum ~50Hz (70000 cycles at 3.5MHz)
+      CAPI.Z80.timerCounter = 0n;
+      CAPI.INTERRUPTS.make(CAPI.INTERRUPTS.Type.Timer);
+    }
+  is_enabled: |
+    // Timer interrupts enabled if global interrupts are enabled
+    !!(CAPI.REG.read('IFF1') & 1n)
+  enable: |
+    true
+  disable: |
+    false

@@ -384,33 +384,34 @@ class OSDriver extends Device {
 }
 
 // TODO: device handler class?
+// TODO: Enable/Disable devices
 
 // { <id>: Device, ...}
 export const devices = new Map<string, Device>([
-    [
-        "console",
-        new ConsoleDevice({
-            ctrl_addr: 0xf0000000,
-            status_addr: 0xf0000004,
-            data: {
-                start: 0xf0000008,
-                end: 0xf000000f,
-            },
-            enabled: true,
-        }),
-    ],
-    [
-        "os",
-        new OSDriver({
-            ctrl_addr: 0xf0000010,
-            status_addr: 0xf0000014,
-            data: {
-                start: 0xf0000018,
-                end: 0xf000001f,
-            },
-            enabled: true,
-        }),
-    ],
+    // [
+    //     "console",
+    //     new ConsoleDevice({
+    //         ctrl_addr: 0xf0000000,
+    //         status_addr: 0xf0000004,
+    //         data: {
+    //             start: 0xf0000008,
+    //             end: 0xf000000f,
+    //         },
+    //         enabled: true,
+    //     }),
+    // ],
+    // [
+    //     "os",
+    //     new OSDriver({
+    //         ctrl_addr: 0xf0000010,
+    //         status_addr: 0xf0000014,
+    //         data: {
+    //             start: 0xf0000018,
+    //             end: 0xf000001f,
+    //         },
+    //         enabled: true,
+    //     }),
+    // ],
 ]);
 
 /* Memory */

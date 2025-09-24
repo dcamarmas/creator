@@ -20,10 +20,6 @@
 
 export const keyboardBuffer = [];
 
-// 2. Setup the host listener for Node.js standard input.
-//    This code runs once when the emulator module is loaded.
-
-// A private helper function to efficiently check for even parity using BigInts.
 function _isEvenParity(value) {
     let v = BigInt(value) & 0xffn;
     v ^= v >> 4n;
@@ -41,6 +37,69 @@ export const Z80 = {
     C_FLAG: 0x01n,
 
     borderColor: 0n,
+    interruptMode: 0, // Default interrupt mode is 0
+    interruptPin: 0, // Default interrupt pin state is low (0)
+    timerCounter: 0n,
+    /**
+     * @property {Object<string, boolean>} keyState
+     * @description Holds the current state of the Spectrum keyboard.
+     * Keys are identified by their JavaScript event.code string.
+     * `true` means the key is currently pressed.
+     */
+    keyState: {},
+
+    // The ZX Spectrum keyboard matrix layout (obtained from documented disassembly)
+    // ; ---------------------------------------------------------------------------
+    // ;
+    // ;         0     1     2     3     4 -Bits-  4     3     2     1     0
+    // ; PORT                                                                    PORT
+    // ;
+    // ; F7FE  [ 1 ] [ 2 ] [ 3 ] [ 4 ] [ 5 ]  |  [ 6 ] [ 7 ] [ 8 ] [ 9 ] [ 0 ]   EFFE
+    // ;  ^                                   |                                   v
+    // ; FBFE  [ Q ] [ W ] [ E ] [ R ] [ T ]  |  [ Y ] [ U ] [ I ] [ O ] [ P ]   DFFE
+    // ;  ^                                   |                                   v
+    // ; FDFE  [ A ] [ S ] [ D ] [ F ] [ G ]  |  [ H ] [ J ] [ K ] [ L ] [ ENT ] BFFE
+    // ;  ^                                   |                                   v
+    // ; FEFE  [SHI] [ Z ] [ X ] [ C ] [ V ]  |  [ B ] [ N ] [ M ] [sym] [ SPC ] 7FFE
+    // ;  ^     $27                                                 $18           v
+    // ; Start                                                                   End
+    // ;        00100111                                            00011000
+    // ;
+    // ; ---------------------------------------------------------------------------
+
+    /**
+     * @property {Object<number, string[]>} keyMap
+     * @description Maps the high byte of a ULA port address to an array of 5 key codes.
+     * The order in the array corresponds to bits 0 through 4.
+     * The key codes are JavaScript `event.code` strings.
+     */
+    keyMap: {
+        0xF7: ['Digit1', 'Digit2', 'Digit3', 'Digit4', 'Digit5'],
+        0xFB: ['KeyQ', 'KeyW', 'KeyE', 'KeyR', 'KeyT'],
+        0xFD: ['KeyA', 'KeyS', 'KeyD', 'KeyF', 'KeyG'],
+        0xFE: ['ShiftLeft', 'KeyZ', 'KeyX', 'KeyC', 'KeyV'],
+        // These are the other way around (look at the diagram above)
+        0xEF: ['Digit0', 'Digit9', 'Digit8', 'Digit7', 'Digit6'],
+        0xDF: ['KeyP', 'KeyO', 'KeyI', 'KeyU', 'KeyY'],
+        0xBF: ['Enter', 'KeyL', 'KeyK', 'KeyJ', 'KeyH'],
+        0x7F: ['Space', 'ShiftRight', 'KeyM', 'KeyN', 'KeyB'],
+    },
+
+    /**
+     * Registers a key as being pressed.
+     * @param {string} code - The `event.code` of the key that was pressed.
+     */
+    pressKey(code) {
+        this.keyState[code] = true;
+    },
+
+    /**
+     * Registers a key as being released.
+     * @param {string} code - The `event.code` of the key that was released.
+     */
+    releaseKey(code) {
+        this.keyState[code] = false;
+    },
 
     /**
      * Calculates flags for an 8-bit INC operation.
@@ -274,17 +333,107 @@ export const Z80 = {
 
         newF |= this.H_FLAG; // H is always set
         // N is always reset
-        
-        // For better accuracy, you might want to copy undocumented flags
-        // newF |= (value & 0x28n); // Copy bits 5 and 3 from the operand
 
         return newF;
     },
 
     /**
+     * Calculates flags for rotate and shift instructions (e.g., RLC, RRC, SLA).
+     * @param {BigInt} result - The 8-bit result of the operation.
+     * @param {BigInt} carry - The new value for the Carry flag (0n or 1n).
+     * @returns {BigInt} The new 8-bit flag register value.
+     */
+    calculateFlags_ROTATE(result, carry) {
+        let newF = 0n;
+
+        // S is set if result is negative
+        if (result & this.S_FLAG) {
+            newF |= this.S_FLAG;
+        }
+
+        // Z is set if result is 0
+        if (result === 0n) {
+            newF |= this.Z_FLAG;
+        }
+
+        // H and N are always reset for these operations
+        
+        // P/V is set for even parity
+        if (_isEvenParity(result)) {
+            newF |= this.PV_FLAG;
+        }
+
+        // C is set from the bit that was shifted out
+        if (carry) { // carry is expected to be 1n or 0n
+            newF |= this.C_FLAG;
+        }
+        
+        return newF;
+    },
+
+    /**
+     * Calculates flags for the SRL (Shift Right Logical) instruction.
+     * @param {BigInt} result - The 8-bit result of the operation.
+     * @param {BigInt} carry - The new value for the Carry flag (0n or 1n), from the original bit 0.
+     * @returns {BigInt} The new 8-bit flag register value.
+     */
+    calculateFlags_SRL(result, carry) {
+        let newF = 0n;
+
+        // S, H, N are always reset for SRL.
+
+        // Z is set if result is 0
+        if (result === 0n) {
+            newF |= this.Z_FLAG;
+        }
+
+        // P/V is set for even parity
+        if (_isEvenParity(result)) {
+            newF |= this.PV_FLAG;
+        }
+
+        // C is set from the bit that was shifted out (original bit 0)
+        if (carry) { // carry is expected to be 1n or 0n
+            newF |= this.C_FLAG;
+        }
+        
+        return newF;
+    },
+
+    /**
+     * Emulates a read from the ULA, specifically handling the keyboard matrix.
+     * It checks the high byte of the port to determine which half-row of keys
+     * to poll and returns a byte representing their state.
+     * @param {BigInt} port - The full 16-bit port address from the IN instruction.
+     * @returns {BigInt} The 8-bit value from the ULA. Bits 0-4 are key states,
+     *                   and bits 5-7 are typically high (1).
+     */
+    readULAKeyboard(port) {
+        const highByte = Number(port >> 8n);
+        const halfRow = this.keyMap[highByte];
+
+        // Start with all 5 key bits high (1), meaning no keys pressed.
+        let result = 0x1Fn;
+
+        if (halfRow) {
+            // If the high byte corresponds to a valid half-row, check each key.
+            for (let i = 0; i < 5; i++) {
+                const keyCode = halfRow[i];
+                // If the key is pressed (true in keyState), set its bit to 0.
+                if (this.keyState[keyCode]) {
+                    result &= ~(1n << BigInt(i));
+                }
+            }
+        }
+
+        // The ULA keyboard bits are D0-D4. Bits D5-D7 are typically high (1).
+        return result | 0xE0n;
+    },
+
+    /**
      * Reads a byte from an I/O port.
      * Implements the non-blocking read from the keyboard buffer.
-     * @param {BigInt} port - The 8-bit port address.
+     * @param {BigInt} port - The port address.
      * @returns {BigInt} The 8-bit value read from the port.
      */
     read(port) {
@@ -296,14 +445,17 @@ export const Z80 = {
             }
             // Return 0 if no key is available.
             return 0n;
+        } else if (this.keyMap[portNum >> 8]) {
+            // ZX Spectrum ULA port.
+            return this.readULAKeyboard(port);
         }
-        // Default for unhandled ports.
-        return 0xffn;
+        // For unhandled ports, return 0xFF (all bits high).
+        return 0xFFn;
     },
 
     /**
      * Writes a byte to an I/O port.
-     * @param {BigInt} port - The 8-bit port address.
+     * @param {BigInt} port - The port address.
      * @param {BigInt} value - The 8-bit value to write.
      */
     write(port, value) {
@@ -312,9 +464,6 @@ export const Z80 = {
         if (portNum === 0x02) {
             // Screen Port
             const valNum = Number(value);
-            // Create a 1-byte buffer from the value and write it directly.
-            // process.stdout will correctly interpret control characters
-            // like \n, \r, \b, etc., when sent this way.
             process.stdout.write(Buffer.from([valNum]));
         } else if (portNum === 0xfe) {
             // ZX Spectrum ULA port.

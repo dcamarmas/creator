@@ -126,7 +126,7 @@ export function precomputeInstructions(sourceCode, sourceMap, tags = null) {
         const words = [];
         // Read up to MAXNWORDS words starting from the current address
         for (let j = 0; j < MAXNWORDS && idx + j < memory.length; j++) {
-            const wordBytes = main_memory.readWord(memory[idx + j]);
+            const wordBytes = main_memory.readWord(BigInt(memory[idx + j]));
             const word = Array.from(new Uint8Array(wordBytes))
                 .map(byte => byte.toString(16).padStart(2, "0"))
                 .join("");

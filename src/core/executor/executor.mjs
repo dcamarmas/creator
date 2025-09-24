@@ -427,12 +427,6 @@ function executeInstructionCycle(draw) {
         return inLoopCheckResult;
     }
 
-    // Handle any pending interrupts
-    handle_interrupts(draw);
-
-    // handle timer
-    handleTimer();
-
     // Update execution index based on PC
     // get_execution_index(draw);
 
@@ -442,6 +436,12 @@ function executeInstructionCycle(draw) {
         return processingResult;
     }
 
+    // Handle any pending interrupts
+    handle_interrupts(draw);
+
+    // handle timer
+    handleTimer();
+    
     // Handle Devices
     handleDevices();
 

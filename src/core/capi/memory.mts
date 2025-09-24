@@ -276,7 +276,6 @@ export const MEM = {
                 raise(
                     
                 `Segmentation fault. You tried to read in the text segment (${toHex(address, 4)})`,
-            ,
                 );
                 creator_executor_exit(true);
             }
