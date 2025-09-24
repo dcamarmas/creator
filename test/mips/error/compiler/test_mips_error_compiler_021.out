@@ -1,6 +1,6 @@
 
 
-[E16] Error: Data at address `0x200001` isn't aligned to size `2` nor word size `4`
+[E17] Error: Data at address `0x200001` isn't aligned to size `2` nor word size `4`
    ╭─[ assembly:9:21 ]
    │
  9 │     example2:   .half 2

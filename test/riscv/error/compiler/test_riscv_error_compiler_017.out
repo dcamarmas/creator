@@ -4,10 +4,10 @@ Error: Unterminated string literal
    ╭─[ assembly:8:34 ]
    │
  8 │     example:    .string "hello world
-   │                                     ┬  
-   │                                     ╰── Caused by this
+   │                         ──────┬─────┬  
+   │                               ╰──────── While parsing this `string`
    │                                     │  
-   │                                     ╰── while parsing this token
+   │                                     ╰── Caused by this
 ───╯
 
 Not executed
