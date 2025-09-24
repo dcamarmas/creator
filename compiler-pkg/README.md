@@ -30,7 +30,7 @@ The compiler currently supports 3 modes of execution:
 ### JS Bindings
 
 JS bindings are supported through `wasm`. In order to build them, the code must first
-be compiled into a `wasm` package with [`wasm-pack`](https://rustwasm.github.io/wasm-pack/installer/).
+be compiled into a `wasm` package with [`wasm-pack`](https://drager.github.io/wasm-pack/installer/).
 This can be done using `wasm-pack build --target [web|nodejs]`, where the target
 depends on if the code is being compiled for `NodeJS` or a browser. The flag `--dev`
 can be added to generate a debug module with a shorter compile time by omitting optimizations.
