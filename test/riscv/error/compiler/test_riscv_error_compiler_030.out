@@ -1,6 +1,6 @@
 
 
-[E12] Error: Main label `main` not found
+[E13] Error: Main label `main` not found
    ╭─[ assembly:8:14 ]
    │
  8 │     li t0, 10
