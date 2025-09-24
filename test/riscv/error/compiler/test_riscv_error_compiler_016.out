@@ -1,13 +1,13 @@
 
 
 Error: Unterminated string literal
-   ╭─[ assembly:8:34 ]
+   ╭─[ assembly:8:33 ]
    │
  8 │     example:    .string hello world"
-   │                                     ┬  
-   │                                     ╰── Caused by this
-   │                                     │  
-   │                                     ╰── while parsing this token
+   │                               ───┬─┬  
+   │                                  ╰──── While parsing this `identifier`
+   │                                    │  
+   │                                    ╰── Caused by this
 ───╯
 
 Not executed

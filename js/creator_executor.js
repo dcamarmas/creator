@@ -189,13 +189,13 @@ function execute_instruction ( )
 
         for (var f = 0; f < instruction_fields.length; f++) 
         {
-          re = new RegExp("[Ff]"+f);
+          re = new RegExp("F"+f);
           var res = instruction_loaded.search(re);
 
           if (res != -1)
           {
             var value = null;
-            re = new RegExp("[Ff]"+f, "g");
+            re = new RegExp("F"+f, "g");
             switch(instruction_fields[f].type)
             {
               case "co":
@@ -263,7 +263,7 @@ function execute_instruction ( )
 
         signatureDef = signatureDef.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
-        re = new RegExp("[fF][0-9]+", "g");
+        re = new RegExp("F[0-9]+", "g");
         signatureDef = signatureDef.replace(re, "(.*?)");
 
         re = new RegExp(",", "g");
