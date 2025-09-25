@@ -41,11 +41,11 @@ jobs:
           bun install -g wasm-pack
           wasm-pack build --target web
           mv pkg/* ../src/core/assembler/creatorAssembler/web/wasm/
-      # - name: Build compiler cli
-      #   run: |
-      #     cd CreatorCompiler
-      #     deno run -A jsr:@deno/wasmbuild
-      #     mv lib/* ../src/core/assembler/creatorAssembler/deno/wasm/
+      - name: Build compiler cli
+        run: |
+          cd CreatorCompiler
+          deno run -A jsr:@deno/wasmbuild
+          mv lib/* ../src/core/assembler/creatorAssembler/deno/wasm/
       - name: Build web
         run: |
           bun install
