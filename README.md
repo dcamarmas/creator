@@ -40,8 +40,19 @@ bun dev:cli
 
 ### Building Web version for production
 ```sh
-bun run build:web
+bun build:web
 ```
+
+The resulting bundle will be saved to `dist/web/creatorV`.
+
+> [!TIP]
+> To test locally the bundle version:
+> ```bash
+> cd dist/web
+> python -m http.server 8080
+> ```
+> And go to [localhost:8080/creatorV](https://localhost:8080/creatorV)
+
 <!--
 TODO: when the code is type-safe, replace build:web to:
 ```
