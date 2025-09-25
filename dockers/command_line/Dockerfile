@@ -27,7 +27,8 @@ RUN apt update && apt-get install -y \
 #Download CREATOR
 RUN git clone https://github.com/creatorsim/creator.git && \
     cd creator && \
-    npm install terser jshint colors yargs readline-sync
+    npm install terser jshint colors yargs readline-sync && \
+    ./mk_min.sh
 
 
 #Create workdir

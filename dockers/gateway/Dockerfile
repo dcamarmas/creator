@@ -54,7 +54,8 @@ RUN mkdir -p /esp && \
 #Download CREATOR
 RUN git clone https://github.com/creatorsim/creator.git && \
     cd creator && \
-    npm install terser jshint colors yargs readline-sync
+    npm install terser jshint colors yargs readline-sync && \
+    ./mk_min.sh
 
 
 #Gateway environment setup
