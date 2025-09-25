@@ -1,19 +1,19 @@
 version: 2.0.0
 
-arch_conf:
-  Name: MIPS-32
-  WordSize: 32
-  Description: The MIPS processor was developed by Dr.John Hennessey and his graduate students at Stanford University in the early 1980s. It is currently one of the major processors in the embedded processor market.
-  Endianness: big_endian
-  Memory Alignment: true
-  Main Function: main
-  Passing Convention: true
-  Sensitive Register Name: true
-  CommentPrefix: "#"
-  StartAddress: 0x0
-  PCOffset: 0
-  ByteSize: 8
-  Assemblers:
+config:
+  name: MIPS-32
+  word_size: 32
+  description: The MIPS processor was developed by Dr.John Hennessey and his graduate students at Stanford University in the early 1980s. It is currently one of the major processors in the embedded processor market.
+  endianness: big_endian
+  memory_alignment: true
+  main_function: main
+  passing_convention: true
+  sensitive_register_name: true
+  comment_prefix: "#"
+  start_address: 0x0
+  pc_offset: 0
+  byte_size: 8
+  assemblers:
     - name: "CreatorCompiler"
       description: "Default Creator Compiler"
 
@@ -24,7 +24,7 @@ components:
     elements:
       - name:
           - PC
-        nbits: '32'
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -33,7 +33,7 @@ components:
           - program_counter
       - name:
           - EPC
-        nbits: '32'
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -42,7 +42,7 @@ components:
           - exception_program_counter
       - name:
           - CAUSE
-        nbits: '32'
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -51,7 +51,7 @@ components:
           - event_cause
       - name:
           - BADVADDR
-        nbits: '32'
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -59,7 +59,7 @@ components:
           - write
       - name:
           - STATUS
-        nbits: '32'
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -68,7 +68,7 @@ components:
           - status_register
       - name:
           - HI
-        nbits: '32'
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -76,7 +76,7 @@ components:
           - write
       - name:
           - LO
-        nbits: '32'
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -84,7 +84,7 @@ components:
           - write
       - name:
           - FIR
-        nbits: '32'
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -92,7 +92,7 @@ components:
           - write
       - name:
           - FCSR
-        nbits: '32'
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -100,7 +100,7 @@ components:
           - write
       - name:
           - FCCR
-        nbits: '32'
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -108,7 +108,7 @@ components:
           - write
       - name:
           - FEXR
-        nbits: '32'
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -121,7 +121,7 @@ components:
       - name:
           - r0
           - zero
-        nbits: '32'
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -129,7 +129,7 @@ components:
       - name:
           - r1
           - at
-        nbits: '32'
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -138,7 +138,7 @@ components:
       - name:
           - r2
           - v0
-        nbits: '32'
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -147,7 +147,7 @@ components:
       - name:
           - r3
           - v1
-        nbits: '32'
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -156,7 +156,7 @@ components:
       - name:
           - r4
           - a0
-        nbits: '32'
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -165,7 +165,7 @@ components:
       - name:
           - r5
           - a1
-        nbits: '32'
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -174,7 +174,7 @@ components:
       - name:
           - r6
           - a2
-        nbits: '32'
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -183,7 +183,7 @@ components:
       - name:
           - r7
           - a3
-        nbits: '32'
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -192,7 +192,7 @@ components:
       - name:
           - r8
           - t0
-        nbits: '32'
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -201,7 +201,7 @@ components:
       - name:
           - r9
           - t1
-        nbits: '32'
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -210,7 +210,7 @@ components:
       - name:
           - r10
           - t2
-        nbits: '32'
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -219,7 +219,7 @@ components:
       - name:
           - r11
           - t3
-        nbits: '32'
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -228,7 +228,7 @@ components:
       - name:
           - r12
           - t4
-        nbits: '32'
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -237,7 +237,7 @@ components:
       - name:
           - r13
           - t5
-        nbits: '32'
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -246,7 +246,7 @@ components:
       - name:
           - r14
           - t6
-        nbits: '32'
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -255,7 +255,7 @@ components:
       - name:
           - r15
           - t7
-        nbits: '32'
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -264,7 +264,7 @@ components:
       - name:
           - r16
           - s0
-        nbits: '32'
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -274,7 +274,7 @@ components:
       - name:
           - r17
           - s1
-        nbits: '32'
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -284,7 +284,7 @@ components:
       - name:
           - r18
           - s2
-        nbits: '32'
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -294,7 +294,7 @@ components:
       - name:
           - r19
           - s3
-        nbits: '32'
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -304,7 +304,7 @@ components:
       - name:
           - r20
           - s4
-        nbits: '32'
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -314,7 +314,7 @@ components:
       - name:
           - r21
           - s5
-        nbits: '32'
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -324,7 +324,7 @@ components:
       - name:
           - r22
           - s6
-        nbits: '32'
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -334,7 +334,7 @@ components:
       - name:
           - r23
           - s7
-        nbits: '32'
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -344,7 +344,7 @@ components:
       - name:
           - r24
           - t8
-        nbits: '32'
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -353,7 +353,7 @@ components:
       - name:
           - r25
           - t9
-        nbits: '32'
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -362,7 +362,7 @@ components:
       - name:
           - r26
           - k0
-        nbits: '32'
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -371,7 +371,7 @@ components:
       - name:
           - r27
           - k1
-        nbits: '32'
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -380,7 +380,7 @@ components:
       - name:
           - r28
           - gp
-        nbits: '32'
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -390,7 +390,7 @@ components:
       - name:
           - r29
           - sp
-        nbits: '32'
+        nbits: 32
         value: 268435452
         default_value: 268435452
         properties:
@@ -400,7 +400,7 @@ components:
       - name:
           - r30
           - fp
-        nbits: '32'
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -410,7 +410,7 @@ components:
       - name:
           - r31
           - ra
-        nbits: '32'
+        nbits: 32
         value: 4294967295
         default_value: 4294967295
         properties:
@@ -422,7 +422,7 @@ components:
     elements:
       - name:
           - f0
-        nbits: '32'
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -430,7 +430,7 @@ components:
           - write
       - name:
           - f1
-        nbits: '32'
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -438,7 +438,7 @@ components:
           - write
       - name:
           - f2
-        nbits: '32'
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -446,7 +446,7 @@ components:
           - write
       - name:
           - f3
-        nbits: '32'
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -454,7 +454,7 @@ components:
           - write
       - name:
           - f4
-        nbits: '32'
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -462,7 +462,7 @@ components:
           - write
       - name:
           - f5
-        nbits: '32'
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -470,7 +470,7 @@ components:
           - write
       - name:
           - f6
-        nbits: '32'
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -478,7 +478,7 @@ components:
           - write
       - name:
           - f7
-        nbits: '32'
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -486,7 +486,7 @@ components:
           - write
       - name:
           - f8
-        nbits: '32'
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -494,7 +494,7 @@ components:
           - write
       - name:
           - f9
-        nbits: '32'
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -502,7 +502,7 @@ components:
           - write
       - name:
           - f10
-        nbits: '32'
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -510,7 +510,7 @@ components:
           - write
       - name:
           - f11
-        nbits: '32'
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -518,7 +518,7 @@ components:
           - write
       - name:
           - f12
-        nbits: '32'
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -526,7 +526,7 @@ components:
           - write
       - name:
           - f13
-        nbits: '32'
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -534,7 +534,7 @@ components:
           - write
       - name:
           - f14
-        nbits: '32'
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -542,7 +542,7 @@ components:
           - write
       - name:
           - f15
-        nbits: '32'
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -550,7 +550,7 @@ components:
           - write
       - name:
           - f16
-        nbits: '32'
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -558,7 +558,7 @@ components:
           - write
       - name:
           - f17
-        nbits: '32'
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -566,7 +566,7 @@ components:
           - write
       - name:
           - f18
-        nbits: '32'
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -574,7 +574,7 @@ components:
           - write
       - name:
           - f19
-        nbits: '32'
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -582,7 +582,7 @@ components:
           - write
       - name:
           - f20
-        nbits: '32'
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -590,7 +590,7 @@ components:
           - write
       - name:
           - f21
-        nbits: '32'
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -598,7 +598,7 @@ components:
           - write
       - name:
           - f22
-        nbits: '32'
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -606,7 +606,7 @@ components:
           - write
       - name:
           - f23
-        nbits: '32'
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -614,7 +614,7 @@ components:
           - write
       - name:
           - f24
-        nbits: '32'
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -622,7 +622,7 @@ components:
           - write
       - name:
           - f25
-        nbits: '32'
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -630,7 +630,7 @@ components:
           - write
       - name:
           - f26
-        nbits: '32'
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -638,7 +638,7 @@ components:
           - write
       - name:
           - f27
-        nbits: '32'
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -646,7 +646,7 @@ components:
           - write
       - name:
           - f28
-        nbits: '32'
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -654,7 +654,7 @@ components:
           - write
       - name:
           - f29
-        nbits: '32'
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -662,7 +662,7 @@ components:
           - write
       - name:
           - f30
-        nbits: '32'
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -670,7 +670,7 @@ components:
           - write
       - name:
           - f31
-        nbits: '32'
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -5086,16 +5086,15 @@ directives:
   - name: .align
     action: align
     size: null
+
 memory_layout:
-  - name: text start
-    value: '0x00000000'
-  - name: text end
-    value: '0x001FFFFF'
-  - name: data start
-    value: '0x00200000'
-  - name: data end
-    value: '0x05BBFCBF'
-  - name: stack start
-    value: '0x0FFFFFFC'
-  - name: stack end
-    value: '0x0FFFFFFF'
+  text:
+    start: 0x00000000
+    end: 0x001FFFFF
+  data:
+    start: 0x00200000
+    end: 0x05BBFCBF
+  stack:
+    start: 0x0FFFFFFC
+    end: 0x0FFFFFFF
+

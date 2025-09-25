@@ -49,14 +49,14 @@ export let backup_stack_address;
 export let backup_data_address;
 
 export let architecture_hash = [];
-/** @type {import("./core").Architecture} */
+/** @type {import("./core.d.ts").Architecture} */
 export let architecture = {};
 export let newArchitecture;
 
 /** @type {import("vue").ComponentPublicInstance}*/
 export let app;
 
-/** @type {import("./core").Status} */
+/** @type {import("./core.d.ts").Status} */
 export let status = {
     execution_init: 1,
     executedInstructions: 0,
@@ -80,7 +80,7 @@ export let WORDSIZE;
 export let BYTESIZE;
 export let ENDIANNESSARR = [];
 export let MAXNWORDS;
-/** @type {import("./core").RegisterBank[]} */
+/** @type {import("./core.d.ts").RegisterBank[]} */
 export let REGISTERS;
 export let REGISTERS_BACKUP = [];
 export const register_size_bits = 64; //TODO: load from architecture

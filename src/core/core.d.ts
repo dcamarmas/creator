@@ -21,6 +21,34 @@ type RegisterBank = {
         properties: string[];
     }[];
 };
+
+type Field = {
+    name: string;
+    valueField: string;
+    type: string;
+    startbit: number;
+    stopbit: number;
+    order: number;
+    word: number[];
+};
+
+type Instruction = {
+    name: string;
+    co: string;
+    template: string;
+    description: string;
+    separated: Array<number | string>;
+    type: string;
+    signature: string;
+    signatureRaw: string;
+    signature_definition: string;
+    nwords: number;
+    clk_cycles: number;
+    fields: Field[];
+    definition: string;
+    help?: string;
+};
+
 export declare const REGISTERS: RegisterBank[];
 
 type Architecture = {
@@ -49,7 +77,7 @@ type Architecture = {
         stack: { start: number; end: number };
     };
     components: RegisterBank[];
-    instructions: Array;
+    instructions: Instruction[];
     directives: { name: string; action: string }[];
     interrupts: {
         enabled: boolean;

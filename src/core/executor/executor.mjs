@@ -418,7 +418,7 @@ function executeInstructionCycle(draw) {
             i => parseInt(i.Address, 16) === get_entrypoint(),
         )
     ) {
-        stackTracker.newFrame(tag_instructions[getPC()].tag || "");
+        stackTracker.newFrame(tag_instructions[getPC()]?.tag || "");
     }
 
     // Check for conditions that would stop execution
