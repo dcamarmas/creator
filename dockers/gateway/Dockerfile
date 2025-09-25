@@ -1,5 +1,5 @@
 
-FROM ubuntu:22.04
+FROM ubuntu:24.04
 
 ENV TZ=Europe/Madrid
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
