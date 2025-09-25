@@ -71,7 +71,7 @@ export default {
     <b-card-group>
       <CardAuthor
         v-for="author in authors"
-        :img-src="`/img/authors/${author.id}.webp`"
+        :img-src="`img/authors/${author.id}.webp`"
         :img-alt="`author_${author.id}`"
         :full-name="author.name"
         :linkedin="author.linkedin"
