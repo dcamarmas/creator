@@ -560,7 +560,23 @@ export default {
         :key="index"
       >
         <!-- button_architecture -->
-        <b-dropdown
+
+        <b-button
+          v-if="item === 'btn_architecture'"
+          class="menuButton text-truncate"
+          size="sm"
+          variant="outline-secondary"
+          id="assembly_btn_sim"
+          @click="change_UI_mode('architecture')"
+        >
+          <font-awesome-icon :icon="['fas', 'screwdriver-wrench']" />
+          Architecture
+        </b-button>
+
+        <!--
+        Changing architecture from here is broken, if we fix it uncomment this
+        -->
+        <!-- <b-dropdown
           v-if="item === 'btn_architecture'"
           variant="outline-secondary"
           :toggle-class="{ menuButton: !dark, menuButtonDark: dark }"
@@ -583,7 +599,7 @@ export default {
           >
             {{ arch.name }}
           </b-dropdown-item-button>
-        </b-dropdown>
+        </b-dropdown> -->
 
         <!-- button_assembly -->
         <b-button
