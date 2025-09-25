@@ -50,6 +50,8 @@ var textarea_assembly_editor;
 var codemirrorHistory = null;
 /*Assembly code textarea*/
 var code_assembly = '';
+/*Text memory address*/
+var address;
 /*Data memory address*/
 var data_address;
 /*Stack memory address*/

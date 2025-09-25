@@ -179,7 +179,7 @@
             '               <b-badge variant="info" ' +
             '                        class="border border-info shadow memoryTag" ' +
             '                        v-if="item2.properties.includes(\'global_pointer\') && ((parseInt(item2.value) & 0xFFFFFFFC) == (row.item.addr & 0xFFFFFFFC))">' +
-            '                 {{item2.name[0]}}' +
+            '                 {{item2.name.join(" | ")}}' +
             '               </b-badge>' +
             '               <span class="fas fa-long-arrow-alt-right" ' +
             '                     v-if="item2.properties.includes(\'global_pointer\') && ((parseInt(item2.value) & 0xFFFFFFFC) == (row.item.addr & 0xFFFFFFFC))">' +
@@ -187,7 +187,7 @@
             '               <b-badge variant="success" ' +
             '                        class="border border-success shadow memoryTag" ' +
             '                        v-if="item2.properties.includes(\'program_counter\') && ((parseInt(item2.value) & 0xFFFFFFFC) == (row.item.addr & 0xFFFFFFFC))">' +
-            '                 {{item2.name[0]}}' +
+            '                 {{item2.name.join(" | ")}}' +
             '               </b-badge>' +
             '               <span class="fas fa-long-arrow-alt-right" ' +
             '                     v-if="item2.properties.includes(\'program_counter\') && ((parseInt(item2.value) & 0xFFFFFFFC) == (row.item.addr & 0xFFFFFFFC))">' +
@@ -195,7 +195,7 @@
             '               <b-badge variant="info" ' +
             '                        class="border border-info shadow memoryTag" ' +
             '                     v-if="(item2.properties.includes(\'stack_pointer\') || item2.properties.includes(\'frame_pointer\')) && ((parseInt(item2.value) & 0xFFFFFFFC) == (row.item.addr & 0xFFFFFFFC))">' +
-            '                 {{item2.name[0]}}' +
+            '                 {{item2.name.join(" | ")}}' +
             '               </b-badge>' +
             '               <span class="fas fa-long-arrow-alt-right" ' +
             '                 v-if="(item2.properties.includes(\'stack_pointer\') || item2.properties.includes(\'frame_pointer\') ) && ((parseInt(item2.value) & 0xFFFFFFFC) == (row.item.addr & 0xFFFFFFFC))">' +
