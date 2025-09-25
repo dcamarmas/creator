@@ -851,6 +851,7 @@ function clk_cycles_reset ( )
 
   for (var i = 0; i < clk_cycles.length; i++)
   {
+    clk_cycles[i].clk_cycles = 0;
     clk_cycles[i].percentage = 0;
 
     //Update CLK Cycles plot
