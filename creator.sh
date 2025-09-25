@@ -9,7 +9,18 @@
    var path = require('path') ;
 
    // creator
-   var creator = require('./js/min.creator_node.js') ;
+   try
+   {
+      var creator = require('./js/min.creator_node.js') ;
+   }
+   catch (e)
+   {
+      console.log("")
+      console.log("[ERROR FOUND] Please execute first: ./mk_min.sh")
+      console.log("")
+
+      process.exit(-1) ;
+   }
    var creator_version = JSON.parse(fs.readFileSync(__dirname + '/package.json', 'utf8')).version ;
 
    // color
