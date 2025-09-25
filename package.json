@@ -9,10 +9,11 @@
     "build-creator-node": "./mk_min.sh"
   },
   "dependencies": {
+    "child_process": "^1.0.2",
     "colors": "^1.4.0",
     "jshint": "^2.13.6",
     "readline-sync": "^1.4.10",
-    "terser": "^5.43.1",
+    "terser": "^5.44.0",
     "yargs": "^17.7.2"
   }
 }
