@@ -95,7 +95,10 @@ export const SYSCALL = {
         );
 
         if (typeof document !== "undefined" && document.app) {
-            document.getElementById("enter_keyboard").scrollIntoView();
+            const element = document.getElementById("enter_keyboard");
+            if (element) {
+                element.scrollIntoView();
+            }
         }
         status.run_program = 3;
         const register = crex_findReg(dest_reg_info);
