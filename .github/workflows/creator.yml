@@ -73,6 +73,12 @@ jobs:
           tag_name: nightly
           target_commitish: ${{ github.sha }}
           files: creator6
+      - name: Latest release
+        uses: softprops/action-gh-release@v2
+        if: github.ref_type == 'tag'
+        with:
+          files: creator6
+          make_latest: true
 
   # TODO: update unit tests runner
   # creator-checker:
