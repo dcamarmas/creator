@@ -4,10 +4,13 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "dev:wasm": "wasm-pack build --target web --dev --out-dir ../src/core/assembler/creatorAssembler/web/wasm/ CreatorCompiler && cd CreatorCompiler && deno run -A jsr:@deno/wasmbuild@0.19.3 --out ../src/core/assembler/creatorAssembler/deno/wasm/ --skip-opt",
+    "wasm:web": "wasm-pack build --target web --out-dir ../src/core/assembler/creatorAssembler/web/wasm/ CreatorCompiler",
+    "wasm:cli": "cd CreatorCompiler && deno run -A jsr:@deno/wasmbuild@0.19.3 --out ../src/core/assembler/creatorAssembler/deno/wasm/",
     "dev:web": "vite",
     "dev:cli": "deno run --allow-all --watch src/cli/creator6.mts",
-    "build:web": "vite build",
-    "build:cli": "deno compile --no-check -A --include ./src/core/assembler/creatorAssembler/deno ./src/cli/creator6.mts",
+    "build:web": "bun run wasm:web && vite build",
+    "build:cli": "bun run wasm:cli && deno compile --no-check -A --include ./src/core/assembler/creatorAssembler/deno ./src/cli/creator6.mts",
     "type-check": "vue-tsc --build",
     "lint": "eslint",
     "format": "prettier --write"

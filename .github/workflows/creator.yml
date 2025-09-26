@@ -37,22 +37,13 @@ jobs:
           deno-version: v2.5.2
       - name: Build compiler web
         run: |
-          cd CreatorCompiler
+          bun install
           bun install -g wasm-pack
-          wasm-pack build --target web
-          mv pkg/* ../src/core/assembler/creatorAssembler/web/wasm/
+          bun build:web
       - name: Build compiler cli
         run: |
           cd CreatorCompiler
-          deno run -A jsr:@deno/wasmbuild
-          mv lib/* ../src/core/assembler/creatorAssembler/deno/wasm/
-      - name: Build web
-        run: |
-          bun install
-          bun build:web
-      # - name: Build cli
-      #   run: |
-      #     bun run build:cli
+          bun build:cli
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
