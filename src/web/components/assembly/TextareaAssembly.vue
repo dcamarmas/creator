@@ -29,6 +29,7 @@ import { tags as t } from "@lezer/highlight"
 import { createTheme } from "@uiw/codemirror-themes"
 
 import { creator_ga } from "@/core/utils/creator_ga.mjs"
+import { update_binary } from "@/core/core.mjs"
 
 import PopoverShortcuts from "./PopoverShortcuts.vue"
 
@@ -222,6 +223,17 @@ export default {
       this.vimActive = !this.vimActive
     },
 
+    libraryLoaded() {
+      return Object.keys(update_binary).length !== 0
+    },
+
+    libraryTags() {
+      if (!this.libraryLoaded()) {
+        return []
+      }
+      return update_binary?.instructions_tag.filter(t => t.globl)
+    },
+
     /**
      * Codemirror callback for when component is ready
      */
@@ -236,19 +248,42 @@ export default {
 <template>
   <PopoverShortcuts target="assemblyInfo" :vim_mode="vimActive" :os="os" />
 
-  <b-button
-    class="actionsGroup"
-    variant="outline-secondary"
-    size="sm"
-    :pressed="vimActive"
-    @click="toggleVim()"
-    title="Enable Vim mode"
-  >
-    <font-awesome-icon :icon="['fab', 'vimeo-v']" /> Vim
-  </b-button>
+  <b-row cols="2" class="mb-3" align-h="between">
+    <!-- Vim button -->
+    <b-col cols="11">
+      <b-button
+        class="actionsGroup"
+        variant="outline-secondary"
+        size="sm"
+        :pressed="vimActive"
+        @click="toggleVim()"
+        title="Enable Vim mode"
+      >
+        <font-awesome-icon :icon="['fab', 'vimeo-v']" /> Vim
+      </b-button>
+    </b-col>
 
-  <br />
-  <br />
+    <!-- Library tags -->
+    <b-col cols="1" class="d-grid">
+      <b-popover click placement="bottom">
+        <!-- v-if="libraryLoaded()" -->
+        <template #target>
+          <b-button variant="outline-secondary" size="sm">
+            Library tags
+            <font-awesome-icon size="xs" :icon="['fa', 'caret-down']" />
+          </b-button>
+        </template>
+
+        <b-list-group>
+          <b-list-group-item v-for="tag of libraryTags()">
+            <b-badge pill variant="primary">
+              {{ tag.tag }}
+            </b-badge>
+          </b-list-group-item>
+        </b-list-group>
+      </b-popover>
+    </b-col>
+  </b-row>
 
   <font-awesome-icon id="assemblyInfo" icon="circle-info" />&nbsp;
   <span class="h5">Assembly:</span>

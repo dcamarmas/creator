@@ -42,7 +42,7 @@ export default {
         this.$root.assembly_code = event.currentTarget.result
         hide_loading()
         show_notification(
-          " The selected program has been loaded correctly",
+          "The selected program has been loaded correctly",
           "success",
         )
       }
@@ -71,7 +71,6 @@ export default {
       placeholder="Choose a file..."
       accept=".s"
       id="assembly_file"
-    >
-    </b-form-file>
+    />
   </b-modal>
 </template>

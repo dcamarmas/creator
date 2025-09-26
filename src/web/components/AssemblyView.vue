@@ -17,6 +17,7 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
+
 <script>
 import UIeltoToolbar from "./general/UIeltoToolbar.vue"
 import TextareaAssembly from "./assembly/TextareaAssembly.vue"
@@ -25,6 +26,7 @@ import Examples from "./assembly/Examples.vue"
 import LoadAssembly from "./assembly/LoadAssembly.vue"
 import DownloadPopup from "./general/DownloadModal.vue"
 import MakeURI from "./assembly/MakeURI.vue"
+import LoadLibrary from "./assembly/LoadLibrary.vue"
 
 export default {
   props: {
@@ -47,92 +49,76 @@ export default {
     LoadAssembly,
     DownloadPopup,
     MakeURI,
+    LoadLibrary,
   },
 }
 </script>
 
 <template>
   <b-container fluid align-h="center" id="assembly">
-    <b-row>
-      <b-col>
-        <!-- Navbar -->
-        <UIeltoToolbar
-          id="navbar_assembly"
-          components="btn_architecture,btn_simulator|btn_compile|dropdown_assembly_file,dropdown_library|btn_configuration,btn_information"
-          :browser="browser"
-          :os="os"
-          :dark="dark"
-          :arch_available="arch_available"
-          :assembly_code="assembly_code"
-          :show_instruction_help="true"
-          ref="toolbar"
-        />
+    <!-- Navbar -->
+    <UIeltoToolbar
+      id="navbar_assembly"
+      components="btn_architecture,btn_simulator|btn_compile|dropdown_assembly_file,dropdown_library|btn_configuration,btn_information"
+      :browser="browser"
+      :os="os"
+      :dark="dark"
+      :arch_available="arch_available"
+      :assembly_code="assembly_code"
+      :show_instruction_help="true"
+      ref="toolbar"
+    />
 
-        <!-- Assembly navbar modals -->
+    <!-- Assembly navbar modals -->
 
-        <!-- Load assembly form -->
-        <LoadAssembly id="load_assembly" />
+    <!-- Load assembly form -->
+    <LoadAssembly id="load_assembly" />
 
-        <!-- Save assembly form -->
-        <DownloadPopup
-          id="save_assembly"
-          type="assembly"
-          title="Save Assembly"
-          default-filename="assembly"
-          extension=".s"
-          :fileData="this.$root.assembly_code"
-        />
+    <!-- Save assembly form -->
+    <DownloadPopup
+      id="save_assembly"
+      type="assembly"
+      title="Save Assembly"
+      default-filename="assembly"
+      extension=".s"
+      :fileData="this.$root.assembly_code"
+    />
 
-        <!-- Examples modal -->
-        <Examples
-          id="examples-assembly"
-          :architecture_name="architecture_name"
-          :compile="false"
-        />
+    <!-- Examples modal -->
+    <Examples
+      id="examples-assembly"
+      :architecture_name="architecture_name"
+      :compile="false"
+    />
 
-        <!-- Get uri -->
-        <MakeURI
-          id="make_uri"
-          :architecture_name="architecture_name"
-          :assembly_code="assembly_code"
-        />
+    <!-- Get uri -->
+    <MakeURI
+      id="make_uri"
+      :architecture_name="architecture_name"
+      :assembly_code="assembly_code"
+    />
 
-        <!-- Load binary form -->
-        <!-- <LoadLibrary id="load_binary" /> -->
+    <!-- Load binary form -->
+    <LoadLibrary id="load_binary" />
 
-        <!-- Save binary form -->
-        <!-- <SaveLibrary id="save_binary" /> -->
+    <!-- Save binary form -->
+    <!-- <SaveLibrary id="save_binary" /> -->
 
-        <!-- <b-container fluid align-h="center" class="mx-0 px-0">
-          <b-row cols="2">
-            <b-col cols="12" id="divAssembly"> -->
-        <!-- Assembly textarea-->
-        <TextareaAssembly
-          :os="os"
-          :assembly_code="assembly_code"
-          :vim_mode="vim_mode"
-          :vim_custom_keybinds="vim_custom_keybinds"
-          height="75vh"
-          :dark="dark"
-        />
-        <!-- </b-col>
+    <!-- Assembly textarea-->
+    <TextareaAssembly
+      :os="os"
+      :assembly_code="assembly_code"
+      :vim_mode="vim_mode"
+      :vim_custom_keybinds="vim_custom_keybinds"
+      height="75vh"
+      :dark="dark"
+    />
 
-            <b-col cols="0" id="divTags" class="d-none"> -->
-        <!-- Library tags-->
-        <!-- <ListLibraryTags
-                :instructions_tag="update_binary.instructions_tag"
-              />
-            </b-col>
-          </b-row>
-        </b-container> -->
-
-        <!-- Compile error modal -->
-        <AssemblyError
-          id="modalAssemblyError"
-          reff="errorAssembly"
-          :assembly_error="assembly_error"
-        />
-      </b-col>
-    </b-row>
+    <!-- Compile error modal -->
+    <AssemblyError
+      id="modalAssemblyError"
+      reff="errorAssembly"
+      :assembly_error="assembly_error"
+    />
   </b-container>
 </template>

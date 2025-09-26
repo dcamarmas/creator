@@ -46,7 +46,7 @@ import { compileTimerFunctions } from "./executor/timers.mts";
 
 
 export const code_assembly = "";
-export let update_binary = "";
+export let update_binary = {};
 export let backup_stack_address;
 export let backup_data_address;
 
@@ -1039,16 +1039,24 @@ export function load_architecture(arch_str) {
     return ret;
 }
 
+/**
+ * Loads a library.
+ *
+ * @param {string} lib_str
+ *
+ * @throws {SyntaxError} If the library is invalid
+ */
 export function load_library(lib_str) {
-    const ret = {
-        status: "ok",
-        msg: "",
-    };
-
     code_binary = lib_str;
     update_binary = JSON.parse(code_binary);
+}
 
-    return ret;
+/**
+ * Removes a library.
+ */
+export function remove_library() {
+    code_binary = "";
+    update_binary = {};
 }
 
 // compilation
