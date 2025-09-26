@@ -737,26 +737,34 @@ function legacyFormat(matchedInstruction, instruction_loaded) {
 }
 
 /**
- * Decodes a binary or hexadecimal instruction into its assembly representation
+ * Decodes a binary instruction from bytes or legacy string formats
  *
- * @param {string} toDecode - The instruction to decode (binary, hex, or assembly)
+ * @param {string|Uint8Array} toDecode - The instruction to decode (binary, hex string, or Uint8Array)
  * @param {boolean} [newFormat=false] - Whether to use new format (just return instruction string) or legacy format
  * @returns {string|Object} Decoded instruction as string (newFormat=true) or legacy object (newFormat=false)
  * @throws {Error} When instruction cannot be decoded or is unknown
  */
 export function decode_instruction(toDecode, newFormat = false) {
-    const toDecodeArray = toDecode.split(" ");
-    const isBinary = /^[01]+$/.test(toDecodeArray[0]);
-    const isHex = /^0x[0-9a-fA-F]+$/.test(toDecodeArray[0]);
-    let binaryInstruction = toDecode;
+    let binaryInstruction;
+    if (toDecode instanceof Uint8Array) {
+        binaryInstruction = Array.from(toDecode)
+            .map(byte => byte.toString(2).padStart(8, '0'))
+            .join('');
+    } else {
+        // TODO: Remove this path once all callers use Uint8Array
+        const toDecodeArray = toDecode.split(" ");
+        const isBinary = /^[01]+$/.test(toDecodeArray[0]);
+        const isHex = /^0x[0-9a-fA-F]+$/.test(toDecodeArray[0]);
+        binaryInstruction = toDecode;
 
-    // Convert hex to binary if needed
-    if (isHex) {
-        const hexValue = toDecodeArray[0].slice(2);
-        const numBits = hexValue.length * 4;
-        binaryInstruction = parseInt(hexValue, 16)
-            .toString(2)
-            .padStart(numBits, "0");
+        // Convert hex to binary if needed
+        if (isHex) {
+            const hexValue = toDecodeArray[0].slice(2);
+            const numBits = hexValue.length * 4;
+            binaryInstruction = parseInt(hexValue, 16)
+                .toString(2)
+                .padStart(numBits, "0");
+        }
     }
 
     // Use fast instruction matching
@@ -764,12 +772,22 @@ export function decode_instruction(toDecode, newFormat = false) {
 
     if (!matchedInstruction) {
         let errorValue;
-        if (isHex) {
-            errorValue = toDecodeArray[0].toUpperCase();
-        } else if (isBinary) {
-            errorValue = `0x${parseInt(binaryInstruction, 2).toString(16).toUpperCase()}`;
+        if (toDecode instanceof Uint8Array) {
+            // Fast path: convert bytes to hex for error display
+            errorValue = `0x${Array.from(toDecode).map(b => b.toString(16).padStart(2, '0')).join('').toUpperCase()}`;
         } else {
-            errorValue = `"${toDecode}"`;
+            // TODO: Remove this path once all callers use Uint8Array
+            const toDecodeArray = toDecode.split(" ");
+            const isHex = /^0x[0-9a-fA-F]+$/.test(toDecodeArray[0]);
+            const isBinary = /^[01]+$/.test(toDecodeArray[0]);
+            
+            if (isHex) {
+                errorValue = toDecodeArray[0].toUpperCase();
+            } else if (isBinary) {
+                errorValue = `0x${parseInt(binaryInstruction, 2).toString(16).toUpperCase()}`;
+            } else {
+                errorValue = `"${toDecode}"`;
+            }
         }
         return { status: "error", reason: `Illegal Instruction: ${errorValue}` };
     }
@@ -792,16 +810,6 @@ export function decode_instruction(toDecode, newFormat = false) {
     const instruction_loaded = instructionArray
         .filter(x => x !== undefined)
         .join(" ");
-
-    const instructionExecParts = instruction_loaded.split(" ");
-    const instructionAltNames = replaceRegisterNames(instructionExecParts);
-
-    const finalInstruction = {
-        instruction: instructionExecParts,
-        instructionAltNames,
-        nwords: matchedInstruction.nwords,
-        definition: matchedInstruction.definition,
-    };
 
     if (newFormat) {
         return instruction_loaded;

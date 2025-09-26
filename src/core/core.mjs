@@ -32,16 +32,18 @@ import {
 } from "./assembler/assembler.mjs";
 import { Memory } from "./memory/Memory.mts";
 import yaml from "js-yaml";
-import { crex_findReg } from "./register/registerLookup.mjs";
-import { readRegister } from "./register/registerOperations.mjs";
+import { crex_findReg, crex_findReg_bytag } from "./register/registerLookup.mjs";
+import { readRegister, writeRegister } from "./register/registerOperations.mjs";
 import { StackTracker } from "./memory/StackTracker.mts";
 import { creator_ga } from "./utils/creator_ga.mjs";
 import { creator_callstack_reset } from "./sentinel/sentinel.mjs";
 import { resetStats } from "./executor/stats.mts";
 import { resetCache } from "./executor/decoder.mjs";
 import { enableInterrupts, ExecutionMode } from "./executor/interrupts.mts";
-import { initialize_execution } from "./executor/executor.mjs";
+import { init } from "./executor/executor.mjs";
 import { resetDevices } from "./executor/devices.mts";
+import { compileTimerFunctions } from "./executor/timers.mts";
+
 
 export const code_assembly = "";
 export let update_binary = "";
@@ -93,6 +95,7 @@ export let main_memory_backup;
 export function updateMainMemoryBackup(value) {
     main_memory_backup = value;
 }
+export let PC_REG_INDEX; // Index of the PC register (indexComp, indexElem). Set when loading architecture.
 
 export let execution_mode = 0; // 0: instruction by instruction, 1: run program
 export function set_execution_mode(value) {
@@ -192,6 +195,10 @@ function load_arch_select(cfg) {
     // Create deep copy backup of REGISTERS after all initialization is complete
     // This ensures the backup contains the correct values for all registers, including SP
     REGISTERS_BACKUP = JSON.parse(JSON.stringify(REGISTERS));
+
+    PC_REG_INDEX = crex_findReg_bytag("program_counter");
+
+    compileTimerFunctions();
 
     ret.token = "The selected architecture has been loaded correctly";
     ret.type = "success";
@@ -1067,7 +1074,7 @@ export async function assembly_compile(code, compiler) {
     }
 
     // Initialize execution environment
-    initialize_execution();
+    init();
 
     return ret;
 }
@@ -1134,7 +1141,7 @@ export function reset() {
     resetDevices();
 
     // Initialize execution environment
-    initialize_execution();
+    init();
 
     return true;
 }
@@ -1383,4 +1390,22 @@ export function loadBinaryFile(filePath, offset = 0n) {
             msg: `Error loading binary file: ${error.message}`,
         };
     }
+}
+
+export function getPC() {
+    const pc_address = readRegister(PC_REG_INDEX.indexComp, PC_REG_INDEX.indexElem);
+    return BigInt(pc_address);
+}
+
+export function setPC(value) {
+    writeRegister(value, PC_REG_INDEX.indexComp, PC_REG_INDEX.indexElem);
+
+    const offset = BigInt(newArchitecture.config.pc_offset || 0n);
+    status.virtual_PC = BigInt(value + offset);
+    logger.debug("Virtual PC register updated to " + status.virtual_PC);
+    return null;
+}
+
+export function hasVirtualPCChanged(oldVirtualPC) {
+    return oldVirtualPC !== status.virtual_PC;
 }

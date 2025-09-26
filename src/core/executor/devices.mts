@@ -19,11 +19,10 @@
  *
  */
 
-import { packExecute } from "./executor.mjs";
 import { creator_ga } from "../utils/creator_ga.mjs";
 import { main_memory, status } from "../core.mjs";
 import { keyboard_read, display_print } from "./IO.mjs";
-import { float2bin, double2bin } from "../utils/utils.mjs";
+import { float2bin, double2bin, packExecute } from "../utils/utils.mjs";
 import { SYSCALL } from "../capi/syscall.mts";
 import { MEM } from "../capi/memory.mts";
 import { Memory } from "../memory/Memory.mts";

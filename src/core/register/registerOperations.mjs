@@ -19,9 +19,11 @@
  */
 
 import { architecture, status, REGISTERS } from "../core.mjs";
-import { packExecute, writeStackLimit } from "../executor/executor.mjs";
+import {writeStackLimit } from "../executor/executor.mjs";
 import { instructions } from "../assembler/assembler.mjs";
 import { creator_callstack_writeRegister } from "../sentinel/sentinel.mjs";
+import { packExecute } from "../utils/utils.mjs";
+
 
 /**
  * Updates UI after a register update

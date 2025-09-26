@@ -20,7 +20,7 @@
  */
 
 import { main_memory, stackTracker, BYTESIZE } from "../core.mjs";
-import { creator_executor_exit } from "../executor/executor.mjs";
+import { exit } from "../executor/executor.mjs";
 import { raise } from "./validation.mjs";
 import { crex_findReg } from "../register/registerLookup.mjs";
 import {
@@ -201,7 +201,7 @@ export const MEM = {
                 raise(
                     "Segmentation fault. You tried to write in the text segment",
                 );
-                creator_executor_exit(true);
+                exit(true);
             }
 
             // Validate that write access is allowed for this address
@@ -211,7 +211,7 @@ export const MEM = {
                         address.toString(16) +
                         "'",
                 );
-                creator_executor_exit(true);
+                exit(true);
             }
         }
 
@@ -224,7 +224,7 @@ export const MEM = {
                     address.toString(16) +
                     "'",
             );
-            creator_executor_exit(true);
+            exit(true);
         }
 
         // Add hint if provided
@@ -277,7 +277,7 @@ export const MEM = {
                     
                 `Segmentation fault. You tried to read in the text segment (${toHex(address, 4)})`,
                 );
-                creator_executor_exit(true);
+                exit(true);
             }
 
             // Validate that read access is allowed for this address
@@ -287,7 +287,7 @@ export const MEM = {
                         address.toString(16) +
                         "'",
                 );
-                creator_executor_exit(true);
+                exit(true);
             }
         }
         try {
@@ -298,7 +298,7 @@ export const MEM = {
                     address.toString(16) +
                     "'",
             );
-            creator_executor_exit(true);
+            exit(true);
         }
 
         // Remove the call to undefined function
