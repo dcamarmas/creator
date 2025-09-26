@@ -17,10 +17,19 @@ lockfile, which explicitly states the package versions.
 bun install
 ```
 
-> [!IMPORTANT]
-> You must build the CREATOR assembler before executing for the first time.  
-> See [CREATOR Assembler README](src/core/assembler/creatorAssembler/README.md).
+### Build CREATOR Assembler
 
+> [!IMPORTANT]
+> Building the assembler requires installing [rustup](https://rustup.rs/),
+> [Deno](https://deno.com/), and [wasm-pack](https://drager.github.io/wasm-pack/).
+
+> [!IMPORTANT]
+> Make sure to initialize the submodules, as they contain the assembler dependency.
+> You can use either `git clone --recurse-submodules` or `git submodule update --init --recursive`.
+
+```sh
+bun dev:wasm
+```
 
 ### Compile Web and Hot-Reload for Development (with [Vite](https://vite.dev/))
 ```sh
