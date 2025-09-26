@@ -1,0 +1,5100 @@
+version: 2.0.0
+
+config:
+  name: MIPS-32
+  word_size: 32
+  description: The MIPS processor was developed by Dr.John Hennessey and his graduate students at Stanford University in the early 1980s. It is currently one of the major processors in the embedded processor market.
+  endianness: big_endian
+  memory_alignment: true
+  main_function: main
+  passing_convention: true
+  sensitive_register_name: true
+  comment_prefix: "#"
+  start_address: 0x0
+  pc_offset: 0
+  byte_size: 8
+  assemblers:
+    - name: "CreatorCompiler"
+      description: "Default Creator Compiler"
+
+components:
+  - name: Control registers
+    type: ctrl_registers
+    double_precision: false
+    elements:
+      - name:
+          - PC
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+          - program_counter
+      - name:
+          - EPC
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+          - exception_program_counter
+      - name:
+          - CAUSE
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+          - event_cause
+      - name:
+          - BADVADDR
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - STATUS
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+          - status_register
+      - name:
+          - HI
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - LO
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - FIR
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - FCSR
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - FCCR
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - FEXR
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+  - name: Integer registers
+    type: int_registers
+    double_precision: false
+    elements:
+      - name:
+          - r0
+          - zero
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+      - name:
+          - r1
+          - at
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - r2
+          - v0
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - r3
+          - v1
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - r4
+          - a0
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - r5
+          - a1
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - r6
+          - a2
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - r7
+          - a3
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - r8
+          - t0
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - r9
+          - t1
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - r10
+          - t2
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - r11
+          - t3
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - r12
+          - t4
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - r13
+          - t5
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - r14
+          - t6
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - r15
+          - t7
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - r16
+          - s0
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+          - saved
+      - name:
+          - r17
+          - s1
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+          - saved
+      - name:
+          - r18
+          - s2
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+          - saved
+      - name:
+          - r19
+          - s3
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+          - saved
+      - name:
+          - r20
+          - s4
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+          - saved
+      - name:
+          - r21
+          - s5
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+          - saved
+      - name:
+          - r22
+          - s6
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+          - saved
+      - name:
+          - r23
+          - s7
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+          - saved
+      - name:
+          - r24
+          - t8
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - r25
+          - t9
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - r26
+          - k0
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - r27
+          - k1
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - r28
+          - gp
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+          - global_pointer
+      - name:
+          - r29
+          - sp
+        nbits: 32
+        value: 268435452
+        default_value: 268435452
+        properties:
+          - read
+          - write
+          - stack_pointer
+      - name:
+          - r30
+          - fp
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+          - frame_pointer
+      - name:
+          - r31
+          - ra
+        nbits: 32
+        value: 4294967295
+        default_value: 4294967295
+        properties:
+          - read
+          - write
+  - name: 32-bit FP registers
+    type: fp_registers
+    double_precision: false
+    elements:
+      - name:
+          - f0
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f1
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f2
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f3
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f4
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f5
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f6
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f7
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f8
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f9
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f10
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f11
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f12
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f13
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f14
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f15
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f16
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f17
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f18
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f19
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f20
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f21
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f22
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f23
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f24
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f25
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f26
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f27
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f28
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f29
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f30
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - f31
+        nbits: 32
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+
+templates:
+  - name: I
+    type: Arithmetic integer
+    nwords: 1
+    clk_cycles: 1
+    fields:
+    # The order of these fields != the order in the ASSEMBLY
+    # That's what the "order" field is for.
+    #
+    # For the order of the fields in the instruction encoding,
+    # the "startbit" and "stopbit" fields are used
+      - name: opcode
+        type: co
+        startbit: 31
+        stopbit: 26
+        order: 0
+      - name: rs
+        type: INT-Reg
+        startbit: 25
+        stopbit: 21
+        order: 2 # Notice this 2 here, corresponding with the instruction format
+                 # Example: addi rt, rs, immediate
+        prefix: "$"
+      - name: rt
+        type: INT-Reg
+        startbit: 20
+        stopbit: 16
+        order: 1
+        prefix: "$"
+      - name: imm
+        type: inm-signed
+        startbit: 15
+        stopbit: 0
+        order: 3
+
+  - name: I_PCREL
+    type: Arithmetic integer
+    nwords: 1
+    clk_cycles: 1
+    fields:
+      - name: opcode
+        type: co
+        startbit: 31
+        stopbit: 26
+        order: 0
+        valueField: "111011"
+      - name: rs
+        type: INT-Reg
+        startbit: 25
+        stopbit: 21
+        order: 1
+        prefix: "$"
+      - name: funct
+        type: cop
+        startbit: 20
+        stopbit: 16
+      - name: imm
+        type: inm-signed
+        startbit: 15
+        stopbit: 0
+        order: 2
+
+  - name: R
+    nwords: 1
+    clk_cycles: 1
+    fields:
+      - name: opcode
+        type: co
+        startbit: 31
+        stopbit: 26
+        valueField: '000000'
+        order: 0
+      - name: rs
+        type: INT-Reg
+        startbit: 25
+        stopbit: 21
+        order: 3
+        prefix: "$"
+      - name: rt
+        type: INT-Reg
+        startbit: 20
+        stopbit: 16
+        order: 2
+        prefix: "$"
+      - name: rd
+        type: INT-Reg
+        startbit: 15
+        stopbit: 11
+        order: 1
+        prefix: "$"
+      - name: cop
+        type: cop
+        startbit: 5
+        stopbit: 0
+  
+  - name: Custom
+    nwords: 1
+    clk_cycles: 1
+    fields:
+      - name: opcode
+        type: co
+        startbit: 31
+        stopbit: 26
+        order: 0
+
+  - name: FPU_I # I-Type (Immediate) FPU Instruction Format
+    type: Arithmetic Floating Point
+    nwords: 1
+    clk_cycles: 1
+    fields:
+      - name: opcode # COP1 field, but it has to be called opcode here
+        type: co
+        startbit: 31
+        stopbit: 26
+        order: 0
+      - name: base # CPU register: base address for address calculations.
+        type: INT-Reg
+        startbit: 25
+        stopbit: 21
+        order: 2
+        prefix: "$"
+      - name: ft # FPU register: source (for stores, arithmetic) or destination (for loads).
+        type: SFP-Reg
+        startbit: 20
+        stopbit: 16
+        order: 1
+        prefix: "$"
+      - name: offset # Signed offset field used in address calculations.
+        type: offset_bytes
+        startbit: 15
+        stopbit: 0
+        order: 3
+      
+  - name: FPU_R # R-Type (Register) FPU Instruction Format
+    type: Arithmetic Floating Point
+    nwords: 1
+    clk_cycles: 1
+    fields:
+      - name: opcode # Coprocessor 1 primary opcode value in op field
+        type: co
+        startbit: 31
+        stopbit: 26
+        order: 0
+        valueField: '010001'
+      - name: fmt # Destination and/or operand type (format) specifier
+        type: INT-Reg
+        startbit: 25
+        stopbit: 21
+        prefix: "$"
+      - name: ft # FPU register: source (for stores, arithmetic) or destination (for loads).
+        type: SFP-Reg
+        startbit: 20
+        stopbit: 16
+        order: 3
+        prefix: "$"
+      - name: fs # FPU register: source.
+        type: SFP-Reg
+        startbit: 15
+        stopbit: 11
+        order: 2
+        prefix: "$"
+      - name: fd # FPU register: destination (arithmetic, loads, move-to) or source (stores, move-from).
+        type: SFP-Reg
+        startbit: 10
+        stopbit: 6
+        order: 1
+        prefix: "$"
+      - name: function # Field specifying a function within a particular op operation code.
+        type: cop
+        startbit: 5
+        stopbit: 0
+
+  - name: FPU_Compare # FPU Compare Instruction Format
+    type: Arithmetic Floating Point
+    nwords: 1
+    clk_cycles: 1
+    fields:
+      - name: opcode # Coprocessor 1 primary opcode value in op field
+        type: co
+        startbit: 31
+        stopbit: 26
+        order: 0
+        valueField: '010001'
+      - name: fmt # Operand type (format) specifier
+        type: cop
+        startbit: 25
+        stopbit: 21
+      - name: ft # FPU register: source (for stores, arithmetic) or destination (for loads).
+        type: SFP-Reg
+        startbit: 20
+        stopbit: 16
+        order: 3
+        prefix: "$"
+      - name: fs # FPU register: source.
+        type: SFP-Reg
+        startbit: 15
+        stopbit: 11
+        order: 2
+        prefix: "$"
+      - name: cc # Condition Code specifier; for architectural levels prior to MIPS IV, this must be set to zero.
+        type: inm-unsigned
+        startbit: 10
+        stopbit: 8
+        order: 1
+      - name: zero
+        type: cop
+        startbit: 7
+        stopbit: 6
+        valueField: '00'
+      - name: cond # Condition field
+        type: cop
+        startbit: 5
+        stopbit: 0
+
+  - name: FPU_RI # Register-Immediate FPU Instruction Format
+    type: Arithmetic Floating Point
+    nwords: 1
+    clk_cycles: 1
+    fields:
+      - name: opcode # Coprocessor 1 primary opcode value in op field.
+        type: co
+        startbit: 31
+        stopbit: 26
+        order: 0
+        valueField: '010001'
+      - name: sub # Operation subcode field for COP1 register immediate-mode instructions.
+        type: cop
+        startbit: 25
+        stopbit: 21
+        prefix: "$"
+      - name: rt #
+        type: SFP-Reg
+        startbit: 20
+        stopbit: 16
+        order: 3
+        prefix: "$"
+      - name: fs # FPU register: source.
+        type: SFP-Reg
+        startbit: 15
+        stopbit: 11
+        order: 2
+        prefix: "$"
+
+instructions:
+  MIPS32:
+    - name: abs.s
+      type: Arithmetic floating point
+      template: FPU_R
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: function
+          value: "000101"
+        - field: ft
+          order: null
+          value: "00000"
+      preoperation: |
+        fs = CAPI.FS.uint2float32(fs);
+      postoperation: |
+        fd = CAPI.FS.float322uint(fd);
+      definition: |
+        fd = Math.abs(fs);
+
+    - name: add
+      template: R
+      help: Sum with overflow
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: cop
+          value: "100000"
+      definition: |
+        var isover = CAPI.VALIDATION.isOverflow(rs, rt, rs+rt);
+        if (!isover){ 
+          rd = rs + rt; 
+        } else { 
+          console.log('Integer Overflow'); 
+        }
+
+    - name: add.s
+      template: FPU_R
+      type: Arithmetic floating point
+      help: Add the register fs and ft and store the result in fd (float)
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: function
+          value: "000000"
+        - field: fmt
+          value: "00000"
+          type: cop
+      preoperation: |
+        fs = CAPI.FS.uint2float32(fs);
+        ft = CAPI.FS.uint2float32(ft);
+      postoperation: |
+        fd = CAPI.FS.float322uint(fd);
+      definition: |
+        fd = fs + ft;
+    
+    - name: add.d
+      template: FPU_R
+      type: Arithmetic floating point
+      help: Add the register fs and ft and store the result in fd (double)
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: function
+          value: "000000"
+        - field: fmt
+          type: cop
+          value: "00001"
+        - field: fd
+          type: SFP-Reg
+        - field: fs
+          type: SFP-Reg
+        - field: ft
+          type: SFP-Reg
+      preoperation: |
+        let val1 = CAPI.MIPS.readDouble(fs_name);
+        let val2 = CAPI.MIPS.readDouble(ft_name);
+      postoperation: |
+        CAPI.MIPS.writeDouble(result, fd_name);
+      definition: |
+        let result = val1 + val2;
+
+    - name: addi
+      template: I
+      type: Arithmetic integer
+      help: Add an immediate number with overflow
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          value: "001000"
+      definition: |
+        var isover = CAPI.VALIDATION.isOverflow(rs, imm, rs+imm);
+        if (!isover){ 
+          rt = rs + imm; 
+        } else { 
+          console.log('Integer Overflow'); 
+        }
+
+    - name: addiu
+      template: I
+      type: Arithmetic integer
+      help: Add an immediate number without overflow
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          value: "001001"
+      definition: |
+        rt = rs + imm;
+
+    - name: addu
+      template: R
+      help: Add Unsigned Word
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: cop
+          value: "100001"
+      definition: |
+        rd = rs + rt;
+
+    - name: and
+      template: R
+      help: Bitwise AND
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: cop
+          value: "100100"
+      definition: |
+        rd = rs & rt;
+
+    - name: andi
+      template: I
+      help: Bitwise AND Immediate
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          value: "001100"
+      definition: |
+        rt = rs & (imm & 0xFFFF);
+
+    - name: bc
+      template: Custom
+      type: Conditional bifurcation
+      help: Branch, Compact
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          value: "110010"
+        - field: offset
+          startbit: 25
+          stopbit: 0
+          type: inm-signed
+          order: 1
+      definition: |
+        // Not implemented
+
+    - name: bc1eqz
+      template: FPU_I
+      type: Conditional bifurcation
+      help: Branch if Coprocessor 1 (FPU) Register Bit 0 is Equal to Zero
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          value: "010001"
+        - field: base # We're overriding this field since its part of the opcode in this instruction
+          value: "01001"
+          type: cop
+          order: null
+      definition: |
+        if (ft & 1 == 0){ 
+          PC = PC - 4n + offset
+        }
+
+    - name: bc1f
+      template: Custom
+      type: Conditional bifurcation
+      help: Branch on Coprocessor 1 (FPU) False
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          value: "010001"
+        - field: cop1
+          type: cop
+          value: "01000"
+          startbit: 25
+          stopbit: 21
+        - field: cc
+          type: inm-unsigned
+          startbit: 20
+          stopbit: 18
+        - field: 'offset'
+          type: offset_bytes
+          startbit: 15
+          stopbit: 0
+          padding: 2
+        - field: cop2
+          type: cop
+          startbit: 17
+          stopbit: 16
+          value: "00"
+      definition: |
+        if ((FCSR & (1 << ((cc == 0 ? 0 : cc+1) + 23))) == 0) {
+            PC = PC - 4n + offset
+        }
+
+    - name: bc1nez
+      template: FPU_I
+      type: Conditional bifurcation
+      help: Branch if Coprocessor 1 (FPU) Register Bit 0 is Not Equal to Zero
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          value: "010001"
+        - field: base # We're overriding this field since its part of the opcode in this instruction
+          value: "01101"
+          type: cop
+          order: null
+      definition: |
+        if (ft & 1 != 0){ 
+          PC = PC + ((offset << 16n) >> 14n)
+        }
+
+    - name: bc1t
+      template: Custom
+      type: Conditional bifurcation
+      help: Branch on Coprocessor 1 (FPU) True
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          value: "010001"
+        - field: cop
+          type: cop
+          value: "01000"
+          startbit: 25
+          stopbit: 21
+        - field: cc
+          type: inm-unsigned
+          startbit: 20
+          stopbit: 18
+        - field: 'offset'
+          type: offset_bytes
+          startbit: 15
+          stopbit: 0
+          padding: 2
+        - field: cop
+          type: cop
+          startbit: 17
+          stopbit: 16
+          valueField: '01'
+      definition: |
+        if ((FCSR & (1 << ((cc == 0 ? 0 : cc+1) + 23))) != 0) {
+            PC = PC - 4n + offset
+        }
+
+    - name: beq
+      template: I
+      help: Branch if Equal
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          value: "000100"
+        - field: imm
+          type: offset_bytes
+      definition: |
+        if (CAPI.FP.uint2int(rs) == CAPI.FP.uint2int(rt)) {
+          PC = PC - 4n + imm;
+        }
+    
+    - name: bgez
+      template: I
+      help: Branch on Greater Than or Equal to Zero
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          value: "000001"
+        - field: rt
+          value: "00001"
+          type: cop
+          order: null
+        - field: imm
+          type: offset_bytes
+      definition: |
+        if (CAPI.FP.uint2int(rs) >= 0) {
+          PC = PC - 4n + imm;
+        }
+      
+    - name: bgezal
+      template: I
+      help: Branch on Greater Than or Equal to Zero and Link
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          value: "000001"
+        - field: rt
+          value: "10001"
+          type: cop
+          order: null
+        - field: imm
+          type: offset_bytes
+      definition: |
+        if (CAPI.FP.uint2int(rs) >= 0) {
+          PC = PC - 4n + imm;
+          CAPI.CHECK_STACK.begin(rs);
+          CAPI.DRAW_STACK.begin(rs);
+        }
+
+    - name: bgtz
+      template: I
+      help: Branch on Greater Than Zero
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          value: "000111"
+        - field: rt
+          value: "00000"
+          order: null
+        - field: imm
+          type: offset_bytes
+      definition: |
+        if (CAPI.FP.uint2int(rs) > 0) {
+          PC = PC - 4n + imm;
+        }
+
+    - name: blez
+      template: I
+      help: Branch on Less Than or Equal to Zero
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          value: "000110"
+        - field: rt
+          value: "00000"
+          order: null
+        - field: imm
+          type: offset_bytes
+      definition: |
+        if (CAPI.FP.uint2int(rs) <= 0) {
+          PC = PC - 4n + imm;
+        }
+  
+    - name: bltz
+      template: I
+      help: Branch on Less Than Zero
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          value: "000001"
+        - field: rt
+          value: "00000"
+          type: cop # On this one it's actually part of the opcode, unlike the others
+          order: null
+        - field: imm
+          type: offset_bytes
+      definition: |
+        if (CAPI.FP.uint2int(rs) < 0) {
+          PC = PC - 4n + imm;
+        }
+
+    - name: bne
+      template: I
+      help: Branch if Not Equal
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          value: "000101"
+        - field: imm
+          type: offset_bytes
+      definition: |
+        if (CAPI.FP.uint2int(rs) != CAPI.FP.uint2int(rt)) {
+          PC = PC - 4n + imm;
+        }
+
+    - name: c.eq.s
+      template: FPU_Compare
+      type: Logic
+      help: Compare Equal (Single Precision)
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          value: "010001"
+        - field: fmt
+          value: "00001"
+        - field: cond
+          startbit: 3
+          stopbit: 0
+          value: "0010"
+        - field: fc
+          type: cop
+          startbit: 5
+          stopbit: 4
+          value: "11"
+          
+      definition: |
+        let off = CAPI.FP.int2uint(cc)
+
+        if (off != 0) {
+            off = off + 1;
+        }
+
+        let condition = (ft == fs) ? 1n : 0n;
+
+        FCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23 + off)) | (FCSR & (-1 >>> (9 - off))); FCCR = condition
+
+    # From this point on, the instructions were converted automatically from the old CREATOR format.
+    - name: c.ole.d
+      template: Custom
+      type: Logic
+      help: ''
+      properties: []
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          type: co
+          startbit: 31
+          stopbit: 26
+          value: '010001'
+          order: 0
+        - field: fmt
+          type: cop
+          startbit: 25
+          stopbit: 21
+          valueField: '00001'
+        - field: ft
+          type: SFP-Reg
+          startbit: 20
+          stopbit: 16
+          order: 3
+          prefix: $
+        - field: fs
+          type: SFP-Reg
+          startbit: 15
+          stopbit: 11
+          order: 2
+          prefix: $
+        - field: cc
+          type: inm-unsigned
+          startbit: 10
+          stopbit: 8
+          order: 1
+        - field: cond
+          type: cop
+          startbit: 3
+          stopbit: 0
+          valueField: '0110'
+      preoperation: |
+        let val1 = CAPI.MIPS.readDouble(fs_name);
+        let val2 = CAPI.MIPS.readDouble(ft_name);
+      definition: |
+        var off = CAPI.FP.int2uint(cc);
+        if (off != 0) {
+            off = off + 1;
+        }
+        var condition = (val1 <= val2) ? 1n : 0n;
+        FCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23 + off)) | (FCSR & (-1 >>> (9 - off)));
+        FCCR = condition;
+    - name: c.ole.s
+      template: Custom
+      type: Logic
+      help: ''
+      properties: []
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          type: co
+          startbit: 31
+          stopbit: 26
+          value: '010001'
+          order: 0
+        - field: fmt
+          type: cop
+          startbit: 25
+          stopbit: 21
+          valueField: '00000'
+        - field: ft
+          type: SFP-Reg
+          startbit: 20
+          stopbit: 16
+          order: 3
+          prefix: $
+        - field: fs
+          type: SFP-Reg
+          startbit: 15
+          stopbit: 11
+          order: 2
+          prefix: $
+        - field: cc
+          type: inm-unsigned
+          startbit: 10
+          stopbit: 8
+          order: 1
+        - field: cond
+          type: cop
+          startbit: 3
+          stopbit: 0
+          valueField: '0110'
+      definition: |-
+        var off = CAPI.FP.int2uint(cc) ;
+        if (off != 0) {
+            off = off +1;
+        }
+        var condition = (fs <= ft) ? 1n : 0n;
+        FCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23+off)) | (FCSR & (-1 >>> (9 - off))); FCCR = condition
+    - name: c.olt.d
+      template: Custom
+      type: Logic
+      help: ''
+      properties: []
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          type: co
+          startbit: 31
+          stopbit: 26
+          value: '010001'
+          order: 0
+        - field: fmt
+          type: cop
+          startbit: 25
+          stopbit: 21
+          valueField: '00001'
+        - field: ft
+          type: SFP-Reg
+          startbit: 20
+          stopbit: 16
+          order: 3
+          prefix: $
+        - field: fs
+          type: SFP-Reg
+          startbit: 15
+          stopbit: 11
+          order: 2
+          prefix: $
+        - field: cc
+          type: inm-unsigned
+          startbit: 10
+          stopbit: 8
+          order: 1
+        - field: cond
+          type: cop
+          startbit: 3
+          stopbit: 0
+          valueField: '0100'
+      preoperation: |
+        let val1 = CAPI.MIPS.readDouble(fs_name);
+        let val2 = CAPI.MIPS.readDouble(ft_name);
+      definition: |
+        var off = CAPI.FP.int2uint(cc);
+        if (off != 0) {
+            off = off + 1;
+        }
+        var condition = (val1 < val2) ? 1n : 0n;
+        FCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23 + off)) | (FCSR & (-1 >>> (9 - off)));
+        FCCR = condition;
+    - name: c.olt.s
+      template: Custom
+      type: Logic
+      help: ''
+      properties: []
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          type: co
+          startbit: 31
+          stopbit: 26
+          value: '010001'
+          order: 0
+        - field: fmt
+          type: cop
+          startbit: 25
+          stopbit: 21
+          valueField: '00000'
+        - field: ft
+          type: SFP-Reg
+          startbit: 20
+          stopbit: 16
+          order: 3
+          prefix: $
+        - field: fs
+          type: SFP-Reg
+          startbit: 15
+          stopbit: 11
+          order: 2
+          prefix: $
+        - field: cc
+          type: inm-unsigned
+          startbit: 10
+          stopbit: 8
+          order: 1
+        - field: cond
+          type: cop
+          startbit: 3
+          stopbit: 0
+          valueField: '0100'
+      definition: |-
+        var off = CAPI.FP.int2uint(cc) ;
+        if (off != 0) {
+            off = off +1;
+        }
+        var condition = (fs < ft) ? 1n : 0n;
+        FCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23+off)) | (FCSR & (-1 >>> (9 - off))); FCCR = condition
+    - name: cvt.d.s
+      template: Custom
+      type: Arithmetic floating point
+      help: 'Turn a float into a double, the result is saved in fd'
+      properties: []
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          type: co
+          startbit: 31
+          stopbit: 26
+          value: '010001'
+          order: 0
+        - field: fmt
+          type: cop
+          startbit: 25
+          stopbit: 21
+          valueField: '00000'
+        - field: fs
+          type: SFP-Reg
+          startbit: 15
+          stopbit: 11
+          order: 2
+          prefix: $
+        - field: fd
+          type: SFP-Reg
+          startbit: 10
+          stopbit: 6
+          order: 1
+          prefix: $
+        - field: cop
+          type: cop
+          startbit: 5
+          stopbit: 0
+          valueField: '100001'
+      definition: fd = fs;
+    - name: cvt.d.w
+      template: Custom
+      type: Arithmetic floating point
+      help: 'Convert an integer to a double, the result is saved in fd'
+      properties: []
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          type: co
+          startbit: 31
+          stopbit: 26
+          value: '010001'
+          order: 0
+        - field: fmt
+          type: cop
+          startbit: 25
+          stopbit: 21
+          valueField: '00001'
+        - field: fs
+          type: SFP-Reg
+          startbit: 15
+          stopbit: 11
+          order: 2
+          prefix: $
+        - field: fd
+          type: SFP-Reg
+          startbit: 10
+          stopbit: 6
+          order: 1
+          prefix: $
+        - field: cop
+          type: cop
+          startbit: 5
+          stopbit: 0
+          valueField: '100001'
+      definition: fd = fs;
+    - name: cvt.s.d
+      template: Custom
+      type: Arithmetic floating point
+      help: 'Turn a double into a float, the result is saved in fd'
+      properties: []
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          type: co
+          startbit: 31
+          stopbit: 26
+          value: '010001'
+          order: 0
+        - field: fmt
+          type: cop
+          startbit: 25
+          stopbit: 21
+          valueField: '00001'
+        - field: fs
+          type: SFP-Reg
+          startbit: 15
+          stopbit: 11
+          order: 1
+          prefix: $
+        - field: fd
+          type: SFP-Reg
+          startbit: 10
+          stopbit: 6
+          order: 2
+          prefix: $
+        - field: cop
+          type: cop
+          startbit: 5
+          stopbit: 0
+          valueField: '100000'
+      preoperation: |
+        let val = CAPI.FS.uint2float32(CAPI.REG.read(fs_name));
+      postoperation: |
+        CAPI.MIPS.writeDouble(val, fd_name);
+      definition: |
+        // Conversion handled in preoperation/postoperation
+    - name: cvt.s.w
+      template: Custom
+      type: Arithmetic floating point
+      help: 'Convert an integer into a float, the result is saved in fd'
+      properties: []
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          type: co
+          startbit: 31
+          stopbit: 26
+          value: '010001'
+          order: 0
+        - field: fmt
+          type: cop
+          startbit: 25
+          stopbit: 21
+          valueField: '00010'
+        - field: fs
+          type: SFP-Reg
+          startbit: 15
+          stopbit: 11
+          order: 2
+          prefix: $
+        - field: fd
+          type: SFP-Reg
+          startbit: 10
+          stopbit: 6
+          order: 1
+          prefix: $
+        - field: cop
+          type: cop
+          startbit: 5
+          stopbit: 0
+          valueField: '100000'
+      definition: fd = parseFloat(float2int_v2(fs));
+    - name: cvt.w.d
+      template: Custom
+      type: Arithmetic floating point
+      help: 'Convert a double into an integer, the result is saved in Rdest'
+      properties: []
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          type: co
+          startbit: 31
+          stopbit: 26
+          value: '010001'
+          order: 0
+        - field: fmt
+          type: cop
+          startbit: 25
+          stopbit: 21
+          valueField: '00001'
+        - field: fs
+          type: SFP-Reg
+          startbit: 15
+          stopbit: 11
+          order: 2
+          prefix: $
+        - field: fd
+          type: SFP-Reg
+          startbit: 10
+          stopbit: 6
+          order: 1
+          prefix: $
+        - field: cop
+          type: cop
+          startbit: 5
+          stopbit: 0
+          valueField: '100100'
+      preoperation: |
+        let val = CAPI.MIPS.readDouble(fs_name);
+      postoperation: |
+        CAPI.REG.write(BigInt(Math.trunc(val)), fd_name);
+      definition: |
+        // Conversion handled in preoperation/postoperation
+    - name: cvt.w.s
+      template: Custom
+      type: Arithmetic floating point
+      help: 'Convert a float into an integer, the result is saved in Rdest'
+      properties: []
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          type: co
+          startbit: 31
+          stopbit: 26
+          value: '010001'
+          order: 0
+        - field: fmt
+          type: cop
+          startbit: 25
+          stopbit: 21
+          valueField: '00000'
+        - field: fs
+          type: SFP-Reg
+          startbit: 15
+          stopbit: 11
+          order: 2
+          prefix: $
+        - field: fd
+          type: SFP-Reg
+          startbit: 10
+          stopbit: 6
+          order: 1
+          prefix: $
+        - field: cop
+          type: cop
+          startbit: 5
+          stopbit: 0
+          valueField: '100100'
+      definition: fd = parseInt(fs);
+    - name: div
+      template: Custom
+      type: Arithmetic integer
+      help: Divide with overflow
+      properties: []
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          type: co
+          startbit: 31
+          stopbit: 26
+          value: '000000'
+          order: 0
+        - field: rs
+          type: INT-Reg
+          startbit: 25
+          stopbit: 21
+          order: 2
+          prefix: $
+        - field: rt
+          type: INT-Reg
+          startbit: 20
+          stopbit: 16
+          order: 3
+          prefix: $
+        - field: rd
+          type: INT-Reg
+          startbit: 15
+          stopbit: 11
+          order: 1
+          prefix: $
+        - field: cop1
+          type: cop
+          startbit: 10
+          stopbit: 6
+          valueField: '00010'
+        - field: cop2
+          type: cop
+          startbit: 5
+          stopbit: 0
+          valueField: '011010'
+      definition: |-
+        if (rt != 0){ 
+          let cociente = (CAPI.FP.uint2int(rs) / CAPI.FP.uint2int(rt));
+          if (cociente < 0){ 
+            rd = BigInt(Math.ceil(Number(cociente))); 
+          } else { 
+            rd = BigInt(Math.floor(Number(cociente))); 
+          }
+        } else {
+          CAPI.VALIDATION.raise('Division by zero not allowed'); 
+        }
+    - name: div
+      template: Custom
+      type: Arithmetic integer
+      help: "Divide with overflow. Leave the quotient in the register lo and the rest in the register hi"
+      properties: []
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          type: co
+          startbit: 31
+          stopbit: 26
+          value: '000000'
+          order: 0
+        - field: rs
+          type: INT-Reg
+          startbit: 25
+          stopbit: 21
+          order: 1
+          prefix: $
+        - field: rt
+          type: INT-Reg
+          startbit: 20
+          stopbit: 16
+          order: 2
+          prefix: $
+        - field: zero
+          type: cop
+          startbit: 15
+          stopbit: 6
+          valueField: '0000000000'
+        - field: cop2
+          type: cop
+          startbit: 5
+          stopbit: 0
+          valueField: '011010'
+      
+      definition: |-
+        HI = CAPI.FP.uint2int(rs) % CAPI.FP.uint2int(rt);
+        var cociente = (CAPI.FP.uint2int(rs) / CAPI.FP.uint2int(rt));
+        if (cociente < 0) {
+            LO = BigInt(Math.ceil(Number(cociente)));
+        } else {
+            LO = BigInt(Math.floor(Number(cociente)));
+        }
+    - name: div.d
+      template: Custom
+      type: Arithmetic floating point
+      help: Divide fs by ft and leave the result in fd (double)
+      properties: []
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          type: co
+          startbit: 31
+          stopbit: 26
+          valueField: '010001'
+          value: '010001'
+          order: 0
+        - field: fmt
+          type: cop
+          startbit: 25
+          stopbit: 21
+          valueField: '00001'
+        - field: ft
+          type: SFP-Reg
+          startbit: 20
+          stopbit: 16
+          order: 3
+          prefix: $
+        - field: fs
+          type: SFP-Reg
+          startbit: 15
+          stopbit: 11
+          order: 2
+          prefix: $
+        - field: fd
+          type: SFP-Reg
+          startbit: 10
+          stopbit: 6
+          order: 1
+          prefix: $
+        - field: cop
+          type: cop
+          startbit: 5
+          stopbit: 0
+          valueField: '000011'
+      preoperation: |
+        let val1 = CAPI.MIPS.readDouble(fs_name);
+        let val2 = CAPI.MIPS.readDouble(ft_name);
+      postoperation: |
+        CAPI.MIPS.writeDouble(result, fd_name);
+      definition: |
+        let result;
+        if (val2 !== 0) {
+          result = val1 / val2;
+        } else {
+          CAPI.VALIDATION.raise('Division by zero not allowed');
+        }
+    - name: div.s
+      template: Custom
+      type: Arithmetic floating point
+      help: Divide fs by ft and leave the result in fd (float)
+      properties: []
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          type: co
+          startbit: 31
+          stopbit: 26
+          valueField: '010001'
+          value: '010001'
+          order: 0
+        - field: fmt
+          type: cop
+          startbit: 25
+          stopbit: 21
+          valueField: '00000'
+        - field: ft
+          type: SFP-Reg
+          startbit: 20
+          stopbit: 16
+          order: 3
+          prefix: $
+        - field: fs
+          type: SFP-Reg
+          startbit: 15
+          stopbit: 11
+          order: 2
+          prefix: $
+        - field: fd
+          type: SFP-Reg
+          startbit: 10
+          stopbit: 6
+          order: 1
+          prefix: $
+        - field: cop
+          type: cop
+          startbit: 5
+          stopbit: 0
+          valueField: '000011'
+      preoperation: |
+        fs = CAPI.FS.uint2float32(fs);
+        ft = CAPI.FS.uint2float32(ft);
+      postoperation: |
+        fd = CAPI.FS.float322uint(fd);
+      definition: |-
+        if (ft != 0)
+         { fd = fs / ft; }
+         else { CAPI.VALIDATION.raise('Division by zero not allowed'); }
+    - name: divu
+      template: Custom
+      type: Arithmetic integer
+      help: Divide without overflow
+      properties: []
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          type: co
+          startbit: 31
+          stopbit: 26
+          value: '000000'
+          order: 0
+        - field: rs
+          type: INT-Reg
+          startbit: 25
+          stopbit: 21
+          order: 2
+          prefix: $
+        - field: rt
+          type: INT-Reg
+          startbit: 20
+          stopbit: 16
+          order: 3
+          prefix: $
+        - field: rd
+          type: INT-Reg
+          startbit: 15
+          stopbit: 11
+          order: 1
+          prefix: $
+        - field: cop
+          type: cop
+          startbit: 10
+          stopbit: 6
+          valueField: '00010'
+        - field: sop33
+          type: cop
+          startbit: 5
+          stopbit: 0
+          valueField: '011011'
+      definition: |-
+        if (rt != 0)
+         { rd = Math.floor(CAPI.FP.int2uint(rs) / CAPI.FP.int2uint(rt)); }
+         else { CAPI.VALIDATION.raise('Division by zero not allowed'); }
+    - name: divu
+      template: Custom
+      type: Arithmetic integer
+      help: "Divide without overflow. Leave quotient in the register lo and the rest in the register hi"
+      properties: []
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          type: co
+          startbit: 31
+          stopbit: 26
+          value: '000000'
+          order: 0
+        - field: rs
+          type: INT-Reg
+          startbit: 25
+          stopbit: 21
+          order: 1
+          prefix: $
+        - field: rt
+          type: INT-Reg
+          startbit: 20
+          stopbit: 16
+          order: 2
+          prefix: $
+        - field: cop
+          type: cop
+          startbit: 5
+          stopbit: 0
+          valueField: '011011'
+      definition: |-
+        if (rt != 0)
+         { LO = Math.floor(CAPI.FP.int2uint(rs) / CAPI.FP.int2uint(rt));
+        HI = CAPI.FP.int2uint(rs) % CAPI.FP.int2uint(rt); }
+         else { CAPI.VALIDATION.raise('Division by zero not allowed'); }
+    - name: j
+      template: Custom
+      type: Unconditional bifurcation
+      help: Unconditional jump.
+      properties: []
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          type: co
+          startbit: 31
+          stopbit: 26
+          value: '000010'
+          order: 0
+        - field: addr
+          type: inm-signed
+          startbit: 25
+          stopbit: 0
+          order: 1
+      definition: PC = addr;
+    - name: jal
+      template: Custom
+      type: Function call
+      help: 'Unconditional jump, stores the current address at $ ra ($31).'
+      properties:
+        - enter_subrutine
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          type: co
+          startbit: 31
+          stopbit: 26
+          value: '000011'
+          order: 0
+        - field: addr
+          type: inm-signed
+          startbit: 25
+          stopbit: 0
+          order: 1
+      definition: |-
+        ra = PC;
+         PC = addr;
+         CAPI.CHECK_STACK.begin(addr); CAPI.DRAW_STACK.begin(addr);
+    - name: jalr
+      template: Custom
+      type: Function call
+      help: 'Unconditional jump, stores the current address in Rsrc1.'
+      properties:
+        - enter_subrutine
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          type: co
+          startbit: 31
+          stopbit: 26
+          value: '000000'
+          order: 0
+        - field: rs
+          type: INT-Reg
+          startbit: 25
+          stopbit: 21
+          order: 2
+          prefix: $
+        - field: rd
+          type: INT-Reg
+          startbit: 15
+          stopbit: 11
+          order: 1
+          prefix: $
+        - field: cop
+          type: cop
+          startbit: 5
+          stopbit: 0
+          valueField: '001001'
+      definition: |-
+        rd = PC;
+         PC = rs;
+         CAPI.CHECK_STACK.begin(rs); CAPI.DRAW_STACK.begin(rs);
+    - name: jr
+      template: Custom
+      type: Unconditional bifurcation
+      help: Unconditional jump.
+      properties:
+        - exit_subrutine
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          type: co
+          startbit: 31
+          stopbit: 26
+          value: '000000'
+          order: 0
+        - field: rs
+          type: INT-Reg
+          startbit: 25
+          stopbit: 21
+          order: 1
+          prefix: $
+        - field: cop
+          type: cop
+          startbit: 5
+          stopbit: 0
+          valueField: '001000'
+      definition: |-
+        PC = rs;
+         CAPI.CHECK_STACK.end(); CAPI.DRAW_STACK.end();
+    - name: lb
+      template: Custom
+      type: Memory access
+      help: ''
+      properties: []
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          type: co
+          startbit: 31
+          stopbit: 26
+          value: '100000'
+          order: 0
+        - field: reg1
+          type: INT-Reg
+          startbit: 20
+          stopbit: 16
+          order: 1
+          prefix: $
+        - field: val
+          type: inm-signed
+          startbit: 15
+          stopbit: 0
+          order: 2
+        - field: reg2
+          type: INT-Reg
+          startbit: 25
+          stopbit: 21
+          prefix: ($
+          suffix: )
+          order: 3
+      definition: 'reg1 = CAPI.MEM.read(reg2+val, 1, reg1_name);'
+    - name: lbu
+      template: Custom
+      type: Memory access
+      help: ''
+      properties: []
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          type: co
+          startbit: 31
+          stopbit: 26
+          value: '100100'
+          order: 0
+        - field: base
+          type: INT-Reg
+          startbit: 25
+          stopbit: 21
+          prefix: ($
+          suffix: )
+          order: 3
+        - field: rt
+          type: INT-Reg
+          startbit: 20
+          stopbit: 16
+          order: 1
+          prefix: $
+        - field: 'off'
+          type: inm-signed
+          startbit: 15
+          stopbit: 0
+          order: 2
+      definition: 'rt = CAPI.MEM.read(base+off, 1, rt_name);'
+    - name: ldc1
+      template: Custom
+      type: Memory access
+      help: ''
+      properties: []
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          type: co
+          startbit: 31
+          stopbit: 26
+          value: '110101'
+          order: 0
+        - field: base
+          type: INT-Reg
+          startbit: 25
+          stopbit: 21
+          prefix: ($
+          suffix: )
+          order: 3
+        - field: ft
+          type: SFP-Reg
+          startbit: 20
+          stopbit: 16
+          order: 1
+          prefix: $
+        - field: 'off'
+          type: inm-signed
+          startbit: 15
+          stopbit: 0
+          order: 2
+      preoperation: |
+        CAPI.MIPS.validateEvenRegister(ft_name);
+      postoperation: |
+        CAPI.MIPS.writeDouble(doubleValue, ft_name);
+      definition: |
+        if (CAPI.VALIDATION.isMisaligned(base + off, 'd')) {
+          CAPI.VALIDATION.raise('The memory must be aligned');
+        }
+        let high = CAPI.MEM.read(base + off, 4);
+        let low = CAPI.MEM.read(base + off + 4n, 4, ft_name);
+        let doubleValue = CAPI.FP.uint2float64(Number(low), Number(high));
+    - name: lh
+      template: Custom
+      type: Memory access
+      help: 'Load 16 bits of the specified address, sign is extended'
+      properties: []
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          type: co
+          startbit: 31
+          stopbit: 26
+          value: '100001'
+          order: 0
+        - field: reg1
+          type: INT-Reg
+          startbit: 20
+          stopbit: 16
+          order: 1
+          prefix: $
+        - field: val
+          type: inm-signed
+          startbit: 15
+          stopbit: 0
+          order: 2
+        - field: reg2
+          type: INT-Reg
+          startbit: 25
+          stopbit: 21
+          order: 3
+          prefix: ($
+          suffix: )
+      definition: 'reg1 = CAPI.MEM.read(reg2+val, 2, reg1_name);'
+    - name: lhu
+      template: Custom
+      type: Memory access
+      help: 'Load 16 bits of the specified address, no sign is extended'
+      properties: []
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          type: co
+          startbit: 31
+          stopbit: 26
+          value: '100101'
+          order: 0
+        - field: base
+          type: INT-Reg
+          startbit: 25
+          stopbit: 21
+          prefix: ($
+          suffix: )
+          order: 3
+        - field: rt
+          type: INT-Reg
+          startbit: 20
+          stopbit: 16
+          order: 1
+          prefix: $
+        - field: 'off'
+          type: inm-signed
+          startbit: 15
+          stopbit: 0
+          order: 2
+      definition: 'rt = CAPI.MEM.read(base+off, 2, rt_name);'
+    - name: lui
+      template: Custom
+      type: Other
+      help: "Load the 16 bits of the lower part of the immediate value in the upper part of the register. The bits of the lower part are set to 0"
+      properties: []
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          type: co
+          startbit: 31
+          stopbit: 26
+          value: '001111'
+          order: 0
+        - field: reg1
+          type: INT-Reg
+          startbit: 20
+          stopbit: 16
+          order: 1
+          prefix: $
+        - field: val
+          type: inm-unsigned
+          startbit: 15
+          stopbit: 0
+          order: 2
+      definition: reg1 = val << 16n;
+    - name: lw
+      template: Custom
+      type: Memory access
+      help: Load a word from the specified address
+      properties: []
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          type: co
+          startbit: 31
+          stopbit: 26
+          value: '100011'
+          order: 0
+        - field: reg1
+          type: INT-Reg
+          startbit: 20
+          stopbit: 16
+          order: 1
+          prefix: $
+        - field: val
+          type: inm-signed
+          startbit: 15
+          stopbit: 0
+          order: 2
+        - field: reg2
+          type: INT-Reg
+          startbit: 25
+          stopbit: 21
+          prefix: ($
+          suffix: )
+          order: 3
+      definition: 'reg1 = CAPI.MEM.read(val+reg2, 4, reg1_name);'
+    - name: lwc1
+      template: Custom
+      type: Memory access
+      help: ''
+      properties: []
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          type: co
+          startbit: 31
+          stopbit: 26
+          value: '110001'
+          order: 0
+        - field: base
+          type: INT-Reg
+          startbit: 25
+          stopbit: 21
+          prefix: ($
+          suffix: )
+          order: 3
+        - field: ft
+          type: SFP-Reg
+          startbit: 20
+          stopbit: 16
+          order: 1
+          prefix: $
+        - field: 'off'
+          type: inm-signed
+          startbit: 15
+          stopbit: 0
+          order: 2
+      definition: |-
+        ft = CAPI.MEM.read(base+off, 4, ft_name);
+    - name: mfc1
+      template: Custom
+      type: Transfer between registers
+      help: "Moves the contents of the CPsrc register of the floating-point coprocessor to the Rdest CPU register."
+      properties: []
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          type: co
+          startbit: 31
+          stopbit: 26
+          value: '010001'
+          order: 0
+        - field: cop
+          type: cop
+          startbit: 25
+          stopbit: 21
+          valueField: '11111'
+        - field: rt
+          type: INT-Reg
+          startbit: 20
+          stopbit: 16
+          order: 1
+          prefix: $
+        - field: fs
+          type: SFP-Reg
+          startbit: 15
+          stopbit: 11
+          order: 2
+          prefix: $
+      definition: rt = CAPI.FP.float322uint(fs);
+    - name: mfhi
+      template: Custom
+      type: Transfer between registers
+      help: Move the contents of the HI register to the Rdest register.
+      properties: []
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          type: co
+          startbit: 31
+          stopbit: 26
+          value: '000000'
+          order: 0
+        - field: rd
+          type: INT-Reg
+          startbit: 15
+          stopbit: 11
+          order: 1
+          prefix: $
+        - field: cop
+          type: cop
+          startbit: 5
+          stopbit: 0
+          valueField: '010000'
+      definition: rd = HI;
+    - name: mflo
+      template: Custom
+      type: Transfer between registers
+      help: Move the contents of the LO register to the Rdest register.
+      properties: []
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          type: co
+          startbit: 31
+          stopbit: 26
+          value: '000000'
+          order: 0
+        - field: rd
+          type: INT-Reg
+          startbit: 15
+          stopbit: 11
+          order: 1
+          prefix: $
+        - field: cop
+          type: cop
+          startbit: 5
+          stopbit: 0
+          valueField: '010010'
+      definition: rd = LO;
+    - name: mod
+      template: Custom
+      type: Arithmetic integer
+      help: Division module with overflow
+      properties: []
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          type: co
+          startbit: 31
+          stopbit: 26
+          value: '000000'
+          order: 0
+        - field: rs
+          type: INT-Reg
+          startbit: 25
+          stopbit: 21
+          order: 2
+          prefix: $
+        - field: rt
+          type: INT-Reg
+          startbit: 20
+          stopbit: 16
+          order: 3
+          prefix: $
+        - field: rd
+          type: INT-Reg
+          startbit: 15
+          stopbit: 11
+          order: 1
+          prefix: $
+        - field: cop
+          type: cop
+          startbit: 10
+          stopbit: 0
+          valueField: '00011011010'
+      definition: rd = CAPI.FP.uint2int(rs) % CAPI.FP.uint2int(rt);
+    - name: modu
+      template: Custom
+      type: Arithmetic floating point
+      help: Division module without overflow
+      properties: []
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          type: co
+          startbit: 31
+          stopbit: 26
+          value: '000000'
+          order: 0
+        - field: rs
+          type: INT-Reg
+          startbit: 25
+          stopbit: 21
+          order: 2
+          prefix: $
+        - field: rt
+          type: INT-Reg
+          startbit: 20
+          stopbit: 16
+          order: 3
+          prefix: $
+        - field: rd
+          type: INT-Reg
+          startbit: 15
+          stopbit: 11
+          order: 1
+          prefix: $
+        - field: cop
+          type: cop
+          startbit: 10
+          stopbit: 0
+          valueField: '00011011011'
+      definition: rd = CAPI.FP.int2uint(rs) % CAPI.FP.int2uint(rt);
+    - name: mov.d
+      template: Custom
+      type: Transfer between registers
+      help: Move the contents of the fs record to the fd record. (double)
+      properties: []
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          type: co
+          startbit: 31
+          stopbit: 26
+          value: '010001'
+          order: 0
+        - field: fmt
+          type: cop
+          startbit: 25
+          stopbit: 21
+          valueField: '00001'
+        - field: fs
+          type: SFP-Reg
+          startbit: 15
+          stopbit: 11
+          order: 2
+          prefix: $
+        - field: fd
+          type: SFP-Reg
+          startbit: 10
+          stopbit: 6
+          order: 1
+          prefix: $
+        - field: cop
+          type: cop
+          startbit: 5
+          stopbit: 0
+          valueField: '000110'
+      preoperation: |
+        let val = CAPI.MIPS.readDouble(fs_name);
+      postoperation: |
+        CAPI.MIPS.writeDouble(val, fd_name);
+      definition: |
+        // Value is moved in preoperation/postoperation
+    - name: mov.s
+      template: Custom
+      type: Transfer between registers
+      help: Move the contents of the fs record to the fd record. (float)
+      properties: []
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          type: co
+          startbit: 31
+          stopbit: 26
+          value: '010001'
+          order: 0
+        - field: fmt
+          type: cop
+          startbit: 25
+          stopbit: 21
+          valueField: '00000'
+        - field: fs
+          type: SFP-Reg
+          startbit: 15
+          stopbit: 11
+          order: 2
+          prefix: $
+        - field: fd
+          type: SFP-Reg
+          startbit: 10
+          stopbit: 6
+          order: 1
+          prefix: $
+        - field: cop
+          type: cop
+          startbit: 5
+          stopbit: 0
+          valueField: '000110'
+      preoperation: |
+        fs = CAPI.FS.uint2float32(fs);
+      postoperation: |
+        fd = CAPI.FS.float322uint(fd);
+      definition: fd = fs;
+    - name: mtc1
+      template: Custom
+      type: Transfer between registers
+      help: "Move the contents of the Rsrc register of the CPU to the CPdest register of the floating-point coprocessor."
+      properties: []
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          type: co
+          startbit: 31
+          stopbit: 26
+          value: '010001'
+          order: 0
+        - field: cop
+          type: cop
+          startbit: 25
+          stopbit: 21
+          valueField: '00100'
+        - field: rt
+          type: INT-Reg
+          startbit: 20
+          stopbit: 16
+          order: 1
+          prefix: $
+        - field: fs
+          type: SFP-Reg
+          startbit: 15
+          stopbit: 11
+          order: 2
+          prefix: $
+      definition: fs = CAPI.FP.uint2float32(rt);
+    - name: mthi
+      template: Custom
+      type: Transfer between registers
+      help: Move the contents of the Rsrc register to the HI register.
+      properties: []
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          type: co
+          startbit: 31
+          stopbit: 26
+          value: '000000'
+          order: 0
+        - field: rs
+          type: INT-Reg
+          startbit: 25
+          stopbit: 21
+          order: 1
+          prefix: $
+        - field: cop
+          type: cop
+          startbit: 5
+          stopbit: 0
+          valueField: '010001'
+      definition: HI = rs;
+    - name: mtlo
+      template: Custom
+      type: Transfer between registers
+      help: Move the contents of the Rsrc register to the LO register.
+      properties: []
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          type: co
+          startbit: 31
+          stopbit: 26
+          value: '000000'
+          order: 0
+        - field: rs
+          type: INT-Reg
+          startbit: 25
+          stopbit: 21
+          order: 1
+          prefix: $
+        - field: cop
+          type: cop
+          startbit: 5
+          stopbit: 0
+          valueField: '010011'
+      definition: LO = rs;
+    - name: mul
+      template: Custom
+      type: Arithmetic integer
+      help: ''
+      properties: []
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          type: co
+          startbit: 31
+          stopbit: 26
+          value: '011100'
+          order: 0
+        - field: reg1
+          type: INT-Reg
+          startbit: 25
+          stopbit: 21
+          order: 1
+          prefix: $
+        - field: reg2
+          type: INT-Reg
+          startbit: 20
+          stopbit: 16
+          order: 2
+          prefix: $
+        - field: reg3
+          type: INT-Reg
+          startbit: 15
+          stopbit: 11
+          order: 3
+          prefix: $
+        - field: cop
+          type: cop
+          startbit: 5
+          stopbit: 0
+          valueField: '000010'
+      definition: reg1 = reg2 * reg3;
+    - name: mul.d
+      template: Custom
+      type: Arithmetic floating point
+      help: Multiply the register fs and ft and leave your result in fd. (double)
+      properties: []
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          type: co
+          startbit: 31
+          stopbit: 26
+          value: '010001'
+          order: 0
+        - field: fmt
+          type: cop
+          startbit: 25
+          stopbit: 21
+          valueField: '00001'
+        - field: ft
+          type: SFP-Reg
+          startbit: 20
+          stopbit: 16
+          order: 3
+          prefix: $
+        - field: fs
+          type: SFP-Reg
+          startbit: 15
+          stopbit: 11
+          order: 2
+          prefix: $
+        - field: fd
+          type: SFP-Reg
+          startbit: 10
+          stopbit: 6
+          order: 1
+          prefix: $
+        - field: cop
+          type: cop
+          startbit: 5
+          stopbit: 0
+          valueField: '000010'
+      preoperation: |
+        let val1 = CAPI.MIPS.readDouble(fs_name);
+        let val2 = CAPI.MIPS.readDouble(ft_name);
+      postoperation: |
+        CAPI.MIPS.writeDouble(result, fd_name);
+      definition: |
+        let result = val1 * val2;
+    - name: mul.s
+      template: Custom
+      type: Arithmetic floating point
+      help: Multiply the register fs and ft and leave your result in fd. (float)
+      properties: []
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          type: co
+          startbit: 31
+          stopbit: 26
+          value: '010001'
+          order: 0
+        - field: fmt
+          type: cop
+          startbit: 25
+          stopbit: 21
+          valueField: '00000'
+        - field: ft
+          type: SFP-Reg
+          startbit: 20
+          stopbit: 16
+          order: 3
+          prefix: $
+        - field: fs
+          type: SFP-Reg
+          startbit: 15
+          stopbit: 11
+          order: 2
+          prefix: $
+        - field: fd
+          type: SFP-Reg
+          startbit: 10
+          stopbit: 6
+          order: 1
+          prefix: $
+        - field: cop
+          type: cop
+          startbit: 5
+          stopbit: 0
+          valueField: '000010'
+      preoperation: |
+        fs = CAPI.FS.uint2float32(fs);
+        ft = CAPI.FS.uint2float32(ft);
+      postoperation: |
+        fd = CAPI.FS.float322uint(fd);
+      definition: fd = fs * ft;
+    - name: mult
+      template: Custom
+      type: Arithmetic integer
+      help: "Multiply, the low part of the result is left in the lo register and the high part in the hi register"
+      properties: []
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          type: co
+          startbit: 31
+          stopbit: 26
+          value: '000000'
+          order: 0
+        - field: rs
+          type: INT-Reg
+          startbit: 25
+          stopbit: 21
+          order: 2
+          prefix: $
+        - field: rt
+          type: INT-Reg
+          startbit: 20
+          stopbit: 16
+          order: 1
+          prefix: $
+        - field: cop
+          type: cop
+          startbit: 5
+          stopbit: 0
+          valueField: '011000'
+      definition: |-
+        let result = CAPI.FP.uint2int(rs) * CAPI.FP.uint2int(rt);
+        HI = Math.floor(result / Math.pow (2, 32));
+        LO = result % Math.pow(2, 32);
+    - name: multu
+      template: Custom
+      type: Arithmetic integer
+      help: "Multiply without overflow, the low part of the result is left in the lo register and the high part in the hi register"
+      properties: []
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          type: co
+          startbit: 31
+          stopbit: 26
+          value: '000000'
+          order: 0
+        - field: rs
+          type: INT-Reg
+          startbit: 25
+          stopbit: 21
+          order: 2
+          prefix: $
+        - field: rt
+          type: INT-Reg
+          startbit: 20
+          stopbit: 16
+          order: 1
+          prefix: $
+        - field: cop
+          type: cop
+          startbit: 5
+          stopbit: 0
+          valueField: '011001'
+      definition: |-
+        let result = CAPI.FP.int2uint(rs) * CAPI.FP.int2uint(rt);
+        HI = Math.floor(result / Math.pow(2, 32));
+        HI = HI >>> 0;
+        LO = result % Math.pow(2, 32);
+        LO = LO >>> 0;
+    - name: nop
+      template: Custom
+      type: Logic
+      help: It does not perform any operation
+      properties: []
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          type: co
+          startbit: 31
+          stopbit: 26
+          value: '000000'
+          order: 0
+        - field: cop
+          type: cop
+          startbit: 5
+          stopbit: 0
+          valueField: '000000'
+      definition: ''
+    - name: nor
+      template: Custom
+      type: Arithmetic integer
+      help: NOR Logic Operation
+      properties: []
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          type: co
+          startbit: 31
+          stopbit: 26
+          value: '000000'
+          order: 0
+        - field: rs
+          type: INT-Reg
+          startbit: 25
+          stopbit: 21
+          order: 2
+          prefix: $
+        - field: rt
+          type: INT-Reg
+          startbit: 20
+          stopbit: 16
+          order: 3
+          prefix: $
+        - field: rd
+          type: INT-Reg
+          startbit: 15
+          stopbit: 11
+          order: 1
+          prefix: $
+        - field: cop
+          type: cop
+          startbit: 5
+          stopbit: 0
+          valueField: '101111'
+      definition: rd = (~ (rs | rt));
+    - name: or
+      template: Custom
+      type: Logic
+      help: OR Logic Operation
+      properties: []
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          type: co
+          startbit: 31
+          stopbit: 26
+          value: '000000'
+          order: 0
+        - field: reg1
+          type: INT-Reg
+          startbit: 25
+          stopbit: 21
+          order: 1
+          prefix: $
+        - field: reg2
+          type: INT-Reg
+          startbit: 20
+          stopbit: 16
+          order: 2
+          prefix: $
+        - field: reg3
+          type: INT-Reg
+          startbit: 15
+          stopbit: 11
+          order: 3
+          prefix: $
+        - field: cop
+          type: cop
+          startbit: 5
+          stopbit: 0
+          valueField: '100101'
+      definition: reg1 = reg2 | reg3;
+    - name: ori
+      template: Custom
+      type: Logic
+      help: OR Logic Operation with immediate
+      properties: []
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          type: co
+          startbit: 31
+          stopbit: 26
+          value: '001101'
+          order: 0
+        - field: reg1
+          type: INT-Reg
+          startbit: 25
+          stopbit: 21
+          order: 1
+          prefix: $
+        - field: reg2
+          type: INT-Reg
+          startbit: 20
+          stopbit: 16
+          order: 2
+          prefix: $
+        - field: val
+          type: inm-unsigned
+          startbit: 15
+          stopbit: 0
+          order: 3
+      definition: reg1 = reg2 | val;
+    - name: rotr
+      template: Custom
+      type: Arithmetic integer
+      help: Right rotation of inm bits
+      properties: []
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          type: co
+          startbit: 31
+          stopbit: 26
+          value: '000000'
+          order: 0
+        - field: r
+          type: cop
+          startbit: 21
+          stopbit: 21
+          valueField: '1'
+        - field: rt
+          type: INT-Reg
+          startbit: 20
+          stopbit: 16
+          order: 2
+          prefix: $
+        - field: rd
+          type: INT-Reg
+          startbit: 15
+          stopbit: 11
+          order: 1
+          prefix: $
+        - field: sa
+          type: inm-unsigned
+          startbit: 10
+          stopbit: 6
+          order: 3
+        - field: cop
+          type: cop
+          startbit: 5
+          stopbit: 0
+          valueField: '000010'
+      definition: rd = CAPI.FP.int2uint((rt >>> sa) | (rt << (32 - sa)));
+    - name: rsqrt.d
+      template: Custom
+      type: Arithmetic floating point
+      help: Reciprocal Square Root fd = 1.0/sqrt.s(fs) (double)
+      properties: []
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          type: co
+          startbit: 31
+          stopbit: 26
+          value: '010001'
+          order: 0
+        - field: fmt
+          type: cop
+          startbit: 25
+          stopbit: 21
+          valueField: '00001'
+        - field: fs
+          type: SFP-Reg
+          startbit: 15
+          stopbit: 11
+          order: 2
+          prefix: $
+        - field: fd
+          type: SFP-Reg
+          startbit: 10
+          stopbit: 6
+          order: 1
+          prefix: $
+        - field: cop
+          type: cop
+          startbit: 5
+          stopbit: 0
+          valueField: '010110'
+      preoperation: |
+        let val = CAPI.MIPS.readDouble(fs_name);
+      postoperation: |
+        CAPI.MIPS.writeDouble(result, fd_name);
+      definition: |
+        let result;
+        if (val >= 0) {
+          result = 1.0 / Math.sqrt(val);
+        } else {
+          CAPI.VALIDATION.raise('Square root of a negative number is not allowed.');
+        }
+    - name: rsqrt.s
+      template: Custom
+      type: Arithmetic floating point
+      help: Reciprocal Square Root fd = 1.0/sqrt.s(fs) (float)
+      properties: []
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          type: co
+          startbit: 31
+          stopbit: 26
+          value: '010001'
+          order: 0
+        - field: fmt
+          type: cop
+          startbit: 25
+          stopbit: 21
+          valueField: '00000'
+        - field: fs
+          type: SFP-Reg
+          startbit: 15
+          stopbit: 11
+          order: 2
+          prefix: $
+        - field: fd
+          type: SFP-Reg
+          startbit: 10
+          stopbit: 6
+          order: 1
+          prefix: $
+        - field: cop
+          type: cop
+          startbit: 5
+          stopbit: 0
+          valueField: '010110'
+      preoperation: |
+        fs = CAPI.FS.uint2float32(fs);
+      postoperation: |
+        fd = CAPI.FS.float322uint(fd);
+      definition: |-
+        if (fs >= 0)
+         { fd = 1.0/Math.sqrt(fs); }
+         else { CAPI.VALIDATION.raise('Square root of a negative number is not allowed.'); }
+    - name: sb
+      template: Custom
+      type: Memory access
+      help: ''
+      properties: []
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          type: co
+          startbit: 31
+          stopbit: 26
+          value: '101000'
+          order: 0
+        - field: base
+          type: INT-Reg
+          startbit: 25
+          stopbit: 21
+          prefix: ($
+          suffix: )
+          order: 3
+        - field: rt
+          type: INT-Reg
+          startbit: 20
+          stopbit: 16
+          order: 1
+          prefix: $
+        - field: 'off'
+          type: inm-signed
+          startbit: 15
+          stopbit: 0
+          order: 2
+      definition: 'CAPI.MEM.write(base+off, 1, rt, rt_name);'
+    - name: sdc1
+      template: Custom
+      type: Memory access
+      help: ''
+      properties: []
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          type: co
+          startbit: 31
+          stopbit: 26
+          value: '111101'
+          order: 0
+        - field: base
+          type: INT-Reg
+          startbit: 25
+          stopbit: 21
+          prefix: ($
+          suffix: )
+          order: 3
+        - field: ft
+          type: SFP-Reg
+          startbit: 20
+          stopbit: 16
+          order: 1
+          prefix: $
+        - field: 'off'
+          type: inm-signed
+          startbit: 15
+          stopbit: 0
+          order: 2
+      preoperation: |
+        let doubleValue = CAPI.MIPS.readDouble(ft_name);
+        let parts = CAPI.FP.float642uint(doubleValue);
+      definition: |
+        if (CAPI.VALIDATION.isMisaligned(base + off, 'd')) {
+          CAPI.VALIDATION.raise('The memory must be aligned');
+        }
+        CAPI.MEM.write(base + off, 4, BigInt(parts[0]), ft_name);
+        CAPI.MEM.write(base + off + 4n, 4, BigInt(parts[1]));
+    - name: sh
+      template: Custom
+      type: Memory access
+      help: "Stores the low half word (16 bits) of a register in the indicated memory address."
+      properties: []
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          type: co
+          startbit: 31
+          stopbit: 26
+          value: '101001'
+          order: 0
+        - field: base
+          type: INT-Reg
+          startbit: 25
+          stopbit: 21
+          prefix: ($
+          suffix: )
+          order: 3
+        - field: rt
+          type: INT-Reg
+          startbit: 20
+          stopbit: 16
+          order: 1
+          prefix: $
+        - field: 'off'
+          type: inm-signed
+          startbit: 15
+          stopbit: 0
+          order: 2
+      definition: 'CAPI.MEM.write(base+off, 2, rt, rt_name);'
+    - name: sll
+      template: Custom
+      type: Arithmetic integer
+      help: Logical bit shift to the left
+      properties: []
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          type: co
+          startbit: 31
+          stopbit: 26
+          value: '000000'
+          order: 0
+        - field: rt
+          type: INT-Reg
+          startbit: 20
+          stopbit: 16
+          order: 2
+          prefix: $
+        - field: rd
+          type: INT-Reg
+          startbit: 15
+          stopbit: 11
+          order: 1
+          prefix: $
+        - field: sa
+          type: inm-unsigned
+          startbit: 10
+          stopbit: 6
+          order: 3
+        - field: cop
+          type: cop
+          startbit: 5
+          stopbit: 0
+          valueField: '111111'
+      definition: rd = CAPI.FP.int2uint(rt << sa);
+    - name: slt
+      template: Custom
+      type: Logic
+      help: "Set Rdest to 1 if Rsrc1 is less than Rsrc2, otherwise set 0 (for signed numbers)."
+      properties: []
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          type: co
+          startbit: 31
+          stopbit: 26
+          value: '000000'
+          order: 0
+        - field: rs
+          type: INT-Reg
+          startbit: 25
+          stopbit: 21
+          order: 2
+          prefix: $
+        - field: rt
+          type: INT-Reg
+          startbit: 20
+          stopbit: 16
+          order: 3
+          prefix: $
+        - field: rd
+          type: INT-Reg
+          startbit: 15
+          stopbit: 11
+          order: 1
+          prefix: $
+        - field: cop
+          type: cop
+          startbit: 5
+          stopbit: 0
+          valueField: '101010'
+      definition: 'rd = CAPI.FP.uint2int(rs) < CAPI.FP.uint2int(rt) ? 1n : 0n;'
+    - name: slti
+      template: Custom
+      type: Logic
+      help: "Set Rdest to 1 if Rsrc1 is less than inm, otherwise set 0 (for signed numbers)."
+      properties: []
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          type: co
+          startbit: 31
+          stopbit: 26
+          value: '001010'
+          order: 0
+        - field: rt
+          type: INT-Reg
+          startbit: 25
+          stopbit: 21
+          order: 2
+          prefix: $
+        - field: rs
+          type: INT-Reg
+          startbit: 20
+          stopbit: 16
+          order: 1
+          prefix: $
+        - field: inm
+          type: inm-signed
+          startbit: 15
+          stopbit: 0
+          order: 3
+      definition: 'rs = CAPI.FP.uint2int(rt) < CAPI.FP.uint2int(inm) ? 1n : 0n;'
+    - name: sltiu
+      template: Custom
+      type: Logic
+      help: "Set Rdest to 1 if Rsrc1 is less than inm, otherwise set 0 (for unsigned numbers)."
+      properties: []
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          type: co
+          startbit: 31
+          stopbit: 26
+          value: '001011'
+          order: 0
+        - field: rt
+          type: INT-Reg
+          startbit: 25
+          stopbit: 21
+          order: 2
+          prefix: $
+        - field: rs
+          type: INT-Reg
+          startbit: 20
+          stopbit: 16
+          order: 1
+          prefix: $
+        - field: inm
+          type: inm-signed
+          startbit: 15
+          stopbit: 0
+          order: 3
+      definition: 'rs = CAPI.FP.int2uint(rt) < CAPI.FP.int2uint(inm) ? 1n : 0n;'
+    - name: sltu
+      template: Custom
+      type: Logic
+      help: "Set Rdest to 1 if Rsrc1 is less than Rsrc2, otherwise set 0 (for unsigned numbers)."
+      properties: []
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          type: co
+          startbit: 31
+          stopbit: 26
+          value: '000000'
+          order: 0
+        - field: rs
+          type: INT-Reg
+          startbit: 25
+          stopbit: 21
+          order: 2
+          prefix: $
+        - field: rt
+          type: INT-Reg
+          startbit: 20
+          stopbit: 16
+          order: 3
+          prefix: $
+        - field: rd
+          type: INT-Reg
+          startbit: 15
+          stopbit: 11
+          order: 1
+          prefix: $
+        - field: cop
+          type: cop
+          startbit: 5
+          stopbit: 0
+          valueField: '101011'
+      definition: 'rd = CAPI.FP.uint2int(rs) < CAPI.FP.uint2int(rt) ? 1n : 0n;'
+    - name: sqrt.d
+      template: Custom
+      type: Arithmetic floating point
+      help: Square root of fs (double)
+      properties: []
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          type: co
+          startbit: 31
+          stopbit: 26
+          value: '010001'
+          order: 0
+        - field: fmt
+          type: cop
+          startbit: 25
+          stopbit: 21
+          valueField: '00001'
+        - field: fs
+          type: SFP-Reg
+          startbit: 15
+          stopbit: 11
+          order: 2
+          prefix: $
+        - field: fd
+          type: SFP-Reg
+          startbit: 10
+          stopbit: 6
+          order: 1
+          prefix: $
+        - field: cop
+          type: cop
+          startbit: 5
+          stopbit: 0
+          valueField: '000100'
+      preoperation: |
+        let val = CAPI.MIPS.readDouble(fs_name);
+      postoperation: |
+        CAPI.MIPS.writeDouble(result, fd_name);
+      definition: |
+        let result;
+        if (val >= 0) {
+          result = Math.sqrt(val);
+        } else {
+          CAPI.VALIDATION.raise('Square root of a negative number is not allowed.');
+        }
+    - name: sqrt.s
+      template: Custom
+      type: Arithmetic floating point
+      help: 'Square root of fs (float): fd=sqrt(fs)'
+      properties: []
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          type: co
+          startbit: 31
+          stopbit: 26
+          value: '010001'
+          order: 0
+        - field: fmt
+          type: cop
+          startbit: 25
+          stopbit: 21
+          valueField: '00000'
+        - field: fs
+          type: SFP-Reg
+          startbit: 15
+          stopbit: 11
+          order: 2
+          prefix: $
+        - field: fd
+          type: SFP-Reg
+          startbit: 10
+          stopbit: 6
+          order: 1
+          prefix: $
+        - field: cop
+          type: cop
+          startbit: 5
+          stopbit: 0
+          valueField: '000100'
+      preoperation: |
+        fs = CAPI.FS.uint2float32(fs);
+      postoperation: |
+        fd = CAPI.FS.float322uint(fd);
+      definition: |-
+        if (fs >= 0)
+         { fd = Math.sqrt(fs); }
+         else { CAPI.VALIDATION.raise('Square root of a negative number is not allowed.'); }
+    - name: sra
+      template: Custom
+      type: Arithmetic integer
+      help: Arithmetic bit shift to the right
+      properties: []
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          type: co
+          startbit: 31
+          stopbit: 26
+          value: '000000'
+          order: 0
+        - field: rt
+          type: INT-Reg
+          startbit: 20
+          stopbit: 16
+          order: 2
+          prefix: $
+        - field: rd
+          type: INT-Reg
+          startbit: 15
+          stopbit: 11
+          order: 1
+          prefix: $
+        - field: sa
+          type: inm-unsigned
+          startbit: 10
+          stopbit: 6
+          order: 3
+        - field: cop
+          type: cop
+          startbit: 5
+          stopbit: 0
+          valueField: '000011'
+      definition: rd = CAPI.FP.int2uint(rt >> sa);
+    - name: srl
+      template: Custom
+      type: Arithmetic integer
+      help: Logical bit shift to the right
+      properties: []
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          type: co
+          startbit: 31
+          stopbit: 26
+          value: '000000'
+          order: 0
+        - field: r
+          type: cop
+          startbit: 21
+          stopbit: 21
+          valueField: '0'
+        - field: rt
+          type: INT-Reg
+          startbit: 20
+          stopbit: 16
+          order: 2
+          prefix: $
+        - field: rd
+          type: INT-Reg
+          startbit: 15
+          stopbit: 11
+          order: 1
+          prefix: $
+        - field: sa
+          type: inm-unsigned
+          startbit: 10
+          stopbit: 6
+          order: 3
+        - field: cop
+          type: cop
+          startbit: 5
+          stopbit: 0
+          valueField: '000010'
+      definition: rd = rt >>> sa;
+    - name: sub
+      template: Custom
+      type: Arithmetic integer
+      help: Subtraction (with overflow)
+      properties: []
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          type: co
+          startbit: 31
+          stopbit: 26
+          value: '000000'
+          order: 0
+        - field: reg1
+          type: INT-Reg
+          startbit: 25
+          stopbit: 21
+          order: 1
+          prefix: $
+        - field: reg2
+          type: INT-Reg
+          startbit: 20
+          stopbit: 16
+          order: 2
+          prefix: $
+        - field: reg3
+          type: INT-Reg
+          startbit: 15
+          stopbit: 11
+          order: 3
+          prefix: $
+        - field: cop
+          type: cop
+          startbit: 5
+          stopbit: 0
+          valueField: '100010'
+      definition: reg1 = CAPI.FP.int2uint(CAPI.FP.uint2int(reg2) - CAPI.FP.uint2int(reg3));
+    - name: sub.d
+      template: Custom
+      type: Arithmetic floating point
+      help: Subtraction (double)
+      properties: []
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          type: co
+          startbit: 31
+          stopbit: 26
+          value: '010001'
+          order: 0
+        - field: fmt
+          type: cop
+          startbit: 25
+          stopbit: 21
+          valueField: '00001'
+        - field: ft
+          type: SFP-Reg
+          startbit: 20
+          stopbit: 16
+          order: 3
+          prefix: $
+        - field: fs
+          type: SFP-Reg
+          startbit: 15
+          stopbit: 11
+          order: 2
+          prefix: $
+        - field: fd
+          type: SFP-Reg
+          startbit: 10
+          stopbit: 6
+          order: 1
+          prefix: $
+        - field: cop
+          type: cop
+          startbit: 5
+          stopbit: 0
+          valueField: '000001'
+      preoperation: |
+        let val1 = CAPI.MIPS.readDouble(fs_name);
+        let val2 = CAPI.MIPS.readDouble(ft_name);
+      postoperation: |
+        CAPI.MIPS.writeDouble(result, fd_name);
+      definition: |
+        let result = val1 - val2;
+    - name: sub.s
+      template: Custom
+      type: Arithmetic floating point
+      help: 'Subtraction (float): fd = fs-ft'
+      properties: []
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          type: co
+          startbit: 31
+          stopbit: 26
+          value: '010001'
+          order: 0
+        - field: fmt
+          type: cop
+          startbit: 25
+          stopbit: 21
+          valueField: '00000'
+        - field: ft
+          type: SFP-Reg
+          startbit: 20
+          stopbit: 16
+          order: 3
+          prefix: $
+        - field: fs
+          type: SFP-Reg
+          startbit: 15
+          stopbit: 11
+          order: 2
+          prefix: $
+        - field: fd
+          type: SFP-Reg
+          startbit: 10
+          stopbit: 6
+          order: 1
+          prefix: $
+        - field: cop
+          type: cop
+          startbit: 5
+          stopbit: 0
+          valueField: '000001'
+      preoperation: |
+        fs = CAPI.FS.uint2float32(fs);
+        ft = CAPI.FS.uint2float32(ft);
+      postoperation: |
+        fd = CAPI.FS.float322uint(fd);
+      definition: fd = fs - ft;
+    - name: subu
+      template: Custom
+      type: Arithmetic integer
+      help: Subtraction (without overflow)
+      properties: []
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          type: co
+          startbit: 31
+          stopbit: 26
+          value: '000000'
+          order: 0
+        - field: rs
+          type: INT-Reg
+          startbit: 25
+          stopbit: 21
+          order: 2
+          prefix: $
+        - field: rt
+          type: INT-Reg
+          startbit: 20
+          stopbit: 16
+          order: 3
+          prefix: $
+        - field: rd
+          type: INT-Reg
+          startbit: 15
+          stopbit: 11
+          order: 1
+          prefix: $
+        - field: cop
+          type: cop
+          startbit: 5
+          stopbit: 0
+          valueField: '100011'
+      definition: rd = CAPI.FP.int2uint(CAPI.FP.int2uint(rs) - CAPI.FP.int2uint(rt)) ;
+    - name: sw
+      template: Custom
+      type: Memory access
+      help: Store the Rsrc in the indicated address.
+      properties: []
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          type: co
+          startbit: 31
+          stopbit: 26
+          value: '101011'
+          order: 0
+        - field: reg1
+          type: INT-Reg
+          startbit: 20
+          stopbit: 16
+          order: 1
+          prefix: $
+        - field: val
+          type: inm-signed
+          startbit: 15
+          stopbit: 0
+          order: 2
+        - field: reg2
+          type: INT-Reg
+          startbit: 25
+          stopbit: 21
+          prefix: ($
+          suffix: )
+          order: 3
+      definition: 'CAPI.MEM.write(val+reg2, 4, reg1, reg1_name);'
+    - name: swc1
+      template: Custom
+      type: Memory access
+      help: ''
+      properties: []
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          type: co
+          startbit: 31
+          stopbit: 26
+          value: '111001'
+          order: 0
+        - field: base
+          type: INT-Reg
+          startbit: 25
+          stopbit: 21
+          prefix: ($
+          suffix: )
+          order: 3
+        - field: ft
+          type: SFP-Reg
+          startbit: 20
+          stopbit: 16
+          order: 1
+          prefix: $
+        - field: 'off'
+          type: inm-signed
+          startbit: 15
+          stopbit: 0
+          order: 2
+      definition: 'CAPI.MEM.write(base+off, 4, ft, ft_name);'
+    - name: syscall
+      template: Custom
+      type: Syscall
+      help: ''
+      properties: []
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          type: co
+          startbit: 31
+          stopbit: 26
+          value: '000000'
+          order: 0
+        - field: cop
+          type: cop
+          startbit: 5
+          stopbit: 0
+          valueField: '001100'
+      definition: |-
+        switch(v0){
+          case 1n:
+            CAPI.SYSCALL.print(a0, 'int');
+            break;
+          case 2n:
+            CAPI.SYSCALL.print(f12, 'float');
+            break;
+          case 3n:
+            CAPI.SYSCALL.print(FP12, 'double');
+            break;
+          case 4n:
+            CAPI.SYSCALL.print(a0, 'string');
+            break;
+          case 5n:
+            CAPI.SYSCALL.read('v0', 'int');
+            break;
+          case 6n:
+            CAPI.SYSCALL.read(f0, 'float');
+            break;
+          case 7n:
+            CAPI.SYSCALL.read(FP0, 'double');
+            break;
+          case 8n:
+            CAPI.SYSCALL.read('a0', 'string', 'a1');
+            break;
+          case 9n:
+            CAPI.SYSCALL.sbrk('a0', 'v0');
+            break;
+          case 10n:
+            CAPI.SYSCALL.exit();
+            break;
+          case 11n:
+            CAPI.SYSCALL.print(a0, 'char');
+            break;
+          case 12n:
+            CAPI.SYSCALL.read('v0', 'char');
+            break;
+          case 13:
+          v0 = CAPI.SYSCALL.get_clk_cycles();
+          break;
+        }
+    - name: xor
+      template: Custom
+      type: Logic
+      help: XOR Logic Operation
+      properties: []
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          type: co
+          startbit: 31
+          stopbit: 26
+          value: '000000'
+          order: 0
+        - field: reg1
+          type: INT-Reg
+          startbit: 25
+          stopbit: 21
+          order: 1
+          prefix: $
+        - field: reg2
+          type: INT-Reg
+          startbit: 20
+          stopbit: 16
+          order: 2
+          prefix: $
+        - field: reg3
+          type: INT-Reg
+          startbit: 15
+          stopbit: 11
+          order: 3
+          prefix: $
+        - field: cop
+          type: cop
+          startbit: 5
+          stopbit: 0
+          valueField: '100110'
+      definition: reg1 = reg2 ^ reg3;
+    - name: xori
+      template: Custom
+      type: Logic
+      help: XOR Logic Operation with immediate number
+      properties: []
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          type: co
+          startbit: 31
+          stopbit: 26
+          value: '001110'
+          order: 0
+        - field: reg1
+          type: INT-Reg
+          startbit: 25
+          stopbit: 21
+          order: 1
+          prefix: $
+        - field: reg2
+          type: INT-Reg
+          startbit: 20
+          stopbit: 16
+          order: 2
+          prefix: $
+        - field: val
+          type: inm-signed
+          startbit: 15
+          stopbit: 0
+          order: 3
+      definition: reg1 = reg2 ^ val;
+    - name: rfe
+      template: Custom
+      type: Other
+      help: Return from exception
+      properties: []
+      nwords: 1
+      clk_cycles: 1
+      fields:
+        - field: opcode
+          type: co
+          startbit: 31
+          stopbit: 26
+          value: '110011'
+          order: 0
+      definition: PC = EPC;
+
+pseudoinstructions:
+  MIPS32:
+    - name: add
+      help: ''
+      properties: []
+      nwords: 1
+      fields:
+      - field: rs
+        type: INT-Reg
+        prefix: $
+      - field: rt
+        type: INT-Reg
+        prefix: $
+      - field: inm
+        type: inm-signed
+      definition: |-
+        if(Field.3.SIZE<=16){addi $rs, $rt, inm;}
+        else{lui $at, Field.3.(31,16).int;
+        ori $at, $at, Field.3.(15,0).int;
+        add $rs, $rt, $at;}
+    - name: addi
+      help: ''
+      properties: []
+      nwords: 1
+      fields:
+      - field: reg1
+        type: INT-Reg
+        prefix: $
+      - field: reg2
+        type: INT-Reg
+        prefix: $
+      - field: val
+        type: inm-signed
+      definition: |-
+        lui $at, Field.3.(31,16).int;
+        ori $at, $at, Field.3.(15,0).int;
+        add $reg1, $reg2, $at;
+    - name: addiu
+      help: ''
+      properties: []
+      nwords: 1
+      fields:
+      - field: reg1
+        type: INT-Reg
+        prefix: $
+      - field: reg2
+        type: INT-Reg
+        prefix: $
+      - field: val
+        type: inm-signed
+      definition: |-
+        lui $at, Field.3.(31,16).int;
+        ori $at, $at, Field.3.(15,0).int;
+        addu $reg1, $reg2, $at;
+    - name: addu
+      help: ''
+      properties: []
+      nwords: 1
+      fields:
+      - field: rs
+        type: INT-Reg
+        prefix: $
+      - field: rt
+        type: INT-Reg
+        prefix: $
+      - field: inm
+        type: inm-signed
+      definition: |-
+        if(Field.3.SIZE<=16){addiu $rs, $rt, inm;}
+        else{lui $at, Field.3.(31,16).int;
+        ori $at, $at, Field.3.(15,0).int;
+        addu $rs, $rt, $at;}
+    - name: and
+      help: ''
+      properties: []
+      nwords: 1
+      fields:
+      - field: rs
+        type: INT-Reg
+        prefix: $
+      - field: rt
+        type: INT-Reg
+        prefix: $
+      - field: inm
+        type: inm-signed
+      definition: |-
+        if(Field.3.SIZE<=16){andi $rs, $rt, inm;}
+        else{lui $at, Field.3.(31,16).int;
+        ori $at, $at, Field.3.(15,0).int;
+        and $rs, $rt, $at;}
+    - name: andi
+      help: ''
+      properties: []
+      nwords: 1
+      fields:
+      - field: rs
+        type: INT-Reg
+        prefix: $
+      - field: rt
+        type: INT-Reg
+        prefix: $
+      - field: inm
+        type: inm-signed
+      definition: |-
+        lui $at, Field.3.(31,16).int;
+        ori $at, $at, Field.3.(15,0).int;
+        and $rs, $rt, $at;
+    - name: b
+      help: ''
+      properties: []
+      nwords: 1
+      fields:
+      - field: inm
+        type: inm-unsigned
+      definition: |-
+        bgez $zero, inm;
+    - name: bc1t
+      help: ''
+      nwords: 1
+      fields:
+      - field: 'off'
+        type: offset_bytes
+      definition: |-
+        bc1t 0, off;
+    - name: beq
+      help: ''
+      properties: []
+      nwords: 1
+      fields:
+      - field: reg1
+        type: INT-Reg
+        prefix: $
+      - field: inm
+        type: inm-unsigned
+      - field: 'off'
+        type: offset_bytes
+      definition: |-
+        ori $at, $zero, inm; beq $reg1, $at, off;
+    - name: beqz
+      help: ''
+      properties: []
+      nwords: 1
+      fields:
+      - field: reg1
+        type: INT-Reg
+        prefix: $
+      - field: 'off'
+        type: offset_bytes
+      definition: |-
+        beq $reg1, $zero, off;
+    - name: bge
+      help: ''
+      properties: []
+      nwords: 1
+      fields:
+      - field: reg1
+        type: INT-Reg
+        prefix: $
+      - field: reg2
+        type: INT-Reg
+        prefix: $
+      - field: 'off'
+        type: offset_bytes
+      definition: |-
+        slt $at, $reg1, $reg2; beq $at, $zero, off;
+    - name: bge
+      help: ''
+      properties: []
+      nwords: 1
+      fields:
+      - field: reg1
+        type: INT-Reg
+        prefix: $
+      - field: inm
+        type: inm-unsigned
+      - field: 'off'
+        type: offset_bytes
+      definition: |-
+        slti $at, $reg1, inm; beq $at, $zero, off;
+    - name: bgeu
+      help: ''
+      properties: []
+      nwords: 1
+      fields:
+      - field: reg1
+        type: INT-Reg
+        prefix: $
+      - field: reg2
+        type: INT-Reg
+        prefix: $
+      - field: 'off'
+        type: offset_bytes
+      definition: |-
+        sltu $at, $reg1, $reg2; beq $at, $zero, off;
+    - name: bgeu
+      help: ''
+      properties: []
+      nwords: 1
+      fields:
+      - field: reg1
+        type: INT-Reg
+        prefix: $
+      - field: inm
+        type: inm-unsigned
+      - field: 'off'
+        type: offset_bytes
+      definition: |-
+        sltiu $at, $reg1, inm; beq $at, $zero, off;
+    - name: bgt
+      help: ''
+      properties: []
+      nwords: 1
+      fields:
+      - field: reg1
+        type: INT-Reg
+        prefix: $
+      - field: reg2
+        type: INT-Reg
+        prefix: $
+      - field: 'off'
+        type: offset_bytes
+      definition: |-
+        slt $at, $reg2, $reg1; bne $at, $zero, off;
+    - name: bgt
+      help: ''
+      properties: []
+      nwords: 1
+      fields:
+      - field: reg1
+        type: INT-Reg
+        prefix: $
+      - field: inm
+        type: inm-unsigned
+      - field: 'off'
+        type: offset_bytes
+      definition: |-
+        addi $at, $zero, inm; addi $at, $at, 1; slt $at, $reg1, $at; beq $at, $zero, off;
+    - name: bgtu
+      help: ''
+      properties: []
+      nwords: 1
+      fields:
+      - field: reg1
+        type: INT-Reg
+        prefix: $
+      - field: reg2
+        type: INT-Reg
+        prefix: $
+      - field: 'off'
+        type: offset_bytes
+      definition: |-
+        sltu $at, $reg2, $reg1; bne $at, $zero, off;
+    - name: bgtu
+      help: ''
+      properties: []
+      nwords: 1
+      fields:
+      - field: reg1
+        type: INT-Reg
+        prefix: $
+      - field: inm
+        type: inm-unsigned
+      - field: 'off'
+        type: offset_bytes
+      definition: |-
+        ori $at, $zero, inm; beq $at, $reg1, off; sltu $at, $reg1, $at;
+    - name: ble
+      help: ''
+      properties: []
+      nwords: 1
+      fields:
+      - field: reg1
+        type: INT-Reg
+        prefix: $
+      - field: reg2
+        type: INT-Reg
+        prefix: $
+      - field: 'off'
+        type: offset_bytes
+      definition: |-
+        slt $at, $reg2, $reg1; beq $at, $zero, off;
+    - name: ble
+      help: ''
+      properties: []
+      nwords: 1
+      fields:
+      - field: reg1
+        type: INT-Reg
+        prefix: $
+      - field: inm
+        type: inm-unsigned
+      - field: 'off'
+        type: offset_bytes
+      definition: |-
+        addi $at, $zero, inm; addi $at, $at, 1; slti $at, $reg1, inm; bne $at, $zero, off;
+    - name: bleu
+      help: ''
+      properties: []
+      nwords: 1
+      fields:
+      - field: reg1
+        type: INT-Reg
+        prefix: $
+      - field: reg2
+        type: INT-Reg
+        prefix: $
+      - field: 'off'
+        type: offset_bytes
+      definition: |-
+        sltu $at, $reg2, $reg1; beq $at, $zero, off;
+    - name: bleu
+      help: ''
+      properties: []
+      nwords: 1
+      fields:
+      - field: reg1
+        type: INT-Reg
+        prefix: $
+      - field: inm
+        type: inm-unsigned
+      - field: 'off'
+        type: offset_bytes
+      definition: |-
+        ori $at, $zero, inm; beq $at, $reg1, off; sltu $at, $reg1, $at; bne $at, $zero, off;
+    - name: blt
+      help: ''
+      properties: []
+      nwords: 1
+      fields:
+      - field: reg1
+        type: INT-Reg
+        prefix: $
+      - field: reg2
+        type: INT-Reg
+        prefix: $
+      - field: 'off'
+        type: offset_bytes
+      definition: |-
+        slt $at, $reg1, $reg2; bne $at, $zero, off;
+    - name: blt
+      help: ''
+      properties: []
+      nwords: 1
+      fields:
+      - field: reg1
+        type: INT-Reg
+        prefix: $
+      - field: inm
+        type: inm-unsigned
+      - field: 'off'
+        type: offset_bytes
+      definition: |-
+        slti $at, $reg1, inm; bne $at, $zero, off;
+    - name: bltu
+      help: ''
+      properties: []
+      nwords: 1
+      fields:
+      - field: reg1
+        type: INT-Reg
+        prefix: $
+      - field: reg2
+        type: INT-Reg
+        prefix: $
+      - field: 'off'
+        type: offset_bytes
+      definition: |-
+        sltu $at, $reg1, $reg2; bne $at, $zero, off;
+    - name: bltu
+      help: ''
+      properties: []
+      nwords: 1
+      fields:
+      - field: reg1
+        type: INT-Reg
+        prefix: $
+      - field: inm
+        type: inm-unsigned
+      - field: 'off'
+        type: offset_bytes
+      definition: |-
+        sltiu $at, $reg1, off; bne $at, $zero, off;
+    - name: bne
+      help: ''
+      properties: []
+      nwords: 1
+      fields:
+      - field: reg1
+        type: INT-Reg
+        prefix: $
+      - field: inm
+        type: inm-unsigned
+      - field: 'off'
+        type: offset_bytes
+      definition: |-
+        ori $at, $zero, inm; bne $reg1, $at, off;
+    - name: bnez
+      help: ''
+      properties: []
+      nwords: 1
+      fields:
+      - field: reg1
+        type: INT-Reg
+        prefix: $
+      - field: 'off'
+        type: offset_bytes
+      definition: |-
+        bne $reg1, $zero, off;
+    - name: c.eq.d
+      help: ''
+      nwords: 1
+      fields:
+      - field: fs
+        type: SFP-Reg
+        prefix: $
+      - field: ft
+        type: SFP-Reg
+        prefix: $
+      definition: |-
+        c.eq.d 0, $fs, $ft;
+    - name: c.eq.s
+      help: ''
+      nwords: 1
+      fields:
+      - field: ft
+        type: SFP-Reg
+        prefix: $
+      - field: fs
+        type: SFP-Reg
+        prefix: $
+      definition: |-
+        c.eq.s 0, $fs, $ft;
+    - name: c.ole.d
+      help: ''
+      nwords: 1
+      fields:
+      - field: fs
+        type: SFP-Reg
+        prefix: $
+      - field: ft
+        type: SFP-Reg
+        prefix: $
+      definition: |-
+        c.ole.d 0, $fs, $ft;
+    - name: c.ole.s
+      help: ''
+      nwords: 1
+      fields:
+      - field: fs
+        type: SFP-Reg
+        prefix: $
+      - field: ft
+        type: SFP-Reg
+        prefix: $
+      definition: |-
+        c.ole.s 0, $fs, $ft;
+    - name: c.olt.d
+      help: ''
+      nwords: 1
+      fields:
+      - field: fs
+        type: SFP-Reg
+        prefix: $
+      - field: ft
+        type: SFP-Reg
+        prefix: $
+      definition: |-
+        c.olt.d 0, $fs, $ft;
+    - name: c.olt.s
+      help: ''
+      nwords: 1
+      fields:
+      - field: fs
+        type: SFP-Reg
+        prefix: $
+      - field: ft
+        type: SFP-Reg
+        prefix: $
+      definition: |-
+        c.olt.s 0, $fs, $ft;
+    - name: jalr
+      help: ''
+      properties: []
+      nwords: 1
+      fields:
+      - field: rs
+        type: INT-Reg
+        prefix: $
+      definition: |-
+        jalr $rs, $ra;
+    - name: l.d
+      help: ''
+      properties: []
+      nwords: 1
+      fields:
+      - field: reg1
+        type: SFP-Reg
+        prefix: $
+      - field: inm
+        type: inm-signed
+      - field: reg2
+        type: INT-Reg
+        prefix: ($
+        suffix: )
+      definition: |-
+        ldc1 $reg1, inm($reg2);
+    - name: l.s
+      help: ''
+      properties: []
+      nwords: 1
+      fields:
+      - field: rs
+        type: SFP-Reg
+        prefix: $
+      - field: 'off'
+        type: inm-signed
+      - field: rt
+        type: INT-Reg
+        prefix: ($
+        suffix: )
+      definition: |-
+        lwc1 $rs, off($rt);
+    - name: la
+      help: ''
+      properties: []
+      nwords: 1
+      fields:
+      - field: rd
+        type: INT-Reg
+        prefix: $
+      - field: addr
+        type: inm-signed
+      definition: |-
+        if(Field.2.SIZE<=16){addi $rd, $zero, addr;}
+        else{lui $at, Field.2.(31,16).int;
+        ori $at, $at, Field.2.(15,0).int;
+        add $rd, $zero, $at;}
+    - name: lb
+      help: ''
+      properties: []
+      nwords: 1
+      fields:
+      - field: rd
+        type: INT-Reg
+        prefix: $
+      - field: addr
+        type: inm-signed
+      definition: |-
+        if(Field.2.SIZE<=16){lb $rd, addr($zero);}
+        else{lui $at, Field.2.(31,16).int;
+        ori $at, $at, Field.2.(15,0).int;
+        lb $rd, 0($at);}
+    - name: lbu
+      help: ''
+      properties: []
+      nwords: 1
+      fields:
+      - field: rd
+        type: INT-Reg
+        prefix: $
+      - field: addr
+        type: inm-signed
+      definition: |-
+        if(Field.2.SIZE<=16){lbu $rd, addr($zero);}
+        else{lui $at, Field.2.(31,16).int;
+        ori $at, $at, Field.2.(15,0).int;
+        lbu $rd, 0($at);}
+    - name: lh
+      help: ''
+      properties: []
+      nwords: 1
+      fields:
+      - field: rd
+        type: INT-Reg
+        prefix: $
+      - field: addr
+        type: inm-signed
+      definition: |-
+        if(Field.2.SIZE<=16){lh $rd, addr($zero);}
+        else{lui $at, Field.2.(31,16).int;
+        ori $at, $at, Field.2.(15,0).int;
+        lh $rd, 0($at);}
+    - name: lhu
+      help: ''
+      properties: []
+      nwords: 1
+      fields:
+      - field: rd
+        type: INT-Reg
+        prefix: $
+      - field: addr
+        type: inm-signed
+      definition: |-
+        if(Field.2.SIZE<=16){lhu $rd, addr($zero);}
+        else{lui $at, Field.2.(31,16).int;
+        ori $at, $at, Field.2.(15,0).int;
+        lhu $rd, 0($at);}
+    - name: li
+      help: ''
+      properties: []
+      nwords: 1
+      fields:
+      - field: rd
+        type: INT-Reg
+        prefix: $
+      - field: val
+        type: inm-signed
+      definition: |-
+        no_ret_op{tmp=Field.2.(31,0).int;
+        tmp_low=tmp&0x0000FFFF;
+        tmp_hi=tmp>>>16};
+        if(tmp_hi === 0){addi $rd, $zero, op{tmp_low};}
+        else{lui $at, op{tmp_hi};
+        ori $at, $at, op{tmp_low};
+        add $rd, $zero, $at;}
+    - name: li.d
+      help: ''
+      properties: []
+      nwords: 1
+      fields:
+      - field: rd
+        type: SFP-Reg
+        prefix: $
+      - field: val
+        type: inm-signed
+      definition: |-
+        no_ret_op{tmp0=Field.2.(63,32).double;
+        tmp_low0=tmp0&0x0000FFFF;
+        tmp_hi0=tmp0>>>16;
+        tmp1=Field.2.(31,0).double;
+        tmp_low1=tmp1&0x0000FFFF;
+        tmp_hi1=tmp1>>>16};
+        lui $at, op{tmp_hi1};
+        ori $at, $at, op{tmp_low1};
+        mtc1 $at, $aliasDouble(rd;1);
+        lui $at, op{tmp_hi0};
+        ori $at, $at, op{tmp_low0};
+        mtc1 $at, $aliasDouble(rd;0);
+    - name: li.s
+      help: ''
+      properties: []
+      nwords: 1
+      fields:
+      - field: rd
+        type: SFP-Reg
+        prefix: $
+      - field: val
+        type: inm-signed
+      definition: |-
+        no_ret_op{tmp=Field.2.(31,0).float;
+        tmp_low=tmp&0x0000FFFF;
+        tmp_hi=tmp>>>16};
+        lui $at, op{tmp_hi};
+        ori $at, $at, op{tmp_low};
+        mtc1 $at, $rd;
+    - name: lw
+      help: ''
+      properties: []
+      nwords: 1
+      fields:
+      - field: rd
+        type: INT-Reg
+        prefix: $
+      - field: addr
+        type: inm-signed
+      definition: |-
+        if(Field.2.SIZE<=16){lw $rd, addr($zero);}
+        else{lui $at, Field.2.(31,16).int;
+        ori $at, $at, Field.2.(15,0).int;
+        lw $rd, 0($at);}
+    - name: move
+      help: ''
+      properties: []
+      nwords: 1
+      fields:
+      - field: reg1
+        type: INT-Reg
+        prefix: $
+      - field: reg2
+        type: INT-Reg
+        prefix: $
+      definition: |-
+        add $reg1, $zero, $reg2;
+    - name: mul
+      help: ''
+      properties: []
+      nwords: 1
+      fields:
+      - field: rs
+        type: INT-Reg
+        prefix: $
+      - field: rt
+        type: INT-Reg
+        prefix: $
+      - field: inm
+        type: inm-signed
+      definition: |-
+        if(Field.3.SIZE<=16){addi $at, $zero, inm; mul $rs, $rt, $at;}
+        else{lui $at, Field.3.(31,16).int;
+        ori $at, $at, Field.3.(15,0).int;
+        mul $rs, $rt, $at;}
+    - name: nor
+      help: ''
+      properties: []
+      nwords: 1
+      fields:
+      - field: rs
+        type: INT-Reg
+        prefix: $
+      - field: rt
+        type: INT-Reg
+        prefix: $
+      - field: inm
+        type: inm-signed
+      definition: |-
+        if(Field.3.SIZE<=16){addi $at, $zero, inm; nor $rs, $rt, $at;}
+        else{lui $at, Field.3.(31,16).int;
+        ori $at, $at, Field.3.(15,0).int;
+        nor $rs, $rt, $at;}
+    - name: or
+      help: ''
+      properties: []
+      nwords: 1
+      fields:
+      - field: rs
+        type: INT-Reg
+        prefix: $
+      - field: rt
+        type: INT-Reg
+        prefix: $
+      - field: inm
+        type: inm-signed
+      definition: |-
+        if(Field.3.SIZE<=16){ori $rs, $rt, inm;}
+        else{lui $at, Field.3.(31,16).int;
+        ori $at, $at, Field.3.(15,0).int;
+        or $rs, $rt, $at;}
+    - name: ori
+      help: ''
+      properties: []
+      nwords: 1
+      fields:
+      - field: rs
+        type: INT-Reg
+        prefix: $
+      - field: rt
+        type: INT-Reg
+        prefix: $
+      - field: inm
+        type: inm-signed
+      definition: |-
+        lui $at, Field.3.(31,16).int;
+        ori $at, $at, Field.3.(15,0).int;
+        or $rs, $rt, $at;
+    - name: rem
+      help: ''
+      properties: []
+      nwords: 1
+      fields:
+      - field: reg1
+        type: INT-Reg
+        prefix: $
+      - field: reg2
+        type: INT-Reg
+        prefix: $
+      - field: reg3
+        type: INT-Reg
+        prefix: $
+      definition: |-
+        div $reg2, $reg3; mfhi $reg1;
+    - name: rol
+      help: ''
+      nwords: 1
+      fields:
+      - field: reg2
+        type: INT-Reg
+        prefix: $
+      - field: reg1
+        type: INT-Reg
+        prefix: $
+      - field: val
+        type: inm-unsigned
+      definition: |-
+        srl $at, $reg2, op{32-(val)};sll $reg1, $reg2, val;or $reg1, $reg1, $at;
+    - name: ror
+      help: ''
+      nwords: 1
+      fields:
+      - field: reg2
+        type: INT-Reg
+        prefix: $
+      - field: reg1
+        type: INT-Reg
+        prefix: $
+      - field: val
+        type: inm-unsigned
+      definition: |-
+        sll $at, $reg2, op{32-(val)};srl $reg1, $reg2, val;or $reg1, $reg1, $at;
+    - name: s.d
+      help: ''
+      properties: []
+      nwords: 1
+      fields:
+      - field: rs
+        type: SFP-Reg
+        prefix: $
+      - field: rt
+        type: INT-Reg
+        prefix: ($
+        suffix: )
+      definition: |-
+        sdc1 $rs, 0($rt);
+    - name: s.d
+      help: ''
+      properties: []
+      nwords: 1
+      fields:
+      - field: rs
+        type: SFP-Reg
+        prefix: $
+      - field: 'off'
+        type: inm-signed
+      - field: rt
+        type: INT-Reg
+        prefix: ($
+        suffix: )
+      definition: |-
+        sdc1 $rs, off($rt);
+    - name: s.s
+      help: ''
+      properties: []
+      nwords: 1
+      fields:
+      - field: rs
+        type: SFP-Reg
+        prefix: $
+      - field: rt
+        type: INT-Reg
+        prefix: ($
+        suffix: )
+      definition: |-
+        swc1 $rs, 0($rt);
+    - name: s.s
+      help: ''
+      properties: []
+      nwords: 1
+      fields:
+      - field: rs
+        type: SFP-Reg
+        prefix: $
+      - field: 'off'
+        type: inm-signed
+      - field: rt
+        type: INT-Reg
+        prefix: ($
+        suffix: )
+      definition: |-
+        swc1 $rs, off($rt);
+    - name: sb
+      help: ''
+      properties: []
+      nwords: 1
+      fields:
+      - field: rd
+        type: INT-Reg
+        prefix: $
+      - field: addr
+        type: inm-signed
+      definition: |-
+        if(Field.2.SIZE<=16){sb $rd, addr($zero);}
+        else{lui $at, Field.2.(31,16).int;
+        ori $at, $at, Field.2.(15,0).int;
+        sb $rd, 0($at);}
+    - name: sh
+      help: ''
+      properties: []
+      nwords: 1
+      fields:
+      - field: rd
+        type: INT-Reg
+        prefix: $
+      - field: addr
+        type: inm-signed
+      definition: |-
+        if(Field.2.SIZE<=16){sh $rd, addr($zero);}
+        else{lui $at, Field.2.(31,16).int;
+        ori $at, $at, Field.2.(15,0).int;
+        sh $rd, 0($at);}
+    - name: sub
+      help: ''
+      properties: []
+      nwords: 1
+      fields:
+      - field: rs
+        type: INT-Reg
+        prefix: $
+      - field: rt
+        type: INT-Reg
+        prefix: $
+      - field: inm
+        type: inm-signed
+      definition: |-
+        if(Field.3.SIZE<=16){addi $at, $zero, inm; sub $rs, $rt, $at;}
+        else{lui $at, Field.3.(31,16).int;
+        ori $at, $at, Field.3.(15,0).int;
+        sub $rs, $rt, $at;}
+    - name: subu
+      help: ''
+      properties: []
+      nwords: 1
+      fields:
+      - field: rs
+        type: INT-Reg
+        prefix: $
+      - field: rt
+        type: INT-Reg
+        prefix: $
+      - field: inm
+        type: inm-signed
+      definition: |-
+        if(Field.3.SIZE<=16){addi $at, $zero, inm; subu $rs, $rt, $at;}
+        else{lui $at, Field.3.(31,16).int;
+        ori $at, $at, Field.3.(15,0).int;
+        subu $rs, $rt, $at;}
+    - name: sw
+      help: ''
+      properties: []
+      nwords: 1
+      fields:
+      - field: rd
+        type: INT-Reg
+        prefix: $
+      - field: addr
+        type: inm-signed
+      definition: |-
+        if(Field.2.SIZE<=16){sw $rd, addr($zero);}
+        else{lui $at, Field.2.(31,16).int;
+        ori $at, $at, Field.2.(15,0).int;
+        sw $rd, 0($at);}
+    - name: xor
+      help: ''
+      properties: []
+      nwords: 1
+      fields:
+      - field: rs
+        type: INT-Reg
+        prefix: $
+      - field: rt
+        type: INT-Reg
+        prefix: $
+      - field: inm
+        type: inm-signed
+      definition: |-
+        if(Field.3.SIZE<=16){xori $rs, $rt, inm;}
+        else{lui $at, Field.3.(31,16).int;
+        ori $at, $at, Field.3.(15,0).int;
+        xor $rs, $rt, $at;}
+    - name: xori
+      help: ''
+      properties: []
+      nwords: 1
+      fields:
+      - field: rs
+        type: INT-Reg
+        prefix: $
+      - field: rt
+        type: INT-Reg
+        prefix: $
+      - field: inm
+        type: inm-signed
+      definition: |-
+        lui $at, Field.3.(31,16).int;
+        ori $at, $at, Field.3.(15,0).int;
+        xor $rs, $rt, $at;
+directives:
+  - name: .data
+    action: data_segment
+    size: null
+  - name: .text
+    action: code_segment
+    size: null
+  - name: .globl
+    action: global_symbol
+    size: null
+  - name: .byte
+    action: byte
+    size: 1
+  - name: .half
+    action: half_word
+    size: 2
+  - name: .word
+    action: word
+    size: 4
+  - name: .doubleword
+    action: double_word
+    size: 8
+  - name: .float
+    action: float
+    size: 4
+  - name: .double
+    action: double
+    size: 8
+  - name: .space
+    action: space
+    size: 1
+  - name: .ascii
+    action: ascii_not_null_end
+    size: null
+  - name: .asciiz
+    action: ascii_null_end
+    size: null
+  - name: .align
+    action: align
+    size: null
+
+memory_layout:
+  text:
+    start: 0x00000000
+    end: 0x001FFFFF
+  data:
+    start: 0x00200000
+    end: 0x05BBFCBF
+  stack:
+    start: 0x0FFFFFFC
+    end: 0x0FFFFFFF
+

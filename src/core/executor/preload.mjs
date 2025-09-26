@@ -21,7 +21,7 @@
 
 import { REGISTERS } from "../core.mjs";
 import { clean_string } from "../utils/utils.mjs";
-import { console_log } from "../utils/creator_logger.mjs";
+import { console_log, logger } from "../utils/creator_logger.mjs";
 
 // --------------------------------------------------------------
 // These can be used used by the eval in buildInstructionPreload, but the linter doesn't know that

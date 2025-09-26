@@ -35,7 +35,9 @@ Deno.test(
            # return
            lw ra, 0(sp)
            addi sp, sp, 4
-           jr ra
+            # exit program
+            li a7, 10
+            ecall
 
 
 factorial:
@@ -84,7 +86,6 @@ factorial:
                 x5: 0x2n, // t0 should contain 0x2 (comparison value)
                 x6: 0x5n, // t1 should contain 0x5 (last factorial parameter)
                 x10: 0x78n, // a0 should contain 0x78 (120 - factorial of 5)
-                x17: 0x1n, // a7 should contain 0x1 (syscall for print_int)
             },
             display: "120", // Display should show '120' (5! = 120)
             keyboard: "", // Keyboard buffer should be empty

@@ -7,7 +7,7 @@ import {
 } from "../simulator-test-utils.mts";
 
 Deno.test(
-    "Architecture-agnostic testing - RISC-V Basic Data Types and Print Operations",
+    "Architecture-agnostic testing - RISC-V Sum of First 10 Numbers",
     async () => {
         const testAssembly = `
 
@@ -15,30 +15,28 @@ Deno.test(
 # Creator (https://creatorsim.github.io/creator/)
 #
 
+# Sum of the first 10 numbers from 0 to 9
 .data
- 
-   byte:       .byte    12
-    
-   .align 1
-   half:       .half    34
-   
-.text
-   main:
-            
-      # print byte value 
-      la a0, byte
-      lb a0, 0(a0)
-      li a7, 1
-      ecall
-   
-      # print half value
-      la a0, half
-      lh a0, 0(a0)
-      li a7, 1
-      ecall
+	max: .byte 10
 
-      #return
-      jr ra
+.text
+	main: 	    
+		la   t0, max
+		lb   t0, 0 (t0)
+		li   t1, 0
+		li   a0, 0
+		
+	while:	bge  t1, t0, end_while
+		add  a0, a0, t1
+		addi t1, t1, 1
+		beq  zero, zero, while
+
+    end_while: 	li a7, 1
+		ecall # print_int
+
+        # exit program
+        li a7, 10
+        ecall
 
     `;
 
@@ -54,10 +52,11 @@ Deno.test(
         // Assert all expected state using the wrapper function
         assertSimulatorState({
             registers: {
-                x10: 0x22n, // a0 should contain 34 (0x22)
-                x17: 0x1n, // a7 should contain 1 (syscall for print_int)
+                x5: 0xan, // t0 should contain 0xa (10)
+                x6: 0xan, // t1 should contain 0xa (10 - loop counter after completion)
+                x10: 0x2dn, // a0 should contain 0x2d (45 - sum of 0+1+2+...+9)
             },
-            display: "1234", // Should show '1234' (12 followed by 34)
+            display: "45", // Display should show '45'
             keyboard: "", // Keyboard buffer should be empty
         });
 

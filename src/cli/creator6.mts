@@ -1210,7 +1210,7 @@ function getFrameColor(frameIndex: number, totalFrames: number): string {
 
 // eslint-disable-next-line max-lines-per-function
 function handleStackCommand(args: string[]) {
-    const stackTracker = creator.stackTracker as StackTracker; // we do this for the typing
+    const stackTracker = creator.stackTracker;
 
     try {
         // Get the stack frames information
@@ -1766,6 +1766,8 @@ async function main() {
     if (!argv.debug) {
         logger.disable();
     }
+
+    creator.initCAPI();
 
     TUTORIAL_MODE = argv.tutorial;
     // If we load a binary, we have to skip the compiler

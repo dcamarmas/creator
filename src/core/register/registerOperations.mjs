@@ -19,9 +19,11 @@
  */
 
 import { architecture, status, REGISTERS } from "../core.mjs";
-import { packExecute, writeStackLimit } from "../executor/executor.mjs";
+import {writeStackLimit } from "../executor/executor.mjs";
 import { instructions } from "../assembler/assembler.mjs";
 import { creator_callstack_writeRegister } from "../sentinel/sentinel.mjs";
+import { packExecute } from "../utils/utils.mjs";
+
 
 /**
  * Updates UI after a register update
@@ -39,7 +41,7 @@ function updateRegisterUI(indexComp, indexElem) {
     ];
 
     // this is ugly, but it's the only way (I found)
-    document.app.$root.$refs.simulatorView.$refs.registerFile?.$refs[
+    document.app.$root.$refs.simulatorView?.$refs.registerFile?.$refs[
         `reg${register.name[0]}`
     ]
         ?.at(0)
@@ -47,7 +49,7 @@ function updateRegisterUI(indexComp, indexElem) {
 
     // check it's one of the control registers
     if (register.properties.some(p => ctrl_register_tags.includes(p))) {
-        document.app.$root.$refs.simulatorView.$refs.memory?.$refs?.memory_table?.refresh_tags();
+        document.app.$root.$refs.simulatorView?.$refs.memory?.$refs?.memory_table?.refresh_tags();
     }
 }
 
@@ -93,13 +95,18 @@ export function writeRegister(value, indexComp, indexElem) {
 
     if (value === null) {
         return;
+    } else if (value === 0) {
+        value = BigInt(0);
+    }
+    if (typeof value === "number") {
+        throw new Error("Called writeRegister with a number, not BigInt");
     }
 
     const component = REGISTERS[indexComp];
     const element = component.elements[indexElem];
     const properties = element.properties;
     const elementName = element.name.join(" | ");
-    const stackStart = architecture.memory_layout[4].value;
+    const stackStart = architecture.memory_layout.stack.start;
 
     if (!properties.includes("write")) {
         if (properties.includes("ignore_write")) {
@@ -122,14 +129,11 @@ export function writeRegister(value, indexComp, indexElem) {
     element.value = value;
     creator_callstack_writeRegister(indexComp, indexElem);
 
-    if (
-        properties.includes("stack_pointer") &&
-        value !== parseInt(stackStart, 16)
-    ) {
+    if (properties.includes("stack_pointer") && value !== stackStart) {
         writeStackLimit(value);
     }
 
-    if (typeof window !== "undefined") {
+    if (typeof window !== "undefined" && document.app) {
         updateRegisterUI(indexComp, indexElem);
     }
 }

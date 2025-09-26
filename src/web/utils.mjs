@@ -24,7 +24,7 @@ import $ from "jquery";
 import humanizeDuration from "humanize-duration";
 
 import { creator_ga } from "@/core/utils/creator_ga.mjs";
-import { newArchitectureLoad } from "@/core/core.mjs";
+import { newArchitectureLoad, initCAPI } from "@/core/core.mjs";
 import { console_log as clog } from "@/core/utils/creator_logger.mjs";
 
 /*Stop the transmission of events to children*/
@@ -76,6 +76,11 @@ export function show_notification(msg, type, root = document.app) {
     });
 
     return true;
+}
+
+export function crex_show_notification(msg, level) {
+    if (typeof window !== "undefined") show_notification(msg, level);
+    else console.log(level.toUpperCase() + ": " + msg);
 }
 
 /*
@@ -345,7 +350,7 @@ export function downloadToTXTFile(data, filename) {
  *
  * Transforms a value into a hextring.
  *
- * @param {number} value
+ * @param {number | bigint} value
  * @param {number} padding Padding, in bytes
  *
  * @returns {string}

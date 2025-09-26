@@ -22,6 +22,7 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 import MemoryTable from "./MemoryTable.vue"
 
 import { main_memory } from "@/core/core.mjs"
+import { devices } from "@/core/executor/devices.mts"
 
 export default {
   props: {
@@ -36,11 +37,20 @@ export default {
   data() {
     return {
       main_memory,
-      mem_representation_options: main_memory
+      devices,
+      mainMemRepresentationOptions: main_memory
         .getMemorySegments()
         .keys()
         .toArray()
         .map(s => ({ text: s.charAt(0).toUpperCase() + s.slice(1), value: s })),
+      deviceRepresentationOptions: devices
+        // TODO: filter enabled devices
+        .keys()
+        .toArray()
+        .map(s => ({
+          text: s === "os" ? "OS" : s.charAt(0).toUpperCase() + s.slice(1),
+          value: s,
+        })),
     }
   },
 
@@ -74,7 +84,25 @@ export default {
           <b-form-radio-group
             :class="{ 'w-100': true, 'mb-1': true, border: dark }"
             v-model="segment"
-            :options="mem_representation_options"
+            :options="mainMemRepresentationOptions"
+            :button-variant="dark ? 'dark' : 'outline-secondary'"
+            outline
+            size="sm"
+            buttons
+          />
+        </div> </b-col
+      ><b-col>
+        <div class="border m-1 py-1 px-2">
+          <b-badge
+            :variant="dark ? 'dark' : 'light'"
+            class="h6 border groupLabelling my-0"
+          >
+            Device memory
+          </b-badge>
+          <b-form-radio-group
+            :class="{ 'w-100': true, 'mb-1': true, border: dark }"
+            v-model="segment"
+            :options="deviceRepresentationOptions"
             :button-variant="dark ? 'dark' : 'outline-secondary'"
             outline
             size="sm"
@@ -92,6 +120,7 @@ export default {
           class="my-2"
           ref="memory_table"
           :main_memory="main_memory"
+          :devices="devices"
           :segment="segment"
           :callee_frame="callee_frame"
           :caller_frame="caller_frame"

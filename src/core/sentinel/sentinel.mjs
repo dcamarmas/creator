@@ -143,7 +143,7 @@ export function creator_callstack_enter(function_name) {
 
     const new_elto = {
         function_name,
-        enter_stack_pointer: architecture.memory_layout[4].value,
+        enter_stack_pointer: architecture.memory_layout.stack.start,
         register_sm: arr_sm,
         register_value: arr_value,
         register_size_write: arr_size_write,
@@ -180,7 +180,8 @@ export function creator_callstack_leave() {
     //check sp that points to corresponding address
     if (ret.ok) {
         if (
-            architecture.memory_layout[4].value != last_elto.enter_stack_pointer
+            architecture.memory_layout.stack.start !=
+            last_elto.enter_stack_pointer
         ) {
             ret.ok = false;
             ret.msg = "Stack memory has not been released successfully";
@@ -464,7 +465,7 @@ export function creator_callstack_reset() {
 // do state transition
 // Example: creator_callstack_do_transition("wm", 1, 2, 0x12345678)
 //
- 
+
 function creator_callstack_do_transition(
     doAction,
     indexComponent,

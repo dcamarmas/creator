@@ -4,7 +4,7 @@
 settings:
   # Maximum number of states to keep for unstepping
   # -1: unlimited, 0: disabled, positive number: maximum states to keep
-  max_states: -1
+  max_states: 0
 
   # Accessible mode for screen readers
   accessible: false

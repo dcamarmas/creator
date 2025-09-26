@@ -1,19 +1,24 @@
 version: 2.0.0
 
-arch_conf:
-  Name: RV32
-  WordSize: 32
-  Description: RISC-V is an instruction set architecture (ISA) based on the RISC type and its hardware is free. This architecture was created in 2010 at the University of California, Berkeley.
-  Endianness: big_endian
-  Memory Alignment: true
-  Main Function: main
-  Passing Convention: true
-  Sensitive Register Name: true
-  CommentPrefix: "#"
-  StartAddress: 0x0
-  PCOffset: -4
-  ByteSize: 8
-  Assemblers:
+# ASCII text generated w/ https://patorjk.com/software/taag/#p=display&h=1&f=Standard
+# instruction help text extracted from https://msyksphinz-self.github.io/riscv-isadoc/html/index.html
+
+config:
+  name: RV32
+  word_size: 32
+  description: RISC-V is an instruction set architecture (ISA) based on the RISC
+    type and its hardware is free. This architecture was created in 2010 at the
+    University of California, Berkeley.
+  endianness: big_endian
+  memory_alignment: true
+  main_function: main
+  passing_convention: true
+  sensitive_register_name: true
+  comment_prefix: "#"
+  start_address: 0x0
+  pc_offset: -4
+  byte_size: 8
+  assemblers:
     - name: "CreatorCompiler"
       description: "Default Creator Compiler"
 
@@ -48,7 +53,7 @@ components:
     elements:
       - name:
           - PC
-        nbits: "32"
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -62,7 +67,7 @@ components:
       - name:
           - x0
           - zero
-        nbits: "32"
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -71,7 +76,7 @@ components:
       - name:
           - x1
           - ra
-        nbits: "32"
+        nbits: 32
         value: 4294967295
         default_value: 4294967295
         properties:
@@ -80,7 +85,7 @@ components:
       - name:
           - x2
           - sp
-        nbits: "32"
+        nbits: 32
         value: 268435452
         default_value: 268435452
         properties:
@@ -90,7 +95,7 @@ components:
       - name:
           - x3
           - gp
-        nbits: "32"
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -100,7 +105,7 @@ components:
       - name:
           - x4
           - tp
-        nbits: "32"
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -109,7 +114,7 @@ components:
       - name:
           - x5
           - t0
-        nbits: "32"
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -118,7 +123,7 @@ components:
       - name:
           - x6
           - t1
-        nbits: "32"
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -127,7 +132,7 @@ components:
       - name:
           - x7
           - t2
-        nbits: "32"
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -137,7 +142,7 @@ components:
           - x8
           - fp
           - s0
-        nbits: "32"
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -148,7 +153,7 @@ components:
       - name:
           - x9
           - s1
-        nbits: "32"
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -158,7 +163,7 @@ components:
       - name:
           - x10
           - a0
-        nbits: "32"
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -167,7 +172,7 @@ components:
       - name:
           - x11
           - a1
-        nbits: "32"
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -176,7 +181,7 @@ components:
       - name:
           - x12
           - a2
-        nbits: "32"
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -185,7 +190,7 @@ components:
       - name:
           - x13
           - a3
-        nbits: "32"
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -194,7 +199,7 @@ components:
       - name:
           - x14
           - a4
-        nbits: "32"
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -203,7 +208,7 @@ components:
       - name:
           - x15
           - a5
-        nbits: "32"
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -212,7 +217,7 @@ components:
       - name:
           - x16
           - a6
-        nbits: "32"
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -221,7 +226,7 @@ components:
       - name:
           - x17
           - a7
-        nbits: "32"
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -230,7 +235,7 @@ components:
       - name:
           - x18
           - s2
-        nbits: "32"
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -240,7 +245,7 @@ components:
       - name:
           - x19
           - s3
-        nbits: "32"
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -250,7 +255,7 @@ components:
       - name:
           - x20
           - s4
-        nbits: "32"
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -260,7 +265,7 @@ components:
       - name:
           - x21
           - s5
-        nbits: "32"
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -270,7 +275,7 @@ components:
       - name:
           - x22
           - s6
-        nbits: "32"
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -280,7 +285,7 @@ components:
       - name:
           - x23
           - s7
-        nbits: "32"
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -290,7 +295,7 @@ components:
       - name:
           - x24
           - s8
-        nbits: "32"
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -300,7 +305,7 @@ components:
       - name:
           - x25
           - s9
-        nbits: "32"
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -310,7 +315,7 @@ components:
       - name:
           - x26
           - s10
-        nbits: "32"
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -320,7 +325,7 @@ components:
       - name:
           - x27
           - s11
-        nbits: "32"
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -330,7 +335,7 @@ components:
       - name:
           - x28
           - t3
-        nbits: "32"
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -339,7 +344,7 @@ components:
       - name:
           - x29
           - t4
-        nbits: "32"
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -348,7 +353,7 @@ components:
       - name:
           - x30
           - t5
-        nbits: "32"
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -357,7 +362,7 @@ components:
       - name:
           - x31
           - t6
-        nbits: "32"
+        nbits: 32
         value: 0
         default_value: 0
         properties:
@@ -371,7 +376,7 @@ components:
       - name:
           - f0
           - ft0
-        nbits: "64"
+        nbits: 64
         value: 0
         default_value: 0
         properties:
@@ -380,7 +385,7 @@ components:
       - name:
           - f1
           - ft1
-        nbits: "64"
+        nbits: 64
         value: 0
         default_value: 0
         properties:
@@ -389,7 +394,7 @@ components:
       - name:
           - f2
           - ft2
-        nbits: "64"
+        nbits: 64
         value: 0
         default_value: 0
         properties:
@@ -398,7 +403,7 @@ components:
       - name:
           - f3
           - ft3
-        nbits: "64"
+        nbits: 64
         value: 0
         default_value: 0
         properties:
@@ -407,7 +412,7 @@ components:
       - name:
           - f4
           - ft4
-        nbits: "64"
+        nbits: 64
         value: 0
         default_value: 0
         properties:
@@ -416,7 +421,7 @@ components:
       - name:
           - f5
           - ft5
-        nbits: "64"
+        nbits: 64
         value: 0
         default_value: 0
         properties:
@@ -425,7 +430,7 @@ components:
       - name:
           - f6
           - ft6
-        nbits: "64"
+        nbits: 64
         value: 0
         default_value: 0
         properties:
@@ -434,7 +439,7 @@ components:
       - name:
           - f7
           - ft7
-        nbits: "64"
+        nbits: 64
         value: 0
         default_value: 0
         properties:
@@ -443,7 +448,7 @@ components:
       - name:
           - f8
           - fs0
-        nbits: "64"
+        nbits: 64
         value: 0
         default_value: 0
         properties:
@@ -453,7 +458,7 @@ components:
       - name:
           - f9
           - fs1
-        nbits: "64"
+        nbits: 64
         value: 0
         default_value: 0
         properties:
@@ -463,7 +468,7 @@ components:
       - name:
           - f10
           - fa0
-        nbits: "64"
+        nbits: 64
         value: 0
         default_value: 0
         properties:
@@ -472,7 +477,7 @@ components:
       - name:
           - f11
           - fa1
-        nbits: "64"
+        nbits: 64
         value: 0
         default_value: 0
         properties:
@@ -481,7 +486,7 @@ components:
       - name:
           - f12
           - fa2
-        nbits: "64"
+        nbits: 64
         value: 0
         default_value: 0
         properties:
@@ -490,7 +495,7 @@ components:
       - name:
           - f13
           - fa3
-        nbits: "64"
+        nbits: 64
         value: 0
         default_value: 0
         properties:
@@ -499,7 +504,7 @@ components:
       - name:
           - f14
           - fa4
-        nbits: "64"
+        nbits: 64
         value: 0
         default_value: 0
         properties:
@@ -508,7 +513,7 @@ components:
       - name:
           - f15
           - fa5
-        nbits: "64"
+        nbits: 64
         value: 0
         default_value: 0
         properties:
@@ -517,7 +522,7 @@ components:
       - name:
           - f16
           - fa6
-        nbits: "64"
+        nbits: 64
         value: 0
         default_value: 0
         properties:
@@ -526,7 +531,7 @@ components:
       - name:
           - f17
           - fa7
-        nbits: "64"
+        nbits: 64
         value: 0
         default_value: 0
         properties:
@@ -535,7 +540,7 @@ components:
       - name:
           - f18
           - fs2
-        nbits: "64"
+        nbits: 64
         value: 0
         default_value: 0
         properties:
@@ -545,7 +550,7 @@ components:
       - name:
           - f19
           - fs3
-        nbits: "64"
+        nbits: 64
         value: 0
         default_value: 0
         properties:
@@ -555,7 +560,7 @@ components:
       - name:
           - f20
           - fs4
-        nbits: "64"
+        nbits: 64
         value: 0
         default_value: 0
         properties:
@@ -565,7 +570,7 @@ components:
       - name:
           - f21
           - fs5
-        nbits: "64"
+        nbits: 64
         value: 0
         default_value: 0
         properties:
@@ -575,7 +580,7 @@ components:
       - name:
           - f22
           - fs6
-        nbits: "64"
+        nbits: 64
         value: 0
         default_value: 0
         properties:
@@ -585,7 +590,7 @@ components:
       - name:
           - f23
           - fs7
-        nbits: "64"
+        nbits: 64
         value: 0
         default_value: 0
         properties:
@@ -595,7 +600,7 @@ components:
       - name:
           - f24
           - fs8
-        nbits: "64"
+        nbits: 64
         value: 0
         default_value: 0
         properties:
@@ -605,7 +610,7 @@ components:
       - name:
           - f25
           - fs9
-        nbits: "64"
+        nbits: 64
         value: 0
         default_value: 0
         properties:
@@ -615,7 +620,7 @@ components:
       - name:
           - f26
           - fs10
-        nbits: "64"
+        nbits: 64
         value: 0
         default_value: 0
         properties:
@@ -625,7 +630,7 @@ components:
       - name:
           - f27
           - fs11
-        nbits: "64"
+        nbits: 64
         value: 0
         default_value: 0
         properties:
@@ -635,7 +640,7 @@ components:
       - name:
           - f28
           - ft8
-        nbits: "64"
+        nbits: 64
         value: 0
         default_value: 0
         properties:
@@ -644,7 +649,7 @@ components:
       - name:
           - f29
           - ft9
-        nbits: "64"
+        nbits: 64
         value: 0
         default_value: 0
         properties:
@@ -653,7 +658,7 @@ components:
       - name:
           - f30
           - ft10
-        nbits: "64"
+        nbits: 64
         value: 0
         default_value: 0
         properties:
@@ -662,7 +667,7 @@ components:
       - name:
           - f31
           - ft11
-        nbits: "64"
+        nbits: 64
         value: 0
         default_value: 0
         properties:
@@ -723,18 +728,15 @@ directives:
     size: 8
 
 memory_layout:
-  - name: text start
-    value: "0x00000000"
-  - name: text end
-    value: "0x001FFFFF"
-  - name: data start
-    value: "0x00200000"
-  - name: data end
-    value: "0x05BBFCBF"
-  - name: stack start
-    value: "0x0FFFFFFC"
-  - name: stack end
-    value: "0x0FFFFFFF"
+  text:
+    start: 0x00000000
+    end: 0x001FFFFF
+  data:
+    start: 0x00200000
+    end: 0x05BBFCBF
+  stack:
+    start: 0x0FFFFFFC
+    end: 0x0FFFFFFF
 
 templates:
   - name: B
@@ -2791,7 +2793,7 @@ instructions:
           type: DFP-Reg
       definition: |
         if (CAPI.VALIDATION.isMisaligned(rs1 + imm, 'd')) {
-          CAPI.VALIDATION.raise('The memory must be align');
+          CAPI.VALIDATION.raise('The memory must be aligned');
         }
         rd = CAPI.MEM.read(rs1 + imm, 8, rd_name);
       help: Load a double-precision floating-point value from memory into

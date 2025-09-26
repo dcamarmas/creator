@@ -63,14 +63,11 @@
  *
  * @example Memory with layout segments
  * ```typescript
- * const layout = [
- *   { name: "text start", value: "0x0000" },
- *   { name: "text end", value: "0x1000" },
- *   { name: "data start", value: "0x1010" },
- *   { name: "data end", value: "0x2000" },
- *   { name: "stack start", value: "0xFFFE" },
- *   { name: "stack end", value: "0xFFFF" }
- * ];
+ * const layout = new Map([
+ *   { "text", { start: 0x0000, end: 0x1000 } },
+ *   { "data", { start: 0x1010, end: 0x2000 } },
+ *   { "stack", { start: 0xFFFE, end: 0xFFFF } },
+ * ]);
  * const memory = new Memory({ sizeInBytes: 0x10000, memoryLayout: layout });
  * console.log(memory.getSegmentForAddress(0x0500)); // "text"
  * console.log(memory.isValidAccess(0x0500, "text")); // true
@@ -117,21 +114,11 @@
  */
 
 /**
- * Interface for memory layout segment definitions
- */
-interface MemoryLayoutSegment {
-    name: string;
-    value: string; // Hexadecimal address as string (e.g., "0x1000")
-}
-
-/**
  * Interface for processed memory segment information
  */
 interface MemorySegment {
-    start: string; // Hexadecimal address as string (e.g., "0x0000")
-    end: string; // Hexadecimal address as string (e.g., "0x1000")
-    startAddress: bigint; // Parsed start address
-    endAddress: bigint; // Parsed end address
+    start: bigint; // Parsed start address
+    end: bigint; // Parsed end address
     size: bigint;
 }
 
@@ -145,28 +132,30 @@ interface MemoryHint {
     sizeInBits?: number; // Optional size of the type in bits
 }
 
-/**
- * Configuration options for Memory constructor
- */
-interface MemoryConfig {
-    sizeInBytes: number;
-    bitsPerByte?: number;
-    wordSize?: number;
-    endianness?: number[];
-    memoryLayout?: MemoryLayoutSegment[];
-    baseAddress?: bigint;
-}
+// /**
+//  * Configuration options for Memory constructor
+//  */
+// interface MemoryConfig {
+//     sizeInBytes: number;
+//     bitsPerByte?: number;
+//     wordSize?: number;
+//     endianness?: number[];
+//     memoryLayout?: Map<string, MemorySegment>;
+//     baseAddress?: bigint;
+// }
 
-/**
- * Required configuration after applying defaults
- */
-interface RequiredMemoryConfig {
-    sizeInBytes: number;
+export interface MemoryBackup {
+    addresses: number[];
+    values: number[];
     bitsPerByte: number;
-    wordSize: number;
-    endianness?: number[];
-    memoryLayout: MemoryLayoutSegment[];
-    baseAddress: bigint;
+    size: number;
+    hints?: {
+        address: string;
+        tag?: string;
+        type?: string;
+        hint?: string;
+        sizeInBits?: number;
+    }[];
 }
 
 export class Memory {
@@ -183,7 +172,7 @@ export class Memory {
     private buffer!: ArrayBuffer;
 
     /** Typed array view for efficient access to the buffer */
-    public uint8View!: Uint8Array; // Public so that it can be read by Vue
+    private uint8View!: Uint8Array;
 
     /** Number of bytes that constitute a word */
     private wordSize!: number;
@@ -202,11 +191,8 @@ export class Memory {
     /** Base address offset for memory addressing */
     private baseAddress!: bigint;
 
-    /** Memory layout segments from architecture configuration */
-    private memoryLayout!: MemoryLayoutSegment[];
-
-    /** Processed memory segments stored as a map for efficient lookup */
-    private segments!: Map<string, MemorySegment>;
+    /** Memory segments */
+    private memoryLayout!: Map<string, MemorySegment>;
 
     /** Cache for segment lookups to improve performance */
     private segmentCache!: Map<bigint, string>;
@@ -270,25 +256,74 @@ export class Memory {
      * });
      * ```
      */
-    constructor(config: MemoryConfig) {
+    constructor({
+        sizeInBytes,
+        bitsPerByte = 8,
+        wordSize = 4,
+        endianness,
+        memoryLayout = new Map(),
+        baseAddress = 0n,
+    }: {
+        sizeInBytes: number;
+        bitsPerByte?: number;
+        wordSize?: number;
+        endianness: number[];
+        memoryLayout?: Map<string, MemorySegment>;
+        baseAddress?: bigint;
+    }) {
         // Apply defaults to config
-        const finalConfig: RequiredMemoryConfig = {
-            sizeInBytes: config.sizeInBytes,
-            bitsPerByte: config.bitsPerByte ?? 8,
-            wordSize: config.wordSize ?? 4,
-            endianness: config.endianness,
-            memoryLayout: config.memoryLayout ?? [],
-            baseAddress: config.baseAddress ?? 0n,
-        };
 
         // Initialize basic properties
-        this.initializeBasicProperties(finalConfig);
+        if (!Number.isSafeInteger(sizeInBytes) || sizeInBytes <= 0) {
+            throw new Error(
+                "sizeInBytes must be a positive safe integer (<= Number.MAX_SAFE_INTEGER)",
+            );
+        }
+        if (bitsPerByte < 1 || bitsPerByte > 32) {
+            throw new Error("bitsPerByte must be between 1 and 32");
+        }
+
+        if (wordSize < 1) {
+            throw new Error("wordSize must be at least 1");
+        }
+
+        this.size = sizeInBytes;
+        this.bitsPerByte = bitsPerByte;
+        this.maxByteValue =
+            bitsPerByte === 32 ? 0xffffffff : (1 << bitsPerByte) - 1;
+        this.wordSize = wordSize;
+        this.baseAddress = baseAddress;
 
         // Initialize endianness
-        this.initializeEndianness(finalConfig);
+        if (endianness) {
+            if (endianness.length !== wordSize) {
+                throw new Error(
+                    `Endianness array length (${endianness.length}) must match word size (${wordSize})`,
+                );
+            }
+
+            // Validate endianness array contains valid byte indices
+            const sortedEndianness = [...endianness].sort();
+            for (let i = 0; i < wordSize; i++) {
+                if (sortedEndianness[i] !== i) {
+                    throw new Error(
+                        `Endianness array must contain all indices 0 to ${wordSize - 1} exactly once`,
+                    );
+                }
+            }
+
+            this.endianness = [...endianness];
+        } else {
+            // Default little-endian (LSB at lowest address)
+            this.endianness = Array.from(
+                { length: wordSize },
+                (_, i) => wordSize - 1 - i,
+            );
+        }
 
         // Initialize memory layout and segments
-        this.initializeMemoryLayout(finalConfig);
+        this.memoryLayout = memoryLayout;
+        this.segmentCache = new Map();
 
         // Initialize hints system
         this.hints = new Map();
@@ -297,149 +332,14 @@ export class Memory {
         this.writtenAddresses = new Set();
 
         // Initialize storage buffer
-        this.initializeStorage(finalConfig);
-    }
-
-    /**
-     * Initializes basic memory properties
-     * @private
-     */
-    private initializeBasicProperties(config: RequiredMemoryConfig): void {
-        if (
-            !Number.isSafeInteger(config.sizeInBytes) ||
-            config.sizeInBytes <= 0
-        ) {
-            throw new Error(
-                "sizeInBytes must be a positive safe integer (<= Number.MAX_SAFE_INTEGER)",
-            );
-        }
-        if (config.bitsPerByte < 1 || config.bitsPerByte > 32) {
-            throw new Error("bitsPerByte must be between 1 and 32");
-        }
-
-        if (config.wordSize < 1) {
-            throw new Error("wordSize must be at least 1");
-        }
-
-        this.size = config.sizeInBytes;
-        this.bitsPerByte = config.bitsPerByte;
-        this.maxByteValue =
-            config.bitsPerByte === 32
-                ? 0xffffffff
-                : (1 << config.bitsPerByte) - 1;
-        this.wordSize = config.wordSize;
-        this.baseAddress = config.baseAddress;
-    }
-
-    /**
-     * Initializes endianness configuration
-     * @private
-     */
-    private initializeEndianness(config: RequiredMemoryConfig): void {
-        if (config.endianness) {
-            if (config.endianness.length !== config.wordSize) {
-                throw new Error(
-                    `Endianness array length (${config.endianness.length}) must match word size (${config.wordSize})`,
-                );
-            }
-
-            // Validate endianness array contains valid byte indices
-            const sortedEndianness = [...config.endianness].sort();
-            for (let i = 0; i < config.wordSize; i++) {
-                if (sortedEndianness[i] !== i) {
-                    throw new Error(
-                        `Endianness array must contain all indices 0 to ${config.wordSize - 1} exactly once`,
-                    );
-                }
-            }
-
-            this.endianness = [...config.endianness];
-        } else {
-            // Default little-endian (LSB at lowest address)
-            this.endianness = Array.from(
-                { length: config.wordSize },
-                (_, i) => config.wordSize - 1 - i,
-            );
-        }
-    }
-
-    /**
-     * Initializes memory layout and segments
-     * @private
-     */
-    private initializeMemoryLayout(config: RequiredMemoryConfig): void {
-        this.memoryLayout = [...config.memoryLayout];
-        this.segments = this.processMemoryLayout();
-        this.segmentCache = new Map();
-    }
-
-    /**
-     * Initializes the storage buffer
-     * @private
-     */
-    private initializeStorage(config: RequiredMemoryConfig): void {
         // Calculate storage needed: we need enough 8-bit bytes to store all the custom bytes
-        const bitsNeeded = config.sizeInBytes * config.bitsPerByte;
+        const bitsNeeded = sizeInBytes * bitsPerByte;
         const storageBytes = Math.ceil(bitsNeeded / 8);
 
         this.buffer = new ArrayBuffer(storageBytes);
         this.uint8View = new Uint8Array(this.buffer);
 
         this.uint8View.fill(0);
-    }
-
-    /**
-     * Processes the memory layout segments from architecture configuration into
-     * structured segment information for efficient access.
-     *
-     * @private
-     * @returns Map of processed memory segments
-     */
-    private processMemoryLayout(): Map<string, MemorySegment> {
-        const segments = new Map<string, MemorySegment>();
-
-        if (!this.memoryLayout || this.memoryLayout.length === 0) {
-            return segments;
-        }
-
-        // Group layout entries by segment type (text, data, stack, etc.)
-        const segmentGroups = new Map<string, MemoryLayoutSegment[]>();
-
-        for (const layoutEntry of this.memoryLayout) {
-            const parts = layoutEntry.name.split(" ");
-            if (parts.length >= 2) {
-                const segmentType = parts[0]; // "text", "data", "stack", etc.
-                // parts[1] contains "start" or "end" but we don't need to store it
-
-                if (!segmentGroups.has(segmentType)) {
-                    segmentGroups.set(segmentType, []);
-                }
-                segmentGroups.get(segmentType)!.push(layoutEntry);
-            }
-        }
-
-        // Process each segment group
-        for (const [segmentType, entries] of segmentGroups) {
-            const startEntry = entries.find(e => e.name.includes("start"));
-            const endEntry = entries.find(e => e.name.includes("end"));
-
-            if (startEntry && endEntry) {
-                const startAddr = BigInt(startEntry.value);
-                const endAddr = BigInt(endEntry.value);
-
-                if (startAddr <= endAddr) {
-                    segments.set(segmentType, {
-                        start: startEntry.value,
-                        end: endEntry.value,
-                        startAddress: startAddr,
-                        endAddress: endAddr,
-                        size: endAddr - startAddr + 1n,
-                    });
-                }
-            }
-        }
-
-        return segments;
     }
 
     /**
@@ -477,16 +377,25 @@ export class Memory {
      * ```
      */
     read(address: bigint): number {
-        const addr = Number(address);
-        if (addr >= this.size) {
-            throw new Error(`Address ${addr} exceeds memory size ${this.size}`);
+        // check address
+        if (address < this.baseAddress) {
+            throw new Error(
+                `Address ${address} is below base address ${this.baseAddress}`,
+            );
+        }
+
+        const addrIndex = Number(address - this.baseAddress);
+        if (addrIndex >= this.size) {
+            throw new Error(
+                `Address ${address} exceeds memory size ${this.size} (+${this.baseAddress}`,
+            );
         }
 
         if (this.bitsPerByte === 8) {
-            return this.uint8View[addr];
+            return this.uint8View[addrIndex];
         }
 
-        const bitOffset = addr * this.bitsPerByte;
+        const bitOffset = addrIndex * this.bitsPerByte;
         const byteIndex = Math.floor(bitOffset / 8);
         const bitIndex = bitOffset % 8;
 
@@ -553,9 +462,18 @@ export class Memory {
      * ```
      */
     write(address: bigint, value: number): void {
-        const addr = Number(address);
-        if (addr >= this.size) {
-            throw new Error(`Address ${addr} exceeds memory size ${this.size}`);
+        // check address
+        if (address < this.baseAddress) {
+            throw new Error(
+                `Address ${address} is below base address ${this.baseAddress}`,
+            );
+        }
+
+        const addrIndex = Number(address - this.baseAddress);
+        if (addrIndex >= this.size) {
+            throw new Error(
+                `Address ${address} exceeds memory size ${this.size} (+${this.baseAddress}`,
+            );
         }
         if (value > this.maxByteValue || value < 0) {
             throw new Error(
@@ -564,14 +482,14 @@ export class Memory {
         }
 
         // Track this address as written
-        this.writtenAddresses.add(addr);
+        this.writtenAddresses.add(Number(address));
 
         if (this.bitsPerByte === 8) {
-            this.uint8View[addr] = value;
+            this.uint8View[addrIndex] = value;
             return;
         }
 
-        const bitOffset = addr * this.bitsPerByte;
+        const bitOffset = addrIndex * this.bitsPerByte;
         const byteIndex = Math.floor(bitOffset / 8);
         const bitIndex = bitOffset % 8;
 
@@ -693,10 +611,7 @@ export class Memory {
     /**
      * Returns the addreses that have been written
      */
-    getWritten(): Array<{
-        addr: number;
-        value: number;
-    }> {
+    getWritten(): Array<{ addr: number; value: number }> {
         return (
             Array.from(this.writtenAddresses)
                 // Sort addresses to ensure consistent output
@@ -706,6 +621,16 @@ export class Memory {
                     value: this.read(BigInt(addr)),
                 }))
         );
+    }
+
+    /**
+     * Returns all memory addreses and values.
+     */
+    getAll(): Array<{ addr: number; value: number }> {
+        return Array.from(this.uint8View).map((value, i) => ({
+            addr: Number(this.baseAddress) + i,
+            value,
+        }));
     }
 
     /**
@@ -726,18 +651,7 @@ export class Memory {
      * memory.restore(snapshot);
      * ```
      */
-    dump(): {
-        addresses: number[];
-        values: number[];
-        bitsPerByte: number;
-        size: number;
-        hints: {
-            address: string;
-            tag: string;
-            type: string;
-            sizeInBits?: number;
-        }[];
-    } {
+    dump(): MemoryBackup {
         const addresses: number[] = [];
         const values: number[] = [];
 
@@ -794,19 +708,7 @@ export class Memory {
      * memory.restore(snapshot); // Back to original state with hints
      * ```
      */
-    restore(dump: {
-        addresses: number[];
-        values: number[];
-        bitsPerByte: number;
-        size: number;
-        hints?: {
-            address: string;
-            tag?: string;
-            type?: string;
-            hint?: string;
-            sizeInBits?: number;
-        }[];
-    }): void {
+    restore(dump: MemoryBackup): void {
         if (dump.bitsPerByte !== this.bitsPerByte || dump.size !== this.size) {
             throw new Error(
                 "Dump metadata does not match current memory configuration",
@@ -886,6 +788,15 @@ export class Memory {
      */
     getWordSize(): number {
         return this.wordSize;
+    }
+
+    /**
+     * Returns the total number of addressable units (bytes) in this memory configuration.
+     *
+     * @returns Addressable bytes
+     */
+    getSize(): number {
+        return this.size;
     }
 
     /**
@@ -1096,16 +1007,23 @@ export class Memory {
      * ```
      */
     readWord(address: bigint): number[] {
-        const addr = Number(address);
-        if (addr + this.wordSize > this.size) {
+        // check address
+        if (address < this.baseAddress) {
             throw new Error(
-                `Word at address ${addr} with size ${this.wordSize} exceeds memory size ${this.size}`,
+                `Address ${address} is below base address ${this.baseAddress}`,
+            );
+        }
+
+        const addrIndex = Number(address - this.baseAddress);
+        if (addrIndex >= this.size) {
+            throw new Error(
+                `Address ${address} exceeds memory size ${this.size} (+${this.baseAddress}`,
             );
         }
 
         const bytes: number[] = [];
-        for (let i = 0; i < this.wordSize; i++) {
-            bytes.push(this.read(BigInt(addr + i)));
+        for (let i = 0n; i < this.wordSize; i++) {
+            bytes.push(this.read(address + i));
         }
 
         // Reorder bytes according to endianness
@@ -1160,10 +1078,17 @@ export class Memory {
      * ```
      */
     writeWord(address: bigint, word: number[]): void {
-        const addr = Number(address);
-        if (addr + this.wordSize > this.size) {
+        // check address
+        if (address < this.baseAddress) {
             throw new Error(
-                `Word at address ${addr} with size ${this.wordSize} exceeds memory size ${this.size}`,
+                `Address ${address} is below base address ${this.baseAddress}`,
+            );
+        }
+
+        const addrIndex = Number(address - this.baseAddress);
+        if (addrIndex >= this.size) {
+            throw new Error(
+                `Address ${address} exceeds memory size ${this.size} (+${this.baseAddress}`,
             );
         }
 
@@ -1189,8 +1114,8 @@ export class Memory {
             bytesToWrite[this.endianness[i]] = word[i];
         }
 
-        for (let i = 0; i < this.wordSize; i++) {
-            this.write(BigInt(addr + i), bytesToWrite[i]);
+        for (let i = 0n; i < this.wordSize; i++) {
+            this.write(address + i, bytesToWrite[Number(i)]);
         }
     }
 
@@ -1217,10 +1142,10 @@ export class Memory {
         const absoluteAddress = address + this.baseAddress;
 
         // Find segment containing this address
-        for (const [segmentName, segment] of this.segments) {
+        for (const [segmentName, segment] of this.memoryLayout) {
             if (
-                absoluteAddress >= segment.startAddress &&
-                absoluteAddress <= segment.endAddress
+                absoluteAddress >= segment.start &&
+                absoluteAddress <= segment.end
             ) {
                 this.segmentCache.set(address, segmentName);
                 return segmentName;
@@ -1256,10 +1181,19 @@ export class Memory {
         operation: string,
         expectedSegment?: string,
     ): boolean {
+        // generic address check
+        if (
+            address < this.baseAddress ||
+            address - this.baseAddress >= this.size
+        ) {
+            return false;
+        }
+
+        // segment check
         const segment = this.getSegmentForAddress(address);
 
         if (!segment) {
-            return false; // Address not in any defined segment
+            return true;
         }
 
         if (expectedSegment && segment !== expectedSegment) {
@@ -1293,7 +1227,7 @@ export class Memory {
      * ```
      */
     getMemorySegments(): Map<string, MemorySegment> {
-        return new Map(this.segments); // Return copy to prevent external modification
+        return new Map(this.memoryLayout); // Return copy to prevent external modification
     }
 
     /**
@@ -1354,7 +1288,7 @@ export class Memory {
         const usedAddresses = this.getUsedAddresses();
 
         // Initialize segment usage counters
-        for (const [segmentName, segment] of this.segments) {
+        for (const [segmentName, segment] of this.memoryLayout) {
             usage[segmentName] = {
                 usedBytes: 0n,
                 totalBytes: segment.size,
@@ -1371,7 +1305,7 @@ export class Memory {
         }
 
         // Calculate utilization percentages
-        for (const [segmentName] of this.segments) {
+        for (const [segmentName] of this.memoryLayout) {
             const stats = usage[segmentName];
             if (stats && stats.totalBytes > 0n) {
                 stats.utilization = Number(

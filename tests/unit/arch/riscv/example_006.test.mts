@@ -7,7 +7,7 @@ import {
 } from "../simulator-test-utils.mts";
 
 Deno.test(
-    "Architecture-agnostic testing - RISC-V Sum of First 10 Numbers",
+    "Architecture-agnostic testing - RISC-V Branch and Jump Operations",
     async () => {
         const testAssembly = `
 
@@ -15,27 +15,27 @@ Deno.test(
 # Creator (https://creatorsim.github.io/creator/)
 #
 
-# Sum of the first 10 numbers from 0 to 9
-.data
-	max: .byte 10
-
 .text
-	main: 	    
-		la   t0, max
-		lb   t0, 0 (t0)
-		li   t1, 0
-		li   a0, 0
-		
-	while:	bge  t1, t0, end_while
-		add  a0, a0, t1
-		addi t1, t1, 1
-		beq  zero, zero, while
+    main:
 
-    end_while: 	li a7, 1
-		ecall # print_int
+      li  t0, 4
+      li  t1, 2
+      li  t3, 5
+      bge t3, t0, jump1
+      
+    jump2: 
+      li t3, 34
+      li a7, 10
+      ecall
 
-		#return
-		jr ra
+    jump1:
+      li t4, 11
+      li t5, 555
+      beq x0, x0, jump2
+
+      # exit program
+      li a7, 10
+      ecall
 
     `;
 
@@ -51,12 +51,14 @@ Deno.test(
         // Assert all expected state using the wrapper function
         assertSimulatorState({
             registers: {
-                x5: 0xan, // t0 should contain 0xa (10)
-                x6: 0xan, // t1 should contain 0xa (10 - loop counter after completion)
-                x10: 0x2dn, // a0 should contain 0x2d (45 - sum of 0+1+2+...+9)
-                x17: 0x1n, // a7 should contain 0x1 (syscall number for print_int)
+                x5: 0x4n, // t0 should contain 0x4
+                x6: 0x2n, // t1 should contain 0x2
+                x17: 0xan, // a7 should contain 0xa (syscall 10 - exit)
+                x28: 0x22n, // t3 should contain 0x22 (34 in decimal)
+                x29: 0xbn, // t4 should contain 0xb (11 in decimal)
+                x30: 0x22bn, // t5 should contain 0x22b (555 in decimal)
             },
-            display: "45", // Display should show '45'
+            display: "", // Display buffer should be empty
             keyboard: "", // Keyboard buffer should be empty
         });
 

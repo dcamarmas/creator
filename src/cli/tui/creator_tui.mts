@@ -3,7 +3,7 @@ import readline from "node:readline";
 import fs from "node:fs";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
-import * as creator from "../../core/core.mjs";
+import * as creator from "../../core/core";
 import { step } from "../../core/executor/executor.mjs";
 import { decode_instruction } from "../../core/executor/decoder.mjs";
 import { logger } from "../../core/utils/creator_logger.mjs";
@@ -973,7 +973,7 @@ function getStackContent(width: number): string[] {
     const lines: string[] = [];
 
     try {
-        const stackTracker = creator.stackTracker as StackTracker;
+        const stackTracker = creator.stackTracker;
         const stackFrames = stackTracker.getAllFrames();
         const stackTop = stackFrames.at(-1);
 
@@ -1237,7 +1237,7 @@ function getSidebarLines(height: number): string[] {
         lines.push("Status");
         lines.push("------");
         lines.push(
-            `Processor: ${creator.architecture.arch_conf[0].value || "Not loaded"}`,
+            `Processor: ${creator.architecture.config.name || "Not loaded"}`,
         );
         if (instructions.length > 0) {
             const pc_value = creator.dumpRegister("PC");

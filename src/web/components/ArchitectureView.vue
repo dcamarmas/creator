@@ -93,7 +93,7 @@ export default {
     <b-tabs lazy class="menu" id="view_components">
       <!-- Architecture configuration -->
       <b-tab title="Architecture Info" active>
-        <ArchConf :arch_conf="architecture.arch_conf" />
+        <ArchConf :conf="architecture.config" />
       </b-tab>
 
       <!-- Memory layout -->

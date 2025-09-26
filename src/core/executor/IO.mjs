@@ -23,13 +23,13 @@ import {
     writeRegister,
 } from "../register/registerOperations.mjs";
 import process from "node:process";
-import { packExecute } from "./executor.mjs";
+import { packExecute } from "../utils/utils.mjs";
 import os from "node:os";
 import { show_notification } from "@/web/utils.mjs";
 import { instructions } from "../assembler/assembler.mjs";
 
 export function display_print(info) {
-    if (typeof document !== "undefined") {
+    if (typeof document !== "undefined" && document.app) {
         document.app.$data.display += info;
     } else {
         // Deno environment
@@ -55,7 +55,7 @@ export function kbd_read_int(keystroke, params) {
     const value = parseInt(keystroke);
 
     // validate input
-    if (typeof document !== "undefined" && isNaN(value)) {
+    if (typeof document !== "undefined" && document.app && isNaN(value)) {
         show_notification(
             `Invalid input: '${keystroke}' is not an integer`,
             "danger",
@@ -72,7 +72,7 @@ export function kbd_read_float(keystroke, params) {
     const value = parseFloat(keystroke, 10);
 
     // validate input
-    if (typeof document !== "undefined" && isNaN(value)) {
+    if (typeof document !== "undefined" && document.app && isNaN(value)) {
         show_notification(
             `Invalid input: '${keystroke}' is not a float`,
             "danger",

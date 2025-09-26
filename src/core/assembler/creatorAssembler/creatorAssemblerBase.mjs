@@ -101,8 +101,8 @@ export function assembleCreatorBase(code, library, wasmModules) {
     const labels_json = JSON.stringify(library_labels);
 
     /*Allocation of memory addresses*/
-    architecture.memory_layout[4].value = backup_stack_address;
-    architecture.memory_layout[3].value = backup_data_address;
+    architecture.memory_layout.stack.start = backup_stack_address;
+    architecture.memory_layout.data.end = backup_data_address;
 
     // Compile code
     let label_table;
@@ -167,8 +167,8 @@ export function assembleCreatorBase(code, library, wasmModules) {
 
                             // Get word size from architecture configuration
                             const wordSizeBytes =
-                                newArchitecture.arch_conf.WordSize /
-                                newArchitecture.arch_conf.ByteSize;
+                                newArchitecture.config.word_size /
+                                newArchitecture.config.byte_size;
 
                             // Extract bytes from the float's binary representation
                             const floatBytes = new Uint8Array(4);
@@ -198,8 +198,8 @@ export function assembleCreatorBase(code, library, wasmModules) {
 
                             // Get word size from architecture configuration
                             const wordSizeBytes =
-                                newArchitecture.arch_conf.WordSize /
-                                newArchitecture.arch_conf.ByteSize;
+                                newArchitecture.config.word_size /
+                                newArchitecture.config.byte_size;
 
                             // Extract bytes from the double's binary representation
                             const doubleBytes = new Uint8Array(8);
@@ -242,8 +242,8 @@ export function assembleCreatorBase(code, library, wasmModules) {
                                 );
                                 // Get word size from architecture configuration
                                 const wordSizeBytes =
-                                    newArchitecture.arch_conf.WordSize /
-                                    newArchitecture.arch_conf.ByteSize;
+                                    newArchitecture.config.word_size /
+                                    newArchitecture.config.byte_size;
                                 // Split the word into bytes
                                 const wordBytes = new Uint8Array(wordSizeBytes);
 
@@ -251,14 +251,14 @@ export function assembleCreatorBase(code, library, wasmModules) {
                                 for (let i = 0; i < wordSizeBytes; i++) {
                                     const shiftAmount = BigInt(
                                         (wordSizeBytes - 1 - i) *
-                                            newArchitecture.arch_conf.ByteSize,
+                                            newArchitecture.config.byte_size,
                                     );
                                     wordBytes[i] = Number(
                                         (wordValue >> shiftAmount) &
                                             BigInt(
                                                 (1 <<
-                                                    newArchitecture.arch_conf
-                                                        .ByteSize) -
+                                                    newArchitecture.config
+                                                        .byte_size) -
                                                     1,
                                             ),
                                     );
@@ -273,7 +273,7 @@ export function assembleCreatorBase(code, library, wasmModules) {
                                     addr,
                                     wordTag,
                                     wordType,
-                                    newArchitecture.arch_conf.WordSize,
+                                    newArchitecture.config.word_size,
                                 );
                             }
 
@@ -283,19 +283,19 @@ export function assembleCreatorBase(code, library, wasmModules) {
                             const dwordValue = BigInt("0x" + data.value(false));
                             // Get word size from architecture configuration
                             const wordSizeBytes =
-                                newArchitecture.arch_conf.WordSize /
-                                newArchitecture.arch_conf.ByteSize;
+                                newArchitecture.config.word_size /
+                                newArchitecture.config.byte_size;
 
                             // Split dword into two words (high and low)
                             const highWord =
                                 dwordValue >>
-                                BigInt(newArchitecture.arch_conf.WordSize);
+                                BigInt(newArchitecture.config.word_size);
                             const lowWord =
                                 dwordValue &
                                 BigInt(
                                     (1n <<
                                         BigInt(
-                                            newArchitecture.arch_conf.WordSize,
+                                            newArchitecture.config.word_size,
                                         )) -
                                         1n,
                                 );
@@ -307,14 +307,14 @@ export function assembleCreatorBase(code, library, wasmModules) {
                             for (let i = 0; i < wordSizeBytes; i++) {
                                 const shiftAmount = BigInt(
                                     (wordSizeBytes - 1 - i) *
-                                        newArchitecture.arch_conf.ByteSize,
+                                        newArchitecture.config.byte_size,
                                 );
                                 highWordBytes[i] = Number(
                                     (highWord >> shiftAmount) &
                                         BigInt(
                                             (1 <<
-                                                newArchitecture.arch_conf
-                                                    .ByteSize) -
+                                                newArchitecture.config
+                                                    .byte_size) -
                                                 1,
                                         ),
                                 );
@@ -322,8 +322,8 @@ export function assembleCreatorBase(code, library, wasmModules) {
                                     (lowWord >> shiftAmount) &
                                         BigInt(
                                             (1 <<
-                                                newArchitecture.arch_conf
-                                                    .ByteSize) -
+                                                newArchitecture.config
+                                                    .byte_size) -
                                                 1,
                                         ),
                                 );
@@ -521,7 +521,7 @@ export function assembleCreatorBase(code, library, wasmModules) {
         }
     }
 
-    if (typeof document !== "undefined")
+    if (typeof document !== "undefined" && document.app)
         document.app.$data.instructions = instructions;
 
     const tag_instructions = {};
@@ -532,7 +532,7 @@ export function assembleCreatorBase(code, library, wasmModules) {
         };
     }
 
-    setAddress(parseInt(architecture.memory_layout[0].value, 16));
+    setAddress(architecture.memory_layout.text.start);
     setInstructions(instructions);
     set_tag_instructions(tag_instructions);
     return {

@@ -20,7 +20,7 @@
  */
 
 import { architecture, REGISTERS } from "../core.mjs";
-import { crex_show_notification } from "../executor/executor.mjs";
+import { crex_show_notification } from "../../web/utils.mjs";
 import { tag_instructions } from "../assembler/assembler.mjs";
 import {
     creator_callstack_enter,
@@ -29,11 +29,11 @@ import {
 import { creator_ga } from "../utils/creator_ga.mjs";
 
 export const CHECK_STACK = {
-    begin (addr) {
+    begin(addr) {
         let function_name = "";
 
         // 1) Passing Convection enable?
-        if (architecture.arch_conf[6].value === 0) {
+        if (!architecture.config.passing_convention) {
             return;
         }
 
@@ -47,9 +47,9 @@ export const CHECK_STACK = {
         // 3) callstack_enter
         creator_callstack_enter(function_name);
     },
-    end () {
+    end() {
         // 1) Passing Convection enable?
-        if (architecture.arch_conf[6].value === 0) {
+        if (!architecture.config.passing_convention) {
             return;
         }
 

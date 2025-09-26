@@ -17,13 +17,23 @@
  *  You should have received a copy of the GNU Lesser General Public License
  *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  */
-import { MEM } from "./memory.mjs";
-import { SYSCALL } from "./syscall.mjs";
+
+import { MEM } from "./memory.mts";
+import { SYSCALL } from "./syscall.mts";
 import { VALIDATION } from "./validation.mjs";
 import { CHECK_STACK } from "./checkStack.mjs";
 import { DRAW_STACK } from "./drawStack.mjs";
 import { FP } from "./fp.mjs";
 import { RISCV } from "./arch/riscv.mjs";
+import { Z80 } from "./arch/z80.mjs";
+import { MIPS } from "./arch/mips.mjs";
+import { REG } from "./registers.mts";
+import { INTERRUPTS } from "./interrupts.mts";
+
+// trick to prevent TS from screaming at us
+declare global {
+    var CAPI: object;
+}
 
 // Export all CAPI functions and make them globally available
 export function initCAPI() {
@@ -35,6 +45,10 @@ export function initCAPI() {
         DRAW_STACK,
         FP,
         RISCV,
+        Z80,
+        MIPS,
+        REG,
+        INTERRUPTS,
     };
 
     // Make CAPI available as a global object

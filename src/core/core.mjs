@@ -18,7 +18,7 @@
  *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { initCAPI } from "./capi/initCAPI.mjs";
+import { initCAPI } from "./capi/initCAPI.mts";
 
 import { register_value_deserialize } from "./utils/bigint.mjs";
 import { getHexTwosComplement } from "./utils/utils.mjs";
@@ -32,13 +32,18 @@ import {
 } from "./assembler/assembler.mjs";
 import { Memory } from "./memory/Memory.mts";
 import yaml from "js-yaml";
-import { crex_findReg } from "./register/registerLookup.mjs";
-import { readRegister } from "./register/registerOperations.mjs";
+import { crex_findReg, crex_findReg_bytag } from "./register/registerLookup.mjs";
+import { readRegister, writeRegister } from "./register/registerOperations.mjs";
 import { StackTracker } from "./memory/StackTracker.mts";
 import { creator_ga } from "./utils/creator_ga.mjs";
 import { creator_callstack_reset } from "./sentinel/sentinel.mjs";
 import { resetStats } from "./executor/stats.mts";
 import { resetCache } from "./executor/decoder.mjs";
+import { enableInterrupts, ExecutionMode } from "./executor/interrupts.mts";
+import { init } from "./executor/executor.mjs";
+import { resetDevices } from "./executor/devices.mts";
+import { compileTimerFunctions } from "./executor/timers.mts";
+
 
 export const code_assembly = "";
 export let update_binary = "";
@@ -46,17 +51,14 @@ export let backup_stack_address;
 export let backup_data_address;
 
 export let architecture_hash = [];
-export let architecture = {
-    arch_conf: [],
-    memory_layout: [],
-    components: [],
-    instructions: [],
-    directives: [],
-};
+/** @type {import("./core.d.ts").Architecture} */
+export let architecture = {};
 export let newArchitecture;
 
+/** @type {import("vue").ComponentPublicInstance}*/
 export let app;
 
+/** @type {import("./core.d.ts").Status} */
 export let status = {
     execution_init: 1,
     executedInstructions: 0,
@@ -68,23 +70,32 @@ export let status = {
     execution_index: 0,
     virtual_PC: 0n, // This is the PC the instructions see.
     error: 0,
+    execution_mode: ExecutionMode.User,
+    interrupts_enabled: false,
 };
 
 export let arch;
 export const ARCHITECTURE_VERSION = "2.0";
+/** @type {number} */
 export let WORDSIZE;
+/** @type {number} */
 export let BYTESIZE;
 export let ENDIANNESSARR = [];
 export let MAXNWORDS;
+/** @type {import("./core.d.ts").RegisterBank[]} */
 export let REGISTERS;
 export let REGISTERS_BACKUP = [];
 export const register_size_bits = 64; //TODO: load from architecture
+/** @type {Memory} */
 export let main_memory;
+/** @type {StackTracker} */
 export let stackTracker;
+/** @type {Memory} */
 export let main_memory_backup;
 export function updateMainMemoryBackup(value) {
     main_memory_backup = value;
 }
+export let PC_REG_INDEX; // Index of the PC register (indexComp, indexElem). Set when loading architecture.
 
 export let execution_mode = 0; // 0: instruction by instruction, 1: run program
 export function set_execution_mode(value) {
@@ -94,7 +105,7 @@ export const instructions_packed = 100;
 
 let code_binary = "";
 
-initCAPI();
+export { initCAPI }; // Instead of calling it here, which causes circular dependencies, we re-export it so it can be called by the main application.
 let creator_debug = false;
 
 BigInt.prototype.toJSON = function () {
@@ -123,9 +134,9 @@ function load_arch_select(cfg) {
 
     const auxArchitecture = cfg;
     architecture = register_value_deserialize(auxArchitecture);
-    WORDSIZE = newArchitecture.arch_conf.WordSize;
-    BYTESIZE = newArchitecture.arch_conf.ByteSize;
-    const endianness = newArchitecture.arch_conf.Endianness;
+    WORDSIZE = newArchitecture.config.word_size;
+    BYTESIZE = newArchitecture.config.byte_size;
+    const endianness = newArchitecture.config.endianness;
 
     const bytesPerWord = WORDSIZE / BYTESIZE;
 
@@ -150,19 +161,19 @@ function load_arch_select(cfg) {
         });
     }
 
-    backup_stack_address = architecture.memory_layout[4].value;
-    backup_data_address = architecture.memory_layout[3].value;
+    backup_stack_address = architecture.memory_layout.stack.start;
+    backup_data_address = architecture.memory_layout.data.end;
 
     // Initialize main memory with architecture layout support
 
     // Calculate the total size of the memory
     // Get the smallest memory address in the memory layout
     const minMemoryAddress = Math.min(
-        ...architecture.memory_layout.map(el => parseInt(el.value, 16)),
+        ...Object.values(architecture.memory_layout).map(({ start }) => start),
     );
     // Get the largest memory address in the memory layout
     const maxMemoryAddress = Math.max(
-        ...architecture.memory_layout.map(el => parseInt(el.value, 16)),
+        ...Object.values(architecture.memory_layout).map(({ end }) => end),
     );
     // Calculate the total size
     const totalMemorySize = maxMemoryAddress - minMemoryAddress + 1;
@@ -172,7 +183,7 @@ function load_arch_select(cfg) {
         sizeInBytes: totalMemorySize,
         bitsPerByte: BYTESIZE,
         wordSize: WORDSIZE / BYTESIZE,
-        memoryLayout: architecture.memory_layout,
+        memoryLayout: Object.entries(architecture.memory_layout),
         baseAddress: BigInt(minMemoryAddress),
         endianness: ENDIANNESSARR,
     });
@@ -184,6 +195,10 @@ function load_arch_select(cfg) {
     // Create deep copy backup of REGISTERS after all initialization is complete
     // This ensures the backup contains the correct values for all registers, including SP
     REGISTERS_BACKUP = JSON.parse(JSON.stringify(REGISTERS));
+
+    PC_REG_INDEX = crex_findReg_bytag("program_counter");
+
+    compileTimerFunctions();
 
     ret.token = "The selected architecture has been loaded correctly";
     ret.type = "success";
@@ -258,26 +273,11 @@ function mergeTemplateAndInstructionFields(template, instruction) {
 
     // Process instruction fields if they exist
     if (instruction.fields && Array.isArray(instruction.fields)) {
-        instruction.fields.forEach(instructionField => {
+        for (const instructionField of instruction.fields) {
             // Skip null fields
-            if (instructionField === null) return;
+            if (instructionField === null) continue;
 
             const fieldName = instructionField.field;
-
-            // Check if any attribute in the field is null, indicating this field should be removed
-            const hasNullAttribute = Object.values(instructionField).some(
-                value => value === null,
-            );
-
-            if (hasNullAttribute) {
-                const existingFieldIndex = mergedFields.findIndex(
-                    field => field.name === fieldName,
-                );
-                if (existingFieldIndex !== -1) {
-                    mergedFields.splice(existingFieldIndex, 1);
-                }
-                return;
-            }
 
             const existingFieldIndex = mergedFields.findIndex(
                 field => field.name === fieldName,
@@ -293,7 +293,13 @@ function mergeTemplateAndInstructionFields(template, instruction) {
                 // Add new field
                 mergedFields.push(createNewField(instructionField));
             }
-        });
+            // Remove any null attributes from the merged field (they take precedence over the template)
+            for (const key in instructionField) {
+                if (instructionField[key] === null) {
+                    delete mergedFields[existingFieldIndex][key];
+                }
+            }
+        }
     }
 
     return mergedFields;
@@ -422,8 +428,7 @@ function buildCompleteInstruction(
 // eslint-disable-next-line max-lines-per-function
 function processInstructions(architectureObj) {
     architectureObj.instructionsProcessed = [];
-    // eslint-disable-next-line max-lines-per-function
-    architectureObj.instructions.forEach(instruction => {
+    for (const instruction of architectureObj.instructions) {
         const template = findTemplateForInstruction(
             architectureObj,
             instruction,
@@ -463,7 +468,7 @@ function processInstructions(architectureObj) {
                 delete instruction.postoperation;
             }
             // Check to convert (if needed) the "valueField" property from hex to binary
-            mergedFields.forEach(field => {
+            for (const field of mergedFields) {
                 if (field.valueField !== undefined) {
                     // If the valueField is a string, it might be in hex format
                     if (typeof field.valueField === "string") {
@@ -482,7 +487,7 @@ function processInstructions(architectureObj) {
                         }
                     }
                 }
-            });
+            }
             // We need to find if any field is optional, because if it is, we need to
             // construct two different instructions, one with the field and one without it
 
@@ -581,7 +586,7 @@ function processInstructions(architectureObj) {
                 `Template '${instruction.template}' not found for instruction '${instruction.name}'`,
             );
         }
-    });
+    }
     architectureObj.instructions = architectureObj.instructionsProcessed;
     delete architectureObj.instructionsProcessed;
     // If enums exist, for each enum, find whether there's a "DEFAULT" value.
@@ -609,25 +614,36 @@ function processPseudoInstructions(architectureObj, legacy = true) {
                 fields = pseudoinstruction.fields.map(field => ({
                     name: field.field,
                     type: field.type,
+                    ...(field.prefix && {prefix: field.prefix}),
+                    ...(field.suffix && {suffix: field.suffix}),
                 }));
             }
 
             // Create signature_definition: "name F0 F1 F2..."
             const signatureDefParts = [pseudoinstruction.name];
             for (let i = 0; i < fields.length; i++) {
-                signatureDefParts.push(`F${i}`);
+                let part = `F${i}`;
+                if (fields[i].prefix) part = fields[i].prefix + part;
+                if (fields[i].suffix) part += fields[i].suffix;
+                signatureDefParts.push(part);
             }
 
             // Create signature: "name,TYPE1,TYPE2,..."
             const signatureParts = [pseudoinstruction.name];
             fields.forEach(field => {
-                signatureParts.push(field.type);
+                let part = field.type;
+                if (field.prefix) part = field.prefix + part;
+                if (field.suffix) part += field.suffix;
+                signatureParts.push(part);
             });
 
             // Create signatureRaw: "name fieldname1 fieldname2..."
             const signatureRawParts = [pseudoinstruction.name];
             fields.forEach(field => {
-                signatureRawParts.push(field.name);
+                let part = field.name;
+                if (field.prefix) part = field.prefix + part;
+                if (field.suffix) part += field.suffix;
+                signatureRawParts.push(part);
             });
 
             // Create the full legacy pseudoinstruction object
@@ -929,22 +945,6 @@ function prepareArchitecture(architectureObj, dump = false) {
         return Math.max(max, instruction.nwords || 1);
     }, 1);
 
-    // // Convert to JSON for WASM
-    // const architectureJson = JSON.stringify(architectureObj);
-
-    // Dump the architecture JSON to a file for debugging
-    if (dump) {
-        try {
-            Deno.writeTextFileSync(
-                "./architecture/test.json",
-                architectureJson,
-            );
-        } catch (writeError) {
-            logger.error(
-                `Could not write architecture file: ${writeError.message}`,
-            );
-        }
-    }
 
     return architectureObj;
 }
@@ -964,54 +964,6 @@ function isVersionSupported(architectureObj) {
         return false;
     }
     return true;
-}
-
-/**
- * Transform architecture configuration from new format to old format
- * @param {Object} architectureObj - The architecture object to transform
- * @returns {Object} - Transformed architecture object
- */
-function transformArchConf(architectureObj) {
-    const transformed = { ...architectureObj };
-    const newArchConf = architectureObj.arch_conf;
-    const oldArchConf = [];
-    // Add other configuration elements that might be in the new format
-    // This converts any remaining properties to the old array format
-    Object.entries(newArchConf).forEach(([key, value]) => {
-        // If value is bool, convert to "1" or "0"
-        if (typeof value === "boolean") {
-            value = value ? "1" : "0";
-        }
-        // If key is "Word Size", convert it to "bits"
-        if (key === "WordSize") {
-            key = "Bits";
-        }
-        if (key === "Endianness") {
-            key = "Data Format";
-        }
-        if (key === "StartAddress") {
-            return;
-        }
-        if (key === "PCOffset") {
-            return;
-        }
-        if (key === "ByteSize") {
-            return;
-        }
-        if (key === "Assemblers") {
-            return;
-        }
-        // Add remaining properties as individual entries
-        oldArchConf.push({
-            name: key,
-            value,
-        });
-    });
-
-    // Replace with transformed arch_conf
-    transformed.arch_conf = oldArchConf;
-
-    return transformed;
 }
 
 /**
@@ -1039,13 +991,10 @@ export function newArchitectureLoad(architectureYaml, dump = false, isa = []) {
         }
 
         // Transform arch_conf to the format expected by the code
-        const transformedArchObj = transformArchConf(architectureObj);
+        // const transformedArchObj = transformArchConf(architectureObj);
 
         // Determine which instruction sets to load
-        const isaResult = determineInstructionSetsToLoad(
-            transformedArchObj,
-            isa,
-        );
+        const isaResult = determineInstructionSetsToLoad(architectureObj, isa);
         if (isaResult.status === "error") {
             return {
                 errorcode: "invalid_isa",
@@ -1058,7 +1007,7 @@ export function newArchitectureLoad(architectureYaml, dump = false, isa = []) {
 
         // Collect instructions from selected sets
         const updatedArchObj = collectInstructionsFromSets(
-            transformedArchObj,
+            architectureObj,
             isaResult.instructionSets,
         );
 
@@ -1124,6 +1073,9 @@ export async function assembly_compile(code, compiler) {
             break;
     }
 
+    // Initialize execution environment
+    init();
+
     return ret;
 }
 
@@ -1151,7 +1103,7 @@ export function reset() {
     status.display = "";
 
     // reset registers
-    if (typeof document !== "undefined") {
+    if (typeof document !== "undefined" && document.app) {
         // I'd _like_ to use REGISTERS_BACKUP and call it a day... but if I do
         // that Vue doesn't notice the change and it doesn't update visually
         for (const bank of REGISTERS) {
@@ -1163,8 +1115,8 @@ export function reset() {
         REGISTERS = JSON.parse(JSON.stringify(REGISTERS_BACKUP));
     }
 
-    architecture.memory_layout[4].value = backup_stack_address;
-    architecture.memory_layout[3].value = backup_data_address;
+    architecture.memory_layout.stack.start = backup_stack_address;
+    architecture.memory_layout.data.end = backup_data_address;
 
     // reset memory and restore initial hints from backup (if it exists)
     if (typeof main_memory_backup !== "undefined") {
@@ -1181,6 +1133,15 @@ export function reset() {
     while (id--) {
         clearTimeout(id); // will do nothing if no timeout with id is present
     }
+
+    // reset interrupts
+    if (newArchitecture.interrupts?.enabled) enableInterrupts();
+
+    // reset devices
+    resetDevices();
+
+    // Initialize execution environment
+    init();
 
     return true;
 }
@@ -1429,4 +1390,22 @@ export function loadBinaryFile(filePath, offset = 0n) {
             msg: `Error loading binary file: ${error.message}`,
         };
     }
+}
+
+export function getPC() {
+    const pc_address = readRegister(PC_REG_INDEX.indexComp, PC_REG_INDEX.indexElem);
+    return BigInt(pc_address);
+}
+
+export function setPC(value) {
+    writeRegister(value, PC_REG_INDEX.indexComp, PC_REG_INDEX.indexElem);
+
+    const offset = BigInt(newArchitecture.config.pc_offset || 0n);
+    status.virtual_PC = BigInt(value + offset);
+    logger.debug("Virtual PC register updated to " + status.virtual_PC);
+    return null;
+}
+
+export function hasVirtualPCChanged(oldVirtualPC) {
+    return oldVirtualPC !== status.virtual_PC;
 }

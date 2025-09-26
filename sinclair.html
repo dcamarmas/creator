@@ -1,0 +1,1036 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CREATOR</title>
+    <style>
+      :root {
+        --bg-color: #1e1e1e;
+        --text-color: #d4d4d4;
+        --primary-color: #007acc;
+        --panel-bg: #252526;
+        --border-color: #333;
+        --red-color: #f44747;
+        --green-color: #4ec9b0;
+        --orange-color: #ce9178;
+        --info-color: #9cdcfe;
+      }
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+        background-color: var(--bg-color);
+        color: var(--text-color);
+        margin: 0;
+        padding: 1em;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        box-sizing: border-box;
+      }
+      h1,
+      h2,
+      h3,
+      h4 {
+        margin-top: 0;
+        margin-bottom: 0;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 0.3em;
+        font-weight: 400;
+        flex-shrink: 0;
+      }
+      h3,
+      h4 {
+        border-bottom: none;
+        padding-bottom: 0;
+        margin-bottom: 0.5em;
+      }
+      .container {
+        display: flex;
+        flex-grow: 1;
+        gap: 1em;
+        min-height: 0;
+      }
+      .panel {
+        background-color: var(--panel-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        padding: 1em;
+        display: flex;
+        flex-direction: column;
+        box-sizing: border-box;
+        gap: 1em; /* Add gap between sections within a panel */
+        min-width: 0; /* Prevent flex items from overflowing their container */
+      }
+      .scrollable-content {
+        flex-grow: 1;
+        overflow-y: auto;
+        min-height: 0;
+      }
+
+      /* MODIFICATION 1: Increased panel basis to fit the larger border */
+      #visuals-panel {
+        flex-basis: 640px; /* Accommodate 512px canvas + 96px border + padding */
+        flex-shrink: 0;
+      }
+      #interaction-panel {
+        flex-grow: 1;
+      }
+
+      .control-group {
+        margin-bottom: 1.5em;
+      }
+      label {
+        display: block;
+        margin-bottom: 0.5em;
+      }
+      .file-info {
+        font-style: italic;
+        font-size: 0.9em;
+        color: var(--info-color);
+        margin-left: 0.5em;
+      }
+      input[type="file"] {
+        display: block;
+        margin-bottom: 1em;
+      }
+      input[type="text"] {
+        background-color: var(--bg-color);
+        border: 1px solid var(--border-color);
+        color: var(--text-color);
+        padding: 0.4em;
+        border-radius: 4px;
+        width: calc(100% - 1em);
+      }
+      button {
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        padding: 0.6em 1.2em;
+        border-radius: 4px;
+        cursor: pointer;
+        margin-right: 0.5em;
+        margin-bottom: 0.5em;
+        transition: background-color 0.2s;
+      }
+      button:hover {
+        background-color: #005a9e;
+      }
+      button:disabled {
+        background-color: #555;
+        cursor: not-allowed;
+      }
+      #status-line {
+        font-weight: bold;
+      }
+      #status-line.ok {
+        color: var(--green-color);
+      }
+      #status-line.error {
+        color: var(--red-color);
+      }
+      #status-line.pending {
+        color: var(--orange-color);
+      }
+
+      .output-view {
+        font-family: "SF Mono", "Consolas", "Courier New", monospace;
+        white-space: pre;
+        background-color: var(--bg-color);
+        padding: 0.5em;
+        border-radius: 4px;
+        overflow: auto;
+      }
+
+      #instruction-log {
+        flex-grow: 1;
+        max-height: 50vh;
+        min-height: 100px;
+        overflow-y: auto;
+      }
+
+      #register-view {
+        /* No special sizing needed */
+      }
+      #breakpoint-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        font-family: "SF Mono", "Consolas", "Courier New", monospace;
+        max-height: 150px;
+        overflow-y: auto;
+      }
+      #breakpoint-list li {
+        display: flex;
+        align-items: center;
+        gap: 0.75em;
+        padding: 0.3em;
+        border-bottom: 1px solid var(--border-color);
+      }
+      #breakpoint-list li > span {
+        flex-grow: 1;
+      }
+      #breakpoint-list li:last-child {
+        border-bottom: none;
+      }
+      .bp-toggle {
+        margin: 0;
+        cursor: pointer;
+      }
+      .remove-bp-btn {
+        background: none;
+        border: 1px solid var(--red-color);
+        color: var(--red-color);
+        cursor: pointer;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        line-height: 16px;
+        padding: 0;
+        font-weight: bold;
+        flex-shrink: 0; /* Prevent shrinking */
+      }
+
+      .output-section {
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+      }
+
+      .output-section-grow {
+        flex-grow: 1;
+      }
+
+      /* MODIFICATION 2: Changed padding to create the large Spectrum border */
+      #screen-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #000; /* Default border color */
+        padding: 48px; /* This creates the 48px border on all sides */
+        border-radius: 4px;
+        transition: background-color 0.05s linear; /* Smooth border color changes */
+      }
+      #screen-canvas {
+        width: 100%;
+        max-width: 512px;
+        height: auto;
+        background-color: #000;
+        image-rendering: -moz-crisp-edges;
+        image-rendering: -webkit-crisp-edges;
+        image-rendering: pixelated;
+        image-rendering: crisp-edges;
+      }
+
+      #footer-bar {
+        flex-shrink: 0;
+        background-color: var(--primary-color);
+        color: white;
+        padding: 0.2em 1em;
+        font-size: 0.9em;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 2em;
+      }
+      #status-line {
+        font-weight: bold;
+      }
+      .performance-info {
+        font-family: "SF Mono", "Consolas", "Courier New", monospace;
+        border-left: 1px solid rgba(255, 255, 255, 0.3);
+        padding-left: 1em;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div id="visuals-panel" class="panel">
+        <div class="output-section">
+          <h3>Screen Output</h3>
+          <div id="screen-container">
+            <canvas id="screen-canvas" width="256" height="192"></canvas>
+          </div>
+        </div>
+
+        <div class="output-section">
+          <h3>Registers</h3>
+          <pre id="register-view" class="output-view">
+Registers will be shown here after loading...</pre
+          >
+        </div>
+      </div>
+
+      <div id="interaction-panel" class="panel">
+        <div id="controls-section" class="output-section">
+          <div class="scrollable-content">
+            <div class="control-group">
+              <label for="archFile"
+                >1. Load Architecture (YAML):<span
+                  id="arch-file-info"
+                  class="file-info"
+                ></span
+              ></label>
+              <input type="file" id="archFile" accept=".yml,.yaml" />
+
+              <label for="binFile"
+                >2. Load Binary (ROM):<span
+                  id="bin-file-info"
+                  class="file-info"
+                ></span
+              ></label>
+              <input type="file" id="binFile" />
+
+              <button id="loadBtn" disabled>Load & Reset</button>
+              <button
+                id="clearSessionBtn"
+                style="background-color: #a04444"
+                title="Clear saved architecture and ROM from browser memory"
+              >
+                Clear Session
+              </button>
+            </div>
+
+            <div class="control-group">
+              <h3>Execution</h3>
+              <button id="runBtn" disabled>Run</button>
+              <button id="pauseBtn" disabled>Pause</button>
+              <button id="stepBtn" disabled>Step</button>
+              <!-- NEW: Step Over button for handling breakpoints -->
+              <button id="stepOverBtn" disabled>Step Over</button>
+            </div>
+
+            <div class="control-group">
+              <h3>Debugging</h3>
+              <label for="breakpoint-address">Breakpoint Address (Hex):</label>
+              <input
+                type="text"
+                id="breakpoint-address"
+                placeholder="e.g., 0100"
+              />
+              <button id="add-breakpoint-btn" style="margin-top: 0.5em">
+                Add
+              </button>
+              <h4 style="margin-top: 1em; margin-bottom: 0.5em">
+                Active Breakpoints
+              </h4>
+              <ul id="breakpoint-list"></ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="output-section output-section-grow">
+          <h3>Executed Instructions</h3>
+          <pre id="instruction-log" class="output-view">
+Executed instructions will appear here...</pre
+          >
+        </div>
+      </div>
+    </div>
+    <footer id="footer-bar">
+      <span id="footer-status-line" class="pending">Waiting for files...</span>
+      <span>Total Instructions: <b id="footer-total-instructions">0</b></span>
+      <span class="performance-info"
+        >Speed: <b id="footer-emulation-speed">0.0 MHz</b> (<b
+          id="footer-speed-percentage"
+          >0.0%</b
+        >
+        real-time)</span
+      >
+    </footer>
+
+    <script type="module">
+      document.addEventListener("DOMContentLoaded", () => {
+        Promise.all([
+          import("./src/core/core.mjs"),
+          import("./src/core/executor/executor.mjs"),
+          import("./src/core/utils/creator_logger.mjs"),
+          import("./src/core/capi/arch/z80.mjs"),
+        ])
+          .then(([creator, executor, creator_logger, z80]) => {
+            creator.initCAPI();
+            window.creator = creator; // Expose to debug console
+            setupEmulator(creator, executor.step, creator_logger.logger, z80);
+          })
+          .catch(error => {
+            console.error("Failed to load a required emulator module:", error);
+            updateStatus(
+              `Error: Failed to load core module. Check browser console (F12) for 404 errors.`,
+              "error",
+            );
+          });
+
+        const footerStatusLine = document.getElementById("footer-status-line");
+        function updateStatus(message, type = "pending") {
+          footerStatusLine.textContent = message;
+          const footer = document.getElementById("footer-bar");
+          footer.style.backgroundColor = `var(--${type}-color, var(--primary-color))`;
+        }
+
+        function arrayBufferToBase64(buffer) {
+          let binary = "";
+          const bytes = new Uint8Array(buffer);
+          const len = bytes.byteLength;
+          for (let i = 0; i < len; i++) {
+            binary += String.fromCharCode(bytes[i]);
+          }
+          return window.btoa(binary);
+        }
+
+        function base64ToArrayBuffer(base64) {
+          const binary_string = window.atob(base64);
+          const len = binary_string.length;
+          const bytes = new Uint8Array(len);
+          for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+          }
+          return bytes.buffer;
+        }
+
+        function setupEmulator(creator, step, logger, z80) {
+          const keyboardBuffer = z80.keyboardBuffer;
+
+          // --- DOM Elements ---
+          const archFileInput = document.getElementById("archFile");
+          const binFileInput = document.getElementById("binFile");
+          const loadBtn = document.getElementById("loadBtn");
+          const runBtn = document.getElementById("runBtn");
+          const pauseBtn = document.getElementById("pauseBtn");
+          const stepBtn = document.getElementById("stepBtn");
+          const stepOverBtn = document.getElementById("stepOverBtn"); // NEW: Get handle to new button
+          const footerTotalInstructionsEl = document.getElementById(
+            "footer-total-instructions",
+          );
+          const registerView = document.getElementById("register-view");
+          const instructionLog = document.getElementById("instruction-log");
+          const clearSessionBtn = document.getElementById("clearSessionBtn");
+          const archFileInfo = document.getElementById("arch-file-info");
+          const binFileInfo = document.getElementById("bin-file-info");
+          const breakpointAddressInput =
+            document.getElementById("breakpoint-address");
+          const addBreakpointBtn =
+            document.getElementById("add-breakpoint-btn");
+          const breakpointList = document.getElementById("breakpoint-list");
+          const screenContainer = document.getElementById("screen-container");
+          const footerEmulationSpeedEl = document.getElementById(
+            "footer-emulation-speed",
+          );
+          const footerSpeedPercentageEl = document.getElementById(
+            "footer-speed-percentage",
+          );
+
+          // --- Emulator State ---
+          let isRunning = false;
+          let isLoaded = false;
+          let isHalted = false;
+          let isPausedAtBreakpoint = false;
+          let totalInstructions = 0;
+          let emulationLoopHandle = null;
+          const MAX_LOG_LINES = 1000;
+          let logBuffer = [];
+          const LOG_UPDATE_INTERVAL = 50;
+          let cachedArchContent = null;
+          let cachedRomBytes = null;
+          let breakpoints = new Map();
+
+          // --- Performance Monitoring ---
+          const TARGET_CLOCK_SPEED_MHZ = 3.5; // ZX Spectrum runs at 3.5 MHz
+          let performanceStartTime = 0;
+          let performanceStartInstructions = 0;
+          let performanceStartClockCycles = 0; // Track starting clock cycles
+          let lastPerformanceUpdate = 0;
+          const PERFORMANCE_UPDATE_INTERVAL = 1000; // Update performance stats every 1 second
+          let totalClockCycles = 0; // Track actual clock cycles executed
+
+          // --- Screen Rendering State & Constants ---
+          const screenCanvas = document.getElementById("screen-canvas");
+          const screenCtx = screenCanvas.getContext("2d", {
+            willReadFrequently: true,
+          });
+          const screenImageData = screenCtx.createImageData(256, 192);
+          const SPECTRUM_WIDTH = 256;
+          const SPECTRUM_HEIGHT = 192;
+          const PIXEL_MEM_START = 0x4000;
+          const ATTR_MEM_START = 0x5800;
+          const PIXEL_MEM_SIZE = 6144;
+          const ATTR_MEM_SIZE = 768;
+          const PALETTE = [
+            // Normal
+            [0, 0, 0],
+            [0, 0, 205],
+            [205, 0, 0],
+            [205, 0, 205],
+            [0, 205, 0],
+            [0, 205, 205],
+            [205, 205, 0],
+            [205, 205, 205],
+            // Bright
+            [0, 0, 0],
+            [0, 0, 255],
+            [255, 0, 0],
+            [255, 0, 255],
+            [0, 255, 0],
+            [0, 255, 255],
+            [255, 255, 0],
+            [255, 255, 255],
+          ];
+
+          // --- Core Functions ---
+          function readFile(fileInput, readAs = "text") {
+            return new Promise((resolve, reject) => {
+              const file = fileInput.files[0];
+              if (!file) {
+                return reject(new Error("No file selected."));
+              }
+              const reader = new FileReader();
+              reader.onload = e =>
+                resolve({ content: e.target.result, name: file.name });
+              reader.onerror = e =>
+                reject(new Error("Error reading file: " + e.target.error));
+              if (readAs === "text") reader.readAsText(file);
+              else if (readAs === "arrayBuffer") reader.readAsArrayBuffer(file);
+              else reject(new Error("Unsupported read format."));
+            });
+          }
+
+          function logInstruction(pc, instrData) {
+            const line = `${totalInstructions.toString().padStart(8, " ")}: ${pc.toString(16).padStart(4, "0").toUpperCase()}  ${instrData.asm.padEnd(25)} | ${instrData.machineCode}`;
+            logBuffer.push(line);
+            if (logBuffer.length > MAX_LOG_LINES) logBuffer.shift();
+          }
+
+          function updateInstructionLogUI() {
+            instructionLog.textContent = logBuffer.join("\n");
+            instructionLog.scrollTop = instructionLog.scrollHeight;
+          }
+
+          function updatePerformanceDisplay() {
+            if (!isRunning || performanceStartTime === 0) {
+              footerEmulationSpeedEl.textContent = "0.0 MHz";
+              footerSpeedPercentageEl.textContent = "0.0%";
+              return;
+            }
+
+            const currentTime = performance.now();
+            const elapsedSeconds = (currentTime - performanceStartTime) / 1000;
+            const instructionsExecuted =
+              totalInstructions - performanceStartInstructions;
+
+            if (elapsedSeconds > 0 && instructionsExecuted > 0) {
+              // Calculate effective clock speed in MHz
+              let effectiveClockSpeed;
+              const clockCyclesExecuted = totalClockCycles - performanceStartClockCycles;
+              
+              if (clockCyclesExecuted > 0) {
+                // Use actual clock cycles executed during this run session
+                effectiveClockSpeed = clockCyclesExecuted / (elapsedSeconds * 1000000);
+              } else {
+                // Fallback: estimate based on instructions (assume average 10 cycles per instruction)
+                effectiveClockSpeed = (instructionsExecuted * 10) / (elapsedSeconds * 1000000);
+              }
+
+              const speedPercentage =
+                (effectiveClockSpeed / TARGET_CLOCK_SPEED_MHZ) * 100;
+
+              footerEmulationSpeedEl.textContent = `${effectiveClockSpeed.toFixed(2)} MHz`;
+              footerSpeedPercentageEl.textContent = `${speedPercentage.toFixed(1)}%`;
+            }
+          }
+
+          function updateRegisterView() {
+            try {
+              const registers =
+                creator.getRegistersByBank("int_registers").elements;
+              let regText = "";
+              registers.forEach((reg, index) => {
+                const name = reg.name[0].padEnd(4, " ");
+                const value = `0x${reg.value.toString(16).padStart(4, "0").toUpperCase()}`;
+                regText += `${name}${value}${(index + 1) % 4 === 0 ? "\n" : "\t"}`;
+              });
+              registerView.textContent = regText;
+            } catch (e) {
+              registerView.textContent =
+                "Could not read registers. Is an architecture loaded?";
+            }
+          }
+
+          function getPixelAddress(x, y) {
+            return (
+              0x4000 +
+              ((y & 0xc0) << 5) +
+              ((y & 0x07) << 8) +
+              ((y & 0x38) << 2) +
+              (x >> 3)
+            );
+          }
+
+          function updateScreen() {
+            if (!isLoaded || !creator.main_memory) return;
+
+            // --- BORDER LOGIC ---
+            // Get border color from the shared Z80 state object
+            const borderColorIndex = Number(z80.Z80.borderColor);
+            // Look up RGB values from the palette
+            const borderRgb = PALETTE[borderColorIndex];
+            // Set the background color of the canvas's container
+            screenContainer.style.backgroundColor = `rgb(${borderRgb[0]}, ${borderRgb[1]}, ${borderRgb[2]})`;
+
+            const imageDataBuf = screenImageData.data;
+            try {
+              const pixelData = creator.main_memory.readBytes(
+                BigInt(PIXEL_MEM_START),
+                PIXEL_MEM_SIZE,
+              );
+              const attrData = creator.main_memory.readBytes(
+                BigInt(ATTR_MEM_START),
+                ATTR_MEM_SIZE,
+              );
+              for (let y = 0; y < SPECTRUM_HEIGHT; y++) {
+                for (let x = 0; x < SPECTRUM_WIDTH; x++) {
+                  const attr_x = x >> 3,
+                    attr_y = y >> 3;
+                  const attrAddr = attr_y * 32 + attr_x;
+                  const attr = attrData[attrAddr];
+                  const bright = attr & 0x40 ? 8 : 0;
+                  const paper = (attr >> 3) & 0x07;
+                  const ink = attr & 0x07;
+                  const pixelAddr = getPixelAddress(x, y) - PIXEL_MEM_START;
+                  const pixelByte = pixelData[pixelAddr];
+                  const pixelIsSet = (pixelByte >> (7 - (x % 8))) & 1;
+                  const colorIndex = pixelIsSet ? ink + bright : paper + bright;
+                  const rgb = PALETTE[colorIndex];
+                  const canvasIndex = (y * SPECTRUM_WIDTH + x) * 4;
+                  imageDataBuf[canvasIndex] = rgb[0];
+                  imageDataBuf[canvasIndex + 1] = rgb[1];
+                  imageDataBuf[canvasIndex + 2] = rgb[2];
+                  imageDataBuf[canvasIndex + 3] = 255;
+                }
+              }
+              screenCtx.putImageData(screenImageData, 0, 0);
+            } catch (e) {
+              /* Fail silently */
+            }
+          }
+
+          // --- Core Emulator Control Functions ---
+          function resetUI() {
+            instructionLog.textContent = "";
+            logBuffer = [];
+            totalInstructions = 0;
+            footerTotalInstructionsEl.textContent = "0";
+            isHalted = false;
+            isLoaded = false;
+            isPausedAtBreakpoint = false;
+            runBtn.disabled = true;
+            pauseBtn.disabled = true;
+            stepBtn.disabled = true;
+            stepOverBtn.disabled = true;
+            breakpoints.clear();
+            updateBreakpointListUI();
+
+            // Reset performance monitoring
+            performanceStartTime = 0;
+            performanceStartInstructions = 0;
+            performanceStartClockCycles = 0;
+            lastPerformanceUpdate = 0;
+            totalClockCycles = 0;
+            updatePerformanceDisplay();
+            updateStatus("Waiting for files...", "pending");
+            updateRegisterView();
+            screenCtx.fillStyle = "#000";
+            screenCtx.fillRect(0, 0, SPECTRUM_WIDTH, SPECTRUM_HEIGHT);
+            screenContainer.style.backgroundColor = "#000"; // Reset border color
+          }
+
+          function pauseEmulation(
+            message,
+            type = "pending",
+            { atBreakpoint = false } = {},
+          ) {
+            isRunning = false;
+            isPausedAtBreakpoint = atBreakpoint;
+            if (emulationLoopHandle) {
+              clearTimeout(emulationLoopHandle);
+              emulationLoopHandle = null;
+            }
+
+            // Reset performance monitoring when paused
+            performanceStartTime = 0;
+            performanceStartInstructions = 0;
+            performanceStartClockCycles = 0;
+            lastPerformanceUpdate = 0;
+
+            runBtn.disabled = false;
+            stepBtn.disabled = isPausedAtBreakpoint; // Disable normal step when at a breakpoint
+            stepOverBtn.disabled = !isPausedAtBreakpoint; // Enable Step Over ONLY when at a breakpoint
+            loadBtn.disabled = false;
+            pauseBtn.disabled = true;
+            updateStatus(message, type);
+            updateInstructionLogUI();
+            updateRegisterView();
+            updateScreen();
+            updatePerformanceDisplay();
+          }
+
+          function haltEmulation(finalMessage, type) {
+            isRunning = false;
+            isHalted = true;
+            if (emulationLoopHandle) clearTimeout(emulationLoopHandle);
+            emulationLoopHandle = null;
+            runBtn.disabled = true;
+            pauseBtn.disabled = true;
+            stepBtn.disabled = true;
+            stepOverBtn.disabled = true;
+            updateStatus(finalMessage, type);
+            updateInstructionLogUI();
+            updateRegisterView();
+            updateScreen();
+            updatePerformanceDisplay();
+          }
+
+          function executeSingleInstruction() {
+            try {
+              const pc_value = creator.getRegisterInfo("PC").value;
+              const ret = step();
+              if (ret.error === 1) {
+                haltEmulation(`Runtime Error: ${ret.msg}`, "error");
+                return false;
+              }
+              totalInstructions++;
+              footerTotalInstructionsEl.textContent = totalInstructions;
+
+              // Track clock cycles if available
+              if (ret.instructionData && ret.instructionData.clockCycles) {
+                totalClockCycles += ret.instructionData.clockCycles;
+              }
+
+              // logInstruction(pc_value, ret.instructionData);
+              if (creator.status.execution_index === -2) {
+                haltEmulation("Execution Halted (HALT instruction).", "ok");
+                return false;
+              }
+              return true;
+            } catch (error) {
+              console.error("Emulation step error:", error);
+              haltEmulation(`Emulation Error: ${error.message}`, "error");
+              return false;
+            }
+          }
+
+          function singleStep() {
+            if (isHalted) return;
+            try {
+              const pc_value = creator.getRegisterInfo("PC").value;
+              const bp = breakpoints.get(Number(pc_value));
+
+              if (bp && bp.enabled) {
+                pauseEmulation(
+                  `Breakpoint hit at 0x${pc_value.toString(16).toUpperCase()}`,
+                  "pending",
+                  { atBreakpoint: true },
+                );
+                return; // Pause without executing
+              }
+
+              const ret = step();
+              if (ret.error === 1) {
+                haltEmulation(`Runtime Error: ${ret.msg}`, "error");
+                return;
+              }
+
+              totalInstructions++;
+              footerTotalInstructionsEl.textContent = totalInstructions;
+
+              // Track clock cycles if available
+              if (ret.instructionData && ret.instructionData.clockCycles) {
+                totalClockCycles += ret.instructionData.clockCycles;
+              }
+
+              if (creator.status.execution_index === -2) {
+                haltEmulation("Execution Halted (HALT instruction).", "ok");
+              }
+            } catch (error) {
+              console.error("Emulation step error:", error);
+              haltEmulation(`Emulation Error: ${error.message}`, "error");
+            }
+          }
+
+          let lastLogUpdateTime = 0;
+          let lastScreenUpdateTime = 0;
+          const SCREEN_UPDATE_INTERVAL = 16;
+
+          function runEmulationCycle() {
+            if (!isRunning || isHalted) return;
+            const cycleStartTime = performance.now();
+            while (performance.now() - cycleStartTime < 16) {
+              for (let i = 0; i < 50; i++) {
+                if (!isRunning || isHalted) break;
+                singleStep();
+              }
+              if (!isRunning || isHalted) break;
+            }
+            const currentTime = performance.now();
+            if (currentTime - lastLogUpdateTime > LOG_UPDATE_INTERVAL) {
+              updateInstructionLogUI();
+              lastLogUpdateTime = currentTime;
+            }
+            if (currentTime - lastScreenUpdateTime > SCREEN_UPDATE_INTERVAL) {
+              updateScreen();
+              lastScreenUpdateTime = currentTime;
+            }
+            if (
+              currentTime - lastPerformanceUpdate >
+              PERFORMANCE_UPDATE_INTERVAL
+            ) {
+              updatePerformanceDisplay();
+              lastPerformanceUpdate = currentTime;
+            }
+            if (isRunning && !isHalted)
+              emulationLoopHandle = setTimeout(runEmulationCycle, 0);
+          }
+
+          // --- Event Listeners ---
+          function checkFilesAndEnableLoadButton() {
+            cachedArchContent = null;
+            cachedRomBytes = null;
+            archFileInfo.textContent = "";
+            binFileInfo.textContent = "";
+            if (
+              archFileInput.files.length > 0 &&
+              binFileInput.files.length > 0
+            ) {
+              loadBtn.disabled = false;
+              updateStatus("Files selected. Ready to load.", "pending");
+            } else {
+              loadBtn.disabled = true;
+            }
+            if (isLoaded) {
+              resetUI();
+              updateStatus(
+                "New files selected. Please Load & Reset.",
+                "pending",
+              );
+            }
+          }
+          archFileInput.addEventListener(
+            "change",
+            checkFilesAndEnableLoadButton,
+          );
+          binFileInput.addEventListener(
+            "change",
+            checkFilesAndEnableLoadButton,
+          );
+
+          loadBtn.addEventListener("click", async () => {
+            resetUI();
+            updateStatus("Loading...", "pending");
+            try {
+              let arch, rom;
+              if (cachedArchContent && cachedRomBytes) {
+                arch = {
+                  content: cachedArchContent,
+                  name: localStorage.getItem("savedArchFilename"),
+                };
+                rom = {
+                  content: cachedRomBytes,
+                  name: localStorage.getItem("savedRomFilename"),
+                };
+                updateStatus("Loading from saved session...", "pending");
+              } else {
+                arch = await readFile(archFileInput, "text");
+                rom = await readFile(binFileInput, "arrayBuffer");
+              }
+              const archRet = creator.newArchitectureLoad(arch.content);
+              if (archRet.status !== "ok")
+                throw new Error(`Architecture Error: ${archRet.token}.`);
+              creator.reset();
+              creator.main_memory.loadROM(new Uint8Array(rom.content), 0n);
+              localStorage.setItem("savedArchContent", arch.content);
+              localStorage.setItem("savedArchFilename", arch.name);
+              localStorage.setItem(
+                "savedRomContentBase64",
+                arrayBufferToBase64(rom.content),
+              );
+              localStorage.setItem("savedRomFilename", rom.name);
+              isLoaded = true;
+              runBtn.disabled = false;
+              stepBtn.disabled = false;
+              pauseBtn.disabled = true;
+              updateStatus("Ready to run.", "ok");
+              updateRegisterView();
+              updateScreen();
+            } catch (err) {
+              console.error("Loading error:", err);
+              updateStatus(err.message, "error");
+              isLoaded = false;
+              runBtn.disabled = true;
+              stepBtn.disabled = true;
+              pauseBtn.disabled = true;
+            }
+          });
+
+          runBtn.addEventListener("click", () => {
+            if (!isLoaded || isHalted) return;
+            isRunning = true;
+            isPausedAtBreakpoint = false;
+
+            // Initialize/Reset performance monitoring every time we start running
+            performanceStartTime = performance.now();
+            performanceStartInstructions = totalInstructions;
+            performanceStartClockCycles = totalClockCycles;
+            lastPerformanceUpdate = performanceStartTime;
+
+            runBtn.disabled = true;
+            stepBtn.disabled = true;
+            stepOverBtn.disabled = true;
+            loadBtn.disabled = true;
+            pauseBtn.disabled = false;
+            updateStatus("Running...", "ok");
+            runEmulationCycle();
+          });
+
+          pauseBtn.addEventListener("click", () => {
+            pauseEmulation("Paused by user.", "pending", {
+              atBreakpoint: false,
+            });
+          });
+
+          stepBtn.addEventListener("click", () => {
+            if (!isLoaded || isHalted || isRunning) return;
+            singleStep(); // This now checks for breakpoints
+            updateInstructionLogUI();
+            updateRegisterView();
+            updateScreen();
+            updatePerformanceDisplay(); // Update performance after stepping
+          });
+
+          stepOverBtn.addEventListener("click", () => {
+            if (!isLoaded || isHalted || isRunning || !isPausedAtBreakpoint)
+              return;
+
+            // Execute the instruction at the breakpoint
+            const success = executeSingleInstruction();
+            isPausedAtBreakpoint = false; // We are no longer AT the breakpoint
+
+            // Update UI to reflect the new state
+            updateInstructionLogUI();
+            updateRegisterView();
+            updateScreen();
+            updatePerformanceDisplay(); // Update performance after step over
+
+            // Stay paused, but update buttons to a normal paused state
+            if (success && !isHalted) {
+              runBtn.disabled = false;
+              stepBtn.disabled = false;
+              stepOverBtn.disabled = true;
+              pauseBtn.disabled = true;
+              loadBtn.disabled = false;
+              updateStatus("Stepped. Paused.", "pending");
+            }
+          });
+
+          document.addEventListener("keydown", event => {
+            if (event.target === breakpointAddressInput) return;
+            if (!isLoaded) return;
+            event.preventDefault();
+
+            // Handle ZX Spectrum keyboard matrix
+            z80.Z80.pressKey(event.code);
+          });
+
+          document.addEventListener("keyup", event => {
+            if (event.target === breakpointAddressInput) return;
+            if (!isLoaded) return;
+
+            // Handle ZX Spectrum keyboard matrix
+            z80.Z80.releaseKey(event.code);
+          });
+
+          clearSessionBtn.addEventListener("click", () => {
+            localStorage.removeItem("savedArchContent");
+            localStorage.removeItem("savedArchFilename");
+            localStorage.removeItem("savedRomContentBase64");
+            localStorage.removeItem("savedRomFilename");
+            window.location.reload();
+          });
+
+          function updateBreakpointListUI() {
+            breakpointList.innerHTML = "";
+            const sortedAddrs = Array.from(breakpoints.keys()).sort(
+              (a, b) => a - b,
+            );
+            for (const addr of sortedAddrs) {
+              const bpState = breakpoints.get(addr);
+              const li = document.createElement("li");
+              const addrHex = `0x${addr.toString(16).toUpperCase().padStart(4, "0")}`;
+
+              const checkbox = `<input type="checkbox" class="bp-toggle" data-addr="${addr}" ${bpState.enabled ? "checked" : ""}>`;
+              const label = `<span>${addrHex}</span>`;
+              const removeBtn = `<button class="remove-bp-btn" data-addr="${addr}">X</button>`;
+
+              li.innerHTML = checkbox + label + removeBtn;
+
+              // Apply disabled style if needed
+              if (!bpState.enabled) {
+                const span = li.querySelector("span");
+                span.style.textDecoration = "line-through";
+                span.style.opacity = "0.6";
+              }
+              breakpointList.appendChild(li);
+            }
+          }
+
+          addBreakpointBtn.addEventListener("click", () => {
+            const addrStr = breakpointAddressInput.value.trim();
+            if (!addrStr) return;
+            const addr = parseInt(addrStr, 16);
+            if (isNaN(addr)) {
+              alert("Invalid hexadecimal address.");
+              return;
+            }
+            breakpoints.set(addr, { enabled: true });
+            updateBreakpointListUI();
+            breakpointAddressInput.value = "";
+            breakpointAddressInput.focus();
+          });
+
+          breakpointAddressInput.addEventListener("keydown", e => {
+            if (e.key === "Enter") addBreakpointBtn.click();
+          });
+
+          breakpointList.addEventListener("click", e => {
+            const target = e.target;
+            if (target.classList.contains("remove-bp-btn")) {
+              const addrToRemove = parseInt(target.dataset.addr, 10);
+              breakpoints.delete(addrToRemove);
+              updateBreakpointListUI();
+            } else if (target.classList.contains("bp-toggle")) {
+              const addrToToggle = parseInt(target.dataset.addr, 10);
+              const bp = breakpoints.get(addrToToggle);
+              if (bp) {
+                bp.enabled = target.checked;
+              }
+              updateBreakpointListUI(); // Redraw to update styles
+            }
+          });
+
+          // --- Initial Setup ---
+          logger.disable();
+          const savedArch = localStorage.getItem("savedArchContent");
+          const savedRom = localStorage.getItem("savedRomContentBase64");
+          if (savedArch && savedRom) {
+            cachedArchContent = savedArch;
+            cachedRomBytes = base64ToArrayBuffer(savedRom);
+            archFileInfo.textContent = `(${localStorage.getItem("savedArchFilename")})`;
+            binFileInfo.textContent = `(${localStorage.getItem("savedRomFilename")})`;
+            loadBtn.disabled = false;
+            updateStatus('Saved session found. Press "Load & Reset".', "ok");
+          } else {
+            updateStatus("Select files to begin.", "pending");
+          }
+        }
+      });
+    </script>
+  </body>
+</html>

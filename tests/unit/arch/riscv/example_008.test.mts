@@ -50,8 +50,9 @@ end2:   addi t4, t4, 1
         add  t5, zero, zero
         beq  x0, x0, loop1
 end1:   
-        # return
-        jr ra
+        # exit program
+        li a7, 10
+        ecall
 
 
     `;

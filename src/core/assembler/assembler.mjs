@@ -20,10 +20,11 @@
  */
 
 import { raise } from "../capi/validation.mjs";
-import { main_memory, MAXNWORDS, status } from "../core.mjs";
+import { main_memory, MAXNWORDS, status, architecture } from "../core.mjs";
 import { decode_instruction } from "../executor/decoder.mjs";
 import ansicolor from "ansicolor";
 import { resetStats } from "../executor/stats.mts";
+import { enableInterrupts } from "@/core/executor/interrupts.mts";
 
 /*Instructions memory address*/
 export let address;
@@ -109,8 +110,8 @@ export function precomputeInstructions(sourceCode, sourceMap, tags = null) {
     let memory = main_memory.getWrittenAddresses();
     memory = memory.filter(
         addr =>
-            addr >= Number(textSegment.startAddress) &&
-            addr <= Number(textSegment.endAddress),
+            addr >= Number(textSegment.start) &&
+            addr <= Number(textSegment.end),
     );
     if (memory.length === 0) {
         console.error("No memory written, cannot precompute instructions");
@@ -125,7 +126,7 @@ export function precomputeInstructions(sourceCode, sourceMap, tags = null) {
         const words = [];
         // Read up to MAXNWORDS words starting from the current address
         for (let j = 0; j < MAXNWORDS && idx + j < memory.length; j++) {
-            const wordBytes = main_memory.readWord(memory[idx + j]);
+            const wordBytes = main_memory.readWord(BigInt(memory[idx + j]));
             const word = Array.from(new Uint8Array(wordBytes))
                 .map(byte => byte.toString(16).padStart(2, "0"))
                 .join("");
@@ -133,7 +134,10 @@ export function precomputeInstructions(sourceCode, sourceMap, tags = null) {
         }
         const word = words.join("");
         const instruction = decode_instruction("0x" + word);
-
+        // const instruction = {
+        //     nwords: words.length,
+        //     instructionExec: ""
+        // };
         const machineCode = words
             .slice(0, instruction.nwords)
             .join("")
@@ -184,8 +188,6 @@ export function precomputeInstructions(sourceCode, sourceMap, tags = null) {
         }
     }
     setInstructions(instructions);
-
-    console.log("Instructions precomputed successfully");
 }
 
 export function parseDebugSymbols(debugSymbols) {
@@ -219,8 +221,14 @@ export function assembly_compiler(code, library, compiler) {
     if (!compiler) {
         raise("No compiler specified for assembly compilation");
     }
+
+    // reset stats
     resetStats();
     status.executedInstructions = 0;
     status.clkCycles = 0;
+
+    // enable interrupts
+    if (architecture.interrupts?.enabled) enableInterrupts();
+
     return compiler(code, library);
 }
