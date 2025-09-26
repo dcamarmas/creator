@@ -7,7 +7,7 @@ on:
     branches: ["main"]
 
 permissions:
-  contents: read
+  contents: write
   packages: write
   pages: write # to deploy to Pages
   id-token: write # to verify the deployment originates from an appropriate source
@@ -61,6 +61,19 @@ jobs:
         run: |
           bun install
           bun build:cli
+      - name: Delete nightly tag
+        run: gh release delete nightly --cleanup-tag || true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Nightly release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Nightly release
+          prerelease: true
+          tag_name: nightly
+          target_commitish: ${{ github.sha }}
+          files: creator6
+
   # TODO: update unit tests runner
   # creator-checker:
   #   name: Execute CREATOR Checker
