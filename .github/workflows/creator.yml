@@ -32,6 +32,8 @@ jobs:
         with:
           bun-version: 1.2.22
       - name: Build compiler web
+        env:
+          REPO: ${{ github.event.repository.name }}
         run: |
           bun install
           bun install -g wasm-pack

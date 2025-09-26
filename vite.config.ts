@@ -63,7 +63,7 @@ export default defineConfig({
     },
   },
 
-  base: "/creatorV", // repository name (for github pages deployment)
+  base: "/" + (process.env.REPO ?? ""), // repository name (for github pages deployment)
 
   build: {
     outDir: "dist/web/creatorV",

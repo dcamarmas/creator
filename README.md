@@ -60,7 +60,7 @@ The resulting bundle will be saved to `dist/web/creatorV`.
 > cd dist/web
 > python -m http.server 8080
 > ```
-> And go to [localhost:8080/creatorV](https://localhost:8080/creatorV)
+> And go to [localhost:8080](https://localhost:8080/)
 
 <!--
 TODO: when the code is type-safe, replace build:web to:
@@ -84,7 +84,7 @@ bun lint
 ### Format with [Prettier](https://prettier.io/)
 
 ```sh
-bun format
+bun format <file/directory>
 ```
 
 ### Run Tests
