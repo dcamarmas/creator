@@ -21,11 +21,28 @@
 
 import { architecture, status } from "../core.mjs";
 
+let timerAdvance: () => void;
+let timerHandler: () => void;
+let timerIsEnabled: () => boolean;
+
+export function compileTimerFunctions() {
+    if (!architecture.timer) return;
+    timerAdvance = new Function(
+        architecture.timer.advance,
+    ) as () => void;
+    timerHandler = new Function(
+        architecture.timer.handler,
+    ) as () => void;
+    timerIsEnabled = new Function(
+        architecture.timer.is_enabled,
+    ) as () => boolean;
+}
+
 export function handleTimer() {
-    if (!eval(architecture.timer?.is_enabled)) return;
+    if (!timerIsEnabled()) return;
 
     if (status.clkCycles % architecture.timer.tick_cycles === 0) {
-        eval(architecture.timer.advance);
-        eval(architecture.timer.handler);
+        timerAdvance();
+        timerHandler();
     }
 }

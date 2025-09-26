@@ -21,7 +21,7 @@
 
 import { status, main_memory } from "../core.mjs";
 import { crex_findReg } from "../register/registerLookup.mjs";
-import { creator_executor_exit, packExecute } from "../executor/executor.mjs";
+import { exit } from "../executor/executor.mjs";
 import {
     display_print,
     keyboard_read,
@@ -34,11 +34,12 @@ import {
 import { readRegister } from "../register/registerOperations.mjs";
 import { creator_ga } from "../utils/creator_ga.mjs";
 import type { Memory } from "../memory/Memory.mts";
+import { packExecute } from "../utils/utils.mjs";
 
 export const SYSCALL = {
     exit() {
         creator_ga("execute", "execute.syscall", "execute.syscall.exit");
-        return creator_executor_exit(false);
+        return exit(false);
     },
 
     print(value: number | bigint, type: string) {

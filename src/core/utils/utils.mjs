@@ -18,13 +18,17 @@
  *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
- * Representation
- */
 
-export const isDeno = typeof Deno !== "undefined";
-export const isVue =
-    typeof window !== "undefined" && typeof document !== "undefined" && document.app;
+export function packExecute(error, err_msg, err_type, draw) {
+    const ret = {};
+
+    ret.error = error;
+    ret.msg = err_msg;
+    ret.type = err_type;
+    ret.draw = draw;
+
+    return ret;
+}
 
 /**
  * Check the type of a number in IEEE 754 format.

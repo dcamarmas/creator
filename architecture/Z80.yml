@@ -8260,8 +8260,8 @@ timer:
     }
   is_enabled: |
     // Timer interrupts enabled if global interrupts are enabled
-    !!(CAPI.REG.read('IFF1') & 1n)
-  enable: |
-    true
+    return !!(CAPI.REG.read('IFF1') & 1n);
+  enable: | 
+    return true;
   disable: |
-    false
+    return false;
