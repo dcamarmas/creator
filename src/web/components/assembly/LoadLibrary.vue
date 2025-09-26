@@ -19,51 +19,42 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <script>
+import { show_loading, hide_loading, show_notification } from "@/web/utils.mjs"
+import { load_library } from "@/core/core.mjs"
+
 export default {
   props: {
     id: { type: String, required: true },
   },
 
   data() {
-    return {
-      //Binary code loaded
-      name_binary_load: "",
-    }
+    return { library: null }
   },
 
   methods: {
-    library_update() {
-      if (code_binary.length !== 0) {
-        update_binary = JSON.parse(code_binary)
-        load_binary = true
-        $("#divAssembly").attr("class", "col-lg-10 col-sm-12")
-        $("#divTags").attr("class", "col-lg-2 col-sm-12")
-        $("#divTags").show()
+    load() {
+      // read file
+      show_loading()
+      const reader = new FileReader()
+      reader.onload = event => {
+        try {
+          load_library(event.currentTarget.result)
+        } catch (_e) {
+          show_notification("Invalid library", "danger")
+          return
+        }
+
+        // this.$root.librayLoaded = true
+        hide_loading()
         show_notification(
           "The selected library has been loaded correctly",
           "success",
         )
-      } else {
-        show_notification("Please select one library", "danger")
       }
-    },
+      reader.onerror = () =>
+        show_notification("Error loading library", "danger")
 
-    //Load binary file
-    library_load(e) {
-      let file
-      let reader
-      const files = document.getElementById("binary_file").files
-
-      for (let i = 0; i < files.length; i++) {
-        file = files[i]
-        reader = new FileReader()
-        reader.onloadend = onFileLoaded
-        reader.readAsArrayBuffer(file)
-      }
-
-      function onFileLoaded(event) {
-        code_binary = event.currentTarget.result
-      }
+      reader.readAsText(this.library)
     },
   },
 }
@@ -74,17 +65,15 @@ export default {
     :id="id"
     title="Load Binary"
     ok-title="Load from this File"
-    @ok="library_update"
+    @ok="load"
   >
     <p>Please select the binary file to be loaded</p>
     <b-form-file
-      v-model="name_binary_load"
-      :state="Boolean(name_binary_load)"
+      v-model="library"
+      :state="library !== null"
       placeholder="Choose a file..."
       accept=".o"
-      @change="library_load"
       id="binary_file"
-    >
-    </b-form-file> </b-modal
-  >',
+    />
+  </b-modal>
 </template>

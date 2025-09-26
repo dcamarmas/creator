@@ -27,6 +27,7 @@ import {
   status,
   instructions_packed,
   reset,
+  remove_library,
 } from "@/core/core.mjs"
 import { resetStats } from "@/core/executor/stats.mts"
 import { instructions, setInstructions } from "@/core/assembler/assembler.mjs"
@@ -243,12 +244,9 @@ export default {
     },
 
     //Remove a loaded binary
-    remove_library() {
-      update_binary = ""
-      load_binary = false
-      $("#divAssembly").attr("class", "col-lg-12 col-sm-12")
-      $("#divTags").attr("class", "col-lg-0 col-sm-0")
-      $("#divTags").attr("class", "d-none")
+    removeLibrary() {
+      // this.$root.librayLoaded = false
+      remove_library()
     },
 
     //
@@ -659,13 +657,17 @@ export default {
         <!-- dropdown_assembly_file -->
         <b-dropdown
           v-if="item === 'dropdown_assembly_file'"
-          text="File"
           size="sm"
           class="d-grid gap-2"
           :toggle-class="{ menuButton: !dark, menuButtonDark: dark }"
           :split-class="{ menuButton: !dark, menuButtonDark: dark }"
           variant="outline-secondary"
         >
+          <template #button-content>
+            <font-awesome-icon :icon="['fas', 'file']" />
+            File
+          </template>
+
           <b-dropdown-item @click="new_assembly">
             <font-awesome-icon :icon="['far', 'file']" />
             New
@@ -729,22 +731,27 @@ export default {
         <!-- dropdown_library -->
         <b-dropdown
           v-if="item === 'dropdown_library'"
-          text="Library"
           size="sm"
           class="d-grid gap-2"
           :toggle-class="{ menuButton: !dark, menuButtonDark: dark }"
           :split-class="{ menuButton: !dark, menuButtonDark: dark }"
           variant="outline-secondary"
         >
-          <b-dropdown-item v-b-modal.save_binary>
+          <template #button-content>
+            <font-awesome-icon :icon="['fas', 'book']" />
+            Library
+          </template>
+
+          <!-- We'll deal with this later -->
+          <!-- <b-dropdown-item v-b-modal.save_binary>
             <font-awesome-icon :icon="['fas', 'square-plus']" />
             Create
-          </b-dropdown-item>
+          </b-dropdown-item> -->
           <b-dropdown-item v-b-modal.load_binary>
             <font-awesome-icon :icon="['fas', 'upload']" />
             Load Library
           </b-dropdown-item>
-          <b-dropdown-item @click="remove_library">
+          <b-dropdown-item @click="removeLibrary">
             <font-awesome-icon :icon="['fas', 'trash-can']" />
             Remove
           </b-dropdown-item>
