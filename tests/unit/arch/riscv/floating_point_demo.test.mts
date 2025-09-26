@@ -33,8 +33,9 @@ main:
     fmul.s f5, f2, f2       # f5 = radius^2
     fmul.s f6, f0, f5       # f6 = pi * radius^2
     
-    # Return
-    jr ra
+    # exit program
+    li a7, 10
+    ecall
 `;
 
 Deno.test(

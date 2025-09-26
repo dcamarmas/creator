@@ -47,7 +47,9 @@ main:
     lw s0, 8(sp)
     lw ra, 12(sp)
     addi sp, sp, 16
-    jr ra
+    # exit program
+    li a7, 10
+    ecall
 
 # First level function - calls level2
 level1:

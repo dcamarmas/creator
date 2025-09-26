@@ -75,8 +75,9 @@ Deno.test(
       li a7, 4         # system call for print string
       ecall
       
-      # Return
-      jr ra
+      # exit program
+      li a7, 10
+      ecall
     `;
 
         const RISCV_ARCH_PATH = "../../../architecture/RISCV/RV32IMFD.yml";
@@ -94,7 +95,6 @@ Deno.test(
                 x5: 0x0n, // t0 - last value stored
                 x6: 0x200000n, // t1 - base address
                 x10: 0x200000n, // a0 - string address
-                x17: 0x4n, // a7 - syscall number
             },
             memory: {
                 "0x200000": 0x68n, // 'h' = 104

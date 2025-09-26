@@ -14,6 +14,13 @@
     "description": "RISC-V examples"
   },
   {
+    "name": "RISC-V Examples (Interrupts)",
+    "id": "default",
+    "architecture": "RISC-V (RV32IMFD, Interrupts)",
+    "url": "examples/RISCV-interrupts/list.json",
+    "description": "RISC-V examples (Interrupts)"
+  },
+  {
     "name": "MIPS from UC3M-OCW",
     "id": "uc3m-ec",
     "architecture": "MIPS-32",
@@ -26,5 +33,12 @@
     "architecture": "RISC-V (RV32IMFD)",
     "url": "examples/ag-uc3m-ec/list.json",
     "description": "RISC-V examples for Aula Global at UC3M"
+  },
+  {
+    "name": "RISC-V devices",
+    "id": "devices",
+    "architecture": "RISC-V (RV32IMFD, Interrupts)",
+    "url": "examples/RISCV-devices/list.json",
+    "description": "RISC-V devices examples"
   }
 ]

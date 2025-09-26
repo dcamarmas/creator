@@ -31,10 +31,12 @@ import {
   loadExample,
 } from "./utils.mjs"
 
-import { set_debug } from "@/core/core.mjs"
+import { set_debug, status, initCAPI } from "@/core/core.mjs"
 import { stats } from "@/core/executor/stats.mts"
 
 import { instructions } from "@/core/assembler/assembler.mjs"
+
+import { creator_ga } from "@/core/utils/creator_ga.mjs"
 
 import SpinnerLoading from "./components/general/SpinnerLoading.vue"
 import SupportedBrowsers from "./components/general/SupportedBrowsers.vue"
@@ -294,6 +296,7 @@ export default {
     // set config
     this.set_dark_mode()
     set_debug(this.c_debug)
+    initCAPI()
 
     // listener for window size changes
     window.addEventListener("resize", this.resizeHandler)
@@ -451,8 +454,8 @@ export default {
         "danger",
       )
 
-      if (execution_index !== -1) {
-        instructions[execution_index]._rowVariant = "danger"
+      if (status.execution_index !== -1) {
+        instructions[status.execution_index]._rowVariant = "danger"
       }
 
       /* Google Analytics */

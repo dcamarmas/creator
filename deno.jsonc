@@ -3,5 +3,8 @@
     // resolve @ and #
     "@/": "./src/",
     "#/": "./"
+  },
+  "compilerOptions": {
+    "types": ["./types/dom-minimal.d.ts"]
   }
 }

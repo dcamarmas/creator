@@ -30,8 +30,9 @@ import {
 } from "@/core/core.mjs"
 import { resetStats } from "@/core/executor/stats.mts"
 import { instructions, setInstructions } from "@/core/assembler/assembler.mjs"
-import { step, packExecute } from "@/core/executor/executor.mjs"
+import { step } from "@/core/executor/executor.mjs"
 import { creator_ga } from "@/core/utils/creator_ga.mjs"
+import { packExecute } from "@/core/utils/utils.mjs"
 import {
   show_notification,
   loadDefaultArchitecture,
@@ -369,6 +370,7 @@ export default {
 
       // put rowVariant in entrypoint
       draw.success.push(status.execution_index)
+      // draw.success.push(this.instructions.findIndex(i => i.Address === ))
 
       this.execution_UI_update(packExecute(false, null, null, draw))
     },

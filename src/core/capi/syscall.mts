@@ -21,7 +21,7 @@
 
 import { status, main_memory } from "../core.mjs";
 import { crex_findReg } from "../register/registerLookup.mjs";
-import { creator_executor_exit, packExecute } from "../executor/executor.mjs";
+import { exit } from "../executor/executor.mjs";
 import {
     display_print,
     keyboard_read,
@@ -31,30 +31,29 @@ import {
     kbd_read_char,
     kbd_read_string,
 } from "../executor/IO.mjs";
-import {
-    readRegister,
-    writeRegister,
-} from "../register/registerOperations.mjs";
-import { full_print } from "../utils/utils.mjs";
+import { readRegister } from "../register/registerOperations.mjs";
 import { creator_ga } from "../utils/creator_ga.mjs";
+import type { Memory } from "../memory/Memory.mts";
+import { packExecute } from "../utils/utils.mjs";
 
 export const SYSCALL = {
-    exit () {
+    exit() {
         creator_ga("execute", "execute.syscall", "execute.syscall.exit");
-        return creator_executor_exit(false);
+        return exit(false);
     },
 
-    print (value, type) {
+    print(value: number | bigint, type: string) {
         creator_ga(
             "execute",
             "execute.syscall",
             `execute.syscall.print.${type}`,
         );
 
+        const mainMemory = main_memory as Memory;
+
         switch (type) {
             case "int": {
-                const val_int = parseInt(value, 10);
-                display_print(full_print(val_int, null, false));
+                display_print(value);
                 break;
             }
             case "float":
@@ -63,15 +62,15 @@ export const SYSCALL = {
                 break;
             }
             case "char": {
-                const char_code = Number(value & 0xffn);
+                const char_code = Number(value as bigint & 0xffn);
                 display_print(String.fromCharCode(char_code));
                 break;
             }
             case "string": {
                 const buffer = [];
                 // read byte by byte until a null terminator is found
-                for (let i = 0; i < main_memory.size; i++) {
-                    const byte = main_memory.read(value + BigInt(i));
+                for (let i = 0; i < mainMemory.getSize(); i++) {
+                    const byte = mainMemory.read((value as bigint) + BigInt(i));
                     if (byte === 0) break; // null terminator
                     buffer.push(String.fromCharCode(byte));
                 }
@@ -89,22 +88,25 @@ export const SYSCALL = {
         }
     },
 
-    read (dest_reg_info, type, aux_info) {
+    read(dest_reg_info: string, type: string, aux_info: string | null) {
         creator_ga(
             "execute",
             "execute.syscall",
             `execute.syscall.read.${type}`,
         );
 
-        if (typeof document !== "undefined") {
-            document.getElementById("enter_keyboard").scrollIntoView();
+        if (typeof document !== "undefined" && document.app) {
+            const element = document.getElementById("enter_keyboard");
+            if (element) {
+                element.scrollIntoView();
+            }
         }
         status.run_program = 3;
         const register = crex_findReg(dest_reg_info);
         if (register.match === 0) {
             throw packExecute(
                 true,
-                "capi_syscall: register " + value1 + " not found",
+                "capi_syscall: register '" + dest_reg_info + "' not found",
                 "danger",
                 null,
             );
@@ -155,7 +157,7 @@ export const SYSCALL = {
         }
     },
 
-    sbrk (value1, value2) {
+    sbrk(value1: string, value2: string) {
         // TODO: this is (probably) broken
         /* Google Analytics */
         creator_ga("execute", "execute.syscall", "execute.syscall.sbrk");
@@ -192,11 +194,11 @@ export const SYSCALL = {
             );
         }
 
-        const new_addr = creator_memory_alloc(new_size);
-        writeRegister(new_addr, ret2.indexComp, ret2.indexElem);
+        // const new_addr = creator_memory_alloc(new_size);
+        // writeRegister(new_addr, ret2.indexComp, ret2.indexElem);
     },
 
-    get_clk_cycles () {
+    get_clk_cycles(): number {
         /* Google Analytics */
         creator_ga(
             "execute",
@@ -204,6 +206,6 @@ export const SYSCALL = {
             "execute.syscall.get_clk_cycles",
         );
 
-        return status.total_clk_cycles;
+        return status.clkCycles;
     },
 };

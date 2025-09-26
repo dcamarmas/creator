@@ -18,13 +18,17 @@
  *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
- * Representation
- */
 
-export const isDeno = typeof Deno !== "undefined";
-export const isWeb =
-    typeof window !== "undefined" && typeof document !== "undefined";
+export function packExecute(error, err_msg, err_type, draw) {
+    const ret = {};
+
+    ret.error = error;
+    ret.msg = err_msg;
+    ret.type = err_type;
+    ret.draw = draw;
+
+    return ret;
+}
 
 /**
  * Check the type of a number in IEEE 754 format.
@@ -104,6 +108,11 @@ export function hex2float(hexvalue) {
     new Uint8Array(buffer).set(value_bit.match(/.{8}/g).map(binaryStringToInt));
     return new DataView(buffer).getFloat32(0, false);
 }
+/**
+ * Converts a 32-bit unsigned integer to a 32-bit float.
+ * @param {number} value - The 32-bit unsigned integer to convert
+ * @returns {number} The converted 32-bit float value
+ */
 export function uint_to_float32(value) {
     if (validInteger(value)) {
         const buf = new ArrayBuffer(4);
@@ -114,11 +123,25 @@ export function uint_to_float32(value) {
         return -1;
     }
 }
+/**
+ * Converts a 32-bit float to a 32-bit unsigned integer.
+ * @param {number} value - The 32-bit float to convert
+ * @returns {number} The converted 32-bit unsigned integer
+ */
 export function float32_to_uint(value) {
     const buf = new ArrayBuffer(4);
     new Float32Array(buf)[0] = value;
     return new Uint32Array(buf)[0];
 }
+/**
+ * Converts 32-bit unsigned integers to a 64-bit float.
+ * Supports two calling conventions:
+ * 1. Single BigInt argument: converts a 64-bit integer directly
+ * 2. Two 32-bit arguments: converts low and high 32-bit parts
+ * @param {number|bigint} value0 - Lower 32 bits (as number) or full 64-bit value (as BigInt)
+ * @param {number} [value1] - Higher 32 bits (only used when value0 is a number)
+ * @returns {number} The converted 64-bit float value
+ */
 export function uint_to_float64(value0, value1) {
     const buf = new ArrayBuffer(8);
     const arr = new Uint32Array(buf);
@@ -139,6 +162,11 @@ export function uint_to_float64(value0, value1) {
 
     return -1; // Invalid input
 }
+/**
+ * Converts a 64-bit float to two 32-bit unsigned integers.
+ * @param {number} value - The 64-bit float to convert
+ * @returns {number[]} Array containing [lower_32_bits, higher_32_bits]
+ */
 export function float64_to_uint(value) {
     const buf = new ArrayBuffer(8);
     new Float64Array(buf)[0] = value;

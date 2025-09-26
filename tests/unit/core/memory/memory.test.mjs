@@ -1393,7 +1393,12 @@ Deno.test("Memory - dump and restore preserves word configuration", () => {
 
 Deno.test("Memory - getEndianness returns copy, not reference", () => {
     const originalEndianness = [3, 2, 1, 0];
-    const memory = new Memory(100, 8, 4, originalEndianness);
+    const memory = new Memory({
+        sizeInBytes: 100,
+        bitsPerByte: 8,
+        wordSize: 4,
+        endianness: originalEndianness,
+    });
 
     const endianness1 = memory.getEndianness();
     const endianness2 = memory.getEndianness();

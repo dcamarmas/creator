@@ -1,15 +1,15 @@
 version: 2.0.0
 
 arch_conf:
-  Name: Minimal
-  Word Size: 16
-  Description: Minimal architecture
-  Data Format: little_endian
-  Memory Alignment: true
-  Main Function: main
-  Passing Convention: true
-  Sensitive Register Name: true
-  CommentPrefix: "//"
+  name: Minimal
+  word Size: 16
+  description: Minimal architecture
+  data_format: little_endian
+  memory_alignment: true
+  main_function: main
+  passing_convention: true
+  sensitive_register_name: true
+  comment_prefix: "//"
 
 components:
   - name: Control registers

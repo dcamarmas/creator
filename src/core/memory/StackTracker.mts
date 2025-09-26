@@ -84,22 +84,26 @@ export class StackTracker {
      * Returns the address of the stack pointer.
      */
     private static getCurrentStackPointer(): number {
-        return Number(
-            // find stack pointer register
-            REGISTERS.flatMap(
-                (bank: { elements: [{ properties: [string] }] }) =>
-                    bank.elements.filter(register =>
-                        // check it has the stack pointer property
-                        register.properties.includes("stack_pointer"),
-                    ),
-            ).at(0).value,
-        );
+        // find stack pointer register
+        const sp = REGISTERS.flatMap(bank =>
+            bank.elements.filter(register =>
+                // check it has the stack pointer property
+                register.properties.includes("stack_pointer"),
+            ),
+        ).at(0);
+
+        if (sp === undefined) {
+            throw new Error("Found no stack pointer register");
+        }
+
+        return Number(sp.value);
     }
 
     private updateUI() {
-        // @ts-ignore: trust me bro, it exists
+        if (document === undefined || Object.hasOwn(document, "app") === false) return;
+        // @ts-ignore app is injected by Vue
         document.app.$data.callee_frame = this.frames.at(-1);
-        // @ts-ignore: trust me bro, it exists
+        // @ts-ignore app is injected by Vue
         document.app.$data.caller_frame = this.frames.at(-2);
     }
 
