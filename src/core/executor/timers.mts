@@ -39,6 +39,7 @@ export function compileTimerFunctions() {
 }
 
 export function handleTimer() {
+    if (architecture.timer === undefined) return;
     if (!timerIsEnabled()) return;
 
     if (status.clkCycles % architecture.timer.tick_cycles === 0) {
