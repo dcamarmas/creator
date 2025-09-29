@@ -63,11 +63,29 @@ jobs:
         run: |
           bun install
           bun build:cli
+      - name: Upload cli artifact
+        uses: pyTooling/upload-artifact@v4
+        with:
+          name: cli-artifact
+          working-directory: "."
+          path: "*"
+          if-no-files-found: error
+          include-hidden-files: true
+
+  publish-nightly:
+    name: Publish nightly release
+    runs-on: ubuntu-latest
+    needs: build-cli
+    steps:
+      - name: Download artifact
+        uses: pyTooling/download-artifact@v5
+        with:
+          name: cli-artifact
       - name: Delete nightly tag
         run: gh release delete nightly --cleanup-tag || true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Nightly release
+      - name: Publish nightly release
         uses: softprops/action-gh-release@v2
         with:
           name: Nightly release
@@ -75,9 +93,19 @@ jobs:
           tag_name: nightly
           target_commitish: ${{ github.sha }}
           files: creator6
-      - name: Latest release
+
+  publish-stable:
+    name: Publish latest tagged release
+    runs-on: ubuntu-latest
+    needs: build-cli
+    if: github.ref_type == 'tag'
+    steps:
+      - name: Download artifact
+        uses: pyTooling/download-artifact@v5
+        with:
+          name: cli-artifact
+      - name: Publish latest release
         uses: softprops/action-gh-release@v2
-        if: github.ref_type == 'tag'
         with:
           files: creator6
           make_latest: true
@@ -85,11 +113,8 @@ jobs:
   test:
     name: Run CREATOR tests
     runs-on: ubuntu-latest
+    needs: build-cli
     steps:
-      - name: Checkout
-        uses: actions/checkout@v5
-        with:
-          submodules: recursive
       - name: Install bun
         uses: oven-sh/setup-bun@v2
         with:
@@ -98,10 +123,10 @@ jobs:
         uses: denoland/setup-deno@v2
         with:
           deno-version: v2.5.2
-      - name: Build assembler
-        run: |
-          bun install
-          bun wasm:cli
+      - name: Download artifact
+        uses: pyTooling/download-artifact@v5
+        with:
+          name: cli-artifact
       - name: Run tests
         run: deno test -A --unstable-node-globals --parallel --ignore=tests/unit/core/executor/decoder/
 
