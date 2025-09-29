@@ -51,7 +51,13 @@ jobs:
       - name: Install dependencies
         uses: ./.github/actions/dependencies
       - name: Build compiler cli
-        run: bun build:cli
+        run: bun wasm:cli
+      - name: Build cli
+        run: bun run-p build:cli:windows build:cli:mac-x64 build:cli:mac-arm build:cli:linux-x64 build:cli:linux-arm
+      - name: Cleanup artifact
+        run: |
+          rm -rf node_modules
+          rm -rf CreatorCompiler
       - name: Upload cli artifact
         uses: pyTooling/upload-artifact@v4
         with:
@@ -59,7 +65,6 @@ jobs:
           working-directory: "."
           path: "*"
           if-no-files-found: error
-          include-hidden-files: true
 
   publish-nightly:
     name: Publish nightly release
@@ -81,7 +86,8 @@ jobs:
           prerelease: true
           tag_name: nightly
           target_commitish: ${{ github.sha }}
-          files: creator6
+          fail_on_unmatched_files: true
+          files: creator-cli-*
 
   publish-stable:
     name: Publish latest tagged release
@@ -96,8 +102,9 @@ jobs:
       - name: Publish latest release
         uses: softprops/action-gh-release@v2
         with:
-          files: creator6
           make_latest: true
+          fail_on_unmatched_files: true
+          files: creator-cli-*
 
   test:
     name: Run CREATOR tests
