@@ -6,12 +6,6 @@ on:
   pull_request:
     branches: ["main"]
 
-permissions:
-  contents: write
-  packages: write
-  pages: write # to deploy to Pages
-  id-token: write # to verify the deployment originates from an appropriate source
-
 jobs:
   build-web:
     name: Build CREATOR web
@@ -102,6 +96,8 @@ jobs:
     concurrency:
       group: nightly-release
       cancel-in-progress: false
+    permissions:
+      contents: write
     steps:
       - name: Download artifact
         uses: pyTooling/download-artifact@v5
@@ -129,6 +125,8 @@ jobs:
     concurrency:
       group: stable-release
       cancel-in-progress: false
+    permissions:
+      contents: write
     steps:
       - name: Download artifact
         uses: pyTooling/download-artifact@v5
@@ -149,6 +147,9 @@ jobs:
     concurrency:
       group: pages
       cancel-in-progress: false
+    permissions:
+      pages: write # to deploy to Pages
+      id-token: write # to verify the deployment originates from an appropriate source
     # Deploy to the github-pages environment
     environment:
       name: github-pages
