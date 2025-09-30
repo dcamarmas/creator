@@ -102,9 +102,9 @@
                       // Architecture Selector
                       //
 
-                      load_arch_select(arch)
+                      async load_arch_select(arch)
                       {
-                        uielto_preload_architecture.methods.load_arch_select(arch);
+                        await uielto_preload_architecture.methods.load_arch_select(arch);
 
                         //Close all toast and refresh
                         app.$bvToast.hide()

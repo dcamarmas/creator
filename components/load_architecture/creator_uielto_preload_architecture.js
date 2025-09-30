@@ -19,6 +19,7 @@
  *
  */
 
+let wasm_loader;
 let wasm;
 
   /* jshint esversion: 6 */
@@ -97,9 +98,9 @@ let wasm;
                         });
 
                         //Read architecture JSON
-                        $.getJSON('architecture/'+e.file+'.json' + "?v=" + new Date().getTime(), function(cfg){
+                        $.getJSON('architecture/'+e.file+'.json' + "?v=" + new Date().getTime(), async function(cfg){
                           try {
-                            uielto_preload_architecture.methods.load_arch_select_aux(cfg, true, e);
+                            await uielto_preload_architecture.methods.load_arch_select_aux(cfg, true, e);
                             show_notification(e.name + ' architecture has been loaded correctly', 'success');
                           } catch (error) {
                             show_notification(e.name + ' architecture is invalid: ' + error, 'danger');
@@ -120,7 +121,7 @@ let wasm;
                   },
 
                   //Load selected architecture on CREATOR
-                  load_arch_select(e)
+                  async load_arch_select(e)
                   {
                     show_loading();
 
@@ -138,7 +139,7 @@ let wasm;
                       {
                         var aux_architecture = JSON.parse(load_architectures[i].architecture);
                         try {
-                          uielto_preload_architecture.methods.load_arch_select_aux(aux_architecture, true, e);
+                          await uielto_preload_architecture.methods.load_arch_select_aux(aux_architecture, true, e);
                           show_notification(e.name + ' architecture has been loaded correctly', 'success');
                         } catch (error) {
                           show_notification(e.name + ' architecture is invalid: ' + error, 'danger');
@@ -159,9 +160,9 @@ let wasm;
                     });
 
                     //Read architecture JSON
-                    $.getJSON('architecture/'+e.file+'.json' + "?v=" + new Date().getTime(), function(cfg){
+                    $.getJSON('architecture/'+e.file+'.json' + "?v=" + new Date().getTime(), async function(cfg){
                       try {
-                        uielto_preload_architecture.methods.load_arch_select_aux(cfg, true, e);
+                        await uielto_preload_architecture.methods.load_arch_select_aux(cfg, true, e);
                         show_notification(e.name + ' architecture has been loaded correctly', 'success');
                       } catch (error) {
                         show_notification(e.name + ' architecture is invalid: ' + error, 'danger');
@@ -180,8 +181,9 @@ let wasm;
                   },
 
                   //Load architecture in CREATOR
-                  load_arch_select_aux(cfg, load_associated_examples, e)
+                  async load_arch_select_aux(cfg, load_associated_examples, e)
                   {
+                    await wasm_loader; // wait for wasm to be loaded
                     //Load architecture
                     var aux_architecture = cfg;
                     architecture = register_value_deserialize(aux_architecture);
@@ -272,8 +274,8 @@ let wasm;
                           //If no current_architecture loaded then load the associated
                           if (current_architecture == '')
                           {
-                            $.getJSON('architecture/'+ set[i].architecture +'.json', function(cfg) {
-                              uielto_preload_architecture.methods.load_arch_select_aux(cfg, false, null);
+                            $.getJSON('architecture/'+ set[i].architecture +'.json', async function(cfg) {
+                              await uielto_preload_architecture.methods.load_arch_select_aux(cfg, false, null);
                             }) ;
                           }
 

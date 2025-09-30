@@ -279,9 +279,9 @@ try
     /************************
      * Mounted vue instance *
      ************************/
-    async mounted(){
+    mounted(){
       this.validate_browser();
-      await this.load_compiler_wasm();
+      wasm_loader = this.load_compiler_wasm();
       uielto_backup.methods.backup_modal(this);
 
       //Pre-load following URL params
