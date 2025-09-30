@@ -41,8 +41,8 @@
                     show_loading();
 
                     //Read architecture JSON
-                    $.getJSON('architecture/new_arch.json' + "?v=" + new Date().getTime(), function(cfg){
-                      uielto_new_architecture.methods.load_arch_select_aux(cfg);
+                    $.getJSON('architecture/new_arch.json' + "?v=" + new Date().getTime(), async function(cfg){
+                      await uielto_new_architecture.methods.load_arch_select_aux(cfg);
 
                       //Refresh UI
                       hide_loading();
@@ -58,8 +58,9 @@
                   },
 
                   //Load architecture in CREATOR
-                  load_arch_select_aux(cfg)
+                  async load_arch_select_aux(cfg)
                   {
+                    await wasm_loader; // wait for wasm to be loaded
                     //Load architecture
                     var aux_architecture = cfg;
                     architecture = register_value_deserialize(aux_architecture);
