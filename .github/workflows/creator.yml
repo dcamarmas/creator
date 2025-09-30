@@ -74,6 +74,7 @@ jobs:
           working-directory: "."
           path: creator-cli-*
           if-no-files-found: error
+          compression-level: 3
 
   test:
     name: Run CREATOR tests
