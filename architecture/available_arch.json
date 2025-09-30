@@ -23,13 +23,13 @@
     "name": "RISC-V (RV32IMFD, Interrupts)",
     "alias": [""],
     "file": "RISCV/RV32IMFD-Interrupts",
-    "img": "/img/logos/riscv.webp",
+    "img": "riscv.webp",
     "alt": "",
     "id": "select_confRISCVI",
     "examples": ["default"],
     "description": "RISC-V, with interrupts.",
     "guide": "",
-    "available": 1
+    "available": 0
   },
   {
     "name": "MIPS-32",
