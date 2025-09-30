@@ -387,7 +387,7 @@ export class Memory {
         const addrIndex = Number(address - this.baseAddress);
         if (addrIndex >= this.size) {
             throw new Error(
-                `Address ${address} exceeds memory size ${this.size} (+${this.baseAddress}`,
+                `Address ${addrIndex} exceeds memory size ${this.size} (+${this.baseAddress})`,
             );
         }
 
@@ -472,7 +472,7 @@ export class Memory {
         const addrIndex = Number(address - this.baseAddress);
         if (addrIndex >= this.size) {
             throw new Error(
-                `Address ${address} exceeds memory size ${this.size} (+${this.baseAddress}`,
+                `Address ${address} exceeds memory size ${this.size} (+${this.baseAddress})`,
             );
         }
         if (value > this.maxByteValue || value < 0) {
@@ -1017,7 +1017,7 @@ export class Memory {
         const addrIndex = Number(address - this.baseAddress);
         if (addrIndex >= this.size) {
             throw new Error(
-                `Address ${address} exceeds memory size ${this.size} (+${this.baseAddress}`,
+                `Address ${addrIndex} exceeds memory size ${this.size} (+${this.baseAddress})`,
             );
         }
 
@@ -1088,7 +1088,7 @@ export class Memory {
         const addrIndex = Number(address - this.baseAddress);
         if (addrIndex >= this.size) {
             throw new Error(
-                `Address ${address} exceeds memory size ${this.size} (+${this.baseAddress}`,
+                `Address ${addrIndex} exceeds memory size ${this.size} (+${this.baseAddress})`,
             );
         }
 
