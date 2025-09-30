@@ -10,6 +10,9 @@ Compilation is done through [Deno](https://deno.com/):
 deno run -A jsr:@deno/wasmbuild
 ```
 
+> [!NOTE]
+> If you're building for development purposes, you can add the `--skip-opt` flag to generate a debug mode with a shorter compile time.
+
 The generated files (inside `lib/` subdirectory) must be placed inside `src/core/assembler/creatorAssembler/deno/wasm/`.
 
 

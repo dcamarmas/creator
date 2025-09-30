@@ -1,0 +1,3 @@
+[submodule "CreatorCompiler"]
+	path = CreatorCompiler
+	url = https://github.com/ALVAROPING1/CreatorCompiler.git

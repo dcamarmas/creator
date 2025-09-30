@@ -67,7 +67,7 @@ export default {
   >
     <template #img>
       <b-img
-        :src="architecture.img ?? '/img/logos/default.webp'"
+        :src="`img/logos/${architecture.img}` ?? 'img/logos/default.webp'"
         :alt="architecture.alt"
         @click="select_arch"
       />

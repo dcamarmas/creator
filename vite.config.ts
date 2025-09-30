@@ -44,11 +44,11 @@ export default defineConfig({
       // bundle these folders
       {
         input: "architecture/**",
-        output: "/architecture",
+        output: "architecture",
       },
       {
         input: "examples/**",
-        output: "/examples",
+        output: "examples",
       },
     ]) as PluginOption,
   ],
@@ -63,8 +63,10 @@ export default defineConfig({
     },
   },
 
+  base: "/" + (process.env.REPO ?? ""), // repository name (for github pages deployment)
+
   build: {
-    outDir: "dist/web",
+    outDir: "dist/web/creatorV",
     emptyOutDir: true,
     target: "esnext", // browsers can handle the latest ES features
 
