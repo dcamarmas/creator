@@ -20,7 +20,7 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 
 <script>
 import { creator_ga } from "@/core/utils/creator_ga.mjs"
-import { downloadToTXTFile } from "@/web/utils.mjs"
+import { downloadToFile } from "@/web/utils.mjs"
 
 export default {
   props: {
@@ -38,7 +38,7 @@ export default {
 
   methods: {
     download() {
-      downloadToTXTFile(
+      downloadToFile(
         this.fileData,
         (this.filename || this.defaultFilename) + this.extension,
       )

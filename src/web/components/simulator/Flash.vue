@@ -1,8 +1,8 @@
 <!--
-Copyright 2018-2025 Felix Garcia Carballeira, Diego Camarmas Alonso,
-                    Alejandro Calderon Mateos, Luis Daniel Casais Mezquida
+Copyright 2018-2025 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro
+                    Calderon Mateos, Luis Daniel Casais Mezquida
 
-This file is part of CREATOR.
+file is part of CREATOR.
 
 CREATOR is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -19,35 +19,82 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <script>
-let this_env = null
+import { REMOTELAB } from "@/web/src/remoteLab.js"
+import { LOCALLAB } from "@/web/src/localGateway.js"
+import { downloadFile, console_log, show_notification } from "@/web/utils.mjs"
+import { creator_ga } from "@/core/utils/creator_ga.mjs"
+import { instructions } from "@/core/assembler/assembler.mjs"
+
 export default {
   props: {
     id: { type: String, required: true },
+    os: { type: String, required: true },
     lab_url: { type: String, required: true },
     result_email: { type: String, required: true },
     target_board: { type: String, required: true },
     target_port: { type: String, required: true },
     flash_url: { type: String, required: true },
+    assembly_code: { type: String, required: true },
+  },
+
+  computed: {
+    // sync w/ root
+    labURL: {
+      get() {
+        return this.lab_url
+      },
+      set(value) {
+        this.$root.lab_url = value
+      },
+    },
+    resultEmail: {
+      get() {
+        return this.result_email
+      },
+      set(value) {
+        this.$root.result_email = value
+      },
+    },
+    targetBoard: {
+      get() {
+        return this.target_board
+      },
+      set(value) {
+        this.$root.target_board = value
+      },
+    },
+    targetPort: {
+      get() {
+        return this.target_port
+      },
+      set(value) {
+        this.$root.target_port = value
+      },
+    },
+    flashURL: {
+      get() {
+        return this.flash_url
+      },
+      set(value) {
+        this.$root.flash_url = value
+      },
+    },
   },
 
   data() {
     return {
       //
-      //Remote Device
+      // Remote Device
       //
 
       remote_target_boards: [
-        { text: "Please select an option", value: "", disabled: true },
-        { text: "ESP32-C2 (RISC-V)", value: "esp32c2" },
+        { text: "Please select an option", value: null, disabled: true },
+        { text: "ESP32-C6 (RISC-V)", value: "esp32c6" },
         { text: "ESP32-C3 (RISC-V)", value: "esp32c3" },
         { text: "ESP32-H2 (RISC-V)", value: "esp32h2" },
-        //{ text: 'ESP32-S2 (MIPS-32)',      value: 'esp32s2' },
-        //{ text: 'ESP32-S3 (MIPS-32)',      value: 'esp32s3' },
+        // { text: "ESP32-S2 (MIPS-32)", value: "esp32s2" },
+        // { text: "ESP32-S3 (MIPS-32)", value: "esp32s3" },
       ],
-
-      /*
-                      lab_url = "",
-                      */
 
       request_id: -1,
       position: "",
@@ -57,28 +104,26 @@ export default {
       status: false,
 
       //
-      //Local Device
+      // Local Device
       //
 
       target_boards: [
-        { text: "Please select an option", value: "", disabled: true },
-        { text: "ESP32-C2 (RISC-V)", value: "esp32c2" },
+        { text: "Please select an option", value: null, disabled: true },
+        { text: "ESP32-C6 (RISC-V)", value: "esp32c6" },
         { text: "ESP32-C3 (RISC-V)", value: "esp32c3" },
         { text: "ESP32-H2 (RISC-V)", value: "esp32h2" },
-        //{ text: 'ESP32-S2 (MIPS-32)',      value: 'esp32s2' },
-        //{ text: 'ESP32-S3 (MIPS-32)',      value: 'esp32s3' },
+        // { text: "ESP32-S2 (MIPS-32)", value: "esp32s2" },
+        // { text: "ESP32-S3 (MIPS-32)", value: "esp32s3" },
       ],
-
-      /*
-                      target_ports : { Win: 'rfc2217://host.docker.internal:4000?ign_set_control', Mac: '/dev/cu.usbserial-210', Linux: '/dev/ttyUSB0' },
-
-                      target_board : "esp32c3",
-                      target_port  : this.get_target_port(),
-                      flash_url    : "http://localhost:8080",
-                      */
 
       flashing: false,
       running: false,
+      debugging: false,
+      fullclean: false,
+      stoprunning: false,
+      eraseflash: false,
+      showPopup: false,
+      pendingAction: null,
     }
   },
 
@@ -87,144 +132,125 @@ export default {
     //Remote Device
     //
 
-    get_boards() {
-      if (this.lab_url != "") {
-        this.save()
+    // get_boards() {
+    //   if (this.labURL != "") {
 
-        this_env = this
-        remote_lab_get_boards(this.lab_url + "/target_boards").then(
-          function (data) {
-            if (data != "-1") {
-              available_boards = JSON.parse(data)
+    //     this_env = this
+    //     REMOTELAB.get_boards(this.labURL + "/target_boards").then(
+    //       function (data) {
+    //         if (data != "-1") {
+    //           available_boards = JSON.parse(data)
 
-              for (let i = 1; i < this_env.remote_target_boards.length; i++) {
-                if (
-                  !available_boards.includes(
-                    this_env.remote_target_boards[i].value,
-                  )
-                ) {
-                  this_env.remote_target_boards.splice(i, 1)
-                  i--
-                }
-              }
+    //           for (var i = 1; i < this_env.remote_target_boards.length; i++) {
+    //             if (
+    //               !available_boards.includes(
+    //                 this_env.remote_target_boards[i]["value"],
+    //               )
+    //             ) {
+    //               this_env.remote_target_boards.splice(i, 1)
+    //               i--
+    //             }
+    //           }
 
-              this_env.boards = true
-            }
-          },
-        )
-      } else {
-        this.boards = false
-      }
-    },
+    //           this_env.boards = true
+    //         }
+    //       },
+    //     )
+    //   } else {
+    //     this.boards = false
+    //   }
+    // },
 
-    do_enqueue() {
-      this.save()
+    // do_enqueue() {
 
-      if (instructions.length == 0) {
-        show_notification("Compile a program first", "danger")
-        return
-      }
+    //   if (instructions.length == 0) {
+    //     show_notification("Compile a program first", "warning")
+    //     return
+    //   }
 
-      if (this.result_email == "") {
-        show_notification("Please, enter your E-mail", "danger")
-        return
-      }
+    //   if (this.resultEmail == "") {
+    //     show_notification("Please, enter your E-mail", "danger")
+    //     return
+    //   }
 
-      const earg = {
-        target_board: this.target_board,
-        result_email: this.result_email,
-        assembly: code_assembly,
-      }
+    //   const earg = {
+    //     target_board: this.targetBoard,
+    //     result_email: this.resultEmail,
+    //     assembly: this.assembly_code,
+    //   }
 
-      this_env = this
-      remote_lab_enqueue(this.lab_url + "/enqueue", earg).then(function (data) {
-        if (data != "-1") {
-          this_env.request_id = data
-          this_env.enqueue = true
-          this_env.status = true
-          this_env.position = ""
-          this_env.check_status()
-        }
-      })
+    //   this_env = this
+    //   REMOTELAB.enqueue(this.labURL + "/enqueue", earg).then(function (data) {
+    //     if (data != "-1") {
+    //       this_env.request_id = data
+    //       this_env.enqueue = true
+    //       this_env.status = true
+    //       this_env.position = ""
+    //       this_env.check_status()
+    //     }
+    //   })
 
-      //Google Analytics
-      creator_ga("simulator", "simulator.enqueue", "simulator.enqueue")
-    },
+    //   //Google Analytics
+    //   creator_ga("simulator", "simulator.enqueue", "simulator.enqueue")
+    // },
 
-    check_status() {
-      if (this.position != "Completed" && this.position != "Error") {
-        this.get_status()
-        setTimeout(this.check_status, 20000)
-      }
-    },
+    // check_status() {
+    //   if (this.position != "Completed" && this.position != "Error") {
+    //     this.get_status()
+    //     setTimeout(this.check_status, 20000)
+    //   }
+    // },
 
-    get_status() {
-      this.save()
+    // get_status() {
 
-      const parg = {
-        req_id: this.request_id,
-      }
+    //   var parg = {
+    //     req_id: this.request_id,
+    //   }
 
-      this_env = this
-      remote_lab_status(this.lab_url + "/status", parg).then(function (data) {
-        if (data == "Completed") {
-          this_env.enqueue = false
-        }
-        if (data != "-1") {
-          if (data == "-2") {
-            this_env.position = "Error"
-            this_env.enqueue = false
-          } else if (!isNaN(data)) {
-            this_env.position = "Queue position: " + data
-          } else {
-            this_env.position = data
-          }
-        }
-      })
-      //Google Analytics
-      creator_ga("simulator", "simulator.position", "simulator.position")
-    },
+    //   this_env = this
+    //   REMOTELAB.status(this.labURL + "/status", parg).then(function (data) {
+    //     if (data == "Completed") {
+    //       this_env.enqueue = false
+    //     }
+    //     if (data != "-1") {
+    //       if (data == "-2") {
+    //         this_env.position = "Error"
+    //         this_env.enqueue = false
+    //       } else if (!isNaN(data)) {
+    //         this_env.position = "Queue position: " + data
+    //       } else {
+    //         this_env.position = data
+    //       }
+    //     }
+    //   })
+    //   //Google Analytics
+    //   creator_ga("simulator", "simulator.position", "simulator.position")
+    // },
 
-    do_cancel() {
-      this.save()
+    // do_cancel() {
 
-      const carg = {
-        req_id: this.request_id,
-      }
+    //   var carg = {
+    //     req_id: this.request_id,
+    //   }
 
-      this_env = this
-      remote_lab_cancel(this.lab_url + "/delete", carg).then(function (data) {
-        if (data != "-1") {
-          this_env.enqueue = false
-          this_env.position = "Canceled"
-        }
-      })
+    //   this_env = this
+    //   REMOTELAB.cancel(this.labURL + "/delete", carg).then(function (data) {
+    //     if (data != "-1") {
+    //       this_env.enqueue = false
+    //       this_env.position = "Canceled"
+    //     }
+    //   })
 
-      //Google Analytics
-      creator_ga("simulator", "simulator.cancel", "simulator.cancel")
-    },
+    //   //Google Analytics
+    //   creator_ga("simulator", "simulator.cancel", "simulator.cancel")
+    // },
 
     //
     //Local device
     //
 
-    /*get_target_port()
-                    {
-                      return target_ports[this._props.os];
-                    },*/
-
-    //Download driver
     download_driver() {
-      const link = document.createElement("a")
-      link.download = "driver.zip"
-      link.href =
-        window.location.href.split("?")[0].split("#")[0] +
-        "/gateway/" +
-        this.target_board +
-        ".zip"
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
+      downloadFile(`/gateway/${this.targetBoard}.zip`, this.targetBoard)
 
       //Google Analytics
       creator_ga(
@@ -235,717 +261,578 @@ export default {
     },
 
     do_flash() {
-      this.save()
-
-      if (instructions.length == 0) {
-        show_notification("Compile a program first", "danger")
+      if (instructions.length === 0) {
+        show_notification("Compile a program first", "warning")
         return
       }
 
       this.flashing = true
 
-      const farg = {
-        target_board: this.target_board,
-        target_port: this.target_port,
-        assembly: code_assembly,
-      }
-
-      this_env = this
-      gateway_remote_flash(this.flash_url + "/flash", farg).then(
-        function (data) {
-          this_env.flashing = false
-          show_notification(data, "danger")
-        },
-      )
+      LOCALLAB.gateway_flash(this.flashURL + "/flash", {
+        target_board: this.targetBoard,
+        target_port: this.targetPort,
+        assembly: this.assembly_code,
+      }).then(data => {
+        this.flashing = false
+        console_log(JSON.stringify(data, null, 2), "DEBUG")
+        if (
+          JSON.stringify(data, null, 2).includes("Flash completed successfully")
+        ) {
+          show_notification("Flashing program success.", "success")
+        }
+        if (JSON.stringify(data, null, 2).includes("No UART port found")) {
+          show_notification("Error flashing: Not found UART port", "danger")
+        }
+        if (
+          JSON.stringify(data, null, 2).includes(
+            "cr_ functions are not supported in this mode",
+          )
+        ) {
+          show_notification(
+            'CREATino code in CREATOR module. Make sure the "Arduino Support" checkbox is selected',
+            "danger",
+          )
+        }
+      })
 
       //Google Analytics
       creator_ga("simulator", "simulator.flash", "simulator.flash")
     },
 
+    do_stop_monitor() {
+      this.stoprunning = true
+
+      LOCALLAB.gateway_monitor(this.flashURL + "/stopmonitor", {
+        target_board: this.targetBoard,
+        target_port: this.targetPort,
+        assembly: this.assembly_code,
+      }).then(data => {
+        this.stoprunning = false
+        console_log(JSON.stringify(data, null, 2), "DEBUG")
+        if (JSON.stringify(data, null, 2).includes("Process stopped")) {
+          show_notification("Process stopped.", "success")
+        }
+      })
+
+      //Google Analytics
+      creator_ga("simulator", "simulator.stopmonitor", "simulator.stopmonitor")
+    },
+
     do_monitor() {
-      this.save()
-
       this.running = true
+      this.stoprunning = false
 
-      const farg = {
-        target_board: this.target_board,
-        target_port: this.target_port,
-        assembly: code_assembly,
-      }
+      LOCALLAB.gateway_monitor(this.flashURL + "/monitor", {
+        target_board: this.targetBoard,
+        target_port: this.targetPort,
+        assembly: this.assembly_code,
+      }).then(data => {
+        this.running = false
 
-      this_env = this
-      gateway_remote_monitor(this.flash_url + "/monitor", farg).then(
-        function (data) {
-          this_env.running = false
-          //show_notification(data, 'danger') ;
-        },
-      )
+        console_log(JSON.stringify(data, null, 2), "DEBUG")
+        if (JSON.stringify(data, null, 2).includes("No UART port found")) {
+          show_notification("Error: Not found UART port", "danger")
+        }
+      })
 
       //Google Analytics
       creator_ga("simulator", "simulator.monitor", "simulator.monitor")
     },
 
-    //
-    //General
-    //
+    do_debug() {
+      this.debugging = true
 
-    save() {
-      app._data.lab_url = this._props.lab_url
-      app._data.result_email = this._props.result_email
-      app._data.target_board = this._props.target_board
-      app._data.target_port = this._props.target_port
-      app._data.flash_url = this._props.flash_url
+      LOCALLAB.gateway_monitor(this.flashURL + "/debug", {
+        target_board: this.targetBoard,
+        target_port: this.targetPort,
+        assembly: this.assembly_code,
+      }).then(_data => {
+        this.debugging = false
+        // show_notification(_data, 'danger') ;
+      })
+
+      //Google Analytics
+      creator_ga("simulator", "simulator.debug", "simulator.debug")
     },
-  },
 
-  //
-  // Remote Device web service functions
-  //
+    showConfirmPopup(action) {
+      this.pendingAction = action
+      this.showPopup = true
+    },
 
-  async remote_lab_get_boards(lab_url) {
-    const fetch_args = {
-      method: "GET",
-    }
-
-    try {
-      const res = await fetch(lab_url, fetch_args)
-
-      return await res.text()
-    } catch (err) {
-      if (err.toString() == "TypeError: Failed to fetch") {
-        show_notification(
-          "Remote device not available at the moment. Please, try again later.",
-          "danger",
-        )
-        return "-1"
+    confirmAction() {
+      this.showPopup = false
+      if (this.pendingAction === "fullclean") {
+        this.do_fullclean()
+      } else if (this.pendingAction === "eraseflash") {
+        this.do_erase_flash()
       }
+      this.pendingAction = null
+    },
 
-      return err.toString() + "\n"
-    }
-  },
+    do_fullclean() {
+      this.fullclean = true
 
-  async remote_lab_enqueue(lab_url, enqueue_args) {
-    const fetch_args = {
-      method: "POST",
-      headers: {
-        "Content-type": "application/json",
-        Accept: "application/json",
-      },
-      body: JSON.stringify(enqueue_args),
-    }
+      LOCALLAB.gateway_monitor(this.flashURL + "/fullclean", {
+        target_board: this.targetBoard,
+        target_port: this.targetPort,
+        assembly: this.assembly_code,
+      }).then(data => {
+        this.fullclean = false
+        console_log(JSON.stringify(data, null, 2), "DEBUG")
+        if (JSON.stringify(data, null, 2).includes("Full clean done.")) {
+          show_notification("Full clean done.", "success")
+        }
+        if (JSON.stringify(data, null, 2).includes("Nothing to clean")) {
+          show_notification("Nothing to clean", "success")
+        }
+      })
 
-    try {
-      const res = await fetch(lab_url, fetch_args)
-      const jres = await res.json()
+      //Google Analytics
+      creator_ga("simulator", "simulator.fullclean", "simulator.fullclean")
+    },
 
-      return jres.status
-    } catch (err) {
-      if (err.toString() == "TypeError: Failed to fetch") {
-        show_notification(
-          "Remote device not available at the moment. Please, try again later.",
-          "danger",
-        )
-        return "-1"
-      }
+    do_erase_flash() {
+      this.eraseflash = true
 
-      return err.toString() + "\n"
-    }
-  },
+      LOCALLAB.gateway_monitor(this.flashURL + "/eraseflash", {
+        target_board: this.targetBoard,
+        target_port: this.targetPort,
+        assembly: this.assembly_code,
+      }).then(data => {
+        this.eraseflash = false
 
-  async remote_lab_cancel(lab_url, cancel_args) {
-    const fetch_args = {
-      method: "POST",
-      headers: {
-        "Content-type": "application/json",
-        Accept: "application/json",
-      },
-      body: JSON.stringify(cancel_args),
-    }
+        //show_notification(data, 'danger')
+        console_log(JSON.stringify(data, null, 2), "DEBUG")
 
-    try {
-      const res = await fetch(lab_url, fetch_args)
-      const jres = await res.json()
+        if (JSON.stringify(data, null, 2).includes("Erase flash done")) {
+          show_notification(
+            "Erase flash done. Please, unplug and plug the cable(s) again",
+            "success",
+          )
+        }
+        if (
+          JSON.stringify(data, null, 2).includes(
+            "Could not open /dev/ttyUSB0, the port is busy or doesn't exist",
+          )
+        ) {
+          show_notification(
+            "Error erasing flash: Hint: Check if the port is correct and ESP connected",
+            "danger",
+          )
+        }
+      })
 
-      return jres.status
-    } catch (err) {
-      if (err.toString() == "TypeError: Failed to fetch") {
-        show_notification(
-          "Remote device not available at the moment. Please, try again later.",
-          "danger",
-        )
-        return "-1"
-      }
-
-      return err.toString() + "\n"
-    }
-  },
-
-  async remote_lab_position(lab_url, position_args) {
-    const fetch_args = {
-      method: "POST",
-      headers: {
-        "Content-type": "application/json",
-        Accept: "application/json",
-      },
-      body: JSON.stringify(position_args),
-    }
-
-    try {
-      const res = await fetch(lab_url, fetch_args)
-      const jres = await res.json()
-
-      return jres.status
-    } catch (err) {
-      if (err.toString() == "TypeError: Failed to fetch") {
-        show_notification(
-          "Remote device not available at the moment. Please, try again later.",
-          "danger",
-        )
-        return "-1"
-      }
-
-      return err.toString() + "\n"
-    }
-  },
-
-  async remote_lab_status(lab_url, status_args) {
-    const fetch_args = {
-      method: "POST",
-      headers: {
-        "Content-type": "application/json",
-        Accept: "application/json",
-      },
-      body: JSON.stringify(status_args),
-    }
-
-    try {
-      const res = await fetch(lab_url, fetch_args)
-      const jres = await res.json()
-
-      return jres.status
-    } catch (err) {
-      if (err.toString() == "TypeError: Failed to fetch") {
-        show_notification(
-          "Remote device not available at the moment. Please, try again later.",
-          "danger",
-        )
-        return "-2"
-      }
-
-      return err.toString() + "\n"
-    }
-  },
-
-  //
-  // Local device web service functions
-  //
-
-  async gateway_remote_flash(flash_url, flash_args) {
-    const fetch_args = {
-      method: "POST",
-      headers: {
-        "Content-type": "application/json",
-        Accept: "application/json",
-      },
-      body: JSON.stringify(flash_args),
-    }
-
-    try {
-      const res = await fetch(flash_url, fetch_args)
-      const jres = await res.json()
-
-      return jres.status
-    } catch (err) {
-      if (err.toString() == "TypeError: Failed to fetch") {
-        return "Gateway not available at the moment. Please, execute 'python3 gateway.py' and connect your board first\n"
-      }
-
-      return err.toString() + "\n"
-    }
-  },
-
-  async gateway_remote_monitor(flash_url, flash_args) {
-    const fetch_args = {
-      method: "POST",
-      headers: {
-        "Content-type": "application/json",
-        Accept: "application/json",
-      },
-      body: JSON.stringify(flash_args),
-    }
-
-    try {
-      const res = await fetch(flash_url, fetch_args)
-      const jres = await res.json()
-
-      return jres.status
-    } catch (err) {
-      if (err.toString() == "TypeError: Failed to fetch") {
-        return "Gateway not available at the moment. Please, execute 'python3 gateway.py' and connect your board first\n"
-      }
-
-      return err.toString() + "\n"
-    }
+      // Google Analytics
+      creator_ga("simulator", "simulator.eraseflash", "simulator.eraseflash")
+    },
   },
 }
 </script>
 
 <template>
-  <b-modal :id="id" title="Target Board Flash" no-footer @hidden="save">
+  <b-modal :id="id" title="Target Board Flash" hide-footer>
     <b-tabs content-class="mt-3">
       <b-tab title="Local Device">
-        <b-container fluid align-h="center" class="mx-0 px-0">
-          <b-row cols="1" align-h="center">
-            <b-col class="pt-2">
-              <label for="range-6">(1) Select Target Board:</label>
-              <b-form-select
-                v-model="target_board"
-                :options="target_boards"
-                size="sm"
-                title="Target board"
-              />
-            </b-col>
-          </b-row>
-        </b-container>
+        (1) Select Target Board:
+        <b-form-select
+          v-model="targetBoard"
+          :options="target_boards"
+          size="sm"
+          title="Target board"
+        />
         <br />
 
-        <b-tabs content-class="mt-3" v-if="target_board != ''">
+        <b-tabs content-class="mt-3" v-if="targetBoard">
           <b-tab title="Prerequisites">
             <b-tabs content-class="mt-3">
               <b-tab title="Docker Windows" active>
-                <b-container fluid align-h="center" class="mx-0 px-0">
-                  <b-row cols="1" align-h="center">
-                    <b-col class="pt-2">
-                      <label for="range-6"
-                        >(2) Install Docker Desktop (only the first
-                        time):</label
-                      >
-                      <b-card class="text-center">
-                        <b-row no-gutters>
-                          <b-col md="12">
-                            <b-card-text style="text-align: left; margin: 2%">
-                              <span>
-                                Follow the instructions from:
-                                <a
-                                  href="https://docs.docker.com/desktop/install/windows-install/"
-                                  target="_blank"
-                                >
-                                  https://docs.docker.com/desktop/install/windows-install/
-                                </a>
-                              </span>
-                            </b-card-text>
-                          </b-col>
-                        </b-row>
-                      </b-card>
-                    </b-col>
-                  </b-row>
-                </b-container>
+                (2) Install Docker Desktop (only the first time):
+                <b-card class="text-left m-2">
+                  Follow the instructions from
+                  <a
+                    href="https://docs.docker.com/desktop/install/windows-install/"
+                    target="_blank"
+                  >
+                    Docker's documentation
+                  </a>
+                </b-card>
 
-                <b-container fluid align-h="center" class="mx-0 px-0">
-                  <b-row cols="1" align-h="center">
-                    <b-col class="pt-2">
-                      <label for="range-6"
-                        >(3) Download esptool (only the first time):</label
-                      >
-                      <b-card class="text-center">
-                        <b-row no-gutters>
-                          <b-col md="12">
-                            <b-card-text style="text-align: left; margin: 2%">
-                              <span
-                                >Download from:
-                                <a
-                                  href="https://github.com/espressif/esptool/releases"
-                                  target="_blank"
-                                >
-                                  https://github.com/espressif/esptool/releases
-                                </a>
-                              </span>
-                            </b-card-text>
-                          </b-col>
-                        </b-row>
-                      </b-card>
-                    </b-col>
-                  </b-row>
-                </b-container>
+                (3) Download esptool (only the first time):
+                <b-card class="text-left m-2">
+                  Download from:
+                  <a
+                    href="https://github.com/espressif/esptool/releases"
+                    target="_blank"
+                  >
+                    github.com/espressif/esptool/releases
+                  </a>
+                </b-card>
 
-                <b-container fluid align-h="center" class="mx-0 px-0">
-                  <b-row cols="1" align-h="center">
-                    <b-col class="pt-2">
-                      <label for="range-6"
-                        >(4) Pull creator_gateway image in Docker
-                        Desktop:</label
-                      >
-                      <b-card class="text-center">
-                        <b-row no-gutters>
-                          <b-col md="12">
-                            <b-card-text style="text-align: left; margin: 2%">
-                              <ol style="margin: 3%">
-                                <li>
-                                  Search for "creatorsim/creator_gateway" in the
-                                  Docker Desktop browser
-                                </li>
-                                <li>Click the "Pull" button</li>
-                              </ol>
-                            </b-card-text>
-                          </b-col>
-                        </b-row>
-                      </b-card>
-                    </b-col>
-                  </b-row>
-                </b-container>
+                (4) Pull <code>creator_gateway</code> image in Docker Desktop:
+                <b-card class="text-left m-2">
+                  <ol class="mb-0">
+                    <li>
+                      Search for <code>creatorsim/creator_gateway</code> in the
+                      Docker Desktop browser
+                    </li>
+                    <li>Click the "Pull" button</li>
+                  </ol>
+                </b-card>
 
-                <b-container fluid align-h="center" class="mx-0 px-0">
-                  <b-row cols="1" align-h="center">
-                    <b-col class="pt-2">
-                      <label for="range-6"
-                        >(5) Run creator_gateway image:</label
-                      >
-                      <b-card class="text-center">
-                        <b-row no-gutters>
-                          <b-col md="12">
-                            <b-card-text style="text-align: left; margin: 2%">
-                              <ol style="margin: 3%">
-                                <li>Click the "Run" button</li>
-                                <li>Click the "Optional settings" button</li>
-                                <li>Set the Host port to 8080</li>
-                                <li>Click the "Run" button</li>
-                              </ol>
-                            </b-card-text>
-                          </b-col>
-                        </b-row>
-                      </b-card>
-                    </b-col>
-                  </b-row>
-                </b-container>
+                (5) Run the image:
+                <b-card class="text-left">
+                  <ol class="mb-0">
+                    <li>Click the "Run" button</li>
+                    <li>Click the "Optional settings" button</li>
+                    <li>Set the Host port to 8080</li>
+                    <li>Click the "Run" button</li>
+                  </ol>
+                </b-card>
+                (6) Run start_gateway script in the container bash:
+                <b-card class="text-left m-2">
+                  <ol class="mb-0">
+                    <li>Click the "Exec" button</li>
+                    <li>Execute <code>./start_gateway.sh</code></li>
+                  </ol>
+                </b-card>
 
-                <b-container fluid align-h="center" class="mx-0 px-0">
-                  <b-row cols="1" align-h="center">
-                    <b-col class="pt-2">
-                      <label for="range-6">
-                        (6) Run start_gateway script in the container bash:
-                      </label>
-                      <b-card class="text-center">
-                        <b-row no-gutters>
-                          <b-col md="12">
-                            <b-card-text style="text-align: left; margin: 2%">
-                              <ol style="margin: 3%">
-                                <li>Click the "Exec" button</li>
-                                <li>Execute <code>./start_gateway.sh</code></li>
-                              </ol>
-                            </b-card-text>
-                          </b-col>
-                        </b-row>
-                      </b-card>
-                    </b-col>
-                  </b-row>
-                </b-container>
-
-                <b-container fluid align-h="center" class="mx-0 px-0">
-                  <b-row cols="1" align-h="center">
-                    <b-col class="pt-2">
-                      <label for="range-6"
-                        >(7) Run esp_rfc2217_server in windows cmd:</label
-                      >
-                      <b-card class="text-center">
-                        <b-row no-gutters>
-                          <b-col md="12">
-                            <b-card-text style="text-align: left; margin: 2%">
-                              <ol style="margin: 3%">
-                                <li>
-                                  Execute the windows cmd in the esptool path
-                                </li>
-                                <li>
-                                  Execute
-                                  <code
-                                    >esp_rfc2217_server -v -p 4000
-                                    &lt;target_port&gt;</code
-                                  >
-                                </li>
-                              </ol>
-                              <span>
-                                For more information:
-                                <a
-                                  href="https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/tools/idf-docker-image.html#using-remote-serial-port"
-                                  target="_blank"
-                                  >https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/tools/idf-docker-image.html#using-remote-serial-port
-                                </a>
-                              </span>
-                            </b-card-text>
-                          </b-col>
-                        </b-row>
-                      </b-card>
-                    </b-col>
-                  </b-row>
-                </b-container>
+                (7) Run esp_rfc2217_server in windows cmd:
+                <b-card class="text-left m-2">
+                  <ol class="mb-0">
+                    <li>Execute the windows cmd in the esptool path</li>
+                    <li>
+                      Execute
+                      <code>
+                        esp_rfc2217_server -v -p 4000 &lt;targetPort&gt;
+                      </code>
+                    </li>
+                  </ol>
+                  More information in
+                  <a
+                    href="https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/tools/idf-docker-image.html#using-remote-serial-port"
+                    target="_blank"
+                  >
+                    Espressiff's documentation
+                  </a>
+                </b-card>
               </b-tab>
 
               <b-tab title="Docker Linux/MacOS">
-                <b-container fluid align-h="center" class="mx-0 px-0">
-                  <b-row cols="1" align-h="center">
-                    <b-col class="pt-2">
-                      <label for="range-6"
-                        >(2) Install Docker Engine (only the first time):</label
-                      >
-                      <b-card class="text-center">
-                        <b-row no-gutters>
-                          <b-col md="12">
-                            <b-card-text style="text-align: left; margin: 2%">
-                              <span>
-                                Follow the instructions from:
-                                <a
-                                  href="https://docs.docker.com/engine/install/"
-                                  target="_blank"
-                                >
-                                  https://docs.docker.com/engine/install/
-                                </a>
-                              </span>
-                            </b-card-text>
-                          </b-col>
-                        </b-row>
-                      </b-card>
-                    </b-col>
-                  </b-row>
-                </b-container>
+                (2) Install Docker Engine (only the first time):
+                <b-card class="text-left m-2">
+                  Follow the instructions from
+                  <a
+                    href="https://docs.docker.com/engine/install/"
+                    target="_blank"
+                  >
+                    Docker's documentation
+                  </a>
+                </b-card>
 
-                <b-container fluid align-h="center" class="mx-0 px-0">
-                  <b-row cols="1" align-h="center">
-                    <b-col class="pt-2">
-                      <label for="range-6"
-                        >(3) Pull creator_gateway image:</label
-                      >
-                      <b-card class="text-center">
-                        <b-row no-gutters>
-                          <b-col md="12">
-                            <b-card-text style="text-align: left; margin: 2%">
-                              <code
-                                >docker pull creatorsim/creator_gateway</code
-                              >
-                            </b-card-text>
-                          </b-col>
-                        </b-row>
-                      </b-card>
-                    </b-col>
-                  </b-row>
-                </b-container>
+                (3) Download the <code>creator_gateway</code> image:
+                <b-card class="text-left m-2">
+                  <code>docker pull creatorsim/creator_gateway</code>
+                </b-card>
 
-                <b-container fluid align-h="center" class="mx-0 px-0">
-                  <b-row cols="1" align-h="center">
-                    <b-col class="pt-2">
-                      <label for="range-6"
-                        >(4) Run creator_gateway image:</label
-                      >
-                      <b-card class="text-center">
-                        <b-row no-gutters>
-                          <b-col md="12">
-                            <b-card-text style="text-align: left; margin: 2%">
-                              <code>
-                                docker run --init -it
-                                --device=&lt;target_port&gt; -p 8080:8080 --name
-                                creator_gateway creatorsim/creator_gateway
-                                /bin/bash
-                              </code>
-                            </b-card-text>
-                          </b-col>
-                        </b-row>
-                      </b-card>
-                    </b-col>
-                  </b-row>
-                </b-container>
+                (4) Run the image:
+                <b-card class="text-left m-2 bash">
+                  <code
+                    >docker run --init -it --device=&lt;targetPort&gt; -p
+                    8080:8080 --name creator_gateway creatorsim/creator_gateway
+                    /bin/bash
+                  </code>
+                </b-card>
 
-                <b-container fluid align-h="center" class="mx-0 px-0">
-                  <b-row cols="1" align-h="center">
-                    <b-col class="pt-2">
-                      <label for="range-6">
-                        (5) Run start_gateway script in the container bash:
-                      </label>
-                      <b-card class="text-center">
-                        <b-row no-gutters>
-                          <b-col md="12">
-                            <b-card-text style="text-align: left; margin: 2%">
-                              <code>./start_gateway.sh</code>
-                            </b-card-text>
-                          </b-col>
-                        </b-row>
-                      </b-card>
-                    </b-col>
-                  </b-row>
-                </b-container>
+                (5) Run the <code>start_gateway.sh</code> script in the
+                container's shell:
+                <b-card class="text-left m-2">
+                  <code>./start_gateway.sh</code>
+                </b-card>
               </b-tab>
 
               <b-tab title="Native">
-                <b-container fluid align-h="center" class="mx-0 px-0">
-                  <b-row cols="1" align-h="center">
-                    <b-col class="pt-2">
-                      <label for="range-6">
-                        (2) Install the ESP32 Software (only the first time):
-                      </label>
-                      <b-card class="text-center">
-                        <b-row no-gutters>
-                          <b-col md="12">
-                            <b-card-text style="text-align: left; margin: 2%">
-                              <span>
-                                Follow the instructions from:
-                                <a
-                                  href="https://docs.espressif.com/projects/esp-idf/en/latest/esp32/"
-                                  target="_blank"
-                                >
-                                  https://docs.espressif.com/projects/esp-idf/en/latest/esp32/
-                                </a>
-                              </span>
-                            </b-card-text>
-                          </b-col>
-                        </b-row>
-                      </b-card>
-                    </b-col>
-                  </b-row>
+                (2) Install ESP-IDF framework (only the first time):
+                <b-card class="text-left m-2">
+                  Follow the instructions from
+                  <a
+                    href="https://docs.espressif.com/projects/esp-idf/en/v5.5.1/esp32/get-started/linux-macos-setup.html"
+                    target="_blank"
+                  >
+                    Espressif's documentation
+                  </a>
+                </b-card>
+
+                (!!) (NEW) Install Python 3.9 (required version for this
+                driver):<br />
+                <!-- You can either install it natively or use
+                <a href="https://docs.astral.sh/uv/" target="_blank">uv</a>. -->
+
+                <b-card class="text-left m-2">
+                  <b>Installing Python 3.9 in Ubuntu</b>
+                  <br />
+                  <code>
+                    sudo apt install software-properties-common<br />
+                    sudo add-apt-repository ppa:deadsnakes/ppa<br />
+                    sudo apt install python3.9<br />
+                  </code>
+                </b-card>
+
+                <b-card class="text-left m-2 flex-wrap bash">
+                  <b>Setting Python 3.9 as the default version in Ubuntu</b>
+                  <br />
+                  <code>
+                    sudo update-alternatives --set python3 /usr/bin/python3.9
+                  </code>
+                </b-card>
+
+                (3) Install the
+                <a href="https://pypi.org/project/Flask/" target="_blank">
+                  flask</a
+                >
+                and
+                <a href="https://pypi.org/project/flask-cors/" target="_blank">
+                  flask-cors</a
+                >
+                Python packages:
+                <b-card class="text-left m-2">
+                  <code>pip3 install flask flask_cors</code>
+                </b-card>
+
+                (4) (NEW) Install additional packages for debug:
+                <b-card class="text-left m-2">
+                  <!-- Install
+                  <a
+                    href="https://docs.espressif.com/projects/esp-idf/en/v3.3.3/api-guides/jtag-debugging/setup-openocd-linux.html"
+                    target="_blank"
+                  >
+                    Openocd
+                  </a>
+                  <br /> -->
+                  Install the GDB web interface (<a
+                    href="https://pypi.org/project/gdbgui/"
+                    target="_blank"
+                    >gdbgui</a
+                  >):
+                  <br />
+                  <code>pip3 install gdbgui</code>
+                </b-card>
+
+                (5) Download the driver:
+                <br />
+
+                <b-container align-h="center" class="d-grid mb-1">
+                  <b-button
+                    size="sm"
+                    class="my-1"
+                    variant="outline-primary"
+                    @click="download_driver"
+                  >
+                    <font-awesome-icon :icon="['fas', 'download']" />
+                    Download Driver
+                  </b-button>
                 </b-container>
 
-                <b-container fluid align-h="center" class="mx-0 px-0">
-                  <b-row cols="1" align-h="center">
-                    <b-col class="pt-2">
-                      <label for="range-6">(3) Install python3 packages:</label>
-                      <b-card class="text-center">
-                        <b-row no-gutters>
-                          <b-col md="12">
-                            <b-card-text style="text-align: left; margin: 2%">
-                              <code>pip3 install flask flask_cors</code>
-                            </b-card-text>
-                          </b-col>
-                        </b-row>
-                      </b-card>
-                    </b-col>
-                  </b-row>
-                </b-container>
-
-                <b-container fluid align-h="center" class="mx-0 px-0">
-                  <b-row cols="1" align-h="center">
-                    <b-col class="pt-2">
-                      <label for="range-6">(4) Download the driver:</label>
-                      <b-button
-                        size="sm"
-                        variant="outline-primary"
-                        @click="download_driver"
-                      >
-                        <span class="fas fa-download" />
-                        Download Driver
-                      </b-button>
-                    </b-col>
-                  </b-row>
-                </b-container>
-
-                <b-container fluid align-h="center" class="mx-0 px-0">
-                  <b-row cols="1" align-h="center">
-                    <b-col class="pt-2">
-                      <label for="range-6">(5) Run driver:</label>
-                      <b-card class="text-center">
-                        <b-row no-gutters>
-                          <b-col md="12">
-                            <b-card-text
-                              style="text-align: justify; margin: 2%"
-                            >
-                              <span
-                                >Load the environment variable for your board
-                                with:</span
-                              >
-                              <br />
-                              <code>. $HOME/esp/esp-idf/export.sh</code>
-                              <br />
-                              <br />
-                              <span>
-                                Unzip the driver.zip file and change into the
-                                driver directory associated to your board with
-                                "cd &lt;board&gt;", for example:
-                              </span>
-                              <br />
-                              <code>unzip driver.zip</code>
-                              <br />
-                              <code>cd &lt;board&gt;</code>
-                              <br />
-                              <br />
-                              <span>Execute the gateway web service:</span>
-                              <br />
-                              <code>python3 gateway.py</code>
-                              <br />
-                            </b-card-text>
-                          </b-col>
-                        </b-row>
-                      </b-card>
-                    </b-col>
-                  </b-row>
-                </b-container>
+                (6) Run driver:
+                <b-card class="text-left m-2">
+                  Load the environment variable for your board:<br />
+                  <code>. $HOME/esp/esp-idf/export.sh</code>
+                </b-card>
+                <b-card class="text-left m-2">
+                  Unzip the <code>driver.zip</code> file and move into the
+                  driver directory associated to your board:<br />
+                  <code>
+                    unzip driver.zip<br />
+                    cd &lt;board&gt;
+                  </code>
+                </b-card>
+                <b-card class="text-left m-2">
+                  Execute the gateway web service:<br />
+                  <code>python3 gateway.py</code>
+                </b-card>
               </b-tab>
             </b-tabs>
           </b-tab>
 
+          <!-- Run -->
           <b-tab title="Run" active>
-            <b-container fluid align-h="center" class="mx-0 px-0">
-              <b-row cols="1" align-h="center">
-                <b-col class="pt-2">
-                  <label for="range-6">
-                    (2) Target Port: (please verify the port on your computer)
-                  </label>
-                  <b-form-input
-                    type="text"
-                    v-model="target_port"
-                    placeholder="Enter target port"
-                    size="sm"
-                    title="Target port"
-                  />
-                </b-col>
-              </b-row>
-            </b-container>
+            (2) Target Port: (please verify the port on your computer)
+            <b-form-input
+              type="text"
+              v-model="targetPort"
+              placeholder="Enter target port"
+              size="sm"
+              title="Target port"
+              class="m-2"
+            />
+            <label for="range-6">(3) Flash URL:</label>
+            <b-form-input
+              type="text"
+              v-model="flashURL"
+              placeholder="Enter flash URL"
+              size="sm"
+              title="Flash URL"
+              class="m-2"
+            />
 
-            <b-container fluid align-h="center" class="mx-0 px-0">
-              <b-row cols="1" align-h="center">
-                <b-col class="pt-2">
-                  <label for="range-6">(3) Flash URL:</label>
-                  <b-form-input
-                    type="text"
-                    v-model="flash_url"
-                    placeholder="Enter flash URL"
-                    size="sm"
-                    title="Flash URL"
-                  />
-                </b-col>
-              </b-row>
-            </b-container>
-
-            <br />
-
-            <b-container fluid align-h="center" class="mx-0 px-0">
-              <b-row cols="2" align-h="center">
-                <b-col class="pt-2">
+            <b-container fluid align-h="center">
+              <b-row align-h="center" class="mt-3">
+                <!-- Columna 1: Flash, Clean y Erase Flash -->
+                <b-col class="d-grid gap-3">
+                  <!-- Botón Flash -->
                   <b-button
-                    size="sm"
                     variant="primary"
                     @click="do_flash"
                     :pressed="flashing"
-                    :disabled="flashing || running"
+                    :disabled="
+                      flashing ||
+                      running ||
+                      debugging ||
+                      fullclean ||
+                      stoprunning ||
+                      eraseflash
+                    "
                   >
-                    <span v-if="!flashing"
-                      ><span class="fas fa-bolt-lightning"></span> Flash</span
-                    >
-                    <span v-if="flashing">
-                      <span class="fas fa-bolt-lightning" /> Flashing...
+                    <font-awesome-icon :icon="['fas', 'bolt-lightning']" />
+                    <span v-if="!flashing">&nbsp;Flash</span>
+                    <span v-else>
+                      &nbsp;Flashing...
+                      <b-spinner small />
                     </span>
-                    <b-spinner small v-if="flashing"></b-spinner>
                   </b-button>
-                </b-col>
-                <b-col class="pt-2">
+
+                  <!-- Botón Clean -->
                   <b-button
-                    size="sm"
+                    class="btn btn-block"
+                    variant="danger"
+                    @click="showConfirmPopup('fullclean')"
+                    :pressed="fullclean"
+                    :disabled="
+                      fullclean ||
+                      flashing ||
+                      running ||
+                      debugging ||
+                      stoprunning ||
+                      eraseflash
+                    "
+                  >
+                    <font-awesome-icon :icon="['fas', 'trash']" />
+                    <span v-if="!fullclean">&nbsp;Clean</span>
+                    <span v-else>
+                      &nbsp;Cleaning...
+                      <b-spinner small />
+                    </span>
+                  </b-button>
+
+                  <!-- Botón Erase Flash -->
+                  <b-button
+                    class="btn btn-block"
+                    variant="danger"
+                    @click="showConfirmPopup('eraseflash')"
+                    :pressed="eraseflash"
+                    :disabled="
+                      eraseflash ||
+                      fullclean ||
+                      flashing ||
+                      running ||
+                      debugging ||
+                      stoprunning
+                    "
+                  >
+                    <font-awesome-icon :icon="['fas', 'broom']" />
+                    <span v-if="!eraseflash">&nbsp;Erase Flash</span>
+                    <span v-else>
+                      &nbsp;Erasing...
+                      <b-spinner small />
+                    </span>
+                  </b-button>
+
+                  <!-- Popup de confirmación -->
+                  <b-modal
+                    id="confirm-popup"
+                    v-model="showPopup"
+                    title="Confirm Action"
+                  >
+                    <p>
+                      This action will delete your previous work. Are you sure
+                      you want to proceed?
+                    </p>
+                    <template #modal-footer>
+                      <b-button variant="secondary" @click="showPopup = false">
+                        Cancel
+                      </b-button>
+                      <b-button variant="primary" @click="confirmAction">
+                        Confirm
+                      </b-button>
+                    </template>
+                  </b-modal>
+                </b-col>
+
+                <!-- Columna 2: Monitor, Debug y Stop -->
+                <b-col class="d-grid gap-3">
+                  <!-- Botón Monitor -->
+                  <b-button
                     variant="primary"
                     @click="do_monitor"
                     :pressed="running"
-                    :disabled="running || flashing"
+                    :disabled="
+                      running ||
+                      flashing ||
+                      debugging ||
+                      fullclean ||
+                      stoprunning ||
+                      eraseflash
+                    "
                   >
-                    <span v-if="!running"
-                      ><span class="fas fa-play" /> Monitor</span
-                    >
-                    <span v-if="running"
-                      ><span class="fas fa-play" /> Runing...</span
-                    >
-                    <b-spinner small v-if="running" />
+                    <font-awesome-icon :icon="['fas', 'desktop']" />
+                    <span v-if="!running">&nbsp;Monitor</span>
+                    <span v-else>
+                      &nbsp;Running...
+                      <b-spinner small />
+                    </span>
+                  </b-button>
+
+                  <!-- Botón Debug -->
+                  <b-button
+                    class="btn btn-block"
+                    variant="primary"
+                    @click="do_debug"
+                    :pressed="debugging"
+                    :disabled="
+                      debugging ||
+                      flashing ||
+                      running ||
+                      fullclean ||
+                      stoprunning ||
+                      eraseflash
+                    "
+                  >
+                    <font-awesome-icon :icon="['fas', 'bug']" />
+                    <span v-if="!debugging">&nbsp;Debug</span>
+                    <span v-else>
+                      &nbsp;Debuging...
+                      <b-spinner small />
+                    </span>
+                  </b-button>
+                  <!-- Botón Stop -->
+                  <b-button
+                    class="btn btn-block"
+                    variant="primary"
+                    @click="do_stop_monitor"
+                    :pressed="stoprunning"
+                    :disabled="
+                      !(running || debugging) ||
+                      flashing ||
+                      fullclean ||
+                      eraseflash
+                    "
+                  >
+                    <font-awesome-icon :icon="['fas', 'stop']" />
+                    <span v-if="!stoprunning"> Stop</span>
+                    <span v-else>
+                      Stopping...
+                      <b-spinner small />
+                    </span>
                   </b-button>
                 </b-col>
               </b-row>
@@ -954,90 +841,70 @@ export default {
         </b-tabs>
       </b-tab>
 
+      <!-- Remote -->
+
+      <!--
       <b-tab title="Remote Device">
-        <b-container fluid align-h="center" class="mx-0 px-0">
-          <b-row cols="1" align-h="center">
-            <b-col class="pt-2">
-              <label for="range-6">(1) Remote Device URL:</label>
-              <b-form-input
-                type="text"
-                v-model="lab_url"
-                placeholder="Enter remote device URL"
-                size="sm"
-                title="Remote remote device URL"
-              />
-            </b-col>
-          </b-row>
-        </b-container>
+        <label for="range-6">(1) Remote Device URL:</label>
+        <b-form-input
+          type="text"
+          v-model="labURL"
+          placeholder="Enter remote device URL"
+          size="sm"
+          title="Remote remote device URL"
+        >
+        </b-form-input>
         <br />
 
-        <b-container fluid align-h="center" class="mx-0 px-0" v-if="!boards">
-          <b-row cols="1" align-h="center">
-            <b-col class="pt-2">
-              <b-button size="sm" variant="primary" @click="get_boards">
-                <span class="fas fa-link" /> Connect
-              </b-button>
-            </b-col>
-          </b-row>
-        </b-container>
+        <b-button
+          class="btn btn-sm btn-block"
+          variant="primary"
+          @click="get_boards"
+        >
+          <span class="fas fa-link"></span> Connect
+        </b-button>
         <br v-if="!boards" />
 
         <b-container fluid align-h="center" class="mx-0 px-0" v-if="boards">
-          <b-row cols="1" align-h="center">
-            <b-col class="pt-2">
-              <label for="range-6">(2) Select Target Board:</label>
-              <b-form-select
-                v-model="target_board"
-                :options="remote_target_boards"
-                size="sm"
-                title="Target board"
-              />
-            </b-col>
-          </b-row>
+          <label for="range-6">(2) Select Target Board:</label>
+          <b-form-select
+            v-model="targetBoard"
+            :options="remote_target_boards"
+            size="sm"
+            title="Target board"
+          >
+          </b-form-select>
         </b-container>
         <br />
 
         <b-container fluid align-h="center" class="mx-0 px-0" v-if="boards">
-          <b-row cols="1" align-h="center">
-            <b-col class="pt-2">
-              <label for="range-6"
-                >(3) E-mail to receive the execution results:</label
-              >
-              <b-form-input
-                type="text"
-                v-model="result_email"
-                placeholder="Enter E-mail"
-                size="sm"
-                title="Result E-mail"
-              />
-            </b-col>
-          </b-row>
+          (3) E-mail to receive the execution results:
+          <b-form-input
+            type="text"
+            v-model="resultEmail"
+            placeholder="Enter E-mail"
+            size="sm"
+            title="Result E-mail"
+          />
         </b-container>
         <br />
 
-        <b-container fluid align-h="center" class="mx-0 px-0" v-if="status">
-          <b-row cols="1" align-h="center">
-            <b-col class="pt-2">
-              <span>
-                Last program status: <b>{{ position }}</b>
-              </span>
-            </b-col>
-          </b-row>
-        </b-container>
+        Last program status: <b>{{ position }}</b>
 
         <b-container
           fluid
           align-h="center"
           class="mx-0 px-0"
-          v-if="target_board != '' && enqueue"
+          v-if="targetBoard != '' && enqueue"
         >
-          <b-row cols="1" align-h="center">
-            <b-col class="pt-2">
-              <b-button size="sm" variant="danger" @click="do_cancel">
-                <span class="fas fa-ban" /> Cancel last program
-              </b-button>
-            </b-col>
-          </b-row>
+          <b-button
+            class="btn btn-sm btn-block"
+            variant="danger"
+            @click="do_cancel"
+          >
+            <font-awesome-icon :icon="['fas', 'ban']" />
+            Cancel last program
+          </b-button>
         </b-container>
         <br />
 
@@ -1045,24 +912,33 @@ export default {
           fluid
           align-h="center"
           class="mx-0 px-0"
-          v-if="target_board != ''"
+          v-if="targetBoard != ''"
         >
-          <b-row cols="1" align-h="center">
-            <b-col class="pt-2">
-              <b-button size="sm" variant="primary" @click="do_enqueue">
-                <span class="fas fa-paper-plane" /> Send program
-              </b-button>
-            </b-col>
-          </b-row>
+          <b-button
+            class="btn btn-sm btn-block"
+            variant="primary"
+            @click="do_enqueue"
+          >
+            <font-awesome-icon :icon="['fas', 'paper-plane']" />
+            Send program
+          </b-button>
         </b-container>
         <br />
-        For Teachers, how to deploy a remote laboratory
+        For Teachers, you can read about how to deploy a remote laboratory in
         <a
           href="https://github.com/creatorsim/creator/blob/master/dockers/remote_lab/README.md"
         >
-          documentation
+          our documentation.
         </a>
       </b-tab>
+      -->
     </b-tabs>
   </b-modal>
 </template>
+
+<style lang="scss" scoped>
+.bash {
+  white-space: pre;
+  overflow: auto;
+}
+</style>

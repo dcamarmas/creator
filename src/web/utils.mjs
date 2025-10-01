@@ -321,13 +321,14 @@ export function formatRelativeDate(date) {
 }
 
 /**
- * Downloads a plain text file with the specified filename.
+ * Downloads the specified data as a file with the specified filename.
  *
- * @param {String} data TXT data to store in file
+ * @param {String} data data to store in file
  * @param {String} filename Name of the file
+ * @param {String} mimetype MIME type of the file
  *
  */
-export function downloadToTXTFile(data, filename) {
+export function downloadToFile(data, filename, mimetype = "text/plain") {
     // yes, this is actually the way to do it in JS...
 
     const downloadLink = document.createElement("a");
@@ -337,13 +338,47 @@ export function downloadToTXTFile(data, filename) {
     window.URL = window.URL || window.webkitURL;
 
     downloadLink.href = window.URL.createObjectURL(
-        new Blob([data], { type: "text/plain" }),
+        new Blob([data], { type: mimetype }),
     );
     downloadLink.onclick = destroyClickedElement;
     downloadLink.style.display = "none";
     document.body.appendChild(downloadLink);
 
     downloadLink.click();
+}
+
+/**
+ * Downloads a file in the specified (relative) URL to the specified filename.
+ *
+ * @param {String} url URL of the source file. It must start with `/`, e.g.
+ * `"/gateway/esp32c.zip"`
+ * @param {String} filename Name of the saved file
+ */
+export function downloadFile(url, filename) {
+    fetch(
+        window.location.origin +
+            window.location.pathname.replace(/\/+$/, "") +
+            url,
+    )
+        // check to make sure you didn't have an unexpected failure (may need to check other things here depending on use case / backend)
+        .then(resp =>
+            resp.status === 200
+                ? resp.blob()
+                : Promise.reject("something went wrong"),
+        )
+        .then(blob => {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.style.display = "none";
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+
+            show_notification("File downloaded", "success");
+        })
+        .catch(() => show_notification("Error downloading file", "error"));
 }
 
 /**

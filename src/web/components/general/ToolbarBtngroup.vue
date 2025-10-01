@@ -181,13 +181,7 @@ export default {
 
       this.compiling = true // Change buttons status
 
-      // Compile
-      // if (typeof code !== "undefined") {
-      //   code_assembly = code
-      // } else {
-      //   code_assembly = textarea_assembly_editor.getValue()
-      // }
-      // Select assembler function
+      // Assemble
       const assemblerFn = this.assembler_map[this.selectedCompiler]
       // If default, let assembly_compile use its internal default
       const ret = await (assemblerFn

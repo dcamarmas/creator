@@ -50,6 +50,10 @@ export default defineConfig({
         input: "examples/**",
         output: "examples",
       },
+      {
+        input: "gateway/**",
+        output: "/gateway",
+      },
     ]) as PluginOption,
   ],
 
