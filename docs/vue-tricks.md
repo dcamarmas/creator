@@ -118,7 +118,7 @@ export default {
         return this.message
       },
       set(value) {
-        this.$roota.message = value
+        this.$root.message = value
       }
     }
   }

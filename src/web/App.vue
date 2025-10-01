@@ -54,7 +54,7 @@ import SimulatorView from "./components/SimulatorView.vue"
 import AssemblyView from "./components/AssemblyView.vue"
 
 const creatorASCII = `
- ██████╗██████╗ ███████╗ █████╗ ████████╗ ██████╗ ██████╗ 
+ ██████╗██████╗ ███████╗ █████╗ ████████╗ ██████╗ ██████╗
 ██╔════╝██╔══██╗██╔════╝██╔══██╗╚══██╔══╝██╔═══██╗██╔══██╗
 ██║     ██████╔╝█████╗  ███████║   ██║   ██║   ██║██████╔╝
 ██║     ██╔══██╗██╔══╝  ██╔══██║   ██║   ██║   ██║██╔══██╗
@@ -249,16 +249,17 @@ export default {
       // Flash
       //
 
-      lab_url: "",
-      result_email: "",
       target_ports: {
         Win: "rfc2217://host.docker.internal:4000?ign_set_control",
         Mac: "/dev/cu.usbserial-210",
         Linux: "/dev/ttyUSB0",
-      }, //TODO: include into flash component - modal info
-      target_board: "", //TODO: include into flash component - modal info
-      target_port: "", //TODO: include into flash component - modal info
-      flash_url: "http://localhost:8080", //TODO: include into flash component - modal info
+      },
+
+      lab_url: "",
+      result_email: "",
+      target_board: "",
+      target_port: "",
+      flash_url: "http://localhost:8080",
     }
   },
 
@@ -283,7 +284,7 @@ export default {
   created() {
     this.os = this.detect_os()
     this.browser = this.detect_browser()
-    this.get_target_port()
+    this.target_port = this.get_target_port()
   },
 
   /************************
@@ -464,7 +465,7 @@ export default {
 
     //Get target por by SO
     get_target_port() {
-      this.target_port = this.target_ports[this.os]
+      return this.target_ports[this.os] ?? ""
     },
 
     resizeHandler(_e) {
@@ -614,6 +615,12 @@ export default {
     :key="simulatorViewKey"
     :callee_frame="callee_frame"
     :caller_frame="caller_frame"
+    :assembly_code="assembly_code"
+    :lab_url="lab_url"
+    :result_email="result_email"
+    :target_board="target_board"
+    :target_port="target_port"
+    :flash_url="flash_url"
   />
 </template>
 

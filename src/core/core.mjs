@@ -32,7 +32,10 @@ import {
 } from "./assembler/assembler.mjs";
 import { Memory } from "./memory/Memory.mts";
 import yaml from "js-yaml";
-import { crex_findReg, crex_findReg_bytag } from "./register/registerLookup.mjs";
+import {
+    crex_findReg,
+    crex_findReg_bytag,
+} from "./register/registerLookup.mjs";
 import { readRegister, writeRegister } from "./register/registerOperations.mjs";
 import { StackTracker } from "./memory/StackTracker.mts";
 import { creator_ga } from "./utils/creator_ga.mjs";
@@ -44,8 +47,6 @@ import { init } from "./executor/executor.mjs";
 import { resetDevices } from "./executor/devices.mts";
 import { compileTimerFunctions } from "./executor/timers.mts";
 
-
-export const code_assembly = "";
 export let update_binary = {};
 export let backup_stack_address;
 export let backup_data_address;
@@ -614,8 +615,8 @@ function processPseudoInstructions(architectureObj, legacy = true) {
                 fields = pseudoinstruction.fields.map(field => ({
                     name: field.field,
                     type: field.type,
-                    ...(field.prefix && {prefix: field.prefix}),
-                    ...(field.suffix && {suffix: field.suffix}),
+                    ...(field.prefix && { prefix: field.prefix }),
+                    ...(field.suffix && { suffix: field.suffix }),
                 }));
             }
 
@@ -944,7 +945,6 @@ function prepareArchitecture(architectureObj, dump = false) {
     MAXNWORDS = architectureObj.instructions.reduce((max, instruction) => {
         return Math.max(max, instruction.nwords || 1);
     }, 1);
-
 
     return architectureObj;
 }
@@ -1401,7 +1401,10 @@ export function loadBinaryFile(filePath, offset = 0n) {
 }
 
 export function getPC() {
-    const pc_address = readRegister(PC_REG_INDEX.indexComp, PC_REG_INDEX.indexElem);
+    const pc_address = readRegister(
+        PC_REG_INDEX.indexComp,
+        PC_REG_INDEX.indexElem,
+    );
     return BigInt(pc_address);
 }
 

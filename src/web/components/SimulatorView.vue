@@ -29,6 +29,7 @@ import Monitor from "./simulator/Monitor.vue"
 import Keyboard from "./simulator/Keyboard.vue"
 import Calculator from "./simulator/Calculator.vue"
 import Stats from "./simulator/Stats.vue"
+import Flash from "./simulator/Flash.vue"
 
 import { architecture } from "@/core/core.mjs"
 
@@ -49,12 +50,19 @@ export default {
     stat_representation: { type: String, required: true },
     stat_type: { type: String, required: true },
     memory_segment: { type: String, required: true },
+    assembly_code: { type: String, required: true },
     enter: [Boolean, null],
     main_memory_busy: Boolean,
     display: String,
     keyboard: String,
     caller_frame: Object,
     callee_frame: Object,
+
+    lab_url: { type: String, required: true },
+    result_email: { type: String, required: true },
+    target_board: { type: String, required: true },
+    target_port: { type: String, required: true },
+    flash_url: { type: String, required: true },
   },
 
   components: {
@@ -68,6 +76,7 @@ export default {
     Keyboard,
     Calculator,
     Stats,
+    Flash,
   },
 
   data() {
@@ -98,14 +107,16 @@ export default {
         <!-- Simulator navbar modals -->
 
         <!-- Flash -->
-        <!-- <Flash
+        <Flash
           id="flash"
+          :os="os"
+          :assembly_code="assembly_code"
           :lab_url="lab_url"
           :result_email="result_email"
           :target_board="target_board"
           :target_port="target_port"
           :flash_url="flash_url"
-        /> -->
+        />
 
         <!-- Examples modal -->
         <Examples

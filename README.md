@@ -17,18 +17,21 @@ lockfile, which explicitly states the package versions.
 bun install
 ```
 
-### Build CREATOR Assembler
+### Build CREATOR Dependencies
 
 > [!IMPORTANT]
 > Building the assembler requires installing [rustup](https://rustup.rs/),
 > [Deno](https://deno.com/), and [wasm-pack](https://drager.github.io/wasm-pack/).
 
 > [!IMPORTANT]
-> Make sure to initialize the submodules, as they contain the assembler dependency.
-> You can use either `git clone --recurse-submodules` or `git submodule update --init --recursive`.
+> Make sure to initialize the submodules.
+> 
+> You can either add the `--recurse-submodules` flag when doing `git clone` or
+> do `git submodule update --init --recursive` once it is already cloned.
 
 ```sh
 bun dev:wasm
+bun build:gateway
 ```
 
 ### Compile Web and Hot-Reload for Development (with [Vite](https://vite.dev/))
@@ -60,7 +63,7 @@ The resulting bundle will be saved to `dist/web/creatorV`.
 > cd dist/web
 > python -m http.server 8080
 > ```
-> And go to [localhost:8080](https://localhost:8080/)
+> And go to [localhost:8080](https://localhost:8080/creatorV)
 
 <!--
 TODO: when the code is type-safe, replace build:web to:
