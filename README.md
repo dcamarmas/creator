@@ -55,15 +55,16 @@ bun dev:cli
 bun build:web
 ```
 
-The resulting bundle will be saved to `dist/web/creatorV`.
+The resulting bundle will be saved to `dist/web/`.
 
 > [!TIP]
-> To test locally the bundle version:
+> To test locally the bundle version, as it will be deployed in GitHub Pages:
 > ```bash
+> REPO="creatorV" bun build:web
 > cd dist/web
 > python -m http.server 8080
 > ```
-> And go to [localhost:8080](https://localhost:8080/creatorV)
+> And go to [localhost:8080/creatorV/](https://localhost:8080/creatorV/)
 
 <!--
 TODO: when the code is type-safe, replace build:web to:
