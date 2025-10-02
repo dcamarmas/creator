@@ -37,7 +37,7 @@ export function display_print(info) {
         if (typeof info !== "string") {
             info = info.toString();
         }
-        process.stdout.write(info + "\n"); //TODO: Remove the newline after all testing is done
+        process.stdout.write(info);
     }
 
     status.display += info;

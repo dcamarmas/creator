@@ -35,6 +35,7 @@ import yaml from "js-yaml";
 import {
     crex_findReg,
     crex_findReg_bytag,
+    crex_clearRegisterCache,
 } from "./register/registerLookup.mjs";
 import { readRegister, writeRegister } from "./register/registerOperations.mjs";
 import { StackTracker } from "./memory/StackTracker.mts";
@@ -42,8 +43,12 @@ import { creator_ga } from "./utils/creator_ga.mjs";
 import { creator_callstack_reset } from "./sentinel/sentinel.mjs";
 import { resetStats } from "./executor/stats.mts";
 import { resetCache } from "./executor/decoder.mjs";
-import { enableInterrupts, ExecutionMode } from "./executor/interrupts.mts";
-import { init } from "./executor/executor.mjs";
+import {
+    compileInterruptFunctions,
+    enableInterrupts,
+    ExecutionMode,
+} from "./executor/interrupts.mts";
+import { init, compileArchitectureFunctions } from "./executor/executor.mjs";
 import { resetDevices } from "./executor/devices.mts";
 import { compileTimerFunctions } from "./executor/timers.mts";
 
@@ -153,6 +158,7 @@ function load_arch_select(cfg) {
     }
 
     REGISTERS = architecture.components;
+    crex_clearRegisterCache();
 
     architecture_hash = [];
     for (let i = 0; i < REGISTERS.length; i++) {
@@ -200,6 +206,9 @@ function load_arch_select(cfg) {
     PC_REG_INDEX = crex_findReg_bytag("program_counter");
 
     compileTimerFunctions();
+    compileInterruptFunctions();
+
+    compileArchitectureFunctions(architecture);
 
     ret.token = "The selected architecture has been loaded correctly";
     ret.type = "success";
@@ -1121,6 +1130,7 @@ export function reset() {
         }
     } else {
         REGISTERS = JSON.parse(JSON.stringify(REGISTERS_BACKUP));
+        crex_clearRegisterCache();
     }
 
     architecture.memory_layout.stack.start = backup_stack_address;
@@ -1211,6 +1221,7 @@ export function restore(snapshot) {
     // Restore the registers
     if (registersObj) {
         REGISTERS = registersObj;
+        crex_clearRegisterCache();
     }
     // Restore the stack
     stackTracker.load(stackData);

@@ -30,14 +30,27 @@ import { MIPS } from "./arch/mips.mjs";
 import { REG } from "./registers.mts";
 import { INTERRUPTS } from "./interrupts.mts";
 
-// trick to prevent TS from screaming at us
+export interface CAPIType {
+    MEM: typeof MEM;
+    SYSCALL: typeof SYSCALL;
+    VALIDATION: typeof VALIDATION;
+    CHECK_STACK: typeof CHECK_STACK;
+    DRAW_STACK: typeof DRAW_STACK;
+    FP: typeof FP;
+    RISCV: typeof RISCV;
+    Z80: typeof Z80;
+    MIPS: typeof MIPS;
+    REG: typeof REG;
+    INTERRUPTS: typeof INTERRUPTS;
+}
+
 declare global {
-    var CAPI: object;
+    var CAPI: CAPIType;
 }
 
 // Export all CAPI functions and make them globally available
 export function initCAPI() {
-    const CAPI = {
+    const CAPI: CAPIType = {
         MEM,
         SYSCALL,
         VALIDATION,

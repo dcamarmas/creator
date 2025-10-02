@@ -13,7 +13,7 @@ export function setupArchitecture(
 
 export function decode_test(instruction, expected) {
     setupArchitecture();
-    const result = decode_instruction(instruction, true, true);
+    const result = decode_instruction(instruction, "decodedOnly");
 
     assertEquals(result, expected);
 }

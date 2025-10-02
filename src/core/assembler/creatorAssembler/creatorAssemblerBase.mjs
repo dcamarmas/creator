@@ -54,7 +54,7 @@ let instructions_binary = [];
 export function assembleCreatorBase(code, library, wasmModules) {
     /* Google Analytics */
     creator_ga("compile", "compile.assembly");
-    const color = 1;
+    const color = 2;
 
     const { ArchitectureJS, DataCategoryJS } = wasmModules;
 

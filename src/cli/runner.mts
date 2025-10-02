@@ -156,13 +156,13 @@ async function main() {
                     process.exit(1);
                 }
                 totalInstructions++;
-                // console.log(
-                //     totalInstructions,
-                //     pc_value.toString(16).padStart(4, "0").toUpperCase(),
-                //     ret.instructionData.asm,
-                //     "|",
-                //     ret.instructionData.machineCode,
-                // );
+                console.log(
+                    totalInstructions,
+                    pc_value.toString(16).padStart(4, "0").toUpperCase(),
+                    ret.instructionData.asm,
+                    "|",
+                    ret.instructionData.machineCode,
+                );
                 if (creator.status.execution_index === -2) {
                     break;
                 }

@@ -30,6 +30,16 @@ export function packExecute(error, err_msg, err_type, draw) {
     return ret;
 }
 
+export function getPrimaryKey(instr) {
+    let key = "";
+    for (const field of instr.fields) {
+        if (field.type === "co" || field.type === "cop") {
+            key += field.valueField;
+        }
+    }
+    return key;
+}
+
 /**
  * Check the type of a number in IEEE 754 format.
  * @param {number} s - Sign bit (0 for positive, 1 for negative)
