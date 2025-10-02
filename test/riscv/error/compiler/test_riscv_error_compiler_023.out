@@ -1,11 +1,11 @@
 
 
-[E09] Error: Incorrect amount of arguments, expected at least `1` but found `0`
+[E10] Error: Incorrect amount of arguments, expected at least `1` but found `0`
    ╭─[ assembly:9:20 ]
    │
  9 │    example2:    .half
-   │                       ┬  
-   │                       ╰── This directive has `0` arguments
+   │                       │ 
+   │                       ╰─ This directive has `0` arguments
    │ 
    │ Help: Consider adding the missing `1` argument
 ───╯

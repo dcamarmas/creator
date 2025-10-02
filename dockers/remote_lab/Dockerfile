@@ -1,5 +1,5 @@
 
-FROM ubuntu:22.04
+FROM ubuntu:24.04
 
 ENV TZ=Europe/Madrid
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
@@ -31,13 +31,14 @@ RUN apt update && apt-get install -y \
         python3-pip \
         python3-venv
 
-RUN pip3 --no-cache install flask flask_cors requests
+RUN pip3 --no-cache install flask flask_cors requests --break-system-packages
 
 
 #Download CREATOR
 RUN git clone https://github.com/creatorsim/creator.git && \
     cd creator && \
-    npm install terser jshint colors yargs readline-sync
+    npm install terser jshint colors yargs readline-sync && \
+    ./mk_min.sh
 
 RUN ln -s /creator/remote_lab/deployment.json deployment.json
 
