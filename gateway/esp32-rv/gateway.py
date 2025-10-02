@@ -293,7 +293,7 @@ def do_monitor_request(request):
         do_cmd(req_data, ['idf.py', '-p', target_device, 'monitor'])
     else:
       req_data['status'] += "No ELF file found in build directory.\n"
-      logging.info("No elf found.")
+      logging.error("No elf found.")
               
   except Exception as e:
     req_data['status'] += str(e) + '\n'
@@ -358,7 +358,7 @@ def do_stop_flash_request(request):
 def check_uart_connection():
     """ Checks UART devices """
     devices = glob.glob('/dev/ttyUSB*')
-    logging.info(f"Found devices: {devices}")
+    logging.debug(f"Found devices: {devices}")
     if "/dev/ttyUSB0" in devices:
         logging.info("Found UART.")
         return 0
