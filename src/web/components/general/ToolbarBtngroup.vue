@@ -460,7 +460,7 @@ export default {
         if (
           status.run_program === 0 || // stop button pressed
           status.run_program === 3 || // wait for user input at keyboard
-          (instructions[status.execution_index].Break === true &&
+          (instructions[status.execution_index]?.Break === true &&
             status.run_program !== 2) // stop because a breakpoint
         ) {
           this.execution_UI_update(ret)
@@ -472,7 +472,7 @@ export default {
           this.stop_disable = true
           this.$root.main_memory_busy = false
 
-          if (instructions[status.execution_index].Break === true) {
+          if (instructions[status.execution_index]?.Break === true) {
             status.run_program = 2 //In case breakpoint --> stop
           }
           return
@@ -499,7 +499,7 @@ export default {
             return
           }
 
-          if (ret.msg !== null) {
+          if (ret.msg) {
             show_notification(ret.msg, ret.type)
 
             this.execution_UI_update(ret)
