@@ -41,7 +41,6 @@ import { logger } from "../utils/creator_logger.mjs";
 import { packExecute } from "../utils/utils.mjs";
 import { decode_instruction } from "./decoder.mjs";
 import { buildInstructionPreload } from "./preload.mjs";
-import { show_notification } from "@/web/utils.mjs";
 import { updateStats } from "./stats.mts";
 import {
     checkInterrupt,
@@ -52,7 +51,6 @@ import { handleDevices } from "./devices.mts";
 import { handleTimer } from "./timers.mts";
 
 const instructionCache = new Map();
-
 
 /**
  * Performs validation checks to determine if execution should continue. This is used to prevent the execution from continuing AFTER it has already finished, but the user tries to step again.
@@ -281,12 +279,15 @@ function processCurrentInstruction(draw, enableCache = true) {
                 status.execution_index = -1; // Set execution index to -1 to indicate error
                 return packExecute(
                     true,
-                    "Error reading memory at address: " + target_address + " - " + e.message,
+                    "Error reading memory at address: " +
+                        target_address +
+                        " - " +
+                        e.message,
                     "danger",
                     draw,
                 );
             }
-            
+
             // Collect bytes directly instead of creating hex strings
             allBytes.push(...new Uint8Array(wordBytes));
         }
@@ -307,9 +308,12 @@ function processCurrentInstruction(draw, enableCache = true) {
         instruction = returnValue.value;
 
         asm = instruction.instructionExecPartsWithProperNames.join(" ");
-        
-        const instructionSizeInBytes = instruction.nwords * (WORDSIZE / BYTESIZE);
-        machineCode = Array.from(instructionBytes.slice(0, instructionSizeInBytes))
+
+        const instructionSizeInBytes =
+            instruction.nwords * (WORDSIZE / BYTESIZE);
+        machineCode = Array.from(
+            instructionBytes.slice(0, instructionSizeInBytes),
+        )
             .map(byte => byte.toString(16).padStart(2, "0"))
             .join("");
 
@@ -395,7 +399,7 @@ function executeInstructionCycle(draw) {
 
     // handle timer
     handleTimer();
-    
+
     // Handle Devices
     handleDevices();
 
@@ -490,7 +494,12 @@ export function step() {
     // }
 
     // Return execution result with instruction data
-    const result = packExecute(status.error, cycleResult.msg, null, draw);
+    const result = packExecute(
+        status.error,
+        cycleResult.msg,
+        cycleResult.type,
+        draw,
+    );
     if (instructionData) {
         result.instructionData = instructionData;
     }
