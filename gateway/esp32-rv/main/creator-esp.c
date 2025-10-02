@@ -19,7 +19,7 @@
 //////////////////////// para leer del monitor
 #include "esp_system.h"
 #include "esp_console.h"
-#include "esp_vfs_dev.h"
+#include "driver/uart_vfs.h"
 #include "esp_vfs_fat.h"
 ////////////////////////
 
@@ -47,9 +47,9 @@ void app_main(void)
 {
   /////////// para leer del monitor
   ESP_ERROR_CHECK(uart_driver_install(CONFIG_ESP_CONSOLE_UART_NUM, 256, 0, 0, NULL, 0));
-  esp_vfs_dev_uart_use_driver(CONFIG_ESP_CONSOLE_UART_NUM);
-  esp_vfs_dev_uart_port_set_rx_line_endings(CONFIG_ESP_CONSOLE_UART_NUM, ESP_LINE_ENDINGS_CR);
-  esp_vfs_dev_uart_port_set_tx_line_endings(CONFIG_ESP_CONSOLE_UART_NUM, ESP_LINE_ENDINGS_CRLF);
+  uart_vfs_dev_use_driver(CONFIG_ESP_CONSOLE_UART_NUM);
+  uart_vfs_dev_port_set_rx_line_endings(CONFIG_ESP_CONSOLE_UART_NUM, ESP_LINE_ENDINGS_CR);
+  uart_vfs_dev_port_set_tx_line_endings(CONFIG_ESP_CONSOLE_UART_NUM, ESP_LINE_ENDINGS_CRLF);
   /////////
  
   printf("Started program... \n");
