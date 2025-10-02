@@ -782,12 +782,12 @@ module.exports.__wbg_BigInt_ddea6d2f55558acb = function() { return handleError(f
     return ret;
 }, arguments) };
 
-module.exports.__wbg_String_9b121810deeaa285 = function(arg0) {
+module.exports.__wbg_String_0a7a65e4c87a9a2a = function(arg0) {
     const ret = String(arg0);
     return ret;
 };
 
-module.exports.__wbg_call_2646d8562ec87fba = function() { return handleError(function (arg0, arg1) {
+module.exports.__wbg_call_359af57880ff6188 = function() { return handleError(function (arg0, arg1) {
     const ret = arg0.call(arg1);
     return ret;
 }, arguments) };
@@ -829,7 +829,7 @@ module.exports.__wbg_new_8a6f238a6ece86ea = function() {
     return ret;
 };
 
-module.exports.__wbg_newnoargs_5ce243b1fb0c0c80 = function() { return handleError(function (arg0, arg1) {
+module.exports.__wbg_newnoargs_177cedd42cb6a2bc = function() { return handleError(function (arg0, arg1) {
     const ret = new Function(getStringFromWasm0(arg0, arg1));
     return ret;
 }, arguments) };

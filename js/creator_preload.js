@@ -111,9 +111,9 @@
         }
 
         return $.getJSON( 'architecture/available_arch.json',
-                          function (arch_availables) {
+                          async function (arch_availables) {
                             var a_i = preload_find_architecture(arch_availables, arch_name) ;
-                            uielto_preload_architecture.methods.load_arch_select(a_i) ;
+                            await uielto_preload_architecture.methods.load_arch_select(a_i) ;
                             return 'Architecture loaded.' ;
                           }
                         ) ;

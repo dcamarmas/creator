@@ -1,6 +1,6 @@
 
 
-[E08] Error: Incorrect instruction syntax
+[E09] Error: Incorrect instruction syntax
     ╭─[ assembly:12:8 ]
     │
  12 │    add 25, $t1, 12

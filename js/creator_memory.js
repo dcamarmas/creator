@@ -54,26 +54,18 @@ var memory_hash = [ "data_memory", "instructions_memory", "stack_memory" ] ;
 
 function main_memory_get_addresses ( )
 {
-        return Object.keys(main_memory)
-                     .sort(function (a, b) {
-                             ia = parseInt(a) ;
-                             ib = parseInt(b) ;
-                             if (ia > ib) return -1;
-                             if (ib > ia) return  1;
-                                          return  0;
-                     }) ;
+        // NOTE: since main_memory is an sparse array, `Object.keys`
+        // returns the keys sorted numerically in ascending order, so there is
+        // no need to sort them again
+        return Object.keys(main_memory).reverse()
+
 }
 
 function main_memory_datatype_get_addresses ( )
 {
-        return Object.keys(main_memory_datatypes)
-                     .sort(function (a, b) {
-                             ia = parseInt(a) ;
-                             ib = parseInt(b) ;
-                             if (ia > ib) return -1;
-                             if (ib > ia) return  1;
-                                          return  0;
-                     }) ;
+        // NOTE: for objects, `Object.keys` is specified to return numeric keys
+        // in ascending order first, so we don't need to sort them again
+        return Object.keys(main_memory_datatypes).reverse()
 }
 
 // Full value (stored in address)
