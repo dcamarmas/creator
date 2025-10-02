@@ -43,14 +43,15 @@ def do_fullclean_request(request):
     req_data = request.get_json()
     target_device      = req_data['target_port']
     req_data['status'] = ''
+    error = 0
     # flashing steps...
-    if error ==0:
-      do_cmd_output(req_data, ['idf.py','-C', BUILD_PATH,'fullclean'])
+    if error == 0:
+      do_cmd_output(req_data, ['idf.py','-C', BUILD_PATH,'fullclean'])  
     if error == 0:
        req_data['status'] += 'Full clean done.\n'    
   except Exception as e:
     req_data['status'] += str(e) + '\n'
-  return jsonify(req_data)  
+  return jsonify(req_data)
 
 def do_eraseflash_request(request):
   """ Erase flash the target device """
@@ -59,6 +60,7 @@ def do_eraseflash_request(request):
     target_device      = req_data['target_port']
     req_data['status'] = ''
     # flashing steps...
+    error = 0
     if error == 0:
       error = do_cmd_output(req_data, ['idf.py','-C', BUILD_PATH,'-p',target_device,'erase-flash'])
     if error == 0:
@@ -115,7 +117,6 @@ def creator_build(file_in, file_out):
           fout.write("addi sp, sp, -8\n")
           fout.write("sw ra, 4(sp)\n")
           fout.write("sw a0, 0(sp)\n")
-
           fout.write("jal ra, _rdcycle\n")
           fout.write("mv "+ data[1] +", a0\n")
 
@@ -284,8 +285,16 @@ def do_monitor_request(request):
       kill_all_processes("gdbgui")
       process_holder.pop('gdbgui', None)
 
-    do_cmd(req_data, ['idf.py', '-p', target_device, 'monitor'])
-
+    build_root = BUILD_PATH +'/build'
+    if check_uart_connection() != 0:
+      req_data['status'] += "No UART port found\n"
+      return jsonify(req_data)
+    if os.path.isdir(build_root) and os.listdir(build_root):
+        do_cmd(req_data, ['idf.py', '-p', target_device, 'monitor'])
+    else:
+      req_data['status'] += "No ELF file found in build directory.\n"
+      logging.info("No elf found.")
+              
   except Exception as e:
     req_data['status'] += str(e) + '\n'
 
@@ -349,7 +358,7 @@ def do_stop_flash_request(request):
 def check_uart_connection():
     """ Checks UART devices """
     devices = glob.glob('/dev/ttyUSB*')
-    logging.debug(f"Found devices: {devices}")
+    logging.info(f"Found devices: {devices}")
     if "/dev/ttyUSB0" in devices:
         logging.info("Found UART.")
         return 0
@@ -455,7 +464,7 @@ def kill_all_processes(process_name):
         if result.returncode != 0:
             logging.error(f"Error al intentar matar los procesos {process_name}. Salida: {result.stderr.strip()}")
         else:
-            logging.info(f"Todos los procesos '{process_name}' han sido eliminados.")
+            logging.debug(f"Todos los procesos '{process_name}' han sido eliminados.")
         
         return result.returncode
 
@@ -476,7 +485,7 @@ def kill_all_processes(process_name):
 def start_openocd_thread(req_data):
     target_board = req_data['target_board']
     script_board = './openocd_scripts/openscript_' + target_board + '.cfg'
-    logging.info(f"OpenOCD script: {script_board}")
+    logging.debug(f"OpenOCD script: {script_board}")
     try:
         thread = threading.Thread(
             target=monitor_openocd_output,
@@ -502,32 +511,33 @@ def start_gdbgui(req_data):
         req_data['status'] += f"GDB route: {route} does not exist.\n"
         return jsonify(req_data)
     req_data['status'] = ''
-    if check_uart_connection:
-      logging.info("Starting GDBGUI...")
-      gdbgui_cmd = ['idf.py', '-C', BUILD_PATH, 'gdbgui', '-x', route, 'monitor']
-      sleep(5)
-      try:
-          process_holder['gdbgui'] = subprocess.run(
-              gdbgui_cmd,
-              stdout=sys.stdout,
-              stderr=sys.stderr,
-              text=True
-          )
-          if process_holder['gdbgui'].returncode != -9 and process_holder['gdbgui'].returncode != 0:
-              logging.error(f"Command failed with return code {process_holder['gdbgui'].returncode}")
+    if check_uart_connection():
+      req_data['status'] += f"No UART found\n"
+      return jsonify(req_data)
+    
+    logging.info("Starting GDBGUI...")
+    gdbgui_cmd = ['idf.py', '-C', BUILD_PATH, 'gdbgui', '-x', route, 'monitor']
+    sleep(5)
+    try:
+        process_holder['gdbgui'] = subprocess.run(
+            gdbgui_cmd,
+            stdout=sys.stdout,
+            stderr=sys.stderr,
+            text=True
+        )
+        if process_holder['gdbgui'].returncode != -9 and process_holder['gdbgui'].returncode != 0:
+            logging.error(f"Command failed with return code {process_holder['gdbgui'].returncode}")
 
-      except subprocess.CalledProcessError as e:
-          logging.error("Failed to start GDBGUI: %s", e)
-          req_data['status'] += f"Error starting GDBGUI (code {e.returncode}): {e.stderr}\n"
-          return None
-      except Exception as e:
-          logging.error("Unexpected error in GDBGUI: %s", e)
-          req_data['status'] += f"Unexpected error starting GDBGUI: {e}\n"
-          return None
-      
-      req_data['status'] += f"Finished debug session: {e}\n"
-    else:
-      req_data['status'] += f"UART not connected: {e}\n"
+    except subprocess.CalledProcessError as e:
+        logging.error("Failed to start GDBGUI: %s", e)
+        req_data['status'] += f"Error starting GDBGUI (code {e.returncode}): {e.stderr}\n"
+        return None
+    except Exception as e:
+        logging.error("Unexpected error in GDBGUI: %s", e)
+        req_data['status'] += f"Unexpected error starting GDBGUI: {e}\n"
+        return None
+    
+    req_data['status'] += f"Finished debug session: {e}\n"
     return jsonify(req_data)
           
 
@@ -556,7 +566,10 @@ def do_debug_request(request):
                 logging.debug('Killing OpenOCD')
                 kill_all_processes("openocd")
                 process_holder.pop('openocd', None)
-
+            # Check UART
+            if  check_uart_connection():
+                req_data['status'] += f"No UART found\n"
+                return jsonify(req_data)    
             # Check if JTAG is connected
             if not check_jtag_connection():
                 req_data['status'] += "No JTAG found\n"
