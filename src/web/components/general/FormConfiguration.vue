@@ -32,6 +32,7 @@ export default {
     default_architecture: { type: String, required: true },
     stack_total_list: { type: Number, required: true },
     autoscroll: { type: Boolean, required: true },
+    backup: { type: Boolean, required: true },
     notification_time: { type: Number, required: true },
     instruction_help_size: { type: Number, required: true },
     dark: { type: Boolean, required: true },
@@ -64,6 +65,7 @@ export default {
     "update:dark",
     "update:c_debug",
     "update:vim_custom_keybinds",
+    "update:backup",
   ],
   computed: {
     // placeholder for editing a vim keybind
@@ -136,6 +138,23 @@ export default {
           "configuration",
           "configuration.autoscroll",
           "configuration.autoscroll." + value,
+        )
+      },
+    },
+    backup_value: {
+      get() {
+        return this.backup
+      },
+      set(value) {
+        this.$emit("update:backup", value)
+
+        localStorage.setItem("conf_backup", value)
+
+        //Google Analytics
+        creator_ga(
+          "configuration",
+          "configuration.backup",
+          "configuration.backup." + value,
         )
       },
     },
@@ -303,10 +322,10 @@ export default {
 <template>
   <b-modal :id="id" title="Configuration">
     <b-list-group>
+      <!--
       <b-list-group-item class="justify-content-between align-items-center m-1">
         <label for="range-5">Default Architecture:</label>
 
-        <!-- TODO: load from arch_available -->
         <b-form-select
           v-model="default_architecture_value"
           size="sm"
@@ -319,6 +338,7 @@ export default {
           <BFormSelectOption value="'MIPS-32'">MIPS-32</BFormSelectOption>
         </b-form-select>
       </b-list-group-item>
+      -->
 
       <b-list-group-item class="justify-content-between align-items-center m-1">
         <label for="range-1">Maximum stack values listed:</label>
@@ -376,14 +396,27 @@ export default {
         />
       </b-list-group-item>
 
-      <!-- <b-list-group-item class="justify-content-between align-items-center m-1">
+      <b-list-group-item class="justify-content-between align-items-center m-1">
+        <label for="range-2">Automatic backup:</label>
+        <b-form-checkbox
+          id="range-2"
+          v-model="backup_value"
+          name="check-button"
+          switch
+          size="lg"
+        />
+      </b-list-group-item>
+
+      <!--
+      <b-list-group-item class="justify-content-between align-items-center m-1">
         <label for="range-4">Font Size:</label>
         <b-input-group>
           <b-button variant="outline-secondary" @click="font_size_value -= 1">-</b-button>
           <b-form-input id="range-4" v-model="fontSize" type="range" min="8" max="48" step="1" title="Font Size" />
           <b-button variant="outline-secondary" @click="font_size_value += 1">+</b-button>
         </b-input-group>
-      </b-list-group-item> -->
+      </b-list-group-item>
+      -->
 
       <b-list-group-item class="justify-content-between align-items-center m-1">
         <label for="range-5">Dark Mode:</label>

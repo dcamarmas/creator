@@ -154,6 +154,11 @@ export default {
         return a === null ? true : a === "true"
       })(localStorage.getItem("conf_autoscroll")), // if null, set to true, else respect the value
 
+      // Backup
+      backup: (a => {
+        return a === null ? true : a === "true"
+      })(localStorage.getItem("conf_backup")), // if null, set to true, else respect the value
+
       // Font size
       font_size: 15,
 
@@ -504,6 +509,7 @@ export default {
       v-model:default_architecture="default_architecture"
       v-model:stack_total_list="stack_total_list"
       v-model:autoscroll="autoscroll"
+      v-model:backup="backup"
       v-model:instruction_help_size="instruction_help_size"
       v-model:notification_time="notification_time"
       v-model:dark="dark"
