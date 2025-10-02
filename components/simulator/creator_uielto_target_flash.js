@@ -285,9 +285,6 @@
                                                                                                       if (JSON.stringify(data, null, 2).includes('No UART port found')) {
                                                                                                         show_notification('Error flashing: Not found UART port', 'danger');
                                                                                                       }
-                                                                                                      if (JSON.stringify(data, null, 2).includes('cr_ functions are not supported in this mode')) {
-                                                                                                        show_notification('CREATino code in CREATOR module. Make sure the "Arduino Support" checkbox is selected', 'danger');
-                                                                                                      }
                                                                                                     } ) ;
 
                         //Google Analytics
@@ -342,6 +339,9 @@
                                                                                                           if (JSON.stringify(data, null, 2).includes('No UART port found')) {
                                                                                                             show_notification('Error: Not found UART port', 'danger');
                                                                                                           }
+                                                                                                          if (JSON.stringify(data, null, 2).includes('No ELF file found')) {
+                                                                                                            show_notification('Error: Built proyect not found', 'danger');
+                                                                                                          }
                                                                                                         } ) ;
 
                         //Google Analytics
@@ -361,9 +361,17 @@
                                     } ;
 
                         this_env = this;
-                        gateway_remote_monitor(this.flash_url + "/debug", farg).then( function(data)  { 
-                                                                                                          this_env.debugging = false; 
-                                                                                                          //show_notification(data, 'danger') ;
+                      gateway_remote_monitor(this.flash_url + "/debug", farg).then( function(data)  { 
+                                                                                                      this_env.debugging = false;                                                
+                                                                                                      if (JSON.stringify(data, null, 2).includes('No ELF file found in build directory')) {
+                                                                                                        show_notification('Error: Not found proyect to debug', 'danger');
+                                                                                                      }
+                                                                                                      if (JSON.stringify(data, null, 2).includes('No JTAG found')) {
+                                                                                                        show_notification('Error: JTAG no connected. Check wire installment', 'danger');
+                                                                                                      }
+                                                                                                      if (JSON.stringify(data, null, 2).includes('No UART found')) {
+                                                                                                        show_notification('Error: UART no connected. Check wire installment', 'danger');
+                                                                                                      }
                                                                                                         } ) ;
 
                         //Google Analytics
@@ -741,7 +749,6 @@
                     '                       <b-row no-gutters>' +
                     '                         <b-col md="12">' +
                     '                           <b-card-text style="text-align: left;margin:2%;">' +
-                    '                              <span>Install </span><a href="https://docs.espressif.com/projects/esp-idf/en/v3.3.3/api-guides/jtag-debugging/setup-openocd-linux.html" target="_blank">Openocd</a><br>' +
                     '                              <span>Install the GDB web interface: </span><code>pip3 install gdbgui</code> ' +
                     '                           </b-card-text>' +
                     '                         </b-col>' +
