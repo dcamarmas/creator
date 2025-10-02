@@ -527,9 +527,6 @@ export default {
       }
     },
 
-    //Flash program
-    flash_program() {},
-
     //Stop program excution
     stop_execution() {
       status.run_program = 0
