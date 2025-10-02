@@ -108,7 +108,7 @@ export default {
       //
 
       target_boards: [
-        { text: "Please select an option", value: null, disabled: true },
+        { text: "Please select an option", value: null },
         { text: "ESP32-C6 (RISC-V)", value: "esp32c6" },
         { text: "ESP32-C3 (RISC-V)", value: "esp32c3" },
         { text: "ESP32-H2 (RISC-V)", value: "esp32h2" },
@@ -129,124 +129,102 @@ export default {
 
   methods: {
     //
-    //Remote Device
+    // Remote Device
     //
 
-    // get_boards() {
-    //   if (this.labURL != "") {
+    get_boards() {
+      if (this.labURL !== "") {
+        REMOTELAB.get_boards(this.labURL + "/target_boards").then(data => {
+          if (data !== "-1") {
+            const available_boards = JSON.parse(data)
 
-    //     this_env = this
-    //     REMOTELAB.get_boards(this.labURL + "/target_boards").then(
-    //       function (data) {
-    //         if (data != "-1") {
-    //           available_boards = JSON.parse(data)
+            // remove non-available boards
+            this.remote_target_boards = this.remote_target_boards.filter(
+              board => available_boards.includes(board.value),
+            )
 
-    //           for (var i = 1; i < this_env.remote_target_boards.length; i++) {
-    //             if (
-    //               !available_boards.includes(
-    //                 this_env.remote_target_boards[i]["value"],
-    //               )
-    //             ) {
-    //               this_env.remote_target_boards.splice(i, 1)
-    //               i--
-    //             }
-    //           }
+            this.boards = true
+          }
+        })
+      } else {
+        this.boards = false
+      }
+    },
 
-    //           this_env.boards = true
-    //         }
-    //       },
-    //     )
-    //   } else {
-    //     this.boards = false
-    //   }
-    // },
+    do_enqueue() {
+      if (instructions.length === 0) {
+        show_notification("Compile a program first", "warning")
+        return
+      }
 
-    // do_enqueue() {
+      if (this.resultEmail === "") {
+        show_notification("Please, enter your E-mail", "danger")
+        return
+      }
 
-    //   if (instructions.length == 0) {
-    //     show_notification("Compile a program first", "warning")
-    //     return
-    //   }
+      REMOTELAB.enqueue(this.labURL + "/enqueue", {
+        target_board: this.targetBoard,
+        result_email: this.resultEmail,
+        assembly: this.assembly_code,
+      }).then(data => {
+        if (data !== "-1") {
+          this.request_id = data
+          this.enqueue = true
+          this.status = true
+          this.position = ""
+          this.check_status()
+        }
+      })
 
-    //   if (this.resultEmail == "") {
-    //     show_notification("Please, enter your E-mail", "danger")
-    //     return
-    //   }
+      //Google Analytics
+      creator_ga("simulator", "simulator.enqueue", "simulator.enqueue")
+    },
 
-    //   const earg = {
-    //     target_board: this.targetBoard,
-    //     result_email: this.resultEmail,
-    //     assembly: this.assembly_code,
-    //   }
+    check_status() {
+      if (this.position !== "Completed" && this.position !== "Error") {
+        this.get_status()
+        setTimeout(this.check_status, 20000)
+      }
+    },
 
-    //   this_env = this
-    //   REMOTELAB.enqueue(this.labURL + "/enqueue", earg).then(function (data) {
-    //     if (data != "-1") {
-    //       this_env.request_id = data
-    //       this_env.enqueue = true
-    //       this_env.status = true
-    //       this_env.position = ""
-    //       this_env.check_status()
-    //     }
-    //   })
+    get_status() {
+      REMOTELAB.status(this.labURL + "/status", {
+        req_id: this.request_id,
+      }).then(data => {
+        if (data === "Completed") {
+          this.enqueue = false
+        }
+        if (data !== "-1") {
+          if (data === "-2") {
+            this.position = "Error"
+            this.enqueue = false
+          } else if (!isNaN(data)) {
+            this.position = "Queue position: " + data
+          } else {
+            this.position = data
+          }
+        }
+      })
+      //Google Analytics
+      creator_ga("simulator", "simulator.position", "simulator.position")
+    },
 
-    //   //Google Analytics
-    //   creator_ga("simulator", "simulator.enqueue", "simulator.enqueue")
-    // },
+    do_cancel() {
+      REMOTELAB.cancel(this.labURL + "/delete", {
+        req_id: this.request_id,
+      }).then(function (data) {
+        if (data !== "-1") {
+          this.enqueue = false
+          this.position = "Canceled"
+        }
+      })
 
-    // check_status() {
-    //   if (this.position != "Completed" && this.position != "Error") {
-    //     this.get_status()
-    //     setTimeout(this.check_status, 20000)
-    //   }
-    // },
-
-    // get_status() {
-
-    //   var parg = {
-    //     req_id: this.request_id,
-    //   }
-
-    //   this_env = this
-    //   REMOTELAB.status(this.labURL + "/status", parg).then(function (data) {
-    //     if (data == "Completed") {
-    //       this_env.enqueue = false
-    //     }
-    //     if (data != "-1") {
-    //       if (data == "-2") {
-    //         this_env.position = "Error"
-    //         this_env.enqueue = false
-    //       } else if (!isNaN(data)) {
-    //         this_env.position = "Queue position: " + data
-    //       } else {
-    //         this_env.position = data
-    //       }
-    //     }
-    //   })
-    //   //Google Analytics
-    //   creator_ga("simulator", "simulator.position", "simulator.position")
-    // },
-
-    // do_cancel() {
-
-    //   var carg = {
-    //     req_id: this.request_id,
-    //   }
-
-    //   this_env = this
-    //   REMOTELAB.cancel(this.labURL + "/delete", carg).then(function (data) {
-    //     if (data != "-1") {
-    //       this_env.enqueue = false
-    //       this_env.position = "Canceled"
-    //     }
-    //   })
-
-    //   //Google Analytics
-    //   creator_ga("simulator", "simulator.cancel", "simulator.cancel")
-    // },
+      //Google Analytics
+      creator_ga("simulator", "simulator.cancel", "simulator.cancel")
+    },
 
     //
-    //Local device
+    // Local device
     //
 
     download_driver() {
@@ -431,24 +409,29 @@ export default {
 </script>
 
 <template>
-  <b-modal :id="id" title="Target Board Flash" hide-footer>
+  <b-modal :id="id" title="Target Board Flash" no-footer>
     <b-tabs content-class="mt-3">
-      <b-tab title="Local Device">
-        (1) Select Target Board:
+      <b-tab title="Local Device" active id="flash-tab-local">
+        <label for="select-local-boards">(1) Select Target Board:</label>
         <b-form-select
+          id="select-local-boards"
           v-model="targetBoard"
           :options="target_boards"
           size="sm"
-          title="Target board"
+          class="mt-2"
         />
         <br />
 
         <b-tabs content-class="mt-3" v-if="targetBoard">
-          <b-tab title="Prerequisites">
+          <b-tab title="Prerequisites" id="flash-tab-prerequisites">
             <b-tabs content-class="mt-3">
-              <b-tab title="Docker Windows" active>
+              <b-tab
+                title="Docker Windows"
+                id="tab-docker-win"
+                :active="os === 'Win'"
+              >
                 (2) Install Docker Desktop (only the first time):
-                <b-card class="text-left m-2">
+                <b-card class="text-left my-2 mx-4">
                   Follow the instructions from
                   <a
                     href="https://docs.docker.com/desktop/install/windows-install/"
@@ -459,8 +442,8 @@ export default {
                 </b-card>
 
                 (3) Download esptool (only the first time):
-                <b-card class="text-left m-2">
-                  Download from:
+                <b-card class="text-left my-2 mx-4">
+                  Download from
                   <a
                     href="https://github.com/espressif/esptool/releases"
                     target="_blank"
@@ -470,7 +453,7 @@ export default {
                 </b-card>
 
                 (4) Pull <code>creator_gateway</code> image in Docker Desktop:
-                <b-card class="text-left m-2">
+                <b-card class="text-left my-2 mx-4">
                   <ol class="mb-0">
                     <li>
                       Search for <code>creatorsim/creator_gateway</code> in the
@@ -481,7 +464,7 @@ export default {
                 </b-card>
 
                 (5) Run the image:
-                <b-card class="text-left">
+                <b-card class="text-left my-2 mx-4">
                   <ol class="mb-0">
                     <li>Click the "Run" button</li>
                     <li>Click the "Optional settings" button</li>
@@ -490,15 +473,15 @@ export default {
                   </ol>
                 </b-card>
                 (6) Run start_gateway script in the container bash:
-                <b-card class="text-left m-2">
+                <b-card class="text-left my-2 mx-4">
                   <ol class="mb-0">
                     <li>Click the "Exec" button</li>
                     <li>Execute <code>./start_gateway.sh</code></li>
                   </ol>
                 </b-card>
 
-                (7) Run esp_rfc2217_server in windows cmd:
-                <b-card class="text-left m-2">
+                (7) Run <code>esp_rfc2217_server</code> in windows cmd:
+                <b-card class="text-left my-2 mx-4">
                   <ol class="mb-0">
                     <li>Execute the windows cmd in the esptool path</li>
                     <li>
@@ -518,9 +501,13 @@ export default {
                 </b-card>
               </b-tab>
 
-              <b-tab title="Docker Linux/MacOS">
+              <b-tab
+                title="Docker Linux/MacOS"
+                id="flash-tab-docker-unix"
+                :active="['Mac', 'Linux'].includes(os)"
+              >
                 (2) Install Docker Engine (only the first time):
-                <b-card class="text-left m-2">
+                <b-card class="text-left my-2 ms-4 me-4">
                   Follow the instructions from
                   <a
                     href="https://docs.docker.com/engine/install/"
@@ -531,12 +518,12 @@ export default {
                 </b-card>
 
                 (3) Download the <code>creator_gateway</code> image:
-                <b-card class="text-left m-2">
+                <b-card class="text-left my-2 mx-4">
                   <code>docker pull creatorsim/creator_gateway</code>
                 </b-card>
 
                 (4) Run the image:
-                <b-card class="text-left m-2 bash">
+                <b-card class="text-left my-2 mx-4 bash">
                   <code
                     >docker run --init -it --device=&lt;targetPort&gt; -p
                     8080:8080 --name creator_gateway creatorsim/creator_gateway
@@ -546,14 +533,20 @@ export default {
 
                 (5) Run the <code>start_gateway.sh</code> script in the
                 container's shell:
-                <b-card class="text-left m-2">
+                <b-card class="text-left my-2 mx-4">
                   <code>./start_gateway.sh</code>
                 </b-card>
               </b-tab>
 
               <b-tab title="Native">
-                (2) Install ESP-IDF framework (only the first time):
-                <b-card class="text-left m-2">
+                (2) Install
+                <a href="https://www.python.org/" target="_blank">Python</a>
+                <b-card class="text-left my-2 mx-4">
+                  The supported versions are from 3.9 to 3.13
+                </b-card>
+
+                (3) Install ESP-IDF framework (only the first time):
+                <b-card class="text-left my-2 mx-4">
                   Follow the instructions from
                   <a
                     href="https://docs.espressif.com/projects/esp-idf/en/v5.5.1/esp32/get-started/linux-macos-setup.html"
@@ -563,12 +556,11 @@ export default {
                   </a>
                 </b-card>
 
+                <!--
                 (!!) (NEW) Install Python 3.9 (required version for this
                 driver):<br />
-                <!-- You can either install it natively or use
-                <a href="https://docs.astral.sh/uv/" target="_blank">uv</a>. -->
 
-                <b-card class="text-left m-2">
+                <b-card class="text-left my-2 mx-4">
                   <b>Installing Python 3.9 in Ubuntu</b>
                   <br />
                   <code>
@@ -585,8 +577,9 @@ export default {
                     sudo update-alternatives --set python3 /usr/bin/python3.9
                   </code>
                 </b-card>
+                -->
 
-                (3) Install the
+                (4) Install the
                 <a href="https://pypi.org/project/Flask/" target="_blank">
                   flask</a
                 >
@@ -595,26 +588,16 @@ export default {
                   flask-cors</a
                 >
                 Python packages:
-                <b-card class="text-left m-2">
+                <b-card class="text-left my-2 mx-4">
                   <code>pip3 install flask flask_cors</code>
                 </b-card>
 
-                (4) (NEW) Install additional packages for debug:
-                <b-card class="text-left m-2">
-                  <!-- Install
-                  <a
-                    href="https://docs.espressif.com/projects/esp-idf/en/v3.3.3/api-guides/jtag-debugging/setup-openocd-linux.html"
-                    target="_blank"
-                  >
-                    Openocd
-                  </a>
-                  <br /> -->
-                  Install the GDB web interface (<a
-                    href="https://pypi.org/project/gdbgui/"
-                    target="_blank"
-                    >gdbgui</a
-                  >):
-                  <br />
+                &nbsp;&nbsp;For debug, install the GDB web interface (<a
+                  href="https://pypi.org/project/gdbgui/"
+                  target="_blank"
+                  >gdbgui</a
+                >):
+                <b-card class="text-left my-2 mx-4">
                   <code>pip3 install gdbgui</code>
                 </b-card>
 
@@ -634,11 +617,14 @@ export default {
                 </b-container>
 
                 (6) Run driver:
-                <b-card class="text-left m-2">
-                  Load the environment variable for your board:<br />
-                  <code>. $HOME/esp/esp-idf/export.sh</code>
+                <b-card class="text-left my-2 mx-4">
+                  Remember to
+                  <a
+                    href="https://docs.espressif.com/projects/esp-idf/en/v5.5.1/esp32/get-started/linux-macos-setup.html#step-4-set-up-the-environment-variables"
+                    >load the environment variables</a
+                  >
                 </b-card>
-                <b-card class="text-left m-2">
+                <b-card class="text-left my-2 mx-4">
                   Unzip the <code>driver.zip</code> file and move into the
                   driver directory associated to your board:<br />
                   <code>
@@ -646,7 +632,7 @@ export default {
                     cd &lt;board&gt;
                   </code>
                 </b-card>
-                <b-card class="text-left m-2">
+                <b-card class="text-left my-2 mx-4">
                   Execute the gateway web service:<br />
                   <code>python3 gateway.py</code>
                 </b-card>
@@ -655,24 +641,26 @@ export default {
           </b-tab>
 
           <!-- Run -->
-          <b-tab title="Run" active>
-            (2) Target Port: (please verify the port on your computer)
+          <b-tab title="Run" active id="flash-tab-run">
+            <label for="target-port">
+              Target port (please verify the port on your computer):
+            </label>
             <b-form-input
+              id="target-port"
               type="text"
               v-model="targetPort"
               placeholder="Enter target port"
               size="sm"
-              title="Target port"
-              class="m-2"
+              class="my-2"
             />
-            <label for="range-6">(3) Flash URL:</label>
+            <label for="flash-url"> Flash URL: </label>
             <b-form-input
+              id="flash-url"
               type="text"
               v-model="flashURL"
               placeholder="Enter flash URL"
               size="sm"
-              title="Flash URL"
-              class="m-2"
+              class="my-2"
             />
 
             <b-container fluid align-h="center">
@@ -843,39 +831,34 @@ export default {
 
       <!-- Remote -->
 
+      <!-- TODO: Uncomment when tested -->
       <!--
-      <b-tab title="Remote Device">
-        <label for="range-6">(1) Remote Device URL:</label>
+      <b-tab title="Remote Device" id="flash-tab-remote">
+        Remote Device URL:
         <b-form-input
           type="text"
           v-model="labURL"
           placeholder="Enter remote device URL"
           size="sm"
-          title="Remote remote device URL"
-        >
-        </b-form-input>
-        <br />
+          class="my-2"
+        />
 
-        <b-button
-          class="btn btn-sm btn-block"
-          variant="primary"
-          @click="get_boards"
-        >
-          <span class="fas fa-link"></span> Connect
-        </b-button>
-        <br v-if="!boards" />
+        <b-container class="d-grid mt-3">
+          <b-button size="sm" variant="primary" @click="get_boards">
+            <font-awesome-icon :icon="['fas', 'link']" /> Connect
+          </b-button>
+        </b-container>
 
         <b-container fluid align-h="center" class="mx-0 px-0" v-if="boards">
-          <label for="range-6">(2) Select Target Board:</label>
+          <label for="select-remote-boards">(2) Select Target Board:</label>
           <b-form-select
+            id="select-remote-boards"
             v-model="targetBoard"
             :options="remote_target_boards"
             size="sm"
-            title="Target board"
-          >
-          </b-form-select>
+          />
+          <br />
         </b-container>
-        <br />
 
         <b-container fluid align-h="center" class="mx-0 px-0" v-if="boards">
           (3) E-mail to receive the execution results:
@@ -884,29 +867,26 @@ export default {
             v-model="resultEmail"
             placeholder="Enter E-mail"
             size="sm"
-            title="Result E-mail"
           />
+          <br />
         </b-container>
-        <br />
 
-        Last program status: <b>{{ position }}</b>
+        <div v-if="position">
+          Last program status: <b>{{ position }}</b>
+        </div>
 
         <b-container
           fluid
           align-h="center"
           class="mx-0 px-0"
-          v-if="targetBoard != '' && enqueue"
+          v-if="targetBoard !== '' && enqueue"
         >
-          <b-button
-            class="btn btn-sm btn-block"
-            variant="danger"
-            @click="do_cancel"
-          >
+          <b-button size="sm" variant="danger" @click="do_cancel">
             <font-awesome-icon :icon="['fas', 'ban']" />
             Cancel last program
           </b-button>
+          <br />
         </b-container>
-        <br />
 
         <b-container
           fluid
@@ -914,24 +894,22 @@ export default {
           class="mx-0 px-0"
           v-if="targetBoard != ''"
         >
-          <b-button
-            class="btn btn-sm btn-block"
-            variant="primary"
-            @click="do_enqueue"
-          >
+          <b-button size="sm" variant="primary" @click="do_enqueue">
             <font-awesome-icon :icon="['fas', 'paper-plane']" />
             Send program
           </b-button>
         </b-container>
+
         <br />
+
         For Teachers, you can read about how to deploy a remote laboratory in
         <a
           href="https://github.com/creatorsim/creator/blob/master/dockers/remote_lab/README.md"
         >
-          our documentation.
-        </a>
+          our documentation</a
+        >.
       </b-tab>
-      -->
+    -->
     </b-tabs>
   </b-modal>
 </template>

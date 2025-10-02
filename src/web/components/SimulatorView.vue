@@ -94,7 +94,7 @@ export default {
         <!-- Navbar -->
         <UIeltoToolbar
           id="navbar_simulator"
-          components="btn_architecture,btn_assembly|btn_reset,btn_instruction,btn_run,btn_flash,btn_stop|btn_examples,btn_calculator|btn_configuration,btn_information"
+          components="btn_architecture,btn_assembly|btn_reset,btn_instruction,btn_run,btn_stop,btn_flash|btn_examples,btn_calculator|btn_configuration,btn_information"
           :browser="browser"
           :os="os"
           :dark="dark"
