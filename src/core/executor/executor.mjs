@@ -38,9 +38,8 @@ import {
 } from "../register/registerOperations.mjs";
 import { creator_ga } from "../utils/creator_ga.mjs";
 import { logger } from "../utils/creator_logger.mjs";
-import { packExecute } from "../utils/utils.mjs";
+import { getPrimaryKey, packExecute } from "../utils/utils.mjs";
 import { decode_instruction } from "./decoder.mjs";
-import { buildInstructionPreload } from "./preload.mjs";
 import { updateStats } from "./stats.mts";
 import {
     checkInterrupt,
@@ -49,8 +48,20 @@ import {
 } from "./interrupts.mts";
 import { handleDevices } from "./devices.mts";
 import { handleTimer } from "./timers.mts";
+import { compileInstruction } from "./instructionCompiler.mts";
 
 const instructionCache = new Map();
+const compiledFunctions = new Map();
+
+export function compileArchitectureFunctions(architecture) {
+    instructionCache.clear();
+    compiledFunctions.clear();
+    for (const instr of architecture.instructions) {
+        const primaryKey = getPrimaryKey(instr);
+        const preloadFunction = compileInstruction(instr);
+        compiledFunctions.set(primaryKey, { instr, preloadFunction });
+    }
+}
 
 /**
  * Performs validation checks to determine if execution should continue. This is used to prevent the execution from continuing AFTER it has already finished, but the user tries to step again.
@@ -189,7 +200,7 @@ function incrementProgramCounter(nwords) {
     return null;
 }
 
-function executeInstructionAndHandlePC(draw, preloadFunction) {
+function executeInstructionAndHandlePC(draw, preloadFunction, parameters) {
     /*
      *  Depending on the architecture, the PC can point to different
      *  addresses. For example, in MIPS/RISC-V, the PC points to the
@@ -211,7 +222,7 @@ function executeInstructionAndHandlePC(draw, preloadFunction) {
     // Execute instruction and handle errors
     if (preloadFunction) {
         try {
-            preloadFunction();
+            preloadFunction(...parameters);
         } catch (e) {
             logger.error("Preload function error: " + e.stack);
             draw.danger.push(status.execution_index);
@@ -254,11 +265,12 @@ function processCurrentInstruction(draw, enableCache = true) {
     let asm;
     let machineCode;
     let preloadFunction;
+    let parameters = [];
 
     // Check for instruction in cache only if caching is enabled
     if (enableCache && instructionCache.has(pc_address)) {
         // If instruction is already cached, retrieve it
-        ({ instruction, asm, machineCode, preloadFunction } =
+        ({ instruction, asm, machineCode, preloadFunction, parameters } =
             instructionCache.get(pc_address));
         // Increment PC based on instruction size
         incrementProgramCounter(instruction.nwords);
@@ -293,7 +305,7 @@ function processCurrentInstruction(draw, enableCache = true) {
         }
 
         const instructionBytes = new Uint8Array(allBytes);
-        const returnValue = decode_instruction(instructionBytes);
+        const returnValue = decode_instruction(instructionBytes, "new");
         if (returnValue.status === "error") {
             // If decoding fails, return an error
             draw.danger.push(status.execution_index);
@@ -305,9 +317,11 @@ function processCurrentInstruction(draw, enableCache = true) {
                 draw,
             );
         }
-        instruction = returnValue.value;
+        const instructionArray = returnValue.decodedFields;
+        instruction = returnValue.instruction;
+        const opcode = getPrimaryKey(instruction);
 
-        asm = instruction.instructionExecPartsWithProperNames.join(" ");
+        asm = instructionArray.map(item => item.value).join(" ");
 
         const instructionSizeInBytes =
             instruction.nwords * (WORDSIZE / BYTESIZE);
@@ -317,8 +331,24 @@ function processCurrentInstruction(draw, enableCache = true) {
             .map(byte => byte.toString(16).padStart(2, "0"))
             .join("");
 
-        // 3. Build instruction preload
-        preloadFunction = buildInstructionPreload(instruction);
+        preloadFunction = compiledFunctions.get(opcode).preloadFunction;
+
+        // Now we need to fetch the parameters to pass to the preload function
+        for (const field of instructionArray) {
+            if (
+                [
+                    "INT-Reg",
+                    "Ctrl-Reg",
+                    "SFP-Reg",
+                    "DFP-Reg",
+                    "inm-signed",
+                    "inm-unsigned",
+                    "offset_bytes",
+                ].includes(field.type)
+            ) {
+                parameters.push(field.value);
+            }
+        }
 
         // check privileged instructions
         if (
@@ -339,6 +369,7 @@ function processCurrentInstruction(draw, enableCache = true) {
                 asm,
                 machineCode,
                 preloadFunction,
+                parameters,
             });
         }
         // 4. Increment PC based on instruction size
@@ -346,7 +377,11 @@ function processCurrentInstruction(draw, enableCache = true) {
     }
 
     // 5. Execute instruction and handle PC changes
-    const executeResult = executeInstructionAndHandlePC(draw, preloadFunction);
+    const executeResult = executeInstructionAndHandlePC(
+        draw,
+        preloadFunction,
+        parameters,
+    );
     if (executeResult !== null) {
         return executeResult;
     }

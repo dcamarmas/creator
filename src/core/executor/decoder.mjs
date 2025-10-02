@@ -384,38 +384,6 @@ function replaceRegisterNames(instructionParts) {
 }
 
 /**
- * Parse signature definition and create regex for instruction matching
- *
- * @param {Object} instruction - The instruction object containing signature information
- * @param {string} instruction.signature_definition - The signature definition pattern
- * @param {string} instruction.signature - The instruction signature
- * @param {string} instruction.signatureRaw - The raw instruction signature
- * @returns {Object} Object containing parsed signature elements
- * @returns {string} returns.signatureDef - Processed signature definition
- * @returns {string} returns.signature - Processed signature
- * @returns {RegExpMatchArray|null} returns.signatureMatch - Regex match result for signature
- * @returns {RegExpMatchArray|null} returns.signatureRawMatch - Regex match result for raw signature
- */
-function parseSignatureDefinition(instruction) {
-    let signatureDef = instruction.signature_definition.replace(
-        /[.*+?^${}()|[\]\\]/g,
-        "\\$&",
-    );
-    signatureDef = signatureDef.replace(/[fF][0-9]+/g, "(.*?)");
-    const signature = instruction.signature.replace(/,/g, " ");
-    const re = new RegExp(signatureDef + "$");
-    const signatureMatch = re.exec(signature);
-    const signatureRawMatch = re.exec(instruction.signatureRaw);
-
-    return {
-        signatureDef,
-        signature,
-        signatureMatch,
-        signatureRawMatch,
-    };
-}
-
-/**
  * Builds a lookup table for fast instruction matching
  * Groups instructions by opcode and creates bit masks for function fields
  *
@@ -662,16 +630,27 @@ function findMatchingInstruction(binaryInstruction, variableOpcodeSize = false) 
 }
 
 /**
- * Processes all instruction fields and returns a map of ordered results
+ * Processes all instruction fields and returns an array indexed by field.order.
+ * Undefined indices are left as holes (later filtered by the caller).
+ * This removes the need to build an intermediate Map and then re-materialize
+ * an ordered array.
  *
  * @param {Object} instruction - The instruction definition object
  * @param {string} binaryInstruction - The binary instruction string
- * @returns {Map<number, string|number>} Map of field order to processed field values
+ * @returns {Array<string|number|Object>} Array where index == field.order
  */
 function processAllFields(instruction, binaryInstruction) {
-    const results = new Map();
+    // Find the maximum order to size the array minimally once.
+    let maxOrder = -1;
+    for (const field of instruction.fields) {
+        if ((field.order || field.type === "co") && (field.order ?? 0) > maxOrder) {
+            maxOrder = field.order ?? 0;
+        }
+    }
+    const ordered = new Array(maxOrder + 1);
 
     for (const field of instruction.fields) {
+        // Skip fields without an order unless they are opcode (co)
         if (!field.order && field.type !== "co") continue;
 
         const value = processInstructionField(
@@ -680,71 +659,34 @@ function processAllFields(instruction, binaryInstruction) {
             instruction.nwords,
         );
 
+        const targetIndex = field.order || 0;
+
         if (field.type === "co") {
-            results.set(field.order || 0, instruction.name);
+            ordered[targetIndex] = { name: "opcode", type: field.type, value: instruction.name, prettyValue: instruction.name };
         } else if (value !== null) {
+            let prettyValue = value;
             let finalValue = value;
-
-            // Apply prefix/suffix if specified
-            if (field.prefix) finalValue = field.prefix + finalValue;
-            if (field.suffix) finalValue += field.suffix;
-
-            results.set(field.order, finalValue);
+            if (typeof value === "number") {
+                finalValue = BigInt(value);
+            }
+            if (field.prefix) prettyValue = field.prefix + prettyValue;
+            if (field.suffix) prettyValue += field.suffix;
+            ordered[targetIndex] = { name: field.name, type: field.type, value: finalValue, prettyValue };
         }
     }
-
-    return results;
-}
-
-/**
- * Formats the decoded instruction in legacy format for backward compatibility
- *
- * @param {Object} matchedInstruction - The matched instruction definition
- * @param {string} instruction_loaded - The assembled instruction string
- * @returns {Object} Legacy format object with instruction details
- * @returns {string} returns.type - Instruction type
- * @returns {string} returns.signatureDef - Signature definition
- * @returns {Array<string>} returns.signatureParts - Parsed signature parts
- * @returns {Array<string>} returns.signatureRawParts - Parsed raw signature parts
- * @returns {string} returns.instructionExec - Instruction execution string
- * @returns {Array<string>} returns.instructionExecParts - Instruction parts
- * @returns {Array<string>} returns.instructionExecPartsWithProperNames - Instruction parts with proper register names
- * @returns {string} returns.auxDef - Instruction definition
- * @returns {number} returns.nwords - Number of words
- * @returns {boolean} returns.binary - Binary flag
- */
-function legacyFormat(matchedInstruction, instruction_loaded) {
-    const parsedSignature = parseSignatureDefinition(matchedInstruction);
-    const instructionExecParts = instruction_loaded.split(" ");
-    const instructionExecPartsWithProperNames =
-        replaceRegisterNames(instructionExecParts);
-
-    return {
-        type: matchedInstruction.type,
-        signatureDef: parsedSignature.signatureDef,
-        signatureParts: Array.from(parsedSignature.signatureMatch).slice(1),
-        signatureRawParts: Array.from(parsedSignature.signatureRawMatch).slice(
-            1,
-        ),
-        instructionExec: instruction_loaded,
-        instructionExecParts,
-        instructionExecPartsWithProperNames,
-        auxDef: matchedInstruction.definition,
-        nwords: matchedInstruction.nwords,
-        binary: true,
-        clk_cycles: matchedInstruction.clk_cycles ?? 1,
-    };
+    // before returning, ensure the array is compact (no holes)
+    return ordered.filter(item => item !== undefined);
 }
 
 /**
  * Decodes a binary instruction from bytes or legacy string formats
  *
  * @param {string|Uint8Array} toDecode - The instruction to decode (binary, hex string, or Uint8Array)
- * @param {boolean} [newFormat=false] - Whether to use new format (just return instruction string) or legacy format
+ * @param {string} [outputFormat="new"] - Whether to use new format (just return instruction string) or legacy format
  * @returns {string|Object} Decoded instruction as string (newFormat=true) or legacy object (newFormat=false)
  * @throws {Error} When instruction cannot be decoded or is unknown
  */
-export function decode_instruction(toDecode, newFormat = false) {
+export function decode_instruction(toDecode, outputFormat = "new") {
     let binaryInstruction;
     if (toDecode instanceof Uint8Array) {
         binaryInstruction = Array.from(toDecode)
@@ -753,7 +695,6 @@ export function decode_instruction(toDecode, newFormat = false) {
     } else {
         // TODO: Remove this path once all callers use Uint8Array
         const toDecodeArray = toDecode.split(" ");
-        const isBinary = /^[01]+$/.test(toDecodeArray[0]);
         const isHex = /^0x[0-9a-fA-F]+$/.test(toDecodeArray[0]);
         binaryInstruction = toDecode;
 
@@ -792,28 +733,21 @@ export function decode_instruction(toDecode, newFormat = false) {
         return { status: "error", reason: `Illegal Instruction: ${errorValue}` };
     }
 
-    // Process all fields efficiently
-    const fieldResults = processAllFields(
+    const instructionArray = processAllFields(
         matchedInstruction,
         binaryInstruction,
     );
 
-    // Build instruction array from ordered results
-    const maxOrder = Math.max(...fieldResults.keys());
-    const instructionArray = new Array(maxOrder + 1);
-
-    for (const [order, value] of fieldResults) {
-        instructionArray[order] = value;
-    }
-
-    // Filter out undefined elements and join
-    const instruction_loaded = instructionArray
+    const instructionAssembly = instructionArray
         .filter(x => x !== undefined)
+        .map(x => x.prettyValue)
         .join(" ");
 
-    if (newFormat) {
-        return instruction_loaded;
+    if (outputFormat === "decodedOnly") {
+        return instructionAssembly;
+    } else if (outputFormat === "new") {
+        return { status: "ok", instruction: matchedInstruction, decodedFields: instructionArray };
     } else {
-        return { status: "ok", value: legacyFormat(matchedInstruction, instruction_loaded) };
+        throw new Error(`Unknown output format: ${outputFormat}`);
     }
 }
