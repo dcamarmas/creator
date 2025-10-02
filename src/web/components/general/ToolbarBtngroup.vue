@@ -812,6 +812,7 @@ export default {
           class="actionsGroup h-100"
           size="sm"
           variant="outline-secondary"
+          :disabled="!reset_disable"
           v-b-modal.flash
         >
           <font-awesome-icon :icon="['fab', 'usb']" />
