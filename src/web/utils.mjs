@@ -296,6 +296,11 @@ export function storeBackup(root = document.app) {
         return;
     }
 
+    if (!root.backup) {
+        // disabled in config
+        return;
+    }
+
     localStorage.setItem("backup_asm", root.assembly_code);
     localStorage.setItem("backup_arch", root.arch_code);
     localStorage.setItem("backup_arch_name", root.architecture_name);
