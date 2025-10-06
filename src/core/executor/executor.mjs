@@ -33,7 +33,7 @@ import {
     PC_REG_INDEX,
 } from "../core.mjs";
 import { crex_findReg_bytag } from "../register/registerLookup.mjs";
-import { writeRegister } from "../register/registerOperations.mjs";
+import { writeRegister , updateRegisterUI} from "../register/registerOperations.mjs";
 import { creator_ga } from "../utils/creator_ga.mjs";
 import { logger } from "../utils/creator_logger.mjs";
 import { getPrimaryKey, packExecute } from "../utils/utils.mjs";
@@ -208,6 +208,10 @@ function incrementProgramCounter(nwords) {
     // Update virtual_PC (required for correct execution)
     const offset = BigInt(newArchitecture.config.pc_offset || 0n);
     status.virtual_PC = new_pc + offset;
+
+    if (typeof window !== "undefined" && document.app) {
+        updateRegisterUI(PC_REG_INDEX.indexComp, PC_REG_INDEX.indexElem);
+    }
 
     return null;
 }
