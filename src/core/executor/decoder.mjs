@@ -31,7 +31,7 @@ let instructionLookupCache = null;
  * @function resetCache
  * @returns {void}
  */
-export function resetCache() {
+export function resetDecoderCache() {
     instructionLookupCache = null;
 }
 
@@ -679,11 +679,13 @@ function processAllFields(instruction, binaryInstruction) {
 }
 
 /**
- * Decodes a binary instruction from bytes or legacy string formats
+ * Decodes a binary instruction from a Uint8Array.
  *
- * @param {string|Uint8Array} toDecode - The instruction to decode (binary, hex string, or Uint8Array)
- * @param {string} [outputFormat="new"] - Whether to use new format (just return instruction string) or legacy format
- * @returns {string|Object} Decoded instruction as string (newFormat=true) or legacy object (newFormat=false)
+ * @param {string|Uint8Array} toDecode - The instruction to decode  (Uint8Array)
+ * @param {string} [outputFormat="new"] - Used for testing the decoder. Can be "new" (default) or "decodedOnly".
+ *                                       "new" returns an object with status, instruction, and decodedFields.
+ *                                       "decodedOnly" returns just the assembly string of the instruction.
+ * @returns {string|Object} Decoded instruction in the requested format
  * @throws {Error} When instruction cannot be decoded or is unknown
  */
 export function decode_instruction(toDecode, outputFormat = "new") {
@@ -693,43 +695,14 @@ export function decode_instruction(toDecode, outputFormat = "new") {
             .map(byte => byte.toString(2).padStart(8, '0'))
             .join('');
     } else {
-        // TODO: Remove this path once all callers use Uint8Array
-        const toDecodeArray = toDecode.split(" ");
-        const isHex = /^0x[0-9a-fA-F]+$/.test(toDecodeArray[0]);
-        binaryInstruction = toDecode;
-
-        // Convert hex to binary if needed
-        if (isHex) {
-            const hexValue = toDecodeArray[0].slice(2);
-            const numBits = hexValue.length * 4;
-            binaryInstruction = parseInt(hexValue, 16)
-                .toString(2)
-                .padStart(numBits, "0");
-        }
+        throw new Error("toDecode must be a Uint8Array");
     }
 
     // Use fast instruction matching
     const matchedInstruction = findMatchingInstruction(binaryInstruction);
 
     if (!matchedInstruction) {
-        let errorValue;
-        if (toDecode instanceof Uint8Array) {
-            // Fast path: convert bytes to hex for error display
-            errorValue = `0x${Array.from(toDecode).map(b => b.toString(16).padStart(2, '0')).join('').toUpperCase()}`;
-        } else {
-            // TODO: Remove this path once all callers use Uint8Array
-            const toDecodeArray = toDecode.split(" ");
-            const isHex = /^0x[0-9a-fA-F]+$/.test(toDecodeArray[0]);
-            const isBinary = /^[01]+$/.test(toDecodeArray[0]);
-            
-            if (isHex) {
-                errorValue = toDecodeArray[0].toUpperCase();
-            } else if (isBinary) {
-                errorValue = `0x${parseInt(binaryInstruction, 2).toString(16).toUpperCase()}`;
-            } else {
-                errorValue = `"${toDecode}"`;
-            }
-        }
+        const errorValue = `0x${Array.from(toDecode).map(b => b.toString(16).padStart(2, '0')).join('').toUpperCase()}`
         return { status: "error", reason: `Illegal Instruction: ${errorValue}` };
     }
 

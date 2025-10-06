@@ -28,14 +28,12 @@ import {
     stackTracker,
     newArchitecture,
     getPC,
-    setPC,
     hasVirtualPCChanged,
+    REGISTERS,
+    PC_REG_INDEX,
 } from "../core.mjs";
 import { crex_findReg_bytag } from "../register/registerLookup.mjs";
-import {
-    readRegister,
-    writeRegister,
-} from "../register/registerOperations.mjs";
+import { writeRegister } from "../register/registerOperations.mjs";
 import { creator_ga } from "../utils/creator_ga.mjs";
 import { logger } from "../utils/creator_logger.mjs";
 import { getPrimaryKey, packExecute } from "../utils/utils.mjs";
@@ -58,8 +56,8 @@ export function compileArchitectureFunctions(architecture) {
     compiledFunctions.clear();
     for (const instr of architecture.instructions) {
         const primaryKey = getPrimaryKey(instr);
-        const preloadFunction = compileInstruction(instr);
-        compiledFunctions.set(primaryKey, { instr, preloadFunction });
+        const compiledFunction = compileInstruction(instr);
+        compiledFunctions.set(primaryKey, { instr, compiledFunction });
     }
 }
 
@@ -193,14 +191,28 @@ function updateExecutionStatus(draw) {
     return null;
 }
 
+/**
+ * Directly accesses PC register to avoid the overhead of generic register operations.
+ * @param {number} nwords - Number of words to increment
+ */
 function incrementProgramCounter(nwords) {
     const increment = BigInt((nwords * WORDSIZE) / BYTESIZE);
-    const new_pc = getPC() + increment;
-    setPC(new_pc);
+    // Direct access to PC register value
+    const pc_element =
+        REGISTERS[PC_REG_INDEX.indexComp].elements[PC_REG_INDEX.indexElem];
+    const new_pc = BigInt(pc_element.value) + increment;
+
+    // Direct write
+    pc_element.value = new_pc;
+
+    // Update virtual_PC (required for correct execution)
+    const offset = BigInt(newArchitecture.config.pc_offset || 0n);
+    status.virtual_PC = new_pc + offset;
+
     return null;
 }
 
-function executeInstructionAndHandlePC(draw, preloadFunction, parameters) {
+function executeInstructionAndHandlePC(compiledFunction, parameters) {
     /*
      *  Depending on the architecture, the PC can point to different
      *  addresses. For example, in MIPS/RISC-V, the PC points to the
@@ -219,22 +231,7 @@ function executeInstructionAndHandlePC(draw, preloadFunction, parameters) {
     // Store initial virtual PC before instruction execution
     const initialVirtualPC = status.virtual_PC;
 
-    // Execute instruction and handle errors
-    if (preloadFunction) {
-        try {
-            preloadFunction(...parameters);
-        } catch (e) {
-            logger.error("Preload function error: " + e.stack);
-            draw.danger.push(status.execution_index);
-            status.execution_index = -1; // Set execution index to -1 to indicate error
-            return packExecute(
-                true,
-                "Error executing preload function: " + e.message,
-                "danger",
-                draw,
-            );
-        }
-    }
+    compiledFunction(...parameters);
 
     // Check if PC has changed
     if (hasVirtualPCChanged(initialVirtualPC)) {
@@ -264,13 +261,13 @@ function processCurrentInstruction(draw, enableCache = true) {
     let instruction;
     let asm;
     let machineCode;
-    let preloadFunction;
+    let compiledFunction;
     let parameters = [];
 
     // Check for instruction in cache only if caching is enabled
     if (enableCache && instructionCache.has(pc_address)) {
         // If instruction is already cached, retrieve it
-        ({ instruction, asm, machineCode, preloadFunction, parameters } =
+        ({ instruction, asm, machineCode, compiledFunction, parameters } =
             instructionCache.get(pc_address));
         // Increment PC based on instruction size
         incrementProgramCounter(instruction.nwords);
@@ -331,9 +328,9 @@ function processCurrentInstruction(draw, enableCache = true) {
             .map(byte => byte.toString(16).padStart(2, "0"))
             .join("");
 
-        preloadFunction = compiledFunctions.get(opcode).preloadFunction;
+        compiledFunction = compiledFunctions.get(opcode).compiledFunction;
 
-        // Now we need to fetch the parameters to pass to the preload function
+        // Now we need to fetch the parameters to pass to the compiled function
         for (const field of instructionArray) {
             if (
                 [
@@ -368,7 +365,7 @@ function processCurrentInstruction(draw, enableCache = true) {
                 instruction,
                 asm,
                 machineCode,
-                preloadFunction,
+                compiledFunction,
                 parameters,
             });
         }
@@ -378,8 +375,7 @@ function processCurrentInstruction(draw, enableCache = true) {
 
     // 5. Execute instruction and handle PC changes
     const executeResult = executeInstructionAndHandlePC(
-        draw,
-        preloadFunction,
+        compiledFunction,
         parameters,
     );
     if (executeResult !== null) {
