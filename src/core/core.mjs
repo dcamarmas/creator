@@ -42,7 +42,7 @@ import { StackTracker } from "./memory/StackTracker.mts";
 import { creator_ga } from "./utils/creator_ga.mjs";
 import { creator_callstack_reset } from "./sentinel/sentinel.mjs";
 import { resetStats } from "./executor/stats.mts";
-import { resetCache } from "./executor/decoder.mjs";
+import { resetDecoderCache } from "./executor/decoder.mjs";
 import {
     compileInterruptFunctions,
     enableInterrupts,
@@ -452,13 +452,6 @@ function processInstructions(architectureObj) {
 
             // merge template type and instruction type
             instruction.type = instruction.type || template.type;
-
-            // We need a marker to help distinguish the user definition from the pre-operation and post-operation definitions, so we can later perform the preload correctly.
-            // The marker can be any string.
-            instruction.definition =
-                "// BEGIN USERDEF\n" +
-                instruction.definition +
-                "\n// END USERDEF\n";
 
             // If it has a "preoperation" or "postoperation" field, we need to concatenate it with the "definition"
             // field, and remove them
@@ -1110,7 +1103,7 @@ export function reset() {
     resetStats();
 
     // Reset decoder cache
-    resetCache();
+    resetDecoderCache();
 
     status.executedInstructions = 0;
     status.clkCycles = 0;
@@ -1224,7 +1217,10 @@ export function restore(snapshot) {
         crex_clearRegisterCache();
     }
     // Restore the stack
-    stackTracker.load(stackData);
+    stackTracker.load({
+        frames: stackData.frames,
+        hints: new Map(Object.entries(stackData.hints)),
+    });
 
     // Restore the status
     status = statusObj;

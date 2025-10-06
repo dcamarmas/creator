@@ -94,8 +94,8 @@ export function compileInstruction(
         ...orderedParameters,
         instruction.definition,
     );
-    
-    // Return a wrapper function that injects the status object
+
+    // Return a wrapper function that injects the status and registers objects
     return function(...args: unknown[]) {
         return func(status, registers, ...args);
     };

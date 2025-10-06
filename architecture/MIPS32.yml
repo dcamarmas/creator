@@ -934,11 +934,11 @@ instructions:
           order: null
           value: "00000"
       preoperation: |
-        fs = CAPI.FS.uint2float32(fs);
+        let fsValue = CAPI.FS.uint2float32(registers[fs]);
       postoperation: |
-        fd = CAPI.FS.float322uint(fd);
+        fd = CAPI.FS.float322uint(result);
       definition: |
-        fd = Math.abs(fs);
+        let result = Math.abs(fsValue);
 
     - name: add
       template: R
@@ -949,9 +949,9 @@ instructions:
         - field: cop
           value: "100000"
       definition: |
-        var isover = CAPI.VALIDATION.isOverflow(rs, rt, rs+rt);
+        var isover = CAPI.VALIDATION.isOverflow(registers[rs], registers[rt], registers[rs]+registers[rt]);
         if (!isover){ 
-          rd = rs + rt; 
+          registers[rd] = registers[rs] + registers[rt]; 
         } else { 
           console.log('Integer Overflow'); 
         }
@@ -969,12 +969,12 @@ instructions:
           value: "00000"
           type: cop
       preoperation: |
-        fs = CAPI.FS.uint2float32(fs);
-        ft = CAPI.FS.uint2float32(ft);
+        fsValue = CAPI.FS.uint2float32(registers[fs]);
+        ftValue = CAPI.FS.uint2float32(registers[ft]);
       postoperation: |
-        fd = CAPI.FS.float322uint(fd);
+        registers[fd] = CAPI.FS.float322uint(result);
       definition: |
-        fd = fs + ft;
+        let result = fsValue + ftValue;
     
     - name: add.d
       template: FPU_R
@@ -995,10 +995,10 @@ instructions:
         - field: ft
           type: SFP-Reg
       preoperation: |
-        let val1 = CAPI.MIPS.readDouble(fs_name);
-        let val2 = CAPI.MIPS.readDouble(ft_name);
+        let val1 = CAPI.MIPS.readDouble(fs);
+        let val2 = CAPI.MIPS.readDouble(ft);
       postoperation: |
-        CAPI.MIPS.writeDouble(result, fd_name);
+        CAPI.MIPS.writeDouble(result, fd);
       definition: |
         let result = val1 + val2;
 
@@ -1012,9 +1012,9 @@ instructions:
         - field: opcode
           value: "001000"
       definition: |
-        var isover = CAPI.VALIDATION.isOverflow(rs, imm, rs+imm);
+        var isover = CAPI.VALIDATION.isOverflow(registers[rs], imm, registers[rs]+imm);
         if (!isover){ 
-          rt = rs + imm; 
+          registers[rt] = registers[rs] + imm; 
         } else { 
           console.log('Integer Overflow'); 
         }
@@ -1029,7 +1029,7 @@ instructions:
         - field: opcode
           value: "001001"
       definition: |
-        rt = rs + imm;
+        registers[rt] = registers[rs] + imm;
 
     - name: addu
       template: R
@@ -1040,7 +1040,7 @@ instructions:
         - field: cop
           value: "100001"
       definition: |
-        rd = rs + rt;
+        registers[rd] = registers[rs] + registers[rt];
 
     - name: and
       template: R
@@ -1051,7 +1051,7 @@ instructions:
         - field: cop
           value: "100100"
       definition: |
-        rd = rs & rt;
+        registers[rd] = registers[rs] & registers[rt];
 
     - name: andi
       template: I
@@ -1062,7 +1062,7 @@ instructions:
         - field: opcode
           value: "001100"
       definition: |
-        rt = rs & (imm & 0xFFFF);
+        registers[rt] = registers[rs] & (imm & 0xFFFF);
 
     - name: bc
       template: Custom
@@ -1096,7 +1096,7 @@ instructions:
           order: null
       definition: |
         if (ft & 1 == 0){ 
-          PC = PC - 4n + offset
+          registers.PC = registers.PC - 4n + offset
         }
 
     - name: bc1f
@@ -1128,8 +1128,8 @@ instructions:
           stopbit: 16
           value: "00"
       definition: |
-        if ((FCSR & (1 << ((cc == 0 ? 0 : cc+1) + 23))) == 0) {
-            PC = PC - 4n + offset
+        if ((registers.FCSR & (1 << ((cc == 0 ? 0 : cc+1) + 23))) == 0) {
+            registers.PC = registers.PC - 4n + offset
         }
 
     - name: bc1nez
@@ -1146,8 +1146,8 @@ instructions:
           type: cop
           order: null
       definition: |
-        if (ft & 1 != 0){ 
-          PC = PC + ((offset << 16n) >> 14n)
+        if (registers[ft] & 1 != 0){ 
+          registers.PC = registers.PC + ((offset << 16n) >> 14n)
         }
 
     - name: bc1t
@@ -1179,8 +1179,8 @@ instructions:
           stopbit: 16
           valueField: '01'
       definition: |
-        if ((FCSR & (1 << ((cc == 0 ? 0 : cc+1) + 23))) != 0) {
-            PC = PC - 4n + offset
+        if ((registers.FCSR & (1 << ((cc == 0 ? 0 : cc+1) + 23))) != 0) {
+            registers.PC = registers.PC - 4n + offset
         }
 
     - name: beq
@@ -1194,8 +1194,8 @@ instructions:
         - field: imm
           type: offset_bytes
       definition: |
-        if (CAPI.FP.uint2int(rs) == CAPI.FP.uint2int(rt)) {
-          PC = PC - 4n + imm;
+        if (CAPI.FP.uint2int(registers[rs]) == CAPI.FP.uint2int(registers[rt])) {
+          registers.PC = registers.PC - 4n + imm;
         }
     
     - name: bgez
@@ -1213,8 +1213,8 @@ instructions:
         - field: imm
           type: offset_bytes
       definition: |
-        if (CAPI.FP.uint2int(rs) >= 0) {
-          PC = PC - 4n + imm;
+        if (CAPI.FP.uint2int(registers[rs]) >= 0) {
+          registers.PC = registers.PC - 4n + imm;
         }
       
     - name: bgezal
@@ -1232,10 +1232,10 @@ instructions:
         - field: imm
           type: offset_bytes
       definition: |
-        if (CAPI.FP.uint2int(rs) >= 0) {
-          PC = PC - 4n + imm;
-          CAPI.CHECK_STACK.begin(rs);
-          CAPI.DRAW_STACK.begin(rs);
+        if (CAPI.FP.uint2int(registers[rs]) >= 0) {
+          registers.PC = registers.PC - 4n + imm;
+          CAPI.CHECK_STACK.begin(registers[rs]);
+          CAPI.DRAW_STACK.begin(registers[rs]);
         }
 
     - name: bgtz
@@ -1252,8 +1252,8 @@ instructions:
         - field: imm
           type: offset_bytes
       definition: |
-        if (CAPI.FP.uint2int(rs) > 0) {
-          PC = PC - 4n + imm;
+        if (CAPI.FP.uint2int(registers[rs]) > 0) {
+          registers.PC = registers.PC - 4n + imm;
         }
 
     - name: blez
@@ -1270,8 +1270,8 @@ instructions:
         - field: imm
           type: offset_bytes
       definition: |
-        if (CAPI.FP.uint2int(rs) <= 0) {
-          PC = PC - 4n + imm;
+        if (CAPI.FP.uint2int(registers[rs]) <= 0) {
+          registers.PC = registers.PC - 4n + imm;
         }
   
     - name: bltz
@@ -1289,8 +1289,8 @@ instructions:
         - field: imm
           type: offset_bytes
       definition: |
-        if (CAPI.FP.uint2int(rs) < 0) {
-          PC = PC - 4n + imm;
+        if (CAPI.FP.uint2int(registers[rs]) < 0) {
+          registers.PC = registers.PC - 4n + imm;
         }
 
     - name: bne
@@ -1304,8 +1304,8 @@ instructions:
         - field: imm
           type: offset_bytes
       definition: |
-        if (CAPI.FP.uint2int(rs) != CAPI.FP.uint2int(rt)) {
-          PC = PC - 4n + imm;
+        if (CAPI.FP.uint2int(registers[rs]) != CAPI.FP.uint2int(registers[rt])) {
+          registers.PC = registers.PC - 4n + imm;
         }
 
     - name: c.eq.s
@@ -1338,7 +1338,7 @@ instructions:
 
         let condition = (ft == fs) ? 1n : 0n;
 
-        FCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23 + off)) | (FCSR & (-1 >>> (9 - off))); FCCR = condition
+        registers.FCSR = (registers.FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23 + off)) | (registers.FCSR & (-1 >>> (9 - off))); registers.FCCR = condition;
 
     # From this point on, the instructions were converted automatically from the old CREATOR format.
     - name: c.ole.d
@@ -1383,16 +1383,16 @@ instructions:
           stopbit: 0
           valueField: '0110'
       preoperation: |
-        let val1 = CAPI.MIPS.readDouble(fs_name);
-        let val2 = CAPI.MIPS.readDouble(ft_name);
+        let val1 = CAPI.MIPS.readDouble(fs);
+        let val2 = CAPI.MIPS.readDouble(ft);
       definition: |
         var off = CAPI.FP.int2uint(cc);
         if (off != 0) {
             off = off + 1;
         }
         var condition = (val1 <= val2) ? 1n : 0n;
-        FCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23 + off)) | (FCSR & (-1 >>> (9 - off)));
-        FCCR = condition;
+        registers.FCSR = (registers.FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23 + off)) | (registers.FCSR & (-1 >>> (9 - off)));
+        registers.FCCR = condition;
     - name: c.ole.s
       template: Custom
       type: Logic
@@ -1439,8 +1439,8 @@ instructions:
         if (off != 0) {
             off = off +1;
         }
-        var condition = (fs <= ft) ? 1n : 0n;
-        FCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23+off)) | (FCSR & (-1 >>> (9 - off))); FCCR = condition
+        var condition = (registers[fs] <= registers[ft]) ? 1n : 0n;
+        registers.FCSR = (registers.FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23+off)) | (registers.FCSR & (-1 >>> (9 - off))); registers.FCCR = condition
     - name: c.olt.d
       template: Custom
       type: Logic
@@ -1483,16 +1483,16 @@ instructions:
           stopbit: 0
           valueField: '0100'
       preoperation: |
-        let val1 = CAPI.MIPS.readDouble(fs_name);
-        let val2 = CAPI.MIPS.readDouble(ft_name);
+        let val1 = CAPI.MIPS.readDouble(fs);
+        let val2 = CAPI.MIPS.readDouble(ft);
       definition: |
         var off = CAPI.FP.int2uint(cc);
         if (off != 0) {
             off = off + 1;
         }
         var condition = (val1 < val2) ? 1n : 0n;
-        FCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23 + off)) | (FCSR & (-1 >>> (9 - off)));
-        FCCR = condition;
+        registers.FCSR = (registers.FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23 + off)) | (registers.FCSR & (-1 >>> (9 - off)));
+        registers.FCCR = condition;
     - name: c.olt.s
       template: Custom
       type: Logic
@@ -1539,8 +1539,8 @@ instructions:
         if (off != 0) {
             off = off +1;
         }
-        var condition = (fs < ft) ? 1n : 0n;
-        FCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23+off)) | (FCSR & (-1 >>> (9 - off))); FCCR = condition
+        var condition = (registers[fs] < registers[ft]) ? 1n : 0n;
+        registers.FCSR = (registers.FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23+off)) | (registers.FCSR & (-1 >>> (9 - off))); registers.FCCR = condition
     - name: cvt.d.s
       template: Custom
       type: Arithmetic floating point
@@ -1577,7 +1577,7 @@ instructions:
           startbit: 5
           stopbit: 0
           valueField: '100001'
-      definition: fd = fs;
+      definition: registers[fd] = registers[fs];
     - name: cvt.d.w
       template: Custom
       type: Arithmetic floating point
@@ -1614,7 +1614,7 @@ instructions:
           startbit: 5
           stopbit: 0
           valueField: '100001'
-      definition: fd = fs;
+      definition: registers[fd] = registers[fs];
     - name: cvt.s.d
       template: Custom
       type: Arithmetic floating point
@@ -1651,12 +1651,9 @@ instructions:
           startbit: 5
           stopbit: 0
           valueField: '100000'
-      preoperation: |
-        let val = CAPI.FS.uint2float32(CAPI.REG.read(fs_name));
-      postoperation: |
-        CAPI.MIPS.writeDouble(val, fd_name);
       definition: |
-        // Conversion handled in preoperation/postoperation
+        let val = CAPI.FS.uint2float32(registers[fs]);
+        CAPI.MIPS.writeDouble(val, fd);
     - name: cvt.s.w
       template: Custom
       type: Arithmetic floating point
@@ -1693,7 +1690,7 @@ instructions:
           startbit: 5
           stopbit: 0
           valueField: '100000'
-      definition: fd = parseFloat(float2int_v2(fs));
+      definition: registers[fd] = parseFloat(float2int_v2(registers[fs]));
     - name: cvt.w.d
       template: Custom
       type: Arithmetic floating point
@@ -1730,12 +1727,9 @@ instructions:
           startbit: 5
           stopbit: 0
           valueField: '100100'
-      preoperation: |
-        let val = CAPI.MIPS.readDouble(fs_name);
-      postoperation: |
-        CAPI.REG.write(BigInt(Math.trunc(val)), fd_name);
       definition: |
-        // Conversion handled in preoperation/postoperation
+        let val = CAPI.MIPS.readDouble(fs);
+        CAPI.REG.write(BigInt(Math.trunc(val)), fd);
     - name: cvt.w.s
       template: Custom
       type: Arithmetic floating point
@@ -1772,7 +1766,7 @@ instructions:
           startbit: 5
           stopbit: 0
           valueField: '100100'
-      definition: fd = parseInt(fs);
+      definition: registers[fd] = parseInt(registers[fs]);
     - name: div
       template: Custom
       type: Arithmetic integer
@@ -1816,12 +1810,12 @@ instructions:
           stopbit: 0
           valueField: '011010'
       definition: |-
-        if (rt != 0){ 
-          let cociente = (CAPI.FP.uint2int(rs) / CAPI.FP.uint2int(rt));
+        if (registers[rt] != 0){ 
+          let cociente = (CAPI.FP.uint2int(registers[rs]) / CAPI.FP.uint2int(registers[rt]));
           if (cociente < 0){ 
-            rd = BigInt(Math.ceil(Number(cociente))); 
+            registers[rd] = BigInt(Math.ceil(Number(cociente))); 
           } else { 
-            rd = BigInt(Math.floor(Number(cociente))); 
+            registers[rd] = BigInt(Math.floor(Number(cociente))); 
           }
         } else {
           CAPI.VALIDATION.raise('Division by zero not allowed'); 
@@ -1864,12 +1858,12 @@ instructions:
           valueField: '011010'
       
       definition: |-
-        HI = CAPI.FP.uint2int(rs) % CAPI.FP.uint2int(rt);
-        var cociente = (CAPI.FP.uint2int(rs) / CAPI.FP.uint2int(rt));
+        registers.HI = CAPI.FP.uint2int(registers[rs]) % CAPI.FP.uint2int(registers[rt]);
+        var cociente = (CAPI.FP.uint2int(registers[rs]) / CAPI.FP.uint2int(registers[rt]));
         if (cociente < 0) {
-            LO = BigInt(Math.ceil(Number(cociente)));
+            registers.LO = BigInt(Math.ceil(Number(cociente)));
         } else {
-            LO = BigInt(Math.floor(Number(cociente)));
+            registers.LO = BigInt(Math.floor(Number(cociente)));
         }
     - name: div.d
       template: Custom
@@ -1915,10 +1909,10 @@ instructions:
           stopbit: 0
           valueField: '000011'
       preoperation: |
-        let val1 = CAPI.MIPS.readDouble(fs_name);
-        let val2 = CAPI.MIPS.readDouble(ft_name);
+        let val1 = CAPI.MIPS.readDouble(fs);
+        let val2 = CAPI.MIPS.readDouble(ft);
       postoperation: |
-        CAPI.MIPS.writeDouble(result, fd_name);
+        CAPI.MIPS.writeDouble(result, fd);
       definition: |
         let result;
         if (val2 !== 0) {
@@ -1970,13 +1964,14 @@ instructions:
           stopbit: 0
           valueField: '000011'
       preoperation: |
-        fs = CAPI.FS.uint2float32(fs);
-        ft = CAPI.FS.uint2float32(ft);
+        fsValue = CAPI.FS.uint2float32(fs);
+        ftValue = CAPI.FS.uint2float32(ft);
       postoperation: |
-        fd = CAPI.FS.float322uint(fd);
+        fd = CAPI.FS.float322uint(result);
       definition: |-
-        if (ft != 0)
-         { fd = fs / ft; }
+        let result;
+        if (ftValue != 0)
+         { result = fsValue / ftValue; }
          else { CAPI.VALIDATION.raise('Division by zero not allowed'); }
     - name: divu
       template: Custom
@@ -2021,8 +2016,8 @@ instructions:
           stopbit: 0
           valueField: '011011'
       definition: |-
-        if (rt != 0)
-         { rd = Math.floor(CAPI.FP.int2uint(rs) / CAPI.FP.int2uint(rt)); }
+        if (registers[rt] != 0)
+         { registers[rd] = Math.floor(CAPI.FP.int2uint(registers[rs]) / CAPI.FP.int2uint(registers[rt])); }
          else { CAPI.VALIDATION.raise('Division by zero not allowed'); }
     - name: divu
       template: Custom
@@ -2056,9 +2051,9 @@ instructions:
           stopbit: 0
           valueField: '011011'
       definition: |-
-        if (rt != 0)
-         { LO = Math.floor(CAPI.FP.int2uint(rs) / CAPI.FP.int2uint(rt));
-        HI = CAPI.FP.int2uint(rs) % CAPI.FP.int2uint(rt); }
+        if (registers[rt] != 0)
+         { registers.LO = Math.floor(CAPI.FP.int2uint(registers[rs]) / CAPI.FP.int2uint(registers[rt]));
+        registers.HI = CAPI.FP.int2uint(registers[rs]) % CAPI.FP.int2uint(registers[rt]); }
          else { CAPI.VALIDATION.raise('Division by zero not allowed'); }
     - name: j
       template: Custom
@@ -2079,7 +2074,7 @@ instructions:
           startbit: 25
           stopbit: 0
           order: 1
-      definition: PC = addr;
+      definition: registers.PC = addr;
     - name: jal
       template: Custom
       type: Function call
@@ -2101,9 +2096,9 @@ instructions:
           stopbit: 0
           order: 1
       definition: |-
-        ra = PC;
-         PC = addr;
-         CAPI.CHECK_STACK.begin(addr); CAPI.DRAW_STACK.begin(addr);
+        registers.ra = registers.PC;
+        registers.PC = addr;
+        CAPI.CHECK_STACK.begin(addr); CAPI.DRAW_STACK.begin(addr);
     - name: jalr
       template: Custom
       type: Function call
@@ -2137,9 +2132,9 @@ instructions:
           stopbit: 0
           valueField: '001001'
       definition: |-
-        rd = PC;
-         PC = rs;
-         CAPI.CHECK_STACK.begin(rs); CAPI.DRAW_STACK.begin(rs);
+        registers[rd] = registers.PC;
+        registers.PC = registers[rs];
+        CAPI.CHECK_STACK.begin(registers[rs]); CAPI.DRAW_STACK.begin(registers[rs]);
     - name: jr
       template: Custom
       type: Unconditional bifurcation
@@ -2167,8 +2162,8 @@ instructions:
           stopbit: 0
           valueField: '001000'
       definition: |-
-        PC = rs;
-         CAPI.CHECK_STACK.end(); CAPI.DRAW_STACK.end();
+        registers.PC = registers[rs];
+        CAPI.CHECK_STACK.end(); CAPI.DRAW_STACK.end();
     - name: lb
       template: Custom
       type: Memory access
@@ -2201,7 +2196,8 @@ instructions:
           prefix: ($
           suffix: )
           order: 3
-      definition: 'reg1 = CAPI.MEM.read(reg2+val, 1, reg1_name);'
+      definition: |
+        registers[reg1] = CAPI.MEM.read(registers[reg2]+val, 1, reg1);
     - name: lbu
       template: Custom
       type: Memory access
@@ -2234,7 +2230,8 @@ instructions:
           startbit: 15
           stopbit: 0
           order: 2
-      definition: 'rt = CAPI.MEM.read(base+off, 1, rt_name);'
+      definition: |
+        registers[rt] = CAPI.MEM.read(registers[base]+off, 1, rt);
     - name: ldc1
       template: Custom
       type: Memory access
@@ -2268,15 +2265,15 @@ instructions:
           stopbit: 0
           order: 2
       preoperation: |
-        CAPI.MIPS.validateEvenRegister(ft_name);
+        CAPI.MIPS.validateEvenRegister(ft);
       postoperation: |
-        CAPI.MIPS.writeDouble(doubleValue, ft_name);
+        CAPI.MIPS.writeDouble(doubleValue, ft);
       definition: |
-        if (CAPI.VALIDATION.isMisaligned(base + off, 'd')) {
+        if (CAPI.VALIDATION.isMisaligned(registers[base] + off, 'd')) {
           CAPI.VALIDATION.raise('The memory must be aligned');
         }
-        let high = CAPI.MEM.read(base + off, 4);
-        let low = CAPI.MEM.read(base + off + 4n, 4, ft_name);
+        let high = CAPI.MEM.read(registers[base] + off, 4);
+        let low = CAPI.MEM.read(registers[base] + off + 4n, 4, ft);
         let doubleValue = CAPI.FP.uint2float64(Number(low), Number(high));
     - name: lh
       template: Custom
@@ -2310,7 +2307,8 @@ instructions:
           order: 3
           prefix: ($
           suffix: )
-      definition: 'reg1 = CAPI.MEM.read(reg2+val, 2, reg1_name);'
+      definition: |
+        registers[reg1] = CAPI.MEM.read(registers[reg2]+val, 2, reg1);
     - name: lhu
       template: Custom
       type: Memory access
@@ -2343,7 +2341,8 @@ instructions:
           startbit: 15
           stopbit: 0
           order: 2
-      definition: 'rt = CAPI.MEM.read(base+off, 2, rt_name);'
+      definition: | 
+        registers[rt] = CAPI.MEM.read(registers[base]+off, 2, rt);
     - name: lui
       template: Custom
       type: Other
@@ -2369,7 +2368,8 @@ instructions:
           startbit: 15
           stopbit: 0
           order: 2
-      definition: reg1 = val << 16n;
+      definition: |
+        registers[reg1] = val << 16n;
     - name: lw
       template: Custom
       type: Memory access
@@ -2402,7 +2402,8 @@ instructions:
           prefix: ($
           suffix: )
           order: 3
-      definition: 'reg1 = CAPI.MEM.read(val+reg2, 4, reg1_name);'
+      definition: |
+        registers[reg1] = CAPI.MEM.read(registers[reg2]+val, 4, reg1);
     - name: lwc1
       template: Custom
       type: Memory access
@@ -2436,7 +2437,7 @@ instructions:
           stopbit: 0
           order: 2
       definition: |-
-        ft = CAPI.MEM.read(base+off, 4, ft_name);
+        registers[ft] = CAPI.MEM.read(registers[base]+off, 4, ft);
     - name: mfc1
       template: Custom
       type: Transfer between registers
@@ -2468,7 +2469,8 @@ instructions:
           stopbit: 11
           order: 2
           prefix: $
-      definition: rt = CAPI.FP.float322uint(fs);
+      definition: |
+        registers[rt] = CAPI.FP.float322uint(registers[fs]);
     - name: mfhi
       template: Custom
       type: Transfer between registers
@@ -2494,7 +2496,8 @@ instructions:
           startbit: 5
           stopbit: 0
           valueField: '010000'
-      definition: rd = HI;
+      definition: |
+        registers[rd] = registers.HI;
     - name: mflo
       template: Custom
       type: Transfer between registers
@@ -2520,7 +2523,8 @@ instructions:
           startbit: 5
           stopbit: 0
           valueField: '010010'
-      definition: rd = LO;
+      definition: |
+        registers[rd] = registers.LO;
     - name: mod
       template: Custom
       type: Arithmetic integer
@@ -2558,7 +2562,8 @@ instructions:
           startbit: 10
           stopbit: 0
           valueField: '00011011010'
-      definition: rd = CAPI.FP.uint2int(rs) % CAPI.FP.uint2int(rt);
+      definition: |
+        registers[rd] = CAPI.FP.uint2int(registers[rs]) % CAPI.FP.uint2int(registers[rt]);
     - name: modu
       template: Custom
       type: Arithmetic floating point
@@ -2596,7 +2601,8 @@ instructions:
           startbit: 10
           stopbit: 0
           valueField: '00011011011'
-      definition: rd = CAPI.FP.int2uint(rs) % CAPI.FP.int2uint(rt);
+      definition: |
+        registers[rd] = CAPI.FP.int2uint(registers[rs]) % CAPI.FP.int2uint(registers[rt]);
     - name: mov.d
       template: Custom
       type: Transfer between registers
@@ -2634,9 +2640,9 @@ instructions:
           stopbit: 0
           valueField: '000110'
       preoperation: |
-        let val = CAPI.MIPS.readDouble(fs_name);
+        let val = CAPI.MIPS.readDouble(fs);
       postoperation: |
-        CAPI.MIPS.writeDouble(val, fd_name);
+        CAPI.MIPS.writeDouble(val, fd);
       definition: |
         // Value is moved in preoperation/postoperation
     - name: mov.s
@@ -2676,10 +2682,10 @@ instructions:
           stopbit: 0
           valueField: '000110'
       preoperation: |
-        fs = CAPI.FS.uint2float32(fs);
+        fsValue = CAPI.FS.uint2float32(fs);
       postoperation: |
-        fd = CAPI.FS.float322uint(fd);
-      definition: fd = fs;
+        registers[fd] = CAPI.FS.float322uint(result);
+      definition: let result = fsValue;
     - name: mtc1
       template: Custom
       type: Transfer between registers
@@ -2711,7 +2717,7 @@ instructions:
           stopbit: 11
           order: 2
           prefix: $
-      definition: fs = CAPI.FP.uint2float32(rt);
+      definition: registers[fs] = CAPI.FP.uint2float32(registers[rt]);
     - name: mthi
       template: Custom
       type: Transfer between registers
@@ -2737,7 +2743,7 @@ instructions:
           startbit: 5
           stopbit: 0
           valueField: '010001'
-      definition: HI = rs;
+      definition: registers.HI = registers[rs];
     - name: mtlo
       template: Custom
       type: Transfer between registers
@@ -2763,7 +2769,7 @@ instructions:
           startbit: 5
           stopbit: 0
           valueField: '010011'
-      definition: LO = rs;
+      definition: registers.LO = registers[rs];
     - name: mul
       template: Custom
       type: Arithmetic integer
@@ -2801,7 +2807,7 @@ instructions:
           startbit: 5
           stopbit: 0
           valueField: '000010'
-      definition: reg1 = reg2 * reg3;
+      definition: registers[reg1] = registers[reg2] * registers[reg3];
     - name: mul.d
       template: Custom
       type: Arithmetic floating point
@@ -2845,10 +2851,10 @@ instructions:
           stopbit: 0
           valueField: '000010'
       preoperation: |
-        let val1 = CAPI.MIPS.readDouble(fs_name);
-        let val2 = CAPI.MIPS.readDouble(ft_name);
+        let val1 = CAPI.MIPS.readDouble(fs);
+        let val2 = CAPI.MIPS.readDouble(ft);
       postoperation: |
-        CAPI.MIPS.writeDouble(result, fd_name);
+        CAPI.MIPS.writeDouble(result, fd);
       definition: |
         let result = val1 * val2;
     - name: mul.s
@@ -2894,11 +2900,12 @@ instructions:
           stopbit: 0
           valueField: '000010'
       preoperation: |
-        fs = CAPI.FS.uint2float32(fs);
-        ft = CAPI.FS.uint2float32(ft);
+        fsValue = CAPI.FS.uint2float32(fs);
+        ftValue = CAPI.FS.uint2float32(ft);
       postoperation: |
-        fd = CAPI.FS.float322uint(fd);
-      definition: fd = fs * ft;
+        registers[fd] = CAPI.FS.float322uint(result);
+      definition: |
+        let result = fsValue * ftValue;
     - name: mult
       template: Custom
       type: Arithmetic integer
@@ -2931,9 +2938,9 @@ instructions:
           stopbit: 0
           valueField: '011000'
       definition: |-
-        let result = CAPI.FP.uint2int(rs) * CAPI.FP.uint2int(rt);
-        HI = Math.floor(result / Math.pow (2, 32));
-        LO = result % Math.pow(2, 32);
+        let result = CAPI.FP.uint2int(registers[rs]) * CAPI.FP.uint2int(registers[rt]);
+        registers.HI = Math.floor(result / Math.pow (2, 32));
+        registers.LO = result % Math.pow(2, 32);
     - name: multu
       template: Custom
       type: Arithmetic integer
@@ -2966,11 +2973,11 @@ instructions:
           stopbit: 0
           valueField: '011001'
       definition: |-
-        let result = CAPI.FP.int2uint(rs) * CAPI.FP.int2uint(rt);
-        HI = Math.floor(result / Math.pow(2, 32));
-        HI = HI >>> 0;
-        LO = result % Math.pow(2, 32);
-        LO = LO >>> 0;
+        let result = CAPI.FP.int2uint(registers[rs]) * CAPI.FP.int2uint(registers[rt]);
+        registers.HI = Math.floor(result / Math.pow(2, 32));
+        registers.HI = registers.HI >>> 0; // TODO: This is broken with bigints.
+        registers.LO = result % Math.pow(2, 32);
+        registers.LO = registers.LO >>> 0;
     - name: nop
       template: Custom
       type: Logic
@@ -3028,7 +3035,7 @@ instructions:
           startbit: 5
           stopbit: 0
           valueField: '101111'
-      definition: rd = (~ (rs | rt));
+      definition: registers[rd] = (~ (registers[rs] | registers[rt]));
     - name: or
       template: Custom
       type: Logic
@@ -3066,7 +3073,7 @@ instructions:
           startbit: 5
           stopbit: 0
           valueField: '100101'
-      definition: reg1 = reg2 | reg3;
+      definition: registers[reg1] = registers[reg2] | registers[reg3];
     - name: ori
       template: Custom
       type: Logic
@@ -3098,7 +3105,7 @@ instructions:
           startbit: 15
           stopbit: 0
           order: 3
-      definition: reg1 = reg2 | val;
+      definition: registers[reg1] = registers[reg2] | val;
     - name: rotr
       template: Custom
       type: Arithmetic integer
@@ -3140,7 +3147,8 @@ instructions:
           startbit: 5
           stopbit: 0
           valueField: '000010'
-      definition: rd = CAPI.FP.int2uint((rt >>> sa) | (rt << (32 - sa)));
+      definition: |
+        registers[rd] = CAPI.FP.int2uint((registers[rt] >>> sa) | (registers[rt] << (32 - sa))); // TODO: This is broken with bigints.
     - name: rsqrt.d
       template: Custom
       type: Arithmetic floating point
@@ -3178,9 +3186,9 @@ instructions:
           stopbit: 0
           valueField: '010110'
       preoperation: |
-        let val = CAPI.MIPS.readDouble(fs_name);
+        let val = CAPI.MIPS.readDouble(fs);
       postoperation: |
-        CAPI.MIPS.writeDouble(result, fd_name);
+        CAPI.MIPS.writeDouble(result, fd);
       definition: |
         let result;
         if (val >= 0) {
@@ -3225,13 +3233,16 @@ instructions:
           stopbit: 0
           valueField: '010110'
       preoperation: |
-        fs = CAPI.FS.uint2float32(fs);
+        fsValue = CAPI.FS.uint2float32(fs);
       postoperation: |
         fd = CAPI.FS.float322uint(fd);
       definition: |-
-        if (fs >= 0)
-         { fd = 1.0/Math.sqrt(fs); }
-         else { CAPI.VALIDATION.raise('Square root of a negative number is not allowed.'); }
+        let result;
+        if (fsValue >= 0) { 
+          result = 1.0/Math.sqrt(fsValue); 
+        } else {
+          CAPI.VALIDATION.raise('Square root of a negative number is not allowed.'); 
+        }
     - name: sb
       template: Custom
       type: Memory access
@@ -3264,7 +3275,7 @@ instructions:
           startbit: 15
           stopbit: 0
           order: 2
-      definition: 'CAPI.MEM.write(base+off, 1, rt, rt_name);'
+      definition: 'CAPI.MEM.write(registers[base]+off, 1, registers[rt], rt);'
     - name: sdc1
       template: Custom
       type: Memory access
@@ -3298,14 +3309,14 @@ instructions:
           stopbit: 0
           order: 2
       preoperation: |
-        let doubleValue = CAPI.MIPS.readDouble(ft_name);
+        let doubleValue = CAPI.MIPS.readDouble(ft);
         let parts = CAPI.FP.float642uint(doubleValue);
       definition: |
-        if (CAPI.VALIDATION.isMisaligned(base + off, 'd')) {
+        if (CAPI.VALIDATION.isMisaligned(registers[base] + off, 'd')) {
           CAPI.VALIDATION.raise('The memory must be aligned');
         }
-        CAPI.MEM.write(base + off, 4, BigInt(parts[0]), ft_name);
-        CAPI.MEM.write(base + off + 4n, 4, BigInt(parts[1]));
+        CAPI.MEM.write(registers[base] + off, 4, BigInt(parts[0]), ft);
+        CAPI.MEM.write(registers[base] + off + 4n, 4, BigInt(parts[1]));
     - name: sh
       template: Custom
       type: Memory access
@@ -3338,7 +3349,7 @@ instructions:
           startbit: 15
           stopbit: 0
           order: 2
-      definition: 'CAPI.MEM.write(base+off, 2, rt, rt_name);'
+      definition: 'CAPI.MEM.write(registers[base]+off, 2, registers[rt], rt);'
     - name: sll
       template: Custom
       type: Arithmetic integer
@@ -3375,7 +3386,7 @@ instructions:
           startbit: 5
           stopbit: 0
           valueField: '111111'
-      definition: rd = CAPI.FP.int2uint(rt << sa);
+      definition: rd = CAPI.FP.int2uint(registers[rt] << sa);
     - name: slt
       template: Custom
       type: Logic
@@ -3413,7 +3424,7 @@ instructions:
           startbit: 5
           stopbit: 0
           valueField: '101010'
-      definition: 'rd = CAPI.FP.uint2int(rs) < CAPI.FP.uint2int(rt) ? 1n : 0n;'
+      definition: 'registers[rd] = CAPI.FP.uint2int(registers[rs]) < CAPI.FP.uint2int(registers[rt]) ? 1n : 0n;'
     - name: slti
       template: Custom
       type: Logic
@@ -3445,7 +3456,7 @@ instructions:
           startbit: 15
           stopbit: 0
           order: 3
-      definition: 'rs = CAPI.FP.uint2int(rt) < CAPI.FP.uint2int(inm) ? 1n : 0n;'
+      definition: 'registers[rs] = CAPI.FP.uint2int(registers[rt]) < CAPI.FP.uint2int(inm) ? 1n : 0n;'
     - name: sltiu
       template: Custom
       type: Logic
@@ -3477,7 +3488,7 @@ instructions:
           startbit: 15
           stopbit: 0
           order: 3
-      definition: 'rs = CAPI.FP.int2uint(rt) < CAPI.FP.int2uint(inm) ? 1n : 0n;'
+      definition: 'registers[rs] = CAPI.FP.int2uint(registers[rt]) < CAPI.FP.int2uint(inm) ? 1n : 0n;'
     - name: sltu
       template: Custom
       type: Logic
@@ -3515,7 +3526,7 @@ instructions:
           startbit: 5
           stopbit: 0
           valueField: '101011'
-      definition: 'rd = CAPI.FP.uint2int(rs) < CAPI.FP.uint2int(rt) ? 1n : 0n;'
+      definition: 'registers[rd] = CAPI.FP.uint2int(registers[rs]) < CAPI.FP.uint2int(registers[rt]) ? 1n : 0n;'
     - name: sqrt.d
       template: Custom
       type: Arithmetic floating point
@@ -3553,9 +3564,9 @@ instructions:
           stopbit: 0
           valueField: '000100'
       preoperation: |
-        let val = CAPI.MIPS.readDouble(fs_name);
+        let val = CAPI.MIPS.readDouble(fs);
       postoperation: |
-        CAPI.MIPS.writeDouble(result, fd_name);
+        CAPI.MIPS.writeDouble(result, fd);
       definition: |
         let result;
         if (val >= 0) {
@@ -3600,13 +3611,16 @@ instructions:
           stopbit: 0
           valueField: '000100'
       preoperation: |
-        fs = CAPI.FS.uint2float32(fs);
+        fsValue = CAPI.FS.uint2float32(fs);
       postoperation: |
-        fd = CAPI.FS.float322uint(fd);
+        registers[fd] = CAPI.FS.float322uint(result);
       definition: |-
-        if (fs >= 0)
-         { fd = Math.sqrt(fs); }
-         else { CAPI.VALIDATION.raise('Square root of a negative number is not allowed.'); }
+        let result;
+        if (fsValue >= 0) {
+          result = Math.sqrt(fsValue);
+        } else { 
+          CAPI.VALIDATION.raise('Square root of a negative number is not allowed.'); 
+        }
     - name: sra
       template: Custom
       type: Arithmetic integer
@@ -3643,7 +3657,8 @@ instructions:
           startbit: 5
           stopbit: 0
           valueField: '000011'
-      definition: rd = CAPI.FP.int2uint(rt >> sa);
+      definition: |
+        registers[rd] = CAPI.FP.int2uint(registers[rt] >> sa);
     - name: srl
       template: Custom
       type: Arithmetic integer
@@ -3685,7 +3700,8 @@ instructions:
           startbit: 5
           stopbit: 0
           valueField: '000010'
-      definition: rd = rt >>> sa;
+      definition: |
+        registers[rd] = registers[rt] >>> sa; // TODO:broken with bigints.
     - name: sub
       template: Custom
       type: Arithmetic integer
@@ -3723,7 +3739,8 @@ instructions:
           startbit: 5
           stopbit: 0
           valueField: '100010'
-      definition: reg1 = CAPI.FP.int2uint(CAPI.FP.uint2int(reg2) - CAPI.FP.uint2int(reg3));
+      definition: |
+        registers[reg1] = CAPI.FP.int2uint(CAPI.FP.uint2int(registers[reg2]) - CAPI.FP.uint2int(registers[reg3]));
     - name: sub.d
       template: Custom
       type: Arithmetic floating point
@@ -3767,10 +3784,10 @@ instructions:
           stopbit: 0
           valueField: '000001'
       preoperation: |
-        let val1 = CAPI.MIPS.readDouble(fs_name);
-        let val2 = CAPI.MIPS.readDouble(ft_name);
+        let val1 = CAPI.MIPS.readDouble(fs);
+        let val2 = CAPI.MIPS.readDouble(ft);
       postoperation: |
-        CAPI.MIPS.writeDouble(result, fd_name);
+        CAPI.MIPS.writeDouble(result, fd);
       definition: |
         let result = val1 - val2;
     - name: sub.s
@@ -3816,11 +3833,11 @@ instructions:
           stopbit: 0
           valueField: '000001'
       preoperation: |
-        fs = CAPI.FS.uint2float32(fs);
-        ft = CAPI.FS.uint2float32(ft);
+        fsValue = CAPI.FS.uint2float32(fs);
+        ftValue = CAPI.FS.uint2float32(ft);
       postoperation: |
-        fd = CAPI.FS.float322uint(fd);
-      definition: fd = fs - ft;
+        registers[fd] = CAPI.FS.float322uint(result);
+      definition: let result = fsValue - ftValue;
     - name: subu
       template: Custom
       type: Arithmetic integer
@@ -3858,7 +3875,8 @@ instructions:
           startbit: 5
           stopbit: 0
           valueField: '100011'
-      definition: rd = CAPI.FP.int2uint(CAPI.FP.int2uint(rs) - CAPI.FP.int2uint(rt)) ;
+      definition: |
+        registers[rd] = CAPI.FP.int2uint(CAPI.FP.int2uint(registers[rs]) - CAPI.FP.int2uint(registers[rt]));
     - name: sw
       template: Custom
       type: Memory access
@@ -3891,7 +3909,7 @@ instructions:
           prefix: ($
           suffix: )
           order: 3
-      definition: 'CAPI.MEM.write(val+reg2, 4, reg1, reg1_name);'
+      definition: 'CAPI.MEM.write(val+registers[reg2], 4, registers[reg1], reg1);'
     - name: swc1
       template: Custom
       type: Memory access
@@ -3924,7 +3942,7 @@ instructions:
           startbit: 15
           stopbit: 0
           order: 2
-      definition: 'CAPI.MEM.write(base+off, 4, ft, ft_name);'
+      definition: 'CAPI.MEM.write(registers[base]+off, 4, registers[ft], ft);'
     - name: syscall
       template: Custom
       type: Syscall
@@ -3945,7 +3963,13 @@ instructions:
           stopbit: 0
           valueField: '001100'
       definition: |-
-        switch(v0){
+        let a0 = CAPI.REG.read('a0');
+        let a1 = CAPI.REG.read('a1');
+        let f0 = CAPI.REG.read('f0');
+        let f12 = CAPI.REG.read('f12');
+        let FP0 = CAPI.MIPS.readDouble('f0');
+        let FP12 = CAPI.MIPS.readDouble('f12');
+        switch(CAPI.REG.read('v0')){
           case 1n:
             CAPI.SYSCALL.print(a0, 'int');
             break;
@@ -4023,7 +4047,7 @@ instructions:
           startbit: 5
           stopbit: 0
           valueField: '100110'
-      definition: reg1 = reg2 ^ reg3;
+      definition: registers[reg1] = registers[reg2] ^ registers[reg3];
     - name: xori
       template: Custom
       type: Logic
@@ -4055,7 +4079,7 @@ instructions:
           startbit: 15
           stopbit: 0
           order: 3
-      definition: reg1 = reg2 ^ val;
+      definition: registers[reg1] = registers[reg2] ^ val;
     - name: rfe
       template: Custom
       type: Other
@@ -4070,7 +4094,7 @@ instructions:
           stopbit: 26
           value: '110011'
           order: 0
-      definition: PC = EPC;
+      definition: registers.PC = registers.EPC;
 
 pseudoinstructions:
   MIPS32:
