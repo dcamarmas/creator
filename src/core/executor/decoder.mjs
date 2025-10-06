@@ -97,7 +97,7 @@ function extractOpcode(fields) {
 function convertToSignedValue(binaryValue) {
     let value = parseInt(binaryValue, BINARY_BASE);
     if (binaryValue.charAt(0) === "1") {
-        value -= BINARY_BASE**binaryValue.length;
+        value -= BINARY_BASE ** binaryValue.length;
     }
     return value;
 }
@@ -540,7 +540,10 @@ function checkCandidateOpcode(candidate, instruction) {
  * @param {string} binaryInstruction - The binary instruction string to match
  * @returns {Object|null} The matching instruction object or null if no match found
  */
-function findMatchingInstruction(binaryInstruction, variableOpcodeSize = false) {
+function findMatchingInstruction(
+    binaryInstruction,
+    variableOpcodeSize = false,
+) {
     const lookupTable = buildInstructionLookupTable();
     const nwords = binaryInstruction.length / WORDSIZE;
     if (binaryInstruction.length % WORDSIZE !== 0) {
@@ -643,7 +646,10 @@ function processAllFields(instruction, binaryInstruction) {
     // Find the maximum order to size the array minimally once.
     let maxOrder = -1;
     for (const field of instruction.fields) {
-        if ((field.order || field.type === "co") && (field.order ?? 0) > maxOrder) {
+        if (
+            (field.order || field.type === "co") &&
+            (field.order ?? 0) > maxOrder
+        ) {
             maxOrder = field.order ?? 0;
         }
     }
@@ -662,7 +668,12 @@ function processAllFields(instruction, binaryInstruction) {
         const targetIndex = field.order || 0;
 
         if (field.type === "co") {
-            ordered[targetIndex] = { name: "opcode", type: field.type, value: instruction.name, prettyValue: instruction.name };
+            ordered[targetIndex] = {
+                name: "opcode",
+                type: field.type,
+                value: instruction.name,
+                prettyValue: instruction.name,
+            };
         } else if (value !== null) {
             let prettyValue = value;
             let finalValue = value;
@@ -671,7 +682,12 @@ function processAllFields(instruction, binaryInstruction) {
             }
             if (field.prefix) prettyValue = field.prefix + prettyValue;
             if (field.suffix) prettyValue += field.suffix;
-            ordered[targetIndex] = { name: field.name, type: field.type, value: finalValue, prettyValue };
+            ordered[targetIndex] = {
+                name: field.name,
+                type: field.type,
+                value: finalValue,
+                prettyValue,
+            };
         }
     }
     // before returning, ensure the array is compact (no holes)
@@ -692,8 +708,8 @@ export function decode_instruction(toDecode, outputFormat = "new") {
     let binaryInstruction;
     if (toDecode instanceof Uint8Array) {
         binaryInstruction = Array.from(toDecode)
-            .map(byte => byte.toString(2).padStart(8, '0'))
-            .join('');
+            .map(byte => byte.toString(2).padStart(8, "0"))
+            .join("");
     } else {
         throw new Error("toDecode must be a Uint8Array");
     }
@@ -702,8 +718,14 @@ export function decode_instruction(toDecode, outputFormat = "new") {
     const matchedInstruction = findMatchingInstruction(binaryInstruction);
 
     if (!matchedInstruction) {
-        const errorValue = `0x${Array.from(toDecode).map(b => b.toString(16).padStart(2, '0')).join('').toUpperCase()}`
-        return { status: "error", reason: `Illegal Instruction: ${errorValue}` };
+        const errorValue = `0x${Array.from(toDecode)
+            .map(b => b.toString(16).padStart(2, "0"))
+            .join("")
+            .toUpperCase()}`;
+        return {
+            status: "error",
+            reason: `Illegal Instruction: ${errorValue}`,
+        };
     }
 
     const instructionArray = processAllFields(
@@ -719,7 +741,11 @@ export function decode_instruction(toDecode, outputFormat = "new") {
     if (outputFormat === "decodedOnly") {
         return instructionAssembly;
     } else if (outputFormat === "new") {
-        return { status: "ok", instruction: matchedInstruction, decodedFields: instructionArray };
+        return {
+            status: "ok",
+            instruction: matchedInstruction,
+            decodedFields: instructionArray,
+        };
     } else {
         throw new Error(`Unknown output format: ${outputFormat}`);
     }

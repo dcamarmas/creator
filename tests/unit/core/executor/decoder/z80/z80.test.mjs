@@ -15,4 +15,3 @@ Deno.test("decode_instruction - ld bc (nn) instruction 1 ", () =>
 Deno.test("decode_instruction - ld bc (nn) instruction 2 ", () =>
     decode_test("0xED4BFFFF", "ld bc, (65535)"),
 );
-

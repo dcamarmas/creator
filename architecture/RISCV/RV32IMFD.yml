@@ -728,7 +728,7 @@ memory_layout:
   stack:
     start: 0xFFFFFFC
     end: 0xFFFFFFF
-    
+
 templates:
   - name: B
     type: Conditional bifurcation

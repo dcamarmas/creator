@@ -152,7 +152,7 @@ const tutorialSteps: TutorialStep[] = [
             "\n\nThis program demonstrates basic RISC-V assembly instructions. It loads a word from memory, prints it, and then prints a string.\n\nThe program is divided into two sections: .data (for data declarations) and .text (for code).\n\nThe program has already been loaded into the simulator. To see the instructions loaded into memory, use the 'list' command.\n\nThis will show all instructions in memory, with their addresses, labels, and the assembly code.\n\nTry it now by typing 'list':",
         waitForCommand: true,
         expectedCommand: "list",
-        executeAfter () {
+        executeAfter() {
             console.log(
                 colorText(
                     wrapText(
@@ -168,7 +168,7 @@ const tutorialSteps: TutorialStep[] = [
         text: "Registers are small, fast storage locations in the CPU. RISC-V has 32 general-purpose registers (x0-x31).\n\nTo view the integer registers, use the 'reg' command.\n\nTry it now by typing 'reg int_registers':",
         waitForCommand: true,
         expectedCommand: "reg int_registers",
-        executeAfter () {
+        executeAfter() {
             console.log(
                 colorText(
                     wrapText(
@@ -184,7 +184,7 @@ const tutorialSteps: TutorialStep[] = [
         text: "To execute one instruction at a time, use the 'step' command:",
         waitForCommand: true,
         expectedCommand: "step",
-        executeAfter () {
+        executeAfter() {
             console.log(
                 colorText(
                     wrapText(
@@ -200,7 +200,7 @@ const tutorialSteps: TutorialStep[] = [
         text: "Let's check the registers again to see the updated value of t1. You can use the 'reg' comand followed by the register name to view a specific register.\n\nTry it now by typing 'reg t1':",
         waitForCommand: true,
         expectedCommand: "reg t1",
-        executeAfter () {
+        executeAfter() {
             console.log(
                 colorText(
                     wrapText(
@@ -216,7 +216,7 @@ const tutorialSteps: TutorialStep[] = [
         text: "Our program works with data in memory. To view memory contents, use the 'mem' command followed by an address.\n\nLet's look at the 'myword' variable in memory. Since the variable is declared at the start of the .data section, we can find it at address 0x200000. For this architecture, address 0x200000 is the start of the .data section.\n\nTry it now by typing 'mem 0x200000':",
         waitForCommand: true,
         expectedCommandPrefix: "mem 0x200000",
-        executeAfter () {
+        executeAfter() {
             const assembly = `\n.data\n.align 2\n\tmyword:       .word   0x12345678\n`;
             console.log(
                 colorText(
@@ -247,7 +247,7 @@ const tutorialSteps: TutorialStep[] = [
         text: "You can see the breakpoints you've set in the instruction listing. Try it now by typing 'list':",
         waitForCommand: true,
         expectedCommand: "list",
-        executeAfter () {
+        executeAfter() {
             console.log(
                 colorText(
                     wrapText(
@@ -270,7 +270,7 @@ const tutorialSteps: TutorialStep[] = [
         text: "Use the 'run' command without arguments to execute until completion or until a breakpoint is hit.\n\nTry it now by typing 'run':",
         waitForCommand: true,
         expectedCommand: "run",
-        executeAfter () {
+        executeAfter() {
             console.log(
                 colorText(
                     wrapText(
@@ -373,7 +373,7 @@ function advanceToNextStep(): void {
 }
 
 // Process user input during tutorial
- 
+
 function processTutorialCommand(line: string): void {
     const cleanedInput = line.trim().toLowerCase();
 

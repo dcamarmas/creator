@@ -124,7 +124,9 @@ export async function setupSimulator(
     const compilerKey = assembler || "default";
 
     if (!isValidCompilerKey(compilerKey)) {
-        throw new Error(`Invalid assembler: ${compilerKey}. Valid options are: ${Object.keys(compiler_map).join(", ")}`);
+        throw new Error(
+            `Invalid assembler: ${compilerKey}. Valid options are: ${Object.keys(compiler_map).join(", ")}`,
+        );
     }
 
     const compilerFunction = compiler_map[compilerKey];
@@ -175,11 +177,15 @@ export function executeStep(): ExecutionResult {
  * @returns Combined execution result
  */
 export function executeN(n: number): ExecutionResult {
-    let lastResult: ExecutionResult = { output: "", completed: false, error: false };
+    let lastResult: ExecutionResult = {
+        output: "",
+        completed: false,
+        error: false,
+    };
 
     for (let i = 0; i < n; i++) {
         lastResult = executeStep();
-        
+
         if (lastResult.error || lastResult.completed) {
             break;
         }

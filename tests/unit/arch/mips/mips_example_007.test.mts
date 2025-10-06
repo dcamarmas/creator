@@ -6,10 +6,8 @@ import {
     assertSimulatorState,
 } from "../simulator-test-utils.mts";
 
-Deno.test(
-    "MIPS Array Sum Loop",
-    async () => {
-        const testAssembly = `
+Deno.test("MIPS Array Sum Loop", async () => {
+    const testAssembly = `
 
 #
 # Creator (https://creatorsim.github.io/creator/)
@@ -51,33 +49,32 @@ end1:
 
     `;
 
-        const MIPS_ARCH_PATH = "../../../architecture/MIPS32.yml";
+    const MIPS_ARCH_PATH = "../../../architecture/MIPS32.yml";
 
-        // Setup simulator with MIPS architecture
-        await setupSimulator(testAssembly, MIPS_ARCH_PATH);
+    // Setup simulator with MIPS architecture
+    await setupSimulator(testAssembly, MIPS_ARCH_PATH);
 
-        // Execute the program
-        const result = executeN(1000);
-        assertEquals(result.error, false, "Execution should not error");
+    // Execute the program
+    const result = executeN(1000);
+    assertEquals(result.error, false, "Execution should not error");
 
-        // Assert all expected state using the wrapper function
-        assertSimulatorState({
-            registers: {
-                PC: 0x44n,
-                r1: 0x200000n, // at
-                r2: 0xan, // v0
-                r9: 0x5n, // t1
-                r10: 0x5n, // t2
-                r11: 0x1n, // t3
-                r12: 0x4n, // t4
-                r13: 0x200014n, // t5
-                r14: 0x5n, // t6
-                r15: 0xfn, // t7
-            },
-            display: "", // Display buffer should be empty
-            keyboard: "", // Keyboard buffer should be empty
-        });
+    // Assert all expected state using the wrapper function
+    assertSimulatorState({
+        registers: {
+            PC: 0x44n,
+            r1: 0x200000n, // at
+            r2: 0xan, // v0
+            r9: 0x5n, // t1
+            r10: 0x5n, // t2
+            r11: 0x1n, // t3
+            r12: 0x4n, // t4
+            r13: 0x200014n, // t5
+            r14: 0x5n, // t6
+            r15: 0xfn, // t7
+        },
+        display: "", // Display buffer should be empty
+        keyboard: "", // Keyboard buffer should be empty
+    });
 
-        cleanupSimulator();
-    },
-);
+    cleanupSimulator();
+});

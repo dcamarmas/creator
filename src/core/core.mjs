@@ -37,6 +37,11 @@ import {
     crex_findReg_bytag,
     crex_clearRegisterCache,
 } from "./register/registerLookup.mjs";
+import {
+    crex_findReg,
+    crex_findReg_bytag,
+    crex_clearRegisterCache,
+} from "./register/registerLookup.mjs";
 import { readRegister, writeRegister } from "./register/registerOperations.mjs";
 import { StackTracker } from "./memory/StackTracker.mts";
 import { creator_ga } from "./utils/creator_ga.mjs";
@@ -48,11 +53,17 @@ import {
     enableInterrupts,
     ExecutionMode,
 } from "./executor/interrupts.mts";
+import {
+    compileInterruptFunctions,
+    enableInterrupts,
+    ExecutionMode,
+} from "./executor/interrupts.mts";
 import { init, compileArchitectureFunctions } from "./executor/executor.mjs";
 import { resetDevices } from "./executor/devices.mts";
 import { compileTimerFunctions } from "./executor/timers.mts";
 
-export let update_binary = {};
+export const code_assembly = "";
+export let update_binary = "";
 export let backup_stack_address;
 export let backup_data_address;
 
@@ -617,6 +628,8 @@ function processPseudoInstructions(architectureObj, legacy = true) {
                 fields = pseudoinstruction.fields.map(field => ({
                     name: field.field,
                     type: field.type,
+                    ...(field.prefix && { prefix: field.prefix }),
+                    ...(field.suffix && { suffix: field.suffix }),
                     ...(field.prefix && { prefix: field.prefix }),
                     ...(field.suffix && { suffix: field.suffix }),
                 }));
@@ -1221,6 +1234,10 @@ export function restore(snapshot) {
         frames: stackData.frames,
         hints: new Map(Object.entries(stackData.hints)),
     });
+    stackTracker.load({
+        frames: stackData.frames,
+        hints: new Map(Object.entries(stackData.hints)),
+    });
 
     // Restore the status
     status = statusObj;
@@ -1408,6 +1425,10 @@ export function loadBinaryFile(filePath, offset = 0n) {
 }
 
 export function getPC() {
+    const pc_address = readRegister(
+        PC_REG_INDEX.indexComp,
+        PC_REG_INDEX.indexElem,
+    );
     const pc_address = readRegister(
         PC_REG_INDEX.indexComp,
         PC_REG_INDEX.indexElem,

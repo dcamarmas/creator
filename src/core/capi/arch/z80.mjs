@@ -74,15 +74,15 @@ export const Z80 = {
      * The key codes are JavaScript `event.code` strings.
      */
     keyMap: {
-        0xF7: ['Digit1', 'Digit2', 'Digit3', 'Digit4', 'Digit5'],
-        0xFB: ['KeyQ', 'KeyW', 'KeyE', 'KeyR', 'KeyT'],
-        0xFD: ['KeyA', 'KeyS', 'KeyD', 'KeyF', 'KeyG'],
-        0xFE: ['ShiftLeft', 'KeyZ', 'KeyX', 'KeyC', 'KeyV'],
+        0xf7: ["Digit1", "Digit2", "Digit3", "Digit4", "Digit5"],
+        0xfb: ["KeyQ", "KeyW", "KeyE", "KeyR", "KeyT"],
+        0xfd: ["KeyA", "KeyS", "KeyD", "KeyF", "KeyG"],
+        0xfe: ["ShiftLeft", "KeyZ", "KeyX", "KeyC", "KeyV"],
         // These are the other way around (look at the diagram above)
-        0xEF: ['Digit0', 'Digit9', 'Digit8', 'Digit7', 'Digit6'],
-        0xDF: ['KeyP', 'KeyO', 'KeyI', 'KeyU', 'KeyY'],
-        0xBF: ['Enter', 'KeyL', 'KeyK', 'KeyJ', 'KeyH'],
-        0x7F: ['Space', 'ShiftRight', 'KeyM', 'KeyN', 'KeyB'],
+        0xef: ["Digit0", "Digit9", "Digit8", "Digit7", "Digit6"],
+        0xdf: ["KeyP", "KeyO", "KeyI", "KeyU", "KeyY"],
+        0xbf: ["Enter", "KeyL", "KeyK", "KeyJ", "KeyH"],
+        0x7f: ["Space", "ShiftRight", "KeyM", "KeyN", "KeyB"],
     },
 
     /**
@@ -357,17 +357,18 @@ export const Z80 = {
         }
 
         // H and N are always reset for these operations
-        
+
         // P/V is set for even parity
         if (_isEvenParity(result)) {
             newF |= this.PV_FLAG;
         }
 
         // C is set from the bit that was shifted out
-        if (carry) { // carry is expected to be 1n or 0n
+        if (carry) {
+            // carry is expected to be 1n or 0n
             newF |= this.C_FLAG;
         }
-        
+
         return newF;
     },
 
@@ -393,10 +394,11 @@ export const Z80 = {
         }
 
         // C is set from the bit that was shifted out (original bit 0)
-        if (carry) { // carry is expected to be 1n or 0n
+        if (carry) {
+            // carry is expected to be 1n or 0n
             newF |= this.C_FLAG;
         }
-        
+
         return newF;
     },
 
@@ -413,7 +415,7 @@ export const Z80 = {
         const halfRow = this.keyMap[highByte];
 
         // Start with all 5 key bits high (1), meaning no keys pressed.
-        let result = 0x1Fn;
+        let result = 0x1fn;
 
         if (halfRow) {
             // If the high byte corresponds to a valid half-row, check each key.
@@ -427,7 +429,7 @@ export const Z80 = {
         }
 
         // The ULA keyboard bits are D0-D4. Bits D5-D7 are typically high (1).
-        return result | 0xE0n;
+        return result | 0xe0n;
     },
 
     /**
@@ -450,7 +452,7 @@ export const Z80 = {
             return this.readULAKeyboard(port);
         }
         // For unhandled ports, return 0xFF (all bits high).
-        return 0xFFn;
+        return 0xffn;
     },
 
     /**

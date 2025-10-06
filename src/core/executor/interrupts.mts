@@ -41,8 +41,13 @@ export enum ExecutionMode {
 
 let interruptEnable: (interruptType: typeof InterruptType) => void;
 let interruptDisable: (interruptType: typeof InterruptType) => void;
-let interruptCheck: (interruptType: typeof InterruptType) => InterruptType | null;
-let interruptCreate: (interruptType: typeof InterruptType, type: InterruptType) => void;
+let interruptCheck: (
+    interruptType: typeof InterruptType,
+) => InterruptType | null;
+let interruptCreate: (
+    interruptType: typeof InterruptType,
+    type: InterruptType,
+) => void;
 let interruptGetHandlerAddr: (interruptType: typeof InterruptType) => number;
 let interruptClear: (interruptType: typeof InterruptType) => void;
 

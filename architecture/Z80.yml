@@ -357,7 +357,7 @@ instructions:
         temp_reg = registers.F;
         registers.F = registers.F_prime;
         registers.F_prime = temp_reg;
-  
+
     - name: djnz
       template: standard
       nwords: 2
@@ -419,7 +419,7 @@ instructions:
         // Loads 16-bit immediate into HL. Low byte to L, high byte to H.
         registers.L = nn & 0xFFn;
         registers.H = (nn >> 8n) & 0xFFn;
-      
+
     - name: cmp
       template: standard
       nwords: 1
@@ -2083,7 +2083,7 @@ instructions:
           value: "0x9F"
       definition: |
         const carry = registers.F & CAPI.Z80.C_FLAG;
-        
+
         if (carry === 0n) {
             // Operation is A - A - 0. Result is 0.
             registers.A = 0n;
@@ -2503,7 +2503,7 @@ instructions:
           order: 1
       definition: |
         CAPI.MEM.write((registers.B << 8n) | registers.C, 1, registers.A);
-  
+
     - name: ld
       template: standard
       nwords: 1
@@ -2586,7 +2586,7 @@ instructions:
         const value = (((registers.D << 8n) | registers.E) + 1n) & 0xFFFFn;
         registers.D = (value >> 8n) & 0xFFn;
         registers.E = value & 0xFFn;
-  
+
     - name: inc hl
       template: standard
       clk_cycles: 6
@@ -2873,7 +2873,7 @@ instructions:
         if (lsb) newF |= CAPI.Z80.C_FLAG; // Set C if bit 0 was 1
         // N and H are reset
         registers.F = newF;
-      
+
     - name: rra
       template: standard
       clk_cycles: 4
@@ -2985,7 +2985,7 @@ instructions:
         const oldValue = CAPI.MEM.read(addr, 1);
         CAPI.MEM.write(addr, 1, (oldValue + 1n) & 0xFFn);
         registers.F = CAPI.Z80.calculateFlags_INC(oldValue, registers.F);
-      
+
     - name: dec b
       template: standard
       clk_cycles: 4
@@ -3287,7 +3287,7 @@ instructions:
           order: 2
           word: 1
       definition: "registers.H = n;"
-    
+
     - name: ld # (hl), n
       template: standard
       nwords: 2
@@ -3618,7 +3618,7 @@ instructions:
         temp_reg = registers.L;
         registers.L = registers.L_prime;
         registers.L_prime = temp_reg;
-      
+
     - name: rst 18h
       template: standard
       clk_cycles: 11
@@ -3884,7 +3884,7 @@ instructions:
       definition: |
         registers['IFF1'] = 0n;
         registers['IFF2'] = 0n;
-        
+
     - name: rst 38h
       template: standard
       clk_cycles: 11
@@ -3988,7 +3988,7 @@ instructions:
         const msb = (registers.L & 0x80n) >> 7n;
         registers.L = ((registers.L << 1n) | msb) & 0xFFn;
         registers.F = CAPI.Z80.calculateFlags_ROTATE(registers.L, msb);
-        
+
     - name: rlc
       template: CB
       clk_cycles: 8
@@ -4876,7 +4876,7 @@ instructions:
           value: "7,a"
           order: 1
       definition: registers.F = CAPI.Z80.calculateFlags_BIT(registers.A, 7, registers.F);
-      
+
     # BIT b, (HL)
     - name: bit
       template: CB
@@ -4990,7 +4990,7 @@ instructions:
         const addr = (registers.H << 8n) | registers.L;
         const value = CAPI.MEM.read(addr, 1);
         registers.F = CAPI.Z80.calculateFlags_BIT(value, 7, registers.F);
-    
+
     # SET b, (HL)
     - name: set
       template: CB
@@ -5770,7 +5770,7 @@ instructions:
         const addr = (registers.IX + imm) & 0xFFFFn;
         const value = CAPI.MEM.read(addr, 1);
         CAPI.MEM.write(addr, 1, value & ~0x80n);
-        
+
     # SET b, r
     - name: set
       template: CB
@@ -7128,14 +7128,14 @@ instructions:
         const newHL = (hlAddr - 1n) & 0xFFFFn;
         const newDE = (deAddr - 1n) & 0xFFFFn;
         bcCount = (bcCount - 1n) & 0xFFFFn;
-        
+
         registers.H = (newHL >> 8n) & 0xFFn;
         registers.L = newHL & 0xFFn;
         registers.D = (newDE >> 8n) & 0xFFn;
         registers.E = newDE & 0xFFn;
         registers.B = (bcCount >> 8n) & 0xFFn;
         registers.C = bcCount & 0xFFn;
-        
+
         // 4. Update flags according to Z80 specification
         // S, Z, C are unaffected. H and N are reset. P/V is set if BC != 0.
         let newF = registers.F & (CAPI.Z80.S_FLAG | CAPI.Z80.Z_FLAG | CAPI.Z80.C_FLAG);
@@ -7150,9 +7150,9 @@ instructions:
             // P/V is reset when BC becomes 0.
             // set_private_field("clk_cycles", 16); // Optional: for accurate timing
         }
-        
+
         registers.F = newF;
-  
+
     - name: ldir
       template: ED
       # Cycles: 21 if BC != 0, 16 if BC = 0. Handled in definition.
@@ -7173,14 +7173,14 @@ instructions:
         const newHL = (hlAddr + 1n) & 0xFFFFn;
         const newDE = (deAddr + 1n) & 0xFFFFn;
         bcCount = (bcCount - 1n) & 0xFFFFn;
-        
+
         registers.H = (newHL >> 8n) & 0xFFn;
         registers.L = newHL & 0xFFn;
         registers.D = (newDE >> 8n) & 0xFFn;
         registers.E = newDE & 0xFFn;
         registers.B = (bcCount >> 8n) & 0xFFn;
         registers.C = bcCount & 0xFFn;
-        
+
         // 4. Update flags according to Z80 specification
         // S, Z, C are unaffected. H and N are reset. P/V is set if BC != 0.
         let newF = registers.F & (CAPI.Z80.S_FLAG | CAPI.Z80.Z_FLAG | CAPI.Z80.C_FLAG); 
@@ -7195,7 +7195,7 @@ instructions:
             // P/V is reset when BC becomes 0.
             // set_private_field("clk_cycles", 16); // Optional: for accurate timing
         }
-        
+
         registers.F = newF;
 
     - name: im
@@ -7593,7 +7593,7 @@ instructions:
         // Loads the value pointed to by IY plus d into L.
         const addr = (registers.IY + d) & 0xFFFFn;
         registers.L = CAPI.MEM.read(addr, 1);
-      
+
     - name: ld
       template: FD
       nwords: 3
@@ -7806,19 +7806,19 @@ instructions:
           type: skip
           value: "hl, bc"
           order: 1
-      definition: |        
+      definition: |
         // 1. Get 16-bit operands
         const hlValue = (registers.H << 8n) | registers.L;
         const bcValue = (registers.B << 8n) | registers.C;
-        
+
         // 2. Perform the subtraction
         const carry = registers.F & CAPI.Z80.C_FLAG;
         const result = (hlValue - bcValue - carry) & 0xFFFFn;
-        
+
         // 3. Call the helper function to calculate all flags.
         //    We pass the original values to it.
         registers.F = CAPI.Z80.calculateFlags_SBC16(hlValue, bcValue, registers.F);
-        
+
         // 4. Update the destination register pair (HL) with the result.
         registers.H = (result >> 8n) & 0xFFn;
         registers.L = result & 0xFFn;
@@ -7833,11 +7833,11 @@ instructions:
           type: skip
           value: "hl, de"
           order: 1
-      definition: |        
+      definition: |
         // 1. Get 16-bit operands
         const hlValue = (registers.H << 8n) | registers.L;
         const deValue = (registers.D << 8n) | registers.E;
-        
+
         // 2. Perform the subtraction
         const carry = registers.F & CAPI.Z80.C_FLAG;
         const result = (hlValue - deValue - carry) & 0xFFFFn;
@@ -7849,7 +7849,7 @@ instructions:
         // 4. Update the destination register pair (HL) with the result.
         registers.H = (result >> 8n) & 0xFFn;
         registers.L = result & 0xFFn;
-      
+
     - name: sbc
       template: ED
       clk_cycles: 15
@@ -7860,7 +7860,7 @@ instructions:
           type: skip
           value: "hl, hl"
           order: 1
-      definition: |        
+      definition: |
         // 1. Get 16-bit operands
         const hlValue = (registers.H << 8n) | registers.L;
         const hlValue2 = (registers.H << 8n) | registers.L;
@@ -7887,10 +7887,10 @@ instructions:
           type: skip
           value: "hl, sp"
           order: 1
-      definition: |        
+      definition: |
         // 1. Get 16-bit operands
         const hlValue = (registers.H << 8n) | registers.L;
-        
+
         // 2. Perform the subtraction
         const carry = registers.F & CAPI.Z80.C_FLAG;
         const result = (hlValue - registers.SP - carry) & 0xFFFFn;
@@ -8236,7 +8236,7 @@ interrupts:
     if (typeof CAPI.Z80.interruptPin === 'undefined') {
       CAPI.Z80.interruptPin = false;
     }
-    
+
     switch (type) {
       case InterruptType.External:
         CAPI.Z80.interruptPin = true; // Assert INT pin
@@ -8261,7 +8261,7 @@ timer:
   is_enabled: |
     // Timer interrupts enabled if global interrupts are enabled
     return !!(CAPI.REG.read('IFF1') & 1n);
-  enable: | 
+  enable: |
     return true;
   disable: |
     return false;

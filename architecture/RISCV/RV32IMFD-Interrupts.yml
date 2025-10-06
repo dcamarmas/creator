@@ -3876,7 +3876,6 @@ interrupts:
         break;
     }
     CAPI.REG.write(val, 'MCAUSE');
-    
 
 timer:
   tick_cycles: 1
