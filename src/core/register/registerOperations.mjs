@@ -30,7 +30,7 @@ import { packExecute } from "../utils/utils.mjs";
  * @param {Number} indexComp Index of the register bank
  * @param {Number} indexElem Index of the register
  */
-function updateRegisterUI(indexComp, indexElem) {
+export function updateRegisterUI(indexComp, indexElem) {
     const register = REGISTERS[indexComp].elements[indexElem];
     const ctrl_register_tags = [
         "program_counter",

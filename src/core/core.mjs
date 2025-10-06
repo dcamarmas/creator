@@ -37,22 +37,12 @@ import {
     crex_findReg_bytag,
     crex_clearRegisterCache,
 } from "./register/registerLookup.mjs";
-import {
-    crex_findReg,
-    crex_findReg_bytag,
-    crex_clearRegisterCache,
-} from "./register/registerLookup.mjs";
 import { readRegister, writeRegister } from "./register/registerOperations.mjs";
 import { StackTracker } from "./memory/StackTracker.mts";
 import { creator_ga } from "./utils/creator_ga.mjs";
 import { creator_callstack_reset } from "./sentinel/sentinel.mjs";
 import { resetStats } from "./executor/stats.mts";
 import { resetDecoderCache } from "./executor/decoder.mjs";
-import {
-    compileInterruptFunctions,
-    enableInterrupts,
-    ExecutionMode,
-} from "./executor/interrupts.mts";
 import {
     compileInterruptFunctions,
     enableInterrupts,
@@ -1425,10 +1415,6 @@ export function loadBinaryFile(filePath, offset = 0n) {
 }
 
 export function getPC() {
-    const pc_address = readRegister(
-        PC_REG_INDEX.indexComp,
-        PC_REG_INDEX.indexElem,
-    );
     const pc_address = readRegister(
         PC_REG_INDEX.indexComp,
         PC_REG_INDEX.indexElem,
