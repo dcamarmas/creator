@@ -8,7 +8,7 @@ import {
 
 Deno.test(
     "Architecture-agnostic testing - RISC-V Recursive Factorial Function",
-     
+
     async () => {
         const testAssembly = `
 

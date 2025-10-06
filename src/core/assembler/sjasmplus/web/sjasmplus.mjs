@@ -22,7 +22,7 @@
 import { SjasmPlus } from "./wasm/sjasmplus.js";
 import { main_memory } from "../../../core.mjs";
 import { parseDebugSymbols, precomputeInstructions } from "../../compiler.mjs";
- 
+
 export async function sjasmplusAssemble(code) {
     // Re-initialize WASM module every time
     let sjasmModule;

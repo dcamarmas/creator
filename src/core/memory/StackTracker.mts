@@ -102,7 +102,8 @@ export class StackTracker {
     }
 
     private updateUI() {
-        if (document === undefined || Object.hasOwn(document, "app") === false) return;
+        if (document === undefined || Object.hasOwn(document, "app") === false)
+            return;
         // @ts-ignore app is injected by Vue
         document.app.$data.callee_frame = this.frames.at(-1);
         // @ts-ignore app is injected by Vue

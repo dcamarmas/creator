@@ -1,4 +1,3 @@
-
 import { newArchitectureLoad } from "@/core/core.mjs";
 import fs from "node:fs";
 import { assertEquals } from "https://deno.land/std/assert/mod.ts";

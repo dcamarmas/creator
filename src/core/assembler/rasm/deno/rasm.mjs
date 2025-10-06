@@ -62,7 +62,6 @@ function parseSourceLineMapping(rawRasmOutput) {
     return sourceMap;
 }
 
- 
 export function rasmAssemble(code) {
     // --- Setup temporary files ---
     const filename = "program";

@@ -1335,7 +1335,7 @@ instructions:
           value: "1100011"
         - field: funct3
           value: "001"
-      definition: | 
+      definition: |
         if (registers[rs1] !== registers[rs2]) 
           registers["PC"] = registers["PC"] + imm;
       help: Take the branch if registers rs1 and rs2 are not equal.

@@ -32,49 +32,60 @@ interface InstructionDescriptor {
     fields: Array<DecodedField & { order?: number }>;
 }
 
-const registers = new Proxy({}, {
-    get(_target, prop) {
-        if (typeof prop !== "string") {
-            throw new Error("Register name must be a string");
-        }
-        // Special case for PC register - read virtual PC from status
-        if (prop === "PC") {
-            return status.virtual_PC;
-        }
-        return CAPI.REG.read(prop);
-    },
-    set(_target, prop, value) {
-        if (typeof prop !== "string") {
-            throw new Error("Register name must be a string");
-        }
-        CAPI.REG.write(value, prop);
-        return true;
-    },
-    has(_target, prop) {
-        if (typeof prop !== "string") {
-            return false;
-        }
-        // Special case for PC register
-        if (prop === "PC") {
+const registers = new Proxy(
+    {},
+    {
+        get(_target, prop) {
+            if (typeof prop !== "string") {
+                throw new Error("Register name must be a string");
+            }
+            // Special case for PC register - read virtual PC from status
+            if (prop === "PC") {
+                return status.virtual_PC;
+            }
+            return CAPI.REG.read(prop);
+        },
+        set(_target, prop, value) {
+            if (typeof prop !== "string") {
+                throw new Error("Register name must be a string");
+            }
+            CAPI.REG.write(value, prop);
             return true;
-        }
-        try {
-            CAPI.REG.read(prop);
-            return true;
-        } catch {
-            return false;
-        }
-    }
-});
+        },
+        has(_target, prop) {
+            if (typeof prop !== "string") {
+                return false;
+            }
+            // Special case for PC register
+            if (prop === "PC") {
+                return true;
+            }
+            try {
+                CAPI.REG.read(prop);
+                return true;
+            } catch {
+                return false;
+            }
+        },
+    },
+);
 
-export function compileInstruction(
-    instruction: InstructionDescriptor,
-) {
+export function compileInstruction(instruction: InstructionDescriptor) {
     const parameters: Array<string | undefined> = [];
     for (const field of instruction.fields) {
         // For each field that is a register or an immediate, we have to
         // create a function that receives those values as parameters
-        if (["INT-Reg", "Ctrl-Reg", "SFP-Reg", "DFP-Reg", "inm-signed", "inm-unsigned", "offset_bytes"].includes(field.type)) {
+        if (
+            [
+                "INT-Reg",
+                "Ctrl-Reg",
+                "SFP-Reg",
+                "DFP-Reg",
+                "inm-signed",
+                "inm-unsigned",
+                "offset_bytes",
+            ].includes(field.type)
+        ) {
             // check the "order" field, and sort them ascendingly
             // to ensure the parameters are always in the same order
             if (typeof field.order !== "number") {
@@ -86,8 +97,10 @@ export function compileInstruction(
             parameters[field.order] = field.name;
         }
     }
-    const orderedParameters = parameters.filter((param): param is string => typeof param === "string");
-    
+    const orderedParameters = parameters.filter(
+        (param): param is string => typeof param === "string",
+    );
+
     const func = new Function(
         "status",
         "registers",
@@ -96,7 +109,7 @@ export function compileInstruction(
     );
 
     // Return a wrapper function that injects the status and registers objects
-    return function(...args: unknown[]) {
+    return function (...args: unknown[]) {
         return func(status, registers, ...args);
     };
 }

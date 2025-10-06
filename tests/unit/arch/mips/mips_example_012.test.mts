@@ -6,10 +6,8 @@ import {
     assertSimulatorState,
 } from "../simulator-test-utils.mts";
 
-Deno.test(
-    "MIPS Recursive Factorial",
-    async () => {
-        const testAssembly = `
+Deno.test("MIPS Recursive Factorial", async () => {
+    const testAssembly = `
 
 #
 # ARCOS.INF.UC3M.ES
@@ -64,29 +62,28 @@ factorial:
 
     `;
 
-        const MIPS_ARCH_PATH = "../../../architecture/MIPS32.yml";
+    const MIPS_ARCH_PATH = "../../../architecture/MIPS32.yml";
 
-        // Setup simulator with MIPS architecture
-        await setupSimulator(testAssembly, MIPS_ARCH_PATH);
+    // Setup simulator with MIPS architecture
+    await setupSimulator(testAssembly, MIPS_ARCH_PATH);
 
-        // Execute the program
-        const result = executeN(1000);
-        assertEquals(result.error, false, "Execution should not error");
+    // Execute the program
+    const result = executeN(1000);
+    assertEquals(result.error, false, "Execution should not error");
 
-        // Assert all expected state using the wrapper function
-        assertSimulatorState({
-            registers: {
-                PC: 0x1cn,
-                r1: 0x1n, // at
-                r2: 0xan, // v0
-                r4: 0x78n, // a0
-                r9: 0x5n, // t1
-                r31: 0x8n, // ra
-            },
-            display: "120", // Should display '120'
-            keyboard: "", // Keyboard buffer should be empty
-        });
+    // Assert all expected state using the wrapper function
+    assertSimulatorState({
+        registers: {
+            PC: 0x1cn,
+            r1: 0x1n, // at
+            r2: 0xan, // v0
+            r4: 0x78n, // a0
+            r9: 0x5n, // t1
+            r31: 0x8n, // ra
+        },
+        display: "120", // Should display '120'
+        keyboard: "", // Keyboard buffer should be empty
+    });
 
-        cleanupSimulator();
-    },
-);
+    cleanupSimulator();
+});

@@ -128,7 +128,6 @@ async function main() {
                 //     process.exit(0);
                 // }
 
-
                 // if (totalInstructions === 1000000) {
                 //     process.exit(0);
                 // }

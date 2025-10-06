@@ -18,7 +18,6 @@
  *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 export function packExecute(error, err_msg, err_type, draw) {
     const ret = {};
 

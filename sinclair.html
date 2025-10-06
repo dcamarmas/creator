@@ -519,14 +519,17 @@ Executed instructions will appear here...</pre
             if (elapsedSeconds > 0 && instructionsExecuted > 0) {
               // Calculate effective clock speed in MHz
               let effectiveClockSpeed;
-              const clockCyclesExecuted = totalClockCycles - performanceStartClockCycles;
-              
+              const clockCyclesExecuted =
+                totalClockCycles - performanceStartClockCycles;
+
               if (clockCyclesExecuted > 0) {
                 // Use actual clock cycles executed during this run session
-                effectiveClockSpeed = clockCyclesExecuted / (elapsedSeconds * 1000000);
+                effectiveClockSpeed =
+                  clockCyclesExecuted / (elapsedSeconds * 1000000);
               } else {
                 // Fallback: estimate based on instructions (assume average 10 cycles per instruction)
-                effectiveClockSpeed = (instructionsExecuted * 10) / (elapsedSeconds * 1000000);
+                effectiveClockSpeed =
+                  (instructionsExecuted * 10) / (elapsedSeconds * 1000000);
               }
 
               const speedPercentage =
