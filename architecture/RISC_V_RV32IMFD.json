@@ -6262,7 +6262,7 @@
           "valueField": "101"
         }
       ],
-      "definition": "rd = rs1 >> rs2;",
+      "definition": "rd = rs1 >>> rs2;",
       "separated": [
         false,
         false,
