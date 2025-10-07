@@ -6323,7 +6323,7 @@
           "valueField": "000000"
         }
       ],
-      "definition": "if (shamt > 0) {rd = (rs1 >> shamt);}",
+      "definition": "if (shamt > 0) {rd = (rs1 >>> shamt);}",
       "separated": [
         false,
         false,
