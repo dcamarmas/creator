@@ -24,7 +24,7 @@ import $ from "jquery";
 import humanizeDuration from "humanize-duration";
 
 import { creator_ga } from "@/core/utils/creator_ga.mjs";
-import { newArchitectureLoad, initCAPI } from "@/core/core.mjs";
+import { loadArchitecture, initCAPI } from "@/core/core.mjs";
 import { console_log as clog } from "@/core/utils/creator_logger.mjs";
 
 /*Stop the transmission of events to children*/
@@ -143,7 +143,7 @@ export function loadDefaultArchitecture(arch, root = document.app) {
     $.ajaxSetup({ async: false });
 
     $.get("architecture/" + arch.file + ".yml", cfg => {
-        const { status, errorcode, token } = newArchitectureLoad(cfg);
+        const { status, errorcode, token } = loadArchitecture(cfg);
 
         if (status === "ko") {
             show_notification(`[${errorcode}] ${token}`, "danger", root);
@@ -198,7 +198,7 @@ export function loadDefaultArchitecture(arch, root = document.app) {
  * @param {Object} [root] Root Vue component (App)
  */
 export function loadCustomArchitecture(arch, root = document.app) {
-    const { status, errorcode, token } = newArchitectureLoad(arch.definition);
+    const { status, errorcode, token } = loadArchitecture(arch.definition);
 
     if (status === "ko") {
         show_notification(`[${errorcode}] ${token}`, "danger", root);

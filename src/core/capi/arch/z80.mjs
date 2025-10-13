@@ -27,7 +27,7 @@ function _isEvenParity(value) {
     v ^= v >> 1n;
     return (v & 1n) === 0n;
 }
-export const Z80 = {
+export const ARCH = {
     // Flag bitmasks
     S_FLAG: 0x80n,
     Z_FLAG: 0x40n,

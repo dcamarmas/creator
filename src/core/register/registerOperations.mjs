@@ -96,6 +96,8 @@ export function writeRegister(value, indexComp, indexElem) {
         return;
     } else if (value === 0) {
         value = BigInt(0);
+    } else if (value < 0) {
+        throw new Error("Cannot write negative values to registers. Use two's complement.");
     }
     if (typeof value === "number") {
         throw new Error("Called writeRegister with a number, not BigInt");

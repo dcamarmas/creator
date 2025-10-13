@@ -633,7 +633,7 @@ Executed instructions will appear here...</pre
                 arch = await readFile(archFileInput, "text");
                 rom = await readFile(binFileInput, "arrayBuffer");
               }
-              const archRet = creator.newArchitectureLoad(arch.content);
+              const archRet = creator.loadArchitecture(arch.content);
               if (archRet.status !== "ok")
                 throw new Error(`Architecture Error: ${archRet.token}.`);
               creator.reset();

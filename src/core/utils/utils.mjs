@@ -33,7 +33,7 @@ export function getPrimaryKey(instr) {
     let key = "";
     for (const field of instr.fields) {
         if (field.type === "co" || field.type === "cop") {
-            key += field.valueField;
+            key += field.value;
         }
     }
     return key;

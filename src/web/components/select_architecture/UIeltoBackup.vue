@@ -19,7 +19,7 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <script>
-import { newArchitectureLoad } from "@/core/core.mjs"
+import { loadArchitecture } from "@/core/core.mjs"
 import { show_notification, formatRelativeDate } from "@/web/utils.mjs"
 
 export default {
@@ -45,7 +45,7 @@ export default {
     load_copy() {
       // Load architecture from cache
       this.$root.arch_code = localStorage.getItem("backup_arch") || ""
-      newArchitectureLoad(this.$root.arch_code)
+      loadArchitecture(this.$root.arch_code)
 
       this.$root.architecture_name = localStorage.getItem("backup_arch_name")
 

@@ -23,7 +23,7 @@
  * Provides utilities for handling double precision floating point registers
  * and conversions between register pairs and JavaScript numbers.
  */
-export const MIPS = {
+export const ARCH = {
     /**
      * Validates that a register is even (required for double precision operations).
      * @param {string} regName - The register name (e.g., "f0", "f2")

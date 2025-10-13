@@ -302,7 +302,6 @@ export default {
     // set config
     this.set_dark_mode()
     set_debug(this.c_debug)
-    initCAPI()
 
     // listener for window size changes
     window.addEventListener("resize", this.resizeHandler)

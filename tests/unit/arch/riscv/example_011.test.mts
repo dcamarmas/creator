@@ -55,14 +55,14 @@ sub:
 
         // Execute the program
         const result = executeN(1000);
-        assertEquals(result.error, false, "Execution should not error");
+        assertEquals(result.error, 0, "Execution should not error");
 
         // Assert all expected state using the wrapper function
         assertSimulatorState({
             registers: {
-                x6: BigInt.asIntN(32, 0xffffffcan), // t1 should contain 0xffffffca (-54 in 2's complement)
+                x6: 0xffffffcan, // t1 should contain 0xffffffca (-54 in 2's complement)
                 x7: 0x5an, // t2 should contain 0x5a (90 in decimal)
-                x10: BigInt.asIntN(32, 0xffffff70n), // a0 should contain 0xffffff70 (-144 in 2's complement)
+                x10: 0xffffff70n, // a0 should contain 0xffffff70 (-144 in 2's complement)
                 x11: 0x5an, // a1 should contain 0x5a (90 in decimal)
                 x12: 0x2dn, // a2 should contain 0x2d (45 in decimal)
             },

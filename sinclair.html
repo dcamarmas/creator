@@ -348,7 +348,7 @@ Executed instructions will appear here...</pre
           import("./src/core/capi/arch/z80.mjs"),
         ])
           .then(([creator, executor, creator_logger, z80]) => {
-            creator.initCAPI();
+            creator.initCAPI("z80");
             window.creator = creator; // Expose to debug console
             setupEmulator(creator, executor.step, creator_logger.logger, z80);
           })
@@ -572,7 +572,7 @@ Executed instructions will appear here...</pre
 
             // --- BORDER LOGIC ---
             // Get border color from the shared Z80 state object
-            const borderColorIndex = Number(z80.Z80.borderColor);
+            const borderColorIndex = Number(z80.ARCH.borderColor);
             // Look up RGB values from the palette
             const borderRgb = PALETTE[borderColorIndex];
             // Set the background color of the canvas's container
@@ -843,7 +843,7 @@ Executed instructions will appear here...</pre
                 arch = await readFile(archFileInput, "text");
                 rom = await readFile(binFileInput, "arrayBuffer");
               }
-              const archRet = creator.newArchitectureLoad(arch.content);
+              const archRet = creator.loadArchitecture(arch.content);
               if (archRet.status !== "ok")
                 throw new Error(`Architecture Error: ${archRet.token}.`);
               creator.reset();
@@ -938,7 +938,7 @@ Executed instructions will appear here...</pre
             event.preventDefault();
 
             // Handle ZX Spectrum keyboard matrix
-            z80.Z80.pressKey(event.code);
+            z80.ARCH.pressKey(event.code);
           });
 
           document.addEventListener("keyup", event => {
@@ -946,7 +946,7 @@ Executed instructions will appear here...</pre
             if (!isLoaded) return;
 
             // Handle ZX Spectrum keyboard matrix
-            z80.Z80.releaseKey(event.code);
+            z80.ARCH.releaseKey(event.code);
           });
 
           clearSessionBtn.addEventListener("click", () => {

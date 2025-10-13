@@ -42,27 +42,20 @@ export function resetDecoderCache() {
  * @param {string} binaryValue - The binary representation of the register
  * @returns {string|null} - The register name or null if not found
  */
-function get_register_binary(type, binaryValue) {
+function decodeRegister(type, binaryValue) {
+    const binaryValueInt = parseInt(binaryValue, BINARY_BASE);
     // Find the component that matches the requested register type
     for (const component of REGISTERS) {
         if (component.type !== type) {
             continue;
         }
 
-        // Find the register whose index matches the binary value
-        for (
-            let registerIndex = 0;
-            registerIndex < component.elements.length;
-            registerIndex++
-        ) {
-            const registerBinaryValue = registerIndex
-                .toString(BINARY_BASE)
-                .padStart(binaryValue.length, "0");
-
-            if (registerBinaryValue === binaryValue) {
-                return component.elements[registerIndex].name[0];
+        for (const register of component.elements) {
+            if (register.encoding === binaryValueInt) {
+                return register.name[0]; // Return the first name (canonical)
             }
         }
+
     }
 
     return null;
@@ -81,7 +74,7 @@ function extractOpcode(fields) {
                 startbit: field.startbit,
                 stopbit: field.stopbit,
                 word: field.word,
-                value: field.valueField,
+                value: field.value,
             };
         }
     }
@@ -127,18 +120,18 @@ function computeBitsOrder(startbit, stopbit) {
  * Processes a single instruction field and extracts its value from the binary instruction
  *
  * @param {Object} field - The instruction field definition object
- * @param {string} instructionExec - The binary instruction string
- * @param {number} instruction_nwords - Number of words in the instruction
+ * @param {string} encodedInstruction - String containing the binary instruction and possibly part of the next one. In that case, only the first nwords*WORDSIZE bits are considered.
+ * @param {number} nwords - Number of words in the instruction
  * @returns {string|number|null} The extracted field value or null if not applicable
  */
 // eslint-disable-next-line max-lines-per-function
-function processInstructionField(field, instructionExec, instruction_nwords) {
+function processInstructionField(field, encodedInstruction, nwords) {
     let value = null;
 
     // Split instruction into words
     const words = [];
-    for (let i = 0; i < instruction_nwords; i++) {
-        const word = instructionExec.substring(
+    for (let i = 0; i < nwords; i++) {
+        const word = encodedInstruction.substring(
             i * WORDSIZE,
             (i + 1) * WORDSIZE,
         );
@@ -188,7 +181,7 @@ function processInstructionField(field, instructionExec, instruction_nwords) {
                 combinedWord.length - field.startbit - 1,
                 combinedWord.length - field.stopbit,
             );
-            let convertedType = null;
+            let convertedType;
             // The register type in the instruction is different from the one in the architecture
             switch (field.type) {
                 case "INT-Reg":
@@ -202,10 +195,10 @@ function processInstructionField(field, instructionExec, instruction_nwords) {
                     convertedType = "ctrl_registers";
                     break;
                 default:
-                    logger.error("Unknown register type: " + field.type);
+                    throw new Error("Unknown register type: " + field.type);
             }
 
-            value = get_register_binary(convertedType, bin);
+            value = decodeRegister(convertedType, bin);
             break;
         }
         case "enum": {
@@ -244,8 +237,8 @@ function processInstructionField(field, instructionExec, instruction_nwords) {
             }
             break;
         }
-        case "inm-signed":
-        case "inm-unsigned":
+        case "imm-signed":
+        case "imm-unsigned":
         case "address":
         case "offset_bytes":
         case "offset_words": {
@@ -307,7 +300,7 @@ function processInstructionField(field, instructionExec, instruction_nwords) {
                 value = parseInt(binaryValue, BINARY_BASE);
                 // Signed immediates need to be sign-extended
                 if (
-                    field.type === "inm-signed" ||
+                    field.type === "imm-signed" ||
                     field.type === "offset_words" ||
                     field.type === "offset_bytes"
                 ) {
@@ -325,7 +318,7 @@ function processInstructionField(field, instructionExec, instruction_nwords) {
 
                 value = parseInt(binaryValue, BINARY_BASE);
                 if (
-                    field.type === "inm-signed" ||
+                    field.type === "imm-signed" ||
                     field.type === "offset_words" ||
                     field.type === "offset_bytes"
                 ) {
@@ -336,51 +329,13 @@ function processInstructionField(field, instructionExec, instruction_nwords) {
             break;
         }
         case "skip":
-            value = field.valueField;
+            value = field.value;
             break;
 
         default:
             logger.error("Unknown field type: " + field.type);
     }
     return value;
-}
-
-/**
- * Replaces register names in instruction parts with their proper names (aliases)
- *
- * @param {Array<string>} instructionParts - Array of instruction parts
- * @returns {Array<string>} - Array with register names replaced with proper names
- */
-function replaceRegisterNames(instructionParts) {
-    if (!instructionParts || !Array.isArray(instructionParts)) {
-        return instructionParts;
-    }
-
-    return instructionParts.map(part => {
-        // Check if this part is a register
-        for (const bank of REGISTERS) {
-            if (
-                bank.type !== "int_registers" &&
-                bank.type !== "fp_registers" &&
-                bank.type !== "ctrl_registers"
-            ) {
-                continue;
-            }
-
-            for (const register of bank.elements) {
-                if (register.name && register.name.length > 1) {
-                    // If the part matches the default name (first name in the array)
-                    if (part === register.name[0]) {
-                        // Return the proper name (second name in the array)
-                        return register.name[1];
-                    }
-                }
-            }
-        }
-
-        // If not a register or no proper name found, return the original part
-        return part;
-    });
 }
 
 /**
@@ -413,7 +368,7 @@ function buildInstructionLookupTable() {
                 functionMasks.push({
                     startbit: field.startbit,
                     stopbit: field.stopbit,
-                    expectedValue: field.valueField,
+                    expectedValue: field.value,
                     word: field.word,
                 });
             }
@@ -593,11 +548,13 @@ function findMatchingInstruction(
         if (matchingInstructions.length > 0) {
             // If more than one match, check for enum field preference
             if (matchingInstructions.length > 1) {
+                //              ----- MEGA HACK ALERT -----
                 // This is a workaround due to the assembler not supporting
                 // optional fields in the signature definition.
                 // The way we fix this is by duplicating the instruction
                 // in the architecture file. However, this breaks the
-                // instruction matching logic, so we need to handle it here.
+                // instruction matching logic since it introduces ambiguity
+                // so we need to handle it here.
 
                 // Check if we have exactly 2 matches and they only differ by an enum field
                 if (matchingInstructions.length === 2) {
@@ -672,7 +629,7 @@ function processAllFields(instruction, binaryInstruction) {
                 name: "opcode",
                 type: field.type,
                 value: instruction.name,
-                prettyValue: instruction.name,
+                prettyValue: instruction.name + " ",
             };
         } else if (value !== null) {
             let prettyValue = value;
@@ -682,6 +639,7 @@ function processAllFields(instruction, binaryInstruction) {
             }
             if (field.prefix) prettyValue = field.prefix + prettyValue;
             if (field.suffix) prettyValue += field.suffix;
+            prettyValue += field.space === false ? "" : " ";
             ordered[targetIndex] = {
                 name: field.name,
                 type: field.type,
@@ -698,13 +656,10 @@ function processAllFields(instruction, binaryInstruction) {
  * Decodes a binary instruction from a Uint8Array.
  *
  * @param {string|Uint8Array} toDecode - The instruction to decode  (Uint8Array)
- * @param {string} [outputFormat="new"] - Used for testing the decoder. Can be "new" (default) or "decodedOnly".
- *                                       "new" returns an object with status, instruction, and decodedFields.
- *                                       "decodedOnly" returns just the assembly string of the instruction.
  * @returns {string|Object} Decoded instruction in the requested format
  * @throws {Error} When instruction cannot be decoded or is unknown
  */
-export function decode_instruction(toDecode, outputFormat = "new") {
+export function decode(toDecode) {
     let binaryInstruction;
     if (toDecode instanceof Uint8Array) {
         binaryInstruction = Array.from(toDecode)
@@ -733,20 +688,22 @@ export function decode_instruction(toDecode, outputFormat = "new") {
         binaryInstruction,
     );
 
-    const instructionAssembly = instructionArray
+    let instructionAssembly = instructionArray
         .filter(x => x !== undefined)
         .map(x => x.prettyValue)
-        .join(" ");
+        .join("").trim();
 
-    if (outputFormat === "decodedOnly") {
-        return instructionAssembly;
-    } else if (outputFormat === "new") {
-        return {
-            status: "ok",
-            instruction: matchedInstruction,
-            decodedFields: instructionArray,
-        };
-    } else {
-        throw new Error(`Unknown output format: ${outputFormat}`);
+    // If the last character is a comma, remove it.
+    // Honestly a hack, but any proper fix would require
+    // updating the z80 architecture file (>8k lines)
+    if (instructionAssembly.endsWith(",")) {
+        instructionAssembly = instructionAssembly.slice(0, -1);
     }
+
+    return {
+        status: "ok",
+        instruction: matchedInstruction,
+        decodedFields: instructionArray,
+        assembly: instructionAssembly,
+    };
 }

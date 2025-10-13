@@ -44,19 +44,13 @@ sub:
     `;
 
     const MIPS_ARCH_PATH = "../../../architecture/MIPS32.yml";
-    const MIPS_ARCH_PATH = "../../../architecture/MIPS32.yml";
 
-    // Setup simulator with MIPS architecture
-    await setupSimulator(testAssembly, MIPS_ARCH_PATH);
     // Setup simulator with MIPS architecture
     await setupSimulator(testAssembly, MIPS_ARCH_PATH);
 
     // Execute the program
     const result = executeN(1000);
-    assertEquals(result.error, false, "Execution should not error");
-    // Execute the program
-    const result = executeN(1000);
-    assertEquals(result.error, false, "Execution should not error");
+    assertEquals(result.error, 0, "Execution should not error");
 
     // Assert all expected state using the wrapper function
     assertSimulatorState({
@@ -75,25 +69,6 @@ sub:
         display: "-144", // Should display '-144'
         keyboard: "", // Keyboard buffer should be empty
     });
-    // Assert all expected state using the wrapper function
-    assertSimulatorState({
-        registers: {
-            PC: 0x38n,
-            r1: 0xffffffb3n, // at
-            r2: 0xan, // v0
-            r3: 0x5an, // v1
-            r4: 0xffffff70n, // a0
-            r5: 0x5an, // a1
-            r6: 0x2dn, // a2
-            r9: 0xffffffcan, // t1
-            r10: 0x5an, // t2
-            r31: 0x24n, // ra
-        },
-        display: "-144", // Should display '-144'
-        keyboard: "", // Keyboard buffer should be empty
-    });
 
-    cleanupSimulator();
-});
     cleanupSimulator();
 });

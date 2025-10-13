@@ -13,6 +13,7 @@ config:
   comment_prefix: ";"
   start_address: 0x0
   pc_offset: 0
+  plugin: z80
   assemblers:
     - name: "SjasmPlus" # The first element is the default assembler
       description: "SjasmPlus Z80 Assembler"
@@ -183,15 +184,15 @@ templates:
         stopbit: 0
         order: 0
         word: 0
-        valueField: "11011101"
+        value: "11011101"
       - name: opcode2
         type: cop
         startbit: 7
         stopbit: 0
         word: 1
-        valueField: "11001011"
+        value: "11001011"
       - name: imm
-        type: inm-unsigned
+        type: imm-unsigned
         startbit: 7
         stopbit: 0
         prefix: "("
@@ -215,7 +216,7 @@ templates:
         stopbit: 0
         order: 0
         word: 0
-        valueField: "11011101"
+        value: "11011101"
       - name: opcode2
         type: cop
         startbit: 7
@@ -233,7 +234,7 @@ templates:
         stopbit: 0
         order: 0
         word: 0
-        valueField: "11101101"
+        value: "11101101"
       - name: opcode2
         type: cop
         startbit: 7
@@ -251,7 +252,7 @@ templates:
         stopbit: 0
         order: 0
         word: 0
-        valueField: "11111101"
+        value: "11111101"
       - name: opcode2
         type: cop
         startbit: 7
@@ -269,15 +270,15 @@ templates:
         stopbit: 0
         order: 0
         word: 0
-        valueField: "11111101" # 0xFD prefix
+        value: "11111101" # 0xFD prefix
       - name: opcode2
         type: cop
         startbit: 7
         stopbit: 0
         word: 1
-        valueField: "11001011" # 0xCB prefix
+        value: "11001011" # 0xCB prefix
       - name: d
-        type: inm-signed
+        type: imm-signed
         startbit: 7
         stopbit: 0
         word: 2
@@ -298,7 +299,7 @@ templates:
         stopbit: 0
         order: 0
         word: 0
-        valueField: "11001011"
+        value: "11001011"
       - name: opcode2
         type: cop
         startbit: 7
@@ -325,7 +326,7 @@ instructions:
           value: "bc,"
           order: 1
         - field: nn
-          type: inm-unsigned
+          type: imm-unsigned
           startbit: 15
           stopbit: 0
           order: 2
@@ -366,7 +367,7 @@ instructions:
         - field: opcode
           value: "0x10"
         - field: e
-          type: inm-signed
+          type: imm-signed
           startbit: 7
           stopbit: 0
           order: 1
@@ -389,7 +390,7 @@ instructions:
           value: "de,"
           order: 1
         - field: nn
-          type: inm-unsigned
+          type: imm-unsigned
           startbit: 15
           stopbit: 0
           order: 2
@@ -410,7 +411,7 @@ instructions:
           value: "hl,"
           order: 1
         - field: nn
-          type: inm-unsigned
+          type: imm-unsigned
           startbit: 15
           stopbit: 0
           order: 2
@@ -442,7 +443,7 @@ instructions:
           value: "sp,"
           order: 1
         - field: nn
-          type: inm-unsigned
+          type: imm-unsigned
           startbit: 15
           stopbit: 0
           order: 2
@@ -458,7 +459,7 @@ instructions:
         - field: opcode
           value: "0xC3"
         - field: nn
-          type: inm-unsigned
+          type: imm-unsigned
           startbit: 15
           stopbit: 0
           order: 1
@@ -473,7 +474,7 @@ instructions:
         - field: opcode
           value: "0x18"
         - field: e
-          type: inm-signed
+          type: imm-signed
           startbit: 7
           stopbit: 0
           order: 1
@@ -493,7 +494,7 @@ instructions:
           value: "nz,"
           order: 1
         - field: e
-          type: inm-signed
+          type: imm-signed
           startbit: 7
           stopbit: 0
           order: 2
@@ -501,7 +502,7 @@ instructions:
       definition: |
         // If the zero flag is unset, the signed value d is added to PC. 
         // The jump is measured from the start of the instruction opcode. 
-        if ((registers.F & CAPI.Z80.Z_FLAG) === 0n) {
+        if ((registers.F & CAPI.ARCH.Z_FLAG) === 0n) {
             registers.PC = (registers.PC + e) & 0xFFFFn;
         }
     - name: jr
@@ -516,13 +517,13 @@ instructions:
           value: "z,"
           order: 1
         - field: e
-          type: inm-signed
+          type: imm-signed
           startbit: 7
           stopbit: 0
           order: 2
           word: 1
       definition: |
-        if ((registers.F & CAPI.Z80.Z_FLAG) !== 0n) {
+        if ((registers.F & CAPI.ARCH.Z_FLAG) !== 0n) {
             registers.PC = (registers.PC + e) & 0xFFFFn;
         }
     - name: jr
@@ -537,13 +538,13 @@ instructions:
           value: "nc,"
           order: 1
         - field: e
-          type: inm-signed
+          type: imm-signed
           startbit: 7
           stopbit: 0
           order: 2
           word: 1
       definition: |
-        if ((registers.F & CAPI.Z80.C_FLAG) === 0n) {
+        if ((registers.F & CAPI.ARCH.C_FLAG) === 0n) {
             registers.PC = (registers.PC + e) & 0xFFFFn;
         }
     - name: jr
@@ -558,13 +559,13 @@ instructions:
           value: "c,"
           order: 1
         - field: e
-          type: inm-signed
+          type: imm-signed
           startbit: 7
           stopbit: 0
           order: 2
           word: 1
       definition: |
-        if ((registers.F & CAPI.Z80.C_FLAG) !== 0n) {
+        if ((registers.F & CAPI.ARCH.C_FLAG) !== 0n) {
             registers.PC = (registers.PC + e) & 0xFFFFn;
         }
     - name: jp
@@ -579,13 +580,13 @@ instructions:
           value: "nz,"
           order: 1
         - field: nn
-          type: inm-unsigned
+          type: imm-unsigned
           startbit: 15
           stopbit: 0
           order: 2
           word: [2, 1]
       definition: |
-        if ((registers.F & CAPI.Z80.Z_FLAG) === 0n) {
+        if ((registers.F & CAPI.ARCH.Z_FLAG) === 0n) {
             registers.PC = nn;
         }
     - name: jp
@@ -596,7 +597,7 @@ instructions:
         - field: opcode
           value: "0xCA"
         - field: nn
-          type: inm-unsigned
+          type: imm-unsigned
           startbit: 15
           stopbit: 0
           order: 2
@@ -606,7 +607,7 @@ instructions:
           value: "z,"
           order: 1
       definition: |
-        if ((registers.F & CAPI.Z80.Z_FLAG) !== 0n) {
+        if ((registers.F & CAPI.ARCH.Z_FLAG) !== 0n) {
             registers.PC = nn;
         }
     - name: jp
@@ -621,13 +622,13 @@ instructions:
           value: "nc,"
           order: 1
         - field: nn
-          type: inm-unsigned
+          type: imm-unsigned
           startbit: 15
           stopbit: 0
           order: 2
           word: [2, 1]
       definition: |
-        if ((registers.F & CAPI.Z80.C_FLAG) === 0n) {
+        if ((registers.F & CAPI.ARCH.C_FLAG) === 0n) {
             registers.PC = nn;
         }
 
@@ -639,7 +640,7 @@ instructions:
         - field: opcode
           value: "0xD3"
         - field: n
-          type: inm-unsigned
+          type: imm-unsigned
           startbit: 7
           stopbit: 0
           prefix: "("
@@ -652,7 +653,7 @@ instructions:
           order: 2
       definition: |
         // Writes the value of the Accumulator to the I/O port specified by n.
-        CAPI.Z80.write(n, registers.A);
+        CAPI.ARCH.write(n, registers.A);
 
     - name: rst 00h
       template: standard
@@ -722,7 +723,7 @@ instructions:
         - field: opcode
           value: "0xDB"
         - field: n
-          type: inm-unsigned
+          type: imm-unsigned
           startbit: 7
           stopbit: 0
           prefix: "("
@@ -735,7 +736,7 @@ instructions:
           order: 1
       definition: |
         // Reads a byte from the I/O port specified by n and stores it in the Accumulator.
-        registers.A = CAPI.Z80.read(n);
+        registers.A = CAPI.ARCH.read(n);
 
     - name: jp
       template: standard
@@ -749,13 +750,13 @@ instructions:
           value: "c,"
           order: 1
         - field: nn
-          type: inm-unsigned
+          type: imm-unsigned
           startbit: 15
           stopbit: 0
           order: 2
           word: [2, 1]
       definition: |
-        if ((registers.F & CAPI.Z80.C_FLAG) !== 0n) {
+        if ((registers.F & CAPI.ARCH.C_FLAG) !== 0n) {
             registers.PC = nn;
         }
     - name: jp
@@ -770,13 +771,13 @@ instructions:
           value: "po,"
           order: 1
         - field: nn
-          type: inm-unsigned
+          type: imm-unsigned
           startbit: 15
           stopbit: 0
           order: 2
           word: [2, 1]
       definition: |
-        if ((registers.F & CAPI.Z80.PV_FLAG) === 0n) {
+        if ((registers.F & CAPI.ARCH.PV_FLAG) === 0n) {
             registers.PC = nn;
         }
 
@@ -816,13 +817,13 @@ instructions:
           value: "pe,"
           order: 1
         - field: nn
-          type: inm-unsigned
+          type: imm-unsigned
           startbit: 15
           stopbit: 0
           order: 2
           word: [2, 1]
       definition: |
-        if ((registers.F & CAPI.Z80.PV_FLAG) !== 0n) {
+        if ((registers.F & CAPI.ARCH.PV_FLAG) !== 0n) {
             registers.PC = nn;
         }
 
@@ -869,13 +870,13 @@ instructions:
           value: "p,"
           order: 1
         - field: nn
-          type: inm-unsigned
+          type: imm-unsigned
           startbit: 15
           stopbit: 0
           order: 2
           word: [2, 1]
       definition: |
-        if ((registers.F & CAPI.Z80.S_FLAG) === 0n) {
+        if ((registers.F & CAPI.ARCH.S_FLAG) === 0n) {
             registers.PC = nn;
         }
     - name: jp
@@ -890,13 +891,13 @@ instructions:
           value: "m,"
           order: 1
         - field: nn
-          type: inm-unsigned
+          type: imm-unsigned
           startbit: 15
           stopbit: 0
           order: 2
           word: [2, 1]
       definition: |
-        if ((registers.F & CAPI.Z80.S_FLAG) !== 0n) {
+        if ((registers.F & CAPI.ARCH.S_FLAG) !== 0n) {
             registers.PC = nn;
         }
 
@@ -1728,7 +1729,7 @@ instructions:
       definition: |
         const oldValueA = registers.A;
         registers.A = (oldValueA + registers.B) & 0xFFn;
-        registers.F = CAPI.Z80.calculateFlags_ADD(oldValueA, registers.B);
+        registers.F = CAPI.ARCH.calculateFlags_ADD(oldValueA, registers.B);
 
     - name: add a, c
       template: standard
@@ -1738,7 +1739,7 @@ instructions:
       definition: |
         const oldValueA = registers.A;
         registers.A = (oldValueA + registers.C) & 0xFFn;
-        registers.F = CAPI.Z80.calculateFlags_ADD(oldValueA, registers.C);
+        registers.F = CAPI.ARCH.calculateFlags_ADD(oldValueA, registers.C);
 
     - name: add a, d
       template: standard
@@ -1748,7 +1749,7 @@ instructions:
       definition: |
         const oldValueA = registers.A;
         registers.A = (oldValueA + registers.D) & 0xFFn;
-        registers.F = CAPI.Z80.calculateFlags_ADD(oldValueA, registers.D);
+        registers.F = CAPI.ARCH.calculateFlags_ADD(oldValueA, registers.D);
 
     - name: add a, e
       template: standard
@@ -1758,7 +1759,7 @@ instructions:
       definition: |
         const oldValueA = registers.A;
         registers.A = (oldValueA + registers.E) & 0xFFn;
-        registers.F = CAPI.Z80.calculateFlags_ADD(oldValueA, registers.E);
+        registers.F = CAPI.ARCH.calculateFlags_ADD(oldValueA, registers.E);
 
     - name: add a, h
       template: standard
@@ -1768,7 +1769,7 @@ instructions:
       definition: |
         const oldValueA = registers.A;
         registers.A = (oldValueA + registers.H) & 0xFFn;
-        registers.F = CAPI.Z80.calculateFlags_ADD(oldValueA, registers.H);
+        registers.F = CAPI.ARCH.calculateFlags_ADD(oldValueA, registers.H);
 
     - name: add a, l
       template: standard
@@ -1778,7 +1779,7 @@ instructions:
       definition: |
         const oldValueA = registers.A;
         registers.A = (oldValueA + registers.L) & 0xFFn;
-        registers.F = CAPI.Z80.calculateFlags_ADD(oldValueA, registers.L);
+        registers.F = CAPI.ARCH.calculateFlags_ADD(oldValueA, registers.L);
 
     - name: add a, (hl)
       template: standard
@@ -1790,7 +1791,7 @@ instructions:
         const value = CAPI.MEM.read((registers.H << 8n) | registers.L, 1);
         const oldValueA = registers.A;
         registers.A = (oldValueA + value) & 0xFFn;
-        registers.F = CAPI.Z80.calculateFlags_ADD(oldValueA, value);
+        registers.F = CAPI.ARCH.calculateFlags_ADD(oldValueA, value);
 
     - name: add a, a
       template: standard
@@ -1801,7 +1802,7 @@ instructions:
       definition: |
         const oldValueA = registers.A;
         registers.A = (oldValueA + oldValueA) & 0xFFn;
-        registers.F = CAPI.Z80.calculateFlags_ADD(oldValueA, oldValueA);
+        registers.F = CAPI.ARCH.calculateFlags_ADD(oldValueA, oldValueA);
 
     - name: adc a, b
       template: standard
@@ -1812,7 +1813,7 @@ instructions:
         const oldValueA = registers.A;
         const valueB = registers.B;
         registers.A = (oldValueA + valueB + (registers.F & 0x01n)) & 0xFFn;
-        registers.F = CAPI.Z80.calculateFlags_ADC(oldValueA, valueB, registers.F);
+        registers.F = CAPI.ARCH.calculateFlags_ADC(oldValueA, valueB, registers.F);
 
     - name: adc a, c
       template: standard
@@ -1823,7 +1824,7 @@ instructions:
         const oldValueA = registers.A;
         const valueC = registers.C;
         registers.A = (oldValueA + valueC + (registers.F & 0x01n)) & 0xFFn;
-        registers.F = CAPI.Z80.calculateFlags_ADC(oldValueA, valueC, registers.F);
+        registers.F = CAPI.ARCH.calculateFlags_ADC(oldValueA, valueC, registers.F);
 
     - name: adc a, d
       template: standard
@@ -1834,7 +1835,7 @@ instructions:
         const oldValueA = registers.A;
         const valueD = registers.D;
         registers.A = (oldValueA + valueD + (registers.F & 0x01n)) & 0xFFn;
-        registers.F = CAPI.Z80.calculateFlags_ADC(oldValueA, valueD, registers.F);
+        registers.F = CAPI.ARCH.calculateFlags_ADC(oldValueA, valueD, registers.F);
 
     - name: adc a, e
       template: standard
@@ -1845,7 +1846,7 @@ instructions:
         const oldValueA = registers.A;
         const valueE = registers.E;
         registers.A = (oldValueA + valueE + (registers.F & 0x01n)) & 0xFFn;
-        registers.F = CAPI.Z80.calculateFlags_ADC(oldValueA, valueE, registers.F);
+        registers.F = CAPI.ARCH.calculateFlags_ADC(oldValueA, valueE, registers.F);
 
     - name: adc a, h
       template: standard
@@ -1856,7 +1857,7 @@ instructions:
         const oldValueA = registers.A;
         const valueH = registers.H;
         registers.A = (oldValueA + valueH + (registers.F & 0x01n)) & 0xFFn;
-        registers.F = CAPI.Z80.calculateFlags_ADC(oldValueA, valueH, registers.F);
+        registers.F = CAPI.ARCH.calculateFlags_ADC(oldValueA, valueH, registers.F);
 
     - name: adc a, l
       template: standard
@@ -1867,7 +1868,7 @@ instructions:
         const oldValueA = registers.A;
         const valueL = registers.L;
         registers.A = (oldValueA + valueL + (registers.F & 0x01n)) & 0xFFn;
-        registers.F = CAPI.Z80.calculateFlags_ADC(oldValueA, valueL, registers.F);
+        registers.F = CAPI.ARCH.calculateFlags_ADC(oldValueA, valueL, registers.F);
 
     - name: adc a, (hl)
       template: standard
@@ -1879,7 +1880,7 @@ instructions:
         const value = CAPI.MEM.read((registers.H << 8n) | registers.L, 1);
         const oldValueA = registers.A;
         registers.A = (oldValueA + value + (registers.F & 0x01n)) & 0xFFn;
-        registers.F = CAPI.Z80.calculateFlags_ADC(oldValueA, value, registers.F);
+        registers.F = CAPI.ARCH.calculateFlags_ADC(oldValueA, value, registers.F);
 
     - name: adc a, a
       template: standard
@@ -1890,7 +1891,7 @@ instructions:
       definition: |
         const oldValueA = registers.A;
         registers.A = (oldValueA + oldValueA + (registers.F & 0x01n)) & 0xFFn;
-        registers.F = CAPI.Z80.calculateFlags_ADC(oldValueA, oldValueA, registers.F);
+        registers.F = CAPI.ARCH.calculateFlags_ADC(oldValueA, oldValueA, registers.F);
 
     - name: sub b
       template: standard
@@ -1901,7 +1902,7 @@ instructions:
       definition: |
         const oldValueA = registers.A;
         registers.A = (oldValueA - registers.B) & 0xFFn;
-        registers.F = CAPI.Z80.calculateFlags_SUB(oldValueA, registers.B);
+        registers.F = CAPI.ARCH.calculateFlags_SUB(oldValueA, registers.B);
     - name: sub c
       template: standard
       clk_cycles: 4
@@ -1911,7 +1912,7 @@ instructions:
       definition: |
         const oldValueA = registers.A;
         registers.A = (oldValueA - registers.C) & 0xFFn;
-        registers.F = CAPI.Z80.calculateFlags_SUB(oldValueA, registers.C);
+        registers.F = CAPI.ARCH.calculateFlags_SUB(oldValueA, registers.C);
     - name: sub d
       template: standard
       clk_cycles: 4
@@ -1921,7 +1922,7 @@ instructions:
       definition: |
         const oldValueA = registers.A;
         registers.A = (oldValueA - registers.D) & 0xFFn;
-        registers.F = CAPI.Z80.calculateFlags_SUB(oldValueA, registers.D);
+        registers.F = CAPI.ARCH.calculateFlags_SUB(oldValueA, registers.D);
     - name: sub e
       template: standard
       clk_cycles: 4
@@ -1931,7 +1932,7 @@ instructions:
       definition: |
         const oldValueA = registers.A;
         registers.A = (oldValueA - registers.E) & 0xFFn;
-        registers.F = CAPI.Z80.calculateFlags_SUB(oldValueA, registers.E);
+        registers.F = CAPI.ARCH.calculateFlags_SUB(oldValueA, registers.E);
     - name: sub h
       template: standard
       clk_cycles: 4
@@ -1941,7 +1942,7 @@ instructions:
       definition: |
         const oldValueA = registers.A;
         registers.A = (oldValueA - registers.H) & 0xFFn;
-        registers.F = CAPI.Z80.calculateFlags_SUB(oldValueA, registers.H);
+        registers.F = CAPI.ARCH.calculateFlags_SUB(oldValueA, registers.H);
     - name: sub l
       template: standard
       clk_cycles: 4
@@ -1951,7 +1952,7 @@ instructions:
       definition: |
         const oldValueA = registers.A;
         registers.A = (oldValueA - registers.L) & 0xFFn;
-        registers.F = CAPI.Z80.calculateFlags_SUB(oldValueA, registers.L);
+        registers.F = CAPI.ARCH.calculateFlags_SUB(oldValueA, registers.L);
     - name: sub (hl)
       template: standard
       clk_cycles: 7
@@ -1962,7 +1963,7 @@ instructions:
         const value = CAPI.MEM.read((registers.H << 8n) | registers.L, 1);
         const oldValueA = registers.A;
         registers.A = (oldValueA - value) & 0xFFn;
-        registers.F = CAPI.Z80.calculateFlags_SUB(oldValueA, value);
+        registers.F = CAPI.ARCH.calculateFlags_SUB(oldValueA, value);
     - name: sub a
       template: standard
       clk_cycles: 4
@@ -1972,7 +1973,7 @@ instructions:
       definition: |
         const oldValueA = registers.A;
         registers.A = 0n;
-        registers.F = CAPI.Z80.calculateFlags_SUB(oldValueA, oldValueA);
+        registers.F = CAPI.ARCH.calculateFlags_SUB(oldValueA, oldValueA);
     - name: sub
       template: standard
       clk_cycles: 7
@@ -1981,7 +1982,7 @@ instructions:
         - field: opcode
           value: "0xD6"
         - field: n
-          type: inm-unsigned
+          type: imm-unsigned
           startbit: 7
           stopbit: 0
           order: 1
@@ -1989,7 +1990,7 @@ instructions:
       definition: |
         const oldValueA = registers.A;
         registers.A = (oldValueA - n) & 0xFFn;
-        registers.F = CAPI.Z80.calculateFlags_SUB(oldValueA, n);
+        registers.F = CAPI.ARCH.calculateFlags_SUB(oldValueA, n);
 
     - name: sbc a, b
       template: standard
@@ -2002,7 +2003,7 @@ instructions:
         const valueB = registers.B;
         const carry = registers.F & 0x01n;
         registers.A = (oldValueA - valueB - carry) & 0xFFn;
-        registers.F = CAPI.Z80.calculateFlags_SBC(oldValueA, valueB, registers.F);
+        registers.F = CAPI.ARCH.calculateFlags_SBC(oldValueA, valueB, registers.F);
     - name: sbc a, c
       template: standard
       clk_cycles: 4
@@ -2014,7 +2015,7 @@ instructions:
         const valueC = registers.C;
         const carry = registers.F & 0x01n;
         registers.A = (oldValueA - valueC - carry) & 0xFFn;
-        registers.F = CAPI.Z80.calculateFlags_SBC(oldValueA, valueC, registers.F);
+        registers.F = CAPI.ARCH.calculateFlags_SBC(oldValueA, valueC, registers.F);
     - name: sbc a, d
       template: standard
       clk_cycles: 4
@@ -2026,7 +2027,7 @@ instructions:
         const valueD = registers.D;
         const carry = registers.F & 0x01n;
         registers.A = (oldValueA - valueD - carry) & 0xFFn;
-        registers.F = CAPI.Z80.calculateFlags_SBC(oldValueA, valueD, registers.F);
+        registers.F = CAPI.ARCH.calculateFlags_SBC(oldValueA, valueD, registers.F);
     - name: sbc a, e
       template: standard
       clk_cycles: 4
@@ -2038,7 +2039,7 @@ instructions:
         const valueE = registers.E;
         const carry = registers.F & 0x01n;
         registers.A = (oldValueA - valueE - carry) & 0xFFn;
-        registers.F = CAPI.Z80.calculateFlags_SBC(oldValueA, valueE, registers.F);
+        registers.F = CAPI.ARCH.calculateFlags_SBC(oldValueA, valueE, registers.F);
     - name: sbc a, h
       template: standard
       clk_cycles: 4
@@ -2050,7 +2051,7 @@ instructions:
         const valueH = registers.H;
         const carry = registers.F & 0x01n;
         registers.A = (oldValueA - valueH - carry) & 0xFFn;
-        registers.F = CAPI.Z80.calculateFlags_SBC(oldValueA, valueH, registers.F);
+        registers.F = CAPI.ARCH.calculateFlags_SBC(oldValueA, valueH, registers.F);
     - name: sbc a, l
       template: standard
       clk_cycles: 4
@@ -2062,7 +2063,7 @@ instructions:
         const valueL = registers.L;
         const carry = registers.F & 0x01n;
         registers.A = (oldValueA - valueL - carry) & 0xFFn;
-        registers.F = CAPI.Z80.calculateFlags_SBC(oldValueA, valueL, registers.F);
+        registers.F = CAPI.ARCH.calculateFlags_SBC(oldValueA, valueL, registers.F);
     - name: sbc a, (hl)
       template: standard
       clk_cycles: 7
@@ -2074,7 +2075,7 @@ instructions:
         const oldValueA = registers.A;
         const carry = registers.F & 0x01n;
         registers.A = (oldValueA - value - carry) & 0xFFn;
-        registers.F = CAPI.Z80.calculateFlags_SBC(oldValueA, value, registers.F);
+        registers.F = CAPI.ARCH.calculateFlags_SBC(oldValueA, value, registers.F);
     - name: sbc a, a
       template: standard
       clk_cycles: 4
@@ -2082,18 +2083,18 @@ instructions:
         - field: opcode
           value: "0x9F"
       definition: |
-        const carry = registers.F & CAPI.Z80.C_FLAG;
+        const carry = registers.F & CAPI.ARCH.C_FLAG;
 
         if (carry === 0n) {
             // Operation is A - A - 0. Result is 0.
             registers.A = 0n;
             // Flags: S=0, Z=1, H=0, P/V=0, N=1, C=0
-            registers.F = CAPI.Z80.Z_FLAG | CAPI.Z80.N_FLAG; 
+            registers.F = CAPI.ARCH.Z_FLAG | CAPI.ARCH.N_FLAG; 
         } else {
             // Operation is A - A - 1. Result is -1 (0xFF).
             registers.A = 0xFFn;
             // Flags: S=1, Z=0, H=1, P/V=0, N=1, C=1
-            registers.F = CAPI.Z80.S_FLAG | CAPI.Z80.H_FLAG | CAPI.Z80.N_FLAG | CAPI.Z80.C_FLAG;
+            registers.F = CAPI.ARCH.S_FLAG | CAPI.ARCH.H_FLAG | CAPI.ARCH.N_FLAG | CAPI.ARCH.C_FLAG;
         }
     - name: and b
       template: standard
@@ -2103,7 +2104,7 @@ instructions:
           value: "0xA0"
       definition: |
         registers.A = registers.A & registers.B;
-        registers.F = CAPI.Z80.calculateFlags_LOGICAL(registers.A, 1);
+        registers.F = CAPI.ARCH.calculateFlags_LOGICAL(registers.A, 1);
     - name: and c
       template: standard
       clk_cycles: 4
@@ -2112,7 +2113,7 @@ instructions:
           value: "0xA1"
       definition: |
         registers.A = registers.A & registers.C;
-        registers.F = CAPI.Z80.calculateFlags_LOGICAL(registers.A, 1);
+        registers.F = CAPI.ARCH.calculateFlags_LOGICAL(registers.A, 1);
     - name: and d
       template: standard
       clk_cycles: 4
@@ -2121,7 +2122,7 @@ instructions:
           value: "0xA2"
       definition: |
         registers.A = registers.A & registers.D;
-        registers.F = CAPI.Z80.calculateFlags_LOGICAL(registers.A, 1);
+        registers.F = CAPI.ARCH.calculateFlags_LOGICAL(registers.A, 1);
     - name: and e
       template: standard
       clk_cycles: 4
@@ -2130,7 +2131,7 @@ instructions:
           value: "0xA3"
       definition: |
         registers.A = registers.A & registers.E;
-        registers.F = CAPI.Z80.calculateFlags_LOGICAL(registers.A, 1);
+        registers.F = CAPI.ARCH.calculateFlags_LOGICAL(registers.A, 1);
     - name: and h
       template: standard
       clk_cycles: 4
@@ -2139,7 +2140,7 @@ instructions:
           value: "0xA4"
       definition: |
         registers.A = registers.A & registers.H;
-        registers.F = CAPI.Z80.calculateFlags_LOGICAL(registers.A, 1);
+        registers.F = CAPI.ARCH.calculateFlags_LOGICAL(registers.A, 1);
     - name: and l
       template: standard
       clk_cycles: 4
@@ -2148,7 +2149,7 @@ instructions:
           value: "0xA5"
       definition: |
         registers.A = registers.A & registers.L;
-        registers.F = CAPI.Z80.calculateFlags_LOGICAL(registers.A, 1);
+        registers.F = CAPI.ARCH.calculateFlags_LOGICAL(registers.A, 1);
     - name: and (hl)
       template: standard
       clk_cycles: 7
@@ -2157,7 +2158,7 @@ instructions:
           value: "0xA6"
       definition: |
         registers.A = registers.A & CAPI.MEM.read((registers.H << 8n) | registers.L, 1);
-        registers.F = CAPI.Z80.calculateFlags_LOGICAL(registers.A, 1);
+        registers.F = CAPI.ARCH.calculateFlags_LOGICAL(registers.A, 1);
     - name: and a
       template: standard
       clk_cycles: 4
@@ -2166,7 +2167,7 @@ instructions:
           value: "0xA7"
       definition: |
         registers.A = registers.A & registers.A;
-        registers.F = CAPI.Z80.calculateFlags_LOGICAL(registers.A, 1);
+        registers.F = CAPI.ARCH.calculateFlags_LOGICAL(registers.A, 1);
     - name: and
       template: standard
       nwords: 2
@@ -2175,14 +2176,14 @@ instructions:
         - field: opcode
           value: "0xE6"
         - field: n
-          type: inm-unsigned
+          type: imm-unsigned
           startbit: 7
           stopbit: 0
           order: 1
           word: 1
       definition: |
         registers.A = registers.A & n;
-        registers.F = CAPI.Z80.calculateFlags_LOGICAL(registers.A, 1);
+        registers.F = CAPI.ARCH.calculateFlags_LOGICAL(registers.A, 1);
     - name: xor b
       template: standard
       clk_cycles: 4
@@ -2191,7 +2192,7 @@ instructions:
           value: "0xA8"
       definition: |
         registers.A = registers.A ^ registers.B;
-        registers.F = CAPI.Z80.calculateFlags_LOGICAL(registers.A, 0);
+        registers.F = CAPI.ARCH.calculateFlags_LOGICAL(registers.A, 0);
     - name: xor c
       template: standard
       clk_cycles: 4
@@ -2200,7 +2201,7 @@ instructions:
           value: "0xA9"
       definition: |
         registers.A = registers.A ^ registers.C;
-        registers.F = CAPI.Z80.calculateFlags_LOGICAL(registers.A, 0);
+        registers.F = CAPI.ARCH.calculateFlags_LOGICAL(registers.A, 0);
     - name: xor d
       template: standard
       clk_cycles: 4
@@ -2209,7 +2210,7 @@ instructions:
           value: "0xAA"
       definition: |
         registers.A = registers.A ^ registers.D;
-        registers.F = CAPI.Z80.calculateFlags_LOGICAL(registers.A, 0);
+        registers.F = CAPI.ARCH.calculateFlags_LOGICAL(registers.A, 0);
     - name: xor e
       template: standard
       clk_cycles: 4
@@ -2218,7 +2219,7 @@ instructions:
           value: "0xAB"
       definition: |
         registers.A = registers.A ^ registers.E;
-        registers.F = CAPI.Z80.calculateFlags_LOGICAL(registers.A, 0);
+        registers.F = CAPI.ARCH.calculateFlags_LOGICAL(registers.A, 0);
     - name: xor h
       template: standard
       clk_cycles: 4
@@ -2227,7 +2228,7 @@ instructions:
           value: "0xAC"
       definition: |
         registers.A = registers.A ^ registers.H;
-        registers.F = CAPI.Z80.calculateFlags_LOGICAL(registers.A, 0);
+        registers.F = CAPI.ARCH.calculateFlags_LOGICAL(registers.A, 0);
     - name: xor l
       template: standard
       clk_cycles: 4
@@ -2236,7 +2237,7 @@ instructions:
           value: "0xAD"
       definition: |
         registers.A = registers.A ^ registers.L;
-        registers.F = CAPI.Z80.calculateFlags_LOGICAL(registers.A, 0);
+        registers.F = CAPI.ARCH.calculateFlags_LOGICAL(registers.A, 0);
     - name: xor (hl)
       template: standard
       clk_cycles: 7
@@ -2245,7 +2246,7 @@ instructions:
           value: "0xAE"
       definition: |
         registers.A = registers.A ^ CAPI.MEM.read((registers.H << 8n) | registers.L, 1);
-        registers.F = CAPI.Z80.calculateFlags_LOGICAL(registers.A, 0);
+        registers.F = CAPI.ARCH.calculateFlags_LOGICAL(registers.A, 0);
     - name: xor a
       template: standard
       clk_cycles: 4
@@ -2254,7 +2255,7 @@ instructions:
           value: "0xAF"
       definition: |
         registers.A = registers.A ^ registers.A;
-        registers.F = CAPI.Z80.calculateFlags_LOGICAL(registers.A, 0);
+        registers.F = CAPI.ARCH.calculateFlags_LOGICAL(registers.A, 0);
     - name: or b
       template: standard
       clk_cycles: 4
@@ -2263,7 +2264,7 @@ instructions:
           value: "0xB0"
       definition: |
         registers.A = registers.A | registers.B;
-        registers.F = CAPI.Z80.calculateFlags_LOGICAL(registers.A, 0);
+        registers.F = CAPI.ARCH.calculateFlags_LOGICAL(registers.A, 0);
     - name: or c
       template: standard
       clk_cycles: 4
@@ -2272,7 +2273,7 @@ instructions:
           value: "0xB1"
       definition: |
         registers.A = registers.A | registers.C;
-        registers.F = CAPI.Z80.calculateFlags_LOGICAL(registers.A, 0);
+        registers.F = CAPI.ARCH.calculateFlags_LOGICAL(registers.A, 0);
     - name: or d
       template: standard
       clk_cycles: 4
@@ -2281,7 +2282,7 @@ instructions:
           value: "0xB2"
       definition: |
         registers.A = registers.A | registers.D;
-        registers.F = CAPI.Z80.calculateFlags_LOGICAL(registers.A, 0);
+        registers.F = CAPI.ARCH.calculateFlags_LOGICAL(registers.A, 0);
     - name: or e
       template: standard
       clk_cycles: 4
@@ -2290,7 +2291,7 @@ instructions:
           value: "0xB3"
       definition: |
         registers.A = registers.A | registers.E;
-        registers.F = CAPI.Z80.calculateFlags_LOGICAL(registers.A, 0);
+        registers.F = CAPI.ARCH.calculateFlags_LOGICAL(registers.A, 0);
     - name: or h
       template: standard
       clk_cycles: 4
@@ -2299,7 +2300,7 @@ instructions:
           value: "0xB4"
       definition: |
         registers.A = registers.A | registers.H;
-        registers.F = CAPI.Z80.calculateFlags_LOGICAL(registers.A, 0);
+        registers.F = CAPI.ARCH.calculateFlags_LOGICAL(registers.A, 0);
     - name: or l
       template: standard
       clk_cycles: 4
@@ -2308,7 +2309,7 @@ instructions:
           value: "0xB5"
       definition: |
         registers.A = registers.A | registers.L;
-        registers.F = CAPI.Z80.calculateFlags_LOGICAL(registers.A, 0);
+        registers.F = CAPI.ARCH.calculateFlags_LOGICAL(registers.A, 0);
     - name: or (hl)
       template: standard
       clk_cycles: 7
@@ -2317,7 +2318,7 @@ instructions:
           value: "0xB6"
       definition: |
         registers.A = registers.A | CAPI.MEM.read((registers.H << 8n) | registers.L, 1);
-        registers.F = CAPI.Z80.calculateFlags_LOGICAL(registers.A, 0);
+        registers.F = CAPI.ARCH.calculateFlags_LOGICAL(registers.A, 0);
     - name: or a
       template: standard
       clk_cycles: 4
@@ -2326,7 +2327,7 @@ instructions:
           value: "0xB7"
       definition: |
         registers.A = registers.A | registers.A;
-        registers.F = CAPI.Z80.calculateFlags_LOGICAL(registers.A, 0);
+        registers.F = CAPI.ARCH.calculateFlags_LOGICAL(registers.A, 0);
     - name: cp b
       template: standard
       clk_cycles: 4
@@ -2334,7 +2335,7 @@ instructions:
         - field: opcode
           value: "0xB8"
       definition: |
-        registers.F = CAPI.Z80.calculateFlags_CP(registers.A, registers.B);
+        registers.F = CAPI.ARCH.calculateFlags_CP(registers.A, registers.B);
     - name: cp c
       template: standard
       clk_cycles: 4
@@ -2342,7 +2343,7 @@ instructions:
         - field: opcode
           value: "0xB9"
       definition: |
-        registers.F = CAPI.Z80.calculateFlags_CP(registers.A, registers.C);
+        registers.F = CAPI.ARCH.calculateFlags_CP(registers.A, registers.C);
     - name: cp d
       template: standard
       clk_cycles: 4
@@ -2350,7 +2351,7 @@ instructions:
         - field: opcode
           value: "0xBA"
       definition: |
-        registers.F = CAPI.Z80.calculateFlags_CP(registers.A, registers.D);
+        registers.F = CAPI.ARCH.calculateFlags_CP(registers.A, registers.D);
     - name: cp e
       template: standard
       clk_cycles: 4
@@ -2358,7 +2359,7 @@ instructions:
         - field: opcode
           value: "0xBB"
       definition: |
-        registers.F = CAPI.Z80.calculateFlags_CP(registers.A, registers.E);
+        registers.F = CAPI.ARCH.calculateFlags_CP(registers.A, registers.E);
     - name: cp h
       template: standard
       clk_cycles: 4
@@ -2366,7 +2367,7 @@ instructions:
         - field: opcode
           value: "0xBC"
       definition: |
-        registers.F = CAPI.Z80.calculateFlags_CP(registers.A, registers.H);
+        registers.F = CAPI.ARCH.calculateFlags_CP(registers.A, registers.H);
     - name: cp l
       template: standard
       clk_cycles: 4
@@ -2374,7 +2375,7 @@ instructions:
         - field: opcode
           value: "0xBD"
       definition: |
-        registers.F = CAPI.Z80.calculateFlags_CP(registers.A, registers.L);
+        registers.F = CAPI.ARCH.calculateFlags_CP(registers.A, registers.L);
     - name: cp (hl)
       template: standard
       clk_cycles: 7
@@ -2383,7 +2384,7 @@ instructions:
           value: "0xBE"
       definition: |
         const value = CAPI.MEM.read((registers.H << 8n) | registers.L, 1);
-        registers.F = CAPI.Z80.calculateFlags_CP(registers.A, value);
+        registers.F = CAPI.ARCH.calculateFlags_CP(registers.A, value);
     - name: cp a
       template: standard
       clk_cycles: 4
@@ -2391,7 +2392,7 @@ instructions:
         - field: opcode
           value: "0xBF"
       definition: |
-        registers.F = CAPI.Z80.calculateFlags_CP(registers.A, registers.A);
+        registers.F = CAPI.ARCH.calculateFlags_CP(registers.A, registers.A);
     - name: cp
       template: standard
       nwords: 2
@@ -2400,13 +2401,13 @@ instructions:
         - field: opcode
           value: "0xFE"
         - field: n
-          type: inm-unsigned
+          type: imm-unsigned
           startbit: 7
           stopbit: 0
           order: 1
           word: 1
       definition: |
-        registers.F = CAPI.Z80.calculateFlags_CP(registers.A, n);
+        registers.F = CAPI.ARCH.calculateFlags_CP(registers.A, n);
 
     - name: adc
       template: standard
@@ -2420,7 +2421,7 @@ instructions:
           value: "a,"
           order: 1
         - field: n
-          type: inm-unsigned
+          type: imm-unsigned
           startbit: 7
           stopbit: 0
           order: 2
@@ -2428,7 +2429,7 @@ instructions:
       definition: |
         const oldValueA = registers.A;
         registers.A = (oldValueA + n + (registers.F & 0x01n)) & 0xFFn;
-        registers.F = CAPI.Z80.calculateFlags_ADC(oldValueA, n, registers.F);
+        registers.F = CAPI.ARCH.calculateFlags_ADC(oldValueA, n, registers.F);
 
     - name: add
       template: standard
@@ -2442,7 +2443,7 @@ instructions:
           value: "a,"
           order: 1
         - field: n
-          type: inm-unsigned
+          type: imm-unsigned
           startbit: 7
           stopbit: 0
           order: 2
@@ -2450,7 +2451,7 @@ instructions:
       definition: |
         const oldValue = registers.A;
         registers.A = (oldValue + n) & 0xFFn;
-        registers.F = CAPI.Z80.calculateFlags_ADD(oldValue, n);
+        registers.F = CAPI.ARCH.calculateFlags_ADD(oldValue, n);
 
     - name: ld
       template: standard
@@ -2463,7 +2464,7 @@ instructions:
           value: "b,"
           order: 1
         - field: n
-          type: inm-unsigned
+          type: imm-unsigned
           startbit: 7
           stopbit: 0
           order: 2
@@ -2482,7 +2483,7 @@ instructions:
           value: "a,"
           order: 1
         - field: n
-          type: inm-unsigned
+          type: imm-unsigned
           startbit: 7
           stopbit: 0
           order: 2
@@ -2530,7 +2531,7 @@ instructions:
           value: "hl"
           order: 2
         - field: nn
-          type: inm-unsigned
+          type: imm-unsigned
           startbit: 15
           stopbit: 0
           prefix: "("
@@ -2553,7 +2554,7 @@ instructions:
           value: ", a"
           order: 2
         - field: nn
-          type: inm-unsigned
+          type: imm-unsigned
           startbit: 15
           stopbit: 0
           prefix: "("
@@ -2669,7 +2670,7 @@ instructions:
         const hlValue = (registers.H << 8n) | registers.L;
         const bcValue = (registers.B << 8n) | registers.C;
         const result = hlValue + bcValue;
-        registers.F = CAPI.Z80.calculateFlags_ADD16(hlValue, bcValue, registers.F);
+        registers.F = CAPI.ARCH.calculateFlags_ADD16(hlValue, bcValue, registers.F);
         const resultWord = result & 0xFFFFn;
         registers.H = (resultWord >> 8n) & 0xFFn;
         registers.L = resultWord & 0xFFn;
@@ -2688,7 +2689,7 @@ instructions:
         // Adds the value of DE to HL.
         const hlValue = (registers.H << 8n) | registers.L;
         const deValue = (registers.D << 8n) | registers.E;
-        registers.F = CAPI.Z80.calculateFlags_ADD16(hlValue, deValue, registers.F);
+        registers.F = CAPI.ARCH.calculateFlags_ADD16(hlValue, deValue, registers.F);
         const result = (hlValue + deValue) & 0xFFFFn;
         registers.H = (result >> 8n) & 0xFFn;
         registers.L = result & 0xFFn;
@@ -2706,7 +2707,7 @@ instructions:
       definition: |
         const hlValue = (registers.H << 8n) | registers.L;
         const result = hlValue + hlValue;
-        registers.F = CAPI.Z80.calculateFlags_ADD16(hlValue, hlValue, registers.F);
+        registers.F = CAPI.ARCH.calculateFlags_ADD16(hlValue, hlValue, registers.F);
         const resultWord = result & 0xFFFFn;
         registers.H = (resultWord >> 8n) & 0xFFn;
         registers.L = resultWord & 0xFFn;
@@ -2724,7 +2725,7 @@ instructions:
       definition: |
         const hlValue = (registers.H << 8n) | registers.L;
         const result = hlValue + registers.SP;
-        registers.F = CAPI.Z80.calculateFlags_ADD16(hlValue, registers.SP, registers.F);
+        registers.F = CAPI.ARCH.calculateFlags_ADD16(hlValue, registers.SP, registers.F);
         const resultWord = result & 0xFFFFn;
         registers.H = (resultWord >> 8n) & 0xFFn;
         registers.L = resultWord & 0xFFn;
@@ -2769,7 +2770,7 @@ instructions:
           value: "hl,"
           order: 1
         - field: nn
-          type: inm-unsigned
+          type: imm-unsigned
           startbit: 15
           stopbit: 0
           prefix: "("
@@ -2793,7 +2794,7 @@ instructions:
           value: "a,"
           order: 1
         - field: nn
-          type: inm-unsigned
+          type: imm-unsigned
           startbit: 15
           stopbit: 0
           prefix: "("
@@ -2814,7 +2815,7 @@ instructions:
       definition: |
         const oldValue = registers.C;
         registers.C = (oldValue + 1n) & 0xFFn;
-        registers.F = CAPI.Z80.calculateFlags_INC(oldValue, registers.F);
+        registers.F = CAPI.ARCH.calculateFlags_INC(oldValue, registers.F);
 
     - name: inc e
       template: standard
@@ -2825,7 +2826,7 @@ instructions:
       definition: |
         const oldValue = registers.E;
         registers.E = (oldValue + 1n) & 0xFFn;
-        registers.F = CAPI.Z80.calculateFlags_INC(oldValue, registers.F);
+        registers.F = CAPI.ARCH.calculateFlags_INC(oldValue, registers.F);
 
     - name: inc l
       template: standard
@@ -2836,7 +2837,7 @@ instructions:
       definition: |
         const oldValue = registers.L;
         registers.L = (oldValue + 1n) & 0xFFn;
-        registers.F = CAPI.Z80.calculateFlags_INC(oldValue, registers.F);
+        registers.F = CAPI.ARCH.calculateFlags_INC(oldValue, registers.F);
 
     - name: inc a
       template: standard
@@ -2847,7 +2848,7 @@ instructions:
       definition: |
         const oldValue = registers.A;
         registers.A = (oldValue + 1n) & 0xFFn;
-        registers.F = CAPI.Z80.calculateFlags_INC(oldValue, registers.F);
+        registers.F = CAPI.ARCH.calculateFlags_INC(oldValue, registers.F);
 
     - name: dec c
       template: standard
@@ -2858,7 +2859,7 @@ instructions:
       definition: |
         const oldValue = registers.C;
         registers.C = (oldValue - 1n) & 0xFFn;
-        registers.F = CAPI.Z80.calculateFlags_DEC(oldValue, registers.F);
+        registers.F = CAPI.ARCH.calculateFlags_DEC(oldValue, registers.F);
 
     - name: rrca
       template: standard
@@ -2869,8 +2870,8 @@ instructions:
       definition: |
         const lsb = registers.A & 0x01n;
         registers.A = (registers.A >> 1n) | (lsb << 7n);
-        let newF = registers.F & (CAPI.Z80.S_FLAG | CAPI.Z80.Z_FLAG | CAPI.Z80.PV_FLAG); // Preserve S, Z, P/V
-        if (lsb) newF |= CAPI.Z80.C_FLAG; // Set C if bit 0 was 1
+        let newF = registers.F & (CAPI.ARCH.S_FLAG | CAPI.ARCH.Z_FLAG | CAPI.ARCH.PV_FLAG); // Preserve S, Z, P/V
+        if (lsb) newF |= CAPI.ARCH.C_FLAG; // Set C if bit 0 was 1
         // N and H are reset
         registers.F = newF;
 
@@ -2883,13 +2884,13 @@ instructions:
       definition: |
         // The contents of A are rotated right one bit position.
         // Bit 0 is copied to the Carry flag, and the old Carry flag is copied to bit 7.
-        const oldCarry = registers.F & CAPI.Z80.C_FLAG;
+        const oldCarry = registers.F & CAPI.ARCH.C_FLAG;
         const newCarry = registers.A & 0x01n;
 
         registers.A = ((registers.A >> 1n) | (oldCarry << 7n)) & 0xFFn;
 
         // Preserve S, Z, P/V. Reset H, N. Set C from bit 0 of original A.
-        let newF = registers.F & (CAPI.Z80.S_FLAG | CAPI.Z80.Z_FLAG | CAPI.Z80.PV_FLAG);
+        let newF = registers.F & (CAPI.ARCH.S_FLAG | CAPI.ARCH.Z_FLAG | CAPI.ARCH.PV_FLAG);
         newF |= newCarry; // newCarry is 0n or 1n, which corresponds to C_FLAG value
         registers.F = newF;
 
@@ -2902,7 +2903,7 @@ instructions:
       definition: |
         const oldValue = registers.E;
         registers.E = (oldValue - 1n) & 0xFFn;
-        registers.F = CAPI.Z80.calculateFlags_DEC(oldValue, registers.F);
+        registers.F = CAPI.ARCH.calculateFlags_DEC(oldValue, registers.F);
 
     - name: dec l
       template: standard
@@ -2913,7 +2914,7 @@ instructions:
       definition: |
         const oldValue = registers.L;
         registers.L = (oldValue - 1n) & 0xFFn;
-        registers.F = CAPI.Z80.calculateFlags_DEC(oldValue, registers.F);
+        registers.F = CAPI.ARCH.calculateFlags_DEC(oldValue, registers.F);
 
     - name: dec a
       template: standard
@@ -2924,7 +2925,7 @@ instructions:
       definition: |
         const oldValue = registers.A;
         registers.A = (oldValue - 1n) & 0xFFn;
-        registers.F = CAPI.Z80.calculateFlags_DEC(oldValue, registers.F);
+        registers.F = CAPI.ARCH.calculateFlags_DEC(oldValue, registers.F);
 
     - name: inc b
       template: standard
@@ -2935,7 +2936,7 @@ instructions:
       definition: |
         const oldValue = registers.B;
         registers.B = (oldValue + 1n) & 0xFFn;
-        registers.F = CAPI.Z80.calculateFlags_INC(oldValue, registers.F);
+        registers.F = CAPI.ARCH.calculateFlags_INC(oldValue, registers.F);
 
     - name: inc d
       template: standard
@@ -2946,7 +2947,7 @@ instructions:
       definition: |
         const oldValue = registers.D;
         registers.D = (oldValue + 1n) & 0xFFn;
-        registers.F = CAPI.Z80.calculateFlags_INC(oldValue, registers.F);
+        registers.F = CAPI.ARCH.calculateFlags_INC(oldValue, registers.F);
 
     - name: rla
       template: standard
@@ -2955,11 +2956,11 @@ instructions:
         - field: opcode
           value: "0x17"
       definition: |
-        const carry = registers.F & CAPI.Z80.C_FLAG;
+        const carry = registers.F & CAPI.ARCH.C_FLAG;
         const msb = (registers.A & 0x80n) ? 1n : 0n;
         registers.A = ((registers.A << 1n) | carry) & 0xFFn;
-        let newF = registers.F & (CAPI.Z80.S_FLAG | CAPI.Z80.Z_FLAG | CAPI.Z80.PV_FLAG); // Preserve S, Z, P/V
-        if (msb) newF |= CAPI.Z80.C_FLAG; // Set C if bit 7 was 1
+        let newF = registers.F & (CAPI.ARCH.S_FLAG | CAPI.ARCH.Z_FLAG | CAPI.ARCH.PV_FLAG); // Preserve S, Z, P/V
+        if (msb) newF |= CAPI.ARCH.C_FLAG; // Set C if bit 7 was 1
         // N and H are reset
         registers.F = newF;
 
@@ -2972,7 +2973,7 @@ instructions:
       definition: |
         const oldValue = registers.H;
         registers.H = (oldValue + 1n) & 0xFFn;
-        registers.F = CAPI.Z80.calculateFlags_INC(oldValue, registers.F);
+        registers.F = CAPI.ARCH.calculateFlags_INC(oldValue, registers.F);
 
     - name: inc (hl)
       template: standard
@@ -2984,7 +2985,7 @@ instructions:
         const addr = (registers.H << 8n) | registers.L;
         const oldValue = CAPI.MEM.read(addr, 1);
         CAPI.MEM.write(addr, 1, (oldValue + 1n) & 0xFFn);
-        registers.F = CAPI.Z80.calculateFlags_INC(oldValue, registers.F);
+        registers.F = CAPI.ARCH.calculateFlags_INC(oldValue, registers.F);
 
     - name: dec b
       template: standard
@@ -2995,7 +2996,7 @@ instructions:
       definition: |
         const oldValue = registers.B;
         registers.B = (oldValue - 1n) & 0xFFn;
-        registers.F = CAPI.Z80.calculateFlags_DEC(oldValue, registers.F);
+        registers.F = CAPI.ARCH.calculateFlags_DEC(oldValue, registers.F);
 
     - name: dec d
       template: standard
@@ -3006,7 +3007,7 @@ instructions:
       definition: |
         const oldValue = registers.D;
         registers.D = (oldValue - 1n) & 0xFFn;
-        registers.F = CAPI.Z80.calculateFlags_DEC(oldValue, registers.F);
+        registers.F = CAPI.ARCH.calculateFlags_DEC(oldValue, registers.F);
 
     - name: dec h
       template: standard
@@ -3017,7 +3018,7 @@ instructions:
       definition: |
         const oldValue = registers.H;
         registers.H = (oldValue - 1n) & 0xFFn;
-        registers.F = CAPI.Z80.calculateFlags_DEC(oldValue, registers.F);
+        registers.F = CAPI.ARCH.calculateFlags_DEC(oldValue, registers.F);
 
     - name: dec (hl)
       template: standard
@@ -3029,7 +3030,7 @@ instructions:
         const addr = (registers.H << 8n) | registers.L;
         const oldValue = CAPI.MEM.read(addr, 1);
         CAPI.MEM.write(addr, 1, (oldValue - 1n) & 0xFFn);
-        registers.F = CAPI.Z80.calculateFlags_DEC(oldValue, registers.F);
+        registers.F = CAPI.ARCH.calculateFlags_DEC(oldValue, registers.F);
 
     - name: ccf
       template: standard
@@ -3039,16 +3040,16 @@ instructions:
           value: "0x3F"
       definition: |
         // Complement Carry Flag.
-        const oldCarrySet = (registers.F & CAPI.Z80.C_FLAG) !== 0n;
+        const oldCarrySet = (registers.F & CAPI.ARCH.C_FLAG) !== 0n;
         // Preserve S, Z, and P/V flags from the original F register.
-        let newF = registers.F & (CAPI.Z80.S_FLAG | CAPI.Z80.Z_FLAG | CAPI.Z80.PV_FLAG);
+        let newF = registers.F & (CAPI.ARCH.S_FLAG | CAPI.ARCH.Z_FLAG | CAPI.ARCH.PV_FLAG);
 
         if (oldCarrySet) {
             // If the old carry was set (1), the H flag is set to 1, and the new carry is reset (0).
-            newF |= CAPI.Z80.H_FLAG;
+            newF |= CAPI.ARCH.H_FLAG;
         } else {
             // If the old carry was reset (0), the H flag is reset (0), and the new carry is set (1).
-            newF |= CAPI.Z80.C_FLAG;
+            newF |= CAPI.ARCH.C_FLAG;
         }
 
         // The N flag is reset.
@@ -3062,7 +3063,7 @@ instructions:
         - field: opcode
           value: "0xF6"
         - field: n
-          type: inm-unsigned
+          type: imm-unsigned
           startbit: 7
           stopbit: 0
           order: 1
@@ -3071,7 +3072,7 @@ instructions:
         // Performs a bitwise logical OR between the accumulator and the immediate value n.
         registers.A = registers.A | n;
         // H, N, and C flags are reset. S, Z, and P/V are set based on the result.
-        registers.F = CAPI.Z80.calculateFlags_LOGICAL(registers.A, 0);
+        registers.F = CAPI.ARCH.calculateFlags_LOGICAL(registers.A, 0);
 
     - name: ld
       template: ED
@@ -3084,7 +3085,7 @@ instructions:
           value: "bc,"
           order: 2
         - field: nn
-          type: inm-unsigned
+          type: imm-unsigned
           startbit: 15
           stopbit: 0
           prefix: "("
@@ -3107,7 +3108,7 @@ instructions:
           value: "de,"
           order: 2
         - field: nn
-          type: inm-unsigned
+          type: imm-unsigned
           startbit: 15
           stopbit: 0
           prefix: "("
@@ -3130,7 +3131,7 @@ instructions:
           value: "de,"
           order: 2
         - field: nn
-          type: inm-unsigned
+          type: imm-unsigned
           startbit: 15
           stopbit: 0
           prefix: "("
@@ -3153,7 +3154,7 @@ instructions:
           value: "sp,"
           order: 2
         - field: nn
-          type: inm-unsigned
+          type: imm-unsigned
           startbit: 15
           stopbit: 0
           prefix: "("
@@ -3175,7 +3176,7 @@ instructions:
           value: "bc,"
           order: 1
         - field: nn
-          type: inm-unsigned
+          type: imm-unsigned
           startbit: 15
           stopbit: 0
           prefix: "("
@@ -3194,14 +3195,14 @@ instructions:
         - field: opcode2
           value: "0x78"
         - field: port
-          type: inm-unsigned
+          type: imm-unsigned
           startbit: 7
           stopbit: 0
           order: 1
           word: 1
       definition: |
         // A byte from the port at the 16-bit address contained in the BC register pair is written to A.
-        registers.A = CAPI.Z80.read((registers.B << 8n) | registers.C);
+        registers.A = CAPI.ARCH.read((registers.B << 8n) | registers.C);
 
     - name: scf
       template: standard
@@ -3227,7 +3228,7 @@ instructions:
           value: "c,"
           order: 1
         - field: n
-          type: inm-unsigned
+          type: imm-unsigned
           startbit: 7
           stopbit: 0
           order: 2
@@ -3245,7 +3246,7 @@ instructions:
           value: "d,"
           order: 1
         - field: n
-          type: inm-unsigned
+          type: imm-unsigned
           startbit: 7
           stopbit: 0
           order: 2
@@ -3263,7 +3264,7 @@ instructions:
           value: "e,"
           order: 1
         - field: n
-          type: inm-unsigned
+          type: imm-unsigned
           startbit: 7
           stopbit: 0
           order: 2
@@ -3281,7 +3282,7 @@ instructions:
           value: "h,"
           order: 1
         - field: n
-          type: inm-unsigned
+          type: imm-unsigned
           startbit: 7
           stopbit: 0
           order: 2
@@ -3300,7 +3301,7 @@ instructions:
           value: "(hl),"
           order: 1
         - field: n
-          type: inm-unsigned
+          type: imm-unsigned
           startbit: 7
           stopbit: 0
           order: 2
@@ -3319,7 +3320,7 @@ instructions:
           value: "l,"
           order: 1
         - field: n
-          type: inm-unsigned
+          type: imm-unsigned
           startbit: 7
           stopbit: 0
           order: 2
@@ -3337,7 +3338,7 @@ instructions:
           value: "nz"
           order: 1
       definition: |
-        if ((registers.F & CAPI.Z80.Z_FLAG) === 0n) {
+        if ((registers.F & CAPI.ARCH.Z_FLAG) === 0n) {
             const lsb = CAPI.MEM.read(registers.SP, 1);
             const msb = CAPI.MEM.read(registers.SP + 1n, 1);
             registers.PC = (msb << 8n) | lsb;
@@ -3399,7 +3400,7 @@ instructions:
           value: "z"
           order: 1
       definition: |
-        if ((registers.F & CAPI.Z80.Z_FLAG) !== 0n) {
+        if ((registers.F & CAPI.ARCH.Z_FLAG) !== 0n) {
             const lsb = CAPI.MEM.read(registers.SP, 1);
             const msb = CAPI.MEM.read(registers.SP + 1n, 1);
             registers.PC = (msb << 8n) | lsb;
@@ -3417,13 +3418,13 @@ instructions:
           value: "nz,"
           order: 1
         - field: nn
-          type: inm-unsigned
+          type: imm-unsigned
           startbit: 15
           stopbit: 0
           order: 2
           word: [2, 1]
       definition: |
-        if ((registers.F & CAPI.Z80.Z_FLAG) === 0n) {
+        if ((registers.F & CAPI.ARCH.Z_FLAG) === 0n) {
             registers.SP = (registers.SP - 1n) & 0xFFFFn;
             CAPI.MEM.write(registers.SP, 1, (registers.PC >> 8n) & 0xFFn);
             registers.SP = (registers.SP - 1n) & 0xFFFFn;
@@ -3442,13 +3443,13 @@ instructions:
           value: "z,"
           order: 1
         - field: nn
-          type: inm-unsigned
+          type: imm-unsigned
           startbit: 15
           stopbit: 0
           order: 2
           word: [2, 1]
       definition: |
-        if ((registers.F & CAPI.Z80.Z_FLAG) !== 0n) {
+        if ((registers.F & CAPI.ARCH.Z_FLAG) !== 0n) {
             registers.SP = (registers.SP - 1n) & 0xFFFFn;
             CAPI.MEM.write(registers.SP, 1, (registers.PC >> 8n) & 0xFFn);
             registers.SP = (registers.SP - 1n) & 0xFFFFn;
@@ -3463,7 +3464,7 @@ instructions:
         - field: opcode
           value: "0xCD"
         - field: nn
-          type: inm-unsigned
+          type: imm-unsigned
           startbit: 15
           stopbit: 0
           order: 1
@@ -3493,7 +3494,7 @@ instructions:
         - field: opcode
           value: "0xD0"
       definition: |
-        if ((registers.F & CAPI.Z80.C_FLAG) === 0n) {
+        if ((registers.F & CAPI.ARCH.C_FLAG) === 0n) {
             const lsb = CAPI.MEM.read(registers.SP, 1);
             const msb = CAPI.MEM.read(registers.SP + 1n, 1);
             registers.PC = (msb << 8n) | lsb;
@@ -3521,13 +3522,13 @@ instructions:
           value: "nc,"
           order: 1
         - field: nn
-          type: inm-unsigned
+          type: imm-unsigned
           startbit: 15
           stopbit: 0
           order: 2
           word: [2, 1]
       definition: |
-        if ((registers.F & CAPI.Z80.C_FLAG) === 0n) {
+        if ((registers.F & CAPI.ARCH.C_FLAG) === 0n) {
             registers.SP = (registers.SP - 1n) & 0xFFFFn;
             CAPI.MEM.write(registers.SP, 1, (registers.PC >> 8n) & 0xFFn);
             registers.SP = (registers.SP - 1n) & 0xFFFFn;
@@ -3552,7 +3553,7 @@ instructions:
         - field: opcode
           value: "0xD8"
       definition: |
-        if ((registers.F & CAPI.Z80.C_FLAG) !== 0n) {
+        if ((registers.F & CAPI.ARCH.C_FLAG) !== 0n) {
             const lsb = CAPI.MEM.read(registers.SP, 1);
             const msb = CAPI.MEM.read(registers.SP + 1n, 1);
             registers.PC = (msb << 8n) | lsb;
@@ -3570,13 +3571,13 @@ instructions:
           value: "c,"
           order: 1
         - field: nn
-          type: inm-unsigned
+          type: imm-unsigned
           startbit: 15
           stopbit: 0
           order: 2
           word: [2, 1]
       definition: |
-        if ((registers.F & CAPI.Z80.C_FLAG) !== 0n) {
+        if ((registers.F & CAPI.ARCH.C_FLAG) !== 0n) {
             registers.SP = (registers.SP - 1n) & 0xFFFFn;
             CAPI.MEM.write(registers.SP, 1, (registers.PC >> 8n) & 0xFFn);
             registers.SP = (registers.SP - 1n) & 0xFFFFn;
@@ -3638,7 +3639,7 @@ instructions:
         - field: opcode
           value: "0xE0"
       definition: |
-        if ((registers.F & CAPI.Z80.PV_FLAG) === 0n) {
+        if ((registers.F & CAPI.ARCH.PV_FLAG) === 0n) {
             const lsb = CAPI.MEM.read(registers.SP, 1);
             const msb = CAPI.MEM.read(registers.SP + 1n, 1);
             registers.PC = (msb << 8n) | lsb;
@@ -3666,13 +3667,13 @@ instructions:
           value: "po,"
           order: 1
         - field: nn
-          type: inm-unsigned
+          type: imm-unsigned
           startbit: 15
           stopbit: 0
           order: 2
           word: [2, 1]
       definition: |
-        if ((registers.F & CAPI.Z80.PV_FLAG) === 0n) {
+        if ((registers.F & CAPI.ARCH.PV_FLAG) === 0n) {
             registers.SP = (registers.SP - 1n) & 0xFFFFn;
             CAPI.MEM.write(registers.SP, 1, (registers.PC >> 8n) & 0xFFn);
             registers.SP = (registers.SP - 1n) & 0xFFFFn;
@@ -3697,7 +3698,7 @@ instructions:
         - field: opcode
           value: "0xE8"
       definition: |
-        if ((registers.F & CAPI.Z80.PV_FLAG) !== 0n) {
+        if ((registers.F & CAPI.ARCH.PV_FLAG) !== 0n) {
             const lsb = CAPI.MEM.read(registers.SP, 1);
             const msb = CAPI.MEM.read(registers.SP + 1n, 1);
             registers.PC = (msb << 8n) | lsb;
@@ -3715,13 +3716,13 @@ instructions:
           value: "pe,"
           order: 1
         - field: nn
-          type: inm-unsigned
+          type: imm-unsigned
           startbit: 15
           stopbit: 0
           order: 2
           word: [2, 1]
       definition: |
-        if ((registers.F & CAPI.Z80.PV_FLAG) !== 0n) {
+        if ((registers.F & CAPI.ARCH.PV_FLAG) !== 0n) {
             registers.SP = (registers.SP - 1n) & 0xFFFFn;
             CAPI.MEM.write(registers.SP, 1, (registers.PC >> 8n) & 0xFFn);
             registers.SP = (registers.SP - 1n) & 0xFFFFn;
@@ -3737,7 +3738,7 @@ instructions:
         - field: opcode
           value: "0xEE"
         - field: n
-          type: inm-unsigned
+          type: imm-unsigned
           startbit: 7
           stopbit: 0
           order: 1
@@ -3746,7 +3747,7 @@ instructions:
         // Performs a bitwise logical XOR between the accumulator and the immediate value n.
         registers.A = registers.A ^ n;
         // H, N, and C flags are reset. S, Z, and P/V are set based on the result.
-        registers.F = CAPI.Z80.calculateFlags_LOGICAL(registers.A, 0);
+        registers.F = CAPI.ARCH.calculateFlags_LOGICAL(registers.A, 0);
 
     - name: rst 28h
       template: standard
@@ -3767,7 +3768,7 @@ instructions:
         - field: opcode
           value: "0xF0"
       definition: |
-        if ((registers.F & CAPI.Z80.S_FLAG) === 0n) {
+        if ((registers.F & CAPI.ARCH.S_FLAG) === 0n) {
             const lsb = CAPI.MEM.read(registers.SP, 1);
             const msb = CAPI.MEM.read(registers.SP + 1n, 1);
             registers.PC = (msb << 8n) | lsb;
@@ -3795,13 +3796,13 @@ instructions:
           value: "p,"
           order: 1
         - field: nn
-          type: inm-unsigned
+          type: imm-unsigned
           startbit: 15
           stopbit: 0
           order: 2
           word: [2, 1]
       definition: |
-        if ((registers.F & CAPI.Z80.S_FLAG) === 0n) {
+        if ((registers.F & CAPI.ARCH.S_FLAG) === 0n) {
             registers.SP = (registers.SP - 1n) & 0xFFFFn;
             CAPI.MEM.write(registers.SP, 1, (registers.PC >> 8n) & 0xFFn);
             registers.SP = (registers.SP - 1n) & 0xFFFFn;
@@ -3836,7 +3837,7 @@ instructions:
         - field: opcode
           value: "0xF8"
       definition: |
-        if ((registers.F & CAPI.Z80.S_FLAG) !== 0n) {
+        if ((registers.F & CAPI.ARCH.S_FLAG) !== 0n) {
             const lsb = CAPI.MEM.read(registers.SP, 1);
             const msb = CAPI.MEM.read(registers.SP + 1n, 1);
             registers.PC = (msb << 8n) | lsb;
@@ -3862,13 +3863,13 @@ instructions:
           value: "m,"
           order: 1
         - field: nn
-          type: inm-unsigned
+          type: imm-unsigned
           startbit: 15
           stopbit: 0
           order: 2
           word: [2, 1]
       definition: |
-        if ((registers.F & CAPI.Z80.S_FLAG) !== 0n) {
+        if ((registers.F & CAPI.ARCH.S_FLAG) !== 0n) {
             registers.SP = (registers.SP - 1n) & 0xFFFFn;
             CAPI.MEM.write(registers.SP, 1, (registers.PC >> 8n) & 0xFFn);
             registers.SP = (registers.SP - 1n) & 0xFFFFn;
@@ -3912,7 +3913,7 @@ instructions:
       definition: |
         const msb = (registers.B & 0x80n) >> 7n;
         registers.B = ((registers.B << 1n) | msb) & 0xFFn;
-        registers.F = CAPI.Z80.calculateFlags_ROTATE(registers.B, msb);
+        registers.F = CAPI.ARCH.calculateFlags_ROTATE(registers.B, msb);
 
     - name: rlc
       template: CB
@@ -3927,7 +3928,7 @@ instructions:
       definition: |
         const msb = (registers.C & 0x80n) >> 7n;
         registers.C = ((registers.C << 1n) | msb) & 0xFFn;
-        registers.F = CAPI.Z80.calculateFlags_ROTATE(registers.C, msb);
+        registers.F = CAPI.ARCH.calculateFlags_ROTATE(registers.C, msb);
 
     - name: rlc
       template: CB
@@ -3942,7 +3943,7 @@ instructions:
       definition: |
         const msb = (registers.D & 0x80n) >> 7n;
         registers.D = ((registers.D << 1n) | msb) & 0xFFn;
-        registers.F = CAPI.Z80.calculateFlags_ROTATE(registers.D, msb);
+        registers.F = CAPI.ARCH.calculateFlags_ROTATE(registers.D, msb);
 
     - name: rlc
       template: CB
@@ -3957,7 +3958,7 @@ instructions:
       definition: |
         const msb = (registers.E & 0x80n) >> 7n;
         registers.E = ((registers.E << 1n) | msb) & 0xFFn;
-        registers.F = CAPI.Z80.calculateFlags_ROTATE(registers.E, msb);
+        registers.F = CAPI.ARCH.calculateFlags_ROTATE(registers.E, msb);
 
     - name: rlc
       template: CB
@@ -3972,7 +3973,7 @@ instructions:
       definition: |
         const msb = (registers.H & 0x80n) >> 7n;
         registers.H = ((registers.H << 1n) | msb) & 0xFFn;
-        registers.F = CAPI.Z80.calculateFlags_ROTATE(registers.H, msb);
+        registers.F = CAPI.ARCH.calculateFlags_ROTATE(registers.H, msb);
 
     - name: rlc
       template: CB
@@ -3987,7 +3988,7 @@ instructions:
       definition: |
         const msb = (registers.L & 0x80n) >> 7n;
         registers.L = ((registers.L << 1n) | msb) & 0xFFn;
-        registers.F = CAPI.Z80.calculateFlags_ROTATE(registers.L, msb);
+        registers.F = CAPI.ARCH.calculateFlags_ROTATE(registers.L, msb);
 
     - name: rlc
       template: CB
@@ -4002,7 +4003,7 @@ instructions:
       definition: |
         const msb = (registers.A & 0x80n) >> 7n;
         registers.A = ((registers.A << 1n) | msb) & 0xFFn;
-        registers.F = CAPI.Z80.calculateFlags_ROTATE(registers.A, msb);
+        registers.F = CAPI.ARCH.calculateFlags_ROTATE(registers.A, msb);
 
     # RLC (HL)
     - name: rlc
@@ -4021,7 +4022,7 @@ instructions:
         const msb = (value & 0x80n) >> 7n;
         const result = ((value << 1n) | msb) & 0xFFn;
         CAPI.MEM.write(addr, 1, result);
-        registers.F = CAPI.Z80.calculateFlags_ROTATE(result, msb);
+        registers.F = CAPI.ARCH.calculateFlags_ROTATE(result, msb);
 
     # SRL r
     - name: srl
@@ -4037,7 +4038,7 @@ instructions:
       definition: |
         const lsb = registers.B & 0x01n;
         registers.B = registers.B >> 1n;
-        registers.F = CAPI.Z80.calculateFlags_SRL(registers.B, lsb);
+        registers.F = CAPI.ARCH.calculateFlags_SRL(registers.B, lsb);
 
     - name: srl
       template: CB
@@ -4052,7 +4053,7 @@ instructions:
       definition: |
         const lsb = registers.C & 0x01n;
         registers.C = registers.C >> 1n;
-        registers.F = CAPI.Z80.calculateFlags_SRL(registers.C, lsb);
+        registers.F = CAPI.ARCH.calculateFlags_SRL(registers.C, lsb);
 
     - name: srl
       template: CB
@@ -4067,7 +4068,7 @@ instructions:
       definition: |
         const lsb = registers.D & 0x01n;
         registers.D = registers.D >> 1n;
-        registers.F = CAPI.Z80.calculateFlags_SRL(registers.D, lsb);
+        registers.F = CAPI.ARCH.calculateFlags_SRL(registers.D, lsb);
 
     - name: srl
       template: CB
@@ -4082,7 +4083,7 @@ instructions:
       definition: |
         const lsb = registers.E & 0x01n;
         registers.E = registers.E >> 1n;
-        registers.F = CAPI.Z80.calculateFlags_SRL(registers.E, lsb);
+        registers.F = CAPI.ARCH.calculateFlags_SRL(registers.E, lsb);
 
     - name: srl
       template: CB
@@ -4097,7 +4098,7 @@ instructions:
       definition: |
         const lsb = registers.H & 0x01n;
         registers.H = registers.H >> 1n;
-        registers.F = CAPI.Z80.calculateFlags_SRL(registers.H, lsb);
+        registers.F = CAPI.ARCH.calculateFlags_SRL(registers.H, lsb);
 
     - name: srl
       template: CB
@@ -4112,7 +4113,7 @@ instructions:
       definition: |
         const lsb = registers.L & 0x01n;
         registers.L = registers.L >> 1n;
-        registers.F = CAPI.Z80.calculateFlags_SRL(registers.L, lsb);
+        registers.F = CAPI.ARCH.calculateFlags_SRL(registers.L, lsb);
 
     - name: srl
       template: CB
@@ -4127,7 +4128,7 @@ instructions:
       definition: |
         const lsb = registers.A & 0x01n;
         registers.A = registers.A >> 1n;
-        registers.F = CAPI.Z80.calculateFlags_SRL(registers.A, lsb);
+        registers.F = CAPI.ARCH.calculateFlags_SRL(registers.A, lsb);
 
     # SRL (HL)
     - name: srl
@@ -4146,7 +4147,7 @@ instructions:
         const lsb = value & 0x01n;
         const result = value >> 1n;
         CAPI.MEM.write(addr, 1, result);
-        registers.F = CAPI.Z80.calculateFlags_SRL(result, lsb);
+        registers.F = CAPI.ARCH.calculateFlags_SRL(result, lsb);
 
     - name: ld
       template: DD
@@ -4160,7 +4161,7 @@ instructions:
           value: "ix,"
           order: 1
         - field: nn
-          type: inm-unsigned
+          type: imm-unsigned
           startbit: 15
           stopbit: 0
           order: 2
@@ -4182,7 +4183,7 @@ instructions:
       definition: |
         // The value of BC is added to IX.
         const value = (((registers.B << 8n) | registers.C) - 1n) & 0xFFFFn;
-        registers.F = CAPI.Z80.calculateFlags_ADD16(registers.IX, value, registers.F);
+        registers.F = CAPI.ARCH.calculateFlags_ADD16(registers.IX, value, registers.F);
         registers.IX = (registers.IX + value) & 0xFFFFn;
 
     - name: add
@@ -4199,7 +4200,7 @@ instructions:
         // The value of IX is added to IX.
         let prevIX = registers.IX;
         registers.IX = (registers.IX + registers.IX) & 0xFFFFn;
-        registers.F = CAPI.Z80.calculateFlags_ADD16(prevIX, prevIX, registers.F)
+        registers.F = CAPI.ARCH.calculateFlags_ADD16(prevIX, prevIX, registers.F)
 
     - name: jp
       template: DD
@@ -4235,7 +4236,7 @@ instructions:
         const lsb = value & 0x01n;
         const result = value >> 1n;
         CAPI.MEM.write(addr, 1, result);
-        registers.F = CAPI.Z80.calculateFlags_SRL(result, lsb);
+        registers.F = CAPI.ARCH.calculateFlags_SRL(result, lsb);
 
     # SRL (IY+d)
     - name: srl
@@ -4257,7 +4258,7 @@ instructions:
         const lsb = value & 0x01n;
         const result = value >> 1n;
         CAPI.MEM.write(addr, 1, result);
-        registers.F = CAPI.Z80.calculateFlags_SRL(result, lsb);
+        registers.F = CAPI.ARCH.calculateFlags_SRL(result, lsb);
 
     # BIT b, r instructions
     - name: bit
@@ -4270,7 +4271,7 @@ instructions:
           type: skip
           value: "0,b"
           order: 1
-      definition: registers.F = CAPI.Z80.calculateFlags_BIT(registers.B, 0, registers.F);
+      definition: registers.F = CAPI.ARCH.calculateFlags_BIT(registers.B, 0, registers.F);
     - name: bit
       template: CB
       clk_cycles: 8
@@ -4281,7 +4282,7 @@ instructions:
           type: skip
           value: "0,c"
           order: 1
-      definition: registers.F = CAPI.Z80.calculateFlags_BIT(registers.C, 0, registers.F);
+      definition: registers.F = CAPI.ARCH.calculateFlags_BIT(registers.C, 0, registers.F);
     - name: bit
       template: CB
       clk_cycles: 8
@@ -4292,7 +4293,7 @@ instructions:
           type: skip
           value: "0,d"
           order: 1
-      definition: registers.F = CAPI.Z80.calculateFlags_BIT(registers.D, 0, registers.F);
+      definition: registers.F = CAPI.ARCH.calculateFlags_BIT(registers.D, 0, registers.F);
     - name: bit
       template: CB
       clk_cycles: 8
@@ -4303,7 +4304,7 @@ instructions:
           type: skip
           value: "0,e"
           order: 1
-      definition: registers.F = CAPI.Z80.calculateFlags_BIT(registers.E, 0, registers.F);
+      definition: registers.F = CAPI.ARCH.calculateFlags_BIT(registers.E, 0, registers.F);
     - name: bit
       template: CB
       clk_cycles: 8
@@ -4314,7 +4315,7 @@ instructions:
           type: skip
           value: "0,h"
           order: 1
-      definition: registers.F = CAPI.Z80.calculateFlags_BIT(registers.H, 0, registers.F);
+      definition: registers.F = CAPI.ARCH.calculateFlags_BIT(registers.H, 0, registers.F);
     - name: bit
       template: CB
       clk_cycles: 8
@@ -4325,7 +4326,7 @@ instructions:
           type: skip
           value: "0,l"
           order: 1
-      definition: registers.F = CAPI.Z80.calculateFlags_BIT(registers.L, 0, registers.F);
+      definition: registers.F = CAPI.ARCH.calculateFlags_BIT(registers.L, 0, registers.F);
     - name: bit
       template: CB
       clk_cycles: 8
@@ -4336,7 +4337,7 @@ instructions:
           type: skip
           value: "0,a"
           order: 1
-      definition: registers.F = CAPI.Z80.calculateFlags_BIT(registers.A, 0, registers.F);
+      definition: registers.F = CAPI.ARCH.calculateFlags_BIT(registers.A, 0, registers.F);
     - name: bit
       template: CB
       clk_cycles: 8
@@ -4347,7 +4348,7 @@ instructions:
           type: skip
           value: "1,b"
           order: 1
-      definition: registers.F = CAPI.Z80.calculateFlags_BIT(registers.B, 1, registers.F);
+      definition: registers.F = CAPI.ARCH.calculateFlags_BIT(registers.B, 1, registers.F);
     - name: bit
       template: CB
       clk_cycles: 8
@@ -4358,7 +4359,7 @@ instructions:
           type: skip
           value: "1,c"
           order: 1
-      definition: registers.F = CAPI.Z80.calculateFlags_BIT(registers.C, 1, registers.F);
+      definition: registers.F = CAPI.ARCH.calculateFlags_BIT(registers.C, 1, registers.F);
     - name: bit
       template: CB
       clk_cycles: 8
@@ -4369,7 +4370,7 @@ instructions:
           type: skip
           value: "1,d"
           order: 1
-      definition: registers.F = CAPI.Z80.calculateFlags_BIT(registers.D, 1, registers.F);
+      definition: registers.F = CAPI.ARCH.calculateFlags_BIT(registers.D, 1, registers.F);
     - name: bit
       template: CB
       clk_cycles: 8
@@ -4380,7 +4381,7 @@ instructions:
           type: skip
           value: "1,e"
           order: 1
-      definition: registers.F = CAPI.Z80.calculateFlags_BIT(registers.E, 1, registers.F);
+      definition: registers.F = CAPI.ARCH.calculateFlags_BIT(registers.E, 1, registers.F);
     - name: bit
       template: CB
       clk_cycles: 8
@@ -4391,7 +4392,7 @@ instructions:
           type: skip
           value: "1,h"
           order: 1
-      definition: registers.F = CAPI.Z80.calculateFlags_BIT(registers.H, 1, registers.F);
+      definition: registers.F = CAPI.ARCH.calculateFlags_BIT(registers.H, 1, registers.F);
     - name: bit
       template: CB
       clk_cycles: 8
@@ -4402,7 +4403,7 @@ instructions:
           type: skip
           value: "1,l"
           order: 1
-      definition: registers.F = CAPI.Z80.calculateFlags_BIT(registers.L, 1, registers.F);
+      definition: registers.F = CAPI.ARCH.calculateFlags_BIT(registers.L, 1, registers.F);
     - name: bit
       template: CB
       clk_cycles: 8
@@ -4413,7 +4414,7 @@ instructions:
           type: skip
           value: "1,a"
           order: 1
-      definition: registers.F = CAPI.Z80.calculateFlags_BIT(registers.A, 1, registers.F);
+      definition: registers.F = CAPI.ARCH.calculateFlags_BIT(registers.A, 1, registers.F);
     - name: bit
       template: CB
       clk_cycles: 8
@@ -4424,7 +4425,7 @@ instructions:
           type: skip
           value: "2,b"
           order: 1
-      definition: registers.F = CAPI.Z80.calculateFlags_BIT(registers.B, 2, registers.F);
+      definition: registers.F = CAPI.ARCH.calculateFlags_BIT(registers.B, 2, registers.F);
     - name: bit
       template: CB
       clk_cycles: 8
@@ -4435,7 +4436,7 @@ instructions:
           type: skip
           value: "2,c"
           order: 1
-      definition: registers.F = CAPI.Z80.calculateFlags_BIT(registers.C, 2, registers.F);
+      definition: registers.F = CAPI.ARCH.calculateFlags_BIT(registers.C, 2, registers.F);
     - name: bit
       template: CB
       clk_cycles: 8
@@ -4446,7 +4447,7 @@ instructions:
           type: skip
           value: "2,d"
           order: 1
-      definition: registers.F = CAPI.Z80.calculateFlags_BIT(registers.D, 2, registers.F);
+      definition: registers.F = CAPI.ARCH.calculateFlags_BIT(registers.D, 2, registers.F);
     - name: bit
       template: CB
       clk_cycles: 8
@@ -4457,7 +4458,7 @@ instructions:
           type: skip
           value: "2,e"
           order: 1
-      definition: registers.F = CAPI.Z80.calculateFlags_BIT(registers.E, 2, registers.F);
+      definition: registers.F = CAPI.ARCH.calculateFlags_BIT(registers.E, 2, registers.F);
     - name: bit
       template: CB
       clk_cycles: 8
@@ -4468,7 +4469,7 @@ instructions:
           type: skip
           value: "2,h"
           order: 1
-      definition: registers.F = CAPI.Z80.calculateFlags_BIT(registers.H, 2, registers.F);
+      definition: registers.F = CAPI.ARCH.calculateFlags_BIT(registers.H, 2, registers.F);
     - name: bit
       template: CB
       clk_cycles: 8
@@ -4479,7 +4480,7 @@ instructions:
           type: skip
           value: "2,l"
           order: 1
-      definition: registers.F = CAPI.Z80.calculateFlags_BIT(registers.L, 2, registers.F);
+      definition: registers.F = CAPI.ARCH.calculateFlags_BIT(registers.L, 2, registers.F);
     - name: bit
       template: CB
       clk_cycles: 8
@@ -4490,7 +4491,7 @@ instructions:
           type: skip
           value: "2,a"
           order: 1
-      definition: registers.F = CAPI.Z80.calculateFlags_BIT(registers.A, 2, registers.F);
+      definition: registers.F = CAPI.ARCH.calculateFlags_BIT(registers.A, 2, registers.F);
     - name: bit
       template: CB
       clk_cycles: 8
@@ -4501,7 +4502,7 @@ instructions:
           type: skip
           value: "3,b"
           order: 1
-      definition: registers.F = CAPI.Z80.calculateFlags_BIT(registers.B, 3, registers.F);
+      definition: registers.F = CAPI.ARCH.calculateFlags_BIT(registers.B, 3, registers.F);
     - name: bit
       template: CB
       clk_cycles: 8
@@ -4512,7 +4513,7 @@ instructions:
           type: skip
           value: "3,c"
           order: 1
-      definition: registers.F = CAPI.Z80.calculateFlags_BIT(registers.C, 3, registers.F);
+      definition: registers.F = CAPI.ARCH.calculateFlags_BIT(registers.C, 3, registers.F);
     - name: bit
       template: CB
       clk_cycles: 8
@@ -4523,7 +4524,7 @@ instructions:
           type: skip
           value: "3,d"
           order: 1
-      definition: registers.F = CAPI.Z80.calculateFlags_BIT(registers.D, 3, registers.F);
+      definition: registers.F = CAPI.ARCH.calculateFlags_BIT(registers.D, 3, registers.F);
     - name: bit
       template: CB
       clk_cycles: 8
@@ -4534,7 +4535,7 @@ instructions:
           type: skip
           value: "3,e"
           order: 1
-      definition: registers.F = CAPI.Z80.calculateFlags_BIT(registers.E, 3, registers.F);
+      definition: registers.F = CAPI.ARCH.calculateFlags_BIT(registers.E, 3, registers.F);
     - name: bit
       template: CB
       clk_cycles: 8
@@ -4545,7 +4546,7 @@ instructions:
           type: skip
           value: "3,h"
           order: 1
-      definition: registers.F = CAPI.Z80.calculateFlags_BIT(registers.H, 3, registers.F);
+      definition: registers.F = CAPI.ARCH.calculateFlags_BIT(registers.H, 3, registers.F);
     - name: bit
       template: CB
       clk_cycles: 8
@@ -4556,7 +4557,7 @@ instructions:
           type: skip
           value: "3,l"
           order: 1
-      definition: registers.F = CAPI.Z80.calculateFlags_BIT(registers.L, 3, registers.F);
+      definition: registers.F = CAPI.ARCH.calculateFlags_BIT(registers.L, 3, registers.F);
     - name: bit
       template: CB
       clk_cycles: 8
@@ -4567,7 +4568,7 @@ instructions:
           type: skip
           value: "3,a"
           order: 1
-      definition: registers.F = CAPI.Z80.calculateFlags_BIT(registers.A, 3, registers.F);
+      definition: registers.F = CAPI.ARCH.calculateFlags_BIT(registers.A, 3, registers.F);
     - name: bit
       template: CB
       clk_cycles: 8
@@ -4578,7 +4579,7 @@ instructions:
           type: skip
           value: "4,b"
           order: 1
-      definition: registers.F = CAPI.Z80.calculateFlags_BIT(registers.B, 4, registers.F);
+      definition: registers.F = CAPI.ARCH.calculateFlags_BIT(registers.B, 4, registers.F);
     - name: bit
       template: CB
       clk_cycles: 8
@@ -4589,7 +4590,7 @@ instructions:
           type: skip
           value: "4,c"
           order: 1
-      definition: registers.F = CAPI.Z80.calculateFlags_BIT(registers.C, 4, registers.F);
+      definition: registers.F = CAPI.ARCH.calculateFlags_BIT(registers.C, 4, registers.F);
     - name: bit
       template: CB
       clk_cycles: 8
@@ -4600,7 +4601,7 @@ instructions:
           type: skip
           value: "4,d"
           order: 1
-      definition: registers.F = CAPI.Z80.calculateFlags_BIT(registers.D, 4, registers.F);
+      definition: registers.F = CAPI.ARCH.calculateFlags_BIT(registers.D, 4, registers.F);
     - name: bit
       template: CB
       clk_cycles: 8
@@ -4611,7 +4612,7 @@ instructions:
           type: skip
           value: "4,e"
           order: 1
-      definition: registers.F = CAPI.Z80.calculateFlags_BIT(registers.E, 4, registers.F);
+      definition: registers.F = CAPI.ARCH.calculateFlags_BIT(registers.E, 4, registers.F);
     - name: bit
       template: CB
       clk_cycles: 8
@@ -4622,7 +4623,7 @@ instructions:
           type: skip
           value: "4,h"
           order: 1
-      definition: registers.F = CAPI.Z80.calculateFlags_BIT(registers.H, 4, registers.F);
+      definition: registers.F = CAPI.ARCH.calculateFlags_BIT(registers.H, 4, registers.F);
     - name: bit
       template: CB
       clk_cycles: 8
@@ -4633,7 +4634,7 @@ instructions:
           type: skip
           value: "4,l"
           order: 1
-      definition: registers.F = CAPI.Z80.calculateFlags_BIT(registers.L, 4, registers.F);
+      definition: registers.F = CAPI.ARCH.calculateFlags_BIT(registers.L, 4, registers.F);
     - name: bit
       template: CB
       clk_cycles: 8
@@ -4644,7 +4645,7 @@ instructions:
           type: skip
           value: "4,a"
           order: 1
-      definition: registers.F = CAPI.Z80.calculateFlags_BIT(registers.A, 4, registers.F);
+      definition: registers.F = CAPI.ARCH.calculateFlags_BIT(registers.A, 4, registers.F);
     - name: bit
       template: CB
       clk_cycles: 8
@@ -4655,7 +4656,7 @@ instructions:
           type: skip
           value: "5,b"
           order: 1
-      definition: registers.F = CAPI.Z80.calculateFlags_BIT(registers.B, 5, registers.F);
+      definition: registers.F = CAPI.ARCH.calculateFlags_BIT(registers.B, 5, registers.F);
     - name: bit
       template: CB
       clk_cycles: 8
@@ -4666,7 +4667,7 @@ instructions:
           type: skip
           value: "5,c"
           order: 1
-      definition: registers.F = CAPI.Z80.calculateFlags_BIT(registers.C, 5, registers.F);
+      definition: registers.F = CAPI.ARCH.calculateFlags_BIT(registers.C, 5, registers.F);
     - name: bit
       template: CB
       clk_cycles: 8
@@ -4677,7 +4678,7 @@ instructions:
           type: skip
           value: "5,d"
           order: 1
-      definition: registers.F = CAPI.Z80.calculateFlags_BIT(registers.D, 5, registers.F);
+      definition: registers.F = CAPI.ARCH.calculateFlags_BIT(registers.D, 5, registers.F);
     - name: bit
       template: CB
       clk_cycles: 8
@@ -4688,7 +4689,7 @@ instructions:
           type: skip
           value: "5,e"
           order: 1
-      definition: registers.F = CAPI.Z80.calculateFlags_BIT(registers.E, 5, registers.F);
+      definition: registers.F = CAPI.ARCH.calculateFlags_BIT(registers.E, 5, registers.F);
     - name: bit
       template: CB
       clk_cycles: 8
@@ -4699,7 +4700,7 @@ instructions:
           type: skip
           value: "5,h"
           order: 1
-      definition: registers.F = CAPI.Z80.calculateFlags_BIT(registers.H, 5, registers.F);
+      definition: registers.F = CAPI.ARCH.calculateFlags_BIT(registers.H, 5, registers.F);
     - name: bit
       template: CB
       clk_cycles: 8
@@ -4710,7 +4711,7 @@ instructions:
           type: skip
           value: "5,l"
           order: 1
-      definition: registers.F = CAPI.Z80.calculateFlags_BIT(registers.L, 5, registers.F);
+      definition: registers.F = CAPI.ARCH.calculateFlags_BIT(registers.L, 5, registers.F);
     - name: bit
       template: CB
       clk_cycles: 8
@@ -4721,7 +4722,7 @@ instructions:
           type: skip
           value: "5,a"
           order: 1
-      definition: registers.F = CAPI.Z80.calculateFlags_BIT(registers.A, 5, registers.F);
+      definition: registers.F = CAPI.ARCH.calculateFlags_BIT(registers.A, 5, registers.F);
     - name: bit
       template: CB
       clk_cycles: 8
@@ -4732,7 +4733,7 @@ instructions:
           type: skip
           value: "6,b"
           order: 1
-      definition: registers.F = CAPI.Z80.calculateFlags_BIT(registers.B, 6, registers.F);
+      definition: registers.F = CAPI.ARCH.calculateFlags_BIT(registers.B, 6, registers.F);
     - name: bit
       template: CB
       clk_cycles: 8
@@ -4743,7 +4744,7 @@ instructions:
           type: skip
           value: "6,c"
           order: 1
-      definition: registers.F = CAPI.Z80.calculateFlags_BIT(registers.C, 6, registers.F);
+      definition: registers.F = CAPI.ARCH.calculateFlags_BIT(registers.C, 6, registers.F);
     - name: bit
       template: CB
       clk_cycles: 8
@@ -4754,7 +4755,7 @@ instructions:
           type: skip
           value: "6,d"
           order: 1
-      definition: registers.F = CAPI.Z80.calculateFlags_BIT(registers.D, 6, registers.F);
+      definition: registers.F = CAPI.ARCH.calculateFlags_BIT(registers.D, 6, registers.F);
     - name: bit
       template: CB
       clk_cycles: 8
@@ -4765,7 +4766,7 @@ instructions:
           type: skip
           value: "6,e"
           order: 1
-      definition: registers.F = CAPI.Z80.calculateFlags_BIT(registers.E, 6, registers.F);
+      definition: registers.F = CAPI.ARCH.calculateFlags_BIT(registers.E, 6, registers.F);
     - name: bit
       template: CB
       clk_cycles: 8
@@ -4776,7 +4777,7 @@ instructions:
           type: skip
           value: "6,h"
           order: 1
-      definition: registers.F = CAPI.Z80.calculateFlags_BIT(registers.H, 6, registers.F);
+      definition: registers.F = CAPI.ARCH.calculateFlags_BIT(registers.H, 6, registers.F);
     - name: bit
       template: CB
       clk_cycles: 8
@@ -4787,7 +4788,7 @@ instructions:
           type: skip
           value: "6,l"
           order: 1
-      definition: registers.F = CAPI.Z80.calculateFlags_BIT(registers.L, 6, registers.F);
+      definition: registers.F = CAPI.ARCH.calculateFlags_BIT(registers.L, 6, registers.F);
     - name: bit
       template: CB
       clk_cycles: 8
@@ -4798,7 +4799,7 @@ instructions:
           type: skip
           value: "6,a"
           order: 1
-      definition: registers.F = CAPI.Z80.calculateFlags_BIT(registers.A, 6, registers.F);
+      definition: registers.F = CAPI.ARCH.calculateFlags_BIT(registers.A, 6, registers.F);
     - name: bit
       template: CB
       clk_cycles: 8
@@ -4809,7 +4810,7 @@ instructions:
           type: skip
           value: "7,b"
           order: 1
-      definition: registers.F = CAPI.Z80.calculateFlags_BIT(registers.B, 7, registers.F);
+      definition: registers.F = CAPI.ARCH.calculateFlags_BIT(registers.B, 7, registers.F);
     - name: bit
       template: CB
       clk_cycles: 8
@@ -4820,7 +4821,7 @@ instructions:
           type: skip
           value: "7,c"
           order: 1
-      definition: registers.F = CAPI.Z80.calculateFlags_BIT(registers.C, 7, registers.F);
+      definition: registers.F = CAPI.ARCH.calculateFlags_BIT(registers.C, 7, registers.F);
     - name: bit
       template: CB
       clk_cycles: 8
@@ -4831,7 +4832,7 @@ instructions:
           type: skip
           value: "7,d"
           order: 1
-      definition: registers.F = CAPI.Z80.calculateFlags_BIT(registers.D, 7, registers.F);
+      definition: registers.F = CAPI.ARCH.calculateFlags_BIT(registers.D, 7, registers.F);
     - name: bit
       template: CB
       clk_cycles: 8
@@ -4842,7 +4843,7 @@ instructions:
           type: skip
           value: "7,e"
           order: 1
-      definition: registers.F = CAPI.Z80.calculateFlags_BIT(registers.E, 7, registers.F);
+      definition: registers.F = CAPI.ARCH.calculateFlags_BIT(registers.E, 7, registers.F);
     - name: bit
       template: CB
       clk_cycles: 8
@@ -4853,7 +4854,7 @@ instructions:
           type: skip
           value: "7,h"
           order: 1
-      definition: registers.F = CAPI.Z80.calculateFlags_BIT(registers.H, 7, registers.F);
+      definition: registers.F = CAPI.ARCH.calculateFlags_BIT(registers.H, 7, registers.F);
     - name: bit
       template: CB
       clk_cycles: 8
@@ -4864,7 +4865,7 @@ instructions:
           type: skip
           value: "7,l"
           order: 1
-      definition: registers.F = CAPI.Z80.calculateFlags_BIT(registers.L, 7, registers.F);
+      definition: registers.F = CAPI.ARCH.calculateFlags_BIT(registers.L, 7, registers.F);
     - name: bit
       template: CB
       clk_cycles: 8
@@ -4875,7 +4876,7 @@ instructions:
           type: skip
           value: "7,a"
           order: 1
-      definition: registers.F = CAPI.Z80.calculateFlags_BIT(registers.A, 7, registers.F);
+      definition: registers.F = CAPI.ARCH.calculateFlags_BIT(registers.A, 7, registers.F);
 
     # BIT b, (HL)
     - name: bit
@@ -4891,7 +4892,7 @@ instructions:
       definition: |
         const addr = (registers.H << 8n) | registers.L;
         const value = CAPI.MEM.read(addr, 1);
-        registers.F = CAPI.Z80.calculateFlags_BIT(value, 0, registers.F);
+        registers.F = CAPI.ARCH.calculateFlags_BIT(value, 0, registers.F);
     - name: bit
       template: CB
       clk_cycles: 12
@@ -4905,7 +4906,7 @@ instructions:
       definition: |
         const addr = (registers.H << 8n) | registers.L;
         const value = CAPI.MEM.read(addr, 1);
-        registers.F = CAPI.Z80.calculateFlags_BIT(value, 1, registers.F);
+        registers.F = CAPI.ARCH.calculateFlags_BIT(value, 1, registers.F);
     - name: bit
       template: CB
       clk_cycles: 12
@@ -4919,7 +4920,7 @@ instructions:
       definition: |
         const addr = (registers.H << 8n) | registers.L;
         const value = CAPI.MEM.read(addr, 1);
-        registers.F = CAPI.Z80.calculateFlags_BIT(value, 2, registers.F);
+        registers.F = CAPI.ARCH.calculateFlags_BIT(value, 2, registers.F);
     - name: bit
       template: CB
       clk_cycles: 12
@@ -4933,7 +4934,7 @@ instructions:
       definition: |
         const addr = (registers.H << 8n) | registers.L;
         const value = CAPI.MEM.read(addr, 1);
-        registers.F = CAPI.Z80.calculateFlags_BIT(value, 3, registers.F);
+        registers.F = CAPI.ARCH.calculateFlags_BIT(value, 3, registers.F);
     - name: bit
       template: CB
       clk_cycles: 12
@@ -4947,7 +4948,7 @@ instructions:
       definition: |
         const addr = (registers.H << 8n) | registers.L;
         const value = CAPI.MEM.read(addr, 1);
-        registers.F = CAPI.Z80.calculateFlags_BIT(value, 4, registers.F);
+        registers.F = CAPI.ARCH.calculateFlags_BIT(value, 4, registers.F);
     - name: bit
       template: CB
       clk_cycles: 12
@@ -4961,7 +4962,7 @@ instructions:
       definition: |
         const addr = (registers.H << 8n) | registers.L;
         const value = CAPI.MEM.read(addr, 1);
-        registers.F = CAPI.Z80.calculateFlags_BIT(value, 5, registers.F);
+        registers.F = CAPI.ARCH.calculateFlags_BIT(value, 5, registers.F);
     - name: bit
       template: CB
       clk_cycles: 12
@@ -4975,7 +4976,7 @@ instructions:
       definition: |
         const addr = (registers.H << 8n) | registers.L;
         const value = CAPI.MEM.read(addr, 1);
-        registers.F = CAPI.Z80.calculateFlags_BIT(value, 6, registers.F);
+        registers.F = CAPI.ARCH.calculateFlags_BIT(value, 6, registers.F);
     - name: bit
       template: CB
       clk_cycles: 12
@@ -4989,7 +4990,7 @@ instructions:
       definition: |
         const addr = (registers.H << 8n) | registers.L;
         const value = CAPI.MEM.read(addr, 1);
-        registers.F = CAPI.Z80.calculateFlags_BIT(value, 7, registers.F);
+        registers.F = CAPI.ARCH.calculateFlags_BIT(value, 7, registers.F);
 
     # SET b, (HL)
     - name: set
@@ -5236,7 +5237,7 @@ instructions:
       definition: |
         const addr = (registers.IX + imm) & 0xFFFFn;
         const value = CAPI.MEM.read(addr, 1);
-        registers.F = CAPI.Z80.calculateFlags_BIT(value, 0, registers.F);
+        registers.F = CAPI.ARCH.calculateFlags_BIT(value, 0, registers.F);
     - name: bit
       template: DDCB
       clk_cycles: 20
@@ -5253,7 +5254,7 @@ instructions:
       definition: |
         const addr = (registers.IX + imm) & 0xFFFFn;
         const value = CAPI.MEM.read(addr, 1);
-        registers.F = CAPI.Z80.calculateFlags_BIT(value, 1, registers.F);
+        registers.F = CAPI.ARCH.calculateFlags_BIT(value, 1, registers.F);
     - name: bit
       template: DDCB
       clk_cycles: 20
@@ -5270,7 +5271,7 @@ instructions:
       definition: |
         const addr = (registers.IX + imm) & 0xFFFFn;
         const value = CAPI.MEM.read(addr, 1);
-        registers.F = CAPI.Z80.calculateFlags_BIT(value, 2, registers.F);
+        registers.F = CAPI.ARCH.calculateFlags_BIT(value, 2, registers.F);
     - name: bit
       template: DDCB
       clk_cycles: 20
@@ -5287,7 +5288,7 @@ instructions:
       definition: |
         const addr = (registers.IX + imm) & 0xFFFFn;
         const value = CAPI.MEM.read(addr, 1);
-        registers.F = CAPI.Z80.calculateFlags_BIT(value, 3, registers.F);
+        registers.F = CAPI.ARCH.calculateFlags_BIT(value, 3, registers.F);
     - name: bit
       template: DDCB
       clk_cycles: 20
@@ -5304,7 +5305,7 @@ instructions:
       definition: |
         const addr = (registers.IX + imm) & 0xFFFFn;
         const value = CAPI.MEM.read(addr, 1);
-        registers.F = CAPI.Z80.calculateFlags_BIT(value, 4, registers.F);
+        registers.F = CAPI.ARCH.calculateFlags_BIT(value, 4, registers.F);
     - name: bit
       template: DDCB
       clk_cycles: 20
@@ -5321,7 +5322,7 @@ instructions:
       definition: |
         const addr = (registers.IX + imm) & 0xFFFFn;
         const value = CAPI.MEM.read(addr, 1);
-        registers.F = CAPI.Z80.calculateFlags_BIT(value, 5, registers.F);
+        registers.F = CAPI.ARCH.calculateFlags_BIT(value, 5, registers.F);
     - name: bit
       template: DDCB
       clk_cycles: 20
@@ -5338,7 +5339,7 @@ instructions:
       definition: |
         const addr = (registers.IX + imm) & 0xFFFFn;
         const value = CAPI.MEM.read(addr, 1);
-        registers.F = CAPI.Z80.calculateFlags_BIT(value, 6, registers.F);
+        registers.F = CAPI.ARCH.calculateFlags_BIT(value, 6, registers.F);
     - name: bit
       template: DDCB
       clk_cycles: 20
@@ -5355,7 +5356,7 @@ instructions:
       definition: |
         const addr = (registers.IX + imm) & 0xFFFFn;
         const value = CAPI.MEM.read(addr, 1);
-        registers.F = CAPI.Z80.calculateFlags_BIT(value, 7, registers.F);
+        registers.F = CAPI.ARCH.calculateFlags_BIT(value, 7, registers.F);
 
     # BIT b, (IY+d)
     - name: bit
@@ -5374,7 +5375,7 @@ instructions:
       definition: |
         const addr = (registers.IY + d) & 0xFFFFn;
         const value = CAPI.MEM.read(addr, 1);
-        registers.F = CAPI.Z80.calculateFlags_BIT(value, 0, registers.F);
+        registers.F = CAPI.ARCH.calculateFlags_BIT(value, 0, registers.F);
     - name: bit
       template: FDCB
       clk_cycles: 20
@@ -5391,7 +5392,7 @@ instructions:
       definition: |
         const addr = (registers.IY + d) & 0xFFFFn;
         const value = CAPI.MEM.read(addr, 1);
-        registers.F = CAPI.Z80.calculateFlags_BIT(value, 1, registers.F);
+        registers.F = CAPI.ARCH.calculateFlags_BIT(value, 1, registers.F);
     - name: bit
       template: FDCB
       clk_cycles: 20
@@ -5408,7 +5409,7 @@ instructions:
       definition: |
         const addr = (registers.IY + d) & 0xFFFFn;
         const value = CAPI.MEM.read(addr, 1);
-        registers.F = CAPI.Z80.calculateFlags_BIT(value, 2, registers.F);
+        registers.F = CAPI.ARCH.calculateFlags_BIT(value, 2, registers.F);
     - name: bit
       template: FDCB
       clk_cycles: 20
@@ -5425,7 +5426,7 @@ instructions:
       definition: |
         const addr = (registers.IY + d) & 0xFFFFn;
         const value = CAPI.MEM.read(addr, 1);
-        registers.F = CAPI.Z80.calculateFlags_BIT(value, 3, registers.F);
+        registers.F = CAPI.ARCH.calculateFlags_BIT(value, 3, registers.F);
     - name: bit
       template: FDCB
       clk_cycles: 20
@@ -5442,7 +5443,7 @@ instructions:
       definition: |
         const addr = (registers.IY + d) & 0xFFFFn;
         const value = CAPI.MEM.read(addr, 1);
-        registers.F = CAPI.Z80.calculateFlags_BIT(value, 4, registers.F);
+        registers.F = CAPI.ARCH.calculateFlags_BIT(value, 4, registers.F);
     - name: bit
       template: FDCB
       clk_cycles: 20
@@ -5459,7 +5460,7 @@ instructions:
       definition: |
         const addr = (registers.IY + d) & 0xFFFFn;
         const value = CAPI.MEM.read(addr, 1);
-        registers.F = CAPI.Z80.calculateFlags_BIT(value, 5, registers.F);
+        registers.F = CAPI.ARCH.calculateFlags_BIT(value, 5, registers.F);
     - name: bit
       template: FDCB
       clk_cycles: 20
@@ -5476,7 +5477,7 @@ instructions:
       definition: |
         const addr = (registers.IY + d) & 0xFFFFn;
         const value = CAPI.MEM.read(addr, 1);
-        registers.F = CAPI.Z80.calculateFlags_BIT(value, 6, registers.F);
+        registers.F = CAPI.ARCH.calculateFlags_BIT(value, 6, registers.F);
     - name: bit
       template: FDCB
       clk_cycles: 20
@@ -5493,7 +5494,7 @@ instructions:
       definition: |
         const addr = (registers.IY + d) & 0xFFFFn;
         const value = CAPI.MEM.read(addr, 1);
-        registers.F = CAPI.Z80.calculateFlags_BIT(value, 7, registers.F);
+        registers.F = CAPI.ARCH.calculateFlags_BIT(value, 7, registers.F);
 
     # SET b, (IX+d)
     - name: set
@@ -7019,7 +7020,7 @@ instructions:
         // This is equivalent to 0 - A.
         const oldValueA = registers.A;
         registers.A = (0n - oldValueA) & 0xFFn;
-        registers.F = CAPI.Z80.calculateFlags_SUB(0n, oldValueA);
+        registers.F = CAPI.ARCH.calculateFlags_SUB(0n, oldValueA);
 
     - name: ld
       template: ED
@@ -7048,7 +7049,7 @@ instructions:
           value: "de,"
           order: 1
         - field: nn
-          type: inm-unsigned
+          type: imm-unsigned
           startbit: 15
           stopbit: 0
           prefix: "("
@@ -7072,7 +7073,7 @@ instructions:
           value: "hl,"
           order: 1
         - field: nn
-          type: inm-unsigned
+          type: imm-unsigned
           startbit: 15
           stopbit: 0
           prefix: "("
@@ -7096,7 +7097,7 @@ instructions:
           value: "sp,"
           order: 1
         - field: nn
-          type: inm-unsigned
+          type: imm-unsigned
           startbit: 15
           stopbit: 0
           prefix: "("
@@ -7138,11 +7139,11 @@ instructions:
 
         // 4. Update flags according to Z80 specification
         // S, Z, C are unaffected. H and N are reset. P/V is set if BC != 0.
-        let newF = registers.F & (CAPI.Z80.S_FLAG | CAPI.Z80.Z_FLAG | CAPI.Z80.C_FLAG);
+        let newF = registers.F & (CAPI.ARCH.S_FLAG | CAPI.ARCH.Z_FLAG | CAPI.ARCH.C_FLAG);
 
         // 5. Check for repeat condition
         if (bcCount !== 0n) {
-            newF |= CAPI.Z80.PV_FLAG;
+            newF |= CAPI.ARCH.PV_FLAG;
             // Rewind PC to re-execute this instruction
             registers.PC = (registers.PC - 2n) & 0xFFFFn;
             // set_private_field("clk_cycles", 21); // Optional: for accurate timing
@@ -7183,11 +7184,11 @@ instructions:
 
         // 4. Update flags according to Z80 specification
         // S, Z, C are unaffected. H and N are reset. P/V is set if BC != 0.
-        let newF = registers.F & (CAPI.Z80.S_FLAG | CAPI.Z80.Z_FLAG | CAPI.Z80.C_FLAG); 
+        let newF = registers.F & (CAPI.ARCH.S_FLAG | CAPI.ARCH.Z_FLAG | CAPI.ARCH.C_FLAG); 
 
         // 5. Check for repeat condition
         if (bcCount !== 0n) {
-            newF |= CAPI.Z80.PV_FLAG;
+            newF |= CAPI.ARCH.PV_FLAG;
             // Rewind PC to re-execute this instruction
             registers.PC = (registers.PC - 2n) & 0xFFFFn;
             // set_private_field("clk_cycles", 21); // Optional: for accurate timing
@@ -7211,10 +7212,10 @@ instructions:
           order: 1
       definition: |
         // Set the interrupt mode to 1 (stored in internal CPU state)
-        if (typeof CAPI.Z80.interruptMode === 'undefined') {
-          CAPI.Z80.interruptMode = 0;
+        if (typeof CAPI.ARCH.interruptMode === 'undefined') {
+          CAPI.ARCH.interruptMode = 0;
         }
-        CAPI.Z80.interruptMode = 1;
+        CAPI.ARCH.interruptMode = 1;
 
     - name: reti
       template: ED
@@ -7242,7 +7243,7 @@ instructions:
           value: "iy,"
           order: 1
         - field: nn
-          type: inm-unsigned
+          type: imm-unsigned
           startbit: 15
           stopbit: 0
           order: 2
@@ -7264,7 +7265,7 @@ instructions:
           value: "(iy+"
           order: 1
         - field: d
-          type: inm-signed
+          type: imm-signed
           startbit: 7
           stopbit: 0
           order: 2
@@ -7274,7 +7275,7 @@ instructions:
           value: "),"
           order: 3
         - field: n
-          type: inm-unsigned
+          type: imm-unsigned
           startbit: 7
           stopbit: 0
           order: 4
@@ -7296,7 +7297,7 @@ instructions:
           value: "(iy+"
           order: 1
         - field: d
-          type: inm-signed
+          type: imm-signed
           startbit: 7
           stopbit: 0
           order: 2
@@ -7310,7 +7311,7 @@ instructions:
         const addr = (registers.IY + d) & 0xFFFFn;
         const oldValue = CAPI.MEM.read(addr, 1);
         CAPI.MEM.write(addr, 1, (oldValue + 1n) & 0xFFn);
-        registers.F = CAPI.Z80.calculateFlags_INC(oldValue, registers.F);
+        registers.F = CAPI.ARCH.calculateFlags_INC(oldValue, registers.F);
 
     - name: dec
       template: FD
@@ -7324,7 +7325,7 @@ instructions:
           value: "(iy+"
           order: 1
         - field: d
-          type: inm-signed
+          type: imm-signed
           startbit: 7
           stopbit: 0
           order: 2
@@ -7338,7 +7339,7 @@ instructions:
         const addr = (registers.IY + d) & 0xFFFFn;
         const oldValue = CAPI.MEM.read(addr, 1);
         CAPI.MEM.write(addr, 1, (oldValue - 1n) & 0xFFn);
-        registers.F = CAPI.Z80.calculateFlags_DEC(oldValue, registers.F);
+        registers.F = CAPI.ARCH.calculateFlags_DEC(oldValue, registers.F);
 
     - name: ld
       template: FD
@@ -7352,7 +7353,7 @@ instructions:
           value: "(iy+"
           order: 1
         - field: displacement
-          type: inm-signed
+          type: imm-signed
           startbit: 7
           stopbit: 0
           order: 2
@@ -7378,7 +7379,7 @@ instructions:
           value: "(iy+"
           order: 1
         - field: displacement
-          type: inm-signed
+          type: imm-signed
           startbit: 7
           stopbit: 0
           order: 2
@@ -7404,7 +7405,7 @@ instructions:
           value: "(iy+"
           order: 1
         - field: displacement
-          type: inm-signed
+          type: imm-signed
           startbit: 7
           stopbit: 0
           order: 2
@@ -7430,7 +7431,7 @@ instructions:
           value: "(iy+"
           order: 1
         - field: displacement
-          type: inm-signed
+          type: imm-signed
           startbit: 7
           stopbit: 0
           order: 2
@@ -7456,7 +7457,7 @@ instructions:
           value: "(iy+"
           order: 1
         - field: displacement
-          type: inm-signed
+          type: imm-signed
           startbit: 7
           stopbit: 0
           order: 2
@@ -7482,7 +7483,7 @@ instructions:
           value: "(iy+"
           order: 1
         - field: displacement
-          type: inm-signed
+          type: imm-signed
           startbit: 7
           stopbit: 0
           order: 2
@@ -7508,7 +7509,7 @@ instructions:
           value: "(iy+"
           order: 1
         - field: displacement
-          type: inm-signed
+          type: imm-signed
           startbit: 7
           stopbit: 0
           order: 2
@@ -7534,7 +7535,7 @@ instructions:
           value: "c,"
           order: 1
         - field: d
-          type: inm-signed
+          type: imm-signed
           startbit: 7
           stopbit: 0
           prefix: "(iy+"
@@ -7558,7 +7559,7 @@ instructions:
           value: "e,"
           order: 1
         - field: d
-          type: inm-signed
+          type: imm-signed
           startbit: 7
           stopbit: 0
           prefix: "(iy+"
@@ -7582,7 +7583,7 @@ instructions:
           value: "l,"
           order: 1
         - field: d
-          type: inm-signed
+          type: imm-signed
           startbit: 7
           stopbit: 0
           prefix: "(iy+"
@@ -7606,7 +7607,7 @@ instructions:
           value: "a,"
           order: 1
         - field: d
-          type: inm-signed
+          type: imm-signed
           startbit: 7
           stopbit: 0
           prefix: "(iy+"
@@ -7630,7 +7631,7 @@ instructions:
           value: "b,"
           order: 1
         - field: d
-          type: inm-signed
+          type: imm-signed
           startbit: 7
           stopbit: 0
           prefix: "(iy+"
@@ -7654,7 +7655,7 @@ instructions:
           value: "d,"
           order: 1
         - field: d
-          type: inm-signed
+          type: imm-signed
           startbit: 7
           stopbit: 0
           prefix: "(iy+"
@@ -7678,7 +7679,7 @@ instructions:
           value: "h,"
           order: 1
         - field: d
-          type: inm-signed
+          type: imm-signed
           startbit: 7
           stopbit: 0
           prefix: "(iy+"
@@ -7702,7 +7703,7 @@ instructions:
           value: "a,"
           order: 1
         - field: d
-          type: inm-signed
+          type: imm-signed
           startbit: 7
           stopbit: 0
           prefix: "(iy+"
@@ -7715,7 +7716,7 @@ instructions:
         const value = CAPI.MEM.read(addr, 1);
         const oldValueA = registers.A;
         registers.A = (oldValueA + value) & 0xFFn;
-        registers.F = CAPI.Z80.calculateFlags_ADD(oldValueA, value);
+        registers.F = CAPI.ARCH.calculateFlags_ADD(oldValueA, value);
 
     - name: sub
       template: FD
@@ -7729,7 +7730,7 @@ instructions:
           value: "a,"
           order: 1
         - field: d
-          type: inm-signed
+          type: imm-signed
           startbit: 7
           stopbit: 0
           prefix: "(iy+"
@@ -7742,7 +7743,7 @@ instructions:
         const value = CAPI.MEM.read(addr, 1);
         const oldValueA = registers.A;
         registers.A = (oldValueA - value) & 0xFFn;
-        registers.F = CAPI.Z80.calculateFlags_SUB(oldValueA, value);
+        registers.F = CAPI.ARCH.calculateFlags_SUB(oldValueA, value);
 
     - name: and
       template: FD
@@ -7756,7 +7757,7 @@ instructions:
           value: "a,"
           order: 1
         - field: d
-          type: inm-signed
+          type: imm-signed
           startbit: 7
           stopbit: 0
           prefix: "(iy+"
@@ -7768,7 +7769,7 @@ instructions:
         const addr = (registers.IY + d) & 0xFFFFn;
         const value = CAPI.MEM.read(addr, 1);
         registers.A = registers.A & value;
-        registers.F = CAPI.Z80.calculateFlags_LOGICAL(registers.A, 1);
+        registers.F = CAPI.ARCH.calculateFlags_LOGICAL(registers.A, 1);
 
     - name: or
       template: FD
@@ -7782,7 +7783,7 @@ instructions:
           value: "a,"
           order: 1
         - field: d
-          type: inm-signed
+          type: imm-signed
           startbit: 7
           stopbit: 0
           prefix: "(iy+"
@@ -7794,7 +7795,7 @@ instructions:
         const addr = (registers.IY + d) & 0xFFFFn;
         const value = CAPI.MEM.read(addr, 1);
         registers.A = registers.A | value;
-        registers.F = CAPI.Z80.calculateFlags_LOGICAL(registers.A, 0);
+        registers.F = CAPI.ARCH.calculateFlags_LOGICAL(registers.A, 0);
 
     - name: sbc
       template: ED
@@ -7812,12 +7813,12 @@ instructions:
         const bcValue = (registers.B << 8n) | registers.C;
 
         // 2. Perform the subtraction
-        const carry = registers.F & CAPI.Z80.C_FLAG;
+        const carry = registers.F & CAPI.ARCH.C_FLAG;
         const result = (hlValue - bcValue - carry) & 0xFFFFn;
 
         // 3. Call the helper function to calculate all flags.
         //    We pass the original values to it.
-        registers.F = CAPI.Z80.calculateFlags_SBC16(hlValue, bcValue, registers.F);
+        registers.F = CAPI.ARCH.calculateFlags_SBC16(hlValue, bcValue, registers.F);
 
         // 4. Update the destination register pair (HL) with the result.
         registers.H = (result >> 8n) & 0xFFn;
@@ -7839,12 +7840,12 @@ instructions:
         const deValue = (registers.D << 8n) | registers.E;
 
         // 2. Perform the subtraction
-        const carry = registers.F & CAPI.Z80.C_FLAG;
+        const carry = registers.F & CAPI.ARCH.C_FLAG;
         const result = (hlValue - deValue - carry) & 0xFFFFn;
 
         // 3. Call the helper function to calculate all flags.
         //    We pass the original values to it.
-        registers.F = CAPI.Z80.calculateFlags_SBC16(hlValue, deValue, registers.F);
+        registers.F = CAPI.ARCH.calculateFlags_SBC16(hlValue, deValue, registers.F);
 
         // 4. Update the destination register pair (HL) with the result.
         registers.H = (result >> 8n) & 0xFFn;
@@ -7866,12 +7867,12 @@ instructions:
         const hlValue2 = (registers.H << 8n) | registers.L;
 
         // 2. Perform the subtraction
-        const carry = registers.F & CAPI.Z80.C_FLAG;
+        const carry = registers.F & CAPI.ARCH.C_FLAG;
         const result = (hlValue - hlValue2 - carry) & 0xFFFFn;
 
         // 3. Call the helper function to calculate all flags.
         //    We pass the original values to it.
-        registers.F = CAPI.Z80.calculateFlags_SBC16(hlValue, hlValue2, registers.F);
+        registers.F = CAPI.ARCH.calculateFlags_SBC16(hlValue, hlValue2, registers.F);
 
         // 4. Update the destination register pair (HL) with the result.
         registers.H = (result >> 8n) & 0xFFn;
@@ -7892,12 +7893,12 @@ instructions:
         const hlValue = (registers.H << 8n) | registers.L;
 
         // 2. Perform the subtraction
-        const carry = registers.F & CAPI.Z80.C_FLAG;
+        const carry = registers.F & CAPI.ARCH.C_FLAG;
         const result = (hlValue - registers.SP - carry) & 0xFFFFn;
 
         // 3. Call the helper function to calculate all flags.
         //    We pass the original values to it.
-        registers.F = CAPI.Z80.calculateFlags_SBC16(hlValue, registers.SP, registers.F);
+        registers.F = CAPI.ARCH.calculateFlags_SBC16(hlValue, registers.SP, registers.F);
 
         // 4. Update the destination register pair (HL) with the result.
         registers.H = (result >> 8n) & 0xFFn;
@@ -8182,7 +8183,7 @@ instructions:
 interrupts:
   enabled: true
   check: |
-    if (CAPI.Z80.interruptPin) {
+    if (CAPI.ARCH.interruptPin) {
       // If we have an interrupts request (INT pin is asserted)
 
       // Save the current PC on the stack, so we know where to return
@@ -8217,10 +8218,10 @@ interrupts:
     CAPI.REG.write(0n, 'IFF1');
     CAPI.REG.write(0n, 'IFF2');
   get_handler_addr: |
-    if (CAPI.Z80.interruptMode === 1) {
+    if (CAPI.ARCH.interruptMode === 1) {
       // Mode 1: Always jump to RST 38h (0x0038)
       return 0x0038n;
-    } else if (CAPI.Z80.interruptMode === 0) {
+    } else if (CAPI.ARCH.interruptMode === 0) {
       // Mode 0: Execute instruction from data bus (simplified as RST 38h)
       return 0x0038n;
     } else {
@@ -8228,34 +8229,34 @@ interrupts:
     }
   clear: |
     // Clear the simulated INT pin
-    if (typeof CAPI.Z80.interruptPin  !== 'undefined') {
-      CAPI.Z80.interruptPin = false;
+    if (typeof CAPI.ARCH.interruptPin  !== 'undefined') {
+      CAPI.ARCH.interruptPin = false;
     }
   create: |
     // Simulate asserting the INT pin (like external hardware would do)
-    if (typeof CAPI.Z80.interruptPin === 'undefined') {
-      CAPI.Z80.interruptPin = false;
+    if (typeof CAPI.ARCH.interruptPin === 'undefined') {
+      CAPI.ARCH.interruptPin = false;
     }
 
     switch (type) {
       case InterruptType.External:
-        CAPI.Z80.interruptPin = true; // Assert INT pin
+        CAPI.ARCH.interruptPin = true; // Assert INT pin
         break;
       case InterruptType.Timer:
-        CAPI.Z80.interruptPin = true; // Timer also uses maskable interrupt
+        CAPI.ARCH.interruptPin = true; // Timer also uses maskable interrupt
         break;
       default:
-        CAPI.Z80.interruptPin = true;
+        CAPI.ARCH.interruptPin = true;
         break;
     }
 
 timer:
   tick_cycles: 1
   advance: |
-    CAPI.Z80.timerCounter++;
+    CAPI.ARCH.timerCounter++;
   handler: |
-    if (CAPI.Z80.timerCounter >= 70000n) { // Sinclair ZX Spectrum ~50Hz (70000 cycles at 3.5MHz)
-      CAPI.Z80.timerCounter = 0n;
+    if (CAPI.ARCH.timerCounter >= 70000n) { // Sinclair ZX Spectrum ~50Hz (70000 cycles at 3.5MHz)
+      CAPI.ARCH.timerCounter = 0n;
       CAPI.INTERRUPTS.make(CAPI.INTERRUPTS.Type.Timer);
     }
   is_enabled: |

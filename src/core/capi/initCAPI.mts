@@ -24,9 +24,9 @@ import { VALIDATION } from "./validation.mjs";
 import { CHECK_STACK } from "./checkStack.mjs";
 import { DRAW_STACK } from "./drawStack.mjs";
 import { FP } from "./fp.mjs";
-import { RISCV } from "./arch/riscv.mjs";
-import { Z80 } from "./arch/z80.mjs";
-import { MIPS } from "./arch/mips.mjs";
+import { ARCH as RISCV} from "./arch/riscv.mjs";
+import { ARCH as Z80 } from "./arch/z80.mjs";
+import { ARCH as MIPS } from "./arch/mips.mjs";
 import { REG } from "./registers.mts";
 import { INTERRUPTS } from "./interrupts.mts";
 
@@ -37,9 +37,7 @@ export interface CAPIType {
     CHECK_STACK: typeof CHECK_STACK;
     DRAW_STACK: typeof DRAW_STACK;
     FP: typeof FP;
-    RISCV: typeof RISCV;
-    Z80: typeof Z80;
-    MIPS: typeof MIPS;
+    ARCH: unknown; // The architecture plugin will be loaded here
     REG: typeof REG;
     INTERRUPTS: typeof INTERRUPTS;
 }
@@ -48,22 +46,35 @@ declare global {
     var CAPI: CAPIType;
 }
 
+interface ArchPlugins {
+    [key: string]: object;
+}
+
+const ARCH_PLUGINS: ArchPlugins = {
+    z80: Z80,
+    riscv: RISCV,
+    mips: MIPS,
+};
+
 // Export all CAPI functions and make them globally available
-export function initCAPI() {
-    const CAPI: CAPIType = {
+export function initCAPI(pluginName?: string) {
+    let ARCH_PLUGIN = null;
+    
+    if (pluginName) {
+        ARCH_PLUGIN = ARCH_PLUGINS[pluginName];
+    }
+    
+    const CAPI = {
         MEM,
         SYSCALL,
         VALIDATION,
         CHECK_STACK,
         DRAW_STACK,
         FP,
-        RISCV,
-        Z80,
-        MIPS,
+        ARCH: ARCH_PLUGIN,
         REG,
         INTERRUPTS,
     };
-
-    // Make CAPI available as a global object
+    
     globalThis.CAPI = CAPI;
 }

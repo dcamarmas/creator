@@ -113,7 +113,7 @@ export default {
               ret = this.register.value.toString(10)
             } else {
               ret = (
-                this.register.value - BigInt(2 ** this.register.nbits)
+                this.register.value - 2n ** BigInt(this.register.nbits)
               ).toString(10)
             }
           } else if (this.double_precision_type === null) {

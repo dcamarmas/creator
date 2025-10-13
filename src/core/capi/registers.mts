@@ -18,6 +18,7 @@
  *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { architecture } from "../core.mjs";
 import { crex_findReg } from "../register/registerLookup.mjs";
 import {
     readRegister,
@@ -37,9 +38,10 @@ export const REG = {
 
     write: (value: bigint, name: string) => {
         const reg = crex_findReg(name);
+        const nbits = parseInt(architecture.components[reg.indexComp].elements[reg.indexElem].nbits, 10);
 
         if (reg.match) {
-            writeRegister(value, reg.indexComp, reg.indexElem);
+            writeRegister(BigInt.asUintN(nbits, value), reg.indexComp, reg.indexElem);
             return;
         }
 

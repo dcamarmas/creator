@@ -18,7 +18,9 @@ main:
 
     lw ra, 0(sp)
     addi sp, sp, 4
-    jr ra
+    # return
+    li a7, 10
+    ecall
 
 sum:
     add  t1, a0, a1

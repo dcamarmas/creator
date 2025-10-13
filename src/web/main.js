@@ -36,7 +36,6 @@ library.add(fas, far, fab);
 
 import { confirmExit, show_notification } from "./utils.mjs";
 import { creator_ga } from "../core/utils/creator_ga.mjs";
-import { initCAPI } from "@/core/core.mjs";
 
 /*Closing alert*/
 window.onbeforeunload = confirmExit;
@@ -53,8 +52,12 @@ const app = createApp(App)
 
 //Error handler
 app.config.errorHandler = function (err, _vm, _info) {
+    // Log the error for debugging
+    console.error("Vue error:", err, _info);
+    
+    // Show notification to the user
     show_notification(
-        `An error has ocurred, the simulator is going to restart.\nError: ${err}`,
+        `An error has occurred, the simulator is going to restart.\nError: ${err}`,
         "danger",
     );
     setTimeout(function () {
@@ -65,8 +68,9 @@ app.config.errorHandler = function (err, _vm, _info) {
 try {
     document.app = app.mount("#app"); // store in document so we can access it through JS as `document.app`
 } catch (e) {
+    // Critical mounting error - this should restart
     show_notification(
-        "An error has ocurred, the simulator is going to restart.  \n Error: " +
+        "A critical error has occurred during initialization, the simulator will restart.\nError: " +
             e,
         "danger",
     );

@@ -26,6 +26,7 @@
         "esbuild": "^0.25.9",
         "humanize-duration": "^3.33.0",
         "jquery": "^3.7.1",
+        "js-yaml": "^4.1.0",
         "jshint": "^2.13.6",
         "meow": "^13.2.0",
         "nyc": "^17.1.0",
@@ -48,6 +49,7 @@
         "@tsconfig/node22": "^22.0.2",
         "@types/colors": "^1.2.4",
         "@types/jquery": "^3.5.33",
+        "@types/js-yaml": "^4.0.9",
         "@types/node": "^24.3.1",
         "@types/yargs": "^17.0.33",
         "@vitejs/plugin-vue": "^6.0.1",
@@ -470,6 +472,8 @@
     "@types/humanize-duration": ["@types/humanize-duration@3.27.4", "", {}, "sha512-yaf7kan2Sq0goxpbcwTQ+8E9RP6HutFBPv74T/IA/ojcHKhuKVlk2YFYyHhWZeLvZPzzLE3aatuQB4h0iqyyUA=="],
 
     "@types/jquery": ["@types/jquery@3.5.33", "", { "dependencies": { "@types/sizzle": "*" } }, "sha512-SeyVJXlCZpEki5F0ghuYe+L+PprQta6nRZqhONt9F13dWBtR/ftoaIbdRQ7cis7womE+X2LKhsDdDtkkDhJS6g=="],
+
+    "@types/js-yaml": ["@types/js-yaml@4.0.9", "", {}, "sha512-k4MGaQl5TGo/iipqb2UDG2UwjXziSWkh0uysQelTlJpX1qGlpUZYm8PnO4DxG1qBomtJUdYJ6qR6xdIah10JLg=="],
 
     "@types/json-schema": ["@types/json-schema@7.0.15", "", {}, "sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA=="],
 

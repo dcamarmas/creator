@@ -7,10 +7,11 @@ import {
 import { step } from "../../../src/core/executor/executor.mjs";
 import { logger } from "../../../src/core/utils/creator_logger.mjs";
 import { assertEquals } from "https://deno.land/std/assert/mod.ts";
-import { RISCV } from "@/core/capi/arch/riscv.mjs";
+import { ARCH as RISCV } from "@/core/capi/arch/riscv.mjs";
 import fs from "node:fs";
 import { rasmAssemble } from "@/core/assembler/rasm/deno/rasm.mjs";
 import { assembleCreator } from "@/core/assembler/creatorAssembler/deno/creatorAssembler.mjs";
+import yaml from "js-yaml";
 
 export interface ArchResult {
     status: string;
@@ -27,8 +28,13 @@ export interface CompileResult {
 
 export interface ExecutionResult {
     output: string;
-    completed: boolean;
-    error: boolean;
+    instructionData?: {
+        asm: string;
+        machineCode: string;
+        clockCycles: number;
+        success: boolean;
+    };
+    error: number;
 }
 
 const compiler_map = {
@@ -110,10 +116,28 @@ export async function setupSimulator(
     // Load architecture configuration from file synchronously
     const archPath = new URL(yamlPath, import.meta.url);
     const architectureConfigContent = fs.readFileSync(archPath, "utf8");
-    creator.initCAPI();
+    // yaml.load returns unknown; narrow its type and validate at runtime
+    const archObject = yaml.load(architectureConfigContent) as
+        | { config?: { plugin?: string } }
+        | undefined;
+
+    if (
+        !archObject ||
+        typeof archObject !== "object" ||
+        !archObject.config ||
+        typeof archObject.config.plugin !== "string"
+    ) {
+        throw new Error(
+            `Invalid architecture YAML: missing or invalid config.plugin in ${yamlPath}`,
+        );
+    }
+
+    const pluginName = archObject.config.plugin;
+
+    creator.initCAPI(pluginName);
 
     // Load architecture
-    const archResult = creator.newArchitectureLoad(
+    const archResult = creator.loadArchitecture(
         architectureConfigContent,
     ) as ArchResult;
     if (archResult.status !== "ok") {
@@ -150,24 +174,14 @@ export async function setupSimulator(
  */
 export function executeStep(): ExecutionResult {
     if (creator.status.execution_index === -2) {
-        // Stop processing if execution is completed
-        return { output: "", completed: true, error: false };
+        return { output: "", error: 0 };
     }
 
-    const ret = step() as {
-        error?: boolean;
-        msg?: string;
-        output?: string;
-        completed?: boolean;
-    };
-    if (ret.error) {
-        return { output: ret.msg || "", completed: true, error: true };
-    }
+    const ret = step();
 
     return {
-        output: ret.output || "",
-        completed: ret.completed || false,
-        error: ret.error || false,
+        output: ret.msg || "",
+        error: ret.error,
     };
 }
 
@@ -177,16 +191,12 @@ export function executeStep(): ExecutionResult {
  * @returns Combined execution result
  */
 export function executeN(n: number): ExecutionResult {
-    let lastResult: ExecutionResult = {
-        output: "",
-        completed: false,
-        error: false,
-    };
+    let lastResult: ExecutionResult = { output: "", error: 0 };
 
     for (let i = 0; i < n; i++) {
         lastResult = executeStep();
 
-        if (lastResult.error || lastResult.completed) {
+        if (lastResult.error !== 0 || creator.status.execution_index === -2) {
             break;
         }
     }
