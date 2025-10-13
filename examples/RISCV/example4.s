@@ -30,6 +30,7 @@ main:
     addi x28, x28, 8
     fsd  f12, 0(x28)
 
-    #return 
-    jr ra
+    # return
+    li a7, 10
+    ecall
 

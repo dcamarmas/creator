@@ -21,7 +21,7 @@
 import {
     bi_BigIntTofloat,
     bi_BigIntTodouble,
-} from "../../utils/float_bigint.mjs";
+} from "@/core/utils/bigint.mjs";
 
 function isInt(val, bits) {
     const max = (1n << BigInt(bits - 1)) - 1n;
@@ -104,7 +104,7 @@ function generateInstructionsImpl(value, instructions, destReg) {
     }
 }
 
-export const RISCV = {
+export const ARCH = {
     generateLoadImmediate(val, destReg) {
         const instructions = [];
         generateInstructionsImpl(BigInt(val), instructions, destReg);

@@ -3,12 +3,11 @@ import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import * as creator from "../core/core.mjs";
 import { step } from "../core/executor/executor.mjs";
-import { decode_instruction } from "../core/executor/decoder.mjs";
+import { decode } from "../core/executor/decoder.mjs";
 import process from "node:process";
 import { logger } from "../core/utils/creator_logger.mjs";
 import readline from "node:readline";
 import { instructions } from "../core/assembler/assembler.mjs";
-import type { StackTracker, StackFrame } from "@/core/memory/StackTracker.mjs";
 import { startTutorial } from "./tutorial.mts";
 import yaml from "js-yaml";
 import path from "node:path";
@@ -33,6 +32,7 @@ let TUTORIAL_MODE = false;
 let BINARY_LOADED = false;
 // Track if execution is currently paused
 let EXECUTION_PAUSED = false;
+let pluginName: string | undefined = undefined;
 const creatorASCII = `
  ██████╗██████╗ ███████╗ █████╗ ████████╗ ██████╗ ██████╗ 
 ██╔════╝██╔══██╗██╔════╝██╔══██╗╚══██╔══╝██╔═══██╗██╔══██╗
@@ -244,7 +244,7 @@ function executeStep() {
     const ret: ReturnType = step();
     if (ret.error) {
         //console.error(`Error executing instruction: ${ret.msg}`);
-        return { output: ``, completed: true, error: true };
+        return { output: ``, completed: true, error: true, errormsg: ret.msg };
     }
 
     // Get instruction data from the step result
@@ -263,16 +263,12 @@ function executeStep() {
     };
 }
 
-function loadArchitecture(
-    filePath: string,
-    isaExtensions: string[],
-    skipCompiler: boolean = false,
-) {
+function loadArchitecture(filePath: string, isaExtensions: string[]) {
     const architectureFile = fs.readFileSync(filePath, "utf8");
-    const ret: ReturnType = creator.newArchitectureLoad(
+    const architectureObj = yaml.load(architectureFile);
+    pluginName = architectureObj.config.plugin;
+    const ret: ReturnType = creator.loadArchitecture(
         architectureFile,
-        skipCompiler,
-        false,
         isaExtensions,
     );
     if (ret.status !== "ok") {
@@ -598,8 +594,7 @@ function handleRunCommand(args: string[], silent = false) {
         while (
             iterations < chunkEnd &&
             creator.status.execution_index !== -2 &&
-            !breakpointHit &&
-            !EXECUTION_PAUSED
+            !breakpointHit
         ) {
             // Check for breakpoints
             const pc_value = creator.dumpRegister("PC");
@@ -618,14 +613,14 @@ function handleRunCommand(args: string[], silent = false) {
             if (breakpointHit) break;
 
             // Execute a step
-            const { output, completed, error } = executeStep();
+            const { output, completed, error, errormsg } = executeStep();
             if (!silent) {
                 console.log(output);
             }
             iterations++;
 
             if (error) {
-                console.error("Error during execution.");
+                console.error(errormsg);
                 return;
             } else if (completed) {
                 console.log(colorText("Program execution completed.", "32"));
@@ -859,7 +854,7 @@ function handleInsnCommand() {
         // Decompile binary instructions
         const instructionInt = parseInt(rawInstruction, 16);
         const instructionBinary = instructionInt.toString(2).padStart(32, "0");
-        const decodedInstruction = decode_instruction(instructionBinary);
+        const decodedInstruction = decode(instructionBinary);
 
         let asmString = "unknown";
         if (
@@ -1212,187 +1207,175 @@ function getFrameColor(frameIndex: number, totalFrames: number): string {
 function handleStackCommand(args: string[]) {
     const stackTracker = creator.stackTracker;
 
-    try {
-        // Get the stack frames information
-        const stackFrames = stackTracker.getAllFrames();
-        const stackHints = stackTracker.getAllHints();
-        const totalFrames = stackTracker.length();
+    const stackFrames = stackTracker.getAllFrames();
+    const stackHints = stackTracker.getAllHints();
+    const totalFrames = stackTracker.length();
 
-        if (totalFrames === 0) {
-            console.log("No stack information available.");
-            return;
-        }
+    if (totalFrames === 0) {
+        console.log("No stack information available.");
+        return;
+    }
 
-        // 1. Display call stack hierarchy
-        console.log(
-            ACCESSIBLE ? "Call Stack:" : colorText("Call Stack:", "36"),
-        );
+    // 1. Display call stack hierarchy
+    console.log(ACCESSIBLE ? "Call Stack:" : colorText("Call Stack:", "36"));
 
-        // Visual representation with indentation
-        for (const [i, frame] of stackFrames.toReversed().entries()) {
-            // Get function name from label or fall back to address
-            const functionName = frame.name ?? "";
-            const depth = totalFrames - 1 - i;
-            const indent = "  ".repeat(depth);
-            const frameSize: number = frame.begin - frame.end;
-            const prefix = i === totalFrames - 1 ? "►" : "•";
+    // Visual representation with indentation
+    for (const [i, frame] of stackFrames.toReversed().entries()) {
+        // Get function name from label or fall back to address
+        const functionName = frame.name ?? "";
+        const depth = totalFrames - 1 - i;
+        const indent = "  ".repeat(depth);
+        const frameSize: number = frame.begin - frame.end;
+        const prefix = i === totalFrames - 1 ? "►" : "•";
 
-            // Use consistent color mapping for frames
-            const color = getFrameColor(i, totalFrames);
+        // Use consistent color mapping for frames
+        const color = getFrameColor(i, totalFrames);
 
-            const beginAddress = BigInt(frame.begin);
-            const beginAddressHex = `0x${beginAddress.toString(16).toUpperCase()}`;
-            const endAddress = BigInt(frame.end);
-            const endAddressHex = `0x${endAddress.toString(16).toUpperCase()}`;
-
-            console.log(
-                colorText(
-                    `${indent}${prefix} ${functionName} (${beginAddressHex} - ${endAddressHex}, ${frameSize} bytes)`,
-                    color,
-                ),
-            );
-        }
-
-        // 2. Show stack frame details for the current (top) frame
-        const stackTop = stackFrames.at(-1);
-
-        if (stackTop === undefined) {
-            // this should never happen, but it's to make the compiler happy
-            return;
-        }
-
-        console.log(colorText("\nCurrent Frame Details:", "36"));
-
-        // Get function name from label for current function
-        const currentFuncName = stackTop.name ?? "";
-
-        console.log(`Function: ${currentFuncName}`);
-
-        const beginAddress = BigInt(stackTop.begin);
+        const beginAddress = BigInt(frame.begin);
         const beginAddressHex = `0x${beginAddress.toString(16).toUpperCase()}`;
-        const endAddress = BigInt(stackTop.end);
+        const endAddress = BigInt(frame.end);
         const endAddressHex = `0x${endAddress.toString(16).toUpperCase()}`;
 
-        console.log(`Frame: ${beginAddressHex} - ${endAddressHex}`);
-
-        // Calculate frame size
-        const frameSize = stackTop.begin - stackTop.end;
-        console.log(`Size: ${frameSize} bytes`);
-
-        if (totalFrames > 1) {
-            // Get function name from label for caller
-            // @ts-ignore: stackFrame should have at least two elements
-            const callerFuncName = stackFrames.at(-2).name ?? "";
-
-            const callerBeginAddress = BigInt(stackTop.begin);
-            const callerBeginAddressHex = `0x${callerBeginAddress.toString(16).toUpperCase()}`;
-            const callerEndAddress = BigInt(stackTop.end);
-            const callerEndAddressHex = `0x${callerEndAddress.toString(16).toUpperCase()}`;
-
-            console.log(`Caller: ${callerFuncName}`);
-            console.log(
-                `Caller frame: ${callerBeginAddressHex} - ${callerEndAddressHex}`,
-            );
-        }
-
-        // 3. Show stack memory contents
-        console.log(colorText("\nStack Memory Contents:", "36"));
-
-        // Calculate the range to display for the entire stack, not just current frame
-        // Get current stack pointer (lowest address)
-        const startAddressHex = stackTop.end;
-        const startAddress = BigInt(startAddressHex);
-
-        // Find the highest address in the stack (from the bottom-most frame or top frame)
-        // Use the highest begin_callee from all frames
-        let stackEndAddress = startAddress;
-        for (const frame of stackFrames) {
-            const frameBegin = BigInt(frame.begin);
-            if (frameBegin > stackEndAddress) {
-                stackEndAddress = frameBegin;
-            }
-        }
-
-        // If stack is very large, limit to a reasonable number of bytes
-        const maxBytesToShow = args.length > 2 ? parseInt(args[2], 10) : 256;
-        const actualBytesToShow = stackEndAddress - startAddress;
-
-        // If the actual stack is larger than our limit, reduce the end address
-        if (actualBytesToShow > BigInt(maxBytesToShow)) {
-            stackEndAddress = startAddress + BigInt(maxBytesToShow);
-        }
-
-        // Show memory contents with frame boundary annotations
-        const wordSize = creator.main_memory.getWordSize();
-        for (
-            let addr = startAddress;
-            addr < stackEndAddress;
-            addr += BigInt(wordSize)
-        ) {
-            const bytes = creator.dumpAddress(addr, wordSize);
-            const valueStr =
-                "0x" + bytes.padStart(wordSize * 2, "0").toUpperCase();
-            const formattedAddr = `0x${addr.toString(16).padStart(8, "0").toUpperCase()}`;
-
-            // Identify which frame this address belongs to and add annotations
-            let annotation = "";
-            let frameIndex = -1;
-
-            // Find which frame this address belongs to
-            for (const [i, frame] of stackFrames.entries()) {
-                if (addr >= BigInt(frame.end) && addr < BigInt(frame.begin)) {
-                    frameIndex = i;
-                    break;
-                }
-            }
-
-            // Check if there's a hint for this address
-            if (stackHints) {
-                const hint = stackHints.get(Number(addr));
-                if (hint) {
-                    annotation += (annotation ? ", " : "") + `"${hint}"`;
-                }
-            }
-
-            // Mark stack pointer
-            const stackPointer = BigInt(stackTop.end);
-            if (addr === stackPointer) {
-                annotation += (annotation ? ", " : "") + "← SP";
-            }
-
-            // Mark frame boundaries
-            for (const frame of stackFrames) {
-                // Mark frame start (at the end_callee address, which is the low address/stack pointer)
-                if (addr === BigInt(frame.end)) {
-                    // Get function name from label
-                    annotation +=
-                        (annotation ? ", " : "") +
-                        `← ${frame.name} frame start`;
-                }
-
-                // Mark frame end (at the begin_callee address, which is the high address)
-                if (addr === BigInt(frame.begin)) {
-                    // Get function name from label
-                    annotation +=
-                        (annotation ? ", " : "") + `← ${frame.name} frame end`;
-                }
-            }
-
-            // Color-code by frame using consistent color mapping
-            let line = `${formattedAddr}: ${valueStr.padEnd(10)} ${annotation}`;
-            if (frameIndex >= 0) {
-                // Use the same color mapping as in the call stack
-                const colorCode = getFrameColor(frameIndex, totalFrames);
-                line = colorText(line, colorCode);
-            }
-
-            console.log(line);
-        }
-    } catch (error) {
-        console.error(
-            "Error retrieving stack information:",
-            (error as Error).message,
+        console.log(
+            colorText(
+                `${indent}${prefix} ${functionName} (${beginAddressHex} - ${endAddressHex}, ${frameSize} bytes)`,
+                color,
+            ),
         );
+    }
+
+    // 2. Show stack frame details for the current (top) frame
+    const stackTop = stackFrames.at(-1);
+
+    if (stackTop === undefined) {
+        // this should never happen, but it's to make the compiler happy
+        return;
+    }
+
+    console.log(colorText("\nCurrent Frame Details:", "36"));
+
+    // Get function name from label for current function
+    const currentFuncName = stackTop.name ?? "";
+
+    console.log(`Function: ${currentFuncName}`);
+
+    const beginAddress = BigInt(stackTop.begin);
+    const beginAddressHex = `0x${beginAddress.toString(16).toUpperCase()}`;
+    const endAddress = BigInt(stackTop.end);
+    const endAddressHex = `0x${endAddress.toString(16).toUpperCase()}`;
+
+    console.log(`Frame: ${beginAddressHex} - ${endAddressHex}`);
+
+    // Calculate frame size
+    const frameSize = stackTop.begin - stackTop.end;
+    console.log(`Size: ${frameSize} bytes`);
+
+    if (totalFrames > 1) {
+        // Get function name from label for caller
+        // @ts-ignore: stackFrame should have at least two elements
+        const callerFuncName = stackFrames.at(-2).name ?? "";
+
+        const callerBeginAddress = BigInt(stackTop.begin);
+        const callerBeginAddressHex = `0x${callerBeginAddress.toString(16).toUpperCase()}`;
+        const callerEndAddress = BigInt(stackTop.end);
+        const callerEndAddressHex = `0x${callerEndAddress.toString(16).toUpperCase()}`;
+
+        console.log(`Caller: ${callerFuncName}`);
+        console.log(
+            `Caller frame: ${callerBeginAddressHex} - ${callerEndAddressHex}`,
+        );
+    }
+
+    // 3. Show stack memory contents
+    console.log(colorText("\nStack Memory Contents:", "36"));
+
+    // Calculate the range to display for the entire stack, not just current frame
+    // Get current stack pointer (lowest address)
+    const startAddressHex = stackTop.end;
+    const startAddress = BigInt(startAddressHex);
+
+    // Find the highest address in the stack (from the bottom-most frame or top frame)
+    // Use the highest begin_callee from all frames
+    let stackEndAddress = startAddress;
+    for (const frame of stackFrames) {
+        const frameBegin = BigInt(frame.begin);
+        if (frameBegin > stackEndAddress) {
+            stackEndAddress = frameBegin;
+        }
+    }
+
+    // If stack is very large, limit to a reasonable number of bytes
+    const maxBytesToShow = args.length > 2 ? parseInt(args[2], 10) : 256;
+    const actualBytesToShow = stackEndAddress - startAddress;
+
+    // If the actual stack is larger than our limit, reduce the end address
+    if (actualBytesToShow > BigInt(maxBytesToShow)) {
+        stackEndAddress = startAddress + BigInt(maxBytesToShow);
+    }
+
+    // Show memory contents with frame boundary annotations
+    const wordSize = creator.main_memory.getWordSize();
+    for (
+        let addr = startAddress;
+        addr < stackEndAddress;
+        addr += BigInt(wordSize)
+    ) {
+        const bytes = creator.dumpAddress(addr, wordSize);
+        const valueStr = "0x" + bytes.padStart(wordSize * 2, "0").toUpperCase();
+        const formattedAddr = `0x${addr.toString(16).padStart(8, "0").toUpperCase()}`;
+
+        // Identify which frame this address belongs to and add annotations
+        let annotation = "";
+        let frameIndex = -1;
+
+        // Find which frame this address belongs to
+        for (const [i, frame] of stackFrames.entries()) {
+            if (addr >= BigInt(frame.end) && addr < BigInt(frame.begin)) {
+                frameIndex = i;
+                break;
+            }
+        }
+
+        // Check if there's a hint for this address
+        if (stackHints) {
+            const hint = stackHints.get(Number(addr));
+            if (hint) {
+                annotation += (annotation ? ", " : "") + `"${hint}"`;
+            }
+        }
+
+        // Mark stack pointer
+        const stackPointer = BigInt(stackTop.end);
+        if (addr === stackPointer) {
+            annotation += (annotation ? ", " : "") + "← SP";
+        }
+
+        // Mark frame boundaries
+        for (const frame of stackFrames) {
+            // Mark frame start (at the end_callee address, which is the low address/stack pointer)
+            if (addr === BigInt(frame.end)) {
+                // Get function name from label
+                annotation +=
+                    (annotation ? ", " : "") + `← ${frame.name} frame start`;
+            }
+
+            // Mark frame end (at the begin_callee address, which is the high address)
+            if (addr === BigInt(frame.begin)) {
+                // Get function name from label
+                annotation +=
+                    (annotation ? ", " : "") + `← ${frame.name} frame end`;
+            }
+        }
+
+        // Color-code by frame using consistent color mapping
+        let line = `${formattedAddr}: ${valueStr.padEnd(10)} ${annotation}`;
+        if (frameIndex >= 0) {
+            // Use the same color mapping as in the call stack
+            const colorCode = getFrameColor(frameIndex, totalFrames);
+            line = colorText(line, colorCode);
+        }
+
+        console.log(line);
     }
 }
 
@@ -1712,9 +1695,7 @@ function interactiveMode() {
                 return;
             }
         } catch (error) {
-            console.error(
-                `Error executing command: ${(error as Error).message}`,
-            );
+            console.error(`Error: ${(error as Error).message}`);
         }
         rl.prompt();
     });
@@ -1734,8 +1715,8 @@ function checkTerminalSize() {
     }
 
     const { columns, rows } = process.stdout;
-    const minColumns = 80; // Reduced from 95
-    const minRows = 24; // Reduced from 31
+    const minColumns = 80;
+    const minRows = 24;
 
     // Instead of exiting, just warn the user
     if (columns < minColumns || rows < minRows) {
@@ -1767,16 +1748,13 @@ async function main() {
         logger.disable();
     }
 
-    creator.initCAPI();
-
     TUTORIAL_MODE = argv.tutorial;
-    // If we load a binary, we have to skip the compiler
-    // Or if we use a compiler which isn't the default one
-    const skipCompiler = argv.bin !== "" || argv.compiler !== "default";
 
     // Load architecture
-    loadArchitecture(argv.architecture, argv.isa, skipCompiler);
+    loadArchitecture(argv.architecture, argv.isa);
 
+
+    creator.initCAPI(pluginName);
     // Reset BINARY_LOADED flag before loading any files
     BINARY_LOADED = false;
 

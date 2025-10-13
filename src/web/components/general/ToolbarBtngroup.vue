@@ -25,9 +25,11 @@ import {
   assembly_compile,
   set_execution_mode,
   status,
+  guiVariables,
   instructions_packed,
   reset,
   remove_library,
+  getPC,
 } from "@/core/core.mjs"
 import { resetStats } from "@/core/executor/stats.mts"
 import { instructions, setInstructions } from "@/core/assembler/assembler.mjs"
@@ -287,18 +289,28 @@ export default {
       // we use this style of loop instead of a `for (const [i, instruction] of
       // this.instruction_values.entries())` because we have to update through
       // `this.instruction_values` so the computed property is updated
+      const currentPC = getPC()
+      const previousPC = guiVariables.previous_PC
+      const keep_highlighted = guiVariables.keep_highlighted
       for (let i = 0; i < this.instruction_values.length; i++) {
-        // clear type
+        // _rowVariant is the color of the row
+        // It's called _rowVariant because bootstrap-vue uses that name
         this.instruction_values[i]._rowVariant = ""
+        switch (BigInt(this.instruction_values[i].Address)) {
+          case keep_highlighted:
+            this.instruction_values[i]._rowVariant = "warning"
+            break
 
-        for (const [type, toUpdate] of Object.entries(ret.draw)) {
-          if (
-            toUpdate.includes(i) &&
-            ["success", "info", "warning", "danger"].includes(type)
-          ) {
-            // update instruction type
-            this.instruction_values[i]._rowVariant = type
-          }
+          case previousPC:
+            this.instruction_values[i]._rowVariant = "info"
+            break
+
+          case currentPC:
+            this.instruction_values[i]._rowVariant = "success"
+            break
+
+          default:
+            break
         }
       }
 
@@ -391,7 +403,25 @@ export default {
 
       set_execution_mode(0)
 
-      const ret = step()
+      let ret
+      try {
+        ret = step()
+      } catch (err) {
+        console.error("Execution error:", err)
+        show_notification(`Execution error: ${err.message || err}`, "danger")
+        
+        // Mark current instruction with error
+        if (status.execution_index >= 0 && status.execution_index < this.instruction_values.length) {
+          this.instruction_values[status.execution_index]._rowVariant = "danger"
+        }
+        
+        // Stop execution
+        status.execution_index = -1
+        status.error = 1
+        
+        this.execution_UI_update({ error: 1, msg: err.message || err })
+        return
+      }
 
       if (status.run_program === 3) {
         // mutex read
@@ -481,7 +511,34 @@ export default {
             status.run_program = 1
           }
 
-          ret = step()
+          try {
+            ret = step()
+          } catch (err) {
+            // Handle execution error without crashing
+            console.error("Execution error:", err)
+            show_notification(`Execution error: ${err.message || err}`, "danger")
+            
+            // Mark current instruction with error
+            if (status.execution_index >= 0 && status.execution_index < this.instruction_values.length) {
+              this.instruction_values[status.execution_index]._rowVariant = "danger"
+            }
+            
+            // Stop execution
+            status.run_program = 0
+            status.execution_index = -1
+            status.error = 1
+            
+            this.execution_UI_update({ error: 1, msg: err.message || err })
+
+            //Change buttons status
+            this.reset_disable = false
+            this.instruction_disable = false
+            this.run_disable = false
+            this.stop_disable = true
+            this.$root.main_memory_busy = false
+
+            return
+          }
 
           if (typeof ret === "undefined") {
             console.log("Something weird happened :-S")
@@ -584,13 +641,10 @@ export default {
             <span @click="change_UI_mode('architecture')"> Architecture </span>
           </template>
 
-          <b-dropdown-item-button
-            v-for="arch in arch_available"
-            @click="load_arch_select(arch)"
-          >
-            {{ arch.name }}
-          </b-dropdown-item-button>
-        </b-dropdown> -->
+<b-dropdown-item-button v-for="arch in arch_available" @click="load_arch_select(arch)">
+  {{ arch.name }}
+</b-dropdown-item-button>
+</b-dropdown> -->
 
         <!-- button_assembly -->
         <b-button
@@ -953,11 +1007,13 @@ export default {
 .menuButton {
   background-color: #f8f9fa;
 }
+
 :deep(.menuButtonDark),
 .menuButtonDark {
   background-color: #212529;
   color: $secondary;
 }
+
 :deep(.menuButtonDark:hover),
 .menuButtonDark:hover {
   background-color: #424649;
@@ -976,6 +1032,7 @@ export default {
     background-color: #212529;
     color: $secondary;
   }
+
   .menuButton:hover {
     background-color: #424649;
   }
@@ -987,10 +1044,12 @@ export default {
   .actionsGroup:hover {
     background-color: #424649;
   }
+
   .infoButton {
     background-color: #a3a815;
     color: #f5f5f5;
   }
+
   .infoButton:hover {
     background-color: #424649;
   }

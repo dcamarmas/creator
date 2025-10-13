@@ -67,7 +67,7 @@ async function main() {
     // --- 1. Load the Architecture ---
     try {
         const architectureFile = fs.readFileSync(argv.architecture, "utf8");
-        const ret = creator.newArchitectureLoad(architectureFile);
+        const ret = creator.loadArchitecture(architectureFile);
         if (ret.status !== "ok") {
             console.error(`Error loading architecture: ${ret.token}.`);
             process.exit(1);

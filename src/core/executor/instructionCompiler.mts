@@ -81,8 +81,8 @@ export function compileInstruction(instruction: InstructionDescriptor) {
                 "Ctrl-Reg",
                 "SFP-Reg",
                 "DFP-Reg",
-                "inm-signed",
-                "inm-unsigned",
+                "imm-signed",
+                "imm-unsigned",
                 "offset_bytes",
             ].includes(field.type)
         ) {

@@ -16,15 +16,15 @@ type RegisterBank = {
     elements: {
         name: string[];
         nbits: string;
-        value: number;
-        default_value: number;
+        value: bigint;
+        default_value: bigint;
         properties: string[];
     }[];
 };
 
 type Field = {
     name: string;
-    valueField: string;
+    value: string;
     type: string;
     startbit: number;
     stopbit: number;

@@ -16,6 +16,7 @@ config:
   comment_prefix: "#"
   start_address: 0x0
   pc_offset: -4
+  plugin: riscv
   assemblers:
     - name: "CreatorCompiler"
       description: "Default Creator Compiler"
@@ -54,6 +55,7 @@ components:
         nbits: 64
         value: 0
         default_value: 0
+        encoding: 0
         properties:
           - read
           - write
@@ -68,6 +70,7 @@ components:
         nbits: 64
         value: 0
         default_value: 0
+        encoding: 0
         properties:
           - read
           - ignore_write
@@ -77,6 +80,7 @@ components:
         nbits: 64
         value: 18446744073709551615
         default_value: 18446744073709551615
+        encoding: 1
         properties:
           - read
           - write
@@ -86,6 +90,7 @@ components:
         nbits: 64
         value: 268435452
         default_value: 268435452
+        encoding: 2
         properties:
           - read
           - write
@@ -96,6 +101,7 @@ components:
         nbits: 64
         value: 0
         default_value: 0
+        encoding: 3
         properties:
           - read
           - write
@@ -106,6 +112,7 @@ components:
         nbits: 64
         value: 0
         default_value: 0
+        encoding: 4
         properties:
           - read
           - write
@@ -115,6 +122,7 @@ components:
         nbits: 64
         value: 0
         default_value: 0
+        encoding: 5
         properties:
           - read
           - write
@@ -124,6 +132,7 @@ components:
         nbits: 64
         value: 0
         default_value: 0
+        encoding: 6
         properties:
           - read
           - write
@@ -133,6 +142,7 @@ components:
         nbits: 64
         value: 0
         default_value: 0
+        encoding: 7
         properties:
           - read
           - write
@@ -143,6 +153,7 @@ components:
         nbits: 64
         value: 0
         default_value: 0
+        encoding: 8
         properties:
           - read
           - write
@@ -154,6 +165,7 @@ components:
         nbits: 64
         value: 0
         default_value: 0
+        encoding: 9
         properties:
           - read
           - write
@@ -164,6 +176,7 @@ components:
         nbits: 64
         value: 0
         default_value: 0
+        encoding: 10
         properties:
           - read
           - write
@@ -173,6 +186,7 @@ components:
         nbits: 64
         value: 0
         default_value: 0
+        encoding: 11
         properties:
           - read
           - write
@@ -182,6 +196,7 @@ components:
         nbits: 64
         value: 0
         default_value: 0
+        encoding: 12
         properties:
           - read
           - write
@@ -191,6 +206,7 @@ components:
         nbits: 64
         value: 0
         default_value: 0
+        encoding: 13
         properties:
           - read
           - write
@@ -200,6 +216,7 @@ components:
         nbits: 64
         value: 0
         default_value: 0
+        encoding: 14
         properties:
           - read
           - write
@@ -209,6 +226,7 @@ components:
         nbits: 64
         value: 0
         default_value: 0
+        encoding: 15
         properties:
           - read
           - write
@@ -218,6 +236,7 @@ components:
         nbits: 64
         value: 0
         default_value: 0
+        encoding: 16
         properties:
           - read
           - write
@@ -227,6 +246,7 @@ components:
         nbits: 64
         value: 0
         default_value: 0
+        encoding: 17
         properties:
           - read
           - write
@@ -236,6 +256,7 @@ components:
         nbits: 64
         value: 0
         default_value: 0
+        encoding: 18
         properties:
           - read
           - write
@@ -246,6 +267,7 @@ components:
         nbits: 64
         value: 0
         default_value: 0
+        encoding: 19
         properties:
           - read
           - write
@@ -256,6 +278,7 @@ components:
         nbits: 64
         value: 0
         default_value: 0
+        encoding: 20
         properties:
           - read
           - write
@@ -266,6 +289,7 @@ components:
         nbits: 64
         value: 0
         default_value: 0
+        encoding: 21
         properties:
           - read
           - write
@@ -276,6 +300,7 @@ components:
         nbits: 64
         value: 0
         default_value: 0
+        encoding: 22
         properties:
           - read
           - write
@@ -286,6 +311,7 @@ components:
         nbits: 64
         value: 0
         default_value: 0
+        encoding: 23
         properties:
           - read
           - write
@@ -296,6 +322,7 @@ components:
         nbits: 64
         value: 0
         default_value: 0
+        encoding: 24
         properties:
           - read
           - write
@@ -306,6 +333,7 @@ components:
         nbits: 64
         value: 0
         default_value: 0
+        encoding: 25
         properties:
           - read
           - write
@@ -316,6 +344,7 @@ components:
         nbits: 64
         value: 0
         default_value: 0
+        encoding: 26
         properties:
           - read
           - write
@@ -326,6 +355,7 @@ components:
         nbits: 64
         value: 0
         default_value: 0
+        encoding: 27
         properties:
           - read
           - write
@@ -336,6 +366,7 @@ components:
         nbits: 64
         value: 0
         default_value: 0
+        encoding: 28
         properties:
           - read
           - write
@@ -345,6 +376,7 @@ components:
         nbits: 64
         value: 0
         default_value: 0
+        encoding: 29
         properties:
           - read
           - write
@@ -354,6 +386,7 @@ components:
         nbits: 64
         value: 0
         default_value: 0
+        encoding: 30
         properties:
           - read
           - write
@@ -363,13 +396,13 @@ components:
         nbits: 64
         value: 0
         default_value: 0
+        encoding: 31
         properties:
           - read
           - write
   - name: Floating point registers
     type: fp_registers
     double_precision: true
-    double_precision_type: extended
     elements:
       - name:
           - f0
@@ -377,6 +410,7 @@ components:
         nbits: 64
         value: 0
         default_value: 0
+        encoding: 0
         properties:
           - read
           - write
@@ -386,6 +420,7 @@ components:
         nbits: 64
         value: 0
         default_value: 0
+        encoding: 1
         properties:
           - read
           - write
@@ -395,6 +430,7 @@ components:
         nbits: 64
         value: 0
         default_value: 0
+        encoding: 2
         properties:
           - read
           - write
@@ -404,6 +440,7 @@ components:
         nbits: 64
         value: 0
         default_value: 0
+        encoding: 3
         properties:
           - read
           - write
@@ -413,6 +450,7 @@ components:
         nbits: 64
         value: 0
         default_value: 0
+        encoding: 4
         properties:
           - read
           - write
@@ -422,6 +460,7 @@ components:
         nbits: 64
         value: 0
         default_value: 0
+        encoding: 5
         properties:
           - read
           - write
@@ -431,6 +470,7 @@ components:
         nbits: 64
         value: 0
         default_value: 0
+        encoding: 6
         properties:
           - read
           - write
@@ -440,6 +480,7 @@ components:
         nbits: 64
         value: 0
         default_value: 0
+        encoding: 7
         properties:
           - read
           - write
@@ -449,6 +490,7 @@ components:
         nbits: 64
         value: 0
         default_value: 0
+        encoding: 8
         properties:
           - read
           - write
@@ -459,6 +501,7 @@ components:
         nbits: 64
         value: 0
         default_value: 0
+        encoding: 9
         properties:
           - read
           - write
@@ -469,6 +512,7 @@ components:
         nbits: 64
         value: 0
         default_value: 0
+        encoding: 10
         properties:
           - read
           - write
@@ -478,6 +522,7 @@ components:
         nbits: 64
         value: 0
         default_value: 0
+        encoding: 11
         properties:
           - read
           - write
@@ -487,6 +532,7 @@ components:
         nbits: 64
         value: 0
         default_value: 0
+        encoding: 12
         properties:
           - read
           - write
@@ -496,6 +542,7 @@ components:
         nbits: 64
         value: 0
         default_value: 0
+        encoding: 13
         properties:
           - read
           - write
@@ -505,6 +552,7 @@ components:
         nbits: 64
         value: 0
         default_value: 0
+        encoding: 14
         properties:
           - read
           - write
@@ -514,6 +562,7 @@ components:
         nbits: 64
         value: 0
         default_value: 0
+        encoding: 15
         properties:
           - read
           - write
@@ -523,6 +572,7 @@ components:
         nbits: 64
         value: 0
         default_value: 0
+        encoding: 16
         properties:
           - read
           - write
@@ -532,6 +582,7 @@ components:
         nbits: 64
         value: 0
         default_value: 0
+        encoding: 17
         properties:
           - read
           - write
@@ -541,6 +592,7 @@ components:
         nbits: 64
         value: 0
         default_value: 0
+        encoding: 18
         properties:
           - read
           - write
@@ -551,6 +603,7 @@ components:
         nbits: 64
         value: 0
         default_value: 0
+        encoding: 19
         properties:
           - read
           - write
@@ -561,6 +614,7 @@ components:
         nbits: 64
         value: 0
         default_value: 0
+        encoding: 20
         properties:
           - read
           - write
@@ -571,6 +625,7 @@ components:
         nbits: 64
         value: 0
         default_value: 0
+        encoding: 21
         properties:
           - read
           - write
@@ -581,6 +636,7 @@ components:
         nbits: 64
         value: 0
         default_value: 0
+        encoding: 22
         properties:
           - read
           - write
@@ -591,6 +647,7 @@ components:
         nbits: 64
         value: 0
         default_value: 0
+        encoding: 23
         properties:
           - read
           - write
@@ -601,6 +658,7 @@ components:
         nbits: 64
         value: 0
         default_value: 0
+        encoding: 24
         properties:
           - read
           - write
@@ -611,6 +669,7 @@ components:
         nbits: 64
         value: 0
         default_value: 0
+        encoding: 25
         properties:
           - read
           - write
@@ -621,6 +680,7 @@ components:
         nbits: 64
         value: 0
         default_value: 0
+        encoding: 26
         properties:
           - read
           - write
@@ -631,6 +691,7 @@ components:
         nbits: 64
         value: 0
         default_value: 0
+        encoding: 27
         properties:
           - read
           - write
@@ -641,6 +702,7 @@ components:
         nbits: 64
         value: 0
         default_value: 0
+        encoding: 28
         properties:
           - read
           - write
@@ -650,6 +712,7 @@ components:
         nbits: 64
         value: 0
         default_value: 0
+        encoding: 29
         properties:
           - read
           - write
@@ -659,6 +722,7 @@ components:
         nbits: 64
         value: 0
         default_value: 0
+        encoding: 30
         properties:
           - read
           - write
@@ -668,10 +732,10 @@ components:
         nbits: 64
         value: 0
         default_value: 0
+        encoding: 31
         properties:
           - read
           - write
-
 directives:
   - name: .data
     action: data_segment
@@ -751,11 +815,13 @@ templates:
         type: INT-Reg
         startbit: 19
         stopbit: 15
+        suffix: ","
         order: 1
       - name: rs2
         type: INT-Reg
         startbit: 24
         stopbit: 20
+        suffix: ","
         order: 2
       - name: imm
         type: offset_bytes
@@ -789,9 +855,10 @@ templates:
         type: INT-Reg
         startbit: 11
         stopbit: 7
+        suffix: ","
         order: 1
       - name: imm
-        type: inm-signed
+        type: imm-signed
         startbit: 31
         stopbit: 20
         order: 3
@@ -799,6 +866,7 @@ templates:
         type: INT-Reg
         startbit: 19
         stopbit: 15
+        suffix: ","
         order: 2
       - name: funct3
         type: cop
@@ -819,12 +887,14 @@ templates:
         type: INT-Reg
         startbit: 11
         stopbit: 7
+        suffix: ","
         order: 1
       - name: imm
-        type: inm-signed
+        type: imm-signed
         startbit: 31
         stopbit: 20
         order: 2
+        space: false
       - name: rs1
         type: INT-Reg
         startbit: 19
@@ -850,14 +920,16 @@ templates:
         type: INT-Reg
         startbit: 11
         stopbit: 7
+        suffix: ","
         order: 1
       - name: rs1
         type: INT-Reg
         startbit: 19
         stopbit: 15
+        suffix: ","
         order: 2
       - name: shamt
-        type: inm-unsigned
+        type: imm-unsigned
         startbit: 24
         stopbit: 20
         order: 3
@@ -884,6 +956,7 @@ templates:
         type: INT-Reg
         startbit: 11
         stopbit: 7
+        suffix: ","
         order: 1
       - name: imm
         type: offset_bytes
@@ -914,11 +987,13 @@ templates:
         type: INT-Reg
         startbit: 11
         stopbit: 7
+        suffix: ","
         order: 1
       - name: rs1
         type: INT-Reg
         startbit: 19
         stopbit: 15
+        suffix: ","
         order: 2
       - name: rs2
         type: INT-Reg
@@ -945,19 +1020,22 @@ templates:
         stopbit: 0
         order: 0
       - name: rd
-        type: SFP-Reg
+        type: DFP-Reg
         startbit: 11
         stopbit: 7
+        suffix: ","
         order: 1
       - name: rs1
-        type: SFP-Reg
+        type: DFP-Reg
         startbit: 19
         stopbit: 15
+        suffix: ","
         order: 2
       - name: rs2
-        type: SFP-Reg
+        type: DFP-Reg
         startbit: 24
         stopbit: 20
+        suffix: ","
         order: 3
       - name: funct7
         type: cop
@@ -982,16 +1060,19 @@ templates:
         type: DFP-Reg
         startbit: 11
         stopbit: 7
+        suffix: ","
         order: 1
       - name: rs1
         type: DFP-Reg
         startbit: 19
         stopbit: 15
+        suffix: ","
         order: 2
       - name: rs2
         type: DFP-Reg
         startbit: 24
         stopbit: 20
+        suffix: ","
         order: 3
       - name: funct7
         type: cop
@@ -1013,14 +1094,16 @@ templates:
         stopbit: 0
         order: 0
       - name: rd
-        type: SFP-Reg
+        type: DFP-Reg
         startbit: 11
         stopbit: 7
+        suffix: ","
         order: 1
       - name: rs1
         type: INT-Reg
         startbit: 19
         stopbit: 15
+        suffix: ","
         order: 2
       - name: funct5
         type: cop
@@ -1049,11 +1132,13 @@ templates:
         type: INT-Reg
         startbit: 11
         stopbit: 7
+        suffix: ","
         order: 1
       - name: rs1
-        type: SFP-Reg
+        type: DFP-Reg
         startbit: 19
         stopbit: 15
+        suffix: ","
         order: 2
       - name: funct5
         type: cop
@@ -1082,11 +1167,13 @@ templates:
         type: Not-Set
         startbit: 11
         stopbit: 7
+        suffix: ","
         order: 1
       - name: rs1
         type: Not-Set
         startbit: 19
         stopbit: 15
+        suffix: ","
         order: 2
       - name: funct5
         type: cop
@@ -1112,24 +1199,28 @@ templates:
         stopbit: 0
         order: 0
       - name: rd
-        type: SFP-Reg
+        type: DFP-Reg
         startbit: 11
         stopbit: 7
+        suffix: ","
         order: 1
       - name: rs1
-        type: SFP-Reg
+        type: DFP-Reg
         startbit: 19
         stopbit: 15
+        suffix: ","
         order: 2
       - name: rs2
-        type: SFP-Reg
+        type: DFP-Reg
         startbit: 24
         stopbit: 20
+        suffix: ","
         order: 3
       - name: rs3
-        type: SFP-Reg
+        type: DFP-Reg
         startbit: 31
         stopbit: 27
+        suffix: ","
         order: 4
       - name: funct3
         type: cop
@@ -1154,21 +1245,25 @@ templates:
         type: DFP-Reg
         startbit: 11
         stopbit: 7
+        suffix: ","
         order: 1
       - name: rs1
         type: DFP-Reg
         startbit: 19
         stopbit: 15
+        suffix: ","
         order: 2
       - name: rs2
         type: DFP-Reg
         startbit: 24
         stopbit: 20
+        suffix: ","
         order: 3
       - name: rs3
         type: DFP-Reg
         startbit: 31
         stopbit: 27
+        suffix: ","
         order: 4
       - name: funct3
         type: cop
@@ -1193,9 +1288,10 @@ templates:
         type: INT-Reg
         startbit: 24
         stopbit: 20
+        suffix: ","
         order: 1
       - name: imm
-        type: inm-signed
+        type: imm-signed
         startbit:
           - 31
           - 11
@@ -1203,6 +1299,7 @@ templates:
           - 25
           - 7
         order: 2
+        space: false
       - name: rs1
         type: INT-Reg
         startbit: 19
@@ -1229,11 +1326,43 @@ templates:
         type: INT-Reg
         startbit: 11
         stopbit: 7
+        suffix: ","
         order: 1
       - name: imm
-        type: inm-unsigned
+        type: imm-unsigned
         startbit: 31
         stopbit: 12
+        order: 2
+
+  - name: CSR
+    nwords: 1
+    clk_cycles: 1
+    fields:
+      - name: opcode
+        type: co
+        startbit: 6
+        stopbit: 0
+        order: 0
+      - name: rd
+        type: INT-Reg
+        startbit: 11
+        stopbit: 7
+        suffix: ","
+        order: 1
+      - name: funct3
+        type: cop
+        startbit: 14
+        stopbit: 12
+      - name: rs1
+        type: INT-Reg
+        startbit: 19
+        stopbit: 15
+        order: 3
+      - name: csr
+        type: Ctrl-Reg
+        startbit: 31
+        stopbit: 20
+        suffix: ","
         order: 2
 
   - name: Custom
@@ -1606,7 +1735,7 @@ instructions:
         rs1 by the shift amount held in the lower 5 bits of the immediate.
 
     - name: srli
-      type: I-Shift
+      template: I-Shift
       fields:
         - field: opcode
           value: "0010011"
@@ -1993,7 +2122,7 @@ instructions:
         - field: opcode
           value: "0110111"
         - field: imm
-          type: inm-unsigned
+          type: imm-unsigned
       definition: |
         registers[rd] = BigInt.asIntN(64, BigInt.asIntN(20, imm) << 12n);
       help: Build 32-bit constants and uses the U-type format. LUI places the
@@ -2012,7 +2141,7 @@ instructions:
           startbit: 31
           stopbit: 7
           value: "0000000000000000000000000"
-      preoperation: 'let [fa0Value, fa0Type] = CAPI.RISCV.toJSNumberD(registers["fa0"]);'
+      preoperation: 'let [fa0Value, fa0Type] = CAPI.ARCH.toJSNumberD(registers["fa0"]);'
       definition: |
         switch (registers["a7"]) {
           case 1n:
@@ -2252,7 +2381,7 @@ instructions:
         registers[rd] = CAPI.MEM.read(registers[rs1] + imm, 4, rd);
 
       postoperation: |
-        registers[rd] = CAPI.RISCV.NaNBox(registers[rd]);
+        registers[rd] = CAPI.ARCH.NaNBox(registers[rd]);
 
       help: Load a single-precision floating-point value from memory into floating-point register rd.
     - name: fadd.s
@@ -2269,13 +2398,13 @@ instructions:
           order: 4
       preoperation: |
         let result, rs1Number, rs2Number, type_rs1, type_rs2;
-        [rs1Number, type_rs1] = CAPI.RISCV.toJSNumberD(registers[rs1]);
-        [rs2Number, type_rs2] = CAPI.RISCV.toJSNumberD(registers[rs2]);
+        [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
+        [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
         if (isNaN(result)) {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "NaN32");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "NaN32");
         } else {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "NaNBfloat32_64");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "NaNBfloat32_64");
         }
 
       definition: |
@@ -2299,16 +2428,16 @@ instructions:
           type: INT-Reg
       preoperation: |
         let rs1Value, rs2Value, type_rs1, type_rs2;
-        [rs1Value, type_rs1] = CAPI.RISCV.toJSNumberD(registers[rs1]);
-        [rs2Value, type_rs2] = CAPI.RISCV.toJSNumberD(registers[rs2]);
+        [rs1Value, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
+        [rs2Value, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
         if (isNaN(registers[rd])) {
-          registers[rd] = CAPI.RISCV.toBigInt(registers[rd], "NaN32");
+          registers[rd] = CAPI.ARCH.toBigInt(registers[rd], "NaN32");
         } else {
-          registers[rd] = CAPI.RISCV.toBigInt(registers[rd], "NaNBfloat32_64");
+          registers[rd] = CAPI.ARCH.toBigInt(registers[rd], "NaNBfloat32_64");
         }
-        registers[rs1] = CAPI.RISCV.toBigInt(rs1Value, type_rs1);
-        registers[rs2] = CAPI.RISCV.toBigInt(rs2Value, type_rs2);
+        registers[rs1] = CAPI.ARCH.toBigInt(rs1Value, type_rs1);
+        registers[rs2] = CAPI.ARCH.toBigInt(rs2Value, type_rs2);
       definition: |
         let a = CAPI.FP.float2bin(registers[rs1]);
         registers[rd] = CAPI.FP.check_ieee(
@@ -2332,7 +2461,7 @@ instructions:
           optional: true
           order: 3
       postoperation: |
-        registers[rd] = CAPI.RISCV.toBigInt(registers[rd],'NaNBfloat32_64');
+        registers[rd] = CAPI.ARCH.toBigInt(registers[rd],'NaNBfloat32_64');
       definition: |
         registers[rd] = CAPI.FP.uint2int(registers[rs1])
 
@@ -2371,13 +2500,13 @@ instructions:
           order: 3
       preoperation: |
         let result, rs1Number, rs2Number, type_rs1, type_rs2;
-        [rs1Number, type_rs1] = CAPI.RISCV.toJSNumberD(registers[rs1]);
-        [rs2Number, type_rs2] = CAPI.RISCV.toJSNumberD(registers[rs2]);
+        [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
+        [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
         if (isNaN(result)) {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "NaN32");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "NaN32");
         } else {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "NaNBfloat32_64");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "NaNBfloat32_64");
         }
 
       definition: |
@@ -2400,13 +2529,13 @@ instructions:
           order: 3
       preoperation: |
         let result, rs1Number, rs2Number, type_rs1, type_rs2;
-        [rs1Number, type_rs1] = CAPI.RISCV.toJSNumberD(registers[rs1]);
-        [rs2Number, type_rs2] = CAPI.RISCV.toJSNumberD(registers[rs2]);
+        [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
+        [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
         if (isNaN(result)) {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "NaN32");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "NaN32");
         } else {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "NaNBfloat32_64");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "NaNBfloat32_64");
         }
       definition: |
         registers[rd] = CAPI.FP.int2uint(parseInt(rs1Number));
@@ -2426,13 +2555,13 @@ instructions:
           order: 4
       preoperation: |
         let result, rs1Number, rs2Number, type_rs1, type_rs2;
-        [rs1Number, type_rs1] = CAPI.RISCV.toJSNumberD(registers[rs1]);
-        [rs2Number, type_rs2] = CAPI.RISCV.toJSNumberD(registers[rs2]);
+        [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
+        [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
         if (isNaN(result)) {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "NaN32");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "NaN32");
         } else {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "NaNBfloat32_64");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "NaNBfloat32_64");
         }
       definition: |
         if (rs2Number != 0) { result = rs1Number / rs2Number; }
@@ -2452,13 +2581,13 @@ instructions:
           type: INT-Reg
       preoperation: |
         let result, rs1Number, rs2Number, type_rs1, type_rs2;
-        [rs1Number, type_rs1] = CAPI.RISCV.toJSNumberD(registers[rs1]);
-        [rs2Number, type_rs2] = CAPI.RISCV.toJSNumberD(registers[rs2]);
+        [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
+        [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
         if (isNaN(result)) {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "NaN32");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "NaN32");
         } else {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "NaNBfloat32_64");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "NaNBfloat32_64");
         }
 
       definition: |
@@ -2478,13 +2607,13 @@ instructions:
           type: INT-Reg
       preoperation: |
         let result, rs1Number, rs2Number, type_rs1, type_rs2;
-        [rs1Number, type_rs1] = CAPI.RISCV.toJSNumberD(registers[rs1]);
-        [rs2Number, type_rs2] = CAPI.RISCV.toJSNumberD(registers[rs2]);
+        [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
+        [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
         if (isNaN(result)) {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "NaN32");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "NaN32");
         } else {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "NaNBfloat32_64");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "NaNBfloat32_64");
         }
 
       definition: |
@@ -2504,13 +2633,13 @@ instructions:
           type: INT-Reg
       preoperation: |
         let result, rs1Number, rs2Number, type_rs1, type_rs2;
-        [rs1Number, type_rs1] = CAPI.RISCV.toJSNumberD(registers[rs1]);
-        [rs2Number, type_rs2] = CAPI.RISCV.toJSNumberD(registers[rs2]);
+        [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
+        [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
         if (isNaN(result)) {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "NaN32");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "NaN32");
         } else {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "NaNBfloat32_64");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "NaNBfloat32_64");
         }
 
       definition: |
@@ -2528,13 +2657,13 @@ instructions:
           value: "001"
       preoperation: |
         let result, rs1Number, rs2Number, type_rs1, type_rs2;
-        [rs1Number, type_rs1] = CAPI.RISCV.toJSNumberD(registers[rs1]);
-        [rs2Number, type_rs2] = CAPI.RISCV.toJSNumberD(registers[rs2]);
+        [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
+        [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
         if (isNaN(result)) {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "NaN32");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "NaN32");
         } else {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "NaNBfloat32_64");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "NaNBfloat32_64");
         }
 
       definition: |
@@ -2552,13 +2681,13 @@ instructions:
           value: "000"
       preoperation: |
         let result, rs1Number, rs2Number, type_rs1, type_rs2;
-        [rs1Number, type_rs1] = CAPI.RISCV.toJSNumberD(registers[rs1]);
-        [rs2Number, type_rs2] = CAPI.RISCV.toJSNumberD(registers[rs2]);
+        [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
+        [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
         if (isNaN(result)) {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "NaN32");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "NaN32");
         } else {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "NaNBfloat32_64");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "NaNBfloat32_64");
         }
       definition: |
         result = Math.min(rs1Number, rs2Number);
@@ -2578,13 +2707,13 @@ instructions:
           order: 4
       preoperation: |
         let result, rs1Number, rs2Number, type_rs1, type_rs2;
-        [rs1Number, type_rs1] = CAPI.RISCV.toJSNumberD(registers[rs1]);
-        [rs2Number, type_rs2] = CAPI.RISCV.toJSNumberD(registers[rs2]);
+        [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
+        [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
         if (isNaN(result)) {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "NaN32");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "NaN32");
         } else {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "NaNBfloat32_64");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "NaNBfloat32_64");
         }
       definition: |
         result = rs2Number * rs1Number;
@@ -2603,13 +2732,13 @@ instructions:
           value: "000"
       preoperation: |
         let result, rs1Number, rs2Number, type_rs1, type_rs2;
-        [rs1Number, type_rs1] = CAPI.RISCV.toJSNumberD(registers[rs1]);
-        [rs2Number, type_rs2] = CAPI.RISCV.toJSNumberD(registers[rs2]);
+        [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
+        [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
         if (isNaN(result)) {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "NaN32");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "NaN32");
         } else {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "NaNBfloat32_64");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "NaNBfloat32_64");
         }
 
       definition: |
@@ -2629,14 +2758,14 @@ instructions:
           value: "000"
       preoperation: |
         let result, rs1Number, type_rs1;
-        [rs1Number, type_rs1] = CAPI.RISCV.toJSNumberD(registers[rs1]);
+        [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
       postoperation: |
         if (isNaN(result)) {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "NaN32");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "NaN32");
         } else {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "NaNBfloat32_64");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "NaNBfloat32_64");
         }
-        registers[rs1] = CAPI.RISCV.toBigInt(rs1Number, type_rs1);
+        registers[rs1] = CAPI.ARCH.toBigInt(rs1Number, type_rs1);
       definition: |
         result = CAPI.FP.float322uint(rs1Number);
 
@@ -2652,13 +2781,13 @@ instructions:
           value: "000"
       preoperation: |
         let result, rs1Number, rs2Number, type_rs1, type_rs2;
-        [rs1Number, type_rs1] = CAPI.RISCV.toJSNumberD(registers[rs1]);
-        [rs2Number, type_rs2] = CAPI.RISCV.toJSNumberD(registers[rs2]);
+        [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
+        [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
         if (isNaN(result)) {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "NaN32");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "NaN32");
         } else {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "NaNBfloat32_64");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "NaNBfloat32_64");
         }
       definition: |
         result = (rs2Number >= 0) ? Math.abs(rs1Number) : -Math.abs(rs1Number);
@@ -2675,13 +2804,13 @@ instructions:
           value: "001"
       preoperation: |
         let result, rs1Number, rs2Number, type_rs1, type_rs2;
-        [rs1Number, type_rs1] = CAPI.RISCV.toJSNumberD(registers[rs1]);
-        [rs2Number, type_rs2] = CAPI.RISCV.toJSNumberD(registers[rs2]);
+        [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
+        [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
         if (isNaN(result)) {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "NaN32");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "NaN32");
         } else {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "NaNBfloat32_64");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "NaNBfloat32_64");
         }
       definition: |
         result = (rs2Number <= 0) ? Math.abs(rs1Number) : -Math.abs(rs1Number);
@@ -2697,13 +2826,13 @@ instructions:
           value: "010"
       preoperation: |
         let result, rs1Number, rs2Number, type_rs1, type_rs2;
-        [rs1Number, type_rs1] = CAPI.RISCV.toJSNumberD(registers[rs1]);
-        [rs2Number, type_rs2] = CAPI.RISCV.toJSNumberD(registers[rs2]);
+        [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
+        [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
         if (isNaN(result)) {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "NaN32");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "NaN32");
         } else {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "NaNBfloat32_64");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "NaNBfloat32_64");
         }
       definition: |
         let a = rs1Number < 0;
@@ -2728,13 +2857,13 @@ instructions:
           order: 3
       preoperation: |
         let result, rs1Number, rs2Number, type_rs1, type_rs2;
-        [rs1Number, type_rs1] = CAPI.RISCV.toJSNumberD(registers[rs1]);
-        [rs2Number, type_rs2] = CAPI.RISCV.toJSNumberD(registers[rs2]);
+        [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
+        [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
         if (isNaN(result)) {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "NaN32");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "NaN32");
         } else {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "NaNBfloat32_64");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "NaNBfloat32_64");
         }
 
       definition: |
@@ -2760,13 +2889,13 @@ instructions:
           order: 4
       preoperation: |
         let result, rs1Number, rs2Number, type_rs1, type_rs2;
-        [rs1Number, type_rs1] = CAPI.RISCV.toJSNumberD(registers[rs1]);
-        [rs2Number, type_rs2] = CAPI.RISCV.toJSNumberD(registers[rs2]);
+        [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
+        [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
         if (isNaN(result)) {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "NaN32");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "NaN32");
         } else {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "NaNBfloat32_64");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "NaNBfloat32_64");
         }
 
       definition: |
@@ -2787,14 +2916,14 @@ instructions:
           order: 5
       preoperation: |
         let result, rs1Number, rs2Number, rs3Number, type_rs1, type_rs2, type_rs3;
-        [rs1Number, type_rs1] = CAPI.RISCV.toJSNumberD(registers[rs1]);
-        [rs2Number, type_rs2] = CAPI.RISCV.toJSNumberD(registers[rs2]);
-        [rs3Number, type_rs3] = CAPI.RISCV.toJSNumberD(rs3);
+        [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
+        [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
+        [rs3Number, type_rs3] = CAPI.ARCH.toJSNumberD(rs3);
       postoperation: |
         if (isNaN(result)) {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "NaN32");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "NaN32");
         } else {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "NaNBfloat32_64");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "NaNBfloat32_64");
         }
 
       definition: |
@@ -2815,14 +2944,14 @@ instructions:
           order: 5
       preoperation: |
         let result, rs1Number, rs2Number, rs3Number, type_rs1, type_rs2, type_rs3;
-        [rs1Number, type_rs1] = CAPI.RISCV.toJSNumberD(registers[rs1]);
-        [rs2Number, type_rs2] = CAPI.RISCV.toJSNumberD(registers[rs2]);
-        [rs3Number, type_rs3] = CAPI.RISCV.toJSNumberD(rs3);
+        [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
+        [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
+        [rs3Number, type_rs3] = CAPI.ARCH.toJSNumberD(rs3);
       postoperation: |
         if (isNaN(result)) {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "NaN32");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "NaN32");
         } else {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "NaNBfloat32_64");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "NaNBfloat32_64");
         }
 
       definition: |
@@ -2843,14 +2972,14 @@ instructions:
           order: 5
       preoperation: |
         let result, rs1Number, rs2Number, rs3Number, type_rs1, type_rs2, type_rs3;
-        [rs1Number, type_rs1] = CAPI.RISCV.toJSNumberD(registers[rs1]);
-        [rs2Number, type_rs2] = CAPI.RISCV.toJSNumberD(registers[rs2]);
-        [rs3Number, type_rs3] = CAPI.RISCV.toJSNumberD(rs3);
+        [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
+        [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
+        [rs3Number, type_rs3] = CAPI.ARCH.toJSNumberD(rs3);
       postoperation: |
         if (isNaN(result)) {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "NaN32");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "NaN32");
         } else {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "NaNBfloat32_64");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "NaNBfloat32_64");
         }
 
       definition: |
@@ -2871,14 +3000,14 @@ instructions:
           order: 5
       preoperation: |
         let result, rs1Number, rs2Number, rs3Number, type_rs1, type_rs2, type_rs3;
-        [rs1Number, type_rs1] = CAPI.RISCV.toJSNumberD(registers[rs1]);
-        [rs2Number, type_rs2] = CAPI.RISCV.toJSNumberD(registers[rs2]);
-        [rs3Number, type_rs3] = CAPI.RISCV.toJSNumberD(rs3);
+        [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
+        [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
+        [rs3Number, type_rs3] = CAPI.ARCH.toJSNumberD(rs3);
       postoperation: |
         if (isNaN(result)) {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "NaN32");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "NaN32");
         } else {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "NaNBfloat32_64");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "NaNBfloat32_64");
         }
 
       definition: |
@@ -2937,13 +3066,13 @@ instructions:
           order: 4
       preoperation: |
         let result, rs1Number, rs2Number, type_rs1, type_rs2;
-        [rs1Number, type_rs1] = CAPI.RISCV.toJSNumberD(registers[rs1]);
-        [rs2Number, type_rs2] = CAPI.RISCV.toJSNumberD(registers[rs2]);
+        [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
+        [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
         if (isNaN(result)) {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "NaN64");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "NaN64");
         } else {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "float64");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "float64");
         }
       definition: |
         result = rs1Number + rs2Number;
@@ -2966,13 +3095,13 @@ instructions:
           type: INT-Reg
       preoperation: |
         let result, rs1Number, rs2Number, type_rs1, type_rs2;
-        [rs1Number, type_rs1] = CAPI.RISCV.toJSNumberD(registers[rs1]);
-        [rs2Number, type_rs2] = CAPI.RISCV.toJSNumberD(registers[rs2]);
+        [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
+        [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
         if (isNaN(result)) {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "NaN64");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "NaN64");
         } else {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "float64");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "float64");
         }
       definition: |
         let a = CAPI.FP.float2bin(rs1Number);
@@ -3002,13 +3131,13 @@ instructions:
           order: null
       preoperation: |
         let result, rs1Number, rs2Number, type_rs1, type_rs2;
-        [rs1Number, type_rs1] = CAPI.RISCV.toJSNumberD(registers[rs1]);
-        [rs2Number, type_rs2] = CAPI.RISCV.toJSNumberD(registers[rs2]);
+        [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
+        [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
         if (isNaN(result)) {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "NaN64");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "NaN64");
         } else {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "float64");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "float64");
         }
       definition: |
         result = rs1Number; // TODO: This doesn't seem right, check the RISC-V manual
@@ -3034,9 +3163,9 @@ instructions:
           type: INT-Reg
       preoperation: |
         let result, rs1Number, type_rs1;
-        [rs1Number, type_rs1] = CAPI.RISCV.toJSNumberD(registers[rs1]);
+        [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
       postoperation: |
-        registers[rd] = CAPI.RISCV.toBigInt(result, 'float64');
+        registers[rd] = CAPI.ARCH.toBigInt(result, 'float64');
       definition: |
         result = CAPI.FP.uint2int(rs1Number);
 
@@ -3061,13 +3190,13 @@ instructions:
           type: INT-Reg
       preoperation: |
         let result, rs1Number, rs2Number, type_rs1, type_rs2;
-        [rs1Number, type_rs1] = CAPI.RISCV.toJSNumberD(registers[rs1]);
-        [rs2Number, type_rs2] = CAPI.RISCV.toJSNumberD(registers[rs2]);
+        [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
+        [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
         if (isNaN(result)) {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "NaN64");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "NaN64");
         } else {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "float64");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "float64");
         }
       definition: |
         result = CAPI.FP.int2uint(parseFloat(rs1Number));
@@ -3093,13 +3222,13 @@ instructions:
           type: DFP-Reg
       preoperation: |
         let result, rs1Number, rs2Number, type_rs1, type_rs2;
-        [rs1Number, type_rs1] = CAPI.RISCV.toJSNumberD(registers[rs1]);
-        [rs2Number, type_rs2] = CAPI.RISCV.toJSNumberD(registers[rs2]);
+        [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
+        [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
         if (isNaN(result)) {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "NaN64");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "NaN64");
         } else {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "float64");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "float64");
         }
       definition: |
         result = rs1Number; // TODO: This doesn't seem right, check the RISC-V manual
@@ -3125,13 +3254,13 @@ instructions:
           type: DFP-Reg
       preoperation: |
         let result, rs1Number, rs2Number, type_rs1, type_rs2;
-        [rs1Number, type_rs1] = CAPI.RISCV.toJSNumberD(registers[rs1]);
-        [rs2Number, type_rs2] = CAPI.RISCV.toJSNumberD(registers[rs2]);
+        [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
+        [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
         if (isNaN(result)) {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "NaN64");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "NaN64");
         } else {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "float64");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "float64");
         }
 
       definition: |
@@ -3158,13 +3287,13 @@ instructions:
           type: DFP-Reg
       preoperation: |
         let result, rs1Number, rs2Number, type_rs1, type_rs2;
-        [rs1Number, type_rs1] = CAPI.RISCV.toJSNumberD(registers[rs1]);
-        [rs2Number, type_rs2] = CAPI.RISCV.toJSNumberD(registers[rs2]);
+        [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
+        [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
         if (isNaN(result)) {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "NaN64");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "NaN64");
         } else {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "float64");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "float64");
         }
 
       definition: |
@@ -3185,13 +3314,13 @@ instructions:
           order: 4
       preoperation: |
         let result, rs1Number, rs2Number, type_rs1, type_rs2;
-        [rs1Number, type_rs1] = CAPI.RISCV.toJSNumberD(registers[rs1]);
-        [rs2Number, type_rs2] = CAPI.RISCV.toJSNumberD(registers[rs2]);
+        [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
+        [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
         if (isNaN(result)) {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "NaN64");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "NaN64");
         } else {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "float64");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "float64");
         }
 
       definition: |
@@ -3210,8 +3339,8 @@ instructions:
           type: INT-Reg
       preoperation: |
         let result, rs1Number, rs2Number, type_rs1, type_rs2;
-        [rs1Number, type_rs1] = CAPI.RISCV.toJSNumberD(registers[rs1]);
-        [rs2Number, type_rs2] = CAPI.RISCV.toJSNumberD(registers[rs2]);
+        [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
+        [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
 
       definition: |
@@ -3231,8 +3360,8 @@ instructions:
           type: INT-Reg
       preoperation: |
         let rs1Number, rs2Number, type_rs1, type_rs2;
-        [rs1Number, type_rs1] = CAPI.RISCV.toJSNumberD(registers[rs1]);
-        [rs2Number, type_rs2] = CAPI.RISCV.toJSNumberD(registers[rs2]);
+        [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
+        [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
 
       definition: |
@@ -3252,8 +3381,8 @@ instructions:
           type: INT-Reg
       preoperation: |
         let rs1Number, rs2Number, type_rs1, type_rs2;
-        [rs1Number, type_rs1] = CAPI.RISCV.toJSNumberD(registers[rs1]);
-        [rs2Number, type_rs2] = CAPI.RISCV.toJSNumberD(registers[rs2]);
+        [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
+        [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
 
       definition: |
@@ -3271,13 +3400,13 @@ instructions:
           value: "001"
       preoperation: |
         let result, rs1Number, rs2Number, type_rs1, type_rs2;
-        [rs1Number, type_rs1] = CAPI.RISCV.toJSNumberD(registers[rs1]);
-        [rs2Number, type_rs2] = CAPI.RISCV.toJSNumberD(registers[rs2]);
+        [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
+        [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
         if (isNaN(result)) {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "NaN64");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "NaN64");
         } else {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "float64");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "float64");
         }
 
       definition: |
@@ -3295,13 +3424,13 @@ instructions:
           value: "000"
       preoperation: |
         let result, rs1Number, rs2Number, type_rs1, type_rs2;
-        [rs1Number, type_rs1] = CAPI.RISCV.toJSNumberD(registers[rs1]);
-        [rs2Number, type_rs2] = CAPI.RISCV.toJSNumberD(registers[rs2]);
+        [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
+        [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
         if (isNaN(result)) {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "NaN64");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "NaN64");
         } else {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "float64");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "float64");
         }
 
       definition: |
@@ -3322,13 +3451,13 @@ instructions:
           order: 4
       preoperation: |
         let result, rs1Number, rs2Number, type_rs1, type_rs2;
-        [rs1Number, type_rs1] = CAPI.RISCV.toJSNumberD(registers[rs1]);
-        [rs2Number, type_rs2] = CAPI.RISCV.toJSNumberD(registers[rs2]);
+        [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
+        [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
         if (isNaN(result)) {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "NaN64");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "NaN64");
         } else {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "float64");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "float64");
         }
 
       definition: |
@@ -3346,13 +3475,13 @@ instructions:
           value: "000"
       preoperation: |
         let result, rs1Number, rs2Number, type_rs1, type_rs2;
-        [rs1Number, type_rs1] = CAPI.RISCV.toJSNumberD(registers[rs1]);
-        [rs2Number, type_rs2] = CAPI.RISCV.toJSNumberD(registers[rs2]);
+        [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
+        [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
         if (isNaN(result)) {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "NaN64");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "NaN64");
         } else {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "float64");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "float64");
         }
 
       definition: |
@@ -3369,13 +3498,13 @@ instructions:
           value: "001"
       preoperation: |
         let result, rs1Number, rs2Number, type_rs1, type_rs2;
-        [rs1Number, type_rs1] = CAPI.RISCV.toJSNumberD(registers[rs1]);
-        [rs2Number, type_rs2] = CAPI.RISCV.toJSNumberD(registers[rs2]);
+        [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
+        [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
         if (isNaN(result)) {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "NaN64");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "NaN64");
         } else {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "float64");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "float64");
         }
 
       definition: |
@@ -3393,13 +3522,13 @@ instructions:
           value: "010"
       preoperation: |
         let result, rs1Number, rs2Number, type_rs1, type_rs2;
-        [rs1Number, type_rs1] = CAPI.RISCV.toJSNumberD(registers[rs1]);
-        [rs2Number, type_rs2] = CAPI.RISCV.toJSNumberD(registers[rs2]);
+        [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
+        [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
         if (isNaN(result)) {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "NaN64");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "NaN64");
         } else {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "float64");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "float64");
         }
 
       definition: |
@@ -3425,13 +3554,13 @@ instructions:
           order: 3
       preoperation: |
         let result, rs1Number, rs2Number, type_rs1, type_rs2;
-        [rs1Number, type_rs1] = CAPI.RISCV.toJSNumberD(registers[rs1]);
-        [rs2Number, type_rs2] = CAPI.RISCV.toJSNumberD(registers[rs2]);
+        [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
+        [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
         if (isNaN(result)) {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "NaN64");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "NaN64");
         } else {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "float64");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "float64");
         }
 
       definition: |
@@ -3457,13 +3586,13 @@ instructions:
           order: 4
       preoperation: |
         let result, rs1Number, rs2Number, type_rs1, type_rs2;
-        [rs1Number, type_rs1] = CAPI.RISCV.toJSNumberD(registers[rs1]);
-        [rs2Number, type_rs2] = CAPI.RISCV.toJSNumberD(registers[rs2]);
+        [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
+        [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
         if (isNaN(result)) {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "NaN64");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "NaN64");
         } else {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "float64");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "float64");
         }
 
       definition: |
@@ -3484,17 +3613,17 @@ instructions:
           order: 5
       preoperation: |
         let result, rs1Number, rs2Number, rs3Number, type_rs1, type_rs2, type_rs3;
-        [rs1Number, type_rs1] = CAPI.RISCV.toJSNumberD(registers[rs1]);
-        [rs2Number, type_rs2] = CAPI.RISCV.toJSNumberD(registers[rs2]);
-        [rs3Number, type_rs3] = CAPI.RISCV.toJSNumberD(registers[rs3]);
+        [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
+        [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
+        [rs3Number, type_rs3] = CAPI.ARCH.toJSNumberD(registers[rs3]);
       postoperation: |
         if (isNaN(result)) {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "NaN64");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "NaN64");
         } else {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "float64");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "float64");
         }
 
-        registers[rs3] = CAPI.RISCV.toBigInt(rs3Number, type_rs3);
+        registers[rs3] = CAPI.ARCH.toBigInt(rs3Number, type_rs3);
       definition: |
         result = rs1Number * rs2Number + rs3Number;
 
@@ -3513,17 +3642,17 @@ instructions:
           order: 5
       preoperation: |
         let result, rs1Number, rs2Number, rs3Number, type_rs1, type_rs2, type_rs3;
-        [rs1Number, type_rs1] = CAPI.RISCV.toJSNumberD(registers[rs1]);
-        [rs2Number, type_rs2] = CAPI.RISCV.toJSNumberD(registers[rs2]);
-        [rs3Number, type_rs3] = CAPI.RISCV.toJSNumberD(registers[rs3]);
+        [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
+        [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
+        [rs3Number, type_rs3] = CAPI.ARCH.toJSNumberD(registers[rs3]);
       postoperation: |
         if (isNaN(result)) {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "NaN64");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "NaN64");
         } else {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "float64");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "float64");
         }
 
-        registers[rs3] = CAPI.RISCV.toBigInt(rs3Number, type_rs3);
+        registers[rs3] = CAPI.ARCH.toBigInt(rs3Number, type_rs3);
       definition: |
         result = rs1Number * rs2Number - rs3Number;
 
@@ -3542,17 +3671,17 @@ instructions:
           order: 5
       preoperation: |
         let result, rs1Number, rs2Number, rs3Number, type_rs1, type_rs2, type_rs3;
-        [rs1Number, type_rs1] = CAPI.RISCV.toJSNumberD(registers[rs1]);
-        [rs2Number, type_rs2] = CAPI.RISCV.toJSNumberD(registers[rs2]);
-        [rs3Number, type_rs3] = CAPI.RISCV.toJSNumberD(registers[rs3]);
+        [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
+        [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
+        [rs3Number, type_rs3] = CAPI.ARCH.toJSNumberD(registers[rs3]);
       postoperation: |
         if (isNaN(result)) {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "NaN64");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "NaN64");
         } else {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "float64");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "float64");
         }
 
-        registers[rs3] = CAPI.RISCV.toBigInt(rs3Number, type_rs3);
+        registers[rs3] = CAPI.ARCH.toBigInt(rs3Number, type_rs3);
       definition: |
         result = -rs1Number * rs2Number - rs3Number;
 
@@ -3571,17 +3700,17 @@ instructions:
           order: 5
       preoperation: |
         let result, rs1Number, rs2Number, rs3Number, type_rs1, type_rs2, type_rs3;
-        [rs1Number, type_rs1] = CAPI.RISCV.toJSNumberD(registers[rs1]);
-        [rs2Number, type_rs2] = CAPI.RISCV.toJSNumberD(registers[rs2]);
-        [rs3Number, type_rs3] = CAPI.RISCV.toJSNumberD(registers[rs3]);
+        [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
+        [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
+        [rs3Number, type_rs3] = CAPI.ARCH.toJSNumberD(registers[rs3]);
       postoperation: |
         if (isNaN(result)) {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "NaN64");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "NaN64");
         } else {
-          registers[rd] = CAPI.RISCV.toBigInt(result, "float64");
+          registers[rd] = CAPI.ARCH.toBigInt(result, "float64");
         }
 
-        registers[rs3] = CAPI.RISCV.toBigInt(rs3Number, type_rs3);
+        registers[rs3] = CAPI.ARCH.toBigInt(rs3Number, type_rs3);
       definition: |
         result = -rs1Number * rs2Number + rs3Number;
 
@@ -3657,6 +3786,7 @@ pseudoinstructions:
       fields:
         - field: rs1
           type: INT-Reg
+          suffix: ","
         - field: off
           type: offset_bytes
       definition: |
@@ -3666,6 +3796,7 @@ pseudoinstructions:
       fields:
         - field: rs1
           type: INT-Reg
+          suffix: ","
         - field: off
           type: offset_bytes
       definition: |
@@ -3676,8 +3807,10 @@ pseudoinstructions:
       fields:
         - field: rs1
           type: INT-Reg
+          suffix: ","
         - field: rs2
           type: INT-Reg
+          suffix: ","
         - field: off
           type: offset_bytes
       definition: |
@@ -3687,8 +3820,10 @@ pseudoinstructions:
       fields:
         - field: rs1
           type: INT-Reg
+          suffix: ","
         - field: rs2
           type: INT-Reg
+          suffix: ","
         - field: off
           type: offset_bytes
       definition: |
@@ -3698,6 +3833,7 @@ pseudoinstructions:
       fields:
         - field: rs1
           type: INT-Reg
+          suffix: ","
         - field: off
           type: offset_bytes
       definition: |
@@ -3707,8 +3843,10 @@ pseudoinstructions:
       fields:
         - field: rs1
           type: INT-Reg
+          suffix: ","
         - field: rs2
           type: INT-Reg
+          suffix: ","
         - field: off
           type: offset_bytes
       definition: |
@@ -3718,8 +3856,10 @@ pseudoinstructions:
       fields:
         - field: rs1
           type: INT-Reg
+          suffix: ","
         - field: rs2
           type: INT-Reg
+          suffix: ","
         - field: off
           type: offset_bytes
       definition: |
@@ -3729,6 +3869,7 @@ pseudoinstructions:
       fields:
         - field: rs1
           type: INT-Reg
+          suffix: ","
         - field: off
           type: offset_bytes
       definition: |
@@ -3738,6 +3879,7 @@ pseudoinstructions:
       fields:
         - field: rs1
           type: INT-Reg
+          suffix: ","
         - field: off
           type: offset_bytes
       definition: |
@@ -3747,6 +3889,7 @@ pseudoinstructions:
       fields:
         - field: rs1
           type: INT-Reg
+          suffix: ","
         - field: off
           type: offset_bytes
       definition: |
@@ -3777,8 +3920,9 @@ pseudoinstructions:
       fields:
         - field: rd
           type: INT-Reg
+          suffix: ","
         - field: addr
-          type: inm-unsigned
+          type: imm-unsigned
       definition: |
         no_ret_op{
           tmp = Field.2.(31,0).int;
@@ -3793,13 +3937,14 @@ pseudoinstructions:
       fields:
         - field: rd
           type: INT-Reg
+          suffix: ","
         - field: val
-          type: inm-signed
+          type: imm-signed
       # For legibility purposes, the implementation is included in the CREATOR codebase as a module.
       definition: |
         no_ret_op{
           value = Field.2.(63,0).int;
-          instructions = CAPI.RISCV.generateLoadImmediate(value, reg_name{1})
+          instructions = CAPI.ARCH.generateLoadImmediate(value, reg_name{1})
         };
         op{instructions};
 
@@ -3807,6 +3952,7 @@ pseudoinstructions:
       fields:
         - field: reg1
           type: INT-Reg
+          suffix: ","
         - field: reg2
           type: INT-Reg
       definition: |
@@ -3817,6 +3963,7 @@ pseudoinstructions:
       fields:
         - field: reg1
           type: INT-Reg
+          suffix: ","
         - field: reg2
           type: INT-Reg
       definition: |
@@ -3831,6 +3978,7 @@ pseudoinstructions:
       fields:
         - field: reg1
           type: INT-Reg
+          suffix: ","
         - field: reg2
           type: INT-Reg
       definition: |
@@ -3844,6 +3992,7 @@ pseudoinstructions:
       fields:
         - field: reg1
           type: INT-Reg
+          suffix: ","
         - field: reg2
           type: INT-Reg
       definition: |
@@ -3853,6 +4002,7 @@ pseudoinstructions:
       fields:
         - field: reg1
           type: INT-Reg
+          suffix: ","
         - field: reg2
           type: INT-Reg
       definition: |
@@ -3862,6 +4012,7 @@ pseudoinstructions:
       fields:
         - field: reg1
           type: INT-Reg
+          suffix: ","
         - field: reg2
           type: INT-Reg
       definition: |
@@ -3871,6 +4022,7 @@ pseudoinstructions:
       fields:
         - field: reg1
           type: INT-Reg
+          suffix: ","
         - field: reg2
           type: INT-Reg
       definition: |
@@ -3881,6 +4033,7 @@ pseudoinstructions:
       fields:
         - field: rs1
           type: SFP-Reg
+          suffix: ","
         - field: rs2
           type: SFP-Reg
       definition: |
@@ -3890,6 +4043,7 @@ pseudoinstructions:
       fields:
         - field: rs1
           type: SFP-Reg
+          suffix: ","
         - field: rs2
           type: SFP-Reg
       definition: |
@@ -3899,6 +4053,7 @@ pseudoinstructions:
       fields:
         - field: rs1
           type: SFP-Reg
+          suffix: ","
         - field: rs2
           type: SFP-Reg
       definition: |
@@ -3909,6 +4064,7 @@ pseudoinstructions:
       fields:
         - field: rs1
           type: DFP-Reg
+          suffix: ","
         - field: rs2
           type: DFP-Reg
       definition: |
@@ -3918,6 +4074,7 @@ pseudoinstructions:
       fields:
         - field: rs1
           type: DFP-Reg
+          suffix: ","
         - field: rs2
           type: DFP-Reg
       definition: |
@@ -3927,6 +4084,7 @@ pseudoinstructions:
       fields:
         - field: rs1
           type: DFP-Reg
+          suffix: ","
         - field: rs2
           type: DFP-Reg
       definition: |

@@ -5,7 +5,6 @@ import {
     bi_BigIntTofloat,
     bi_doubleToBigInt,
     bi_BigIntTodouble,
-    register_value_deserialize,
 } from "../../../../src/core/utils/bigint.mjs";
 
 const REGISTER_SIZE = 32n;
@@ -40,73 +39,5 @@ Deno.test(
         const bigIntVal = bi_doubleToBigInt(doubleVal);
         const doubleRoundTrip = bi_BigIntTodouble(bigIntVal);
         assert(Math.abs(doubleVal - doubleRoundTrip) < 1e-12);
-    },
-);
-
-Deno.test(
-    "register_value_deserialize - deserializes non-floating point register values",
-    () => {
-        const architecture = {
-            components: [
-                {
-                    type: "gp_registers",
-                    double_precision: false,
-                    elements: [
-                        {
-                            value: "123",
-                            default_value: "456",
-                        },
-                    ],
-                },
-            ],
-        };
-
-        const deserializedArch = register_value_deserialize(architecture);
-        assertEquals(
-            typeof deserializedArch.components[0].elements[0].value,
-            "bigint",
-        );
-        assertEquals(
-            deserializedArch.components[0].elements[0].value,
-            BigInt(123),
-        );
-        assertEquals(
-            typeof deserializedArch.components[0].elements[0].default_value,
-            "bigint",
-        );
-        assertEquals(
-            deserializedArch.components[0].elements[0].default_value,
-            BigInt(456),
-        );
-    },
-);
-
-Deno.test(
-    "register_value_deserialize - deserializes floating point register values",
-    () => {
-        const architecture = {
-            components: [
-                {
-                    type: "fp_registers",
-                    double_precision: false,
-                    elements: [
-                        {
-                            value: 3.14,
-                            default_value: 2.718,
-                        },
-                    ],
-                },
-            ],
-        };
-
-        const deserializedArch = register_value_deserialize(architecture);
-        const floatVal = bi_BigIntTofloat(
-            deserializedArch.components[0].elements[0].value,
-        );
-        const floatDefault = bi_BigIntTofloat(
-            deserializedArch.components[0].elements[0].default_value,
-        );
-        assert(Math.abs(floatVal - 3.14) < 1e-6);
-        assert(Math.abs(floatDefault - 2.718) < 1e-6);
     },
 );
