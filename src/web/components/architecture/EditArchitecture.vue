@@ -47,9 +47,8 @@ import { yaml } from "@codemirror/lang-yaml"
 
 import {
   architecture,
-  architecture_hash,
   reset,
-  newArchitectureLoad,
+  loadArchitecture,
 } from "@/core/core.mjs"
 import { show_notification, storeBackup } from "@/web/utils.mjs"
 
@@ -155,7 +154,7 @@ export default {
     // save edited architecture
     arch_edit_save() {
       try {
-        newArchitectureLoad(this.architecture_value)
+        loadArchitecture(this.architecture_value)
       } catch {
         show_notification(
           "Architecture not edited. Architecture format is incorrect",
@@ -167,7 +166,6 @@ export default {
       // update architecture data
       this.$root.architecture_name = architecture.config.name
       this.$root.architecture = architecture
-      this.$root.architecture_hash = architecture_hash
 
       // reset execution
       this.$root.instructions = []

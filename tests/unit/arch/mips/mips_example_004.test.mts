@@ -6,10 +6,8 @@ import {
     assertSimulatorState,
 } from "../simulator-test-utils.mts";
 
-Deno.test(
-    "MIPS Floating Point Operations",
-    async () => {
-        const testAssembly = `
+Deno.test("MIPS Floating Point Operations", async () => {
+    const testAssembly = `
 #
 # Creator (https://creatorsim.github.io/creator/)
 #
@@ -46,29 +44,28 @@ main:
 
     `;
 
-        const MIPS_ARCH_PATH = "../../../architecture/MIPS32.yml";
+    const MIPS_ARCH_PATH = "../../../architecture/MIPS32.yml";
 
-        // Setup simulator with MIPS architecture
-        await setupSimulator(testAssembly, MIPS_ARCH_PATH);
+    // Setup simulator with MIPS architecture
+    await setupSimulator(testAssembly, MIPS_ARCH_PATH);
 
-        // Execute the program
-        const result = executeN(1000);
-        assertEquals(result.error, false, "Execution should not error");
+    // Execute the program
+    const result = executeN(1000);
+    assertEquals(result.error, 0, "Execution should not error");
+    // TODO: finish the conditions below
+    // Assert all expected state using the wrapper function
+    assertSimulatorState({
+        registers: {
+            r1: 0x200018n, // at
+            r2: 0xan, // v0
+            r8: 0x200000n, // t0
+            r9: 0x200008n, // t1
+            r10: 0x200010n, // t2
+            r11: 0x200028n, // t3
+        },
+        display: "", // Display buffer should be empty
+        keyboard: "", // Keyboard buffer should be empty
+    });
 
-        // Assert all expected state using the wrapper function
-        assertSimulatorState({
-            registers: {
-                r1: 0x200018n, // at
-                r2: 0xan, // v0
-                r8: 0x200000n, // t0
-                r9: 0x200008n, // t1
-                r10: 0x200010n, // t2
-                r11: 0x200028n, // t3
-            },
-            display: "", // Display buffer should be empty
-            keyboard: "", // Keyboard buffer should be empty
-        });
-
-        cleanupSimulator();
-    },
-);
+    cleanupSimulator();
+});

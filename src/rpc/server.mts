@@ -138,7 +138,7 @@ class CreatorRpcServer {
                 );
             }
 
-            const result = creator.newArchitectureLoad(
+            const result = creator.loadArchitecture(
                 architectureContent,
                 false,
                 params.isaExtensions || [],

@@ -22,7 +22,7 @@
 import {
     main_memory,
     status,
-    update_binary,
+    loadedLibrary,
     architecture,
     backup_stack_address,
     backup_data_address,
@@ -54,7 +54,7 @@ let instructions_binary = [];
 export function assembleCreatorBase(code, library, wasmModules) {
     /* Google Analytics */
     creator_ga("compile", "compile.assembly");
-    const color = 1;
+    const color = 2;
 
     const { ArchitectureJS, DataCategoryJS } = wasmModules;
 
@@ -76,9 +76,9 @@ export function assembleCreatorBase(code, library, wasmModules) {
     status.execution_init = 1;
 
     let library_offset = 0;
-    const library_instructions = update_binary.instructions_binary?.length ?? 0;
+    const library_instructions = loadedLibrary.instructions_binary?.length ?? 0;
     for (let i = 0; i < library_instructions; i++) {
-        const instruction = update_binary.instructions_binary[i];
+        const instruction = loadedLibrary.instructions_binary[i];
         instruction.hide = !(i === 0 || instruction.globl === true);
         if (instruction.globl !== true) {
             instruction.Label = "";
@@ -92,7 +92,7 @@ export function assembleCreatorBase(code, library, wasmModules) {
     // Convert the library labels to the format used by the compiler,
     // filtering out non-global labels
     const library_labels =
-        update_binary.instructions_tag
+        loadedLibrary.instructions_tag
             ?.filter(x => x.globl)
             .reduce((tbl, x) => {
                 tbl[x.tag] = x.addr;
@@ -472,7 +472,7 @@ export function assembleCreatorBase(code, library, wasmModules) {
     }
 
     /* Enter the binary in the text segment */
-    for (const instruction of update_binary.instructions_binary ?? []) {
+    for (const instruction of loadedLibrary.instructions_binary ?? []) {
         const auxAddr = parseInt(instruction.Address, 16);
 
         // Split binary into words and write to memory

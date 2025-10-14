@@ -21,7 +21,7 @@
 import {
     bi_BigIntTofloat,
     bi_BigIntTodouble,
-} from "../../utils/float_bigint.mjs";
+} from "@/core/utils/bigint.mjs";
 
 function isInt(val, bits) {
     const max = (1n << BigInt(bits - 1)) - 1n;
@@ -104,13 +104,13 @@ function generateInstructionsImpl(value, instructions, destReg) {
     }
 }
 
-export const RISCV = {
-    generateLoadImmediate (val, destReg) {
+export const ARCH = {
+    generateLoadImmediate(val, destReg) {
         const instructions = [];
         generateInstructionsImpl(BigInt(val), instructions, destReg);
         return instructions.join(";");
     },
-    toJSNumberD (bigIntValue) {
+    toJSNumberD(bigIntValue) {
         //  Used when the D extension is enabled
         //  These are the possible cases:
         //  1. The value is a float64 NaN
@@ -147,7 +147,7 @@ export const RISCV = {
             return [bi_BigIntTodouble(bigIntValue), "float64"];
         }
     },
-    toJSNumberS (bigIntValue) {
+    toJSNumberS(bigIntValue) {
         //  Used when ONLY the S extension is enabled
         bigIntValue = BigInt(bigIntValue);
         const bitString = bigIntValue.toString(2);
@@ -168,7 +168,7 @@ export const RISCV = {
         }
         return [bi_BigIntTofloat(bigIntValue), "float32"];
     },
-    toBigInt (number, type) {
+    toBigInt(number, type) {
         number = Number(number);
 
         switch (type) {
@@ -217,7 +217,7 @@ export const RISCV = {
                 throw new Error("Unknown type for toBigInt: " + type);
         }
     },
-    NaNBox (bigIntValue) {
+    NaNBox(bigIntValue) {
         //  Used when the D extension is enabled
         //  Simply NaN-boxes the value
         //  See RISC-V Spec, section 21.2

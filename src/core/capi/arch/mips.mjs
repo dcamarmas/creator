@@ -23,7 +23,7 @@
  * Provides utilities for handling double precision floating point registers
  * and conversions between register pairs and JavaScript numbers.
  */
-export const MIPS = {
+export const ARCH = {
     /**
      * Validates that a register is even (required for double precision operations).
      * @param {string} regName - The register name (e.g., "f0", "f2")
@@ -32,7 +32,9 @@ export const MIPS = {
     validateEvenRegister(regName) {
         const regNumber = parseInt(regName.substring(1), 10);
         if (regNumber % 2 !== 0) {
-            throw new Error(`The register ${regName} is not even, cannot be used for double precision operations.`);
+            throw new Error(
+                `The register ${regName} is not even, cannot be used for double precision operations.`,
+            );
         }
     },
 
@@ -78,10 +80,7 @@ export const MIPS = {
      * @returns {number[]} Array containing [value1, value2]
      */
     readDoublePair(reg1Name, reg2Name) {
-        return [
-            this.readDouble(reg1Name),
-            this.readDouble(reg2Name)
-        ];
+        return [this.readDouble(reg1Name), this.readDouble(reg2Name)];
     },
 
     /**
@@ -121,5 +120,5 @@ export const MIPS = {
         const value = this.readDouble(srcReg);
         const result = operation(value);
         this.writeDouble(result, destReg);
-    }
+    },
 };

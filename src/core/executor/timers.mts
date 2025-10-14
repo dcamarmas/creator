@@ -27,12 +27,8 @@ let timerIsEnabled: () => boolean;
 
 export function compileTimerFunctions() {
     if (!architecture.timer) return;
-    timerAdvance = new Function(
-        architecture.timer.advance,
-    ) as () => void;
-    timerHandler = new Function(
-        architecture.timer.handler,
-    ) as () => void;
+    timerAdvance = new Function(architecture.timer.advance) as () => void;
+    timerHandler = new Function(architecture.timer.handler) as () => void;
     timerIsEnabled = new Function(
         architecture.timer.is_enabled,
     ) as () => boolean;

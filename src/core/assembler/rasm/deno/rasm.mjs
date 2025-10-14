@@ -62,7 +62,6 @@ function parseSourceLineMapping(rawRasmOutput) {
     return sourceMap;
 }
 
- 
 export function rasmAssemble(code) {
     // --- Setup temporary files ---
     const filename = "program";
@@ -112,7 +111,6 @@ export function rasmAssemble(code) {
         };
     }
 
-    // --- EXISTING LOGIC (UNCHANGED) ---
     // Read the output binary
     const binary = fs.readFileSync(tempBinPath);
 

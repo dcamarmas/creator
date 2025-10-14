@@ -6,10 +6,8 @@ import {
     assertSimulatorState,
 } from "../simulator-test-utils.mts";
 
-Deno.test(
-    "MIPS Loop and Print Sum",
-    async () => {
-        const testAssembly = `
+Deno.test("MIPS Loop and Print Sum", async () => {
+    const testAssembly = `
 
 #
 # Creator (https://creatorsim.github.io/creator/)
@@ -34,27 +32,26 @@ Deno.test(
 		
     `;
 
-        const MIPS_ARCH_PATH = "../../../architecture/MIPS32.yml";
+    const MIPS_ARCH_PATH = "../../../architecture/MIPS32.yml";
 
-        // Setup simulator with MIPS architecture
-        await setupSimulator(testAssembly, MIPS_ARCH_PATH);
+    // Setup simulator with MIPS architecture
+    await setupSimulator(testAssembly, MIPS_ARCH_PATH);
 
-        // Execute the program
-        const result = executeN(1000);
-        assertEquals(result.error, false, "Execution should not error");
+    // Execute the program
+    const result = executeN(1000);
+    assertEquals(result.error, 0, "Execution should not error");
 
-        // Assert all expected state using the wrapper function
-        assertSimulatorState({
-            registers: {
-                r2: 0x1n, // v0
-                r4: 0x2dn, // a0 = 45
-                r8: 0xan, // t0 = 10
-                r9: 0xan, // t1 = 10
-            },
-            display: "45", // Should display '45'
-            keyboard: "", // Keyboard buffer should be empty
-        });
+    // Assert all expected state using the wrapper function
+    assertSimulatorState({
+        registers: {
+            r2: 0x1n, // v0
+            r4: 0x2dn, // a0 = 45
+            r8: 0xan, // t0 = 10
+            r9: 0xan, // t1 = 10
+        },
+        display: "45", // Should display '45'
+        keyboard: "", // Keyboard buffer should be empty
+    });
 
-        cleanupSimulator();
-    },
-);
+    cleanupSimulator();
+});

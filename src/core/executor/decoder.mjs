@@ -31,7 +31,7 @@ let instructionLookupCache = null;
  * @function resetCache
  * @returns {void}
  */
-export function resetCache() {
+export function resetDecoderCache() {
     instructionLookupCache = null;
 }
 
@@ -42,27 +42,20 @@ export function resetCache() {
  * @param {string} binaryValue - The binary representation of the register
  * @returns {string|null} - The register name or null if not found
  */
-function get_register_binary(type, binaryValue) {
+function decodeRegister(type, binaryValue) {
+    const binaryValueInt = parseInt(binaryValue, BINARY_BASE);
     // Find the component that matches the requested register type
     for (const component of REGISTERS) {
         if (component.type !== type) {
             continue;
         }
 
-        // Find the register whose index matches the binary value
-        for (
-            let registerIndex = 0;
-            registerIndex < component.elements.length;
-            registerIndex++
-        ) {
-            const registerBinaryValue = registerIndex
-                .toString(BINARY_BASE)
-                .padStart(binaryValue.length, "0");
-
-            if (registerBinaryValue === binaryValue) {
-                return component.elements[registerIndex].name[0];
+        for (const register of component.elements) {
+            if (register.encoding === binaryValueInt) {
+                return register.name[0]; // Return the first name (canonical)
             }
         }
+
     }
 
     return null;
@@ -81,7 +74,7 @@ function extractOpcode(fields) {
                 startbit: field.startbit,
                 stopbit: field.stopbit,
                 word: field.word,
-                value: field.valueField,
+                value: field.value,
             };
         }
     }
@@ -97,7 +90,7 @@ function extractOpcode(fields) {
 function convertToSignedValue(binaryValue) {
     let value = parseInt(binaryValue, BINARY_BASE);
     if (binaryValue.charAt(0) === "1") {
-        value -= BINARY_BASE**binaryValue.length;
+        value -= BINARY_BASE ** binaryValue.length;
     }
     return value;
 }
@@ -127,18 +120,18 @@ function computeBitsOrder(startbit, stopbit) {
  * Processes a single instruction field and extracts its value from the binary instruction
  *
  * @param {Object} field - The instruction field definition object
- * @param {string} instructionExec - The binary instruction string
- * @param {number} instruction_nwords - Number of words in the instruction
+ * @param {string} encodedInstruction - String containing the binary instruction and possibly part of the next one. In that case, only the first nwords*WORDSIZE bits are considered.
+ * @param {number} nwords - Number of words in the instruction
  * @returns {string|number|null} The extracted field value or null if not applicable
  */
 // eslint-disable-next-line max-lines-per-function
-function processInstructionField(field, instructionExec, instruction_nwords) {
+function processInstructionField(field, encodedInstruction, nwords) {
     let value = null;
 
     // Split instruction into words
     const words = [];
-    for (let i = 0; i < instruction_nwords; i++) {
-        const word = instructionExec.substring(
+    for (let i = 0; i < nwords; i++) {
+        const word = encodedInstruction.substring(
             i * WORDSIZE,
             (i + 1) * WORDSIZE,
         );
@@ -188,7 +181,7 @@ function processInstructionField(field, instructionExec, instruction_nwords) {
                 combinedWord.length - field.startbit - 1,
                 combinedWord.length - field.stopbit,
             );
-            let convertedType = null;
+            let convertedType;
             // The register type in the instruction is different from the one in the architecture
             switch (field.type) {
                 case "INT-Reg":
@@ -202,10 +195,10 @@ function processInstructionField(field, instructionExec, instruction_nwords) {
                     convertedType = "ctrl_registers";
                     break;
                 default:
-                    logger.error("Unknown register type: " + field.type);
+                    throw new Error("Unknown register type: " + field.type);
             }
 
-            value = get_register_binary(convertedType, bin);
+            value = decodeRegister(convertedType, bin);
             break;
         }
         case "enum": {
@@ -244,8 +237,8 @@ function processInstructionField(field, instructionExec, instruction_nwords) {
             }
             break;
         }
-        case "inm-signed":
-        case "inm-unsigned":
+        case "imm-signed":
+        case "imm-unsigned":
         case "address":
         case "offset_bytes":
         case "offset_words": {
@@ -307,7 +300,7 @@ function processInstructionField(field, instructionExec, instruction_nwords) {
                 value = parseInt(binaryValue, BINARY_BASE);
                 // Signed immediates need to be sign-extended
                 if (
-                    field.type === "inm-signed" ||
+                    field.type === "imm-signed" ||
                     field.type === "offset_words" ||
                     field.type === "offset_bytes"
                 ) {
@@ -325,7 +318,7 @@ function processInstructionField(field, instructionExec, instruction_nwords) {
 
                 value = parseInt(binaryValue, BINARY_BASE);
                 if (
-                    field.type === "inm-signed" ||
+                    field.type === "imm-signed" ||
                     field.type === "offset_words" ||
                     field.type === "offset_bytes"
                 ) {
@@ -336,83 +329,13 @@ function processInstructionField(field, instructionExec, instruction_nwords) {
             break;
         }
         case "skip":
-            value = field.valueField;
+            value = field.value;
             break;
 
         default:
             logger.error("Unknown field type: " + field.type);
     }
     return value;
-}
-
-/**
- * Replaces register names in instruction parts with their proper names (aliases)
- *
- * @param {Array<string>} instructionParts - Array of instruction parts
- * @returns {Array<string>} - Array with register names replaced with proper names
- */
-function replaceRegisterNames(instructionParts) {
-    if (!instructionParts || !Array.isArray(instructionParts)) {
-        return instructionParts;
-    }
-
-    return instructionParts.map(part => {
-        // Check if this part is a register
-        for (const bank of REGISTERS) {
-            if (
-                bank.type !== "int_registers" &&
-                bank.type !== "fp_registers" &&
-                bank.type !== "ctrl_registers"
-            ) {
-                continue;
-            }
-
-            for (const register of bank.elements) {
-                if (register.name && register.name.length > 1) {
-                    // If the part matches the default name (first name in the array)
-                    if (part === register.name[0]) {
-                        // Return the proper name (second name in the array)
-                        return register.name[1];
-                    }
-                }
-            }
-        }
-
-        // If not a register or no proper name found, return the original part
-        return part;
-    });
-}
-
-/**
- * Parse signature definition and create regex for instruction matching
- *
- * @param {Object} instruction - The instruction object containing signature information
- * @param {string} instruction.signature_definition - The signature definition pattern
- * @param {string} instruction.signature - The instruction signature
- * @param {string} instruction.signatureRaw - The raw instruction signature
- * @returns {Object} Object containing parsed signature elements
- * @returns {string} returns.signatureDef - Processed signature definition
- * @returns {string} returns.signature - Processed signature
- * @returns {RegExpMatchArray|null} returns.signatureMatch - Regex match result for signature
- * @returns {RegExpMatchArray|null} returns.signatureRawMatch - Regex match result for raw signature
- */
-function parseSignatureDefinition(instruction) {
-    let signatureDef = instruction.signature_definition.replace(
-        /[.*+?^${}()|[\]\\]/g,
-        "\\$&",
-    );
-    signatureDef = signatureDef.replace(/[fF][0-9]+/g, "(.*?)");
-    const signature = instruction.signature.replace(/,/g, " ");
-    const re = new RegExp(signatureDef + "$");
-    const signatureMatch = re.exec(signature);
-    const signatureRawMatch = re.exec(instruction.signatureRaw);
-
-    return {
-        signatureDef,
-        signature,
-        signatureMatch,
-        signatureRawMatch,
-    };
 }
 
 /**
@@ -445,7 +368,7 @@ function buildInstructionLookupTable() {
                 functionMasks.push({
                     startbit: field.startbit,
                     stopbit: field.stopbit,
-                    expectedValue: field.valueField,
+                    expectedValue: field.value,
                     word: field.word,
                 });
             }
@@ -572,7 +495,10 @@ function checkCandidateOpcode(candidate, instruction) {
  * @param {string} binaryInstruction - The binary instruction string to match
  * @returns {Object|null} The matching instruction object or null if no match found
  */
-function findMatchingInstruction(binaryInstruction, variableOpcodeSize = false) {
+function findMatchingInstruction(
+    binaryInstruction,
+    variableOpcodeSize = false,
+) {
     const lookupTable = buildInstructionLookupTable();
     const nwords = binaryInstruction.length / WORDSIZE;
     if (binaryInstruction.length % WORDSIZE !== 0) {
@@ -622,11 +548,13 @@ function findMatchingInstruction(binaryInstruction, variableOpcodeSize = false) 
         if (matchingInstructions.length > 0) {
             // If more than one match, check for enum field preference
             if (matchingInstructions.length > 1) {
+                //              ----- MEGA HACK ALERT -----
                 // This is a workaround due to the assembler not supporting
                 // optional fields in the signature definition.
                 // The way we fix this is by duplicating the instruction
                 // in the architecture file. However, this breaks the
-                // instruction matching logic, so we need to handle it here.
+                // instruction matching logic since it introduces ambiguity
+                // so we need to handle it here.
 
                 // Check if we have exactly 2 matches and they only differ by an enum field
                 if (matchingInstructions.length === 2) {
@@ -662,16 +590,30 @@ function findMatchingInstruction(binaryInstruction, variableOpcodeSize = false) 
 }
 
 /**
- * Processes all instruction fields and returns a map of ordered results
+ * Processes all instruction fields and returns an array indexed by field.order.
+ * Undefined indices are left as holes (later filtered by the caller).
+ * This removes the need to build an intermediate Map and then re-materialize
+ * an ordered array.
  *
  * @param {Object} instruction - The instruction definition object
  * @param {string} binaryInstruction - The binary instruction string
- * @returns {Map<number, string|number>} Map of field order to processed field values
+ * @returns {Array<string|number|Object>} Array where index == field.order
  */
 function processAllFields(instruction, binaryInstruction) {
-    const results = new Map();
+    // Find the maximum order to size the array minimally once.
+    let maxOrder = -1;
+    for (const field of instruction.fields) {
+        if (
+            (field.order || field.type === "co") &&
+            (field.order ?? 0) > maxOrder
+        ) {
+            maxOrder = field.order ?? 0;
+        }
+    }
+    const ordered = new Array(maxOrder + 1);
 
     for (const field of instruction.fields) {
+        // Skip fields without an order unless they are opcode (co)
         if (!field.order && field.type !== "co") continue;
 
         const value = processInstructionField(
@@ -680,140 +622,88 @@ function processAllFields(instruction, binaryInstruction) {
             instruction.nwords,
         );
 
+        const targetIndex = field.order || 0;
+
         if (field.type === "co") {
-            results.set(field.order || 0, instruction.name);
+            ordered[targetIndex] = {
+                name: "opcode",
+                type: field.type,
+                value: instruction.name,
+                prettyValue: instruction.name + " ",
+            };
         } else if (value !== null) {
+            let prettyValue = value;
             let finalValue = value;
-
-            // Apply prefix/suffix if specified
-            if (field.prefix) finalValue = field.prefix + finalValue;
-            if (field.suffix) finalValue += field.suffix;
-
-            results.set(field.order, finalValue);
+            if (typeof value === "number") {
+                finalValue = BigInt(value);
+            }
+            if (field.prefix) prettyValue = field.prefix + prettyValue;
+            if (field.suffix) prettyValue += field.suffix;
+            prettyValue += field.space === false ? "" : " ";
+            ordered[targetIndex] = {
+                name: field.name,
+                type: field.type,
+                value: finalValue,
+                prettyValue,
+            };
         }
     }
-
-    return results;
+    // before returning, ensure the array is compact (no holes)
+    return ordered.filter(item => item !== undefined);
 }
 
 /**
- * Formats the decoded instruction in legacy format for backward compatibility
+ * Decodes a binary instruction from a Uint8Array.
  *
- * @param {Object} matchedInstruction - The matched instruction definition
- * @param {string} instruction_loaded - The assembled instruction string
- * @returns {Object} Legacy format object with instruction details
- * @returns {string} returns.type - Instruction type
- * @returns {string} returns.signatureDef - Signature definition
- * @returns {Array<string>} returns.signatureParts - Parsed signature parts
- * @returns {Array<string>} returns.signatureRawParts - Parsed raw signature parts
- * @returns {string} returns.instructionExec - Instruction execution string
- * @returns {Array<string>} returns.instructionExecParts - Instruction parts
- * @returns {Array<string>} returns.instructionExecPartsWithProperNames - Instruction parts with proper register names
- * @returns {string} returns.auxDef - Instruction definition
- * @returns {number} returns.nwords - Number of words
- * @returns {boolean} returns.binary - Binary flag
- */
-function legacyFormat(matchedInstruction, instruction_loaded) {
-    const parsedSignature = parseSignatureDefinition(matchedInstruction);
-    const instructionExecParts = instruction_loaded.split(" ");
-    const instructionExecPartsWithProperNames =
-        replaceRegisterNames(instructionExecParts);
-
-    return {
-        type: matchedInstruction.type,
-        signatureDef: parsedSignature.signatureDef,
-        signatureParts: Array.from(parsedSignature.signatureMatch).slice(1),
-        signatureRawParts: Array.from(parsedSignature.signatureRawMatch).slice(
-            1,
-        ),
-        instructionExec: instruction_loaded,
-        instructionExecParts,
-        instructionExecPartsWithProperNames,
-        auxDef: matchedInstruction.definition,
-        nwords: matchedInstruction.nwords,
-        binary: true,
-        clk_cycles: matchedInstruction.clk_cycles ?? 1,
-    };
-}
-
-/**
- * Decodes a binary instruction from bytes or legacy string formats
- *
- * @param {string|Uint8Array} toDecode - The instruction to decode (binary, hex string, or Uint8Array)
- * @param {boolean} [newFormat=false] - Whether to use new format (just return instruction string) or legacy format
- * @returns {string|Object} Decoded instruction as string (newFormat=true) or legacy object (newFormat=false)
+ * @param {string|Uint8Array} toDecode - The instruction to decode  (Uint8Array)
+ * @returns {string|Object} Decoded instruction in the requested format
  * @throws {Error} When instruction cannot be decoded or is unknown
  */
-export function decode_instruction(toDecode, newFormat = false) {
+export function decode(toDecode) {
     let binaryInstruction;
     if (toDecode instanceof Uint8Array) {
         binaryInstruction = Array.from(toDecode)
-            .map(byte => byte.toString(2).padStart(8, '0'))
-            .join('');
+            .map(byte => byte.toString(2).padStart(8, "0"))
+            .join("");
     } else {
-        // TODO: Remove this path once all callers use Uint8Array
-        const toDecodeArray = toDecode.split(" ");
-        const isBinary = /^[01]+$/.test(toDecodeArray[0]);
-        const isHex = /^0x[0-9a-fA-F]+$/.test(toDecodeArray[0]);
-        binaryInstruction = toDecode;
-
-        // Convert hex to binary if needed
-        if (isHex) {
-            const hexValue = toDecodeArray[0].slice(2);
-            const numBits = hexValue.length * 4;
-            binaryInstruction = parseInt(hexValue, 16)
-                .toString(2)
-                .padStart(numBits, "0");
-        }
+        throw new Error("toDecode must be a Uint8Array");
     }
 
     // Use fast instruction matching
     const matchedInstruction = findMatchingInstruction(binaryInstruction);
 
     if (!matchedInstruction) {
-        let errorValue;
-        if (toDecode instanceof Uint8Array) {
-            // Fast path: convert bytes to hex for error display
-            errorValue = `0x${Array.from(toDecode).map(b => b.toString(16).padStart(2, '0')).join('').toUpperCase()}`;
-        } else {
-            // TODO: Remove this path once all callers use Uint8Array
-            const toDecodeArray = toDecode.split(" ");
-            const isHex = /^0x[0-9a-fA-F]+$/.test(toDecodeArray[0]);
-            const isBinary = /^[01]+$/.test(toDecodeArray[0]);
-            
-            if (isHex) {
-                errorValue = toDecodeArray[0].toUpperCase();
-            } else if (isBinary) {
-                errorValue = `0x${parseInt(binaryInstruction, 2).toString(16).toUpperCase()}`;
-            } else {
-                errorValue = `"${toDecode}"`;
-            }
-        }
-        return { status: "error", reason: `Illegal Instruction: ${errorValue}` };
+        const errorValue = `0x${Array.from(toDecode)
+            .map(b => b.toString(16).padStart(2, "0"))
+            .join("")
+            .toUpperCase()}`;
+        return {
+            status: "error",
+            reason: `Illegal Instruction: ${errorValue}`,
+        };
     }
 
-    // Process all fields efficiently
-    const fieldResults = processAllFields(
+    const instructionArray = processAllFields(
         matchedInstruction,
         binaryInstruction,
     );
 
-    // Build instruction array from ordered results
-    const maxOrder = Math.max(...fieldResults.keys());
-    const instructionArray = new Array(maxOrder + 1);
-
-    for (const [order, value] of fieldResults) {
-        instructionArray[order] = value;
-    }
-
-    // Filter out undefined elements and join
-    const instruction_loaded = instructionArray
+    let instructionAssembly = instructionArray
         .filter(x => x !== undefined)
-        .join(" ");
+        .map(x => x.prettyValue)
+        .join("").trim();
 
-    if (newFormat) {
-        return instruction_loaded;
-    } else {
-        return { status: "ok", value: legacyFormat(matchedInstruction, instruction_loaded) };
+    // If the last character is a comma, remove it.
+    // Honestly a hack, but any proper fix would require
+    // updating the z80 architecture file (>8k lines)
+    if (instructionAssembly.endsWith(",")) {
+        instructionAssembly = instructionAssembly.slice(0, -1);
     }
+
+    return {
+        status: "ok",
+        instruction: matchedInstruction,
+        decodedFields: instructionArray,
+        assembly: instructionAssembly,
+    };
 }

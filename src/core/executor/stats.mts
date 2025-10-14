@@ -47,7 +47,7 @@ function updateUI(): void {
     // to `stats`
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (document as any).app.$root.$refs.simulatorView.$refs.stats?.refresh();
+    (document as any).app.$root.$refs.simulatorView?.$refs.stats?.refresh();
 }
 
 /**

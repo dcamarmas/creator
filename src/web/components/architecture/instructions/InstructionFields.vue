@@ -31,8 +31,8 @@ export default {
     return {
       // Allow instruction with fractioned fields
       fragmet_data: [
-        "inm-signed",
-        "inm-unsigned",
+        "imm-signed",
+        "imm-unsigned",
         "address",
         "offset_bytes",
         "offset_words",
@@ -185,8 +185,8 @@ export default {
           <div class="col-lg-2 col-2 fields" v-if="field.type == 'cop'">
             <b-form-input
               type="text"
-              v-on:input="debounce('field.valueField', $event)"
-              :model-value="field.valueField"
+              v-on:input="debounce('field.value', $event)"
+              :model-value="field.value"
               readonly
               size="sm"
               title="Field value"

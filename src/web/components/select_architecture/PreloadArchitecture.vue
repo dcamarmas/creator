@@ -21,6 +21,8 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 <script>
 import { loadDefaultArchitecture } from "@/web/utils.mjs"
 import { loadCustomArchitecture } from "../../utils.mjs"
+import { initCAPI } from "@/core/capi/initCAPI.mts"
+import { architecture } from "@/core/core.mjs"
 
 export default {
   props: {
@@ -44,12 +46,15 @@ export default {
      * Selects an architecture by emitting the 'select-architecture' event with the selected architecture's name to App (grandparent)
      * @param {Object} arch Selected architecture
      */
-    select_arch() {
+    async select_arch() {
       if (this.architecture.default) {
-        loadDefaultArchitecture(this.architecture)
+        await loadDefaultArchitecture(this.architecture)
       } else {
         loadCustomArchitecture(this.architecture)
       }
+      const pluginName = architecture.config.plugin
+      // Now we can initialize the CAPI with the plugin name
+      initCAPI(pluginName)
       this.$emit("select-architecture", this.architecture.name) // emit to our grandparent
     },
   },

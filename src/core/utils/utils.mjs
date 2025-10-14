@@ -18,7 +18,6 @@
  *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 export function packExecute(error, err_msg, err_type, draw) {
     const ret = {};
 
@@ -28,6 +27,16 @@ export function packExecute(error, err_msg, err_type, draw) {
     ret.draw = draw;
 
     return ret;
+}
+
+export function getPrimaryKey(instr) {
+    let key = "";
+    for (const field of instr.fields) {
+        if (field.type === "co" || field.type === "cop") {
+            key += field.value;
+        }
+    }
+    return key;
 }
 
 /**

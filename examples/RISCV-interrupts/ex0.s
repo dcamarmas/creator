@@ -26,4 +26,4 @@ rti_end:		csrrw t0, MCAUSE, t0  # restore t0
 main:  			li a7, 1
 				li a0, 69
 				ecall
-                jr ra
+                jr ra # TODO: Implement proper exit

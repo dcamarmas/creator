@@ -3,4 +3,4 @@
 	url = https://github.com/ALVAROPING1/CreatorCompiler.git
 [submodule "creatorDriver"]
 	path = creatorDriver
-	url = git@github.com:EUtrilla2002/creatorDriver.git
+	url = https://github.com/EUtrilla2002/creatorDriver.git

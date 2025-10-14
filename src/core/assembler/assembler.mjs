@@ -20,8 +20,9 @@
  */
 
 import { raise } from "../capi/validation.mjs";
-import { main_memory, MAXNWORDS, status, architecture } from "../core.mjs";
-import { decode_instruction } from "../executor/decoder.mjs";
+import { main_memory, status, architecture } from "../core.mjs";
+import { MAXNWORDS } from "../utils/architectureProcessor.mjs";
+import { decode } from "../executor/decoder.mjs";
 import ansicolor from "ansicolor";
 import { resetStats } from "../executor/stats.mts";
 import { enableInterrupts } from "@/core/executor/interrupts.mts";
@@ -100,6 +101,7 @@ export function formatErrorWithColors(error) {
 
 export function precomputeInstructions(sourceCode, sourceMap, tags = null) {
     // When we don't use the default compiler, we need to precompute the instructions.
+    // This is the array used to display the instructions in the UI.
     // To do so, we iterate through the binary file, and decode the instructions, adding them to the instructions array.
 
     const sourceLines = sourceCode ? sourceCode.split("\n") : [];
@@ -124,6 +126,7 @@ export function precomputeInstructions(sourceCode, sourceMap, tags = null) {
     while (idx < memory.length) {
         const addr = memory[idx];
         const words = [];
+        const allBytes = [];
         // Read up to MAXNWORDS words starting from the current address
         for (let j = 0; j < MAXNWORDS && idx + j < memory.length; j++) {
             const wordBytes = main_memory.readWord(BigInt(memory[idx + j]));
@@ -131,13 +134,9 @@ export function precomputeInstructions(sourceCode, sourceMap, tags = null) {
                 .map(byte => byte.toString(16).padStart(2, "0"))
                 .join("");
             words.push(word);
+            allBytes.push(...new Uint8Array(wordBytes));
         }
-        const word = words.join("");
-        const instruction = decode_instruction("0x" + word);
-        // const instruction = {
-        //     nwords: words.length,
-        //     instructionExec: ""
-        // };
+        const instruction = decode(new Uint8Array(allBytes));
         const machineCode = words
             .slice(0, instruction.nwords)
             .join("")

@@ -6,10 +6,8 @@ import {
     assertSimulatorState,
 } from "../simulator-test-utils.mts";
 
-Deno.test(
-    "MIPS Data Types and Memory Operations",
-    async () => {
-        const testAssembly = `
+Deno.test("MIPS Data Types and Memory Operations", async () => {
+    const testAssembly = `
 
 #
 # Creator (https://creatorsim.github.io/creator/)
@@ -49,38 +47,37 @@ main:
 
     `;
 
-        const MIPS_ARCH_PATH = "../../../architecture/MIPS32.yml";
+    const MIPS_ARCH_PATH = "../../../architecture/MIPS32.yml";
 
-        // Setup simulator with MIPS architecture
-        await setupSimulator(testAssembly, MIPS_ARCH_PATH);
+    // Setup simulator with MIPS architecture
+    await setupSimulator(testAssembly, MIPS_ARCH_PATH);
 
-        // Execute the program
-        const result = executeN(1000);
-        assertEquals(result.error, false, "Execution should not error");
+    // Execute the program
+    const result = executeN(1000);
+    assertEquals(result.error, 0, "Execution should not error");
 
-        // Assert all expected state using the wrapper function
-        assertSimulatorState({
-            registers: {
-                r1: 0x20000en, // at
-                r8: 0x200000n, // t0
-                r9: 0x200004n, // t1
-                r10: 0x200006n, // t2
-                r11: 0xen, // t3
-                r12: 0xen, // t4
-                r13: 0x78n, // t5
-                r14: 0x78n, // t6
-                r15: 0x16n, // t7
-                r24: 0x16n, // t8
-            },
-            memory: {
-                "0x20000f": 0x16n,
-                "0x20000c": 0x78n,
-                "0x20000b": 0xen,
-            },
-            display: "", // Display buffer should be empty
-            keyboard: "", // Keyboard buffer should be empty
-        });
+    // Assert all expected state using the wrapper function
+    assertSimulatorState({
+        registers: {
+            r1: 0x20000en, // at
+            r8: 0x200000n, // t0
+            r9: 0x200004n, // t1
+            r10: 0x200006n, // t2
+            r11: 0xen, // t3
+            r12: 0xen, // t4
+            r13: 0x78n, // t5
+            r14: 0x78n, // t6
+            r15: 0x16n, // t7
+            r24: 0x16n, // t8
+        },
+        memory: {
+            "0x20000f": 0x16n,
+            "0x20000c": 0x78n,
+            "0x20000b": 0xen,
+        },
+        display: "", // Display buffer should be empty
+        keyboard: "", // Keyboard buffer should be empty
+    });
 
-        cleanupSimulator();
-    },
-);
+    cleanupSimulator();
+});

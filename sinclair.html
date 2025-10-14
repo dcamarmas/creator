@@ -297,7 +297,6 @@ Registers will be shown here after loading...</pre
               <button id="runBtn" disabled>Run</button>
               <button id="pauseBtn" disabled>Pause</button>
               <button id="stepBtn" disabled>Step</button>
-              <!-- NEW: Step Over button for handling breakpoints -->
               <button id="stepOverBtn" disabled>Step Over</button>
             </div>
 
@@ -349,7 +348,7 @@ Executed instructions will appear here...</pre
           import("./src/core/capi/arch/z80.mjs"),
         ])
           .then(([creator, executor, creator_logger, z80]) => {
-            creator.initCAPI();
+            creator.initCAPI("z80");
             window.creator = creator; // Expose to debug console
             setupEmulator(creator, executor.step, creator_logger.logger, z80);
           })
@@ -398,7 +397,7 @@ Executed instructions will appear here...</pre
           const runBtn = document.getElementById("runBtn");
           const pauseBtn = document.getElementById("pauseBtn");
           const stepBtn = document.getElementById("stepBtn");
-          const stepOverBtn = document.getElementById("stepOverBtn"); // NEW: Get handle to new button
+          const stepOverBtn = document.getElementById("stepOverBtn");
           const footerTotalInstructionsEl = document.getElementById(
             "footer-total-instructions",
           );
@@ -520,14 +519,17 @@ Executed instructions will appear here...</pre
             if (elapsedSeconds > 0 && instructionsExecuted > 0) {
               // Calculate effective clock speed in MHz
               let effectiveClockSpeed;
-              const clockCyclesExecuted = totalClockCycles - performanceStartClockCycles;
-              
+              const clockCyclesExecuted =
+                totalClockCycles - performanceStartClockCycles;
+
               if (clockCyclesExecuted > 0) {
                 // Use actual clock cycles executed during this run session
-                effectiveClockSpeed = clockCyclesExecuted / (elapsedSeconds * 1000000);
+                effectiveClockSpeed =
+                  clockCyclesExecuted / (elapsedSeconds * 1000000);
               } else {
                 // Fallback: estimate based on instructions (assume average 10 cycles per instruction)
-                effectiveClockSpeed = (instructionsExecuted * 10) / (elapsedSeconds * 1000000);
+                effectiveClockSpeed =
+                  (instructionsExecuted * 10) / (elapsedSeconds * 1000000);
               }
 
               const speedPercentage =
@@ -570,7 +572,7 @@ Executed instructions will appear here...</pre
 
             // --- BORDER LOGIC ---
             // Get border color from the shared Z80 state object
-            const borderColorIndex = Number(z80.Z80.borderColor);
+            const borderColorIndex = Number(z80.ARCH.borderColor);
             // Look up RGB values from the palette
             const borderRgb = PALETTE[borderColorIndex];
             // Set the background color of the canvas's container
@@ -705,7 +707,7 @@ Executed instructions will appear here...</pre
                 totalClockCycles += ret.instructionData.clockCycles;
               }
 
-              // logInstruction(pc_value, ret.instructionData);
+              logInstruction(pc_value, ret.instructionData);
               if (creator.status.execution_index === -2) {
                 haltEmulation("Execution Halted (HALT instruction).", "ok");
                 return false;
@@ -841,7 +843,7 @@ Executed instructions will appear here...</pre
                 arch = await readFile(archFileInput, "text");
                 rom = await readFile(binFileInput, "arrayBuffer");
               }
-              const archRet = creator.newArchitectureLoad(arch.content);
+              const archRet = creator.loadArchitecture(arch.content);
               if (archRet.status !== "ok")
                 throw new Error(`Architecture Error: ${archRet.token}.`);
               creator.reset();
@@ -936,7 +938,7 @@ Executed instructions will appear here...</pre
             event.preventDefault();
 
             // Handle ZX Spectrum keyboard matrix
-            z80.Z80.pressKey(event.code);
+            z80.ARCH.pressKey(event.code);
           });
 
           document.addEventListener("keyup", event => {
@@ -944,7 +946,7 @@ Executed instructions will appear here...</pre
             if (!isLoaded) return;
 
             // Handle ZX Spectrum keyboard matrix
-            z80.Z80.releaseKey(event.code);
+            z80.ARCH.releaseKey(event.code);
           });
 
           clearSessionBtn.addEventListener("click", () => {

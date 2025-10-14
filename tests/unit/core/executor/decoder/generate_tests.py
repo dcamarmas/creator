@@ -18,11 +18,11 @@ def parse_disassembly(input_text):
     return instructions
 
 def generate_test_file(instructions):
-    template = '''import { decode_test } from "../common.mjs";
+    template = '''import { decode_test } from "../../common.mjs";
     '''
     
     for i, (binary, assembly) in enumerate(instructions):
-        test = f'''Deno.test("decode_instruction - fsd instruction {i+1}", () =>
+        test = f'''Deno.test("decode - fsd instruction {i+1}", () =>
     decode_test("{binary}", "{assembly}"),
 );
 

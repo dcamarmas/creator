@@ -50,7 +50,28 @@ export default {
   },
 
   computed: {
-    available_sets() {
+    example_set_options() {
+      return Object.entries(this.available_sets).map(([id, set]) => ({
+        text: set.name,
+        value: id,
+      }))
+    },
+  },
+
+  data() {
+    return {
+      selected_set: "default", // selected example set
+      selected_example: null, // selected example id
+      available_sets: {}, // loaded example sets
+    }
+  },
+
+  async mounted() {
+    await this.loadAvailableSets()
+  },
+
+  methods: {
+    async loadAvailableSets() {
       const sets = example_set
         .filter(set => set.architecture === this.architecture_name)
         // convert sets to object ({"default": {...}, ...})
@@ -65,34 +86,21 @@ export default {
 
       // load examples
       for (const [_key, set] of Object.entries(sets)) {
-        $.ajaxSetup({ async: false })
-        $.getJSON(set.url, cfg => {
-          set.examples = cfg
-        }).fail(() => {
+        try {
+          const response = await fetch(set.url)
+          if (response.ok) {
+            set.examples = await response.json()
+          } else {
+            set.examples = []
+          }
+        } catch (_error) {
           set.examples = []
-        })
+        }
         delete set.url
       }
 
-      return sets
+      this.available_sets = sets
     },
-
-    example_set_options() {
-      return Object.entries(this.available_sets).map(([id, set]) => ({
-        text: set.name,
-        value: id,
-      }))
-    },
-  },
-
-  data() {
-    return {
-      selected_set: "default", // selected example set
-      selected_example: null, // selected example id
-    }
-  },
-
-  methods: {
     get_example_set() {
       return this.example_set
     },
@@ -119,11 +127,18 @@ export default {
      * @param {String} url URL of the example file (.s)
      * @param {Boolean} assemble Set to automatically assemble the example
      */
-    load_example(url, assemble) {
+    async load_example(url, assemble) {
       // close modal
       this.hide()
 
-      $.get(url, code => {
+      try {
+        const response = await fetch(url)
+        
+        if (!response.ok) {
+          throw new Error("Failed to load example")
+        }
+
+        const code = await response.text()
         this.$root.assembly_code = code
 
         if (assemble) {
@@ -148,7 +163,9 @@ export default {
           "example.loading",
           "example.loading.url",
         )
-      })
+      } catch (_error) {
+        show_notification("Failed to load example", "danger")
+      }
     },
   },
 }
