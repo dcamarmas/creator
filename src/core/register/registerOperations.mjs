@@ -83,6 +83,14 @@ export function readRegister(indexComp, indexElem) {
     return BigInt(REGISTERS[indexComp].elements[indexElem].value);
 }
 
+/**
+ * Writes the specified value in the specified register, given its component and
+ * index elements
+ *
+ * @param {bigint} value Value to write
+ * @param {number} indexComp Index of the component/bank
+ * @param {number} indexElem Index of the element
+ */
 export function writeRegister(value, indexComp, indexElem) {
     const draw = {
         space: [],

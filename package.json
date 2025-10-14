@@ -37,7 +37,7 @@
     "ansicolor": "^2.0.3",
     "apexcharts": "^5.3.5",
     "bootstrap": "^5.3.8",
-    "bootstrap-vue-next": "^0.40.5",
+    "bootstrap-vue-next": "^0.40.6",
     "codemirror": "^6.0.2",
     "colors": "^1.4.0",
     "deno": "^2.5.0",

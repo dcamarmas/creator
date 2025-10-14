@@ -219,6 +219,11 @@ export function double2bin(number) {
     return result;
 }
 
+/**
+ *
+ * @param {string} s
+ * @returns {string | null}
+ */
 export function bin2hex(s) {
     let i,
         k,
@@ -227,11 +232,11 @@ export function bin2hex(s) {
         ret = "";
 
     for (i = s.length - 1; i >= 3; i -= 4) {
-        part = s.substr(i + 1 - 4, 4);
+        part = s.slice(i + 1 - 4, i + 1);
         accum = 0;
         for (k = 0; k < 4; k += 1) {
             if (part[k] !== "0" && part[k] !== "1") {
-                return { valid: false };
+                return null;
             }
             accum = accum * 2 + parseInt(part[k], 10);
         }
@@ -246,7 +251,7 @@ export function bin2hex(s) {
         accum = 0;
         for (k = 0; k <= i; k += 1) {
             if (s[k] !== "0" && s[k] !== "1") {
-                return { valid: false };
+                return null;
             }
             accum = accum * 2 + parseInt(s[k], 10);
         }

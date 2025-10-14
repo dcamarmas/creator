@@ -10,6 +10,11 @@
   ],
   "compilerOptions": {
     "target": "es2024",
-    "lib": ["dom", "es2024"]
+    "lib": ["dom", "es2024"],
+    "strict": true,
+    "verbatimModuleSyntax": true,
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   }
 }

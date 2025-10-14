@@ -1,4 +1,4 @@
-/*
+/**
  *  Copyright 2018-2025 Felix Garcia Carballeira, Diego Camarmas Alonso,
  *                      Alejandro Calderon Mateo, Luis Daniel Casais Mezquida
  *
@@ -41,7 +41,6 @@ import { creator_ga } from "../core/utils/creator_ga.mjs";
 window.onbeforeunload = confirmExit;
 
 // Vue config
-
 const app = createApp(App)
     .component("font-awesome-icon", FontAwesomeIcon)
     .use(createBootstrap());
@@ -50,19 +49,20 @@ const app = createApp(App)
 app.config.errorHandler = function (err, _vm, _info) {
     // Log the error for debugging
     console.error("Vue error:", err, _info);
-    
+
     // Show notification to the user
     show_notification(
         `An error has occurred, the simulator is going to restart.\nError: ${err}`,
         "danger",
     );
-    setTimeout(function () {
-        location.reload(true);
+    setTimeout(() => {
+        location.reload();
     }, 3000);
 };
 
 try {
-    document.app = app.mount("#app"); // store in document so we can access it through JS as `document.app`
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (document as any).app = app.mount("#app"); // store in document so we can access it through JS as `document.app`
 } catch (e) {
     // Critical mounting error - this should restart
     show_notification(
@@ -74,7 +74,7 @@ try {
     /* Google Analytics */
     creator_ga("creator", "creator.exception", "creator.exception." + e);
 
-    setTimeout(function () {
-        location.reload(true);
+    setTimeout(() => {
+        location.reload();
     }, 3000);
 }

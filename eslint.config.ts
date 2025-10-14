@@ -138,6 +138,7 @@ export default defineConfigWithVueTs(
     files: ["**/*.vue"],
     rules: {
       "no-invalid-this": "off", // in Vue, inside arrow functions, `this` refers to the current component
+      "@typescript-eslint/no-explicit-any": "off", // for stuff like this.$root... we need to use this...
     },
   },
 );
