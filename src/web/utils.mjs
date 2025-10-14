@@ -19,8 +19,6 @@
  *
  */
 
-import $ from "jquery";
-
 import humanizeDuration from "humanize-duration";
 
 import { creator_ga } from "@/core/utils/creator_ga.mjs";
@@ -95,11 +93,11 @@ export function show_loading() {
         return;
     }
 
-    // after half second show the loading spinner
-    loading_handler = setTimeout(function () {
-        $("#loading").show();
-        loading_handler = null;
-    }, 500);
+    // // after half second show the loading spinner
+    // loading_handler = setTimeout(function () {
+    //     $("#loading").show();
+    //     loading_handler = null;
+    // }, 500);
 }
 
 export function hide_loading() {
@@ -110,7 +108,7 @@ export function hide_loading() {
     }
 
     // disable loading spinner
-    $("#loading").hide();
+    // $("#loading").hide();
 }
 
 /**
@@ -133,16 +131,17 @@ export function hide_loading() {
  * @param {DefaultArchitecture} arch Architecture object, as defined in available_arch.json
  * @param {Object} [root] Root Vue component (App)
  */
-export function loadDefaultArchitecture(arch, root = document.app) {
+export async function loadDefaultArchitecture(arch, root = document.app) {
     // show_loading()
 
-    // TODO: use Fetch API instead of jquery:
-    // https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
+    try {
+        const response = await fetch("architecture/" + arch.file + ".yml");
+        
+        if (!response.ok) {
+            throw new Error("Architecture file not found");
+        }
 
-    //Synchronous JSON read
-    $.ajaxSetup({ async: false });
-
-    $.get("architecture/" + arch.file + ".yml", cfg => {
+        const cfg = await response.text();
         const { status, errorcode, token } = loadArchitecture(cfg);
 
         if (status === "ko") {
@@ -169,7 +168,7 @@ export function loadDefaultArchitecture(arch, root = document.app) {
         );
 
         // hide_loading()
-    }).fail(() => {
+    } catch (_error) {
         show_notification(
             arch.name + " architecture is not currently available",
             "danger",
@@ -177,7 +176,7 @@ export function loadDefaultArchitecture(arch, root = document.app) {
         );
 
         // hide_loading()
-    });
+    }
 }
 
 /**
@@ -233,56 +232,74 @@ export function loadCustomArchitecture(arch, root = document.app) {
  * @param {Object} root Root Vue component (App)
  *
  */
-export function loadExample(
+export async function loadExample(
     architecture_name,
     set_name,
     example_id,
     root = document.app,
 ) {
-    $.ajaxSetup({ async: false });
-
-    $.getJSON(
+    try {
         // get specified example set
-        example_set.find(
+        const setUrl = example_set.find(
             set =>
                 set.architecture === architecture_name && set.id === set_name,
-        ),
-    )
-        .done(
-            // load list of examples of the set
-            example_list => {
-                $.ajaxSetup({ async: false });
-                // load code
-                $.get(
-                    // get code uri
-                    example_list.find(example => example.id === example_id)
-                        ?.url,
-                )
-                    .done(code => {
-                        root.assembly_code = code;
-
-                        // FIXME: as we can't compile (see above), we go to the
-                        // assembly view, when we should go to simulator view
-                        root.creator_mode = "assembly";
-
-                        show_notification(
-                            `Loaded example '${set_name}-${example_id}'`,
-                            "success",
-                            root,
-                        );
-                    })
-                    .fail(() =>
-                        show_notification(
-                            `'${example_id}' example not found`,
-                            "danger",
-                            root,
-                        ),
-                    );
-            },
-        )
-        .fail(() =>
-            show_notification(`'${set_name}' set not found`, "danger", root),
         );
+
+        if (!setUrl) {
+            show_notification(`'${set_name}' set not found`, "danger", root);
+            return;
+        }
+
+        const setResponse = await fetch(setUrl);
+        
+        if (!setResponse.ok) {
+            show_notification(`'${set_name}' set not found`, "danger", root);
+            return;
+        }
+
+        // load list of examples of the set
+        const example_list = await setResponse.json();
+
+        // get code uri
+        const exampleUrl = example_list.find(
+            example => example.id === example_id,
+        )?.url;
+
+        if (!exampleUrl) {
+            show_notification(
+                `'${example_id}' example not found`,
+                "danger",
+                root,
+            );
+            return;
+        }
+
+        const codeResponse = await fetch(exampleUrl);
+
+        if (!codeResponse.ok) {
+            show_notification(
+                `'${example_id}' example not found`,
+                "danger",
+                root,
+            );
+            return;
+        }
+
+        const code = await codeResponse.text();
+        root.assembly_code = code;
+
+        // FIXME: as we can't compile (see above), we go to the
+        // assembly view, when we should go to simulator view
+        root.creator_mode = "assembly";
+
+        show_notification(
+            `Loaded example '${set_name}-${example_id}'`,
+            "success",
+            root,
+        );
+    } catch (_error) {
+        show_notification(`'${set_name}' set not found`, "danger", root);
+    }
 }
 
 /**

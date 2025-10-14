@@ -75,7 +75,7 @@ export let status = {
     interrupts_enabled: false,
 };
 
-export let guiVariables = {
+export const guiVariables = {
     previous_PC: 0n, // Used in the GUI to show the last executed instruction
     keep_highlighted: -1n // Address to keep highlighted (used to highlight interrupted instructions)
 };
