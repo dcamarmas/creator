@@ -65,7 +65,7 @@ export default {
   data() {
     return {
       compiling: false,
-      reset_disable: false,
+      reset_disable: true,
       instruction_disable: false,
       run_disable: false,
       stop_disable: true,
@@ -394,6 +394,12 @@ export default {
       this.$root.keyboard = ""
       this.$root.display = ""
       this.$root.enter = null
+
+      // reset button status
+      this.reset_disable = false
+      this.instruction_disable = false
+      this.run_disable = false
+      this.stop_disable = true
 
       reset(reset_graphic)
 
