@@ -40,10 +40,6 @@ import { creator_ga } from "../core/utils/creator_ga.mjs";
 /*Closing alert*/
 window.onbeforeunload = confirmExit;
 
-// jquery
-import $ from "jquery";
-window.$ = $;
-
 // Vue config
 
 const app = createApp(App)

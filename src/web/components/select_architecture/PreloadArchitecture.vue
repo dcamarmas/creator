@@ -46,9 +46,9 @@ export default {
      * Selects an architecture by emitting the 'select-architecture' event with the selected architecture's name to App (grandparent)
      * @param {Object} arch Selected architecture
      */
-    select_arch() {
+    async select_arch() {
       if (this.architecture.default) {
-        loadDefaultArchitecture(this.architecture)
+        await loadDefaultArchitecture(this.architecture)
       } else {
         loadCustomArchitecture(this.architecture)
       }

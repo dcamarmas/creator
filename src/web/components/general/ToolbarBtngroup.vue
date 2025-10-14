@@ -333,24 +333,30 @@ export default {
             row = status.execution_index
           }
 
-          const row_pos = $(
+          const rowElement = document.querySelector(
             "#inst_table__row_" + this.instructions[row].Address,
-          ).position()
+          )
+          const tableElement = document.querySelector(".instructions_table")
 
-          if (row_pos) {
-            $(".instructions_table").animate(
-              {
-                scrollTop: row_pos.top - $(".instructions_table").height() / 2,
-              },
-              300,
-            )
+          if (rowElement && tableElement) {
+            const rowPos = rowElement.offsetTop
+            const tableHeight = tableElement.clientHeight
+
+            tableElement.scrollTo({
+              top: rowPos - tableHeight / 2,
+              behavior: "smooth",
+            })
           }
         } else {
           // scroll to top
-          $(".instructions_table").animate(
-            { scrollTop: $(".instructions_table").height() },
-            300,
-          )
+          const tableElement = document.querySelector(".instructions_table")
+          
+          if (tableElement) {
+            tableElement.scrollTo({
+              top: tableElement.scrollHeight,
+              behavior: "smooth",
+            })
+          }
         }
       }
     },
