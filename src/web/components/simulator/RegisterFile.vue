@@ -18,12 +18,15 @@ You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<script>
+<script lang="ts">
 import { REGISTERS } from "@/core/core.mjs"
 
 import Register from "./Register.vue"
+import RegisterSpaceView from "./RegisterSpaceView.vue"
+import { useToggle } from "bootstrap-vue-next"
+import { defineComponent } from "vue"
 
-export default {
+export default defineComponent({
   props: {
     data_mode: { type: String, required: true },
     reg_representation_int: { type: String, required: true },
@@ -34,6 +37,12 @@ export default {
 
   components: {
     Register,
+    RegisterSpaceView,
+  },
+
+  setup() {
+    const { show } = useToggle("registerSpaceView")
+    return { showSpaceView: show }
   },
 
   data() {
@@ -46,10 +55,10 @@ export default {
         { text: "All", value: "all" },
       ],
 
-      render: 0n, // dummy variable to force components with this as key to refresh
+      render: 0, // dummy variable to force components with this as key to refresh
 
       // space modal
-      spaceItem: null,
+      spaceItem: null as RegisterDetailsItem | null,
       spaceView: false,
     }
   },
@@ -62,11 +71,11 @@ export default {
           ? this.reg_representation_float
           : this.reg_representation_int
       },
-      set(value) {
+      set(value: string) {
         if (this.data_mode === "fp_registers") {
-          this.$root.reg_representation_float = value
+          ;(this.$root as any).reg_representation_float = value
         } else {
-          this.$root.reg_representation_int = value
+          ;(this.$root as any).reg_representation_int = value
         }
       },
     },
@@ -76,8 +85,8 @@ export default {
       get() {
         return this.reg_name_representation
       },
-      set(value) {
-        this.$root.reg_name_representation = value
+      set(value: string) {
+        ;(this.$root as any).reg_name_representation = value
       },
     },
 
@@ -107,7 +116,7 @@ export default {
       this.render++
     },
   },
-}
+})
 </script>
 
 <template>
@@ -179,18 +188,16 @@ export default {
             <b-col class="p-1 mx-0" v-for="(register, _index) in bank.elements">
               <Register
                 :type="bank.type"
-                :double_precision_type="
-                  bank.double_precision ? bank.double_precision_type : null
-                "
+                :double_precision="bank.double_precision"
                 :register="register"
                 :name_representation="reg_name_representation_value"
                 :value_representation="reg_representation_value"
                 :ref="`reg${register.name[0]}`"
                 :key="render"
                 @register-details="
-                  item => {
+                  (item: RegisterDetailsItem) => {
                     spaceItem = item
-                    spaceView = true
+                    showSpaceView()
                   }
                 "
               />
@@ -209,118 +216,7 @@ export default {
   If you'd like to check how it was before, go to Register.vue on commit
   8fddb81c.
   -->
-  <b-modal
-    v-if="spaceItem"
-    responsive
-    no-footer
-    centered
-    :title="`Space view for ${spaceItem.name.join(' | ')}`"
-    v-model="spaceView"
-  >
-    <b-table-simple small responsive bordered>
-      <b-tbody>
-        <b-tr>
-          <b-td>Hexadecimal</b-td>
-          <b-td>
-            <b-badge class="registerPopover">
-              {{ spaceItem.hex }}
-            </b-badge>
-          </b-td>
-        </b-tr>
-        <b-tr>
-          <b-td>Binary</b-td>
-          <b-td>
-            <b-badge class="registerPopover">
-              {{ spaceItem.bin }}
-            </b-badge>
-          </b-td>
-        </b-tr>
-        <b-tr v-if="spaceItem.type !== 'fp_registers'">
-          <b-td>Signed</b-td>
-          <b-td>
-            <b-badge class="registerPopover">
-              {{ spaceItem.signed }}
-            </b-badge>
-          </b-td>
-        </b-tr>
-        <b-tr v-if="spaceItem.type !== 'fp_registers'">
-          <b-td>Unsigned</b-td>
-          <b-td>
-            <b-badge class="registerPopover">
-              {{ spaceItem.unsigned }}
-            </b-badge>
-          </b-td>
-        </b-tr>
-        <b-tr v-if="spaceItem.type !== 'fp_registers'">
-          <b-td>Char</b-td>
-          <b-td>
-            <b-badge class="registerPopover">
-              {{ spaceItem.char }}
-            </b-badge>
-          </b-td>
-        </b-tr>
-        <b-tr>
-          <b-td>IEEE 754 (32 bits)</b-td>
-          <b-td>
-            <b-badge class="registerPopover">
-              {{ spaceItem.ieee32 }}
-            </b-badge>
-          </b-td>
-        </b-tr>
-        <b-tr>
-          <b-td>IEEE 754 (64 bits)</b-td>
-          <b-td>
-            <b-badge class="registerPopover">
-              {{ spaceItem.ieee64 }}
-            </b-badge>
-          </b-td>
-        </b-tr>
-      </b-tbody>
-    </b-table-simple>
-
-    <!-- <b-container fluid align-h="center" class="mx-0">
-      <b-row align-h="center" :cols="this.double_precision_type !== null ? 3 : 2">
-        <b-col class="popoverFooter">
-          <b-form-input
-            v-model="newValue"
-            type="text"
-            size="sm"
-            title="New Register Value"
-            placeholder="Enter new value"
-          />
-        </b-col>
-
-        <b-col v-if="double_precision !== null">
-          <b-form-select v-model="precision" size="sm" block>
-            <b-form-select-option value="false"
-              >Simple Precision</b-form-select-option
-            >
-            <b-form-select-option value="true" active
-              >Double Precision</b-form-select-option
-            >
-          </b-form-select>
-        </b-col>
-
-        <b-col>
-          <b-button
-            class="w-100"
-            variant="primary"
-            size="sm"
-            @click="
-              update_register(
-                component.index,
-                register.name,
-                architecture.components[component.index].type,
-                precision === 'true',
-              )
-            "
-          >
-            Update
-          </b-button>
-        </b-col>
-      </b-row>
-    </b-container> -->
-  </b-modal>
+  <RegisterSpaceView id="registerSpaceView" :item="spaceItem" />
 </template>
 
 <style lang="scss" scoped>

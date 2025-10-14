@@ -177,7 +177,7 @@ export default {
 
   data() {
     return {
-      render: 0n, // dummy variable to force components with this as key to refresh
+      render: 0, // dummy variable to force components with this as key to refresh
       bar: bar,
       // ...
     }
@@ -212,3 +212,35 @@ export updateBar() {
 ```
 
 Remember that if you want to update a nested component, not just the root one, you must [navigate the component tree](#navigating-the-component-tree).
+
+
+## TypeScript tricks
+
+### `this.$root` crap
+Use `(this.$root as any)`.
+
+
+### Custom prop types
+```ts
+import { defineComponent, type PropType } from "vue"
+import type { MyType } from "myTypes.ts"
+
+export default defineComponent({
+  props: {
+    stuff: { type: Object as PropType<MyType>, required: true },
+  }
+})
+```
+
+
+### Custom data types
+```ts
+import { defineComponent } from "vue"
+import type { MyType } from "myTypes.ts"
+
+export default defineComponent({
+  data() {
+    return { stuff: null as MyType | null }
+  }
+})
+```

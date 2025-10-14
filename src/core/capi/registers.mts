@@ -38,10 +38,18 @@ export const REG = {
 
     write: (value: bigint, name: string) => {
         const reg = crex_findReg(name);
-        const nbits = parseInt(architecture.components[reg.indexComp].elements[reg.indexElem].nbits, 10);
+        const nbits = parseInt(
+            architecture.components[reg.indexComp!]!.elements[reg.indexElem!]!
+                .nbits,
+            10,
+        );
 
         if (reg.match) {
-            writeRegister(BigInt.asUintN(nbits, value), reg.indexComp, reg.indexElem);
+            writeRegister(
+                BigInt.asUintN(nbits, value),
+                reg.indexComp!,
+                reg.indexElem!,
+            );
             return;
         }
 

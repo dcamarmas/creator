@@ -18,9 +18,11 @@ You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<script>
-import { creator_ga } from "@/core/utils/creator_ga.mjs"
+<script lang="ts">
+import { defineComponent, type PropType } from "vue"
 
+import type { Register } from "@/core/core"
+import { creator_ga } from "@/core/utils/creator_ga.mjs"
 import { bi_BigIntTofloat, bi_BigIntTodouble } from "@/core/utils/bigint.mjs"
 import {
   hex2float,
@@ -29,13 +31,14 @@ import {
   float2bin,
   float2int_v2,
   double2int_v2,
+  double2bin,
 } from "@/core/utils/utils.mjs"
 
-export default {
+export default defineComponent({
   props: {
     type: { type: String, required: true },
-    register: { type: Object, required: true },
-    double_precision_type: { type: [String, null], required: true },
+    register: { type: Object as PropType<Register>, required: true },
+    double_precision: { type: Boolean, required: true },
     name_representation: { type: String, required: true },
     value_representation: { type: String, required: true },
   },
@@ -44,7 +47,7 @@ export default {
 
   data() {
     return {
-      render: 0n, // dummy variable to force components with this as key to refresh
+      render: 0, // dummy variable to force components with this as key to refresh
       glow: false, // whether the button is glowing or not
     }
   },
@@ -88,10 +91,25 @@ export default {
       }, 500)
     },
 
+    showDetails() {
+      this.$emit("register-details", {
+        name: this.register.name,
+        type: this.type,
+        hex: this.show_value("hex"),
+        bin: this.show_value("bin"),
+        signed: this.show_value("signed"),
+        unsigned: this.show_value("unsigned"),
+        char: this.show_value("char"),
+        ieee32: this.show_value("ieee32"),
+        ieee64: this.show_value("ieee64"),
+      })
+      creator_ga("data", "data.view", "data.view.registers_details")
+    },
+
     // I'd like for this to be a computed property, but it won't work because
     // ✨ computed caching ✨
     reg_value() {
-      let ret = this.show_value().toString()
+      let ret = this.show_value(this.value_representation).toString()
       if (ret.length > 8) {
         ret = ret.slice(0, 8) + "..."
       }
@@ -99,11 +117,11 @@ export default {
     },
 
     // TODO: move to utils
-    is_positive(value, nbits) {
+    is_positive(value: number | bigint, nbits: number) {
       return value.toString(2).padStart(nbits, "0").charAt(0) === "0"
     },
 
-    show_value(representation = this.value_representation) {
+    show_value(representation: string): number | string {
       let ret
 
       switch (representation) {
@@ -116,7 +134,7 @@ export default {
                 this.register.value - 2n ** BigInt(this.register.nbits)
               ).toString(10)
             }
-          } else if (this.double_precision_type === null) {
+          } else if (!this.double_precision) {
             ret = float2int_v2(bi_BigIntTofloat(this.register.value))
           } else {
             ret = double2int_v2(bi_BigIntTodouble(this.register.value))
@@ -126,7 +144,7 @@ export default {
         case "unsigned":
           if (this.type === "ctrl_registers" || this.type === "int_registers") {
             ret = parseInt(this.register.value.toString(10), 10) >>> 0
-          } else if (this.double_precision_type === null) {
+          } else if (!this.double_precision) {
             ret = float2int_v2(bi_BigIntTofloat(this.register.value)) >>> 0
           } else {
             ret = double2int_v2(bi_BigIntTodouble(this.register.value)) >>> 0
@@ -144,6 +162,7 @@ export default {
           break
 
         case "ieee64":
+          // FIXME: this is wrong...
           if (this.type === "ctrl_registers" || this.type === "int_registers") {
             ret = hex2double(
               "0x" + this.register.value.toString(16).padStart(16, "0"),
@@ -159,10 +178,11 @@ export default {
               .toString(16)
               .padStart(this.register.nbits / 4, "0")
               .toUpperCase()
-          } else if (this.double_precision_type !== null) {
-            ret = bin2hex(float2bin(bi_BigIntTofloat(this.register.value)))
+          } else if (this.double_precision !== null) {
+            // FIXME: this is wrong...
+            ret = bin2hex(float2bin(bi_BigIntTofloat(this.register.value)))!
           } else {
-            ret = bin2hex(double2bin(bi_BigIntTodouble(this.register.value)))
+            ret = bin2hex(double2bin(bi_BigIntTodouble(this.register.value)))!
           }
           break
 
@@ -171,7 +191,7 @@ export default {
             ret = this.register.value
               .toString(2)
               .padStart(this.register.nbits, "0")
-          } else if (this.double_precision_type !== null) {
+          } else if (this.double_precision !== null) {
             ret = float2bin(bi_BigIntTofloat(this.register.value))
           } else {
             ret = double2bin(bi_BigIntTodouble(this.register.value))
@@ -187,18 +207,18 @@ export default {
           return "N/A"
       }
 
-      if (this.double_precision_type === "linked") {
-        ret = ret.toString()
+      // if (this.double_precision === "linked") {
+      //   ret = ret.toString()
 
-        if (ret.length > 10) {
-          return ret.slice(0, 8) + "..."
-        }
-      }
+      //   if (ret.length > 10) {
+      //     return ret.slice(0, 8) + "..."
+      //   }
+      // }
 
       return ret
     },
   },
-}
+})
 </script>
 
 <template>
@@ -209,22 +229,7 @@ export default {
     :class="{ registers: !glow, 'registers-glow': glow }"
     :id="popoverId"
     :key="render"
-    @click="
-      () => {
-        this.$emit('register-details', {
-          name: this.register.name,
-          type: this.type,
-          hex: this.show_value('hex'),
-          bin: this.show_value('bin'),
-          signed: this.show_value('signed'),
-          unsigned: this.show_value('unsigned'),
-          char: this.show_value('char'),
-          ieee32: this.show_value('ieee32'),
-          ieee64: this.show_value('ieee64'),
-        })
-        creator_ga('data', 'data.view', 'data.view.registers_details')
-      }
-    "
+    @click="showDetails"
   >
     <span class="text-truncate">{{ reg_name }}</span>
     &nbsp;

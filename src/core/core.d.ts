@@ -13,13 +13,15 @@ type RegisterBank = {
     name: string;
     type: string;
     double_precision: boolean;
-    elements: {
-        name: string[];
-        nbits: string;
-        value: bigint;
-        default_value: bigint;
-        properties: string[];
-    }[];
+    elements: Register[];
+};
+
+type Register = {
+    name: string[];
+    nbits: number;
+    value: bigint;
+    default_value: bigint;
+    properties: string[];
 };
 
 type Field = {
