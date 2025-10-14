@@ -375,8 +375,9 @@ export function downloadToFile(data, filename, mimetype = "text/plain") {
  * @param {String} url URL of the source file. It must start with `/`, e.g.
  * `"/gateway/esp32c.zip"`
  * @param {String} filename Name of the saved file
+ * @param {boolean} [notify=false] Whether to notify the file has been downloaded or not
  */
-export function downloadFile(url, filename) {
+export function downloadFile(url, filename, notify = false) {
     fetch(
         window.location.origin +
             window.location.pathname.replace(/\/+$/, "") +
@@ -398,7 +399,9 @@ export function downloadFile(url, filename) {
             a.click();
             window.URL.revokeObjectURL(url);
 
-            show_notification("File downloaded", "success");
+            if (notify) {
+                show_notification("File downloaded", "success");
+            }
         })
         .catch(() => show_notification("Error downloading file", "error"));
 }

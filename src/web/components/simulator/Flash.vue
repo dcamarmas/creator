@@ -108,7 +108,6 @@ export default {
       //
 
       target_boards: [
-        { text: "Please select an option", value: null },
         { text: "ESP32-C6 (RISC-V)", value: "esp32c6" },
         { text: "ESP32-C3 (RISC-V)", value: "esp32c3" },
         { text: "ESP32-H2 (RISC-V)", value: "esp32h2" },
@@ -228,7 +227,7 @@ export default {
     //
 
     download_driver() {
-      downloadFile(`/gateway/${this.targetBoard}.zip`, this.targetBoard)
+      downloadFile(`/gateway/${this.targetBoard}.zip`, "driver")
 
       //Google Analytics
       creator_ga(
@@ -540,9 +539,33 @@ export default {
 
               <b-tab title="Native">
                 (2) Install
-                <a href="https://www.python.org/" target="_blank">Python</a>
+                <a
+                  href="https://www.python.org/downloads/release/python-3913/"
+                  target="_blank"
+                >
+                  Python 3.9
+                </a>
                 <b-card class="text-left my-2 mx-4">
-                  The supported versions are from 3.9 to 3.13
+                  <b>In Ubuntu</b>
+                  <br />
+                  <code>
+                    sudo apt install software-properties-common<br />
+                    sudo add-apt-repository ppa:deadsnakes/ppa<br />
+                    sudo apt install python3.9<br />
+                  </code>
+                  <!--
+                  <b>Setting Python 3.9 as the default version in Ubuntu</b>
+                  <br />
+                  <code>
+                    sudo update-alternatives --set python3 /usr/bin/python3.9
+                  </code>
+                  -->
+                  <b>
+                    With
+                    <a href="https://docs.astral.sh/uv" target="_blank">uv</a>
+                  </b>
+                  <br />
+                  <code>uv python install 3.9</code>
                 </b-card>
 
                 (3) Install ESP-IDF framework (only the first time):
@@ -551,63 +574,30 @@ export default {
                   <a
                     href="https://docs.espressif.com/projects/esp-idf/en/v5.5.1/esp32/get-started/linux-macos-setup.html"
                     target="_blank"
-                  >
-                    Espressif's documentation
-                  </a>
+                    >Espressif's documentation</a
+                  >.<br /><br />
+                  To ensure Python 3.9 is used for the installation, first
+                  create a virtual environment in
+                  <code>~/.espressif/python_env/idf5.3_py3.9_en</code>, and
+                  activate it, before executing the
+                  <code>install.sh</code> script.
+                  <div class="bash mt-2">
+                    <code>
+                      python3.9 -m venv
+                      ~/.espressif/python_env/idf5.3_py3.9_en<br />
+                      source
+                      ~/.espressif/python_env/idf5.3_py3.9_env/bin/activate<br />
+                    </code>
+                  </div>
                 </b-card>
 
-                <!--
-                (!!) (NEW) Install Python 3.9 (required version for this
-                driver):<br />
-
-                <b-card class="text-left my-2 mx-4">
-                  <b>Installing Python 3.9 in Ubuntu</b>
-                  <br />
-                  <code>
-                    sudo apt install software-properties-common<br />
-                    sudo add-apt-repository ppa:deadsnakes/ppa<br />
-                    sudo apt install python3.9<br />
-                  </code>
-                </b-card>
-
-                <b-card class="text-left m-2 flex-wrap bash">
-                  <b>Setting Python 3.9 as the default version in Ubuntu</b>
-                  <br />
-                  <code>
-                    sudo update-alternatives --set python3 /usr/bin/python3.9
-                  </code>
-                </b-card>
-                -->
-
-                (4) Install the
-                <a href="https://pypi.org/project/Flask/" target="_blank">
-                  flask</a
-                >
-                and
-                <a href="https://pypi.org/project/flask-cors/" target="_blank">
-                  flask-cors</a
-                >
-                Python packages:
-                <b-card class="text-left my-2 mx-4">
-                  <code>pip3 install flask flask_cors</code>
-                </b-card>
-
-                &nbsp;&nbsp;For debug, install the GDB web interface (<a
-                  href="https://pypi.org/project/gdbgui/"
-                  target="_blank"
-                  >gdbgui</a
-                >):
-                <b-card class="text-left my-2 mx-4">
-                  <code>pip3 install gdbgui</code>
-                </b-card>
-
-                (5) Download the driver:
+                (4) Download the driver:
                 <br />
 
                 <b-container align-h="center" class="d-grid mb-1">
                   <b-button
                     size="sm"
-                    class="my-1"
+                    class="my-1 mx-3"
                     variant="outline-primary"
                     @click="download_driver"
                   >
@@ -616,14 +606,7 @@ export default {
                   </b-button>
                 </b-container>
 
-                (6) Run driver:
-                <b-card class="text-left my-2 mx-4">
-                  Remember to
-                  <a
-                    href="https://docs.espressif.com/projects/esp-idf/en/v5.5.1/esp32/get-started/linux-macos-setup.html#step-4-set-up-the-environment-variables"
-                    >load the environment variables</a
-                  >
-                </b-card>
+                (5) Run driver:
                 <b-card class="text-left my-2 mx-4">
                   Unzip the <code>driver.zip</code> file and move into the
                   driver directory associated to your board:<br />
@@ -631,6 +614,17 @@ export default {
                     unzip driver.zip<br />
                     cd &lt;board&gt;
                   </code>
+                </b-card>
+                <b-card class="text-left my-2 mx-4">
+                  Install the Python dependencies:<br />
+                  <code> pip3 install -r requirements.txt </code>
+                </b-card>
+                <b-card class="text-left my-2 mx-4">
+                  <a
+                    href="https://docs.espressif.com/projects/esp-idf/en/v5.5.1/esp32/get-started/linux-macos-setup.html#step-4-set-up-the-environment-variables"
+                    >Load the ESP-IDF environment variables</a
+                  >
+                  (<code>export.sh</code>)
                 </b-card>
                 <b-card class="text-left my-2 mx-4">
                   Execute the gateway web service:<br />
