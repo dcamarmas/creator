@@ -67,7 +67,7 @@ async function main() {
     // --- 1. Load the Architecture ---
     try {
         const architectureFile = fs.readFileSync(argv.architecture, "utf8");
-        const ret = creator.newArchitectureLoad(architectureFile);
+        const ret = creator.loadArchitecture(architectureFile);
         if (ret.status !== "ok") {
             console.error(`Error loading architecture: ${ret.token}.`);
             process.exit(1);
@@ -128,7 +128,6 @@ async function main() {
                 //     process.exit(0);
                 // }
 
-
                 // if (totalInstructions === 1000000) {
                 //     process.exit(0);
                 // }
@@ -156,13 +155,13 @@ async function main() {
                     process.exit(1);
                 }
                 totalInstructions++;
-                // console.log(
-                //     totalInstructions,
-                //     pc_value.toString(16).padStart(4, "0").toUpperCase(),
-                //     ret.instructionData.asm,
-                //     "|",
-                //     ret.instructionData.machineCode,
-                // );
+                console.log(
+                    totalInstructions,
+                    pc_value.toString(16).padStart(4, "0").toUpperCase(),
+                    ret.instructionData.asm,
+                    "|",
+                    ret.instructionData.machineCode,
+                );
                 if (creator.status.execution_index === -2) {
                     break;
                 }

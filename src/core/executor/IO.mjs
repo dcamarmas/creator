@@ -37,7 +37,7 @@ export function display_print(info) {
         if (typeof info !== "string") {
             info = info.toString();
         }
-        process.stdout.write(info + "\n"); //TODO: Remove the newline after all testing is done
+        process.stdout.write(info);
     }
 
     status.display += info;
@@ -52,16 +52,23 @@ export function kbd_read_char(keystroke, params) {
 
 export function kbd_read_int(keystroke, params) {
     // eslint-disable-next-line radix
-    const value = parseInt(keystroke);
+    let value = parseInt(keystroke);
 
     // validate input
-    if (typeof document !== "undefined" && document.app && isNaN(value)) {
-        show_notification(
-            `Invalid input: '${keystroke}' is not an integer`,
-            "danger",
-        );
+    if (isNaN(value)) {
+        if (typeof document !== "undefined" && document.app) {
+            show_notification(
+                `Invalid input: '${keystroke}' is not an integer`,
+                "danger",
+            );
+        }
+        else {
+            throw new Error(`\nInvalid input: '${keystroke}' is not an integer`);
+        }
         return null;
-    }
+    } 
+    
+    value = BigInt(value);
 
     writeRegister(value, params.indexComp, params.indexElem);
 
@@ -80,7 +87,7 @@ export function kbd_read_float(keystroke, params) {
         return null;
     }
 
-    writeRegister(value, params.indexComp, params.indexElem, "SFP-Reg");
+    writeRegister(value, params.indexComp, params.indexElem);
 
     return value;
 }
@@ -172,22 +179,13 @@ export function keyboard_read(fn_post_read, fn_post_params) {
 
     // Check for Deno environment
     if (typeof Deno !== "undefined") {
-        try {
-            const keystroke = rawPrompt();
-            const value = fn_post_read(keystroke, fn_post_params);
-            status.keyboard = status.keyboard + " " + value;
-            status.run_program = 0; // Reset run_program status
+        const keystroke = rawPrompt();
+        const value = fn_post_read(keystroke, fn_post_params);
+        status.keyboard = status.keyboard + " " + value;
+        status.run_program = 0; // Reset run_program status
 
-            return packExecute(
-                false,
-                "The data has been uploaded",
-                "info",
-                null,
-            );
-        } catch (e) {
-            console.error("Error reading input:", e);
-            return packExecute(false, "Error reading input", "danger", null);
-        }
+        return null;
+
     }
 
     // Web/UI mode

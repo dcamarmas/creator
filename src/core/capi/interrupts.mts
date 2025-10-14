@@ -19,7 +19,7 @@
  *
  */
 
-import { status } from "../core.mjs";
+import { status, guiVariables } from "../core.mjs";
 import {
     ExecutionMode,
     InterruptType,
@@ -29,6 +29,7 @@ import {
 export const INTERRUPTS = {
     setUserMode: () => {
         status.execution_mode = ExecutionMode.User;
+        guiVariables.keep_highlighted = -1n; // Stop keeping the interrupted instruction highlighted
     },
 
     setKernelMode: () => {

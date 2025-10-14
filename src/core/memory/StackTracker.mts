@@ -47,7 +47,7 @@ export class StackTracker {
     public dump() {
         return {
             frames: this.frames,
-            hints: this.hints,
+            hints: Object.fromEntries(this.hints),
         };
     }
 
@@ -59,10 +59,12 @@ export class StackTracker {
         hints,
     }: {
         frames: Array<StackFrame>;
-        hints: Map<number, string>;
+        hints: { [address: number]: string };
     }) {
         this.frames = frames;
-        this.hints = hints;
+        this.hints = new Map(
+            Object.entries(hints).map(([key, value]) => [Number(key), value]), // ts magic
+        );
     }
 
     /**
@@ -100,7 +102,8 @@ export class StackTracker {
     }
 
     private updateUI() {
-        if (document === undefined || Object.hasOwn(document, "app") === false) return;
+        if (document === undefined || Object.hasOwn(document, "app") === false)
+            return;
         // @ts-ignore app is injected by Vue
         document.app.$data.callee_frame = this.frames.at(-1);
         // @ts-ignore app is injected by Vue

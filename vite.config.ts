@@ -95,7 +95,6 @@ export default defineConfig({
             "@codemirror/lang-yaml",
             "@codemirror/language",
           ],
-          jquery: ["jquery"],
         },
       },
     },

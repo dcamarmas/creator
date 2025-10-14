@@ -52,8 +52,8 @@ export const SYSCALL = {
         const mainMemory = main_memory as Memory;
 
         switch (type) {
-            case "int": {
-                display_print(value);
+            case "int32": {
+                display_print(BigInt.asIntN(32, BigInt(value)));
                 break;
             }
             case "float":
@@ -79,12 +79,7 @@ export const SYSCALL = {
                 break;
             }
             default:
-                throw packExecute(
-                    true,
-                    `capi_syscall: unknown print type '${type}'`,
-                    "danger",
-                    null,
-                );
+                throw new Error(`capi_syscall: unknown print type '${type}'`);
         }
     },
 
@@ -104,11 +99,8 @@ export const SYSCALL = {
         status.run_program = 3;
         const register = crex_findReg(dest_reg_info);
         if (register.match === 0) {
-            throw packExecute(
-                true,
-                "capi_syscall: register '" + dest_reg_info + "' not found",
-                "danger",
-                null,
+            throw new Error (
+                "capi_syscall: register '" + dest_reg_info + "' not found"
             );
         }
 
@@ -125,11 +117,8 @@ export const SYSCALL = {
                 if (aux_info !== null) {
                     const auxreg = crex_findReg(aux_info);
                     if (auxreg.match === 0) {
-                        throw packExecute(
-                            true,
-                            "capi_syscall: register " + aux_info + " not found",
-                            "danger",
-                            null,
+                        throw new Error (
+                            "capi_syscall: register " + aux_info + " not found"
                         );
                     }
                     const size = readRegister(
@@ -148,11 +137,8 @@ export const SYSCALL = {
 
             default:
                 status.run_program = 1; // Revert run_program status
-                throw packExecute(
-                    true,
+                throw new Error(
                     `capi_syscall: unknown read type '${type}'`,
-                    "danger",
-                    null,
                 );
         }
     },
@@ -165,32 +151,23 @@ export const SYSCALL = {
         /* Get register id */
         const ret1 = crex_findReg(value1);
         if (ret1.match === 0) {
-            throw packExecute(
-                true,
-                "capi_syscall: register " + value1 + " not found",
-                "danger",
-                null,
+            throw new Error(
+                "capi_syscall: register " + value1 + " not found"
             );
         }
 
         const ret2 = crex_findReg(value2);
         if (ret2.match === 0) {
-            throw packExecute(
-                true,
-                "capi_syscall: register " + value2 + " not found",
-                "danger",
-                null,
+            throw new Error(
+                "capi_syscall: register " + value2 + " not found"
             );
         }
 
         /* Request more memory */
         const new_size = readRegister(ret1.indexComp, ret1.indexElem);
         if (new_size < 0) {
-            throw packExecute(
-                true,
-                "capi_syscall: negative size",
-                "danger",
-                null,
+            throw new Error(
+                "capi_syscall: negative size"
             );
         }
 

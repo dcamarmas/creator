@@ -7,7 +7,6 @@ import {
 } from "../simulator-test-utils.mts";
 
 Deno.test("MIPS Function Calls", async () => {
-    return; // TODO: fix this test
     const testAssembly = `
 
 #
@@ -51,7 +50,7 @@ sub:
 
     // Execute the program
     const result = executeN(1000);
-    assertEquals(result.error, false, "Execution should not error");
+    assertEquals(result.error, 0, "Execution should not error");
 
     // Assert all expected state using the wrapper function
     assertSimulatorState({

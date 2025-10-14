@@ -19,11 +19,10 @@
  */
 
 import { architecture, status, REGISTERS } from "../core.mjs";
-import {writeStackLimit } from "../executor/executor.mjs";
+import { writeStackLimit } from "../executor/executor.mjs";
 import { instructions } from "../assembler/assembler.mjs";
 import { creator_callstack_writeRegister } from "../sentinel/sentinel.mjs";
 import { packExecute } from "../utils/utils.mjs";
-
 
 /**
  * Updates UI after a register update
@@ -31,7 +30,7 @@ import { packExecute } from "../utils/utils.mjs";
  * @param {Number} indexComp Index of the register bank
  * @param {Number} indexElem Index of the register
  */
-function updateRegisterUI(indexComp, indexElem) {
+export function updateRegisterUI(indexComp, indexElem) {
     const register = REGISTERS[indexComp].elements[indexElem];
     const ctrl_register_tags = [
         "program_counter",
@@ -97,6 +96,8 @@ export function writeRegister(value, indexComp, indexElem) {
         return;
     } else if (value === 0) {
         value = BigInt(0);
+    } else if (value < 0) {
+        throw new Error("Cannot write negative values to registers. Use two's complement.");
     }
     if (typeof value === "number") {
         throw new Error("Called writeRegister with a number, not BigInt");

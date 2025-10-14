@@ -2,7 +2,7 @@
   {
     "name": "Example 0",
     "id": "e0",
-    "url":"examples/RISCV-interrupts/ex0.s",
+    "url": "examples/RISCV-interrupts/ex0.s",
     "description": ""
   }
 ]

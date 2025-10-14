@@ -185,7 +185,7 @@ export const MEM = {
         value: bigint,
         reg_name: string,
         hint: string,
-        noSegFault: boolean = true
+        noSegFault: boolean = true,
     ) {
         // get memory
         const deviceID = checkDeviceAddr(Number(address));
@@ -258,7 +258,12 @@ export const MEM = {
         creator_callstack_newWrite(i, j, address, byteArray.length);
     },
 
-    read(address: bigint, bytes: number, reg_name: string, noSegFault: boolean = true) {
+    read(
+        address: bigint,
+        bytes: number,
+        reg_name: string,
+        noSegFault: boolean = true,
+    ) {
         // get memory
         const deviceID = checkDeviceAddr(Number(address));
         const memory =
@@ -274,8 +279,7 @@ export const MEM = {
             const segment = memory.getSegmentForAddress(address);
             if (segment === "text") {
                 raise(
-                    
-                `Segmentation fault. You tried to read in the text segment (${toHex(address, 4)})`,
+                    `Segmentation fault. You tried to read in the text segment (${toHex(address, 4)})`,
                 );
                 exit(true);
             }

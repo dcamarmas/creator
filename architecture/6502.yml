@@ -1,15 +1,17 @@
 version: 2.0.0
 
-arch_conf:
-  name: Minimal
-  word Size: 16
-  description: Minimal architecture
-  data_format: little_endian
+config:
+  name: "6502"
+  word_size: 8 # 8-bit word size, which is the same as the byte size
+  byte_size: 8
+  description: "6502 Architecture"
+  endianness: little_endian
   memory_alignment: true
   main_function: main
   passing_convention: true
   sensitive_register_name: true
-  comment_prefix: "//"
+  start_address: 0x0
+  pc_offset: 0
 
 components:
   - name: Control registers
@@ -163,7 +165,7 @@ instructions:
         - field: opcode
           value: "10101001"
         - field: imm
-          type: inm-unsigned
+          type: imm-unsigned
           startbit: 15
           stopbit: 8
           order: 1
@@ -176,13 +178,13 @@ instructions:
         - field: opcode
           value: "10101101"
         - field: imm
-          type: inm-unsigned
+          type: imm-unsigned
           startbit: 15
           stopbit: 8
           order: 1
           prefix: "%"
         - field: imm2
-          type: inm-unsigned
+          type: imm-unsigned
           startbit: 24
           stopbit: 16
           order: 2

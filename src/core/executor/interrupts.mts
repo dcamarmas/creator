@@ -39,12 +39,53 @@ export enum ExecutionMode {
     Kernel,
 }
 
+let interruptEnable: (interruptType: typeof InterruptType) => void;
+let interruptDisable: (interruptType: typeof InterruptType) => void;
+let interruptCheck: (
+    interruptType: typeof InterruptType,
+) => InterruptType | null;
+let interruptCreate: (
+    interruptType: typeof InterruptType,
+    type: InterruptType,
+) => void;
+let interruptGetHandlerAddr: (interruptType: typeof InterruptType) => number;
+let interruptClear: (interruptType: typeof InterruptType) => void;
+
+export function compileInterruptFunctions() {
+    if (!architecture.interrupts) return;
+    interruptEnable = new Function(
+        "InterruptType",
+        architecture.interrupts.enable,
+    ) as (interruptType: typeof InterruptType) => void;
+    interruptDisable = new Function(
+        "InterruptType",
+        architecture.interrupts.disable,
+    ) as (interruptType: typeof InterruptType) => void;
+    interruptCheck = new Function(
+        "InterruptType",
+        architecture.interrupts.check,
+    ) as (interruptType: typeof InterruptType) => InterruptType | null;
+    interruptCreate = new Function(
+        "InterruptType",
+        "type",
+        architecture.interrupts.create,
+    ) as (interruptType: typeof InterruptType, type: InterruptType) => void;
+    interruptGetHandlerAddr = new Function(
+        "InterruptType",
+        architecture.interrupts.get_handler_addr,
+    ) as (interruptType: typeof InterruptType) => number;
+    interruptClear = new Function(
+        "InterruptType",
+        architecture.interrupts.clear,
+    ) as (interruptType: typeof InterruptType) => void;
+}
+
 /**
  * Enables interrupts
  */
 export function enableInterrupts() {
     status.interrupts_enabled = true;
-    return eval(architecture.interrupts.enable);
+    return interruptEnable(InterruptType);
 }
 
 /**
@@ -52,21 +93,21 @@ export function enableInterrupts() {
  */
 export function disableInterrupts() {
     status.interrupts_enabled = false;
-    return eval(architecture.interrupts.disable);
+    return interruptDisable(InterruptType);
 }
 
 /**
  * Checks if an interrupt has occured
  */
 export function checkInterrupt(): InterruptType | null {
-    return eval(architecture.interrupts.check);
+    return interruptCheck(InterruptType);
 }
 
 /**
  * Creates an interrupt of the specified type.
  */
 export function makeInterrupt(type: InterruptType): void {
-    return eval(architecture.interrupts.create)(type);
+    return interruptCreate(InterruptType, type);
 }
 
 /**
@@ -86,9 +127,9 @@ export function handleInterrupt() {
     }
 
     // jump to interruption handler
-    const handler_address = eval(architecture.interrupts.get_handler_addr);
+    const handler_address = interruptGetHandlerAddr(InterruptType);
     writeRegister(handler_address, pc_reg.indexComp, pc_reg.indexElem);
 
     // clear interruption
-    eval(architecture.interrupts.clear);
+    interruptClear(InterruptType);
 }

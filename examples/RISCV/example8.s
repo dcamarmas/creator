@@ -36,5 +36,6 @@ end2:   addi t4, t4, 1
         beq  x0, x0, loop1
 end1:   
         # return
-        jr ra
+        li a7, 10
+        ecall
 

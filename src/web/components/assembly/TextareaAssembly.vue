@@ -29,7 +29,7 @@ import { tags as t } from "@lezer/highlight"
 import { createTheme } from "@uiw/codemirror-themes"
 
 import { creator_ga } from "@/core/utils/creator_ga.mjs"
-import { update_binary } from "@/core/core.mjs"
+import { loadedLibrary } from "@/core/core.mjs"
 
 import PopoverShortcuts from "./PopoverShortcuts.vue"
 
@@ -224,14 +224,14 @@ export default {
     },
 
     libraryLoaded() {
-      return Object.keys(update_binary).length !== 0
+      return Object.keys(loadedLibrary).length !== 0
     },
 
     libraryTags() {
       if (!this.libraryLoaded()) {
         return []
       }
-      return update_binary?.instructions_tag.filter(t => t.globl)
+      return loadedLibrary?.instructions_tag.filter(t => t.globl)
     },
 
     /**

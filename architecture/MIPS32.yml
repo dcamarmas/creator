@@ -13,6 +13,7 @@ config:
   start_address: 0x0
   pc_offset: 0
   byte_size: 8
+  plugin: mips
   assemblers:
     - name: "CreatorCompiler"
       description: "Default Creator Compiler"
@@ -27,6 +28,7 @@ components:
         nbits: 32
         value: 0
         default_value: 0
+        encoding: 0
         properties:
           - read
           - write
@@ -36,6 +38,7 @@ components:
         nbits: 32
         value: 0
         default_value: 0
+        encoding: 1
         properties:
           - read
           - write
@@ -45,6 +48,7 @@ components:
         nbits: 32
         value: 0
         default_value: 0
+        encoding: 2
         properties:
           - read
           - write
@@ -54,6 +58,7 @@ components:
         nbits: 32
         value: 0
         default_value: 0
+        encoding: 3
         properties:
           - read
           - write
@@ -62,6 +67,7 @@ components:
         nbits: 32
         value: 0
         default_value: 0
+        encoding: 4
         properties:
           - read
           - write
@@ -71,6 +77,7 @@ components:
         nbits: 32
         value: 0
         default_value: 0
+        encoding: 5
         properties:
           - read
           - write
@@ -79,6 +86,7 @@ components:
         nbits: 32
         value: 0
         default_value: 0
+        encoding: 6
         properties:
           - read
           - write
@@ -87,6 +95,7 @@ components:
         nbits: 32
         value: 0
         default_value: 0
+        encoding: 7
         properties:
           - read
           - write
@@ -95,6 +104,7 @@ components:
         nbits: 32
         value: 0
         default_value: 0
+        encoding: 8
         properties:
           - read
           - write
@@ -103,6 +113,7 @@ components:
         nbits: 32
         value: 0
         default_value: 0
+        encoding: 9
         properties:
           - read
           - write
@@ -111,6 +122,7 @@ components:
         nbits: 32
         value: 0
         default_value: 0
+        encoding: 10
         properties:
           - read
           - write
@@ -124,6 +136,7 @@ components:
         nbits: 32
         value: 0
         default_value: 0
+        encoding: 0
         properties:
           - read
       - name:
@@ -132,6 +145,7 @@ components:
         nbits: 32
         value: 0
         default_value: 0
+        encoding: 1
         properties:
           - read
           - write
@@ -141,6 +155,7 @@ components:
         nbits: 32
         value: 0
         default_value: 0
+        encoding: 2
         properties:
           - read
           - write
@@ -150,6 +165,7 @@ components:
         nbits: 32
         value: 0
         default_value: 0
+        encoding: 3
         properties:
           - read
           - write
@@ -159,6 +175,7 @@ components:
         nbits: 32
         value: 0
         default_value: 0
+        encoding: 4
         properties:
           - read
           - write
@@ -168,6 +185,7 @@ components:
         nbits: 32
         value: 0
         default_value: 0
+        encoding: 5
         properties:
           - read
           - write
@@ -177,6 +195,7 @@ components:
         nbits: 32
         value: 0
         default_value: 0
+        encoding: 6
         properties:
           - read
           - write
@@ -186,6 +205,7 @@ components:
         nbits: 32
         value: 0
         default_value: 0
+        encoding: 7
         properties:
           - read
           - write
@@ -195,6 +215,7 @@ components:
         nbits: 32
         value: 0
         default_value: 0
+        encoding: 8
         properties:
           - read
           - write
@@ -204,6 +225,7 @@ components:
         nbits: 32
         value: 0
         default_value: 0
+        encoding: 9
         properties:
           - read
           - write
@@ -213,6 +235,7 @@ components:
         nbits: 32
         value: 0
         default_value: 0
+        encoding: 10
         properties:
           - read
           - write
@@ -222,6 +245,7 @@ components:
         nbits: 32
         value: 0
         default_value: 0
+        encoding: 11
         properties:
           - read
           - write
@@ -231,6 +255,7 @@ components:
         nbits: 32
         value: 0
         default_value: 0
+        encoding: 12
         properties:
           - read
           - write
@@ -240,6 +265,7 @@ components:
         nbits: 32
         value: 0
         default_value: 0
+        encoding: 13
         properties:
           - read
           - write
@@ -249,6 +275,7 @@ components:
         nbits: 32
         value: 0
         default_value: 0
+        encoding: 14
         properties:
           - read
           - write
@@ -258,6 +285,7 @@ components:
         nbits: 32
         value: 0
         default_value: 0
+        encoding: 15
         properties:
           - read
           - write
@@ -267,6 +295,7 @@ components:
         nbits: 32
         value: 0
         default_value: 0
+        encoding: 16
         properties:
           - read
           - write
@@ -277,6 +306,7 @@ components:
         nbits: 32
         value: 0
         default_value: 0
+        encoding: 17
         properties:
           - read
           - write
@@ -287,6 +317,7 @@ components:
         nbits: 32
         value: 0
         default_value: 0
+        encoding: 18
         properties:
           - read
           - write
@@ -297,6 +328,7 @@ components:
         nbits: 32
         value: 0
         default_value: 0
+        encoding: 19
         properties:
           - read
           - write
@@ -307,6 +339,7 @@ components:
         nbits: 32
         value: 0
         default_value: 0
+        encoding: 20
         properties:
           - read
           - write
@@ -317,6 +350,7 @@ components:
         nbits: 32
         value: 0
         default_value: 0
+        encoding: 21
         properties:
           - read
           - write
@@ -327,6 +361,7 @@ components:
         nbits: 32
         value: 0
         default_value: 0
+        encoding: 22
         properties:
           - read
           - write
@@ -337,6 +372,7 @@ components:
         nbits: 32
         value: 0
         default_value: 0
+        encoding: 23
         properties:
           - read
           - write
@@ -347,6 +383,7 @@ components:
         nbits: 32
         value: 0
         default_value: 0
+        encoding: 24
         properties:
           - read
           - write
@@ -356,6 +393,7 @@ components:
         nbits: 32
         value: 0
         default_value: 0
+        encoding: 25
         properties:
           - read
           - write
@@ -365,6 +403,7 @@ components:
         nbits: 32
         value: 0
         default_value: 0
+        encoding: 26
         properties:
           - read
           - write
@@ -374,6 +413,7 @@ components:
         nbits: 32
         value: 0
         default_value: 0
+        encoding: 27
         properties:
           - read
           - write
@@ -383,6 +423,7 @@ components:
         nbits: 32
         value: 0
         default_value: 0
+        encoding: 28
         properties:
           - read
           - write
@@ -393,6 +434,7 @@ components:
         nbits: 32
         value: 268435452
         default_value: 268435452
+        encoding: 29
         properties:
           - read
           - write
@@ -403,6 +445,7 @@ components:
         nbits: 32
         value: 0
         default_value: 0
+        encoding: 30
         properties:
           - read
           - write
@@ -413,6 +456,7 @@ components:
         nbits: 32
         value: 4294967295
         default_value: 4294967295
+        encoding: 31
         properties:
           - read
           - write
@@ -425,6 +469,7 @@ components:
         nbits: 32
         value: 0
         default_value: 0
+        encoding: 0
         properties:
           - read
           - write
@@ -433,6 +478,7 @@ components:
         nbits: 32
         value: 0
         default_value: 0
+        encoding: 1
         properties:
           - read
           - write
@@ -441,6 +487,7 @@ components:
         nbits: 32
         value: 0
         default_value: 0
+        encoding: 2
         properties:
           - read
           - write
@@ -449,6 +496,7 @@ components:
         nbits: 32
         value: 0
         default_value: 0
+        encoding: 3
         properties:
           - read
           - write
@@ -457,6 +505,7 @@ components:
         nbits: 32
         value: 0
         default_value: 0
+        encoding: 4
         properties:
           - read
           - write
@@ -465,6 +514,7 @@ components:
         nbits: 32
         value: 0
         default_value: 0
+        encoding: 5
         properties:
           - read
           - write
@@ -473,6 +523,7 @@ components:
         nbits: 32
         value: 0
         default_value: 0
+        encoding: 6
         properties:
           - read
           - write
@@ -481,6 +532,7 @@ components:
         nbits: 32
         value: 0
         default_value: 0
+        encoding: 7
         properties:
           - read
           - write
@@ -489,6 +541,7 @@ components:
         nbits: 32
         value: 0
         default_value: 0
+        encoding: 8
         properties:
           - read
           - write
@@ -497,6 +550,7 @@ components:
         nbits: 32
         value: 0
         default_value: 0
+        encoding: 9
         properties:
           - read
           - write
@@ -505,6 +559,7 @@ components:
         nbits: 32
         value: 0
         default_value: 0
+        encoding: 10
         properties:
           - read
           - write
@@ -513,6 +568,7 @@ components:
         nbits: 32
         value: 0
         default_value: 0
+        encoding: 11
         properties:
           - read
           - write
@@ -521,6 +577,7 @@ components:
         nbits: 32
         value: 0
         default_value: 0
+        encoding: 12
         properties:
           - read
           - write
@@ -529,6 +586,7 @@ components:
         nbits: 32
         value: 0
         default_value: 0
+        encoding: 13
         properties:
           - read
           - write
@@ -537,6 +595,7 @@ components:
         nbits: 32
         value: 0
         default_value: 0
+        encoding: 14
         properties:
           - read
           - write
@@ -545,6 +604,7 @@ components:
         nbits: 32
         value: 0
         default_value: 0
+        encoding: 15
         properties:
           - read
           - write
@@ -553,6 +613,7 @@ components:
         nbits: 32
         value: 0
         default_value: 0
+        encoding: 16
         properties:
           - read
           - write
@@ -561,6 +622,7 @@ components:
         nbits: 32
         value: 0
         default_value: 0
+        encoding: 17
         properties:
           - read
           - write
@@ -569,6 +631,7 @@ components:
         nbits: 32
         value: 0
         default_value: 0
+        encoding: 18
         properties:
           - read
           - write
@@ -577,6 +640,7 @@ components:
         nbits: 32
         value: 0
         default_value: 0
+        encoding: 19
         properties:
           - read
           - write
@@ -585,6 +649,7 @@ components:
         nbits: 32
         value: 0
         default_value: 0
+        encoding: 20
         properties:
           - read
           - write
@@ -593,6 +658,7 @@ components:
         nbits: 32
         value: 0
         default_value: 0
+        encoding: 21
         properties:
           - read
           - write
@@ -601,6 +667,7 @@ components:
         nbits: 32
         value: 0
         default_value: 0
+        encoding: 22
         properties:
           - read
           - write
@@ -609,6 +676,7 @@ components:
         nbits: 32
         value: 0
         default_value: 0
+        encoding: 23
         properties:
           - read
           - write
@@ -617,6 +685,7 @@ components:
         nbits: 32
         value: 0
         default_value: 0
+        encoding: 24
         properties:
           - read
           - write
@@ -625,6 +694,7 @@ components:
         nbits: 32
         value: 0
         default_value: 0
+        encoding: 25
         properties:
           - read
           - write
@@ -633,6 +703,7 @@ components:
         nbits: 32
         value: 0
         default_value: 0
+        encoding: 26
         properties:
           - read
           - write
@@ -641,6 +712,7 @@ components:
         nbits: 32
         value: 0
         default_value: 0
+        encoding: 27
         properties:
           - read
           - write
@@ -649,6 +721,7 @@ components:
         nbits: 32
         value: 0
         default_value: 0
+        encoding: 28
         properties:
           - read
           - write
@@ -657,6 +730,7 @@ components:
         nbits: 32
         value: 0
         default_value: 0
+        encoding: 29
         properties:
           - read
           - write
@@ -665,6 +739,7 @@ components:
         nbits: 32
         value: 0
         default_value: 0
+        encoding: 30
         properties:
           - read
           - write
@@ -673,6 +748,7 @@ components:
         nbits: 32
         value: 0
         default_value: 0
+        encoding: 31
         properties:
           - read
           - write
@@ -683,11 +759,11 @@ templates:
     nwords: 1
     clk_cycles: 1
     fields:
-    # The order of these fields != the order in the ASSEMBLY
-    # That's what the "order" field is for.
-    #
-    # For the order of the fields in the instruction encoding,
-    # the "startbit" and "stopbit" fields are used
+      # The order of these fields != the order in the ASSEMBLY
+      # That's what the "order" field is for.
+      #
+      # For the order of the fields in the instruction encoding,
+      # the "startbit" and "stopbit" fields are used
       - name: opcode
         type: co
         startbit: 31
@@ -697,8 +773,10 @@ templates:
         type: INT-Reg
         startbit: 25
         stopbit: 21
-        order: 2 # Notice this 2 here, corresponding with the instruction format
-                 # Example: addi rt, rs, immediate
+        suffix: ","
+        order:
+          2 # Notice this 2 here, corresponding with the instruction format
+          # Example: addi rt, rs, immediate
         prefix: "$"
       - name: rt
         type: INT-Reg
@@ -706,8 +784,9 @@ templates:
         stopbit: 16
         order: 1
         prefix: "$"
+        suffix: ","
       - name: imm
-        type: inm-signed
+        type: imm-signed
         startbit: 15
         stopbit: 0
         order: 3
@@ -722,19 +801,20 @@ templates:
         startbit: 31
         stopbit: 26
         order: 0
-        valueField: "111011"
+        value: "111011"
       - name: rs
         type: INT-Reg
         startbit: 25
         stopbit: 21
         order: 1
         prefix: "$"
+        suffix: ","
       - name: funct
         type: cop
         startbit: 20
         stopbit: 16
       - name: imm
-        type: inm-signed
+        type: imm-signed
         startbit: 15
         stopbit: 0
         order: 2
@@ -747,7 +827,7 @@ templates:
         type: co
         startbit: 31
         stopbit: 26
-        valueField: '000000'
+        value: "000000"
         order: 0
       - name: rs
         type: INT-Reg
@@ -761,17 +841,19 @@ templates:
         stopbit: 16
         order: 2
         prefix: "$"
+        suffix: ","
       - name: rd
         type: INT-Reg
         startbit: 15
         stopbit: 11
         order: 1
         prefix: "$"
+        suffix: ","
       - name: cop
         type: cop
         startbit: 5
         stopbit: 0
-  
+
   - name: Custom
     nwords: 1
     clk_cycles: 1
@@ -798,18 +880,20 @@ templates:
         stopbit: 21
         order: 2
         prefix: "$"
+        suffix: ","
       - name: ft # FPU register: source (for stores, arithmetic) or destination (for loads).
         type: SFP-Reg
         startbit: 20
         stopbit: 16
         order: 1
         prefix: "$"
+        suffix: ","
       - name: offset # Signed offset field used in address calculations.
         type: offset_bytes
         startbit: 15
         stopbit: 0
         order: 3
-      
+
   - name: FPU_R # R-Type (Register) FPU Instruction Format
     type: Arithmetic Floating Point
     nwords: 1
@@ -820,7 +904,7 @@ templates:
         startbit: 31
         stopbit: 26
         order: 0
-        valueField: '010001'
+        value: "010001"
       - name: fmt # Destination and/or operand type (format) specifier
         type: INT-Reg
         startbit: 25
@@ -838,12 +922,14 @@ templates:
         stopbit: 11
         order: 2
         prefix: "$"
+        suffix: ","
       - name: fd # FPU register: destination (arithmetic, loads, move-to) or source (stores, move-from).
         type: SFP-Reg
         startbit: 10
         stopbit: 6
         order: 1
         prefix: "$"
+        suffix: ","
       - name: function # Field specifying a function within a particular op operation code.
         type: cop
         startbit: 5
@@ -859,7 +945,7 @@ templates:
         startbit: 31
         stopbit: 26
         order: 0
-        valueField: '010001'
+        value: "010001"
       - name: fmt # Operand type (format) specifier
         type: cop
         startbit: 25
@@ -876,16 +962,18 @@ templates:
         stopbit: 11
         order: 2
         prefix: "$"
+        suffix: ","
       - name: cc # Condition Code specifier; for architectural levels prior to MIPS IV, this must be set to zero.
-        type: inm-unsigned
+        type: imm-unsigned
         startbit: 10
         stopbit: 8
         order: 1
+        suffix: ","
       - name: zero
         type: cop
         startbit: 7
         stopbit: 6
-        valueField: '00'
+        value: "00"
       - name: cond # Condition field
         type: cop
         startbit: 5
@@ -901,7 +989,7 @@ templates:
         startbit: 31
         stopbit: 26
         order: 0
-        valueField: '010001'
+        value: "010001"
       - name: sub # Operation subcode field for COP1 register immediate-mode instructions.
         type: cop
         startbit: 25
@@ -934,11 +1022,11 @@ instructions:
           order: null
           value: "00000"
       preoperation: |
-        fs = CAPI.FS.uint2float32(fs);
+        let fsValue = CAPI.FS.uint2float32(registers[fs]);
       postoperation: |
-        fd = CAPI.FS.float322uint(fd);
+        fd = CAPI.FS.float322uint(result);
       definition: |
-        fd = Math.abs(fs);
+        let result = Math.abs(fsValue);
 
     - name: add
       template: R
@@ -949,9 +1037,9 @@ instructions:
         - field: cop
           value: "100000"
       definition: |
-        var isover = CAPI.VALIDATION.isOverflow(rs, rt, rs+rt);
+        var isover = CAPI.VALIDATION.isOverflow(registers[rs], registers[rt], registers[rs]+registers[rt]);
         if (!isover){ 
-          rd = rs + rt; 
+          registers[rd] = registers[rs] + registers[rt]; 
         } else { 
           console.log('Integer Overflow'); 
         }
@@ -969,13 +1057,13 @@ instructions:
           value: "00000"
           type: cop
       preoperation: |
-        fs = CAPI.FS.uint2float32(fs);
-        ft = CAPI.FS.uint2float32(ft);
+        fsValue = CAPI.FS.uint2float32(registers[fs]);
+        ftValue = CAPI.FS.uint2float32(registers[ft]);
       postoperation: |
-        fd = CAPI.FS.float322uint(fd);
+        registers[fd] = CAPI.FS.float322uint(result);
       definition: |
-        fd = fs + ft;
-    
+        let result = fsValue + ftValue;
+
     - name: add.d
       template: FPU_R
       type: Arithmetic floating point
@@ -995,10 +1083,10 @@ instructions:
         - field: ft
           type: SFP-Reg
       preoperation: |
-        let val1 = CAPI.MIPS.readDouble(fs_name);
-        let val2 = CAPI.MIPS.readDouble(ft_name);
+        let val1 = CAPI.ARCH.readDouble(fs);
+        let val2 = CAPI.ARCH.readDouble(ft);
       postoperation: |
-        CAPI.MIPS.writeDouble(result, fd_name);
+        CAPI.ARCH.writeDouble(result, fd);
       definition: |
         let result = val1 + val2;
 
@@ -1012,9 +1100,9 @@ instructions:
         - field: opcode
           value: "001000"
       definition: |
-        var isover = CAPI.VALIDATION.isOverflow(rs, imm, rs+imm);
+        var isover = CAPI.VALIDATION.isOverflow(registers[rs], imm, registers[rs]+imm);
         if (!isover){ 
-          rt = rs + imm; 
+          registers[rt] = registers[rs] + imm; 
         } else { 
           console.log('Integer Overflow'); 
         }
@@ -1029,7 +1117,7 @@ instructions:
         - field: opcode
           value: "001001"
       definition: |
-        rt = rs + imm;
+        registers[rt] = registers[rs] + imm;
 
     - name: addu
       template: R
@@ -1040,7 +1128,7 @@ instructions:
         - field: cop
           value: "100001"
       definition: |
-        rd = rs + rt;
+        registers[rd] = registers[rs] + registers[rt];
 
     - name: and
       template: R
@@ -1051,7 +1139,7 @@ instructions:
         - field: cop
           value: "100100"
       definition: |
-        rd = rs & rt;
+        registers[rd] = registers[rs] & registers[rt];
 
     - name: andi
       template: I
@@ -1062,7 +1150,7 @@ instructions:
         - field: opcode
           value: "001100"
       definition: |
-        rt = rs & (imm & 0xFFFF);
+        registers[rt] = registers[rs] & (imm & 0xFFFF);
 
     - name: bc
       template: Custom
@@ -1076,7 +1164,7 @@ instructions:
         - field: offset
           startbit: 25
           stopbit: 0
-          type: inm-signed
+          type: imm-signed
           order: 1
       definition: |
         // Not implemented
@@ -1096,7 +1184,7 @@ instructions:
           order: null
       definition: |
         if (ft & 1 == 0){ 
-          PC = PC - 4n + offset
+          registers.PC = registers.PC - 4n + offset
         }
 
     - name: bc1f
@@ -1114,10 +1202,10 @@ instructions:
           startbit: 25
           stopbit: 21
         - field: cc
-          type: inm-unsigned
+          type: imm-unsigned
           startbit: 20
           stopbit: 18
-        - field: 'offset'
+        - field: "offset"
           type: offset_bytes
           startbit: 15
           stopbit: 0
@@ -1128,8 +1216,8 @@ instructions:
           stopbit: 16
           value: "00"
       definition: |
-        if ((FCSR & (1 << ((cc == 0 ? 0 : cc+1) + 23))) == 0) {
-            PC = PC - 4n + offset
+        if ((registers.FCSR & (1 << ((cc == 0 ? 0 : cc+1) + 23))) == 0) {
+            registers.PC = registers.PC - 4n + offset
         }
 
     - name: bc1nez
@@ -1146,8 +1234,8 @@ instructions:
           type: cop
           order: null
       definition: |
-        if (ft & 1 != 0){ 
-          PC = PC + ((offset << 16n) >> 14n)
+        if (registers[ft] & 1 != 0){ 
+          registers.PC = registers.PC + ((offset << 16n) >> 14n)
         }
 
     - name: bc1t
@@ -1165,10 +1253,10 @@ instructions:
           startbit: 25
           stopbit: 21
         - field: cc
-          type: inm-unsigned
+          type: imm-unsigned
           startbit: 20
           stopbit: 18
-        - field: 'offset'
+        - field: "offset"
           type: offset_bytes
           startbit: 15
           stopbit: 0
@@ -1177,10 +1265,10 @@ instructions:
           type: cop
           startbit: 17
           stopbit: 16
-          valueField: '01'
+          value: "01"
       definition: |
-        if ((FCSR & (1 << ((cc == 0 ? 0 : cc+1) + 23))) != 0) {
-            PC = PC - 4n + offset
+        if ((registers.FCSR & (1 << ((cc == 0 ? 0 : cc+1) + 23))) != 0) {
+            registers.PC = registers.PC - 4n + offset
         }
 
     - name: beq
@@ -1194,10 +1282,10 @@ instructions:
         - field: imm
           type: offset_bytes
       definition: |
-        if (CAPI.FP.uint2int(rs) == CAPI.FP.uint2int(rt)) {
-          PC = PC - 4n + imm;
+        if (CAPI.FP.uint2int(registers[rs]) == CAPI.FP.uint2int(registers[rt])) {
+          registers.PC = registers.PC - 4n + imm;
         }
-    
+
     - name: bgez
       template: I
       help: Branch on Greater Than or Equal to Zero
@@ -1213,10 +1301,10 @@ instructions:
         - field: imm
           type: offset_bytes
       definition: |
-        if (CAPI.FP.uint2int(rs) >= 0) {
-          PC = PC - 4n + imm;
+        if (CAPI.FP.uint2int(registers[rs]) >= 0) {
+          registers.PC = registers.PC - 4n + imm;
         }
-      
+
     - name: bgezal
       template: I
       help: Branch on Greater Than or Equal to Zero and Link
@@ -1232,10 +1320,10 @@ instructions:
         - field: imm
           type: offset_bytes
       definition: |
-        if (CAPI.FP.uint2int(rs) >= 0) {
-          PC = PC - 4n + imm;
-          CAPI.CHECK_STACK.begin(rs);
-          CAPI.DRAW_STACK.begin(rs);
+        if (CAPI.FP.uint2int(registers[rs]) >= 0) {
+          registers.PC = registers.PC - 4n + imm;
+          CAPI.CHECK_STACK.begin(registers[rs]);
+          CAPI.DRAW_STACK.begin(registers[rs]);
         }
 
     - name: bgtz
@@ -1252,8 +1340,8 @@ instructions:
         - field: imm
           type: offset_bytes
       definition: |
-        if (CAPI.FP.uint2int(rs) > 0) {
-          PC = PC - 4n + imm;
+        if (CAPI.FP.uint2int(registers[rs]) > 0) {
+          registers.PC = registers.PC - 4n + imm;
         }
 
     - name: blez
@@ -1270,10 +1358,10 @@ instructions:
         - field: imm
           type: offset_bytes
       definition: |
-        if (CAPI.FP.uint2int(rs) <= 0) {
-          PC = PC - 4n + imm;
+        if (CAPI.FP.uint2int(registers[rs]) <= 0) {
+          registers.PC = registers.PC - 4n + imm;
         }
-  
+
     - name: bltz
       template: I
       help: Branch on Less Than Zero
@@ -1289,8 +1377,8 @@ instructions:
         - field: imm
           type: offset_bytes
       definition: |
-        if (CAPI.FP.uint2int(rs) < 0) {
-          PC = PC - 4n + imm;
+        if (CAPI.FP.uint2int(registers[rs]) < 0) {
+          registers.PC = registers.PC - 4n + imm;
         }
 
     - name: bne
@@ -1304,8 +1392,8 @@ instructions:
         - field: imm
           type: offset_bytes
       definition: |
-        if (CAPI.FP.uint2int(rs) != CAPI.FP.uint2int(rt)) {
-          PC = PC - 4n + imm;
+        if (CAPI.FP.uint2int(registers[rs]) != CAPI.FP.uint2int(registers[rt])) {
+          registers.PC = registers.PC - 4n + imm;
         }
 
     - name: c.eq.s
@@ -1328,7 +1416,7 @@ instructions:
           startbit: 5
           stopbit: 4
           value: "11"
-          
+
       definition: |
         let off = CAPI.FP.int2uint(cc)
 
@@ -1338,13 +1426,13 @@ instructions:
 
         let condition = (ft == fs) ? 1n : 0n;
 
-        FCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23 + off)) | (FCSR & (-1 >>> (9 - off))); FCCR = condition
+        registers.FCSR = (registers.FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23 + off)) | (registers.FCSR & (-1 >>> (9 - off))); registers.FCCR = condition;
 
     # From this point on, the instructions were converted automatically from the old CREATOR format.
     - name: c.ole.d
       template: Custom
       type: Logic
-      help: ''
+      help: ""
       properties: []
       nwords: 1
       clk_cycles: 1
@@ -1353,13 +1441,13 @@ instructions:
           type: co
           startbit: 31
           stopbit: 26
-          value: '010001'
+          value: "010001"
           order: 0
         - field: fmt
           type: cop
           startbit: 25
           stopbit: 21
-          valueField: '00001'
+          value: "00001"
         - field: ft
           type: SFP-Reg
           startbit: 20
@@ -1372,31 +1460,33 @@ instructions:
           stopbit: 11
           order: 2
           prefix: $
+          suffix: ","
         - field: cc
-          type: inm-unsigned
+          type: imm-unsigned
           startbit: 10
           stopbit: 8
           order: 1
+          suffix: ","
         - field: cond
           type: cop
           startbit: 3
           stopbit: 0
-          valueField: '0110'
+          value: "0110"
       preoperation: |
-        let val1 = CAPI.MIPS.readDouble(fs_name);
-        let val2 = CAPI.MIPS.readDouble(ft_name);
+        let val1 = CAPI.ARCH.readDouble(fs);
+        let val2 = CAPI.ARCH.readDouble(ft);
       definition: |
         var off = CAPI.FP.int2uint(cc);
         if (off != 0) {
             off = off + 1;
         }
         var condition = (val1 <= val2) ? 1n : 0n;
-        FCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23 + off)) | (FCSR & (-1 >>> (9 - off)));
-        FCCR = condition;
+        registers.FCSR = (registers.FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23 + off)) | (registers.FCSR & (-1 >>> (9 - off)));
+        registers.FCCR = condition;
     - name: c.ole.s
       template: Custom
       type: Logic
-      help: ''
+      help: ""
       properties: []
       nwords: 1
       clk_cycles: 1
@@ -1405,13 +1495,13 @@ instructions:
           type: co
           startbit: 31
           stopbit: 26
-          value: '010001'
+          value: "010001"
           order: 0
         - field: fmt
           type: cop
           startbit: 25
           stopbit: 21
-          valueField: '00000'
+          value: "00000"
         - field: ft
           type: SFP-Reg
           startbit: 20
@@ -1424,27 +1514,29 @@ instructions:
           stopbit: 11
           order: 2
           prefix: $
+          suffix: ","
         - field: cc
-          type: inm-unsigned
+          type: imm-unsigned
           startbit: 10
           stopbit: 8
           order: 1
+          suffix: ","
         - field: cond
           type: cop
           startbit: 3
           stopbit: 0
-          valueField: '0110'
+          value: "0110"
       definition: |-
         var off = CAPI.FP.int2uint(cc) ;
         if (off != 0) {
             off = off +1;
         }
-        var condition = (fs <= ft) ? 1n : 0n;
-        FCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23+off)) | (FCSR & (-1 >>> (9 - off))); FCCR = condition
+        var condition = (registers[fs] <= registers[ft]) ? 1n : 0n;
+        registers.FCSR = (registers.FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23+off)) | (registers.FCSR & (-1 >>> (9 - off))); registers.FCCR = condition
     - name: c.olt.d
       template: Custom
       type: Logic
-      help: ''
+      help: ""
       properties: []
       nwords: 1
       clk_cycles: 1
@@ -1453,13 +1545,13 @@ instructions:
           type: co
           startbit: 31
           stopbit: 26
-          value: '010001'
+          value: "010001"
           order: 0
         - field: fmt
           type: cop
           startbit: 25
           stopbit: 21
-          valueField: '00001'
+          value: "00001"
         - field: ft
           type: SFP-Reg
           startbit: 20
@@ -1472,31 +1564,33 @@ instructions:
           stopbit: 11
           order: 2
           prefix: $
+          suffix: ","
         - field: cc
-          type: inm-unsigned
+          type: imm-unsigned
           startbit: 10
           stopbit: 8
           order: 1
+          suffix: ","
         - field: cond
           type: cop
           startbit: 3
           stopbit: 0
-          valueField: '0100'
+          value: "0100"
       preoperation: |
-        let val1 = CAPI.MIPS.readDouble(fs_name);
-        let val2 = CAPI.MIPS.readDouble(ft_name);
+        let val1 = CAPI.ARCH.readDouble(fs);
+        let val2 = CAPI.ARCH.readDouble(ft);
       definition: |
         var off = CAPI.FP.int2uint(cc);
         if (off != 0) {
             off = off + 1;
         }
         var condition = (val1 < val2) ? 1n : 0n;
-        FCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23 + off)) | (FCSR & (-1 >>> (9 - off)));
-        FCCR = condition;
+        registers.FCSR = (registers.FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23 + off)) | (registers.FCSR & (-1 >>> (9 - off)));
+        registers.FCCR = condition;
     - name: c.olt.s
       template: Custom
       type: Logic
-      help: ''
+      help: ""
       properties: []
       nwords: 1
       clk_cycles: 1
@@ -1505,13 +1599,13 @@ instructions:
           type: co
           startbit: 31
           stopbit: 26
-          value: '010001'
+          value: "010001"
           order: 0
         - field: fmt
           type: cop
           startbit: 25
           stopbit: 21
-          valueField: '00000'
+          value: "00000"
         - field: ft
           type: SFP-Reg
           startbit: 20
@@ -1524,27 +1618,29 @@ instructions:
           stopbit: 11
           order: 2
           prefix: $
+          suffix: ","
         - field: cc
-          type: inm-unsigned
+          type: imm-unsigned
           startbit: 10
           stopbit: 8
           order: 1
+          suffix: ","
         - field: cond
           type: cop
           startbit: 3
           stopbit: 0
-          valueField: '0100'
+          value: "0100"
       definition: |-
         var off = CAPI.FP.int2uint(cc) ;
         if (off != 0) {
             off = off +1;
         }
-        var condition = (fs < ft) ? 1n : 0n;
-        FCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23+off)) | (FCSR & (-1 >>> (9 - off))); FCCR = condition
+        var condition = (registers[fs] < registers[ft]) ? 1n : 0n;
+        registers.FCSR = (registers.FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23+off)) | (registers.FCSR & (-1 >>> (9 - off))); registers.FCCR = condition
     - name: cvt.d.s
       template: Custom
       type: Arithmetic floating point
-      help: 'Turn a float into a double, the result is saved in fd'
+      help: "Turn a float into a double, the result is saved in fd"
       properties: []
       nwords: 1
       clk_cycles: 1
@@ -1553,35 +1649,37 @@ instructions:
           type: co
           startbit: 31
           stopbit: 26
-          value: '010001'
+          value: "010001"
           order: 0
         - field: fmt
           type: cop
           startbit: 25
           stopbit: 21
-          valueField: '00000'
+          value: "00000"
         - field: fs
           type: SFP-Reg
           startbit: 15
           stopbit: 11
           order: 2
           prefix: $
+          suffix: ","
         - field: fd
           type: SFP-Reg
           startbit: 10
           stopbit: 6
           order: 1
           prefix: $
+          suffix: ","
         - field: cop
           type: cop
           startbit: 5
           stopbit: 0
-          valueField: '100001'
-      definition: fd = fs;
+          value: "100001"
+      definition: registers[fd] = registers[fs];
     - name: cvt.d.w
       template: Custom
       type: Arithmetic floating point
-      help: 'Convert an integer to a double, the result is saved in fd'
+      help: "Convert an integer to a double, the result is saved in fd"
       properties: []
       nwords: 1
       clk_cycles: 1
@@ -1590,35 +1688,37 @@ instructions:
           type: co
           startbit: 31
           stopbit: 26
-          value: '010001'
+          value: "010001"
           order: 0
         - field: fmt
           type: cop
           startbit: 25
           stopbit: 21
-          valueField: '00001'
+          value: "00001"
         - field: fs
           type: SFP-Reg
           startbit: 15
           stopbit: 11
           order: 2
           prefix: $
+          suffix: ","
         - field: fd
           type: SFP-Reg
           startbit: 10
           stopbit: 6
           order: 1
           prefix: $
+          suffix: ","
         - field: cop
           type: cop
           startbit: 5
           stopbit: 0
-          valueField: '100001'
-      definition: fd = fs;
+          value: "100001"
+      definition: registers[fd] = registers[fs];
     - name: cvt.s.d
       template: Custom
       type: Arithmetic floating point
-      help: 'Turn a double into a float, the result is saved in fd'
+      help: "Turn a double into a float, the result is saved in fd"
       properties: []
       nwords: 1
       clk_cycles: 1
@@ -1627,40 +1727,39 @@ instructions:
           type: co
           startbit: 31
           stopbit: 26
-          value: '010001'
+          value: "010001"
           order: 0
         - field: fmt
           type: cop
           startbit: 25
           stopbit: 21
-          valueField: '00001'
+          value: "00001"
         - field: fs
           type: SFP-Reg
           startbit: 15
           stopbit: 11
           order: 1
           prefix: $
+          suffix: ","
         - field: fd
           type: SFP-Reg
           startbit: 10
           stopbit: 6
           order: 2
           prefix: $
+          suffix: ","
         - field: cop
           type: cop
           startbit: 5
           stopbit: 0
-          valueField: '100000'
-      preoperation: |
-        let val = CAPI.FS.uint2float32(CAPI.REG.read(fs_name));
-      postoperation: |
-        CAPI.MIPS.writeDouble(val, fd_name);
+          value: "100000"
       definition: |
-        // Conversion handled in preoperation/postoperation
+        let val = CAPI.FS.uint2float32(registers[fs]);
+        CAPI.ARCH.writeDouble(val, fd);
     - name: cvt.s.w
       template: Custom
       type: Arithmetic floating point
-      help: 'Convert an integer into a float, the result is saved in fd'
+      help: "Convert an integer into a float, the result is saved in fd"
       properties: []
       nwords: 1
       clk_cycles: 1
@@ -1669,35 +1768,37 @@ instructions:
           type: co
           startbit: 31
           stopbit: 26
-          value: '010001'
+          value: "010001"
           order: 0
         - field: fmt
           type: cop
           startbit: 25
           stopbit: 21
-          valueField: '00010'
+          value: "00010"
         - field: fs
           type: SFP-Reg
           startbit: 15
           stopbit: 11
           order: 2
           prefix: $
+          suffix: ","
         - field: fd
           type: SFP-Reg
           startbit: 10
           stopbit: 6
           order: 1
           prefix: $
+          suffix: ","
         - field: cop
           type: cop
           startbit: 5
           stopbit: 0
-          valueField: '100000'
-      definition: fd = parseFloat(float2int_v2(fs));
+          value: "100000"
+      definition: registers[fd] = parseFloat(float2int_v2(registers[fs]));
     - name: cvt.w.d
       template: Custom
       type: Arithmetic floating point
-      help: 'Convert a double into an integer, the result is saved in Rdest'
+      help: "Convert a double into an integer, the result is saved in Rdest"
       properties: []
       nwords: 1
       clk_cycles: 1
@@ -1706,40 +1807,39 @@ instructions:
           type: co
           startbit: 31
           stopbit: 26
-          value: '010001'
+          value: "010001"
           order: 0
         - field: fmt
           type: cop
           startbit: 25
           stopbit: 21
-          valueField: '00001'
+          value: "00001"
         - field: fs
           type: SFP-Reg
           startbit: 15
           stopbit: 11
           order: 2
           prefix: $
+          suffix: ","
         - field: fd
           type: SFP-Reg
           startbit: 10
           stopbit: 6
           order: 1
           prefix: $
+          suffix: ","
         - field: cop
           type: cop
           startbit: 5
           stopbit: 0
-          valueField: '100100'
-      preoperation: |
-        let val = CAPI.MIPS.readDouble(fs_name);
-      postoperation: |
-        CAPI.REG.write(BigInt(Math.trunc(val)), fd_name);
+          value: "100100"
       definition: |
-        // Conversion handled in preoperation/postoperation
+        let val = CAPI.ARCH.readDouble(fs);
+        CAPI.REG.write(BigInt(Math.trunc(val)), fd);
     - name: cvt.w.s
       template: Custom
       type: Arithmetic floating point
-      help: 'Convert a float into an integer, the result is saved in Rdest'
+      help: "Convert a float into an integer, the result is saved in Rdest"
       properties: []
       nwords: 1
       clk_cycles: 1
@@ -1748,31 +1848,33 @@ instructions:
           type: co
           startbit: 31
           stopbit: 26
-          value: '010001'
+          value: "010001"
           order: 0
         - field: fmt
           type: cop
           startbit: 25
           stopbit: 21
-          valueField: '00000'
+          value: "00000"
         - field: fs
           type: SFP-Reg
           startbit: 15
           stopbit: 11
           order: 2
           prefix: $
+          suffix: ","
         - field: fd
           type: SFP-Reg
           startbit: 10
           stopbit: 6
           order: 1
           prefix: $
+          suffix: ","
         - field: cop
           type: cop
           startbit: 5
           stopbit: 0
-          valueField: '100100'
-      definition: fd = parseInt(fs);
+          value: "100100"
+      definition: registers[fd] = parseInt(registers[fs]);
     - name: div
       template: Custom
       type: Arithmetic integer
@@ -1785,7 +1887,7 @@ instructions:
           type: co
           startbit: 31
           stopbit: 26
-          value: '000000'
+          value: "000000"
           order: 0
         - field: rs
           type: INT-Reg
@@ -1793,6 +1895,7 @@ instructions:
           stopbit: 21
           order: 2
           prefix: $
+          suffix: ","
         - field: rt
           type: INT-Reg
           startbit: 20
@@ -1805,23 +1908,24 @@ instructions:
           stopbit: 11
           order: 1
           prefix: $
+          suffix: ","
         - field: cop1
           type: cop
           startbit: 10
           stopbit: 6
-          valueField: '00010'
+          value: "00010"
         - field: cop2
           type: cop
           startbit: 5
           stopbit: 0
-          valueField: '011010'
+          value: "011010"
       definition: |-
-        if (rt != 0){ 
-          let cociente = (CAPI.FP.uint2int(rs) / CAPI.FP.uint2int(rt));
+        if (registers[rt] != 0){ 
+          let cociente = (CAPI.FP.uint2int(registers[rs]) / CAPI.FP.uint2int(registers[rt]));
           if (cociente < 0){ 
-            rd = BigInt(Math.ceil(Number(cociente))); 
+            registers[rd] = BigInt(Math.ceil(Number(cociente))); 
           } else { 
-            rd = BigInt(Math.floor(Number(cociente))); 
+            registers[rd] = BigInt(Math.floor(Number(cociente))); 
           }
         } else {
           CAPI.VALIDATION.raise('Division by zero not allowed'); 
@@ -1838,7 +1942,7 @@ instructions:
           type: co
           startbit: 31
           stopbit: 26
-          value: '000000'
+          value: "000000"
           order: 0
         - field: rs
           type: INT-Reg
@@ -1846,6 +1950,7 @@ instructions:
           stopbit: 21
           order: 1
           prefix: $
+          suffix: ","
         - field: rt
           type: INT-Reg
           startbit: 20
@@ -1856,20 +1961,20 @@ instructions:
           type: cop
           startbit: 15
           stopbit: 6
-          valueField: '0000000000'
+          value: "0000000000"
         - field: cop2
           type: cop
           startbit: 5
           stopbit: 0
-          valueField: '011010'
-      
+          value: "011010"
+
       definition: |-
-        HI = CAPI.FP.uint2int(rs) % CAPI.FP.uint2int(rt);
-        var cociente = (CAPI.FP.uint2int(rs) / CAPI.FP.uint2int(rt));
+        registers.HI = CAPI.FP.uint2int(registers[rs]) % CAPI.FP.uint2int(registers[rt]);
+        var cociente = (CAPI.FP.uint2int(registers[rs]) / CAPI.FP.uint2int(registers[rt]));
         if (cociente < 0) {
-            LO = BigInt(Math.ceil(Number(cociente)));
+            registers.LO = BigInt(Math.ceil(Number(cociente)));
         } else {
-            LO = BigInt(Math.floor(Number(cociente)));
+            registers.LO = BigInt(Math.floor(Number(cociente)));
         }
     - name: div.d
       template: Custom
@@ -1883,14 +1988,13 @@ instructions:
           type: co
           startbit: 31
           stopbit: 26
-          valueField: '010001'
-          value: '010001'
+          value: "010001"
           order: 0
         - field: fmt
           type: cop
           startbit: 25
           stopbit: 21
-          valueField: '00001'
+          value: "00001"
         - field: ft
           type: SFP-Reg
           startbit: 20
@@ -1903,22 +2007,24 @@ instructions:
           stopbit: 11
           order: 2
           prefix: $
+          suffix: ","
         - field: fd
           type: SFP-Reg
           startbit: 10
           stopbit: 6
           order: 1
           prefix: $
+          suffix: ","
         - field: cop
           type: cop
           startbit: 5
           stopbit: 0
-          valueField: '000011'
+          value: "000011"
       preoperation: |
-        let val1 = CAPI.MIPS.readDouble(fs_name);
-        let val2 = CAPI.MIPS.readDouble(ft_name);
+        let val1 = CAPI.ARCH.readDouble(fs);
+        let val2 = CAPI.ARCH.readDouble(ft);
       postoperation: |
-        CAPI.MIPS.writeDouble(result, fd_name);
+        CAPI.ARCH.writeDouble(result, fd);
       definition: |
         let result;
         if (val2 !== 0) {
@@ -1938,14 +2044,13 @@ instructions:
           type: co
           startbit: 31
           stopbit: 26
-          valueField: '010001'
-          value: '010001'
+          value: "010001"
           order: 0
         - field: fmt
           type: cop
           startbit: 25
           stopbit: 21
-          valueField: '00000'
+          value: "00000"
         - field: ft
           type: SFP-Reg
           startbit: 20
@@ -1958,25 +2063,28 @@ instructions:
           stopbit: 11
           order: 2
           prefix: $
+          suffix: ","
         - field: fd
           type: SFP-Reg
           startbit: 10
           stopbit: 6
           order: 1
           prefix: $
+          suffix: ","
         - field: cop
           type: cop
           startbit: 5
           stopbit: 0
-          valueField: '000011'
+          value: "000011"
       preoperation: |
-        fs = CAPI.FS.uint2float32(fs);
-        ft = CAPI.FS.uint2float32(ft);
+        fsValue = CAPI.FS.uint2float32(fs);
+        ftValue = CAPI.FS.uint2float32(ft);
       postoperation: |
-        fd = CAPI.FS.float322uint(fd);
+        fd = CAPI.FS.float322uint(result);
       definition: |-
-        if (ft != 0)
-         { fd = fs / ft; }
+        let result;
+        if (ftValue != 0)
+         { result = fsValue / ftValue; }
          else { CAPI.VALIDATION.raise('Division by zero not allowed'); }
     - name: divu
       template: Custom
@@ -1990,7 +2098,7 @@ instructions:
           type: co
           startbit: 31
           stopbit: 26
-          value: '000000'
+          value: "000000"
           order: 0
         - field: rs
           type: INT-Reg
@@ -1998,6 +2106,7 @@ instructions:
           stopbit: 21
           order: 2
           prefix: $
+          suffix: ","
         - field: rt
           type: INT-Reg
           startbit: 20
@@ -2010,19 +2119,20 @@ instructions:
           stopbit: 11
           order: 1
           prefix: $
+          suffix: ","
         - field: cop
           type: cop
           startbit: 10
           stopbit: 6
-          valueField: '00010'
+          value: "00010"
         - field: sop33
           type: cop
           startbit: 5
           stopbit: 0
-          valueField: '011011'
+          value: "011011"
       definition: |-
-        if (rt != 0)
-         { rd = Math.floor(CAPI.FP.int2uint(rs) / CAPI.FP.int2uint(rt)); }
+        if (registers[rt] != 0)
+         { registers[rd] = Math.floor(CAPI.FP.int2uint(registers[rs]) / CAPI.FP.int2uint(registers[rt])); }
          else { CAPI.VALIDATION.raise('Division by zero not allowed'); }
     - name: divu
       template: Custom
@@ -2036,7 +2146,7 @@ instructions:
           type: co
           startbit: 31
           stopbit: 26
-          value: '000000'
+          value: "000000"
           order: 0
         - field: rs
           type: INT-Reg
@@ -2044,6 +2154,7 @@ instructions:
           stopbit: 21
           order: 1
           prefix: $
+          suffix: ","
         - field: rt
           type: INT-Reg
           startbit: 20
@@ -2054,11 +2165,11 @@ instructions:
           type: cop
           startbit: 5
           stopbit: 0
-          valueField: '011011'
+          value: "011011"
       definition: |-
-        if (rt != 0)
-         { LO = Math.floor(CAPI.FP.int2uint(rs) / CAPI.FP.int2uint(rt));
-        HI = CAPI.FP.int2uint(rs) % CAPI.FP.int2uint(rt); }
+        if (registers[rt] != 0)
+         { registers.LO = Math.floor(CAPI.FP.int2uint(registers[rs]) / CAPI.FP.int2uint(registers[rt]));
+        registers.HI = CAPI.FP.int2uint(registers[rs]) % CAPI.FP.int2uint(registers[rt]); }
          else { CAPI.VALIDATION.raise('Division by zero not allowed'); }
     - name: j
       template: Custom
@@ -2072,20 +2183,20 @@ instructions:
           type: co
           startbit: 31
           stopbit: 26
-          value: '000010'
+          value: "000010"
           order: 0
         - field: addr
-          type: inm-signed
+          type: imm-signed
           startbit: 25
           stopbit: 0
           order: 1
-      definition: PC = addr;
+      definition: registers.PC = addr;
     - name: jal
       template: Custom
       type: Function call
-      help: 'Unconditional jump, stores the current address at $ ra ($31).'
+      help: "Unconditional jump, stores the current address at $ ra ($31)."
       properties:
-        - enter_subrutine
+        - enter_subroutine
       nwords: 1
       clk_cycles: 1
       fields:
@@ -2093,23 +2204,23 @@ instructions:
           type: co
           startbit: 31
           stopbit: 26
-          value: '000011'
+          value: "000011"
           order: 0
         - field: addr
-          type: inm-signed
+          type: imm-signed
           startbit: 25
           stopbit: 0
           order: 1
       definition: |-
-        ra = PC;
-         PC = addr;
-         CAPI.CHECK_STACK.begin(addr); CAPI.DRAW_STACK.begin(addr);
+        registers.ra = registers.PC;
+        registers.PC = addr;
+        CAPI.CHECK_STACK.begin(addr); CAPI.DRAW_STACK.begin(addr);
     - name: jalr
       template: Custom
       type: Function call
-      help: 'Unconditional jump, stores the current address in Rsrc1.'
+      help: "Unconditional jump, stores the current address in Rsrc1."
       properties:
-        - enter_subrutine
+        - enter_subroutine
       nwords: 1
       clk_cycles: 1
       fields:
@@ -2117,7 +2228,7 @@ instructions:
           type: co
           startbit: 31
           stopbit: 26
-          value: '000000'
+          value: "000000"
           order: 0
         - field: rs
           type: INT-Reg
@@ -2131,21 +2242,22 @@ instructions:
           stopbit: 11
           order: 1
           prefix: $
+          suffix: ","
         - field: cop
           type: cop
           startbit: 5
           stopbit: 0
-          valueField: '001001'
+          value: "001001"
       definition: |-
-        rd = PC;
-         PC = rs;
-         CAPI.CHECK_STACK.begin(rs); CAPI.DRAW_STACK.begin(rs);
+        registers[rd] = registers.PC;
+        registers.PC = registers[rs];
+        CAPI.CHECK_STACK.begin(registers[rs]); CAPI.DRAW_STACK.begin(registers[rs]);
     - name: jr
       template: Custom
       type: Unconditional bifurcation
       help: Unconditional jump.
       properties:
-        - exit_subrutine
+        - exit_subroutine
       nwords: 1
       clk_cycles: 1
       fields:
@@ -2153,7 +2265,7 @@ instructions:
           type: co
           startbit: 31
           stopbit: 26
-          value: '000000'
+          value: "000000"
           order: 0
         - field: rs
           type: INT-Reg
@@ -2165,14 +2277,14 @@ instructions:
           type: cop
           startbit: 5
           stopbit: 0
-          valueField: '001000'
+          value: "001000"
       definition: |-
-        PC = rs;
-         CAPI.CHECK_STACK.end(); CAPI.DRAW_STACK.end();
+        registers.PC = registers[rs];
+        CAPI.CHECK_STACK.end(); CAPI.DRAW_STACK.end();
     - name: lb
       template: Custom
       type: Memory access
-      help: ''
+      help: ""
       properties: []
       nwords: 1
       clk_cycles: 1
@@ -2181,7 +2293,7 @@ instructions:
           type: co
           startbit: 31
           stopbit: 26
-          value: '100000'
+          value: "100000"
           order: 0
         - field: reg1
           type: INT-Reg
@@ -2189,11 +2301,13 @@ instructions:
           stopbit: 16
           order: 1
           prefix: $
+          suffix: ","
         - field: val
-          type: inm-signed
+          type: imm-signed
           startbit: 15
           stopbit: 0
           order: 2
+          space: false
         - field: reg2
           type: INT-Reg
           startbit: 25
@@ -2201,11 +2315,12 @@ instructions:
           prefix: ($
           suffix: )
           order: 3
-      definition: 'reg1 = CAPI.MEM.read(reg2+val, 1, reg1_name);'
+      definition: |
+        registers[reg1] = CAPI.MEM.read(registers[reg2]+val, 1, reg1);
     - name: lbu
       template: Custom
       type: Memory access
-      help: ''
+      help: ""
       properties: []
       nwords: 1
       clk_cycles: 1
@@ -2214,7 +2329,7 @@ instructions:
           type: co
           startbit: 31
           stopbit: 26
-          value: '100100'
+          value: "100100"
           order: 0
         - field: base
           type: INT-Reg
@@ -2229,16 +2344,19 @@ instructions:
           stopbit: 16
           order: 1
           prefix: $
-        - field: 'off'
-          type: inm-signed
+          suffix: ","
+        - field: "off"
+          type: imm-signed
           startbit: 15
           stopbit: 0
           order: 2
-      definition: 'rt = CAPI.MEM.read(base+off, 1, rt_name);'
+          space: false
+      definition: |
+        registers[rt] = CAPI.MEM.read(registers[base]+off, 1, rt);
     - name: ldc1
       template: Custom
       type: Memory access
-      help: ''
+      help: ""
       properties: []
       nwords: 1
       clk_cycles: 1
@@ -2247,7 +2365,7 @@ instructions:
           type: co
           startbit: 31
           stopbit: 26
-          value: '110101'
+          value: "110101"
           order: 0
         - field: base
           type: INT-Reg
@@ -2262,26 +2380,28 @@ instructions:
           stopbit: 16
           order: 1
           prefix: $
-        - field: 'off'
-          type: inm-signed
+          suffix: ","
+        - field: "off"
+          type: imm-signed
           startbit: 15
           stopbit: 0
           order: 2
+          space: false
       preoperation: |
-        CAPI.MIPS.validateEvenRegister(ft_name);
+        CAPI.ARCH.validateEvenRegister(ft);
       postoperation: |
-        CAPI.MIPS.writeDouble(doubleValue, ft_name);
+        CAPI.ARCH.writeDouble(doubleValue, ft);
       definition: |
-        if (CAPI.VALIDATION.isMisaligned(base + off, 'd')) {
+        if (CAPI.VALIDATION.isMisaligned(registers[base] + off, 'd')) {
           CAPI.VALIDATION.raise('The memory must be aligned');
         }
-        let high = CAPI.MEM.read(base + off, 4);
-        let low = CAPI.MEM.read(base + off + 4n, 4, ft_name);
+        let high = CAPI.MEM.read(registers[base] + off, 4);
+        let low = CAPI.MEM.read(registers[base] + off + 4n, 4, ft);
         let doubleValue = CAPI.FP.uint2float64(Number(low), Number(high));
     - name: lh
       template: Custom
       type: Memory access
-      help: 'Load 16 bits of the specified address, sign is extended'
+      help: "Load 16 bits of the specified address, sign is extended"
       properties: []
       nwords: 1
       clk_cycles: 1
@@ -2290,7 +2410,7 @@ instructions:
           type: co
           startbit: 31
           stopbit: 26
-          value: '100001'
+          value: "100001"
           order: 0
         - field: reg1
           type: INT-Reg
@@ -2298,11 +2418,13 @@ instructions:
           stopbit: 16
           order: 1
           prefix: $
+          suffix: ","
         - field: val
-          type: inm-signed
+          type: imm-signed
           startbit: 15
           stopbit: 0
           order: 2
+          space: false
         - field: reg2
           type: INT-Reg
           startbit: 25
@@ -2310,11 +2432,12 @@ instructions:
           order: 3
           prefix: ($
           suffix: )
-      definition: 'reg1 = CAPI.MEM.read(reg2+val, 2, reg1_name);'
+      definition: |
+        registers[reg1] = CAPI.MEM.read(registers[reg2]+val, 2, reg1);
     - name: lhu
       template: Custom
       type: Memory access
-      help: 'Load 16 bits of the specified address, no sign is extended'
+      help: "Load 16 bits of the specified address, no sign is extended"
       properties: []
       nwords: 1
       clk_cycles: 1
@@ -2323,7 +2446,7 @@ instructions:
           type: co
           startbit: 31
           stopbit: 26
-          value: '100101'
+          value: "100101"
           order: 0
         - field: base
           type: INT-Reg
@@ -2338,12 +2461,15 @@ instructions:
           stopbit: 16
           order: 1
           prefix: $
-        - field: 'off'
-          type: inm-signed
+          suffix: ","
+        - field: "off"
+          type: imm-signed
           startbit: 15
           stopbit: 0
           order: 2
-      definition: 'rt = CAPI.MEM.read(base+off, 2, rt_name);'
+          space: false
+      definition: |
+        registers[rt] = CAPI.MEM.read(registers[base]+off, 2, rt);
     - name: lui
       template: Custom
       type: Other
@@ -2356,7 +2482,7 @@ instructions:
           type: co
           startbit: 31
           stopbit: 26
-          value: '001111'
+          value: "001111"
           order: 0
         - field: reg1
           type: INT-Reg
@@ -2364,12 +2490,14 @@ instructions:
           stopbit: 16
           order: 1
           prefix: $
+          suffix: ","
         - field: val
-          type: inm-unsigned
+          type: imm-unsigned
           startbit: 15
           stopbit: 0
           order: 2
-      definition: reg1 = val << 16n;
+      definition: |
+        registers[reg1] = val << 16n;
     - name: lw
       template: Custom
       type: Memory access
@@ -2382,7 +2510,7 @@ instructions:
           type: co
           startbit: 31
           stopbit: 26
-          value: '100011'
+          value: "100011"
           order: 0
         - field: reg1
           type: INT-Reg
@@ -2390,11 +2518,13 @@ instructions:
           stopbit: 16
           order: 1
           prefix: $
+          suffix: ","
         - field: val
-          type: inm-signed
+          type: imm-signed
           startbit: 15
           stopbit: 0
           order: 2
+          space: false
         - field: reg2
           type: INT-Reg
           startbit: 25
@@ -2402,11 +2532,12 @@ instructions:
           prefix: ($
           suffix: )
           order: 3
-      definition: 'reg1 = CAPI.MEM.read(val+reg2, 4, reg1_name);'
+      definition: |
+        registers[reg1] = CAPI.MEM.read(registers[reg2]+val, 4, reg1);
     - name: lwc1
       template: Custom
       type: Memory access
-      help: ''
+      help: ""
       properties: []
       nwords: 1
       clk_cycles: 1
@@ -2415,7 +2546,7 @@ instructions:
           type: co
           startbit: 31
           stopbit: 26
-          value: '110001'
+          value: "110001"
           order: 0
         - field: base
           type: INT-Reg
@@ -2430,13 +2561,15 @@ instructions:
           stopbit: 16
           order: 1
           prefix: $
-        - field: 'off'
-          type: inm-signed
+          suffix: ","
+        - field: "off"
+          type: imm-signed
           startbit: 15
           stopbit: 0
           order: 2
+          space: false
       definition: |-
-        ft = CAPI.MEM.read(base+off, 4, ft_name);
+        registers[ft] = CAPI.MEM.read(registers[base]+off, 4, ft);
     - name: mfc1
       template: Custom
       type: Transfer between registers
@@ -2449,26 +2582,28 @@ instructions:
           type: co
           startbit: 31
           stopbit: 26
-          value: '010001'
+          value: "010001"
           order: 0
         - field: cop
           type: cop
           startbit: 25
           stopbit: 21
-          valueField: '11111'
+          value: "11111"
         - field: rt
           type: INT-Reg
           startbit: 20
           stopbit: 16
           order: 1
           prefix: $
+          suffix: ","
         - field: fs
           type: SFP-Reg
           startbit: 15
           stopbit: 11
           order: 2
           prefix: $
-      definition: rt = CAPI.FP.float322uint(fs);
+      definition: |
+        registers[rt] = CAPI.FP.float322uint(registers[fs]);
     - name: mfhi
       template: Custom
       type: Transfer between registers
@@ -2481,7 +2616,7 @@ instructions:
           type: co
           startbit: 31
           stopbit: 26
-          value: '000000'
+          value: "000000"
           order: 0
         - field: rd
           type: INT-Reg
@@ -2493,8 +2628,9 @@ instructions:
           type: cop
           startbit: 5
           stopbit: 0
-          valueField: '010000'
-      definition: rd = HI;
+          value: "010000"
+      definition: |
+        registers[rd] = registers.HI;
     - name: mflo
       template: Custom
       type: Transfer between registers
@@ -2507,7 +2643,7 @@ instructions:
           type: co
           startbit: 31
           stopbit: 26
-          value: '000000'
+          value: "000000"
           order: 0
         - field: rd
           type: INT-Reg
@@ -2519,8 +2655,9 @@ instructions:
           type: cop
           startbit: 5
           stopbit: 0
-          valueField: '010010'
-      definition: rd = LO;
+          value: "010010"
+      definition: |
+        registers[rd] = registers.LO;
     - name: mod
       template: Custom
       type: Arithmetic integer
@@ -2533,7 +2670,7 @@ instructions:
           type: co
           startbit: 31
           stopbit: 26
-          value: '000000'
+          value: "000000"
           order: 0
         - field: rs
           type: INT-Reg
@@ -2541,6 +2678,7 @@ instructions:
           stopbit: 21
           order: 2
           prefix: $
+          suffix: ","
         - field: rt
           type: INT-Reg
           startbit: 20
@@ -2553,12 +2691,14 @@ instructions:
           stopbit: 11
           order: 1
           prefix: $
+          suffix: ","
         - field: cop
           type: cop
           startbit: 10
           stopbit: 0
-          valueField: '00011011010'
-      definition: rd = CAPI.FP.uint2int(rs) % CAPI.FP.uint2int(rt);
+          value: "00011011010"
+      definition: |
+        registers[rd] = CAPI.FP.uint2int(registers[rs]) % CAPI.FP.uint2int(registers[rt]);
     - name: modu
       template: Custom
       type: Arithmetic floating point
@@ -2571,7 +2711,7 @@ instructions:
           type: co
           startbit: 31
           stopbit: 26
-          value: '000000'
+          value: "000000"
           order: 0
         - field: rs
           type: INT-Reg
@@ -2579,6 +2719,7 @@ instructions:
           stopbit: 21
           order: 2
           prefix: $
+          suffix: ","
         - field: rt
           type: INT-Reg
           startbit: 20
@@ -2591,12 +2732,14 @@ instructions:
           stopbit: 11
           order: 1
           prefix: $
+          suffix: ","
         - field: cop
           type: cop
           startbit: 10
           stopbit: 0
-          valueField: '00011011011'
-      definition: rd = CAPI.FP.int2uint(rs) % CAPI.FP.int2uint(rt);
+          value: "00011011011"
+      definition: |
+        registers[rd] = CAPI.FP.int2uint(registers[rs]) % CAPI.FP.int2uint(registers[rt]);
     - name: mov.d
       template: Custom
       type: Transfer between registers
@@ -2609,13 +2752,13 @@ instructions:
           type: co
           startbit: 31
           stopbit: 26
-          value: '010001'
+          value: "010001"
           order: 0
         - field: fmt
           type: cop
           startbit: 25
           stopbit: 21
-          valueField: '00001'
+          value: "00001"
         - field: fs
           type: SFP-Reg
           startbit: 15
@@ -2628,15 +2771,16 @@ instructions:
           stopbit: 6
           order: 1
           prefix: $
+          suffix: ","
         - field: cop
           type: cop
           startbit: 5
           stopbit: 0
-          valueField: '000110'
+          value: "000110"
       preoperation: |
-        let val = CAPI.MIPS.readDouble(fs_name);
+        let val = CAPI.ARCH.readDouble(fs);
       postoperation: |
-        CAPI.MIPS.writeDouble(val, fd_name);
+        CAPI.ARCH.writeDouble(val, fd);
       definition: |
         // Value is moved in preoperation/postoperation
     - name: mov.s
@@ -2651,13 +2795,13 @@ instructions:
           type: co
           startbit: 31
           stopbit: 26
-          value: '010001'
+          value: "010001"
           order: 0
         - field: fmt
           type: cop
           startbit: 25
           stopbit: 21
-          valueField: '00000'
+          value: "00000"
         - field: fs
           type: SFP-Reg
           startbit: 15
@@ -2670,16 +2814,17 @@ instructions:
           stopbit: 6
           order: 1
           prefix: $
+          suffix: ","
         - field: cop
           type: cop
           startbit: 5
           stopbit: 0
-          valueField: '000110'
+          value: "000110"
       preoperation: |
-        fs = CAPI.FS.uint2float32(fs);
+        fsValue = CAPI.FS.uint2float32(fs);
       postoperation: |
-        fd = CAPI.FS.float322uint(fd);
-      definition: fd = fs;
+        registers[fd] = CAPI.FS.float322uint(result);
+      definition: let result = fsValue;
     - name: mtc1
       template: Custom
       type: Transfer between registers
@@ -2692,26 +2837,27 @@ instructions:
           type: co
           startbit: 31
           stopbit: 26
-          value: '010001'
+          value: "010001"
           order: 0
         - field: cop
           type: cop
           startbit: 25
           stopbit: 21
-          valueField: '00100'
+          value: "00100"
         - field: rt
           type: INT-Reg
           startbit: 20
           stopbit: 16
           order: 1
           prefix: $
+          suffix: ","
         - field: fs
           type: SFP-Reg
           startbit: 15
           stopbit: 11
           order: 2
           prefix: $
-      definition: fs = CAPI.FP.uint2float32(rt);
+      definition: registers[fs] = CAPI.FP.uint2float32(registers[rt]);
     - name: mthi
       template: Custom
       type: Transfer between registers
@@ -2724,7 +2870,7 @@ instructions:
           type: co
           startbit: 31
           stopbit: 26
-          value: '000000'
+          value: "000000"
           order: 0
         - field: rs
           type: INT-Reg
@@ -2736,8 +2882,8 @@ instructions:
           type: cop
           startbit: 5
           stopbit: 0
-          valueField: '010001'
-      definition: HI = rs;
+          value: "010001"
+      definition: registers.HI = registers[rs];
     - name: mtlo
       template: Custom
       type: Transfer between registers
@@ -2750,7 +2896,7 @@ instructions:
           type: co
           startbit: 31
           stopbit: 26
-          value: '000000'
+          value: "000000"
           order: 0
         - field: rs
           type: INT-Reg
@@ -2762,12 +2908,12 @@ instructions:
           type: cop
           startbit: 5
           stopbit: 0
-          valueField: '010011'
-      definition: LO = rs;
+          value: "010011"
+      definition: registers.LO = registers[rs];
     - name: mul
       template: Custom
       type: Arithmetic integer
-      help: ''
+      help: ""
       properties: []
       nwords: 1
       clk_cycles: 1
@@ -2776,7 +2922,7 @@ instructions:
           type: co
           startbit: 31
           stopbit: 26
-          value: '011100'
+          value: "011100"
           order: 0
         - field: reg1
           type: INT-Reg
@@ -2784,12 +2930,14 @@ instructions:
           stopbit: 21
           order: 1
           prefix: $
+          suffix: ","
         - field: reg2
           type: INT-Reg
           startbit: 20
           stopbit: 16
           order: 2
           prefix: $
+          suffix: ","
         - field: reg3
           type: INT-Reg
           startbit: 15
@@ -2800,8 +2948,8 @@ instructions:
           type: cop
           startbit: 5
           stopbit: 0
-          valueField: '000010'
-      definition: reg1 = reg2 * reg3;
+          value: "000010"
+      definition: registers[reg1] = registers[reg2] * registers[reg3];
     - name: mul.d
       template: Custom
       type: Arithmetic floating point
@@ -2814,13 +2962,13 @@ instructions:
           type: co
           startbit: 31
           stopbit: 26
-          value: '010001'
+          value: "010001"
           order: 0
         - field: fmt
           type: cop
           startbit: 25
           stopbit: 21
-          valueField: '00001'
+          value: "00001"
         - field: ft
           type: SFP-Reg
           startbit: 20
@@ -2833,22 +2981,24 @@ instructions:
           stopbit: 11
           order: 2
           prefix: $
+          suffix: ","
         - field: fd
           type: SFP-Reg
           startbit: 10
           stopbit: 6
           order: 1
           prefix: $
+          suffix: ","
         - field: cop
           type: cop
           startbit: 5
           stopbit: 0
-          valueField: '000010'
+          value: "000010"
       preoperation: |
-        let val1 = CAPI.MIPS.readDouble(fs_name);
-        let val2 = CAPI.MIPS.readDouble(ft_name);
+        let val1 = CAPI.ARCH.readDouble(fs);
+        let val2 = CAPI.ARCH.readDouble(ft);
       postoperation: |
-        CAPI.MIPS.writeDouble(result, fd_name);
+        CAPI.ARCH.writeDouble(result, fd);
       definition: |
         let result = val1 * val2;
     - name: mul.s
@@ -2863,13 +3013,13 @@ instructions:
           type: co
           startbit: 31
           stopbit: 26
-          value: '010001'
+          value: "010001"
           order: 0
         - field: fmt
           type: cop
           startbit: 25
           stopbit: 21
-          valueField: '00000'
+          value: "00000"
         - field: ft
           type: SFP-Reg
           startbit: 20
@@ -2882,23 +3032,26 @@ instructions:
           stopbit: 11
           order: 2
           prefix: $
+          suffix: ","
         - field: fd
           type: SFP-Reg
           startbit: 10
           stopbit: 6
           order: 1
           prefix: $
+          suffix: ","
         - field: cop
           type: cop
           startbit: 5
           stopbit: 0
-          valueField: '000010'
+          value: "000010"
       preoperation: |
-        fs = CAPI.FS.uint2float32(fs);
-        ft = CAPI.FS.uint2float32(ft);
+        fsValue = CAPI.FS.uint2float32(fs);
+        ftValue = CAPI.FS.uint2float32(ft);
       postoperation: |
-        fd = CAPI.FS.float322uint(fd);
-      definition: fd = fs * ft;
+        registers[fd] = CAPI.FS.float322uint(result);
+      definition: |
+        let result = fsValue * ftValue;
     - name: mult
       template: Custom
       type: Arithmetic integer
@@ -2911,7 +3064,7 @@ instructions:
           type: co
           startbit: 31
           stopbit: 26
-          value: '000000'
+          value: "000000"
           order: 0
         - field: rs
           type: INT-Reg
@@ -2925,15 +3078,16 @@ instructions:
           stopbit: 16
           order: 1
           prefix: $
+          suffix: ","
         - field: cop
           type: cop
           startbit: 5
           stopbit: 0
-          valueField: '011000'
+          value: "011000"
       definition: |-
-        let result = CAPI.FP.uint2int(rs) * CAPI.FP.uint2int(rt);
-        HI = Math.floor(result / Math.pow (2, 32));
-        LO = result % Math.pow(2, 32);
+        let result = CAPI.FP.uint2int(registers[rs]) * CAPI.FP.uint2int(registers[rt]);
+        registers.HI = Math.floor(result / Math.pow (2, 32));
+        registers.LO = result % Math.pow(2, 32);
     - name: multu
       template: Custom
       type: Arithmetic integer
@@ -2946,7 +3100,7 @@ instructions:
           type: co
           startbit: 31
           stopbit: 26
-          value: '000000'
+          value: "000000"
           order: 0
         - field: rs
           type: INT-Reg
@@ -2960,17 +3114,18 @@ instructions:
           stopbit: 16
           order: 1
           prefix: $
+          suffix: ","
         - field: cop
           type: cop
           startbit: 5
           stopbit: 0
-          valueField: '011001'
+          value: "011001"
       definition: |-
-        let result = CAPI.FP.int2uint(rs) * CAPI.FP.int2uint(rt);
-        HI = Math.floor(result / Math.pow(2, 32));
-        HI = HI >>> 0;
-        LO = result % Math.pow(2, 32);
-        LO = LO >>> 0;
+        let result = CAPI.FP.int2uint(registers[rs]) * CAPI.FP.int2uint(registers[rt]);
+        registers.HI = Math.floor(result / Math.pow(2, 32));
+        registers.HI = registers.HI >>> 0; // TODO: This is broken with bigints.
+        registers.LO = result % Math.pow(2, 32);
+        registers.LO = registers.LO >>> 0;
     - name: nop
       template: Custom
       type: Logic
@@ -2983,14 +3138,14 @@ instructions:
           type: co
           startbit: 31
           stopbit: 26
-          value: '000000'
+          value: "000000"
           order: 0
         - field: cop
           type: cop
           startbit: 5
           stopbit: 0
-          valueField: '000000'
-      definition: ''
+          value: "000000"
+      definition: ""
     - name: nor
       template: Custom
       type: Arithmetic integer
@@ -3003,7 +3158,7 @@ instructions:
           type: co
           startbit: 31
           stopbit: 26
-          value: '000000'
+          value: "000000"
           order: 0
         - field: rs
           type: INT-Reg
@@ -3011,6 +3166,7 @@ instructions:
           stopbit: 21
           order: 2
           prefix: $
+          suffix: ","
         - field: rt
           type: INT-Reg
           startbit: 20
@@ -3023,12 +3179,13 @@ instructions:
           stopbit: 11
           order: 1
           prefix: $
+          suffix: ","
         - field: cop
           type: cop
           startbit: 5
           stopbit: 0
-          valueField: '101111'
-      definition: rd = (~ (rs | rt));
+          value: "101111"
+      definition: registers[rd] = (~ (registers[rs] | registers[rt]));
     - name: or
       template: Custom
       type: Logic
@@ -3041,7 +3198,7 @@ instructions:
           type: co
           startbit: 31
           stopbit: 26
-          value: '000000'
+          value: "000000"
           order: 0
         - field: reg1
           type: INT-Reg
@@ -3049,12 +3206,14 @@ instructions:
           stopbit: 21
           order: 1
           prefix: $
+          suffix: ","
         - field: reg2
           type: INT-Reg
           startbit: 20
           stopbit: 16
           order: 2
           prefix: $
+          suffix: ","
         - field: reg3
           type: INT-Reg
           startbit: 15
@@ -3065,8 +3224,8 @@ instructions:
           type: cop
           startbit: 5
           stopbit: 0
-          valueField: '100101'
-      definition: reg1 = reg2 | reg3;
+          value: "100101"
+      definition: registers[reg1] = registers[reg2] | registers[reg3];
     - name: ori
       template: Custom
       type: Logic
@@ -3079,7 +3238,7 @@ instructions:
           type: co
           startbit: 31
           stopbit: 26
-          value: '001101'
+          value: "001101"
           order: 0
         - field: reg1
           type: INT-Reg
@@ -3087,18 +3246,20 @@ instructions:
           stopbit: 21
           order: 1
           prefix: $
+          suffix: ","
         - field: reg2
           type: INT-Reg
           startbit: 20
           stopbit: 16
           order: 2
           prefix: $
+          suffix: ","
         - field: val
-          type: inm-unsigned
+          type: imm-unsigned
           startbit: 15
           stopbit: 0
           order: 3
-      definition: reg1 = reg2 | val;
+      definition: registers[reg1] = registers[reg2] | val;
     - name: rotr
       template: Custom
       type: Arithmetic integer
@@ -3111,27 +3272,29 @@ instructions:
           type: co
           startbit: 31
           stopbit: 26
-          value: '000000'
+          value: "000000"
           order: 0
         - field: r
           type: cop
           startbit: 21
           stopbit: 21
-          valueField: '1'
+          value: "1"
         - field: rt
           type: INT-Reg
           startbit: 20
           stopbit: 16
           order: 2
           prefix: $
+          suffix: ","
         - field: rd
           type: INT-Reg
           startbit: 15
           stopbit: 11
           order: 1
           prefix: $
+          suffix: ","
         - field: sa
-          type: inm-unsigned
+          type: imm-unsigned
           startbit: 10
           stopbit: 6
           order: 3
@@ -3139,8 +3302,9 @@ instructions:
           type: cop
           startbit: 5
           stopbit: 0
-          valueField: '000010'
-      definition: rd = CAPI.FP.int2uint((rt >>> sa) | (rt << (32 - sa)));
+          value: "000010"
+      definition: |
+        registers[rd] = CAPI.FP.int2uint((registers[rt] >>> sa) | (registers[rt] << (32 - sa))); // TODO: This is broken with bigints.
     - name: rsqrt.d
       template: Custom
       type: Arithmetic floating point
@@ -3153,13 +3317,13 @@ instructions:
           type: co
           startbit: 31
           stopbit: 26
-          value: '010001'
+          value: "010001"
           order: 0
         - field: fmt
           type: cop
           startbit: 25
           stopbit: 21
-          valueField: '00001'
+          value: "00001"
         - field: fs
           type: SFP-Reg
           startbit: 15
@@ -3172,15 +3336,16 @@ instructions:
           stopbit: 6
           order: 1
           prefix: $
+          suffix: ","
         - field: cop
           type: cop
           startbit: 5
           stopbit: 0
-          valueField: '010110'
+          value: "010110"
       preoperation: |
-        let val = CAPI.MIPS.readDouble(fs_name);
+        let val = CAPI.ARCH.readDouble(fs);
       postoperation: |
-        CAPI.MIPS.writeDouble(result, fd_name);
+        CAPI.ARCH.writeDouble(result, fd);
       definition: |
         let result;
         if (val >= 0) {
@@ -3200,13 +3365,13 @@ instructions:
           type: co
           startbit: 31
           stopbit: 26
-          value: '010001'
+          value: "010001"
           order: 0
         - field: fmt
           type: cop
           startbit: 25
           stopbit: 21
-          valueField: '00000'
+          value: "00000"
         - field: fs
           type: SFP-Reg
           startbit: 15
@@ -3219,23 +3384,27 @@ instructions:
           stopbit: 6
           order: 1
           prefix: $
+          suffix: ","
         - field: cop
           type: cop
           startbit: 5
           stopbit: 0
-          valueField: '010110'
+          value: "010110"
       preoperation: |
-        fs = CAPI.FS.uint2float32(fs);
+        fsValue = CAPI.FS.uint2float32(fs);
       postoperation: |
         fd = CAPI.FS.float322uint(fd);
       definition: |-
-        if (fs >= 0)
-         { fd = 1.0/Math.sqrt(fs); }
-         else { CAPI.VALIDATION.raise('Square root of a negative number is not allowed.'); }
+        let result;
+        if (fsValue >= 0) { 
+          result = 1.0/Math.sqrt(fsValue); 
+        } else {
+          CAPI.VALIDATION.raise('Square root of a negative number is not allowed.'); 
+        }
     - name: sb
       template: Custom
       type: Memory access
-      help: ''
+      help: ""
       properties: []
       nwords: 1
       clk_cycles: 1
@@ -3244,7 +3413,7 @@ instructions:
           type: co
           startbit: 31
           stopbit: 26
-          value: '101000'
+          value: "101000"
           order: 0
         - field: base
           type: INT-Reg
@@ -3259,16 +3428,18 @@ instructions:
           stopbit: 16
           order: 1
           prefix: $
-        - field: 'off'
-          type: inm-signed
+          suffix: ","
+        - field: "off"
+          type: imm-signed
           startbit: 15
           stopbit: 0
           order: 2
-      definition: 'CAPI.MEM.write(base+off, 1, rt, rt_name);'
+          space: false
+      definition: "CAPI.MEM.write(registers[base]+off, 1, registers[rt], rt);"
     - name: sdc1
       template: Custom
       type: Memory access
-      help: ''
+      help: ""
       properties: []
       nwords: 1
       clk_cycles: 1
@@ -3277,7 +3448,7 @@ instructions:
           type: co
           startbit: 31
           stopbit: 26
-          value: '111101'
+          value: "111101"
           order: 0
         - field: base
           type: INT-Reg
@@ -3292,20 +3463,22 @@ instructions:
           stopbit: 16
           order: 1
           prefix: $
-        - field: 'off'
-          type: inm-signed
+          suffix: ","
+        - field: "off"
+          type: imm-signed
           startbit: 15
           stopbit: 0
           order: 2
+          space: false
       preoperation: |
-        let doubleValue = CAPI.MIPS.readDouble(ft_name);
+        let doubleValue = CAPI.ARCH.readDouble(ft);
         let parts = CAPI.FP.float642uint(doubleValue);
       definition: |
-        if (CAPI.VALIDATION.isMisaligned(base + off, 'd')) {
+        if (CAPI.VALIDATION.isMisaligned(registers[base] + off, 'd')) {
           CAPI.VALIDATION.raise('The memory must be aligned');
         }
-        CAPI.MEM.write(base + off, 4, BigInt(parts[0]), ft_name);
-        CAPI.MEM.write(base + off + 4n, 4, BigInt(parts[1]));
+        CAPI.MEM.write(registers[base] + off, 4, BigInt(parts[0]), ft);
+        CAPI.MEM.write(registers[base] + off + 4n, 4, BigInt(parts[1]));
     - name: sh
       template: Custom
       type: Memory access
@@ -3318,7 +3491,7 @@ instructions:
           type: co
           startbit: 31
           stopbit: 26
-          value: '101001'
+          value: "101001"
           order: 0
         - field: base
           type: INT-Reg
@@ -3333,12 +3506,14 @@ instructions:
           stopbit: 16
           order: 1
           prefix: $
-        - field: 'off'
-          type: inm-signed
+          suffix: ","
+        - field: "off"
+          type: imm-signed
           startbit: 15
           stopbit: 0
           order: 2
-      definition: 'CAPI.MEM.write(base+off, 2, rt, rt_name);'
+          space: false
+      definition: "CAPI.MEM.write(registers[base]+off, 2, registers[rt], rt);"
     - name: sll
       template: Custom
       type: Arithmetic integer
@@ -3351,7 +3526,7 @@ instructions:
           type: co
           startbit: 31
           stopbit: 26
-          value: '000000'
+          value: "000000"
           order: 0
         - field: rt
           type: INT-Reg
@@ -3359,14 +3534,16 @@ instructions:
           stopbit: 16
           order: 2
           prefix: $
+          suffix: ","
         - field: rd
           type: INT-Reg
           startbit: 15
           stopbit: 11
           order: 1
           prefix: $
+          suffix: ","
         - field: sa
-          type: inm-unsigned
+          type: imm-unsigned
           startbit: 10
           stopbit: 6
           order: 3
@@ -3374,8 +3551,8 @@ instructions:
           type: cop
           startbit: 5
           stopbit: 0
-          valueField: '111111'
-      definition: rd = CAPI.FP.int2uint(rt << sa);
+          value: "111111"
+      definition: rd = CAPI.FP.int2uint(registers[rt] << sa);
     - name: slt
       template: Custom
       type: Logic
@@ -3388,7 +3565,7 @@ instructions:
           type: co
           startbit: 31
           stopbit: 26
-          value: '000000'
+          value: "000000"
           order: 0
         - field: rs
           type: INT-Reg
@@ -3396,6 +3573,7 @@ instructions:
           stopbit: 21
           order: 2
           prefix: $
+          suffix: ","
         - field: rt
           type: INT-Reg
           startbit: 20
@@ -3408,12 +3586,13 @@ instructions:
           stopbit: 11
           order: 1
           prefix: $
+          suffix: ","
         - field: cop
           type: cop
           startbit: 5
           stopbit: 0
-          valueField: '101010'
-      definition: 'rd = CAPI.FP.uint2int(rs) < CAPI.FP.uint2int(rt) ? 1n : 0n;'
+          value: "101010"
+      definition: "registers[rd] = CAPI.FP.uint2int(registers[rs]) < CAPI.FP.uint2int(registers[rt]) ? 1n : 0n;"
     - name: slti
       template: Custom
       type: Logic
@@ -3426,7 +3605,7 @@ instructions:
           type: co
           startbit: 31
           stopbit: 26
-          value: '001010'
+          value: "001010"
           order: 0
         - field: rt
           type: INT-Reg
@@ -3434,18 +3613,20 @@ instructions:
           stopbit: 21
           order: 2
           prefix: $
+          suffix: ","
         - field: rs
           type: INT-Reg
           startbit: 20
           stopbit: 16
           order: 1
           prefix: $
+          suffix: ","
         - field: inm
-          type: inm-signed
+          type: imm-signed
           startbit: 15
           stopbit: 0
           order: 3
-      definition: 'rs = CAPI.FP.uint2int(rt) < CAPI.FP.uint2int(inm) ? 1n : 0n;'
+      definition: "registers[rs] = CAPI.FP.uint2int(registers[rt]) < CAPI.FP.uint2int(inm) ? 1n : 0n;"
     - name: sltiu
       template: Custom
       type: Logic
@@ -3458,7 +3639,7 @@ instructions:
           type: co
           startbit: 31
           stopbit: 26
-          value: '001011'
+          value: "001011"
           order: 0
         - field: rt
           type: INT-Reg
@@ -3466,18 +3647,20 @@ instructions:
           stopbit: 21
           order: 2
           prefix: $
+          suffix: ","
         - field: rs
           type: INT-Reg
           startbit: 20
           stopbit: 16
           order: 1
           prefix: $
+          suffix: ","
         - field: inm
-          type: inm-signed
+          type: imm-signed
           startbit: 15
           stopbit: 0
           order: 3
-      definition: 'rs = CAPI.FP.int2uint(rt) < CAPI.FP.int2uint(inm) ? 1n : 0n;'
+      definition: "registers[rs] = CAPI.FP.int2uint(registers[rt]) < CAPI.FP.int2uint(inm) ? 1n : 0n;"
     - name: sltu
       template: Custom
       type: Logic
@@ -3490,7 +3673,7 @@ instructions:
           type: co
           startbit: 31
           stopbit: 26
-          value: '000000'
+          value: "000000"
           order: 0
         - field: rs
           type: INT-Reg
@@ -3498,6 +3681,7 @@ instructions:
           stopbit: 21
           order: 2
           prefix: $
+          suffix: ","
         - field: rt
           type: INT-Reg
           startbit: 20
@@ -3510,12 +3694,13 @@ instructions:
           stopbit: 11
           order: 1
           prefix: $
+          suffix: ","
         - field: cop
           type: cop
           startbit: 5
           stopbit: 0
-          valueField: '101011'
-      definition: 'rd = CAPI.FP.uint2int(rs) < CAPI.FP.uint2int(rt) ? 1n : 0n;'
+          value: "101011"
+      definition: "registers[rd] = CAPI.FP.uint2int(registers[rs]) < CAPI.FP.uint2int(registers[rt]) ? 1n : 0n;"
     - name: sqrt.d
       template: Custom
       type: Arithmetic floating point
@@ -3528,13 +3713,13 @@ instructions:
           type: co
           startbit: 31
           stopbit: 26
-          value: '010001'
+          value: "010001"
           order: 0
         - field: fmt
           type: cop
           startbit: 25
           stopbit: 21
-          valueField: '00001'
+          value: "00001"
         - field: fs
           type: SFP-Reg
           startbit: 15
@@ -3547,15 +3732,16 @@ instructions:
           stopbit: 6
           order: 1
           prefix: $
+          suffix: ","
         - field: cop
           type: cop
           startbit: 5
           stopbit: 0
-          valueField: '000100'
+          value: "000100"
       preoperation: |
-        let val = CAPI.MIPS.readDouble(fs_name);
+        let val = CAPI.ARCH.readDouble(fs);
       postoperation: |
-        CAPI.MIPS.writeDouble(result, fd_name);
+        CAPI.ARCH.writeDouble(result, fd);
       definition: |
         let result;
         if (val >= 0) {
@@ -3566,7 +3752,7 @@ instructions:
     - name: sqrt.s
       template: Custom
       type: Arithmetic floating point
-      help: 'Square root of fs (float): fd=sqrt(fs)'
+      help: "Square root of fs (float): fd=sqrt(fs)"
       properties: []
       nwords: 1
       clk_cycles: 1
@@ -3575,13 +3761,13 @@ instructions:
           type: co
           startbit: 31
           stopbit: 26
-          value: '010001'
+          value: "010001"
           order: 0
         - field: fmt
           type: cop
           startbit: 25
           stopbit: 21
-          valueField: '00000'
+          value: "00000"
         - field: fs
           type: SFP-Reg
           startbit: 15
@@ -3594,19 +3780,23 @@ instructions:
           stopbit: 6
           order: 1
           prefix: $
+          suffix: ","
         - field: cop
           type: cop
           startbit: 5
           stopbit: 0
-          valueField: '000100'
+          value: "000100"
       preoperation: |
-        fs = CAPI.FS.uint2float32(fs);
+        fsValue = CAPI.FS.uint2float32(fs);
       postoperation: |
-        fd = CAPI.FS.float322uint(fd);
+        registers[fd] = CAPI.FS.float322uint(result);
       definition: |-
-        if (fs >= 0)
-         { fd = Math.sqrt(fs); }
-         else { CAPI.VALIDATION.raise('Square root of a negative number is not allowed.'); }
+        let result;
+        if (fsValue >= 0) {
+          result = Math.sqrt(fsValue);
+        } else { 
+          CAPI.VALIDATION.raise('Square root of a negative number is not allowed.'); 
+        }
     - name: sra
       template: Custom
       type: Arithmetic integer
@@ -3619,7 +3809,7 @@ instructions:
           type: co
           startbit: 31
           stopbit: 26
-          value: '000000'
+          value: "000000"
           order: 0
         - field: rt
           type: INT-Reg
@@ -3627,14 +3817,16 @@ instructions:
           stopbit: 16
           order: 2
           prefix: $
+          suffix: ","
         - field: rd
           type: INT-Reg
           startbit: 15
           stopbit: 11
           order: 1
           prefix: $
+          suffix: ","
         - field: sa
-          type: inm-unsigned
+          type: imm-unsigned
           startbit: 10
           stopbit: 6
           order: 3
@@ -3642,8 +3834,9 @@ instructions:
           type: cop
           startbit: 5
           stopbit: 0
-          valueField: '000011'
-      definition: rd = CAPI.FP.int2uint(rt >> sa);
+          value: "000011"
+      definition: |
+        registers[rd] = CAPI.FP.int2uint(registers[rt] >> sa);
     - name: srl
       template: Custom
       type: Arithmetic integer
@@ -3656,27 +3849,29 @@ instructions:
           type: co
           startbit: 31
           stopbit: 26
-          value: '000000'
+          value: "000000"
           order: 0
         - field: r
           type: cop
           startbit: 21
           stopbit: 21
-          valueField: '0'
+          value: "0"
         - field: rt
           type: INT-Reg
           startbit: 20
           stopbit: 16
           order: 2
           prefix: $
+          suffix: ","
         - field: rd
           type: INT-Reg
           startbit: 15
           stopbit: 11
           order: 1
           prefix: $
+          suffix: ","
         - field: sa
-          type: inm-unsigned
+          type: imm-unsigned
           startbit: 10
           stopbit: 6
           order: 3
@@ -3684,8 +3879,9 @@ instructions:
           type: cop
           startbit: 5
           stopbit: 0
-          valueField: '000010'
-      definition: rd = rt >>> sa;
+          value: "000010"
+      definition: |
+        registers[rd] = registers[rt] >>> sa; // TODO:broken with bigints.
     - name: sub
       template: Custom
       type: Arithmetic integer
@@ -3698,7 +3894,7 @@ instructions:
           type: co
           startbit: 31
           stopbit: 26
-          value: '000000'
+          value: "000000"
           order: 0
         - field: reg1
           type: INT-Reg
@@ -3706,12 +3902,14 @@ instructions:
           stopbit: 21
           order: 1
           prefix: $
+          suffix: ","
         - field: reg2
           type: INT-Reg
           startbit: 20
           stopbit: 16
           order: 2
           prefix: $
+          suffix: ","
         - field: reg3
           type: INT-Reg
           startbit: 15
@@ -3722,8 +3920,9 @@ instructions:
           type: cop
           startbit: 5
           stopbit: 0
-          valueField: '100010'
-      definition: reg1 = CAPI.FP.int2uint(CAPI.FP.uint2int(reg2) - CAPI.FP.uint2int(reg3));
+          value: "100010"
+      definition: |
+        registers[reg1] = CAPI.FP.int2uint(CAPI.FP.uint2int(registers[reg2]) - CAPI.FP.uint2int(registers[reg3]));
     - name: sub.d
       template: Custom
       type: Arithmetic floating point
@@ -3736,13 +3935,13 @@ instructions:
           type: co
           startbit: 31
           stopbit: 26
-          value: '010001'
+          value: "010001"
           order: 0
         - field: fmt
           type: cop
           startbit: 25
           stopbit: 21
-          valueField: '00001'
+          value: "00001"
         - field: ft
           type: SFP-Reg
           startbit: 20
@@ -3755,28 +3954,30 @@ instructions:
           stopbit: 11
           order: 2
           prefix: $
+          suffix: ","
         - field: fd
           type: SFP-Reg
           startbit: 10
           stopbit: 6
           order: 1
           prefix: $
+          suffix: ","
         - field: cop
           type: cop
           startbit: 5
           stopbit: 0
-          valueField: '000001'
+          value: "000001"
       preoperation: |
-        let val1 = CAPI.MIPS.readDouble(fs_name);
-        let val2 = CAPI.MIPS.readDouble(ft_name);
+        let val1 = CAPI.ARCH.readDouble(fs);
+        let val2 = CAPI.ARCH.readDouble(ft);
       postoperation: |
-        CAPI.MIPS.writeDouble(result, fd_name);
+        CAPI.ARCH.writeDouble(result, fd);
       definition: |
         let result = val1 - val2;
     - name: sub.s
       template: Custom
       type: Arithmetic floating point
-      help: 'Subtraction (float): fd = fs-ft'
+      help: "Subtraction (float): fd = fs-ft"
       properties: []
       nwords: 1
       clk_cycles: 1
@@ -3785,13 +3986,13 @@ instructions:
           type: co
           startbit: 31
           stopbit: 26
-          value: '010001'
+          value: "010001"
           order: 0
         - field: fmt
           type: cop
           startbit: 25
           stopbit: 21
-          valueField: '00000'
+          value: "00000"
         - field: ft
           type: SFP-Reg
           startbit: 20
@@ -3804,23 +4005,25 @@ instructions:
           stopbit: 11
           order: 2
           prefix: $
+          suffix: ","
         - field: fd
           type: SFP-Reg
           startbit: 10
           stopbit: 6
           order: 1
           prefix: $
+          suffix: ","
         - field: cop
           type: cop
           startbit: 5
           stopbit: 0
-          valueField: '000001'
+          value: "000001"
       preoperation: |
-        fs = CAPI.FS.uint2float32(fs);
-        ft = CAPI.FS.uint2float32(ft);
+        fsValue = CAPI.FS.uint2float32(fs);
+        ftValue = CAPI.FS.uint2float32(ft);
       postoperation: |
-        fd = CAPI.FS.float322uint(fd);
-      definition: fd = fs - ft;
+        registers[fd] = CAPI.FS.float322uint(result);
+      definition: let result = fsValue - ftValue;
     - name: subu
       template: Custom
       type: Arithmetic integer
@@ -3833,7 +4036,7 @@ instructions:
           type: co
           startbit: 31
           stopbit: 26
-          value: '000000'
+          value: "000000"
           order: 0
         - field: rs
           type: INT-Reg
@@ -3841,6 +4044,7 @@ instructions:
           stopbit: 21
           order: 2
           prefix: $
+          suffix: ","
         - field: rt
           type: INT-Reg
           startbit: 20
@@ -3853,12 +4057,14 @@ instructions:
           stopbit: 11
           order: 1
           prefix: $
+          suffix: ","
         - field: cop
           type: cop
           startbit: 5
           stopbit: 0
-          valueField: '100011'
-      definition: rd = CAPI.FP.int2uint(CAPI.FP.int2uint(rs) - CAPI.FP.int2uint(rt)) ;
+          value: "100011"
+      definition: |
+        registers[rd] = CAPI.FP.int2uint(CAPI.FP.int2uint(registers[rs]) - CAPI.FP.int2uint(registers[rt]));
     - name: sw
       template: Custom
       type: Memory access
@@ -3871,7 +4077,7 @@ instructions:
           type: co
           startbit: 31
           stopbit: 26
-          value: '101011'
+          value: "101011"
           order: 0
         - field: reg1
           type: INT-Reg
@@ -3879,11 +4085,13 @@ instructions:
           stopbit: 16
           order: 1
           prefix: $
+          suffix: ","
         - field: val
-          type: inm-signed
+          type: imm-signed
           startbit: 15
           stopbit: 0
           order: 2
+          space: false
         - field: reg2
           type: INT-Reg
           startbit: 25
@@ -3891,11 +4099,11 @@ instructions:
           prefix: ($
           suffix: )
           order: 3
-      definition: 'CAPI.MEM.write(val+reg2, 4, reg1, reg1_name);'
+      definition: "CAPI.MEM.write(val+registers[reg2], 4, registers[reg1], reg1);"
     - name: swc1
       template: Custom
       type: Memory access
-      help: ''
+      help: ""
       properties: []
       nwords: 1
       clk_cycles: 1
@@ -3904,7 +4112,7 @@ instructions:
           type: co
           startbit: 31
           stopbit: 26
-          value: '111001'
+          value: "111001"
           order: 0
         - field: base
           type: INT-Reg
@@ -3919,16 +4127,18 @@ instructions:
           stopbit: 16
           order: 1
           prefix: $
-        - field: 'off'
-          type: inm-signed
+          suffix: ","
+        - field: "off"
+          type: imm-signed
           startbit: 15
           stopbit: 0
           order: 2
-      definition: 'CAPI.MEM.write(base+off, 4, ft, ft_name);'
+          space: false
+      definition: "CAPI.MEM.write(registers[base]+off, 4, registers[ft], ft);"
     - name: syscall
       template: Custom
       type: Syscall
-      help: ''
+      help: ""
       properties: []
       nwords: 1
       clk_cycles: 1
@@ -3937,17 +4147,19 @@ instructions:
           type: co
           startbit: 31
           stopbit: 26
-          value: '000000'
+          value: "000000"
           order: 0
         - field: cop
           type: cop
           startbit: 5
           stopbit: 0
-          valueField: '001100'
+          value: "001100"
       definition: |-
-        switch(v0){
+        let FP0 = CAPI.ARCH.readDouble('f0');
+        let FP12 = CAPI.ARCH.readDouble('f12');
+        switch(registers["v0"]) {
           case 1n:
-            CAPI.SYSCALL.print(a0, 'int');
+            CAPI.SYSCALL.print(registers["a0"], 'int32');
             break;
           case 2n:
             CAPI.SYSCALL.print(f12, 'float');
@@ -3956,7 +4168,7 @@ instructions:
             CAPI.SYSCALL.print(FP12, 'double');
             break;
           case 4n:
-            CAPI.SYSCALL.print(a0, 'string');
+            CAPI.SYSCALL.print(registers["a0"], 'string');
             break;
           case 5n:
             CAPI.SYSCALL.read('v0', 'int');
@@ -3977,7 +4189,7 @@ instructions:
             CAPI.SYSCALL.exit();
             break;
           case 11n:
-            CAPI.SYSCALL.print(a0, 'char');
+            CAPI.SYSCALL.print(registers["a0"], 'char');
             break;
           case 12n:
             CAPI.SYSCALL.read('v0', 'char');
@@ -3998,7 +4210,7 @@ instructions:
           type: co
           startbit: 31
           stopbit: 26
-          value: '000000'
+          value: "000000"
           order: 0
         - field: reg1
           type: INT-Reg
@@ -4006,12 +4218,14 @@ instructions:
           stopbit: 21
           order: 1
           prefix: $
+          suffix: ","
         - field: reg2
           type: INT-Reg
           startbit: 20
           stopbit: 16
           order: 2
           prefix: $
+          suffix: ","
         - field: reg3
           type: INT-Reg
           startbit: 15
@@ -4022,8 +4236,8 @@ instructions:
           type: cop
           startbit: 5
           stopbit: 0
-          valueField: '100110'
-      definition: reg1 = reg2 ^ reg3;
+          value: "100110"
+      definition: registers[reg1] = registers[reg2] ^ registers[reg3];
     - name: xori
       template: Custom
       type: Logic
@@ -4036,7 +4250,7 @@ instructions:
           type: co
           startbit: 31
           stopbit: 26
-          value: '001110'
+          value: "001110"
           order: 0
         - field: reg1
           type: INT-Reg
@@ -4044,18 +4258,20 @@ instructions:
           stopbit: 21
           order: 1
           prefix: $
+          suffix: ","
         - field: reg2
           type: INT-Reg
           startbit: 20
           stopbit: 16
           order: 2
           prefix: $
+          suffix: ","
         - field: val
-          type: inm-signed
+          type: imm-signed
           startbit: 15
           stopbit: 0
           order: 3
-      definition: reg1 = reg2 ^ val;
+      definition: registers[reg1] = registers[reg2] ^ val;
     - name: rfe
       template: Custom
       type: Other
@@ -4068,617 +4284,683 @@ instructions:
           type: co
           startbit: 31
           stopbit: 26
-          value: '110011'
+          value: "110011"
           order: 0
-      definition: PC = EPC;
+      definition: registers.PC = registers.EPC;
 
 pseudoinstructions:
   MIPS32:
     - name: add
-      help: ''
+      help: ""
       properties: []
       nwords: 1
       fields:
-      - field: rs
-        type: INT-Reg
-        prefix: $
-      - field: rt
-        type: INT-Reg
-        prefix: $
-      - field: inm
-        type: inm-signed
+        - field: rs
+          type: INT-Reg
+          prefix: $
+          suffix: ","
+        - field: rt
+          type: INT-Reg
+          prefix: $
+          suffix: ","
+        - field: inm
+          type: imm-signed
       definition: |-
         if(Field.3.SIZE<=16){addi $rs, $rt, inm;}
         else{lui $at, Field.3.(31,16).int;
         ori $at, $at, Field.3.(15,0).int;
         add $rs, $rt, $at;}
     - name: addi
-      help: ''
+      help: ""
       properties: []
       nwords: 1
       fields:
-      - field: reg1
-        type: INT-Reg
-        prefix: $
-      - field: reg2
-        type: INT-Reg
-        prefix: $
-      - field: val
-        type: inm-signed
+        - field: reg1
+          type: INT-Reg
+          prefix: $
+          suffix: ","
+        - field: reg2
+          type: INT-Reg
+          prefix: $
+          suffix: ","
+        - field: val
+          type: imm-signed
       definition: |-
         lui $at, Field.3.(31,16).int;
         ori $at, $at, Field.3.(15,0).int;
         add $reg1, $reg2, $at;
     - name: addiu
-      help: ''
+      help: ""
       properties: []
       nwords: 1
       fields:
-      - field: reg1
-        type: INT-Reg
-        prefix: $
-      - field: reg2
-        type: INT-Reg
-        prefix: $
-      - field: val
-        type: inm-signed
+        - field: reg1
+          type: INT-Reg
+          prefix: $
+          suffix: ","
+        - field: reg2
+          type: INT-Reg
+          prefix: $
+          suffix: ","
+        - field: val
+          type: imm-signed
       definition: |-
         lui $at, Field.3.(31,16).int;
         ori $at, $at, Field.3.(15,0).int;
         addu $reg1, $reg2, $at;
     - name: addu
-      help: ''
+      help: ""
       properties: []
       nwords: 1
       fields:
-      - field: rs
-        type: INT-Reg
-        prefix: $
-      - field: rt
-        type: INT-Reg
-        prefix: $
-      - field: inm
-        type: inm-signed
+        - field: rs
+          type: INT-Reg
+          prefix: $
+          suffix: ","
+        - field: rt
+          type: INT-Reg
+          prefix: $
+          suffix: ","
+        - field: inm
+          type: imm-signed
       definition: |-
         if(Field.3.SIZE<=16){addiu $rs, $rt, inm;}
         else{lui $at, Field.3.(31,16).int;
         ori $at, $at, Field.3.(15,0).int;
         addu $rs, $rt, $at;}
     - name: and
-      help: ''
+      help: ""
       properties: []
       nwords: 1
       fields:
-      - field: rs
-        type: INT-Reg
-        prefix: $
-      - field: rt
-        type: INT-Reg
-        prefix: $
-      - field: inm
-        type: inm-signed
+        - field: rs
+          type: INT-Reg
+          prefix: $
+          suffix: ","
+        - field: rt
+          type: INT-Reg
+          prefix: $
+          suffix: ","
+        - field: inm
+          type: imm-signed
       definition: |-
         if(Field.3.SIZE<=16){andi $rs, $rt, inm;}
         else{lui $at, Field.3.(31,16).int;
         ori $at, $at, Field.3.(15,0).int;
         and $rs, $rt, $at;}
     - name: andi
-      help: ''
+      help: ""
       properties: []
       nwords: 1
       fields:
-      - field: rs
-        type: INT-Reg
-        prefix: $
-      - field: rt
-        type: INT-Reg
-        prefix: $
-      - field: inm
-        type: inm-signed
+        - field: rs
+          type: INT-Reg
+          prefix: $
+          suffix: ","
+        - field: rt
+          type: INT-Reg
+          prefix: $
+          suffix: ","
+        - field: inm
+          type: imm-signed
       definition: |-
         lui $at, Field.3.(31,16).int;
         ori $at, $at, Field.3.(15,0).int;
         and $rs, $rt, $at;
     - name: b
-      help: ''
+      help: ""
       properties: []
       nwords: 1
       fields:
-      - field: inm
-        type: inm-unsigned
+        - field: inm
+          type: imm-unsigned
       definition: |-
         bgez $zero, inm;
     - name: bc1t
-      help: ''
+      help: ""
       nwords: 1
       fields:
-      - field: 'off'
-        type: offset_bytes
+        - field: "off"
+          type: offset_bytes
       definition: |-
         bc1t 0, off;
     - name: beq
-      help: ''
+      help: ""
       properties: []
       nwords: 1
       fields:
-      - field: reg1
-        type: INT-Reg
-        prefix: $
-      - field: inm
-        type: inm-unsigned
-      - field: 'off'
-        type: offset_bytes
+        - field: reg1
+          type: INT-Reg
+          prefix: $
+          suffix: ","
+        - field: inm
+          type: imm-unsigned
+          suffix: ","
+        - field: "off"
+          type: offset_bytes
       definition: |-
         ori $at, $zero, inm; beq $reg1, $at, off;
     - name: beqz
-      help: ''
+      help: ""
       properties: []
       nwords: 1
       fields:
-      - field: reg1
-        type: INT-Reg
-        prefix: $
-      - field: 'off'
-        type: offset_bytes
+        - field: reg1
+          type: INT-Reg
+          prefix: $
+          suffix: ","
+        - field: "off"
+          type: offset_bytes
       definition: |-
         beq $reg1, $zero, off;
     - name: bge
-      help: ''
+      help: ""
       properties: []
       nwords: 1
       fields:
-      - field: reg1
-        type: INT-Reg
-        prefix: $
-      - field: reg2
-        type: INT-Reg
-        prefix: $
-      - field: 'off'
-        type: offset_bytes
+        - field: reg1
+          type: INT-Reg
+          prefix: $
+          suffix: ","
+        - field: reg2
+          type: INT-Reg
+          prefix: $
+          suffix: ","
+        - field: "off"
+          type: offset_bytes
       definition: |-
         slt $at, $reg1, $reg2; beq $at, $zero, off;
     - name: bge
-      help: ''
+      help: ""
       properties: []
       nwords: 1
       fields:
-      - field: reg1
-        type: INT-Reg
-        prefix: $
-      - field: inm
-        type: inm-unsigned
-      - field: 'off'
-        type: offset_bytes
+        - field: reg1
+          type: INT-Reg
+          prefix: $
+          suffix: ","
+        - field: inm
+          type: imm-unsigned
+          suffix: ","
+        - field: "off"
+          type: offset_bytes
       definition: |-
         slti $at, $reg1, inm; beq $at, $zero, off;
     - name: bgeu
-      help: ''
+      help: ""
       properties: []
       nwords: 1
       fields:
-      - field: reg1
-        type: INT-Reg
-        prefix: $
-      - field: reg2
-        type: INT-Reg
-        prefix: $
-      - field: 'off'
-        type: offset_bytes
+        - field: reg1
+          type: INT-Reg
+          prefix: $
+          suffix: ","
+        - field: reg2
+          type: INT-Reg
+          prefix: $
+          suffix: ","
+        - field: "off"
+          type: offset_bytes
       definition: |-
         sltu $at, $reg1, $reg2; beq $at, $zero, off;
     - name: bgeu
-      help: ''
+      help: ""
       properties: []
       nwords: 1
       fields:
-      - field: reg1
-        type: INT-Reg
-        prefix: $
-      - field: inm
-        type: inm-unsigned
-      - field: 'off'
-        type: offset_bytes
+        - field: reg1
+          type: INT-Reg
+          prefix: $
+          suffix: ","
+        - field: inm
+          type: imm-unsigned
+          suffix: ","
+        - field: "off"
+          type: offset_bytes
       definition: |-
         sltiu $at, $reg1, inm; beq $at, $zero, off;
     - name: bgt
-      help: ''
+      help: ""
       properties: []
       nwords: 1
       fields:
-      - field: reg1
-        type: INT-Reg
-        prefix: $
-      - field: reg2
-        type: INT-Reg
-        prefix: $
-      - field: 'off'
-        type: offset_bytes
+        - field: reg1
+          type: INT-Reg
+          prefix: $
+          suffix: ","
+        - field: reg2
+          type: INT-Reg
+          prefix: $
+          suffix: ","
+        - field: "off"
+          type: offset_bytes
       definition: |-
         slt $at, $reg2, $reg1; bne $at, $zero, off;
     - name: bgt
-      help: ''
+      help: ""
       properties: []
       nwords: 1
       fields:
-      - field: reg1
-        type: INT-Reg
-        prefix: $
-      - field: inm
-        type: inm-unsigned
-      - field: 'off'
-        type: offset_bytes
+        - field: reg1
+          type: INT-Reg
+          prefix: $
+          suffix: ","
+        - field: inm
+          type: imm-unsigned
+          suffix: ","
+        - field: "off"
+          type: offset_bytes
       definition: |-
         addi $at, $zero, inm; addi $at, $at, 1; slt $at, $reg1, $at; beq $at, $zero, off;
     - name: bgtu
-      help: ''
+      help: ""
       properties: []
       nwords: 1
       fields:
-      - field: reg1
-        type: INT-Reg
-        prefix: $
-      - field: reg2
-        type: INT-Reg
-        prefix: $
-      - field: 'off'
-        type: offset_bytes
+        - field: reg1
+          type: INT-Reg
+          prefix: $
+          suffix: ","
+        - field: reg2
+          type: INT-Reg
+          prefix: $
+          suffix: ","
+        - field: "off"
+          type: offset_bytes
       definition: |-
         sltu $at, $reg2, $reg1; bne $at, $zero, off;
     - name: bgtu
-      help: ''
+      help: ""
       properties: []
       nwords: 1
       fields:
-      - field: reg1
-        type: INT-Reg
-        prefix: $
-      - field: inm
-        type: inm-unsigned
-      - field: 'off'
-        type: offset_bytes
+        - field: reg1
+          type: INT-Reg
+          prefix: $
+          suffix: ","
+        - field: inm
+          type: imm-unsigned
+          suffix: ","
+        - field: "off"
+          type: offset_bytes
       definition: |-
         ori $at, $zero, inm; beq $at, $reg1, off; sltu $at, $reg1, $at;
     - name: ble
-      help: ''
+      help: ""
       properties: []
       nwords: 1
       fields:
-      - field: reg1
-        type: INT-Reg
-        prefix: $
-      - field: reg2
-        type: INT-Reg
-        prefix: $
-      - field: 'off'
-        type: offset_bytes
+        - field: reg1
+          type: INT-Reg
+          prefix: $
+          suffix: ","
+        - field: reg2
+          type: INT-Reg
+          prefix: $
+          suffix: ","
+        - field: "off"
+          type: offset_bytes
       definition: |-
         slt $at, $reg2, $reg1; beq $at, $zero, off;
     - name: ble
-      help: ''
+      help: ""
       properties: []
       nwords: 1
       fields:
-      - field: reg1
-        type: INT-Reg
-        prefix: $
-      - field: inm
-        type: inm-unsigned
-      - field: 'off'
-        type: offset_bytes
+        - field: reg1
+          type: INT-Reg
+          prefix: $
+          suffix: ","
+        - field: inm
+          type: imm-unsigned
+          suffix: ","
+        - field: "off"
+          type: offset_bytes
       definition: |-
         addi $at, $zero, inm; addi $at, $at, 1; slti $at, $reg1, inm; bne $at, $zero, off;
     - name: bleu
-      help: ''
+      help: ""
       properties: []
       nwords: 1
       fields:
-      - field: reg1
-        type: INT-Reg
-        prefix: $
-      - field: reg2
-        type: INT-Reg
-        prefix: $
-      - field: 'off'
-        type: offset_bytes
+        - field: reg1
+          type: INT-Reg
+          prefix: $
+          suffix: ","
+        - field: reg2
+          type: INT-Reg
+          prefix: $
+          suffix: ","
+        - field: "off"
+          type: offset_bytes
       definition: |-
         sltu $at, $reg2, $reg1; beq $at, $zero, off;
     - name: bleu
-      help: ''
+      help: ""
       properties: []
       nwords: 1
       fields:
-      - field: reg1
-        type: INT-Reg
-        prefix: $
-      - field: inm
-        type: inm-unsigned
-      - field: 'off'
-        type: offset_bytes
+        - field: reg1
+          type: INT-Reg
+          prefix: $
+          suffix: ","
+        - field: inm
+          type: imm-unsigned
+          suffix: ","
+        - field: "off"
+          type: offset_bytes
       definition: |-
         ori $at, $zero, inm; beq $at, $reg1, off; sltu $at, $reg1, $at; bne $at, $zero, off;
     - name: blt
-      help: ''
+      help: ""
       properties: []
       nwords: 1
       fields:
-      - field: reg1
-        type: INT-Reg
-        prefix: $
-      - field: reg2
-        type: INT-Reg
-        prefix: $
-      - field: 'off'
-        type: offset_bytes
+        - field: reg1
+          type: INT-Reg
+          prefix: $
+          suffix: ","
+        - field: reg2
+          type: INT-Reg
+          prefix: $
+          suffix: ","
+        - field: "off"
+          type: offset_bytes
       definition: |-
         slt $at, $reg1, $reg2; bne $at, $zero, off;
     - name: blt
-      help: ''
+      help: ""
       properties: []
       nwords: 1
       fields:
-      - field: reg1
-        type: INT-Reg
-        prefix: $
-      - field: inm
-        type: inm-unsigned
-      - field: 'off'
-        type: offset_bytes
+        - field: reg1
+          type: INT-Reg
+          prefix: $
+          suffix: ","
+        - field: inm
+          type: imm-unsigned
+          suffix: ","
+        - field: "off"
+          type: offset_bytes
       definition: |-
         slti $at, $reg1, inm; bne $at, $zero, off;
     - name: bltu
-      help: ''
+      help: ""
       properties: []
       nwords: 1
       fields:
-      - field: reg1
-        type: INT-Reg
-        prefix: $
-      - field: reg2
-        type: INT-Reg
-        prefix: $
-      - field: 'off'
-        type: offset_bytes
+        - field: reg1
+          type: INT-Reg
+          prefix: $
+          suffix: ","
+        - field: reg2
+          type: INT-Reg
+          prefix: $
+          suffix: ","
+        - field: "off"
+          type: offset_bytes
       definition: |-
         sltu $at, $reg1, $reg2; bne $at, $zero, off;
     - name: bltu
-      help: ''
+      help: ""
       properties: []
       nwords: 1
       fields:
-      - field: reg1
-        type: INT-Reg
-        prefix: $
-      - field: inm
-        type: inm-unsigned
-      - field: 'off'
-        type: offset_bytes
+        - field: reg1
+          type: INT-Reg
+          prefix: $
+          suffix: ","
+        - field: inm
+          type: imm-unsigned
+          suffix: ","
+        - field: "off"
+          type: offset_bytes
       definition: |-
         sltiu $at, $reg1, off; bne $at, $zero, off;
     - name: bne
-      help: ''
+      help: ""
       properties: []
       nwords: 1
       fields:
-      - field: reg1
-        type: INT-Reg
-        prefix: $
-      - field: inm
-        type: inm-unsigned
-      - field: 'off'
-        type: offset_bytes
+        - field: reg1
+          type: INT-Reg
+          prefix: $
+          suffix: ","
+        - field: inm
+          type: imm-unsigned
+          suffix: ","
+        - field: "off"
+          type: offset_bytes
       definition: |-
         ori $at, $zero, inm; bne $reg1, $at, off;
     - name: bnez
-      help: ''
+      help: ""
       properties: []
       nwords: 1
       fields:
-      - field: reg1
-        type: INT-Reg
-        prefix: $
-      - field: 'off'
-        type: offset_bytes
+        - field: reg1
+          type: INT-Reg
+          prefix: $
+          suffix: ","
+        - field: "off"
+          type: offset_bytes
       definition: |-
         bne $reg1, $zero, off;
     - name: c.eq.d
-      help: ''
+      help: ""
       nwords: 1
       fields:
-      - field: fs
-        type: SFP-Reg
-        prefix: $
-      - field: ft
-        type: SFP-Reg
-        prefix: $
+        - field: fs
+          type: SFP-Reg
+          prefix: $
+          suffix: ","
+        - field: ft
+          type: SFP-Reg
+          prefix: $
       definition: |-
         c.eq.d 0, $fs, $ft;
     - name: c.eq.s
-      help: ''
+      help: ""
       nwords: 1
       fields:
-      - field: ft
-        type: SFP-Reg
-        prefix: $
-      - field: fs
-        type: SFP-Reg
-        prefix: $
+        - field: ft
+          type: SFP-Reg
+          prefix: $
+          suffix: ","
+        - field: fs
+          type: SFP-Reg
+          prefix: $
       definition: |-
         c.eq.s 0, $fs, $ft;
     - name: c.ole.d
-      help: ''
+      help: ""
       nwords: 1
       fields:
-      - field: fs
-        type: SFP-Reg
-        prefix: $
-      - field: ft
-        type: SFP-Reg
-        prefix: $
+        - field: fs
+          type: SFP-Reg
+          prefix: $
+          suffix: ","
+        - field: ft
+          type: SFP-Reg
+          prefix: $
       definition: |-
         c.ole.d 0, $fs, $ft;
     - name: c.ole.s
-      help: ''
+      help: ""
       nwords: 1
       fields:
-      - field: fs
-        type: SFP-Reg
-        prefix: $
-      - field: ft
-        type: SFP-Reg
-        prefix: $
+        - field: fs
+          type: SFP-Reg
+          prefix: $
+          suffix: ","
+        - field: ft
+          type: SFP-Reg
+          prefix: $
       definition: |-
         c.ole.s 0, $fs, $ft;
     - name: c.olt.d
-      help: ''
+      help: ""
       nwords: 1
       fields:
-      - field: fs
-        type: SFP-Reg
-        prefix: $
-      - field: ft
-        type: SFP-Reg
-        prefix: $
+        - field: fs
+          type: SFP-Reg
+          prefix: $
+          suffix: ","
+        - field: ft
+          type: SFP-Reg
+          prefix: $
       definition: |-
         c.olt.d 0, $fs, $ft;
     - name: c.olt.s
-      help: ''
+      help: ""
       nwords: 1
       fields:
-      - field: fs
-        type: SFP-Reg
-        prefix: $
-      - field: ft
-        type: SFP-Reg
-        prefix: $
+        - field: fs
+          type: SFP-Reg
+          prefix: $
+          suffix: ","
+        - field: ft
+          type: SFP-Reg
+          prefix: $
       definition: |-
         c.olt.s 0, $fs, $ft;
     - name: jalr
-      help: ''
+      help: ""
       properties: []
       nwords: 1
       fields:
-      - field: rs
-        type: INT-Reg
-        prefix: $
+        - field: rs
+          type: INT-Reg
+          prefix: $
       definition: |-
         jalr $rs, $ra;
     - name: l.d
-      help: ''
+      help: ""
       properties: []
       nwords: 1
       fields:
-      - field: reg1
-        type: SFP-Reg
-        prefix: $
-      - field: inm
-        type: inm-signed
-      - field: reg2
-        type: INT-Reg
-        prefix: ($
-        suffix: )
+        - field: reg1
+          type: SFP-Reg
+          prefix: $
+          suffix: ","
+        - field: inm
+          type: imm-signed
+          space: false
+        - field: reg2
+          type: INT-Reg
+          prefix: ($
+          suffix: )
       definition: |-
         ldc1 $reg1, inm($reg2);
     - name: l.s
-      help: ''
+      help: ""
       properties: []
       nwords: 1
       fields:
-      - field: rs
-        type: SFP-Reg
-        prefix: $
-      - field: 'off'
-        type: inm-signed
-      - field: rt
-        type: INT-Reg
-        prefix: ($
-        suffix: )
+        - field: rs
+          type: SFP-Reg
+          prefix: $
+          suffix: ","
+        - field: "off"
+          type: imm-signed
+          space: false
+        - field: rt
+          type: INT-Reg
+          prefix: ($
+          suffix: )
       definition: |-
         lwc1 $rs, off($rt);
     - name: la
-      help: ''
+      help: ""
       properties: []
       nwords: 1
       fields:
-      - field: rd
-        type: INT-Reg
-        prefix: $
-      - field: addr
-        type: inm-signed
+        - field: rd
+          type: INT-Reg
+          prefix: $
+          suffix: ","
+        - field: addr
+          type: imm-signed
       definition: |-
         if(Field.2.SIZE<=16){addi $rd, $zero, addr;}
         else{lui $at, Field.2.(31,16).int;
         ori $at, $at, Field.2.(15,0).int;
         add $rd, $zero, $at;}
     - name: lb
-      help: ''
+      help: ""
       properties: []
       nwords: 1
       fields:
-      - field: rd
-        type: INT-Reg
-        prefix: $
-      - field: addr
-        type: inm-signed
+        - field: rd
+          type: INT-Reg
+          prefix: $
+          suffix: ","
+        - field: addr
+          type: imm-signed
       definition: |-
         if(Field.2.SIZE<=16){lb $rd, addr($zero);}
         else{lui $at, Field.2.(31,16).int;
         ori $at, $at, Field.2.(15,0).int;
         lb $rd, 0($at);}
     - name: lbu
-      help: ''
+      help: ""
       properties: []
       nwords: 1
       fields:
-      - field: rd
-        type: INT-Reg
-        prefix: $
-      - field: addr
-        type: inm-signed
+        - field: rd
+          type: INT-Reg
+          prefix: $
+          suffix: ","
+        - field: addr
+          type: imm-signed
       definition: |-
         if(Field.2.SIZE<=16){lbu $rd, addr($zero);}
         else{lui $at, Field.2.(31,16).int;
         ori $at, $at, Field.2.(15,0).int;
         lbu $rd, 0($at);}
     - name: lh
-      help: ''
+      help: ""
       properties: []
       nwords: 1
       fields:
-      - field: rd
-        type: INT-Reg
-        prefix: $
-      - field: addr
-        type: inm-signed
+        - field: rd
+          type: INT-Reg
+          prefix: $
+          suffix: ","
+        - field: addr
+          type: imm-signed
       definition: |-
         if(Field.2.SIZE<=16){lh $rd, addr($zero);}
         else{lui $at, Field.2.(31,16).int;
         ori $at, $at, Field.2.(15,0).int;
         lh $rd, 0($at);}
     - name: lhu
-      help: ''
+      help: ""
       properties: []
       nwords: 1
       fields:
-      - field: rd
-        type: INT-Reg
-        prefix: $
-      - field: addr
-        type: inm-signed
+        - field: rd
+          type: INT-Reg
+          prefix: $
+          suffix: ","
+        - field: addr
+          type: imm-signed
       definition: |-
         if(Field.2.SIZE<=16){lhu $rd, addr($zero);}
         else{lui $at, Field.2.(31,16).int;
         ori $at, $at, Field.2.(15,0).int;
         lhu $rd, 0($at);}
     - name: li
-      help: ''
+      help: ""
       properties: []
       nwords: 1
       fields:
-      - field: rd
-        type: INT-Reg
-        prefix: $
-      - field: val
-        type: inm-signed
+        - field: rd
+          type: INT-Reg
+          prefix: $
+          suffix: ","
+        - field: val
+          type: imm-signed
       definition: |-
         no_ret_op{tmp=Field.2.(31,0).int;
         tmp_low=tmp&0x0000FFFF;
@@ -4688,15 +4970,16 @@ pseudoinstructions:
         ori $at, $at, op{tmp_low};
         add $rd, $zero, $at;}
     - name: li.d
-      help: ''
+      help: ""
       properties: []
       nwords: 1
       fields:
-      - field: rd
-        type: SFP-Reg
-        prefix: $
-      - field: val
-        type: inm-signed
+        - field: rd
+          type: SFP-Reg
+          prefix: $
+          suffix: ","
+        - field: val
+          type: imm-signed
       definition: |-
         no_ret_op{tmp0=Field.2.(63,32).double;
         tmp_low0=tmp0&0x0000FFFF;
@@ -4711,15 +4994,16 @@ pseudoinstructions:
         ori $at, $at, op{tmp_low0};
         mtc1 $at, $aliasDouble(rd;0);
     - name: li.s
-      help: ''
+      help: ""
       properties: []
       nwords: 1
       fields:
-      - field: rd
-        type: SFP-Reg
-        prefix: $
-      - field: val
-        type: inm-signed
+        - field: rd
+          type: SFP-Reg
+          prefix: $
+          suffix: ","
+        - field: val
+          type: imm-signed
       definition: |-
         no_ret_op{tmp=Field.2.(31,0).float;
         tmp_low=tmp&0x0000FFFF;
@@ -4728,320 +5012,323 @@ pseudoinstructions:
         ori $at, $at, op{tmp_low};
         mtc1 $at, $rd;
     - name: lw
-      help: ''
+      help: ""
       properties: []
       nwords: 1
       fields:
-      - field: rd
-        type: INT-Reg
-        prefix: $
-      - field: addr
-        type: inm-signed
+        - field: rd
+          type: INT-Reg
+          prefix: $
+          suffix: ","
+        - field: addr
+          type: imm-signed
       definition: |-
         if(Field.2.SIZE<=16){lw $rd, addr($zero);}
         else{lui $at, Field.2.(31,16).int;
         ori $at, $at, Field.2.(15,0).int;
         lw $rd, 0($at);}
     - name: move
-      help: ''
+      help: ""
       properties: []
       nwords: 1
       fields:
-      - field: reg1
-        type: INT-Reg
-        prefix: $
-      - field: reg2
-        type: INT-Reg
-        prefix: $
+        - field: reg1
+          type: INT-Reg
+          prefix: $
+          suffix: ","
+        - field: reg2
+          type: INT-Reg
+          prefix: $
       definition: |-
         add $reg1, $zero, $reg2;
     - name: mul
-      help: ''
+      help: ""
       properties: []
       nwords: 1
       fields:
-      - field: rs
-        type: INT-Reg
-        prefix: $
-      - field: rt
-        type: INT-Reg
-        prefix: $
-      - field: inm
-        type: inm-signed
+        - field: rs
+          type: INT-Reg
+          prefix: $
+          suffix: ","
+        - field: rt
+          type: INT-Reg
+          prefix: $
+          suffix: ","
+        - field: inm
+          type: imm-signed
       definition: |-
         if(Field.3.SIZE<=16){addi $at, $zero, inm; mul $rs, $rt, $at;}
         else{lui $at, Field.3.(31,16).int;
         ori $at, $at, Field.3.(15,0).int;
         mul $rs, $rt, $at;}
     - name: nor
-      help: ''
+      help: ""
       properties: []
       nwords: 1
       fields:
-      - field: rs
-        type: INT-Reg
-        prefix: $
-      - field: rt
-        type: INT-Reg
-        prefix: $
-      - field: inm
-        type: inm-signed
+        - field: rs
+          type: INT-Reg
+          prefix: $
+          suffix: ","
+        - field: rt
+          type: INT-Reg
+          prefix: $
+          suffix: ","
+        - field: inm
+          type: imm-signed
       definition: |-
         if(Field.3.SIZE<=16){addi $at, $zero, inm; nor $rs, $rt, $at;}
         else{lui $at, Field.3.(31,16).int;
         ori $at, $at, Field.3.(15,0).int;
         nor $rs, $rt, $at;}
     - name: or
-      help: ''
+      help: ""
       properties: []
       nwords: 1
       fields:
-      - field: rs
-        type: INT-Reg
-        prefix: $
-      - field: rt
-        type: INT-Reg
-        prefix: $
-      - field: inm
-        type: inm-signed
+        - field: rs
+          type: INT-Reg
+          prefix: $
+          suffix: ","
+        - field: rt
+          type: INT-Reg
+          prefix: $
+          suffix: ","
+        - field: inm
+          type: imm-signed
       definition: |-
         if(Field.3.SIZE<=16){ori $rs, $rt, inm;}
         else{lui $at, Field.3.(31,16).int;
         ori $at, $at, Field.3.(15,0).int;
         or $rs, $rt, $at;}
     - name: ori
-      help: ''
+      help: ""
       properties: []
       nwords: 1
       fields:
-      - field: rs
-        type: INT-Reg
-        prefix: $
-      - field: rt
-        type: INT-Reg
-        prefix: $
-      - field: inm
-        type: inm-signed
+        - field: rs
+          type: INT-Reg
+          prefix: $
+          suffix: ","
+        - field: rt
+          type: INT-Reg
+          prefix: $
+          suffix: ","
+        - field: inm
+          type: imm-signed
       definition: |-
         lui $at, Field.3.(31,16).int;
         ori $at, $at, Field.3.(15,0).int;
         or $rs, $rt, $at;
     - name: rem
-      help: ''
+      help: ""
       properties: []
       nwords: 1
       fields:
-      - field: reg1
-        type: INT-Reg
-        prefix: $
-      - field: reg2
-        type: INT-Reg
-        prefix: $
-      - field: reg3
-        type: INT-Reg
-        prefix: $
+        - field: reg1
+          type: INT-Reg
+          prefix: $
+          suffix: ","
+        - field: reg2
+          type: INT-Reg
+          prefix: $
+          suffix: ","
+        - field: reg3
+          type: INT-Reg
+          prefix: $
       definition: |-
         div $reg2, $reg3; mfhi $reg1;
     - name: rol
-      help: ''
+      help: ""
       nwords: 1
       fields:
-      - field: reg2
-        type: INT-Reg
-        prefix: $
-      - field: reg1
-        type: INT-Reg
-        prefix: $
-      - field: val
-        type: inm-unsigned
+        - field: reg2
+          type: INT-Reg
+          prefix: $
+          suffix: ","
+        - field: reg1
+          type: INT-Reg
+          prefix: $
+          suffix: ","
+        - field: val
+          type: imm-unsigned
       definition: |-
         srl $at, $reg2, op{32-(val)};sll $reg1, $reg2, val;or $reg1, $reg1, $at;
     - name: ror
-      help: ''
+      help: ""
       nwords: 1
       fields:
-      - field: reg2
-        type: INT-Reg
-        prefix: $
-      - field: reg1
-        type: INT-Reg
-        prefix: $
-      - field: val
-        type: inm-unsigned
+        - field: reg2
+          type: INT-Reg
+          prefix: $
+          suffix: ","
+        - field: reg1
+          type: INT-Reg
+          prefix: $
+          suffix: ","
+        - field: val
+          type: imm-unsigned
       definition: |-
         sll $at, $reg2, op{32-(val)};srl $reg1, $reg2, val;or $reg1, $reg1, $at;
     - name: s.d
-      help: ''
+      help: ""
       properties: []
       nwords: 1
       fields:
-      - field: rs
-        type: SFP-Reg
-        prefix: $
-      - field: rt
-        type: INT-Reg
-        prefix: ($
-        suffix: )
-      definition: |-
-        sdc1 $rs, 0($rt);
-    - name: s.d
-      help: ''
-      properties: []
-      nwords: 1
-      fields:
-      - field: rs
-        type: SFP-Reg
-        prefix: $
-      - field: 'off'
-        type: inm-signed
-      - field: rt
-        type: INT-Reg
-        prefix: ($
-        suffix: )
+        - field: rs
+          type: SFP-Reg
+          prefix: $
+          suffix: ","
+        - field: "off"
+          type: imm-signed
+          space: false
+        - field: rt
+          type: INT-Reg
+          prefix: ($
+          suffix: )
       definition: |-
         sdc1 $rs, off($rt);
     - name: s.s
-      help: ''
+      help: ""
       properties: []
       nwords: 1
       fields:
-      - field: rs
-        type: SFP-Reg
-        prefix: $
-      - field: rt
-        type: INT-Reg
-        prefix: ($
-        suffix: )
-      definition: |-
-        swc1 $rs, 0($rt);
-    - name: s.s
-      help: ''
-      properties: []
-      nwords: 1
-      fields:
-      - field: rs
-        type: SFP-Reg
-        prefix: $
-      - field: 'off'
-        type: inm-signed
-      - field: rt
-        type: INT-Reg
-        prefix: ($
-        suffix: )
+        - field: rs
+          type: SFP-Reg
+          prefix: $
+          suffix: ","
+        - field: "off"
+          type: imm-signed
+          space: false
+        - field: rt
+          type: INT-Reg
+          prefix: ($
+          suffix: )
       definition: |-
         swc1 $rs, off($rt);
     - name: sb
-      help: ''
+      help: ""
       properties: []
       nwords: 1
       fields:
-      - field: rd
-        type: INT-Reg
-        prefix: $
-      - field: addr
-        type: inm-signed
+        - field: rd
+          type: INT-Reg
+          prefix: $
+          suffix: ","
+        - field: addr
+          type: imm-signed
       definition: |-
         if(Field.2.SIZE<=16){sb $rd, addr($zero);}
         else{lui $at, Field.2.(31,16).int;
         ori $at, $at, Field.2.(15,0).int;
         sb $rd, 0($at);}
     - name: sh
-      help: ''
+      help: ""
       properties: []
       nwords: 1
       fields:
-      - field: rd
-        type: INT-Reg
-        prefix: $
-      - field: addr
-        type: inm-signed
+        - field: rd
+          type: INT-Reg
+          prefix: $
+          suffix: ","
+        - field: addr
+          type: imm-signed
       definition: |-
         if(Field.2.SIZE<=16){sh $rd, addr($zero);}
         else{lui $at, Field.2.(31,16).int;
         ori $at, $at, Field.2.(15,0).int;
         sh $rd, 0($at);}
     - name: sub
-      help: ''
+      help: ""
       properties: []
       nwords: 1
       fields:
-      - field: rs
-        type: INT-Reg
-        prefix: $
-      - field: rt
-        type: INT-Reg
-        prefix: $
-      - field: inm
-        type: inm-signed
+        - field: rs
+          type: INT-Reg
+          prefix: $
+          suffix: ","
+        - field: rt
+          type: INT-Reg
+          prefix: $
+          suffix: ","
+        - field: inm
+          type: imm-signed
       definition: |-
         if(Field.3.SIZE<=16){addi $at, $zero, inm; sub $rs, $rt, $at;}
         else{lui $at, Field.3.(31,16).int;
         ori $at, $at, Field.3.(15,0).int;
         sub $rs, $rt, $at;}
     - name: subu
-      help: ''
+      help: ""
       properties: []
       nwords: 1
       fields:
-      - field: rs
-        type: INT-Reg
-        prefix: $
-      - field: rt
-        type: INT-Reg
-        prefix: $
-      - field: inm
-        type: inm-signed
+        - field: rs
+          type: INT-Reg
+          prefix: $
+          suffix: ","
+        - field: rt
+          type: INT-Reg
+          prefix: $
+          suffix: ","
+        - field: inm
+          type: imm-signed
       definition: |-
         if(Field.3.SIZE<=16){addi $at, $zero, inm; subu $rs, $rt, $at;}
         else{lui $at, Field.3.(31,16).int;
         ori $at, $at, Field.3.(15,0).int;
         subu $rs, $rt, $at;}
     - name: sw
-      help: ''
+      help: ""
       properties: []
       nwords: 1
       fields:
-      - field: rd
-        type: INT-Reg
-        prefix: $
-      - field: addr
-        type: inm-signed
+        - field: rd
+          type: INT-Reg
+          prefix: $
+          suffix: ","
+        - field: addr
+          type: imm-signed
       definition: |-
         if(Field.2.SIZE<=16){sw $rd, addr($zero);}
         else{lui $at, Field.2.(31,16).int;
         ori $at, $at, Field.2.(15,0).int;
         sw $rd, 0($at);}
     - name: xor
-      help: ''
+      help: ""
       properties: []
       nwords: 1
       fields:
-      - field: rs
-        type: INT-Reg
-        prefix: $
-      - field: rt
-        type: INT-Reg
-        prefix: $
-      - field: inm
-        type: inm-signed
+        - field: rs
+          type: INT-Reg
+          prefix: $
+          suffix: ","
+        - field: rt
+          type: INT-Reg
+          prefix: $
+          suffix: ","
+        - field: inm
+          type: imm-signed
       definition: |-
         if(Field.3.SIZE<=16){xori $rs, $rt, inm;}
         else{lui $at, Field.3.(31,16).int;
         ori $at, $at, Field.3.(15,0).int;
         xor $rs, $rt, $at;}
     - name: xori
-      help: ''
+      help: ""
       properties: []
       nwords: 1
       fields:
-      - field: rs
-        type: INT-Reg
-        prefix: $
-      - field: rt
-        type: INT-Reg
-        prefix: $
-      - field: inm
-        type: inm-signed
+        - field: rs
+          type: INT-Reg
+          prefix: $
+          suffix: ","
+        - field: rt
+          type: INT-Reg
+          prefix: $
+          suffix: ","
+        - field: inm
+          type: imm-signed
       definition: |-
         lui $at, Field.3.(31,16).int;
         ori $at, $at, Field.3.(15,0).int;
@@ -5097,4 +5384,3 @@ memory_layout:
   stack:
     start: 0x0FFFFFFC
     end: 0x0FFFFFFF
-

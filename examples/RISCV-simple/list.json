@@ -33,6 +33,6 @@
     "name": "Example 6",
     "id": "e6",
     "url": "examples/RISCV/example6.s",
-    "description": "Subrutine"
+    "description": "Subroutine"
   }
 ]

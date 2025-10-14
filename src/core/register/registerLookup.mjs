@@ -22,6 +22,21 @@
 import { REGISTERS } from "../core.mjs";
 
 /*
+ *  Register cache
+ */
+const registerCache = new Map();
+const registerTagCache = new Map();
+
+/**
+ * Clear the register caches
+ * Should be called when REGISTERS array is modified
+ */
+export function crex_clearRegisterCache() {
+    registerCache.clear();
+    registerTagCache.clear();
+}
+
+/*
  *  Register operations
  */
 export function crex_findReg(value1) {
@@ -35,6 +50,11 @@ export function crex_findReg(value1) {
         return ret;
     }
 
+    // Check cache first
+    if (registerCache.has(value1)) {
+        return registerCache.get(value1);
+    }
+
     for (let i = 0; i < REGISTERS.length; i++) {
         for (let j = 0; j < REGISTERS[i].elements.length; j++) {
             if (REGISTERS[i].elements[j].name.includes(value1) !== false) {
@@ -45,6 +65,9 @@ export function crex_findReg(value1) {
             }
         }
     }
+
+    // Cache the result
+    registerCache.set(value1, ret);
 
     return ret;
 }
@@ -59,6 +82,11 @@ export function crex_findReg_bytag(value1) {
         return ret;
     }
 
+    // Check cache first
+    if (registerTagCache.has(value1)) {
+        return registerTagCache.get(value1);
+    }
+
     for (let i = 0; i < REGISTERS.length; i++) {
         for (let j = 0; j < REGISTERS[i].elements.length; j++) {
             if (
@@ -71,6 +99,9 @@ export function crex_findReg_bytag(value1) {
             }
         }
     }
+
+    // Cache the result
+    registerTagCache.set(value1, ret);
 
     return ret;
 }
