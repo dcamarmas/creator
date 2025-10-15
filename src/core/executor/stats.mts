@@ -20,7 +20,7 @@
 
 import { status } from "../core.mjs";
 
-type Stat = {
+export type Stat = {
     instructions: number;
     cycles: number;
 };
@@ -71,7 +71,8 @@ export function updateStats(type: string, cycles: number = 1): void {
     status.clkCycles += cycles;
     status.executedInstructions += 1;
 
-    if (typeof document !== "undefined" && document.app) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    if (typeof document !== "undefined" && (document as any).app) {
         updateUI();
     }
 }

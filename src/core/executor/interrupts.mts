@@ -128,7 +128,7 @@ export function handleInterrupt() {
 
     // jump to interruption handler
     const handler_address = interruptGetHandlerAddr(InterruptType);
-    writeRegister(handler_address, pc_reg.indexComp, pc_reg.indexElem);
+    writeRegister(BigInt(handler_address), pc_reg.indexComp, pc_reg.indexElem);
 
     // clear interruption
     interruptClear(InterruptType);

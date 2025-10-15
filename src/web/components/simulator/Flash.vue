@@ -18,14 +18,16 @@ You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<script>
+<script lang="ts">
+import { defineComponent } from "vue"
+
 import { REMOTELAB } from "@/web/src/remoteLab.js"
 import { LOCALLAB } from "@/web/src/localGateway.js"
 import { downloadFile, console_log, show_notification } from "@/web/utils.mjs"
 import { creator_ga } from "@/core/utils/creator_ga.mjs"
 import { instructions } from "@/core/assembler/assembler.mjs"
 
-export default {
+export default defineComponent({
   props: {
     id: { type: String, required: true },
     os: { type: String, required: true },
@@ -43,40 +45,40 @@ export default {
       get() {
         return this.lab_url
       },
-      set(value) {
-        this.$root.lab_url = value
+      set(value: string) {
+        ;(this.$root as any).lab_url = value
       },
     },
     resultEmail: {
       get() {
         return this.result_email
       },
-      set(value) {
-        this.$root.result_email = value
+      set(value: string) {
+        ;(this.$root as any).result_email = value
       },
     },
     targetBoard: {
       get() {
         return this.target_board
       },
-      set(value) {
-        this.$root.target_board = value
+      set(value: string) {
+        ;(this.$root as any).target_board = value
       },
     },
     targetPort: {
       get() {
         return this.target_port
       },
-      set(value) {
-        this.$root.target_port = value
+      set(value: string) {
+        ;(this.$root as any).target_port = value
       },
     },
     flashURL: {
       get() {
         return this.flash_url
       },
-      set(value) {
-        this.$root.flash_url = value
+      set(value: string) {
+        ;(this.$root as any).flash_url = value
       },
     },
   },
@@ -122,7 +124,7 @@ export default {
       stoprunning: false,
       eraseflash: false,
       showPopup: false,
-      pendingAction: null,
+      pendingAction: null as string | null,
     }
   },
 
@@ -211,7 +213,7 @@ export default {
     do_cancel() {
       REMOTELAB.cancel(this.labURL + "/delete", {
         req_id: this.request_id,
-      }).then(function (data) {
+      }).then(data => {
         if (data !== "-1") {
           this.enqueue = false
           this.position = "Canceled"
@@ -332,7 +334,7 @@ export default {
       creator_ga("simulator", "simulator.debug", "simulator.debug")
     },
 
-    showConfirmPopup(action) {
+    showConfirmPopup(action: string) {
       this.pendingAction = action
       this.showPopup = true
     },
@@ -404,7 +406,7 @@ export default {
       creator_ga("simulator", "simulator.eraseflash", "simulator.eraseflash")
     },
   },
-}
+})
 </script>
 
 <template>

@@ -18,12 +18,14 @@ You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<script>
+<script lang="ts">
+import { defineComponent } from "vue"
+
 import { creator_ga } from "@/core/utils/creator_ga.mjs"
 
-export default {
+export default defineComponent({
   props: {
-    data_mode: String,
+    data_mode: { type: String, required: true },
     register_file_num: { type: Number, required: true },
     dark: { type: Boolean, required: true },
   },
@@ -34,11 +36,11 @@ export default {
       get() {
         return this.data_mode
       },
-      set(value) {
-        this.$root.data_mode = value
+      set(value: string) {
+        ;(this.$root as any).data_mode = value
 
         /* Google Analytics */
-        creator_ga("send", "event", "data", "data.view", "data.view." + value)
+        creator_ga("send", "event", "data.view." + value)
       },
     },
     current_reg_name() {
@@ -64,26 +66,26 @@ export default {
   },
 
   methods: {
-    change_data_view(e) {
+    change_data_view(e: string) {
       this.current_reg_type = e
     },
 
-    get_pressed(button) {
-      if (button === "registers") {
-        if (
-          this.current_reg_type === "int_registers" ||
-          this.current_reg_type === "fp_registers"
-        ) {
-          return "secondary"
-        } else {
-          return "outline-secondary"
-        }
+    getVariant(): "secondary" | "outline-secondary" {
+      if (
+        this.current_reg_type === "int_registers" ||
+        this.current_reg_type === "fp_registers"
+      ) {
+        return "secondary"
       }
 
+      return "outline-secondary"
+    },
+
+    isSelected(button: string): boolean {
       return button === this.current_reg_type
     },
   },
-}
+})
 </script>
 
 <template>
@@ -98,7 +100,7 @@ export default {
             right
             :text="current_reg_name"
             size="sm"
-            :variant="get_pressed('registers')"
+            :variant="getVariant()"
             @click="change_data_view(current_reg_type)"
           >
             <b-dropdown-item @click="change_data_view('int_registers')">
@@ -115,7 +117,7 @@ export default {
             :id="register_type.value"
             size="sm"
             :class="{ border: dark }"
-            :pressed="get_pressed(register_type.value)"
+            :pressed="isSelected(register_type.value)"
             :variant="dark ? 'dark' : 'outline-secondary'"
             @click="change_data_view(register_type.value)"
           >
@@ -126,7 +128,7 @@ export default {
           <b-button
             id="memory_btn"
             size="sm"
-            :pressed="get_pressed('memory')"
+            :pressed="isSelected('memory')"
             :class="{ border: dark }"
             :variant="dark ? 'dark' : 'outline-secondary'"
             @click="change_data_view('memory')"
@@ -138,7 +140,7 @@ export default {
           <b-button
             id="stats_btn"
             size="sm"
-            :pressed="get_pressed('stats')"
+            :pressed="isSelected('stats')"
             :class="{ border: dark }"
             :variant="dark ? 'dark' : 'outline-secondary'"
             @click="change_data_view('stats')"

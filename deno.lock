@@ -522,7 +522,7 @@
         "npm:@vueuse/core@^13.9.0",
         "npm:ansicolor@^2.0.3",
         "npm:apexcharts@^5.3.5",
-        "npm:bootstrap-vue-next@0.40.6",
+        "npm:bootstrap-vue-next@~0.40.6",
         "npm:bootstrap@^5.3.8",
         "npm:codemirror@^6.0.2",
         "npm:colors@^1.4.0",

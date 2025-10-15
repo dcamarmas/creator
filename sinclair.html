@@ -695,7 +695,7 @@ Executed instructions will appear here...</pre
             try {
               const pc_value = creator.getRegisterInfo("PC").value;
               const ret = step();
-              if (ret.error === 1) {
+              if (ret.error) {
                 haltEmulation(`Runtime Error: ${ret.msg}`, "error");
                 return false;
               }
@@ -736,7 +736,7 @@ Executed instructions will appear here...</pre
               }
 
               const ret = step();
-              if (ret.error === 1) {
+              if (ret.error) {
                 haltEmulation(`Runtime Error: ${ret.msg}`, "error");
                 return;
               }

@@ -18,38 +18,39 @@ You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<script>
+<script lang="ts">
+import { defineComponent, type PropType } from "vue"
+
+import { main_memory } from "@/core/core"
+import { type Device, devices } from "@/core/executor/devices.mts"
+import type { StackFrame } from "@/core/memory/StackTracker.mjs"
 import MemoryTable from "./MemoryTable.vue"
+import type { Memory } from "@/core/memory/Memory.mjs"
 
-import { main_memory } from "@/core/core.mjs"
-import { devices } from "@/core/executor/devices.mts"
-
-export default {
+export default defineComponent({
   props: {
     dark: { type: Boolean, required: true },
     selectedSegment: { type: String, required: true },
-    caller_frame: Object,
-    callee_frame: Object,
+    caller_frame: Object as PropType<StackFrame>,
+    callee_frame: Object as PropType<StackFrame>,
   },
 
   components: { MemoryTable },
 
   data() {
     return {
-      main_memory,
-      devices,
-      mainMemRepresentationOptions: main_memory
-        .getMemorySegments()
-        .keys()
-        .toArray()
-        .map(s => ({ text: s.charAt(0).toUpperCase() + s.slice(1), value: s })),
-      deviceRepresentationOptions: devices
-        // TODO: filter enabled devices
-        .keys()
-        .toArray()
-        .map(s => ({
-          text: s === "os" ? "OS" : s.charAt(0).toUpperCase() + s.slice(1),
-          value: s,
+      main_memory: main_memory as Memory,
+      devices: devices as Map<string, Device>,
+
+      mainMemRepresentationOptions: Array.from(
+        main_memory.getMemorySegments().keys(),
+      ).map(s => ({ text: s.charAt(0).toUpperCase() + s.slice(1), value: s })),
+
+      deviceRepresentationOptions: Array.from(devices.keys())
+        .filter(id => devices.get(id)!.enabled) // only enabled
+        .map(d => ({
+          text: d === "os" ? "OS" : d.charAt(0).toUpperCase() + d.slice(1),
+          value: d,
         })),
     }
   },
@@ -60,12 +61,12 @@ export default {
       get() {
         return this.selectedSegment
       },
-      set(value) {
-        this.$root.memory_segment = value
+      set(value: string) {
+        ;(this.$root as any).memory_segment = value
       },
     },
   },
-}
+})
 </script>
 
 <template>
@@ -119,8 +120,8 @@ export default {
         <MemoryTable
           class="my-2"
           ref="memory_table"
-          :main_memory="main_memory"
-          :devices="devices"
+          :main_memory="main_memory as Memory"
+          :devices="devices as Map<string, Device>"
           :segment="segment"
           :callee_frame="callee_frame"
           :caller_frame="caller_frame"

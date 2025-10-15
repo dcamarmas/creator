@@ -18,12 +18,18 @@ You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<script>
+<script lang="ts">
+import { defineComponent, type PropType } from "vue"
+import type { PseudoInstruction } from "@/core/core"
+
 import PseudoinstructionFields from "./PseudoinstructionFields.vue"
 
-export default {
+export default defineComponent({
   props: {
-    pseudoinstructions: { type: Array, required: true },
+    pseudoinstructions: {
+      type: Array as PropType<PseudoInstruction[]>,
+      required: true,
+    },
   },
 
   components: { PseudoinstructionFields },
@@ -48,14 +54,14 @@ export default {
 
   methods: {
     //Show pseudoinstruction fields modal
-    view_pseudoinstruction_modal(name, index) {
+    view_pseudoinstruction_modal(name: string, index: number) {
       this.modal_field_pseudoinstruction = {
         name,
         index,
       }
     },
   },
-}
+})
 </script>
 
 <template>
@@ -64,7 +70,9 @@ export default {
     id="fields_pseudoinstructions"
     :name="modal_field_pseudoinstruction.name"
     :index="modal_field_pseudoinstruction.index"
-    :pseudoinstruction="pseudoinstructions[modal_field_pseudoinstruction.index]"
+    :pseudoinstruction="
+      pseudoinstructions[modal_field_pseudoinstruction.index]!
+    "
   />
 
   <!-- Pseudoinstruction set table -->
@@ -78,9 +86,7 @@ export default {
     <!-- For each pseudoinstruction -->
 
     <template v-slot:cell(signatureRaw)="row">
-      {{ row.item.signatureRaw }}
-      <br />
-      {{ row.item.signature }}
+      {{ row.item.signature_definition }}
     </template>
 
     <template v-slot:cell(fields)="row">

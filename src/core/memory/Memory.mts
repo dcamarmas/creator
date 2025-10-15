@@ -392,7 +392,7 @@ export class Memory {
         }
 
         if (this.bitsPerByte === 8) {
-            return this.uint8View[addrIndex];
+            return this.uint8View[addrIndex]!;
         }
 
         const bitOffset = addrIndex * this.bitsPerByte;
@@ -403,7 +403,7 @@ export class Memory {
             // Value fits within a single storage byte
             const mask = this.maxByteValue << (8 - bitIndex - this.bitsPerByte);
             return (
-                (this.uint8View[byteIndex] & mask) >>>
+                (this.uint8View[byteIndex]! & mask) >>>
                 (8 - bitIndex - this.bitsPerByte)
             );
         } else {
@@ -422,7 +422,7 @@ export class Memory {
                     ((1 << bitsFromThisByte) - 1) <<
                     (8 - currentBitIndex - bitsFromThisByte);
                 const bits =
-                    (this.uint8View[currentByteIndex] & mask) >>>
+                    (this.uint8View[currentByteIndex]! & mask) >>>
                     (8 - currentBitIndex - bitsFromThisByte);
 
                 value = (value << bitsFromThisByte) | bits;
@@ -497,7 +497,7 @@ export class Memory {
             // Value fits within a single storage byte
             const mask = this.maxByteValue << (8 - bitIndex - this.bitsPerByte);
             this.uint8View[byteIndex] =
-                (this.uint8View[byteIndex] & ~mask) |
+                (this.uint8View[byteIndex]! & ~mask) |
                 (value << (8 - bitIndex - this.bitsPerByte));
         } else {
             // Value spans multiple storage bytes
@@ -519,7 +519,7 @@ export class Memory {
                     (8 - currentBitIndex - bitsForThisByte);
 
                 this.uint8View[currentByteIndex] =
-                    (this.uint8View[currentByteIndex] & ~mask) |
+                    (this.uint8View[currentByteIndex]! & ~mask) |
                     (bits << (8 - currentBitIndex - bitsForThisByte));
 
                 remainingValue &= (1 << shift) - 1;
@@ -578,7 +578,7 @@ export class Memory {
      */
     loadCustomROM(romData: number[], offset: bigint = 0n): void {
         for (let i = 0; i < romData.length; i++) {
-            this.write(offset + BigInt(i), romData[i]);
+            this.write(offset + BigInt(i), romData[i]!);
         }
     }
 
@@ -721,8 +721,8 @@ export class Memory {
 
         // Restore sparse data
         for (let i = 0; i < dump.addresses.length; i++) {
-            const addr = dump.addresses[i];
-            const value = dump.values[i];
+            const addr = dump.addresses[i]!;
+            const value = dump.values[i]!;
 
             // Use direct uint8View access to avoid re-tracking
             if (this.bitsPerByte === 8) {
@@ -1030,7 +1030,7 @@ export class Memory {
         // endianness[i] tells us which memory position should be read for word position i
         const reorderedBytes: number[] = new Array(this.wordSize);
         for (let i = 0; i < this.wordSize; i++) {
-            reorderedBytes[i] = bytes[this.endianness[i]];
+            reorderedBytes[i] = bytes[this.endianness[i]!]!;
         }
 
         return reorderedBytes;
@@ -1100,7 +1100,7 @@ export class Memory {
 
         // Validate all bytes in the word
         for (let i = 0; i < word.length; i++) {
-            if (word[i] > this.maxByteValue || word[i] < 0) {
+            if (word[i]! > this.maxByteValue || word[i]! < 0) {
                 throw new Error(
                     `Word byte ${i} value ${word[i]} exceeds byte size (max: ${this.maxByteValue})`,
                 );
@@ -1111,11 +1111,11 @@ export class Memory {
         // endianness[i] tells us which memory position should store word position i
         const bytesToWrite: number[] = new Array(this.wordSize);
         for (let i = 0; i < this.wordSize; i++) {
-            bytesToWrite[this.endianness[i]] = word[i];
+            bytesToWrite[this.endianness[i]!] = word[i]!;
         }
 
         for (let i = 0n; i < this.wordSize; i++) {
-            this.write(address + i, bytesToWrite[Number(i)]);
+            this.write(address + i, bytesToWrite[Number(i)]!);
         }
     }
 

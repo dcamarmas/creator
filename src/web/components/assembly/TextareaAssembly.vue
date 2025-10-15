@@ -18,13 +18,14 @@ You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<script>
+<script lang="ts">
+import { defineComponent, type PropType } from "vue"
 import Codemirror from "vue-codemirror6"
 import { vim, Vim } from "@replit/codemirror-vim"
-import { StreamLanguage } from "@codemirror/language"
+import { type LanguageSupport, StreamLanguage } from "@codemirror/language"
 import { gas } from "@codemirror/legacy-modes/mode/gas"
 import { EditorView } from "codemirror"
-import { keymap } from "@codemirror/view"
+import { keymap, type Command } from "@codemirror/view"
 import { tags as t } from "@lezer/highlight"
 import { createTheme } from "@uiw/codemirror-themes"
 
@@ -109,7 +110,7 @@ const creatorDarkTheme = createTheme({
 /**
  * Handler for the Ctrl-s keydown event that disables its default action
  */
-const ctrlSHandler = e => {
+const ctrlSHandler = (e: KeyboardEvent) => {
   if (
     e.key === "s" &&
     (navigator.userAgent.includes("Mac") ? e.metaKey : e.ctrlKey)
@@ -118,12 +119,15 @@ const ctrlSHandler = e => {
   }
 }
 
-export default {
+export default defineComponent({
   props: {
     os: { type: String, required: true },
     assembly_code: { type: String, required: true },
     vim_mode: { type: Boolean, required: true },
-    vim_custom_keybinds: { type: Array, required: true },
+    vim_custom_keybinds: {
+      type: Array as PropType<VimKeybind[]>,
+      required: true,
+    },
     height: { type: String, required: true },
     dark: { type: Boolean, required: true },
   },
@@ -144,7 +148,8 @@ export default {
   },
 
   setup() {
-    const lang = StreamLanguage.define(gas) // GNU Assembler
+    // GNU Assembler
+    const lang = StreamLanguage.define(gas) as unknown as LanguageSupport
 
     return { lang }
   },
@@ -154,10 +159,10 @@ export default {
       get() {
         return this.vim_mode
       },
-      set(value) {
-        this.$root.vim_mode = value
+      set(value: boolean) {
+        ;(this.$root as any).vim_mode = value
 
-        localStorage.setItem("conf_vim_mode", value)
+        localStorage.setItem("conf_vim_mode", value.toString())
 
         // Google Analytics
         creator_ga(
@@ -172,8 +177,8 @@ export default {
       get() {
         return this.assembly_code
       },
-      set(value) {
-        this.$root.assembly_code = value
+      set(value: string) {
+        ;(this.$root as any).assembly_code = value
       },
     },
 
@@ -191,7 +196,9 @@ export default {
         }),
 
         // Ctrl-s to assemble
-        keymap.of([{ key: "Ctrl-s", mac: "Cmd-s", run: this.assemble }]),
+        keymap.of([
+          { key: "Ctrl-s", mac: "Cmd-s", run: this.assemble as Command },
+        ]),
       ]
 
       // vim mode
@@ -211,12 +218,15 @@ export default {
       return extensions
     },
   },
+
   methods: {
     assemble() {
       // I know, this line also breaks my heart, and I wrote it
-      this.$root.$refs.assemblyView.$refs.toolbar.$refs.btngroup1
+      ;(this.$root as any).$refs.assemblyView.$refs.toolbar.$refs.btngroup1
         .at(0)
         .assembly_compiler()
+
+      return true // this is only to make it compatible with `Command`
     },
 
     toggleVim() {
@@ -233,16 +243,8 @@ export default {
       }
       return loadedLibrary?.instructions_tag.filter(t => t.globl)
     },
-
-    /**
-     * Codemirror callback for when component is ready
-     */
-    handleReady({ view, _state }) {
-      // focus on editor
-      view.focus()
-    },
   },
-}
+})
 </script>
 
 <template>
@@ -299,7 +301,11 @@ export default {
     :tab-size="4"
     :lang="lang"
     :extensions="extensions"
-    @ready="handleReady"
+    @ready="
+      ({ view }: { view: EditorView }) => {
+        view.focus()
+      }
+    "
   />
 </template>
 

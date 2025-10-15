@@ -18,8 +18,10 @@ You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<script>
-export default {
+<script lang="ts">
+import { defineComponent } from "vue"
+
+export default defineComponent({
   props: {
     target: { type: String, required: true },
     os: { type: String, required: true },
@@ -49,7 +51,7 @@ export default {
       return this.os === "Mac" ? "⌘ " : "Ctrl+"
     },
   },
-}
+})
 </script>
 
 <template>
@@ -57,7 +59,7 @@ export default {
     :target="target"
     title="Shortcuts"
     triggers="hover focus"
-    placement="bottomright"
+    placement="bottom-end"
   >
     <div v-if="vim_mode">
       <label> Commands </label>

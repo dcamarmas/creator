@@ -220,9 +220,9 @@ export default defineComponent({
 </template>
 
 <style lang="scss" scoped>
-.registerPopover {
-  background-color: #ceecf5;
+:deep(.registerValue) {
   font-family: monospace;
   font-weight: normal;
+  font-size: 0.7em;
 }
 </style>

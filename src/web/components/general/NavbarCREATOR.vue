@@ -18,13 +18,15 @@ You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<script>
-export default {
+<script lang="ts">
+import { defineComponent } from "vue"
+
+export default defineComponent({
   props: {
     version: { type: String, required: true },
     architecture_name: { type: String, required: true },
   },
-}
+})
 </script>
 
 <template>

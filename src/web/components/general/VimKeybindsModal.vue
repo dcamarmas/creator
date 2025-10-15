@@ -18,15 +18,20 @@ You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<script>
+<script lang="ts">
+import { defineComponent, type PropType } from "vue"
+
 import { Vim } from "@replit/codemirror-vim"
 
-export default {
+export default defineComponent({
   props: {
     id: { type: String, required: true },
     title: { type: String, required: true },
     selected_vim_keybind: { type: [Number, null], required: true },
-    vim_custom_keybinds: { type: Array, required: true },
+    vim_custom_keybinds: {
+      type: Array as PropType<VimKeybind[]>,
+      required: true,
+    },
     type: { type: String, required: true }, // 'new' or 'edit'
   },
 
@@ -52,7 +57,7 @@ export default {
     // modifySelectedVimKeybind
     modifiedVimKeybind() {
       // copy selected keybind
-      return { ...this.vim_custom_keybinds_value[this.selected_vim_keybind] }
+      return { ...this.vim_custom_keybinds_value[this.selected_vim_keybind!]! }
     },
 
     keybind() {
@@ -64,28 +69,28 @@ export default {
       get() {
         return this.vim_custom_keybinds
       },
-      set(value) {
+      set(value: VimKeybind[]) {
         this.$emit("update:vim_custom_keybinds", value)
       },
     },
   },
 
   methods: {
-    modifySelectedVimKeybind(mode, lhs, rhs) {
+    modifySelectedVimKeybind(mode: string, lhs: string, rhs: string) {
       Vim.unmap(
-        this.vim_custom_keybinds_value[this.selected_vim_keybind].lhs,
-        this.vim_custom_keybinds_value[this.selected_vim_keybind].mode,
+        this.vim_custom_keybinds_value[this.selected_vim_keybind!]!.lhs,
+        this.vim_custom_keybinds_value[this.selected_vim_keybind!]!.mode,
       )
       Vim.map(lhs, rhs, mode)
 
       this.vim_custom_keybinds_value.splice(
-        this.selected_vim_keybind,
+        this.selected_vim_keybind!,
         1,
         { ...this.modifiedVimKeybind }, // copy
       )
     },
 
-    addVimKeybind(mode, lhs, rhs) {
+    addVimKeybind(mode: string, lhs: string, rhs: string) {
       Vim.map(lhs, rhs, mode)
 
       this.vim_custom_keybinds_value.push({
@@ -105,7 +110,7 @@ export default {
       }
     },
   },
-}
+})
 </script>
 
 <template>

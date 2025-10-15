@@ -49,7 +49,8 @@ import { resetDevices } from "./executor/devices.mts";
 import { compileTimerFunctions } from "./executor/timers.mts";
 import * as archProcessor from "./utils/architectureProcessor.mjs";
 
-export let loadedLibrary = "";
+/** @type {import("./core.d.ts").Library} */
+export let loadedLibrary = {};
 export let backup_stack_address;
 export let backup_data_address;
 
@@ -70,14 +71,14 @@ export let status = {
     display: "",
     execution_index: 0,
     virtual_PC: 0n, // This is the PC the instructions see.
-    error: 0,
+    error: false,
     execution_mode: ExecutionMode.User,
     interrupts_enabled: false,
 };
 
 export const guiVariables = {
     previous_PC: 0n, // Used in the GUI to show the last executed instruction
-    keep_highlighted: -1n // Address to keep highlighted (used to highlight interrupted instructions)
+    keep_highlighted: -1n, // Address to keep highlighted (used to highlight interrupted instructions)
 };
 
 /** @type {number} */
@@ -130,8 +131,11 @@ export function set_debug(enable_debug) {
  */
 export function loadArchitecture(architectureYaml, isa = []) {
     // Process the architecture YAML through all validation and preparation steps
-    const result = archProcessor.processArchitectureFromYaml(architectureYaml, isa);
-    
+    const result = archProcessor.processArchitectureFromYaml(
+        architectureYaml,
+        isa,
+    );
+
     // If processing failed, return the error
     if (result.status !== "ok") {
         return result;
@@ -269,7 +273,7 @@ export function reset() {
     status.execution_index = 0;
     status.execution_init = 1;
     status.run_program = 0;
-    
+
     guiVariables.previous_PC = 0n;
     guiVariables.keep_highlighted = -1n;
 

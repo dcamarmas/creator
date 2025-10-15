@@ -18,11 +18,12 @@ You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<script>
-import { useModalController } from "bootstrap-vue-next"
+<script lang="ts">
+import { defineComponent } from "vue"
+import { useModal } from "bootstrap-vue-next"
 import QrcodeVue from "qrcode.vue"
 
-export default {
+export default defineComponent({
   props: {
     id: { type: String, required: true },
     architecture_name: { type: String, required: true },
@@ -37,7 +38,7 @@ export default {
 
   setup() {
     // this HAS to be defined here
-    const { hide } = useModalController()
+    const { hide } = useModal()
     return { hide }
   },
 
@@ -52,7 +53,7 @@ export default {
   computed: {
     uri() {
       let u =
-        window.location.href.split("?")[0].split("#")[0] +
+        window.location.href.split("?")[0]!.split("#")[0] +
         "?architecture=" +
         encodeURIComponent(this.architecture_name)
 
@@ -74,7 +75,7 @@ export default {
       this.hide()
     },
   },
-}
+})
 </script>
 
 <template>

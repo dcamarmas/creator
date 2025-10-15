@@ -18,25 +18,30 @@ You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<script>
+<script lang="ts">
+import { defineComponent, type PropType } from "vue"
+
 import { REGISTERS, stackTracker } from "@/core/core.mjs"
 import { chunks, range } from "@/core/utils/utils.mjs"
 import { toHex } from "@/web/utils.mjs"
+import type { Memory } from "@/core/memory/Memory.mjs"
+import type { Device } from "@/core/executor/devices.mjs"
+import type { StackFrame } from "@/core/memory/StackTracker.mjs"
 
-export default {
+export default defineComponent({
   props: {
-    main_memory: { type: Object, required: true },
-    devices: { type: Object, required: true },
+    main_memory: { type: Object as PropType<Memory>, required: true },
+    devices: { type: Map as PropType<Map<string, Device>>, required: true },
     segment: { type: String, required: true },
-    caller_frame: Object,
-    callee_frame: Object,
+    caller_frame: Object as PropType<StackFrame>,
+    callee_frame: Object as PropType<StackFrame>,
   },
 
   data() {
     return {
       row_info: null,
       spaceView: false,
-      spaceItem: null,
+      spaceItem: null as MemoryItem | null,
       selected_stack_view: null,
       memorySegments: this.main_memory.getMemorySegments(),
       deviceIDs: Array.from(this.devices.keys()),
@@ -48,8 +53,8 @@ export default {
         "global_pointer",
       ],
 
-      render: 0n, // dummy variable to force refresh the memory table
-      render_tag: 0n, // dummy variable to force refresh the memory tags
+      render: 0, // dummy variable to force refresh the memory table
+      render_tag: 0, // dummy variable to force refresh the memory tags
     }
   },
 
@@ -75,27 +80,27 @@ export default {
     /**
      * Filters which rows to show, depending on the data segment
      */
-    mainMemoryFilter(row, _filter) {
+    mainMemoryFilter(item: MemoryItem, _filter: any) {
       const segment = this.memorySegments.get(this.segment)
       if (segment === undefined) return false
 
-      return row.start >= segment.start && row.end <= segment.end
+      return item.start >= segment.start && item.end <= segment.end
     },
 
-    get_classes(item) {
+    get_classes(item: MemoryItem) {
       return {
         h6Sm:
-          this.segment !== "stack" || item.start >= this.caller_frame?.begin,
+          this.segment !== "stack" || item.start >= this.caller_frame!.begin,
         "text-secondary":
-          item.start < this.callee_frame?.end &&
-          Math.abs(item.start - this.callee_frame?.end) <
-            this.$root.stack_total_list * 4,
+          item.start < this.callee_frame!.end &&
+          Math.abs(item.start - this.callee_frame!.end) <
+            (this.$root as any).stack_total_list * 4,
         "text-success":
-          item.start < this.callee_frame?.begin &&
-          item.start >= this.callee_frame?.end,
+          item.start < this.callee_frame!.begin &&
+          item.start >= this.callee_frame!.end,
         "text-info":
-          item.start < this.caller_frame?.begin &&
-          item.start >= this.caller_frame?.end,
+          item.start < this.caller_frame!.begin &&
+          item.start >= this.caller_frame!.end,
       }
     },
 
@@ -103,59 +108,57 @@ export default {
      *
      * Transforms a value into a hextring.
      *
-     * @param {number} value
-     * @param {number} padding Padding, in bytes
-     *
-     * @returns {string}
+     * @param value
+     * @param padding Padding, in bytes
      */
-    toBin(value, padding) {
+    toBin(value: number, padding: number): string {
       return value.toString(2).padStart(padding * 8, "0")
     },
 
     /**
      * Computes what values are stored in a set of bytes, according to the type.
      *
-     * @param {number[]} bytes
-     * @param {string} type
+     * @param bytes
+     * @param type
      *
-     * @returns {string[]} Array of the same length as `bytes`, with the value
+     * @returns Array of the same length as `bytes`, with the value
      * stored in the corresponding byte, that is, the first byte for all cases
      * except the string, where its a char value per byte.
      */
-    computeHumanValues(bytes, type) {
+    computeHumanValues(bytes: number[], type: string): string[] {
       const values = new Array(bytes.length)
       const view = new DataView(new Uint8Array(bytes).buffer)
 
       switch (type) {
         case "byte":
           // unsigned integer
-          values[0] = view.getUint8()
+          values[0] = view.getUint8(0)
           return values
 
         case "half":
-          values[0] = view.getUint16()
+          values[0] = view.getUint16(0)
           return values
 
         case "word":
         case "signed":
-          values[0] = view.getInt32()
+          values[0] = view.getInt32(0)
           return values
 
         case "unsigned":
-          values[0] = view.getUint32()
+          values[0] = view.getUint32(0)
           return values
 
         case "dword":
-          values[0] = view.getInt64()
+          values[0] = view.getBigInt64(0)
 
           return values
 
         case "float32":
-          values[0] = view.getFloat32()
+          values[0] = view.getFloat32(0)
           return values
 
         case "float64":
-          values[0] = view.getFloat64()
+          values[0] = view.getFloat64(0)
           return values
 
         case "string":
@@ -196,11 +199,10 @@ export default {
      * Checks if any of the special control registers are pointing to this
      * address, and returns its types and names.
      *
-     * @param {Number} addr Adress to check
+     * @param addr Adress to check
      *
-     * @returns {Array<{type: string, name: string}>}
      */
-    get_pointers(addr) {
+    get_pointers(addr: number): { type: string; name: string }[] {
       return REGISTERS.flatMap(bank =>
         bank.elements
           .filter(
@@ -214,8 +216,10 @@ export default {
                 (BigInt(addr) & 0xfffffffcn),
           )
           .map(reg => ({
-            type: reg.properties.find(p => this.ctrl_register_tags.includes(p)),
-            name: reg.name[1] ?? reg.name[0],
+            type: reg.properties.find(p =>
+              this.ctrl_register_tags.includes(p),
+            )!,
+            name: reg.name[1] ?? reg.name[0]!,
           })),
       )
     },
@@ -224,14 +228,20 @@ export default {
     // dependencies are reactive, as we're calling
     // `this.main_memory.getWritten()`, computed caching comes into play and not
     // even force updating works.
-    memory() {
+    memory(): MemoryItem[] {
       // we show just the written memory addresses bc we don't want to store a
       // 4GiB array full of zeroes
       const mem = this.main_memory
         .getWritten()
         // we filter out the stack, we'll add it later bc not all values in the
         // stack are written values
-        .filter(b => b.addr < Number(this.memorySegments.get("stack").start))
+        .filter(
+          b => b.addr < Number(this.memorySegments.get("stack")!.start),
+        ) as {
+        addr: number
+        value: number
+        human?: string
+      }[]
       const addresses = mem.map(b => b.addr)
       const wordSize = this.main_memory.getWordSize()
 
@@ -241,13 +251,15 @@ export default {
       // might be gaps, bytes that were not written
       mem
         // find missing addresses
-        .reduce((missing, byte) => {
+        .reduce((missing: number[], byte) => {
           // for each start of word address, check the bytes of the full word
           // are present
           if (byte.addr % wordSize === 0) {
-            range(byte.addr, byte.addr + 4).forEach(addr => {
-              if (!addresses.includes(addr)) missing.push(addr)
-            })
+            Array.from(range(byte.addr, byte.addr + 4)).forEach(
+              (addr: number) => {
+                if (!addresses.includes(addr)) missing.push(addr)
+              },
+            )
           }
 
           // do the same for the end of the word
@@ -256,7 +268,9 @@ export default {
           // strings (the lenght of the string does not take into account the
           // last \0). When the compiler is updated, remove this.
           if (byte.addr % wordSize === wordSize - 1) {
-            range(byte.addr - (wordSize - 1), byte.addr + 1).forEach(addr => {
+            Array.from(
+              range(byte.addr - (wordSize - 1), byte.addr + 1),
+            ).forEach((addr: number) => {
               if (!addresses.includes(addr)) missing.push(addr)
             })
           }
@@ -275,7 +289,7 @@ export default {
       let i = 0
       while (i < mem.length) {
         const hint = this.mainMemoryHints().find(
-          h => h.address === mem.at(i).addr,
+          h => h.address === mem.at(i)!.addr,
         )
         if (hint === undefined) {
           i++
@@ -286,14 +300,14 @@ export default {
 
         // compute human values and store them in memory
         this.computeHumanValues(bytes, hint.type).forEach(
-          (b, j) => (mem[i + j].human = b),
+          (b, j) => (mem[i + j]!.human = b),
         )
 
         i += hint.size
       }
 
       // add the stack
-      for (const addr of range(this.stackTop(), this.stackBottom() + 1)) {
+      for (const addr of range(this.stackTop()!, this.stackBottom()! + 1)) {
         mem.push({
           addr,
           value: this.main_memory.read(BigInt(addr)),
@@ -305,8 +319,8 @@ export default {
       return (
         // group bytes by words
         chunks(mem, wordSize).map(bytes => ({
-          start: bytes.at(0).addr,
-          end: bytes.at(-1).addr,
+          start: bytes.at(0)!.addr,
+          end: bytes.at(-1)!.addr,
           bytes: bytes.map(b => ({
             addr: b.addr,
             value: b.value,
@@ -317,12 +331,12 @@ export default {
       )
     },
 
-    deviceMemory() {
-      const mem = this.devices.get(this.segment).memory
+    deviceMemory(): MemoryItem[] {
+      const mem = this.devices.get(this.segment)!.memory
 
       return chunks(mem.getAll(), mem.getWordSize()).map(bytes => ({
-        start: bytes.at(0).addr,
-        end: bytes.at(-1).addr,
+        start: bytes.at(0)!.addr,
+        end: bytes.at(-1)!.addr,
         bytes: bytes.map((b, i, arr) => ({
           addr: b.addr,
           value: b.value,
@@ -346,12 +360,12 @@ export default {
           address: Number(address),
           tag,
           type,
-          size: sizeInBits / this.main_memory.getBitsPerByte(),
+          size: sizeInBits! / this.main_memory.getBitsPerByte(),
         }))
     },
 
     deviceMemoryHints() {
-      const device = this.devices.get(this.segment)
+      const device = this.devices.get(this.segment)!
       return [
         {
           address: device.ctrl_addr,
@@ -374,7 +388,7 @@ export default {
       return stackTracker.getAllFrames().at(0)?.begin
     },
 
-    getStackHint(addr) {
+    getStackHint(addr: number) {
       return stackTracker.getHint(addr)
     },
 
@@ -395,7 +409,7 @@ export default {
       ]
     },
   },
-}
+})
 </script>
 
 <template>
@@ -411,8 +425,8 @@ export default {
             hover
             :items="deviceIDs.includes(segment) ? deviceMemory() : memory()"
             :fields="memFields"
-            :filter="!deviceIDs.includes(segment)"
             :filter-function="mainMemoryFilter"
+            :filter="!deviceIDs.includes(segment) ? 'yes' : undefined"
             class="memory_table align-items-start"
             @row-clicked="
               (item, _index, _event) => {
@@ -552,7 +566,7 @@ export default {
             />
           </template>
 
-          <p class="font-monospace">0x{{ toHex(stackTop()) }}</p>
+          <p class="font-monospace">0x{{ toHex(stackTop()!) }}</p>
 
           <b-list-group class="mb-1">
             <b-list-group-item
@@ -562,18 +576,18 @@ export default {
                 'text-info': index === 1,
               }"
             >
-              {{ frame.function_name }}
+              {{ frame.name }}
             </b-list-group-item>
           </b-list-group>
 
-          <p class="font-monospace">0x{{ toHex(stackBottom()) }}</p>
+          <p class="font-monospace">0x{{ toHex(stackBottom()!) }}</p>
         </b-popover>
 
         <!-- Free stack -->
         <b-row align-v="end" class="text-center my-1">
           <b-col cols="6" md="5" sm="2" class="border rounded ms-2">
             <!-- we use b-badge bc it makes the text smaller -->
-            <b-badge variant="white" class="text-secondary">
+            <b-badge variant="light" class="text-secondary">
               Free <br />
               stack
             </b-badge>
@@ -581,28 +595,28 @@ export default {
 
           <!-- Callee -->
           <b-col v-if="stackFrames().length > 0" class="border rounded ms-1">
-            <b-badge variant="white" class="text-success">
-              Callee: <br />{{ callee_frame.name }}
+            <b-badge variant="light" class="text-success">
+              Callee: <br />{{ callee_frame!.name }}
             </b-badge>
           </b-col>
 
           <!-- Caller -->
           <b-col v-if="stackFrames().length > 1" class="border rounded ms-1">
-            <b-badge variant="white" class="text-info">
-              Caller: <br />{{ caller_frame.name }}
+            <b-badge variant="light" class="text-info">
+              Caller: <br />{{ caller_frame!.name }}
             </b-badge>
           </b-col>
 
           <!-- rest of frames -->
           <b-col v-if="stackFrames().length > 2" class="border rounded ms-1">
-            <b-badge variant="white" class="text-secondary">
+            <b-badge variant="light" class="text-secondary">
               <b>&bull;&bull;&bull;<br />{{ stackFrames().length - 2 }}</b>
             </b-badge>
           </b-col>
 
           <!-- System -->
           <b-col class="border rounded ms-1 me-2">
-            <b-badge variant="white" class="text-body">
+            <b-badge variant="light" class="text-body">
               System<br />stack
             </b-badge>
           </b-col>
@@ -735,11 +749,5 @@ export default {
   max-height: 90vh;
   overflow-y: auto;
   -ms-overflow-style: -ms-autohiding-scrollbar;
-}
-
-.registerPopover {
-  background-color: #ceecf5;
-  font-family: monospace;
-  font-weight: normal;
 }
 </style>

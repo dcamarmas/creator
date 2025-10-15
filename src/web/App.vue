@@ -18,11 +18,13 @@ You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<script>
+<script lang="ts">
 import { BOrchestrator, useToast } from "bootstrap-vue-next"
 
-import package_json from "/package.json" // package info
-import arch_available from "/architecture/available_arch.json"
+// import package_json from "#/package.json" // package info
+import package_json from "../../package.json" // package info
+// import arch_available from "#/architecture/available_arch.json"
+import arch_available from "../../architecture/available_arch.json"
 
 import {
   notifications,
@@ -30,12 +32,10 @@ import {
   loadDefaultArchitecture,
   loadExample,
 } from "./utils.mjs"
-
-import { set_debug, status, initCAPI } from "@/core/core.mjs"
+import { set_debug, status } from "@/core/core.mjs"
 import { stats } from "@/core/executor/stats.mts"
-
 import { instructions } from "@/core/assembler/assembler.mjs"
-
+import type { StackFrame } from "@/core/memory/StackTracker.mjs"
 import { creator_ga } from "@/core/utils/creator_ga.mjs"
 
 import SpinnerLoading from "./components/general/SpinnerLoading.vue"
@@ -113,11 +113,11 @@ export default {
       architecture_guide: "",
 
       // Accesskey
-      os: "",
-      browser: "",
+      os: "" as string | null,
+      browser: "" as string | null,
 
       // Displayed notifications
-      notifications, //TODO: copy or only in app?
+      notifications,
 
       // window size
       windowHeight: window.innerHeight,
@@ -139,15 +139,15 @@ export default {
 
       // Stack total list values
       stack_total_list:
-        parseInt(localStorage.getItem("conf_stack_total_list"), 10) || 40,
+        parseInt(localStorage.getItem("conf_stack_total_list")!, 10) || 40,
 
       // Notification speed
       notification_time:
-        parseInt(localStorage.getItem("conf_notification_time"), 10) || 1500,
+        parseInt(localStorage.getItem("conf_notification_time")!, 10) || 1500,
 
       // Instruction help size
       instruction_help_size:
-        parseInt(localStorage.getItem("conf_instruction_help_size"), 10) || 33,
+        parseInt(localStorage.getItem("conf_instruction_help_size")!, 10) || 33,
 
       // Auto Scroll
       autoscroll: (a => {
@@ -173,7 +173,7 @@ export default {
       vim_mode: localStorage.getItem("conf_vim_mode") === "true",
 
       vim_custom_keybinds:
-        JSON.parse(localStorage.getItem("conf_vim_custom_keybinds")) || [],
+        JSON.parse(localStorage.getItem("conf_vim_custom_keybinds")!) || [],
 
       /*************************/
       /* Architecture Selector */
@@ -230,8 +230,8 @@ export default {
       memory_segment: "data",
 
       // Stack
-      callee_frame: undefined,
-      caller_frame: undefined,
+      callee_frame: undefined as StackFrame | undefined,
+      caller_frame: undefined as StackFrame | undefined,
       stack_pointer: 0,
 
       //
@@ -258,7 +258,7 @@ export default {
         Win: "rfc2217://host.docker.internal:4000?ign_set_control",
         Mac: "/dev/cu.usbserial-210",
         Linux: "/dev/ttyUSB0",
-      },
+      } as { [key: string]: string },
 
       lab_url: "",
       result_email: "",
@@ -269,10 +269,13 @@ export default {
   },
 
   computed: {
+    /**
+     * @returns {AvailableArch[]}
+     */
     arch_available() {
       const architectures = arch_available.map(a => ({ ...a, default: true }))
       const customArchs = JSON.parse(
-        localStorage.getItem("customArchitectures"),
+        localStorage.getItem("customArchitectures")!,
       )
 
       if (customArchs) {
@@ -384,7 +387,7 @@ export default {
      */
     loadFromURI() {
       // get parameters
-      const params = new URL(window.location).searchParams
+      const params = new URL(window.location.toString()).searchParams
 
       const architecture_name = params.get("architecture")
       const asm = params.get("asm")
@@ -452,7 +455,7 @@ export default {
     /*************/
 
     //Exception Notification
-    exception(error) {
+    exception(error: string) {
       //TODO: Move?
       show_notification(
         "There has been an exception. Error description: '" + error,
@@ -460,7 +463,7 @@ export default {
       )
 
       if (status.execution_index !== -1) {
-        instructions[status.execution_index]._rowVariant = "danger"
+        instructions[status.execution_index]!._rowVariant = "danger"
       }
 
       /* Google Analytics */
@@ -469,10 +472,10 @@ export default {
 
     //Get target por by SO
     get_target_port() {
-      return this.target_ports[this.os] ?? ""
+      return this.target_ports[this.os!]! ?? ""
     },
 
-    resizeHandler(_e) {
+    resizeHandler(_e: any) {
       this.windowHeight = window.innerHeight
       this.windowWidth = window.innerWidth
     },
@@ -492,14 +495,11 @@ export default {
   <SpinnerLoading id="loading" style="display: none" />
 
   <!-- Browser not supported modal -->
-  <SupportedBrowsers :browser="this.browser" />
+  <SupportedBrowsers :browser="browser" />
 
   <header>
     <!-- Navbar  -->
-    <NavbarCREATOR
-      :version="this.version"
-      :architecture_name="this.architecture_name"
-    />
+    <NavbarCREATOR :version="version" :architecture_name="architecture_name" />
 
     <!-- Configuration modal -->
     <FormConfiguration
@@ -526,7 +526,7 @@ export default {
     <UIeltoInstitutions id="institutions" />
 
     <!-- About modal -->
-    <UIeltoAbout id="about" :dark="dark" />
+    <UIeltoAbout id="about" :dark="dark!" />
 
     <!-- Instruction Help sidebar -->
     <!-- we don't want to load this unless we have selected an architecture -->
@@ -548,9 +548,9 @@ export default {
   <SelectArchitecture
     v-if="creator_mode === 'select_architecture'"
     :arch_available="arch_available"
-    :browser="browser"
-    :os="os"
-    :dark="dark"
+    :browser="browser!"
+    :os="os!"
+    :dark="dark!"
     :window-height="windowHeight"
     ref="selectArchitectureView"
     @select-architecture="
@@ -570,9 +570,9 @@ export default {
     :architecture_name="architecture_name"
     :arch_available="arch_available"
     :arch_code="arch_code"
-    :browser="browser"
-    :os="os"
-    :dark="dark"
+    :browser="browser!"
+    :os="os!"
+    :dark="dark!"
   />
 
   <!------------------->
@@ -582,13 +582,13 @@ export default {
     v-if="creator_mode === 'assembly'"
     :architecture_name="architecture_name"
     :arch_available="arch_available"
-    :browser="browser"
-    :os="os"
+    :browser="browser!"
+    :os="os!"
     :assembly_code="assembly_code"
     :assembly_error="assemblyError"
     :vim_mode="vim_mode"
     :vim_custom_keybinds="vim_custom_keybinds"
-    :dark="dark"
+    :dark="dark!"
     ref="assemblyView"
   />
 
@@ -610,16 +610,16 @@ export default {
     :arch_available="arch_available"
     :instructions="instructions"
     :enter="enter"
-    :browser="browser"
-    :os="os"
+    :browser="browser!"
+    :os="os!"
     :window-height="windowHeight"
     :window-width="windowWidth"
     :display="display"
     :keyboard="keyboard"
-    :dark="dark"
+    :dark="dark!"
     :key="simulatorViewKey"
-    :callee_frame="callee_frame"
-    :caller_frame="caller_frame"
+    :callee_frame="callee_frame!"
+    :caller_frame="caller_frame!"
     :assembly_code="assembly_code"
     :lab_url="lab_url"
     :result_email="result_email"

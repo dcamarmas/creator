@@ -18,10 +18,12 @@ You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<script>
+<script lang="ts">
+import { defineComponent } from "vue"
+
 import { show_notification } from "@/web/utils.mjs"
 
-export default {
+export default defineComponent({
   props: {
     id: { type: String, required: true },
     arch: { type: [String, null], required: true },
@@ -29,17 +31,19 @@ export default {
 
   methods: {
     //Remove architecture
-    removeArch(name) {
+    removeArch(name: string) {
       // remove from root
-      this.$root.arch_available.splice(
-        this.$root.arch_available.findIndex(a => a.name === name),
+      ;((this.$root as any).arch_available as AvailableArch[]).splice(
+        ((this.$root as any).arch_available as AvailableArch[]).findIndex(
+          a => a.name === name,
+        ),
         1,
       )
 
       // remove from localstorage
       const customArchitectures = JSON.parse(
-        localStorage.getItem("customArchitectures"),
-      )
+        localStorage.getItem("customArchitectures")!,
+      ) as AvailableArch[]
 
       localStorage.setItem(
         "customArchitectures",
@@ -50,14 +54,13 @@ export default {
           ),
         ),
       )
-
       // refresh view
-      this.$root.$refs.selectArchitectureView.refresh()
+      ;(this.$root as any).$refs.selectArchitectureView.refresh()
 
       show_notification("Architecture deleted successfully", "success")
     },
   },
-}
+})
 </script>
 
 <template>
@@ -66,7 +69,7 @@ export default {
     title="Delete Architecture"
     ok-variant="danger"
     ok-title="Delete"
-    @ok="removeArch(arch)"
+    @ok="removeArch(arch!)"
   >
     Are you sure you want to delete the '<i>{{ arch }}</i
     >' architecture?
