@@ -18,8 +18,10 @@ You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<script>
-export default {
+<script lang="ts">
+import { defineComponent } from "vue"
+
+export default defineComponent({
   props: {
     display: { type: String, required: true },
   },
@@ -30,12 +32,12 @@ export default {
       get() {
         return this.display
       },
-      set(value) {
-        this.$root.display = value
+      set(value: string) {
+        ;(this.$root as any).display = value
       },
     },
   },
-}
+})
 </script>
 
 <template>

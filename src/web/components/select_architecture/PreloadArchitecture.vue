@@ -18,15 +18,19 @@ You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<script>
-import { loadDefaultArchitecture } from "@/web/utils.mjs"
-import { loadCustomArchitecture } from "../../utils.mjs"
-import { initCAPI } from "@/core/capi/initCAPI.mts"
-import { architecture } from "@/core/core.mjs"
+<script lang="ts">
+import { defineComponent, type PropType } from "vue"
 
-export default {
+import {
+  loadDefaultArchitecture,
+  loadCustomArchitecture,
+} from "@/web/utils.mjs"
+import { initCAPI } from "@/core/capi/initCAPI.mts"
+import { architecture } from "@/core/core"
+
+export default defineComponent({
   props: {
-    architecture: { type: Object, required: true },
+    architecture: { type: Object as PropType<AvailableArch>, required: true },
     dark: { type: Boolean, required: true },
   },
 
@@ -43,8 +47,8 @@ export default {
 
   methods: {
     /**
-     * Selects an architecture by emitting the 'select-architecture' event with the selected architecture's name to App (grandparent)
-     * @param {Object} arch Selected architecture
+     * Selects an architecture by emitting the 'select-architecture' event with
+     * the selected architecture's name to App (grandparent)
      */
     async select_arch() {
       if (this.architecture.default) {
@@ -57,8 +61,12 @@ export default {
       initCAPI(pluginName)
       this.$emit("select-architecture", this.architecture.name) // emit to our grandparent
     },
+
+    deleteArch() {
+      this.$emit("delete-architecture", this.architecture.name)
+    },
   },
-}
+})
 </script>
 
 <template>
@@ -72,7 +80,7 @@ export default {
   >
     <template #img>
       <b-img
-        :src="`img/logos/${architecture.img}` ?? 'img/logos/default.webp'"
+        :src="`img/logos/${architecture.img}` || 'img/logos/default.webp'"
         :alt="architecture.alt"
         @click="select_arch"
       />
@@ -92,7 +100,7 @@ export default {
         class="my-1 w-75 center"
         size="sm"
         variant="outline-danger"
-        @click="this.$emit('delete-architecture', this.architecture.name)"
+        @click="deleteArch"
       >
         <font-awesome-icon :icon="['fas', 'trash-can']" />
         Delete

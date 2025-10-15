@@ -18,13 +18,15 @@ You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<script>
-import PlotStats from "./PlotStats.vue"
-import TableStats from "./TableStats.vue"
+<script lang="ts">
+import { defineComponent } from "vue"
 
 import { stats } from "@/core/executor/stats.mts"
 
-export default {
+import PlotStats from "./PlotStats.vue"
+import TableStats from "./TableStats.vue"
+
+export default defineComponent({
   props: {
     dark: { type: Boolean, required: true },
     representation: { type: String, required: true },
@@ -39,7 +41,7 @@ export default {
   data() {
     return {
       stats,
-      render: 0n, // dummy variable to force components with this as key to refresh
+      render: 0, // dummy variable to force components with this as key to refresh
     }
   },
   computed: {
@@ -48,8 +50,8 @@ export default {
         return this.representation
       },
 
-      set(value) {
-        this.$root.stat_representation = value
+      set(value: string) {
+        ;(this.$root as any).stat_representation = value
       },
     },
     type_value: {
@@ -57,8 +59,8 @@ export default {
         return this.type
       },
 
-      set(value) {
-        this.$root.stat_type = value
+      set(value: string) {
+        ;(this.$root as any).stat_type = value
       },
     },
   },
@@ -69,7 +71,7 @@ export default {
       this.render++
     },
   },
-}
+})
 </script>
 
 <template>

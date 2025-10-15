@@ -385,9 +385,11 @@ export function obj_arraysTOarray_objs(object_arrays) {
  *   2
  * ); // [ [ 10, 20 ], [ 30, 40 ], [ 50, 60 ], [ 70, 80 ] ]
  * ```
- *
- * @param {Iterable} arr Array to iterate through
+ * @template T
+ * @param {T[]} arr Array to iterate through
  * @param {number} chunkSize Size of the chunks
+ *
+ * @returns {T[][]}
  *
  */
 export function chunks(arr, chunkSize) {

@@ -18,10 +18,14 @@ You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<script>
+<script lang="ts">
+import { defineComponent } from "vue"
+
+import authors from "@/web/assets/authors.json"
+
 import CardAuthor from "./CardAuthor.vue"
 
-export default {
+export default defineComponent({
   props: {
     id: { type: String, required: true },
     dark: { type: Boolean, required: true },
@@ -31,39 +35,10 @@ export default {
   data() {
     return {
       contactMail: "creator.arcos.inf.uc3m.es@gmail.com",
-
-      authors: [
-        {
-          id: "dcamarmas",
-          name: "Diego Camarmas Alonso",
-          linkedin: "dcamarmas",
-          rgate: "Diego-Camarmas-Alonso",
-          github: "dcamarmas",
-        },
-        {
-          id: "fgarcia",
-          name: "Félix García Carballeira",
-          linkedin: "f%C3%A9lix-garc%C3%ADa-carballeira-4ab48a14",
-          rgate: "Felix_Garcia-Carballeira",
-        },
-        {
-          id: "acaldero",
-          name: "Alejandro Calderón Mateos",
-          linkedin: "alejandro-calderon-mateos",
-          rgate: "Alejandro_Calderon2",
-          github: "acaldero",
-        },
-        {
-          id: "edelpozo",
-          name: "Elías del Pozo Puñal",
-          linkedin: "edelpozop",
-          rgate: "Elias-Del-Pozo-Punal-2",
-          github: "edelpozop",
-        },
-      ],
+      authors,
     }
   },
-}
+})
 </script>
 
 <template>

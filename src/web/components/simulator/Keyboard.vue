@@ -18,10 +18,11 @@ You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<script>
+<script lang="ts">
 import { execution_mode, status } from "@/core/core.mjs"
+import { defineComponent } from "vue"
 
-export default {
+export default defineComponent({
   props: {
     keyboard: { type: String, required: true },
     enter: [Boolean, null],
@@ -33,8 +34,8 @@ export default {
       get() {
         return this.keyboard
       },
-      set(value) {
-        this.$root.keyboard = value
+      set(value: string) {
+        ;(this.$root as any).keyboard = value
       },
     },
   },
@@ -43,7 +44,7 @@ export default {
     /*Empty keyboard and display*/
     consoleClear() {
       this.keyboard_value = ""
-      this.$root.display = ""
+      ;(this.$root as any).display = ""
     },
 
     /*Console mutex*/
@@ -53,7 +54,7 @@ export default {
       }
     },
   },
-}
+})
 </script>
 
 <template>

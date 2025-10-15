@@ -40,16 +40,19 @@ The alternative is using [events](https://vuejs.org/guide/components/events.html
 ```vue
 <!-- Parent.vue -->
 
-<script>
+<script lang="ts">
+import { defineComponent } from "vue"
+
 import Child from "./Child.vue"
-export default {
+
+export default defineComponent({
   components: { Child },
   data() {
       return {
       message: 'hello'
     }
   }
-}
+})
 </script>
 
 <template>
@@ -60,21 +63,23 @@ export default {
 ```vue
 <!-- Child.vue -->
 
-<script>
-export default {
-  props: ['modelValue'],
+<script lang="ts">
+import { defineComponent } from "vue"
+
+export default defineComponent({
+  props: { modelValue: { type: String, required: true } },
   emits: ['update:modelValue'],
   computed: {
     value: {
       get() {
         return this.modelValue
       },
-      set(value) {
+      set(value: string) {
         this.$emit('update:modelValue', value)
       }
     }
   }
-}
+})
 </script>
 
 <template>
@@ -89,16 +94,19 @@ This is done similarly to how we [sync between a parent and a child](#sync-data-
 ```vue
 <!-- App.vue -->
 
-<script>
+<script lang="ts">
+import { defineComponent } from "vue"
+
 import Child from "./Child.vue"
-export default {
+
+export default defineComponent({
   components: { Child },
   data() {
       return {
       message: 'hello'
     }
   }
-}
+})
 </script>
 
 <template>
@@ -109,20 +117,22 @@ export default {
 ```vue
 <!-- Child.vue -->
 
-<script>
-export default {
-  props: {message: String},
+<script lang="ts">
+import { defineComponent } from "vue"
+
+export default defineComponent({
+  props: { message: { type: String, required: true } },
   computed: {
     value: {
       get() {
         return this.message
       },
-      set(value) {
-        this.$root.message = value
+      set(value: string) {
+        (this.$root as any).message = value
       }
     }
   }
-}
+})
 </script>
 
 <template>
@@ -137,12 +147,12 @@ To easily navigate the component tree, you can make use of [references](https://
 
 Let's see a simple example, with a simple `App.vue` root component:
 ```vue
-<script>
+<script lang="ts">
 //...
 </script>
 
 <template>
-  <child ref="my_child" />
+  <Child ref="my_child" />
 </template>
 ```
 
@@ -169,11 +179,15 @@ To do this, we'll create a dummy variable and a method that will update that var
 ```vue
 <!-- App.vue -->
 
-<script>
-import { bar } from "./foo.js"
+<script lang="ts">
+import { defineComponent } from "vue"
 
-export default {
-// ...
+import { bar } from "./foo.mts"
+
+import ComponentToUpdate from "./ComponentToUpdate.vue"
+
+export default defineComponent({
+  components: { ComponentToUpdate },
 
   data() {
     return {
@@ -189,19 +203,19 @@ export default {
       this.render++
     },
   }
-}
+})
 </script>
 
 <template>
-  <component-to-update
+  <ComponentToUpdate
     :bar="bar"
     :key="render"
   />
 </template>
 ```
 
-```js
-/* foo.js */
+```ts
+/* foo.mts */
 
 export let bar = [ { ... } ]
 

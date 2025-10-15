@@ -18,8 +18,10 @@ You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<script>
-export default {
+<script lang="ts">
+import { defineComponent } from "vue"
+
+export default defineComponent({
   props: {
     imgSrc: { type: String, required: true },
     imgAlt: { type: String, required: true },
@@ -29,7 +31,7 @@ export default {
     github: { type: String, required: false },
     dark: { type: Boolean, required: true },
   },
-}
+})
 </script>
 
 <template>
@@ -52,7 +54,7 @@ export default {
           underline-opacity-hover="75"
           aria-label="linkedin"
           target="_blank"
-          :href="`https://www.linkedin.com/in/${this.linkedin}`"
+          :href="`https://www.linkedin.com/in/${linkedin}`"
         >
           <font-awesome-icon :icon="['fab', 'linkedin']" />
           LinkedIn
@@ -67,7 +69,7 @@ export default {
           underline-opacity-hover="75"
           aria-label="researchgate"
           target="_blank"
-          :href="`https://www.researchgate.net/profile/${this.rgate}`"
+          :href="`https://www.researchgate.net/profile/${rgate}`"
         >
           <font-awesome-icon :icon="['fab', 'researchgate']" />
           R-Gate
@@ -82,7 +84,7 @@ export default {
           underline-opacity-hover="75"
           aria-label="github"
           target="_blank"
-          :href="`https://github.com/${this.github}`"
+          :href="`https://github.com/${github}`"
         >
           <font-awesome-icon :icon="['fab', 'github']" />
           GitHub

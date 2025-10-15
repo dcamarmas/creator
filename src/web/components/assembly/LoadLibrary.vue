@@ -18,11 +18,12 @@ You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<script>
+<script lang="ts">
 import { show_loading, hide_loading, show_notification } from "@/web/utils.mjs"
 import { load_library } from "@/core/core.mjs"
+import { defineComponent } from "vue"
 
-export default {
+export default defineComponent({
   props: {
     id: { type: String, required: true },
   },
@@ -36,9 +37,9 @@ export default {
       // read file
       show_loading()
       const reader = new FileReader()
-      reader.onload = event => {
+      reader.onload = _event => {
         try {
-          load_library(event.currentTarget.result)
+          load_library(reader.result as string)
         } catch (_e) {
           show_notification("Invalid library", "danger")
           return
@@ -54,10 +55,10 @@ export default {
       reader.onerror = () =>
         show_notification("Error loading library", "danger")
 
-      reader.readAsText(this.library)
+      reader.readAsText(this.library!)
     },
   },
-}
+})
 </script>
 
 <template>

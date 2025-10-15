@@ -18,10 +18,11 @@ You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<script>
+<script lang="ts">
+import { defineComponent } from "vue"
 import ToolbarBtngroup from "./ToolbarBtngroup.vue"
 
-export default {
+export default defineComponent({
   props: {
     id: { type: String, required: true },
     components: { type: String, required: true },
@@ -40,7 +41,7 @@ export default {
     },
   },
   components: { ToolbarBtngroup },
-}
+})
 </script>
 
 <template>

@@ -18,17 +18,21 @@ You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<script>
+<script lang="ts">
+import { defineComponent, type PropType } from "vue"
+
+import type { RegisterBank } from "@/core/core"
+
 import Registers from "../registers/Registers.vue"
 
-export default {
+export default defineComponent({
   props: {
-    register_file: { type: Array, required: true },
+    register_file: { type: Array as PropType<RegisterBank[]>, required: true },
   },
   components: {
     Registers,
   },
-}
+})
 </script>
 
 <template>
@@ -61,7 +65,7 @@ export default {
     >
       <b-card-body>
         <Registers
-          :registers="register_file[index].elements"
+          :registers="register_file[index]!.elements"
           :register_file_index="index"
         >
         </Registers>

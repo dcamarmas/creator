@@ -18,26 +18,30 @@ You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<script>
+<script lang="ts">
 import { creator_ga } from "@/core/utils/creator_ga.mjs"
 import { set_debug } from "@/core/core.mjs"
 import { Vim } from "@replit/codemirror-vim"
 
 import VimKeybindsModal from "./VimKeybindsModal.vue"
+import { defineComponent, type PropType } from "vue"
 
-export default {
+export default defineComponent({
   props: {
     id: { type: String, required: true },
-    arch_available: Array,
+    arch_available: Array as PropType<AvailableArch[]>,
     default_architecture: { type: String, required: true },
     stack_total_list: { type: Number, required: true },
     autoscroll: { type: Boolean, required: true },
     backup: { type: Boolean, required: true },
     notification_time: { type: Number, required: true },
     instruction_help_size: { type: Number, required: true },
-    dark: { type: Boolean, required: true },
+    dark: { type: [Boolean, null], required: true },
     c_debug: { type: Boolean, required: true },
-    vim_custom_keybinds: { type: Array, required: true },
+    vim_custom_keybinds: {
+      type: Array as PropType<VimKeybind[]>,
+      required: true,
+    },
     vim_mode: { type: Boolean, required: true },
   },
 
@@ -47,7 +51,7 @@ export default {
     return {
       // vim config
       vim_expanded: false,
-      selected_vim_keybind: null,
+      selected_vim_keybind: null as number | null,
       newVimKeybind: {
         mode: "normal",
         lhs: "",
@@ -65,6 +69,7 @@ export default {
     "update:dark",
     "update:c_debug",
     "update:vim_custom_keybinds",
+    "update:vim_mode",
     "update:backup",
   ],
   computed: {
@@ -72,9 +77,9 @@ export default {
     // we create a copy bc we don't want to sync the value automatically, we
     // want to wait for confirmation from the user to execute
     // modifySelectedVimKeybind
-    modifiedVimKeybind() {
+    modifiedVimKeybind(): VimKeybind {
       // copy selected keybind
-      return { ...this.vim_custom_keybinds_value[this.selected_vim_keybind] }
+      return { ...this.vim_custom_keybinds_value[this.selected_vim_keybind!]! }
     },
 
     // modifying these variables will update the corresponding parent's variables
@@ -83,7 +88,7 @@ export default {
       get() {
         return this.default_architecture
       },
-      set(value) {
+      set(value: string) {
         this.$emit("update:default_architecture", value)
 
         localStorage.setItem("conf_default_architecture", value)
@@ -100,27 +105,27 @@ export default {
       get() {
         return this.stack_total_list
       },
-      set(value) {
-        value = parseInt(value, 10)
+      set(value: string) {
+        let val = parseInt(value, 10)
 
         const prev = this.stack_total_list
 
         // enforce limit
-        if (value < 20) {
-          value = 20
-        } else if (value > 500) {
-          value = 500
+        if (val < 20) {
+          val = 20
+        } else if (val > 500) {
+          val = 500
         }
 
-        this.$emit("update:stack_total_list", value)
+        this.$emit("update:stack_total_list", val)
 
-        localStorage.setItem("conf_stack_total_list", value)
+        localStorage.setItem("conf_stack_total_list", val.toString())
 
         //Google Analytics
         creator_ga(
           "configuration",
           "configuration.stack_total_list",
-          "configuration.stack_total_list.speed_" + (prev > value).toString(),
+          "configuration.stack_total_list.speed_" + (prev > val).toString(),
         )
       },
     },
@@ -128,7 +133,7 @@ export default {
       get() {
         return this.autoscroll
       },
-      set(value) {
+      set(value: string) {
         this.$emit("update:autoscroll", value)
 
         localStorage.setItem("conf_autoscroll", value)
@@ -145,7 +150,7 @@ export default {
       get() {
         return this.backup
       },
-      set(value) {
+      set(value: string) {
         this.$emit("update:backup", value)
 
         localStorage.setItem("conf_backup", value)
@@ -162,27 +167,27 @@ export default {
       get() {
         return this.notification_time
       },
-      set(value) {
+      set(value: string) {
         const prev = this.stack_total_list
 
-        value = parseInt(value, 10)
+        let val = parseInt(value, 10)
 
         // enforce limit
-        if (value < 1000) {
-          value = 1000
-        } else if (value > 5000) {
-          value = 5000
+        if (val < 1000) {
+          val = 1000
+        } else if (val > 5000) {
+          val = 5000
         }
 
-        this.$emit("update:notification_time", value)
+        this.$emit("update:notification_time", val)
 
-        localStorage.setItem("conf_notification_time", value)
+        localStorage.setItem("conf_notification_time", val.toString())
 
         //Google Analytics
         creator_ga(
           "configuration",
           "configuration.notification_time",
-          "configuration.notification_time.time_" + (prev > value).toString(),
+          "configuration.notification_time.time_" + (prev > val).toString(),
         )
       },
     },
@@ -190,28 +195,27 @@ export default {
       get() {
         return this.instruction_help_size
       },
-      set(value) {
+      set(value: string) {
         const prev = this.stack_total_list
 
-        value = parseInt(value, 10)
+        let val = parseInt(value, 10)
 
         // enforce limit
-        if (value < 15) {
-          value = 15
-        } else if (value > 65) {
-          value = 65
+        if (val < 15) {
+          val = 15
+        } else if (val > 65) {
+          val = 65
         }
 
-        this.$emit("update:instruction_help_size", value)
+        this.$emit("update:instruction_help_size", val)
 
-        localStorage.setItem("conf_instruction_help_size", value)
+        localStorage.setItem("conf_instruction_help_size", val.toString())
 
         //Google Analytics
         creator_ga(
           "configuration",
           "configuration.instruction_help_size",
-          "configuration.instruction_help_size.size_" +
-            (prev > value).toString(),
+          "configuration.instruction_help_size.size_" + (prev > val).toString(),
         )
       },
     },
@@ -219,7 +223,7 @@ export default {
       get() {
         return this.dark
       },
-      set(value) {
+      set(value: boolean) {
         // update style
 
         document.documentElement.setAttribute(
@@ -234,7 +238,7 @@ export default {
         // }
 
         this.$emit("update:dark", value)
-        localStorage.setItem("conf_dark_mode", value)
+        localStorage.setItem("conf_dark_mode", value.toString())
 
         //Google Analytics
         creator_ga(
@@ -248,10 +252,10 @@ export default {
       get() {
         return this.c_debug
       },
-      set(value) {
+      set(value: boolean) {
         set_debug(value)
 
-        this.$emit("update:c_debug", value)
+        this.$emit("update:c_debug", value.toString())
 
         //Google Analytics
         creator_ga(
@@ -265,7 +269,7 @@ export default {
       get() {
         return this.vim_custom_keybinds
       },
-      set(value) {
+      set(value: VimKeybind[]) {
         this.$emit("update:vim_custom_keybinds", value)
       },
     },
@@ -273,9 +277,9 @@ export default {
       get() {
         return this.vim_mode
       },
-      set(value) {
+      set(value: boolean) {
         this.$emit("update:vim_mode", value)
-        localStorage.setItem("conf_vim_mode", value)
+        localStorage.setItem("conf_vim_mode", value.toString())
 
         // Google Analytics
         creator_ga(
@@ -287,8 +291,8 @@ export default {
     },
   },
   methods: {
-    removeVimKeybind(index) {
-      const { lhs, mode } = this.vim_custom_keybinds_value[index]
+    removeVimKeybind(index: number) {
+      const { lhs, mode } = this.vim_custom_keybinds_value[index]!
 
       Vim.unmap(lhs, mode)
       this.vim_custom_keybinds_value.splice(index, 1)
@@ -298,7 +302,7 @@ export default {
     // as we're not replacing this property, but mutating it, it will not
     // trigger the computed property setter, so we must do this
     vim_custom_keybinds_value: {
-      handler(value, _old) {
+      handler(value: VimKeybind[], _old: VimKeybind[]) {
         localStorage.setItem(
           "conf_vim_custom_keybinds",
           // if you store an object in localstorage, it saves it as the *string*
@@ -316,7 +320,7 @@ export default {
       deep: true,
     },
   },
-}
+})
 </script>
 
 <template>
@@ -478,7 +482,7 @@ export default {
           >
             <!-- mode in uppercase -->
             <template #cell(mode)="keybind">
-              {{ keybind.value.toUpperCase() }}
+              {{ (keybind.value as string).toUpperCase() }}
             </template>
 
             <!-- edit buttons -->

@@ -6,8 +6,9 @@
  * import { architecture, status } from "@/core/core";
  * ```
  *
- * Therefore, this file is currently used to annotate using JSDoc.
- */
+ * Therefore, this file is currently used to annotate using JSDoc (using @type
+ * {import("./core.d.ts").Stuff})
+ *  */
 
 type RegisterBank = {
     name: string;
@@ -24,7 +25,7 @@ type Register = {
     properties: string[];
 };
 
-type Field = {
+type InstructionField = {
     name: string;
     value: string;
     type: string;
@@ -32,6 +33,13 @@ type Field = {
     stopbit: number;
     order: number;
     word: number[];
+    enum_name?: string;
+};
+
+type PseudoInstructionField = {
+    name: string;
+    type: string;
+    enum_name?: string;
 };
 
 type Instruction = {
@@ -39,17 +47,35 @@ type Instruction = {
     co: string;
     template: string;
     description: string;
-    separated: Array<number | string>;
     type: string;
-    signature: string;
-    signatureRaw: string;
     signature_definition: string;
     nwords: number;
     clk_cycles: number;
-    fields: Field[];
+    fields: InstructionField[];
     definition: string;
+    properties?: string[];
     help?: string;
 };
+
+type PseudoInstruction = {
+    name: string;
+    description: string;
+    signature_definition: string;
+    fields: PseudoInstructionField[];
+    definition: string;
+    properties?: string[];
+    help?: string;
+};
+
+type MemoryLayout = {
+    ktext?: { start: number; end: number };
+    kdata?: { start: number; end: number };
+    text: { start: number; end: number };
+    data: { start: number; end: number };
+    stack: { start: number; end: number };
+};
+
+type Directive = { name: string; action: string };
 
 export declare const REGISTERS: RegisterBank[];
 
@@ -66,21 +92,17 @@ type Architecture = {
         start_address: number;
         pc_offset: number;
         byte_size: number;
+        plugin: string;
         assemblers: {
             name: string;
             description: string;
         }[];
     };
-    memory_layout: {
-        ktext?: { start: number; end: number };
-        kdata?: { start: number; end: number };
-        text: { start: number; end: number };
-        data: { start: number; end: number };
-        stack: { start: number; end: number };
-    };
+    memory_layout: MemoryLayout;
     components: RegisterBank[];
     instructions: Instruction[];
-    directives: { name: string; action: string }[];
+    pseudoinstructions: PseudoInstruction[];
+    directives: Directive[];
     interrupts: {
         enabled: boolean;
         enable: string;
@@ -113,7 +135,7 @@ type Status = {
     display: string;
     execution_index: number;
     virtual_PC: bigint;
-    error: number;
+    error: boolean;
     execution_mode: ExecutionMode;
     interrupts_enabled: boolean;
 };
@@ -128,3 +150,27 @@ export declare const stackTracker: StackTracker;
 
 export declare const BYTESIZE: number;
 export declare const WORDSIZE: number;
+
+type LibraryInstruction = {
+    Break: null | boolean;
+    Address: string;
+    Label: string;
+    loaded: string;
+    user: string | null;
+    _rowVariant: string;
+    visible: boolean;
+    globl: boolean;
+};
+
+type LibraryTag = {
+    tag: string;
+    addr: number;
+    globl: boolean;
+};
+
+type Library = {
+    instuctions_binary: LibraryInstruction[];
+    instructions_tag: LibraryTag[];
+};
+
+export declare const update_binary: Library;

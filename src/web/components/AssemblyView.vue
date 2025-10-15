@@ -18,7 +18,9 @@ You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<script>
+<script lang="ts">
+import { defineComponent, type PropType } from "vue"
+
 import UIeltoToolbar from "./general/UIeltoToolbar.vue"
 import TextareaAssembly from "./assembly/TextareaAssembly.vue"
 import AssemblyError from "./assembly/AssemblyError.vue"
@@ -28,16 +30,22 @@ import DownloadPopup from "./general/DownloadModal.vue"
 import MakeURI from "./assembly/MakeURI.vue"
 import LoadLibrary from "./assembly/LoadLibrary.vue"
 
-export default {
+export default defineComponent({
   props: {
-    browser: String,
+    browser: { type: String, required: true },
     os: { type: String, required: true },
-    arch_available: Array,
-    architecture_name: String,
-    assembly_code: String,
+    arch_available: {
+      type: Array as PropType<AvailableArch[]>,
+      required: true,
+    },
+    architecture_name: { type: String, required: true },
+    assembly_code: { type: String, required: true },
     assembly_error: { type: String, required: true },
     vim_mode: { type: Boolean, required: true },
-    vim_custom_keybinds: { type: Array, required: true },
+    vim_custom_keybinds: {
+      type: Array as PropType<VimKeybind[]>,
+      required: true,
+    },
     dark: { type: Boolean, required: true },
   },
 
@@ -51,7 +59,7 @@ export default {
     MakeURI,
     LoadLibrary,
   },
-}
+})
 </script>
 
 <template>
@@ -81,7 +89,7 @@ export default {
       title="Save Assembly"
       default-filename="assembly"
       extension=".s"
-      :fileData="this.$root.assembly_code"
+      :fileData="assembly_code"
     />
 
     <!-- Examples modal -->

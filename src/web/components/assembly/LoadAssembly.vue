@@ -18,17 +18,19 @@ You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<script>
+<script lang="ts">
+import { defineComponent } from "vue"
+
 import { show_loading, hide_loading, show_notification } from "@/web/utils.mjs"
 import { creator_ga } from "@/core/utils/creator_ga.mjs"
 
-export default {
+export default defineComponent({
   props: {
     id: { type: String, required: true },
   },
 
   data() {
-    return { file: null }
+    return { file: null as File | null }
   },
 
   methods: {
@@ -38,8 +40,8 @@ export default {
 
       // read file
       const reader = new FileReader()
-      reader.onload = event => {
-        this.$root.assembly_code = event.currentTarget.result
+      reader.onload = _event => {
+        ;(this.$root as any).assembly_code = reader.result
         hide_loading()
         show_notification(
           "The selected program has been loaded correctly",
@@ -48,13 +50,13 @@ export default {
       }
       reader.onerror = () => show_notification("Error loading file", "danger")
 
-      reader.readAsText(this.file)
+      reader.readAsText(this.file!)
 
       /* Google Analytics */
       creator_ga("assembly", "assembly.load", "assembly.load")
     },
   },
-}
+})
 </script>
 
 <template>

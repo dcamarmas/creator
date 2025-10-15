@@ -18,7 +18,10 @@ You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<script>
+<script lang="ts">
+import type { BvTriggerableEvent } from "bootstrap-vue-next"
+import { defineComponent } from "vue"
+
 import {
   hide_loading,
   show_loading,
@@ -26,32 +29,32 @@ import {
   show_notification,
 } from "@/web/utils.mjs"
 
-export default {
+export default defineComponent({
   emits: [
     "select-architecture", // architecture has been selected
   ],
 
   data() {
     return {
-      //Form inputs
+      // Form inputs
       name: "",
       description: "",
-      file: null,
+      file: null as File | null,
 
       selected: false,
     }
   },
 
   methods: {
-    loadArch(event) {
+    loadArch(event: BvTriggerableEvent) {
       // show_loading()
 
       event.preventDefault()
 
       // read file
       const reader = new FileReader()
-      reader.onload = event => {
-        const archDefinition = event.currentTarget.result
+      reader.onload = _event => {
+        const archDefinition = reader.result as string
 
         // TODO: parse and verify schema
 
@@ -71,7 +74,7 @@ export default {
           JSON.stringify(
             // add to the list of custom architectures
             (
-              JSON.parse(localStorage.getItem("customArchitectures")) ?? []
+              JSON.parse(localStorage.getItem("customArchitectures")!) ?? []
             ).toSpliced(0, 0, architecture),
           ),
         )
@@ -92,10 +95,10 @@ export default {
 
       reader.onerror = () => show_notification("Error loading file", "danger")
 
-      reader.readAsText(this.file)
+      reader.readAsText(this.file!)
     },
   },
-}
+})
 </script>
 
 <template>

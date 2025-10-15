@@ -18,10 +18,12 @@ You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<script>
-import { console_log } from "../../utils.mjs"
+<script lang="ts">
+import { defineComponent } from "vue"
 
-export default {
+import { console_log } from "@/web/utils.mjs"
+
+export default defineComponent({
   props: {
     id: { type: String, required: true },
   },
@@ -136,7 +138,7 @@ export default {
       app.$forceUpdate()
     }, this.getDebounceTime()),
   },
-}
+})
 </script>
 
 <template>

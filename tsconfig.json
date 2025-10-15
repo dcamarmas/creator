@@ -13,7 +13,9 @@
     "lib": ["dom", "es2024"],
     "strict": true,
     "verbatimModuleSyntax": true,
+    "resolveJsonModule": true,
     "paths": {
+      "@caca/*": ["./*"], // this doesn't work for some reason...
       "@/*": ["./src/*"]
     }
   }

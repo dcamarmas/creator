@@ -18,17 +18,19 @@ You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<script>
-import { useModal, useModalController } from "bootstrap-vue-next"
+<script lang="ts">
+import { defineComponent } from "vue"
+import { useModal } from "bootstrap-vue-next"
 
 import { creator_ga } from "@/core/utils/creator_ga.mjs"
 import { show_notification } from "@/web/utils.mjs"
 
-import example_set from "#/examples/example_set.json"
+// import example_set from "#/examples/example_set.json"
+import example_set from "../../../../examples/example_set.json"
 
 import MakeURI from "./MakeURI.vue"
 
-export default {
+export default defineComponent({
   props: {
     id: { type: String, required: true },
     architecture_name: { type: String, required: true },
@@ -37,14 +39,12 @@ export default {
 
   components: { MakeURI },
 
-  setup(props) {
+  setup() {
     // this HAS to be defined here
-    const { hide } = useModalController()
-
     // as we can have various of these components almost simultaneately (when
     // transitioning from simulator to assembly, for example), we'll set an ID
     // for the URI modal that is based on this component's own ID
-    const { show } = useModal(`${props.id}_uri`)
+    const { show, hide } = useModal()
 
     return { showLink: show, hide }
   },
@@ -61,8 +61,8 @@ export default {
   data() {
     return {
       selected_set: "default", // selected example set
-      selected_example: null, // selected example id
-      available_sets: {}, // loaded example sets
+      selected_example: null as string | null, // selected example id
+      available_sets: {} as { [key: string]: ExampleSet }, // loaded example sets
     }
   },
 
@@ -71,11 +71,11 @@ export default {
   },
 
   methods: {
-    async loadAvailableSets() {
+    async loadAvailableSets(): Promise<{ [key: string]: ExampleSet }> {
       const sets = example_set
         .filter(set => set.architecture === this.architecture_name)
         // convert sets to object ({"default": {...}, ...})
-        .reduce((obj, item) => {
+        .reduce((obj: { [key: string]: ExampleSet }, item) => {
           obj[item.id] = {
             name: item.name,
             description: item.description,
@@ -87,7 +87,7 @@ export default {
       // load examples
       for (const [_key, set] of Object.entries(sets)) {
         try {
-          const response = await fetch(set.url)
+          const response = await fetch(set.url!)
           if (response.ok) {
             set.examples = await response.json()
           } else {
@@ -100,22 +100,25 @@ export default {
       }
 
       this.available_sets = sets
+
+      return sets
     },
+
     get_example_set() {
-      return this.example_set
+      return example_set
     },
 
     assemble() {
       // this is horrible, because this component can also be a child
       // component of assemblyView but, as we always start at the simulatorView,
       // the component always exists in both views
-      this.$root.$refs.simulatorView?.$refs.toolbar?.$refs.btngroup1
+      ;(this.$root as any).$refs.simulatorView?.$refs.toolbar?.$refs.btngroup1
         ?.at(0)
         ?.assembly_compiler()
 
       // update table execution UI
       // FIXME: this doesn't update shit
-      this.$root.$refs.simulatorView?.$refs.toolbar.$refs.btngroup1
+      ;(this.$root as any).$refs.simulatorView?.$refs.toolbar.$refs.btngroup1
         .at(0)
         ?.execution_UI_reset()
     },
@@ -124,22 +127,22 @@ export default {
     /**
      * Loads and (optionally) assembles an example
      *
-     * @param {String} url URL of the example file (.s)
-     * @param {Boolean} assemble Set to automatically assemble the example
+     * @param url URL of the example file (.s)
+     * @param assemble Set to automatically assemble the example
      */
-    async load_example(url, assemble) {
+    async load_example(url: string, assemble: boolean) {
       // close modal
       this.hide()
 
       try {
         const response = await fetch(url)
-        
+
         if (!response.ok) {
           throw new Error("Failed to load example")
         }
 
         const code = await response.text()
-        this.$root.assembly_code = code
+        ;(this.$root as any).assembly_code = code
 
         if (assemble) {
           // TODO: re-enable when fixed
@@ -148,7 +151,7 @@ export default {
 
         // we change to the assembly view bc I'm not able to update the
         // execution table (see assemble()) when that's fixed, delete this
-        this.$root.creator_mode = "assembly"
+        ;(this.$root as any).creator_mode = "assembly"
 
         show_notification(
           " The selected example has been loaded correctly",
@@ -156,19 +159,13 @@ export default {
         )
 
         /* Google Analytics */
-        creator_ga(
-          "send",
-          "event",
-          "example",
-          "example.loading",
-          "example.loading.url",
-        )
+        creator_ga("event", "example.loading", "example.loading.url")
       } catch (_error) {
         show_notification("Failed to load example", "danger")
       }
     },
   },
-}
+})
 </script>
 
 <template>
@@ -201,7 +198,7 @@ export default {
     <span
       v-if="
         example_set_options.length === 0 ||
-        available_sets[selected_set]?.examples.length === 0
+        available_sets[selected_set]?.examples?.length === 0
       "
       class="h6"
     >
@@ -227,7 +224,7 @@ export default {
           @click="
             () => {
               selected_example = example.id
-              showLink()
+              showLink(`${id}_uri`)
             }
           "
           size="sm"
@@ -242,6 +239,6 @@ export default {
     :id="`${id}_uri`"
     :architecture_name="architecture_name"
     :example_set="selected_set"
-    :example_id="selected_example"
+    :example_id="selected_example!"
   />
 </template>

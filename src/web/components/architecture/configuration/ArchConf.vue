@@ -18,24 +18,26 @@ You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<script>
-const configMap = {
-  name: "Name",
-  word_size: "WordSize",
-  description: "Description",
-  endianness: "Endianness",
-  memory_alignment: "Memory Alignment",
-  main_function: "Main Function",
-  passing_convention: "Passing Convention",
-  sensitive_register_name: "Sensitive Register Name",
-  comment_prefix: "Comment Prefix",
-  start_address: "Start Address",
-  pc_offset: "PC Offset",
-  byte_size: "Byte Size",
-  assemblers: "Assemblers",
-}
+<script lang="ts">
+import { defineComponent } from "vue"
 
-function formatValue(attr, value) {
+const configMap = new Map<string, string>([
+  ["name", "Name"],
+  ["word_size", "WordSize"],
+  ["description", "Description"],
+  ["endianness", "Endianness"],
+  ["memory_alignment", "Memory Alignment"],
+  ["main_function", "Main Function"],
+  ["passing_convention", "Passing Convention"],
+  ["sensitive_register_name", "Sensitive Register Name"],
+  ["comment_prefix", "Comment Prefix"],
+  ["start_address", "Start Address"],
+  ["pc_offset", "PC Offset"],
+  ["byte_size", "Byte Size"],
+  ["assemblers", "Assemblers"],
+])
+
+function formatValue(attr: string, value: string) {
   if (attr === "endianness") {
     if (value === "big_endian") {
       return "Big Endian"
@@ -55,7 +57,7 @@ function formatValue(attr, value) {
   return value
 }
 
-export default {
+export default defineComponent({
   props: {
     conf: { type: Object, required: true },
   },
@@ -65,12 +67,12 @@ export default {
       return Object.entries(this.conf)
         .filter(([attr, _v]) => attr !== "assemblers") // no assemblers
         .map(([attr, value]) => ({
-          name: configMap[attr],
+          name: configMap.get(attr),
           value: formatValue(attr, value),
         }))
     },
   },
-}
+})
 </script>
 
 <template>

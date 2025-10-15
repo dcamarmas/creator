@@ -18,10 +18,13 @@ You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<script>
-export default {
+<script lang="ts">
+import { defineComponent, type PropType } from "vue"
+import type { Directive } from "@/core/core"
+
+export default defineComponent({
   props: {
-    directives: { type: Array, required: true },
+    directives: { type: Array as PropType<Directive[]>, required: true },
   },
 
   data() {
@@ -30,8 +33,9 @@ export default {
       directivesFields: ["name", "action", "size"],
     }
   },
-}
+})
 </script>
+
 <template>
   <b-table
     small

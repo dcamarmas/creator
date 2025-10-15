@@ -18,18 +18,22 @@ You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<script>
+<script lang="ts">
+import { defineComponent, type PropType } from "vue"
+
+import type { MemoryLayout } from "@/core/core"
 import { toHex } from "@/web/utils.mjs"
-export default {
+
+export default defineComponent({
   props: {
-    memory_layout: { type: Map, required: true },
+    memory_layout: { type: Object as PropType<MemoryLayout>, required: true },
   },
 
   computed: {
     layout() {
-      return this.memory_layout
-        .entries()
-        .filter(([_, { start, end }]) => end - start > 0)
+      return Object.entries(this.memory_layout).filter(
+        ([_, { start, end }]) => end - start > 0,
+      )
     },
   },
 
@@ -39,7 +43,7 @@ export default {
     /*
      * Obtains the color depending on the memory segment
      */
-    getVariant(name) {
+    getVariant(name: string) {
       switch (
         name.replace(/^\.+/, "") // delete leading "."
       ) {
@@ -56,7 +60,7 @@ export default {
       }
     },
   },
-}
+})
 </script>
 
 <template>
@@ -70,7 +74,7 @@ export default {
 
         <b-list-group
           horizontal
-          v-for="[name, { start, end }] in this.layout.slice(0, -1)"
+          v-for="[name, { start, end }] in layout.slice(0, -1)"
         >
           <b-list-group-item
             :variant="getVariant(name)"
@@ -112,18 +116,18 @@ export default {
           class="memoryLayout font-monospace"
         >
           <br />
-          {{ layout.at(-1)[0] }}
+          stack
           <br />
           <br />
         </b-list-group-item>
         <b-list-group-item class="memoryLayout noBorder left font-monospace">
           <span class="h6">
-            {{ toHex(layout.at(-1)[1].start, 4) }}
+            {{ toHex(memory_layout.stack.start, 4) }}
           </span>
           <br />
           <br />
           <span class="h6">
-            {{ toHex(layout.at(-1)[1].end, 4) }}
+            {{ toHex(memory_layout.stack.end, 4) }}
           </span>
         </b-list-group-item>
       </b-list-group>

@@ -131,7 +131,8 @@ export default defineComponent({
               ret = this.register.value.toString(10)
             } else {
               ret = (
-                this.register.value - 2n ** BigInt(this.register.nbits)
+                this.register.value -
+                2n ** BigInt(this.register.nbits)
               ).toString(10)
             }
           } else if (!this.double_precision) {
@@ -252,13 +253,6 @@ export default defineComponent({
 .registers-glow {
   background-color: #c2c2c2;
   font-size: 1.03em;
-}
-
-.registerValue {
-  background-color: #ceecf5;
-  color: black;
-  font-family: monospace;
-  font-weight: normal;
 }
 
 [data-bs-theme="dark"] {
