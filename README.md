@@ -151,3 +151,25 @@ We'll need to [launch the application in DEV mode](#compile-and-hot-reload-for-d
     "attachSimplePort": 9229
 }
 ```
+
+
+## Resources
+
+### General
+- [MDN Web Docs](https://developer.mozilla.org/)
+- [The TypeScript Handbook](https://www.typescriptlang.org/docs/handbook/intro.html)
+- [D. Camarmas et al. - CREATOR: Simulador didáctico y genérico para la programación en ensamblador](https://zenodo.org/records/5130302)
+
+
+### Web
+- [Vue.js guide](https://vuejs.org/guide/)
+- [BoostrapVueNext Docs](https://bootstrap-vue-next.github.io/bootstrap-vue-next/) & [Bootstrap Docs](https://getbootstrap.com/docs/)
+- [Font Awesome Icons](https://fontawesome.com/search?ic=free) & [Font Awesome Docs](https://docs.fontawesome.com/)
+- [CSS Tricks](https://css-tricks.com/)
+- [vue-codemirror6](https://github.com/logue/vue-codemirror6) & [Codemirror Docs](https://codemirror.net/docs/)
+- [vue3-apexcharts](https://github.com/apexcharts/vue3-apexcharts) & [ApexCharts Docs](https://apexcharts.com/docs)
+- [`vue-tricks.md`](docs/vue-tricks.md)
+
+
+### Compiler
+- [A. Guerrero - Desarrollo de un Compilador Genérico de Lenguaje Ensamblador para el Simulador CREATOR](https://github.com/ALVAROPING1/TFG)
