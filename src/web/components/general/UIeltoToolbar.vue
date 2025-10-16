@@ -21,7 +21,12 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 <script lang="ts">
 import { defineComponent } from "vue"
 import ToolbarBtngroup from "./ToolbarBtngroup.vue"
-
+/**
+ * @deprecated This component is deprecated. Toolbar functionality has been
+ * integrated into NavbarCREATOR for better space efficiency.
+ * This component now renders nothing to maintain backward compatibility
+ * while the views are being updated.
+ */
 export default defineComponent({
   props: {
     id: { type: String, required: true },
@@ -34,7 +39,6 @@ export default defineComponent({
     show_instruction_help: { type: Boolean, default: false },
     instructions: Array,
   },
-
   computed: {
     components_array() {
       return this.components.split("|")
@@ -45,23 +49,6 @@ export default defineComponent({
 </script>
 
 <template>
-  <b-container :id="id" fluid align-h="center" class="menu my-3 mx-0 px-0">
-    <b-row cols-xl="4" cols-lg="3" cols-md="3" cols-sm="2" cols-xs="1" cols="1">
-      <b-col class="px-2 py-1" v-for="(item, i) in components_array">
-        <ToolbarBtngroup
-          :group="item.split(',')"
-          :browser="browser"
-          :os="os"
-          :dark="dark"
-          :architectures="arch_available"
-          :assembly_code="assembly_code"
-          :show_instruction_help="show_instruction_help"
-          :instructions="instructions"
-          :ref="`btngroup${i}`"
-        />
-
-        <div class="w-100 d-block d-sm-none"></div>
-      </b-col>
-    </b-row>
-  </b-container>
+  <!-- Toolbar has been moved to the main navbar for better vertical space usage -->
+  <div :id="id" style="display: none;"></div>
 </template>

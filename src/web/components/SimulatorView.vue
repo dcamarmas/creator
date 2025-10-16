@@ -30,9 +30,8 @@ import DataViewSelector from "./simulator/DataViewSelector.vue"
 import RegisterFile from "./simulator/RegisterFile.vue"
 import Examples from "./assembly/Examples.vue"
 import Memory from "./simulator/Memory.vue"
-import Monitor from "./simulator/Monitor.vue"
-import Keyboard from "./simulator/Keyboard.vue"
 import Calculator from "./simulator/Calculator.vue"
+import Terminal from "./simulator/Terminal.vue"
 import Stats from "./simulator/Stats.vue"
 import Flash from "./simulator/Flash.vue"
 
@@ -74,11 +73,10 @@ export default defineComponent({
     RegisterFile,
     Examples,
     Memory,
-    Monitor,
-    Keyboard,
     Calculator,
     Stats,
     Flash,
+    Terminal,
   },
 
   data() {
@@ -131,8 +129,8 @@ export default defineComponent({
         <Calculator id="calculator" />
 
         <b-row align-h="center">
-          <!-- Execution instruction -->
-          <b-col lg="7" cols="12">
+          <!-- Column 1: Execution instruction -->
+          <b-col lg="7">
             <TableExecution
               :instructions="instructions"
               :enter="enter"
@@ -140,71 +138,64 @@ export default defineComponent({
             />
           </b-col>
 
-          <!-- Execution data -->
-          <b-col lg="5" cols="12">
-            <!-- View selector -->
-            <DataViewSelector
-              :data_mode="data_mode"
-              :register_file_num="architecture.components.length"
-              :dark="dark"
-            />
+          <!-- Column 2: Execution data (split into top: data, bottom: terminal) -->
+          <b-col lg="5" class="execution-data-col">
+            <!-- Top row: current execution data (70%) -->
+            <b-row class="mb-2 execution-data-top">
+              <b-col>
+                <!-- View selector -->
+                <DataViewSelector
+                  :data_mode="data_mode"
+                  :register_file_num="architecture.components.length"
+                  :dark="dark"
+                />
 
-            <!-- Registers view -->
-            <RegisterFile
-              v-if="data_mode == 'int_registers' || data_mode == 'fp_registers'"
-              :data_mode="data_mode"
-              :reg_representation_int="reg_representation_int"
-              :reg_representation_float="reg_representation_float"
-              :reg_name_representation="reg_name_representation"
-              :dark="dark"
-              ref="registerFile"
-            />
+                <!-- Registers view -->
+                <RegisterFile
+                  v-if="data_mode == 'int_registers' || data_mode == 'fp_registers'"
+                  :data_mode="data_mode"
+                  :reg_representation_int="reg_representation_int"
+                  :reg_representation_float="reg_representation_float"
+                  :reg_name_representation="reg_name_representation"
+                  :dark="dark"
+                  ref="registerFile"
+                />
 
-            <!-- Memory view-->
-            <Memory
-              v-if="data_mode === 'memory'"
-              ref="memory"
-              :selectedSegment="memory_segment"
-              :dark="dark"
-              :callee_frame="callee_frame"
-              :caller_frame="caller_frame"
-            />
+                <!-- Memory view-->
+                <Memory
+                  v-if="data_mode === 'memory'"
+                  ref="memory"
+                  :selectedSegment="memory_segment"
+                  :dark="dark"
+                  :callee_frame="callee_frame"
+                  :caller_frame="caller_frame"
+                />
 
-            <!-- Stats view--->
-            <Stats
-              v-if="data_mode === 'stats'"
-              ref="stats"
-              :dark="dark"
-              :representation="stat_representation"
-              :type="stat_type"
-            />
-          </b-col>
-        </b-row>
+                <!-- Stats view--->
+                <Stats
+                  v-if="data_mode === 'stats'"
+                  ref="stats"
+                  :dark="dark"
+                  :representation="stat_representation"
+                  :type="stat_type"
+                />
+              </b-col>
+            </b-row>
 
-        <!-- Monitor & keyboard -->
-        <b-row
-          cols-xl="2"
-          cols-lg="2"
-          cols-md="1"
-          cols-sm="1"
-          cols-xs="1"
-          cols="1"
-          align-h="center"
-          :class="{
-            'mx-0': true,
-            'pb-2': true,
-            'fixed-bottom': windowHeight > 900,
-          }"
-        >
-          <!-- Monitor -->
-          <b-col>
-            <Monitor :display="display" />
+            <!-- Bottom row: terminal (30%) -->
+            <b-row class="execution-data-bottom">
+              <b-col class="terminal-col">
+                <Terminal
+                  :display="display"
+                  :keyboard="keyboard"
+                  :enter="enter"
+                  ref="terminal"
+                />
+              </b-col>
+            </b-row>
           </b-col>
 
-          <!-- Keyboard -->
-          <b-col>
-            <Keyboard :keyboard="keyboard" :enter="enter" />
-          </b-col>
+
         </b-row>
       </b-col>
     </b-row>
@@ -212,6 +203,33 @@ export default defineComponent({
 </template>
 
 <style lang="scss" scoped>
+.terminal-col {
+  display: flex;
+  flex-direction: column;
+  /* Terminal fills the bottom area */
+  flex: 3 1 0%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.execution-data-col {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.execution-data-top {
+  flex: 8 1 0%;
+  min-height: 0;
+  overflow: auto; /* scroll if content is larger than area */
+}
+
+.execution-data-bottom {
+  flex: 2 1 0%;
+  min-height: 0;
+}
+
 :deep() {
   .consoleIcon {
     opacity: 0.6;

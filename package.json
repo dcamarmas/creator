@@ -34,6 +34,8 @@
     "@replit/codemirror-vim": "^6.3.0",
     "@types/humanize-duration": "^3.27.4",
     "@uiw/codemirror-themes": "^4.25.1",
+    "@xterm/addon-fit": "^0.10.0",
+    "@xterm/addon-web-links": "^0.11.0",
     "ajv": "^8.17.1",
     "ansicolor": "^2.0.3",
     "apexcharts": "^5.3.5",
@@ -52,6 +54,7 @@
     "vue": "^3.5.21",
     "vue-codemirror6": "^1.4.1",
     "vue3-apexcharts": "^1.10.0",
+    "xterm": "^5.3.0",
     "yargs": "^18.0.0"
   },
   "devDependencies": {

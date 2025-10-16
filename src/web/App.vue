@@ -501,7 +501,18 @@ export default {
 
   <header>
     <!-- Navbar  -->
-    <NavbarCREATOR :version="version" :architecture_name="architecture_name" />
+    <NavbarCREATOR
+      :version="version"
+      :architecture_name="architecture_name"
+      :creator_mode="creator_mode"
+      :browser="browser"
+      :os="os"
+      :dark="dark"
+      :arch_available="arch_available"
+      :assembly_code="assembly_code"
+      :show_instruction_help="true"
+      :instructions="instructions"
+    />
 
     <!-- Configuration modal -->
     <FormConfiguration
