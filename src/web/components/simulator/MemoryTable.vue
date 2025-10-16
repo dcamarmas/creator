@@ -88,19 +88,23 @@ export default defineComponent({
     },
 
     get_classes(item: MemoryItem) {
+      if (!this.callee_frame || !this.caller_frame) {
+        return { h6Sm: this.segment !== "stack" }
+      }
+
       return {
         h6Sm:
-          this.segment !== "stack" || item.start >= this.caller_frame!.begin,
+          this.segment !== "stack" || item.start >= this.caller_frame?.begin,
         "text-secondary":
-          item.start < this.callee_frame!.end &&
-          Math.abs(item.start - this.callee_frame!.end) <
+          item.start < this.callee_frame?.end &&
+          Math.abs(item.start - this.callee_frame?.end) <
             (this.$root as any).stack_total_list * 4,
         "text-success":
-          item.start < this.callee_frame!.begin &&
-          item.start >= this.callee_frame!.end,
+          item.start < this.callee_frame?.begin &&
+          item.start >= this.callee_frame?.end,
         "text-info":
-          item.start < this.caller_frame!.begin &&
-          item.start >= this.caller_frame!.end,
+          item.start < this.caller_frame?.begin &&
+          item.start >= this.caller_frame?.end,
       }
     },
 
@@ -587,7 +591,7 @@ export default defineComponent({
         <b-row align-v="end" class="text-center my-1">
           <b-col cols="6" md="5" sm="2" class="border rounded ms-2">
             <!-- we use b-badge bc it makes the text smaller -->
-            <b-badge variant="light" class="text-secondary">
+            <b-badge :variant="null" class="text-secondary">
               Free <br />
               stack
             </b-badge>
@@ -595,28 +599,28 @@ export default defineComponent({
 
           <!-- Callee -->
           <b-col v-if="stackFrames().length > 0" class="border rounded ms-1">
-            <b-badge variant="light" class="text-success">
+            <b-badge :variant="null" class="text-success">
               Callee: <br />{{ callee_frame!.name }}
             </b-badge>
           </b-col>
 
           <!-- Caller -->
           <b-col v-if="stackFrames().length > 1" class="border rounded ms-1">
-            <b-badge variant="light" class="text-info">
+            <b-badge :variant="null" class="text-info">
               Caller: <br />{{ caller_frame!.name }}
             </b-badge>
           </b-col>
 
           <!-- rest of frames -->
           <b-col v-if="stackFrames().length > 2" class="border rounded ms-1">
-            <b-badge variant="light" class="text-secondary">
+            <b-badge :variant="null" class="text-secondary">
               <b>&bull;&bull;&bull;<br />{{ stackFrames().length - 2 }}</b>
             </b-badge>
           </b-col>
 
           <!-- System -->
           <b-col class="border rounded ms-1 me-2">
-            <b-badge variant="light" class="text-body">
+            <b-badge :variant="null" class="text-body">
               System<br />stack
             </b-badge>
           </b-col>

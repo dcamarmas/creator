@@ -32,7 +32,6 @@ export default defineComponent({
   },
 
   computed: {
-    // FIXME: this doesn't automagically update...
     statsValues() {
       return Array.from(this.stats.entries()).map(([k, v]) => {
         const value = this.type === "instructions" ? v.instructions : v.cycles
