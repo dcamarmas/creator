@@ -54,6 +54,8 @@ export default defineComponent({
       required: false,
     },
     show_instruction_help: { type: Boolean, default: false },
+    compact: { type: Boolean, default: false },
+    dropdownMode: { type: Boolean, default: false },
   },
 
   setup() {
@@ -166,22 +168,22 @@ export default defineComponent({
       ;(this.$root as any).assembly_code = ""
     },
 
-    //Compile assembly code
-    async assembly_compiler() {
+    //Compile assembly code (just assemble, don't change view)
+    async assembly_compiler_only() {
       // reset simulator
-      ;(this.$root as any).keyboard = ""
-      ;(this.$root as any).display = ""
-      ;(this.$root as any).enter = null
+      this.$root.keyboard = ""
+      this.$root.display = ""
+      this.$root.enter = null
       reset()
 
       this.compiling = true // Change buttons status
 
       // Assemble
-      const assemblerFn = this.assembler_map[this.selectedCompiler]!
+      const assemblerFn = this.assembler_map[this.selectedCompiler]
       // If default, let assembly_compile use its internal default
       const ret = await (assemblerFn
-        ? assembly_compile((this.$root as any).assembly_code, assemblerFn)
-        : assembly_compile((this.$root as any).assembly_code))
+        ? assembly_compile(this.$root.assembly_code, assemblerFn)
+        : assembly_compile(this.$root.assembly_code))
 
       /* Reset stats */
 
@@ -210,7 +212,62 @@ export default defineComponent({
             entrypoint._rowVariant = "success"
           }
           show_notification("Compilation completed successfully", "success")
-          this.change_UI_mode("simulator")
+          // Don't change view - stay in assembly mode
+          break
+      }
+      this.compiling = false
+
+      // Close all toast
+      // app.$bvToast.hide()
+
+      storeBackup()
+    },
+
+    //Compile assembly code (assemble and run - change to simulator view)
+    async assembly_compiler() {
+      // reset simulator
+      ;(this.$root as any).keyboard = ""
+      ;(this.$root as any).display = ""
+      ;(this.$root as any).enter = null
+      reset()
+
+      this.compiling = true // Change buttons status
+
+      // Assemble
+      const assemblerFn = this.assembler_map[this.selectedCompiler]
+      // If default, let assembly_compile use its internal default
+      const ret = await (assemblerFn
+        ? assembly_compile(this.$root.assembly_code, assemblerFn)
+        : assembly_compile(this.$root.assembly_code))
+
+      /* Reset stats */
+
+      resetStats()
+
+      status.executedInstructions = 0
+      status.clkCycles = 0
+
+      // Change buttons status
+      this.compiling = false
+
+      // show error/warning
+      switch (ret.type) {
+        case "error":
+          this.compile_error(ret.msg)
+          break
+
+        case "warning":
+          show_notification(ret.token, ret.bgcolor)
+          break
+
+        default:
+          // put rowVariant in entrypoint
+          const entrypoint = instructions.at(status.execution_index)
+          if (entrypoint) {
+            entrypoint._rowVariant = "success"
+          }
+          show_notification("Compilation completed successfully", "success")
+          // Don't change view - stay in assembly mode
           break
       }
       this.compiling = false
@@ -236,6 +293,37 @@ export default defineComponent({
     removeLibrary() {
       // this.$root.librayLoaded = false
       remove_library()
+    },
+
+    //
+    // Vim mode toggle
+    //
+
+    toggleVim() {
+      this.$root.vim_mode = !this.$root.vim_mode
+      localStorage.setItem("conf_vim_mode", this.$root.vim_mode)
+      
+      // Google Analytics
+      creator_ga(
+        "configuration",
+        "configuration.vim_mode",
+        "configuration.vim_mode." + this.$root.vim_mode,
+      )
+    },
+
+    //
+    // Library tags
+    //
+
+    libraryLoaded() {
+      return guiVariables.loadedLibrary && Object.keys(guiVariables.loadedLibrary).length !== 0
+    },
+
+    libraryTags() {
+      if (!this.libraryLoaded()) {
+        return []
+      }
+      return guiVariables.loadedLibrary?.instructions_tag?.filter(t => t.globl) || []
     },
 
     //
@@ -596,10 +684,136 @@ export default defineComponent({
 </script>
 
 <template>
-  <b-container fluid>
-    <b-row>
+  <!-- Dropdown mode: render as dropdown items -->
+  <template v-if="dropdownMode">
+    <template v-for="(item, index) in group" :key="index">
+      <!-- button_architecture -->
+      <b-dropdown-item v-if="item === 'btn_architecture'" @click="change_UI_mode('architecture')">
+        <font-awesome-icon :icon="['fas', 'screwdriver-wrench']" class="me-2" />
+        Architecture
+      </b-dropdown-item>
+
+      <!-- button_assembly -->
+      <b-dropdown-item v-if="item === 'btn_assembly'" @click="change_UI_mode('assembly')">
+        <font-awesome-icon :icon="['fas', 'hashtag']" class="me-2" />
+        Assembly
+      </b-dropdown-item>
+
+      <!-- button_simulator -->
+      <b-dropdown-item v-if="item === 'btn_simulator'" @click="change_UI_mode('simulator')">
+        <font-awesome-icon :icon="['fas', 'gears']" class="me-2" />
+        Simulator
+      </b-dropdown-item>
+
+      <!-- button_edit_architecture -->
+      <b-dropdown-item v-if="item === 'btn_edit_architecture'" v-b-modal.edit_architecture>
+        <font-awesome-icon :icon="['fas', 'pen-to-square']" class="me-2" />
+        Edit Architecture
+      </b-dropdown-item>
+
+      <!-- button_save_architecture -->
+      <b-dropdown-item v-if="item === 'btn_save_architecture'" v-b-modal.save_architecture>
+        <font-awesome-icon :icon="['fas', 'download']" class="me-2" />
+        Save Architecture
+      </b-dropdown-item>
+
+      <!-- dropdown_assembly_file - expand its items -->
+      <template v-if="item === 'dropdown_assembly_file'">
+        <b-dropdown-item @click="new_assembly">
+          <font-awesome-icon :icon="['far', 'file']" class="me-2" />
+          New
+        </b-dropdown-item>
+        <b-dropdown-item v-b-modal.load_assembly>
+          <font-awesome-icon :icon="['fas', 'upload']" class="me-2" />
+          Load
+        </b-dropdown-item>
+        <b-dropdown-item v-b-modal.save_assembly>
+          <font-awesome-icon :icon="['fas', 'download']" class="me-2" />
+          Save
+        </b-dropdown-item>
+        <b-dropdown-item v-b-modal.examples-assembly>
+          <font-awesome-icon :icon="['fas', 'file-lines']" class="me-2" />
+          Examples
+        </b-dropdown-item>
+        <b-dropdown-item v-b-modal.make_uri>
+          <font-awesome-icon :icon="['fas', 'link']" class="me-2" />
+          Get code as URI
+        </b-dropdown-item>
+      </template>
+
+      <!-- dropdown_library - expand its items -->
+      <template v-if="item === 'dropdown_library'">
+        <b-dropdown-item v-b-modal.load_binary>
+          <font-awesome-icon :icon="['fas', 'upload']" class="me-2" />
+          Load Library
+        </b-dropdown-item>
+        <b-dropdown-item @click="removeLibrary">
+          <font-awesome-icon :icon="['fas', 'trash-can']" class="me-2" />
+          Remove Library
+        </b-dropdown-item>
+      </template>
+
+      <!-- button_reset -->
+      <b-dropdown-item v-if="item === 'btn_reset'" @click="reset(true)" :disabled="reset_disable">
+        <font-awesome-icon :icon="['fas', 'power-off']" class="me-2" />
+        Reset
+      </b-dropdown-item>
+
+      <!-- button_instruction -->
+      <b-dropdown-item v-if="item === 'btn_instruction'" @click="execute_instruction" :disabled="instruction_disable">
+        <font-awesome-icon :icon="['fas', 'forward-step']" class="me-2" />
+        Step Instruction
+      </b-dropdown-item>
+
+      <!-- button_run -->
+      <b-dropdown-item v-if="item === 'btn_run'" @click="execute_program" :disabled="run_disable">
+        <font-awesome-icon :icon="['fas', 'play']" class="me-2" />
+        Run
+      </b-dropdown-item>
+
+      <!-- button_stop -->
+      <b-dropdown-item v-if="item === 'btn_stop'" @click="stop_execution" :disabled="stop_disable">
+        <font-awesome-icon :icon="['fas', 'stop']" class="me-2" />
+        Stop
+      </b-dropdown-item>
+
+      <!-- button_flash -->
+      <b-dropdown-item v-if="item === 'btn_flash'" v-b-modal.flash :disabled="!reset_disable">
+        <font-awesome-icon :icon="['fab', 'usb']" class="me-2" />
+        Flash
+      </b-dropdown-item>
+
+      <!-- button_examples -->
+      <b-dropdown-item v-if="item === 'btn_examples'" v-b-modal.examples>
+        <font-awesome-icon :icon="['fas', 'file-lines']" class="me-2" />
+        Examples
+      </b-dropdown-item>
+
+      <!-- button_calculator -->
+      <b-dropdown-item v-if="item === 'btn_calculator'" v-b-modal.calculator>
+        <font-awesome-icon :icon="['fas', 'calculator']" class="me-2" />
+        Calculator
+      </b-dropdown-item>
+
+      <!-- button_vim_toggle -->
+      <b-dropdown-item v-if="item === 'btn_vim_toggle'" @click="toggleVim">
+        <font-awesome-icon :icon="['fab', 'vimeo-v']" class="me-2" />
+        Vim Mode {{ $root.vim_mode ? '(On)' : '(Off)' }}
+      </b-dropdown-item>
+
+      <!-- button_library_tags -->
+      <b-dropdown-item v-if="item === 'btn_library_tags'" v-b-modal.library_tags>
+        <font-awesome-icon :icon="['fas', 'tags']" class="me-2" />
+        Library Tags
+      </b-dropdown-item>
+    </template>
+  </template>
+
+  <!-- Normal/Compact mode: render as buttons -->
+  <b-container v-else fluid :class="{ 'compact-mode': compact }">
+    <b-row :class="{ 'compact-row': compact }">
       <b-col
-        class="d-grid px-0 mx-1"
+        :class="compact ? 'compact-col' : 'd-grid px-0 mx-1'"
         v-for="(item, index) in group"
         :key="index"
       >
@@ -730,32 +944,26 @@ export default defineComponent({
           </b-dropdown-item>
         </b-dropdown>
 
-        <!-- assembler dropdown split button -->
-
+        <!-- assembler dropdown split button (just assemble) -->
         <b-dropdown
-          v-if="item === 'btn_compile'"
+          v-if="item === 'btn_assemble'"
           variant="outline-secondary"
           :toggle-class="{ menuButton: !dark, menuButtonDark: dark }"
           :split-class="{
             menuButton: !dark,
             menuButtonDark: dark,
-            'w-75': true,
           }"
           split
           right
           size="sm"
-          :id="'compile_assembly'"
+          :id="'assemble_only'"
+          class="assemble-dropdown"
         >
           <template #button-content>
-            <span @click="assembly_compiler">
-              <font-awesome-icon :icon="['fas', 'right-to-bracket']" />
-              {{
-                "Assemble" +
-                (selectedCompilerLabel
-                  ? " (" + selectedCompilerLabel + ")"
-                  : "")
-              }}
-              <b-spinner small v-if="compiling" class="ms-3" />
+            <span @click="assembly_compiler_only" class="assemble-button-content">
+              <font-awesome-icon :icon="['fas', 'hammer']" class="me-1" />
+              <span class="assemble-text">Assemble ({{ selectedCompilerLabel }})</span>
+              <b-spinner small v-if="compiling" class="ms-1" />
             </span>
           </template>
 
@@ -764,7 +972,67 @@ export default defineComponent({
             :key="option.value"
             @click="selectedCompiler = option.value"
           >
-            {{ option.text }}
+            <font-awesome-icon :icon="['fas', 'check']" class="me-2" v-if="selectedCompiler === option.value" />
+            <span :class="{ 'ms-4': selectedCompiler !== option.value }">{{ option.text }}</span>
+          </b-dropdown-item-button>
+        </b-dropdown>
+
+        <!-- assembler and run button -->
+        <b-button
+          v-if="item === 'btn_assemble_and_run'"
+          variant="outline-secondary"
+          :class="{ menuButton: !dark, menuButtonDark: dark }"
+          size="sm"
+          @click="assembly_compiler"
+          :disabled="compiling"
+        >
+          <font-awesome-icon :icon="['fas', 'right-to-bracket']" class="me-1" />
+          <span class="assemble-text">Assemble & Run</span>
+          <b-spinner small v-if="compiling" class="ms-1" />
+        </b-button>
+
+        <!-- vim toggle button -->
+        <b-button
+          v-if="item === 'btn_vim_toggle'"
+          variant="outline-secondary"
+          :class="{ menuButton: !dark, menuButtonDark: dark }"
+          size="sm"
+          @click="toggleVim"
+        >
+          <font-awesome-icon :icon="['fab', 'vimeo-v']" class="me-1" />
+          <span class="assemble-text">Vim {{ $root.vim_mode ? 'On' : 'Off' }}</span>
+        </b-button>
+
+        <!-- assembler dropdown split button (old btn_compile for backwards compatibility) -->
+        <b-dropdown
+          v-if="item === 'btn_compile'"
+          variant="outline-secondary"
+          :toggle-class="{ menuButton: !dark, menuButtonDark: dark }"
+          :split-class="{
+            menuButton: !dark,
+            menuButtonDark: dark,
+          }"
+          split
+          right
+          size="sm"
+          :id="'compile_assembly'"
+          class="assemble-dropdown"
+        >
+          <template #button-content>
+            <span @click="assembly_compiler" class="assemble-button-content">
+              <font-awesome-icon :icon="['fas', 'right-to-bracket']" class="me-1" />
+              <span class="assemble-text">Assemble ({{ selectedCompilerLabel }})</span>
+              <b-spinner small v-if="compiling" class="ms-1" />
+            </span>
+          </template>
+
+          <b-dropdown-item-button
+            v-for="option in compilerOptions"
+            :key="option.value"
+            @click="selectedCompiler = option.value"
+          >
+            <font-awesome-icon :icon="['fas', 'check']" class="me-2" v-if="selectedCompiler === option.value" />
+            <span :class="{ 'ms-4': selectedCompiler !== option.value }">{{ option.text }}</span>
           </b-dropdown-item-button>
         </b-dropdown>
 
@@ -798,94 +1066,83 @@ export default defineComponent({
         </b-dropdown>
 
         <!-- button_reset -->
-        <b-tooltip v-if="item === 'btn_reset'">
-          <template #target>
-            <b-button
-              class="actionsGroup h-100 text-truncate"
-              size="sm"
-              variant="outline-secondary"
-              accesskey="x"
-              @click="reset()"
-              :disabled="reset_disable"
-            >
-              <font-awesome-icon :icon="['fas', 'power-off']" />
-              Reset
-            </b-button>
-          </template>
-
-          {{ accesskey_prefix }}X
-        </b-tooltip>
+        <b-button
+          v-if="item === 'btn_reset'"
+          variant="outline-secondary"
+          :class="{ menuButton: !dark, menuButtonDark: dark }"
+          size="sm"
+          accesskey="x"
+          @click="reset(true)"
+          :disabled="reset_disable"
+          v-b-tooltip.hover
+          :title="`${accesskey_prefix}X`"
+        >
+          <font-awesome-icon :icon="['fas', 'power-off']" class="me-1" />
+          <span class="assemble-text">Reset</span>
+        </b-button>
 
         <!-- button_instruction -->
-        <b-tooltip v-if="item === 'btn_instruction'">
-          <template #target>
-            <b-button
-              class="actionsGroup h-100 text-truncate"
-              size="sm"
-              variant="outline-secondary"
-              accesskey="a"
-              @click="execute_instruction"
-              :disabled="instruction_disable"
-            >
-              <font-awesome-icon :icon="['fas', 'forward-step']" />
-              Inst.
-            </b-button>
-          </template>
-
-          {{ accesskey_prefix }}A
-        </b-tooltip>
+        <b-button
+          v-if="item === 'btn_instruction'"
+          variant="outline-secondary"
+          :class="{ menuButton: !dark, menuButtonDark: dark }"
+          size="sm"
+          accesskey="a"
+          @click="execute_instruction"
+          :disabled="instruction_disable"
+          v-b-tooltip.hover
+          :title="`${accesskey_prefix}A`"
+        >
+          <font-awesome-icon :icon="['fas', 'forward-step']" class="me-1" />
+          <span class="assemble-text">Inst.</span>
+        </b-button>
 
         <!-- button_run -->
-        <b-tooltip v-if="item === 'btn_run'">
-          <template #target>
-            <b-button
-              id="playExecution"
-              class="actionsGroup h-100 text-truncate"
-              size="sm"
-              variant="outline-secondary"
-              @click="execute_program"
-              accesskey="r"
-              :disabled="run_disable"
-            >
-              <font-awesome-icon :icon="['fas', 'play']" />
-              Run
-            </b-button>
-          </template>
-
-          {{ accesskey_prefix }}R
-        </b-tooltip>
+        <b-button
+          v-if="item === 'btn_run'"
+          id="playExecution"
+          variant="outline-secondary"
+          :class="{ menuButton: !dark, menuButtonDark: dark }"
+          size="sm"
+          @click="execute_program"
+          accesskey="r"
+          :disabled="run_disable"
+          v-b-tooltip.hover
+          :title="`${accesskey_prefix}R`"
+        >
+          <font-awesome-icon :icon="['fas', 'play']" class="me-1" />
+          <span class="assemble-text">Run</span>
+        </b-button>
 
         <!-- button_flash -->
         <b-button
           v-if="item === 'btn_flash'"
-          class="actionsGroup h-100"
-          size="sm"
           variant="outline-secondary"
+          :class="{ menuButton: !dark, menuButtonDark: dark }"
+          size="sm"
+          :disabled="!reset_disable"
           v-b-modal.flash
         >
-          <font-awesome-icon :icon="['fab', 'usb']" />
-          Flash
+          <font-awesome-icon :icon="['fab', 'usb']" class="me-1" />
+          <span class="assemble-text">Flash</span>
         </b-button>
 
         <!-- button_stop -->
-        <b-tooltip v-if="item === 'btn_stop'">
-          <template #target>
-            <b-button
-              class="actionsGroup h-100"
-              size="sm"
-              variant="outline-secondary"
-              accesskey="c"
-              @click="stop_execution"
-              :disabled="stop_disable"
-              id="stop_execution"
-            >
-              <font-awesome-icon :icon="['fas', 'stop']" />
-              Stop
-            </b-button>
-          </template>
-
-          {{ accesskey_prefix }}C
-        </b-tooltip>
+        <b-button
+          v-if="item === 'btn_stop'"
+          variant="outline-secondary"
+          :class="{ menuButton: !dark, menuButtonDark: dark }"
+          size="sm"
+          accesskey="c"
+          @click="stop_execution"
+          :disabled="stop_disable"
+          id="stop_execution"
+          v-b-tooltip.hover
+          :title="`${accesskey_prefix}C`"
+        >
+          <font-awesome-icon :icon="['fas', 'stop']" class="me-1" />
+          <span class="assemble-text">Stop</span>
+        </b-button>
 
         <!-- button_examples -->
         <b-button
@@ -908,20 +1165,7 @@ export default defineComponent({
           v-b-modal.calculator
         >
           <font-awesome-icon :icon="['fas', 'calculator']" />
-          Calculator
-        </b-button>
-
-        <!-- button_configuration -->
-        <b-button
-          v-if="item == 'btn_configuration'"
-          class="menuButton h-100 text-truncate"
-          size="sm"
-          variant="outline-secondary"
-          id="conf_btn_sim"
-          v-b-modal.configuration
-        >
-          <font-awesome-icon :icon="['fas', 'gears']" />
-          Configuration
+          Calculator...
         </b-button>
 
         <!-- button_information -->
@@ -997,6 +1241,38 @@ export default defineComponent({
 
 // the workaround to the workaround is to just use class bindings
 
+// Compact mode for navbar integration
+.compact-mode {
+  padding: 0 !important;
+  margin: 0 !important;
+  
+  .compact-row {
+    margin: 0 !important;
+    display: inline-flex;
+    flex-wrap: nowrap;
+    gap: 0.25rem;
+  }
+  
+  .compact-col {
+    padding: 0 !important;
+    margin: 0 !important;
+    flex: none;
+    width: auto;
+  }
+  
+  // Enforce consistent button heights in navbar
+  :deep(.btn),
+  .btn {
+    height: 32px;
+    font-size: 0.8125rem;
+    padding: 0.25rem 0.5rem;
+  }
+  
+  :deep(.btn-group) {
+    height: 32px;
+  }
+}
+
 :deep(.menuButton),
 .menuButton {
   background-color: #f8f9fa;
@@ -1013,12 +1289,48 @@ export default defineComponent({
   background-color: #424649;
 }
 
-.actionsGroup {
-  background-color: #e0e0e0;
-}
-
 .infoButton {
   background-color: #d4db17;
+}
+
+// Modern dropdown menu styling
+:deep(.dropdown-menu) {
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1), 0 0 1px rgba(0, 0, 0, 0.1);
+  padding: 0.5rem 0;
+  margin-top: 0.25rem;
+  min-width: 200px;
+}
+
+:deep(.dropdown-item) {
+  padding: 0.625rem 1rem;
+  font-size: 0.875rem;
+  color: #495057;
+  display: flex;
+  align-items: center;
+  
+  &:hover {
+    background-color: #f8f9fa;
+    color: #2196f3;
+    padding-left: 1.25rem;
+  }
+  
+  &:active {
+    background-color: #e3f2fd;
+    color: #1976d2;
+  }
+  
+  svg {
+    width: 1rem;
+  }
+  
+
+}
+
+:deep(.dropdown-divider) {
+  margin: 0.5rem 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 [data-bs-theme="dark"] {
@@ -1031,14 +1343,6 @@ export default defineComponent({
     background-color: #424649;
   }
 
-  .actionsGroup {
-    background-color: #363636;
-  }
-
-  .actionsGroup:hover {
-    background-color: #424649;
-  }
-
   .infoButton {
     background-color: #a3a815;
     color: #f5f5f5;
@@ -1046,6 +1350,31 @@ export default defineComponent({
 
   .infoButton:hover {
     background-color: #424649;
+  }
+  
+  // Dark mode dropdown styling
+  :deep(.dropdown-menu) {
+    background-color: #2d2d2d;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), 0 0 1px rgba(255, 255, 255, 0.1);
+  }
+  
+  :deep(.dropdown-item) {
+    color: #ced4da;
+    
+    &:hover {
+      background-color: #3a3a3a;
+      color: #64b5f6;
+    }
+    
+    &:active {
+      background-color: #1e3a5f;
+      color: #90caf9;
+    }
+  }
+  
+  :deep(.dropdown-divider) {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
   }
 }
 </style>

@@ -101,7 +101,7 @@ export default {
     <b-col align-h="center">
       <b-table
         id="inst_table"
-        sticky-header="61vh"
+        sticky-header="calc(100vh - 40px)"
         striped
         small
         hover
@@ -179,10 +179,34 @@ export default {
 
 <style lang="scss" scoped>
 .instructions_table {
-  font-size: 1em;
+  font-size: 0.9em;
   padding-right: 1vw;
   cursor: pointer;
-  max-height: 61vh;
+}
+
+:deep(.instructions_table) {
+  td, th {
+    padding: 0.2rem 0.2rem;
+    line-height: 1.2;
+    /* ensure table cell contents are vertically centered */
+    vertical-align: middle;
+  }
+
+  /* Make Break, Address, and Label columns narrower */
+  th:nth-child(1), /* Break */
+  td:nth-child(1) {
+    width: 1%;
+  }
+
+  th:nth-child(2), /* Address */
+  td:nth-child(2) {
+    width: 10%;
+  }
+
+  th:nth-child(3), /* Label */
+  td:nth-child(3) {
+    width: 5%;
+  }
 }
 
 .executionTag {
@@ -193,7 +217,15 @@ export default {
 
 .breakPoint {
   width: auto !important;
-  height: 4vh;
+  height: 2.5vh;
+}
+
+/* center breakpoint image/text inside its table cell */
+.break {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
 }
 
 [data-bs-theme="dark"] {

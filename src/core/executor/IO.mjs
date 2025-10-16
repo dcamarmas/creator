@@ -224,10 +224,6 @@ export function keyboard_read(fn_post_read, fn_post_params) {
         );
     }
 
-    if (status.run_program === 1) {
-        $("#playExecution").trigger("click");
-    }
-
     // re-enable buttons
     document.app.$root.$refs.simulatorView.$refs.toolbar.$refs.btngroup1.at(
         0,

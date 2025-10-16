@@ -30,9 +30,9 @@ import { tags as t } from "@lezer/highlight"
 import { createTheme } from "@uiw/codemirror-themes"
 
 import { creator_ga } from "@/core/utils/creator_ga.mjs"
-import { loadedLibrary } from "@/core/core.mjs"
-
-import PopoverShortcuts from "./PopoverShortcuts.vue"
+import { assembly_compile, reset, status } from "@/core/core.mjs"
+import { resetStats } from "@/core/executor/stats.mts"
+import { assembleCreator } from "@/core/assembler/creatorAssembler/web/creatorAssembler.mjs"
 
 // themes designed by @joseaverde
 const creatorLightTheme = createTheme({
@@ -133,7 +133,6 @@ export default defineComponent({
   },
 
   components: {
-    PopoverShortcuts,
     Codemirror,
   },
 
@@ -189,10 +188,10 @@ export default defineComponent({
         // editor theme
         this.dark ? creatorDarkTheme : creatorLightTheme,
 
-        // fixed height editor
+        // fixed height editor — make the editor fill the available width/height
         EditorView.theme({
-          "&": { height: this.height },
-          ".cm-scroller": { overflow: "auto" },
+          "&": { height: this.height, width: "100%" },
+          ".cm-scroller": { overflow: "auto", height: "100%" },
         }),
 
         // Ctrl-s to assemble
@@ -220,76 +219,38 @@ export default defineComponent({
   },
 
   methods: {
-    assemble() {
-      // I know, this line also breaks my heart, and I wrote it
-      ;(this.$root as any).$refs.assemblyView.$refs.toolbar.$refs.btngroup1
-        .at(0)
-        .assembly_compiler()
+    async assemble() {
+      // Reset simulator
+      this.$root.keyboard = ""
+      this.$root.display = ""
+      this.$root.enter = null
+      reset()
 
-      return true // this is only to make it compatible with `Command`
-    },
+      // Reset stats
+      resetStats()
+      status.executedInstructions = 0
+      status.clkCycles = 0
 
-    toggleVim() {
-      this.vimActive = !this.vimActive
-    },
+      // Assemble the code
+      const ret = await assembly_compile(this.$root.assembly_code, assembleCreator)
 
-    libraryLoaded() {
-      return Object.keys(loadedLibrary).length !== 0
-    },
-
-    libraryTags() {
-      if (!this.libraryLoaded()) {
-        return []
+      // Handle results
+      if (ret.status !== "ok") {
+        this.$root.assemblyError = ret.msg
+        // Trigger error modal - emit event to show error
+        this.$root.$emit("show-assembly-error")
+      } else {
+        // Compilation successful
+        this.$root.creator_mode = "simulator"
       }
-      return loadedLibrary?.instructions_tag.filter(t => t.globl)
+
+      return true // Return true for keymap handler
     },
   },
 })
 </script>
 
 <template>
-  <PopoverShortcuts target="assemblyInfo" :vim_mode="vimActive" :os="os" />
-
-  <b-row cols="2" class="mb-3" align-h="between">
-    <!-- Vim button -->
-    <b-col cols="11">
-      <b-button
-        class="actionsGroup"
-        variant="outline-secondary"
-        size="sm"
-        :pressed="vimActive"
-        @click="toggleVim()"
-        title="Enable Vim mode"
-      >
-        <font-awesome-icon :icon="['fab', 'vimeo-v']" /> Vim
-      </b-button>
-    </b-col>
-
-    <!-- Library tags -->
-    <b-col cols="1" class="d-grid">
-      <b-popover click placement="bottom">
-        <!-- v-if="libraryLoaded()" -->
-        <template #target>
-          <b-button variant="outline-secondary" size="sm">
-            Library tags
-            <font-awesome-icon size="xs" :icon="['fa', 'caret-down']" />
-          </b-button>
-        </template>
-
-        <b-list-group>
-          <b-list-group-item v-for="tag of libraryTags()">
-            <b-badge pill variant="primary">
-              {{ tag.tag }}
-            </b-badge>
-          </b-list-group-item>
-        </b-list-group>
-      </b-popover>
-    </b-col>
-  </b-row>
-
-  <font-awesome-icon id="assemblyInfo" icon="circle-info" />&nbsp;
-  <span class="h5">Assembly:</span>
-
   <Codemirror
     ref="textarea"
     class="codeArea"
@@ -313,5 +274,25 @@ export default defineComponent({
 .codeArea {
   border: 1px solid #eee;
   font-size: 0.85em;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  display: block;
+}
+
+.codeArea :deep(.cm-scroller) {
+  padding: 0;
+  overflow: auto;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.codeArea :deep(.cm-content) {
+  padding: 0;
+}
+
+.codeArea :deep(.cm-editor.cm-focused) {
+  outline: none;
 }
 </style>
