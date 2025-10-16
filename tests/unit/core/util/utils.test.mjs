@@ -184,7 +184,7 @@ Deno.test("bin2hex - converts binary string to hexadecimal", () => {
 Deno.test("bin2hex - returns invalid for incorrect binary input", () => {
     const invalidStr = "1020";
     const result = bin2hex(invalidStr);
-    assertEquals(result.valid, false);
+    assertEquals(result, null);
 });
 
 Deno.test("hex2double - converts hex to double (pi approximation)", () => {

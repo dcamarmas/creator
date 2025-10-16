@@ -1,14 +1,19 @@
-<script>
+<script lang="ts">
+import { defineComponent, type PropType } from "vue"
+import { useToggle } from "bootstrap-vue-next"
+
 import UIeltoToolbar from "./general/UIeltoToolbar.vue"
 import PreloadArchitecture from "./select_architecture/PreloadArchitecture.vue"
 import LoadArchitecture from "./select_architecture/LoadArchitecture.vue"
 import DeleteArchitecture from "./select_architecture/DeleteArchitecture.vue"
-import { useModal } from "bootstrap-vue-next"
 
-export default {
+export default defineComponent({
   props: {
-    arch_available: Array,
-    browser: String,
+    arch_available: {
+      type: Array as PropType<AvailableArch[]>,
+      required: true,
+    },
+    browser: { type: String, required: true },
     os: { type: String, required: true },
     dark: { type: Boolean, required: true },
     windowHeight: { type: Number, required: true },
@@ -24,7 +29,7 @@ export default {
   },
 
   setup() {
-    const showDeleteModal = useModal("modal-delete-arch").show
+    const showDeleteModal = useToggle("modal-delete-arch").show
 
     return { showDeleteModal }
   },
@@ -32,9 +37,9 @@ export default {
   data() {
     return {
       contactMail: "creator.arcos.inf.uc3m.es@gmail.com",
-      archToDelete: null,
+      archToDelete: null as string | null,
 
-      render: 0n, // dummy variable to force components with this as key to refresh
+      render: 0, // dummy variable to force components with this as key to refresh
     }
   },
 
@@ -44,7 +49,7 @@ export default {
       this.render++
     },
   },
-}
+})
 </script>
 
 <template>
@@ -68,13 +73,13 @@ export default {
         :architecture="arch"
         :dark="dark"
         @select-architecture="
-          arch_name => {
-            this.$emit('select-architecture', arch_name) // emit to our grandparent
+          (arch_name: string) => {
+            $emit('select-architecture', arch_name) // emit to our grandparent
           }
         "
         @delete-architecture="
-          arch_name => {
-            this.archToDelete = arch_name
+          (arch_name: string) => {
+            archToDelete = arch_name
             showDeleteModal()
           }
         "
@@ -83,8 +88,8 @@ export default {
       <!-- Load new architecture card -->
       <LoadArchitecture
         @select-architecture="
-          arch_name => {
-            this.$emit('select-architecture', arch_name) // emit to our grandparent
+          (arch_name: string) => {
+            $emit('select-architecture', arch_name) // emit to our grandparent
           }
         "
       />

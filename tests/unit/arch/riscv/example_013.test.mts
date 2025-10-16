@@ -137,7 +137,7 @@ sub:
 
         // Execute the program
         const result = executeN(1000);
-        assertEquals(result.error, 0, "Execution should not error");
+        assertEquals(result.error, false, "Execution should not error");
 
         // This test validates complex nested function calls with proper stack management
         // The exact final result will depend on the computation:

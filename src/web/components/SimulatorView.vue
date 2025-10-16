@@ -18,7 +18,12 @@ You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<script>
+<script lang="ts">
+import { defineComponent, type PropType } from "vue"
+
+import type { StackFrame } from "@/core/memory/StackTracker.mjs"
+import { architecture } from "@/core/core.mjs"
+
 import UIeltoToolbar from "./general/UIeltoToolbar.vue"
 import TableExecution from "./simulator/TableExecution.vue"
 import DataViewSelector from "./simulator/DataViewSelector.vue"
@@ -31,19 +36,17 @@ import Calculator from "./simulator/Calculator.vue"
 import Stats from "./simulator/Stats.vue"
 import Flash from "./simulator/Flash.vue"
 
-import { architecture } from "@/core/core.mjs"
-
-export default {
+export default defineComponent({
   props: {
     instructions: { type: Array, required: true },
-    browser: String,
+    browser: { type: String, required: true },
     os: { type: String, required: true },
     dark: { type: Boolean, required: true },
     windowHeight: { type: Number, required: true },
     windowWidth: { type: Number, required: true },
     arch_available: Array,
-    architecture_name: String,
-    data_mode: String,
+    architecture_name: { type: String, required: true },
+    data_mode: { type: String, required: true },
     reg_representation_int: { type: String, required: true },
     reg_representation_float: { type: String, required: true },
     reg_name_representation: { type: String, required: true },
@@ -51,12 +54,11 @@ export default {
     stat_type: { type: String, required: true },
     memory_segment: { type: String, required: true },
     assembly_code: { type: String, required: true },
-    enter: [Boolean, null],
-    main_memory_busy: Boolean,
-    display: String,
-    keyboard: String,
-    caller_frame: Object,
-    callee_frame: Object,
+    enter: { type: [Boolean, null], required: true },
+    display: { type: String, required: true },
+    keyboard: { type: String, required: true },
+    caller_frame: Object as PropType<StackFrame>,
+    callee_frame: Object as PropType<StackFrame>,
 
     lab_url: { type: String, required: true },
     result_email: { type: String, required: true },
@@ -84,7 +86,7 @@ export default {
       architecture,
     }
   },
-}
+})
 </script>
 
 <template>
@@ -220,5 +222,12 @@ export default {
     position: relative;
     top: -0.6vw;
   }
+}
+
+:deep(.registerPopover) {
+  background-color: #ceecf5;
+  font-family: monospace;
+  font-weight: normal;
+  font-size: 0.7em;
 }
 </style>

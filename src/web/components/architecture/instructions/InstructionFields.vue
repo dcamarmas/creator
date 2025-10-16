@@ -18,8 +18,10 @@ You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<script>
-export default {
+<script lang="ts">
+import { defineComponent } from "vue"
+
+export default defineComponent({
   props: {
     id: { type: String, required: true },
     name: { type: String, required: true },
@@ -39,7 +41,7 @@ export default {
       ],
     }
   },
-}
+})
 </script>
 
 <template>
@@ -113,7 +115,7 @@ export default {
               v-if="
                 fragmet_data.indexOf(instruction.separated[field_index]) !== -1
               "
-              :id="'view-fragment-' + i"
+              :id="'view-fragment-' + field_index"
               :model-value="instruction.separated[field_index]"
               class="ml-3"
               disabled
@@ -185,7 +187,6 @@ export default {
           <div class="col-lg-2 col-2 fields" v-if="field.type == 'cop'">
             <b-form-input
               type="text"
-              v-on:input="debounce('field.value', $event)"
               :model-value="field.value"
               readonly
               size="sm"

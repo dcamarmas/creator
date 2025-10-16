@@ -25,9 +25,7 @@ import { keyboard_read, display_print } from "./IO.mjs";
 import { float2bin, double2bin, packExecute } from "../utils/utils.mjs";
 import { SYSCALL } from "../capi/syscall.mts";
 import { MEM } from "../capi/memory.mts";
-import { Memory } from "../memory/Memory.mts";
-// eslint-disable-next-line no-duplicate-imports
-import type { MemoryBackup } from "../memory/Memory.mts";
+import { Memory, type MemoryBackup } from "../memory/Memory.mts";
 
 /**
  * A CREATOR device.
@@ -42,7 +40,7 @@ import type { MemoryBackup } from "../memory/Memory.mts";
  * @method callback: Function defining the behaviour of the device.
  *
  */
-abstract class Device {
+export abstract class Device {
     readonly ctrl_addr: number;
     readonly status_addr: number;
     readonly data: { start: number; end: number };
@@ -305,7 +303,7 @@ class ConsoleDevice extends Device {
 
                     // Write the string to memory byte by byte
                     for (let i = 0; i < keystroke.length && i < length; i++) {
-                        mainMemory.write(BigInt(addr + i), bytes[i]);
+                        mainMemory.write(BigInt(addr + i), bytes[i]!);
                     }
                 });
 

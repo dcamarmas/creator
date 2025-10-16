@@ -18,7 +18,9 @@ You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<script>
+<script lang="ts">
+import { defineComponent } from "vue"
+
 /* Codemirror */
 import Codemirror from "vue-codemirror6"
 import {
@@ -45,14 +47,10 @@ import { tags as t } from "@lezer/highlight"
 import { createTheme } from "@uiw/codemirror-themes"
 import { yaml } from "@codemirror/lang-yaml"
 
-import {
-  architecture,
-  reset,
-  loadArchitecture,
-} from "@/core/core.mjs"
+import { architecture, reset, loadArchitecture } from "@/core/core.mjs"
 import { show_notification, storeBackup } from "@/web/utils.mjs"
 
-export default {
+export default defineComponent({
   props: {
     id: { type: String, required: true },
     arch_code: { type: String, required: true },
@@ -75,8 +73,8 @@ export default {
       get() {
         return this.arch_code
       },
-      set(value) {
-        this.$root.arch_code = value
+      set(value: string) {
+        ;(this.$root as any).arch_code = value
       },
     },
 
@@ -164,24 +162,19 @@ export default {
       }
 
       // update architecture data
-      this.$root.architecture_name = architecture.config.name
-      this.$root.architecture = architecture
+      ;(this.$root as any).architecture_name = architecture.config.name
+      ;(this.$root as any).architecture = architecture
 
       // reset execution
-      this.$root.instructions = []
+      ;(this.$root as any).instructions = []
       reset()
 
       show_notification("Architecture edited correctly", "success")
 
       storeBackup()
     },
-
-    handleReady({ view, _state }) {
-      // focus on editor
-      view.focus()
-    },
   },
-}
+})
 </script>
 
 <template>
@@ -203,7 +196,11 @@ export default {
       :tab-size="2"
       :lang="lang"
       :extensions="extensions"
-      @ready="handleReady"
+      @ready="
+        ({ view }: { view: EditorView }) => {
+          view.focus()
+        }
+      "
     />
   </b-modal>
 </template>

@@ -18,12 +18,15 @@ You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<script>
-import { status } from "@/core/core.mjs"
+<script lang="ts">
+import { defineComponent, type PropType } from "vue"
 
-export default {
+import { status } from "@/core/core.mjs"
+import type { Stat } from "@/core/executor/stats.mjs"
+
+export default defineComponent({
   props: {
-    stats: { type: Map, required: true },
+    stats: { type: Map as PropType<Map<string, Stat>>, required: true },
     type: { type: String, required: true },
     dark: { type: Boolean, required: true },
   },
@@ -31,11 +34,7 @@ export default {
   computed: {
     // FIXME: this doesn't automagically update...
     statsValues() {
-      return Array.from(
-        // for some reason I have to use the Array.from, otherwise it gives me a
-        // `TypeError: this.stats.values(...).map is not a function`
-        this.stats.entries(),
-      ).map(([k, v]) => {
+      return Array.from(this.stats.entries()).map(([k, v]) => {
         const value = this.type === "instructions" ? v.instructions : v.cycles
 
         return {
@@ -73,7 +72,7 @@ export default {
       ]
     },
   },
-}
+})
 </script>
 
 <template>

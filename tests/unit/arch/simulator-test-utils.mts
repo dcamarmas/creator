@@ -34,7 +34,7 @@ export interface ExecutionResult {
         clockCycles: number;
         success: boolean;
     };
-    error: number;
+    error: boolean;
 }
 
 const compiler_map = {
@@ -174,7 +174,7 @@ export async function setupSimulator(
  */
 export function executeStep(): ExecutionResult {
     if (creator.status.execution_index === -2) {
-        return { output: "", error: 0 };
+        return { output: "", error: false };
     }
 
     const ret = step();
@@ -191,12 +191,12 @@ export function executeStep(): ExecutionResult {
  * @returns Combined execution result
  */
 export function executeN(n: number): ExecutionResult {
-    let lastResult: ExecutionResult = { output: "", error: 0 };
+    let lastResult: ExecutionResult = { output: "", error: false };
 
     for (let i = 0; i < n; i++) {
         lastResult = executeStep();
 
-        if (lastResult.error !== 0 || creator.status.execution_index === -2) {
+        if (lastResult.error || creator.status.execution_index === -2) {
             break;
         }
     }

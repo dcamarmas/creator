@@ -18,11 +18,12 @@ You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<script>
+<script lang="ts">
 import { creator_ga } from "@/core/utils/creator_ga.mjs"
 import { downloadToFile } from "@/web/utils.mjs"
+import { defineComponent } from "vue"
 
-export default {
+export default defineComponent({
   props: {
     id: { type: String, required: true },
     title: { type: String, required: true },
@@ -47,7 +48,7 @@ export default {
       creator_ga(this.type, `${this.type}.save`, `${this.type}.save`)
     },
   },
-}
+})
 </script>
 
 <template>
@@ -64,7 +65,7 @@ export default {
       </b-col>
 
       <b-col cols="8">
-        <b-input-group :append="this.extension">
+        <b-input-group :append="extension">
           <b-form-input
             v-model="filename"
             class="text-end"

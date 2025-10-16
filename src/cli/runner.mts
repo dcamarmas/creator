@@ -150,7 +150,7 @@ async function main() {
                 //             );
                 //         });
                 // }
-                if (ret.error === 1) {
+                if (ret.error) {
                     console.error(ret.msg);
                     process.exit(1);
                 }
