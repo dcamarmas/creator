@@ -150,7 +150,7 @@ function handleInterrupts() {
 function updateExecutionStatus() {
     // Check for program termination due to error
     if (status.execution_index === -1) {
-        status.error = 1;
+        status.error = true;
         return { error: false, msg: "" };
     } else if (status.execution_index === -2) {
         // Normal program termination
@@ -406,14 +406,14 @@ function executeInstructionCycle() {
 }
 
 export function step() {
-    status.error = 0;
+    status.error = false;
 
     // Execute a single instruction cycle
     const cycleResult = executeInstructionCycle();
 
     // Check if error occurred during execution
     if (status.execution_index === -1) {
-        status.error = 1;
+        status.error = true;
     }
 
     // Capture instruction data from the executed cycle before checking PC validity

@@ -18,13 +18,18 @@ You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<script>
-export default {
+<script lang="ts">
+import { defineComponent, type PropType } from "vue"
+
+export default defineComponent({
   props: {
     id: { type: String, required: true },
-    notifications: { type: Array, required: true },
+    notifications: {
+      type: Array as PropType<CREATORNotification[]>,
+      required: true,
+    },
   },
-}
+})
 </script>
 
 <template>

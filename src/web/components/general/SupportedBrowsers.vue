@@ -29,16 +29,20 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 }
 </style>
 
-<script>
-export default {
+<script lang="ts">
+import { defineComponent } from "vue"
+
+export default defineComponent({
   props: {
-    browser: String,
+    browser: { type: [String, null], required: true },
   },
+
   data() {
     return {
       modalShow: false,
     }
   },
+
   methods: {
     validate_browser() {
       switch (this.browser) {
@@ -52,10 +56,11 @@ export default {
       }
     },
   },
+
   mounted() {
     this.modalShow = !this.validate_browser()
   },
-}
+})
 </script>
 
 <template>

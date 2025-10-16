@@ -18,18 +18,20 @@ You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<script>
-export default {
+<script lang="ts">
+import { defineComponent } from "vue"
+
+export default defineComponent({
   props: {
     id: { type: String, required: true },
   },
-}
+})
 </script>
 
 <template>
   <b-modal :id="id" title="CREATOR Community" scrollable no-footer size="xl">
     <b-container fluid align-h="center" class="mx-0 px-0">
-      <b-row cols="3 text-center" align-v="center">
+      <b-row cols="3" class="text-center" align-v="center">
         <b-col cols="4">
           <a target="_blank" href="https://www.uc3m.es/">
             <img

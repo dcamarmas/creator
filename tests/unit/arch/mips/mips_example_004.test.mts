@@ -51,7 +51,7 @@ main:
 
     // Execute the program
     const result = executeN(1000);
-    assertEquals(result.error, 0, "Execution should not error");
+    assertEquals(result.error, false, "Execution should not error");
     // TODO: finish the conditions below
     // Assert all expected state using the wrapper function
     assertSimulatorState({

@@ -18,11 +18,14 @@ You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<script>
-import available_arch from "/architecture/available_arch.json"
+<script lang="ts">
+import { defineComponent } from "vue"
+
+// import available_arch from "#/architecture/available_arch.json"
+import available_arch from "../../../../architecture/available_arch.json"
 import { architecture } from "@/core/core.mjs"
 
-export default {
+export default defineComponent({
   props: {
     id: { type: String, required: true },
     architecture_name: { type: String, required: true },
@@ -31,10 +34,10 @@ export default {
 
   data() {
     return {
-      //Help Filter
-      instHelpFilter: null,
+      // help Filter
+      instHelpFilter: undefined,
 
-      //Help table
+      // help table
       insHelpFields: ["name"],
 
       instructions: architecture.instructions,
@@ -54,7 +57,7 @@ export default {
       )?.guide
     },
   },
-}
+})
 </script>
 
 <template>
@@ -85,7 +88,7 @@ export default {
     >
       <template v-slot:cell(name)="row">
         <h4>{{ row.item.name }}</h4>
-        <em>{{ row.item.signatureRaw }}</em>
+        <em>{{ row.item.signature_definition }}</em>
         <br />
         {{ row.item.help }}
       </template>

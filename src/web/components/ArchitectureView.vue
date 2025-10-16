@@ -18,7 +18,9 @@ You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<script>
+<script lang="ts">
+import { defineComponent, type PropType } from "vue"
+
 import { architecture } from "@/core/core.mjs"
 
 import UIeltoToolbar from "./general/UIeltoToolbar.vue"
@@ -31,11 +33,11 @@ import Instructions from "./architecture/instructions/Instructions.vue"
 import Directives from "./architecture/directives/Directives.vue"
 import Pseudoinstructions from "./architecture/pseudoinstructions/Pseudoinstructions.vue"
 
-export default {
+export default defineComponent({
   props: {
-    browser: String,
+    browser: { type: String, required: true },
     os: { type: String, required: true },
-    arch_available: Array,
+    arch_available: Array as PropType<AvailableArch[]>,
     architecture_name: String,
     dark: { type: Boolean, required: true },
     arch_code: { type: String, required: true },
@@ -56,7 +58,7 @@ export default {
       architecture,
     }
   },
-}
+})
 </script>
 
 <template>

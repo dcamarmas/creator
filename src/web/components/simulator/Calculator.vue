@@ -20,12 +20,20 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 
 <!-- TODO: this whole thing needs to be redone... -->
 
-<script>
-import { console_log } from "@/web/utils.mjs"
-import { hex2float, float2bin, bin2hex } from "@/core/utils/utils.mjs"
+<script lang="ts">
+import { defineComponent } from "vue"
+
+import { console_log, show_notification } from "@/web/utils.mjs"
+import {
+  hex2float,
+  float2bin,
+  bin2hex,
+  hex2double,
+  double2bin,
+} from "@/core/utils/utils.mjs"
 import { creator_ga } from "@/core/utils/creator_ga.mjs"
 
-export default {
+export default defineComponent({
   props: {
     id: { type: String, required: true },
   },
@@ -94,12 +102,12 @@ export default {
       this.calculator.decimal = ""
       this.calculator.sign = ""
       this.calculator.exponentDec = ""
-      this.calculator.mantissaDec = ""
+      this.calculator.mantissaDec = 0
     },
 
     /*Calculator functionality*/
     // eslint-disable-next-line max-lines-per-function
-    calculatorFunct(index) {
+    calculatorFunct(index: number) {
       let float
       let binary
 
@@ -150,20 +158,8 @@ export default {
             }
 
             /* Google Analytics */
-            creator_ga(
-              "send",
-              "event",
-              "calculator",
-              "calculator.32",
-              "calculator.32.hex",
-            )
-            creator_ga(
-              "send",
-              "event",
-              "calculator",
-              "calculator.32",
-              "calculator.32.0x" + hex,
-            )
+            creator_ga("send", "event", "calculator.32.hex")
+            creator_ga("send", "event", "calculator.32.0x" + hex)
           }
           if (this.calculator.bits === 64) {
             const re = /[0-9A-Fa-f]{16}/g
@@ -201,20 +197,8 @@ export default {
             }
 
             /* Google Analytics */
-            creator_ga(
-              "send",
-              "event",
-              "calculator",
-              "calculator.64",
-              "calculator.64.hex",
-            )
-            creator_ga(
-              "send",
-              "event",
-              "calculator",
-              "calculator.64",
-              "calculator.64.0x" + hex,
-            )
+            creator_ga("send", "event", "calculator.64.hex")
+            creator_ga("send", "event", "calculator.64.0x" + hex)
           }
 
           break
@@ -266,20 +250,8 @@ export default {
             }
 
             /*Google Analytics*/
-            creator_ga(
-              "send",
-              "event",
-              "calculator",
-              "calculator.32",
-              "calculator.32.bin",
-            )
-            creator_ga(
-              "send",
-              "event",
-              "calculator",
-              "calculator.32",
-              "calculator.32." + binary,
-            )
+            creator_ga("send", "event", "calculator.32.bin")
+            creator_ga("send", "event", "calculator.32." + binary)
           }
           if (this.calculator.bits === 64) {
             this.calculator.sign = this.calculator.sign.padStart(1, "0")
@@ -328,20 +300,8 @@ export default {
             )
 
             /*Google Analytics*/
-            creator_ga(
-              "send",
-              "event",
-              "calculator",
-              "calculator.64",
-              "calculator.64.bin",
-            )
-            creator_ga(
-              "send",
-              "event",
-              "calculator",
-              "calculator.64",
-              "calculator.64." + binary,
-            )
+            creator_ga("send", "event", "calculator.64.bin")
+            creator_ga("send", "event", "calculator.64." + binary)
           }
 
           break
@@ -350,7 +310,7 @@ export default {
             this.calculator.decimal = this.calculator.decimal.replace(",", ".")
           }
 
-          float = parseFloat(this.calculator.decimal, 10)
+          float = parseFloat(this.calculator.decimal)
           let hexadecimal
 
           if (this.calculator.bits === 32) {
@@ -380,18 +340,10 @@ export default {
             }
 
             /*Google Analytics*/
+            creator_ga("send", "event", "calculator.32.dec")
             creator_ga(
               "send",
               "event",
-              "calculator",
-              "calculator.32",
-              "calculator.32.dec",
-            )
-            creator_ga(
-              "send",
-              "event",
-              "calculator",
-              "calculator.32",
               "calculator.32." + this.calculator.decimal,
             )
           }
@@ -421,18 +373,10 @@ export default {
             }
 
             /* Google Analytics */
+            creator_ga("send", "event", "calculator.64.dec")
             creator_ga(
               "send",
               "event",
-              "calculator",
-              "calculator.64",
-              "calculator.64.dec",
-            )
-            creator_ga(
-              "send",
-              "event",
-              "calculator",
-              "calculator.64",
               "calculator.64." + this.calculator.decimal,
             )
           }
@@ -441,7 +385,7 @@ export default {
       }
     },
   },
-}
+})
 </script>
 
 <template>

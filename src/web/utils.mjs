@@ -22,7 +22,7 @@
 import humanizeDuration from "humanize-duration";
 
 import { creator_ga } from "@/core/utils/creator_ga.mjs";
-import { loadArchitecture, initCAPI } from "@/core/core.mjs";
+import { loadArchitecture } from "@/core/core.mjs";
 import { console_log as clog } from "@/core/utils/creator_logger.mjs";
 
 /*Stop the transmission of events to children*/
@@ -47,7 +47,8 @@ export let notifications = [];
  * Shows a notification on the UI and.
  *
  * @param {string} msg Notification message.
- * @param {string} type Type of notification, one of `'success'`, `'warning'` or `'danger'`.
+ * @param {string} type Type of notification, one of `'success'`, `'warning'` ,
+ * `'info'` or `'danger'`.
  * @param {Object} [root] Root Vue component (App)
  *
  */
@@ -136,7 +137,7 @@ export async function loadDefaultArchitecture(arch, root = document.app) {
 
     try {
         const response = await fetch("architecture/" + arch.file + ".yml");
-        
+
         if (!response.ok) {
             throw new Error("Architecture file not found");
         }
@@ -180,20 +181,8 @@ export async function loadDefaultArchitecture(arch, root = document.app) {
 }
 
 /**
- * @typedef {Object} CustomArchitecture
- * @property {string} name Architecture name
- * @property {Array<string>} alias Name aliases
- * @property {string} img Architecture image file location (absolute)
- * @property {string} id ID (select_conf<something>)
- * @property {Array<string>} examples List of example sets
- * @property {string} description
- * @property {string} definition Architection definition (YAML)
- * @property {boolean} available Whether it's available or not
- */
-
-/**
  * Loads the specified custom architecture
- * @param {CustomArchitecture} arch Architecture object
+ * @param {AvailableArch} arch Architecture object
  * @param {Object} [root] Root Vue component (App)
  */
 export function loadCustomArchitecture(arch, root = document.app) {
@@ -251,7 +240,7 @@ export async function loadExample(
         }
 
         const setResponse = await fetch(setUrl);
-        
+
         if (!setResponse.ok) {
             show_notification(`'${set_name}' set not found`, "danger", root);
             return;
@@ -375,8 +364,9 @@ export function downloadToFile(data, filename, mimetype = "text/plain") {
  * @param {String} url URL of the source file. It must start with `/`, e.g.
  * `"/gateway/esp32c.zip"`
  * @param {String} filename Name of the saved file
+ * @param {boolean} [notify=false] Whether to notify the file has been downloaded or not
  */
-export function downloadFile(url, filename) {
+export function downloadFile(url, filename, notify = false) {
     fetch(
         window.location.origin +
             window.location.pathname.replace(/\/+$/, "") +
@@ -398,7 +388,9 @@ export function downloadFile(url, filename) {
             a.click();
             window.URL.revokeObjectURL(url);
 
-            show_notification("File downloaded", "success");
+            if (notify) {
+                show_notification("File downloaded", "success");
+            }
         })
         .catch(() => show_notification("Error downloading file", "error"));
 }
@@ -408,11 +400,11 @@ export function downloadFile(url, filename) {
  * Transforms a value into a hextring.
  *
  * @param {number | bigint} value
- * @param {number} padding Padding, in bytes
+ * @param {number} [padding=0] Padding, in bytes
  *
  * @returns {string}
  */
-export function toHex(value, padding) {
+export function toHex(value, padding = 0) {
     return value
         .toString(16)
         .padStart(padding * 2, "0")

@@ -18,12 +18,15 @@ You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<script>
-import { toHex } from "@/web/utils.mjs"
+<script lang="ts">
+import { defineComponent, type PropType } from "vue"
 
-export default {
+import { toHex } from "@/web/utils.mjs"
+import type { Register } from "@/core/core"
+
+export default defineComponent({
   props: {
-    registers: { type: Array, required: true },
+    registers: { type: Array as PropType<Register[]>, required: true },
     register_file_index: { type: Number, required: true },
   },
 
@@ -35,7 +38,7 @@ export default {
   },
 
   methods: { toHex },
-}
+})
 </script>
 
 <template>

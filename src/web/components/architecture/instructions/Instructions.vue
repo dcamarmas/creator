@@ -18,12 +18,15 @@ You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<script>
+<script lang="ts">
+import { defineComponent, type PropType } from "vue"
+import type { Instruction } from "@/core/core"
+
 import InstructionFields from "./InstructionFields.vue"
 
-export default {
+export default defineComponent({
   props: {
-    instructions: { type: Array, required: true },
+    instructions: { type: Array as PropType<Instruction[]>, required: true },
   },
 
   components: { InstructionFields },
@@ -53,21 +56,21 @@ export default {
 
   methods: {
     // Show instruction fields modal
-    view_instructions_modal(name, index) {
+    view_instructions_modal(name: string, index: number) {
       this.modal_field_instruction = {
         name,
         index,
       }
     },
   },
-}
+})
 </script>
 <template>
   <InstructionFields
     id="fields_instructions"
     :name="modal_field_instruction.name"
     :index="modal_field_instruction.index"
-    :instruction="instructions[modal_field_instruction.index]"
+    :instruction="instructions[modal_field_instruction.index]!"
   />
 
   <!-- Instruction set table -->
@@ -92,9 +95,7 @@ export default {
     </template>
 
     <template v-slot:cell(signatureRaw)="row">
-      {{ row.item.signatureRaw }}
-      <br />
-      {{ row.item.signature }}
+      {{ row.item.signature_definition }}
     </template>
 
     <template v-slot:cell(fields)="row">

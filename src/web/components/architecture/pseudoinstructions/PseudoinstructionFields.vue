@@ -18,15 +18,22 @@ You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<script>
-export default {
+<script lang="ts">
+import { defineComponent, type PropType } from "vue"
+
+import type { PseudoInstruction } from "@/core/core"
+
+export default defineComponent({
   props: {
     id: { type: String, required: true },
     name: { type: String, required: true },
     index: { type: Number, required: true },
-    pseudoinstruction: { type: Object, required: true },
+    pseudoinstruction: {
+      type: Object as PropType<PseudoInstruction>,
+      required: true,
+    },
   },
-}
+})
 </script>
 
 <template>

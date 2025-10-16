@@ -18,11 +18,13 @@ You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<script>
+<script lang="ts">
+import { defineComponent } from "vue"
+
 import { loadArchitecture } from "@/core/core.mjs"
 import { show_notification, formatRelativeDate } from "@/web/utils.mjs"
 
-export default {
+export default defineComponent({
   props: {
     id: { type: String, required: true },
   },
@@ -34,7 +36,7 @@ export default {
       show_modal: localStorage.getItem("backup_timestamp") !== null,
 
       backup_date: new Date(
-        parseInt(localStorage.getItem("backup_timestamp"), 10),
+        parseInt(localStorage.getItem("backup_timestamp")!, 10),
       ),
       backup_arch_name: localStorage.getItem("backup_arch_name"),
     }
@@ -44,13 +46,13 @@ export default {
     // Load backup from cache
     load_copy() {
       // Load architecture from cache
-      this.$root.arch_code = localStorage.getItem("backup_arch") || ""
-      loadArchitecture(this.$root.arch_code)
-
-      this.$root.architecture_name = localStorage.getItem("backup_arch_name")
+      ;(this.$root as any).arch_code = localStorage.getItem("backup_arch") || ""
+      loadArchitecture((this.$root as any).arch_code)
+      ;(this.$root as any).architecture_name =
+        localStorage.getItem("backup_arch_name")
 
       // Load the last assembly code from cache
-      this.$root.assembly_code = localStorage.getItem("backup_asm")
+      ;(this.$root as any).assembly_code = localStorage.getItem("backup_asm")
 
       // Refresh UI
       show_notification("The backup has been loaded correctly", "success")
@@ -72,7 +74,7 @@ export default {
 
     formatRelativeDate,
   },
-}
+})
 </script>
 
 <template>

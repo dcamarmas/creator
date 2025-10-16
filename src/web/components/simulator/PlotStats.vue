@@ -18,18 +18,21 @@ You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<script>
+<script lang="ts">
+import { defineComponent, type PropType } from "vue"
 import VueApexCharts from "vue3-apexcharts"
+import type { ApexOptions } from "apexcharts"
 
-import { status } from "@/core/core.mjs"
+import type { Stat } from "@/core/executor/stats.mts"
+import { status } from "@/core/core"
 
-export default {
+export default defineComponent({
   components: {
     VueApexCharts,
   },
 
   props: {
-    stats: { type: Map, required: true },
+    stats: { type: Map as PropType<Map<string, Stat>>, required: true },
     type: { type: String, required: true },
     dark: { type: Boolean, required: true },
   },
@@ -66,7 +69,7 @@ export default {
         chart: {
           background: "0", // transparent background
         },
-      },
+      } as ApexOptions,
 
       // config for donut (instructions)
       donutOptions: {
@@ -114,16 +117,19 @@ export default {
                   show: true,
                   showAlways: true,
                   formatter(w) {
-                    return w.globals.seriesTotals.reduce((a, b) => {
-                      return a + b
-                    }, 0)
+                    return w.globals.seriesTotals.reduce(
+                      (a: number, b: number) => {
+                        return a + b
+                      },
+                      0,
+                    )
                   },
                 },
               },
             },
           },
         },
-      },
+      } as ApexOptions,
 
       // config for bar (cycles)
       barOptions: {
@@ -167,7 +173,7 @@ export default {
             },
           },
         },
-      },
+      } as ApexOptions,
     }
   },
 
@@ -201,12 +207,12 @@ export default {
         : status.clkCycles
     },
   },
-}
+})
 </script>
 
 <template>
   <VueApexCharts
-    :type="this.type === 'instructions' ? 'donut' : 'bar'"
+    :type="type === 'instructions' ? 'donut' : 'bar'"
     :options="options"
     :series="statsValues"
     height="180%"

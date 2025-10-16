@@ -33,6 +33,8 @@ export function setAddress(address_) {
     address = address_;
 }
 /*Instructions memory*/
+
+/** @type {import("./assembler.d.ts").Instruction[]} */
 export const instructions = [];
 export function clear_instructions() {
     instructions.splice(0, instructions.length);
