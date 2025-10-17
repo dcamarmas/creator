@@ -173,6 +173,7 @@ We'll need to [launch the application in DEV mode](#compile-and-hot-reload-for-d
 
 ### Compiler
 - [A. Guerrero - Desarrollo de un Compilador Genérico de Lenguaje Ensamblador para el Simulador CREATOR](https://github.com/ALVAROPING1/TFG)
+- [The Rust Programming Language](https://doc.rust-lang.org/book/title-page.html)
 - [Compiler Contribution Docs](https://github.com/ALVAROPING1/CreatorCompiler/blob/master/CONTRIBUTING.md)
 - [Serde (Deserialization Library) Docs](https://docs.rs/serde/)
 - [Chumsky (Parser Library) Docs](https://docs.rs/chumsky)
