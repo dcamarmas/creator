@@ -516,7 +516,7 @@ def start_gdbgui(req_data):
       return jsonify(req_data)
     
     logging.info("Starting GDBGUI...")
-    gdbgui_cmd = ['idf.py', '-C', BUILD_PATH, 'gdbgui', '-x', route, 'monitor']
+    gdbgui_cmd = ['idf.py', '-C', BUILD_PATH, 'gdbgui', '--gdbinit', route, 'monitor']
     sleep(5)
     try:
         process_holder['gdbgui'] = subprocess.run(
