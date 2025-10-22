@@ -70,8 +70,8 @@ export default defineComponent({
 </script>
 
 <template>
-  <b-container fluid align-h="center" class="mx-0 my-3 px-2">
-    <b-row cols-xl="2" cols-lg="1" cols-md="2" cols-sm="1" cols-xs="1" cols="1">
+  <b-container fluid align-h="center" class="mx-0 px-0 memory-container">
+    <b-row cols-xl="2" cols-lg="1" cols-md="2" cols-sm="1" cols-xs="1" cols="1" class="memory-controls">
       <!-- uncomment this when kernel -->
       <!-- <b-row cols-xl="1" cols-lg="1" cols-md="1" cols-sm="1" cols-xs="1" cols="1"> -->
       <b-col align-h="center" class="px-2">
@@ -115,7 +115,7 @@ export default defineComponent({
       <b-col></b-col>
     </b-row>
 
-    <b-row cols="1">
+    <b-row cols="1" class="memory-table-row">
       <b-col align-h="center" class="px-2">
         <MemoryTable
           class="my-2"
@@ -130,3 +130,43 @@ export default defineComponent({
     </b-row>
   </b-container>
 </template>
+
+<style scoped>
+.memory-container {
+  height: 100%;
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.memory-controls {
+  flex: 0 0 auto;
+}
+
+.memory-table-row {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(139, 148, 158, 0.3) transparent;
+}
+
+.memory-table-row::-webkit-scrollbar {
+  width: 8px;
+}
+
+.memory-table-row::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.memory-table-row::-webkit-scrollbar-thumb {
+  background-color: rgba(139, 148, 158, 0.3);
+  border-radius: 4px;
+}
+
+.memory-table-row::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(139, 148, 158, 0.5);
+}
+</style>

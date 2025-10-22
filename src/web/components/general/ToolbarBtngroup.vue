@@ -54,8 +54,9 @@ export default defineComponent({
       required: false,
     },
     show_instruction_help: { type: Boolean, default: false },
-    compact: { type: Boolean, default: false },
     dropdownMode: { type: Boolean, default: false },
+    architecture_name: { type: String, required: false },
+    disableTooltips: { type: Boolean, default: false },
   },
 
   setup() {
@@ -84,6 +85,13 @@ export default defineComponent({
     }
   },
   computed: {
+    /**
+     * Provides typed access to the root component
+     */
+    root(): AppRootInstance {
+      return this.$root as unknown as AppRootInstance
+    },
+
     selectedCompilerLabel() {
       const found = this.compilerOptions.find(
         opt => opt.value === this.selectedCompiler,
@@ -129,9 +137,9 @@ export default defineComponent({
   },
 
   mounted() {
-    if ((this.$root as any).creator_mode === "simulator") {
+    if ((this.root as any).creator_mode === "simulator") {
       // enable execution buttons only if there are instructions to execute
-      const prepared_for_execution = (this.$root as any).instructions.length > 0
+      const prepared_for_execution = (this.root as any).instructions.length > 0
 
       if (this.group.includes("btn_run") && status.run_program !== 3) {
         this.run_disable = !prepared_for_execution
@@ -155,8 +163,8 @@ export default defineComponent({
     //
 
     change_UI_mode(e: string) {
-      if ((this.$root as any).creator_mode !== e) {
-        ;(this.$root as any).creator_mode = e
+      if ((this.root as any).creator_mode !== e) {
+        ;(this.root as any).creator_mode = e
       }
     },
 
@@ -165,15 +173,16 @@ export default defineComponent({
     //
 
     new_assembly() {
-      ;(this.$root as any).assembly_code = ""
+      ;(this.root as any).assembly_code = ""
     },
 
     //Compile assembly code (just assemble, don't change view)
     async assembly_compiler_only() {
       // reset simulator
-      this.$root.keyboard = ""
-      this.$root.display = ""
-      this.$root.enter = null
+      const root = this.root as unknown as AppRootInstance
+      root.keyboard = ""
+      root.display = ""
+      root.enter = null
       reset()
 
       this.compiling = true // Change buttons status
@@ -182,8 +191,8 @@ export default defineComponent({
       const assemblerFn = this.assembler_map[this.selectedCompiler]
       // If default, let assembly_compile use its internal default
       const ret = await (assemblerFn
-        ? assembly_compile(this.$root.assembly_code, assemblerFn)
-        : assembly_compile(this.$root.assembly_code))
+        ? assembly_compile(root.assembly_code, assemblerFn)
+        : assembly_compile(root.assembly_code))
 
       /* Reset stats */
 
@@ -226,9 +235,9 @@ export default defineComponent({
     //Compile assembly code (assemble and run - change to simulator view)
     async assembly_compiler() {
       // reset simulator
-      ;(this.$root as any).keyboard = ""
-      ;(this.$root as any).display = ""
-      ;(this.$root as any).enter = null
+      this.root.keyboard = ""
+      this.root.display = ""
+      this.root.enter = null
       reset()
 
       this.compiling = true // Change buttons status
@@ -237,8 +246,8 @@ export default defineComponent({
       const assemblerFn = this.assembler_map[this.selectedCompiler]
       // If default, let assembly_compile use its internal default
       const ret = await (assemblerFn
-        ? assembly_compile(this.$root.assembly_code, assemblerFn)
-        : assembly_compile(this.$root.assembly_code))
+        ? assembly_compile(this.root.assembly_code, assemblerFn)
+        : assembly_compile(this.root.assembly_code))
 
       /* Reset stats */
 
@@ -283,7 +292,7 @@ export default defineComponent({
       // this.change_UI_mode("assembly")
 
       // set compilation msg
-      ;(this.$root as any).assemblyError = msg
+      this.root.assemblyError = msg
 
       // show assembly error modal
       this.showAssemblyError()
@@ -291,7 +300,7 @@ export default defineComponent({
 
     //Remove a loaded binary
     removeLibrary() {
-      // this.$root.librayLoaded = false
+      // this.root.librayLoaded = false
       remove_library()
     },
 
@@ -300,14 +309,14 @@ export default defineComponent({
     //
 
     toggleVim() {
-      this.$root.vim_mode = !this.$root.vim_mode
-      localStorage.setItem("conf_vim_mode", this.$root.vim_mode)
+      this.root.vim_mode = !this.root.vim_mode
+      localStorage.setItem("conf_vim_mode", this.root.vim_mode.toString())
       
       // Google Analytics
       creator_ga(
         "configuration",
         "configuration.vim_mode",
-        "configuration.vim_mode." + this.$root.vim_mode,
+        "configuration.vim_mode." + this.root.vim_mode,
       )
     },
 
@@ -315,6 +324,7 @@ export default defineComponent({
     // Library tags
     //
 
+    // TODO: Fix library
     libraryLoaded() {
       return guiVariables.loadedLibrary && Object.keys(guiVariables.loadedLibrary).length !== 0
     },
@@ -344,11 +354,11 @@ export default defineComponent({
 
       /* MEMORY */
       ;(
-        this.$root as any
-      ).$refs.simulatorView.$refs.memory?.$refs?.memory_table?.refresh()
+        this.root as any
+      ).$refs.simulatorView?.$refs.memory?.$refs?.memory_table?.refresh()
 
       /* STATS */
-      ;(this.$root as any).$refs.simulatorView.$refs.stats?.refresh()
+      ;(this.root as any).$refs.simulatorView?.$refs.stats?.refresh()
 
       /* EXECUTION TABLE */
 
@@ -386,7 +396,7 @@ export default defineComponent({
       // Auto-scroll
 
       if (
-        (this.$root as any).autoscroll &&
+        (this.root as any).autoscroll &&
         status.run_program !== 1 &&
         this.instructions!.length > 0
       ) {
@@ -460,9 +470,9 @@ export default defineComponent({
       creator_ga("execute", "execute.reset", "execute.reset")
 
       // UI: reset I/O
-      ;(this.$root as any).keyboard = ""
-      ;(this.$root as any).display = ""
-      ;(this.$root as any).enter = null
+      ;(this.root as any).keyboard = ""
+      ;(this.root as any).display = ""
+      ;(this.root as any).enter = null
 
       // reset button status
       this.reset_disable = false
@@ -473,7 +483,6 @@ export default defineComponent({
       reset()
 
       this.execution_UI_reset()
-      ;(this.$root as any).$refs.simulatorView.$refs.registerFile?.refresh() // refresh registers
     },
 
     // Execute one instruction
@@ -754,7 +763,7 @@ export default defineComponent({
       </template>
 
       <!-- button_reset -->
-      <b-dropdown-item v-if="item === 'btn_reset'" @click="reset(true)" :disabled="reset_disable">
+      <b-dropdown-item v-if="item === 'btn_reset'" @click="reset()" :disabled="reset_disable">
         <font-awesome-icon :icon="['fas', 'power-off']" class="me-2" />
         Reset
       </b-dropdown-item>
@@ -798,7 +807,7 @@ export default defineComponent({
       <!-- button_vim_toggle -->
       <b-dropdown-item v-if="item === 'btn_vim_toggle'" @click="toggleVim">
         <font-awesome-icon :icon="['fab', 'vimeo-v']" class="me-2" />
-        Vim Mode {{ $root.vim_mode ? '(On)' : '(Off)' }}
+        Vim Mode {{ root.vim_mode ? '(On)' : '(Off)' }}
       </b-dropdown-item>
 
       <!-- button_library_tags -->
@@ -806,14 +815,78 @@ export default defineComponent({
         <font-awesome-icon :icon="['fas', 'tags']" class="me-2" />
         Library Tags
       </b-dropdown-item>
+
+      <!-- Creator menu items -->
+      <b-dropdown-item v-if="item === 'btn_architecture_info'" disabled>
+        <font-awesome-icon :icon="['fas', 'microchip']" class="me-2" />
+        <strong>{{ architecture_name }}</strong>
+      </b-dropdown-item>
+
+      <b-dropdown-divider v-if="item === 'divider'" />
+
+      <b-dropdown-item v-if="item === 'btn_home'" href=".">
+        <font-awesome-icon :icon="['fas', 'home']" class="me-2" />
+        Home
+      </b-dropdown-item>
+
+      <b-dropdown-item v-if="item === 'btn_website'" href="https://creatorsim.github.io/" target="_blank">
+        <font-awesome-icon :icon="['fas', 'globe']" class="me-2" />
+        Website
+      </b-dropdown-item>
+
+      <b-dropdown-item v-if="item === 'btn_github'" href="https://github.com/creatorsim/creator" target="_blank">
+        <font-awesome-icon :icon="['fab', 'github']" class="me-2" />
+        GitHub
+      </b-dropdown-item>
+
+      <b-dropdown-item v-if="item === 'btn_configuration'" v-b-modal.configuration>
+        <font-awesome-icon :icon="['fas', 'gears']" class="me-2" />
+        Settings...
+      </b-dropdown-item>
+
+      <!-- Help menu items -->
+      <b-dropdown-item v-if="item === 'btn_help'" href="https://creatorsim.github.io/" target="_blank" @click="help_event('general_help')">
+        <font-awesome-icon :icon="['fas', 'circle-question']" class="me-2" />
+        Help
+      </b-dropdown-item>
+
+      <b-dropdown-item v-if="item === 'btn_instruction_help'" v-b-toggle.sidebar_help @click="help_event('instruction_help')">
+        <font-awesome-icon :icon="['fas', 'book']" class="me-2" />
+        Instruction Help
+      </b-dropdown-item>
+
+      <b-dropdown-item v-if="item === 'btn_notifications'" v-b-modal.notifications>
+        <font-awesome-icon :icon="['fas', 'bell']" class="me-2" />
+        Notifications
+      </b-dropdown-item>
+
+      <b-dropdown-item v-if="item === 'btn_feedback'" href="https://docs.google.com/forms/d/e/1FAIpQLSdFbdy5istZbq2CErZs0cTV85Ur8aXiIlxvseLMhPgs0vHnlQ/viewform?usp=header" target="_blank">
+        <font-awesome-icon :icon="['fas', 'star']" class="me-2" />
+        Feedback
+      </b-dropdown-item>
+
+      <b-dropdown-item v-if="item === 'btn_suggestions'" href="https://docs.google.com/forms/d/e/1FAIpQLSfSclv1rKqBt5aIIP3jfTGbdu8m_vIgEAaiqpI2dGDcQFSg8g/viewform?usp=header" target="_blank">
+        <font-awesome-icon :icon="['fas', 'lightbulb']" class="me-2" />
+        Suggestions
+      </b-dropdown-item>
+
+      <b-dropdown-item v-if="item === 'btn_institutions'" v-b-modal.institutions>
+        <font-awesome-icon :icon="['fas', 'building-columns']" class="me-2" />
+        Community
+      </b-dropdown-item>
+
+      <b-dropdown-item v-if="item === 'btn_about'" v-b-modal.about>
+        <font-awesome-icon :icon="['fas', 'address-card']" class="me-2" />
+        About Us
+      </b-dropdown-item>
     </template>
   </template>
 
-  <!-- Normal/Compact mode: render as buttons -->
-  <b-container v-else fluid :class="{ 'compact-mode': compact }">
-    <b-row :class="{ 'compact-row': compact }">
+  <!-- Normal mode: render as buttons -->
+  <b-container v-else fluid class="toolbar-container">
+    <b-row class="toolbar-row">
       <b-col
-        :class="compact ? 'compact-col' : 'd-grid px-0 mx-1'"
+        class="toolbar-col"
         v-for="(item, index) in group"
         :key="index"
       >
@@ -1000,41 +1073,8 @@ export default defineComponent({
           @click="toggleVim"
         >
           <font-awesome-icon :icon="['fab', 'vimeo-v']" class="me-1" />
-          <span class="assemble-text">Vim {{ $root.vim_mode ? 'On' : 'Off' }}</span>
+          <span class="assemble-text">Vim {{ root.vim_mode ? 'On' : 'Off' }}</span>
         </b-button>
-
-        <!-- assembler dropdown split button (old btn_compile for backwards compatibility) -->
-        <b-dropdown
-          v-if="item === 'btn_compile'"
-          variant="outline-secondary"
-          :toggle-class="{ menuButton: !dark, menuButtonDark: dark }"
-          :split-class="{
-            menuButton: !dark,
-            menuButtonDark: dark,
-          }"
-          split
-          right
-          size="sm"
-          :id="'compile_assembly'"
-          class="assemble-dropdown"
-        >
-          <template #button-content>
-            <span @click="assembly_compiler" class="assemble-button-content">
-              <font-awesome-icon :icon="['fas', 'right-to-bracket']" class="me-1" />
-              <span class="assemble-text">Assemble ({{ selectedCompilerLabel }})</span>
-              <b-spinner small v-if="compiling" class="ms-1" />
-            </span>
-          </template>
-
-          <b-dropdown-item-button
-            v-for="option in compilerOptions"
-            :key="option.value"
-            @click="selectedCompiler = option.value"
-          >
-            <font-awesome-icon :icon="['fas', 'check']" class="me-2" v-if="selectedCompiler === option.value" />
-            <span :class="{ 'ms-4': selectedCompiler !== option.value }">{{ option.text }}</span>
-          </b-dropdown-item-button>
-        </b-dropdown>
 
         <!-- dropdown_library -->
         <b-dropdown
@@ -1072,9 +1112,9 @@ export default defineComponent({
           :class="{ menuButton: !dark, menuButtonDark: dark }"
           size="sm"
           accesskey="x"
-          @click="reset(true)"
+          @click="reset()"
           :disabled="reset_disable"
-          v-b-tooltip.hover
+          v-b-tooltip.hover="!disableTooltips"
           :title="`${accesskey_prefix}X`"
         >
           <font-awesome-icon :icon="['fas', 'power-off']" class="me-1" />
@@ -1090,11 +1130,11 @@ export default defineComponent({
           accesskey="a"
           @click="execute_instruction"
           :disabled="instruction_disable"
-          v-b-tooltip.hover
+          v-b-tooltip.hover="!disableTooltips"
           :title="`${accesskey_prefix}A`"
         >
           <font-awesome-icon :icon="['fas', 'forward-step']" class="me-1" />
-          <span class="assemble-text">Inst.</span>
+          <span class="assemble-text">Step</span>
         </b-button>
 
         <!-- button_run -->
@@ -1107,24 +1147,11 @@ export default defineComponent({
           @click="execute_program"
           accesskey="r"
           :disabled="run_disable"
-          v-b-tooltip.hover
+          v-b-tooltip.hover="!disableTooltips"
           :title="`${accesskey_prefix}R`"
         >
           <font-awesome-icon :icon="['fas', 'play']" class="me-1" />
           <span class="assemble-text">Run</span>
-        </b-button>
-
-        <!-- button_flash -->
-        <b-button
-          v-if="item === 'btn_flash'"
-          variant="outline-secondary"
-          :class="{ menuButton: !dark, menuButtonDark: dark }"
-          size="sm"
-          :disabled="!reset_disable"
-          v-b-modal.flash
-        >
-          <font-awesome-icon :icon="['fab', 'usb']" class="me-1" />
-          <span class="assemble-text">Flash</span>
         </b-button>
 
         <!-- button_stop -->
@@ -1137,95 +1164,12 @@ export default defineComponent({
           @click="stop_execution"
           :disabled="stop_disable"
           id="stop_execution"
-          v-b-tooltip.hover
+          v-b-tooltip.hover="!disableTooltips"
           :title="`${accesskey_prefix}C`"
         >
           <font-awesome-icon :icon="['fas', 'stop']" class="me-1" />
           <span class="assemble-text">Stop</span>
         </b-button>
-
-        <!-- button_examples -->
-        <b-button
-          v-if="item == 'btn_examples'"
-          class="menuButton h-100 text-truncate"
-          size="sm"
-          variant="outline-secondary"
-          v-b-modal.examples-simulator
-        >
-          <font-awesome-icon :icon="['fas', 'file-lines']" />
-          Examples
-        </b-button>
-
-        <!-- button_calculator -->
-        <b-button
-          v-if="item == 'btn_calculator'"
-          class="menuButton h-100 text-truncate"
-          size="sm"
-          variant="outline-secondary"
-          v-b-modal.calculator
-        >
-          <font-awesome-icon :icon="['fas', 'calculator']" />
-          Calculator...
-        </b-button>
-
-        <!-- button_information -->
-
-        <b-popover
-          v-if="item === 'btn_information'"
-          :click="true"
-          :close-on-hide="true"
-          :delay="{ show: 0, hide: 0 }"
-          position="auto"
-        >
-          <template #target>
-            <b-button
-              class="infoButton text-truncate"
-              size="sm"
-              variant="outline-secondary"
-              id="info"
-            >
-              <font-awesome-icon :icon="['fas', 'circle-info']" />
-              Info
-            </b-button>
-          </template>
-
-          <div class="d-grid gap-2">
-            <b-button
-              class="infoButton text-truncate"
-              href="https://creatorsim.github.io/"
-              target="_blank"
-              size="sm"
-              variant="outline-secondary"
-              @click="help_event('general_help')"
-            >
-              <font-awesome-icon :icon="['fas', 'circle-question']" />
-              Help
-            </b-button>
-
-            <b-button
-              class="infoButton"
-              v-if="show_instruction_help"
-              id="inst_ass"
-              v-b-toggle.sidebar_help
-              size="sm"
-              variant="outline-secondary"
-              @click="help_event('instruction_help')"
-            >
-              <font-awesome-icon :icon="['fas', 'book']" />
-              Instruction Help
-            </b-button>
-
-            <b-button
-              class="menuButton"
-              size="sm"
-              variant="outline-secondary"
-              v-b-modal.notifications
-            >
-              <font-awesome-icon :icon="['fas', 'bell']" />
-              Notifications
-            </b-button>
-          </div>
-        </b-popover>
       </b-col>
     </b-row>
   </b-container>
@@ -1241,140 +1185,243 @@ export default defineComponent({
 
 // the workaround to the workaround is to just use class bindings
 
-// Compact mode for navbar integration
-.compact-mode {
+// Toolbar layout for navbar integration
+.toolbar-container {
   padding: 0 !important;
   margin: 0 !important;
-  
-  .compact-row {
-    margin: 0 !important;
-    display: inline-flex;
-    flex-wrap: nowrap;
-    gap: 0.25rem;
-  }
-  
-  .compact-col {
-    padding: 0 !important;
-    margin: 0 !important;
-    flex: none;
-    width: auto;
-  }
-  
-  // Enforce consistent button heights in navbar
-  :deep(.btn),
-  .btn {
-    height: 32px;
-    font-size: 0.8125rem;
-    padding: 0.25rem 0.5rem;
-  }
-  
-  :deep(.btn-group) {
-    height: 32px;
-  }
 }
 
-:deep(.menuButton),
+.toolbar-row {
+  margin: 0 !important;
+  display: inline-flex;
+  flex-wrap: nowrap;
+  gap: 0.25rem;
+}
+
+.toolbar-col {
+  padding: 0 !important;
+  margin: 0 !important;
+  flex: none;
+  width: auto;
+}
+
+// Using color-mix for semi-transparent backgrounds
 .menuButton {
-  background-color: #f8f9fa;
+  min-height: 24px;
+  min-width: 16px;
+  padding: 5px 10px;
+  border-radius: 6px;
+  border: none;
+  font-weight: bold;
+  font-size: 0.8125rem;
+  
+  // Light theme colors
+  color: rgba(0, 0, 0, 0.8);
+  background-color: color-mix(in srgb, currentColor 10%, transparent);
+  box-shadow: none;
+  
+  transition: all 150ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+
+
+  &.keyboard-activating:not(:disabled),
+  &:active:not(:disabled) {
+    background-color: color-mix(in srgb, currentColor 30%, transparent);
+  }
+
+  &:checked {
+    background-color: color-mix(in srgb, currentColor 30%, transparent);
+
+
+    &.keyboard-activating:not(:disabled),
+    &:active:not(:disabled) {
+      background-color: color-mix(in srgb, currentColor 40%, transparent);
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid color-mix(in srgb, currentColor 50%, transparent);
+    outline-offset: 2px;
+    transition: outline 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+
+    label {
+      opacity: 1;
+    }
+  }
+
+  // Image button variant (icon only)
+  &.image-button {
+    min-width: 24px;
+    padding-left: 5px;
+    padding-right: 5px;
+  }
+
+  // Text button variant
+  &.text-button {
+    padding-left: 17px;
+    padding-right: 17px;
+  }
 }
 
-:deep(.menuButtonDark),
+// Dark theme variant
 .menuButtonDark {
-  background-color: #212529;
-  color: $secondary;
-}
-
-:deep(.menuButtonDark:hover),
-.menuButtonDark:hover {
-  background-color: #424649;
-}
-
-.infoButton {
-  background-color: #d4db17;
-}
-
-// Modern dropdown menu styling
-:deep(.dropdown-menu) {
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1), 0 0 1px rgba(0, 0, 0, 0.1);
-  padding: 0.5rem 0;
-  margin-top: 0.25rem;
-  min-width: 200px;
-}
-
-:deep(.dropdown-item) {
-  padding: 0.625rem 1rem;
-  font-size: 0.875rem;
-  color: #495057;
-  display: flex;
-  align-items: center;
+  min-height: 24px;
+  min-width: 16px;
+  padding: 5px 10px;
+  border-radius: 6px;
+  border: none;
+  font-weight: bold;
+  font-size: 0.8125rem;
   
-  &:hover {
-    background-color: #f8f9fa;
-    color: #2196f3;
-    padding-left: 1.25rem;
-  }
+  // Dark theme colors
+  color: rgba(255, 255, 255, 0.9);
+  background-color: color-mix(in srgb, currentColor 10%, transparent);
+  box-shadow: none;
   
-  &:active {
-    background-color: #e3f2fd;
-    color: #1976d2;
-  }
-  
-  svg {
-    width: 1rem;
-  }
-  
+  transition: all 150ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
 
-}
-
-:deep(.dropdown-divider) {
-  margin: 0.5rem 0;
-  border-top: 1px solid rgba(0, 0, 0, 0.06);
-}
-
-[data-bs-theme="dark"] {
-  .menuButton {
-    background-color: #212529;
-    color: $secondary;
+  &:hover:not(:disabled) {
+    background-color: color-mix(in srgb, currentColor 15%, transparent);
   }
 
-  .menuButton:hover {
-    background-color: #424649;
+  &.keyboard-activating:not(:disabled),
+  &:active:not(:disabled) {
+    background-color: color-mix(in srgb, currentColor 30%, transparent);
   }
 
-  .infoButton {
-    background-color: #a3a815;
-    color: #f5f5f5;
-  }
+  &:checked {
+    background-color: color-mix(in srgb, currentColor 30%, transparent);
 
-  .infoButton:hover {
-    background-color: #424649;
-  }
-  
-  // Dark mode dropdown styling
-  :deep(.dropdown-menu) {
-    background-color: #2d2d2d;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), 0 0 1px rgba(255, 255, 255, 0.1);
-  }
-  
-  :deep(.dropdown-item) {
-    color: #ced4da;
-    
-    &:hover {
-      background-color: #3a3a3a;
-      color: #64b5f6;
+    &:hover:not(:disabled) {
+      background-color: color-mix(in srgb, currentColor 35%, transparent);
     }
-    
-    &:active {
-      background-color: #1e3a5f;
-      color: #90caf9;
+
+    &.keyboard-activating:not(:disabled),
+    &:active:not(:disabled) {
+      background-color: color-mix(in srgb, currentColor 40%, transparent);
     }
   }
-  
-  :deep(.dropdown-divider) {
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+
+  &:focus-visible {
+    outline: 2px solid color-mix(in srgb, currentColor 50%, transparent);
+    outline-offset: 2px;
+    transition: outline 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+
+    label {
+      opacity: 1;
+    }
+  }
+
+  // Image button variant (icon only)
+  &.image-button {
+    min-width: 24px;
+    padding-left: 5px;
+    padding-right: 5px;
+  }
+
+  // Text button variant
+  &.text-button {
+    padding-left: 17px;
+    padding-right: 17px;
+  }
+}
+
+// Dropdown buttons need special handling due to Bootstrap Vue structure
+:deep(.btn-group) {
+  .menuButton,
+  .menuButtonDark {
+    // Split button main part
+    &.btn {
+      min-height: 24px;
+      max-height: 32px;
+      min-width: 16px;
+      border-radius: 6px;
+      border: none;
+      font-weight: bold;
+      font-size: 0.8125rem;
+      box-shadow: none;
+      transition: all 150ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    // Remove right border radius on left part of split button
+    &.btn:not(.dropdown-toggle) {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+      margin-right: -1px;
+    }
+
+    // Remove left border radius on right part of split button (dropdown toggle)
+    &.dropdown-toggle {
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+      margin-left: -1px;
+      padding-left: 8px;
+      padding-right: 8px;
+    }
+  }
+
+  // Light theme dropdown buttons
+  .menuButton.btn {
+    color: rgba(0, 0, 0, 0.8);
+    background-color: color-mix(in srgb, currentColor 10%, transparent);
+
+    &:hover:not(:disabled) {
+      background-color: color-mix(in srgb, currentColor 15%, transparent);
+    }
+
+    &:active:not(:disabled),
+    &.show {
+      background-color: color-mix(in srgb, currentColor 30%, transparent);
+    }
+
+    &:focus-visible {
+      outline: 2px solid color-mix(in srgb, currentColor 50%, transparent);
+      outline-offset: 2px;
+    }
+
+    &:disabled {
+      opacity: 0.5;
+    }
+  }
+
+  // Dark theme dropdown buttons
+  .menuButtonDark.btn {
+    color: rgba(255, 255, 255, 0.9);
+    background-color: color-mix(in srgb, currentColor 10%, transparent);
+
+    &:hover:not(:disabled) {
+      background-color: color-mix(in srgb, currentColor 15%, transparent);
+    }
+
+    &:active:not(:disabled),
+    &.show {
+      background-color: color-mix(in srgb, currentColor 30%, transparent);
+    }
+
+    &:focus-visible {
+      outline: 2px solid color-mix(in srgb, currentColor 50%, transparent);
+      outline-offset: 2px;
+    }
+
+    &:disabled {
+      opacity: 0.5;
+    }
+  }
+}
+
+// Ensure dropdown wrapper itself has proper styling
+.assemble-dropdown {
+  .assemble-button-content {
+    display: inline-flex;
+    align-items: center;
   }
 }
 </style>

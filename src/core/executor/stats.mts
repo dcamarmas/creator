@@ -19,6 +19,7 @@
  */
 
 import { status } from "../core.mjs";
+import { coreEvents } from "../events.mjs";
 
 export type Stat = {
     instructions: number;
@@ -41,13 +42,11 @@ export const stats = new Map<string, Stat>([
     ["Other", { instructions: 0, cycles: 0 }],
 ]);
 
-function updateUI(): void {
-    // this is ugly, but it's the only way I found, because the computed
-    // properties in PlotStats.vue / TableStats.vue don't react to changes done
-    // to `stats`
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (document as any).app.$root.$refs.simulatorView?.$refs.stats?.refresh();
+/**
+ * Notifies UI layers about a stats update via event emission
+ */
+function notifyStatsUpdate(): void {
+    coreEvents.emit("stats-updated");
 }
 
 /**
@@ -71,10 +70,8 @@ export function updateStats(type: string, cycles: number = 1): void {
     status.clkCycles += cycles;
     status.executedInstructions += 1;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    if (typeof document !== "undefined" && (document as any).app) {
-        updateUI();
-    }
+    // Notify UI layers about stats update (CLI ignores, web UI listens)
+    notifyStatsUpdate();
 }
 
 export function resetStats() {

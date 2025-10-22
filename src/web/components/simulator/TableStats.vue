@@ -76,6 +76,7 @@ export default defineComponent({
 
 <template>
   <b-table
+    responsive
     striped
     small
     hover

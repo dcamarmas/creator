@@ -225,12 +225,11 @@ export function keyboard_read(fn_post_read, fn_post_params) {
     }
 
     // re-enable buttons
-    document.app.$root.$refs.simulatorView.$refs.toolbar.$refs.btngroup1.at(
-        0,
-    ).instruction_disable = false;
-    document.app.$root.$refs.simulatorView.$refs.toolbar.$refs.btngroup1.at(
-        0,
-    ).run_disable = false;
+    const executeGroup = document.app.$root.$refs.navbar?.$refs?.executeGroup;
+    if (executeGroup) {
+        executeGroup.instruction_disable = false;
+        executeGroup.run_disable = false;
+    }
 
     return draw;
 }

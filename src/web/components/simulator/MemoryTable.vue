@@ -22,6 +22,7 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 import { defineComponent, type PropType } from "vue"
 
 import { REGISTERS, stackTracker } from "@/core/core.mjs"
+import { coreEvents } from "@/core/events.mjs"
 import { chunks, range } from "@/core/utils/utils.mjs"
 import { toHex } from "@/web/utils.mjs"
 import type { Memory } from "@/core/memory/Memory.mjs"
@@ -58,8 +59,30 @@ export default defineComponent({
     }
   },
 
+  mounted() {
+    // Subscribe to register update events to refresh control register badges
+    coreEvents.on("register-updated", this.onRegisterUpdated)
+  },
+
+  beforeUnmount() {
+    // Clean up event listener
+    coreEvents.off("register-updated", this.onRegisterUpdated)
+  },
+
   methods: {
     toHex,
+
+    onRegisterUpdated(payload: any) {
+      const { indexComp, indexElem } = payload
+      const register = REGISTERS[indexComp]?.elements[indexElem]
+      
+      if (!register) return
+      
+      // Check if it's one of the control registers that affects memory tags
+      if (register.properties.some((p: string) => this.ctrl_register_tags.includes(p))) {
+        this.refresh_tags()
+      }
+    },
 
     /**
      * Refreshes the memory table
@@ -450,19 +473,14 @@ export default defineComponent({
 
             <template v-slot:cell(Tag)="row">
               <!--
-              OK, here we go...
-              I'd _like_ to prevent doing this. I HATE doing this, but good ol'
-              Vue makes me do this, as I found no other way.
-
-              We want the badges to automatically update, right? It _should_ be
-              as easy as using the method and that's it, but no... Vue doesn't
-              like this. Maybe it's because the method depends on row.item.addr,
-              and that doesn't change when registers change, so nothing updates.
-
-              The "hack" I found is adding another horrible line in the
-              updateRegisterUI function to force update these components every
-              time we update a register. It's hacky, its inefficient, and it's
-              plain ugly, but it works.
+              Control register badges (PC, SP, FP, GP) are displayed here.
+              
+              Vue doesn't automatically detect when register values change because
+              row.item.addr stays the same. To solve this, we use an event-based
+              approach: when a control register is updated, the core emits a
+              'register-updated' event, which we listen to in the mounted hook.
+              The event handler calls refresh_tags() to update the :key below,
+              forcing a re-render of the badges.
               -->
               <div :key="render_tag">
                 <div

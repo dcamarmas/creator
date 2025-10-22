@@ -28,6 +28,7 @@
         "deno": "^2.5.4",
         "humanize-duration": "^3.33.0",
         "js-yaml": "^4.1.0",
+        "mitt": "^3.0.1",
         "qrcode.vue": "^3.6.0",
         "readline-sync": "^1.4.10",
         "vite-node": "^3.2.4",

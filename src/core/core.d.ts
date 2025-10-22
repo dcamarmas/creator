@@ -141,6 +141,13 @@ type Status = {
 };
 export declare const status: Status;
 
+type GUIVariables = {
+    previous_PC: bigint;
+    keep_highlighted: bigint;
+};
+
+export declare const guiVariables: GUIVariables;
+
 import type { Memory } from "./memory/Memory.mts";
 export declare const main_memory: Memory;
 export declare const main_memory_backup: Memory;

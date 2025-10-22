@@ -181,6 +181,10 @@ export default defineComponent({
       },
     },
 
+    shouldAutoFocus() {
+      return this.os !== 'mobile'
+    },
+
     extensions() {
       const extensions = [
         // basicSetup covers most of the required extensions
@@ -264,7 +268,10 @@ export default defineComponent({
     :extensions="extensions"
     @ready="
       ({ view }: { view: EditorView }) => {
-        view.focus()
+        // Only auto-focus on desktop. On mobile it can be annoying (keyboard pops up)
+        if (shouldAutoFocus) {
+          view.focus()
+        }
       }
     "
   />
@@ -272,7 +279,6 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .codeArea {
-  border: 1px solid #eee;
   font-size: 0.85em;
   width: 100%;
   height: 100%;

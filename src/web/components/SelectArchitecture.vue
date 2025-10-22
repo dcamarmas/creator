@@ -1,136 +1,137 @@
-<script lang="ts">
-import { defineComponent, type PropType } from "vue"
-import { useToggle } from "bootstrap-vue-next"
+<script setup lang="ts">
+import { ref, computed } from 'vue'
+import { useToggle } from 'bootstrap-vue-next'
 
-import UIeltoToolbar from "./general/UIeltoToolbar.vue"
-import PreloadArchitecture from "./select_architecture/PreloadArchitecture.vue"
-import LoadArchitecture from "./select_architecture/LoadArchitecture.vue"
-import DeleteArchitecture from "./select_architecture/DeleteArchitecture.vue"
+import PreloadArchitecture from './select_architecture/PreloadArchitecture.vue'
+import LoadArchitecture from './select_architecture/LoadArchitecture.vue'
+import DeleteArchitecture from './select_architecture/DeleteArchitecture.vue'
 
-export default defineComponent({
-  props: {
-    arch_available: {
-      type: Array as PropType<AvailableArch[]>,
-      required: true,
-    },
-    browser: { type: String, required: true },
-    os: { type: String, required: true },
-    dark: { type: Boolean, required: true },
-    windowHeight: { type: Number, required: true },
-  },
+interface AvailableArch {
+  name: string
+  alias: string[]
+  file?: string
+  img?: string
+  alt?: string
+  id: string
+  examples: string[]
+  description: string
+  guide?: string
+  available: boolean
+  default?: boolean
+}
 
-  emits: ["select-architecture"], // PreloadArchitecture's event, we just pass it to our parent
+interface Props {
+  arch_available: AvailableArch[]
+  browser: string
+  os: string
+  dark: boolean
+  windowHeight: number
+}
 
-  components: {
-    UIeltoToolbar,
-    PreloadArchitecture,
-    LoadArchitecture,
-    DeleteArchitecture,
-  },
+interface Emits {
+  (e: 'select-architecture', arch_name: string): void
+}
 
-  setup() {
-    const showDeleteModal = useToggle("modal-delete-arch").show
+const props = defineProps<Props>()
+const emit = defineEmits<Emits>()
 
-    return { showDeleteModal }
-  },
+const contactMail = 'creator.arcos.inf.uc3m.es@gmail.com'
+const archToDelete = ref<string | null>(null)
+const render = ref(0) // dummy variable to force components with this as key to refresh
 
-  data() {
-    return {
-      contactMail: "creator.arcos.inf.uc3m.es@gmail.com",
-      archToDelete: null as string | null,
+const showDeleteModal = useToggle('modal-delete-arch').show
 
-      render: 0, // dummy variable to force components with this as key to refresh
-    }
-  },
+const refresh = () => {
+  render.value++
+}
 
-  methods: {
-    refresh() {
-      // refreshes children components with `:key="render"`
-      this.render++
-    },
-  },
-})
+const availableArchitectures = computed(() =>
+  props.arch_available.filter(arch => arch.available)
+)
+
+const isFixedBottom = computed(() =>
+  props.windowHeight > 800 + 160 * Math.max(3 - props.arch_available.length, 0)
+)
+
+const handleSelectArchitecture = (arch_name: string) => {
+  emit('select-architecture', arch_name)
+}
+
+const handleDeleteArchitecture = (arch_name: string) => {
+  archToDelete.value = arch_name
+  showDeleteModal()
+}
 </script>
 
 <template>
   <b-container fluid align-h="center" id="load_menu">
-    <!-- Navbar -->
-    <UIeltoToolbar
-      id="navbar_load_architecture"
-      :components="' | | |btn_configuration,btn_information'"
-      :browser="browser"
-      :os="os"
-      :dark="dark"
-      :arch_available="arch_available"
-      ref="toolbar"
-    />
-
     <!-- Architecture menu -->
     <b-card-group deck id="load_menu_arch" :key="render">
       <!-- Preload architecture card -->
       <PreloadArchitecture
-        v-for="arch in arch_available.filter(a => a.available)"
+        v-for="arch in availableArchitectures"
+        :key="arch.id"
         :architecture="arch"
         :dark="dark"
-        @select-architecture="
-          (arch_name: string) => {
-            $emit('select-architecture', arch_name) // emit to our grandparent
-          }
-        "
-        @delete-architecture="
-          (arch_name: string) => {
-            archToDelete = arch_name
-            showDeleteModal()
-          }
-        "
+        @select-architecture="handleSelectArchitecture"
+        @delete-architecture="handleDeleteArchitecture"
       />
 
       <!-- Load new architecture card -->
-      <LoadArchitecture
-        @select-architecture="
-          (arch_name: string) => {
-            $emit('select-architecture', arch_name) // emit to our grandparent
-          }
-        "
-      />
+      <LoadArchitecture @select-architecture="handleSelectArchitecture" />
     </b-card-group>
 
     <!-- Delete architecture modal -->
     <DeleteArchitecture id="modal-delete-arch" :arch="archToDelete" />
 
-    <!-- CREATOR Information -->
-    <b-list-group
-      align-h="center"
-      :class="{
-        'mx-3': true,
-        'my-2': true,
-        'fixed-bottom':
-          // we put the info at the bottom, unless it overlaps w/ the
-          // architecture cards
-          // if we have fewer than 3 cards, the card height starts to overlap,
-          // so we have to disable the fixed bottom earlier
-          windowHeight > 800 + 160 * Math.max(3 - arch_available.length, 0),
-      }"
-    >
-      <b-list-group-item class="text-center">
-        <b-link
-          underline-opacity="0"
-          underline-opacity-hover="75"
-          :href="`mailto: ${contactMail}`"
-        >
-          <font-awesome-icon :icon="['fas', 'envelope']" />
-          {{ contactMail }}
-        </b-link>
-      </b-list-group-item>
-    </b-list-group>
   </b-container>
 </template>
 
 <style lang="scss" scoped>
-@import "bootstrap/scss/bootstrap";
-:deep() {
-  .selectedCard {
-    border-color: $secondary;
+#load_menu {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem 0;
+}
+
+#load_menu_arch {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 1200px;
+  margin-bottom: 2rem;
+}
+
+.creator-info {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: auto;
+  margin: 1rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.9);
+
+  &.dark {
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
   }
+
+  &:not(.fixed-bottom) {
+    position: static;
+    transform: none;
+    margin-top: 2rem;
+  }
+}
+
+:deep(.selectedCard) {
+  border-color: var(--bs-secondary);
+  box-shadow: 0 0 0 0.2rem rgba(var(--bs-secondary-rgb), 0.25);
 }
 </style>

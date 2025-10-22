@@ -62,12 +62,35 @@ export default defineComponent({
         { text: "INT/Ctrl Registers", value: "int_registers" },
         { text: "FP Registers", value: "fp_registers" },
       ],
+      dropdownOpen: false,
     }
+  },
+
+  mounted() {
+    // Close dropdown when clicking outside
+    document.addEventListener('click', this.handleClickOutside)
+  },
+
+  beforeUnmount() {
+    document.removeEventListener('click', this.handleClickOutside)
   },
 
   methods: {
     change_data_view(e: string) {
       this.current_reg_type = e
+      this.dropdownOpen = false
+    },
+
+    toggleDropdown(event: Event) {
+      event.stopPropagation()
+      this.dropdownOpen = !this.dropdownOpen
+    },
+
+    handleClickOutside(event: Event) {
+      const target = event.target as HTMLElement
+      if (!target.closest('.tab-dropdown')) {
+        this.dropdownOpen = false
+      }
     },
 
     getVariant(): "secondary" | "outline-secondary" {
@@ -89,67 +112,169 @@ export default defineComponent({
 </script>
 
 <template>
-  <b-container fluid align-h="center" class="mx-0 px-2">
-    <b-row cols="1">
-      <b-col class="px-1">
-        <b-button-group class="w-100 pb-3">
-          <!-- Registers -->
-          <b-dropdown
-            split
-            v-if="register_file_num > 4"
-            right
-            :text="current_reg_name"
-            size="sm"
-            :variant="getVariant()"
-            @click="change_data_view(current_reg_type)"
-          >
-            <b-dropdown-item @click="change_data_view('int_registers')">
-              CPU-INT/Ctrl Registers
-            </b-dropdown-item>
-            <b-dropdown-item @click="change_data_view('fp_registers')">
-              CPU-FP Registers
-            </b-dropdown-item>
-          </b-dropdown>
+  <div class="data-view-selector">
+    <div class="tabs-container">
+      <!-- Registers Tab -->
+      <button
+        v-if="register_file_num <= 4"
+        :class="['tab', { active: current_reg_type === 'int_registers' }]"
+        @click="change_data_view('int_registers')"
+      >
+        <font-awesome-icon :icon="['fas', 'microchip']" />
+        <span>Registers</span>
+      </button>
 
-          <b-button
-            v-else
-            v-for="register_type in reg_representation_options"
-            :id="register_type.value"
-            size="sm"
-            :class="{ border: dark }"
-            :pressed="isSelected(register_type.value)"
-            :variant="dark ? 'dark' : 'outline-secondary'"
-            @click="change_data_view(register_type.value)"
-          >
-            <font-awesome-icon :icon="['fas', 'microchip']" />
-            {{ register_type.text }}
-          </b-button>
 
-          <b-button
-            id="memory_btn"
-            size="sm"
-            :pressed="isSelected('memory')"
-            :class="{ border: dark }"
-            :variant="dark ? 'dark' : 'outline-secondary'"
-            @click="change_data_view('memory')"
-          >
-            <font-awesome-icon :icon="['fas', 'memory']" />
-            Memory
-          </b-button>
+      <!-- Dropdown for multiple register banks -->
+      <div v-if="register_file_num > 4" class="tab-dropdown">
+        <button
+          :class="['tab', { active: current_reg_type === 'int_registers' || current_reg_type === 'fp_registers' }]"
+          @click="toggleDropdown"
+        >
+          <font-awesome-icon :icon="['fas', 'microchip']" />
+          <span>{{ current_reg_name }}</span>
+          <font-awesome-icon :icon="['fas', 'chevron-down']" class="dropdown-icon" />
+        </button>
+        <div v-if="dropdownOpen" class="dropdown-menu">
+          <button class="dropdown-item" @click="change_data_view('int_registers')">
+            CPU-INT/Ctrl Registers
+          </button>
+          <button class="dropdown-item" @click="change_data_view('fp_registers')">
+            CPU-FP Registers
+          </button>
+        </div>
+      </div>
 
-          <b-button
-            id="stats_btn"
-            size="sm"
-            :pressed="isSelected('stats')"
-            :class="{ border: dark }"
-            :variant="dark ? 'dark' : 'outline-secondary'"
-            @click="change_data_view('stats')"
-          >
-            <font-awesome-icon :icon="['fas', 'chart-line']" />
-            Statistics
-          </b-button>
-        </b-button-group>
-      </b-col>
-    </b-row>
-  </b-container>
+      <!-- Memory Tab -->
+      <button
+        :class="['tab', { active: current_reg_type === 'memory' }]"
+        @click="change_data_view('memory')"
+      >
+        <font-awesome-icon :icon="['fas', 'memory']" />
+        <span>Memory</span>
+      </button>
+
+
+      <!-- Statistics Tab -->
+      <button
+        :class="['tab', { active: current_reg_type === 'stats' }]"
+        @click="change_data_view('stats')"
+      >
+        <font-awesome-icon :icon="['fas', 'chart-line']" />
+        <span>Statistics</span>
+      </button>
+    </div>
+  </div>
 </template>
+
+<style scoped>
+.data-view-selector {
+  width: 100%;
+  user-select: none;
+}
+
+.tabs-container {
+  display: flex;
+  gap: 0.25rem;
+  padding: 6px;
+  background: transparent;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+  overflow: hidden;
+}
+
+.tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 24px;
+  min-width: 16px;
+  padding: 5px 10px;
+  cursor: pointer;
+  position: relative;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.8125rem;
+  font-weight: bold;
+  
+  /* Light theme colors */
+  color: rgba(0, 0, 0, 0.8);
+  background-color: color-mix(in srgb, currentColor 10%, transparent);
+  box-shadow: none;
+  
+  transition: all 150ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.tab:hover {
+  background-color: color-mix(in srgb, currentColor 15%, transparent);
+}
+
+.tab:active {
+  background-color: color-mix(in srgb, currentColor 30%, transparent);
+}
+
+/* Active/checked state for selected tab */
+.tab.active {
+  background-color: color-mix(in srgb, currentColor 30%, transparent);
+  color: rgba(0, 0, 0, 0.9);
+}
+
+.tab.active:hover {
+  background-color: color-mix(in srgb, currentColor 35%, transparent);
+}
+
+.tab.active:active {
+  background-color: color-mix(in srgb, currentColor 40%, transparent);
+}
+
+.tab:focus-visible {
+  outline: 2px solid color-mix(in srgb, currentColor 50%, transparent);
+  outline-offset: 2px;
+  transition: outline 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.tab svg {
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+.tab.active svg {
+  opacity: 1;
+}
+
+.tab span {
+  display: inline;
+}
+
+
+/* Dark theme support */
+[data-bs-theme="dark"] {
+  .tabs-container {
+    border-bottom-color: rgba(255, 255, 255, 0.12);
+  }
+
+  .tab-separator {
+    color: rgba(255, 255, 255, 0.15);
+  }
+
+  .tab {
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  .tab.active {
+    color: rgba(255, 255, 255, 1);
+  }
+
+  .dropdown-menu {
+    background: #2d2d2d;
+    box-shadow: 
+      0 2px 8px rgba(0, 0, 0, 0.3),
+      0 0 0 1px rgba(255, 255, 255, 0.1);
+  }
+
+  .dropdown-item {
+    color: rgba(255, 255, 255, 0.9);
+  }
+}
+</style>

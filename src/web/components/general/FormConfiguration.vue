@@ -43,6 +43,9 @@ export default defineComponent({
       required: true,
     },
     vim_mode: { type: Boolean, required: true },
+    reg_representation_int: { type: String, required: true },
+    reg_representation_float: { type: String, required: true },
+    reg_name_representation: { type: String, required: true },
   },
 
   components: { VimKeybindsModal },
@@ -57,6 +60,25 @@ export default defineComponent({
         lhs: "",
         rhs: "",
       },
+      
+      // register representation options
+      reg_name_representation_options: [
+        { text: "Name", value: "logical" },
+        { text: "Alias", value: "alias" },
+        { text: "All", value: "all" },
+      ],
+      
+      reg_representation_int_options: [
+        { text: "Signed", value: "signed" },
+        { text: "Unsigned", value: "unsigned" },
+        { text: "Hex", value: "hex" },
+      ],
+      
+      reg_representation_float_options: [
+        { text: "IEEE 754 (32b)", value: "ieee32" },
+        { text: "IEEE 754 (64b)", value: "ieee64" },
+        { text: "Hex", value: "hex" },
+      ],
     }
   },
   emits: [
@@ -71,6 +93,9 @@ export default defineComponent({
     "update:vim_custom_keybinds",
     "update:vim_mode",
     "update:backup",
+    "update:reg_representation_int",
+    "update:reg_representation_float",
+    "update:reg_name_representation",
   ],
   computed: {
     // placeholder for editing a vim keybind
@@ -286,6 +311,54 @@ export default defineComponent({
           "configuration",
           "configuration.vim_mode",
           "configuration.vim_mode." + value,
+        )
+      },
+    },
+    reg_representation_int_value: {
+      get() {
+        return this.reg_representation_int
+      },
+      set(value: string) {
+        this.$emit("update:reg_representation_int", value)
+        localStorage.setItem("conf_reg_representation_int", value)
+
+        // Google Analytics
+        creator_ga(
+          "configuration",
+          "configuration.reg_representation_int",
+          "configuration.reg_representation_int." + value,
+        )
+      },
+    },
+    reg_representation_float_value: {
+      get() {
+        return this.reg_representation_float
+      },
+      set(value: string) {
+        this.$emit("update:reg_representation_float", value)
+        localStorage.setItem("conf_reg_representation_float", value)
+
+        // Google Analytics
+        creator_ga(
+          "configuration",
+          "configuration.reg_representation_float",
+          "configuration.reg_representation_float." + value,
+        )
+      },
+    },
+    reg_name_representation_value: {
+      get() {
+        return this.reg_name_representation
+      },
+      set(value: string) {
+        this.$emit("update:reg_name_representation", value)
+        localStorage.setItem("conf_reg_name_representation", value)
+
+        // Google Analytics
+        creator_ga(
+          "configuration",
+          "configuration.reg_name_representation",
+          "configuration.reg_name_representation." + value,
         )
       },
     },
@@ -514,6 +587,37 @@ export default defineComponent({
           </b-container>
         </b-collapse>
       </b-list-group-item>
+
+      <!-- Register Representation Settings -->
+      <b-list-group-item class="justify-content-between align-items-center config-item">
+        <label>Register Name Representation:</label>
+        <b-form-select
+          v-model="reg_name_representation_value"
+          :options="reg_name_representation_options"
+          size="sm"
+          class="representation-select"
+        />
+      </b-list-group-item>
+
+      <b-list-group-item class="justify-content-between align-items-center config-item">
+        <label>Integer Register Value Format:</label>
+        <b-form-select
+          v-model="reg_representation_int_value"
+          :options="reg_representation_int_options"
+          size="sm"
+          class="representation-select"
+        />
+      </b-list-group-item>
+
+      <b-list-group-item class="justify-content-between align-items-center config-item">
+        <label>Float Register Value Format:</label>
+        <b-form-select
+          v-model="reg_representation_float_value"
+          :options="reg_representation_float_options"
+          size="sm"
+          class="representation-select"
+        />
+      </b-list-group-item>
     </b-list-group>
   </b-modal>
 
@@ -564,6 +668,11 @@ export default defineComponent({
     .number-input {
       max-width: 100px;
       text-align: right;
+    }
+
+    .representation-select {
+      max-width: 200px;
+      flex-shrink: 0;
     }
   }
 

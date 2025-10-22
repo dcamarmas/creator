@@ -10,7 +10,11 @@ the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
 CREATOR is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
+but WITHOUT ANY WARRANTY; without   max-width: 100%;
+}
+
+.bottom-nav-item {
+  display: flex;ranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU Lesser General Public License for more details.
 
@@ -19,9 +23,11 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
-import { defineComponent } from "vue"
+import { defineComponent, type PropType } from "vue"
 
 import ToolbarBtngroup from "./ToolbarBtngroup.vue"
+import type { Instruction } from "@/core/assembler/assembler";
+import type { BDropdown } from "bootstrap-vue-next";
 
 export default defineComponent({
   props: {
@@ -31,15 +37,16 @@ export default defineComponent({
     browser: { type: String, required: false },
     os: { type: String, required: false },
     dark: { type: Boolean, required: false, default: false },
-    arch_available: { type: Array, required: false },
+    arch_available: { type: Array as PropType<AvailableArch[]>, required: false },
     assembly_code: { type: String, required: false },
     show_instruction_help: { type: Boolean, default: false },
-    instructions: Array,
+    instructions: Array as PropType<Instruction[]>,
   },
   data() {
     return {
-      openDropdown: null, // Track which dropdown is currently open
+      openDropdown: null as string | null, // Track which dropdown is currently open
       hoverSwitchEnabled: false, // Enable hover switching after clicking
+      mobileView: 'code' as 'code' | 'instructions' | 'data' | 'architecture' | 'settings', // Track current mobile view
     }
   },
   computed: {
@@ -61,6 +68,11 @@ export default defineComponent({
     showLibraryMenu() {
       return this.creator_mode === 'assembly'
     },
+
+    // Hide mobile navbar when selecting architecture
+    showMobileNavbar() {
+      return this.creator_mode !== 'select_architecture'
+    },
   },
   mounted() {
     // Listen for escape key to close dropdowns
@@ -73,20 +85,20 @@ export default defineComponent({
     document.removeEventListener('click', this.handleDocumentClick)
   },
   methods: {
-    handleEscapeKey(event) {
+    handleEscapeKey(event: KeyboardEvent) {
       if (event.key === 'Escape' && this.openDropdown) {
         this.closeAllDropdowns()
       }
     },
-    handleDocumentClick(event) {
+    handleDocumentClick(event: MouseEvent) {
       // Check if click is outside any dropdown
-      const isDropdownClick = event.target.closest('.dropdown, .nav-item-dropdown')
+      const isDropdownClick = event.target!.closest('.dropdown, .nav-item-dropdown')
       if (!isDropdownClick) {
         this.hoverSwitchEnabled = false
         this.openDropdown = null
       }
     },
-    handleDropdownShow(dropdownId) {
+    handleDropdownShow(dropdownId: string) {
       // Close any other open dropdown
       if (this.openDropdown && this.openDropdown !== dropdownId) {
         this.closeDropdown(this.openDropdown)
@@ -94,7 +106,7 @@ export default defineComponent({
       this.openDropdown = dropdownId
       this.hoverSwitchEnabled = true
     },
-    handleDropdownHide(dropdownId) {
+    handleDropdownHide(dropdownId: string) {
       if (this.openDropdown === dropdownId) {
         this.openDropdown = null
         // Small delay before disabling hover switch
@@ -105,7 +117,7 @@ export default defineComponent({
         }, 100)
       }
     },
-    handleDropdownHover(dropdownId) {
+    handleDropdownHover(dropdownId: string) {
       // Only switch if hover switching is enabled and a different dropdown is open
       if (this.hoverSwitchEnabled && this.openDropdown && this.openDropdown !== dropdownId) {
         // Close current dropdown and open the hovered one
@@ -128,13 +140,8 @@ export default defineComponent({
       ]
       
       dropdownRefs.forEach(refName => {
-        const dropdown = this.$refs[refName]
+        const dropdown = this.$refs[refName] as InstanceType<typeof BDropdown>
         if (dropdown) {
-          // Bootstrap Vue Next dropdowns have a hide method
-          if (typeof dropdown.hide === 'function') {
-            dropdown.hide()
-          }
-          // Also try closing via internal state
           if (dropdown.$el) {
             const toggleBtn = dropdown.$el.querySelector('.dropdown-toggle')
             if (toggleBtn && toggleBtn.getAttribute('aria-expanded') === 'true') {
@@ -147,12 +154,10 @@ export default defineComponent({
       this.openDropdown = null
       this.hoverSwitchEnabled = false
     },
-    closeDropdown(dropdownId) {
-      const dropdown = this.$refs[dropdownId]
+    closeDropdown(dropdownId: string) {
+      const dropdown = this.$refs[dropdownId] as InstanceType<typeof BDropdown>
       if (dropdown) {
-        if (typeof dropdown.hide === 'function') {
-          dropdown.hide()
-        } else if (dropdown.$el) {
+        if (dropdown.$el) {
           const toggleBtn = dropdown.$el.querySelector('.dropdown-toggle')
           if (toggleBtn && toggleBtn.getAttribute('aria-expanded') === 'true') {
             toggleBtn.click()
@@ -160,12 +165,10 @@ export default defineComponent({
         }
       }
     },
-    openDropdownById(dropdownId) {
-      const dropdown = this.$refs[dropdownId]
+    openDropdownById(dropdownId: string) {
+      const dropdown = this.$refs[dropdownId] as InstanceType<typeof BDropdown>
       if (dropdown) {
-        if (typeof dropdown.show === 'function') {
-          dropdown.show()
-        } else if (dropdown.$el) {
+        if (dropdown.$el) {
           const toggleBtn = dropdown.$el.querySelector('.dropdown-toggle')
           if (toggleBtn && toggleBtn.getAttribute('aria-expanded') === 'false') {
             toggleBtn.click()
@@ -173,15 +176,21 @@ export default defineComponent({
         }
       }
     },
+    setMobileView(view: 'code' | 'instructions' | 'data' | 'architecture' | 'settings') {
+      this.mobileView = view
+      // Emit event so parent components can react to view changes
+      this.$emit('mobile-view-change', view)
+    },
   },
   components: { ToolbarBtngroup },
 })
 </script>
 
 <template>
-  <b-navbar toggleable="lg" class="header px-2 py-0">
+  <!-- Top navbar (hidden on mobile, shown on tablet+) -->
+  <b-navbar toggleable="md" class="header py-3 top-navbar">
     <!-- Creator Dropdown Menu -->
-    <b-navbar-nav>
+    <b-navbar-nav class="creator-brand">
       <b-nav-item-dropdown 
         class="navMenu creator-menu" 
         no-caret
@@ -198,34 +207,24 @@ export default defineComponent({
           </span>
         </template>
 
-        <b-dropdown-item v-if="architecture_name">
-          <font-awesome-icon :icon="['fas', 'microchip']" class="me-2" />
-          <strong>{{ architecture_name }}</strong>
-        </b-dropdown-item>
-        
-        <b-dropdown-divider v-if="architecture_name" />
-
-        <b-dropdown-item href=".">
-          <font-awesome-icon :icon="['fas', 'home']" class="me-2" />
-          Home
-        </b-dropdown-item>
-
-        <b-dropdown-item href="https://creatorsim.github.io/" target="_blank">
-          <font-awesome-icon :icon="['fas', 'globe']" class="me-2" />
-          Website
-        </b-dropdown-item>
-
-        <b-dropdown-item href="https://github.com/creatorsim/creator" target="_blank">
-          <font-awesome-icon :icon="['fab', 'github']" class="me-2" />
-          GitHub
-        </b-dropdown-item>
-        
-        <b-dropdown-divider />
-
-        <b-dropdown-item v-b-modal.configuration>
-          <font-awesome-icon :icon="['fas', 'gears']" class="me-2" />
-          Settings...
-        </b-dropdown-item>
+        <ToolbarBtngroup
+          v-if="architecture_name"
+          :group="['btn_architecture_info', 'divider']"
+          :browser="browser"
+          :os="os"
+          :dark="dark"
+          :architecture_name="architecture_name"
+          dropdown-mode
+          ref="creatorGroup1"
+        />
+        <ToolbarBtngroup
+          :group="['btn_home', 'btn_website', 'btn_github', 'divider', 'btn_configuration']"
+          :browser="browser"
+          :os="os"
+          :dark="dark"
+          dropdown-mode
+          ref="creatorGroup2"
+        />
       </b-nav-item-dropdown>
     </b-navbar-nav>
 
@@ -368,8 +367,7 @@ export default defineComponent({
         <!-- Help Menu -->
         <b-nav-item-dropdown 
           text="Help" 
-          right 
-          class="navMenu helpMenu" 
+          class="navMenu" 
           no-caret
           no-animation
           ref="helpDropdown"
@@ -377,58 +375,22 @@ export default defineComponent({
           @hide="handleDropdownHide('helpDropdown')"
           @mouseenter="handleDropdownHover('helpDropdown')"
         >
-          <b-dropdown-item
-            href="https://creatorsim.github.io/"
-            target="_blank"
-            @click="$root.$emit('help_event', 'general_help')"
-          >
-            <font-awesome-icon :icon="['fas', 'circle-question']" class="me-2" />
-            Help
-          </b-dropdown-item>
-
-          <b-dropdown-item
-            v-if="show_instruction_help"
-            v-b-toggle.sidebar_help
-            @click="$root.$emit('help_event', 'instruction_help')"
-          >
-            <font-awesome-icon :icon="['fas', 'book']" class="me-2" />
-            Instruction Help
-          </b-dropdown-item>
-
-          <b-dropdown-item v-b-modal.notifications>
-            <font-awesome-icon :icon="['fas', 'bell']" class="me-2" />
-            Notifications
-          </b-dropdown-item>
-
-          <b-dropdown-divider />
-
-          <b-dropdown-item
-            href="https://docs.google.com/forms/d/e/1FAIpQLSdFbdy5istZbq2CErZs0cTV85Ur8aXiIlxvseLMhPgs0vHnlQ/viewform?usp=header"
-            target="_blank"
-          >
-            <font-awesome-icon :icon="['fas', 'star']" class="me-2" />
-            Feedback
-          </b-dropdown-item>
-
-          <b-dropdown-item
-            href="https://docs.google.com/forms/d/e/1FAIpQLSfSclv1rKqBt5aIIP3jfTGbdu8m_vIgEAaiqpI2dGDcQFSg8g/viewform?usp=header"
-            target="_blank"
-          >
-            <font-awesome-icon :icon="['fas', 'lightbulb']" class="me-2" />
-            Suggestions
-          </b-dropdown-item>
-
-          <b-dropdown-divider />
-
-          <b-dropdown-item v-b-modal.institutions>
-            <font-awesome-icon :icon="['fas', 'building-columns']" class="me-2" />
-            Community
-          </b-dropdown-item>
-
-          <b-dropdown-item v-b-modal.about>
-            <font-awesome-icon :icon="['fas', 'address-card']" class="me-2" />
-            About Us
-          </b-dropdown-item>
+          <ToolbarBtngroup
+            :group="show_instruction_help ? ['btn_help', 'btn_instruction_help', 'btn_notifications', 'divider'] : ['btn_help', 'btn_notifications', 'divider']"
+            :browser="browser"
+            :os="os"
+            :dark="dark"
+            dropdown-mode
+            ref="helpGroup1"
+          />
+          <ToolbarBtngroup
+            :group="['btn_feedback', 'btn_suggestions', 'divider', 'btn_institutions', 'btn_about']"
+            :browser="browser"
+            :os="os"
+            :dark="dark"
+            dropdown-mode
+            ref="helpGroup2"
+          />
         </b-nav-item-dropdown>
 
         <!-- Separator for buttons -->
@@ -464,152 +426,234 @@ export default defineComponent({
 
     </b-collapse>
   </b-navbar>
+
+  <!-- Mobile bottom navbar (shown only on mobile) -->
+  <nav v-if="showMobileNavbar" class="mobile-bottom-navbar">
+    <div class="bottom-nav-container">
+      <!-- Code Tab -->
+      <button 
+        class="bottom-nav-item"
+        :class="{ 'active': mobileView === 'code' }"
+        @click="setMobileView('code')"
+        aria-label="Code"
+      >
+        <font-awesome-icon :icon="['fas', 'code']" />
+        <span class="bottom-nav-label">Code</span>
+      </button>
+
+      <!-- Instructions Tab -->
+      <button 
+        class="bottom-nav-item"
+        :class="{ 'active': mobileView === 'instructions' }"
+        @click="setMobileView('instructions')"
+        aria-label="Instructions"
+      >
+        <font-awesome-icon :icon="['fas', 'book']" />
+        <span class="bottom-nav-label">Instructions</span>
+      </button>
+
+      <!-- Data Tab -->
+      <button 
+        class="bottom-nav-item"
+        :class="{ 'active': mobileView === 'data' }"
+        @click="setMobileView('data')"
+        aria-label="Data"
+      >
+        <font-awesome-icon :icon="['fas', 'database']" />
+        <span class="bottom-nav-label">Data</span>
+      </button>
+
+      <!-- Architecture Tab -->
+      <button 
+        class="bottom-nav-item"
+        :class="{ 'active': mobileView === 'architecture' }"
+        @click="setMobileView('architecture')"
+        aria-label="Architecture"
+      >
+        <font-awesome-icon :icon="['fas', 'microchip']" />
+        <span class="bottom-nav-label">Architecture</span>
+      </button>
+
+      <!-- Settings Tab -->
+      <button 
+        class="bottom-nav-item"
+        :class="{ 'active': mobileView === 'settings' }"
+        @click="setMobileView('settings')"
+        aria-label="Settings"
+      >
+        <font-awesome-icon :icon="['fas', 'cog']" />
+        <span class="bottom-nav-label">Settings</span>
+      </button>
+    </div>
+  </nav>
 </template>
 
 <style lang="scss" scoped>
 @import "bootstrap/scss/bootstrap";
 
-.header {
+// Top navbar (desktop and tablet)
+.top-navbar {
   width: 100%;
   align-items: center;
-  background-color: #f8f9fa;
-  border-bottom: 1px solid #dee2e6;
   min-height: 40px !important;
   max-height: 40px !important;
-  padding-top: 0;
-  padding-bottom: 0;
+  background-color: rgb(238, 238, 238);
   
   :deep(.navbar-nav) {
     align-items: center;
-    min-height: 40px;
-    max-height: 40px;
   }
+
+  // Hide on mobile, show on tablet+
+  @media (max-width: 767px) {
+    display: none;
+  }
+}
+
+// Mobile bottom navbar
+.mobile-bottom-navbar {
+  display: none; // Hidden on desktop
   
-  :deep(.nav-item),
-  :deep(.nav-item-dropdown) {
-    display: flex;
-    align-items: center;
-    height: 40px;
+  // Show only on mobile
+  @media (max-width: 767px) {
+    display: block;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1030;
+    background-color: rgb(238, 238, 238);
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    // Safe area insets for home indicator and rounded corners
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+}
+
+.bottom-nav-container {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 8px 0;
+  max-width: 100%;
+  height: 56px;
+
+  // Reduce height on very small screens
+  @media (max-width: 320px) {
+    height: 48px;
+    padding: 6px 0;
+  }
+}
+
+.bottom-nav-dropdown {
+  flex: 1;
+  
+  :deep(.dropdown-toggle) {
+    border: none;
+    width: 100%;
+    padding: 0;
+    
+    &::after {
+      display: none; // Hide dropdown arrow
+    }
+  }
+
+}
+
+.bottom-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 8px 12px;
+  color: #6c757d;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex: 1;
+  position: relative;
+  
+  svg {
+    font-size: 20px;
+    transition: transform 0.2s ease;
+  }
+
+  // Reduce padding and icon size on very small screens (320px and below)
+  @media (max-width: 320px) {
+    padding: 6px 8px;
+    gap: 2px;
+    
+    svg {
+      font-size: 18px;
+    }
+  }
+
+  // Active state (selected tab)
+  &.active {
+    color: #2196f3;
+    
+    svg {
+      transform: scale(1.1);
+    }
+
+    // Active indicator bar
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 32px;
+      height: 3px;
+      background-color: #2196f3;
+      border-radius: 0 0 3px 3px;
+
+      // Smaller width on very small screens
+      @media (max-width: 320px) {
+        width: 24px;
+      }
+    }
+  }
+
+  // Tap feedback
+  &:active:not(.active) {
+    color: #2196f3;
+    background-color: rgba(33, 150, 243, 0.08);
+    
+    svg {
+      transform: scale(0.95);
+    }
+  }
+}
+
+.bottom-nav-label {
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: color 0.2s ease;
+
+  // Smaller font on very small screens
+  @media (max-width: 320px) {
+    font-size: 10px;
+  }
+}.creator-brand {
+  // On mobile, don't collapse the Creator menu
+  @media (max-width: 767px) {
+    flex-shrink: 0;
   }
 }
 
 .headerText {
   color: #2196f3;
-  margin: 0;
-  padding: 0;
-  font-size: 0.9375rem;
-  line-height: 1;
   font-weight: 700;
-  white-space: nowrap;
-}
+  font-size: 1rem;
 
-.version-badge {
-  font-size: 0.6em;
-  color: #6c757d;
-  font-weight: 400;
-  margin-left: 0.3em;
-}
-
-.headerName {
-  color: #6c757d;
-  font-size: 0.5em;
-  font-weight: 400;
-}
-
-.headerLogo {
-  height: 4vh;
-}
-
-.linkButton {
-  background-color: transparent;
-  color: #6c757d;
-  border: none;
-  font-size: 0.875rem;
-  padding: 0.25rem 0.5rem;
-}
-
-.linkButton:hover {
-  background-color: #e9ecef;
-  color: #495057;
-}
-
-// Navigation menu dropdown
-:deep(.navMenu) {
-  display: flex;
-  align-items: center;
-  height: 40px;
-  
-  .dropdown-toggle {
-    color: #495057;
-    font-size: 0.9375rem;
-    padding: 0.25rem 0.625rem;
-    font-weight: 500;
-    display: flex;
-    align-items: center;
-    height: 32px;
-  }
-  
-  .dropdown-toggle:hover {
-    color: #2196f3;
-  }
-  
-  // Special styling for creator menu
-  &.creator-menu {
-    .dropdown-toggle {
-      background: none !important;
-      border: none !important;
-      
-      &::after {
-        display: none; // Hide default dropdown caret
-      }
-      
-      &:hover {
-        background: none !important;
-        .headerText {
-          color: #1976d2;
-        }
-      }
-    }
-  }
-  
-  // Modern dropdown menu styling
-  .dropdown-menu {
-    border: 1px solid rgba(0, 0, 0, 0.08);
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1), 0 0 1px rgba(0, 0, 0, 0.1);
-    padding: 0.5rem 0;
-    margin-top: 0.25rem;
-    min-width: 200px;
-  }
-  
-  .dropdown-item {
-    padding: 0.625rem 1rem;
-    font-size: 0.875rem;
-    color: #495057;
-    transition: all 0.15s ease;
-    display: flex;
-    align-items: center;
-    
-    &:hover {
-      background-color: #f8f9fa;
-      color: #2196f3;
-      padding-left: 1.25rem;
-    }
-    
-    &:active {
-      background-color: #e3f2fd;
-      color: #1976d2;
-    }
-    
-    svg {
-      width: 1rem;
-    }
-    
-  }
-  
-  .dropdown-divider {
-    margin: 0.5rem 0;
-    border-top: 1px solid rgba(0, 0, 0, 0.06);
+  // Slightly smaller on mobile
+  @media (max-width: 767px) {
+    font-size: 0.9rem;
   }
 }
 
@@ -621,142 +665,155 @@ export default defineComponent({
   margin: 0 0.75rem;
 }
 
-// Compile button styling (prominent)
-.compile-item {
-  display: flex;
-  align-items: center;
-  height: 40px;
-  
-  :deep(.compact-mode) {
-    padding: 0;
-    display: flex;
-    align-items: center;
-  }
-  
-  :deep(.assemble-dropdown) {
-    .btn-group {
-      display: flex;
-      white-space: nowrap;
-      height: 32px;
-    }
-    
-    .btn {
-      padding: 0.25rem 0.5rem;
-      font-size: 0.8125rem;
-      line-height: 1.2;
-      height: 32px;
-      display: flex;
-      align-items: center;
-    }
-    
-    .assemble-button-content {
-      display: flex;
-      align-items: center;
-      gap: 0.25rem;
-      white-space: nowrap;
-    }
-    
-    .assemble-text {
-      display: inline-block;
-      min-width: max-content;
-    }
-    
-    .dropdown-toggle-split {
-      padding-left: 0.25rem;
-      padding-right: 0.25rem;
-    }
+// Dropdown menu styling
+:deep(.dropdown-menu) {
+  border-radius: 8px;
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.12),
+    0 4px 16px rgba(0, 0, 0, 0.08);
+  padding: 6px;
+  margin-top: 4px;
+  min-width: 0;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+
+  // On mobile, make dropdowns full width within collapsed menu
+  @media (max-width: 767px) {
+    width: 100%;
+    position: relative !important;
+    transform: none !important;
+    margin: 0;
+    box-shadow: none;
+    border: 1px solid rgba(0, 0, 0, 0.08);
   }
 }
 
+:deep(.dropdown-item) {
+  border-radius: 4px;
+  margin-bottom: 2px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 400;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: none;
+  min-width: 0;
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+  
+  &:hover,
+  &:active {
+    background-color: rgba(0, 0, 0, 0.08);
+    color: rgba(0, 0, 0, 0.95);
+  }
+  
+  // Icon styling
+  .fa-icon,
+  svg {
+    min-height: 16px;
+    min-width: 16px;
+    opacity: 0.85;
+  }
+  
+  &:hover .fa-icon,
+  &:hover svg {
+    opacity: 1;
+  }
+}
 
+// Dropdown divider
+:deep(.dropdown-divider) {
+  margin: 6px 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  opacity: 1;
+}
 
-// Configuration button styling (navbar right side)
-:deep(.navbar-nav) {
-  > .compact-mode {
-    display: flex;
-    align-items: center;
-    height: 40px;
+// Modern scrollbar
+:deep(.dropdown-menu) {
+  max-height: 500px;
+  overflow-y: auto;
+  
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 4px;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 4px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
     
-    .btn {
-      height: 32px !important;
-      padding: 0.25rem 0.5rem;
-      font-size: 0.8125rem;
-      line-height: 1.2;
-      display: flex;
-      align-items: center;
+    &:hover {
+      background: rgba(0, 0, 0, 0.25);
+      background-clip: padding-box;
     }
   }
 }
 
 [data-bs-theme="dark"] {
-  .header {
-    background-color: #1a1a1a;
-    border-bottom: 1px solid #333;
+  .top-navbar {
+    background-color: hsl(214, 9%, 12%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   }
-  .version-badge {
-    color: #adb5bd;
+
+  .headerText {
+    color: #64b5f6;
   }
-  .headerName {
-    color: #adb5bd;
-  }
-  .linkButton {
-    background-color: transparent;
-    color: #adb5bd;
-    border: none;
-  }
-  .linkButton:hover {
-    background-color: #2d2d2d;
-    color: #ced4da;
-  }
-  
+
   .button-separator {
-    background-color: #333;
+    background-color: rgba(255, 255, 255, 0.12);
   }
-  
-  :deep(.navMenu),
-  :deep(.creator-menu),
-  :deep(.helpMenu) {
-    .dropdown-toggle {
-      color: #ced4da;
-    }
+
+  :deep(.navbar-toggler) {
+    border-color: rgba(255, 255, 255, 0.1);
     
-    .dropdown-toggle:hover {
+    .navbar-toggler-icon {
+      filter: invert(1);
+    }
+  }
+
+  // Mobile bottom navbar in dark mode
+  .mobile-bottom-navbar {
+    background-color: hsl(214, 9%, 12%);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3);
+  }
+
+  .bottom-nav-item {
+    color: #adb5bd;
+    
+    // Active state in dark mode
+    &.active {
       color: #64b5f6;
-    }
-    
-    // Dark mode dropdown styling
-    .dropdown-menu {
-      background-color: #2d2d2d;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), 0 0 1px rgba(255, 255, 255, 0.1);
-    }
-    
-    .dropdown-item {
-      color: #ced4da;
       
-      &:hover {
-        background-color: #3a3a3a;
-        color: #64b5f6;
-      }
-      
-      &:active {
-        background-color: #1e3a5f;
-        color: #90caf9;
+      &::after {
+        background-color: #64b5f6;
       }
     }
     
-    .dropdown-divider {
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    // Tap feedback in dark mode
+    &:active:not(.active) {
+      color: #64b5f6;
+      background-color: rgba(100, 181, 246, 0.12);
     }
   }
-  
-  // Special override for creator menu text color
-  :deep(.creator-menu) {
-    .dropdown-toggle:hover {
-      .headerText {
-        color: #64b5f6;
-      }
+
+  // Mobile dropdown styling in dark mode
+  @media (max-width: 767px) {
+    :deep(.dropdown-menu) {
+      background-color: hsl(214, 9%, 15%);
+      border-color: rgba(255, 255, 255, 0.08);
     }
   }
 }
+
+
 </style>

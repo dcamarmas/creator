@@ -32,7 +32,7 @@ import {
   loadDefaultArchitecture,
   loadExample,
 } from "./utils.mjs"
-import { set_debug, status } from "@/core/core.mjs"
+import { set_debug, status, reset } from "@/core/core.mjs"
 import { stats } from "@/core/executor/stats.mts"
 import { instructions } from "@/core/assembler/assembler.mjs"
 import type { StackFrame } from "@/core/memory/StackTracker.mjs"
@@ -47,6 +47,12 @@ import UIeltoInstitutions from "./components/general/UIeltoInstitutions.vue"
 import UIeltoAbout from "./components/general/UIeltoAbout.vue"
 import SidebarInstructionHelp from "./components/general/SidebarInstructionHelp.vue"
 import UIeltoBackup from "./components/select_architecture/UIeltoBackup.vue"
+import MobileSettings from "./components/mobile/MobileSettings.vue"
+import MobileCodeView from "./components/mobile/MobileCodeView.vue"
+import MobileArchitectureSelect from "./components/mobile/MobileArchitectureSelect.vue"
+import MobileInstructionsView from "./components/mobile/MobileInstructionsView.vue"
+import MobileDataView from "./components/mobile/MobileDataView.vue"
+import MobileArchitectureView from "./components/mobile/MobileArchitectureView.vue"
 
 import SelectArchitecture from "./components/SelectArchitecture.vue"
 import ArchitectureView from "./components/ArchitectureView.vue"
@@ -78,6 +84,12 @@ export default {
     UIeltoAbout,
     SidebarInstructionHelp,
     UIeltoBackup,
+    MobileSettings,
+    MobileCodeView,
+    MobileArchitectureSelect,
+    MobileInstructionsView,
+    MobileDataView,
+    MobileArchitectureView,
 
     SelectArchitecture,
     ArchitectureView,
@@ -124,6 +136,12 @@ export default {
       // window size
       windowHeight: window.innerHeight,
       windowWidth: window.innerWidth,
+
+      // Mobile view
+      mobileView: 'code' as 'code' | 'instructions' | 'data' | 'architecture' | 'settings',
+
+      // Mobile data view state
+      mobileDataView: 'registers' as 'registers' | 'memory' | 'stats' | 'console',
 
       //
       // Current view
@@ -285,6 +303,13 @@ export default {
       }
 
       return architectures
+    },
+
+    /**
+     * @returns {boolean} True if the current viewport is mobile-sized
+     */
+    isMobile() {
+      return this.windowWidth <= 767
     },
   },
 
@@ -481,6 +506,29 @@ export default {
       this.windowHeight = window.innerHeight
       this.windowWidth = window.innerWidth
     },
+
+    // Handle mobile view changes from navbar
+    handleMobileViewChange(view: 'code' | 'instructions' | 'data' | 'architecture' | 'settings') {
+      this.mobileView = view
+    },
+
+    // Reset simulator state for mobile code view
+    resetSimulator() {
+      this.keyboard = ""
+      this.display = ""
+      this.enter = null
+      reset()
+    },
+
+    // Show toast notification for mobile code view
+    showToast(toastData: { message: string, title: string, variant: 'success' | 'danger' | 'warning' | 'info' }) {
+      this.createToast({
+        title: toastData.title,
+        body: toastData.message,
+        variant: toastData.variant,
+        solid: true,
+      })
+    },
   },
 }
 </script>
@@ -512,11 +560,14 @@ export default {
       :assembly_code="assembly_code"
       :show_instruction_help="true"
       :instructions="instructions"
+      @mobile-view-change="handleMobileViewChange"
+      ref="navbar"
     />
 
     <!-- Configuration modal -->
     <FormConfiguration
       id="configuration"
+      class="bottomCard"
       v-model:arch_available="arch_available"
       v-model:default_architecture="default_architecture"
       v-model:stack_total_list="stack_total_list"
@@ -528,6 +579,9 @@ export default {
       v-model:c_debug="c_debug"
       v-model:vim_custom_keybinds="vim_custom_keybinds"
       v-model:vim_mode="vim_mode"
+      v-model:reg_representation_int="reg_representation_int"
+      v-model:reg_representation_float="reg_representation_float"
+      v-model:reg_name_representation="reg_name_representation"
     />
 
     <!-- Information modals -->
@@ -554,12 +608,29 @@ export default {
     <UIeltoBackup id="copy" @load-architecture="creator_mode = 'assembly'" />
   </header>
 
+  <!-------------------->
+  <!-- Mobile Architecture Select -->
+  <!-------------------->
+
+  <MobileArchitectureSelect
+    v-if="isMobile"
+    :arch_available="arch_available"
+    :dark="dark"
+    @select-architecture="
+      arch_name => {
+        architecture_name = arch_name
+        creator_mode = 'simulator'
+        mobileView = 'code'
+      }
+    "
+  />
+
   <!----------------------->
   <!-- Select architecture -->
   <!----------------------->
 
   <SelectArchitecture
-    v-if="creator_mode === 'select_architecture'"
+    v-if="!isMobile && creator_mode === 'select_architecture'"
     :arch_available="arch_available"
     :browser="browser!"
     :os="os!"
@@ -579,7 +650,7 @@ export default {
   <!------------------>
 
   <ArchitectureView
-    v-if="creator_mode === 'architecture'"
+    v-if="!isMobile && creator_mode === 'architecture'"
     :architecture_name="architecture_name"
     :arch_available="arch_available"
     :arch_code="arch_code"
@@ -592,7 +663,7 @@ export default {
   <!-- Assembly view -->
   <!------------------->
   <AssemblyView
-    v-if="creator_mode === 'assembly'"
+    v-if="!isMobile && creator_mode === 'assembly'"
     :architecture_name="architecture_name"
     :arch_available="arch_available"
     :browser="browser!"
@@ -610,7 +681,7 @@ export default {
   <!-------------------->
 
   <SimulatorView
-    v-if="creator_mode === 'simulator'"
+    v-if="!isMobile && creator_mode === 'simulator'"
     ref="simulatorView"
     :data_mode="data_mode"
     :reg_representation_int="reg_representation_int"
@@ -638,9 +709,100 @@ export default {
     :result_email="result_email"
     :target_board="target_board"
     :target_port="target_port"
-    :flash_url="flash_url"
+        :flash_url="flash_url"
+  />
+
+  <!-------------------->
+  <!-- Mobile Settings -->
+  <!-------------------->
+
+  <MobileSettings
+    v-if="isMobile && mobileView === 'settings' && creator_mode !== 'select_architecture'"
+    v-model:stack_total_list="stack_total_list"
+    v-model:autoscroll="autoscroll"
+    v-model:backup="backup"
+    v-model:notification_time="notification_time"
+    v-model:instruction_help_size="instruction_help_size"
+    v-model:dark="dark"
+    v-model:c_debug="c_debug"
+    v-model:vim_mode="vim_mode"
+    v-model:vim_custom_keybinds="vim_custom_keybinds"
+    v-model:reg_representation_int="reg_representation_int"
+    v-model:reg_representation_float="reg_representation_float"
+    v-model:reg_name_representation="reg_name_representation"
+  />
+
+  <!-------------------->
+  <!-- Mobile Code View -->
+  <!-------------------->
+
+  <MobileCodeView
+    v-if="isMobile && mobileView === 'code' && creator_mode !== 'select_architecture'"
+    :architecture_name="architecture_name"
+    v-model:assembly_code="assembly_code"
+    :vim_mode="vim_mode"
+    :vim_custom_keybinds="vim_custom_keybinds"
+    :dark="dark"
+    @assembly-error="assemblyError = $event"
+    @switch-to-simulator="creator_mode = 'simulator'"
+    @reset-simulator="resetSimulator"
+    @show-toast="showToast"
+  />
+
+  <!-------------------->
+  <!-- Mobile Instructions View -->
+  <!-------------------->
+
+  <MobileInstructionsView
+    v-if="isMobile && mobileView === 'instructions' && creator_mode !== 'select_architecture'"
+    :instructions="instructions"
+    :enter="enter"
+    :browser="browser!"
+    :os="os!"
+    :dark="dark!"
+    @reset-simulator="resetSimulator"
+    @show-toast="showToast"
+  />
+
+  <!-------------------->
+  <!-- Mobile Data View -->
+  <!-------------------->
+
+  <MobileDataView
+    ref="mobileDataView"
+    v-if="isMobile && mobileView === 'data' && creator_mode !== 'select_architecture'"
+    :data_mode="data_mode"
+    :reg_representation_int="reg_representation_int"
+    :reg_representation_float="reg_representation_float"
+    :reg_name_representation="reg_name_representation"
+    :stat_representation="stat_representation"
+    :stat_type="stat_type"
+    :memory_segment="memory_segment"
+    :display="display"
+    :keyboard="keyboard"
+    :enter="enter"
+    :dark="dark!"
+    :caller_frame="caller_frame!"
+    :callee_frame="callee_frame!"
+    :mobile_data_view="mobileDataView"
+    @update:mobile_data_view="mobileDataView = $event"
+  />
+
+  <!-------------------->
+  <!-- Mobile Architecture View -->
+  <!-------------------->
+
+  <MobileArchitectureView
+    v-if="isMobile && mobileView === 'architecture' && creator_mode !== 'select_architecture'"
+    :browser="browser!"
+    :os="os!"
+    :arch_available="arch_available"
+    :architecture_name="architecture_name"
+    :dark="dark!"
+    :arch_code="arch_code"
   />
 </template>
+
 
 <style lang="scss" scoped>
 :deep() {
@@ -650,6 +812,12 @@ export default {
     overflow-x: hidden;
     font-size: 15px;
     height: 100vh;
+
+    // Add padding for mobile safe areas
+    @media (max-width: 767px) {
+      padding-top: env(safe-area-inset-top);
+      overflow-y: hidden; // Prevent vertical scrolling on mobile
+    }
   }
 
   * {
