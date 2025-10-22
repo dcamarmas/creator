@@ -21,7 +21,6 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 <script lang="ts">
 import { defineComponent, type PropType } from "vue"
 
-import UIeltoToolbar from "./general/UIeltoToolbar.vue"
 import TextareaAssembly from "./assembly/TextareaAssembly.vue"
 import AssemblyError from "./assembly/AssemblyError.vue"
 import Examples from "./assembly/Examples.vue"
@@ -51,7 +50,6 @@ export default defineComponent({
   },
 
   components: {
-    UIeltoToolbar,
     TextareaAssembly,
     AssemblyError,
     Examples,
@@ -67,17 +65,6 @@ export default defineComponent({
 <template>
   <b-container fluid align-h="center" id="assembly" class="p-0">
     <!-- Navbar -->
-    <UIeltoToolbar
-      id="navbar_assembly"
-      components="btn_architecture,btn_simulator|btn_compile|dropdown_assembly_file,dropdown_library|btn_configuration,btn_information"
-      :browser="browser"
-      :os="os"
-      :dark="dark"
-      :arch_available="arch_available"
-      :assembly_code="assembly_code"
-      :show_instruction_help="true"
-      ref="toolbar"
-    />
 
     <!-- Assembly navbar modals -->
 

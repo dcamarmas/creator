@@ -31,13 +31,20 @@ export default {
     return {
       /*Instrutions table fields*/
       archInstructions: [
-        "Break",
         "Address",
         "Label",
         "userInstructions",
         "loadedInstructions",
-        "tag",
       ],
+    }
+  },
+
+  computed: {
+    processedInstructions() {
+      return this.instructions.map(instruction => ({
+        ...instruction,
+        _cellVariants: instruction.Break ? { Address: 'danger' } : {}
+      }))
     }
   },
 
@@ -75,157 +82,81 @@ export default {
         this.$root.instructions[index].Break = null
       }
     },
-
-    /* Computes the execution tag depending on the row's `_rowVariant` */
-    computeExecutionTag(rowVariant) {
-      switch (rowVariant) {
-        case "warning":
-          return "Interrupted"
-
-        case "info":
-          return this.enter !== null ? "Current-Keyboard" : "Current"
-
-        case "success":
-          return "Next"
-
-        default:
-          return ""
-      }
-    },
   },
 }
 </script>
 
 <template>
-  <b-row cols="1">
-    <b-col align-h="center">
-      <b-table
-        id="inst_table"
-        sticky-header="calc(100vh - 40px)"
-        striped
-        small
-        hover
-        responsive
-        :items="instructions"
-        :fields="archInstructions"
-        class="instructions_table responsive"
-        @row-clicked="breakPoint"
-        :filter-function="filter"
-        filter=" "
-        primary-key="Address"
-      >
-        <!-- column headers -->
-        <template #head(userInstructions)="_row"> User Instruction </template>
+  <b-table id="inst_table" sticky-header="100%" small hover :items="processedInstructions" :fields="archInstructions"
+    class="instructions_table" @row-clicked="breakPoint" :filter-function="filter" filter=" " primary-key="Address">
+    <!-- column headers -->
+    <template #head(userInstructions)="_row"> User Instruction </template>
 
-        <template #head(loadedInstructions)="_row">
-          Loaded Instructions
-        </template>
+    <template #head(loadedInstructions)="_row">
+      Loaded Instructions
+    </template>
 
-        <template #head(tag)="_row"> &nbsp; </template>
+    <!-- address -->
+    <template #cell(Address)="row">
+      <span>{{ row.item.Address }}</span>
+    </template>
 
-        <!-- breakpoints -->
-        <template #cell(Break)="row">
-          <div class="break" :id="row.index">
-            <b-img
-              alt="Break"
-              src="@/web/assets/img/stop_classic.webp"
-              class="shadow breakPoint"
-              rounded="circle"
-              v-if="row.item.Break"
-            />
-            <br v-else />
-          </div>
-        </template>
+    <!-- label -->
+    <template #cell(Label)="row">
+      <b-badge pill variant="info">{{ row.item.Label }}</b-badge>
+    </template>
 
-        <!-- address -->
-        <template #cell(Address)="row">
-          <span class="h6">{{ row.item.Address }}</span>
-        </template>
+    <!-- user instruction -->
+    <template #cell(userInstructions)="row">
+      <span v-if="row.item.visible">
+        {{ row.item.user }}
+      </span>
+      <span v-else> &lt;&lt;Hidden&gt;&gt; </span>
+    </template>
 
-        <!-- label -->
-        <template #cell(Label)="row">
-          <b-badge pill variant="info">{{ row.item.Label }}</b-badge>
-        </template>
-
-        <!-- user instruction -->
-        <template #cell(userInstructions)="row">
-          <span class="h6" v-if="row.item.visible">
-            {{ row.item.user }}
-          </span>
-          <span class="h6" v-else> &lt;&lt;Hidden&gt;&gt; </span>
-        </template>
-
-        <!-- loaded instruction -->
-        <template #cell(loadedInstructions)="row">
-          <span class="h6" v-if="row.item.visible">
-            {{ row.item.loaded }}
-          </span>
-          <span class="h6" v-else> &lt;&lt;Hidden&gt;&gt; </span>
-        </template>
-
-        <!-- execution tags -->
-        <template #cell(tag)="row">
-          <b-badge
-            :variant="row.item._rowVariant"
-            :class="`border border-${row.item._rowVariant} shadow executionTag`"
-          >
-            {{ computeExecutionTag(row.item._rowVariant) }}
-          </b-badge>
-        </template>
-      </b-table>
-    </b-col>
-  </b-row>
+    <!-- loaded instruction -->
+    <template #cell(loadedInstructions)="row">
+      <span v-if="row.item.visible">
+        {{ row.item.loaded }}
+      </span>
+      <span v-else> &lt;&lt;Hidden&gt;&gt; </span>
+    </template>
+  </b-table>
 </template>
 
 <style lang="scss" scoped>
+.table-execution-container {
+  height: 100%;
+  max-height: 100%;
+  overflow: hidden;
+}
+
+.table-execution-col {
+  height: 100%;
+  max-height: 100%;
+  overflow: hidden;
+}
+
 .instructions_table {
-  font-size: 0.9em;
-  padding-right: 1vw;
   cursor: pointer;
+  height: 100%;
+  max-height: 100%;
 }
 
 :deep(.instructions_table) {
-  td, th {
-    padding: 0.2rem 0.2rem;
-    line-height: 1.2;
-    /* ensure table cell contents are vertically centered */
-    vertical-align: middle;
-  }
 
-  /* Make Break, Address, and Label columns narrower */
-  th:nth-child(1), /* Break */
+  /* Make Address and Label columns narrower */
+  th:nth-child(1),
+  /* Address */
   td:nth-child(1) {
-    width: 1%;
+    width: 12%;
   }
 
-  th:nth-child(2), /* Address */
+  th:nth-child(2),
+  /* Label */
   td:nth-child(2) {
-    width: 10%;
+    width: 6%;
   }
-
-  th:nth-child(3), /* Label */
-  td:nth-child(3) {
-    width: 5%;
-  }
-}
-
-.executionTag {
-  float: right;
-  position: relative;
-  right: -0.7vw;
-}
-
-.breakPoint {
-  width: auto !important;
-  height: 2.5vh;
-}
-
-/* center breakpoint image/text inside its table cell */
-.break {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
 }
 
 [data-bs-theme="dark"] {

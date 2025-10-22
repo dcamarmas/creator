@@ -227,6 +227,143 @@ export updateBar() {
 
 Remember that if you want to update a nested component, not just the root one, you must [navigate the component tree](#navigating-the-component-tree).
 
+## Event-based updates from non-Vue code
+
+This is the alternative to the direct state mutation approach above when you have core business logic in plain JavaScript/TypeScript that needs to notify Vue components about updates. It keeps your core decoupled from Vue and works across all environments (browser, CLI, Node.js, etc.).
+
+### Implementation with mitt (tiny event emitter so we don't reinvent the wheel)
+
+**1. Create a central event emitter** in your core:
+```js
+// core/events.mjs
+import mitt from "mitt"
+
+/**
+ * Event types for CREATOR core events
+ */
+export const CoreEventTypes = {
+    REGISTER_UPDATED: "register-updated",
+    REGISTERS_RESET: "registers-reset",
+    STATS_UPDATED: "stats-updated",
+}
+
+/**
+ * Global event emitter for core events
+ * Used to notify UI layers about core state changes
+ * CLI version simply doesn't subscribe to these events
+ */
+export const coreEvents = mitt()
+```
+
+**2. Emit events from your core logic** instead of directly updating UI:
+   ```js
+   // core/someModule.mjs
+   import { coreEvents } from "./events.mjs"
+   
+   export function updateSomeData(indexComp, indexElem) {
+       // ... update your data ...
+       data[indexComp].elements[indexElem].value = newValue
+       
+       // Notify UI layers (CLI ignores, web UI listens)
+       coreEvents.emit("data-updated", { indexComp, indexElem })
+   }
+   ```
+
+**3. Subscribe to events in Vue components**:
+```vue
+<!-- Component.vue -->
+<script lang="ts">
+import { defineComponent } from "vue"
+import { coreEvents } from "@/core/events.mjs"
+import { DATA } from "@/core/someModule.mjs"
+
+export default defineComponent({
+  data() {
+    return {
+      data: DATA,
+    }
+  },
+
+  mounted() {
+    // Subscribe to events from core
+    coreEvents.on("data-updated", this.onDataUpdated)
+  },
+
+  beforeUnmount() {
+    // IMPORTANT: Clean up event listener to prevent memory leaks
+    coreEvents.off("data-updated", this.onDataUpdated)
+  },
+
+  methods: {
+    onDataUpdated(payload: any) {
+      const { indexComp, indexElem } = payload
+      
+      // Option 1: Update specific child component
+      const refs = this.$refs[`item${indexComp}_${indexElem}`] as any
+      refs?.refresh?.()
+      
+      // Option 2: Update all components (for batch operations)
+      // this.refreshAll()
+    }
+  }
+})
+</script>
+
+<template>
+  <ChildComponent
+    v-for="item in data"
+    :key="item.id"
+    :ref="`item${item.id}`"
+    :data="item"
+  />
+</template>
+```
+
+### Batch operations
+
+For operations that update many items at once (like reset), emit a single batch event instead of individual events:
+
+```js
+// core/core.mjs
+export function reset() {
+    // Reset all data
+    for (let i = 0; i < DATA.length; i++) {
+        DATA[i].value = DATA_BACKUP[i].value
+    }
+    
+    // Single event instead of hundreds
+    coreEvents.emit("data-reset")
+}
+```
+
+```vue
+<!-- Component.vue -->
+<script lang="ts">
+export default defineComponent({
+  mounted() {
+    coreEvents.on("data-updated", this.onDataUpdated)
+    coreEvents.on("data-reset", this.onDataReset)
+  },
+  
+  methods: {
+    onDataUpdated(payload: any) {
+      // Handle single update
+      const { indexComp, indexElem } = payload
+      this.updateSingleItem(indexComp, indexElem)
+    },
+    
+    onDataReset() {
+      // Handle batch update - refresh all at once
+      for (const item of this.data) {
+        const refs = this.$refs[`item${item.id}`] as any
+        refs?.refresh?.()
+      }
+    }
+  }
+})
+</script>
+```
+
 
 ## TypeScript tricks
 

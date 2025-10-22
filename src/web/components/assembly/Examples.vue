@@ -110,18 +110,18 @@ export default defineComponent({
     },
 
     assemble() {
-      // this is horrible, because this component can also be a child
-      // component of assemblyView but, as we always start at the simulatorView,
-      // the component always exists in both views
-      ;(this.$root as any).$refs.simulatorView?.$refs.toolbar?.$refs.btngroup1
-        ?.at(0)
-        ?.assembly_compiler()
-
-      // update table execution UI
-      // FIXME: this doesn't update shit
-      ;(this.$root as any).$refs.simulatorView?.$refs.toolbar.$refs.btngroup1
-        .at(0)
-        ?.execution_UI_reset()
+      // Get the compile group from the navbar
+      const compileGroup = (this.$root as any).$refs.navbar?.$refs?.compileGroup;
+      
+      if (compileGroup) {
+        compileGroup.assembly_compiler();
+        
+        // update table execution UI
+        const executeGroup = (this.$root as any).$refs.navbar?.$refs?.executeGroup;
+        if (executeGroup) {
+          executeGroup.execution_UI_reset();
+        }
+      }
     },
 
     /* Load a selected example */
@@ -170,7 +170,7 @@ export default defineComponent({
 </script>
 
 <template>
-  <b-modal :id="id" title="Available examples" no-footer scrollable>
+  <b-modal :id="id" class="bottomCard" title="Available examples" no-footer centered scrollable>
     <!-- set selector -->
     <b-form-radio-group
       v-if="example_set_options.length > 0 && example_set_options.length < 3"
@@ -185,7 +185,6 @@ export default defineComponent({
     <b-dropdown
       v-if="example_set_options.length > 2"
       id="examples_dropdown"
-      class="w-100 mb-3"
       size="sm"
     >
       <b-dropdown-item

@@ -22,6 +22,7 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 import { defineComponent } from "vue"
 
 import { stats } from "@/core/executor/stats.mts"
+import { coreEvents } from "@/core/events.mjs"
 
 import PlotStats from "./PlotStats.vue"
 import TableStats from "./TableStats.vue"
@@ -42,11 +43,31 @@ export default defineComponent({
     return {
       stats,
       render: 0, // dummy variable to force components with this as key to refresh
+      windowWidth: 0,
     }
   },
+
+  mounted() {
+    this.windowWidth = window.innerWidth
+    window.addEventListener('resize', this.updateWindowWidth)
+    
+    // Subscribe to stats update events from core
+    coreEvents.on("stats-updated", this.onStatsUpdated)
+  },
+
+  beforeUnmount() {
+    window.removeEventListener('resize', this.updateWindowWidth)
+    
+    // Clean up event listener
+    coreEvents.off("stats-updated", this.onStatsUpdated)
+  },
   computed: {
+    isMobile() {
+      return this.windowWidth < 768
+    },
     representation_value: {
       get() {
+        if (this.isMobile) return 'table'
         return this.representation
       },
 
@@ -66,6 +87,14 @@ export default defineComponent({
   },
 
   methods: {
+    onStatsUpdated() {
+      this.refresh()
+    },
+    
+    updateWindowWidth() {
+      this.windowWidth = window.innerWidth
+    },
+    
     refresh() {
       // refreshes children components with `:key="render"`
       this.render++
@@ -75,15 +104,16 @@ export default defineComponent({
 </script>
 
 <template>
-  <b-container fluid align-h="center" class="mx-0 my-3 px-2">
-    <b-row cols-xl="2" cols-lg="1" cols-md="2" cols-sm="1" cols-xs="1" cols="1">
+  <b-container fluid align-h="center" class="mx-0 px-0 stats-container">
+    <b-row cols-xl="2" cols-lg="1" cols-md="2" cols-sm="1" cols-xs="1" cols="1" class="stats-controls">
       <b-col align-h="center" class="px-2">
-        <div class="border m-1 py-1 px-2">
+        <div :class="`m-1 py-1 px-2 ${!isMobile ? 'border' : ''}`">
           <b-badge
+            v-if="!isMobile"
             :variant="dark ? 'dark' : 'light'"
             class="h6 border my-0 groupLabelling"
           >
-            Statistics
+            Stats
           </b-badge>
           <b-form-radio-group
             :class="{ 'w-100': true, 'mb-1': true, border: dark }"
@@ -104,13 +134,13 @@ export default defineComponent({
         </div>
       </b-col>
 
-      <b-col align-h="center" class="px-2">
+      <b-col align-h="center" class="px-2 d-none d-md-block">
         <div class="border m-1 py-1 px-2">
           <b-badge
             :variant="dark ? 'dark' : 'light'"
             class="h6 border my-0 groupLabelling"
           >
-            Statistic representation
+            Format
           </b-badge>
           <b-form-radio-group
             :class="{ 'w-100': true, 'mb-1': true, border: dark }"
@@ -137,7 +167,7 @@ export default defineComponent({
       </b-col>
     </b-row>
 
-    <b-row cols="1">
+    <b-row cols="1" class="stats-content-row">
       <b-col align-h="center" class="px-2 my-2">
         <PlotStats
           v-if="representation_value === 'graphic'"
@@ -157,3 +187,43 @@ export default defineComponent({
     </b-row>
   </b-container>
 </template>
+
+<style scoped>
+.stats-container {
+  height: 100%;
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.stats-controls {
+  flex: 0 0 auto;
+}
+
+.stats-content-row {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(139, 148, 158, 0.3) transparent;
+}
+
+.stats-content-row::-webkit-scrollbar {
+  width: 8px;
+}
+
+.stats-content-row::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.stats-content-row::-webkit-scrollbar-thumb {
+  background-color: rgba(139, 148, 158, 0.3);
+  border-radius: 4px;
+}
+
+.stats-content-row::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(139, 148, 158, 0.5);
+}
+</style>

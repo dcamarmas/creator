@@ -39,6 +39,7 @@ import { creator_ga } from "./utils/creator_ga.mjs";
 import { creator_callstack_reset } from "./sentinel/sentinel.mjs";
 import { resetStats } from "./executor/stats.mts";
 import { resetDecoderCache } from "./executor/decoder.mjs";
+import { coreEvents } from "./events.mjs";
 import {
     compileInterruptFunctions,
     enableInterrupts,
@@ -75,7 +76,7 @@ export let status = {
     execution_mode: ExecutionMode.User,
     interrupts_enabled: false,
 };
-
+/** @type {import("./core.d.ts").GUIVariables} */
 export const guiVariables = {
     previous_PC: 0n, // Used in the GUI to show the last executed instruction
     keep_highlighted: -1n, // Address to keep highlighted (used to highlight interrupted instructions)
@@ -291,18 +292,20 @@ export function reset() {
     status.display = "";
 
     // reset registers
-    if (typeof document !== "undefined" && document.app) {
-        // I'd _like_ to use REGISTERS_BACKUP and call it a day... but if I do
-        // that Vue doesn't notice the change and it doesn't update visually
-        for (const bank of REGISTERS) {
-            for (const reg of bank.elements) {
-                reg.value = reg.default_value;
-            }
+    // Restore register values from backup, preserving BigInt types
+    for (let i = 0; i < REGISTERS.length; i++) {
+        for (let j = 0; j < REGISTERS[i].elements.length; j++) {
+            // Copy value from backup, ensuring it's a BigInt
+            const backupValue = REGISTERS_BACKUP[i].elements[j].value;
+            REGISTERS[i].elements[j].value = typeof backupValue === 'bigint' 
+                ? backupValue 
+                : BigInt(backupValue);
         }
-    } else {
-        REGISTERS = JSON.parse(JSON.stringify(REGISTERS_BACKUP));
-        crex_clearRegisterCache();
     }
+    crex_clearRegisterCache();
+    
+    // Notify UI layers that all registers have been reset
+    coreEvents.emit("registers-reset");
 
     architecture.memory_layout.stack.start = backup_stack_address;
     architecture.memory_layout.data.end = backup_data_address;

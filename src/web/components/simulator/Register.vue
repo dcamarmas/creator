@@ -33,6 +33,11 @@ import {
   double2int_v2,
   double2bin,
 } from "@/core/utils/utils.mjs"
+import {
+  isRegisterGlowing,
+  setRegisterGlow,
+  clearRegisterGlow,
+} from "@/core/register/registerGlowState.mjs"
 
 export default defineComponent({
   props: {
@@ -41,15 +46,22 @@ export default defineComponent({
     double_precision: { type: Boolean, required: true },
     name_representation: { type: String, required: true },
     value_representation: { type: String, required: true },
+    indexComp: { type: Number, required: true },
+    indexElem: { type: Number, required: true },
   },
 
   emits: ["register-details"],
 
   data() {
     return {
-      render: 0, // dummy variable to force components with this as key to refresh
-      glow: false, // whether the button is glowing or not
+      render: false, // toggle this to trigger reactive recalculation
+      glow: false, // whether the button is glowing or not (persistent until next step)
     }
+  },
+
+  mounted() {
+    // Restore glow state from persistent store
+    this.glow = isRegisterGlowing(this.indexComp, this.indexElem)
   },
 
   computed: {
@@ -57,24 +69,38 @@ export default defineComponent({
       return "popoverValueContent" + this.register.name[0]
     },
 
-    reg_name() {
+    // Format register names horizontally separated by |
+    formattedRegNames() {
+      let names: string[]
+      
       switch (this.name_representation) {
         case "logical":
-          return this.register.name[0]
+          names = [this.register.name[0] ?? ""]
+          break
         case "alias":
           if (typeof this.register.name[1] === "undefined") {
-            return this.register.name[0]
+            names = [this.register.name[0] ?? ""]
+          } else {
+            names = this.register.name.slice(1, this.register.name.length)
           }
-
-          return this.register.name
-            .slice(1, this.register.name.length)
-            .join(" | ")
+          break
         case "all":
-          return this.register.name.join(" | ")
-
+          names = this.register.name
+          break
         default:
-          return ""
+          names = []
       }
+      
+      return names.join(" | ")
+    },
+
+    // Now a computed property! The render variable acts as a dependency
+    // When refresh() increments render, this recomputes automatically
+    reg_value(): string {
+      // Access render to create a reactive dependency
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+      this.render
+      return this.show_value(this.value_representation).toString()
     },
   },
 
@@ -82,13 +108,17 @@ export default defineComponent({
     creator_ga,
 
     refresh() {
-      // refreshes children components with `:key="render"`
-      this.render++
-      // make it glow
+      // toggle to trigger computed property recalculation
+      this.render = !this.render
+      // make it glow (persisted in global store)
       this.glow = true
-      setTimeout(() => {
-        this.glow = false
-      }, 500)
+      setRegisterGlow(this.indexComp, this.indexElem)
+    },
+
+    clearGlow() {
+      // clear the glow effect (from both component and global store)
+      this.glow = false
+      clearRegisterGlow(this.indexComp, this.indexElem)
     },
 
     showDetails() {
@@ -104,16 +134,6 @@ export default defineComponent({
         ieee64: this.show_value("ieee64"),
       })
       creator_ga("data", "data.view", "data.view.registers_details")
-    },
-
-    // I'd like for this to be a computed property, but it won't work because
-    // ✨ computed caching ✨
-    reg_value() {
-      let ret = this.show_value(this.value_representation).toString()
-      if (ret.length > 8) {
-        ret = ret.slice(0, 8) + "..."
-      }
-      return ret
     },
 
     // TODO: move to utils
@@ -208,14 +228,6 @@ export default defineComponent({
           return "N/A"
       }
 
-      // if (this.double_precision === "linked") {
-      //   ret = ret.toString()
-
-      //   if (ret.length > 10) {
-      //     return ret.slice(0, 8) + "..."
-      //   }
-      // }
-
       return ret
     },
   },
@@ -223,50 +235,91 @@ export default defineComponent({
 </script>
 
 <template>
-  <b-button
-    class="registers w-100 h-100"
-    variant="outline-secondary"
-    size="sm"
-    :class="{ registers: !glow, 'registers-glow': glow }"
+  <div
+    class="register-row"
+    :class="{ 'register-row-glow': glow }"
     :id="popoverId"
-    :key="render"
+    :key="+render"
     @click="showDetails"
   >
-    <span class="text-truncate">{{ reg_name }}</span>
-    &nbsp;
-    <transition>
-      <b-badge class="registerValue">
-        {{ reg_value() }}
-      </b-badge>
-    </transition>
-  </b-button>
+    <div class="register">
+      <div class="register-name register-name-horizontal">
+        {{ formattedRegNames }}
+      </div>
+      <div class="register-value">
+        {{ reg_value }}
+      </div>
+    </div>
+  </div>
 </template>
 
 <style lang="scss" scoped>
-@import "bootstrap/scss/bootstrap";
+.register-row {
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
 
-.registers {
-  background-color: #f8f9fa;
-  font-size: 1.03em;
+  &:hover {
+    background-color: rgba(var(--bs-primary-rgb), 0.08);
+  }
+
+  &.register-row-glow {
+    background-color: rgba(var(--bs-primary-rgb), 0.25);
+  }
 }
 
-.registers-glow {
-  background-color: #c2c2c2;
-  font-size: 1.03em;
+.register {
+  padding: 0;
+  min-width: 7.5rem;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  width: 100%;
 }
 
+.register-name {
+  font-weight: 600;
+  font-size: 0.875rem;
+  white-space: nowrap;
+  color: rgba(var(--bs-body-color-rgb), 1.0);
+  letter-spacing: 0.01em;
+  text-align: center;
+  padding: 0;
+  font-weight: 800;
+  background-color: rgba(var(--bs-secondary-rgb), 0.15);
+}
+
+.register-value {
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+  font-family: ui-monospace, 'SF Mono', 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace;
+  color: rgba(var(--bs-body-color-rgb), 0.95);
+  font-weight: 500;
+  text-align: center;
+  padding: 0rem 0.25rem;
+  background-color: rgba(var(--bs-light-rgb), 0.4);
+}
+
+// Dark mode adjustments
 [data-bs-theme="dark"] {
-  .registers {
-    background-color: #343a40;
-    color: $secondary;
+  .register-row {
+    
+    &:hover {
+      background-color: rgba(var(--bs-primary-rgb), 0.12);
+    }
   }
-
-  .registers:hover {
-    background-color: #4d5154;
+  
+  .register {
+    border-color: rgba(255, 255, 255, 0.15);
   }
-
-  .registers-glow {
-    background-color: #4d5154;
+  
+  .register-name {
+    color: rgba(255, 255, 255, 1.0);
+    background-color: rgba(255, 255, 255, 0.05);
+  }
+  
+  .register-value {
+    color: rgba(255, 255, 255, 0.95);
+    background-color: rgba(0, 0, 0, 0.3);
   }
 }
 </style>

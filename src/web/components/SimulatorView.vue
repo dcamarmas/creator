@@ -24,7 +24,6 @@ import { defineComponent, type PropType } from "vue"
 import type { StackFrame } from "@/core/memory/StackTracker.mjs"
 import { architecture } from "@/core/core.mjs"
 
-import UIeltoToolbar from "./general/UIeltoToolbar.vue"
 import TableExecution from "./simulator/TableExecution.vue"
 import DataViewSelector from "./simulator/DataViewSelector.vue"
 import RegisterFile from "./simulator/RegisterFile.vue"
@@ -67,7 +66,6 @@ export default defineComponent({
   },
 
   components: {
-    UIeltoToolbar,
     TableExecution,
     DataViewSelector,
     RegisterFile,
@@ -92,17 +90,6 @@ export default defineComponent({
     <b-row>
       <b-col>
         <!-- Navbar -->
-        <UIeltoToolbar
-          id="navbar_simulator"
-          components="btn_architecture,btn_assembly|btn_reset,btn_instruction,btn_run,btn_stop,btn_flash|btn_examples,btn_calculator|btn_configuration,btn_information"
-          :browser="browser"
-          :os="os"
-          :dark="dark"
-          :arch_available="arch_available"
-          :show_instruction_help="true"
-          :instructions="instructions"
-          ref="toolbar"
-        />
 
         <!-- Simulator navbar modals -->
 
@@ -128,9 +115,9 @@ export default defineComponent({
         <!-- Calculator -->
         <Calculator id="calculator" />
 
-        <b-row align-h="center">
+        <b-row align-h="center" class="simulator-main-row">
           <!-- Column 1: Execution instruction -->
-          <b-col lg="7">
+          <b-col cols="12" sm="12" md="6" lg="6" class="execution-instruction-col">
             <TableExecution
               :instructions="instructions"
               :enter="enter"
@@ -139,17 +126,19 @@ export default defineComponent({
           </b-col>
 
           <!-- Column 2: Execution data (split into top: data, bottom: terminal) -->
-          <b-col lg="5" class="execution-data-col">
-            <!-- Top row: current execution data (70%) -->
-            <b-row class="mb-2 execution-data-top">
-              <b-col>
-                <!-- View selector -->
+          <b-col cols="12" sm="12" md="6" lg="6" class="execution-data-col">
+            <!-- Top row: current execution data -->
+            <div class="execution-data-container">
+              <div class="execution-data-header">
+                <!-- View selector as tabs -->
                 <DataViewSelector
                   :data_mode="data_mode"
                   :register_file_num="architecture.components.length"
                   :dark="dark"
                 />
-
+              </div>
+              
+              <div class="execution-data-content">
                 <!-- Registers view -->
                 <RegisterFile
                   v-if="data_mode == 'int_registers' || data_mode == 'fp_registers'"
@@ -179,10 +168,10 @@ export default defineComponent({
                   :representation="stat_representation"
                   :type="stat_type"
                 />
-              </b-col>
-            </b-row>
+              </div>
+            </div>
 
-            <!-- Bottom row: terminal (30%) -->
+            <!-- Bottom row: terminal-->
             <b-row class="execution-data-bottom">
               <b-col class="terminal-col">
                 <Terminal
@@ -203,31 +192,104 @@ export default defineComponent({
 </template>
 
 <style lang="scss" scoped>
-.terminal-col {
+#simulator {
+  padding-top: 10px;
+  height: calc(90vh);
+  overflow: hidden;
+}
+
+#simulator > .row {
+  height: 100%;
+  max-height: 100%;
+}
+
+#simulator > .row > .col {
+  height: 100%;
+  max-height: 100%;
   display: flex;
   flex-direction: column;
-  /* Terminal fills the bottom area */
-  flex: 3 1 0%;
+}
+
+.simulator-main-row {
+  flex: 1;
+  min-height: 0;
+}
+
+.execution-instruction-col {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  min-height: 0;
+  max-height: 100%;
+  height: 100%;
+  border-radius: 8px;
 }
 
 .execution-data-col {
   display: flex;
   flex-direction: column;
   min-height: 0;
+  max-height: 100%;
+  height: 100%;
+  gap: 12px;
+}
+
+.execution-data-container {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.execution-data-header {
+  flex: 0 0 auto;
+  padding: 0;
+}
+
+.execution-data-content {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Make child components fill the content area properly */
+.execution-data-content :deep(.register-file-container),
+.execution-data-content :deep(.memory-container),
+.execution-data-content :deep(.stats-container) {
+  height: 100%;
+  max-height: 100%;
+  padding: 8px;
 }
 
 .execution-data-top {
-  flex: 8 1 0%;
+  flex: 1;
   min-height: 0;
-  overflow: auto; /* scroll if content is larger than area */
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.execution-data-top > .col {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .execution-data-bottom {
-  flex: 2 1 0%;
-  min-height: 0;
+  flex: 0 0 240px; /* Fixed height for terminal */
+  min-height: 240px;
+  max-height: 240px;
+  overflow: hidden;
+}
+
+.terminal-col {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 :deep() {
