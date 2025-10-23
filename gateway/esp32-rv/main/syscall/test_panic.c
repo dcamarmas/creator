@@ -159,7 +159,6 @@ int read_buffer_string(char *dest, int length){
 }
 
 void read_string(char *dest, int length) {
-    int value = 0;
     int i = -1;
     int sum = 0;
     while (i == -1){

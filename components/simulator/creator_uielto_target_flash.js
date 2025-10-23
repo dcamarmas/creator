@@ -285,9 +285,6 @@
                                                                                                       if (JSON.stringify(data, null, 2).includes('No UART port found')) {
                                                                                                         show_notification('Error flashing: Not found UART port', 'danger');
                                                                                                       }
-                                                                                                      if (JSON.stringify(data, null, 2).includes('cr_ functions are not supported in this mode')) {
-                                                                                                        show_notification('CREATino code in CREATOR module. Make sure the "Arduino Support" checkbox is selected', 'danger');
-                                                                                                      }
                                                                                                     } ) ;
 
                         //Google Analytics
@@ -342,6 +339,9 @@
                                                                                                           if (JSON.stringify(data, null, 2).includes('No UART port found')) {
                                                                                                             show_notification('Error: Not found UART port', 'danger');
                                                                                                           }
+                                                                                                          if (JSON.stringify(data, null, 2).includes('No ELF file found')) {
+                                                                                                            show_notification('Error: Built proyect not found', 'danger');
+                                                                                                          }
                                                                                                         } ) ;
 
                         //Google Analytics
@@ -361,9 +361,17 @@
                                     } ;
 
                         this_env = this;
-                        gateway_remote_monitor(this.flash_url + "/debug", farg).then( function(data)  { 
-                                                                                                          this_env.debugging = false; 
-                                                                                                          //show_notification(data, 'danger') ;
+                      gateway_remote_monitor(this.flash_url + "/debug", farg).then( function(data)  { 
+                                                                                                      this_env.debugging = false;                                                
+                                                                                                      if (JSON.stringify(data, null, 2).includes('No ELF file found in build directory')) {
+                                                                                                        show_notification('Error: Not found proyect to debug', 'danger');
+                                                                                                      }
+                                                                                                      if (JSON.stringify(data, null, 2).includes('No JTAG found')) {
+                                                                                                        show_notification('Error: JTAG no connected. Check wire installment', 'danger');
+                                                                                                      }
+                                                                                                      if (JSON.stringify(data, null, 2).includes('No UART found')) {
+                                                                                                        show_notification('Error: UART no connected. Check wire installment', 'danger');
+                                                                                                      }
                                                                                                         } ) ;
 
                         //Google Analytics
@@ -691,7 +699,7 @@
                                         '               <b-container fluid align-h="center" class="mx-0 px-0">' +
                     '                 <b-row cols="1" align-h="center">' +
                     '                   <b-col class="pt-2">' +
-                    '                     <label for="range-6">(!!) (NEW) Install the python version stable for this driver(python 3.9):</label>' +
+                    '                     <label for="range-6">(!!) (NEW) Install the python version stable for this driver(python 3.9 or 3.10):</label>' +
                     '                     <b-card class="text-center">' +
                     '                       <b-row no-gutters>' +
                     '                         <b-col md="12">' +
@@ -706,7 +714,12 @@
                     '                              <div style="margin-bottom:1em;">' +
                     '                                  <span><b>How to change Python environment if you have another installed:</b></span>' +
                     '                                  <code style="background-color:#f5f5f5; padding:5px 10px; border-radius:5px; display:block; margin-top:5px;">' +
-                    'sudo update-alternatives --set python3 /usr/bin/python3.9' +
+                    'python3.9 -m venv ~/.espressif/python_env/idf5.3_py3.9_env\n' +
+                    'source ~/.espressif/python_env/idf5.3_py3.9_env/bin/activate' +
+                    '                                  </code>' +
+                    '                                  <span><b>Check and erase if you have newer python environment versions (by default it will choose the newer one):</b></span>' +
+                    '                                  <code style="background-color:#f5f5f5; padding:5px 10px; border-radius:5px; display:block; margin-top:5px;">' +
+                    'rm -rf ~/.espressif/python_env/idf5.3_py3.10_en\n' +
                     '                                  </code>' +
                     '                           </b-card-text>' +
                     '                         </b-col>' +
@@ -741,7 +754,6 @@
                     '                       <b-row no-gutters>' +
                     '                         <b-col md="12">' +
                     '                           <b-card-text style="text-align: left;margin:2%;">' +
-                    '                              <span>Install </span><a href="https://docs.espressif.com/projects/esp-idf/en/v3.3.3/api-guides/jtag-debugging/setup-openocd-linux.html" target="_blank">Openocd</a><br>' +
                     '                              <span>Install the GDB web interface: </span><code>pip3 install gdbgui</code> ' +
                     '                           </b-card-text>' +
                     '                         </b-col>' +
