@@ -66,13 +66,17 @@ jobs:
       - name: Install dependencies
         uses: ./.github/actions/dependencies
       - name: Build cli binaries
-        run: bun run-p build:cli:windows build:cli:mac-x64 build:cli:mac-arm build:cli:linux-x64 build:cli:linux-arm
+        run: |
+          bun run-p build:cli:windows build:cli:mac-x64 build:cli:mac-arm build:cli:linux-x64 build:cli:linux-arm
+          zip architectures.zip architecture/*.yml architecture/**/*.yml
       - name: Upload cli binaries artifact
         uses: pyTooling/upload-artifact@v4
         with:
           name: cli-binaries
           working-directory: "."
-          path: creator-cli-*
+          path: |
+            creator-cli-*
+            architectures.zip
           if-no-files-found: error
           compression-level: 3
 
@@ -116,7 +120,9 @@ jobs:
           tag_name: nightly
           target_commitish: ${{ github.sha }}
           fail_on_unmatched_files: true
-          files: creator-cli-*
+          files: |
+            creator-cli-*
+            architectures.zip
 
   publish-stable:
     name: Publish latest tagged release
@@ -138,7 +144,9 @@ jobs:
         with:
           make_latest: true
           fail_on_unmatched_files: true
-          files: creator-cli-*
+          files: |
+            creator-cli-*
+            architectures.zip
 
   deploy-pages:
     name: Deploy CREATOR to GitHub Pages
