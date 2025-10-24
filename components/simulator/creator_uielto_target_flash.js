@@ -713,10 +713,10 @@
                     '                              </div>' +
                     '                              <div style="margin-bottom:1em;">' +
                     '                                  <span><b>How to change Python environment if you have another installed:</b></span>' +
-                    '                                  <code style="background-color:#f5f5f5; padding:5px 10px; border-radius:5px; display:block; margin-top:5px;">' +
+                    '                                  <pre style="background-color:#f5f5f5; padding:10px; border-radius:5px; margin-top:5px;">' +
                     'python3.9 -m venv ~/.espressif/python_env/idf5.3_py3.9_env\n' +
                     'source ~/.espressif/python_env/idf5.3_py3.9_env/bin/activate' +
-                    '                                  </code>' +
+                    '                                  </pre>' +
                     '                                  <span><b>Check and erase if you have newer python environment versions (by default it will choose the newer one):</b></span>' +
                     '                                  <code style="background-color:#f5f5f5; padding:5px 10px; border-radius:5px; display:block; margin-top:5px;">' +
                     'rm -rf ~/.espressif/python_env/idf5.3_py3.10_en\n' +
@@ -780,9 +780,13 @@
                     '                       <b-row no-gutters>' +
                     '                         <b-col md="12">' +
                     '                           <b-card-text style="text-align: justify;margin:2%;">' +
+                    '                             <span>Install ESP-IDF dependencies inside the virtual environment:</span>' +
+                    '                             <br>' +
+                    '                             <code> $HOME/esp-idf-v5.3.2/install.sh</code>' +
+                    '                             <br>' +
                     '                             <span>Load the environment variable for your board with:</span>' +
                     '                             <br>' +
-                    '                             <code>. $HOME/esp/esp-idf/export.sh</code>' +
+                    '                             <code>. $HOME/esp-idf-v5.3.2/export.sh</code>' +
                     '                             <br>' +
                     '                             <br>' +
                     '                             <span>Unzip the driver.zip file and change into the driver directory associated to your board with "cd &lt;board&gt;", for example:</span>' +
