@@ -736,21 +736,12 @@ export default defineComponent({
                     id="confirm-popup"
                     v-model="showPopup"
                     title="Confirm Action"
+                    @ok="confirmAction"
                   >
-                    <p>
-                      This action will delete your previous work. Are you sure
-                      you want to proceed?
-                    </p>
-                    <template #modal-footer>
-                      <b-button variant="secondary" @click="showPopup = false">
-                        Cancel
-                      </b-button>
-                      <b-button variant="primary" @click="confirmAction">
-                        Confirm
-                      </b-button>
-                    </template>
+                    This action will delete your previous work. Are you sure you
+                    want to proceed?
                   </b-modal>
-                </b-col>
+		</b-col>
 
                 <!-- Columna 2: Monitor, Debug y Stop -->
                 <b-col class="d-grid gap-3">
