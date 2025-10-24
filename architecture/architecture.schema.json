@@ -1,0 +1,1417 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "$id": "https://rajayonin.github.io/creatorV/docs/architecture.schema.json",
+  "title": "CREATOR Architecture definition",
+  "description": "v2",
+  "type": "object",
+  "required": [
+    "components",
+    "config",
+    "instructions",
+    "memory_layout",
+    "version"
+  ],
+  "properties": {
+    "version": {
+      "description": "Architecture version",
+      "type": "string"
+    },
+    "components": {
+      "description": "Components (register files) of the architecture. It's assumed that the first register of the first file will contain the program counter",
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Component"
+      }
+    },
+    "config": {
+      "description": "Metadata about the architecture Order of elements is assumed to be name, bits, description, data format, memory alignment, main function, passing convention, and sensitive register name",
+      "allOf": [
+        {
+          "$ref": "#/definitions/Config"
+        }
+      ]
+    },
+    "directives": {
+      "description": "Directives allowed",
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Directive"
+      }
+    },
+    "enums": {
+      "description": "Definitions of possible enumerated instruction fields",
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "DEFAULT": { "type": "string" }
+        },
+        "additionalProperties": {
+          "type": "integer"
+        }
+      }
+    },
+
+    "templates": {
+      "description": "Instructions templates",
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/TemplateInstruction"
+      }
+    },
+    "instructions": {
+      "description": "Instructions allowed",
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "$ref": "#/definitions/Instruction"
+        }
+      }
+    },
+    "interrupts": {
+      "description": "Interrupt configuration",
+      "anyOf": [
+        {
+          "$ref": "#/definitions/Interrupts"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "memory_layout": {
+      "description": "Memory layout of the architecture. Order of elements is assumed to be optionally ktext start/end and kdata start/end, followed by text start/end, data start/end, and stack start/end",
+      "allOf": [
+        {
+          "$ref": "#/definitions/MemoryLayout"
+        }
+      ]
+    },
+    "modifiers": {
+      "description": "Definitions of possible modifiers",
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/definitions/Modifier"
+      }
+    },
+    "pseudoinstructions": {
+      "description": "Pseudoinstructions allowed",
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "$ref": "#/definitions/Pseudoinstruction"
+        }
+      }
+    },
+    "timer": {
+      "description": "Timer configuration",
+      "anyOf": [
+        {
+          "$ref": "#/definitions/Timer"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "definitions": {
+    "AlignmentType": {
+      "description": "Data alignment types",
+      "oneOf": [
+        {
+          "description": "Align data to n bytes",
+          "type": "string",
+          "enum": ["balign"]
+        },
+        {
+          "description": "Align data to 2^n bytes",
+          "type": "string",
+          "enum": ["align"]
+        }
+      ]
+    },
+    "BaseN_for_2": {
+      "description": "Wrapper for integers that can be deserialized from a string representing an integer in base N",
+      "type": "string"
+    },
+    "BitPosition": {
+      "description": "Position of the start/end bit of a field in a binary instruction",
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 0.0
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0.0
+          }
+        }
+      ]
+    },
+    "Component": {
+      "description": "Register file",
+      "type": "object",
+      "required": ["double_precision", "elements", "name", "type"],
+      "properties": {
+        "double_precision": {
+          "description": "Whether the registers have double the word size",
+          "type": "boolean"
+        },
+        "elements": {
+          "description": "Registers in this file",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Register"
+          }
+        },
+        "name": {
+          "description": "Name of the register file",
+          "type": "string"
+        },
+        "type": {
+          "description": "Type of the registers",
+          "allOf": [
+            {
+              "$ref": "#/definitions/ComponentType"
+            }
+          ]
+        }
+      }
+    },
+    "ComponentType": {
+      "description": "Types of register files allowed",
+      "oneOf": [
+        {
+          "description": "Control registers",
+          "type": "string",
+          "enum": ["ctrl_registers"]
+        },
+        {
+          "description": "Integer registers",
+          "type": "string",
+          "enum": ["int_registers"]
+        },
+        {
+          "description": "Floating point registers",
+          "type": "string",
+          "enum": ["fp_registers"]
+        }
+      ]
+    },
+    "Config": {
+      "description": "Architecture metadata attributes",
+      "type": "object",
+      "required": [
+        "description",
+        "endianness",
+        "main_function",
+        "memory_alignment",
+        "name",
+        "passing_convention",
+        "sensitive_register_name",
+        "word_size"
+      ],
+      "properties": {
+        "comment_prefix": {
+          "description": "String to use as line comment prefix",
+          "type": "string"
+        },
+        "description": {
+          "description": "Description of the architecture",
+          "type": "string"
+        },
+        "endianness": {
+          "description": "Storage format of the architecture (big/little endian)",
+          "allOf": [
+            {
+              "$ref": "#/definitions/Endianness"
+            }
+          ]
+        },
+        "main_function": {
+          "description": "Name of the `main` function of the program",
+          "type": "string"
+        },
+        "memory_alignment": {
+          "description": "Whether to enable memory alignment",
+          "type": "boolean"
+        },
+        "name": {
+          "description": "Name of the architecture",
+          "type": "string"
+        },
+        "passing_convention": {
+          "description": "Whether to enable function parameter passing convention checks",
+          "type": "boolean"
+        },
+        "sensitive_register_name": {
+          "description": "Whether the register names should be case sensitive (`true`) or not (`false`)",
+          "type": "boolean"
+        },
+        "word_size": {
+          "description": "Word size in bits",
+          "type": "integer",
+          "minimum": 0.0
+        }
+      }
+    },
+    "Directive": {
+      "description": "Directive specification",
+      "type": "object",
+      "required": ["action", "name"],
+      "properties": {
+        "action": {
+          "description": "Action of the directive",
+          "allOf": [
+            {
+              "$ref": "#/definitions/DirectiveAction_for_DirectiveData"
+            }
+          ]
+        },
+        "name": {
+          "description": "Name of the directive",
+          "type": "string"
+        },
+        "size": {
+          "description": "Size in bytes of values associated with this directive",
+          "default": null,
+          "type": ["integer", "null"],
+          "minimum": 0.0
+        }
+      }
+    },
+    "DirectiveAction_for_DirectiveData": {
+      "description": "Allowed actions for directives",
+      "anyOf": [
+        {
+          "description": "Ignore this directive",
+          "allOf": [
+            {
+              "$ref": "#/definitions/Nop"
+            }
+          ]
+        },
+        {
+          "description": "Switch to the given segment",
+          "allOf": [
+            {
+              "$ref": "#/definitions/DirectiveSegment"
+            }
+          ]
+        },
+        {
+          "description": "Store symbols in an external symbols table",
+          "allOf": [
+            {
+              "$ref": "#/definitions/GlobalSymbol"
+            }
+          ]
+        },
+        {
+          "description": "Add data to the data segment",
+          "allOf": [
+            {
+              "$ref": "#/definitions/DirectiveData"
+            }
+          ]
+        }
+      ]
+    },
+    "DirectiveData": {
+      "description": "Data segment types",
+      "anyOf": [
+        {
+          "description": "Store n * size null bytes in the data segment",
+          "allOf": [
+            {
+              "$ref": "#/definitions/Space"
+            }
+          ]
+        },
+        {
+          "description": "Store string",
+          "allOf": [
+            {
+              "$ref": "#/definitions/StringType"
+            }
+          ]
+        },
+        {
+          "description": "Store integer",
+          "allOf": [
+            {
+              "$ref": "#/definitions/IntegerType"
+            }
+          ]
+        },
+        {
+          "description": "Store floating point value",
+          "allOf": [
+            {
+              "$ref": "#/definitions/FloatType"
+            }
+          ]
+        },
+        {
+          "description": "Align the next data value to a given size",
+          "allOf": [
+            {
+              "$ref": "#/definitions/AlignmentType"
+            }
+          ]
+        }
+      ]
+    },
+    "DirectiveSegment": {
+      "description": "Memory segment to switch to",
+      "type": "string",
+      "enum": [
+        "kernel_code_segment",
+        "kernel_data_segment",
+        "code_segment",
+        "data_segment"
+      ]
+    },
+    "Endianness": {
+      "description": "Endianness of data in the architecture",
+      "type": "string",
+      "enum": ["big_endian", "little_endian"]
+    },
+    "FloatType": {
+      "description": "Types of floats allowed",
+      "oneOf": [
+        {
+          "description": "32 bit float",
+          "type": "string",
+          "enum": ["float"]
+        },
+        {
+          "description": "64 bit double",
+          "type": "string",
+          "enum": ["double"]
+        }
+      ]
+    },
+    "GlobalSymbol": {
+      "description": "Store symbols in an external symbols table",
+      "type": "string",
+      "enum": ["global_symbol"]
+    },
+    "Instruction": {
+      "description": "Instruction specification",
+      "type": "object",
+      "required": ["definition", "fields", "name", "template"],
+      "properties": {
+        "template": { "type": "string" },
+        "clk_cycles": {
+          "description": "Execution time of the instruction",
+          "type": ["integer", "null"]
+        },
+        "co": {
+          "description": "Binary op code",
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseN_for_2"
+            }
+          ]
+        },
+        "definition": {
+          "description": "Code to execute for the instruction",
+          "type": "string"
+        },
+        "fields": {
+          "description": "Parameters of the instruction",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/InstructionField_for_BitRange"
+          }
+        },
+        "name": {
+          "description": "Name of the instruction",
+          "type": "string"
+        },
+        "nwords": {
+          "description": "Size of the instruction",
+          "type": "integer",
+          "minimum": 0.0
+        },
+        "properties": {
+          "description": "Properties of the instruction",
+          "type": ["array", "null"],
+          "items": {
+            "$ref": "#/definitions/InstructionProperties"
+          }
+        },
+        "signature_definition": {
+          "description": "Syntax specification of the instruction. `[fF]\\d+` is interpreted as the field with index `i` of the instruction. Other characters are interpreted literally. Ex: `F0 F3 F1 (F2)`",
+          "type": "string"
+        },
+        "type": {
+          "description": "Type of the instruction",
+          "allOf": [
+            {
+              "$ref": "#/definitions/InstructionType"
+            }
+          ]
+        }
+      }
+    },
+    "TemplateInstruction": {
+      "description": "Instruction specification",
+      "type": "object",
+      "required": ["fields"],
+      "properties": {
+        "clk_cycles": {
+          "description": "Execution time of the instruction",
+          "type": ["integer", "null"]
+        },
+        "co": {
+          "description": "Binary op code",
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseN_for_2"
+            }
+          ]
+        },
+        "fields": {
+          "description": "Parameters of the instruction",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/TemplateInstructionField_for_BitRange"
+          }
+        },
+        "nwords": {
+          "description": "Size of the instruction",
+          "type": "integer",
+          "minimum": 0.0
+        },
+        "properties": {
+          "description": "Properties of the instruction",
+          "type": ["array", "null"],
+          "items": {
+            "$ref": "#/definitions/InstructionProperties"
+          }
+        },
+        "signature_definition": {
+          "description": "Syntax specification of the instruction. `[fF]\\d+` is interpreted as the field with index `i` of the instruction. Other characters are interpreted literally. Ex: `F0 F3 F1 (F2)`",
+          "type": "string"
+        },
+        "type": {
+          "description": "Type of the instruction",
+          "allOf": [
+            {
+              "$ref": "#/definitions/InstructionType"
+            }
+          ]
+        }
+      }
+    },
+    "InstructionField_for_BitRange": {
+      "description": "Instruction field specification",
+      "type": "object",
+      "anyOf": [
+        {
+          "description": "Opcode of the instruction",
+          "type": "object",
+          "required": ["type"],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["co"]
+            }
+          }
+        },
+        {
+          "description": "Extended operation code",
+          "type": "object",
+          "required": ["value"],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["cop"]
+            },
+            "value": {
+              "description": "Fixed value of this field in the binary instruction (specified as a binary string)",
+              "allOf": [
+                {
+                  "$ref": "#/definitions/BaseN_for_2"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "description": "Immediate signed integer",
+          "type": "object",
+          "required": ["type"],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["imm-signed"]
+            }
+          }
+        },
+        {
+          "description": "Immediate unsigned integer",
+          "type": "object",
+          "required": ["type"],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["imm-unsigned"]
+            }
+          }
+        },
+        {
+          "description": "Offset from the next instruction's address in bytes",
+          "type": "object",
+          "required": ["type"],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["offset_bytes"]
+            }
+          }
+        },
+        {
+          "description": "Offset from the next instruction's address in words",
+          "type": "object",
+          "required": ["type"],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["offset_words"]
+            }
+          }
+        },
+        {
+          "description": "Control register",
+          "type": "object",
+          "required": ["type"],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["Ctrl-Reg"]
+            }
+          }
+        },
+        {
+          "description": "Integer register",
+          "type": "object",
+          "required": ["type"],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["INT-Reg"]
+            }
+          }
+        },
+        {
+          "description": "Double precision floating point register",
+          "type": "object",
+          "required": ["type"],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["DFP-Reg"]
+            }
+          }
+        },
+        {
+          "description": "Single precision floating point register",
+          "type": "object",
+          "required": ["type"],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["SFP-Reg"]
+            }
+          }
+        },
+        {
+          "description": "Immediate address, equivalent to `ImmUnsigned`",
+          "type": "object",
+          "required": ["type"],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["address"]
+            }
+          }
+        },
+        {
+          "description": "Enumerated field that only allows a predefined set of names to be used",
+          "type": "object",
+          "required": ["enum_name", "type"],
+          "properties": {
+            "enum_name": {
+              "description": "Name of the enumeration, defined in [`Architecture::enums`]",
+              "type": "string"
+            },
+            "type": {
+              "type": "string",
+              "enum": ["enum"]
+            }
+          }
+        },
+        {}
+      ],
+      "required": [],
+      "properties": {
+        "name": {
+          "description": "Name of the field",
+          "type": "string"
+        },
+        "padding": {
+          "description": "Amount of least significant bits from the value that should be ignored",
+          "default": 0,
+          "type": "integer",
+          "minimum": 0.0
+        },
+        "startbit": {
+          "description": "Starting position of the field, ignored for pseudoinstructions. Will be applied from the MSB of the value to the LSB",
+          "allOf": [
+            {
+              "$ref": "#/definitions/BitPosition"
+            }
+          ]
+        },
+        "stopbit": {
+          "description": "End position of the field, ignored for pseudoinstructions. Will be applied from the MSB of the value to the LSB",
+          "allOf": [
+            {
+              "$ref": "#/definitions/BitPosition"
+            }
+          ]
+        },
+        "prefix": {
+          "description": "Prefix for the field",
+          "type": ["string", "null"]
+        },
+        "suffix": {
+          "description": "Suffix for the field",
+          "type": ["string", "null"]
+        }
+      }
+    },
+
+    "TemplateInstructionField_for_BitRange": {
+      "description": "Instruction field specification",
+      "type": "object",
+      "oneOf": [
+        {
+          "description": "Opcode of the instruction",
+          "type": "object",
+          "required": ["type"],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["co"]
+            }
+          }
+        },
+        {
+          "description": "Extended operation code",
+          "type": "object",
+          "required": ["type"],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["cop"]
+            }
+          }
+        },
+        {
+          "description": "Immediate signed integer",
+          "type": "object",
+          "required": ["type"],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["imm-signed"]
+            }
+          }
+        },
+        {
+          "description": "Immediate unsigned integer",
+          "type": "object",
+          "required": ["type"],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["imm-unsigned"]
+            }
+          }
+        },
+        {
+          "description": "Offset from the next instruction's address in bytes",
+          "type": "object",
+          "required": ["type"],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["offset_bytes"]
+            }
+          }
+        },
+        {
+          "description": "Offset from the next instruction's address in words",
+          "type": "object",
+          "required": ["type"],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["offset_words"]
+            }
+          }
+        },
+        {
+          "description": "Control register",
+          "type": "object",
+          "required": ["type"],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["Ctrl-Reg"]
+            }
+          }
+        },
+        {
+          "description": "Integer register",
+          "type": "object",
+          "required": ["type"],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["INT-Reg"]
+            }
+          }
+        },
+        {
+          "description": "Double precision floating point register",
+          "type": "object",
+          "required": ["type"],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["DFP-Reg"]
+            }
+          }
+        },
+        {
+          "description": "Single precision floating point register",
+          "type": "object",
+          "required": ["type"],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["SFP-Reg"]
+            }
+          }
+        },
+        {
+          "description": "Not Set",
+          "type": "object",
+          "required": ["type"],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["Not-Set"]
+            }
+          }
+        },
+        {
+          "description": "Immediate address, equivalent to `ImmUnsigned`",
+          "type": "object",
+          "required": ["type"],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["address"]
+            }
+          }
+        },
+        {
+          "description": "Enumerated field that only allows a predefined set of names to be used",
+          "type": "object",
+          "required": ["enum_name", "type"],
+          "properties": {
+            "enum_name": {
+              "description": "Name of the enumeration, defined in [`Architecture::enums`]",
+              "type": "string"
+            },
+            "type": {
+              "type": "string",
+              "enum": ["enum"]
+            }
+          }
+        }
+      ],
+      "required": ["name", "startbit", "stopbit"],
+      "properties": {
+        "name": {
+          "description": "Name of the field",
+          "type": "string"
+        },
+        "padding": {
+          "description": "Amount of least significant bits from the value that should be ignored",
+          "default": 0,
+          "type": "integer",
+          "minimum": 0.0
+        },
+        "startbit": {
+          "description": "Starting position of the field, ignored for pseudoinstructions. Will be applied from the MSB of the value to the LSB",
+          "allOf": [
+            {
+              "$ref": "#/definitions/BitPosition"
+            }
+          ]
+        },
+        "stopbit": {
+          "description": "End position of the field, ignored for pseudoinstructions. Will be applied from the MSB of the value to the LSB",
+          "allOf": [
+            {
+              "$ref": "#/definitions/BitPosition"
+            }
+          ]
+        },
+        "prefix": {
+          "description": "Prefix for the field",
+          "type": ["string", "null"]
+        },
+        "suffix": {
+          "description": "Suffix for the field",
+          "type": ["string", "null"]
+        }
+      }
+    },
+    "InstructionField_for_Null": {
+      "description": "Instruction field specification",
+      "type": "object",
+      "oneOf": [
+        {
+          "description": "Opcode of the instruction",
+          "type": "object",
+          "required": ["type"],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["co"]
+            }
+          }
+        },
+        {
+          "description": "Extended operation code",
+          "type": "object",
+          "required": ["type", "value"],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["cop"]
+            },
+            "value": {
+              "description": "Fixed value of this field in the binary instruction (specified as a binary string)",
+              "allOf": [
+                {
+                  "$ref": "#/definitions/BaseN_for_2"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "description": "Immediate signed integer",
+          "type": "object",
+          "required": ["type"],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["imm-signed"]
+            }
+          }
+        },
+        {
+          "description": "Immediate unsigned integer",
+          "type": "object",
+          "required": ["type"],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["imm-unsigned"]
+            }
+          }
+        },
+        {
+          "description": "Offset from the next instruction's address in bytes",
+          "type": "object",
+          "required": ["type"],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["offset_bytes"]
+            }
+          }
+        },
+        {
+          "description": "Offset from the next instruction's address in words",
+          "type": "object",
+          "required": ["type"],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["offset_words"]
+            }
+          }
+        },
+        {
+          "description": "Control register",
+          "type": "object",
+          "required": ["type"],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["Ctrl-Reg"]
+            }
+          }
+        },
+        {
+          "description": "Integer register",
+          "type": "object",
+          "required": ["type"],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["INT-Reg"]
+            }
+          }
+        },
+        {
+          "description": "Double precision floating point register",
+          "type": "object",
+          "required": ["type"],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["DFP-Reg"]
+            }
+          }
+        },
+        {
+          "description": "Single precision floating point register",
+          "type": "object",
+          "required": ["type"],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["SFP-Reg"]
+            }
+          }
+        },
+        {
+          "description": "Immediate address, equivalent to `ImmUnsigned`",
+          "type": "object",
+          "required": ["type"],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["address"]
+            }
+          }
+        },
+        {
+          "description": "Enumerated field that only allows a predefined set of names to be used",
+          "type": "object",
+          "required": ["enum_name", "type"],
+          "properties": {
+            "enum_name": {
+              "description": "Name of the enumeration, defined in [`Architecture::enums`]",
+              "type": "string"
+            },
+            "type": {
+              "type": "string",
+              "enum": ["enum"]
+            }
+          }
+        }
+      ],
+      "required": [],
+      "properties": {
+        "name": {
+          "description": "Name of the field",
+          "type": "string"
+        }
+      }
+    },
+    "InstructionProperties": {
+      "description": "Allowed instruction properties",
+      "type": "string",
+      "enum": ["exit_subroutine", "enter_subroutine", "privileged"]
+    },
+    "InstructionType": {
+      "description": "Allowed instruction types",
+      "type": "string",
+      "enum": [
+        "Arithmetic integer",
+        "Arithmetic floating point",
+        "Logic",
+        "Comparison",
+        "Control",
+        "I/O",
+        "Conditional bifurcation",
+        "Unconditional bifurcation",
+        "Syscall",
+        "Function call",
+        "Transfer between registers",
+        "Memory access",
+        "Other"
+      ]
+    },
+    "IntegerType": {
+      "description": "Types of integers allowed",
+      "type": "string",
+      "enum": ["byte", "half_word", "word", "double_word"]
+    },
+    "Interrupts": {
+      "type": "object",
+      "required": [
+        "check",
+        "clear",
+        "create",
+        "disable",
+        "enable",
+        "enabled",
+        "get_handler_addr",
+        "is_enabled"
+      ],
+      "properties": {
+        "check": {
+          "description": "JS code to be executed in order to check whether an interrupt happened. It must return an `InterruptType` (if an interrupt happened) or `null` (if it didn't)",
+          "type": "string"
+        },
+        "clear": {
+          "description": "JS code to be executed in order to clear an interrupt",
+          "type": "string"
+        },
+        "create": {
+          "description": "JS arrow (lambda) function to be executed in order to set an interrupt given an interrupt type",
+          "type": "string"
+        },
+        "disable": {
+          "description": "JS code to be executed in order to disable interrupts",
+          "type": "string"
+        },
+        "enable": {
+          "description": "JS code to be executed in order to enable interrupts",
+          "type": "string"
+        },
+        "enabled": {
+          "description": "Controls whether interrupts are enabled by default (`true`) or not (`false`)",
+          "type": "boolean"
+        },
+        "get_handler_addr": {
+          "description": "JS code to be executed in order to obtain the interrupt handler address",
+          "type": "string"
+        },
+        "is_enabled": {
+          "description": "JS code to be executed in order to check whether interrupts are enabled",
+          "type": "string"
+        }
+      }
+    },
+    "MemoryLayout": {
+      "description": "Memory layout of the architecture",
+      "type": "object",
+      "required": ["data", "stack", "text"],
+      "properties": {
+        "data": {
+          "description": "Addresses reserved for the data segment",
+          "allOf": [
+            {
+              "$ref": "#/definitions/Range_of_Integer"
+            }
+          ]
+        },
+        "kdata": {
+          "description": "Addresses reserved for the kernel data segment",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Range_of_Integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "ktext": {
+          "description": "Addresses reserved for the kernel text segment",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Range_of_Integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "stack": {
+          "description": "Addresses reserved for the stack segment",
+          "allOf": [
+            {
+              "$ref": "#/definitions/Range_of_Integer"
+            }
+          ]
+        },
+        "text": {
+          "description": "Addresses reserved for the text segment",
+          "allOf": [
+            {
+              "$ref": "#/definitions/Range_of_Integer"
+            }
+          ]
+        }
+      }
+    },
+    "Modifier": {
+      "description": "Definition of a expression modifier, an operator which returns a slice of bits from its input",
+      "type": "object",
+      "required": ["lower_signed", "output_signed", "range"],
+      "properties": {
+        "lower_signed": {
+          "description": "Whether to account for the lower (unselected) bits being treated as a signed number. If `true`, will add 1 to the output if that number would have been negative",
+          "type": "boolean"
+        },
+        "output_signed": {
+          "description": "Whether to return the result as a signed (`true`) or unsigned (`false`) number. If the range of bits selected has no upper bound, the sign of the input will always be preserved",
+          "type": "boolean"
+        },
+        "range": {
+          "description": "Range of bits to select from the expression's value",
+          "type": "array",
+          "items": [
+            {
+              "type": "integer",
+              "minimum": 0.0
+            },
+            {
+              "type": ["integer", "null"],
+              "minimum": 0.0
+            }
+          ],
+          "maxItems": 2,
+          "minItems": 2
+        }
+      }
+    },
+    "Nop": {
+      "description": "Ignore this directive",
+      "type": "string",
+      "enum": ["nop"]
+    },
+    "Pseudoinstruction": {
+      "description": "Pseudoinstruction specification",
+      "type": "object",
+      "required": ["definition", "name"],
+      "properties": {
+        "definition": {
+          "description": "Code to execute for the instruction",
+          "type": "string"
+        },
+        "fields": {
+          "description": "Parameters of the instruction",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/InstructionField_for_Null"
+          }
+        },
+        "name": {
+          "description": "Name of the pseudoinstruction",
+          "type": "string"
+        },
+        "properties": {
+          "description": "Properties of the instruction",
+          "type": ["array", "null"],
+          "items": {
+            "$ref": "#/definitions/InstructionProperties"
+          }
+        },
+        "signature_definition": {
+          "description": "Syntax specification of the instruction. `[fF]\\d+` is interpreted as the field with index `i` of the instruction. Other characters are interpreted literally. Ex: `F0 F3 F1 (F2)`",
+          "type": "string"
+        }
+      }
+    },
+    "Range_of_Integer": {
+      "type": "object",
+      "required": ["end", "start"],
+      "properties": {
+        "end": {
+          "type": "integer"
+        },
+        "start": {
+          "type": "integer"
+        }
+      }
+    },
+    "Register": {
+      "description": "Register specification",
+      "type": "object",
+      "required": ["encoding", "name", "nbits", "properties", "value"],
+      "properties": {
+        "default_value": {
+          "description": "Default value of the register",
+          "default": null,
+          "type": ["number", "null"]
+        },
+        "encoding": {
+          "description": "Encoding of the register in an instruction",
+          "type": "integer"
+        },
+        "name": {
+          "description": "List of aliases",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "nbits": {
+          "description": "Size",
+          "type": "integer"
+        },
+        "properties": {
+          "description": "Properties of this register",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/RegisterProperty"
+          }
+        },
+        "value": {
+          "description": "Current value of the register",
+          "type": "number"
+        }
+      }
+    },
+    "RegisterProperty": {
+      "description": "Properties of a register",
+      "oneOf": [
+        {
+          "description": "Register can be read",
+          "type": "string",
+          "enum": ["read"]
+        },
+        {
+          "description": "Register can be written",
+          "type": "string",
+          "enum": ["write"]
+        },
+        {
+          "description": "Register should be preserved across routine calls",
+          "type": "string",
+          "enum": ["saved"]
+        },
+        {
+          "description": "Register contains the program counter",
+          "type": "string",
+          "enum": ["program_counter"]
+        },
+        {
+          "description": "Register to save PC in during interruptions",
+          "type": "string",
+          "enum": ["exception_program_counter"]
+        },
+        {
+          "description": "Interruption ID register",
+          "type": "string",
+          "enum": ["event_cause"]
+        },
+        {
+          "description": "Register can only be used on kernel mode",
+          "type": "string",
+          "enum": ["status_register"]
+        },
+        {
+          "description": "Writes to this register are ignored. Ignored if `Write` is set",
+          "type": "string",
+          "enum": ["ignore_write"]
+        },
+        {
+          "description": "Register contains the stack pointer",
+          "type": "string",
+          "enum": ["stack_pointer"]
+        },
+        {
+          "description": "Register contains the global pointer. Only used in the UI",
+          "type": "string",
+          "enum": ["global_pointer"]
+        },
+        {
+          "description": "Register contains the stack frame pointer. Only used in the UI",
+          "type": "string",
+          "enum": ["frame_pointer"]
+        }
+      ]
+    },
+    "Space": {
+      "description": "Store n * size null bytes in the data segment",
+      "type": "string",
+      "enum": ["space"]
+    },
+    "StringType": {
+      "description": "Types of strings allowed",
+      "oneOf": [
+        {
+          "description": "Ascii string with a terminating null byte (`\\0`)",
+          "type": "string",
+          "enum": ["ascii_null_end"]
+        },
+        {
+          "description": "Ascii string without a terminating null byte (`\\0`)",
+          "type": "string",
+          "enum": ["ascii_not_null_end"]
+        }
+      ]
+    },
+    "Timer": {
+      "type": "object",
+      "required": [
+        "advance",
+        "disable",
+        "enable",
+        "handler",
+        "is_enabled",
+        "tick_cycles"
+      ],
+      "properties": {
+        "advance": {
+          "description": "JS code to be executed each tick in order to advance the tick",
+          "type": "string"
+        },
+        "disable": {
+          "description": "JS code to be executed in order to disable timer",
+          "type": "string"
+        },
+        "enable": {
+          "description": "JS code to be executed in order to enable timer",
+          "type": "string"
+        },
+        "handler": {
+          "description": "JS code to be executed each tick in order to check the timer and act (e.g. launch an interrupt)",
+          "type": "string"
+        },
+        "is_enabled": {
+          "description": "JS code to be executed in order to check whether the timer is enabled",
+          "type": "string"
+        },
+        "tick_cycles": {
+          "description": "Number of clock cycles that correspond to one timer tick",
+          "type": "integer",
+          "minimum": 0.0
+        }
+      }
+    }
+  }
+}

@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=../architecture/architecture.schema.json
 version: 2.0.0
 
 config:
@@ -865,7 +866,7 @@ templates:
         order: 0
 
   - name: FPU_I # I-Type (Immediate) FPU Instruction Format
-    type: Arithmetic Floating Point
+    type: Arithmetic floating point
     nwords: 1
     clk_cycles: 1
     fields:
@@ -895,7 +896,7 @@ templates:
         order: 3
 
   - name: FPU_R # R-Type (Register) FPU Instruction Format
-    type: Arithmetic Floating Point
+    type: Arithmetic floating point
     nwords: 1
     clk_cycles: 1
     fields:
@@ -936,7 +937,7 @@ templates:
         stopbit: 0
 
   - name: FPU_Compare # FPU Compare Instruction Format
-    type: Arithmetic Floating Point
+    type: Arithmetic floating point
     nwords: 1
     clk_cycles: 1
     fields:
@@ -980,7 +981,7 @@ templates:
         stopbit: 0
 
   - name: FPU_RI # Register-Immediate FPU Instruction Format
-    type: Arithmetic Floating Point
+    type: Arithmetic floating point
     nwords: 1
     clk_cycles: 1
     fields:

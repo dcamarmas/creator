@@ -127,7 +127,7 @@ export function set_debug(enable_debug) {
  * Load architecture from YAML string and prepare for use
  * @param {string} architectureYaml - YAML string containing architecture definition
  * @param {Array} isa - Array of instruction set names to load
- * @returns {Object} - Result object with load status
+ * @returns {{errorcode: string, token: string, type: string, update: string, status: string}} - Result object with load status
  */
 export function loadArchitecture(architectureYaml, isa = []) {
     // Process the architecture YAML through all validation and preparation steps
