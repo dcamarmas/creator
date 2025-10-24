@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=../../architecture/architecture.schema.json
 version: 2.0.0
 config:
   name: RV32
@@ -3384,7 +3385,6 @@ instructions:
         CAPI.MEM.write(registers[rs1] + imm + 4n, 4, val, rs2);
         CAPI.MEM.addHint(registers[rs1] + imm, "float64", 64);
       help: Store a double-precision value from the floating-point registers to memory.
-  Zicsr: null
   Zifencei:
     - name: fence.i
       template: Custom

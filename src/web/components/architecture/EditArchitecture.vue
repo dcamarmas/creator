@@ -23,32 +23,16 @@ import { defineComponent } from "vue"
 
 /* Codemirror */
 import Codemirror from "vue-codemirror6"
-import {
-  EditorView,
-  keymap,
-  highlightSpecialChars,
-  drawSelection,
-  highlightActiveLine,
-  dropCursor,
-  highlightActiveLineGutter,
-} from "@codemirror/view"
-import {
-  defaultHighlightStyle,
-  syntaxHighlighting,
-  indentOnInput,
-  bracketMatching,
-  foldGutter,
-  foldKeymap,
-} from "@codemirror/language"
-import { defaultKeymap, history, historyKeymap } from "@codemirror/commands"
-import { searchKeymap } from "@codemirror/search"
-import { closeBrackets, closeBracketsKeymap } from "@codemirror/autocomplete"
+import { EditorView } from "@codemirror/view"
 import { tags as t } from "@lezer/highlight"
 import { createTheme } from "@uiw/codemirror-themes"
 import { yaml } from "@codemirror/lang-yaml"
+import { yamlSchema } from "codemirror-json-schema/yaml"
 
 import { architecture, reset, loadArchitecture } from "@/core/core.mjs"
 import { show_notification, storeBackup } from "@/web/utils.mjs"
+
+import schema from "../../../../architecture/architecture.schema.json"
 
 export default defineComponent({
   props: {
@@ -80,42 +64,7 @@ export default defineComponent({
 
     extensions() {
       return [
-        // modified basicSetup
-
-        // A gutter with code folding markers
-        foldGutter(),
-        // Replace non-printable characters with placeholders
-        highlightSpecialChars(),
-        // The undo history
-        history(),
-        // Replace native cursor/selection with our own
-        drawSelection(),
-        // Show a drop cursor when dragging over the editor
-        dropCursor(),
-        // Re-indent lines when typing specific input
-        indentOnInput(),
-        // Highlight syntax with a default style
-        syntaxHighlighting(defaultHighlightStyle),
-        // Highlight matching brackets near cursor
-        bracketMatching(),
-        // Automatically close brackets
-        closeBrackets(),
-        // Style the current line specially
-        highlightActiveLine(),
-        // Style the gutter for current line specially
-        highlightActiveLineGutter(),
-        keymap.of([
-          // Closed-brackets aware backspace
-          ...closeBracketsKeymap,
-          // A large set of basic bindings
-          ...defaultKeymap,
-          // Search-related keys
-          ...searchKeymap,
-          // Redo/undo keys
-          ...historyKeymap,
-          // Code folding bindings
-          ...foldKeymap,
-        ]),
+        yamlSchema(schema as any),
 
         // FIXME: dark theme is horrible, because the keys are in blue (#0000cc)
         // and have too little contrast. I tried, but wasn't able to change it
@@ -152,7 +101,11 @@ export default defineComponent({
     // save edited architecture
     arch_edit_save() {
       try {
-        loadArchitecture(this.architecture_value)
+        const result = loadArchitecture(this.architecture_value)
+        if (result.status !== "ok") {
+          show_notification("Invalid architecture: " + result.token, "danger")
+          return
+        }
       } catch {
         show_notification(
           "Architecture not edited. Architecture format is incorrect",
@@ -193,6 +146,7 @@ export default defineComponent({
       autofocus
       wrap
       tab
+      basic
       :tab-size="2"
       :lang="lang"
       :extensions="extensions"

@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=../architecture/architecture.schema.json
 version: 2.0.0
 
 config:
@@ -20,7 +21,8 @@ components:
     elements:
       - name:
           - PC
-        nbits: "8"
+        nbits: 8
+        encoding: 0
         value: 0
         default_value: 0
         properties:
@@ -33,7 +35,8 @@ components:
     elements:
       - name:
           - A
-        nbits: "8"
+        encoding: 0
+        nbits: 8
         value: 0
         default_value: 0
         properties:
@@ -41,7 +44,8 @@ components:
           - write
       - name:
           - P
-        nbits: "7"
+        encoding: 1
+        nbits: 7
         value: 0
         default_value: 0
         properties:
@@ -49,7 +53,8 @@ components:
           - write
       - name:
           - S
-        nbits: "8"
+        encoding: 2
+        nbits: 8
         value: 0
         default_value: 0
         properties:
@@ -58,7 +63,8 @@ components:
           - stack_pointer
       - name:
           - X
-        nbits: "8"
+        encoding: 3
+        nbits: 8
         value: 0
         default_value: 0
         properties:
@@ -66,7 +72,8 @@ components:
           - write
       - name:
           - Y
-        nbits: "8"
+        encoding: 4
+        nbits: 8
         value: 0
         default_value: 0
         properties:
@@ -127,18 +134,15 @@ directives:
     size: 8
 
 memory_layout:
-  - name: text start
-    value: "0x0000"
-  - name: text end
-    value: "0x1000"
-  - name: data start
-    value: "0x1010"
-  - name: data end
-    value: "0x2000"
-  - name: stack start
-    value: "0xFFFE"
-  - name: stack end
-    value: "0xFFFF"
+  text:
+    start: 0x0000
+    end: 0x1000
+  data:
+    start: 0x1010
+    end: 0x2000
+  stack:
+    start: 0xFFFE
+    end: 0xFFFF
 
 templates:
   - name: Custom
@@ -154,13 +158,13 @@ templates:
 instructions:
   base:
     - name: nop
-      type: Custom
+      template: Custom
       fields:
         - field: opcode
           value: "11101010"
       definition: ""
     - name: lda
-      type: Custom
+      template: Custom
       fields:
         - field: opcode
           value: "10101001"
@@ -172,7 +176,7 @@ instructions:
           prefix: "#"
       definition: "A = imm"
     - name: lda
-      type: Custom
+      template: Custom
       nwords: 2
       fields:
         - field: opcode

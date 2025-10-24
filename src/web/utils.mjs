@@ -142,7 +142,7 @@ export async function loadDefaultArchitecture(arch, root = document.app) {
             throw new Error("Architecture file not found");
         }
 
-        const cfg = await response.text();
+        let cfg = await response.text();
         const { status, errorcode, token } = loadArchitecture(cfg);
 
         if (status === "ko") {
@@ -150,6 +150,9 @@ export async function loadDefaultArchitecture(arch, root = document.app) {
 
             return;
         }
+
+        // remove schema comment
+        cfg = cfg.replace(/^# yaml-language-server: \$schema=.+\n/, "");
 
         // store code to be edited
         root.arch_code = cfg;

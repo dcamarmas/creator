@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=../../architecture/architecture.schema.json
 version: 2.0.0
 
 # ASCII text generated w/ https://patorjk.com/software/taag/#p=display&h=1&f=Standard
@@ -3732,15 +3733,15 @@ instructions:
         CAPI.MEM.addHint(registers[rs1] + imm, "float64", 64);
       help: Store a double-precision value from the floating-point registers to memory.
 
-  Zicsr:
-    #   _____ _
-    #  |__  /(_)  ___  ___  _ __
-    #    / / | | / __|/ __|| '__|
-    #   / /_ | || (__ \__ \| |
-    #  /____||_| \___||___/|_|
-    # RV32/64 Zicsr Standard Extension
+  # Zicsr:
+  #   _____ _
+  #  |__  /(_)  ___  ___  _ __
+  #    / / | | / __|/ __|| '__|
+  #   / /_ | || (__ \__ \| |
+  #  /____||_| \___||___/|_|
+  # RV32/64 Zicsr Standard Extension
 
-    # TODO: Implement CSR instructions
+  # TODO: Implement CSR instructions
 
   Zifencei:
     #   _____ _   __                          _

@@ -1,4 +1,27 @@
+/**
+ *  Copyright 2018-2025 Felix Garcia Carballeira, Diego Camarmas Alonso,
+ *                      Alejandro Calderon Mateos, Jorge Ramos Santana
+ *
+ *  This file is part of CREATOR.
+ *
+ *  CREATOR is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Lesser General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  CREATOR is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
 import yaml from "js-yaml";
+import { validateArchSchema } from "./schema.mts";
+
 export const ARCHITECTURE_VERSION = "2.0";
 export let MAXNWORDS;
 
@@ -367,34 +390,24 @@ function convertElementValuesToBigInt(architectureObj) {
 
         for (const element of component.elements) {
             // Convert value to BigInt if it exists and is not already a BigInt
-            if (element.value !== undefined && typeof element.value !== 'bigint') {
+            if (
+                element.value !== undefined &&
+                typeof element.value !== "bigint"
+            ) {
                 element.value = BigInt(element.value);
             }
 
             // Convert default_value to BigInt if it exists and is not already a BigInt
-            if (element.default_value !== undefined && typeof element.default_value !== 'bigint') {
+            if (
+                element.default_value !== undefined &&
+                typeof element.default_value !== "bigint"
+            ) {
                 element.default_value = BigInt(element.default_value);
             }
         }
     }
 
     return architectureObj;
-}
-
-/**
- * Parse architecture YAML into an object
- * @param {string} architectureYaml - YAML string containing architecture definition
- * @returns {Object} - Parsed architecture object or throws error
- */
-export function parseArchitectureYaml(architectureYaml) {
-    try {
-        const architectureObj = yaml.load(architectureYaml);
-        // Convert element values and default_values to BigInts
-        return convertElementValuesToBigInt(architectureObj);
-    } catch (error) {
-        logger.error(`Failed to parse architecture YAML: ${error.message}`);
-        throw new Error(`Failed to parse architecture YAML: ${error.message}`);
-    }
 }
 
 /**
@@ -689,7 +702,27 @@ export function isVersionSupported(architectureObj) {
  */
 export function processArchitectureFromYaml(architectureYaml, isa = []) {
     // Parse YAML to object
-    const architectureObj = parseArchitectureYaml(architectureYaml);
+    let architectureObj;
+    try {
+        architectureObj = yaml.load(architectureYaml);
+        // Convert element values and default_values to BigInts
+    } catch (error) {
+        logger.error(`Failed to parse architecture YAML: ${error.message}`);
+        throw new Error(`Failed to parse architecture YAML: ${error.message}`);
+    }
+
+    // validate schema
+    if (!validateArchSchema(architectureObj)) {
+        return {
+            errorcode: "invalid_schema",
+            token: "Invalid Schema",
+            type: "error",
+            update: "",
+            status: "ko",
+        };
+    }
+
+    architectureObj = convertElementValuesToBigInt(architectureObj);
 
     // Check the version
     if (!isVersionSupported(architectureObj)) {

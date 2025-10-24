@@ -56,8 +56,6 @@ export default defineComponent({
       reader.onload = _event => {
         const archDefinition = reader.result as string
 
-        // TODO: parse and verify schema
-
         const architecture = {
           name: this.name,
           alias: [],

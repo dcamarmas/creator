@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=../architecture/architecture.schema.json
 version: 2.0.0
 
 config:
@@ -27,9 +28,10 @@ components:
     elements:
       - name:
           - PC
-        nbits: "16"
+        nbits: 16
         value: 0
         default_value: 0
+        encoding: 0
         properties:
           - read
           - write
@@ -39,112 +41,134 @@ components:
     double_precision: false
     elements:
       - name: [A]
-        nbits: "8"
+        nbits: 8
         value: 0
+        encoding: 0
         default_value: 0
         properties: [read, write]
       - name: [B]
-        nbits: "8"
+        nbits: 8
         value: 0
+        encoding: 1
         default_value: 0
         properties: [read, write]
       - name: [C]
-        nbits: "8"
+        nbits: 8
         value: 0
+        encoding: 2
         default_value: 0
         properties: [read, write]
       - name: [D]
-        nbits: "8"
+        nbits: 8
+        encoding: 3
         value: 0
         default_value: 0
         properties: [read, write]
       - name: [E]
-        nbits: "8"
+        nbits: 8
+        encoding: 4
         value: 0
         default_value: 0
         properties: [read, write]
       - name: [H]
-        nbits: "8"
+        nbits: 8
+        encoding: 5
         value: 0
         default_value: 0
         properties: [read, write]
       - name: [L]
-        nbits: "8"
+        nbits: 8
+        encoding: 6
         value: 0
         default_value: 0
         properties: [read, write]
       - name: [I]
-        nbits: "8"
+        nbits: 8
+        encoding: 7
         value: 0
         default_value: 0
         properties: [read, write]
       - name: ["A_prime"]
-        nbits: "8"
+        nbits: 8
+        encoding: 8
         value: 0
         default_value: 0
         properties: [read, write]
       - name: ["B_prime"]
-        nbits: "8"
+        nbits: 8
+        encoding: 9
         value: 0
         default_value: 0
         properties: [read, write]
       - name: ["C_prime"]
-        nbits: "8"
+        nbits: 8
+        encoding: 10
         value: 0
         default_value: 0
         properties: [read, write]
       - name: ["D_prime"]
-        nbits: "8"
+        nbits: 8
+        encoding: 11
         value: 0
         default_value: 0
         properties: [read, write]
       - name: ["E_prime"]
-        nbits: "8"
+        nbits: 8
+        encoding: 12
         value: 0
         default_value: 0
         properties: [read, write]
       - name: ["H_prime"]
-        nbits: "8"
+        nbits: 8
+        encoding: 13
         value: 0
         default_value: 0
         properties: [read, write]
       - name: ["L_prime"]
-        nbits: "8"
+        nbits: 8
+        encoding: 14
         value: 0
         default_value: 0
         properties: [read, write]
       - name: [SP]
-        nbits: "16"
+        nbits: 16
+        encoding: 15
         value: 65535
         default_value: 65535
         properties: [read, write, stack_pointer]
       - name: [IX]
-        nbits: "16"
+        nbits: 16
+        encoding: 16
         value: 0
         default_value: 0
         properties: [read, write]
       - name: [IY]
-        nbits: "16"
+        nbits: 16
+        encoding: 17
         value: 0
         default_value: 0
         properties: [read, write]
       - name: [F]
-        nbits: "8"
+        nbits: 8
+        encoding: 18
         value: 0
         default_value: 0
         properties: [read, write]
       - name: [F_prime]
-        nbits: "8"
+        nbits: 8
+        encoding: 19
         value: 0
         default_value: 0
         properties: [read, write]
       - name: [IFF1]
-        nbits: "1"
+        nbits: 1
+        encoding: 20
         value: 0
         default_value: 0
         properties: [read, write]
       - name: [IFF2]
-        nbits: "1"
+        nbits: 1
+        encoding: 21
         value: 0
         default_value: 0
         properties: [read, write]
