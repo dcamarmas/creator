@@ -48,7 +48,9 @@ RUN mkdir -p /esp && \
         cd /esp && \
         git clone --recursive https://github.com/espressif/esp-idf.git && \
         cd /esp/esp-idf && \
-        ./install.sh all
+        ./install.sh all && \
+        pip3 uninstall click --break-system-packages && \
+        pip3 install click==8.1.7 --break-system-packages
 
 
 #Download CREATOR
