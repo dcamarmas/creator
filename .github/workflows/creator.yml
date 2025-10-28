@@ -66,9 +66,12 @@ jobs:
       - name: Install dependencies
         uses: ./.github/actions/dependencies
       - name: Build cli binaries
+        env:
+          PAGE: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
         run: |
           bun run-p build:cli:windows build:cli:mac-x64 build:cli:mac-arm build:cli:linux-x64 build:cli:linux-arm
-          zip architectures.zip architecture/*.yml architecture/**/*.yml
+          sed --in-place --expression 's\^# yaml-language-server: $schema=.*schema.json\# yaml-language-server: $schema='"$PAGE"'/architecture/schema.json\' architecture/*.yml architecture/**/*.yml
+          zip --recurse-paths --include '*.yml' --junk-paths architectures.zip architecture/
       - name: Upload cli binaries artifact
         uses: pyTooling/upload-artifact@v4
         with:

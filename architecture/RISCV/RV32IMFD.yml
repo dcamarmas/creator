@@ -1,5 +1,9 @@
-# yaml-language-server: $schema=../../architecture/architecture.schema.json
+# yaml-language-server: $schema=../schema.json
 version: 2.0.0
+
+# ASCII text generated w/ https://patorjk.com/software/taag/#p=display&h=1&f=Standard
+# instruction help text extracted from https://msyksphinz-self.github.io/riscv-isadoc/html/index.html
+
 config:
   name: RV32
   word_size: 32

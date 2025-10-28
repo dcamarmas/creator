@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft-07/schema",
-  "$id": "https://rajayonin.github.io/creatorV/docs/architecture.schema.json",
+  "$id": "https://rajayonin.github.io/creatorV/architecture/schema.json",
   "title": "CREATOR Architecture definition",
   "description": "v2",
   "type": "object",
