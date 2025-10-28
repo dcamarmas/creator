@@ -43,7 +43,7 @@
 
                         remote_target_boards =  [
                                                   { text: 'Please select an option', value: "", disabled: true },
-                                                  { text: 'ESP32-C2 (RISC-V)',       value: 'esp32c2' },
+                                                  { text: 'ESP32-C6 (RISC-V)',       value: 'esp32c6' },
                                                   { text: 'ESP32-C3 (RISC-V)',       value: 'esp32c3' },
                                                   { text: 'ESP32-H2 (RISC-V)',       value: 'esp32h2' },
                                                 //{ text: 'ESP32-S2 (MIPS-32)',      value: 'esp32s2' },
@@ -68,7 +68,7 @@
 
                         target_boards = [
                                           { text: 'Please select an option', value: "", disabled: true },
-                                          { text: 'ESP32-C2 (RISC-V)',       value: 'esp32c2' },
+                                          { text: 'ESP32-C6 (RISC-V)',       value: 'esp32c6' },
                                           { text: 'ESP32-C3 (RISC-V)',       value: 'esp32c3' },
                                           { text: 'ESP32-H2 (RISC-V)',       value: 'esp32h2' },
                                         //{ text: 'ESP32-S2 (MIPS-32)',      value: 'esp32s2' },
@@ -83,8 +83,15 @@
                         flash_url     = "http://localhost:8080",
                         */
 
-                        flashing = false,
-                        running  = false,
+
+                        flashing  = false,
+                        running   = false,
+                        debugging = false,
+                        fullclean = false,
+                        stoprunning = false,
+                        eraseflash = false,
+                        showPopup: false,
+                        pendingAction: null,
                       }
                     },
 
@@ -249,8 +256,7 @@
                         //Google Analytics
                         creator_ga('simulator', 'simulator.download_driver', 'simulator.download_driver');
                       },
-
-                      do_flash( )
+                     do_flash( )
                       {
                         this.save();
 
@@ -271,19 +277,54 @@
 
                         this_env = this;
                         gateway_remote_flash(this.flash_url + "/flash", farg).then( function(data)  { 
-                                      				                                                        this_env.flashing = false; 
-                                                                                                      show_notification(data, 'danger') ;
-                                      			                                                        } ) ;
+                                                                                                      this_env.flashing = false;
+                                                                                                      console.log(JSON.stringify(data, null, 2));
+                                                                                                      if (JSON.stringify(data, null, 2).includes('Flash completed successfully')) {
+                                                                                                        show_notification('Flashing program success.', 'success');
+                                                                                                      }
+                                                                                                      if (JSON.stringify(data, null, 2).includes('No UART port found')) {
+                                                                                                        show_notification('Error flashing: Not found UART port', 'danger');
+                                                                                                      }
+                                                                                                    } ) ;
 
                         //Google Analytics
                         creator_ga('simulator', 'simulator.flash', 'simulator.flash');
                       },
+                      do_stop_monitor()
+                      {
+
+                        this.save();
+
+                        this.stoprunning = true;
+
+                        var farg =  {
+                                      target_board: this.target_board,
+                                      target_port:  this.target_port,
+                                      assembly:     code_assembly,
+                                    } ;
+
+                        this_env = this;
+                        gateway_remote_monitor(this.flash_url + "/stopmonitor", farg).then( function(data)  { 
+                                                                                                          this_env.stoprunning = false; 
+                                                                                                          //show_notification(data, 'danger') ;
+                                                                                                          console.log(JSON.stringify(data, null, 2));
+                                                                                                          if (JSON.stringify(data, null, 2).includes('Process stopped')) {
+                                                                                                            show_notification('Process stopped.', 'success');
+                                                                                                          }
+                                                                                                        } ) ;
+
+                        //Google Analytics
+                        creator_ga('simulator', 'simulator.stopmonitor', 'simulator.stopmonitor');
+
+                      },
+                      
 
                       do_monitor( )
                       {
                         this.save();
 
                         this.running = true;
+                        this.stoprunning = false;
 
                         var farg =  {
                                       target_board: this.target_board,
@@ -293,14 +334,121 @@
 
                         this_env = this;
                         gateway_remote_monitor(this.flash_url + "/monitor", farg).then( function(data)  { 
-                                                                                                          this_env.running = false; 
-                                                                                                          //show_notification(data, 'danger') ;
+                                                                                                          this_env.running = false;
+                                                                                                          console.log(JSON.stringify(data, null, 2)); 
+                                                                                                          if (JSON.stringify(data, null, 2).includes('No UART port found')) {
+                                                                                                            show_notification('Error: Not found UART port', 'danger');
+                                                                                                          }
+                                                                                                          if (JSON.stringify(data, null, 2).includes('No ELF file found')) {
+                                                                                                            show_notification('Error: Built proyect not found', 'danger');
+                                                                                                          }
                                                                                                         } ) ;
 
                         //Google Analytics
                         creator_ga('simulator', 'simulator.monitor', 'simulator.monitor');
                       },
+                      
+                      do_debug( )
+                      {
+                        this.save();
 
+                        this.debugging = true;
+
+                        var farg =  {
+                                      target_board: this.target_board,
+                                      target_port:  this.target_port,
+                                      assembly:     code_assembly,
+                                    } ;
+
+                        this_env = this;
+                      gateway_remote_monitor(this.flash_url + "/debug", farg).then( function(data)  { 
+                                                                                                      this_env.debugging = false;                                                
+                                                                                                      if (JSON.stringify(data, null, 2).includes('No ELF file found in build directory')) {
+                                                                                                        show_notification('Error: Not found proyect to debug', 'danger');
+                                                                                                      }
+                                                                                                      if (JSON.stringify(data, null, 2).includes('No JTAG found')) {
+                                                                                                        show_notification('Error: JTAG no connected. Check wire installment', 'danger');
+                                                                                                      }
+                                                                                                      if (JSON.stringify(data, null, 2).includes('No UART found')) {
+                                                                                                        show_notification('Error: UART no connected. Check wire installment', 'danger');
+                                                                                                      }
+                                                                                                        } ) ;
+
+                        //Google Analytics
+                        creator_ga('simulator', 'simulator.debug', 'simulator.debug');
+                      },
+
+                      showConfirmPopup(action) {
+                          this.pendingAction = action;
+                          this.showPopup = true;
+                      },
+
+                      confirmAction() {
+                          this.showPopup = false;
+                          if (this.pendingAction === 'fullclean') {
+                              this.do_fullclean();
+                          } else if (this.pendingAction === 'eraseflash') {
+                              this.do_erase_flash();
+                          }
+                          this.pendingAction = null;
+                      },
+
+                      do_fullclean( )
+                      {
+                        this.save();
+
+                        this.fullclean = true;
+
+                        var farg =  {
+                                      target_board: this.target_board,
+                                      target_port:  this.target_port,
+                                      assembly:     code_assembly,
+                                    } ;
+
+                        this_env = this;
+                        gateway_remote_monitor(this.flash_url + "/fullclean", farg).then( function(data)  { 
+                                                                                                          this_env.fullclean = false;
+                                                                                                          console.log(JSON.stringify(data, null, 2));
+                                                                                                          if (JSON.stringify(data, null, 2).includes('Full clean done.')) {
+                                                                                                            show_notification('Full clean done.', 'success');
+                                                                                                          }
+                                                                                                          if (JSON.stringify(data, null, 2).includes('Nothing to clean')) {
+                                                                                                            show_notification('Nothing to clean', 'success');
+                                                                                                          }
+                                                                                                          
+                                                                                                        } ) ;
+
+                        //Google Analytics
+                        creator_ga('simulator', 'simulator.fullclean', 'simulator.fullclean');
+                      },
+                      do_erase_flash( )
+                      {
+                        this.save();
+
+                        this.eraseflash = true;
+
+                        var farg =  {
+                                      target_board: this.target_board,
+                                      target_port:  this.target_port,
+                                      assembly:     code_assembly,
+                                    } ;
+
+                        this_env = this;
+                        gateway_remote_monitor(this.flash_url + "/eraseflash", farg).then( function(data)  { 
+                                                                                                          this_env.eraseflash = false; 
+                                                                                                          //show_notification(data, 'danger') ;
+                                                                                                          console.log(JSON.stringify(data, null, 2));
+                                                                                                          if (JSON.stringify(data, null, 2).includes('Erase flash done')) {
+                                                                                                            show_notification('Erase flash done. Please, unplug and plug the cable(s) again', 'success');
+                                                                                                          }
+                                                                                                          if (JSON.stringify(data, null, 2).includes('Could not open /dev/ttyUSB0, the port is busy or doesn\'t exist')) {
+                                                                                                            show_notification('Error erasing flash: Hint: Check if the port is correct and ESP connected', 'danger');
+                                                                                                          }
+                                                                                                        } ) ;
+
+                        //Google Analytics
+                        creator_ga('simulator', 'simulator.eraseflash', 'simulator.eraseflash');
+                      },
                       //
                       //General
                       //
@@ -534,12 +682,45 @@
                     '               <b-container fluid align-h="center" class="mx-0 px-0">' +
                     '                 <b-row cols="1" align-h="center">' +
                     '                   <b-col class="pt-2">' +
-                    '                     <label for="range-6">(2) Install the ESP32 Software (only the first time):</label>' +
+                    '                     <label for="range-6">(2) Install ESP-IDF framework (only the first time):</label>' +
                     '                     <b-card class="text-center">' +
                     '                       <b-row no-gutters>' +
                     '                         <b-col md="12">' +
                     '                           <b-card-text style="text-align: left;margin:2%;">' +
-                    '                             <span>Follow the instructions from: <a href="https://docs.espressif.com/projects/esp-idf/en/latest/esp32/" target="_blank">https://docs.espressif.com/projects/esp-idf/en/latest/esp32/</a></span>' +
+                    '                             <span>Follow the instructions from: <a href="https://github.com/espressif/esp-idf/releases/tag/v5.3.2" target="_blank">https://github.com/espressif/esp-idf/releases/tag/v5.3.2</a></span>' +
+                    '                           </b-card-text>' +
+                    '                         </b-col>' +
+                    '                       </b-row>' +
+                    '                     </b-card>' +
+                    '                   </b-col>' +
+                    '                 </b-row>' +
+                    '               </b-container>' +
+                    ' ' +
+                                        '               <b-container fluid align-h="center" class="mx-0 px-0">' +
+                    '                 <b-row cols="1" align-h="center">' +
+                    '                   <b-col class="pt-2">' +
+                    '                     <label for="range-6">(!!) (NEW) Install the python version stable for this driver(python 3.9 or 3.10):</label>' +
+                    '                     <b-card class="text-center">' +
+                    '                       <b-row no-gutters>' +
+                    '                         <b-col md="12">' +
+                    '                           <b-card-text style="text-align: left;margin:2%;">' +
+                    '                                  <span><b>How to install Python 3.9:</b></span>' +
+                    '                                  <pre style="background-color:#f5f5f5; padding:10px; border-radius:5px; margin-top:5px;">' +
+                                                        'sudo apt install software-properties-common\n' +
+                                                        'sudo add-apt-repository ppa:deadsnakes/ppa\n' +
+                                                        'sudo apt install python3.9' +
+                    '                                  </pre>' +
+                    '                              </div>' +
+                    '                              <div style="margin-bottom:1em;">' +
+                    '                                  <span><b>How to change Python environment if you have another installed:</b></span>' +
+                    '                                  <pre style="background-color:#f5f5f5; padding:10px; border-radius:5px; margin-top:5px;">' +
+                    'python3.9 -m venv ~/.espressif/python_env/idf5.3_py3.9_env\n' +
+                    'source ~/.espressif/python_env/idf5.3_py3.9_env/bin/activate' +
+                    '                                  </pre>' +
+                    '                                  <span><b>Check and erase if you have newer python environment versions (by default it will choose the newer one):</b></span>' +
+                    '                                  <code style="background-color:#f5f5f5; padding:5px 10px; border-radius:5px; display:block; margin-top:5px;">' +
+                    'rm -rf ~/.espressif/python_env/idf5.3_py3.10_en\n' +
+                    '                                  </code>' +
                     '                           </b-card-text>' +
                     '                         </b-col>' +
                     '                       </b-row>' +
@@ -568,7 +749,24 @@
                     '               <b-container fluid align-h="center" class="mx-0 px-0">' +
                     '                 <b-row cols="1" align-h="center">' +
                     '                   <b-col class="pt-2">' +
-                    '                     <label for="range-6">(4) Download the driver:</label>' +
+                    '                     <label for="range-6">(4) (NEW) Install additional packages for debug:</label>' +
+                    '                     <b-card class="text-center">' +
+                    '                       <b-row no-gutters>' +
+                    '                         <b-col md="12">' +
+                    '                           <b-card-text style="text-align: left;margin:2%;">' +
+                    '                              <span>Install the GDB web interface: </span><code>pip3 install gdbgui</code> ' +
+                    '                           </b-card-text>' +
+                    '                         </b-col>' +
+                    '                       </b-row>' +
+                    '                     </b-card>' +
+                    '                   </b-col>' +
+                    '                 </b-row>' +
+                    '               </b-container>' +
+                    ' ' +
+                    '               <b-container fluid align-h="center" class="mx-0 px-0">' +
+                    '                 <b-row cols="1" align-h="center">' +
+                    '                   <b-col class="pt-2">' +
+                    '                     <label for="range-6">(5) Download the driver:</label>' +
                     '                     <b-button class="btn btn-sm btn-block" variant="outline-primary" @click="download_driver"><span class="fas fa-download"></span> Download Driver</b-button>' +
                     '                   </b-col>' +
                     '                 </b-row>' +
@@ -582,9 +780,13 @@
                     '                       <b-row no-gutters>' +
                     '                         <b-col md="12">' +
                     '                           <b-card-text style="text-align: justify;margin:2%;">' +
+                    '                             <span>Install ESP-IDF dependencies inside the virtual environment:</span>' +
+                    '                             <br>' +
+                    '                             <code> $HOME/esp-idf-v5.3.2/install.sh</code>' +
+                    '                             <br>' +
                     '                             <span>Load the environment variable for your board with:</span>' +
                     '                             <br>' +
-                    '                             <code>. $HOME/esp/esp-idf/export.sh</code>' +
+                    '                             <code>. $HOME/esp-idf-v5.3.2/export.sh</code>' +
                     '                             <br>' +
                     '                             <br>' +
                     '                             <span>Unzip the driver.zip file and change into the driver directory associated to your board with "cd &lt;board&gt;", for example:</span>' +
@@ -642,22 +844,72 @@
                     ' ' +
                     '           <b-container fluid align-h="center" class="mx-0 px-0">' +
                     '             <b-row cols="2" align-h="center">' +
-                    '               <b-col class="pt-2">' +
-                    '                 <b-button class="btn btn-sm btn-block" variant="primary" @click="do_flash" :pressed="flashing" :disabled="flashing || running">' +
-                    '                   <span v-if="!flashing"><span class="fas fa-bolt-lightning"></span> Flash</span>' +
-                    '                   <span v-if="flashing"><span class="fas fa-bolt-lightning"></span>  Flashing...</span>' +
-                    '                   <b-spinner small v-if="flashing"></b-spinner>' +
-                    '                 </b-button>' +
-                    '               </b-col>' +
-                    '               <b-col class="pt-2">' +
-                    '                 <b-button class="btn btn-sm btn-block" variant="primary" @click="do_monitor" :pressed="running" :disabled="running || flashing">' +
-                    '                   <span v-if="!running"><span class="fas fa-play"></span> Monitor</span>' +
-                    '                   <span v-if="running"><span class="fas fa-play"></span>  Runing...</span>' +
-                    '                   <b-spinner small v-if="running"></b-spinner>' +
-                    '                 </b-button>' +
-                    '               </b-col>' +
-                    '             </b-row>' +
-                    '           </b-container>' +
+                    // Columna 1: Flash, Clean y Erase Flash
+                    '<b-col class="pt-4">' +
+                    '  <div style="display: flex; flex-direction: column; align-items: center; gap: 10px; margin-bottom: 10px;">' +
+
+                    '    <!-- Botón Flash -->' +
+                    '    <b-button class="btn btn-block" variant="primary" @click="do_flash" :pressed="flashing" :disabled="flashing || running || debugging || fullclean || stoprunning || eraseflash">' +
+                    '      <span v-if="!flashing"><span class="fas fa-bolt-lightning"></span> Flash</span>' +
+                    '      <span v-if="flashing"><span class="fas fa-bolt-lightning"></span> Flashing...</span>' +
+                    '      <b-spinner small v-if="flashing"></b-spinner>' +
+                    '    </b-button>' +
+
+                    '    <!-- Botón Clean -->' +
+                    '    <b-button class="btn btn-block" variant="danger" @click="showConfirmPopup(\'fullclean\')" :pressed="fullclean" :disabled="fullclean || flashing || running || debugging || stoprunning || eraseflash">' +
+                    '      <span v-if="!fullclean"><span class="fas fa-trash"></span> Clean</span>' +
+                    '      <span v-if="fullclean"><span class="fas fa-trash"></span> Cleaning...</span>' +
+                    '      <b-spinner small v-if="fullclean"></b-spinner>' +
+                    '    </b-button>' +
+
+                    '    <!-- Botón Erase Flash -->' +
+                    '    <b-button class="btn btn-block" variant="danger" @click="showConfirmPopup(\'eraseflash\')" :pressed="eraseflash" :disabled="eraseflash || fullclean || flashing || running || debugging || stoprunning">' +
+                    '      <span v-if="!eraseflash"><span class="fas fa-broom"></span> Erase Flash</span>' +
+                    '      <span v-if="eraseflash"><span class="fas fa-broom"></span> Erasing...</span>' +
+                    '      <b-spinner small v-if="eraseflash"></b-spinner>' +
+                    '    </b-button>' +
+
+                    '    <!-- Popup de confirmación -->' +
+                    '    <b-modal id="confirm-popup" v-model="showPopup" title="Confirm Action">' +
+                    '      <p>This action will delete your previous work. Are you sure you want to proceed?</p>' +
+                    '      <template #modal-footer>' +
+                    '        <b-button variant="secondary" @click="showPopup = false">Cancel</b-button>' +
+                    '        <b-button variant="primary" @click="confirmAction">Confirm</b-button>' +
+                    '      </template>' +
+                    '    </b-modal>' +
+
+                    '  </div>' +
+                    '</b-col>' +
+
+                    // Columna 2: Monitor, Debug y Stop
+                    '<b-col class="pt-4">' +
+                    '  <div style="display: flex; flex-direction: column; align-items: center; gap: 10px; margin-bottom: 10px;">' +
+
+                    '    <!-- Botón Monitor -->' +
+                    '    <b-button class="btn btn-block" variant="primary" @click="do_monitor" :pressed="running" :disabled="running || flashing || debugging || fullclean || stoprunning || eraseflash">' +
+                    '      <span v-if="!running"><span class="fas fa-desktop"></span> Monitor</span>' +
+                    '      <span v-if="running"><span class="fas fa-desktop"></span> Running</span>' +
+                    '      <b-spinner small v-if="running"></b-spinner>' +
+                    '    </b-button>' +
+
+                    '    <!-- Botón Debug -->' +
+                    '    <b-button class="btn btn-block" variant="primary" @click="do_debug" :pressed="debugging" :disabled="debugging || flashing || running || fullclean || stoprunning || eraseflash">' +
+                    '      <span v-if="!debugging"><span class="fas fa-bug"></span> Debug</span>' +
+                    '      <span v-if="debugging"><span class="fas fa-bug"></span> Debugging</span>' +
+                    '      <b-spinner small v-if="debugging"></b-spinner>' +
+                    '    </b-button>' +
+
+                    '    <!-- Botón Stop -->' +
+                    '    <b-button class="btn btn-block" variant="primary" @click="do_stop_monitor" :pressed="stoprunning" :disabled="!(running || debugging) || flashing || fullclean || eraseflash">' +
+                    '      <span v-if="!stoprunning"><span class="fas fa-stop"></span> Stop</span>' +
+                    '      <span v-if="stoprunning"><span class="fas fa-stop"></span> Stopping</span>' +
+                    '      <b-spinner small v-if="stoprunning"></b-spinner>' +
+                    '    </b-button>' +
+
+                    '  </div>' +
+                    '</b-col>' +
+                    '  </b-row>' +
+                    '</b-container>' +
                     '         </b-tab>' +
                     '       </b-tabs>' +
                     ' ' +
