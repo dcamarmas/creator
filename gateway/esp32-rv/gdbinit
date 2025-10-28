@@ -1,0 +1,2 @@
+source ./build/gdbinit/symbols
+source ./gbdscript.gdb
