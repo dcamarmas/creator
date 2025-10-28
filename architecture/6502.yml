@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=../architecture/architecture.schema.json
+# yaml-language-server: $schema=schema.json
 version: 2.0.0
 
 config:
