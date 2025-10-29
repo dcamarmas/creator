@@ -21,7 +21,6 @@ main:
         # return
         lw ra, 0(sp)
         addi sp, sp, 4
-         return
         li a7, 10
         ecall
 

@@ -171,7 +171,7 @@ defineExpose({
 <template>
   <b-nav-item-dropdown
     class="sentinel-dropdown"
-    :class="{ 'has-errors': hasErrors }"
+    :class="{ 'has-errors': hasErrors, 'dark-theme': dark }"
     no-caret
     right
   >

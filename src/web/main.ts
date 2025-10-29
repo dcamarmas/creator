@@ -34,11 +34,13 @@ import { far } from "@fortawesome/free-regular-svg-icons";
 import { fab } from "@fortawesome/free-brands-svg-icons";
 library.add(fas, far, fab);
 
-import { confirmExit, show_notification } from "./utils.mjs";
+import {show_notification } from "./utils.mjs";
 import { creator_ga } from "../core/utils/creator_ga.mjs";
 
 /*Closing alert*/
-window.onbeforeunload = confirmExit;
+window.onbeforeunload = function () {
+    return "Are you sure you want to leave? Unsaved changes will be lost.";
+}
 
 // Vue config
 const app = createApp(App)
