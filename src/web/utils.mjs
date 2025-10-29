@@ -30,10 +30,6 @@ export function destroyClickedElement(event) {
     document.body.removeChild(event.target);
 }
 
-export function confirmExit() {
-    return "He's tried to get off this page. Changes may not be saved.";
-}
-
 export function console_log(msg, level = "INFO") {
     if (document.app.c_debug) {
         clog(msg, level);

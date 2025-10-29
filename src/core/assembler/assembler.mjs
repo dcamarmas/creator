@@ -138,13 +138,13 @@ export function precomputeInstructions(sourceCode, sourceMap, tags = null) {
             words.push(word);
             allBytes.push(...new Uint8Array(wordBytes));
         }
-        const instruction = decode(new Uint8Array(allBytes));
-        const machineCode = words
-            .slice(0, instruction.nwords)
-            .join("")
-            .toUpperCase();
+        const decoded = decode(new Uint8Array(allBytes));
 
-        if (instruction) {
+        if (decoded.status === "ok") {
+            const machineCode = words
+                .slice(0, decoded.instruction.nwords)
+                .join("")
+                .toUpperCase();
             let label = "";
             if (tags) {
                 const foundTag = Object.keys(tags).find(
@@ -173,21 +173,22 @@ export function precomputeInstructions(sourceCode, sourceMap, tags = null) {
             instructions.push({
                 Address: "0x" + addr.toString(16),
                 Label: label,
-                loaded: instruction.instructionExec,
+                loaded: decoded.assembly,
                 binary: false,
                 user: userLine,
                 _rowVariant: "",
-                Break: false,
+                Break: null,
                 hide: false,
                 visible: true,
             });
 
-            idx += instruction.nwords;
+            idx += decoded.instruction.nwords;
         } else {
             // If decoding fails, skip to next address to avoid infinite loop
             idx += 1;
         }
     }
+
     setInstructions(instructions);
 }
 
