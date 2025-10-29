@@ -36,7 +36,7 @@ import {
 import { readRegister, writeRegister } from "./register/registerOperations.mjs";
 import { StackTracker } from "./memory/StackTracker.mts";
 import { creator_ga } from "./utils/creator_ga.mjs";
-import { creator_callstack_reset } from "./sentinel/sentinel.mjs";
+import { sentinel } from "./sentinel/sentinel.mjs";
 import { resetStats } from "./executor/stats.mts";
 import { resetDecoderCache } from "./executor/decoder.mjs";
 import { coreEvents } from "./events.mjs";
@@ -308,6 +308,7 @@ export function reset() {
     coreEvents.emit("registers-reset");
 
     architecture.memory_layout.stack.start = backup_stack_address;
+    delete architecture.memory_layout.stack.size;
     architecture.memory_layout.data.end = backup_data_address;
 
     // reset memory and restore initial hints from backup (if it exists)
@@ -317,7 +318,7 @@ export function reset() {
 
     // Stack Reset
     stackTracker.reset();
-    creator_callstack_reset();
+    sentinel.reset();
 
     // clear all read timeouts
     // eslint-disable-next-line no-empty-function

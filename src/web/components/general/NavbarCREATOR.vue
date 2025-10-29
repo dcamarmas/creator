@@ -23,11 +23,13 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
-import { defineComponent, type PropType } from "vue"
+import { defineComponent, type PropType, ref, onMounted, onUnmounted } from "vue"
 
 import ToolbarBtngroup from "./ToolbarBtngroup.vue"
-import type { Instruction } from "@/core/assembler/assembler";
-import type { BDropdown } from "bootstrap-vue-next";
+import SentinelErrorsDropdown from "../simulator/SentinelErrorsDropdown.vue"
+import type { Instruction } from "@/core/assembler/assembler"
+import type { BDropdown } from "bootstrap-vue-next"
+import { coreEvents, CoreEventTypes } from "@/core/events.mjs"
 
 export default defineComponent({
   props: {
@@ -42,6 +44,38 @@ export default defineComponent({
     show_instruction_help: { type: Boolean, default: false },
     instructions: Array as PropType<Instruction[]>,
   },
+
+  components: {
+    ToolbarBtngroup,
+    SentinelErrorsDropdown,
+  },
+
+  setup() {
+    const sentinelDropdownRef = ref<InstanceType<typeof SentinelErrorsDropdown> | null>(null)
+
+    const handleSentinelError = (event: unknown) => {
+      const errorEvent = event as { functionName: string; message: string; ok: boolean }
+      if (sentinelDropdownRef.value) {
+        sentinelDropdownRef.value.checkForErrors(
+          { ok: errorEvent.ok, msg: errorEvent.message },
+          errorEvent.functionName
+        )
+      }
+    }
+
+    onMounted(() => {
+      coreEvents.on(CoreEventTypes.SENTINEL_ERROR, handleSentinelError)
+    })
+
+    onUnmounted(() => {
+      coreEvents.off(CoreEventTypes.SENTINEL_ERROR, handleSentinelError)
+    })
+
+    return {
+      sentinelDropdownRef,
+    }
+  },
+
   data() {
     return {
       openDropdown: null as string | null, // Track which dropdown is currently open
@@ -182,7 +216,6 @@ export default defineComponent({
       this.$emit('mobile-view-change', view)
     },
   },
-  components: { ToolbarBtngroup },
 })
 </script>
 
@@ -422,6 +455,14 @@ export default defineComponent({
             ref="executeGroup"
           />
         </b-nav-item>
+
+        <!-- Sentinel Errors Dropdown (Simulator View Only) -->
+        <SentinelErrorsDropdown
+          v-if="showExecuteMenu"
+          ref="sentinelDropdownRef"
+          :dark="dark"
+          class="ms-auto"
+        />
       </b-navbar-nav>
 
     </b-collapse>
@@ -460,7 +501,7 @@ export default defineComponent({
         aria-label="Data"
       >
         <font-awesome-icon :icon="['fas', 'database']" />
-        <span class="bottom-nav-label">Data</span>
+        <span class="bottom-nav-label">State</span>
       </button>
 
       <!-- Architecture Tab -->
@@ -676,16 +717,6 @@ export default defineComponent({
   min-width: 0;
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
-
-  // On mobile, make dropdowns full width within collapsed menu
-  @media (max-width: 767px) {
-    width: 100%;
-    position: relative !important;
-    transform: none !important;
-    margin: 0;
-    box-shadow: none;
-    border: 1px solid rgba(0, 0, 0, 0.08);
-  }
 }
 
 :deep(.dropdown-item) {
@@ -702,12 +733,6 @@ export default defineComponent({
   
   &:last-child {
     margin-bottom: 0;
-  }
-  
-  &:hover,
-  &:active {
-    background-color: rgba(0, 0, 0, 0.08);
-    color: rgba(0, 0, 0, 0.95);
   }
   
   // Icon styling
@@ -731,32 +756,6 @@ export default defineComponent({
   opacity: 1;
 }
 
-// Modern scrollbar
-:deep(.dropdown-menu) {
-  max-height: 500px;
-  overflow-y: auto;
-  
-  &::-webkit-scrollbar {
-    width: 8px;
-  }
-  
-  &::-webkit-scrollbar-track {
-    background: transparent;
-    border-radius: 4px;
-  }
-  
-  &::-webkit-scrollbar-thumb {
-    background: rgba(0, 0, 0, 0.15);
-    border-radius: 4px;
-    border: 2px solid transparent;
-    background-clip: padding-box;
-    
-    &:hover {
-      background: rgba(0, 0, 0, 0.25);
-      background-clip: padding-box;
-    }
-  }
-}
 
 [data-bs-theme="dark"] {
   .top-navbar {
@@ -803,14 +802,6 @@ export default defineComponent({
     &:active:not(.active) {
       color: #64b5f6;
       background-color: rgba(100, 181, 246, 0.12);
-    }
-  }
-
-  // Mobile dropdown styling in dark mode
-  @media (max-width: 767px) {
-    :deep(.dropdown-menu) {
-      background-color: hsl(214, 9%, 15%);
-      border-color: rgba(255, 255, 255, 0.08);
     }
   }
 }

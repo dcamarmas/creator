@@ -264,6 +264,7 @@ export default defineComponent({
 
   &.register-row-glow {
     background-color: rgba(var(--bs-primary-rgb), 0.25);
+    border-radius: 6px;
   }
 }
 

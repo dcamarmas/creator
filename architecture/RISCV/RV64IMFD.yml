@@ -1800,8 +1800,8 @@ instructions:
       definition: |
         registers[rd] = registers["PC"] + 4n;
         registers["PC"] = registers["PC"] + imm;
-        CAPI.CHECK_STACK.begin(registers["PC"]);
-        CAPI.DRAW_STACK.begin(registers["PC"]);
+        CAPI.CHECK_STACK.begin(registers["PC"] + imm);
+        CAPI.DRAW_STACK.begin(registers["PC"] + imm);
       help: Jump to address and place return address in rd.
 
     # R-type instructions

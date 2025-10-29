@@ -154,7 +154,15 @@ export default defineComponent({
         <span>Memory</span>
       </button>
 
-
+      <!-- Terminal Tab -->
+      <button
+        :class="['tab', { active: current_reg_type === 'terminal' }]"
+        @click="change_data_view('terminal')"
+      >
+        <font-awesome-icon :icon="['fas', 'terminal']" />
+        <span>Terminal</span>
+      </button>
+      
       <!-- Statistics Tab -->
       <button
         :class="['tab', { active: current_reg_type === 'stats' }]"
@@ -163,6 +171,8 @@ export default defineComponent({
         <font-awesome-icon :icon="['fas', 'chart-line']" />
         <span>Statistics</span>
       </button>
+
+
     </div>
   </div>
 </template>

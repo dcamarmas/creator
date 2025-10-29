@@ -60,9 +60,6 @@ export default defineComponent({
           <font-awesome-icon :icon="['fas', 'book']" />
           Instructions
         </h3>
-        <span class="instructions-count" v-if="instructions">
-          {{ instructions.length }} instruction{{ instructions.length !== 1 ? 's' : '' }}
-        </span>
       </div>
 
       <div class="execution-controls">
@@ -203,26 +200,6 @@ export default defineComponent({
   overflow: hidden;
   position: relative;
 
-  :deep(.instructions_table) {
-    height: 100%;
-    max-height: 100%;
-    border: none;
-    border-radius: 0;
-
-    // Make table more mobile-friendly
-    font-size: 0.85rem;
-
-    th, td {
-      padding: 0.5rem 0.25rem;
-    }
-
-    // Adjust column widths for mobile
-    th:nth-child(1), td:nth-child(1) { width: 17%; } // Address
-    th:nth-child(2), td:nth-child(2) { width: 13%; } // Label
-    th:nth-child(3), td:nth-child(3) { width: 35%; } // User Instructions
-    th:nth-child(4), td:nth-child(4) { width: 35%; } // Loaded Instructions
-  }
-
   .no-instructions {
     display: flex;
     align-items: center;
@@ -282,15 +259,7 @@ export default defineComponent({
     }
   }
 
-  .mobile-instructions-table {
-    :deep(.instructions_table) {
-      font-size: 0.8rem;
 
-      th, td {
-        padding: 0.4rem 0.2rem;
-      }
-    }
-  }
 }
 
 // Touch-friendly interactions

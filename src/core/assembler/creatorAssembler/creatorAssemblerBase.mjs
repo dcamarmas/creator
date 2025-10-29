@@ -65,7 +65,7 @@ export function assembleCreatorBase(code, library, wasmModules) {
         logger.error("Error loading architecture:", error);
         return {
             type: "warning",
-            token: "Unsupported architecture",
+            token: error,
             bgcolor: "danger",
             status: "error",
         };

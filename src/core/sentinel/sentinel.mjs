@@ -1,6 +1,6 @@
 /**
  *  Copyright 2018-2025 Felix Garcia Carballeira, Alejandro Calderon Mateos,
- *                      Diego Camarmas Alonso
+ *                      Diego Camarmas Alonso, Jorge Ramos Santana
  *
  *  This file is part of CREATOR.
  *
@@ -20,531 +20,440 @@
  */
 
 import { architecture, REGISTERS } from "../core.mjs";
-import { address } from "../assembler/assembler.mjs";
 import { console_log } from "../utils/creator_logger.mjs";
 
-/*
- * Data Structure
+/**
+ * Event types that can occur during function execution
  */
-/*
- * [ "x", "y" ] ;
- */
-let stack_call_names = [];
-/*
- * [
- *   {
- *     function_name: "",
- *     enter_stack_pointer: 0x0,
- *     register_sm:           [ indexComp: [ 0, ... ]... ; // once per register: state
- *     register_value:        [ indexComp: [ 0x0, ... ], ... ; // once per register: initial value (before save)
- *     register_size_write:   [ indexComp: [ 0x0, ... ], ... ; // once per register: size value
- *     register_size_read:    [ indexComp: [ 0x0, ... ], ... ; // once per register: size value
- *     register_address_write: [ indexComp: [ [0x0, 0x4, ...], ... ], ... ; // once per register: in which position is stored
- *     register_address_read:  [ indexComp: [ [0x0, 0x4, ...], ... ], ... ; // once per register: from which position is restored
- *   },
- *   ...
- * ] ;
- *
- */
-/*
- *
- * TODO: update this with draw.io graph
- * States:
- *  0 -> Init
- *  1 -> Saved in memory/stack
- *  2 -> Restored from memory/stack (read from memory stage)
- *  5 -> Restored from memory/stack (write register stage)
- *  3 -> Error
- *  4 -> Save/.../Restore/Save
- *
- *
- * Transitions (state x action -> next state):
- *
- *           WM==  WM!= RM  WR  RR  END
- *      0     1    1     2  a4   0   3
- *      1     1    7     6  5    1   b4
- *      2     1    1     2  e4   2   3
- *      3     -    -     -  -    -   -
- *      4     -    -     -  -    -   -
- *      5     d4   5     6  5    5   c4
- *      6     d4   6     6  0    6   c4
- *      7     7    7     6  5    7   b4
- *
- */
-const stack_state_transition = [
-    { "wm==": 1, "wm!=": 1, rm: 2, wr: 40, rr: 0, end: 3 },
-    { "wm==": 1, "wm!=": 7, rm: 6, wr: 5, rr: 1, end: 40 },
-    { "wm==": 1, "wm!=": 1, rm: 2, wr: 45, rr: 2, end: 3 },
-    { "wm==": -1, "wm!=": -1, rm: -1, wr: -1, rr: -1, end: -1 },
-    { "wm==": -1, "wm!=": -1, rm: -1, wr: -1, rr: -1, end: -1 },
-    { "wm==": 44, "wm!=": 5, rm: 6, wr: 5, rr: 5, end: 43 },
-    { "wm==": 44, "wm!=": 6, rm: 6, wr: 0, rr: 6, end: 43 },
-    { "wm==": 7, "wm!=": 7, rm: 6, wr: 5, rr: 7, end: 42 },
-];
-let stack_call_register = [];
-/*
- * Public API
- */
-//
-// Initialize
-// Example: creator_callstack_create() ;
-//
-function creator_callstack_create() {
-    const ret = {
-        ok: true,
-        msg: "",
-    };
+const EventType = {
+    WRITE_MEMORY: "write_memory",
+    READ_MEMORY: "read_memory",
+    WRITE_REGISTER: "write_register",
+    READ_REGISTER: "read_register",
+};
 
-    // initialize stack_call
-    stack_call_names = [];
-    stack_call_register = [];
-    creator_callstack_enter("main");
-
-    return ret;
+// Helpers for safe BigInt conversions and comparisons
+function toBigIntSafe(v) {
+    if (v === null || typeof v === "undefined") return null;
+    if (typeof v === "bigint") return v;
+    if (typeof v === "number") {
+        if (!Number.isInteger(v)) return null;
+        return BigInt(v);
+    }
+    // strings and other types that BigInt accepts
+    try {
+        return BigInt(v);
+    } catch (_e) {
+        return null;
+    }
 }
-//
-// "jal X, ..." -> add new element (at the end)
-// Example: creator_callstack_Enter("main")
-//
-export function creator_callstack_enter(function_name) {
-    const ret = {
-        ok: true,
-        msg: "",
-    };
 
-    // 1.- caller name
-    stack_call_names.push(function_name);
-
-    // 2.- caller element
-    const arr_sm = [];
-    const arr_write = [];
-    const arr_read = [];
-    const arr_value = [];
-    const arr_size_write = [];
-    const arr_size_read = [];
-
-    for (let i = 0; i < REGISTERS.length; i++) {
-        arr_sm.push([]);
-        arr_write.push([]);
-        arr_read.push([]);
-        arr_value.push([]);
-        arr_size_write.push([]);
-        arr_size_read.push([]);
-
-        for (let j = 0; j < REGISTERS[i].elements.length; j++) {
-            arr_sm[i].push(0);
-            arr_write[i].push([]);
-            arr_read[i].push([]);
-            arr_size_write[i].push([]);
-            arr_size_read[i].push([]);
-            arr_value[i].push(REGISTERS[i].elements[j].value);
-        }
-    }
-
-    const new_elto = {
-        function_name,
-        enter_stack_pointer: architecture.memory_layout.stack.start,
-        register_sm: arr_sm,
-        register_value: arr_value,
-        register_size_write: arr_size_write,
-        register_size_read: arr_size_read,
-        register_address_write: arr_write,
-        register_address_read: arr_read,
-    };
-
-    stack_call_register.push(new_elto);
-
-    // return ok
-    return ret;
+function bigintsEqual(a, b) {
+    const A = toBigIntSafe(a);
+    const B = toBigIntSafe(b);
+    if (A === null || B === null) return false;
+    return A === B;
 }
-//
-// "jr ra, ..." -> remove last element
-// Example: creator_callstack_Leave() ;
-//
-// eslint-disable-next-line max-lines-per-function
-export function creator_callstack_leave() {
-    const ret = {
-        ok: true,
-        msg: "",
-    };
 
-    // check params
-    if (stack_call_register.length === 0) {
-        ret.msg = "creator_callstack_Leave: empty stack_call_register !!.\n";
-        return ret;
+/**
+ * Represents a single event in the register lifecycle
+ */
+class RegisterEvent {
+    constructor(type, regIndex, elemIndex, address = null, size = null) {
+        this.type = type;
+        this.regIndex = regIndex;
+        this.elemIndex = elemIndex;
+        // Normalize address/size to BigInt when possible to avoid mixed-type comparisons
+        this.address = toBigIntSafe(address);
+        this.size = toBigIntSafe(size);
+        this.timestamp = Date.now();
     }
 
-    // get stack top element
-    let last_elto = stack_call_register[stack_call_register.length - 1];
-
-    //check sp that points to corresponding address
-    if (ret.ok) {
-        if (
-            architecture.memory_layout.stack.start !=
-            last_elto.enter_stack_pointer
-        ) {
-            ret.ok = false;
-            ret.msg = "Stack memory has not been released successfully";
-        }
+    get registerName() {
+        return REGISTERS[this.regIndex]?.elements[this.elemIndex]?.name || "unknown";
     }
 
-    // check values (check currrent state)
-    if (ret.ok) {
+    toString() {
+        const addr = this.address !== null ? ` @0x${this.address.toString(16)}` : "";
+        const size = this.size !== null ? ` (${this.size} bytes)` : "";
+        return `${this.type}: ${this.registerName}${addr}${size}`;
+    }
+}
+
+/**
+ * Represents a function call frame with register state tracking
+ */
+class CallFrame {
+    constructor(functionName, stackPointer) {
+        this.functionName = functionName;
+        this.enterStackPointer = stackPointer;
+        this.events = [];
+        this.initialRegisterValues = CallFrame._captureRegisterValues();
+    }
+
+    static _captureRegisterValues() {
+        const values = [];
         for (let i = 0; i < REGISTERS.length; i++) {
+            values.push([]);
             for (let j = 0; j < REGISTERS[i].elements.length; j++) {
-                if (
-                    last_elto.register_value[i][j] !=
-                        REGISTERS[i].elements[j].value &&
-                    REGISTERS[i].elements[j].properties.includes("saved")
-                ) {
-                    ret.ok = false;
-                    ret.msg =
-                        "Possible failure in the parameter passing convention";
-                    break;
-                }
+                values[i].push(REGISTERS[i].elements[j].value);
             }
         }
+        return values;
     }
 
-    //Check state
-    if (ret.ok) {
-        for (let i = 0; i < REGISTERS.length; i++) {
-            for (let j = 0; j < REGISTERS[i].elements.length; j++) {
-                creator_callstack_do_transition("end", i, j, null);
-
-                last_elto = stack_call_register[stack_call_register.length - 1];
-
-                /////////////////////////// TEMPORAL SOLUTION ///////////////////////////////////////////////////////////////////
-                //last_index_write = last_elto.register_address_write[i][j].length -1;
-                const last_index_read =
-                    last_elto.register_address_read[i][j].length - 1;
-
-                if (
-                    last_elto.register_address_write[i][j][0] ==
-                        last_elto.register_address_read[i][j][
-                            last_index_read
-                        ] &&
-                    last_elto.register_sm[i][j] === 45 &&
-                    REGISTERS[i].elements[j].properties.includes("saved") // ...but should be saved
-                ) {
-                    break;
-                }
-
-                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                else if (
-                    last_elto.register_sm[i][j] !== 3 &&
-                    REGISTERS[i].elements[j].properties.includes("saved") // ...but should be saved
-                ) {
-                    ret.ok = false;
-                    ret.msg =
-                        "Possible failure in the parameter passing convention";
-                    break;
-                }
-            }
-        }
+    addEvent(event) {
+        this.events.push(event);
+        console_log(`[EVENT] ${this.functionName}: ${event.toString()}`, "INFO");
     }
 
-    //Check address
-    if (ret.ok) {
-        for (let i = 0; i < REGISTERS.length; i++) {
-            for (let j = 0; j < REGISTERS[i].elements.length; j++) {
-                //last_index_write = last_elto.register_address_write[i][j].length -1;
-                const last_index_read =
-                    last_elto.register_address_read[i][j].length - 1;
-
-                if (
-                    last_elto.register_address_write[i][j][0] !=
-                        last_elto.register_address_read[i][j][
-                            last_index_read
-                        ] &&
-                    REGISTERS[i].elements[j].properties.includes("saved") // ...but should be saved
-                ) {
-                    ret.ok = false;
-                    ret.msg =
-                        "Possible failure in the parameter passing convention";
-                    break;
-                }
-            }
-        }
-    }
-
-    //Check size
-    if (ret.ok) {
-        for (let i = 0; i < REGISTERS.length; i++) {
-            for (let j = 0; j < REGISTERS[i].elements.length; j++) {
-                //last_index_write = last_elto.register_size_write[i][j].length -1;
-                const last_index_read =
-                    last_elto.register_size_read[i][j].length - 1;
-
-                if (
-                    last_elto.register_size_write[i][j][0] !=
-                        last_elto.register_size_read[i][j][last_index_read] &&
-                    REGISTERS[i].elements[j].properties.includes("saved") // ...but should be saved
-                ) {
-                    ret.ok = false;
-                    ret.msg =
-                        "Possible failure in the parameter passing convention";
-                    break;
-                }
-            }
-        }
-    }
-
-    // pop stack
-    stack_call_register.pop();
-    if (stack_call_names.length > 0) {
-        stack_call_names.pop();
-    }
-
-    // return ok
-    return ret;
-}
-//
-// Get the last element
-// Example: var elto = creator_callstack_getTop() ;
-//
-function creator_callstack_getTop() {
-    const ret = {
-        ok: true,
-        val: null,
-        msg: "",
-    };
-
-    // check params
-    if (stack_call_register.length === 0) {
-        ret.ok = false;
-        ret.msg = "creator_callstack_getTop: empty stack_call_register !!.\n";
-        return ret;
-    }
-
-    // return the last element in the array
-    ret.val = stack_call_register[stack_call_register.length - 1];
-    return ret;
-}
-//
-// Let programmers to modify some arbitrary field.
-// Example: creator_callstack_getTop("function_name", 1, 2, "main") ;
-//
-function creator_callstack_setTop(field, indexComponent, indexElement, value) {
-    const ret = {
-        ok: true,
-        msg: "",
-    };
-
-    // check params
-    if (stack_call_register.length === 0) {
-        ret.ok = false;
-        ret.msg = "creator_callstack_getTop: empty stack_call_register !!.\n";
-        return ret;
-    }
-
-    // set field value
-    const elto = stack_call_register[stack_call_register.length - 1];
-    if (typeof elto.length !== "undefined") {
-        elto[field][indexComponent][indexElement] = value;
-        return ret;
-    }
-
-    elto[field] = value;
-    return ret;
-}
-//
-// Let programmers to modify register state
-// Example: creator_callstack_setState(1, 2, 1) ;
-//
-function creator_callstack_setState(indexComponent, indexElement, newState) {
-    const elto = creator_callstack_getTop();
-    if (elto.ok === false) {
-        console_log("[STATE] Failed to set state: " + elto.msg, "ERROR");
-        return "";
-    }
-
-    elto.val.register_sm[indexComponent][indexElement] = newState;
-}
-function creator_callstack_getState(indexComponent, indexElement) {
-    const elto = creator_callstack_getTop();
-    if (elto.ok === false) {
-        console_log("[STATE] Failed to get state: " + elto.msg, "ERROR");
-        return "";
-    }
-
-    return elto.val.register_sm[indexComponent][indexElement];
-}
-//
-// Let programmers add a new write
-// Example: creator_callstack_newWrite(1, 2, 0x12345) ;
-//
-export function creator_callstack_newWrite(
-    indexComponent,
-    indexElement,
-    address,
-    length,
-) {
-    // Move state finite machine
-    creator_callstack_do_transition(
-        "wm",
-        indexComponent,
-        indexElement,
-        address,
-    );
-
-    const elto = creator_callstack_getTop();
-    if (elto.ok == false) {
-        console_log(
-            "[WRITE] Failed to record new write operation: " + elto.msg,
-            "ERROR",
+    /**
+     * Get all events for a specific register
+     */
+    getRegisterEvents(regIndex, elemIndex) {
+        return this.events.filter(
+            (e) => e.regIndex === regIndex && e.elemIndex === elemIndex
         );
-        return "";
     }
 
-    elto.val.register_address_write[indexComponent][indexElement].push(address);
-    elto.val.register_size_write[indexComponent][indexElement].push(length);
-}
-//
-// Let programmers add a new read
-// Example: creator_callstack_newRead(1, 2, 0x12345) ;
-//
-export function creator_callstack_newRead(
-    indexComponent,
-    indexElement,
-    address,
-    length,
-) {
-    const elto = creator_callstack_getTop();
-    if (elto.ok == false) {
-        console_log(
-            "[READ] Failed to record new read operation: " + elto.msg,
-            "ERROR",
+    /**
+     * Find the first save event for a register
+     */
+    getFirstSave(regIndex, elemIndex) {
+        return this.events.find(
+            (e) =>
+                e.regIndex === regIndex &&
+                e.elemIndex === elemIndex &&
+                e.type === EventType.WRITE_MEMORY
         );
-        return "";
     }
 
-    elto.val.register_address_read[indexComponent][indexElement].push(address);
-    elto.val.register_size_read[indexComponent][indexElement].push(length);
-
-    // Move state finite machine
-    creator_callstack_do_transition(
-        "rm",
-        indexComponent,
-        indexElement,
-        address,
-    );
+    /**
+     * Find the last restore event for a register
+     */
+    getLastRestore(regIndex, elemIndex) {
+        const restores = this.events.filter(
+            (e) =>
+                e.regIndex === regIndex &&
+                e.elemIndex === elemIndex &&
+                e.type === EventType.READ_MEMORY
+        );
+        return restores[restores.length - 1];
+    }
 }
-//
-// Let programmers add a new read
-// Example: creator_callstack_newRead(1, 2, 0x12345) ;
-//
-export function creator_callstack_writeRegister(indexComponent, indexElement) {
-    // Move state finite machine
-    creator_callstack_do_transition(
-        "wr",
-        indexComponent,
-        indexElement,
-        address,
-    );
-}
-//
-// Reset
-// Example: creator_callstack_reset() ;
-//
-export function creator_callstack_reset() {
-    const ret = {
-        ok: true,
-        msg: "",
-    };
 
-    // initialize stack_call
-    stack_call_names = [];
-    stack_call_register = [];
-    creator_callstack_enter("main");
+/**
+ * Validation rules for calling convention
+ */
+class ConventionRules {
+    /**
+     * Check if a saved register follows proper save/restore pattern
+     */
+    static validateSavedRegister(frame, regIndex, elemIndex) {
+        const violations = [];
+        const register = REGISTERS[regIndex].elements[elemIndex];
+        const events = frame.getRegisterEvents(regIndex, elemIndex);
 
-    // return ok
-    return ret;
-}
-//
-// do state transition
-// Example: creator_callstack_do_transition("wm", 1, 2, 0x12345678)
-//
+        // Rule 1: Saved registers must be saved before modification
+        const firstSave = frame.getFirstSave(regIndex, elemIndex);
+        const modifications = events.filter(
+            (e) =>
+                e.type === EventType.WRITE_REGISTER ||
+                e.type === EventType.READ_REGISTER
+        );
 
-function creator_callstack_do_transition(
-    doAction,
-    indexComponent,
-    indexElement,
-    address,
-) {
-    // get current state
-    const state = creator_callstack_getState(indexComponent, indexElement);
-
-    // get action
-    let action = doAction;
-    if (doAction == "wm") {
-        const elto = creator_callstack_getTop();
-        if (elto.ok == false) {
-            console_log(
-                "creator_callstack_do_transition: " + elto.msg,
-                "ERROR",
-            );
-            return "";
+        if (modifications.length > 0 && !firstSave) {
+            violations.push({
+                rule: "SAVE_BEFORE_USE",
+                register: register.name,
+                message: `Register ${register.name} was used but never saved to memory`,
+            });
         }
 
-        const equal =
-            elto.val.register_address_write[indexComponent][
-                indexElement
-            ].includes(address);
-        action = equal ? "wm==" : "wm!=";
+        if (firstSave && modifications.length > 0) {
+            const firstMod = modifications[0];
+            if (firstMod.timestamp < firstSave.timestamp) {
+                violations.push({
+                    rule: "SAVE_BEFORE_USE",
+                    register: register.name,
+                    message: `Register ${register.name} was modified before being saved`,
+                });
+            }
+        }
+
+        // Rule 2: Saved registers must be restored from the same address
+        const lastRestore = frame.getLastRestore(regIndex, elemIndex);
+        if (firstSave && !lastRestore) {
+            violations.push({
+                rule: "RESTORE_REQUIRED",
+                register: register.name,
+                message: `Register ${register.name} was saved but never restored`,
+            });
+        }
+
+        if (firstSave && lastRestore) {
+            if (!bigintsEqual(firstSave.address, lastRestore.address)) {
+                const saveAddr = toBigIntSafe(firstSave.address);
+                const restoreAddr = toBigIntSafe(lastRestore.address);
+                const saveStr = saveAddr !== null ? `0x${saveAddr.toString(16)}` : String(firstSave.address);
+                const restoreStr = restoreAddr !== null ? `0x${restoreAddr.toString(16)}` : String(lastRestore.address);
+                violations.push({
+                    rule: "RESTORE_ADDRESS_MISMATCH",
+                    register: register.name,
+                    message: `Register ${register.name} saved at ${saveStr} but restored from ${restoreStr}`,
+                });
+            }
+        }
+
+        // Rule 3: Save and restore sizes must match
+        if (firstSave && lastRestore) {
+            const s1 = toBigIntSafe(firstSave.size);
+            const s2 = toBigIntSafe(lastRestore.size);
+            if (s1 === null || s2 === null || s1 !== s2) {
+                const s1Str = s1 !== null ? s1.toString() : String(firstSave.size);
+                const s2Str = s2 !== null ? s2.toString() : String(lastRestore.size);
+                violations.push({
+                    rule: "SIZE_MISMATCH",
+                    register: register.name,
+                    message: `Register ${register.name} saved with ${s1Str} bytes but restored with ${s2Str} bytes`,
+                });
+            }
+        }
+
+        // Rule 4: Value must be restored (if the register was modified)
+        const currentValue = REGISTERS[regIndex].elements[elemIndex].value;
+        const initialValue = frame.initialRegisterValues[regIndex]?.[elemIndex];
+
+        // Try to compare as BigInt when possible, otherwise fall back to strict equality
+        const curBig = toBigIntSafe(currentValue);
+        const initBig = toBigIntSafe(initialValue);
+
+        const valueChanged = (curBig !== null && initBig !== null)
+            ? curBig !== initBig
+            : currentValue !== initialValue;
+
+        if (valueChanged && modifications.length > 0) {
+            violations.push({
+                rule: "VALUE_NOT_RESTORED",
+                register: register.name,
+                message: `Register ${register.name} value changed but not properly restored`,
+            });
+        }
+
+        return violations;
     }
 
-    if (doAction == "rm") {
-        const elto = creator_callstack_getTop();
-        if (elto.ok == false) {
-            console_log("creator_callstack_do_transition: " + elto.msg);
-            return "";
+    /**
+     * Check stack pointer restoration
+     */
+    static validateStackPointer(frame, currentStackPointer) {
+        const spEnter = toBigIntSafe(frame.enterStackPointer);
+        const spNow = toBigIntSafe(currentStackPointer);
+        if (spEnter === null || spNow === null || spEnter !== spNow) {
+            const enterStr = spEnter !== null ? `0x${spEnter.toString(16)}` : String(frame.enterStackPointer);
+            const nowStr = spNow !== null ? `0x${spNow.toString(16)}` : String(currentStackPointer);
+            return [
+                {
+                    rule: "STACK_NOT_RESTORED",
+                    message: `Stack pointer not restored: entered at ${enterStr}, exited at ${nowStr}`,
+                },
+            ];
+        }
+        return [];
+    }
+}
+
+/**
+ * Main validator class for calling conventions
+ */
+class CallingConventionValidator {
+    constructor() {
+        this.callStack = [];
+    }
+
+    /**
+     * Enter a new function
+     */
+    enter(functionName) {
+        const stackPointer = architecture.memory_layout.stack.start;
+        const frame = new CallFrame(functionName, stackPointer);
+        this.callStack.push(frame);
+        console_log(`[SENTINEL] Entering function: ${functionName}`, "INFO");
+        return { ok: true, msg: "" };
+    }
+
+    /**
+     * Leave current function and validate
+     */
+    leave() {
+        if (this.callStack.length === 0) {
+            return {
+                ok: false,
+                msg: "Cannot leave function: call stack is empty",
+            };
         }
 
-        const equal =
-            elto.val.register_address_write[indexComponent][
-                indexElement
-            ].includes(address);
-        if (equal == false) {
+        const frame = this.callStack[this.callStack.length - 1];
+        console_log(`[SENTINEL] Leaving function: ${frame.functionName}`, "INFO");
+
+        const violations = [];
+
+        // Validate stack pointer
+        const spViolations = ConventionRules.validateStackPointer(
+            frame,
+            architecture.memory_layout.stack.start
+        );
+        violations.push(...spViolations);
+
+        // Validate each saved register
+        for (let i = 0; i < REGISTERS.length; i++) {
+            for (let j = 0; j < REGISTERS[i].elements.length; j++) {
+                const register = REGISTERS[i].elements[j];
+                
+                // Only check registers that should be saved
+                if (register.properties.includes("saved")) {
+                    const regViolations = ConventionRules.validateSavedRegister(
+                        frame,
+                        i,
+                        j
+                    );
+                    violations.push(...regViolations);
+                }
+            }
+        }
+
+        // Pop the frame
+        this.callStack.pop();
+
+        // Return result
+        if (violations.length > 0) {
+            const messages = violations.map((v) => `  - ${v.message}`).join("\n");
+            return {
+                ok: false,
+                msg: `Calling convention violations in ${frame.functionName}:\n${messages}`,
+            };
+        }
+
+        return { ok: true, msg: "" };
+    }
+
+    /**
+     * Record a memory write event
+     */
+    recordMemoryWrite(regIndex, elemIndex, address, size) {
+        if (this.callStack.length === 0) {
+            console_log("[SENTINEL] Warning: Memory write outside function context", "WARN");
             return;
         }
-    }
 
-    if (
-        typeof stack_state_transition[state] === "undefined" ||
-        typeof stack_state_transition[state][action] === "undefined"
-    ) {
-        if (state < 40 || state < 0) {
-            console_log(
-                "[TRANSITION] Invalid state transition: State=" +
-                    state +
-                    ", Action=" +
-                    action +
-                    " (Component: " +
-                    REGISTERS[indexComponent].elements[indexElement].name +
-                    ")",
-                "ERROR",
-            );
-        }
-        return;
-    }
-
-    // get new state: transition(state, action) -> new_state
-    const new_state = stack_state_transition[state][action];
-    creator_callstack_setState(indexComponent, indexElement, new_state);
-
-    if (action != "end") {
-        console_log(
-            "[TRANSITION] " +
-                REGISTERS[indexComponent].elements[indexElement].name +
-                ": State " +
-                state +
-                " → " +
-                new_state +
-                " (Action: " +
-                action +
-                ")",
-            "WARN",
+        const frame = this.callStack[this.callStack.length - 1];
+        const event = new RegisterEvent(
+            EventType.WRITE_MEMORY,
+            regIndex,
+            elemIndex,
+            address,
+            size
         );
+        frame.addEvent(event);
+    }
+
+    /**
+     * Record a memory read event
+     */
+    recordMemoryRead(regIndex, elemIndex, address, size) {
+        if (this.callStack.length === 0) {
+            console_log("[SENTINEL] Warning: Memory read outside function context", "WARN");
+            return;
+        }
+
+        const frame = this.callStack[this.callStack.length - 1];
+        const event = new RegisterEvent(
+            EventType.READ_MEMORY,
+            regIndex,
+            elemIndex,
+            address,
+            size
+        );
+        frame.addEvent(event);
+    }
+
+    /**
+     * Record a register write event
+     */
+    recordRegisterWrite(regIndex, elemIndex) {
+        if (this.callStack.length === 0) {
+            return;
+        }
+
+        const frame = this.callStack[this.callStack.length - 1];
+        const event = new RegisterEvent(
+            EventType.WRITE_REGISTER,
+            regIndex,
+            elemIndex
+        );
+        frame.addEvent(event);
+    }
+
+    /**
+     * Record a register read event
+     */
+    recordRegisterRead(regIndex, elemIndex) {
+        if (this.callStack.length === 0) {
+            return;
+        }
+
+        const frame = this.callStack[this.callStack.length - 1];
+        const event = new RegisterEvent(
+            EventType.READ_REGISTER,
+            regIndex,
+            elemIndex
+        );
+        frame.addEvent(event);
+    }
+
+    /**
+     * Reset the validator
+     */
+    reset() {
+        this.callStack = [];
+        this.enter("main");
+        return { ok: true, msg: "" };
+    }
+
+    /**
+     * Get current call depth
+     */
+    getCallDepth() {
+        return this.callStack.length;
+    }
+
+    /**
+     * Get current function name
+     */
+    getCurrentFunction() {
+        if (this.callStack.length === 0) {
+            return null;
+        }
+        return this.callStack[this.callStack.length - 1].functionName;
     }
 }
+
+// Global instance
+const validator = new CallingConventionValidator();
+
+// Public API - Direct validator interface
+export const sentinel = {
+    enter: (functionName) => validator.enter(functionName),
+    leave: () => validator.leave(),
+    recordMemoryWrite: (regIndex, elemIndex, address, size) =>
+        validator.recordMemoryWrite(regIndex, elemIndex, address, size),
+    recordMemoryRead: (regIndex, elemIndex, address, size) =>
+        validator.recordMemoryRead(regIndex, elemIndex, address, size),
+    recordRegisterWrite: (regIndex, elemIndex) =>
+        validator.recordRegisterWrite(regIndex, elemIndex),
+    recordRegisterRead: (regIndex, elemIndex) =>
+        validator.recordRegisterRead(regIndex, elemIndex),
+    reset: () => validator.reset(),
+    getCallDepth: () => validator.getCallDepth(),
+    getCurrentFunction: () => validator.getCurrentFunction(),
+};

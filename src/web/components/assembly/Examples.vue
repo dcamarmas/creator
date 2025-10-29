@@ -154,11 +154,6 @@ export default defineComponent({
         // execution table (see assemble()) when that's fixed, delete this
         ;(this.$root as any).creator_mode = "assembly"
 
-        show_notification(
-          " The selected example has been loaded correctly",
-          "success",
-        )
-
         /* Google Analytics */
         creator_ga("event", "example.loading", "example.loading.url")
       } catch (_error) {

@@ -409,7 +409,7 @@ function executeInstructionCycle() {
 export function step() {
     status.error = false;
 
-    if (document.app) {
+    if (typeof document !== "undefined" && document?.app) {
         // Clear register highlighting from persistent store and notify UI
         clearAllRegisterGlows();
         coreEvents.emit("step-about-to-execute");

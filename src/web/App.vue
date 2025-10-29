@@ -244,7 +244,7 @@ export default {
       // we must store this data in the root, bc it resets when re-mounting a
       // component (in this case, RegisterFile)
       data_mode: "int_registers",
-      reg_representation_int: "signed",
+      reg_representation_int: "hex",
       reg_representation_float: "ieee32",
       reg_name_representation: "alias",
       memory_segment: "data",

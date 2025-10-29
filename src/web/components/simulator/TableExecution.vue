@@ -32,7 +32,6 @@ export default {
       /*Instrutions table fields*/
       archInstructions: [
         "Address",
-        "Label",
         "userInstructions",
         "loadedInstructions",
       ],
@@ -99,11 +98,7 @@ export default {
     <!-- address -->
     <template #cell(Address)="row">
       <span>{{ row.item.Address }}</span>
-    </template>
-
-    <!-- label -->
-    <template #cell(Label)="row">
-      <b-badge pill variant="info">{{ row.item.Label }}</b-badge>
+      <b-badge v-if="row.item.Label" pill variant="info" style="margin-left: 0.5em;">{{ row.item.Label }}</b-badge>
     </template>
 
     <!-- user instruction -->
@@ -141,22 +136,11 @@ export default {
   cursor: pointer;
   height: 100%;
   max-height: 100%;
-}
 
-:deep(.instructions_table) {
-
-  /* Make Address and Label columns narrower */
-  th:nth-child(1),
-  /* Address */
-  td:nth-child(1) {
-    width: 12%;
-  }
-
-  th:nth-child(2),
-  /* Label */
-  td:nth-child(2) {
-    width: 6%;
-  }
+  // // Font size only on mobile phones
+  // @media (max-width: 480px) {
+  //   font-size: 1rem;
+  // }
 }
 
 [data-bs-theme="dark"] {
