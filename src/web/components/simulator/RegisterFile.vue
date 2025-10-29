@@ -151,7 +151,7 @@ export default defineComponent({
           </b-row>
           <!-- Collapsible register content -->
           <b-collapse :visible="!isBankCollapsed(bank.name)">
-            <b-row align-h="start" cols="2" cols-sm="3" cols-md="3" cols-lg="3" cols-xl="4">
+            <b-row align-h="start" cols="2" cols-sm="3" cols-md="3" cols-lg="4" cols-xl="5">
               <b-col class="p-1 mx-0" v-for="(register, regIndex) in bank.elements" :key="register.name[0]">
                 <Register :type="bank.type" :double_precision="bank.double_precision" :register="register"
                   :name_representation="reg_name_representation"

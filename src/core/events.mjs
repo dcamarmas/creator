@@ -28,6 +28,7 @@ export const CoreEventTypes = {
     REGISTERS_RESET: "registers-reset",
     STATS_UPDATED: "stats-updated",
     STEP_ABOUT_TO_EXECUTE: "step-about-to-execute",
+    SENTINEL_ERROR: "sentinel-error",
 };
 
 /**
@@ -37,11 +38,19 @@ export const CoreEventTypes = {
  */
 
 /**
+ * @typedef {Object} SentinelErrorEvent
+ * @property {string} functionName - Name of the function that had violations
+ * @property {string} message - Full error message
+ * @property {boolean} ok - Whether the check passed (always false for error events)
+ */
+
+/**
  * @typedef {Object} CoreEvents
  * @property {RegisterUpdatedEvent} register-updated - Emitted when a register value is updated
  * @property {void} registers-reset - Emitted when all registers are reset
  * @property {void} stats-updated - Emitted when statistics are updated
  * @property {void} step-about-to-execute - Emitted just before a step is executed (to clear register highlighting)
+ * @property {SentinelErrorEvent} sentinel-error - Emitted when calling convention violations are detected
  */
 
 /**

@@ -172,34 +172,6 @@ export default defineComponent({
       },
     },
 
-    instruction_help_size_value: {
-      get() {
-        return this.instruction_help_size
-      },
-      set(value: string) {
-        const prev = this.stack_total_list
-
-        let val = parseInt(value, 10)
-
-        // enforce limit
-        if (val < 15) {
-          val = 15
-        } else if (val > 65) {
-          val = 65
-        }
-
-        this.$emit("update:instruction_help_size", val)
-        localStorage.setItem("conf_instruction_help_size", val.toString())
-
-        //Google Analytics
-        creator_ga(
-          "configuration",
-          "configuration.instruction_help_size",
-          "configuration.instruction_help_size.size_" + (prev > val).toString(),
-        )
-      },
-    },
-
     dark_value: {
       get() {
         return this.dark
@@ -395,21 +367,6 @@ export default defineComponent({
             min="1000"
             max="5000"
             step="10"
-            class="setting-input"
-          />
-        </div>
-
-        <div class="setting-item">
-          <div class="setting-label">
-            <font-awesome-icon :icon="['fas', 'question-circle']" />
-            Help Size (%)
-          </div>
-          <b-form-input
-            v-model.number="instruction_help_size_value"
-            type="number"
-            min="15"
-            max="65"
-            step="2"
             class="setting-input"
           />
         </div>

@@ -70,5 +70,11 @@
     "id": "e12",
     "url": "examples/RISCV/example12.s",
     "description": "Factorial"
+  },
+  {
+    "name": "Example 13",
+    "id": "e13",
+    "url": "examples/RISCV/stack_overflow.s",
+    "description": "Stack Overflow Vulnerability Demonstration"
   }
 ]

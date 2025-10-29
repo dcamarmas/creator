@@ -53,17 +53,17 @@ export let notifications = [];
  *
  */
 export function show_notification(msg, type, root = document.app) {
-    // show notification
-    root.createToast({
-        props: {
-            title: " ", // TODO: use fontawesome icons here
-            body: msg,
-            variant: type,
-            position: "bottom-end",
-            value: root.notification_time,
-            // TODO: don't dismiss toast when type is danger
-        },
-    });
+    // // show notification
+    // root.createToast({
+    //     props: {
+    //         title: " ", // TODO: use fontawesome icons here
+    //         body: msg,
+    //         variant: type,
+    //         position: "bottom-end",
+    //         value: root.notification_time,
+    //         // TODO: don't dismiss toast when type is danger
+    //     },
+    // });
 
     // add notification to the notification summary
     const date = new Date();
@@ -157,13 +157,6 @@ export async function loadDefaultArchitecture(arch, root = document.app) {
         // store code to be edited
         root.arch_code = cfg;
 
-        //Refresh UI
-        show_notification(
-            arch.name + " architecture has been loaded correctly",
-            "success",
-            root,
-        );
-
         // Google Analytics
         creator_ga(
             "architecture",
@@ -199,13 +192,6 @@ export function loadCustomArchitecture(arch, root = document.app) {
 
     // store code to be edited
     root.arch_code = arch.definition;
-
-    //Refresh UI
-    show_notification(
-        arch.name + " architecture has been loaded correctly",
-        "success",
-        root,
-    );
 
     // Google Analytics
     creator_ga(

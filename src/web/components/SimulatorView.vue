@@ -117,7 +117,7 @@ export default defineComponent({
 
         <b-row align-h="center" class="simulator-main-row">
           <!-- Column 1: Execution instruction -->
-          <b-col cols="12" sm="12" md="6" lg="6" class="execution-instruction-col">
+          <b-col cols="12" sm="12" md="5" lg="5" class="execution-instruction-col">
             <TableExecution
               :instructions="instructions"
               :enter="enter"
@@ -126,7 +126,7 @@ export default defineComponent({
           </b-col>
 
           <!-- Column 2: Execution data (split into top: data, bottom: terminal) -->
-          <b-col cols="12" sm="12" md="6" lg="6" class="execution-data-col">
+          <b-col cols="12" sm="12" md="7" lg="7" class="execution-data-col">
             <!-- Top row: current execution data -->
             <div class="execution-data-container">
               <div class="execution-data-header">
@@ -168,20 +168,17 @@ export default defineComponent({
                   :representation="stat_representation"
                   :type="stat_type"
                 />
-              </div>
-            </div>
 
-            <!-- Bottom row: terminal-->
-            <b-row class="execution-data-bottom">
-              <b-col class="terminal-col">
+                <!-- Terminal view -->
                 <Terminal
+                  v-if="data_mode === 'terminal'"
                   :display="display"
                   :keyboard="keyboard"
                   :enter="enter"
                   ref="terminal"
                 />
-              </b-col>
-            </b-row>
+              </div>
+            </div>
           </b-col>
 
 
@@ -194,7 +191,7 @@ export default defineComponent({
 <style lang="scss" scoped>
 #simulator {
   padding-top: 10px;
-  height: calc(90vh);
+  height: calc(95vh);
   overflow: hidden;
 }
 
@@ -258,7 +255,8 @@ export default defineComponent({
 /* Make child components fill the content area properly */
 .execution-data-content :deep(.register-file-container),
 .execution-data-content :deep(.memory-container),
-.execution-data-content :deep(.stats-container) {
+.execution-data-content :deep(.stats-container),
+.execution-data-content :deep(.terminal-container) {
   height: 100%;
   max-height: 100%;
   padding: 8px;

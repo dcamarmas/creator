@@ -215,7 +215,7 @@ export default defineComponent({
     :type="type === 'instructions' ? 'donut' : 'bar'"
     :options="options"
     :series="statsValues"
-    height="180%"
+    height="85%"
   />
 
   <b-row v-if="type === 'cycles'">

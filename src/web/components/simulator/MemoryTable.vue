@@ -440,28 +440,26 @@ export default defineComponent({
 </script>
 
 <template>
-  <div :key="render">
-    <b-container fluid align-h="between" class="mx-0 px-0">
-      <b-row align-v="start" cols="1">
-        <b-col class="mx-0 pl-0 pr-2" style="min-height: 35vh !important">
-          <b-table
-            sticky-header
-            striped
-            ref="table"
-            small
-            hover
-            :items="deviceIDs.includes(segment) ? deviceMemory() : memory()"
-            :fields="memFields"
-            :filter-function="mainMemoryFilter"
-            :filter="!deviceIDs.includes(segment) ? 'yes' : undefined"
-            class="memory_table align-items-start"
-            @row-clicked="
-              (item, _index, _event) => {
-                spaceItem = item
-                spaceView = true
-              }
-            "
-          >
+  <div :key="render" :class="segment === 'stack' ? 'd-flex flex-column h-100' : 'h-100'">
+    <b-table
+      sticky-header
+      striped
+      ref="table"
+      small
+      hover
+      :items="deviceIDs.includes(segment) ? deviceMemory() : memory()"
+      :fields="memFields"
+      :filter-function="mainMemoryFilter"
+      :filter="!deviceIDs.includes(segment) ? 'yes' : undefined"
+      class="memory_table align-items-start"
+      :style="segment === 'stack' ? 'flex: 1' : 'min-height: 100%'"
+      @row-clicked="
+        (item, _index, _event) => {
+          spaceItem = item
+          spaceView = true
+        }
+      "
+    >
             <template #table-busy>
               <div class="text-center text-primary my-2">
                 <b-spinner class="align-middle" />
@@ -563,11 +561,9 @@ export default defineComponent({
                 {{ getStackHint(row.item.start) }}
               </b-badge>
             </template>
-          </b-table>
-        </b-col>
-      </b-row>
+    </b-table>
 
-      <!-- stack visualizer -->
+    <!-- stack visualizer -->
 
       <div v-if="segment === 'stack'" class="px-2 border">
         <span>Stack memory areas</span>
@@ -644,7 +640,6 @@ export default defineComponent({
           </b-col>
         </b-row>
       </div>
-    </b-container>
 
     <!-- space view -->
 
@@ -736,40 +731,3 @@ export default defineComponent({
     </b-modal>
   </div>
 </template>
-
-<style lang="scss" scoped>
-.memory_table {
-  max-height: 49vh;
-  padding-left: 1vw;
-  cursor: pointer;
-}
-
-.table-mem-wrapper-scroll-y {
-  display: block;
-  max-height: 75vh;
-  overflow-y: auto;
-  -ms-overflow-style: -ms-autohiding-scrollbar;
-}
-
-.memoryBorder {
-  border: 1px solid gray;
-}
-
-.memoryTag {
-  float: left;
-  position: relative;
-  left: -0.7vw;
-}
-
-.binaryTag {
-  position: relative;
-  top: -9px;
-}
-
-.table-inst-wrapper-scroll-y {
-  display: block;
-  max-height: 90vh;
-  overflow-y: auto;
-  -ms-overflow-style: -ms-autohiding-scrollbar;
-}
-</style>

@@ -26,6 +26,8 @@ import { assembleCreator } from "@/core/assembler/creatorAssembler/web/creatorAs
 import TextareaAssembly from "@/web/components/assembly/TextareaAssembly.vue"
 import Examples from "@/web/components/assembly/Examples.vue"
 import MobileInstructionHelp from "@/web/components/mobile/MobileInstructionHelp.vue"
+import LoadLibrary from "@/web/components/assembly/LoadLibrary.vue"
+import LibraryTags from "@/web/components/assembly/LibraryTags.vue"
 
 export default defineComponent({
   props: {
@@ -52,6 +54,8 @@ export default defineComponent({
     TextareaAssembly,
     Examples,
     MobileInstructionHelp,
+    LoadLibrary,
+    LibraryTags,
   },
 
   data() {
@@ -159,6 +163,14 @@ export default defineComponent({
             <font-awesome-icon :icon="['fas', 'file-lines']" />
             Examples
           </b-dropdown-item>
+          <b-dropdown-item v-b-modal.load-library-mobile>
+            <font-awesome-icon :icon="['fas', 'upload']" />
+            Load Library
+          </b-dropdown-item>
+          <b-dropdown-item v-b-modal.library-tags-mobile>
+            <font-awesome-icon :icon="['fas', 'tags']" />
+            View Library Tags
+          </b-dropdown-item>
           <b-dropdown-item @click="resetCode">
             <font-awesome-icon :icon="['fas', 'trash']" />
             Clear
@@ -199,6 +211,12 @@ export default defineComponent({
     id="instruction-help-mobile"
     :architecture_name="architecture_name"
   />
+
+  <!-- Load Library modal -->
+  <LoadLibrary id="load-library-mobile" />
+
+  <!-- Library Tags modal -->
+  <LibraryTags id="library-tags-mobile" />
 </template>
 
 <style lang="scss" scoped>

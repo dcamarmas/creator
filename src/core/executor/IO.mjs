@@ -208,8 +208,6 @@ export function keyboard_read(fn_post_read, fn_post_params) {
 
     document.app.$data.enter = null; // reset keyboard
 
-    show_notification("The data has been uploaded", "info");
-
     if (status.execution_index >= instructions.length) {
         for (let i = 0; i < instructions.length; i++) {
             draw.space.push(i);
@@ -222,6 +220,15 @@ export function keyboard_read(fn_post_read, fn_post_params) {
             "success",
             null,
         );
+    }
+
+    // If program was running before waiting for input, continue execution automatically
+    if (status.run_program === 1) {
+        // Trigger the play button to continue execution
+        const playButton = document.getElementById("playExecution");
+        if (playButton) {
+            playButton.click();
+        }
     }
 
     // re-enable buttons

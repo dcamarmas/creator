@@ -355,7 +355,7 @@ export default defineComponent({
       /* MEMORY */
       ;(
         this.root as any
-      ).$refs.simulatorView?.$refs.memory?.$refs?.memory_table?.refresh()
+      ).$refs.simulatorView?.$refs.memory?.$refs?.hexviewer?.refresh()
 
       /* STATS */
       ;(this.root as any).$refs.simulatorView?.$refs.stats?.refresh()
@@ -1414,6 +1414,15 @@ export default defineComponent({
     &:disabled {
       opacity: 0.5;
     }
+  }
+}
+
+// Dropdown item hover/active styles for dark mode
+[data-bs-theme="dark"] :deep(.dropdown-item) {
+  &:hover,
+  &:active {
+    background-color: rgba(255, 255, 255, 0.08) !important;
+    color: rgba(255, 255, 255, 0.95) !important;
   }
 }
 

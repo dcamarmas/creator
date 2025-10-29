@@ -21,7 +21,7 @@
 import { architecture, status, REGISTERS } from "../core.mjs";
 import { writeStackLimit } from "../executor/executor.mjs";
 import { instructions } from "../assembler/assembler.mjs";
-import { creator_callstack_writeRegister } from "../sentinel/sentinel.mjs";
+import { sentinel } from "../sentinel/sentinel.mjs";
 import { packExecute } from "../utils/utils.mjs";
 import { coreEvents } from "../events.mjs";
 import { setRegisterGlow } from "./registerGlowState.mjs";
@@ -124,12 +124,12 @@ export function writeRegister(value, indexComp, indexElem) {
     }
 
     element.value = value;
-    creator_callstack_writeRegister(indexComp, indexElem);
+    sentinel.recordRegisterWrite(indexComp, indexElem);
 
     if (properties.includes("stack_pointer") && value !== stackStart) {
         writeStackLimit(value);
     }
-    if (document.app) {
+    if (typeof document !== "undefined" && document?.app) {
         // Notify UI layers about the update (CLI ignores, web UI listens)
         notifyRegisterUpdate(indexComp, indexElem);
     }
