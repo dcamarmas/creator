@@ -26,7 +26,7 @@ import { architecture } from "@/core/core.mjs"
 import EditArchitecture from "./architecture/EditArchitecture.vue"
 import DownloadPopup from "./general/DownloadModal.vue"
 import ArchConf from "./architecture/configuration/ArchConf.vue"
-import MemoryLayout from "./architecture/memory_layout/MemoryLayout.vue"
+import MemoryLayoutDiagram from "./architecture/memory_layout/MemoryLayoutDiagram.vue"
 import RegisterFileArch from "./architecture/register_file/RegisterFileArch.vue"
 import Instructions from "./architecture/instructions/Instructions.vue"
 import Directives from "./architecture/directives/Directives.vue"
@@ -46,7 +46,7 @@ export default defineComponent({
     EditArchitecture,
     DownloadPopup,
     ArchConf,
-    MemoryLayout,
+    MemoryLayoutDiagram,
     RegisterFileArch,
     Instructions,
     Directives,
@@ -56,7 +56,14 @@ export default defineComponent({
   data() {
     return {
       architecture,
+      activeTab: 'instructions'
     }
+  },
+
+  computed: {
+    archCodeWSchema() {
+      return `# yaml-language-server: $schema=${document.URL}architecture/schema.json\n${this.arch_code}`
+    },
   },
 
   computed: {
@@ -68,15 +75,9 @@ export default defineComponent({
 </script>
 
 <template>
-  <b-container fluid align-h="center" id="architecture_menu">
-    <!-- Navbar -->
-
+  <div class="architecture-view" id="architecture_menu">
     <!-- Edit architecture modal -->
-    <EditArchitecture
-      id="edit_architecture"
-      :arch_code="arch_code"
-      :dark="dark"
-    />
+    <EditArchitecture id="edit_architecture" :arch_code="arch_code" :dark="dark" />
 
     <!-- Download architecture modal -->
 
@@ -88,40 +89,305 @@ export default defineComponent({
       :fileData="archCodeWSchema"
       default-filename="architecture"
     />
+    <DownloadPopup id="save_architecture" type="architecture" title="Download Architecture" extension=".yml"
+      :fileData="arch_code" default-filename="architecture" />
 
-    <!-- Architecture information -->
-    <b-tabs lazy class="menu" id="view_components">
-      <!-- Architecture configuration -->
-      <b-tab title="Architecture Info" active>
-        <ArchConf :conf="architecture.config" />
-      </b-tab>
+    <!-- Architecture information with side-by-side layout -->
+    <div class="architecture-layout">
+      <!-- Left Sidebar: Overview -->
+      <div class="sidebar-left">
+        <b-card no-body class="overview-card mb-3">
 
-      <!-- Memory layout -->
-      <b-tab title="Memory Layout">
-        <MemoryLayout :memory_layout="architecture.memory_layout" />
-      </b-tab>
+          <b-card-body class="p-3">
+            <ArchConf :conf="architecture.config" />
+          </b-card-body>
+        </b-card>
+      </div>
 
-      <!-- Register File -->
-      <b-tab title="Register File">
-        <RegisterFileArch :register_file="architecture.components" />
-      </b-tab>
+      <!-- Main Content Area: Instructions & ISA -->
+      <div class="main-content">
+        <!-- View selector as buttons -->
+        <div class="architecture-view-selector">
+          <div class="tabs-container">
+            <!-- Instructions Tab -->
+            <button
+              :class="['tab', { active: activeTab === 'instructions' }]"
+              @click="activeTab = 'instructions'"
+            >
+              <font-awesome-icon :icon="['fas', 'code']" />
+              <span>Instructions</span>
+            </button>
 
-      <!-- Instruction definition -->
-      <b-tab title="Instructions">
-        <Instructions :instructions="architecture.instructions" />
-      </b-tab>
+            <!-- Pseudoinstruction Tab -->
+            <button
+              v-if="architecture.pseudoinstructions && architecture.pseudoinstructions.length > 0"
+              :class="['tab', { active: activeTab === 'pseudoinstructions' }]"
+              @click="activeTab = 'pseudoinstructions'"
+            >
+              <font-awesome-icon :icon="['fas', 'layer-group']" />
+              <span>Pseudoinstructions</span>
+            </button>
 
-      <!-- Pseudoinstruction definition -->
-      <b-tab title="Pseudoinstructions">
-        <Pseudoinstructions
-          :pseudoinstructions="architecture.pseudoinstructions"
-        />
-      </b-tab>
+            <!-- Directives Tab -->
+            <button
+              v-if="architecture.directives && architecture.directives.length > 0"
+              :class="['tab', { active: activeTab === 'directives' }]"
+              @click="activeTab = 'directives'"
+            >
+              <font-awesome-icon :icon="['fas', 'cogs']" />
+              <span>Directives</span>
+            </button>
 
-      <!-- Directives definition -->
-      <b-tab title="Directives">
-        <Directives :directives="architecture.directives" />
-      </b-tab>
-    </b-tabs>
-  </b-container>
+            <!-- Memory Layout Tab -->
+            <button
+              :class="['tab', { active: activeTab === 'memory_layout' }]"
+              @click="activeTab = 'memory_layout'"
+            >
+              <font-awesome-icon :icon="['fas', 'sitemap']" />
+              <span>Memory Layout</span>
+            </button>
+
+            <!-- Registers Tab -->
+            <button
+              :class="['tab', { active: activeTab === 'registers' }]"
+              @click="activeTab = 'registers'"
+            >
+              <font-awesome-icon :icon="['fas', 'database']" />
+              <span>Registers</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="isa-content">
+          <!-- Instruction definition -->
+          <div v-if="activeTab === 'instructions'">
+            <Instructions :instructions="architecture.instructions" />
+          </div>
+
+          <!-- Pseudoinstruction definition -->
+          <div v-if="activeTab === 'pseudoinstructions'">
+            <Pseudoinstructions :pseudoinstructions="architecture.pseudoinstructions" />
+          </div>
+
+          <!-- Directives definition -->
+          <div v-if="activeTab === 'directives'">
+            <Directives :directives="architecture.directives" />
+          </div>
+
+          <!-- Memory Layout -->
+          <div v-if="activeTab === 'memory_layout'">
+            <MemoryLayoutDiagram :memory_layout="architecture.memory_layout" :inverted="true" :show-gaps="true" />
+          </div>
+
+          <!-- Registers -->
+          <div v-if="activeTab === 'registers'">
+            <RegisterFileArch :register_file="architecture.components" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
+
+<style lang="scss" scoped>
+.architecture-view {
+  height: calc(100vh - 40px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.architecture-layout {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+.sidebar-left {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  border-right: 1px solid rgba(0, 0, 0, 0.07);
+  background-color: var(--bs-body-bg);
+
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.3);
+    }
+  }
+
+  .card {
+    border-radius: 0;
+    border: none;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+
+    .card-header {
+      background-color: transparent;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+      padding: 8px 12px;
+      font-weight: 600;
+      font-size: 0.8125rem;
+
+      h5,
+      h6 {
+        color: rgba(0, 0, 0, 0.8);
+        font-size: 0.8125rem;
+        font-weight: 600;
+      }
+
+      i {
+        margin-right: 6px;
+        font-size: 0.875rem;
+      }
+    }
+
+    .card-body {
+      max-height: none;
+      overflow-y: auto;
+      padding: 12px;
+    }
+  }
+}
+
+.main-content {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--bs-body-bg);
+}
+
+.architecture-view-selector {
+  width: 100%;
+  user-select: none;
+}
+
+.tabs-container {
+  display: flex;
+  gap: 0.25rem;
+  padding: 6px;
+  background: transparent;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+  overflow: hidden;
+}
+
+.isa-content {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+
+  > div {
+    height: 100%;
+    overflow: auto;
+
+    &::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 5px;
+
+      &:hover {
+        background: rgba(0, 0, 0, 0.3);
+      }
+    }
+  }
+}
+
+[data-bs-theme="dark"] {
+  .sidebar-left {
+    border-right-color: rgba(255, 255, 255, 0.12);
+
+    &::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.3);
+      }
+    }
+
+    .card {
+      border-bottom-color: rgba(255, 255, 255, 0.12);
+
+      .card-header {
+        border-bottom-color: rgba(255, 255, 255, 0.12);
+
+        h5,
+        h6 {
+          color: rgba(255, 255, 255, 0.9);
+        }
+      }
+    }
+  }
+
+  .tabs-container {
+    border-bottom-color: rgba(255, 255, 255, 0.12);
+  }
+
+  .isa-content > div {
+    &::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.3);
+      }
+    }
+  }
+}
+
+// Responsive breakpoints
+@media (max-width: 1400px) {
+  .architecture-layout {
+    grid-template-columns: 280px 1fr;
+  }
+}
+
+@media (max-width: 1200px) {
+  .architecture-layout {
+    grid-template-columns: 240px 1fr;
+  }
+}
+
+@media (max-width: 992px) {
+  .architecture-layout {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+  }
+
+  .sidebar-left {
+    flex-direction: row;
+    overflow-x: auto;
+    overflow-y: hidden;
+    border-right: none;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+
+    .card {
+      min-width: 250px;
+      flex-shrink: 0;
+      border-right: 1px solid rgba(0, 0, 0, 0.07);
+      border-bottom: none;
+    }
+  }
+}
+</style>

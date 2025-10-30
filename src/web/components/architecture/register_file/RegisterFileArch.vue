@@ -36,61 +36,91 @@ export default defineComponent({
 </script>
 
 <template>
-  <!-- Register File table -->
-  <div class="mt-3" />
-  <!-- For each register file -->
-  <b-card
-    v-for="(item, index) in register_file"
-    :key="item.type"
-    no-body
-    class="mb-1"
-  >
-    <b-card-header header-tag="header" class="p-1 d-grid gap-2" role="tab">
-      <b-button
-        block
-        href="#"
-        v-b-toggle="`registerfile${index}`"
-        class="buttonBackground"
-        variant="outline-secondary"
-        size="sm"
-      >
-        {{ item.name }}
-      </b-button>
-    </b-card-header>
-    <b-collapse
-      :id="'registerfile' + index.toString()"
-      accordion="my-accordion"
-      role="tabpanel"
-      class="architecture-scroll-y"
+  <!-- Register File Layout -->
+  <div class="register-files-container">
+    <!-- For each register file -->
+    <div
+      v-for="(item, index) in register_file"
+      :key="item.type"
+      class="register-file-section"
     >
-      <b-card-body>
+      <div class="register-file-header">
+        <h5 class="register-file-title">{{ item.name }}</h5>
+        <span class="register-count">{{ item.elements.length }} registers</span>
+      </div>
+
+      <div class="register-file-content">
         <Registers
           :registers="register_file[index]!.elements"
           :register_file_index="index"
-        >
-        </Registers>
-      </b-card-body>
-    </b-collapse>
-  </b-card>
+        />
+      </div>
+    </div>
+  </div>
 </template>
 
 <style lang="scss" scoped>
 @import "bootstrap/scss/bootstrap";
 
-.architecture-scroll-y {
-  display: block;
-  max-height: 60vh;
-  overflow-y: auto;
-  -ms-overflow-style: -ms-autohiding-scrollbar;
+.register-files-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding: 1rem 0;
 }
 
-[data-bs-theme="dark"] {
-  .buttonBackground {
-    background-color: #212529;
-    color: $secondary;
+.register-file-section {
+  background: var(--bs-body-bg);
+  border: 1px solid rgba(0, 0, 0, 0.125);
+  border-radius: 0.5rem;
+  overflow: hidden;
+
+  [data-bs-theme="dark"] & {
+    border-color: rgba(255, 255, 255, 0.125);
   }
-  .buttonBackground:hover {
-    background-color: #424649;
+}
+
+.register-file-header {
+  background: rgba(0, 0, 0, 0.03);
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  [data-bs-theme="dark"] & {
+    background: rgba(255, 255, 255, 0.03);
+    border-bottom-color: rgba(255, 255, 255, 0.125);
+  }
+}
+
+.register-file-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--bs-body-color);
+}
+
+.register-count {
+  font-size: 0.875rem;
+  color: var(--bs-secondary-color);
+  background: rgba(0, 123, 255, 0.1);
+  color: #007bff;
+  padding: 0.25rem 0.75rem;
+  border-radius: 1rem;
+  font-weight: 500;
+
+  [data-bs-theme="dark"] & {
+    background: rgba(0, 123, 255, 0.2);
+    color: #4dabf7;
+  }
+}
+
+.register-file-content {
+  padding: 1.5rem;
+
+  @media (max-width: 768px) {
+    padding: 1rem;
   }
 }
 </style>

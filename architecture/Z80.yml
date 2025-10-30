@@ -16,8 +16,6 @@ config:
   pc_offset: 0
   plugin: z80
   assemblers:
-    - name: "SjasmPlus" # The first element is the default assembler
-      description: "SjasmPlus Z80 Assembler"
     - name: "RASM"
       description: "RASM Z80 Assembler"
 

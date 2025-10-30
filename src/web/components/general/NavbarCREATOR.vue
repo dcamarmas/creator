@@ -1,6 +1,7 @@
 <!--
 Copyright 2018-2025 Felix Garcia Carballeira, Diego Camarmas Alonso,
-                    Alejandro Calderon Mateos, Luis Daniel Casais Mezquida
+                    Alejandro Calderon Mateos, Luis Daniel Casais Mezquida,
+                    Jorge Ramos Santana
 
 This file is part of CREATOR.
 
@@ -10,11 +11,7 @@ the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
 CREATOR is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without   max-width: 100%;
-}
-
-.bottom-nav-item {
-  display: flex;ranty of
+but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU Lesser General Public License for more details.
 
@@ -236,7 +233,6 @@ export default defineComponent({
         <template #button-content>
           <span class="headerText text-uppercase">
             Creator
-            <!-- <span class="version-badge">{{ version }}</span> -->
           </span>
         </template>
 
@@ -286,6 +282,7 @@ export default defineComponent({
             :browser="browser"
             :os="os"
             :dark="dark"
+            :creator_mode="creator_mode"
             dropdown-mode
             ref="viewGroup2"
           />
@@ -294,6 +291,7 @@ export default defineComponent({
             :browser="browser"
             :os="os"
             :dark="dark"
+            :creator_mode="creator_mode"
             dropdown-mode
             ref="viewGroup3"
           />
@@ -303,6 +301,7 @@ export default defineComponent({
             :os="os"
             :dark="dark"
             :architectures="arch_available"
+            :creator_mode="creator_mode"
             dropdown-mode
             ref="viewGroup1"
           />

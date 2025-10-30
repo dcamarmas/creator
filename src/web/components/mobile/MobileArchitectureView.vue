@@ -26,7 +26,6 @@ import { architecture } from "@/core/core.mjs"
 import EditArchitecture from "../architecture/EditArchitecture.vue"
 import DownloadPopup from "../general/DownloadModal.vue"
 import ArchConf from "../architecture/configuration/ArchConf.vue"
-import MemoryLayout from "../architecture/memory_layout/MemoryLayout.vue"
 import RegisterFileArch from "../architecture/register_file/RegisterFileArch.vue"
 import Instructions from "../architecture/instructions/Instructions.vue"
 import Directives from "../architecture/directives/Directives.vue"
@@ -45,7 +44,6 @@ export default defineComponent({
     EditArchitecture,
     DownloadPopup,
     ArchConf,
-    MemoryLayout,
     RegisterFileArch,
     Instructions,
     Directives,
@@ -139,7 +137,6 @@ export default defineComponent({
             class="accordion-content"
             v-show="activeSection === 'memory-layout'"
           >
-            <MemoryLayout :memory_layout="architecture.memory_layout" />
           </div>
         </div>
 
@@ -192,7 +189,7 @@ export default defineComponent({
         </div>
 
         <!-- Pseudoinstructions -->
-        <div class="accordion-section">
+        <div v-if="architecture.pseudoinstructions && architecture.pseudoinstructions.length > 0" class="accordion-section">
           <button
             class="accordion-header"
             @click="toggleSection('pseudoinstructions')"
