@@ -20,7 +20,7 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 
 <script lang="ts">
 import { defineComponent } from "vue"
-import { useModal } from "bootstrap-vue-next"
+import { useToggle } from "bootstrap-vue-next"
 
 import { creator_ga } from "@/core/utils/creator_ga.mjs"
 import { show_notification } from "@/web/utils.mjs"
@@ -39,14 +39,15 @@ export default defineComponent({
 
   components: { MakeURI },
 
-  setup() {
+  setup(props) {
     // this HAS to be defined here
     // as we can have various of these components almost simultaneately (when
     // transitioning from simulator to assembly, for example), we'll set an ID
     // for the URI modal that is based on this component's own ID
-    const { show, hide } = useModal()
-
-    return { showLink: show, hide }
+    return {
+      showLink: useToggle(`${props.id}_uri`).show,
+      hideModal: useToggle(props.id).hide,
+    }
   },
 
   computed: {
@@ -132,7 +133,7 @@ export default defineComponent({
      */
     async load_example(url: string, assemble: boolean) {
       // close modal
-      this.hide()
+      this.hideModal()
 
       try {
         const response = await fetch(url)
@@ -224,7 +225,7 @@ export default defineComponent({
           @click="
             () => {
               selected_example = example.id
-              showLink(`${id}_uri`)
+              showLink()
             }
           "
           size="sm"
