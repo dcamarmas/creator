@@ -42,6 +42,7 @@ export default defineComponent({
     dark: { type: Boolean, required: true },
     arch_code: { type: String, required: true },
   },
+
   components: {
     UIeltoToolbar,
     EditArchitecture,
@@ -53,10 +54,17 @@ export default defineComponent({
     Directives,
     Pseudoinstructions,
   },
+
   data() {
     return {
       architecture,
     }
+  },
+
+  computed: {
+    archCodeWSchema() {
+      return `# yaml-language-server: $schema=${document.URL}architecture/schema.json\n${this.arch_code}`
+    },
   },
 })
 </script>
@@ -87,7 +95,7 @@ export default defineComponent({
       type="architecture"
       title="Download Architecture"
       extension=".yml"
-      :fileData="arch_code"
+      :fileData="archCodeWSchema"
       default-filename="architecture"
     />
 
