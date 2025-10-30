@@ -257,6 +257,71 @@
           "description": "Word size in bits",
           "type": "integer",
           "minimum": 0.0
+        },
+        "start_address": {
+          "description": "Default start address, if no main function tag is found",
+          "type": "number"
+        },
+        "pc_offset": {
+          "description": "The offset to apply to the program counter while executing an instruction",
+          "type": "number"
+        },
+        "byte_size": {
+          "description": "Number of bits in a byte (default `8`)",
+          "type": "number"
+        },
+        "plugin": {
+          "description": "CAPI plugin to load",
+          "oneOf": [
+            {
+              "description": "RISC-V CAPI plugin",
+              "type": "string",
+              "enum": ["riscv"]
+            },
+            {
+              "description": "Z80 CAPI plugin",
+              "type": "string",
+              "enum": ["z80"]
+            },
+            {
+              "description": "MIPS CAPI plugin",
+              "type": "string",
+              "enum": ["mips"]
+            }
+          ]
+        },
+        "assemblers": {
+          "description": "List of assemblers that can be used with the architecture. The first element will be the default assembler",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Assembler"
+          }
+        }
+      }
+    },
+    "Assembler": {
+      "description": "CREATOR Assembler",
+      "type": "object",
+      "required": ["name"],
+      "properties": {
+        "name": {
+          "oneOf": [
+            {
+              "description": "Default architecture-agnostic CREATOR assembler",
+              "type": "string",
+              "enum": ["CreatorCompiler"]
+            },
+            {
+              "description": "SjasmPlus Z80 Assembler",
+              "type": "string",
+              "enum": ["SjasmPlus"]
+            },
+            {
+              "description": "RASM Z80 Assembler",
+              "type": "string",
+              "enum": ["RASM"]
+            }
+          ]
         }
       }
     },
