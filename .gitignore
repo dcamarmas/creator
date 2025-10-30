@@ -33,6 +33,7 @@ coverage
 # others
 /components.d.ts
 out/
+/target/
 vscode-extension/.vscode/*
 
 /creator6
