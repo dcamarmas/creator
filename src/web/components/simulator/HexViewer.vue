@@ -1,6 +1,6 @@
 <!--
 Copyright 2018-2025 Felix Garcia Carballeira, Diego Camarmas Alonso,
-                    Alejandro Calderon Mateos, Luis Daniel Casais Mezquida
+                    Alejandro Calderon Mateos, Jorge Ramos Santana
 
 This file is part of CREATOR.
 
@@ -25,6 +25,7 @@ import type { Device } from "@/core/executor/devices.mjs"
 import { coreEvents } from "@/core/events.mjs"
 import { stackTracker, architecture } from "@/core/core.mjs"
 import type { StackFrame } from "@/core/memory/StackTracker.mjs"
+import MemoryLayoutDiagram from "../architecture/memory_layout/MemoryLayoutDiagram.vue"
 
 interface MemoryDump {
   addresses: number[]
@@ -45,7 +46,9 @@ export default defineComponent({
     segment: { type: String, required: true },
   },
 
-  components: {},
+  components: {
+    MemoryLayoutDiagram,
+  },
 
   data() {
     return {
@@ -58,26 +61,26 @@ export default defineComponent({
       hintMap: new Map<number, { tag: string; type: string; sizeInBits?: number; colorIndex: number }>(),
       hintTooltip: null as HTMLElement | null,
       showAllTags: false,
-      
+
       memorySegments: this.main_memory.getMemorySegments(),
       deviceIDs: Array.from(this.devices.keys()),
 
       // Rendering state
       renderState: {} as any,
-      
+
       // Pagination
       rowHeight: 24,
       rowsPerPage: 100, // Number of rows per page
       currentPage: 0, // Current page number (0-indexed)
       pageScrollTop: 0, // Scroll position within the current page
-      
+
       // Window width tracking
       windowWidth: window.innerWidth,
-      
+
       // Editing state
       editingByte: -1,
       editingValue: '',
-      
+
       // Memory layout modal
       showMemoryLayoutModal: false,
       architecture,
@@ -89,9 +92,9 @@ export default defineComponent({
     // Calculate initial bytes per row and ASCII visibility based on window width
     this.updateBytesPerRow()
     this.updateAsciiVisibility()
-    
+
     this.refreshMemory()
-    
+
     // Subscribe to register update events
     coreEvents.on("register-updated", this.onRegisterUpdated)
 
@@ -101,9 +104,9 @@ export default defineComponent({
 
   beforeUnmount() {
     coreEvents.off("register-updated", this.onRegisterUpdated)
-    
+
     window.removeEventListener("resize", this.handleResize)
-    
+
     this.hideHintTooltip()
   },
 
@@ -130,23 +133,23 @@ export default defineComponent({
       const startRow = this.currentPage * this.rowsPerPage
       const endRow = Math.min(startRow + this.rowsPerPage, this.totalRows)
       const rows: number[] = []
-      
+
       for (let row = startRow; row < endRow; row++) {
         rows.push(row)
       }
-      
+
       return rows
     },
 
     selectionInfo(): string {
       if (this.selectedByte < 0 || !this.memoryDump) return ""
-      
+
       const address = this.selectedByte
       const value = this.getMemoryValue(address)
       const char = value >= 32 && value <= 126 ? String.fromCharCode(value) : "."
 
       let info = `Address: 0x${address.toString(16).toUpperCase().padStart(8, "0")}`
-      
+
       if (this.viewMode === 'hex') {
         info += ` | Value: 0x${value.toString(16).toUpperCase().padStart(2, "0")} (${value}) | ASCII: '${char}'`
       } else {
@@ -188,41 +191,10 @@ export default defineComponent({
       return stackTracker.getAllFrames().at(0)?.begin
     },
 
-    // Get memory layout segments sorted by address for display
-    memoryLayoutSegments(): Array<{ name: string; start: number; end: number; variant: string }> {
-      const segments: Array<{ name: string; start: number; end: number; variant: string }> = []
-      
-      // Get all segments from architecture.memory_layout
-      for (const [name, { start, end }] of Object.entries(architecture.memory_layout)) {
-        const startNum = Number(start)
-        const endNum = Number(end)
-        
-        // Only include segments with non-zero size
-        if (endNum > startNum) {
-          segments.push({
-            name,
-            start: startNum,
-            end: endNum,
-            variant: this.getSegmentVariant(startNum),
-          })
-        }
-      }
-      
-      // Sort by start address
-      return segments.sort((a, b) => a.start - b.start)
-    },
-
-    // Get segments in display order (respecting invert toggle)
-    displayMemoryLayoutSegments(): Array<{ name: string; start: number; end: number; variant: string }> {
-      return this.invertMemoryLayout 
-        ? this.memoryLayoutSegments.slice()
-        : this.memoryLayoutSegments.slice().reverse()
-    },
-
     // Group tags by row for efficient rendering
     tagsByRow(): Map<number, Array<Array<{ startCol: number; endCol: number; tag: string; colorIndex: number; isStackFrame?: boolean; frameIndex?: number }>>> {
       const tagsByRow = new Map<number, Array<Array<{ startCol: number; endCol: number; tag: string; colorIndex: number; isStackFrame?: boolean; frameIndex?: number }>>>()
-      
+
       if (!this.memoryDump) return tagsByRow
 
       // Temporary storage: row -> flat list of tags
@@ -237,7 +209,7 @@ export default defineComponent({
         for (const hint of this.memoryDump.hints) {
           const address = parseInt(hint.address, 10)
           const tagKey = `${address}:${hint.tag}`
-          
+
           if (!processedTags.has(tagKey)) {
             const sizeInBytes = hint.sizeInBits ? Math.ceil(hint.sizeInBits / 8) : 1
             processedTags.set(tagKey, { address, sizeInBytes })
@@ -279,16 +251,16 @@ export default defineComponent({
       // Always add stack frame information
       if (this.stackFrames.length > 0 && this.stackTop !== undefined && this.stackBottom !== undefined) {
         const frames = this.stackFrames.toReversed()
-        
+
         for (let i = 0; i < frames.length; i++) {
           const frame = frames[i]!
           // Frame range is [end, begin) - end is inclusive, begin is exclusive
           const startAddress = frame.end
           const endAddress = frame.begin - 1 // Make begin exclusive by subtracting 1
-          
+
           // Skip if the range is invalid (empty)
           if (startAddress > endAddress) continue
-          
+
           const startRow = Math.floor(startAddress / this.bytesPerRow)
           const startCol = startAddress % this.bytesPerRow
           const endRow = Math.floor(endAddress / this.bytesPerRow)
@@ -333,7 +305,7 @@ export default defineComponent({
       for (const [address, hintName] of stackHints.entries()) {
         const row = Math.floor(address / this.bytesPerRow)
         const col = address % this.bytesPerRow
-        
+
         if (!flatTagsByRow.has(row)) {
           flatTagsByRow.set(row, [])
         }
@@ -361,10 +333,10 @@ export default defineComponent({
             if (tag.colorIndex === -2) return 2 // stack hints
             return 1 // memory hints
           }
-          
+
           const priorityDiff = getPriority(a) - getPriority(b)
           if (priorityDiff !== 0) return priorityDiff
-          
+
           // Same priority, sort by start column
           return a.startCol - b.startCol
         })
@@ -373,10 +345,10 @@ export default defineComponent({
           // Find the first level where this tag doesn't overlap with existing tags
           let placed = false
           for (const level of levels) {
-            const hasOverlap = level.some(existingTag => 
+            const hasOverlap = level.some(existingTag =>
               !(tag.endCol < existingTag.startCol || tag.startCol > existingTag.endCol)
             )
-            
+
             if (!hasOverlap) {
               level.push(tag)
               placed = true
@@ -401,7 +373,7 @@ export default defineComponent({
     segment() {
       this.refreshMemory()
     },
-    
+
     bytesPerRow() {
       this.refreshMemory()
     },
@@ -422,14 +394,14 @@ export default defineComponent({
     generateMemoryDump(): MemoryDump {
       // Get all written memory
       const written = this.main_memory.getWritten()
-      
 
-      
+
+
       // Create a sparse array representation - we store written addresses and values
       // but display from 0 to highest address
       const addresses = written.map(b => b.addr)
       const values = written.map(b => b.value)
-      
+
       // Get all hints from memory
       const hints = this.main_memory.getAllHints().map(h => ({
         address: h.address.toString(),
@@ -437,24 +409,24 @@ export default defineComponent({
         type: h.type || "",
         sizeInBits: h.sizeInBits,
       }))
-      
+
       // Get the highest possible address from memory segments
       const segments = this.main_memory.getMemorySegments()
       let highestAddress = 0
       for (const segment of segments.values()) {
         highestAddress = Math.max(highestAddress, Number(segment.end))
       }
-      
+
       return { addresses, values, highestAddress, hints }
     },
 
     setMemoryDump(dump: MemoryDump) {
       this.renderState = {}
-      
+
       // Save current scroll position before updating
       const hexViewerBody = this.$refs.hexViewerBody as HTMLElement
       const savedScrollTop = hexViewerBody?.scrollTop ?? 0
-      
+
       this.memoryDump = dump
       this.selectedByte = -1
 
@@ -466,7 +438,7 @@ export default defineComponent({
       for (const hint of dump.hints) {
         const address = parseInt(hint.address, 10)
         const tagTypeKey = `${hint.tag}:${hint.type}`
-        
+
         if (!hintColors.has(tagTypeKey)) {
           hintColors.set(tagTypeKey, colorIndex % 8)
           colorIndex++
@@ -474,7 +446,7 @@ export default defineComponent({
 
         const hintColorIndex = hintColors.get(tagTypeKey)!
         const sizeInBytes = hint.sizeInBits ? Math.ceil(hint.sizeInBits / 8) : 1
-        
+
         for (let i = 0; i < sizeInBytes; i++) {
           this.hintMap.set(address + i, {
             tag: hint.tag,
@@ -555,7 +527,7 @@ export default defineComponent({
     updateAsciiVisibility() {
       const wasShowingAscii = this.showAscii
       this.showAscii = this.windowWidth >= 870
-      
+
       // Reset to hex view when ASCII column becomes visible
       if (!wasShowingAscii && this.showAscii && this.viewMode === 'ascii') {
         this.viewMode = 'hex'
@@ -572,14 +544,14 @@ export default defineComponent({
       if (isNaN(parsedAddress)) return
 
       parsedAddress = Math.max(0, Math.min(parsedAddress, this.memoryDump.highestAddress))
-      
+
       // Calculate which page contains this address
       const row = Math.floor(parsedAddress / this.bytesPerRow)
       const targetPage = Math.floor(row / this.rowsPerPage)
-      
+
       // Navigate to the target page
       this.currentPage = targetPage
-      
+
       // Scroll to the row within the page
       this.$nextTick(() => {
         const hexViewerBody = this.$refs.hexViewerBody as HTMLElement
@@ -588,7 +560,7 @@ export default defineComponent({
           const scrollTop = rowInPage * this.rowHeight
           hexViewerBody.scrollTop = scrollTop
           this.pageScrollTop = scrollTop
-          
+
           // Select the byte after scrolling
           this.$nextTick(() => {
             this.selectByte(parsedAddress)
@@ -642,7 +614,7 @@ export default defineComponent({
 
     handleByteClick(index: number, event: MouseEvent) {
       this.selectByte(index)
-      
+
       const hintInfo = this.hintMap.get(index)
       if (hintInfo) {
         this.showHintTooltip(event.target as HTMLElement, hintInfo)
@@ -653,10 +625,10 @@ export default defineComponent({
       // Start editing the byte
       this.editingByte = index
       const currentValue = this.getMemoryValue(index)
-      this.editingValue = this.viewMode === 'hex' 
+      this.editingValue = this.viewMode === 'hex'
         ? this.toHex(currentValue, 1)
         : String.fromCharCode(currentValue >= 32 && currentValue <= 126 ? currentValue : 46) // 46 is '.'
-      
+
       // Focus the input after it's rendered
       this.$nextTick(() => {
         const input = this.$el.querySelector(`input.byte-editor[data-index="${index}"]`) as HTMLInputElement
@@ -693,9 +665,9 @@ export default defineComponent({
 
     saveByteEdit(index: number) {
       if (this.editingByte !== index) return
-      
+
       let newValue: number
-      
+
       if (this.viewMode === 'hex') {
         // Parse hex value
         const hexValue = this.editingValue.trim()
@@ -713,19 +685,19 @@ export default defineComponent({
         }
         newValue = this.editingValue.charCodeAt(0)
       }
-      
+
       // Validate the value is within byte range
       if (newValue < 0 || newValue > 255) {
         this.cancelByteEdit()
         return
       }
-      
+
       // Write to memory
       try {
         this.main_memory.write(BigInt(index), newValue)
         this.editingByte = -1
         this.editingValue = ''
-        
+
         // Refresh the memory view
         this.refreshMemory()
       } catch (error) {
@@ -736,9 +708,9 @@ export default defineComponent({
 
     saveByteEditAndContinue(index: number): boolean {
       if (this.editingByte !== index) return false
-      
+
       let newValue: number
-      
+
       if (this.viewMode === 'hex') {
         // Parse hex value
         const hexValue = this.editingValue.trim()
@@ -753,18 +725,18 @@ export default defineComponent({
         }
         newValue = this.editingValue.charCodeAt(0)
       }
-      
+
       // Validate the value is within byte range
       if (newValue < 0 || newValue > 255) {
         return false
       }
-      
+
       // Write to memory
       try {
         this.main_memory.write(BigInt(index), newValue)
         this.editingByte = -1
         this.editingValue = ''
-        
+
         // Refresh the memory view
         this.refreshMemory()
         return true
@@ -835,17 +807,17 @@ export default defineComponent({
       if (!this.memoryDump || index < 0 || index > this.memoryDump.highestAddress) return
 
       this.selectedByte = index
-      
+
       // Ensure the byte is on the current page
       const row = Math.floor(index / this.bytesPerRow)
       const targetPage = Math.floor(row / this.rowsPerPage)
-      
+
       if (this.currentPage !== targetPage) {
         this.saveScrollPosition()
         this.currentPage = targetPage
         this.restoreScrollPosition()
       }
-      
+
       this.$nextTick(() => {
         const hexByte = this.$el.querySelector(`[data-index="${index}"].hex-byte`) as HTMLElement
         if (hexByte) {
@@ -856,11 +828,11 @@ export default defineComponent({
 
     getByteClass(byteIndex: number, value: number): string[] {
       const classes = ["hex-byte"]
-      
+
       if (byteIndex === this.selectedByte) {
         classes.push("selected")
       }
-      
+
       if (value === 0) {
         classes.push("zero")
       }
@@ -875,7 +847,7 @@ export default defineComponent({
 
     getAsciiCharClass(byteIndex: number): string[] {
       const classes = ["ascii-char"]
-      
+
       if (byteIndex === this.selectedByte) {
         classes.push("selected")
       }
@@ -899,7 +871,7 @@ export default defineComponent({
     getSegmentVariant(address: number): string {
       const segmentName = this.main_memory.getSegmentForAddress(BigInt(address))
       if (!segmentName) return 'secondary'
-      
+
       switch (segmentName.replace(/^\.+/, "")) {
         case "ktext":
         case "text":
@@ -929,22 +901,12 @@ export default defineComponent({
     jumpToMemoryLayoutSegment(segmentName: string) {
       // Close the modal
       this.showMemoryLayoutModal = false
-      
+
       // Jump to the segment
       const segment = (architecture.memory_layout as any)[segmentName]
       if (segment) {
         const startAddress = Number(segment.start)
         this.handleGotoAddress(`0x${startAddress.toString(16)}`)
-      }
-    },
-
-    formatGapSize(bytes: number): string {
-      if (bytes >= 1024 * 1024) {
-        return `${(bytes / (1024 * 1024)).toFixed(1)} MB gap`
-      } else if (bytes >= 1024) {
-        return `${(bytes / 1024).toFixed(1)} KB gap`
-      } else {
-        return `${bytes} B gap`
       }
     },
   },
@@ -956,14 +918,8 @@ export default defineComponent({
     <div class="hex-viewer-toolbar">
       <div class="toolbar-group">
         <label for="goto-address">Go to address:</label>
-        <input
-          id="goto-address"
-          ref="gotoInput"
-          class="address-input"
-          type="text"
-          placeholder="e.g. 0x200000"
-          @keydown.enter="handleGotoAddress(($refs.gotoInput as HTMLInputElement).value)"
-        />
+        <input id="goto-address" ref="gotoInput" class="address-input" type="text" placeholder="e.g. 0x200000"
+          @keydown.enter="handleGotoAddress(($refs.gotoInput as HTMLInputElement).value)" />
         <button class="toolbar-button" @click="handleGotoAddress(($refs.gotoInput as HTMLInputElement).value)">
           <font-awesome-icon :icon="['fas', 'arrow-right']" />
           Go
@@ -972,41 +928,25 @@ export default defineComponent({
       <div class="toolbar-group" v-if="segmentList.length > 0">
         <label>Jump to:</label>
         <div class="segment-buttons">
-          <button
-            v-for="segment in segmentList"
-            :key="segment.name"
-            class="toolbar-button segment-button"
+          <button v-for="segment in segmentList" :key="segment.name" class="toolbar-button segment-button"
             @click="jumpToSegment(segment.name)"
-            :title="`Jump to ${segment.name} segment (0x${Number(segment.start).toString(16)})`"
-          >
+            :title="`Jump to ${segment.name} segment (0x${Number(segment.start).toString(16)})`">
             {{ segment.name }}
           </button>
         </div>
       </div>
       <div class="toolbar-group">
-        <button 
-          v-if="!showAscii"
-          class="toolbar-button" 
-          @click="viewMode = viewMode === 'hex' ? 'ascii' : 'hex'"
-          :class="{ active: viewMode === 'ascii' }"
-        >
+        <button v-if="!showAscii" class="toolbar-button" @click="viewMode = viewMode === 'hex' ? 'ascii' : 'hex'"
+          :class="{ active: viewMode === 'ascii' }">
           <font-awesome-icon :icon="['fas', 'exchange-alt']" />
           {{ viewMode === 'hex' ? 'Hex' : 'ASCII' }}
         </button>
-        <button 
-          class="toolbar-button" 
-          @click="showAllTags = !showAllTags"
-          :class="{ active: showAllTags }"
-          title="Show all memory tags"
-        >
+        <button class="toolbar-button" @click="showAllTags = !showAllTags" :class="{ active: showAllTags }"
+          title="Show all memory tags">
           <font-awesome-icon :icon="['fas', 'tags']" />
           Tags
         </button>
-        <button 
-          class="toolbar-button" 
-          @click="showMemoryLayoutModal = true"
-          title="Show memory layout diagram"
-        >
+        <button class="toolbar-button" @click="showMemoryLayoutModal = true" title="Show memory layout diagram">
           <font-awesome-icon :icon="['fas', 'sitemap']" />
           Layout
         </button>
@@ -1024,48 +964,27 @@ export default defineComponent({
         <div v-if="showAscii" class="ascii-column-header">ASCII</div>
       </div>
 
-      <div
-        ref="hexViewerBody"
-        class="hex-viewer-body"
-        tabindex="0"
-        @keydown="handleKeyDown"
-        @scroll="handleScroll"
-      >
-        <div
-          v-if="!memoryDump || memoryDump.highestAddress === 0"
-          class="no-data"
-        >
+      <div ref="hexViewerBody" class="hex-viewer-body" tabindex="0" @keydown="handleKeyDown" @scroll="handleScroll">
+        <div v-if="!memoryDump || memoryDump.highestAddress === 0" class="no-data">
           No data in memory
         </div>
-        
+
         <div v-else class="hex-rows">
           <!-- Visible rows for current page only -->
-          <div
-            v-for="row in visibleRows"
-            :key="row"
-            class="hex-row-container"
-          >
+          <div v-for="row in visibleRows" :key="row" class="hex-row-container">
             <!-- Tag labels row (shown when showAllTags is true OR there are stack frames) -->
             <div v-if="tagsByRow.has(row)" class="tag-labels-container">
               <div class="address-column-spacer"></div>
               <div class="tag-labels-wrapper">
                 <!-- Each level is a separate row of labels -->
-                <div
-                  v-for="(level, levelIdx) in tagsByRow.get(row)"
-                  :key="levelIdx"
-                  class="tag-labels-row"
-                >
+                <div v-for="(level, levelIdx) in tagsByRow.get(row)" :key="levelIdx" class="tag-labels-row">
                   <div class="tag-labels">
-                    <span
-                      v-for="(tagInfo, idx) in level"
-                      :key="idx"
-                      class="tag-label"
+                    <span v-for="(tagInfo, idx) in level" :key="idx" class="tag-label"
                       :class="tagInfo.isStackFrame ? `stack-frame-${tagInfo.frameIndex}` : `hint-${tagInfo.colorIndex}`"
                       :style="{
                         left: `${tagInfo.startCol * (24 + 8)}px`,
                         width: `${(tagInfo.endCol - tagInfo.startCol + 1) * (24 + 8) - 8}px`
-                      }"
-                    >
+                      }">
                       {{ tagInfo.tag }}
                     </span>
                   </div>
@@ -1074,66 +993,41 @@ export default defineComponent({
             </div>
 
             <!-- Data row -->
-            <div
-              class="hex-row"
-              :style="{ height: rowHeight + 'px' }"
-            >
-              <div 
-                class="address-column"
-                :class="`segment-${getSegmentVariant(row * bytesPerRow)}`"
-              >
+            <div class="hex-row" :style="{ height: rowHeight + 'px' }">
+              <div class="address-column" :class="`segment-${getSegmentVariant(row * bytesPerRow)}`">
                 {{ `0x${toHex(row * bytesPerRow, 4)}` }}
               </div>
 
               <div class="hex-columns">
-                <span
-                  v-for="i in bytesPerRow"
-                  :key="i"
-                  :data-index="row * bytesPerRow + i - 1"
+                <span v-for="i in bytesPerRow" :key="i" :data-index="row * bytesPerRow + i - 1"
                   :class="getByteClass(row * bytesPerRow + i - 1, getMemoryValue(row * bytesPerRow + i - 1))"
                   @click="handleByteClick(row * bytesPerRow + i - 1, $event)"
                   @dblclick="handleByteDoubleClick(row * bytesPerRow + i - 1)"
-                  @mouseover="handleByteMouseOver(row * bytesPerRow + i - 1, $event)"
-                  @mouseout="handleByteMouseOut"
-                >
-                  <input
-                    v-if="editingByte === row * bytesPerRow + i - 1"
-                    type="text"
-                    class="byte-editor"
-                    :data-index="row * bytesPerRow + i - 1"
-                    v-model="editingValue"
+                  @mouseover="handleByteMouseOver(row * bytesPerRow + i - 1, $event)" @mouseout="handleByteMouseOut">
+                  <input v-if="editingByte === row * bytesPerRow + i - 1" type="text" class="byte-editor"
+                    :data-index="row * bytesPerRow + i - 1" v-model="editingValue"
                     @input="handleEditInput(row * bytesPerRow + i - 1)"
                     @keydown="handleEditKeyDown($event, row * bytesPerRow + i - 1)"
-                    @blur="saveByteEdit(row * bytesPerRow + i - 1)"
-                    :maxlength="viewMode === 'hex' ? 2 : 1"
-                  />
+                    @blur="saveByteEdit(row * bytesPerRow + i - 1)" :maxlength="viewMode === 'hex' ? 2 : 1" />
                   <template v-else>
                     {{
                       (() => {
                         const value = getMemoryValue(row * bytesPerRow + i - 1);
-                        return viewMode === 'hex' 
+                        return viewMode === 'hex'
                           ? toHex(value, 1)
                           : (value >= 32 && value <= 126 ? String.fromCharCode(value) : ".");
-                      })()
-                    }}
-                  </template>
+                      })()}} </template>
                 </span>
               </div>
 
               <div v-if="showAscii" class="ascii-column">
-                <span
-                  v-for="i in bytesPerRow"
-                  :key="i"
-                  :data-index="row * bytesPerRow + i - 1"
-                  :class="getAsciiCharClass(row * bytesPerRow + i - 1)"
-                >
+                <span v-for="i in bytesPerRow" :key="i" :data-index="row * bytesPerRow + i - 1"
+                  :class="getAsciiCharClass(row * bytesPerRow + i - 1)">
                   {{
                     (() => {
                       const value = getMemoryValue(row * bytesPerRow + i - 1);
                       return value >= 32 && value <= 126 ? String.fromCharCode(value) : ".";
-                    })()
-                  }}
-                </span>
+                    })()}} </span>
               </div>
             </div>
           </div>
@@ -1143,22 +1037,14 @@ export default defineComponent({
 
     <div class="hex-viewer-footer">
       <div class="pagination-controls">
-        <button 
-          class="pagination-button" 
-          :disabled="!hasPreviousPage"
-          @click="previousPage"
-        >
+        <button class="pagination-button" :disabled="!hasPreviousPage" @click="previousPage">
           <font-awesome-icon :icon="['fas', 'chevron-left']" />
           Previous
         </button>
         <span class="page-info">
           Page {{ currentPage + 1 }} of {{ totalPages || 1 }}
         </span>
-        <button 
-          class="pagination-button" 
-          :disabled="!hasNextPage"
-          @click="nextPage"
-        >
+        <button class="pagination-button" :disabled="!hasNextPage" @click="nextPage">
           Next
           <font-awesome-icon :icon="['fas', 'chevron-right']" />
         </button>
@@ -1167,7 +1053,7 @@ export default defineComponent({
     <div class="hex-viewer-status">
       <span class="selection-info">{{ selectionInfo }}</span>
     </div>
-    
+
     <!-- Memory Layout Modal -->
     <transition name="modal-fade">
       <div v-if="showMemoryLayoutModal" class="memory-layout-modal-overlay" @click="showMemoryLayoutModal = false">
@@ -1175,122 +1061,19 @@ export default defineComponent({
           <div class="memory-layout-modal-header">
             <h5>Memory Layout</h5>
             <div class="header-controls">
-              <button 
-                class="invert-button" 
-                @click="invertMemoryLayout = !invertMemoryLayout"
-                :title="invertMemoryLayout ? 'Show high to low addresses' : 'Show low to high addresses'"
-              >
+              <button class="invert-button" @click="invertMemoryLayout = !invertMemoryLayout"
+                :title="invertMemoryLayout ? 'Show high to low addresses' : 'Show low to high addresses'">
                 <font-awesome-icon :icon="['fas', 'arrows-alt-v']" />
               </button>
               <button class="close-button" @click="showMemoryLayoutModal = false">
                 <font-awesome-icon :icon="['fas', 'times']" />
               </button>
             </div>
-        </div>
-        <div class="memory-layout-modal-body">
-          <div class="memory-layout-diagram">
-            <div class="memory-layout-container">
-              <!-- High/Low Addresses Label -->
-              <div class="address-label" :class="invertMemoryLayout ? 'low-address' : 'high-address'">
-                {{ invertMemoryLayout ? 'Low Addresses' : 'High Addresses' }}
-              </div>
-              
-              <!-- All memory segments dynamically generated -->
-              <div class="memory-layout-segments">
-                <template v-for="(segment, index) in displayMemoryLayoutSegments" :key="segment.name">
-                  <!-- Gap indicator between non-contiguous segments -->
-                  <!-- High to Low: current segment's end < previous segment's start means there's a gap -->
-                  <div
-                    v-if="!invertMemoryLayout && index > 0 && displayMemoryLayoutSegments[index - 1] && segment.end < (displayMemoryLayoutSegments[index - 1]?.start || 0) - 1"
-                    class="memory-segment segment-secondary segment-empty"
-                  >
-                    <div class="segment-name">...</div>
-                    <div class="segment-addresses">
-                      <div class="segment-gap-size">{{ formatGapSize((displayMemoryLayoutSegments[index - 1]?.start || 0) - segment.end) }}</div>
-                    </div>
-                  </div>
-                  
-                  <!-- Low to High: current segment's start > previous segment's end means there's a gap -->
-                  <div
-                    v-if="invertMemoryLayout && index > 0 && displayMemoryLayoutSegments[index - 1] && segment.start > (displayMemoryLayoutSegments[index - 1]?.end || 0) + 1"
-                    class="memory-segment segment-secondary segment-empty"
-                  >
-                    <div class="segment-name">...</div>
-                    <div class="segment-addresses">
-                      <div class="segment-gap-size">{{ formatGapSize(segment.start - (displayMemoryLayoutSegments[index - 1]?.end || 0)) }}</div>
-                    </div>
-                  </div>
-
-                  <!-- Data/Heap growth arrow -->
-                  <!-- When NOT inverted (high→low): arrow ABOVE data, pointing UP -->
-                  <!-- When inverted (low→high): arrow BELOW data, pointing DOWN -->
-                  <div 
-                    v-if="segment.name.toLowerCase().includes('data') && !invertMemoryLayout" 
-                    class="growth-indicator-row data-growth"
-                  >
-                    <div class="growth-label">Heap grows</div>
-                    <div class="growth-arrow">↑</div>
-                  </div>
-
-                  <!-- Stack growth arrow -->
-                  <!-- When NOT inverted (high→low): arrow BELOW stack, pointing DOWN -->
-                  <!-- When inverted (low→high): arrow ABOVE stack, pointing UP -->
-                  <div 
-                    v-if="segment.name.toLowerCase().includes('stack') && invertMemoryLayout" 
-                    class="growth-indicator-row stack-growth"
-                  >
-                    <div class="growth-arrow">↑</div>
-                    <div class="growth-label">Stack grows</div>
-                  </div>
-
-                  <!-- Actual segment -->
-                  <div
-                    class="memory-segment"
-                    :class="`segment-${segment.variant}`"
-                    @click="jumpToMemoryLayoutSegment(segment.name)"
-                  >
-                    <div class="segment-addresses segment-address-top">
-                      0x{{ (invertMemoryLayout ? segment.start : segment.end).toString(16).toUpperCase().padStart(8, '0') }}
-                    </div>
-                    <div class="segment-content">
-                      <div class="segment-name">{{ segment.name.startsWith('.') ? segment.name : `.${segment.name}` }}</div>
-                    </div>
-                    <div class="segment-addresses segment-address-bottom">
-                      0x{{ (invertMemoryLayout ? segment.end : segment.start).toString(16).toUpperCase().padStart(8, '0') }}
-                    </div>
-                  </div>
-
-                  <!-- Stack growth arrow -->
-                  <!-- When NOT inverted (high→low): arrow BELOW stack, pointing DOWN -->
-                  <!-- When inverted (low→high): arrow ABOVE stack, pointing UP -->
-                  <div 
-                    v-if="segment.name.toLowerCase().includes('stack') && !invertMemoryLayout" 
-                    class="growth-indicator-row stack-growth"
-                  >
-                    <div class="growth-arrow">↓</div>
-                    <div class="growth-label">Stack grows</div>
-                  </div>
-
-                  <!-- Data/Heap growth arrow -->
-                  <!-- When NOT inverted (high→low): arrow ABOVE data, pointing UP -->
-                  <!-- When inverted (low→high): arrow BELOW data, pointing DOWN -->
-                  <div 
-                    v-if="segment.name.toLowerCase().includes('data') && invertMemoryLayout" 
-                    class="growth-indicator-row data-growth"
-                  >
-                    <div class="growth-label">Heap grows</div>
-                    <div class="growth-arrow">↓</div>
-                  </div>
-                </template>
-              </div>
-
-              <!-- Low/High Addresses Label -->
-              <div class="address-label" :class="invertMemoryLayout ? 'high-address' : 'low-address'">
-                {{ invertMemoryLayout ? 'High Addresses' : 'Low Addresses' }}
-              </div>
-            </div>
           </div>
-        </div>
+          <div class="memory-layout-modal-body">
+            <MemoryLayoutDiagram :memory_layout="architecture.memory_layout" :inverted="invertMemoryLayout"
+              :show-gaps="true" :clickable="true" @segment-click="jumpToMemoryLayoutSegment" />
+          </div>
         </div>
       </div>
     </transition>
@@ -1345,12 +1128,12 @@ export default defineComponent({
   border-radius: 6px;
   font-size: 0.8125rem;
   font-weight: bold;
-  
+
   /* Light theme colors */
   color: rgba(0, 0, 0, 0.8);
   background-color: color-mix(in srgb, currentColor 10%, transparent);
   box-shadow: none;
-  
+
   transition: all 150ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
   display: flex;
   align-items: center;
@@ -1546,12 +1329,14 @@ export default defineComponent({
 
 /* Stack frame colors - matching MemoryTable.vue */
 .stack-frame-0 {
-  background-color: rgba(40, 167, 69, 0.3) !important; /* success - callee */
+  background-color: rgba(40, 167, 69, 0.3) !important;
+  /* success - callee */
   border-color: rgba(40, 167, 69, 0.5) !important;
 }
 
 .stack-frame-1 {
-  background-color: rgba(23, 162, 184, 0.3) !important; /* info - caller */
+  background-color: rgba(23, 162, 184, 0.3) !important;
+  /* info - caller */
   border-color: rgba(23, 162, 184, 0.5) !important;
 }
 
@@ -1563,13 +1348,15 @@ export default defineComponent({
 .stack-frame-7,
 .stack-frame-8,
 .stack-frame-9 {
-  background-color: rgba(108, 117, 125, 0.3) !important; /* secondary - rest */
+  background-color: rgba(108, 117, 125, 0.3) !important;
+  /* secondary - rest */
   border-color: rgba(108, 117, 125, 0.5) !important;
 }
 
 /* Stack hint colors - for register hints */
 .hint--2 {
-  background-color: rgba(255, 193, 7, 0.3) !important; /* warning - stack hints */
+  background-color: rgba(255, 193, 7, 0.3) !important;
+  /* warning - stack hints */
   border-color: rgba(255, 193, 7, 0.5) !important;
 }
 
@@ -1590,19 +1377,23 @@ export default defineComponent({
 }
 
 .address-column.segment-info {
-  border-left-color: #17a2b8; /* Bootstrap info color - text segment */
+  border-left-color: #17a2b8;
+  /* Bootstrap info color - text segment */
 }
 
 .address-column.segment-warning {
-  border-left-color: #ffc107; /* Bootstrap warning color - data segment */
+  border-left-color: #ffc107;
+  /* Bootstrap warning color - data segment */
 }
 
 .address-column.segment-success {
-  border-left-color: #28a745; /* Bootstrap success color - stack segment */
+  border-left-color: #28a745;
+  /* Bootstrap success color - stack segment */
 }
 
 .address-column.segment-secondary {
-  border-left-color: #6c757d; /* Bootstrap secondary color - other segments */
+  border-left-color: #6c757d;
+  /* Bootstrap secondary color - other segments */
 }
 
 .hex-columns {
@@ -1713,12 +1504,12 @@ export default defineComponent({
   border-radius: 6px;
   font-size: 0.8125rem;
   font-weight: bold;
-  
+
   /* Light theme colors */
   color: rgba(0, 0, 0, 0.8);
   background-color: color-mix(in srgb, currentColor 10%, transparent);
   box-shadow: none;
-  
+
   transition: all 150ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
   display: flex;
   align-items: center;
@@ -1769,14 +1560,37 @@ export default defineComponent({
 }
 
 /* Hint colors */
-.hint-0 { background-color: rgba(255, 99, 71, 0.3) !important; }
-.hint-1 { background-color: rgba(54, 162, 235, 0.3) !important; }
-.hint-2 { background-color: rgba(75, 192, 192, 0.3) !important; }
-.hint-3 { background-color: rgba(255, 206, 86, 0.3) !important; }
-.hint-4 { background-color: rgba(153, 102, 255, 0.3) !important; }
-.hint-5 { background-color: rgba(255, 159, 64, 0.3) !important; }
-.hint-6 { background-color: rgba(199, 199, 199, 0.3) !important; }
-.hint-7 { background-color: rgba(83, 102, 255, 0.3) !important; }
+.hint-0 {
+  background-color: rgba(255, 99, 71, 0.3) !important;
+}
+
+.hint-1 {
+  background-color: rgba(54, 162, 235, 0.3) !important;
+}
+
+.hint-2 {
+  background-color: rgba(75, 192, 192, 0.3) !important;
+}
+
+.hint-3 {
+  background-color: rgba(255, 206, 86, 0.3) !important;
+}
+
+.hint-4 {
+  background-color: rgba(153, 102, 255, 0.3) !important;
+}
+
+.hint-5 {
+  background-color: rgba(255, 159, 64, 0.3) !important;
+}
+
+.hint-6 {
+  background-color: rgba(199, 199, 199, 0.3) !important;
+}
+
+.hint-7 {
+  background-color: rgba(83, 102, 255, 0.3) !important;
+}
 
 /* Dark theme support */
 [data-bs-theme="dark"] {
@@ -1841,19 +1655,23 @@ export default defineComponent({
   }
 
   .address-column.segment-info {
-    border-left-color: #3dd5f3; /* Lighter info color for dark theme */
+    border-left-color: #3dd5f3;
+    /* Lighter info color for dark theme */
   }
 
   .address-column.segment-warning {
-    border-left-color: #ffcd39; /* Lighter warning color for dark theme */
+    border-left-color: #ffcd39;
+    /* Lighter warning color for dark theme */
   }
 
   .address-column.segment-success {
-    border-left-color: #48d35c; /* Lighter success color for dark theme */
+    border-left-color: #48d35c;
+    /* Lighter success color for dark theme */
   }
 
   .address-column.segment-secondary {
-    border-left-color: #868e96; /* Lighter secondary color for dark theme */
+    border-left-color: #868e96;
+    /* Lighter secondary color for dark theme */
   }
 }
 
@@ -1955,203 +1773,6 @@ export default defineComponent({
   flex-direction: column;
 }
 
-.memory-layout-diagram {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex: 1;
-}
-
-.memory-layout-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  max-width: 400px;
-}
-
-.address-label {
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  color: var(--bs-secondary-color);
-  margin: 4px 0;
-  padding: 4px 12px;
-  position: relative;
-}
-
-.address-label.high-address {
-  margin-top: 0;
-  margin-bottom: 8px;
-}
-
-.address-label.low-address {
-  margin-top: 8px;
-  margin-bottom: 0;
-}
-
-.memory-layout-segments {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  width: 100%;
-  border-left: 2px solid var(--bs-secondary-color);
-  border-right: 2px solid var(--bs-secondary-color);
-}
-
-.memory-segment {
-  display: flex;
-  flex-direction: column;
-  padding: 0;
-  border-radius: 0;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  border: 1.5px solid currentColor;
-  border-left: none;
-  border-right: none;
-  font-family: "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace;
-  min-height: 50px;
-  position: relative;
-}
-
-.memory-segment:not(.segment-empty):hover {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-}
-
-.memory-segment.segment-empty {
-  cursor: default;
-  opacity: 0.5;
-  border-style: dashed;
-  min-height: 30px;
-  justify-content: center;
-  align-items: center;
-}
-
-.memory-segment.segment-empty:hover {
-  transform: none;
-  box-shadow: none;
-}
-
-.segment-address-top {
-  border-bottom: 1.5px solid currentColor;
-  padding: 3px 12px;
-  font-size: 0.7rem;
-  font-weight: 600;
-  background-color: rgba(0, 0, 0, 0.05);
-  text-align: center;
-}
-
-.segment-address-bottom {
-  border-top: 1.5px solid currentColor;
-  padding: 3px 12px;
-  font-size: 0.7rem;
-  font-weight: 600;
-  background-color: rgba(0, 0, 0, 0.05);
-  text-align: center;
-}
-
-.segment-content {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 8px 12px;
-}
-
-.segment-name {
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: var(--bs-body-color);
-  opacity: 0.95;
-  text-align: center;
-}
-
-.segment-addresses {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  font-size: 0.9rem;
-  color: var(--bs-body-color);
-  opacity: 0.95;
-  font-weight: 500;
-}
-
-.segment-gap-size {
-  font-size: 0.75rem;
-  opacity: 0.7;
-  font-style: italic;
-  text-align: center;
-}
-
-/* Growth Indicators */
-.growth-indicator-row {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-  width: 100%;
-  padding: 8px 0;
-  font-weight: 600;
-  color: var(--bs-body-color);
-  opacity: 0.7;
-  background-color: rgba(0, 0, 0, 0.02);
-}
-
-.growth-arrow {
-  font-size: 1.8rem;
-  line-height: 1;
-  font-weight: bold;
-  animation: pulse 2s ease-in-out infinite;
-}
-
-.growth-label {
-  font-size: 0.65rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  white-space: nowrap;
-}
-
-@keyframes pulse {
-  0%, 100% {
-    opacity: 0.7;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.15);
-  }
-}
-
-.memory-segment.segment-info {
-  background-color: rgba(23, 162, 184, 0.15);
-  color: #17a2b8;
-}
-
-.memory-segment.segment-warning {
-  background-color: rgba(255, 193, 7, 0.15);
-  color: #ffc107;
-}
-
-.memory-segment.segment-success {
-  background-color: rgba(40, 167, 69, 0.15);
-  color: #28a745;
-}
-
-.memory-segment.segment-secondary {
-  background-color: rgba(108, 117, 125, 0.15);
-  color: #6c757d;
-}
-
-.memory-layout-hint {
-  text-align: center;
-  font-size: 0.875rem;
-  color: var(--bs-secondary-color);
-  font-style: italic;
-  padding: 8px;
-}
-
 [data-bs-theme="dark"] {
   .memory-layout-modal-header {
     border-bottom-color: rgba(255, 255, 255, 0.1);
@@ -2165,42 +1786,8 @@ export default defineComponent({
     background-color: rgba(255, 255, 255, 0.1);
   }
 
-  .memory-segment.segment-info {
-    background-color: rgba(23, 162, 184, 0.25);
-    color: #3dd5f3;
-  }
-
-  .memory-segment.segment-warning {
-    background-color: rgba(255, 193, 7, 0.25);
-    color: #ffcd39;
-  }
-
-  .memory-segment.segment-success {
-    background-color: rgba(40, 167, 69, 0.25);
-    color: #48d35c;
-  }
-
-  .memory-segment.segment-secondary {
-    background-color: rgba(108, 117, 125, 0.25);
-    color: #868e96;
-  }
-
   .memory-layout-modal {
     border-color: rgba(255, 255, 255, 0.2);
-  }
-
-  .segment-address-top,
-  .segment-address-bottom {
-    background-color: rgba(255, 255, 255, 0.05);
-  }
-
-  .memory-layout-segments {
-    border-left-color: rgba(255, 255, 255, 0.4);
-    border-right-color: rgba(255, 255, 255, 0.4);
-  }
-
-  .growth-indicator-row {
-    background-color: rgba(255, 255, 255, 0.02);
   }
 }
 

@@ -192,71 +192,6 @@ export default defineComponent({
   overflow: hidden;
 }
 
-.tab {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  min-height: 24px;
-  min-width: 16px;
-  padding: 5px 10px;
-  cursor: pointer;
-  position: relative;
-  border: none;
-  border-radius: 6px;
-  font-size: 0.8125rem;
-  font-weight: bold;
-  
-  /* Light theme colors */
-  color: rgba(0, 0, 0, 0.8);
-  background-color: color-mix(in srgb, currentColor 10%, transparent);
-  box-shadow: none;
-  
-  transition: all 150ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-.tab:hover {
-  background-color: color-mix(in srgb, currentColor 15%, transparent);
-}
-
-.tab:active {
-  background-color: color-mix(in srgb, currentColor 30%, transparent);
-}
-
-/* Active/checked state for selected tab */
-.tab.active {
-  background-color: color-mix(in srgb, currentColor 30%, transparent);
-  color: rgba(0, 0, 0, 0.9);
-}
-
-.tab.active:hover {
-  background-color: color-mix(in srgb, currentColor 35%, transparent);
-}
-
-.tab.active:active {
-  background-color: color-mix(in srgb, currentColor 40%, transparent);
-}
-
-.tab:focus-visible {
-  outline: 2px solid color-mix(in srgb, currentColor 50%, transparent);
-  outline-offset: 2px;
-  transition: outline 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-.tab svg {
-  font-size: 14px;
-  opacity: 0.9;
-}
-
-.tab.active svg {
-  opacity: 1;
-}
-
-.tab span {
-  display: inline;
-}
-
 
 /* Dark theme support */
 [data-bs-theme="dark"] {
@@ -266,14 +201,6 @@ export default defineComponent({
 
   .tab-separator {
     color: rgba(255, 255, 255, 0.15);
-  }
-
-  .tab {
-    color: rgba(255, 255, 255, 0.9);
-  }
-
-  .tab.active {
-    color: rgba(255, 255, 255, 1);
   }
 
   .dropdown-menu {

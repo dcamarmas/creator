@@ -1,0 +1,85 @@
+// Shared tab button styles for consistent UI across components
+.tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 24px;
+  min-width: 16px;
+  padding: 5px 10px;
+  cursor: pointer;
+  position: relative;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.8125rem;
+  font-weight: bold;
+
+  /* Light theme colors */
+  color: rgba(0, 0, 0, 0.8);
+  background-color: color-mix(in srgb, currentColor 10%, transparent);
+  box-shadow: none;
+
+  transition: all 150ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+  &:hover {
+    background-color: color-mix(in srgb, currentColor 15%, transparent);
+  }
+
+  &:active {
+    background-color: color-mix(in srgb, currentColor 30%, transparent);
+  }
+
+  /* Active/checked state for selected tab */
+  &.active {
+    background-color: color-mix(in srgb, currentColor 30%, transparent);
+    color: rgba(0, 0, 0, 0.9);
+
+    &:hover {
+      background-color: color-mix(in srgb, currentColor 35%, transparent);
+    }
+
+    &:active {
+      background-color: color-mix(in srgb, currentColor 40%, transparent);
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid color-mix(in srgb, currentColor 50%, transparent);
+    outline-offset: 2px;
+    transition: outline 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  svg,
+  i {
+    font-size: 14px;
+    opacity: 0.9;
+  }
+
+  &.active svg,
+  &.active i {
+    opacity: 1;
+  }
+
+  span {
+    display: inline;
+  }
+}
+
+// Dark theme support for tab buttons
+[data-bs-theme="dark"] .tab {
+  color: rgba(255, 255, 255, 0.9);
+
+  &.active {
+    color: rgba(255, 255, 255, 1);
+  }
+}// Dark theme support for tab buttons
+@mixin tab-button-dark {
+  .tab {
+    color: rgba(255, 255, 255, 0.9);
+
+    &.active {
+      color: rgba(255, 255, 255, 1);
+    }
+  }
+}

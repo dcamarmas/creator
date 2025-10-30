@@ -23,7 +23,7 @@ import { defineComponent } from "vue"
 
 const configMap = new Map<string, string>([
   ["name", "Name"],
-  ["word_size", "WordSize"],
+  ["word_size", "Word Size"],
   ["description", "Description"],
   ["endianness", "Endianness"],
   ["memory_alignment", "Memory Alignment"],
@@ -34,7 +34,6 @@ const configMap = new Map<string, string>([
   ["start_address", "Start Address"],
   ["pc_offset", "PC Offset"],
   ["byte_size", "Byte Size"],
-  ["assemblers", "Assemblers"],
 ])
 
 function formatValue(attr: string, value: string) {
@@ -76,11 +75,79 @@ export default defineComponent({
 </script>
 
 <template>
-  <b-table
-    small
-    :items="config"
-    :fields="[{ key: 'name', label: 'Field' }, 'value']"
-    class="text-center mt-3"
-    sticky-header="60vh"
-  />
+  <div class="arch-config">
+    <div class="config-grid">
+      <div
+        v-for="item in config"
+        :key="item.name"
+        class="config-item"
+      >
+        <span class="config-label">{{ item.name }}</span>
+        <span class="config-value">{{ item.value }}</span>
+      </div>
+    </div>
+  </div>
 </template>
+
+<style lang="scss" scoped>
+.arch-config {
+  padding: 0;
+}
+
+.config-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+}
+
+.config-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  transition: background-color 0.1s ease;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.02);
+  }
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.config-label {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: rgba(0, 0, 0, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.config-value {
+  font-size: 0.8125rem;
+  color: rgba(0, 0, 0, 0.9);
+  font-weight: 500;
+  word-break: break-word;
+  font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+}
+
+[data-bs-theme="dark"] {
+  .config-item {
+    border-bottom-color: rgba(255, 255, 255, 0.05);
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.02);
+    }
+  }
+
+  .config-label {
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .config-value {
+    color: rgba(255, 255, 255, 0.9);
+  }
+}
+</style>

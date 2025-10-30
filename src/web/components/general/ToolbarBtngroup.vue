@@ -31,6 +31,7 @@ import {
   reset,
   remove_library,
   getPC,
+  architecture,
 } from "@/core/core.mjs"
 import { resetStats } from "@/core/executor/stats.mts"
 import { instructions, setInstructions } from "@/core/assembler/assembler.mjs"
@@ -57,6 +58,7 @@ export default defineComponent({
     dropdownMode: { type: Boolean, default: false },
     architecture_name: { type: String, required: false },
     disableTooltips: { type: Boolean, default: false },
+    creator_mode: { type: String, required: false },
   },
 
   setup() {
@@ -73,15 +75,8 @@ export default defineComponent({
       instruction_disable: false,
       run_disable: false,
       stop_disable: true,
-      selectedCompiler: "default",
-      compilerOptions: [
-        { value: "default", text: "CREATOR" },
-        { value: "rasm", text: "RASM" },
-      ],
-      assembler_map: {
-        default: assembleCreator,
-        rasm: rasmAssemble,
-      } as { [key: string]: object },
+      selectedCompiler: "",
+      isAssembled: false,
     }
   },
   computed: {
@@ -90,6 +85,49 @@ export default defineComponent({
      */
     root(): AppRootInstance {
       return this.$root as unknown as AppRootInstance
+    },
+
+    /**
+     * Map of assembler names to their functions
+     */
+    assembler_map() {
+      return {
+        CreatorCompiler: assembleCreator,
+        RASM: rasmAssemble,
+      } as { [key: string]: any }
+    },
+
+    /**
+     * Build compiler options dynamically from architecture config
+     */
+    compilerOptions() {
+      const assemblers = architecture?.config?.assemblers || []
+      
+      if (assemblers.length === 0) {
+        // Fallback to default if no assemblers specified in architecture
+        return [{ value: "CreatorCompiler", text: "CREATOR" }]
+      }
+
+      return assemblers.map((asm: any) => ({
+        value: asm.name,
+        text: asm.name === "CreatorCompiler" ? "CREATOR" : asm.name.toUpperCase(),
+      }))
+    },
+
+    /**
+     * Whether to show the compiler dropdown (only if multiple assemblers available)
+     */
+    showCompilerDropdown() {
+      return this.compilerOptions.length > 1
+    },
+
+    /**
+     * Get the default/selected compiler
+     */
+    defaultCompiler() {
+      const assemblers = architecture?.config?.assemblers || []
+      // Use the first assembler as default, or fallback to CreatorCompiler
+      return assemblers.length > 0 ? assemblers[0]?.name : "CreatorCompiler"
     },
 
     selectedCompilerLabel() {
@@ -137,6 +175,9 @@ export default defineComponent({
   },
 
   mounted() {
+    // Set initial compiler based on architecture
+    this.selectedCompiler = this.defaultCompiler || "CreatorCompiler"
+
     if ((this.root as any).creator_mode === "simulator") {
       // enable execution buttons only if there are instructions to execute
       const prepared_for_execution = (this.root as any).instructions.length > 0
@@ -150,6 +191,13 @@ export default defineComponent({
       if (this.group.includes("btn_instruction") && status.run_program !== 3) {
         this.instruction_disable = !prepared_for_execution
       }
+    }
+  },
+
+  watch: {
+    // Watch for architecture changes and update selected compiler
+    defaultCompiler(newCompiler) {
+      this.selectedCompiler = newCompiler
     }
   },
 
@@ -220,7 +268,11 @@ export default defineComponent({
           if (entrypoint) {
             entrypoint._rowVariant = "success"
           }
-          show_notification("Compilation completed successfully", "success")
+          this.isAssembled = true
+          // Reset to normal after 2 seconds
+          setTimeout(() => {
+            this.isAssembled = false
+          }, 2000)
           // Don't change view - stay in assembly mode
           break
       }
@@ -275,8 +327,8 @@ export default defineComponent({
           if (entrypoint) {
             entrypoint._rowVariant = "success"
           }
-          show_notification("Compilation completed successfully", "success")
-          // Don't change view - stay in assembly mode
+          // Change to simulator view and run
+          this.change_UI_mode("simulator")
           break
       }
       this.compiling = false
@@ -697,19 +749,19 @@ export default defineComponent({
   <template v-if="dropdownMode">
     <template v-for="(item, index) in group" :key="index">
       <!-- button_architecture -->
-      <b-dropdown-item v-if="item === 'btn_architecture'" @click="change_UI_mode('architecture')">
+      <b-dropdown-item v-if="item === 'btn_architecture'" @click="change_UI_mode('architecture')" :disabled="creator_mode === 'architecture'">
         <font-awesome-icon :icon="['fas', 'screwdriver-wrench']" class="me-2" />
         Architecture
       </b-dropdown-item>
 
       <!-- button_assembly -->
-      <b-dropdown-item v-if="item === 'btn_assembly'" @click="change_UI_mode('assembly')">
+      <b-dropdown-item v-if="item === 'btn_assembly'" @click="change_UI_mode('assembly')" :disabled="creator_mode === 'assembly'">
         <font-awesome-icon :icon="['fas', 'hashtag']" class="me-2" />
         Assembly
       </b-dropdown-item>
 
       <!-- button_simulator -->
-      <b-dropdown-item v-if="item === 'btn_simulator'" @click="change_UI_mode('simulator')">
+      <b-dropdown-item v-if="item === 'btn_simulator'" @click="change_UI_mode('simulator')" :disabled="creator_mode === 'simulator'">
         <font-awesome-icon :icon="['fas', 'gears']" class="me-2" />
         Simulator
       </b-dropdown-item>
@@ -882,7 +934,6 @@ export default defineComponent({
     </template>
   </template>
 
-  <!-- Normal mode: render as buttons -->
   <b-container v-else fluid class="toolbar-container">
     <b-row class="toolbar-row">
       <b-col
@@ -890,97 +941,6 @@ export default defineComponent({
         v-for="(item, index) in group"
         :key="index"
       >
-        <!-- button_architecture -->
-
-        <b-button
-          v-if="item === 'btn_architecture'"
-          class="menuButton text-truncate"
-          size="sm"
-          variant="outline-secondary"
-          id="assembly_btn_sim"
-          @click="change_UI_mode('architecture')"
-        >
-          <font-awesome-icon :icon="['fas', 'screwdriver-wrench']" />
-          Architecture
-        </b-button>
-
-        <!--
-        Changing architecture from here is broken, if we fix it uncomment this
-        -->
-        <!-- <b-dropdown
-          v-if="item === 'btn_architecture'"
-          variant="outline-secondary"
-          :toggle-class="{ menuButton: !dark, menuButtonDark: dark }"
-          :split-class="{
-            menuButton: !dark,
-            menuButtonDark: dark,
-            'w-75': true,
-          }"
-          split
-          right
-          size="sm"
-        >
-          <template #button-content>
-            <span @click="change_UI_mode('architecture')"> Architecture </span>
-          </template>
-
-<b-dropdown-item-button v-for="arch in arch_available" @click="load_arch_select(arch)">
-  {{ arch.name }}
-</b-dropdown-item-button>
-</b-dropdown> -->
-
-        <!-- button_assembly -->
-        <b-button
-          v-if="item === 'btn_assembly'"
-          class="menuButton text-truncate"
-          size="sm"
-          variant="outline-secondary"
-          id="assembly_btn_sim"
-          @click="change_UI_mode('assembly')"
-        >
-          <font-awesome-icon :icon="['fas', 'hashtag']" />
-          Assembly
-        </b-button>
-
-        <!-- button_simulator -->
-        <b-button
-          v-if="item === 'btn_simulator'"
-          class="menuButton"
-          size="sm"
-          variant="outline-secondary"
-          id="sim_btn_arch"
-          @click="change_UI_mode('simulator')"
-        >
-          <font-awesome-icon :icon="['fas', 'gears']" />
-          Simulator
-        </b-button>
-
-        <!-- button_edit_architecture -->
-        <b-button
-          v-if="item === 'btn_edit_architecture'"
-          class="menuButton"
-          size="sm"
-          variant="outline-secondary"
-          id="edit_btn_arch"
-          v-b-modal.edit_architecture
-        >
-          <font-awesome-icon :icon="['fas', 'pen-to-square']" />
-          Edit Architecture
-        </b-button>
-
-        <!-- button_save_architecture -->
-        <b-button
-          v-if="item === 'btn_save_architecture'"
-          class="menuButton"
-          size="sm"
-          variant="outline-secondary"
-          id="save_btn_arch"
-          v-b-modal.save_architecture
-        >
-          <font-awesome-icon :icon="['fas', 'download']" />
-          Save Architecture
-        </b-button>
-
         <!-- dropdown_assembly_file -->
         <b-dropdown
           v-if="item === 'dropdown_assembly_file'"
@@ -1017,10 +977,11 @@ export default defineComponent({
           </b-dropdown-item>
         </b-dropdown>
 
-        <!-- assembler dropdown split button (just assemble) -->
+        <!-- assembler dropdown split button (just assemble) - only show dropdown if multiple assemblers -->
         <b-dropdown
-          v-if="item === 'btn_assemble'"
-          variant="outline-secondary"
+          v-if="item === 'btn_assemble' && showCompilerDropdown"
+          :variant="isAssembled ? 'success' : 'outline-secondary'"
+          :class="{ menuButton: !dark, menuButtonDark: dark, 'assembled-success': isAssembled }"
           :toggle-class="{ menuButton: !dark, menuButtonDark: dark }"
           :split-class="{
             menuButton: !dark,
@@ -1034,7 +995,7 @@ export default defineComponent({
         >
           <template #button-content>
             <span @click="assembly_compiler_only" class="assemble-button-content">
-              <font-awesome-icon :icon="['fas', 'hammer']" class="me-1" />
+              <font-awesome-icon :icon="isAssembled ? ['fas', 'check'] : ['fas', 'hammer']" class="me-1 align-middle" />
               <span class="assemble-text">Assemble ({{ selectedCompilerLabel }})</span>
               <b-spinner small v-if="compiling" class="ms-1" />
             </span>
@@ -1049,6 +1010,20 @@ export default defineComponent({
             <span :class="{ 'ms-4': selectedCompiler !== option.value }">{{ option.text }}</span>
           </b-dropdown-item-button>
         </b-dropdown>
+
+        <!-- assembler simple button (just assemble) - show if only one assembler -->
+        <b-button
+          v-if="item === 'btn_assemble' && !showCompilerDropdown"
+          :variant="isAssembled ? 'success' : 'outline-secondary'"
+          :class="{ menuButton: !dark, menuButtonDark: dark, 'assembled-success': isAssembled }"
+          size="sm"
+          @click="assembly_compiler_only"
+          :disabled="compiling"
+        >
+          <font-awesome-icon :icon="isAssembled ? ['fas', 'check'] : ['fas', 'hammer']" class="me-1 align-middle" />
+          <span class="assemble-text">Assemble</span>
+          <b-spinner small v-if="compiling" class="ms-1" />
+        </b-button>
 
         <!-- assembler and run button -->
         <b-button
@@ -1076,34 +1051,6 @@ export default defineComponent({
           <span class="assemble-text">Vim {{ root.vim_mode ? 'On' : 'Off' }}</span>
         </b-button>
 
-        <!-- dropdown_library -->
-        <b-dropdown
-          v-if="item === 'dropdown_library'"
-          size="sm"
-          class="d-grid gap-2"
-          :toggle-class="{ menuButton: !dark, menuButtonDark: dark }"
-          :split-class="{ menuButton: !dark, menuButtonDark: dark }"
-          variant="outline-secondary"
-        >
-          <template #button-content>
-            <font-awesome-icon :icon="['fas', 'book']" />
-            Library
-          </template>
-
-          <!-- We'll deal with this later -->
-          <!-- <b-dropdown-item v-b-modal.save_binary>
-            <font-awesome-icon :icon="['fas', 'square-plus']" />
-            Create
-          </b-dropdown-item> -->
-          <b-dropdown-item v-b-modal.load_binary>
-            <font-awesome-icon :icon="['fas', 'upload']" />
-            Load Library
-          </b-dropdown-item>
-          <b-dropdown-item @click="removeLibrary">
-            <font-awesome-icon :icon="['fas', 'trash-can']" />
-            Remove
-          </b-dropdown-item>
-        </b-dropdown>
 
         <!-- button_reset -->
         <b-button
@@ -1265,6 +1212,17 @@ export default defineComponent({
     padding-left: 17px;
     padding-right: 17px;
   }
+
+  // Assembled success state
+  &.assembled-success {
+    background-color: #198754 !important; // Bootstrap success color
+    color: white !important;
+    border-color: #198754 !important;
+    
+    &:hover:not(:disabled) {
+      background-color: #157347 !important; // Darker green on hover
+    }
+  }
 }
 
 // Dark theme variant
@@ -1332,6 +1290,17 @@ export default defineComponent({
     padding-left: 17px;
     padding-right: 17px;
   }
+
+  // Assembled success state
+  &.assembled-success {
+    background-color: #198754 !important; // Bootstrap success color
+    color: white !important;
+    border-color: #198754 !important;
+    
+    &:hover:not(:disabled) {
+      background-color: #157347 !important; // Darker green on hover
+    }
+  }
 }
 
 // Dropdown buttons need special handling due to Bootstrap Vue structure
@@ -1390,6 +1359,17 @@ export default defineComponent({
     &:disabled {
       opacity: 0.5;
     }
+
+    // Assembled success state for dropdown buttons
+    &.assembled-success {
+      background-color: #198754 !important;
+      color: white !important;
+      border-color: #198754 !important;
+      
+      &:hover:not(:disabled) {
+        background-color: #157347 !important;
+      }
+    }
   }
 
   // Dark theme dropdown buttons
@@ -1413,6 +1393,17 @@ export default defineComponent({
 
     &:disabled {
       opacity: 0.5;
+    }
+
+    // Assembled success state for dropdown buttons
+    &.assembled-success {
+      background-color: #198754 !important;
+      color: white !important;
+      border-color: #198754 !important;
+      
+      &:hover:not(:disabled) {
+        background-color: #157347 !important;
+      }
     }
   }
 }

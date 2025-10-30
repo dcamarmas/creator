@@ -194,17 +194,11 @@ export default defineComponent({
           break
 
         case "hex":
-          if (this.type === "ctrl_registers" || this.type === "int_registers") {
-            ret = this.register.value
-              .toString(16)
-              .padStart(this.register.nbits / 4, "0")
-              .toUpperCase()
-          } else if (this.double_precision !== null) {
-            // FIXME: this is wrong...
-            ret = bin2hex(float2bin(bi_BigIntTofloat(this.register.value)))!
-          } else {
-            ret = bin2hex(double2bin(bi_BigIntTodouble(this.register.value)))!
-          }
+          ret = this.register.value
+            .toString(16)
+            .padStart(this.register.nbits / 4, "0")
+            .toUpperCase()
+          
           break
 
         case "bin":

@@ -190,7 +190,7 @@ defineExpose({
       </b-badge>
     </template>
 
-    <div class="sentinel-dropdown-content">
+    <div class="sentinel-dropdown-content" @click.stop>
       <!-- Header -->
       <div class="sentinel-header">
         <div class="sentinel-title">
