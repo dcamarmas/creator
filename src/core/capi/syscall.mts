@@ -1,6 +1,6 @@
 /**
  *  Copyright 2018-2025 Felix Garcia Carballeira, Alejandro Calderon Mateos,
- *                      Diego Camarmas Alonso
+ *                      Diego Camarmas Alonso, Jorge Ramos Santana
  *
  *  This file is part of CREATOR.
  *
@@ -99,8 +99,8 @@ export const SYSCALL = {
         status.run_program = 3;
         const register = crex_findReg(dest_reg_info);
         if (register.match === 0) {
-            throw new Error (
-                "capi_syscall: register '" + dest_reg_info + "' not found"
+            throw new Error(
+                "capi_syscall: register '" + dest_reg_info + "' not found",
             );
         }
 
@@ -117,8 +117,8 @@ export const SYSCALL = {
                 if (aux_info !== null) {
                     const auxreg = crex_findReg(aux_info);
                     if (auxreg.match === 0) {
-                        throw new Error (
-                            "capi_syscall: register " + aux_info + " not found"
+                        throw new Error(
+                            "capi_syscall: register " + aux_info + " not found",
                         );
                     }
                     const size = readRegister(
@@ -137,9 +137,7 @@ export const SYSCALL = {
 
             default:
                 status.run_program = 1; // Revert run_program status
-                throw new Error(
-                    `capi_syscall: unknown read type '${type}'`,
-                );
+                throw new Error(`capi_syscall: unknown read type '${type}'`);
         }
     },
 
@@ -151,24 +149,18 @@ export const SYSCALL = {
         /* Get register id */
         const ret1 = crex_findReg(value1);
         if (ret1.match === 0) {
-            throw new Error(
-                "capi_syscall: register " + value1 + " not found"
-            );
+            throw new Error("capi_syscall: register " + value1 + " not found");
         }
 
         const ret2 = crex_findReg(value2);
         if (ret2.match === 0) {
-            throw new Error(
-                "capi_syscall: register " + value2 + " not found"
-            );
+            throw new Error("capi_syscall: register " + value2 + " not found");
         }
 
         /* Request more memory */
         const new_size = readRegister(ret1.indexComp, ret1.indexElem);
         if (new_size < 0) {
-            throw new Error(
-                "capi_syscall: negative size"
-            );
+            throw new Error("capi_syscall: negative size");
         }
 
         // const new_addr = creator_memory_alloc(new_size);

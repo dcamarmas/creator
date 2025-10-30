@@ -1,6 +1,6 @@
 /**
  *  Copyright 2018-2025 Felix Garcia Carballeira, Alejandro Calderon Mateos,
- *                      Diego Camarmas Alonso
+ *                      Diego Camarmas Alonso, Jorge Ramos Santana
  *
  *  This file is part of CREATOR.
  *
@@ -24,7 +24,7 @@ import { VALIDATION } from "./validation.mjs";
 import { CHECK_STACK } from "./checkStack.mjs";
 import { DRAW_STACK } from "./drawStack.mjs";
 import { FP } from "./fp.mjs";
-import { ARCH as RISCV} from "./arch/riscv.mjs";
+import { ARCH as RISCV } from "./arch/riscv.mjs";
 import { ARCH as Z80 } from "./arch/z80.mjs";
 import { ARCH as MIPS } from "./arch/mips.mjs";
 import { REG } from "./registers.mts";
@@ -59,11 +59,11 @@ const ARCH_PLUGINS: ArchPlugins = {
 // Export all CAPI functions and make them globally available
 export function initCAPI(pluginName?: string) {
     let ARCH_PLUGIN = null;
-    
+
     if (pluginName) {
         ARCH_PLUGIN = ARCH_PLUGINS[pluginName];
     }
-    
+
     const CAPI = {
         MEM,
         SYSCALL,
@@ -75,6 +75,6 @@ export function initCAPI(pluginName?: string) {
         REG,
         INTERRUPTS,
     };
-    
+
     globalThis.CAPI = CAPI;
 }

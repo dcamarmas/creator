@@ -1,6 +1,6 @@
 {
   "name": "creator",
-  "version": "VI-alpha",
+  "version": "6.0.0-beta",
   "private": true,
   "type": "module",
   "scripts": {

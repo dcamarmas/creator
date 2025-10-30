@@ -60,7 +60,9 @@ const creatorASCII = `
 ██║     ██╔══██╗██╔══╝  ██╔══██║   ██║   ██║   ██║██╔══██╗
 ╚██████╗██║  ██║███████╗██║  ██║   ██║   ╚██████╔╝██║  ██║
  ╚═════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝   ╚═╝    ╚═════╝ ╚═╝  ╚═╝
-  didaCtic and geneRic assEmbly progrAmming simulaTOR
+    didaCtic and geneRic assEmbly progrAmming simulaTOR
+
+${("v." + package_json.version).padStart(58)}
 `
 
 export default {
