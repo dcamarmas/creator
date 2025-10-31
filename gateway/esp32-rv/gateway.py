@@ -29,7 +29,7 @@ from flask import Flask, request, jsonify, send_file, Response
 from flask_cors import CORS, cross_origin
 import subprocess, os, signal
 import logging
-
+import serial
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
@@ -198,7 +198,7 @@ def do_flash_request(request):
 
     # flashing steps...
     if error == 0 :
-      error = check_uart_connection()
+      error = check_uart_connection(target_device)
     if error != 0:
       req_data['status'] += 'No UART port found.\n'
       logging.error("No UART port found.")
@@ -286,11 +286,15 @@ def do_monitor_request(request):
       process_holder.pop('gdbgui', None)
 
     build_root = BUILD_PATH +'/build'
-    if check_uart_connection() != 0:
+    error = 0
+    error = check_uart_connection(target_device)
+    if error != 0:
+      logging.info("No UART found")
       req_data['status'] += "No UART port found\n"
       return jsonify(req_data)
     if os.path.isdir(build_root) and os.listdir(build_root):
-        do_cmd(req_data, ['idf.py', '-p', target_device, 'monitor'])
+      logging.info("Build found")
+      do_cmd(req_data, ['idf.py', '-p', target_device, 'monitor'])
     else:
       req_data['status'] += "No ELF file found in build directory.\n"
       logging.error("No elf found.")
@@ -301,73 +305,32 @@ def do_monitor_request(request):
   return jsonify(req_data)
 
 
-# (4) Flasing assembly program into target board
-def do_job_request(request):
-  try:
-    req_data = request.get_json()
-    target_device      = req_data['target_port']
-    target_board       = req_data['target_board']
-    asm_code           = req_data['assembly']
-    req_data['status'] = ''
+# (4) Debug 
 
-    # create temporal assembly file
-    text_file = open("tmp_assembly.s", "w")
-    ret = text_file.write(asm_code)
-    text_file.close()
-
-    # transform th temporal assembly file
-    error = creator_build('tmp_assembly.s', "main/program.s");
-    if error != 0:
-        req_data['status'] += 'Error adapting assembly file...\n'
-
-    # flashing steps...
-    if error == 0:
-      error = do_cmd_output(req_data, ['idf.py',  'fullclean'])
-    if error == 0:
-      error = do_cmd_output(req_data, ['idf.py',  'set-target', target_board])
-    if error == 0:
-      error = do_cmd_output(req_data, ['idf.py', 'build'])
-    if error == 0:
-      error = do_cmd_output(req_data, ['idf.py', '-p', target_device, 'flash'])
-    if error == 0:
-      error = do_cmd_output(req_data, ['./gateway_monitor.sh', target_device, '50'])
-      error = do_cmd_output(req_data, ['cat', 'monitor_output.txt'])
-      error = do_cmd_output(req_data, ['rm', 'monitor_output.txt'])
-
-  except Exception as e:
-    req_data['status'] += str(e) + '\n'
-
-  return jsonify(req_data)
-
-
-# (5) Stop flashing
-def do_stop_flash_request(request):
-  try:
-    req_data = request.get_json()
-    req_data['status'] = ''
-    do_cmd(req_data, ['pkill',  'idf.py'])
-
-  except Exception as e:
-    req_data['status'] += str(e) + '\n'
-
-  return jsonify(req_data)
-
-# (6) Debug 
-
-# (6.1) Physical connections check   
-def check_uart_connection():
+# (4.1) Physical connections check   
+def check_uart_connection(board):
     """ Checks UART devices """
-    devices = glob.glob('/dev/ttyUSB*')
-    logging.debug(f"Found devices: {devices}")
-    if "/dev/ttyUSB0" in devices:
-        logging.info("Found UART.")
-        return 0
-    elif devices:
-        logging.error("Other UART devices found (Is the name OK?).")
-        return 0
-    else:
-        logging.error("NO UART port found.")
-        return 1
+    if board.startswith('/dev/ttyUSB'):
+      devices = glob.glob('/dev/ttyUSB*')
+      logging.debug(f"Found devices: {devices}")
+      if "/dev/ttyUSB0" in devices:
+          logging.info("Found UART.")
+          return 0
+      elif devices:
+          logging.error("Other UART devices found (Is the name OK?).")
+          return 0
+      else:
+          logging.error("NO UART port found.")
+          return 1
+    elif board.startswith('rfc2217'):
+      try:
+          ser = serial.serial_for_url(board, timeout=1)
+          ser.close()
+          logging.info("Found RFC2217 UART.")
+          return 0
+      except serial.SerialException as e:
+          logging.error(f"NO RFC2217 UART port found: {e}")
+          return 1  
     
 def check_jtag_connection():
     """ Checks JTAG devices """
@@ -390,7 +353,7 @@ def check_jtag_connection():
         logging.error(f"Error checking JTAG: {e}")
         return None
     return False    
-# --- (6.2) Debug processes monitoring functions ---
+# --- (4.2) Debug processes monitoring functions ---
 
 def check_gdb_connection():
     """ Checks gdb status """
@@ -481,7 +444,7 @@ def kill_all_processes(process_name):
         return 1
 
     
-# (6.3) OpenOCD Function
+# (4.3) OpenOCD Function
 def start_openocd_thread(req_data):
     target_board = req_data['target_board']
     script_board = './openocd_scripts/openscript_' + target_board + '.cfg'
@@ -499,7 +462,7 @@ def start_openocd_thread(req_data):
         req_data['status'] += f"Error starting OpenOCD: {str(e)}\n"
         logging.error(f"Error starting OpenOCD: {str(e)}")
         return None
-# (6.4) GDBGUI function    
+# (4.4) GDBGUI function    
 def start_gdbgui(req_data):
     route = os.path.join(BUILD_PATH, 'gdbinit')
     logging.debug(f"GDB route: {route}")
@@ -550,7 +513,6 @@ def do_debug_request(request):
         req_data = request.get_json()
         target_device = req_data['target_port']
         req_data['status'] = ''
-
         # Check .elf files in BUILD_PATH
         route = BUILD_PATH +'/build'
         logging.debug(f"Checking for ELF files in {route}")
@@ -626,37 +588,26 @@ def post_flash():
 def post_monitor():
   return do_monitor_request(request)
 
-# (4) POST /job -> flash + monitor
-@app.route("/job", methods=["POST"])
-@cross_origin()
-def post_job():
-  return do_job_request(request)
 
-# (5) POST /stop -> cancel
-@app.route("/stop", methods=["POST"])
-@cross_origin()
-def post_stop_flash():
-  return do_stop_flash_request(request)
-
-# (6) POST /fullclean -> clean build directory
+# (4) POST /fullclean -> clean build directory
 @app.route("/fullclean", methods=["POST"])
 @cross_origin()
 def post_fullclean_flash():
   return do_fullclean_request(request)
 
-# (7) POST /eraseflash -> clean board flash
+# (5) POST /eraseflash -> clean board flash
 @app.route("/eraseflash", methods=["POST"])
 @cross_origin()
 def post_erase_flash():
   return do_eraseflash_request(request)
 
-# (8) POST /debug -> debug
+# (6) POST /debug -> debug
 @app.route("/debug", methods=["POST"])
 @cross_origin()
 def post_debug():
   return do_debug_request(request)
 
-# (9) Stop monitor
+# (7) Stop monitor
 @app.route("/stopmonitor", methods=["POST"])
 @cross_origin()
 def post_stop_monitor():
