@@ -46,7 +46,7 @@ RUN apt update && apt-get install -y \
 #Espressif drivers install
 RUN mkdir -p /esp && \
         cd /esp && \
-        git clone --recursive https://github.com/espressif/esp-idf.git && \
+        git clone -b v5.3.2 --recursive https://github.com/espressif/esp-idf.git && \
         cd /esp/esp-idf && \
         ./install.sh all && \
         pip3 uninstall click --break-system-packages && \
