@@ -229,8 +229,8 @@
   * :technologist: [José Antonio Verde Jiménez](https://github.com/joseaverde) (Real hardware integration)
   * :technologist: [Álvaro Guerrero Espinosa](https://github.com/ALVAROPING1) (New compiler)
   * :technologist: [Elisa Utrilla Arroyo](https://github.com/EUtrilla2002) (Real hardware integration)
-  * :technologist: [Luis Daniel Casais Mezquida](https://github.com/rajayonin) (Vue3/Vite/Bootstrap5/Codemirror6/TypeScript migration, interrupts, timers, and memory-mapped devices)
-  * :technologist: [Jorge Ramos Santana](https://github.com/mjorgers) (core/tests rewrite, new UI, new CLI, RV64 & Z80 architectures)
+  * :technologist: [Luis Daniel Casais Mezquida](https://github.com/rajayonin) (Website migration, interrupts, timers, and memory-mapped devices)
+  * :technologist: [Jorge Ramos Santana](https://github.com/mjorgers) (core/tests rewrite, new web UI, new CLI, RV64 & Z80 architectures)
 
 
 
