@@ -464,6 +464,7 @@ def start_openocd_thread(req_data):
         return None
 # (4.4) GDBGUI function    
 def start_gdbgui(req_data):
+    target_device      = req_data['target_port']
     route = os.path.join(BUILD_PATH, 'gdbinit')
     logging.debug(f"GDB route: {route}")
     route = os.path.join(BUILD_PATH, 'gdbinit')
@@ -474,7 +475,7 @@ def start_gdbgui(req_data):
         req_data['status'] += f"GDB route: {route} does not exist.\n"
         return jsonify(req_data)
     req_data['status'] = ''
-    if check_uart_connection():
+    if check_uart_connection(target_device) != 0:
       req_data['status'] += f"No UART found\n"
       return jsonify(req_data)
     
@@ -529,7 +530,7 @@ def do_debug_request(request):
                 kill_all_processes("openocd")
                 process_holder.pop('openocd', None)
             # Check UART
-            if  check_uart_connection():
+            if  check_uart_connection(target_device) != 0:
                 req_data['status'] += f"No UART found\n"
                 return jsonify(req_data)    
             # Check if JTAG is connected
