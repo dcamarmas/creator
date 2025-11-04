@@ -16,7 +16,7 @@
     "id": "select_confRISV",
     "examples": ["default"],
     "description": "RISC-V is an instruction set architecture (ISA) based on the RISC type and its hardware is free. This architecture was created in 2010 at the University of California, Berkeley.",
-    "guide": "/guides/riscv.pdf",
+    "guide": "guides/riscv.pdf",
     "available": true
   },
   {
@@ -40,7 +40,7 @@
     "id": "select_confMIPS",
     "examples": ["default"],
     "description": "The MIPS processor was developed by Dr.John Hennessey and his graduate students at Stanford University in the early 1980s. It is currently one of the major processors in the embedded processor market.",
-    "guide": "/guides/mips32.pdf",
+    "guide": "guides/mips32.pdf",
     "available": true
   },
   {
