@@ -49,7 +49,7 @@
     "examples": ["default"],
     "description": "RISC-V, with interrupts.",
     "guide": "",
-    "available": false
+    "available": true
   },
   {
     "name": "MIPS-32",

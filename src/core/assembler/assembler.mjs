@@ -95,6 +95,103 @@ export function formatErrorWithColors(error) {
     return htmlMsg;
 }
 
+export function getCleanErrorMessage(error) {
+    const errorMsg = String(error);
+    const parsed = ansicolor.parse(errorMsg);
+    const cleanMsg = parsed.spans.map(span => span.text).join("");
+    return cleanMsg;
+}
+
+/**
+ * Parse a clean error message to extract structured error information for linting
+ * Example input: "[E02] Error: Instruction no isn't defined\n   ╭─[ assembly:3:1 ]\n   │\n 3 │ no\n..."
+ * @param {string} cleanErrorMessage - The clean error message (without ANSI codes)
+ * @returns {{errorText: string, line: number, column: number} | null} Parsed error information or null if parsing fails
+ */
+export function parseErrorForLinter(cleanErrorMessage) {
+    if (!cleanErrorMessage || typeof cleanErrorMessage !== 'string') {
+        return null;
+    }
+
+    // Extract the main error text (first line with [EXX] Error: ...)
+    // Pattern: [E02] Error: ...
+    const errorTextMatch = cleanErrorMessage.match(/^\[E\d+\]\s+Error:.*$/m);
+    const errorText = errorTextMatch ? errorTextMatch[0].trim() : '';
+
+    // Extract line and column from the assembly:LINE:COLUMN pattern
+    // Pattern: assembly:3:1
+    const locationMatch = cleanErrorMessage.match(/assembly:(\d+):(\d+)/);
+    
+    if (!locationMatch) {
+        // If we can't find location info, return null or a default
+        return errorText ? {
+            errorText,
+            line: 1,
+            column: 1
+        } : null;
+    }
+
+    const line = parseInt(locationMatch[1], 10);
+    const column = parseInt(locationMatch[2], 10);
+
+    return {
+        errorText: errorText || 'Compilation error',
+        line,
+        column
+    };
+}
+
+/**
+ * Parse RASM assembler error messages to extract multiple errors
+ * Example input: "Pre-processing [program.asm]\nAssembling\n[program.asm:2] Unknown LD format\n[program.asm:3] Unknown LD format\n2 errors"
+ * @param {string} cleanErrorMessage - The clean error message (without ANSI codes)
+ * @returns {{errorText: string, line: number, column: number}[]} Array of parsed error information
+ */
+export function parseRasmErrorsForLinter(cleanErrorMessage) {
+    if (!cleanErrorMessage || typeof cleanErrorMessage !== 'string') {
+        return [];
+    }
+
+    const errors = [];
+    
+    // RASM error format: [filename:LINE] Error message
+    // Pattern: [program.asm:2] Unknown LD format
+    const errorPattern = /\[([^\]]+):(\d+)\]\s*(.+)/g;
+    let match;
+    
+    while ((match = errorPattern.exec(cleanErrorMessage)) !== null) {
+        const line = parseInt(match[2], 10);
+        const errorMessage = match[3].trim();
+        
+        errors.push({
+            errorText: errorMessage,
+            line,
+            column: 1, // RASM doesn't provide column info, default to 1
+        });
+    }
+    
+    // If no errors were found using the pattern, try to extract a general error
+    if (errors.length === 0) {
+        const lines = cleanErrorMessage.split('\n').filter(l => l.trim().length > 0);
+        // Look for lines that might contain error info (not pre-processing/assembling messages)
+        const errorLines = lines.filter(l => 
+            !l.includes('Pre-processing') && 
+            !l.includes('Assembling') && 
+            !l.match(/^\d+\s+errors?$/) // Skip "2 errors" summary line
+        );
+        
+        if (errorLines.length > 0) {
+            errors.push({
+                errorText: errorLines.join(' '),
+                line: 1,
+                column: 1,
+            });
+        }
+    }
+    
+    return errors;
+}
+
 //
 // Compiler
 //

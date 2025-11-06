@@ -42,7 +42,7 @@ export default {
     processedInstructions() {
       return this.instructions.map(instruction => ({
         ...instruction,
-        _cellVariants: instruction.Break ? { Address: 'danger' } : {}
+        _cellVariants: {}
       }))
     }
   },
@@ -97,6 +97,8 @@ export default {
 
     <!-- address -->
     <template #cell(Address)="row">
+      <span v-if="row.item.Break" class="breakpoint-indicator" title="Breakpoint">●</span>
+      <span v-else class="breakpoint-space">&nbsp;</span>
       <span>{{ row.item.Address }}</span>
       <b-badge v-if="row.item.Label" pill variant="info" style="margin-left: 0.5em;">{{ row.item.Label }}</b-badge>
     </template>
@@ -148,5 +150,17 @@ export default {
     // mute the colors a bit...
     filter: saturate(80%);
   }
+}
+
+.breakpoint-indicator {
+  font-weight: bold;
+  font-size: 0.8em;
+  margin-right: 0.3em;
+  color: red;
+}
+
+.breakpoint-space {
+  font-size: 0.8em;
+  margin-right: 1em;
 }
 </style>

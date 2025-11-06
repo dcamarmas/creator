@@ -109,18 +109,77 @@ export default defineComponent({
       return example_set
     },
 
-    assemble() {
-      // Get the compile group from the navbar
-      const compileGroup = (this.$root as any).$refs.navbar?.$refs?.compileGroup;
+    async assemble() {
+      // Import the necessary modules for compilation
+      const { assembly_compile, reset, status } = await import("@/core/core.mjs")
+      const { resetStats } = await import("@/core/executor/stats.mts")
+      const { instructions } = await import("@/core/assembler/assembler.mjs")
+      const { show_notification } = await import("@/web/utils.mjs")
+      const { assemblerMap, getDefaultCompiler } = await import("@/web/assemblers")
+      const { architecture } = await import("@/core/core.mjs")
       
-      if (compileGroup) {
-        compileGroup.assembly_compiler();
-        
-        // update table execution UI
-        const executeGroup = (this.$root as any).$refs.navbar?.$refs?.executeGroup;
-        if (executeGroup) {
-          executeGroup.execution_UI_reset();
-        }
+      const root = this.$root as any
+
+      // Reset simulator
+      root.keyboard = ""
+      root.display = ""
+      root.enter = null
+      reset()
+
+      // Get default compiler for the architecture
+      const defaultCompiler = getDefaultCompiler(architecture)
+      const assemblerFn = assemblerMap[defaultCompiler]
+      
+      // Assemble the code
+      const ret = await (assemblerFn
+        ? assembly_compile(root.assembly_code, assemblerFn)
+        : assembly_compile(root.assembly_code))
+
+      // Reset stats
+      resetStats()
+      status.executedInstructions = 0
+      status.clkCycles = 0
+
+      // Handle results
+      switch (ret.type) {
+        case "error":
+          // Set compilation error and show modal
+          root.assemblyError = ret.msg
+          root.$emit("show-assembly-error")
+          break
+
+        case "warning":
+          show_notification(ret.token, ret.bgcolor)
+          // Still change to simulator view on warning
+          root.creator_mode = "simulator"
+          // Wait for next tick to ensure simulator view is mounted, then update UI
+          await this.$nextTick()
+          this.updateSimulatorUI(instructions, status)
+          break
+
+        default:
+          // Put rowVariant in entrypoint
+          const entrypoint = instructions.at(status.execution_index)
+          if (entrypoint) {
+            entrypoint._rowVariant = "success"
+          }
+          // Change to simulator view
+          root.creator_mode = "simulator"
+          // Wait for next tick to ensure simulator view is mounted, then update UI
+          await this.$nextTick()
+          this.updateSimulatorUI(instructions, status)
+          break
+      }
+    },
+
+    updateSimulatorUI(_instructions: any[], _status: any) {
+      // Update the simulator controls to enable buttons
+      const root = this.$root as any
+      const simulatorControls = root.$refs.navbar?.$refs?.simulatorControls
+      
+      if (simulatorControls) {
+        // Call execution_UI_reset to enable buttons and update execution table
+        simulatorControls.execution_UI_reset()
       }
     },
 
@@ -146,13 +205,12 @@ export default defineComponent({
         ;(this.$root as any).assembly_code = code
 
         if (assemble) {
-          // TODO: re-enable when fixed
-          // this.assemble()
+          // Assemble and switch to simulator view
+          await this.assemble()
+        } else {
+          // Just load the code and switch to assembly view
+          ;(this.$root as any).creator_mode = "assembly"
         }
-
-        // we change to the assembly view bc I'm not able to update the
-        // execution table (see assemble()) when that's fixed, delete this
-        ;(this.$root as any).creator_mode = "assembly"
 
         /* Google Analytics */
         creator_ga("event", "example.loading", "example.loading.url")

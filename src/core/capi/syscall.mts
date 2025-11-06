@@ -34,7 +34,6 @@ import {
 import { readRegister } from "../register/registerOperations.mjs";
 import { creator_ga } from "../utils/creator_ga.mjs";
 import type { Memory } from "../memory/Memory.mts";
-import { packExecute } from "../utils/utils.mjs";
 
 export const SYSCALL = {
     exit() {

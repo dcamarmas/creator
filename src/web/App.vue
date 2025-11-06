@@ -40,12 +40,11 @@ import { creator_ga } from "@/core/utils/creator_ga.mjs"
 
 import SpinnerLoading from "./components/general/SpinnerLoading.vue"
 import SupportedBrowsers from "./components/general/SupportedBrowsers.vue"
-import FormConfiguration from "./components/general/FormConfiguration.vue"
+import FormConfiguration from "./components/general/SettingsModal.vue"
 import UIeltoNotifications from "./components/general/UIeltoNotifications.vue"
 import NavbarCREATOR from "./components/general/NavbarCREATOR.vue"
 import UIeltoInstitutions from "./components/general/UIeltoInstitutions.vue"
-import UIeltoAbout from "./components/general/UIeltoAbout.vue"
-import SidebarInstructionHelp from "./components/general/SidebarInstructionHelp.vue"
+import UIeltoAbout from "./components/general/AboutModal.vue"
 import UIeltoBackup from "./components/select_architecture/UIeltoBackup.vue"
 import MobileSettings from "./components/mobile/MobileSettings.vue"
 import MobileCodeView from "./components/mobile/MobileCodeView.vue"
@@ -82,7 +81,6 @@ export default {
     NavbarCREATOR,
     UIeltoInstitutions,
     UIeltoAbout,
-    SidebarInstructionHelp,
     UIeltoBackup,
     MobileSettings,
     MobileCodeView,
@@ -558,7 +556,6 @@ export default {
       :dark="dark"
       :arch_available="arch_available"
       :assembly_code="assembly_code"
-      :show_instruction_help="true"
       :instructions="instructions"
       @mobile-view-change="handleMobileViewChange"
       ref="navbar"
@@ -594,15 +591,6 @@ export default {
 
     <!-- About modal -->
     <UIeltoAbout id="about" :dark="dark!" />
-
-    <!-- Instruction Help sidebar -->
-    <!-- we don't want to load this unless we have selected an architecture -->
-    <SidebarInstructionHelp
-      v-if="architecture_name !== ''"
-      id="sidebar_help"
-      :architecture_name="architecture_name"
-      :instruction_help_size="instruction_help_size"
-    />
 
     <!-- Backup modal -->
     <UIeltoBackup id="copy" @load-architecture="creator_mode = 'assembly'" />
@@ -807,17 +795,27 @@ export default {
 <style lang="scss" scoped>
 :deep() {
   // applies to all sub-components
-  body {
+  html, body {
     background-color: #ffffff;
-    overflow-x: hidden;
+    overflow: hidden; // Disable all scrolling
     font-size: 15px;
     height: 100vh;
-
+    width: 100vw;
+    position: fixed; // Prevent any scrolling on all devices
+    
     // Add padding for mobile safe areas
     @media (max-width: 767px) {
       padding-top: env(safe-area-inset-top);
-      overflow-y: hidden; // Prevent vertical scrolling on mobile
     }
+  }
+
+  #app {
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    position: fixed;
+    top: 0;
+    left: 0;
   }
 
   * {
@@ -921,14 +919,6 @@ export default {
     max-width: 100%;
   }
 
-  .buttons {
-    width: 100%;
-    margin: 0px;
-    margin-top: 1px;
-    padding: 0px;
-    font-size: 1em;
-  }
-
   .menu {
     width: 100%;
     align-items: center;
@@ -946,28 +936,8 @@ export default {
     padding: 0;
   }
 
-  .apexcharts-legend-text tspan:nth-child(1) {
-    font-weight: lighter;
-    fill: #999;
-  }
-
-  .apexcharts-legend-text tspan:nth-child(3) {
-    font-weight: bold;
-  }
-
   .fields {
     padding: 1%;
-  }
-
-  // for some reason this doesn't affect sub-components
-  [data-bs-theme="dark"] {
-    .buttonBackground {
-      background-color: #212529;
-      color: #818a8d;
-    }
-    .buttonBackground:hover {
-      background-color: #424649;
-    }
   }
 }
 </style>

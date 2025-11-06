@@ -20,9 +20,9 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 
 <script lang="ts">
 import { defineComponent, type PropType } from "vue"
-import { assembly_compile, status } from "@/core/core.mjs"
+import { assembly_compile, status, architecture } from "@/core/core.mjs"
 import { resetStats } from "@/core/executor/stats.mts"
-import { assembleCreator } from "@/core/assembler/creatorAssembler/web/creatorAssembler.mjs"
+import { assemblerMap, getDefaultCompiler } from "@/web/assemblers"
 import TextareaAssembly from "@/web/components/assembly/TextareaAssembly.vue"
 import Examples from "@/web/components/assembly/Examples.vue"
 import MobileInstructionHelp from "@/web/components/mobile/MobileInstructionHelp.vue"
@@ -89,8 +89,10 @@ export default defineComponent({
       status.executedInstructions = 0
       status.clkCycles = 0
 
-      // Assemble the code
-      const ret = await assembly_compile(this.code, assembleCreator)
+      // Assemble the code - use default compiler for mobile
+      const defaultCompiler = getDefaultCompiler(architecture)
+      const assemblerFn = assemblerMap[defaultCompiler]
+      const ret = await assembly_compile(this.code, assemblerFn)
 
       // Handle results
       if (ret.status !== "ok") {

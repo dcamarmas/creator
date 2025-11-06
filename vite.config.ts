@@ -77,7 +77,6 @@ export default defineConfig({
       output: {
         // group libraries in chunks to reduce its size
         manualChunks: {
-          apexcharts: ["apexcharts", "vue3-apexcharts"],
           fontawesome: [
             "@fortawesome/fontawesome-svg-core",
             "@fortawesome/free-brands-svg-icons",
@@ -94,6 +93,7 @@ export default defineConfig({
             "@codemirror/lang-yaml",
             "@codemirror/language",
           ],
+          monaco: ["monaco-editor"],
         },
       },
     },

@@ -1,6 +1,6 @@
 <!--
 Copyright 2018-2025 Felix Garcia Carballeira, Diego Camarmas Alonso,
-                    Alejandro Calderon Mateos, Luis Daniel Casais Mezquida
+                    Alejandro Calderon Mateos, Jorge Ramos Santana
 
 This file is part of CREATOR.
 
@@ -37,7 +37,7 @@ export default defineComponent({
       // Pseudoinstructions table fields
       pseudoinstructions_fields: [
         { key: "name", sortable: true, thClass: "col-name" },
-        { key: "signatureRaw", label: "Syntax", thClass: "col-syntax" },
+        { key: "signature_pretty", label: "Syntax", thClass: "col-syntax" },
         { key: "definition", label: "Expands To", thClass: "col-definition" },
       ],
 
@@ -50,7 +50,7 @@ export default defineComponent({
       return this.pseudoinstructions.filter(inst => {
         const matchesSearch = !this.searchTerm ||
           inst.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-          inst.signature_definition.toLowerCase().includes(this.searchTerm.toLowerCase())
+          inst.signature_pretty.toLowerCase().includes(this.searchTerm.toLowerCase())
 
         return matchesSearch
       })
@@ -88,8 +88,8 @@ export default defineComponent({
         <code class="pseudo-name">{{ row.item.name }}</code>
       </template>
 
-      <template v-slot:cell(signatureRaw)="row">
-        <span class="syntax-text">{{ row.item.signature_definition }}</span>
+      <template v-slot:cell(signature_pretty)="row">
+        <span class="syntax-text">{{ row.item.signature_pretty }}</span>
       </template>
 
       <template v-slot:cell(definition)="row">

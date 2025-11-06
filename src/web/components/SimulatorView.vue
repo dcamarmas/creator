@@ -23,12 +23,14 @@ import { defineComponent, type PropType } from "vue"
 
 import type { StackFrame } from "@/core/memory/StackTracker.mjs"
 import { architecture } from "@/core/core.mjs"
+import { main_memory } from "@/core/core"
+import { type Device, devices } from "@/core/executor/devices.mts"
 
 import TableExecution from "./simulator/TableExecution.vue"
 import DataViewSelector from "./simulator/DataViewSelector.vue"
 import RegisterFile from "./simulator/RegisterFile.vue"
 import Examples from "./assembly/Examples.vue"
-import Memory from "./simulator/Memory.vue"
+import HexViewer from "./simulator/HexViewer.vue"
 import Calculator from "./simulator/Calculator.vue"
 import Terminal from "./simulator/Terminal.vue"
 import Stats from "./simulator/Stats.vue"
@@ -70,7 +72,7 @@ export default defineComponent({
     DataViewSelector,
     RegisterFile,
     Examples,
-    Memory,
+    HexViewer,
     Calculator,
     Stats,
     Flash,
@@ -80,6 +82,8 @@ export default defineComponent({
   data() {
     return {
       architecture,
+      main_memory: main_memory as any,
+      devices: devices as Map<string, any>,
     }
   },
 })
@@ -151,13 +155,12 @@ export default defineComponent({
                 />
 
                 <!-- Memory view-->
-                <Memory
+                <HexViewer
                   v-if="data_mode === 'memory'"
                   ref="memory"
-                  :selectedSegment="memory_segment"
-                  :dark="dark"
-                  :callee_frame="callee_frame"
-                  :caller_frame="caller_frame"
+                  :main_memory="main_memory"
+                  :devices="devices"
+                  :segment="memory_segment"
                 />
 
                 <!-- Stats view--->
