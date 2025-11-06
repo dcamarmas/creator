@@ -41,31 +41,41 @@ export function getPrimaryKey(instr) {
 
 /**
  * Check the type of a number in IEEE 754 format.
- * @param {number} s - Sign bit (0 for positive, 1 for negative)
- * @param {number} e - Exponent (8 bits)
- * @param {number} m - Mantissa (23 bits)
- * @returns {number} Returns a number representing the type of the IEEE 754 number:
- *      1 -> -infinite
- *      2 -> -normalized number
- *      4 -> -non-normalized number
- *      8 -> -0
- *      16 -> +0
- *      32 -> +normalized number
- *      64 -> +non-normalized number
- *      128 -> +inf
- *      256 -> -NaN
- *      512 -> +NaN
+ * @param {string} s - Sign bit (0 for positive, 1 for negative)
+ * @param {string} e - Exponent binary string
+ * @param {string} m - Mantissa binary string
+ * @returns {number} Returns a 10-bit mask where the position of the set bit
+ * indicates the type of the IEEE 754 number:
+ *      0 -> -inf
+ *      1 -> -normalized number
+ *      2 -> -non-normalized number
+ *      3 -> -0
+ *      4 -> +0
+ *      5 -> +non-normalized number
+ *      6 -> +normalized number
+ *      7 -> +inf
+ *      8 -> signaling NaN
+ *      9 -> quiet NaN
  */
 export function checkTypeIEEE(s, e, m) {
     let rd;
+    const s_int = parseInt(s, 2);
+    const e_int = parseInt(e, 2);
+    const m_int = parseInt(m, 2);
 
-    if (!m && !e) rd = s ? 1 << 3 : 1 << 4;
-    else if (!e) rd = s ? 1 << 2 : 1 << 5;
-    else if (!(e ^ 255)) {
-        if (m) rd = s ? 1 << 8 : 1 << 9;
-        else rd = s ? 1 << 0 : 1 << 7;
-    } else rd = s ? 1 << 1 : 1 << 6;
-    return rd;
+    if (!m_int && !e_int)
+        rd = s_int ? 3 : 4; // mantisa and exponent are 0 => ±0
+    else if (!e_int)
+        rd = s_int ? 2 : 5; // exponent is 0 but mantisa isn't => ±non-normalized number
+    // exponent is all 1s
+    else if (!e.includes("0"))
+        if (m_int)
+            // mantisa isn't 0 => NaN. It's signaling if the MSB of the mantisa is 0
+            rd = m[0] === "0" ? 8 : 9;
+        // mantisa is 0 => ±inf
+        else rd = s_int ? 0 : 7;
+    else rd = s_int ? 1 : 6; // any other case is a normalized number
+    return 1 << rd;
 }
 function binaryStringToInt(bstring) {
     return parseInt(bstring, 2);
