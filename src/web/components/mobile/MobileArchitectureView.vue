@@ -22,6 +22,7 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 import { defineComponent, type PropType } from "vue"
 
 import { architecture } from "@/core/core.mjs"
+import available_arch from "../../../../architecture/available_arch.json"
 
 import EditArchitecture from "../architecture/EditArchitecture.vue"
 import DownloadPopup from "../general/DownloadModal.vue"
@@ -55,6 +56,16 @@ export default defineComponent({
       activeSection: null as string | null,
     }
   },
+  computed: {
+    architecture_guide() {
+      if (!this.architecture_name) return undefined
+      return available_arch.find(
+        arch =>
+          arch.name === this.architecture_name ||
+          arch.alias.includes(this.architecture_name!),
+      )?.guide
+    },
+  },
   methods: {
     toggleSection(section: string) {
       this.activeSection = this.activeSection === section ? null : section
@@ -66,6 +77,18 @@ export default defineComponent({
 <template>
   <div class="mobile-architecture-view">
     <div class="mobile-architecture-header">
+      <!-- Architecture Guide Link -->
+      <a 
+        v-if="architecture_guide" 
+        :href="architecture_guide" 
+        target="_blank" 
+        class="mobile-guide-link"
+      >
+        <font-awesome-icon :icon="['fas', 'file-pdf']" />
+        <span>{{ architecture_name }} Guide</span>
+        <font-awesome-icon :icon="['fas', 'external-link-alt']" class="external-icon" />
+      </a>
+
       <h2 class="architecture-title">
         <font-awesome-icon :icon="['fas', 'microchip']" />
         Architecture View
@@ -114,29 +137,6 @@ export default defineComponent({
             v-show="activeSection === 'arch-info'"
           >
             <ArchConf :conf="architecture.config" />
-          </div>
-        </div>
-
-        <!-- Memory Layout -->
-        <div class="accordion-section">
-          <button
-            class="accordion-header"
-            @click="toggleSection('memory-layout')"
-            :class="{ active: activeSection === 'memory-layout' }"
-          >
-            <div class="accordion-title">
-              <font-awesome-icon :icon="['fas', 'memory']" />
-              Memory Layout
-            </div>
-            <font-awesome-icon
-              :icon="['fas', activeSection === 'memory-layout' ? 'chevron-up' : 'chevron-down']"
-              class="accordion-icon"
-            />
-          </button>
-          <div
-            class="accordion-content"
-            v-show="activeSection === 'memory-layout'"
-          >
           </div>
         </div>
 
@@ -294,6 +294,41 @@ export default defineComponent({
     font-size: 0.95rem;
     color: var(--bs-body-color-secondary);
     opacity: 0.8;
+  }
+
+  .mobile-guide-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 1rem;
+    padding: 10px 16px;
+    background: var(--bs-primary);
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+    &:hover {
+      background: color-mix(in srgb, var(--bs-primary) 90%, black);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+
+    .external-icon {
+      font-size: 0.75rem;
+      opacity: 0.9;
+    }
+
+    svg:first-child {
+      font-size: 1rem;
+    }
   }
 }
 

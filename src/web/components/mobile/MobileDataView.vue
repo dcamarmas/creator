@@ -22,9 +22,11 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 import { defineComponent, type PropType } from "vue"
 import type { StackFrame } from "@/core/memory/StackTracker.mjs"
 import { architecture } from "@/core/core.mjs"
+import { main_memory } from "@/core/core"
+import { type Device, devices } from "@/core/executor/devices.mts"
 
 import RegisterFile from "../simulator/RegisterFile.vue"
-import Memory from "../simulator/Memory.vue"
+import HexViewer from "../simulator/HexViewer.vue"
 import Stats from "../simulator/Stats.vue"
 import Terminal from "../simulator/Terminal.vue"
 
@@ -50,7 +52,7 @@ export default defineComponent({
 
   components: {
     RegisterFile,
-    Memory,
+    HexViewer,
     Stats,
     Terminal,
   },
@@ -58,6 +60,8 @@ export default defineComponent({
   data() {
     return {
       architecture,
+      main_memory: main_memory as any,
+      devices: devices as Map<string, any>,
     }
   },
 
@@ -162,11 +166,10 @@ export default defineComponent({
 
       <!-- Memory view-->
       <div v-if="currentView === 'memory'" class="data-section">
-        <Memory
-          :selectedSegment="memory_segment"
-          :dark="dark"
-          :callee_frame="callee_frame"
-          :caller_frame="caller_frame"
+        <HexViewer
+          :main_memory="main_memory"
+          :devices="devices"
+          :segment="memory_segment"
         />
       </div>
 

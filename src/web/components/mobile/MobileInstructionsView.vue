@@ -21,7 +21,7 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 <script lang="ts">
 import { defineComponent, type PropType } from "vue"
 import TableExecution from "@/web/components/simulator/TableExecution.vue"
-import ToolbarBtngroup from "@/web/components/general/ToolbarBtngroup.vue"
+import SimulatorControls from "@/web/components/simulator/SimulatorControls.vue"
 import type { Instruction } from "@/core/assembler/assembler"
 
 export default defineComponent({
@@ -40,12 +40,12 @@ export default defineComponent({
 
   components: {
     TableExecution,
-    ToolbarBtngroup,
+    SimulatorControls,
   },
 
   data() {
     return {
-      // Execution controls will be handled by ToolbarBtngroup
+      // Execution controls will be handled by SimulatorControls
     }
   },
 })
@@ -63,14 +63,13 @@ export default defineComponent({
       </div>
 
       <div class="execution-controls">
-        <ToolbarBtngroup
-          :group="['btn_reset', 'btn_instruction', 'btn_run', 'btn_stop']"
+        <SimulatorControls
           :browser="browser"
           :os="os"
           :dark="dark"
           :instructions="instructions"
-          compact
-          :disableTooltips="true"
+          :autoscroll="true"
+          mode="toolbar"
           ref="executionControls"
         />
       </div>
@@ -169,8 +168,8 @@ export default defineComponent({
     overflow-x: auto;
     padding-bottom: 0.25rem;
 
-    // Style the ToolbarBtngroup buttons for mobile
-    :deep(.menuButton) {
+    // Style the SimulatorControls buttons for mobile
+    :deep(.btn) {
       min-height: 44px; // Touch-friendly
       min-width: 60px;
       padding: 0.5rem;
@@ -181,11 +180,6 @@ export default defineComponent({
 
       svg {
         font-size: 1.1rem;
-      }
-
-      .assemble-text {
-        font-size: 0.7rem;
-        white-space: nowrap;
       }
 
       &:disabled {
@@ -244,16 +238,12 @@ export default defineComponent({
     .execution-controls {
       gap: 0.25rem;
 
-      :deep(.menuButton) {
+      :deep(.btn) {
         min-width: 50px;
         padding: 0.4rem 0.3rem;
 
         svg {
           font-size: 1rem;
-        }
-
-        .assemble-text {
-          font-size: 0.65rem;
         }
       }
     }

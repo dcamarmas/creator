@@ -600,20 +600,10 @@ export default defineComponent({
       </b-list-group-item>
 
       <b-list-group-item class="justify-content-between align-items-center config-item">
-        <label>Integer Register Value Format:</label>
+        <label>Register Value Format:</label>
         <b-form-select
           v-model="reg_representation_int_value"
           :options="reg_representation_int_options"
-          size="sm"
-          class="representation-select"
-        />
-      </b-list-group-item>
-
-      <b-list-group-item class="justify-content-between align-items-center config-item">
-        <label>Float Register Value Format:</label>
-        <b-form-select
-          v-model="reg_representation_float_value"
-          :options="reg_representation_float_options"
           size="sm"
           class="representation-select"
         />

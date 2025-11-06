@@ -18,6 +18,7 @@ config:
   start_address: 0x0
   pc_offset: -4
   plugin: riscv
+  syntax: riscv
   assemblers:
     - name: "CreatorCompiler"
       description: "Default Creator Compiler"

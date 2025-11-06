@@ -22,11 +22,11 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 import { defineComponent, type PropType } from "vue"
 
 import { architecture } from "@/core/core.mjs"
+import available_arch from "../../../architecture/available_arch.json"
 
 import EditArchitecture from "./architecture/EditArchitecture.vue"
 import DownloadPopup from "./general/DownloadModal.vue"
 import ArchConf from "./architecture/configuration/ArchConf.vue"
-import MemoryLayoutDiagram from "./architecture/memory_layout/MemoryLayoutDiagram.vue"
 import RegisterFileArch from "./architecture/register_file/RegisterFileArch.vue"
 import Instructions from "./architecture/instructions/Instructions.vue"
 import Directives from "./architecture/directives/Directives.vue"
@@ -46,7 +46,6 @@ export default defineComponent({
     EditArchitecture,
     DownloadPopup,
     ArchConf,
-    MemoryLayoutDiagram,
     RegisterFileArch,
     Instructions,
     Directives,
@@ -59,14 +58,16 @@ export default defineComponent({
       activeTab: 'instructions'
     }
   },
-
   computed: {
-    archCodeWSchema() {
-      return `# yaml-language-server: $schema=${document.URL}architecture/schema.json\n${this.arch_code}`
+    architecture_guide() {
+      if (!this.architecture_name) return undefined
+      return available_arch.find(
+        arch =>
+          arch.name === this.architecture_name ||
+          arch.alias.includes(this.architecture_name!),
+      )?.guide
     },
-  },
 
-  computed: {
     archCodeWSchema() {
       return `# yaml-language-server: $schema=${document.URL}architecture/schema.json\n${this.arch_code}`
     },
@@ -89,15 +90,21 @@ export default defineComponent({
       :fileData="archCodeWSchema"
       default-filename="architecture"
     />
-    <DownloadPopup id="save_architecture" type="architecture" title="Download Architecture" extension=".yml"
-      :fileData="arch_code" default-filename="architecture" />
 
     <!-- Architecture information with side-by-side layout -->
     <div class="architecture-layout">
       <!-- Left Sidebar: Overview -->
       <div class="sidebar-left">
-        <b-card no-body class="overview-card mb-3">
+        <!-- Architecture Guide Link -->
+        <div v-if="architecture_guide" class="architecture-guide-link">
+          <a :href="architecture_guide" target="_blank" class="guide-link">
+            <font-awesome-icon :icon="['fas', 'file-pdf']" />
+            <span>{{ architecture_name }} Guide</span>
+            <font-awesome-icon :icon="['fas', 'external-link-alt']" class="external-icon" />
+          </a>
+        </div>
 
+        <b-card no-body class="overview-card mb-3">
           <b-card-body class="p-3">
             <ArchConf :conf="architecture.config" />
           </b-card-body>
@@ -135,16 +142,7 @@ export default defineComponent({
               @click="activeTab = 'directives'"
             >
               <font-awesome-icon :icon="['fas', 'cogs']" />
-              <span>Directives</span>
-            </button>
-
-            <!-- Memory Layout Tab -->
-            <button
-              :class="['tab', { active: activeTab === 'memory_layout' }]"
-              @click="activeTab = 'memory_layout'"
-            >
-              <font-awesome-icon :icon="['fas', 'sitemap']" />
-              <span>Memory Layout</span>
+              <span>Assembler Directives</span>
             </button>
 
             <!-- Registers Tab -->
@@ -172,11 +170,6 @@ export default defineComponent({
           <!-- Directives definition -->
           <div v-if="activeTab === 'directives'">
             <Directives :directives="architecture.directives" />
-          </div>
-
-          <!-- Memory Layout -->
-          <div v-if="activeTab === 'memory_layout'">
-            <MemoryLayoutDiagram :memory_layout="architecture.memory_layout" :inverted="true" :show-gaps="true" />
           </div>
 
           <!-- Registers -->
@@ -264,6 +257,40 @@ export default defineComponent({
   }
 }
 
+.architecture-guide-link {
+  padding: 12px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+
+  .guide-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    background: var(--bs-primary);
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: color-mix(in srgb, var(--bs-primary) 90%, black);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .external-icon {
+      margin-left: auto;
+      font-size: 0.75rem;
+      opacity: 0.8;
+    }
+
+    svg:first-child {
+      font-size: 1rem;
+    }
+  }
+}
+
 .main-content {
   display: flex;
   flex-direction: column;
@@ -341,6 +368,10 @@ export default defineComponent({
     }
   }
 
+  .architecture-guide-link {
+    border-bottom-color: rgba(255, 255, 255, 0.12);
+  }
+
   .tabs-container {
     border-bottom-color: rgba(255, 255, 255, 0.12);
   }
@@ -366,28 +397,6 @@ export default defineComponent({
 @media (max-width: 1200px) {
   .architecture-layout {
     grid-template-columns: 240px 1fr;
-  }
-}
-
-@media (max-width: 992px) {
-  .architecture-layout {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto 1fr;
-  }
-
-  .sidebar-left {
-    flex-direction: row;
-    overflow-x: auto;
-    overflow-y: hidden;
-    border-right: none;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.07);
-
-    .card {
-      min-width: 250px;
-      flex-shrink: 0;
-      border-right: 1px solid rgba(0, 0, 0, 0.07);
-      border-bottom: none;
-    }
   }
 }
 </style>

@@ -157,6 +157,8 @@ function buildCompleteInstruction(instruction, template, mergedFields) {
         let fieldName = field.name;
         if (fieldName === "opcode") {
             fieldName = instruction.name;
+        } else if (fieldName === "instructionFormatting") {
+            fieldName = field.value;
         }
         const part = `${field.prefix || ""}${fieldName}${field.suffix || ""}`;
         return field.space === false ? part : part + " ";
@@ -372,19 +374,23 @@ function processPseudoInstructions(architectureObj) {
         }
 
         // Create signature_pretty: "name field0 field1 field2..."
-        const signaturePrettyParts = [pseudoinstruction.name];
-        for (let i = 0; i < fields.length; i++) {
-            let part = fields[i].name;
-            if (fields[i].prefix) part = fields[i].prefix + part;
-            if (fields[i].suffix) part += fields[i].suffix;
-            signaturePrettyParts.push(part);
+        const signaturePrettyParts = fields.map(field => {
+            const fieldName = field.name;
+            const part = `${field.prefix || ""}${fieldName}${field.suffix || ""}`;
+            return field.space === false ? part : part + " ";
+        });
+
+        let signaturePretty = pseudoinstruction.name + " " + signaturePrettyParts.join("").trimEnd();
+        // If the last character is a comma, remove it
+        if (signaturePretty.endsWith(",")) {
+            signaturePretty = signaturePretty.slice(0, -1);
         }
 
         // Create the full legacy pseudoinstruction object
         const legacyPseudoinstruction = {
             name: pseudoinstruction.name,
             signature_definition: signatureDefParts.join(" "),
-            signature_pretty: signaturePrettyParts.join(" "),
+            signature_pretty: signaturePretty,
             properties: [],
             nwords: 1,
             fields,

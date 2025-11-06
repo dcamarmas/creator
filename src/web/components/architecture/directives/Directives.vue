@@ -1,6 +1,6 @@
 <!--
 Copyright 2018-2025 Felix Garcia Carballeira, Diego Camarmas Alonso,
-                    Alejandro Calderon Mateos, Luis Daniel Casais Mezquida
+                    Alejandro Calderon Mateos, Jorge Ramos Santana
 
 This file is part of CREATOR.
 
@@ -49,7 +49,7 @@ export default defineComponent({
       class="directives-table"
       hover
       responsive
-      sticky-header="calc(100vh - 280px)"
+      sticky-header="100%"
     >
       <template v-slot:cell(name)="row">
         <code class="directive-name">{{ row.item.name }}</code>
@@ -68,16 +68,12 @@ export default defineComponent({
   font-size: 0.875rem;
 
   :deep(thead th) {
-    background-color: transparent;
     color: rgba(0, 0, 0, 0.8);
     font-weight: 600;
     border-bottom: 1px solid rgba(0, 0, 0, 0.07);
     border-top: none;
     border-left: none;
     border-right: none;
-    position: sticky;
-    top: 0;
-    z-index: 10;
     padding: 8px 12px;
     font-size: 0.8125rem;
 

@@ -1,6 +1,6 @@
 <!--
 Copyright 2018-2025 Felix Garcia Carballeira, Diego Camarmas Alonso,
-                    Alejandro Calderon Mateos, Luis Daniel Casais Mezquida
+                    Alejandro Calderon Mateos, Jorge Ramos Santana
 
 This file is part of CREATOR.
 
@@ -364,7 +364,7 @@ export default defineComponent({
     </template>
 
     <!-- Legend for field types -->
-    <div class="encoding-legend">
+    <!-- <div class="encoding-legend">
       <span class="legend-item" v-if="instruction.co">
         <span class="legend-color" style="background: rgba(255, 99, 71, 0.3)"></span>
         CO: {{ instruction.co }}
@@ -372,7 +372,7 @@ export default defineComponent({
       <span class="legend-item" v-if="isMultiWord">
         <span class="instruction-info">{{ instruction.nwords }} words</span>
       </span>
-    </div>
+    </div> -->
   </div>
 </template>
 

@@ -22,11 +22,14 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 <script lang="ts">
 import { defineComponent, type PropType, ref, onMounted, onUnmounted } from "vue"
 
-import ToolbarBtngroup from "./ToolbarBtngroup.vue"
+import SimulatorControls from "../simulator/SimulatorControls.vue"
+import AssemblyActions from "../assembly/AssemblyActions.vue"
+import MenuItems from "./MenuItems.vue"
 import SentinelErrorsDropdown from "../simulator/SentinelErrorsDropdown.vue"
 import type { Instruction } from "@/core/assembler/assembler"
 import type { BDropdown } from "bootstrap-vue-next"
 import { coreEvents, CoreEventTypes } from "@/core/events.mjs"
+import { remove_library } from "@/core/core.mjs"
 
 export default defineComponent({
   props: {
@@ -37,13 +40,14 @@ export default defineComponent({
     os: { type: String, required: false },
     dark: { type: Boolean, required: false, default: false },
     arch_available: { type: Array as PropType<AvailableArch[]>, required: false },
-    assembly_code: { type: String, required: false },
-    show_instruction_help: { type: Boolean, default: false },
+    autoscroll: { type: Boolean, required: false, default: false },
     instructions: Array as PropType<Instruction[]>,
   },
 
   components: {
-    ToolbarBtngroup,
+    SimulatorControls,
+    AssemblyActions,
+    MenuItems,
     SentinelErrorsDropdown,
   },
 
@@ -123,10 +127,11 @@ export default defineComponent({
     },
     handleDocumentClick(event: MouseEvent) {
       // Check if click is outside any dropdown
-      const isDropdownClick = event.target!.closest('.dropdown, .nav-item-dropdown')
+      const target = event.target as HTMLElement
+      const isDropdownClick = target?.closest('.dropdown, .nav-item, .dropdown-menu')
       if (!isDropdownClick) {
         this.hoverSwitchEnabled = false
-        this.openDropdown = null
+        this.closeAllDropdowns()
       }
     },
     handleDropdownShow(dropdownId: string) {
@@ -170,47 +175,43 @@ export default defineComponent({
         'helpDropdown'
       ]
       
-      dropdownRefs.forEach(refName => {
-        const dropdown = this.$refs[refName] as InstanceType<typeof BDropdown>
-        if (dropdown) {
-          if (dropdown.$el) {
-            const toggleBtn = dropdown.$el.querySelector('.dropdown-toggle')
-            if (toggleBtn && toggleBtn.getAttribute('aria-expanded') === 'true') {
-              toggleBtn.click()
-            }
-          }
-        }
-      })
+      dropdownRefs.forEach(refName => this.closeDropdown(refName))
       
       this.openDropdown = null
       this.hoverSwitchEnabled = false
     },
-    closeDropdown(dropdownId: string) {
+    toggleDropdown(dropdownId: string, shouldOpen: boolean) {
       const dropdown = this.$refs[dropdownId] as InstanceType<typeof BDropdown>
-      if (dropdown) {
-        if (dropdown.$el) {
-          const toggleBtn = dropdown.$el.querySelector('.dropdown-toggle')
-          if (toggleBtn && toggleBtn.getAttribute('aria-expanded') === 'true') {
-            toggleBtn.click()
-          }
+      if (dropdown?.$el) {
+        const toggleBtn = dropdown.$el.querySelector('.dropdown-toggle')
+        const isExpanded = toggleBtn?.getAttribute('aria-expanded') === 'true'
+        if (toggleBtn && isExpanded !== shouldOpen) {
+          toggleBtn.click()
         }
       }
     },
+    closeDropdown(dropdownId: string) {
+      this.toggleDropdown(dropdownId, false)
+    },
     openDropdownById(dropdownId: string) {
-      const dropdown = this.$refs[dropdownId] as InstanceType<typeof BDropdown>
-      if (dropdown) {
-        if (dropdown.$el) {
-          const toggleBtn = dropdown.$el.querySelector('.dropdown-toggle')
-          if (toggleBtn && toggleBtn.getAttribute('aria-expanded') === 'false') {
-            toggleBtn.click()
-          }
-        }
-      }
+      this.toggleDropdown(dropdownId, true)
     },
     setMobileView(view: 'code' | 'instructions' | 'data' | 'architecture' | 'settings') {
       this.mobileView = view
       // Emit event so parent components can react to view changes
       this.$emit('mobile-view-change', view)
+    },
+    // Simple action methods
+    changeUIMode(mode: string) {
+      if ((this.$root as any).creator_mode !== mode) {
+        (this.$root as any).creator_mode = mode
+      }
+    },
+    newAssembly() {
+      (this.$root as any).assembly_code = ""
+    },
+    removeLibrary() {
+      remove_library()
     },
   },
 })
@@ -221,8 +222,8 @@ export default defineComponent({
   <b-navbar toggleable="md" class="header py-3 top-navbar">
     <!-- Creator Dropdown Menu -->
     <b-navbar-nav class="creator-brand">
-      <b-nav-item-dropdown 
-        class="navMenu creator-menu" 
+      <b-nav-item-dropdown
+        class="navMenu creator-menu"
         no-caret
         no-animation
         ref="creatorDropdown"
@@ -235,41 +236,25 @@ export default defineComponent({
             Creator
           </span>
         </template>
-
-        <ToolbarBtngroup
-          v-if="architecture_name"
-          :group="['btn_architecture_info', 'divider']"
-          :browser="browser"
-          :os="os"
-          :dark="dark"
-          :architecture_name="architecture_name"
-          dropdown-mode
-          ref="creatorGroup1"
-        />
-        <ToolbarBtngroup
-          :group="['btn_home', 'btn_website', 'btn_github', 'divider', 'btn_configuration']"
-          :browser="browser"
-          :os="os"
-          :dark="dark"
-          dropdown-mode
-          ref="creatorGroup2"
+        
+        <MenuItems
+          :items="[
+            ...(architecture_name ? ['btn_architecture_info', 'divider'] : []),
+            'btn_home', 'btn_website', 'btn_github'
+          ]"
+          :architecture-name="architecture_name"
+          @item-clicked="closeDropdown('creatorDropdown')"
         />
       </b-nav-item-dropdown>
     </b-navbar-nav>
-
-    <b-navbar-toggle
-      target="nav_collapse"
-      aria-label="Open/Close menu"
-    />
     
-    <b-collapse is-nav id="nav_collapse">
       <!-- Main menu (left side) -->
       <b-navbar-nav class="me-auto">
         <!-- View Menu -->
-        <b-nav-item-dropdown 
-          v-if="showViewMenu" 
-          text="View" 
-          class="navMenu" 
+        <b-nav-item-dropdown
+          v-if="showViewMenu"
+          text="View"
+          class="navMenu"
           no-caret
           no-animation
           ref="viewDropdown"
@@ -277,41 +262,25 @@ export default defineComponent({
           @hide="handleDropdownHide('viewDropdown')"
           @mouseenter="handleDropdownHover('viewDropdown')"
         >
-          <ToolbarBtngroup
-            :group="['btn_assembly']"
-            :browser="browser"
-            :os="os"
-            :dark="dark"
-            :creator_mode="creator_mode"
-            dropdown-mode
-            ref="viewGroup2"
-          />
-          <ToolbarBtngroup
-            :group="['btn_simulator']"
-            :browser="browser"
-            :os="os"
-            :dark="dark"
-            :creator_mode="creator_mode"
-            dropdown-mode
-            ref="viewGroup3"
-          />
-          <ToolbarBtngroup
-            :group="['btn_architecture']"
-            :browser="browser"
-            :os="os"
-            :dark="dark"
-            :architectures="arch_available"
-            :creator_mode="creator_mode"
-            dropdown-mode
-            ref="viewGroup1"
-          />
+          <b-dropdown-item @click="changeUIMode('assembly')" :disabled="creator_mode === 'assembly'">
+            <font-awesome-icon :icon="['fas', 'hashtag']" class="me-2" />
+            Editor
+          </b-dropdown-item>
+          <b-dropdown-item @click="changeUIMode('simulator')" :disabled="creator_mode === 'simulator'">
+            <font-awesome-icon :icon="['fas', 'gears']" class="me-2" />
+            Simulator
+          </b-dropdown-item>
+          <b-dropdown-item @click="changeUIMode('architecture')" :disabled="creator_mode === 'architecture'">
+            <font-awesome-icon :icon="['fas', 'screwdriver-wrench']" class="me-2" />
+            Architecture
+          </b-dropdown-item>
         </b-nav-item-dropdown>
 
         <!-- File Menu (Assembly View) -->
-        <b-nav-item-dropdown 
-          v-if="showFileMenu" 
-          text="File" 
-          class="navMenu" 
+        <b-nav-item-dropdown
+          v-if="showFileMenu"
+          text="File"
+          class="navMenu"
           no-caret
           no-animation
           ref="fileDropdown"
@@ -319,22 +288,33 @@ export default defineComponent({
           @hide="handleDropdownHide('fileDropdown')"
           @mouseenter="handleDropdownHover('fileDropdown')"
         >
-          <ToolbarBtngroup
-            :group="['dropdown_assembly_file']"
-            :browser="browser"
-            :os="os"
-            :dark="dark"
-            :assembly_code="assembly_code"
-            dropdown-mode
-            ref="fileGroup"
-          />
+          <b-dropdown-item @click="newAssembly">
+            <font-awesome-icon :icon="['far', 'file']" class="me-2" />
+            New Assembly File
+          </b-dropdown-item>
+          <b-dropdown-item v-b-modal.load_assembly>
+            <font-awesome-icon :icon="['fas', 'upload']" class="me-2" />
+            Open File...
+          </b-dropdown-item>
+          <b-dropdown-item v-b-modal.save_assembly>
+            <font-awesome-icon :icon="['fas', 'download']" class="me-2" />
+            Save As...
+          </b-dropdown-item>
+          <b-dropdown-item v-b-modal.examples-assembly>
+            <font-awesome-icon :icon="['fas', 'file-lines']" class="me-2" />
+            Examples...
+          </b-dropdown-item>
+          <b-dropdown-item v-b-modal.make_uri>
+            <font-awesome-icon :icon="['fas', 'link']" class="me-2" />
+            Get code as URI...
+          </b-dropdown-item>
         </b-nav-item-dropdown>
 
         <!-- Architecture Menu (Architecture View)-->
-        <b-nav-item-dropdown 
-          v-if="showArchitectureMenu" 
-          text="Architecture" 
-          class="navMenu" 
+        <b-nav-item-dropdown
+          v-if="showArchitectureMenu"
+          text="Architecture"
+          class="navMenu"
           no-caret
           no-animation
           ref="architectureDropdown"
@@ -342,21 +322,21 @@ export default defineComponent({
           @hide="handleDropdownHide('architectureDropdown')"
           @mouseenter="handleDropdownHover('architectureDropdown')"
         >
-          <ToolbarBtngroup
-            :group="['btn_edit_architecture', 'btn_save_architecture']"
-            :browser="browser"
-            :os="os"
-            :dark="dark"
-            dropdown-mode
-            ref="archGroup"
-          />
+          <b-dropdown-item v-b-modal.edit_architecture>
+            <font-awesome-icon :icon="['fas', 'pen-to-square']" class="me-2" />
+            Edit Architecture
+          </b-dropdown-item>
+          <b-dropdown-item v-b-modal.save_architecture>
+            <font-awesome-icon :icon="['fas', 'download']" class="me-2" />
+            Save Architecture
+          </b-dropdown-item>
         </b-nav-item-dropdown>
 
         <!-- Library Menu (Assembly View) -->
-        <b-nav-item-dropdown 
-          v-if="showLibraryMenu" 
-          text="Library" 
-          class="navMenu" 
+        <b-nav-item-dropdown
+          v-if="showLibraryMenu"
+          text="Library"
+          class="navMenu"
           no-caret
           no-animation
           ref="libraryDropdown"
@@ -364,21 +344,25 @@ export default defineComponent({
           @hide="handleDropdownHide('libraryDropdown')"
           @mouseenter="handleDropdownHover('libraryDropdown')"
         >
-          <ToolbarBtngroup
-            :group="['dropdown_library', 'btn_library_tags']"
-            :browser="browser"
-            :os="os"
-            :dark="dark"
-            dropdown-mode
-            ref="libraryGroup"
-          />
+          <b-dropdown-item v-b-modal.load_binary>
+            <font-awesome-icon :icon="['fas', 'upload']" class="me-2" />
+            Load Library...
+          </b-dropdown-item>
+          <b-dropdown-item @click="removeLibrary">
+            <font-awesome-icon :icon="['fas', 'trash-can']" class="me-2" />
+            Remove Library
+          </b-dropdown-item>
+          <b-dropdown-item v-b-modal.library_tags>
+            <font-awesome-icon :icon="['fas', 'tags']" class="me-2" />
+            Library Tags...
+          </b-dropdown-item>
         </b-nav-item-dropdown>
 
         <!-- Tools Menu (Simulator View) -->
-        <b-nav-item-dropdown 
-          v-if="showExecuteMenu" 
-          text="Tools" 
-          class="navMenu" 
+        <b-nav-item-dropdown
+          v-if="showExecuteMenu"
+          text="Tools"
+          class="navMenu"
           no-caret
           no-animation
           ref="toolsDropdown"
@@ -386,20 +370,18 @@ export default defineComponent({
           @hide="handleDropdownHide('toolsDropdown')"
           @mouseenter="handleDropdownHover('toolsDropdown')"
         >
-          <ToolbarBtngroup
-            :group="['btn_flash', 'btn_calculator']"
-            :browser="browser"
-            :os="os"
-            :dark="dark"
-            dropdown-mode
-            ref="toolsGroup"
-          />
+          <b-dropdown-item v-b-modal.examples-simulator>
+            <font-awesome-icon :icon="['fas', 'file-lines']" class="me-2" />
+            Examples...
+          </b-dropdown-item>
+          <b-dropdown-divider />
+          <MenuItems :items="['btn_flash', 'btn_calculator']" @item-clicked="closeDropdown('toolsDropdown')" />
         </b-nav-item-dropdown>
 
         <!-- Help Menu -->
-        <b-nav-item-dropdown 
-          text="Help" 
-          class="navMenu" 
+        <b-nav-item-dropdown
+          text="Help"
+          class="navMenu"
           no-caret
           no-animation
           ref="helpDropdown"
@@ -407,51 +389,37 @@ export default defineComponent({
           @hide="handleDropdownHide('helpDropdown')"
           @mouseenter="handleDropdownHover('helpDropdown')"
         >
-          <ToolbarBtngroup
-            :group="show_instruction_help ? ['btn_help', 'btn_instruction_help', 'btn_notifications', 'divider'] : ['btn_help', 'btn_notifications', 'divider']"
-            :browser="browser"
-            :os="os"
-            :dark="dark"
-            dropdown-mode
-            ref="helpGroup1"
-          />
-          <ToolbarBtngroup
-            :group="['btn_feedback', 'btn_suggestions', 'divider', 'btn_institutions', 'btn_about']"
-            :browser="browser"
-            :os="os"
-            :dark="dark"
-            dropdown-mode
-            ref="helpGroup2"
+          <MenuItems
+            :items="[
+              'btn_help', 'divider',
+              'btn_feedback', 'btn_suggestions', 'divider', 'btn_institutions', 'btn_about'
+            ]"
+            @item-clicked="closeDropdown('helpDropdown')"
           />
         </b-nav-item-dropdown>
 
         <!-- Separator for buttons -->
         <div v-if="showExecuteMenu || showCompileButton" class="button-separator"></div>
 
-        <!-- Compile Button (Assembly View) -->
+        <!-- Compile Buttons (Assembly View) -->
         <b-nav-item v-if="showCompileButton" class="compile-item">
-          <ToolbarBtngroup
-            :group="['btn_assemble', 'btn_assemble_and_run', 'btn_vim_toggle']"
-            :browser="browser"
-            :os="os"
+          <AssemblyActions
             :dark="dark"
-            :show_instruction_help="show_instruction_help"
-            :instructions="instructions"
-            compact
-            ref="compileGroup"
+            mode="toolbar-split"
+            @change-mode="changeUIMode"
           />
         </b-nav-item>
 
         <!-- Execute Controls (Simulator View) -->
         <b-nav-item v-if="showExecuteMenu" class="execute-controls">
-          <ToolbarBtngroup
-            :group="['btn_reset', 'btn_instruction', 'btn_run', 'btn_stop']"
-            :browser="browser"
-            :os="os"
+          <SimulatorControls
+            ref="simulatorControls"
+            :instructions="instructions || []"
+            :autoscroll="autoscroll"
+            :os="os || ''"
+            :browser="browser || ''"
             :dark="dark"
-            :instructions="instructions"
-            compact
-            ref="executeGroup"
+            mode="toolbar"
           />
         </b-nav-item>
 
@@ -464,7 +432,27 @@ export default defineComponent({
         />
       </b-navbar-nav>
 
-    </b-collapse>
+      <!-- Right side actions -->
+      <b-navbar-nav class="ms-auto">
+        <!-- Notifications Button -->
+        <b-nav-item
+          v-b-modal.notifications
+          class="icon-button"
+          aria-label="Notifications"
+        >
+          <font-awesome-icon :icon="['fas', 'bell']" />
+        </b-nav-item>
+
+        <!-- Settings Button -->
+        <b-nav-item
+          v-b-modal.configuration
+          class="icon-button"
+          aria-label="Settings"
+        >
+          <font-awesome-icon :icon="['fas', 'cog']" />
+        </b-nav-item>
+      </b-navbar-nav>
+
   </b-navbar>
 
   <!-- Mobile bottom navbar (shown only on mobile) -->
@@ -705,6 +693,29 @@ export default defineComponent({
   margin: 0 0.75rem;
 }
 
+// Icon buttons (notifications, settings)
+.icon-button {
+  :deep(.nav-link) {
+    color: #6c757d;
+    transition: all 0.2s ease;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+
+
+    &:hover {
+      color: #2196f3;
+      background-color: rgba(33, 150, 243, 0.08);
+    }
+
+    &:active {
+      transform: scale(0.95);
+    }
+  }
+}
+
 // Dropdown menu styling
 :deep(.dropdown-menu) {
   border-radius: 8px;
@@ -768,6 +779,18 @@ export default defineComponent({
 
   .button-separator {
     background-color: rgba(255, 255, 255, 0.12);
+  }
+
+  // Icon buttons in dark mode
+  .icon-button {
+    :deep(.nav-link) {
+      color: #adb5bd;
+
+      &:hover {
+        color: #64b5f6;
+        background-color: rgba(100, 181, 246, 0.12);
+      }
+    }
   }
 
   :deep(.navbar-toggler) {

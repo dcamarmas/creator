@@ -89,12 +89,14 @@ const handleDeleteArchitecture = (arch_name: string) => {
 
 <style lang="scss" scoped>
 #load_menu {
-  min-height: 100vh;
+  height: calc(100vh - 40px); /* Account for navbar height */
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start; /* Start from top instead of center */
   align-items: center;
   padding: 2rem 0;
+  overflow-y: auto; /* Enable vertical scrolling */
+  overflow-x: hidden;
 }
 
 #load_menu_arch {
