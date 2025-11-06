@@ -18,122 +18,509 @@ import {
 // Comprehensive tests for checkTypeIEEE function
 // Testing all IEEE 754 floating-point classifications
 
-Deno.test("checkTypeIEEE - positive zero (+0): s=0, e=0, m=0", () => {
-    assertEquals(checkTypeIEEE(0, 0, 0), 16); // 1 << 4
+Deno.test("checkTypeIEEE - float - positive zero (+0): s=0, e=0, m=0", () => {
+    assertEquals(checkTypeIEEE("0", "00000000", "00000000000000000000000"), 16); // 1 << 4
+});
+Deno.test("checkTypeIEEE - double - positive zero (+0): s=0, e=0, m=0", () => {
+    assertEquals(
+        checkTypeIEEE(
+            "0",
+            "00000000000",
+            "0000000000000000000000000000000000000000000000000000",
+        ),
+        16,
+    ); // 1 << 4
 });
 
-Deno.test("checkTypeIEEE - negative zero (-0): s=1, e=0, m=0", () => {
-    assertEquals(checkTypeIEEE(1, 0, 0), 8); // 1 << 3
+Deno.test("checkTypeIEEE - float - negative zero (-0): s=1, e=0, m=0", () => {
+    assertEquals(checkTypeIEEE("1", "00000000", "00000000000000000000000"), 8); // 1 << 3
 });
-
-Deno.test("checkTypeIEEE - positive normalized number: s=0, e=127, m=1", () => {
-    assertEquals(checkTypeIEEE(0, 127, 1), 64); // 1 << 6
-});
-
-Deno.test("checkTypeIEEE - negative normalized number: s=1, e=127, m=1", () => {
-    assertEquals(checkTypeIEEE(1, 127, 1), 2); // 1 << 1
+Deno.test("checkTypeIEEE - double - negative zero (-0): s=1, e=0, m=0", () => {
+    assertEquals(
+        checkTypeIEEE(
+            "1",
+            "00000000000",
+            "0000000000000000000000000000000000000000000000000000",
+        ),
+        8,
+    ); // 1 << 3
 });
 
 Deno.test(
-    "checkTypeIEEE - positive subnormal (denormalized): s=0, e=0, m=1",
+    "checkTypeIEEE - float - positive normalized number: s=0, e=127, m=1",
     () => {
-        assertEquals(checkTypeIEEE(0, 0, 1), 32); // 1 << 5
+        assertEquals(
+            checkTypeIEEE("0", "01111111", "00000000000000000000001"),
+            64,
+        ); // 1 << 6
+    },
+);
+Deno.test(
+    "checkTypeIEEE - double - positive normalized number: s=0, e=1023, m=1",
+    () => {
+        assertEquals(
+            checkTypeIEEE(
+                "0",
+                "01111111111",
+                "0000000000000000000000000000000000000000000000000001",
+            ),
+            64,
+        ); // 1 << 6
     },
 );
 
 Deno.test(
-    "checkTypeIEEE - negative subnormal (denormalized): s=1, e=0, m=1",
+    "checkTypeIEEE - float - negative normalized number: s=1, e=127, m=1",
     () => {
-        assertEquals(checkTypeIEEE(1, 0, 1), 4); // 1 << 2
+        assertEquals(
+            checkTypeIEEE("1", "01111111", "00000000000000000000001"),
+            2,
+        ); // 1 << 1
+    },
+);
+Deno.test(
+    "checkTypeIEEE - double - negative normalized number: s=1, e=1023, m=1",
+    () => {
+        assertEquals(
+            checkTypeIEEE(
+                "1",
+                "01111111111",
+                "0000000000000000000000000000000000000000000000000001",
+            ),
+            2,
+        ); // 1 << 1
     },
 );
 
-Deno.test("checkTypeIEEE - positive infinity: s=0, e=255, m=0", () => {
-    assertEquals(checkTypeIEEE(0, 255, 0), 128); // 1 << 7
-});
+Deno.test(
+    "checkTypeIEEE - float - positive subnormal (denormalized): s=0, e=0, m=1",
+    () => {
+        assertEquals(
+            checkTypeIEEE("0", "00000000", "00000000000000000000001"),
+            32,
+        ); // 1 << 5
+    },
+);
+Deno.test(
+    "checkTypeIEEE - double - positive subnormal (denormalized): s=0, e=0, m=1",
+    () => {
+        assertEquals(
+            checkTypeIEEE(
+                "0",
+                "00000000000",
+                "0000000000000000000000000000000000000000000000000001",
+            ),
+            32,
+        ); // 1 << 5
+    },
+);
 
-Deno.test("checkTypeIEEE - negative infinity: s=1, e=255, m=0", () => {
-    assertEquals(checkTypeIEEE(1, 255, 0), 1); // 1 << 0
-});
+Deno.test(
+    "checkTypeIEEE - float - negative subnormal (denormalized): s=1, e=0, m=1",
+    () => {
+        assertEquals(
+            checkTypeIEEE("1", "00000000", "00000000000000000000001"),
+            4,
+        ); // 1 << 2
+    },
+);
+Deno.test(
+    "checkTypeIEEE - double - negative subnormal (denormalized): s=1, e=0, m=1",
+    () => {
+        assertEquals(
+            checkTypeIEEE(
+                "1",
+                "00000000000",
+                "0000000000000000000000000000000000000000000000000001",
+            ),
+            4,
+        ); // 1 << 2
+    },
+);
 
-Deno.test("checkTypeIEEE - positive NaN: s=0, e=255, m=1", () => {
-    assertEquals(checkTypeIEEE(0, 255, 1), 512); // 1 << 9
+Deno.test("checkTypeIEEE - float - positive infinity: s=0, e=255, m=0", () => {
+    assertEquals(
+        checkTypeIEEE("0", "11111111", "00000000000000000000000"),
+        128,
+    ); // 1 << 7
 });
+Deno.test(
+    "checkTypeIEEE - double - positive infinity: s=0, e=2047, m=0",
+    () => {
+        assertEquals(
+            checkTypeIEEE(
+                "0",
+                "11111111111",
+                "0000000000000000000000000000000000000000000000000000",
+            ),
+            128,
+        ); // 1 << 7
+    },
+);
 
-Deno.test("checkTypeIEEE - negative NaN: s=1, e=255, m=1", () => {
-    assertEquals(checkTypeIEEE(1, 255, 1), 256); // 1 << 8
+Deno.test("checkTypeIEEE - float - negative infinity: s=1, e=255, m=0", () => {
+    assertEquals(checkTypeIEEE("1", "11111111", "00000000000000000000000"), 1); // 1 << 0
+});
+Deno.test(
+    "checkTypeIEEE - double - negative infinity: s=1, e=2047, m=0",
+    () => {
+        assertEquals(
+            checkTypeIEEE(
+                "1",
+                "11111111111",
+                "0000000000000000000000000000000000000000000000000000",
+            ),
+            1,
+        ); // 1 << 0
+    },
+);
+
+Deno.test("checkTypeIEEE - float - quiet NaN: s=0, e=255, m=4194305", () => {
+    assertEquals(
+        checkTypeIEEE("0", "11111111", "10000000000000000000001"),
+        512,
+    ); // 1 << 9
+});
+Deno.test("checkTypeIEEE - float - quiet NaN: s=1, e=255, m=4194305", () => {
+    assertEquals(
+        checkTypeIEEE("1", "11111111", "10000000000000000000001"),
+        512,
+    ); // 1 << 9
+});
+Deno.test(
+    "checkTypeIEEE - double - quiet NaN: s=0, e=2047, m=2251799813685249",
+    () => {
+        assertEquals(
+            checkTypeIEEE(
+                "0",
+                "11111111111",
+                "1000000000000000000000000000000000000000000000000001",
+            ),
+            512,
+        ); // 1 << 9
+    },
+);
+Deno.test(
+    "checkTypeIEEE - double - quiet NaN: s=1, e=2047, m=2251799813685249",
+    () => {
+        assertEquals(
+            checkTypeIEEE(
+                "1",
+                "11111111111",
+                "1000000000000000000000000000000000000000000000000001",
+            ),
+            512,
+        ); // 1 << 9
+    },
+);
+
+Deno.test("checkTypeIEEE - float - signaling NaN: s=0, e=255, m=1", () => {
+    assertEquals(
+        checkTypeIEEE("0", "11111111", "00000000000000000000001"),
+        256,
+    ); // 1 << 8
+});
+Deno.test("checkTypeIEEE - float - signaling NaN: s=1, e=255, m=1", () => {
+    assertEquals(
+        checkTypeIEEE("1", "11111111", "00000000000000000000001"),
+        256,
+    ); // 1 << 8
+});
+Deno.test("checkTypeIEEE - double - signaling NaN: s=0, e=2047, m=1", () => {
+    assertEquals(
+        checkTypeIEEE(
+            "0",
+            "11111111111",
+            "0000000000000000000000000000000000000000000000000001",
+        ),
+        256,
+    ); // 1 << 8
+});
+Deno.test("checkTypeIEEE - double - signaling NaN: s=1, e=2047, m=1", () => {
+    assertEquals(
+        checkTypeIEEE(
+            "1",
+            "11111111111",
+            "0000000000000000000000000000000000000000000000000001",
+        ),
+        256,
+    ); // 1 << 8
 });
 
 // Edge cases with different mantissa values
 Deno.test(
-    "checkTypeIEEE - positive subnormal with large mantissa: s=0, e=0, m=8388607",
+    "checkTypeIEEE - float - positive subnormal with large mantissa: s=0, e=0, m=8388607",
     () => {
-        assertEquals(checkTypeIEEE(0, 0, 8388607), 32); // 1 << 5 (still subnormal)
+        assertEquals(
+            checkTypeIEEE("0", "00000000", "11111111111111111111111"),
+            32,
+        ); // 1 << 5 (still subnormal)
+    },
+);
+Deno.test(
+    "checkTypeIEEE - double - positive subnormal with large mantissa: s=0, e=0, m=4503599627370495",
+    () => {
+        assertEquals(
+            checkTypeIEEE(
+                "0",
+                "00000000000",
+                "1111111111111111111111111111111111111111111111111111",
+            ),
+            32,
+        ); // 1 << 5 (still subnormal)
     },
 );
 
 Deno.test(
-    "checkTypeIEEE - negative subnormal with large mantissa: s=1, e=0, m=8388607",
+    "checkTypeIEEE - float - negative subnormal with large mantissa: s=1, e=0, m=8388607",
     () => {
-        assertEquals(checkTypeIEEE(1, 0, 8388607), 4); // 1 << 2 (still subnormal)
+        assertEquals(
+            checkTypeIEEE("1", "00000000", "11111111111111111111111"),
+            4,
+        ); // 1 << 2 (still subnormal)
+    },
+);
+Deno.test(
+    "checkTypeIEEE - double - negative subnormal with large mantissa: s=1, e=0, m=4503599627370495",
+    () => {
+        assertEquals(
+            checkTypeIEEE(
+                "1",
+                "00000000000",
+                "1111111111111111111111111111111111111111111111111111",
+            ),
+            4,
+        ); // 1 << 2 (still subnormal)
     },
 );
 
 Deno.test(
-    "checkTypeIEEE - positive NaN with large mantissa: s=0, e=255, m=8388607",
+    "checkTypeIEEE - float - quiet NaN with large mantissa: s=0, e=255, m=8388607",
     () => {
-        assertEquals(checkTypeIEEE(0, 255, 8388607), 512); // 1 << 9 (still NaN)
+        assertEquals(
+            checkTypeIEEE("0", "11111111", "11111111111111111111111"),
+            512,
+        ); // 1 << 9 (still NaN)
+    },
+);
+Deno.test(
+    "checkTypeIEEE - float - quiet NaN with large mantissa: s=1, e=255, m=8388607",
+    () => {
+        assertEquals(
+            checkTypeIEEE("1", "11111111", "11111111111111111111111"),
+            512,
+        ); // 1 << 9 (still NaN)
+    },
+);
+Deno.test(
+    "checkTypeIEEE - double - quiet NaN with large mantissa: s=0, e=2047, m=4503599627370495",
+    () => {
+        assertEquals(
+            checkTypeIEEE(
+                "0",
+                "11111111111",
+                "1111111111111111111111111111111111111111111111111111",
+            ),
+            512,
+        ); // 1 << 9 (still NaN)
+    },
+);
+Deno.test(
+    "checkTypeIEEE - double - quiet NaN with large mantissa: s=1, e=2047, m=4503599627370495",
+    () => {
+        assertEquals(
+            checkTypeIEEE(
+                "1",
+                "11111111111",
+                "1111111111111111111111111111111111111111111111111111",
+            ),
+            512,
+        ); // 1 << 9 (still NaN)
     },
 );
 
 Deno.test(
-    "checkTypeIEEE - negative NaN with large mantissa: s=1, e=255, m=8388607",
+    "checkTypeIEEE - float - signaling NaN with large mantissa: s=0, e=255, m=4194303",
     () => {
-        assertEquals(checkTypeIEEE(1, 255, 8388607), 256); // 1 << 8 (still NaN)
+        assertEquals(
+            checkTypeIEEE("0", "11111111", "01111111111111111111111"),
+            256,
+        ); // 1 << 8 (still NaN)
+    },
+);
+Deno.test(
+    "checkTypeIEEE - float - signaling NaN with large mantissa: s=1, e=255, m=4194303",
+    () => {
+        assertEquals(
+            checkTypeIEEE("1", "11111111", "01111111111111111111111"),
+            256,
+        ); // 1 << 8 (still NaN)
+    },
+);
+Deno.test(
+    "checkTypeIEEE - double - signaling NaN with large mantissa: s=0, e=2047, m=2251799813685247",
+    () => {
+        assertEquals(
+            checkTypeIEEE(
+                "0",
+                "11111111111",
+                "0111111111111111111111111111111111111111111111111111",
+            ),
+            256,
+        ); // 1 << 8 (still NaN)
+    },
+);
+Deno.test(
+    "checkTypeIEEE - double - signaling NaN with large mantissa: s=1, e=2047, m=2251799813685247",
+    () => {
+        assertEquals(
+            checkTypeIEEE(
+                "1",
+                "11111111111",
+                "0111111111111111111111111111111111111111111111111111",
+            ),
+            256,
+        ); // 1 << 8 (still NaN)
     },
 );
 
 // Test with minimum and maximum normal exponents
 Deno.test(
-    "checkTypeIEEE - positive normalized with min exponent: s=0, e=1, m=0",
+    "checkTypeIEEE - float - positive normalized with min exponent: s=0, e=1, m=0",
     () => {
-        assertEquals(checkTypeIEEE(0, 1, 0), 64); // 1 << 6
+        assertEquals(
+            checkTypeIEEE("0", "00000001", "00000000000000000000000"),
+            64,
+        ); // 1 << 6
+    },
+);
+Deno.test(
+    "checkTypeIEEE - double - positive normalized with min exponent: s=0, e=1, m=0",
+    () => {
+        assertEquals(
+            checkTypeIEEE(
+                "0",
+                "00000000001",
+                "0000000000000000000000000000000000000000000000000000",
+            ),
+            64,
+        ); // 1 << 6
     },
 );
 
 Deno.test(
-    "checkTypeIEEE - negative normalized with min exponent: s=1, e=1, m=0",
+    "checkTypeIEEE - float - negative normalized with min exponent: s=1, e=1, m=0",
     () => {
-        assertEquals(checkTypeIEEE(1, 1, 0), 2); // 1 << 1
+        assertEquals(
+            checkTypeIEEE("1", "00000001", "00000000000000000000000"),
+            2,
+        ); // 1 << 1
+    },
+);
+Deno.test(
+    "checkTypeIEEE - double - negative normalized with min exponent: s=1, e=1, m=0",
+    () => {
+        assertEquals(
+            checkTypeIEEE(
+                "1",
+                "00000000001",
+                "0000000000000000000000000000000000000000000000000000",
+            ),
+            2,
+        ); // 1 << 1
     },
 );
 
 Deno.test(
-    "checkTypeIEEE - positive normalized with max exponent: s=0, e=254, m=8388607",
+    "checkTypeIEEE - float - positive normalized with max exponent: s=0, e=254, m=8388607",
     () => {
-        assertEquals(checkTypeIEEE(0, 254, 8388607), 64); // 1 << 6
+        assertEquals(
+            checkTypeIEEE("0", "11111110", "11111111111111111111111"),
+            64,
+        ); // 1 << 6
+    },
+);
+Deno.test(
+    "checkTypeIEEE - double - positive normalized with max exponent: s=0, e=2046, m=4503599627370495",
+    () => {
+        assertEquals(
+            checkTypeIEEE(
+                "0",
+                "11111111110",
+                "1111111111111111111111111111111111111111111111111111",
+            ),
+            64,
+        ); // 1 << 6
     },
 );
 
 Deno.test(
-    "checkTypeIEEE - negative normalized with max exponent: s=1, e=254, m=8388607",
+    "checkTypeIEEE - float - negative normalized with max exponent: s=1, e=254, m=8388607",
     () => {
-        assertEquals(checkTypeIEEE(1, 254, 8388607), 2); // 1 << 1
+        assertEquals(
+            checkTypeIEEE("1", "11111110", "11111111111111111111111"),
+            2,
+        ); // 1 << 1
+    },
+);
+Deno.test(
+    "checkTypeIEEE - double - negative normalized with max exponent: s=1, e=2046, m=4503599627370495",
+    () => {
+        assertEquals(
+            checkTypeIEEE(
+                "1",
+                "11111111110",
+                "1111111111111111111111111111111111111111111111111111",
+            ),
+            2,
+        ); // 1 << 1
     },
 );
 
 // Test boundary conditions
 Deno.test(
-    "checkTypeIEEE - positive normalized with zero mantissa: s=0, e=100, m=0",
+    "checkTypeIEEE - float - positive normalized with zero mantissa: s=0, e=100, m=0",
     () => {
-        assertEquals(checkTypeIEEE(0, 100, 0), 64); // 1 << 6
+        assertEquals(
+            checkTypeIEEE("0", "01100100", "00000000000000000000000"),
+            64,
+        ); // 1 << 6
+    },
+);
+Deno.test(
+    "checkTypeIEEE - double - positive normalized with zero mantissa: s=0, e=100, m=0",
+    () => {
+        assertEquals(
+            checkTypeIEEE(
+                "0",
+                "00001100100",
+                "0000000000000000000000000000000000000000000000000000",
+            ),
+            64,
+        ); // 1 << 6
     },
 );
 
 Deno.test(
-    "checkTypeIEEE - negative normalized with zero mantissa: s=1, e=100, m=0",
+    "checkTypeIEEE - float - negative normalized with zero mantissa: s=1, e=100, m=0",
     () => {
-        assertEquals(checkTypeIEEE(1, 100, 0), 2); // 1 << 1
+        assertEquals(
+            checkTypeIEEE("1", "01100100", "00000000000000000000000"),
+            2,
+        ); // 1 << 1
+    },
+);
+Deno.test(
+    "checkTypeIEEE - double - negative normalized with zero mantissa: s=1, e=100, m=0",
+    () => {
+        assertEquals(
+            checkTypeIEEE(
+                "1",
+                "00001100100",
+                "0000000000000000000000000000000000000000000000000000",
+            ),
+            2,
+        ); // 1 << 1
     },
 );
 

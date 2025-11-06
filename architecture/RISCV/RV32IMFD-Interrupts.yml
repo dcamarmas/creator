@@ -2270,9 +2270,9 @@ instructions:
       definition: |
         let a = CAPI.FP.float2bin(registers[rs1]);
         registers[rd] = CAPI.FP.check_ieee(
-          parseInt(a[0]),
-          parseInt(a.slice(1, 9), 2),
-          parseInt(a.slice(10), 2),
+          a[0],
+          a.slice(1, 9),
+          a.slice(10),
         );
       help: Examines the value in floating-point register rs1 and writes to integer register rd a 10-bit mask that indicates the class of the floating-point number. The corresponding bit in rd will be set if the property is true and clear otherwise. All other bits in rd are cleared. Note that exactly one bit in rd will be set.
     - name: fcvt.s.w
@@ -2935,11 +2935,11 @@ instructions:
           registers[rd] = CAPI.ARCH.toBigInt(result, "float64");
         }
       definition: |
-        let a = CAPI.FP.float2bin(rs1Number);
+        let a = CAPI.FP.double2bin(rs1Number);
         registers[rd] = CAPI.FP.check_ieee(
-          parseInt(a[0]),
-          parseInt(a.slice(1, 12), 2),
-          parseInt(a.slice(13), 2),
+          a[0],
+          a.slice(1, 12),
+          a.slice(13),
         );
       help: Examines the value in double-precision floating-point register rs1 and writes to integer register rd a 10-bit mask that indicates the class of the floating-point number. The corresponding bit in rd will be set if the property is true and clear otherwise. All other bits in rd are cleared. Note that exactly one bit in rd will be set.
     - name: fcvt.d.s
