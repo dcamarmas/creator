@@ -26,6 +26,7 @@ import { resetStats } from "@/core/executor/stats.mts"
 import { instructions } from "@/core/assembler/assembler.mjs"
 import { show_notification, storeBackup } from "@/web/utils.mjs"
 import { assemblerMap, getDefaultCompiler } from "@/web/assemblers"
+import { creator_ga } from "@/core/utils/creator_ga.mjs"
 
 // State for dropdown visibility
 const dropdownOpen = ref(false)
@@ -33,8 +34,8 @@ const dropdownOpen = ref(false)
 defineProps({
   dark: {
     type: Boolean,
-    default: false
-  }
+    default: false,
+  },
 })
 
 const emit = defineEmits<{
@@ -52,7 +53,7 @@ const showAssemblyError = useToggle("modalAssemblyError").show
 // Computed
 const compilerOptions = computed(() => {
   const assemblers = architecture?.config?.assemblers || []
-  
+
   if (assemblers.length === 0) {
     return [{ value: "CreatorCompiler", text: "CREATOR" }]
   }
@@ -75,16 +76,20 @@ const selectedCompilerLabel = computed(() => {
 })
 
 // Watch for architecture changes
-watch(defaultCompiler, (newCompiler) => {
-  if (newCompiler) {
-    selectedCompiler.value = newCompiler
-  }
-}, { immediate: true })
+watch(
+  defaultCompiler,
+  newCompiler => {
+    if (newCompiler) {
+      selectedCompiler.value = newCompiler
+    }
+  },
+  { immediate: true },
+)
+
+const root = (document as any).app
 
 // Methods
 async function assembly_compiler_only() {
-  const root = (document as any).app
-
   // Reset simulator
   root.keyboard = ""
   root.display = ""
@@ -174,11 +179,23 @@ async function assembly_compiler() {
         entrypoint._rowVariant = "success"
       }
       // Change to simulator view and run
-      emit('changeMode', 'simulator')
+      emit("changeMode", "simulator")
       break
   }
 
   storeBackup()
+}
+
+function toggleVim() {
+  root.vim_mode = !root.vim_mode
+  localStorage.setItem("conf_vim_mode", root.vim_mode.toString())
+
+  // Google Analytics
+  creator_ga(
+    "configuration",
+    "configuration.vim_mode",
+    "configuration.vim_mode." + root.vim_mode,
+  )
 }
 
 function compile_error(msg: string) {
@@ -199,61 +216,76 @@ function compile_error(msg: string) {
       <div class="split-button-group">
         <button
           class="asm-button split-main"
-          :class="{ 
-            'asm-button-dark': dark, 
-            'assembled-success': isAssembled 
+          :class="{
+            'asm-button-dark': dark,
+            'assembled-success': isAssembled,
           }"
           :disabled="compiling"
           @click="assembly_compiler_only"
         >
-          <font-awesome-icon :icon="isAssembled ? ['fas', 'check'] : ['fas', 'hammer']" class="icon-spacing" />
-          <span class="button-text">Assemble ({{ selectedCompilerLabel }})</span>
+          <font-awesome-icon
+            :icon="isAssembled ? ['fas', 'check'] : ['fas', 'hammer']"
+            class="icon-spacing"
+          />
+          <span class="button-text"
+            >Assemble ({{ selectedCompilerLabel }})</span
+          >
           <span v-if="compiling" class="spinner" />
         </button>
         <button
           class="asm-button split-toggle"
-          :class="{ 
-            'asm-button-dark': dark, 
+          :class="{
+            'asm-button-dark': dark,
             'assembled-success': isAssembled,
-            'open': dropdownOpen
+            open: dropdownOpen,
           }"
           :disabled="compiling"
           @click="dropdownOpen = !dropdownOpen"
-          @blur="setTimeout(() => dropdownOpen = false, 200)"
+          @blur="setTimeout(() => (dropdownOpen = false), 200)"
         >
           <font-awesome-icon :icon="['fas', 'chevron-down']" />
         </button>
       </div>
-      
+
+      <!--
       <div v-if="dropdownOpen" class="dropdown-menu">
         <button
           v-for="option in compilerOptions"
           :key="option.value"
           class="dropdown-item"
-          @click="selectedCompiler = option.value; dropdownOpen = false"
+          @click="
+            selectedCompiler = option.value
+            dropdownOpen = false
+          "
         >
-          <font-awesome-icon 
-            :icon="['fas', 'check']" 
-            class="icon-spacing" 
-            v-if="selectedCompiler === option.value" 
+          <font-awesome-icon
+            :icon="['fas', 'check']"
+            class="icon-spacing"
+            v-if="selectedCompiler === option.value"
           />
-          <span :class="{ 'indent': selectedCompiler !== option.value }">{{ option.text }}</span>
+          <span :class="{ indent: selectedCompiler !== option.value }">{{
+            option.text
+          }}</span>
         </button>
       </div>
+      -->
     </div>
 
     <!-- Simple assemble button (when only one compiler) -->
     <button
       v-else
       class="asm-button"
-      :class="{ 
-        'asm-button-dark': dark, 
-        'assembled-success': isAssembled 
+      :class="{
+        'asm-button-dark': dark,
+        'assembled-success': isAssembled,
       }"
       :disabled="compiling"
       @click="assembly_compiler_only"
     >
-      <font-awesome-icon :icon="isAssembled ? ['fas', 'check'] : ['fas', 'hammer']" class="icon-spacing" />
+      <font-awesome-icon
+        :icon="isAssembled ? ['fas', 'check'] : ['fas', 'hammer']"
+        class="icon-spacing"
+      />
       <span class="button-text">Assemble</span>
       <span v-if="compiling" class="spinner" />
     </button>
@@ -265,9 +297,25 @@ function compile_error(msg: string) {
       :disabled="compiling"
       @click="assembly_compiler"
     >
-      <font-awesome-icon :icon="['fas', 'right-to-bracket']" class="icon-spacing" />
+      <font-awesome-icon
+        :icon="['fas', 'right-to-bracket']"
+        class="icon-spacing"
+      />
       <span class="button-text">Assemble & Run</span>
       <span v-if="compiling" class="spinner" />
+    </button>
+
+    <!-- Vim mode -->
+    <button
+      class="asm-button"
+      :class="{ 'asm-button-dark': dark }"
+      @click="toggleVim"
+    >
+      <font-awesome-icon
+        :icon="['fa-brands', 'vimeo-v']"
+        class="icon-spacing"
+      />
+      <span class="button-text">Vim: {{ root.vim_mode ? "on" : "off" }}</span>
     </button>
   </div>
 </template>
@@ -338,7 +386,7 @@ function compile_error(msg: string) {
   &.assembled-success {
     background-color: #198754;
     color: white;
-    
+
     &:hover:not(:disabled) {
       background-color: #157347;
     }
