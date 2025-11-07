@@ -399,18 +399,6 @@ export default defineComponent({
             class="setting-select"
           />
         </div>
-
-        <div class="setting-item">
-          <div class="setting-label">
-            <font-awesome-icon :icon="['fas', 'dot-circle']" />
-            Float Format
-          </div>
-          <b-form-select
-            v-model="reg_representation_float_value"
-            :options="reg_representation_float_options"
-            class="setting-select"
-          />
-        </div>
       </div>
     </div>
   </div>
@@ -442,12 +430,14 @@ export default defineComponent({
 }
 
 .mobile-settings-header {
-  padding: 1rem;
+  padding: 0.5rem;
   border-bottom: 1px solid var(--bs-border-color);
   background-color: var(--bs-body-bg);
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 0.75rem;
+  flex-shrink: 0;
+  min-height: 60px; // Match height of headers with buttons (44px button + 8px padding top + 8px padding bottom)
 
   .settings-title {
     margin: 0;
@@ -610,7 +600,11 @@ export default defineComponent({
 // Responsive adjustments
 @media (max-width: 480px) {
   .mobile-settings-header {
-    padding: 0.75rem;
+    padding: 0.5rem;
+
+    .settings-title {
+      font-size: 1.1rem;
+    }
   }
 
   .mobile-settings-content {

@@ -19,11 +19,11 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
-import { defineComponent, type PropType } from "vue"
+import { defineComponent } from "vue"
 import { assembly_compile, status, architecture } from "@/core/core.mjs"
 import { resetStats } from "@/core/executor/stats.mts"
 import { assemblerMap, getDefaultCompiler } from "@/web/assemblers"
-import TextareaAssembly from "@/web/components/assembly/TextareaAssembly.vue"
+import MobileEditor from "@/web/components/assembly/MobileEditor.vue"
 import Examples from "@/web/components/assembly/Examples.vue"
 import MobileInstructionHelp from "@/web/components/mobile/MobileInstructionHelp.vue"
 import LoadLibrary from "@/web/components/assembly/LoadLibrary.vue"
@@ -33,11 +33,6 @@ export default defineComponent({
   props: {
     architecture_name: { type: String, required: true },
     assembly_code: { type: String, required: true },
-    vim_mode: { type: Boolean, required: true },
-    vim_custom_keybinds: {
-      type: Array as PropType<VimKeybind[]>,
-      required: true,
-    },
     dark: { type: [Boolean, null], required: true },
   },
 
@@ -51,7 +46,7 @@ export default defineComponent({
   ],
 
   components: {
-    TextareaAssembly,
+    MobileEditor,
     Examples,
     MobileInstructionHelp,
     LoadLibrary,
@@ -135,7 +130,6 @@ export default defineComponent({
           <font-awesome-icon :icon="['fas', 'code']" />
           Assembly
         </h3>
-        <span class="architecture-badge">{{ architecture_name }}</span>
       </div>
 
       <div class="code-actions">
@@ -182,22 +176,12 @@ export default defineComponent({
     </div>
 
     <div class="mobile-code-editor">
-      <TextareaAssembly
+      <MobileEditor
         :os="'mobile'"
         :assembly_code="code"
-        :vim_mode="vim_mode"
-        :vim_custom_keybinds="vim_custom_keybinds"
         height="100%"
         :dark="dark || false"
       />
-    </div>
-
-    <!-- Mobile keyboard helper -->
-    <div class="mobile-keyboard-hint" v-if="vim_mode">
-      <small class="text-muted">
-        <font-awesome-icon :icon="['fas', 'keyboard']" />
-        Vim mode active - Tap editor to focus
-      </small>
     </div>
   </div>
 
@@ -247,7 +231,7 @@ export default defineComponent({
 }
 
 .mobile-code-header {
-  padding: 1rem;
+  padding: 0.5rem;
   border-bottom: 1px solid var(--bs-border-color);
   background-color: var(--bs-body-bg);
   display: flex;
@@ -260,6 +244,7 @@ export default defineComponent({
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
+    align-self: center;
 
     .code-title {
       margin: 0;
@@ -392,7 +377,7 @@ export default defineComponent({
 // Mobile optimizations
 @media (max-width: 480px) {
   .mobile-code-header {
-    padding: 0.75rem;
+    padding: 0.5rem;
 
     .code-info {
       .code-title {
@@ -413,10 +398,15 @@ export default defineComponent({
 
 // Touch-friendly interactions
 @media (hover: none) and (pointer: coarse) {
-  .assemble-btn,
-  .menu-btn {
-    min-height: 44px; // Minimum touch target
-    padding: 0.6rem 1.2rem;
+  .mobile-code-header {
+    :deep(.btn) {
+      min-height: 44px; // Minimum touch target
+    }
+    
+    :deep(.dropdown-toggle) {
+      min-height: 44px; // Minimum touch target
+      min-width: 44px;
+    }
   }
 }
 </style>

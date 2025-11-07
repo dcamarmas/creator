@@ -150,6 +150,9 @@ export default {
         | "stats"
         | "console",
 
+      // Mobile architecture view state
+      mobileArchitectureView: 'arch-info' as 'arch-info' | 'register-file' | 'instructions' | 'pseudoinstructions' | 'directives',
+
       //
       // Current view
       //
@@ -748,8 +751,6 @@ export default {
     "
     :architecture_name="architecture_name"
     v-model:assembly_code="assembly_code"
-    :vim_mode="vim_mode"
-    :vim_custom_keybinds="vim_custom_keybinds"
     :dark="dark"
     @assembly-error="assemblyError = $event"
     @switch-to-simulator="creator_mode = 'simulator'"
@@ -820,6 +821,8 @@ export default {
     :architecture_name="architecture_name"
     :dark="dark!"
     :arch_code="arch_code"
+    :mobile_architecture_view="mobileArchitectureView"
+    @update:mobile_architecture_view="mobileArchitectureView = $event"
   />
 </template>
 
