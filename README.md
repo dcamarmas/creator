@@ -252,6 +252,7 @@
      * Revamped web user interface
         * Revamped memory viewer
         * Vastly improved mobile support
+        * New [Monaco](https://microsoft.github.io/monaco-editor)-based editor
      * Vim mode in web editor
      * Revamped CLI version
   - [x] Modular design:

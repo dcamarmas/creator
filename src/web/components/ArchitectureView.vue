@@ -55,7 +55,7 @@ export default defineComponent({
   data() {
     return {
       architecture,
-      activeTab: 'instructions'
+      activeTab: "instructions",
     }
   },
   computed: {
@@ -78,7 +78,12 @@ export default defineComponent({
 <template>
   <div class="architecture-view" id="architecture_menu">
     <!-- Edit architecture modal -->
-    <EditArchitecture id="edit_architecture" :arch_code="arch_code" :dark="dark" />
+    <EditArchitecture
+      id="edit_architecture"
+      :arch_code="arch_code"
+      :dark="dark"
+      :os="os"
+    />
 
     <!-- Download architecture modal -->
 
@@ -100,7 +105,10 @@ export default defineComponent({
           <a :href="architecture_guide" target="_blank" class="guide-link">
             <font-awesome-icon :icon="['fas', 'file-pdf']" />
             <span>{{ architecture_name }} Guide</span>
-            <font-awesome-icon :icon="['fas', 'external-link-alt']" class="external-icon" />
+            <font-awesome-icon
+              :icon="['fas', 'external-link-alt']"
+              class="external-icon"
+            />
           </a>
         </div>
 
@@ -127,7 +135,10 @@ export default defineComponent({
 
             <!-- Pseudoinstruction Tab -->
             <button
-              v-if="architecture.pseudoinstructions && architecture.pseudoinstructions.length > 0"
+              v-if="
+                architecture.pseudoinstructions &&
+                architecture.pseudoinstructions.length > 0
+              "
               :class="['tab', { active: activeTab === 'pseudoinstructions' }]"
               @click="activeTab = 'pseudoinstructions'"
             >
@@ -137,7 +148,9 @@ export default defineComponent({
 
             <!-- Directives Tab -->
             <button
-              v-if="architecture.directives && architecture.directives.length > 0"
+              v-if="
+                architecture.directives && architecture.directives.length > 0
+              "
               :class="['tab', { active: activeTab === 'directives' }]"
               @click="activeTab = 'directives'"
             >
@@ -164,7 +177,9 @@ export default defineComponent({
 
           <!-- Pseudoinstruction definition -->
           <div v-if="activeTab === 'pseudoinstructions'">
-            <Pseudoinstructions :pseudoinstructions="architecture.pseudoinstructions" />
+            <Pseudoinstructions
+              :pseudoinstructions="architecture.pseudoinstructions"
+            />
           </div>
 
           <!-- Directives definition -->
