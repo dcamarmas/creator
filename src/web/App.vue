@@ -125,8 +125,8 @@ export default {
       architecture_guide: "",
 
       // Accesskey
-      os: "" as string | null,
-      browser: "" as string | null,
+      os: "" as string | undefined,
+      browser: "" as string | undefined,
 
       // Displayed notifications
       notifications,
@@ -136,10 +136,19 @@ export default {
       windowWidth: window.innerWidth,
 
       // Mobile view
-      mobileView: 'code' as 'code' | 'instructions' | 'data' | 'architecture' | 'settings',
+      mobileView: "code" as
+        | "code"
+        | "instructions"
+        | "data"
+        | "architecture"
+        | "settings",
 
       // Mobile data view state
-      mobileDataView: 'registers' as 'registers' | 'memory' | 'stats' | 'console',
+      mobileDataView: "registers" as
+        | "registers"
+        | "memory"
+        | "stats"
+        | "console",
 
       //
       // Current view
@@ -287,10 +296,7 @@ export default {
   },
 
   computed: {
-    /**
-     * @returns {AvailableArch[]}
-     */
-    arch_available() {
+    arch_available(): AvailableArch[] {
       const architectures = arch_available.map(a => ({ ...a, default: true }))
       const customArchs = JSON.parse(
         localStorage.getItem("customArchitectures")!,
@@ -353,9 +359,9 @@ export default {
     /**
      * Detects the operating system being used
      *
-     * @return  {String | Null} `"Win"`, `"Mac"`, or `"Linux"`
+     * @return `"Win"`, `"Mac"`, or `"Linux"`, `undefined` if not sure
      */
-    detect_os() {
+    detect_os(): string | undefined {
       if (navigator.userAgent.includes("Win")) {
         return "Win"
       }
@@ -368,15 +374,15 @@ export default {
       ) {
         return "Linux"
       }
-      return null
+      return undefined
     },
 
     /**
      * Detects the browser being used
      *
-     * @returns  {String | Null} `"Chrome"`, `"Firefox"`, or `"Safari"`
+     * @returns `"Chrome"`, `"Firefox"`, or `"Safari", ``undefined` if not sure
      */
-    detect_browser() {
+    detect_browser(): string | undefined {
       if (navigator.userAgent.includes("Chrome")) {
         return "Chrome"
       }
@@ -386,7 +392,7 @@ export default {
       if (navigator.userAgent.includes("Safari")) {
         return "Safari"
       }
-      return null
+      return undefined
     },
 
     // Verify if dark mode was activated from cache
@@ -506,7 +512,9 @@ export default {
     },
 
     // Handle mobile view changes from navbar
-    handleMobileViewChange(view: 'code' | 'instructions' | 'data' | 'architecture' | 'settings') {
+    handleMobileViewChange(
+      view: "code" | "instructions" | "data" | "architecture" | "settings",
+    ) {
       this.mobileView = view
     },
 
@@ -519,7 +527,11 @@ export default {
     },
 
     // Show toast notification for mobile code view
-    showToast(toastData: { message: string, title: string, variant: 'success' | 'danger' | 'warning' | 'info' }) {
+    showToast(toastData: {
+      message: string
+      title: string
+      variant: "success" | "danger" | "warning" | "info"
+    }) {
       this.createToast({
         title: toastData.title,
         body: toastData.message,
@@ -697,7 +709,7 @@ export default {
     :result_email="result_email"
     :target_board="target_board"
     :target_port="target_port"
-        :flash_url="flash_url"
+    :flash_url="flash_url"
   />
 
   <!-------------------->
@@ -705,7 +717,11 @@ export default {
   <!-------------------->
 
   <MobileSettings
-    v-if="isMobile && mobileView === 'settings' && creator_mode !== 'select_architecture'"
+    v-if="
+      isMobile &&
+      mobileView === 'settings' &&
+      creator_mode !== 'select_architecture'
+    "
     v-model:stack_total_list="stack_total_list"
     v-model:autoscroll="autoscroll"
     v-model:backup="backup"
@@ -725,7 +741,11 @@ export default {
   <!-------------------->
 
   <MobileCodeView
-    v-if="isMobile && mobileView === 'code' && creator_mode !== 'select_architecture'"
+    v-if="
+      isMobile &&
+      mobileView === 'code' &&
+      creator_mode !== 'select_architecture'
+    "
     :architecture_name="architecture_name"
     v-model:assembly_code="assembly_code"
     :vim_mode="vim_mode"
@@ -742,7 +762,11 @@ export default {
   <!-------------------->
 
   <MobileInstructionsView
-    v-if="isMobile && mobileView === 'instructions' && creator_mode !== 'select_architecture'"
+    v-if="
+      isMobile &&
+      mobileView === 'instructions' &&
+      creator_mode !== 'select_architecture'
+    "
     :instructions="instructions"
     :enter="enter"
     :browser="browser!"
@@ -758,7 +782,11 @@ export default {
 
   <MobileDataView
     ref="mobileDataView"
-    v-if="isMobile && mobileView === 'data' && creator_mode !== 'select_architecture'"
+    v-if="
+      isMobile &&
+      mobileView === 'data' &&
+      creator_mode !== 'select_architecture'
+    "
     :data_mode="data_mode"
     :reg_representation_int="reg_representation_int"
     :reg_representation_float="reg_representation_float"
@@ -781,7 +809,11 @@ export default {
   <!-------------------->
 
   <MobileArchitectureView
-    v-if="isMobile && mobileView === 'architecture' && creator_mode !== 'select_architecture'"
+    v-if="
+      isMobile &&
+      mobileView === 'architecture' &&
+      creator_mode !== 'select_architecture'
+    "
     :browser="browser!"
     :os="os!"
     :arch_available="arch_available"
@@ -791,18 +823,18 @@ export default {
   />
 </template>
 
-
 <style lang="scss" scoped>
 :deep() {
   // applies to all sub-components
-  html, body {
+  html,
+  body {
     background-color: #ffffff;
     overflow: hidden; // Disable all scrolling
     font-size: 15px;
     height: 100vh;
     width: 100vw;
     position: fixed; // Prevent any scrolling on all devices
-    
+
     // Add padding for mobile safe areas
     @media (max-width: 767px) {
       padding-top: env(safe-area-inset-top);

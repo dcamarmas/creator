@@ -539,6 +539,7 @@
         "npm:mitt@^3.0.1",
         "npm:monaco-editor@0.54",
         "npm:monaco-vim@~0.4.2",
+        "npm:monaco-yaml@^5.4.0",
         "npm:npm-run-all2@^8.0.4",
         "npm:prettier@^3.6.2",
         "npm:qrcode.vue@^3.6.0",

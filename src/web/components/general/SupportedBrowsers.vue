@@ -34,7 +34,7 @@ import { defineComponent } from "vue"
 
 export default defineComponent({
   props: {
-    browser: { type: [String, null], required: true },
+    browser: { type: String, required: false },
   },
 
   data() {
