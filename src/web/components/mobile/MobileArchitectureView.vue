@@ -40,7 +40,9 @@ export default defineComponent({
     architecture_name: String,
     dark: { type: Boolean, required: true },
     arch_code: { type: String, required: true },
+    mobile_architecture_view: { type: String as PropType<'arch-info' | 'register-file' | 'instructions' | 'pseudoinstructions' | 'directives'>, required: true },
   },
+  emits: ['update:mobile_architecture_view'],
   components: {
     EditArchitecture,
     DownloadPopup,
@@ -53,7 +55,6 @@ export default defineComponent({
   data() {
     return {
       architecture,
-      activeSection: null as string | null,
     }
   },
   computed: {
@@ -65,10 +66,39 @@ export default defineComponent({
           arch.alias.includes(this.architecture_name!),
       )?.guide
     },
+
+    currentView: {
+      get() {
+        return this.mobile_architecture_view
+      },
+      set(value: string) {
+        this.$emit('update:mobile_architecture_view', value)
+      }
+    },
+
+    availableViews() {
+      const views = [
+        { key: 'arch-info', label: 'Architecture Info', icon: ['fas', 'info-circle'] },
+        { key: 'register-file', label: 'Register File', icon: ['fas', 'database'] },
+        { key: 'instructions', label: 'Instructions', icon: ['fas', 'code'] },
+        { key: 'directives', label: 'Directives', icon: ['fas', 'cogs'] },
+      ]
+
+      // Only include pseudoinstructions if they exist
+      if (architecture.pseudoinstructions && architecture.pseudoinstructions.length > 0) {
+        views.splice(3, 0, { key: 'pseudoinstructions', label: 'Pseudoinstructions', icon: ['fas', 'magic'] })
+      }
+
+      return views
+    },
   },
   methods: {
-    toggleSection(section: string) {
-      this.activeSection = this.activeSection === section ? null : section
+    switchView(view: string) {
+      this.currentView = view as 'arch-info' | 'register-file' | 'instructions' | 'pseudoinstructions' | 'directives'
+    },
+
+    getCurrentViewInfo() {
+      return this.availableViews.find(view => view.key === this.currentView)
     },
   },
 })
@@ -77,23 +107,29 @@ export default defineComponent({
 <template>
   <div class="mobile-architecture-view">
     <div class="mobile-architecture-header">
-      <!-- Architecture Guide Link -->
-      <a 
-        v-if="architecture_guide" 
-        :href="architecture_guide" 
-        target="_blank" 
-        class="mobile-guide-link"
-      >
-        <font-awesome-icon :icon="['fas', 'file-pdf']" />
-        <span>{{ architecture_name }} Guide</span>
-        <font-awesome-icon :icon="['fas', 'external-link-alt']" class="external-icon" />
-      </a>
+      <h3 class="architecture-title">
+        <font-awesome-icon :icon="getCurrentViewInfo()?.icon || ['fas', 'database']" />
+        {{ getCurrentViewInfo()?.label || 'Architecture View' }}
+      </h3>
 
-      <h2 class="architecture-title">
-        <font-awesome-icon :icon="['fas', 'microchip']" />
-        Architecture View
-      </h2>
-      <p class="architecture-subtitle">Explore the current architecture details</p>
+      <b-dropdown
+        variant="outline-secondary"
+        size="sm"
+        title="Switch View"
+        no-caret
+      >
+        <template #button-content>
+          <font-awesome-icon :icon="['fas', 'bars']" />
+        </template>
+        <b-dropdown-item
+          v-for="view in availableViews"
+          :key="view.key"
+          @click="switchView(view.key)"
+        >
+          <font-awesome-icon :icon="view.icon" />
+          {{ view.label }}
+        </b-dropdown-item>
+      </b-dropdown>
     </div>
 
     <div class="mobile-architecture-content">
@@ -114,129 +150,41 @@ export default defineComponent({
         default-filename="architecture"
       />
 
-      <!-- Architecture sections in accordion -->
-      <div class="architecture-accordion">
-        <!-- Architecture Info -->
-        <div class="accordion-section">
-          <button
-            class="accordion-header"
-            @click="toggleSection('arch-info')"
-            :class="{ active: activeSection === 'arch-info' }"
-          >
-            <div class="accordion-title">
-              <font-awesome-icon :icon="['fas', 'info-circle']" />
-              Architecture Info
-            </div>
-            <font-awesome-icon
-              :icon="['fas', activeSection === 'arch-info' ? 'chevron-up' : 'chevron-down']"
-              class="accordion-icon"
-            />
-          </button>
-          <div
-            class="accordion-content"
-            v-show="activeSection === 'arch-info'"
-          >
-            <ArchConf :conf="architecture.config" />
-          </div>
-        </div>
+      <!-- Architecture content area -->
+      <!-- Architecture Info view -->
+      <div v-if="currentView === 'arch-info'" class="architecture-section">
+        <!-- Architecture Guide Link -->
+        <a 
+          v-if="architecture_guide" 
+          :href="architecture_guide" 
+          target="_blank" 
+          class="mobile-guide-link"
+        >
+          <font-awesome-icon :icon="['fas', 'file-pdf']" />
+          <span>{{ architecture_name }} Guide</span>
+          <font-awesome-icon :icon="['fas', 'external-link-alt']" class="external-icon" />
+        </a>
+        <ArchConf :conf="architecture.config" />
+      </div>
 
-        <!-- Register File -->
-        <div class="accordion-section">
-          <button
-            class="accordion-header"
-            @click="toggleSection('register-file')"
-            :class="{ active: activeSection === 'register-file' }"
-          >
-            <div class="accordion-title">
-              <font-awesome-icon :icon="['fas', 'database']" />
-              Register File
-            </div>
-            <font-awesome-icon
-              :icon="['fas', activeSection === 'register-file' ? 'chevron-up' : 'chevron-down']"
-              class="accordion-icon"
-            />
-          </button>
-          <div
-            class="accordion-content"
-            v-show="activeSection === 'register-file'"
-          >
-            <RegisterFileArch :register_file="architecture.components" />
-          </div>
-        </div>
+      <!-- Register File view -->
+      <div v-if="currentView === 'register-file'" class="architecture-section">
+        <RegisterFileArch :register_file="architecture.components" />
+      </div>
 
-        <!-- Instructions -->
-        <div class="accordion-section">
-          <button
-            class="accordion-header"
-            @click="toggleSection('instructions')"
-            :class="{ active: activeSection === 'instructions' }"
-          >
-            <div class="accordion-title">
-              <font-awesome-icon :icon="['fas', 'code']" />
-              Instructions
-            </div>
-            <font-awesome-icon
-              :icon="['fas', activeSection === 'instructions' ? 'chevron-up' : 'chevron-down']"
-              class="accordion-icon"
-            />
-          </button>
-          <div
-            class="accordion-content"
-            v-show="activeSection === 'instructions'"
-          >
-            <Instructions :instructions="architecture.instructions" />
-          </div>
-        </div>
+      <!-- Instructions view -->
+      <div v-if="currentView === 'instructions'" class="architecture-section">
+        <Instructions :instructions="architecture.instructions" />
+      </div>
 
-        <!-- Pseudoinstructions -->
-        <div v-if="architecture.pseudoinstructions && architecture.pseudoinstructions.length > 0" class="accordion-section">
-          <button
-            class="accordion-header"
-            @click="toggleSection('pseudoinstructions')"
-            :class="{ active: activeSection === 'pseudoinstructions' }"
-          >
-            <div class="accordion-title">
-              <font-awesome-icon :icon="['fas', 'magic']" />
-              Pseudoinstructions
-            </div>
-            <font-awesome-icon
-              :icon="['fas', activeSection === 'pseudoinstructions' ? 'chevron-up' : 'chevron-down']"
-              class="accordion-icon"
-            />
-          </button>
-          <div
-            class="accordion-content"
-            v-show="activeSection === 'pseudoinstructions'"
-          >
-            <Pseudoinstructions
-              :pseudoinstructions="architecture.pseudoinstructions"
-            />
-          </div>
-        </div>
+      <!-- Pseudoinstructions view -->
+      <div v-if="currentView === 'pseudoinstructions'" class="architecture-section">
+        <Pseudoinstructions :pseudoinstructions="architecture.pseudoinstructions" />
+      </div>
 
-        <!-- Directives -->
-        <div class="accordion-section">
-          <button
-            class="accordion-header"
-            @click="toggleSection('directives')"
-            :class="{ active: activeSection === 'directives' }"
-          >
-            <div class="accordion-title">
-              <font-awesome-icon :icon="['fas', 'cogs']" />
-              Directives
-            </div>
-            <font-awesome-icon
-              :icon="['fas', activeSection === 'directives' ? 'chevron-up' : 'chevron-down']"
-              class="accordion-icon"
-            />
-          </button>
-          <div
-            class="accordion-content"
-            v-show="activeSection === 'directives'"
-          >
-            <Directives :directives="architecture.directives" />
-          </div>
-        </div>
+      <!-- Directives view -->
+      <div v-if="currentView === 'directives'" class="architecture-section">
+        <Directives :directives="architecture.directives" />
       </div>
     </div>
   </div>
@@ -268,66 +216,25 @@ export default defineComponent({
 }
 
 .mobile-architecture-header {
-  padding: 1rem;
-  text-align: center;
+  padding: 0.5rem;
   border-bottom: 1px solid var(--bs-border-color);
   background-color: var(--bs-body-bg);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   flex-shrink: 0;
 
   .architecture-title {
-    margin: 0 0 0.5rem;
-    font-size: 1.5rem;
-    font-weight: 700;
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
     color: var(--bs-body-color);
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 0.75rem;
+    gap: 0.5rem;
 
     svg {
       color: var(--bs-primary);
-    }
-  }
-
-  .architecture-subtitle {
-    margin: 0;
-    font-size: 0.95rem;
-    color: var(--bs-body-color-secondary);
-    opacity: 0.8;
-  }
-
-  .mobile-guide-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 1rem;
-    padding: 10px 16px;
-    background: var(--bs-primary);
-    color: white;
-    text-decoration: none;
-    border-radius: 8px;
-    font-size: 0.9rem;
-    font-weight: 500;
-    transition: all 0.2s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-
-    &:hover {
-      background: color-mix(in srgb, var(--bs-primary) 90%, black);
-      transform: translateY(-1px);
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-    }
-
-    &:active {
-      transform: translateY(0);
-    }
-
-    .external-icon {
-      font-size: 0.75rem;
-      opacity: 0.9;
-    }
-
-    svg:first-child {
-      font-size: 1rem;
     }
   }
 }
@@ -335,142 +242,75 @@ export default defineComponent({
 .mobile-architecture-content {
   flex: 1;
   overflow-y: auto;
-  padding: 1rem;
-}
-
-.architecture-accordion {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  padding: 0;
 }
 
-.accordion-section {
-  border-radius: 12px;
-  overflow: hidden;
-  border: 1px solid var(--bs-border-color);
-  background-color: var(--bs-body-bg);
-
-  [data-bs-theme="dark"] & {
-    background-color: hsl(214, 9%, 15%);
-    border-color: rgba(255, 255, 255, 0.1);
-  }
+.architecture-section {
+  height: 100%;
+  padding: 0;
 }
 
-.accordion-header {
-  width: 100%;
-  padding: 1rem;
-  background: none;
-  border: none;
-  display: flex;
+.mobile-guide-link {
+  display: inline-flex;
   align-items: center;
-  justify-content: space-between;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--bs-body-color);
+  gap: 8px;
+  margin: 1rem;
+  padding: 10px 16px;
+  background: var(--bs-primary);
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 
   &:hover {
-    background-color: var(--bs-light);
-
-    [data-bs-theme="dark"] & {
-      background-color: hsl(214, 9%, 20%);
-    }
+    background: color-mix(in srgb, var(--bs-primary) 90%, black);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
   }
 
-  &.active {
-    background-color: var(--bs-primary);
-    color: white;
-
-    .accordion-icon {
-      color: white;
-    }
-  }
-}
-
-.accordion-title {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-
-  svg {
-    color: var(--bs-primary);
-    font-size: 1.1rem;
+  &:active {
+    transform: translateY(0);
   }
 
-  .accordion-header.active & svg {
-    color: white;
-  }
-}
-
-.accordion-icon {
-  color: var(--bs-body-color-secondary);
-  font-size: 0.9rem;
-  transition: transform 0.2s ease;
-}
-
-.accordion-content {
-  padding: 1rem;
-  border-top: 1px solid var(--bs-border-color);
-  background-color: var(--bs-light);
-
-  [data-bs-theme="dark"] & {
-    background-color: hsl(214, 9%, 10%);
-    border-top-color: rgba(255, 255, 255, 0.1);
+  .external-icon {
+    font-size: 0.75rem;
+    opacity: 0.9;
   }
 
-  :deep(.table) {
-    margin-bottom: 0;
-  }
-
-  :deep(.card) {
-    border: none;
-    background: transparent;
-  }
-
-  :deep(.card-header) {
-    background: transparent;
-    border: none;
-    padding: 0.5rem 0;
-  }
-
-  :deep(.card-body) {
-    padding: 0.5rem 0;
+  svg:first-child {
+    font-size: 1rem;
   }
 }
 
 // Mobile optimizations
 @media (max-width: 480px) {
   .mobile-architecture-header {
-    padding: 0.75rem;
+    padding: 0.5rem;
 
     .architecture-title {
-      font-size: 1.3rem;
-    }
-
-    .architecture-subtitle {
-      font-size: 0.9rem;
+      font-size: 1.1rem;
     }
   }
 
   .mobile-architecture-content {
-    padding: 0.75rem;
-  }
-
-  .accordion-header {
-    padding: 0.875rem;
-    font-size: 0.95rem;
-  }
-
-  .accordion-content {
-    padding: 0.75rem;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
   }
 }
 
 // Touch-friendly interactions
 @media (hover: none) and (pointer: coarse) {
-  .accordion-header {
-    min-height: 48px; // Minimum touch target
+  // Dropdown button should be touch-friendly
+  .mobile-architecture-header {
+    :deep(.dropdown-toggle) {
+      min-height: 44px; // Minimum touch target
+      min-width: 44px;
+    }
   }
 }
 </style>
