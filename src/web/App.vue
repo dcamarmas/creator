@@ -196,9 +196,10 @@ export default {
       c_debug: false,
 
       // Dark Mode
-      dark: (a => {
-        return a === null ? null : a === "true"
-      })(localStorage.getItem("conf_dark_mode")), // if null (no localStorage), set to null, else cast to bool
+      dark: false, // the actual dark mode state
+      dark_mode_setting: localStorage.getItem("conf_dark_mode_setting") || "system", // "system", "dark", or "light"
+
+      mediaQuery: null as MediaQueryList | null,
 
       vim_mode: localStorage.getItem("conf_vim_mode") === "true",
 
@@ -338,6 +339,13 @@ export default {
 
     // set config
     this.set_dark_mode()
+
+    // Listen for changes in system dark mode preference if setting is system
+    if (this.dark_mode_setting === "system") {
+      this.mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+      this.mediaQuery.addEventListener('change', this.handleDarkModeChange)
+    }
+
     set_debug(this.c_debug)
 
     // listener for window size changes
@@ -347,7 +355,20 @@ export default {
   },
 
   unmounted() {
+    if (this.mediaQuery) {
+      this.mediaQuery.removeEventListener('change', this.handleDarkModeChange)
+    }
     window.removeEventListener("resize", this.resizeHandler)
+  },
+
+  /***************
+   * Vue watchers *
+   ***************/
+
+  watch: {
+    dark_mode_setting(newSetting: string) {
+      this.handleDarkModeSettingChange(newSetting)
+    },
   },
 
   /***************
@@ -398,15 +419,12 @@ export default {
       return undefined
     },
 
-    // Verify if dark mode was activated from cache
+    // Set dark mode based on setting
     set_dark_mode() {
-      if (this.dark === null) {
-        // detect prefered color scheme
-        if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-          this.dark = true
-        } else {
-          this.dark = false
-        }
+      if (this.dark_mode_setting === "system") {
+        this.dark = window.matchMedia("(prefers-color-scheme: dark)").matches
+      } else {
+        this.dark = this.dark_mode_setting === "dark"
       }
 
       // set dark mode (w/ bootstrap color themes)
@@ -514,6 +532,44 @@ export default {
       this.windowWidth = window.innerWidth
     },
 
+    // Handle changes in system dark mode preference
+    handleDarkModeChange(e: MediaQueryListEvent) {
+      if (this.dark_mode_setting === "system") {
+        this.dark = e.matches
+        document.documentElement.setAttribute(
+          "data-bs-theme",
+          this.dark ? "dark" : "light",
+        )
+      }
+    },
+
+    // Handle dark mode setting change
+    handleDarkModeSettingChange(newSetting: string) {
+      this.dark_mode_setting = newSetting
+      localStorage.setItem("conf_dark_mode_setting", newSetting)
+
+      if (newSetting === "system") {
+        // Add listener if not already
+        if (!this.mediaQuery) {
+          this.mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+          this.mediaQuery.addEventListener('change', this.handleDarkModeChange)
+        }
+        this.dark = this.mediaQuery.matches
+      } else {
+        // Remove listener
+        if (this.mediaQuery) {
+          this.mediaQuery.removeEventListener('change', this.handleDarkModeChange)
+          this.mediaQuery = null
+        }
+        this.dark = newSetting === "dark"
+      }
+
+      document.documentElement.setAttribute(
+        "data-bs-theme",
+        this.dark ? "dark" : "light",
+      )
+    },
+
     // Handle mobile view changes from navbar
     handleMobileViewChange(
       view: "code" | "instructions" | "data" | "architecture" | "settings",
@@ -587,7 +643,7 @@ export default {
       v-model:backup="backup"
       v-model:instruction_help_size="instruction_help_size"
       v-model:notification_time="notification_time"
-      v-model:dark="dark"
+      v-model:dark_mode_setting="dark_mode_setting"
       v-model:c_debug="c_debug"
       v-model:vim_custom_keybinds="vim_custom_keybinds"
       v-model:vim_mode="vim_mode"
@@ -730,7 +786,7 @@ export default {
     v-model:backup="backup"
     v-model:notification_time="notification_time"
     v-model:instruction_help_size="instruction_help_size"
-    v-model:dark="dark"
+    v-model:dark_mode_setting="dark_mode_setting"
     v-model:c_debug="c_debug"
     v-model:vim_mode="vim_mode"
     v-model:vim_custom_keybinds="vim_custom_keybinds"

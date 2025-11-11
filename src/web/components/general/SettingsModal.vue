@@ -36,7 +36,7 @@ export default defineComponent({
     backup: { type: Boolean, required: true },
     notification_time: { type: Number, required: true },
     instruction_help_size: { type: Number, required: true },
-    dark: { type: [Boolean, null], required: true },
+    dark_mode_setting: { type: String, required: true },
     c_debug: { type: Boolean, required: true },
     vim_custom_keybinds: {
       type: Array as PropType<VimKeybind[]>,
@@ -88,7 +88,7 @@ export default defineComponent({
     "update:autoscroll",
     "update:notification_time",
     "update:instruction_help_size",
-    "update:dark",
+    "update:dark_mode_setting",
     "update:c_debug",
     "update:vim_custom_keybinds",
     "update:vim_mode",
@@ -244,32 +244,18 @@ export default defineComponent({
         )
       },
     },
-    dark_value: {
+    dark_mode_setting_value: {
       get() {
-        return this.dark
+        return this.dark_mode_setting
       },
-      set(value: boolean) {
-        // update style
-
-        document.documentElement.setAttribute(
-          "data-bs-theme",
-          value ? "dark" : "light",
-        )
-        // if (value) {
-        //   document.getElementsByTagName("body")[0].style =
-        //     "filter: invert(88%) hue-rotate(160deg) !important; background-color: #111 !important;"
-        // } else {
-        //   document.getElementsByTagName("body")[0].style = ""
-        // }
-
-        this.$emit("update:dark", value)
-        localStorage.setItem("conf_dark_mode", value.toString())
+      set(value: string) {
+        this.$emit("update:dark_mode_setting", value)
 
         //Google Analytics
         creator_ga(
           "configuration",
-          "configuration.dark_mode",
-          "configuration.dark_mode." + value,
+          "configuration.dark_mode_setting",
+          "configuration.dark_mode_setting." + value,
         )
       },
     },
@@ -493,14 +479,18 @@ export default defineComponent({
       -->
 
       <b-list-group-item class="justify-content-between align-items-center config-item">
-        <label for="range-5">Dark Mode:</label>
-        <b-form-checkbox
+        <label for="range-5">Theme:</label>
+        <b-form-select
           id="range-5"
-          name="check-button"
-          switch
-          size="lg"
-          v-model="dark_value"
-        />
+          v-model="dark_mode_setting_value"
+          size="sm"
+          title="Dark Mode Setting"
+          class="representation-select"
+        >
+          <b-form-select-option value="system">System</b-form-select-option>
+          <b-form-select-option value="dark">Dark</b-form-select-option>
+          <b-form-select-option value="light">Light</b-form-select-option>
+        </b-form-select>
       </b-list-group-item>
 
       <b-list-group-item class="justify-content-between align-items-center config-item">
@@ -637,6 +627,7 @@ export default defineComponent({
     justify-content: space-between;
     align-items: center;
     gap: 1rem;
+    position: relative;
 
     label {
       margin: 0;
@@ -663,6 +654,18 @@ export default defineComponent({
     .representation-select {
       max-width: 200px;
       flex-shrink: 0;
+    }
+
+    // Fix dropdown overflow
+    .dropdown {
+      position: static;
+    }
+
+    .dropdown-menu {
+      position: absolute;
+      max-height: 200px;
+      overflow-y: auto;
+      z-index: 1050;
     }
   }
 

@@ -347,20 +347,31 @@ watch(
 </script>
 
 <template>
-  <div id="vim-statusbar"></div>
-  <div
-    ref="editorContainer"
-    class="monaco-editor-container"
-    :style="{ height: height }"
-  />
+  <div class="editor-wrapper" :style="{ height: height }">
+    <div ref="editorContainer" class="monaco-editor-container" />
+    <div id="vim-statusbar" class="vim-statusbar"></div>
+  </div>
 </template>
 
 <style lang="scss" scoped>
+.editor-wrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
 .monaco-editor-container {
   width: 100%;
+  flex: 1;
+  min-height: 0;
   margin: 0;
   padding: 0;
-  display: block;
   overflow: hidden;
+}
+
+.vim-statusbar {
+  width: 100%;
+  flex-shrink: 0;
 }
 </style>
