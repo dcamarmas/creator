@@ -31,7 +31,7 @@ export default defineComponent({
     backup: { type: Boolean, required: true },
     notification_time: { type: Number, required: true },
     instruction_help_size: { type: Number, required: true },
-    dark: { type: [Boolean, null], required: true },
+    dark_mode_setting: { type: String, required: true },
     c_debug: { type: Boolean, required: true },
     vim_mode: { type: Boolean, required: true },
     vim_custom_keybinds: {
@@ -49,7 +49,7 @@ export default defineComponent({
     "update:autoscroll",
     "update:notification_time",
     "update:instruction_help_size",
-    "update:dark",
+    "update:dark_mode_setting",
     "update:c_debug",
     "update:vim_mode",
     "update:backup",
@@ -77,6 +77,12 @@ export default defineComponent({
         { text: "IEEE 754 (32b)", value: "ieee32" },
         { text: "IEEE 754 (64b)", value: "ieee64" },
         { text: "Hex", value: "hex" },
+      ],
+
+      dark_mode_setting_options: [
+        { text: "System", value: "system" },
+        { text: "Dark", value: "dark" },
+        { text: "Light", value: "light" },
       ],
     }
   },
@@ -172,25 +178,18 @@ export default defineComponent({
       },
     },
 
-    dark_value: {
+    dark_mode_setting_value: {
       get() {
-        return this.dark
+        return this.dark_mode_setting
       },
-      set(value: boolean) {
-        // update style
-        document.documentElement.setAttribute(
-          "data-bs-theme",
-          value ? "dark" : "light",
-        )
-
-        this.$emit("update:dark", value)
-        localStorage.setItem("conf_dark_mode", value.toString())
+      set(value: string) {
+        this.$emit("update:dark_mode_setting", value)
 
         //Google Analytics
         creator_ga(
           "configuration",
-          "configuration.dark_mode",
-          "configuration.dark_mode." + value,
+          "configuration.dark_mode_setting",
+          "configuration.dark_mode_setting." + value,
         )
       },
     },
@@ -302,11 +301,10 @@ export default defineComponent({
             <font-awesome-icon :icon="['fas', 'moon']" />
             Dark Mode
           </div>
-          <b-form-checkbox
-            v-model="dark_value"
-            switch
-            size="lg"
-            class="setting-toggle"
+          <b-form-select
+            v-model="dark_mode_setting_value"
+            :options="dark_mode_setting_options"
+            class="setting-select"
           />
         </div>
 
