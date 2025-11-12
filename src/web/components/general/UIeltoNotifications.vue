@@ -35,7 +35,7 @@ export default defineComponent({
 <template>
   <b-modal :id="id" title="Notifications" scrollable no-footer>
     <span class="h6" v-if="notifications.length === 0">
-      There are no notifications at the moment
+      No notifications available.
     </span>
 
     <b-alert

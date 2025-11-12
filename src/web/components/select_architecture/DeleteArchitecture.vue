@@ -27,37 +27,43 @@ export default defineComponent({
   props: {
     id: { type: String, required: true },
     arch: { type: [String, null], required: true },
+    modelValue: { type: Boolean, default: false },
+  },
+
+  emits: ['update:modelValue', 'architecture-deleted'],
+
+  computed: {
+    showModal: {
+      get() {
+        return this.modelValue
+      },
+      set(value: boolean) {
+        this.$emit('update:modelValue', value)
+      }
+    }
   },
 
   methods: {
     //Remove architecture
     removeArch(name: string) {
-      // remove from root
-      ;((this.$root as any).arch_available as AvailableArch[]).splice(
-        ((this.$root as any).arch_available as AvailableArch[]).findIndex(
-          a => a.name === name,
-        ),
-        1,
-      )
-
       // remove from localstorage
       const customArchitectures = JSON.parse(
-        localStorage.getItem("customArchitectures")!,
+        localStorage.getItem("customArchitectures") || "[]",
       ) as AvailableArch[]
+
+      const updatedArchitectures = customArchitectures.filter(a => a.name !== name)
 
       localStorage.setItem(
         "customArchitectures",
-        JSON.stringify(
-          customArchitectures.toSpliced(
-            customArchitectures.findIndex(a => a.name === name),
-            1,
-          ),
-        ),
+        JSON.stringify(updatedArchitectures),
       )
-      // refresh view
-      ;(this.$root as any).$refs.selectArchitectureView.refresh()
 
-      show_notification("Architecture deleted successfully", "success")
+      // Close the modal
+      this.$emit('update:modelValue', false)
+
+      // Emit event to parent to notify deletion
+      this.$emit('architecture-deleted', name)
+
     },
   },
 })
@@ -66,6 +72,7 @@ export default defineComponent({
 <template>
   <b-modal
     :id="id"
+    v-model="showModal"
     title="Delete Architecture"
     ok-variant="danger"
     ok-title="Delete"

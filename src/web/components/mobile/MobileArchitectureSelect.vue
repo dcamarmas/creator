@@ -248,20 +248,17 @@ export default defineComponent({
   height: 48px;
   border-radius: 8px;
   overflow: hidden;
-  background-color: var(--bs-light);
+  background-color: rgba(255, 255, 255, 0.8);
   display: flex;
   align-items: center;
   justify-content: center;
-
-  [data-bs-theme="dark"] & {
-    background-color: hsl(214, 9%, 20%);
-  }
+  padding: 0.375rem;
 }
 
 .arch-image {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
 }
 
 .arch-info {
@@ -318,6 +315,7 @@ export default defineComponent({
     .arch-logo {
       width: 50px;
       height: 50px;
+      padding: 0.4rem;
     }
 
     .arch-info {
@@ -361,6 +359,7 @@ export default defineComponent({
     .arch-logo {
       width: 44px;
       height: 44px;
+      padding: 0.35rem;
     }
 
     .arch-info {

@@ -29,6 +29,8 @@ export const CoreEventTypes = {
     STATS_UPDATED: "stats-updated",
     STEP_ABOUT_TO_EXECUTE: "step-about-to-execute",
     SENTINEL_ERROR: "sentinel-error",
+    LIBRARY_LOADED: "library-loaded",
+    LIBRARY_REMOVED: "library-removed",
 };
 
 /**
@@ -51,6 +53,8 @@ export const CoreEventTypes = {
  * @property {void} stats-updated - Emitted when statistics are updated
  * @property {void} step-about-to-execute - Emitted just before a step is executed (to clear register highlighting)
  * @property {SentinelErrorEvent} sentinel-error - Emitted when calling convention violations are detected
+ * @property {void} library-loaded - Emitted when a library is loaded
+ * @property {void} library-removed - Emitted when a library is removed
  */
 
 /**

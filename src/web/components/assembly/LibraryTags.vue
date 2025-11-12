@@ -20,26 +20,56 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 
 <script>
 import { loadedLibrary } from "@/core/core.mjs"
+import { coreEvents } from "@/core/events.mjs"
 
 export default {
   props: {
     id: { type: String, required: true },
   },
   
+  data() {
+    return {
+      // Use a reactive trigger to force re-computation when library changes
+      libraryVersion: 0,
+    }
+  },
+  
   computed: {
     libraryLoaded() {
-      return loadedLibrary && Object.keys(loadedLibrary).length !== 0
+      // Access libraryVersion to make this reactive to library changes
+      return this.libraryVersion >= 0 && loadedLibrary && Object.keys(loadedLibrary).length !== 0
     },
     
     libraryTags() {
-      if (!this.libraryLoaded) {
+      // Access libraryVersion to make this reactive to library changes
+      if (this.libraryVersion < 0 || !this.libraryLoaded) {
         return []
       }
       return loadedLibrary?.instructions_tag?.filter(t => t.globl) || []
     },
     
     libraryName() {
-      return loadedLibrary?.name || "Library"
+      // Access libraryVersion to make this reactive to library changes
+      return this.libraryVersion >= 0 ? (loadedLibrary?.name || "Library") : "Library"
+    },
+  },
+  
+  mounted() {
+    // Listen for library load/remove events
+    coreEvents.on("library-loaded", this.onLibraryChange)
+    coreEvents.on("library-removed", this.onLibraryChange)
+  },
+  
+  beforeUnmount() {
+    // Clean up event listeners
+    coreEvents.off("library-loaded", this.onLibraryChange)
+    coreEvents.off("library-removed", this.onLibraryChange)
+  },
+  
+  methods: {
+    onLibraryChange() {
+      // Increment version to trigger computed property re-computation
+      this.libraryVersion++
     },
   },
 }

@@ -66,7 +66,7 @@ function handleItemClick() {
     <!-- Website -->
     <b-dropdown-item v-if="item === 'btn_website'" href="https://creatorsim.github.io/" target="_blank">
       <font-awesome-icon :icon="['fas', 'globe']" class="me-2" />
-      Website
+      Project Website
     </b-dropdown-item>
 
     <!-- GitHub -->
@@ -126,7 +126,7 @@ function handleItemClick() {
     <!-- Calculator -->
     <b-dropdown-item v-if="item === 'btn_calculator'" v-b-modal.calculator @click="handleItemClick">
       <font-awesome-icon :icon="['fas', 'calculator']" class="me-2" />
-      Calculator
+      IEEE754 Calculator
     </b-dropdown-item>
 
     <!-- Vim Mode Toggle -->

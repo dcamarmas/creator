@@ -19,17 +19,19 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <script setup lang="ts">
-import { ref, computed, watch } from "vue"
+import { ref, computed, watch, onMounted, onBeforeUnmount } from "vue"
 import { useToggle } from "bootstrap-vue-next"
-import { assembly_compile, reset, status, architecture } from "@/core/core.mjs"
+import { assembly_compile, reset, status, architecture, loadedLibrary } from "@/core/core.mjs"
 import { resetStats } from "@/core/executor/stats.mts"
 import { instructions } from "@/core/assembler/assembler.mjs"
 import { show_notification, storeBackup } from "@/web/utils.mjs"
 import { assemblerMap, getDefaultCompiler } from "@/web/assemblers"
 import { creator_ga } from "@/core/utils/creator_ga.mjs"
+import { coreEvents } from "@/core/events.mjs"
 
 // State for dropdown visibility
 const dropdownOpen = ref(false)
+const libraryVersion = ref(0)
 
 defineProps({
   dark: {
@@ -49,6 +51,7 @@ const isAssembled = ref(false)
 
 // Composables
 const showAssemblyError = useToggle("modalAssemblyError").show
+const showLibraryTags = useToggle("library_tags").show
 
 // Computed
 const compilerOptions = computed(() => {
@@ -75,6 +78,31 @@ const selectedCompilerLabel = computed(() => {
   return found ? found.text : "CREATOR"
 })
 
+const libraryLoaded = computed(() => {
+  // Access libraryVersion to make this reactive to library changes
+  return libraryVersion.value >= 0 && loadedLibrary && Object.keys(loadedLibrary).length !== 0
+})
+
+const libraryTagsCount = computed(() => {
+  // Access libraryVersion to make this reactive
+  if (libraryVersion.value < 0 || !libraryLoaded.value) return 0
+  return loadedLibrary?.instructions_tag?.filter((t: any) => t.globl)?.length || 0
+})
+
+const usesCreatorAssembler = computed(() => {
+  const assemblers = architecture?.config?.assemblers || []
+  // If no assemblers configured, default is CREATOR
+  if (assemblers.length === 0) {
+    return true
+  }
+  // Check if CreatorCompiler is in the list
+  return assemblers.some((asm: { name: string }) => asm.name === "CreatorCompiler")
+})
+
+const showLibraryButton = computed(() => {
+  return usesCreatorAssembler.value && libraryLoaded.value
+})
+
 // Watch for architecture changes
 watch(
   defaultCompiler,
@@ -85,6 +113,17 @@ watch(
   },
   { immediate: true },
 )
+
+// Listen for library load/remove events
+onMounted(() => {
+  coreEvents.on("library-loaded", () => libraryVersion.value++)
+  coreEvents.on("library-removed", () => libraryVersion.value++)
+})
+
+onBeforeUnmount(() => {
+  coreEvents.off("library-loaded", () => libraryVersion.value++)
+  coreEvents.off("library-removed", () => libraryVersion.value++)
+})
 
 const root = (document as any).app
 
@@ -207,6 +246,10 @@ function compile_error(msg: string) {
   // Show assembly error modal
   showAssemblyError()
 }
+
+function handleBlur() {
+  window.setTimeout(() => (dropdownOpen.value = false), 200)
+}
 </script>
 
 <template>
@@ -241,7 +284,7 @@ function compile_error(msg: string) {
           }"
           :disabled="compiling"
           @click="dropdownOpen = !dropdownOpen"
-          @blur="setTimeout(() => (dropdownOpen = false), 200)"
+          @blur="handleBlur"
         >
           <font-awesome-icon :icon="['fas', 'chevron-down']" />
         </button>
@@ -316,6 +359,21 @@ function compile_error(msg: string) {
         class="icon-spacing"
       />
       <span class="button-text">Vim: {{ root.vim_mode ? "on" : "off" }}</span>
+    </button>
+
+    <!-- Library Tags button (only shown when library is loaded) -->
+    <button
+      v-if="showLibraryButton"
+      class="asm-button library-tags-button"
+      :class="{ 'asm-button-dark': dark }"
+      @click="() => showLibraryTags()"
+      :title="`View ${libraryTagsCount} library tag${libraryTagsCount !== 1 ? 's' : ''}`"
+    >
+      <font-awesome-icon
+        :icon="['fas', 'tags']"
+        class="icon-spacing"
+      />
+      <span class="button-text">Library ({{ libraryTagsCount }})</span>
     </button>
   </div>
 </template>

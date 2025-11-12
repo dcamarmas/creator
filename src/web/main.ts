@@ -38,8 +38,9 @@ import {show_notification } from "./utils.mjs";
 import { creator_ga } from "../core/utils/creator_ga.mjs";
 
 /*Closing alert*/
-window.onbeforeunload = function () {
-    return "Are you sure you want to leave? Unsaved changes will be lost.";
+window.onbeforeunload = function (e) {
+    // Cancel the event to trigger the confirmation dialog
+    e.preventDefault();
 }
 
 // Vue config

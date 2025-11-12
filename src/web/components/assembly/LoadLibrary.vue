@@ -47,10 +47,6 @@ export default defineComponent({
 
         // this.$root.librayLoaded = true
         hide_loading()
-        show_notification(
-          "The selected library has been loaded correctly",
-          "success",
-        )
       }
       reader.onerror = () =>
         show_notification("Error loading library", "danger")
