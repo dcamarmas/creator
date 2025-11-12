@@ -24,14 +24,11 @@ import humanizeDuration from "humanize-duration";
 import { creator_ga } from "@/core/utils/creator_ga.mjs";
 import { loadArchitecture } from "@/core/core.mjs";
 import { console_log as clog } from "@/core/utils/creator_logger.mjs";
+import example_set from "../../examples/example_set.json" with { type: "json" };
 
 /*Stop the transmission of events to children*/
 export function destroyClickedElement(event) {
     document.body.removeChild(event.target);
-}
-
-export function confirmExit() {
-    return "He's tried to get off this page. Changes may not be saved.";
 }
 
 export function console_log(msg, level = "INFO") {
@@ -157,13 +154,6 @@ export async function loadDefaultArchitecture(arch, root = document.app) {
         // store code to be edited
         root.arch_code = cfg;
 
-        //Refresh UI
-        show_notification(
-            arch.name + " architecture has been loaded correctly",
-            "success",
-            root,
-        );
-
         // Google Analytics
         creator_ga(
             "architecture",
@@ -200,13 +190,6 @@ export function loadCustomArchitecture(arch, root = document.app) {
     // store code to be edited
     root.arch_code = arch.definition;
 
-    //Refresh UI
-    show_notification(
-        arch.name + " architecture has been loaded correctly",
-        "success",
-        root,
-    );
-
     // Google Analytics
     creator_ga(
         "architecture",
@@ -242,7 +225,7 @@ export async function loadExample(
             return;
         }
 
-        const setResponse = await fetch(setUrl);
+        const setResponse = await fetch(setUrl.url);
 
         if (!setResponse.ok) {
             show_notification(`'${set_name}' set not found`, "danger", root);

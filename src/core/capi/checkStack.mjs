@@ -22,11 +22,9 @@
 import { architecture, REGISTERS } from "../core.mjs";
 import { crex_show_notification } from "../../web/utils.mjs";
 import { tag_instructions } from "../assembler/assembler.mjs";
-import {
-    creator_callstack_enter,
-    creator_callstack_leave,
-} from "../sentinel/sentinel.mjs";
+import { sentinel } from "../sentinel/sentinel.mjs";
 import { creator_ga } from "../utils/creator_ga.mjs";
+import { coreEvents, CoreEventTypes } from "../events.mjs";
 
 export const CHECK_STACK = {
     begin(addr) {
@@ -40,12 +38,12 @@ export const CHECK_STACK = {
         // 2) get function name
         if (typeof REGISTERS[0] !== "undefined") {
             if (typeof tag_instructions[addr] === "undefined")
-                function_name = "0x" + parseInt(addr).toString(16);
+                function_name = "0x" + parseInt(addr, 10).toString(16);
             else function_name = tag_instructions[addr];
         }
 
         // 3) callstack_enter
-        creator_callstack_enter(function_name);
+        sentinel.enter(function_name.tag);
     },
     end() {
         // 1) Passing Convection enable?
@@ -53,15 +51,25 @@ export const CHECK_STACK = {
             return;
         }
 
-        // 2) Callstack_leave
-        const ret = creator_callstack_leave();
+        // 2) Get current function name before leave
+        const currentFunction = sentinel.getCurrentFunction() || "unknown";
 
-        // 3) If everything is ok, just return
+        // 3) Callstack_leave
+        const ret = sentinel.leave();
+
+        // 4) If everything is ok, just return
         if (ret.ok) {
             return;
         }
 
-        // 4) Othewise report some warning...
+        // 5) Otherwise report the error...
+        // Emit event for GUI
+        coreEvents.emit(CoreEventTypes.SENTINEL_ERROR, {
+            functionName: currentFunction,
+            message: ret.msg,
+            ok: false,
+        });
+
         // Google Analytics
         creator_ga(
             "execute",

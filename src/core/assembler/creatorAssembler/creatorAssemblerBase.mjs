@@ -38,6 +38,8 @@ import {
     setAddress,
     setInstructions,
     formatErrorWithColors,
+    getCleanErrorMessage,
+    parseErrorForLinter,
 } from "../assembler.mjs";
 import { logger } from "../../utils/creator_logger.mjs";
 
@@ -54,7 +56,7 @@ let instructions_binary = [];
 export function assembleCreatorBase(code, library, wasmModules) {
     /* Google Analytics */
     creator_ga("compile", "compile.assembly");
-    const color = 2;
+    const color = 1;
 
     const { ArchitectureJS, DataCategoryJS } = wasmModules;
 
@@ -63,11 +65,14 @@ export function assembleCreatorBase(code, library, wasmModules) {
         arch = ArchitectureJS.from_json(JSON.stringify(architecture));
     } catch (error) {
         logger.error("Error loading architecture:", error);
+        const cleanErrorText = getCleanErrorMessage(error);
+        const linterInfo = parseErrorForLinter(cleanErrorText);
         return {
             type: "warning",
-            token: "Unsupported architecture",
+            token: error,
             bgcolor: "danger",
             status: "error",
+            linter: linterInfo,
         };
     }
     const instructions = [];
@@ -462,12 +467,15 @@ export function assembleCreatorBase(code, library, wasmModules) {
         }
         // Catch any errors thrown by the compiler
     } catch (error) {
+        const cleanErrorText = getCleanErrorMessage(error);
+        const linterInfo = parseErrorForLinter(cleanErrorText);
         return {
             errorcode: "101",
             type: "error",
             bgcolor: "danger",
             status: "error",
             msg: formatErrorWithColors(error),
+            linter: linterInfo,
         };
     }
 

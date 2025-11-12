@@ -144,12 +144,32 @@ function buildCompleteInstruction(instruction, template, mergedFields) {
         return field.space === false ? part : part + " ";
     });
 
+
     let signatureDefinition = signatureDefParts.join("").trimEnd();
     // If the last character is a comma, remove it
     if (signatureDefinition.endsWith(",")) {
         signatureDefinition = signatureDefinition.slice(0, -1);
     }
     result.signature_definition = signatureDefinition;
+
+    // Compute signature_pretty for instruction - format example: "rd rs2, rs1 imm"
+    const signaturePrettyParts = orderedFields.map(field => {
+        let fieldName = field.name;
+        if (fieldName === "opcode") {
+            fieldName = instruction.name;
+        } else if (fieldName === "instructionFormatting") {
+            fieldName = field.value;
+        }
+        const part = `${field.prefix || ""}${fieldName}${field.suffix || ""}`;
+        return field.space === false ? part : part + " ";
+    });
+
+    let signaturePretty = signaturePrettyParts.join("").trimEnd();
+    // If the last character is a comma, remove it
+    if (signaturePretty.endsWith(",")) {
+        signaturePretty = signaturePretty.slice(0, -1);
+    }
+    result.signature_pretty = signaturePretty;
 
     // Special case: replace "opcode" field name with instruction name
     const opcodeField = orderedFields.find(field => field.name === "opcode");
@@ -353,10 +373,24 @@ function processPseudoInstructions(architectureObj) {
             signatureDefParts.push(part);
         }
 
+        // Create signature_pretty: "name field0 field1 field2..."
+        const signaturePrettyParts = fields.map(field => {
+            const fieldName = field.name;
+            const part = `${field.prefix || ""}${fieldName}${field.suffix || ""}`;
+            return field.space === false ? part : part + " ";
+        });
+
+        let signaturePretty = pseudoinstruction.name + " " + signaturePrettyParts.join("").trimEnd();
+        // If the last character is a comma, remove it
+        if (signaturePretty.endsWith(",")) {
+            signaturePretty = signaturePretty.slice(0, -1);
+        }
+
         // Create the full legacy pseudoinstruction object
         const legacyPseudoinstruction = {
             name: pseudoinstruction.name,
             signature_definition: signatureDefParts.join(" "),
+            signature_pretty: signaturePretty,
             properties: [],
             nwords: 1,
             fields,

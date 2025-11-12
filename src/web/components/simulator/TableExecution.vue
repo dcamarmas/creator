@@ -31,13 +31,19 @@ export default {
     return {
       /*Instrutions table fields*/
       archInstructions: [
-        "Break",
         "Address",
-        "Label",
         "userInstructions",
         "loadedInstructions",
-        "tag",
       ],
+    }
+  },
+
+  computed: {
+    processedInstructions() {
+      return this.instructions.map(instruction => ({
+        ...instruction,
+        _cellVariants: {}
+      }))
     }
   },
 
@@ -75,125 +81,68 @@ export default {
         this.$root.instructions[index].Break = null
       }
     },
-
-    /* Computes the execution tag depending on the row's `_rowVariant` */
-    computeExecutionTag(rowVariant) {
-      switch (rowVariant) {
-        case "warning":
-          return "Interrupted"
-
-        case "info":
-          return this.enter !== null ? "Current-Keyboard" : "Current"
-
-        case "success":
-          return "Next"
-
-        default:
-          return ""
-      }
-    },
   },
 }
 </script>
 
 <template>
-  <b-row cols="1">
-    <b-col align-h="center">
-      <b-table
-        id="inst_table"
-        sticky-header="61vh"
-        striped
-        small
-        hover
-        responsive
-        :items="instructions"
-        :fields="archInstructions"
-        class="instructions_table responsive"
-        @row-clicked="breakPoint"
-        :filter-function="filter"
-        filter=" "
-        primary-key="Address"
-      >
-        <!-- column headers -->
-        <template #head(userInstructions)="_row"> User Instruction </template>
+  <b-table id="inst_table" sticky-header="100%" small hover :items="processedInstructions" :fields="archInstructions"
+    class="instructions_table" @row-clicked="breakPoint" :filter-function="filter" filter=" " primary-key="Address">
+    <!-- column headers -->
+    <template #head(userInstructions)="_row"> User Instruction </template>
 
-        <template #head(loadedInstructions)="_row">
-          Loaded Instructions
-        </template>
+    <template #head(loadedInstructions)="_row">
+      Loaded Instructions
+    </template>
 
-        <template #head(tag)="_row"> &nbsp; </template>
+    <!-- address -->
+    <template #cell(Address)="row">
+      <span v-if="row.item.Break" class="breakpoint-indicator" title="Breakpoint">●</span>
+      <span v-else class="breakpoint-space">&nbsp;</span>
+      <span>{{ row.item.Address }}</span>
+      <b-badge v-if="row.item.Label" pill variant="info" style="margin-left: 0.5em;">{{ row.item.Label }}</b-badge>
+    </template>
 
-        <!-- breakpoints -->
-        <template #cell(Break)="row">
-          <div class="break" :id="row.index">
-            <b-img
-              alt="Break"
-              src="@/web/assets/img/stop_classic.webp"
-              class="shadow breakPoint"
-              rounded="circle"
-              v-if="row.item.Break"
-            />
-            <br v-else />
-          </div>
-        </template>
+    <!-- user instruction -->
+    <template #cell(userInstructions)="row">
+      <span v-if="row.item.visible">
+        {{ row.item.user }}
+      </span>
+      <span v-else> &lt;&lt;Hidden&gt;&gt; </span>
+    </template>
 
-        <!-- address -->
-        <template #cell(Address)="row">
-          <span class="h6">{{ row.item.Address }}</span>
-        </template>
-
-        <!-- label -->
-        <template #cell(Label)="row">
-          <b-badge pill variant="info">{{ row.item.Label }}</b-badge>
-        </template>
-
-        <!-- user instruction -->
-        <template #cell(userInstructions)="row">
-          <span class="h6" v-if="row.item.visible">
-            {{ row.item.user }}
-          </span>
-          <span class="h6" v-else> &lt;&lt;Hidden&gt;&gt; </span>
-        </template>
-
-        <!-- loaded instruction -->
-        <template #cell(loadedInstructions)="row">
-          <span class="h6" v-if="row.item.visible">
-            {{ row.item.loaded }}
-          </span>
-          <span class="h6" v-else> &lt;&lt;Hidden&gt;&gt; </span>
-        </template>
-
-        <!-- execution tags -->
-        <template #cell(tag)="row">
-          <b-badge
-            :variant="row.item._rowVariant"
-            :class="`border border-${row.item._rowVariant} shadow executionTag`"
-          >
-            {{ computeExecutionTag(row.item._rowVariant) }}
-          </b-badge>
-        </template>
-      </b-table>
-    </b-col>
-  </b-row>
+    <!-- loaded instruction -->
+    <template #cell(loadedInstructions)="row">
+      <span v-if="row.item.visible">
+        {{ row.item.loaded }}
+      </span>
+      <span v-else> &lt;&lt;Hidden&gt;&gt; </span>
+    </template>
+  </b-table>
 </template>
 
 <style lang="scss" scoped>
+.table-execution-container {
+  height: 100%;
+  max-height: 100%;
+  overflow: hidden;
+}
+
+.table-execution-col {
+  height: 100%;
+  max-height: 100%;
+  overflow: hidden;
+}
+
 .instructions_table {
-  font-size: 1em;
-  padding-right: 1vw;
   cursor: pointer;
-  max-height: 61vh;
-}
+  height: 100%;
+  max-height: 100%;
 
-.executionTag {
-  float: right;
-  position: relative;
-  right: -0.7vw;
-}
-
-.breakPoint {
-  width: auto !important;
-  height: 4vh;
+  // // Font size only on mobile phones
+  // @media (max-width: 480px) {
+  //   font-size: 1rem;
+  // }
 }
 
 [data-bs-theme="dark"] {
@@ -201,5 +150,17 @@ export default {
     // mute the colors a bit...
     filter: saturate(80%);
   }
+}
+
+.breakpoint-indicator {
+  font-weight: bold;
+  font-size: 0.8em;
+  margin-right: 0.3em;
+  color: red;
+}
+
+.breakpoint-space {
+  font-size: 0.8em;
+  margin-right: 1em;
 }
 </style>

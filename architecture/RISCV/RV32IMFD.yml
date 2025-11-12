@@ -77,8 +77,8 @@ components:
           - x1
           - ra
         nbits: 32
-        value: 4294967295
-        default_value: 4294967295
+        value: 0x0FFFFF00
+        default_value: 0xFFFFFF00
         encoding: 1
         properties:
           - read
@@ -1640,8 +1640,8 @@ instructions:
       definition: |
         registers[rd] = registers["PC"] + 4n;
         registers["PC"] = registers["PC"] + imm;
-        CAPI.CHECK_STACK.begin(registers["PC"]);
-        CAPI.DRAW_STACK.begin(registers["PC"]);
+        CAPI.CHECK_STACK.begin(registers["PC"] + imm);
+        CAPI.DRAW_STACK.begin(registers["PC"] + imm); // This is not an accident. We only see the virtual PC here, and the virtual/physical PC sync happens after the instruction execution.
       help: Jump to address and place return address in rd.
     - name: add
       template: R

@@ -21,35 +21,23 @@
 import { architecture, status, REGISTERS } from "../core.mjs";
 import { writeStackLimit } from "../executor/executor.mjs";
 import { instructions } from "../assembler/assembler.mjs";
-import { creator_callstack_writeRegister } from "../sentinel/sentinel.mjs";
+import { sentinel } from "../sentinel/sentinel.mjs";
 import { packExecute } from "../utils/utils.mjs";
+import { coreEvents } from "../events.mjs";
+import { setRegisterGlow } from "./registerGlowState.mjs";
 
 /**
- * Updates UI after a register update
+ * Notifies UI layers about a register update via event emission
+ * This keeps the core decoupled from specific UI implementations
  *
  * @param {Number} indexComp Index of the register bank
  * @param {Number} indexElem Index of the register
  */
-export function updateRegisterUI(indexComp, indexElem) {
-    const register = REGISTERS[indexComp].elements[indexElem];
-    const ctrl_register_tags = [
-        "program_counter",
-        "stack_pointer",
-        "frame_pointer",
-        "global_pointer",
-    ];
-
-    // this is ugly, but it's the only way (I found)
-    document.app.$root.$refs.simulatorView?.$refs.registerFile?.$refs[
-        `reg${register.name[0]}`
-    ]
-        ?.at(0)
-        ?.refresh();
-
-    // check it's one of the control registers
-    if (register.properties.some(p => ctrl_register_tags.includes(p))) {
-        document.app.$root.$refs.simulatorView?.$refs.memory?.$refs?.memory_table?.refresh_tags();
-    }
+export function notifyRegisterUpdate(indexComp, indexElem) {
+    // Mark register as glowing in persistent store
+    setRegisterGlow(indexComp, indexElem);
+    // Emit event for UI updates
+    coreEvents.emit("register-updated", { indexComp, indexElem });
 }
 
 export function readRegister(indexComp, indexElem) {
@@ -136,13 +124,13 @@ export function writeRegister(value, indexComp, indexElem) {
     }
 
     element.value = value;
-    creator_callstack_writeRegister(indexComp, indexElem);
+    sentinel.recordRegisterWrite(indexComp, indexElem);
 
     if (properties.includes("stack_pointer") && value !== stackStart) {
         writeStackLimit(value);
     }
-
-    if (typeof window !== "undefined" && document.app) {
-        updateRegisterUI(indexComp, indexElem);
+    if (typeof document !== "undefined" && document?.app) {
+        // Notify UI layers about the update (CLI ignores, web UI listens)
+        notifyRegisterUpdate(indexComp, indexElem);
     }
 }

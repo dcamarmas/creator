@@ -20,6 +20,8 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 
 <script lang="ts">
 import { REGISTERS } from "@/core/core.mjs"
+import { coreEvents } from "@/core/events.mjs"
+import { clearAllRegisterGlows } from "@/core/register/registerGlowState.mjs"
 
 import Register from "./Register.vue"
 import RegisterSpaceView from "./RegisterSpaceView.vue"
@@ -49,160 +51,122 @@ export default defineComponent({
     return {
       register_file: REGISTERS,
 
-      reg_name_representation_options: [
-        { text: "Name", value: "logical" },
-        { text: "Alias", value: "alias" },
-        { text: "All", value: "all" },
-      ],
-
-      render: 0, // dummy variable to force components with this as key to refresh
-
       // space modal
       spaceItem: null as RegisterDetailsItem | null,
       spaceView: false,
+
+      // collapsible state for each register bank
+      collapsedBanks: {} as Record<string, boolean>,
     }
   },
 
-  computed: {
-    // sync w/ root
-    reg_representation_value: {
-      get() {
-        return this.data_mode === "fp_registers"
-          ? this.reg_representation_float
-          : this.reg_representation_int
-      },
-      set(value: string) {
-        if (this.data_mode === "fp_registers") {
-          ;(this.$root as any).reg_representation_float = value
-        } else {
-          ;(this.$root as any).reg_representation_int = value
-        }
-      },
-    },
+  mounted() {
+    // Initialize all banks as expanded
+    this.register_file.forEach((bank: any) => {
+      this.collapsedBanks[bank.name] = false
+    })
 
-    // sync w/ root
-    reg_name_representation_value: {
-      get() {
-        return this.reg_name_representation
-      },
-      set(value: string) {
-        ;(this.$root as any).reg_name_representation = value
-      },
-    },
+    // Subscribe to register update events from core
+    coreEvents.on("register-updated", this.onRegisterUpdated)
+    coreEvents.on("registers-reset", this.onRegistersReset)
+    coreEvents.on("step-about-to-execute", this.clearAllGlows)
+  },
 
-    reg_representation_options() {
-      if (
-        this.data_mode === "int_registers" ||
-        this.data_mode === "ctrl_registers"
-      ) {
-        return [
-          { text: "Signed", value: "signed" },
-          { text: "Unsigned", value: "unsigned" },
-          { text: "Hex", value: "hex" },
-        ]
-      } else {
-        return [
-          { text: "IEEE 754 (32b)", value: "ieee32" },
-          { text: "IEEE 754 (64b)", value: "ieee64" },
-          { text: "Hex", value: "hex" },
-        ]
-      }
-    },
+  beforeUnmount() {
+    // Clean up event listeners
+    coreEvents.off("register-updated", this.onRegisterUpdated)
+    coreEvents.off("registers-reset", this.onRegistersReset)
+    coreEvents.off("step-about-to-execute", this.clearAllGlows)
   },
 
   methods: {
-    refresh() {
-      // refreshes children components with `:key="render"`
-      this.render++
+    onRegisterUpdated(payload: any) {
+      const { indexComp, indexElem } = payload
+      const register = REGISTERS[indexComp]?.elements[indexElem]
+      
+      if (!register) return
+      
+      // Update the specific register component
+      const refs = this.$refs[`reg${register.name[0]}`] as any
+      refs?.at?.(0)?.refresh()
+    },
+
+    onRegistersReset() {
+      // Refresh all register components when registers are reset
+      for (const bank of REGISTERS) {
+        for (const reg of bank.elements) {
+          const refs = this.$refs[`reg${reg.name[0]}`] as any
+          refs?.at?.(0)?.refresh()
+        }
+      }
+    },
+
+    clearAllGlows() {
+      // Clear glow effect from all registers (called before executing next instruction)
+      // Clear from persistent store
+      clearAllRegisterGlows()
+      
+      // Clear from all currently mounted register components
+      for (const bank of REGISTERS) {
+        for (const reg of bank.elements) {
+          const refs = this.$refs[`reg${reg.name[0]}`] as any
+          refs?.at?.(0)?.clearGlow()
+        }
+      }
+    },
+
+    toggleBank(bankName: string) {
+      this.collapsedBanks[bankName] = !this.collapsedBanks[bankName]
+    },
+
+    isBankCollapsed(bankName: string): boolean {
+      return this.collapsedBanks[bankName] || false
     },
   },
 })
 </script>
 
 <template>
-  <b-container fluid align-h="between" class="mx-0 my-3 px-2">
-    <b-row cols-xl="2" cols-lg="1" cols-md="2" cols-sm="1" cols-xs="1" cols="1">
-      <b-col cols="12" xl="6" md="6" align-h="start" class="px-2 col">
-        <div class="border m-1 py-1 px-2">
-          <b-badge
-            :variant="dark ? 'dark' : 'light'"
-            class="h6 border my-0 groupLabelling"
-          >
-            Register value representation
-          </b-badge>
-          <b-form-radio-group
-            :class="{ 'w-100': true, 'mb-1': true, border: dark }"
-            v-model="reg_representation_value"
-            :options="reg_representation_options"
-            :button-variant="dark ? 'dark' : 'outline-secondary'"
-            size="sm"
-            buttons
-          />
-        </div>
-      </b-col>
-
-      <b-col cols="12" xl="6" md="6" align-h="end" class="px-2 col">
-        <div class="border m-1 py-1 px-2">
-          <b-badge
-            :variant="dark ? 'dark' : 'light'"
-            class="h6 border my-0 groupLabelling"
-          >
-            Register name representation
-          </b-badge>
-
-          <b-form-radio-group
-            :class="{ 'w-100': true, 'mb-1': true, border: dark }"
-            v-model="reg_name_representation_value"
-            :options="reg_name_representation_options"
-            :button-variant="dark ? 'dark' : 'outline-secondary'"
-            outline
-            size="sm"
-            buttons
-          />
-        </div>
-      </b-col>
-    </b-row>
-  </b-container>
-
-  <b-container fluid align-h="center" class="mx-0 px-3 my-2">
-    <b-row align-h="center" cols="1">
-      <b-col v-for="bank in register_file">
-        <b-container
-          fluid
-          align-h="center"
-          class="px-0 mx-0 mb-2"
-          v-if="
-            data_mode === bank.type ||
-            (data_mode === 'int_registers' && bank.type === 'ctrl_registers')
-          "
-        >
-          <b-row
-            align-h="start"
-            cols-xl="4"
-            cols-lg="4"
-            cols-md="4"
-            cols-sm="3"
-            cols-xs="3"
-            cols="3"
-          >
-            <b-col class="p-1 mx-0" v-for="(register, _index) in bank.elements">
-              <Register
-                :type="bank.type"
-                :double_precision="bank.double_precision"
-                :register="register"
-                :name_representation="reg_name_representation_value"
-                :value_representation="reg_representation_value"
-                :ref="`reg${register.name[0]}`"
-                :key="render"
-                @register-details="
-                  (item: RegisterDetailsItem) => {
-                    spaceItem = item
-                    showSpaceView()
-                  }
-                "
-              />
+  <b-container fluid align-h="center" class="mx-0 px-0 my-0 register-file-container">
+    <b-row align-h="center" cols="1" class="register-file-content">
+      <b-col v-for="bank in register_file" :key="bank.name">
+        <b-container fluid>
+          <!-- Register bank name with collapse button -->
+          <b-row>
+            <b-col>
+              <button 
+                class="bank-header"
+                @click="toggleBank(bank.name)"
+                :aria-expanded="!isBankCollapsed(bank.name)"
+              >
+                <font-awesome-icon 
+                  :icon="['fas', isBankCollapsed(bank.name) ? 'chevron-right' : 'chevron-down']" 
+                  class="collapse-icon"
+                />
+                <h5 class="mb-0 bank-title">
+                  {{ bank.name }}
+                </h5>
+              </button>
             </b-col>
           </b-row>
+          <!-- Collapsible register content -->
+          <b-collapse :visible="!isBankCollapsed(bank.name)">
+            <b-row align-h="start" cols="2" cols-sm="3" cols-md="3" cols-lg="4" cols-xl="5">
+              <b-col class="p-1 mx-0" v-for="(register, regIndex) in bank.elements" :key="register.name[0]">
+                <Register :type="bank.type" :double_precision="bank.double_precision" :register="register"
+                  :name_representation="reg_name_representation"
+                  :value_representation="reg_representation_int"
+                  :indexComp="register_file.indexOf(bank)"
+                  :indexElem="regIndex"
+                  :ref="`reg${register.name[0]}`" @register-details="
+                    (item: RegisterDetailsItem) => {
+                      spaceItem = item
+                      showSpaceView()
+                    }
+                  " />
+              </b-col>
+            </b-row>
+          </b-collapse>
         </b-container>
       </b-col>
     </b-row>
@@ -219,10 +183,88 @@ export default defineComponent({
   <RegisterSpaceView id="registerSpaceView" :item="spaceItem" />
 </template>
 
-<style lang="scss" scoped>
-:deep(.registerValue) {
-  font-family: monospace;
-  font-weight: normal;
-  font-size: 0.7em;
+<style scoped>
+.register-file-container {
+  height: 100%;
+  max-height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(139, 148, 158, 0.3) transparent;
+  padding: 0;
+  margin: 0;
+}
+
+.register-file-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.register-file-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.register-file-container::-webkit-scrollbar-thumb {
+  background-color: rgba(139, 148, 158, 0.3);
+  border-radius: 4px;
+}
+
+.register-file-container::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(139, 148, 158, 0.5);
+}
+
+.register-file-content {
+  min-height: min-content;
+}
+
+/* Collapsible bank header - libadwaita style */
+.bank-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 4px 8px;
+  border: none;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 150ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  text-align: left;
+}
+
+.bank-header:hover {
+  background-color: color-mix(in srgb, currentColor 10%, transparent);
+}
+
+.bank-header:active {
+  background-color: color-mix(in srgb, currentColor 15%, transparent);
+}
+
+.bank-header:focus-visible {
+  outline: 2px solid color-mix(in srgb, currentColor 50%, transparent);
+  outline-offset: 2px;
+}
+
+.collapse-icon {
+  font-size: 12px;
+  opacity: 0.7;
+  transition: transform 150ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.bank-title {
+  flex: 1;
+  font-weight: 600;
+  user-select: none;
+}
+
+/* Dark theme support */
+@media (prefers-color-scheme: dark) {
+  .bank-header:hover {
+    background-color: color-mix(in srgb, currentColor 15%, transparent);
+  }
+  
+  .bank-header:active {
+    background-color: color-mix(in srgb, currentColor 20%, transparent);
+  }
 }
 </style>

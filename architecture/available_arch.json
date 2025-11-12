@@ -11,7 +11,7 @@
       "rv32"
     ],
     "file": "RISCV/RV32IMFD",
-    "img": "riscv.webp",
+    "img": "riscv.png",
     "alt": "RISC-V",
     "id": "select_confRISV",
     "examples": ["default"],
@@ -19,23 +19,43 @@
     "guide": "guides/riscv.pdf",
     "available": true
   },
+    {
+    "name": "RISC-V (RV64IMFD)",
+    "alias": [
+      "RISC-V (RV64IMFD)",
+      "RISC-V",
+      "risc-v",
+      "RV",
+      "rv",
+      "RV64",
+      "rv64"
+    ],
+    "file": "RISCV/RV64IMFD",
+    "img": "riscv.png",
+    "alt": "RISC-V",
+    "id": "select_confRISV",
+    "examples": ["default"],
+    "description": "RISC-V is an instruction set architecture (ISA) based on the RISC type and its hardware is free. This architecture was created in 2010 at the University of California, Berkeley.",
+    "guide": "/guides/riscv.pdf",
+    "available": true
+  },
   {
     "name": "RISC-V (RV32IMFD, Interrupts)",
     "alias": [""],
     "file": "RISCV/RV32IMFD-Interrupts",
-    "img": "riscv.webp",
+    "img": "riscv.png",
     "alt": "",
     "id": "select_confRISCVI",
     "examples": ["default"],
     "description": "RISC-V, with interrupts.",
     "guide": "",
-    "available": false
+    "available": true
   },
   {
     "name": "MIPS-32",
     "alias": ["MIPS-32", "mips-32", "MIPS32", "mips32"],
     "file": "MIPS32",
-    "img": "mips.webp",
+    "img": "mips.png",
     "alt": "MIPS-32",
     "id": "select_confMIPS",
     "examples": ["default"],
@@ -47,7 +67,7 @@
     "name": "Z80",
     "alias": ["Z80"],
     "file": "Z80",
-    "img": "z80.webp",
+    "img": "zilog.svg",
     "alt": "Z80",
     "id": "select_confZ80",
     "examples": [],

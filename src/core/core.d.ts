@@ -49,6 +49,7 @@ type Instruction = {
     description: string;
     type: string;
     signature_definition: string;
+    signature_pretty: string;
     nwords: number;
     clk_cycles: number;
     fields: InstructionField[];
@@ -61,6 +62,7 @@ type PseudoInstruction = {
     name: string;
     description: string;
     signature_definition: string;
+    signature_pretty: string;
     fields: PseudoInstructionField[];
     definition: string;
     properties?: string[];
@@ -82,7 +84,7 @@ export declare const REGISTERS: RegisterBank[];
 type Architecture = {
     config: {
         name: string;
-        wordSize: number;
+        word_size: number;
         description: string;
         endianness: string;
         memory_alignment: string;
@@ -140,6 +142,13 @@ type Status = {
     interrupts_enabled: boolean;
 };
 export declare const status: Status;
+
+type GUIVariables = {
+    previous_PC: bigint;
+    keep_highlighted: bigint;
+};
+
+export declare const guiVariables: GUIVariables;
 
 import type { Memory } from "./memory/Memory.mts";
 export declare const main_memory: Memory;

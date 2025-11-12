@@ -1,6 +1,6 @@
 <!--
 Copyright 2018-2025 Felix Garcia Carballeira, Diego Camarmas Alonso,
-                    Alejandro Calderon Mateos, Luis Daniel Casais Mezquida
+                    Alejandro Calderon Mateos, Jorge Ramos Santana
 
 This file is part of CREATOR.
 

@@ -1,6 +1,6 @@
 <!--
 Copyright 2018-2025 Felix Garcia Carballeira, Diego Camarmas Alonso,
-                    Alejandro Calderon Mateos, Luis Daniel Casais Mezquida
+                    Alejandro Calderon Mateos, Jorge Ramos Santana
 
 This file is part of CREATOR.
 
@@ -18,94 +18,101 @@ You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<script lang="ts">
-import { defineComponent, type PropType } from "vue"
-import Codemirror from "vue-codemirror6"
-import { vim, Vim } from "@replit/codemirror-vim"
-import { type LanguageSupport, StreamLanguage } from "@codemirror/language"
-import { gas } from "@codemirror/legacy-modes/mode/gas"
-import { EditorView } from "codemirror"
-import { keymap, type Command } from "@codemirror/view"
-import { tags as t } from "@lezer/highlight"
-import { createTheme } from "@uiw/codemirror-themes"
+<script setup lang="ts">
+import { ref, watch, onMounted, onBeforeUnmount, type PropType } from "vue"
+import * as monaco from "monaco-editor"
+import { initVimMode, VimMode } from "monaco-vim"
 
-import { creator_ga } from "@/core/utils/creator_ga.mjs"
-import { loadedLibrary } from "@/core/core.mjs"
+import { assembly_compile, reset, status, architecture } from "@/core/core.mjs"
+import { resetStats } from "@/core/executor/stats.mts"
+import { registerAssemblyLanguages } from "@/web/monaco/languages/index"
+import { registerCreatorThemes } from "@/web/monaco/themes"
+import {
+  setupSemanticValidation,
+  clearValidationMarkers,
+} from "@/web/monaco/validation"
+import { assemblerMap, getDefaultCompiler } from "@/web/assemblers"
 
-import PopoverShortcuts from "./PopoverShortcuts.vue"
+// Setup Monaco Environment for Vite
+self.MonacoEnvironment = {
+  getWorker(_workerId: string, label: string) {
+    const getWorkerModule = (moduleUrl: string, label: string) => {
+      return new Worker(
+        (import.meta.env?.DEV ? "" : (import.meta.env?.BASE_URL ?? "")) +
+          moduleUrl,
+        {
+          name: label,
+          type: "module",
+        },
+      )
+    }
 
-// themes designed by @joseaverde
-const creatorLightTheme = createTheme({
-  theme: "light",
-  settings: {
-    background: "#ffffff",
-    backgroundImage: "",
-    foreground: "#202020",
-    caret: "#222222",
-    selection: "#33333340",
-    selectionMatch: "#33333340",
-    lineHighlight: "#8a91991a",
-    gutterBorder: "1px solid #33333310",
-    gutterBackground: "#f5f5f5",
-    gutterForeground: "#6c6c6c",
+    switch (label) {
+      case "json":
+        return getWorkerModule(
+          "/monaco-editor/esm/vs/language/json/json.worker?worker",
+          label,
+        )
+      case "css":
+      case "scss":
+      case "less":
+        return getWorkerModule(
+          "/monaco-editor/esm/vs/language/css/css.worker?worker",
+          label,
+        )
+      case "html":
+      case "handlebars":
+      case "razor":
+        return getWorkerModule(
+          "/monaco-editor/esm/vs/language/html/html.worker?worker",
+          label,
+        )
+      case "typescript":
+      case "javascript":
+        return getWorkerModule(
+          "/monaco-editor/esm/vs/language/typescript/ts.worker?worker",
+          label,
+        )
+      default:
+        return getWorkerModule(
+          "/monaco-editor/esm/vs/editor/editor.worker?worker",
+          label,
+        )
+    }
   },
-  styles: [
-    { tag: t.comment, color: "#586e75", fontStyle: "italic" },
-    { tag: t.variableName, color: "#2aa198", fontWeight: "bold" },
-    {
-      tag: [t.string, t.special(t.brace)],
-      color: "#d33682",
-      fontStyle: "bold",
-    },
-    { tag: t.number, color: "#d33682" },
-    { tag: t.bool, color: "#d33682" },
-    { tag: t.null, color: "#d33682" },
-    { tag: t.keyword, color: "#b58900", fontWeight: "bold" },
-    { tag: t.operator, color: "#b58900", fontWeight: "bold" },
-    { tag: t.className, color: "#cb4b16", fontWeight: "bold" },
-    { tag: t.definition(t.typeName), color: "#5c6166" },
-    { tag: t.typeName, color: "#2aa198" },
-    { tag: t.angleBracket, color: "#89fb98" },
-    { tag: t.tagName, color: "#b58900", fontWeight: "bold" },
-    { tag: t.attributeName, color: "#cb4b16" },
-  ],
+}
+
+// Register custom themes once (using IIFE to avoid lint warning)
+
+registerCreatorThemes()
+
+const props = defineProps({
+  os: { type: String, required: true },
+  assembly_code: { type: String, required: true },
+  vim_mode: { type: Boolean, required: true },
+  vim_custom_keybinds: {
+    type: Array as PropType<VimKeybind[]>,
+    required: true,
+  },
+  height: { type: String, required: true },
+  dark: { type: Boolean, required: true },
 })
 
-const creatorDarkTheme = createTheme({
-  theme: "dark",
-  settings: {
-    background: "#333333",
-    backgroundImage: "",
-    foreground: "#ffffff",
-    caret: "#f0f0f0",
-    selection: "#f0f0f040",
-    selectionMatch: "#f0f0f040",
-    lineHighlight: "#f0f0f020",
-    gutterBorder: "1px solid #ffffff10",
-    gutterBackground: "#202020",
-    gutterForeground: "#f0f0f0",
-  },
-  styles: [
-    { tag: t.comment, color: "#6dceeb", fontStyle: "italic" },
-    { tag: t.variableName, color: "#bdb76b", fontWeight: "bold" }, // directives (.text, etc)
-    {
-      tag: [t.string, t.special(t.brace)],
-      color: "#ffa0a0",
-      fontStyle: "bold",
-    },
-    { tag: t.number, color: "#ffa0a0" },
-    { tag: t.bool, color: "#ffa0a0" },
-    { tag: t.null, color: "#ffa0a0" },
-    { tag: t.keyword, color: "#f0e68c", fontWeight: "bold" },
-    { tag: t.operator, color: "#f0e68c", fontWeight: "bold" },
-    { tag: t.className, color: "#ffde9b", fontWeight: "bold" },
-    { tag: t.definition(t.typeName), color: "#5c6166" },
-    { tag: t.typeName, color: "#bdb76b" },
-    { tag: t.angleBracket, color: "#89fb98" },
-    { tag: t.tagName, color: "#f0e68c", fontWeight: "bold" },
-    { tag: t.attributeName, color: "#ffde9b" },
-  ],
-})
+const editorContainer = ref<HTMLDivElement | null>(null)
+let editor: monaco.editor.IStandaloneCodeEditor | null = null
+let validationDisposable: monaco.IDisposable | null = null
+
+// Get the selected compiler from the architecture or use default
+const getSelectedCompiler = () => {
+  const defaultCompiler = getDefaultCompiler(architecture)
+
+  // Try to get the selected compiler from AssemblyActions component if available
+  const root = (document as any).app
+  const assemblyActions = root?.$refs?.navbar?.$refs?.assemblyActions
+  const selectedCompiler = assemblyActions?.selectedCompiler || defaultCompiler
+
+  return selectedCompiler
+}
 
 /**
  * Handler for the Ctrl-s keydown event that disables its default action
@@ -119,199 +126,252 @@ const ctrlSHandler = (e: KeyboardEvent) => {
   }
 }
 
-export default defineComponent({
-  props: {
-    os: { type: String, required: true },
-    assembly_code: { type: String, required: true },
-    vim_mode: { type: Boolean, required: true },
-    vim_custom_keybinds: {
-      type: Array as PropType<VimKeybind[]>,
-      required: true,
-    },
-    height: { type: String, required: true },
-    dark: { type: Boolean, required: true },
-  },
+const assemble = async () => {
+  // TODO: call the function defined in AssemblyActions.vue
 
-  components: {
-    PopoverShortcuts,
-    Codemirror,
-  },
+  // Get root - document.app is the mounted root component (App.vue)
+  const root = (document as any).app
 
-  // we want to use Ctrl-s to assemble, so we disable its default action when
-  // mounting the component and re-enable it when unmounting
-  mounted() {
-    document.addEventListener("keydown", ctrlSHandler, false)
-  },
+  if (!root) {
+    console.error("Could not access root component")
+    return true
+  }
 
-  unmounted() {
-    document.removeEventListener("keydown", ctrlSHandler)
-  },
+  // Reset simulator
+  root.keyboard = ""
+  root.display = ""
+  root.enter = null
+  reset()
 
-  setup() {
-    // GNU Assembler
-    const lang = StreamLanguage.define(gas) as unknown as LanguageSupport
+  // Reset stats
+  resetStats()
+  status.executedInstructions = 0
+  status.clkCycles = 0
 
-    return { lang }
-  },
+  // Get the selected compiler and assemble the code
+  const selectedCompilerName = getSelectedCompiler()
+  const assemblerFn = assemblerMap[selectedCompilerName]
+  const ret = await (assemblerFn
+    ? assembly_compile(root.assembly_code, assemblerFn)
+    : assembly_compile(root.assembly_code))
 
-  computed: {
-    vimActive: {
-      get() {
-        return this.vim_mode
-      },
-      set(value: boolean) {
-        ;(this.$root as any).vim_mode = value
+  // Handle results
+  if (ret.status !== "ok") {
+    root.assemblyError = ret.msg
+    // Trigger error modal - emit event to show error
+    root.$emit("show-assembly-error")
+  } else {
+    // Compilation successful
+    root.creator_mode = "simulator"
+  }
 
-        localStorage.setItem("conf_vim_mode", value.toString())
+  return true
+}
 
-        // Google Analytics
-        creator_ga(
-          "configuration",
-          "configuration.vim_mode",
-          "configuration.vim_mode." + value,
-        )
-      },
-    },
-    code: {
-      // sync with App's
-      get() {
-        return this.assembly_code
-      },
-      set(value: string) {
-        ;(this.$root as any).assembly_code = value
-      },
-    },
+let vimMode: any
+const setVimMode = (enabled: boolean) => {
+  if (enabled) {
+    // enable Vim
+    vimMode = initVimMode(
+      editor,
+      // initVimMode requires an ICoreEditor, so...
+      // editor!.getEditors().at(0),
+      document.getElementById("vim-statusbar"),
+    )
 
-    extensions() {
-      const extensions = [
-        // basicSetup covers most of the required extensions
+    // add commands
+    VimMode.Vim.defineEx("write", "w", assemble)
+    VimMode.Vim.defineEx("xit", "x", assemble)
 
-        // editor theme
-        this.dark ? creatorDarkTheme : creatorLightTheme,
+    // add keybindings
+    for (const { mode, lhs, rhs } of props.vim_custom_keybinds) {
+      VimMode.Vim.map(lhs, rhs, mode)
+    }
+  } else {
+    // disable Vim
+    vimMode?.dispose()
+  }
+}
 
-        // fixed height editor
-        EditorView.theme({
-          "&": { height: this.height },
-          ".cm-scroller": { overflow: "auto" },
-        }),
+onMounted(() => {
+  document.addEventListener("keydown", ctrlSHandler, false)
 
-        // Ctrl-s to assemble
-        keymap.of([
-          { key: "Ctrl-s", mac: "Cmd-s", run: this.assemble as Command },
-        ]),
-      ]
+  if (!editorContainer.value) return
 
-      // vim mode
-      if (this.vimActive) {
-        extensions.push(vim()) // add extension
+  // Register language support dynamically from architecture
+  // Cast to any to handle extended properties not in the type definition
+  registerAssemblyLanguages(architecture as any)
 
-        // load custom keybinds
-        for (const { mode, lhs, rhs } of this.vim_custom_keybinds) {
-          Vim.map(lhs, rhs, mode)
-        }
+  // Determine language ID (same logic as in registerAssemblyLanguages):
+  // 1. If syntax is explicitly set, use it (could be custom language or "plaintext")
+  // 2. Otherwise, use architecture name
+  const architectureName = (architecture?.config as any)?.name || "Assembly"
+  const languageId = (architecture?.config as any)?.syntax
+    ? (architecture?.config as any).syntax
+    : architectureName.toLowerCase().replace(/\s+/g, "-")
 
-        // map Vim commands to functions
-        Vim.defineEx("write", "w", () => this.assemble())
-        Vim.defineEx("xit", "x", () => this.assemble())
+  // Create Monaco Editor instance
+  editor = monaco.editor.create(editorContainer.value, {
+    value: props.assembly_code,
+    language: languageId,
+    theme: props.dark ? "creator-dark" : "creator-light",
+    automaticLayout: true,
+    fontSize: 14,
+    minimap: { enabled: true },
+    scrollBeyondLastLine: false,
+    wordWrap: "on",
+    tabSize: 4,
+    folding: true,
+    lineDecorationsWidth: 10,
+    lineNumbersMinChars: 3,
+    occurrencesHighlight: "off",
+    stickyScroll: { enabled: false },
+  })
+
+  // Add Ctrl+S / Cmd+S keybinding
+  editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => {
+    assemble()
+  })
+
+  // Listen to content changes and update parent immediately
+  editor.onDidChangeModelContent(() => {
+    // document.app is the mounted root component (App.vue)
+    const root = (document as any).app
+    if (root && editor) {
+      const newValue = editor.getValue()
+      root.assembly_code = newValue
+
+      // Also save to localStorage for persistence
+      try {
+        localStorage.setItem("creator_assembly_code", newValue)
+      } catch (e) {
+        console.warn("Failed to save to localStorage:", e)
       }
+    }
+  })
 
-      return extensions
-    },
-  },
+  // Auto-focus on desktop
+  if (props.os !== "mobile") {
+    editor.focus()
+  }
 
-  methods: {
-    assemble() {
-      // I know, this line also breaks my heart, and I wrote it
-      ;(this.$root as any).$refs.assemblyView.$refs.toolbar.$refs.btngroup1
-        .at(0)
-        .assembly_compiler()
+  // Setup semantic validation
+  // The validation system will automatically use the correct assembler from architecture.config.assemblers
+  validationDisposable = setupSemanticValidation(
+    editor,
+    architecture as any,
+    1500, // 1.5 second debounce
+  )
 
-      return true // this is only to make it compatible with `Command`
-    },
-
-    toggleVim() {
-      this.vimActive = !this.vimActive
-    },
-
-    libraryLoaded() {
-      return Object.keys(loadedLibrary).length !== 0
-    },
-
-    libraryTags() {
-      if (!this.libraryLoaded()) {
-        return []
-      }
-      return loadedLibrary?.instructions_tag.filter(t => t.globl)
-    },
-  },
+  // vim mode
+  setVimMode(props.vim_mode)
 })
+
+onBeforeUnmount(() => {
+  document.removeEventListener("keydown", ctrlSHandler)
+
+  // Clean up validation
+  if (validationDisposable) {
+    validationDisposable.dispose()
+  }
+
+  // Dispose editor - no need to save since onDidChangeModelContent already handles it
+  if (editor) {
+    editor.dispose()
+  }
+})
+
+// Watch for external code changes (e.g., when loading a new file)
+watch(
+  () => props.assembly_code,
+  newCode => {
+    if (editor && editor.getValue() !== newCode) {
+      // Preserve cursor position if possible
+      const position = editor.getPosition()
+      editor.setValue(newCode)
+      if (position) {
+        editor.setPosition(position)
+      }
+    }
+  },
+)
+
+// Watch for theme changes
+watch(
+  () => props.dark,
+  isDark => {
+    if (editor) {
+      monaco.editor.setTheme(isDark ? "creator-dark" : "creator-light")
+    }
+  },
+)
+
+// Watch for Vim mode
+watch(() => props.vim_mode, setVimMode)
+
+// Watch for architecture changes and update language support
+watch(
+  () => architecture,
+  newArchitecture => {
+    if (newArchitecture && editor) {
+      // Register new language support
+      registerAssemblyLanguages(newArchitecture as any)
+
+      // Determine language ID (same logic as above)
+      const architectureName =
+        (newArchitecture?.config as any)?.name || "Assembly"
+      const languageId = (newArchitecture?.config as any)?.syntax
+        ? (newArchitecture?.config as any).syntax
+        : architectureName.toLowerCase().replace(/\s+/g, "-")
+
+      const model = editor.getModel()
+      if (model) {
+        monaco.editor.setModelLanguage(model, languageId)
+      }
+
+      // Restart validation with new architecture
+      // The validation system will automatically detect the correct assembler
+      if (validationDisposable) {
+        validationDisposable.dispose()
+      }
+      clearValidationMarkers(editor)
+      validationDisposable = setupSemanticValidation(
+        editor,
+        newArchitecture as any,
+        1500, // 1.5 second debounce
+      )
+    }
+  },
+  { deep: true },
+)
 </script>
 
 <template>
-  <PopoverShortcuts target="assemblyInfo" :vim_mode="vimActive" :os="os" />
-
-  <b-row cols="2" class="mb-3" align-h="between">
-    <!-- Vim button -->
-    <b-col cols="11">
-      <b-button
-        class="actionsGroup"
-        variant="outline-secondary"
-        size="sm"
-        :pressed="vimActive"
-        @click="toggleVim()"
-        title="Enable Vim mode"
-      >
-        <font-awesome-icon :icon="['fab', 'vimeo-v']" /> Vim
-      </b-button>
-    </b-col>
-
-    <!-- Library tags -->
-    <b-col cols="1" class="d-grid">
-      <b-popover click placement="bottom">
-        <!-- v-if="libraryLoaded()" -->
-        <template #target>
-          <b-button variant="outline-secondary" size="sm">
-            Library tags
-            <font-awesome-icon size="xs" :icon="['fa', 'caret-down']" />
-          </b-button>
-        </template>
-
-        <b-list-group>
-          <b-list-group-item v-for="tag of libraryTags()">
-            <b-badge pill variant="primary">
-              {{ tag.tag }}
-            </b-badge>
-          </b-list-group-item>
-        </b-list-group>
-      </b-popover>
-    </b-col>
-  </b-row>
-
-  <font-awesome-icon id="assemblyInfo" icon="circle-info" />&nbsp;
-  <span class="h5">Assembly:</span>
-
-  <Codemirror
-    ref="textarea"
-    class="codeArea"
-    placeholder="Assembly code..."
-    v-model="code"
-    basic
-    wrap
-    tab
-    :tab-size="4"
-    :lang="lang"
-    :extensions="extensions"
-    @ready="
-      ({ view }: { view: EditorView }) => {
-        view.focus()
-      }
-    "
-  />
+  <div class="editor-wrapper" :style="{ height: height }">
+    <div ref="editorContainer" class="monaco-editor-container" />
+    <div id="vim-statusbar" class="vim-statusbar"></div>
+  </div>
 </template>
 
 <style lang="scss" scoped>
-.codeArea {
-  border: 1px solid #eee;
-  font-size: 0.85em;
+.editor-wrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.monaco-editor-container {
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.vim-statusbar {
+  width: 100%;
+  flex-shrink: 0;
 }
 </style>

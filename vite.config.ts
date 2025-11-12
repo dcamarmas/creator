@@ -21,8 +21,7 @@ export default defineConfig({
           img: ["src"],
           "b-img": ["src"],
           "b-card-img": ["src"],
-          "b-card": ["img-src"],
-          CardAuthor: ["author_img"],
+          "b-card": ["img-src", "author_img"],
         },
       },
     }),
@@ -78,7 +77,6 @@ export default defineConfig({
       output: {
         // group libraries in chunks to reduce its size
         manualChunks: {
-          apexcharts: ["apexcharts", "vue3-apexcharts"],
           fontawesome: [
             "@fortawesome/fontawesome-svg-core",
             "@fortawesome/free-brands-svg-icons",
@@ -87,14 +85,7 @@ export default defineConfig({
             "@fortawesome/vue-fontawesome",
           ],
           bootstrap: ["bootstrap", "bootstrap-vue-next"],
-          codemirror: [
-            "codemirror",
-            "vue-codemirror6",
-            "@replit/codemirror-vim",
-            "@uiw/codemirror-themes",
-            "@codemirror/lang-yaml",
-            "@codemirror/language",
-          ],
+          monaco: ["monaco-editor", "monaco-vim", "monaco-yaml"],
         },
       },
     },

@@ -32,7 +32,7 @@ import {
   loadDefaultArchitecture,
   loadExample,
 } from "./utils.mjs"
-import { set_debug, status } from "@/core/core.mjs"
+import { set_debug, status, reset } from "@/core/core.mjs"
 import { stats } from "@/core/executor/stats.mts"
 import { instructions } from "@/core/assembler/assembler.mjs"
 import type { StackFrame } from "@/core/memory/StackTracker.mjs"
@@ -40,13 +40,18 @@ import { creator_ga } from "@/core/utils/creator_ga.mjs"
 
 import SpinnerLoading from "./components/general/SpinnerLoading.vue"
 import SupportedBrowsers from "./components/general/SupportedBrowsers.vue"
-import FormConfiguration from "./components/general/FormConfiguration.vue"
+import FormConfiguration from "./components/general/SettingsModal.vue"
 import UIeltoNotifications from "./components/general/UIeltoNotifications.vue"
 import NavbarCREATOR from "./components/general/NavbarCREATOR.vue"
 import UIeltoInstitutions from "./components/general/UIeltoInstitutions.vue"
-import UIeltoAbout from "./components/general/UIeltoAbout.vue"
-import SidebarInstructionHelp from "./components/general/SidebarInstructionHelp.vue"
+import UIeltoAbout from "./components/general/AboutModal.vue"
 import UIeltoBackup from "./components/select_architecture/UIeltoBackup.vue"
+import MobileSettings from "./components/mobile/MobileSettings.vue"
+import MobileCodeView from "./components/mobile/MobileCodeView.vue"
+import MobileArchitectureSelect from "./components/mobile/MobileArchitectureSelect.vue"
+import MobileInstructionsView from "./components/mobile/MobileInstructionsView.vue"
+import MobileDataView from "./components/mobile/MobileDataView.vue"
+import MobileArchitectureView from "./components/mobile/MobileArchitectureView.vue"
 
 import SelectArchitecture from "./components/SelectArchitecture.vue"
 import ArchitectureView from "./components/ArchitectureView.vue"
@@ -76,8 +81,13 @@ export default {
     NavbarCREATOR,
     UIeltoInstitutions,
     UIeltoAbout,
-    SidebarInstructionHelp,
     UIeltoBackup,
+    MobileSettings,
+    MobileCodeView,
+    MobileArchitectureSelect,
+    MobileInstructionsView,
+    MobileDataView,
+    MobileArchitectureView,
 
     SelectArchitecture,
     ArchitectureView,
@@ -110,13 +120,16 @@ export default {
       version: package_json.version,
       simulatorViewKey: 0, // Add a key for SimulatorView to force re-render
 
+      // Force recomputation of arch_available when architectures change
+      customArchitecturesKey: 0,
+
       // Architecture name and guide
       architecture_name: "",
       architecture_guide: "",
 
       // Accesskey
-      os: "" as string | null,
-      browser: "" as string | null,
+      os: "" as string | undefined,
+      browser: "" as string | undefined,
 
       // Displayed notifications
       notifications,
@@ -124,6 +137,24 @@ export default {
       // window size
       windowHeight: window.innerHeight,
       windowWidth: window.innerWidth,
+
+      // Mobile view
+      mobileView: "code" as
+        | "code"
+        | "instructions"
+        | "data"
+        | "architecture"
+        | "settings",
+
+      // Mobile data view state
+      mobileDataView: "registers" as
+        | "registers"
+        | "memory"
+        | "stats"
+        | "console",
+
+      // Mobile architecture view state
+      mobileArchitectureView: 'arch-info' as 'arch-info' | 'register-file' | 'instructions' | 'pseudoinstructions' | 'directives',
 
       //
       // Current view
@@ -168,9 +199,10 @@ export default {
       c_debug: false,
 
       // Dark Mode
-      dark: (a => {
-        return a === null ? null : a === "true"
-      })(localStorage.getItem("conf_dark_mode")), // if null (no localStorage), set to null, else cast to bool
+      dark: false, // the actual dark mode state
+      dark_mode_setting: localStorage.getItem("conf_dark_mode_setting") || "system", // "system", "dark", or "light"
+
+      mediaQuery: null as MediaQueryList | null,
 
       vim_mode: localStorage.getItem("conf_vim_mode") === "true",
 
@@ -226,7 +258,7 @@ export default {
       // we must store this data in the root, bc it resets when re-mounting a
       // component (in this case, RegisterFile)
       data_mode: "int_registers",
-      reg_representation_int: "signed",
+      reg_representation_int: "hex",
       reg_representation_float: "ieee32",
       reg_name_representation: "alias",
       memory_segment: "data",
@@ -271,20 +303,28 @@ export default {
   },
 
   computed: {
-    /**
-     * @returns {AvailableArch[]}
-     */
-    arch_available() {
+    arch_available(): AvailableArch[] {
+      // Use customArchitecturesKey to force recomputation when it changes
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+      this.customArchitecturesKey
+
       const architectures = arch_available.map(a => ({ ...a, default: true }))
       const customArchs = JSON.parse(
-        localStorage.getItem("customArchitectures")!,
+        localStorage.getItem("customArchitectures") || "[]",
       )
 
-      if (customArchs) {
+      if (customArchs && customArchs.length > 0) {
         architectures.push(...customArchs)
       }
 
       return architectures
+    },
+
+    /**
+     * @returns {boolean} True if the current viewport is mobile-sized
+     */
+    isMobile() {
+      return this.windowWidth <= 767
     },
   },
 
@@ -306,6 +346,13 @@ export default {
 
     // set config
     this.set_dark_mode()
+
+    // Listen for changes in system dark mode preference if setting is system
+    if (this.dark_mode_setting === "system") {
+      this.mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+      this.mediaQuery.addEventListener('change', this.handleDarkModeChange)
+    }
+
     set_debug(this.c_debug)
 
     // listener for window size changes
@@ -315,7 +362,20 @@ export default {
   },
 
   unmounted() {
+    if (this.mediaQuery) {
+      this.mediaQuery.removeEventListener('change', this.handleDarkModeChange)
+    }
     window.removeEventListener("resize", this.resizeHandler)
+  },
+
+  /***************
+   * Vue watchers *
+   ***************/
+
+  watch: {
+    dark_mode_setting(newSetting: string) {
+      this.handleDarkModeSettingChange(newSetting)
+    },
   },
 
   /***************
@@ -328,11 +388,19 @@ export default {
      *******************/
 
     /**
+     * Handle architecture deletion event
+     * Forces re-computation of arch_available computed property
+     */
+    handleArchitectureDeleted(_archName: string) {
+      this.customArchitecturesKey++
+    },
+
+    /**
      * Detects the operating system being used
      *
-     * @return  {String | Null} `"Win"`, `"Mac"`, or `"Linux"`
+     * @return `"Win"`, `"Mac"`, or `"Linux"`, `undefined` if not sure
      */
-    detect_os() {
+    detect_os(): string | undefined {
       if (navigator.userAgent.includes("Win")) {
         return "Win"
       }
@@ -345,15 +413,15 @@ export default {
       ) {
         return "Linux"
       }
-      return null
+      return undefined
     },
 
     /**
      * Detects the browser being used
      *
-     * @returns  {String | Null} `"Chrome"`, `"Firefox"`, or `"Safari"`
+     * @returns `"Chrome"`, `"Firefox"`, or `"Safari", ``undefined` if not sure
      */
-    detect_browser() {
+    detect_browser(): string | undefined {
       if (navigator.userAgent.includes("Chrome")) {
         return "Chrome"
       }
@@ -363,18 +431,15 @@ export default {
       if (navigator.userAgent.includes("Safari")) {
         return "Safari"
       }
-      return null
+      return undefined
     },
 
-    // Verify if dark mode was activated from cache
+    // Set dark mode based on setting
     set_dark_mode() {
-      if (this.dark === null) {
-        // detect prefered color scheme
-        if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-          this.dark = true
-        } else {
-          this.dark = false
-        }
+      if (this.dark_mode_setting === "system") {
+        this.dark = window.matchMedia("(prefers-color-scheme: dark)").matches
+      } else {
+        this.dark = this.dark_mode_setting === "dark"
       }
 
       // set dark mode (w/ bootstrap color themes)
@@ -481,6 +546,73 @@ export default {
       this.windowHeight = window.innerHeight
       this.windowWidth = window.innerWidth
     },
+
+    // Handle changes in system dark mode preference
+    handleDarkModeChange(e: MediaQueryListEvent) {
+      if (this.dark_mode_setting === "system") {
+        this.dark = e.matches
+        document.documentElement.setAttribute(
+          "data-bs-theme",
+          this.dark ? "dark" : "light",
+        )
+      }
+    },
+
+    // Handle dark mode setting change
+    handleDarkModeSettingChange(newSetting: string) {
+      this.dark_mode_setting = newSetting
+      localStorage.setItem("conf_dark_mode_setting", newSetting)
+
+      if (newSetting === "system") {
+        // Add listener if not already
+        if (!this.mediaQuery) {
+          this.mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+          this.mediaQuery.addEventListener('change', this.handleDarkModeChange)
+        }
+        this.dark = this.mediaQuery.matches
+      } else {
+        // Remove listener
+        if (this.mediaQuery) {
+          this.mediaQuery.removeEventListener('change', this.handleDarkModeChange)
+          this.mediaQuery = null
+        }
+        this.dark = newSetting === "dark"
+      }
+
+      document.documentElement.setAttribute(
+        "data-bs-theme",
+        this.dark ? "dark" : "light",
+      )
+    },
+
+    // Handle mobile view changes from navbar
+    handleMobileViewChange(
+      view: "code" | "instructions" | "data" | "architecture" | "settings",
+    ) {
+      this.mobileView = view
+    },
+
+    // Reset simulator state for mobile code view
+    resetSimulator() {
+      this.keyboard = ""
+      this.display = ""
+      this.enter = null
+      reset()
+    },
+
+    // Show toast notification for mobile code view
+    showToast(toastData: {
+      message: string
+      title: string
+      variant: "success" | "danger" | "warning" | "info"
+    }) {
+      this.createToast({
+        title: toastData.title,
+        body: toastData.message,
+        variant: toastData.variant,
+        solid: true,
+      })
+    },
   },
 }
 </script>
@@ -501,11 +633,24 @@ export default {
 
   <header>
     <!-- Navbar  -->
-    <NavbarCREATOR :version="version" :architecture_name="architecture_name" />
+    <NavbarCREATOR
+      :version="version"
+      :architecture_name="architecture_name"
+      :creator_mode="creator_mode"
+      :browser="browser"
+      :os="os"
+      :dark="dark"
+      :arch_available="arch_available"
+      :assembly_code="assembly_code"
+      :instructions="instructions"
+      @mobile-view-change="handleMobileViewChange"
+      ref="navbar"
+    />
 
     <!-- Configuration modal -->
     <FormConfiguration
       id="configuration"
+      class="bottomCard"
       v-model:arch_available="arch_available"
       v-model:default_architecture="default_architecture"
       v-model:stack_total_list="stack_total_list"
@@ -513,10 +658,13 @@ export default {
       v-model:backup="backup"
       v-model:instruction_help_size="instruction_help_size"
       v-model:notification_time="notification_time"
-      v-model:dark="dark"
+      v-model:dark_mode_setting="dark_mode_setting"
       v-model:c_debug="c_debug"
       v-model:vim_custom_keybinds="vim_custom_keybinds"
       v-model:vim_mode="vim_mode"
+      v-model:reg_representation_int="reg_representation_int"
+      v-model:reg_representation_float="reg_representation_float"
+      v-model:reg_name_representation="reg_name_representation"
     />
 
     <!-- Information modals -->
@@ -530,25 +678,33 @@ export default {
     <!-- About modal -->
     <UIeltoAbout id="about" :dark="dark!" />
 
-    <!-- Instruction Help sidebar -->
-    <!-- we don't want to load this unless we have selected an architecture -->
-    <SidebarInstructionHelp
-      v-if="architecture_name !== ''"
-      id="sidebar_help"
-      :architecture_name="architecture_name"
-      :instruction_help_size="instruction_help_size"
-    />
-
     <!-- Backup modal -->
     <UIeltoBackup id="copy" @load-architecture="creator_mode = 'assembly'" />
   </header>
+
+  <!-------------------->
+  <!-- Mobile Architecture Select -->
+  <!-------------------->
+
+  <MobileArchitectureSelect
+    v-if="isMobile"
+    :arch_available="arch_available"
+    :dark="dark"
+    @select-architecture="
+      arch_name => {
+        architecture_name = arch_name
+        creator_mode = 'simulator'
+        mobileView = 'code'
+      }
+    "
+  />
 
   <!----------------------->
   <!-- Select architecture -->
   <!----------------------->
 
   <SelectArchitecture
-    v-if="creator_mode === 'select_architecture'"
+    v-if="!isMobile && creator_mode === 'select_architecture'"
     :arch_available="arch_available"
     :browser="browser!"
     :os="os!"
@@ -561,6 +717,7 @@ export default {
         creator_mode = 'simulator'
       }
     "
+    @architecture-deleted="handleArchitectureDeleted"
   />
 
   <!------------------>
@@ -568,7 +725,7 @@ export default {
   <!------------------>
 
   <ArchitectureView
-    v-if="creator_mode === 'architecture'"
+    v-if="!isMobile && creator_mode === 'architecture'"
     :architecture_name="architecture_name"
     :arch_available="arch_available"
     :arch_code="arch_code"
@@ -581,7 +738,7 @@ export default {
   <!-- Assembly view -->
   <!------------------->
   <AssemblyView
-    v-if="creator_mode === 'assembly'"
+    v-if="!isMobile && creator_mode === 'assembly'"
     :architecture_name="architecture_name"
     :arch_available="arch_available"
     :browser="browser!"
@@ -599,7 +756,7 @@ export default {
   <!-------------------->
 
   <SimulatorView
-    v-if="creator_mode === 'simulator'"
+    v-if="!isMobile && creator_mode === 'simulator'"
     ref="simulatorView"
     :data_mode="data_mode"
     :reg_representation_int="reg_representation_int"
@@ -629,16 +786,143 @@ export default {
     :target_port="target_port"
     :flash_url="flash_url"
   />
+
+  <!-------------------->
+  <!-- Mobile Settings -->
+  <!-------------------->
+
+  <MobileSettings
+    v-if="
+      isMobile &&
+      mobileView === 'settings' &&
+      creator_mode !== 'select_architecture'
+    "
+    v-model:stack_total_list="stack_total_list"
+    v-model:autoscroll="autoscroll"
+    v-model:backup="backup"
+    v-model:notification_time="notification_time"
+    v-model:instruction_help_size="instruction_help_size"
+    v-model:dark_mode_setting="dark_mode_setting"
+    v-model:c_debug="c_debug"
+    v-model:vim_mode="vim_mode"
+    v-model:vim_custom_keybinds="vim_custom_keybinds"
+    v-model:reg_representation_int="reg_representation_int"
+    v-model:reg_representation_float="reg_representation_float"
+    v-model:reg_name_representation="reg_name_representation"
+  />
+
+  <!-------------------->
+  <!-- Mobile Code View -->
+  <!-------------------->
+
+  <MobileCodeView
+    v-if="
+      isMobile &&
+      mobileView === 'code' &&
+      creator_mode !== 'select_architecture'
+    "
+    :architecture_name="architecture_name"
+    v-model:assembly_code="assembly_code"
+    :dark="dark"
+    @assembly-error="assemblyError = $event"
+    @switch-to-simulator="creator_mode = 'simulator'"
+    @reset-simulator="resetSimulator"
+    @show-toast="showToast"
+  />
+
+  <!-------------------->
+  <!-- Mobile Instructions View -->
+  <!-------------------->
+
+  <MobileInstructionsView
+    v-if="
+      isMobile &&
+      mobileView === 'instructions' &&
+      creator_mode !== 'select_architecture'
+    "
+    :instructions="instructions"
+    :enter="enter"
+    :browser="browser!"
+    :os="os!"
+    :dark="dark!"
+    @reset-simulator="resetSimulator"
+    @show-toast="showToast"
+  />
+
+  <!-------------------->
+  <!-- Mobile Data View -->
+  <!-------------------->
+
+  <MobileDataView
+    ref="mobileDataView"
+    v-if="
+      isMobile &&
+      mobileView === 'data' &&
+      creator_mode !== 'select_architecture'
+    "
+    :data_mode="data_mode"
+    :reg_representation_int="reg_representation_int"
+    :reg_representation_float="reg_representation_float"
+    :reg_name_representation="reg_name_representation"
+    :stat_representation="stat_representation"
+    :stat_type="stat_type"
+    :memory_segment="memory_segment"
+    :display="display"
+    :keyboard="keyboard"
+    :enter="enter"
+    :dark="dark!"
+    :caller_frame="caller_frame!"
+    :callee_frame="callee_frame!"
+    :mobile_data_view="mobileDataView"
+    @update:mobile_data_view="mobileDataView = $event"
+  />
+
+  <!-------------------->
+  <!-- Mobile Architecture View -->
+  <!-------------------->
+
+  <MobileArchitectureView
+    v-if="
+      isMobile &&
+      mobileView === 'architecture' &&
+      creator_mode !== 'select_architecture'
+    "
+    :browser="browser!"
+    :os="os!"
+    :arch_available="arch_available"
+    :architecture_name="architecture_name"
+    :dark="dark!"
+    :arch_code="arch_code"
+    :mobile_architecture_view="mobileArchitectureView"
+    @update:mobile_architecture_view="mobileArchitectureView = $event"
+  />
 </template>
 
 <style lang="scss" scoped>
 :deep() {
   // applies to all sub-components
+  html,
   body {
     background-color: #ffffff;
-    overflow-x: hidden;
+    overflow: hidden; // Disable all scrolling
     font-size: 15px;
     height: 100vh;
+    width: 100vw;
+    position: fixed; // Prevent any scrolling on all devices
+
+    // Add padding for mobile safe areas
+    @media (max-width: 767px) {
+      padding-top: env(safe-area-inset-top);
+    }
+  }
+
+  #app {
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    position: fixed;
+    top: 0;
+    left: 0;
   }
 
   * {
@@ -742,14 +1026,6 @@ export default {
     max-width: 100%;
   }
 
-  .buttons {
-    width: 100%;
-    margin: 0px;
-    margin-top: 1px;
-    padding: 0px;
-    font-size: 1em;
-  }
-
   .menu {
     width: 100%;
     align-items: center;
@@ -767,28 +1043,8 @@ export default {
     padding: 0;
   }
 
-  .apexcharts-legend-text tspan:nth-child(1) {
-    font-weight: lighter;
-    fill: #999;
-  }
-
-  .apexcharts-legend-text tspan:nth-child(3) {
-    font-weight: bold;
-  }
-
   .fields {
     padding: 1%;
-  }
-
-  // for some reason this doesn't affect sub-components
-  [data-bs-theme="dark"] {
-    .buttonBackground {
-      background-color: #212529;
-      color: #818a8d;
-    }
-    .buttonBackground:hover {
-      background-color: #424649;
-    }
   }
 }
 </style>

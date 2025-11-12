@@ -19,6 +19,8 @@
  */
 
 export const keyboardBuffer = [];
+import { display_print } from "@/core/executor/IO.mjs";
+import { exit } from "@/core/executor/executor.mjs";
 
 function _isEvenParity(value) {
     let v = BigInt(value) & 0xffn;
@@ -466,11 +468,23 @@ export const ARCH = {
         if (portNum === 0x02) {
             // Screen Port
             const valNum = Number(value);
-            process.stdout.write(Buffer.from([valNum]));
+            // If in Deno then:
+            if (typeof Deno !== "undefined") {
+                process.stdout.write(Buffer.from([valNum]));
+            } else {
+                // In browser environment, use display_print
+                display_print(valNum);
+            }
         } else if (portNum === 0xfe) {
             // ZX Spectrum ULA port.
             // Bits 0-2 (the lower 3 bits) of the written value set the border color.
             this.borderColor = value & 0x07n;
+        } else if (portNum === 0x17) {
+            // CREATOR specific port for ecall
+            if (value === 10n) {
+                exit();
+            }
         }
+
     },
 };
