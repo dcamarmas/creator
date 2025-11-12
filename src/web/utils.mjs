@@ -24,6 +24,7 @@ import humanizeDuration from "humanize-duration";
 import { creator_ga } from "@/core/utils/creator_ga.mjs";
 import { loadArchitecture } from "@/core/core.mjs";
 import { console_log as clog } from "@/core/utils/creator_logger.mjs";
+import example_set from "../../examples/example_set.json" with { type: "json" };
 
 /*Stop the transmission of events to children*/
 export function destroyClickedElement(event) {
@@ -224,7 +225,7 @@ export async function loadExample(
             return;
         }
 
-        const setResponse = await fetch(setUrl);
+        const setResponse = await fetch(setUrl.url);
 
         if (!setResponse.ok) {
             show_notification(`'${set_name}' set not found`, "danger", root);

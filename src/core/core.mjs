@@ -228,6 +228,7 @@ export function loadArchitecture(architectureYaml, isa = []) {
  */
 export function load_library(lib_str) {
     loadedLibrary = JSON.parse(lib_str);
+    coreEvents.emit("library-loaded");
 }
 
 /**
@@ -235,6 +236,7 @@ export function load_library(lib_str) {
  */
 export function remove_library() {
     loadedLibrary = {};
+    coreEvents.emit("library-removed");
 }
 
 // compilation

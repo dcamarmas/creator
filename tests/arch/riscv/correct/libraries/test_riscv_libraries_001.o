@@ -66,19 +66,9 @@
       "globl": true
     },
     {
-      "tag": "bigger_symbol",
-      "addr": 8,
-      "globl": false
-    },
-    {
       "tag": "min",
       "addr": 12,
       "globl": true
     },
-    {
-      "tag": "minor_symbol",
-      "addr": 20,
-      "globl": false
-    }
   ]
 }

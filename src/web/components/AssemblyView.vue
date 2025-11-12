@@ -122,3 +122,6 @@ export default defineComponent({
     />
   </b-container>
 </template>
+
+<style scoped>
+</style>

@@ -59,9 +59,6 @@ export default defineComponent({
       // Load the last assembly code from cache
       ;(this.$root as any).assembly_code = localStorage.getItem("backup_asm")
 
-      // Refresh UI
-      show_notification("The backup has been loaded correctly", "success")
-
       this.$emit("load-architecture", this.backup_arch_name) // notify arch loaded
 
       this.show_modal = false

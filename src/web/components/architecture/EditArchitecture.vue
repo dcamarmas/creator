@@ -19,7 +19,7 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <script setup lang="ts">
-import { computed, defineProps, onMounted, ref, watch } from "vue"
+import { computed, defineProps, onMounted, onBeforeUnmount, ref, watch } from "vue"
 
 /* Monaco */
 import * as monaco from "monaco-editor"
@@ -125,13 +125,24 @@ watch(
 onMounted(() => {
   if (!editorContainer.value) return
 
-  editor = monaco.editor.create(editorContainer.value, {
-    automaticLayout: true,
-    model: monaco.editor.createModel(
+  // Get or create the model with a unique URI
+  const modelUri = monaco.Uri.parse("file:///architecture.yaml")
+  let model = monaco.editor.getModel(modelUri)
+  
+  if (!model) {
+    model = monaco.editor.createModel(
       architecture_value.value,
       undefined,
-      monaco.Uri.parse("file:///architecture.yaml"),
-    ),
+      modelUri,
+    )
+  } else {
+    // Update existing model with current value
+    model.setValue(architecture_value.value)
+  }
+
+  editor = monaco.editor.create(editorContainer.value, {
+    automaticLayout: true,
+    model,
     theme: props.dark ? "creator-dark" : "creator-light",
     fontSize: 14,
     minimap: { enabled: false },
@@ -166,6 +177,14 @@ onMounted(() => {
   // Auto-focus on desktop
   if (props.os !== "mobile") {
     editor.focus()
+  }
+})
+
+onBeforeUnmount(() => {
+  // Dispose of the editor when component is unmounted
+  if (editor) {
+    editor.dispose()
+    editor = null
   }
 })
 </script>

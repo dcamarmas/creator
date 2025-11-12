@@ -120,6 +120,9 @@ export default {
       version: package_json.version,
       simulatorViewKey: 0, // Add a key for SimulatorView to force re-render
 
+      // Force recomputation of arch_available when architectures change
+      customArchitecturesKey: 0,
+
       // Architecture name and guide
       architecture_name: "",
       architecture_guide: "",
@@ -301,12 +304,16 @@ export default {
 
   computed: {
     arch_available(): AvailableArch[] {
+      // Use customArchitecturesKey to force recomputation when it changes
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+      this.customArchitecturesKey
+
       const architectures = arch_available.map(a => ({ ...a, default: true }))
       const customArchs = JSON.parse(
-        localStorage.getItem("customArchitectures")!,
+        localStorage.getItem("customArchitectures") || "[]",
       )
 
-      if (customArchs) {
+      if (customArchs && customArchs.length > 0) {
         architectures.push(...customArchs)
       }
 
@@ -379,6 +386,14 @@ export default {
     /*******************
      * General methods *
      *******************/
+
+    /**
+     * Handle architecture deletion event
+     * Forces re-computation of arch_available computed property
+     */
+    handleArchitectureDeleted(_archName: string) {
+      this.customArchitecturesKey++
+    },
 
     /**
      * Detects the operating system being used
@@ -702,6 +717,7 @@ export default {
         creator_mode = 'simulator'
       }
     "
+    @architecture-deleted="handleArchitectureDeleted"
   />
 
   <!------------------>

@@ -64,8 +64,14 @@ export default {
     display(newValue, oldValue) {
       // When display changes, write to terminal
       if (this.terminal && newValue !== oldValue) {
-        const diff = newValue.slice(oldValue.length)
-        this.terminal.write(diff)
+        // If newValue is empty, clear the terminal completely
+        if (newValue === '') {
+          this.terminal.reset()
+          this.inputBuffer = ''
+        } else {
+          const diff = newValue.slice(oldValue.length)
+          this.terminal.write(diff)
+        }
       }
     },
   },

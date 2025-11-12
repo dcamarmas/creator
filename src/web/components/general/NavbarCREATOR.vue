@@ -35,7 +35,7 @@ import SentinelErrorsDropdown from "../simulator/SentinelErrorsDropdown.vue"
 import type { Instruction } from "@/core/assembler/assembler"
 import type { BDropdown } from "bootstrap-vue-next"
 import { coreEvents, CoreEventTypes } from "@/core/events.mjs"
-import { remove_library } from "@/core/core.mjs"
+import { remove_library, architecture } from "@/core/core.mjs"
 
 export default defineComponent({
   props: {
@@ -123,7 +123,17 @@ export default defineComponent({
       return this.creator_mode === "assembly"
     },
     showLibraryMenu() {
-      return this.creator_mode === "assembly"
+      if (this.creator_mode !== "assembly") {
+        return false
+      }
+      // Only show library menu if using CREATOR assembler
+      const assemblers = architecture?.config?.assemblers || []
+      // If no assemblers configured, default is CREATOR
+      if (assemblers.length === 0) {
+        return true
+      }
+      // Check if CreatorCompiler is in the list
+      return assemblers.some((asm: any) => asm.name === "CreatorCompiler")
     },
 
     // Hide mobile navbar when selecting architecture
@@ -393,10 +403,6 @@ export default defineComponent({
         <b-dropdown-item @click="removeLibrary">
           <font-awesome-icon :icon="['fas', 'trash-can']" class="me-2" />
           Remove Library
-        </b-dropdown-item>
-        <b-dropdown-item v-b-modal.library_tags>
-          <font-awesome-icon :icon="['fas', 'tags']" class="me-2" />
-          Library Tags...
         </b-dropdown-item>
       </b-nav-item-dropdown>
 

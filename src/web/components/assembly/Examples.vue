@@ -255,7 +255,7 @@ export default defineComponent({
       "
       class="h6"
     >
-      There are no examples at the moment.
+      No examples available for this architecture.
     </span>
 
     <!-- examples -->
