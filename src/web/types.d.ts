@@ -81,3 +81,39 @@ type ExecutionResult = {
     type?: string | null;
     draw?: ExecutionDraw;
 };
+
+/**
+ * Type definition for the root Vue component (App.vue)
+ * This allows proper type checking when accessing this.$root
+ */
+interface AppRootInstance {
+    assembly_code: string;
+    assemblyError: string;
+    keyboard: string;
+    display: string;
+    enter: boolean | null;
+    creator_mode: string;
+    vim_mode: boolean;
+    autoscroll: boolean;
+    instructions: unknown[];
+    $refs?: {
+        simulatorView?: {
+            $refs?: {
+                memory?: {
+                    $refs?: {
+                        memory_table?: {
+                            refresh: () => void;
+                        };
+                    };
+                };
+                stats?: {
+                    refresh: () => void;
+                };
+                registerFile?: {
+                    refresh: () => void;
+                };
+            };
+        };
+    };
+    $emit?: (event: string, ...args: unknown[]) => void;
+}

@@ -1,6 +1,6 @@
 <html>
  <h1 align="center">CREATOR: <br>didaCtic and geneRic assEmbly progrAmming simulaTOR </h1>
- <h1 align="center"><img alt="Image of CREATOR" width="640vw" src="https://creatorsim.github.io/images/user_mode/execute_program.PNG"><br>https://creatorsim.github.io/</h1>
+ <img width="5120" height="3325" alt="creator interface" src="https://github.com/user-attachments/assets/bbfb18b4-8310-406b-aad7-89223b9c6d87" />
 </html>
 
 
@@ -252,6 +252,7 @@
      * Revamped web user interface
         * Revamped memory viewer
         * Vastly improved mobile support
+        * New [Monaco](https://microsoft.github.io/monaco-editor)-based editor
      * Vim mode in web editor
      * Revamped CLI version
   - [x] Modular design:

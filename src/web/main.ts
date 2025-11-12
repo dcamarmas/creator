@@ -34,11 +34,14 @@ import { far } from "@fortawesome/free-regular-svg-icons";
 import { fab } from "@fortawesome/free-brands-svg-icons";
 library.add(fas, far, fab);
 
-import { confirmExit, show_notification } from "./utils.mjs";
+import {show_notification } from "./utils.mjs";
 import { creator_ga } from "../core/utils/creator_ga.mjs";
 
 /*Closing alert*/
-window.onbeforeunload = confirmExit;
+window.onbeforeunload = function (e) {
+    // Cancel the event to trigger the confirmation dialog
+    e.preventDefault();
+}
 
 // Vue config
 const app = createApp(App)

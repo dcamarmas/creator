@@ -21,7 +21,8 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 <script lang="ts">
 import { defineComponent } from "vue"
 
-import { loadArchitecture } from "@/core/core.mjs"
+import { loadArchitecture, architecture } from "@/core/core.mjs"
+import { initCAPI } from "@/core/capi/initCAPI.mts"
 import { show_notification, formatRelativeDate } from "@/web/utils.mjs"
 
 export default defineComponent({
@@ -51,11 +52,12 @@ export default defineComponent({
       ;(this.$root as any).architecture_name =
         localStorage.getItem("backup_arch_name")
 
+      // Initialize CAPI with the plugin name from the loaded architecture
+      const pluginName = architecture.config.plugin
+      initCAPI(pluginName)
+
       // Load the last assembly code from cache
       ;(this.$root as any).assembly_code = localStorage.getItem("backup_asm")
-
-      // Refresh UI
-      show_notification("The backup has been loaded correctly", "success")
 
       this.$emit("load-architecture", this.backup_arch_name) // notify arch loaded
 

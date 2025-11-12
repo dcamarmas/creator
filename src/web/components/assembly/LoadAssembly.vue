@@ -43,10 +43,6 @@ export default defineComponent({
       reader.onload = _event => {
         ;(this.$root as any).assembly_code = reader.result
         hide_loading()
-        show_notification(
-          "The selected program has been loaded correctly",
-          "success",
-        )
       }
       reader.onerror = () => show_notification("Error loading file", "danger")
 

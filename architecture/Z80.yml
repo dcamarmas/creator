@@ -15,9 +15,8 @@ config:
   start_address: 0x0
   pc_offset: 0
   plugin: z80
+  syntax: z80
   assemblers:
-    - name: "SjasmPlus" # The first element is the default assembler
-      description: "SjasmPlus Z80 Assembler"
     - name: "RASM"
       description: "RASM Z80 Assembler"
 
@@ -202,7 +201,7 @@ templates:
     nwords: 4
     clk_cycles: 1
     fields:
-      - name: opcode1
+      - name: opcode
         type: co
         startbit: 7
         stopbit: 0
@@ -234,7 +233,7 @@ templates:
     nwords: 2
     clk_cycles: 1
     fields:
-      - name: opcode1
+      - name: opcode
         type: co
         startbit: 7
         stopbit: 0
@@ -252,7 +251,7 @@ templates:
     nwords: 2
     clk_cycles: 1
     fields:
-      - name: opcode1
+      - name: opcode
         type: co
         startbit: 7
         stopbit: 0
@@ -270,7 +269,7 @@ templates:
     nwords: 2
     clk_cycles: 1
     fields:
-      - name: opcode1
+      - name: opcode
         type: co
         startbit: 7
         stopbit: 0
@@ -288,7 +287,7 @@ templates:
     nwords: 4
     clk_cycles: 1 # Base, will be overridden by instruction
     fields:
-      - name: opcode1
+      - name: opcode
         type: co
         startbit: 7
         stopbit: 0
@@ -317,7 +316,7 @@ templates:
     nwords: 2
     clk_cycles: 1
     fields:
-      - name: opcode1
+      - name: opcode
         type: co
         startbit: 7
         stopbit: 0

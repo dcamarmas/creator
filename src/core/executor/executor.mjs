@@ -35,7 +35,7 @@ import { MAXNWORDS } from "../utils/architectureProcessor.mjs";
 import { crex_findReg_bytag } from "../register/registerLookup.mjs";
 import {
     writeRegister,
-    updateRegisterUI,
+    notifyRegisterUpdate,
 } from "../register/registerOperations.mjs";
 import { creator_ga } from "../utils/creator_ga.mjs";
 import { logger } from "../utils/creator_logger.mjs";
@@ -50,6 +50,8 @@ import {
 import { handleDevices } from "./devices.mts";
 import { handleTimer } from "./timers.mts";
 import { compileInstruction } from "./instructionCompiler.mts";
+import { coreEvents } from "../events.mjs";
+import { clearAllRegisterGlows } from "../register/registerGlowState.mjs";
 
 const instructionCache = new Map();
 const compiledFunctions = new Map();
@@ -220,9 +222,8 @@ function incrementProgramCounter(nwords) {
     const offset = BigInt(newArchitecture.config.pc_offset || 0n);
     status.virtual_PC = new_pc + offset;
 
-    if (typeof window !== "undefined" && document.app) {
-        updateRegisterUI(PC_REG_INDEX.indexComp, PC_REG_INDEX.indexElem);
-    }
+    // Notify UI layers about PC update
+    notifyRegisterUpdate(PC_REG_INDEX.indexComp, PC_REG_INDEX.indexElem);
 
     return null;
 }
@@ -407,6 +408,12 @@ function executeInstructionCycle() {
 
 export function step() {
     status.error = false;
+
+    if (typeof document !== "undefined" && document?.app) {
+        // Clear register highlighting from persistent store and notify UI
+        clearAllRegisterGlows();
+        coreEvents.emit("step-about-to-execute");
+    }
 
     // Execute a single instruction cycle
     const cycleResult = executeInstructionCycle();

@@ -21,7 +21,6 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 <script lang="ts">
 import { defineComponent, type PropType } from "vue"
 
-import UIeltoToolbar from "./general/UIeltoToolbar.vue"
 import TextareaAssembly from "./assembly/TextareaAssembly.vue"
 import AssemblyError from "./assembly/AssemblyError.vue"
 import Examples from "./assembly/Examples.vue"
@@ -29,6 +28,7 @@ import LoadAssembly from "./assembly/LoadAssembly.vue"
 import DownloadPopup from "./general/DownloadModal.vue"
 import MakeURI from "./assembly/MakeURI.vue"
 import LoadLibrary from "./assembly/LoadLibrary.vue"
+import LibraryTags from "./assembly/LibraryTags.vue"
 
 export default defineComponent({
   props: {
@@ -50,7 +50,6 @@ export default defineComponent({
   },
 
   components: {
-    UIeltoToolbar,
     TextareaAssembly,
     AssemblyError,
     Examples,
@@ -58,24 +57,14 @@ export default defineComponent({
     DownloadPopup,
     MakeURI,
     LoadLibrary,
+    LibraryTags,
   },
 })
 </script>
 
 <template>
-  <b-container fluid align-h="center" id="assembly">
+  <b-container fluid align-h="center" id="assembly" class="p-0">
     <!-- Navbar -->
-    <UIeltoToolbar
-      id="navbar_assembly"
-      components="btn_architecture,btn_simulator|btn_compile|dropdown_assembly_file,dropdown_library|btn_configuration,btn_information"
-      :browser="browser"
-      :os="os"
-      :dark="dark"
-      :arch_available="arch_available"
-      :assembly_code="assembly_code"
-      :show_instruction_help="true"
-      ref="toolbar"
-    />
 
     <!-- Assembly navbar modals -->
 
@@ -112,13 +101,16 @@ export default defineComponent({
     <!-- Save binary form -->
     <!-- <SaveLibrary id="save_binary" /> -->
 
+    <!-- Library tags modal -->
+    <LibraryTags id="library_tags" />
+
     <!-- Assembly textarea-->
     <TextareaAssembly
       :os="os"
       :assembly_code="assembly_code"
       :vim_mode="vim_mode"
       :vim_custom_keybinds="vim_custom_keybinds"
-      height="75vh"
+      height="calc(100vh - 40px)"
       :dark="dark"
     />
 
@@ -130,3 +122,6 @@ export default defineComponent({
     />
   </b-container>
 </template>
+
+<style scoped>
+</style>

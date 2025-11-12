@@ -25,6 +25,8 @@ import {
     precomputeInstructions,
     set_tag_instructions,
     formatErrorWithColors,
+    getCleanErrorMessage,
+    parseRasmErrorsForLinter,
 } from "../../assembler.mjs";
 import { parseDebugSymbolsRASM, toTagInstructions } from "../utils.mjs";
 
@@ -135,10 +137,14 @@ export async function rasmAssemble(code) {
         if (first_exit_code !== 0) {
             const rasmErrorOutput =
                 capturedStdout.join("\n") + capturedStderr.join("\n");
+            const cleanErrorText = getCleanErrorMessage(rasmErrorOutput);
             result.msg = formatErrorWithColors(rasmErrorOutput);
             result.type = "error";
             result.bgcolor = "danger";
             result.status = "error";
+            // Parse multiple errors from RASM output
+            result.linter = parseRasmErrorsForLinter(cleanErrorText);
+            
             return result;
         }
 

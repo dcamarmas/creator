@@ -208,8 +208,6 @@ export function keyboard_read(fn_post_read, fn_post_params) {
 
     document.app.$data.enter = null; // reset keyboard
 
-    show_notification("The data has been uploaded", "info");
-
     if (status.execution_index >= instructions.length) {
         for (let i = 0; i < instructions.length; i++) {
             draw.space.push(i);
@@ -224,17 +222,21 @@ export function keyboard_read(fn_post_read, fn_post_params) {
         );
     }
 
+    // If program was running before waiting for input, continue execution automatically
     if (status.run_program === 1) {
-        $("#playExecution").trigger("click");
+        // Trigger the play button to continue execution
+        const playButton = document.getElementById("playExecution");
+        if (playButton) {
+            playButton.click();
+        }
     }
 
     // re-enable buttons
-    document.app.$root.$refs.simulatorView.$refs.toolbar.$refs.btngroup1.at(
-        0,
-    ).instruction_disable = false;
-    document.app.$root.$refs.simulatorView.$refs.toolbar.$refs.btngroup1.at(
-        0,
-    ).run_disable = false;
+    const executeGroup = document.app.$root.$refs.navbar?.$refs?.executeGroup;
+    if (executeGroup) {
+        executeGroup.instruction_disable = false;
+        executeGroup.run_disable = false;
+    }
 
     return draw;
 }

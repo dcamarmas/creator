@@ -1,6 +1,7 @@
 <!--
 Copyright 2018-2025 Felix Garcia Carballeira, Diego Camarmas Alonso,
-                    Alejandro Calderon Mateos, Luis Daniel Casais Mezquida
+                    Alejandro Calderon Mateos, Luis Daniel Casais Mezquida,
+                    Jorge Ramos Santana
 
 This file is part of CREATOR.
 
@@ -19,131 +20,866 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
-import { defineComponent } from "vue"
+import {
+  defineComponent,
+  type PropType,
+  ref,
+  onMounted,
+  onUnmounted,
+} from "vue"
+
+import SimulatorControls from "../simulator/SimulatorControls.vue"
+import AssemblyActions from "../assembly/AssemblyActions.vue"
+import MenuItems from "./MenuItems.vue"
+import SentinelErrorsDropdown from "../simulator/SentinelErrorsDropdown.vue"
+import type { Instruction } from "@/core/assembler/assembler"
+import type { BDropdown } from "bootstrap-vue-next"
+import { coreEvents, CoreEventTypes } from "@/core/events.mjs"
+import { remove_library, architecture } from "@/core/core.mjs"
 
 export default defineComponent({
   props: {
     version: { type: String, required: true },
     architecture_name: { type: String, required: true },
+    creator_mode: { type: String, required: false, default: "" },
+    browser: { type: String, required: false },
+    os: { type: String, required: false },
+    dark: { type: Boolean, required: false, default: false },
+    arch_available: {
+      type: Array as PropType<AvailableArch[]>,
+      required: false,
+    },
+    autoscroll: { type: Boolean, required: false, default: false },
+    instructions: Array as PropType<Instruction[]>,
+  },
+
+  components: {
+    SimulatorControls,
+    AssemblyActions,
+    MenuItems,
+    SentinelErrorsDropdown,
+  },
+
+  setup() {
+    const sentinelDropdownRef = ref<InstanceType<
+      typeof SentinelErrorsDropdown
+    > | null>(null)
+
+    const handleSentinelError = (event: unknown) => {
+      const errorEvent = event as {
+        functionName: string
+        message: string
+        ok: boolean
+      }
+      if (sentinelDropdownRef.value) {
+        sentinelDropdownRef.value.checkForErrors(
+          { ok: errorEvent.ok, msg: errorEvent.message },
+          errorEvent.functionName,
+        )
+      }
+    }
+
+    onMounted(() => {
+      coreEvents.on(CoreEventTypes.SENTINEL_ERROR, handleSentinelError)
+    })
+
+    onUnmounted(() => {
+      coreEvents.off(CoreEventTypes.SENTINEL_ERROR, handleSentinelError)
+    })
+
+    return {
+      sentinelDropdownRef,
+    }
+  },
+
+  data() {
+    return {
+      openDropdown: null as string | null, // Track which dropdown is currently open
+      hoverSwitchEnabled: false, // Enable hover switching after clicking
+      mobileView: "code" as
+        | "code"
+        | "instructions"
+        | "data"
+        | "architecture"
+        | "settings", // Track current mobile view
+    }
+  },
+  computed: {
+    showViewMenu() {
+      return ["architecture", "assembly", "simulator"].includes(
+        this.creator_mode,
+      )
+    },
+    showFileMenu() {
+      return this.creator_mode === "assembly"
+    },
+    showArchitectureMenu() {
+      return this.creator_mode === "architecture"
+    },
+    showExecuteMenu() {
+      return this.creator_mode === "simulator"
+    },
+    showCompileButton() {
+      return this.creator_mode === "assembly"
+    },
+    showLibraryMenu() {
+      if (this.creator_mode !== "assembly") {
+        return false
+      }
+      // Only show library menu if using CREATOR assembler
+      const assemblers = architecture?.config?.assemblers || []
+      // If no assemblers configured, default is CREATOR
+      if (assemblers.length === 0) {
+        return true
+      }
+      // Check if CreatorCompiler is in the list
+      return assemblers.some((asm: any) => asm.name === "CreatorCompiler")
+    },
+
+    // Hide mobile navbar when selecting architecture
+    showMobileNavbar() {
+      return this.creator_mode !== "select_architecture"
+    },
+  },
+  mounted() {
+    // Listen for escape key to close dropdowns
+    document.addEventListener("keydown", this.handleEscapeKey)
+    // Listen for clicks outside to disable hover switching
+    document.addEventListener("click", this.handleDocumentClick)
+  },
+  beforeUnmount() {
+    document.removeEventListener("keydown", this.handleEscapeKey)
+    document.removeEventListener("click", this.handleDocumentClick)
+  },
+  methods: {
+    handleEscapeKey(event: KeyboardEvent) {
+      if (event.key === "Escape" && this.openDropdown) {
+        this.closeAllDropdowns()
+      }
+    },
+    handleDocumentClick(event: MouseEvent) {
+      // Check if click is outside any dropdown
+      const target = event.target as HTMLElement
+      const isDropdownClick = target?.closest(
+        ".dropdown, .nav-item, .dropdown-menu",
+      )
+      if (!isDropdownClick) {
+        this.hoverSwitchEnabled = false
+        this.closeAllDropdowns()
+      }
+    },
+    handleDropdownShow(dropdownId: string) {
+      // Close any other open dropdown
+      if (this.openDropdown && this.openDropdown !== dropdownId) {
+        this.closeDropdown(this.openDropdown)
+      }
+      this.openDropdown = dropdownId
+      this.hoverSwitchEnabled = true
+    },
+    handleDropdownHide(dropdownId: string) {
+      if (this.openDropdown === dropdownId) {
+        this.openDropdown = null
+        // Small delay before disabling hover switch
+        setTimeout(() => {
+          if (!this.openDropdown) {
+            this.hoverSwitchEnabled = false
+          }
+        }, 100)
+      }
+    },
+    handleDropdownHover(dropdownId: string) {
+      // Only switch if hover switching is enabled and a different dropdown is open
+      if (
+        this.hoverSwitchEnabled &&
+        this.openDropdown &&
+        this.openDropdown !== dropdownId
+      ) {
+        // Close current dropdown and open the hovered one
+        this.closeDropdown(this.openDropdown)
+        setTimeout(() => {
+          this.openDropdownById(dropdownId)
+        }, 50)
+      }
+    },
+    closeAllDropdowns() {
+      // Close all dropdowns by triggering their hide methods
+      const dropdownRefs = [
+        "creatorDropdown",
+        "viewDropdown",
+        "fileDropdown",
+        "architectureDropdown",
+        "libraryDropdown",
+        "toolsDropdown",
+        "helpDropdown",
+      ]
+
+      dropdownRefs.forEach(refName => this.closeDropdown(refName))
+
+      this.openDropdown = null
+      this.hoverSwitchEnabled = false
+    },
+    toggleDropdown(dropdownId: string, shouldOpen: boolean) {
+      const dropdown = this.$refs[dropdownId] as InstanceType<typeof BDropdown>
+      if (dropdown?.$el) {
+        const toggleBtn = dropdown.$el.querySelector(".dropdown-toggle")
+        const isExpanded = toggleBtn?.getAttribute("aria-expanded") === "true"
+        if (toggleBtn && isExpanded !== shouldOpen) {
+          toggleBtn.click()
+        }
+      }
+    },
+    closeDropdown(dropdownId: string) {
+      this.toggleDropdown(dropdownId, false)
+    },
+    openDropdownById(dropdownId: string) {
+      this.toggleDropdown(dropdownId, true)
+    },
+    setMobileView(
+      view: "code" | "instructions" | "data" | "architecture" | "settings",
+    ) {
+      this.mobileView = view
+      // Emit event so parent components can react to view changes
+      this.$emit("mobile-view-change", view)
+    },
+    // Simple action methods
+    changeUIMode(mode: string) {
+      if ((this.$root as any).creator_mode !== mode) {
+        ;(this.$root as any).creator_mode = mode
+      }
+    },
+    newAssembly() {
+      ;(this.$root as any).assembly_code = ""
+    },
+    removeLibrary() {
+      remove_library()
+    },
   },
 })
 </script>
 
 <template>
-  <b-navbar toggleable="sm" class="header px-2">
-    <b-navbar-brand class="p-0 m-0" href=".">
-      <!-- <b-container fluid align-h="center" class="mx-0 px-0"> -->
-      <b-row cols="2" align-h="center">
-        <b-col class="headerText col-auto text-uppercase">
-          <h1>
-            Creator
-            <b-badge pill variant="secondary">{{ version }}</b-badge>
-          </h1>
-        </b-col>
+  <!-- Top navbar (hidden on mobile, shown on tablet+) -->
+  <b-navbar toggleable="md" class="header py-3 top-navbar">
+    <!-- Creator Dropdown Menu -->
+    <b-navbar-nav class="creator-brand">
+      <b-nav-item-dropdown
+        class="navMenu creator-menu"
+        no-caret
+        no-animation
+        ref="creatorDropdown"
+        @show="handleDropdownShow('creatorDropdown')"
+        @hide="handleDropdownHide('creatorDropdown')"
+        @mouseenter="handleDropdownHover('creatorDropdown')"
+      >
+        <template #button-content>
+          <span class="headerText text-uppercase"> Creator </span>
+        </template>
 
-        <b-col class="headerText col-auto my-0 p-0 ml-2">
-          {{ architecture_name }}
-        </b-col>
-      </b-row>
-      <!-- </b-container> -->
+        <MenuItems
+          :items="[
+            ...(architecture_name ? ['btn_architecture_info', 'divider'] : []),
+            'btn_home',
+            'btn_website',
+            'btn_github',
+          ]"
+          :architecture-name="architecture_name"
+          @item-clicked="closeDropdown('creatorDropdown')"
+        />
+      </b-nav-item-dropdown>
+    </b-navbar-nav>
 
-      <!-- <b-container fluid align-h="center"> -->
-      <b-row cols="1" align-h="center">
-        <b-col class="headerName col-auto fw-bold mx-1">
-          didaCtic and geneRic assEmbly progrAmming simulaTOR
-        </b-col>
-      </b-row>
-      <!-- </b-container> -->
-    </b-navbar-brand>
-
-    <b-navbar-toggle
-      target="nav_collapse"
-      aria-label="Open/Close more information"
-    />
-    <b-collapse is-nav id="nav_collapse">
-      <b-navbar-nav class="ms-auto">
-        <b-nav-item
-          href="https://docs.google.com/forms/d/e/1FAIpQLSdFbdy5istZbq2CErZs0cTV85Ur8aXiIlxvseLMhPgs0vHnlQ/viewform?usp=header"
-          target="_blank"
+    <!-- Main menu (left side) -->
+    <b-navbar-nav class="me-auto">
+      <!-- View Menu -->
+      <b-nav-item-dropdown
+        v-if="showViewMenu"
+        text="View"
+        class="navMenu"
+        no-caret
+        no-animation
+        ref="viewDropdown"
+        @show="handleDropdownShow('viewDropdown')"
+        @hide="handleDropdownHide('viewDropdown')"
+        @mouseenter="handleDropdownHover('viewDropdown')"
+      >
+        <b-dropdown-item
+          @click="changeUIMode('assembly')"
+          :disabled="creator_mode === 'assembly'"
         >
-          <b-button size="sm" class="linkButton">
-            <font-awesome-icon :icon="['fas', 'star']" />
-            Feedback
-          </b-button>
-        </b-nav-item>
-
-        <b-nav-item
-          class="mb-0 pb-0 p-0"
-          href="https://docs.google.com/forms/d/e/1FAIpQLSfSclv1rKqBt5aIIP3jfTGbdu8m_vIgEAaiqpI2dGDcQFSg8g/viewform?usp=header"
-          target="_blank"
+          <font-awesome-icon :icon="['fas', 'hashtag']" class="me-2" />
+          Editor
+        </b-dropdown-item>
+        <b-dropdown-item
+          @click="changeUIMode('simulator')"
+          :disabled="creator_mode === 'simulator'"
         >
-          <b-button size="sm" class="linkButton">
-            <font-awesome-icon :icon="['fas', 'lightbulb']" />
-            Suggestions
-          </b-button>
-        </b-nav-item>
+          <font-awesome-icon :icon="['fas', 'gears']" class="me-2" />
+          Simulator
+        </b-dropdown-item>
+        <b-dropdown-item
+          @click="changeUIMode('architecture')"
+          :disabled="creator_mode === 'architecture'"
+        >
+          <font-awesome-icon
+            :icon="['fas', 'screwdriver-wrench']"
+            class="me-2"
+          />
+          Architecture
+        </b-dropdown-item>
+      </b-nav-item-dropdown>
 
-        <b-nav-item>
-          <b-button size="sm" class="linkButton" v-b-modal.institutions>
-            <font-awesome-icon :icon="['fas', 'building-columns']" />
-            Community
-          </b-button>
-        </b-nav-item>
+      <!-- File Menu (Assembly View) -->
+      <b-nav-item-dropdown
+        v-if="showFileMenu"
+        text="File"
+        class="navMenu"
+        no-caret
+        no-animation
+        ref="fileDropdown"
+        @show="handleDropdownShow('fileDropdown')"
+        @hide="handleDropdownHide('fileDropdown')"
+        @mouseenter="handleDropdownHover('fileDropdown')"
+      >
+        <b-dropdown-item @click="newAssembly">
+          <font-awesome-icon :icon="['far', 'file']" class="me-2" />
+          New Assembly File
+        </b-dropdown-item>
+        <b-dropdown-item v-b-modal.load_assembly>
+          <font-awesome-icon :icon="['fas', 'upload']" class="me-2" />
+          Open File...
+        </b-dropdown-item>
+        <b-dropdown-item v-b-modal.save_assembly>
+          <font-awesome-icon :icon="['fas', 'download']" class="me-2" />
+          Save As...
+        </b-dropdown-item>
+        <b-dropdown-item v-b-modal.examples-assembly>
+          <font-awesome-icon :icon="['fas', 'file-lines']" class="me-2" />
+          Examples...
+        </b-dropdown-item>
+        <b-dropdown-item v-b-modal.make_uri>
+          <font-awesome-icon :icon="['fas', 'link']" class="me-2" />
+          Get code as URI...
+        </b-dropdown-item>
+      </b-nav-item-dropdown>
 
-        <b-nav-item>
-          <b-button size="sm" class="linkButton" v-b-modal.about>
-            <font-awesome-icon :icon="['fas', 'address-card']" />
-            About Us
-          </b-button>
-        </b-nav-item>
-      </b-navbar-nav>
-    </b-collapse>
+      <!-- Architecture Menu (Architecture View)-->
+      <b-nav-item-dropdown
+        v-if="showArchitectureMenu"
+        text="Architecture"
+        class="navMenu"
+        no-caret
+        no-animation
+        ref="architectureDropdown"
+        @show="handleDropdownShow('architectureDropdown')"
+        @hide="handleDropdownHide('architectureDropdown')"
+        @mouseenter="handleDropdownHover('architectureDropdown')"
+      >
+        <b-dropdown-item v-b-modal.edit_architecture>
+          <font-awesome-icon :icon="['fas', 'pen-to-square']" class="me-2" />
+          Edit Architecture
+        </b-dropdown-item>
+        <b-dropdown-item v-b-modal.save_architecture>
+          <font-awesome-icon :icon="['fas', 'download']" class="me-2" />
+          Save Architecture
+        </b-dropdown-item>
+      </b-nav-item-dropdown>
+
+      <!-- Library Menu (Assembly View) -->
+      <b-nav-item-dropdown
+        v-if="showLibraryMenu"
+        text="Library"
+        class="navMenu"
+        no-caret
+        no-animation
+        ref="libraryDropdown"
+        @show="handleDropdownShow('libraryDropdown')"
+        @hide="handleDropdownHide('libraryDropdown')"
+        @mouseenter="handleDropdownHover('libraryDropdown')"
+      >
+        <b-dropdown-item v-b-modal.load_binary>
+          <font-awesome-icon :icon="['fas', 'upload']" class="me-2" />
+          Load Library...
+        </b-dropdown-item>
+        <b-dropdown-item @click="removeLibrary">
+          <font-awesome-icon :icon="['fas', 'trash-can']" class="me-2" />
+          Remove Library
+        </b-dropdown-item>
+      </b-nav-item-dropdown>
+
+      <!-- Tools Menu (Simulator View) -->
+      <b-nav-item-dropdown
+        v-if="showExecuteMenu"
+        text="Tools"
+        class="navMenu"
+        no-caret
+        no-animation
+        ref="toolsDropdown"
+        @show="handleDropdownShow('toolsDropdown')"
+        @hide="handleDropdownHide('toolsDropdown')"
+        @mouseenter="handleDropdownHover('toolsDropdown')"
+      >
+        <b-dropdown-item v-b-modal.examples-simulator>
+          <font-awesome-icon :icon="['fas', 'file-lines']" class="me-2" />
+          Examples...
+        </b-dropdown-item>
+        <b-dropdown-divider />
+        <MenuItems
+          :items="['btn_flash', 'btn_calculator']"
+          @item-clicked="closeDropdown('toolsDropdown')"
+        />
+      </b-nav-item-dropdown>
+
+      <!-- Help Menu -->
+      <b-nav-item-dropdown
+        text="Help"
+        class="navMenu"
+        no-caret
+        no-animation
+        ref="helpDropdown"
+        @show="handleDropdownShow('helpDropdown')"
+        @hide="handleDropdownHide('helpDropdown')"
+        @mouseenter="handleDropdownHover('helpDropdown')"
+      >
+        <MenuItems
+          :items="[
+            'btn_help',
+            'divider',
+            'btn_feedback',
+            'btn_suggestions',
+            'divider',
+            'btn_institutions',
+            'btn_about',
+          ]"
+          @item-clicked="closeDropdown('helpDropdown')"
+        />
+      </b-nav-item-dropdown>
+
+      <!-- Separator for buttons -->
+      <div
+        v-if="showExecuteMenu || showCompileButton"
+        class="button-separator"
+      ></div>
+
+      <!-- Compile Buttons (Assembly View) -->
+      <b-nav-item v-if="showCompileButton" class="compile-item">
+        <AssemblyActions
+          :dark="dark"
+          mode="toolbar-split"
+          @change-mode="changeUIMode"
+        />
+      </b-nav-item>
+
+      <!-- Execute Controls (Simulator View) -->
+      <b-nav-item v-if="showExecuteMenu" class="execute-controls">
+        <SimulatorControls
+          ref="simulatorControls"
+          :instructions="instructions || []"
+          :autoscroll="autoscroll"
+          :os="os || ''"
+          :browser="browser || ''"
+          :dark="dark"
+          mode="toolbar"
+        />
+      </b-nav-item>
+
+      <!-- Sentinel Errors Dropdown (Simulator View Only) -->
+      <SentinelErrorsDropdown
+        v-if="showExecuteMenu"
+        ref="sentinelDropdownRef"
+        :dark="dark"
+        class="ms-auto"
+      />
+    </b-navbar-nav>
+
+    <!-- Right side actions -->
+    <b-navbar-nav class="ms-auto">
+      <!-- Notifications Button -->
+      <b-nav-item
+        v-b-modal.notifications
+        class="icon-button"
+        aria-label="Notifications"
+      >
+        <font-awesome-icon :icon="['fas', 'bell']" />
+      </b-nav-item>
+
+      <!-- Settings Button -->
+      <b-nav-item
+        v-b-modal.configuration
+        class="icon-button"
+        aria-label="Settings"
+      >
+        <font-awesome-icon :icon="['fas', 'cog']" />
+      </b-nav-item>
+    </b-navbar-nav>
   </b-navbar>
+
+  <!-- Mobile bottom navbar (shown only on mobile) -->
+  <nav v-if="showMobileNavbar" class="mobile-bottom-navbar">
+    <div class="bottom-nav-container">
+      <!-- Code Tab -->
+      <button
+        class="bottom-nav-item"
+        :class="{ active: mobileView === 'code' }"
+        @click="setMobileView('code')"
+        aria-label="Code"
+      >
+        <font-awesome-icon :icon="['fas', 'code']" />
+        <span class="bottom-nav-label">Code</span>
+      </button>
+
+      <!-- Instructions Tab -->
+      <button
+        class="bottom-nav-item"
+        :class="{ active: mobileView === 'instructions' }"
+        @click="setMobileView('instructions')"
+        aria-label="Instructions"
+      >
+        <font-awesome-icon :icon="['fas', 'book']" />
+        <span class="bottom-nav-label">Instructions</span>
+      </button>
+
+      <!-- Data Tab -->
+      <button
+        class="bottom-nav-item"
+        :class="{ active: mobileView === 'data' }"
+        @click="setMobileView('data')"
+        aria-label="Data"
+      >
+        <font-awesome-icon :icon="['fas', 'database']" />
+        <span class="bottom-nav-label">State</span>
+      </button>
+
+      <!-- Architecture Tab -->
+      <button
+        class="bottom-nav-item"
+        :class="{ active: mobileView === 'architecture' }"
+        @click="setMobileView('architecture')"
+        aria-label="Architecture"
+      >
+        <font-awesome-icon :icon="['fas', 'microchip']" />
+        <span class="bottom-nav-label">Architecture</span>
+      </button>
+
+      <!-- Settings Tab -->
+      <button
+        class="bottom-nav-item"
+        :class="{ active: mobileView === 'settings' }"
+        @click="setMobileView('settings')"
+        aria-label="Settings"
+      >
+        <font-awesome-icon :icon="['fas', 'cog']" />
+        <span class="bottom-nav-label">Settings</span>
+      </button>
+    </div>
+  </nav>
 </template>
 
 <style lang="scss" scoped>
 @import "bootstrap/scss/bootstrap";
 
-.header {
+// Top navbar (desktop and tablet)
+.top-navbar {
   width: 100%;
   align-items: center;
-  background-color: #eaeaea;
-  padding-top: 0pt;
-  padding-bottom: 0pt;
+  min-height: 40px !important;
+  max-height: 40px !important;
+  background-color: rgb(238, 238, 238);
+
+  :deep(.navbar-nav) {
+    align-items: center;
+  }
+
+  // Hide on mobile, show on tablet+
+  @media (max-width: 767px) {
+    display: none;
+  }
+}
+
+// Mobile bottom navbar
+.mobile-bottom-navbar {
+  display: none; // Hidden on desktop
+
+  // Show only on mobile
+  @media (max-width: 767px) {
+    display: block;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1030;
+    background-color: rgb(238, 238, 238);
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    // Safe area insets for home indicator and rounded corners
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+}
+
+.bottom-nav-container {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 8px 0;
+  max-width: 100%;
+  height: 56px;
+
+  // Reduce height on very small screens
+  @media (max-width: 320px) {
+    height: 48px;
+    padding: 6px 0;
+  }
+}
+
+.bottom-nav-dropdown {
+  flex: 1;
+
+  :deep(.dropdown-toggle) {
+    border: none;
+    width: 100%;
+    padding: 0;
+
+    &::after {
+      display: none; // Hide dropdown arrow
+    }
+  }
+}
+
+.bottom-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 8px 12px;
+  color: #6c757d;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex: 1;
+  position: relative;
+
+  svg {
+    font-size: 20px;
+    transition: transform 0.2s ease;
+  }
+
+  // Reduce padding and icon size on very small screens (320px and below)
+  @media (max-width: 320px) {
+    padding: 6px 8px;
+    gap: 2px;
+
+    svg {
+      font-size: 18px;
+    }
+  }
+
+  // Active state (selected tab)
+  &.active {
+    color: #2196f3;
+
+    svg {
+      transform: scale(1.1);
+    }
+
+    // Active indicator bar
+    &::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 32px;
+      height: 3px;
+      background-color: #2196f3;
+      border-radius: 0 0 3px 3px;
+
+      // Smaller width on very small screens
+      @media (max-width: 320px) {
+        width: 24px;
+      }
+    }
+  }
+
+  // Tap feedback
+  &:active:not(.active) {
+    color: #2196f3;
+    background-color: rgba(33, 150, 243, 0.08);
+
+    svg {
+      transform: scale(0.95);
+    }
+  }
+}
+
+.bottom-nav-label {
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: color 0.2s ease;
+
+  // Smaller font on very small screens
+  @media (max-width: 320px) {
+    font-size: 10px;
+  }
+}
+.creator-brand {
+  // On mobile, don't collapse the Creator menu
+  @media (max-width: 767px) {
+    flex-shrink: 0;
+  }
 }
 
 .headerText {
   color: #2196f3;
-  margin: 0px;
+  font-weight: 700;
+  font-size: 1rem;
+
+  // Slightly smaller on mobile
+  @media (max-width: 767px) {
+    font-size: 0.9rem;
+  }
 }
 
-.headerName {
-  color: #383d41;
-  font-size: 0.55em;
+// Button separator (visual divider between menus and buttons)
+.button-separator {
+  width: 1px;
+  height: 30px;
+  background-color: #dee2e6;
+  margin: 0 0.75rem;
 }
 
-.headerLogo {
-  height: 5vh;
+// Icon buttons (notifications, settings)
+.icon-button {
+  :deep(.nav-link) {
+    color: #6c757d;
+    transition: all 0.2s ease;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+      color: #2196f3;
+      background-color: rgba(33, 150, 243, 0.08);
+    }
+
+    &:active {
+      transform: scale(0.95);
+    }
+  }
 }
 
-.linkButton {
-  background-color: white;
-  color: #6c757d;
+// Dropdown menu styling
+:deep(.dropdown-menu) {
+  border-radius: 8px;
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.12),
+    0 4px 16px rgba(0, 0, 0, 0.08);
+  padding: 6px;
+  margin-top: 4px;
+  min-width: 0;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+:deep(.dropdown-item) {
+  border-radius: 4px;
+  margin-bottom: 2px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 400;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: none;
+  min-width: 0;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  // Icon styling
+  .fa-icon,
+  svg {
+    min-height: 16px;
+    min-width: 16px;
+    opacity: 0.85;
+  }
+
+  &:hover .fa-icon,
+  &:hover svg {
+    opacity: 1;
+  }
+}
+
+// Dropdown divider
+:deep(.dropdown-divider) {
+  margin: 6px 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  opacity: 1;
 }
 
 [data-bs-theme="dark"] {
-  .header {
-    background-color: #2f2f2f;
+  .top-navbar {
+    background-color: hsl(214, 9%, 12%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   }
-  .headerName {
-    color: $secondary;
+
+  .headerText {
+    color: #64b5f6;
   }
-  .linkButton {
-    background-color: #212529;
-    color: $secondary;
+
+  .button-separator {
+    background-color: rgba(255, 255, 255, 0.12);
   }
-  .linkButton:hover {
-    background-color: #424649;
+
+  // Icon buttons in dark mode
+  .icon-button {
+    :deep(.nav-link) {
+      color: #adb5bd;
+
+      &:hover {
+        color: #64b5f6;
+        background-color: rgba(100, 181, 246, 0.12);
+      }
+    }
+  }
+
+  :deep(.navbar-toggler) {
+    border-color: rgba(255, 255, 255, 0.1);
+
+    .navbar-toggler-icon {
+      filter: invert(1);
+    }
+  }
+
+  // Mobile bottom navbar in dark mode
+  .mobile-bottom-navbar {
+    background-color: hsl(214, 9%, 12%);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3);
+  }
+
+  .bottom-nav-item {
+    color: #adb5bd;
+
+    // Active state in dark mode
+    &.active {
+      color: #64b5f6;
+
+      &::after {
+        background-color: #64b5f6;
+      }
+    }
+
+    // Tap feedback in dark mode
+    &:active:not(.active) {
+      color: #64b5f6;
+      background-color: rgba(100, 181, 246, 0.12);
+    }
   }
 }
 </style>

@@ -109,19 +109,78 @@ export default defineComponent({
       return example_set
     },
 
-    assemble() {
-      // this is horrible, because this component can also be a child
-      // component of assemblyView but, as we always start at the simulatorView,
-      // the component always exists in both views
-      ;(this.$root as any).$refs.simulatorView?.$refs.toolbar?.$refs.btngroup1
-        ?.at(0)
-        ?.assembly_compiler()
+    async assemble() {
+      // Import the necessary modules for compilation
+      const { assembly_compile, reset, status } = await import("@/core/core.mjs")
+      const { resetStats } = await import("@/core/executor/stats.mts")
+      const { instructions } = await import("@/core/assembler/assembler.mjs")
+      const { show_notification } = await import("@/web/utils.mjs")
+      const { assemblerMap, getDefaultCompiler } = await import("@/web/assemblers")
+      const { architecture } = await import("@/core/core.mjs")
+      
+      const root = this.$root as any
 
-      // update table execution UI
-      // FIXME: this doesn't update shit
-      ;(this.$root as any).$refs.simulatorView?.$refs.toolbar.$refs.btngroup1
-        .at(0)
-        ?.execution_UI_reset()
+      // Reset simulator
+      root.keyboard = ""
+      root.display = ""
+      root.enter = null
+      reset()
+
+      // Get default compiler for the architecture
+      const defaultCompiler = getDefaultCompiler(architecture)
+      const assemblerFn = assemblerMap[defaultCompiler]
+      
+      // Assemble the code
+      const ret = await (assemblerFn
+        ? assembly_compile(root.assembly_code, assemblerFn)
+        : assembly_compile(root.assembly_code))
+
+      // Reset stats
+      resetStats()
+      status.executedInstructions = 0
+      status.clkCycles = 0
+
+      // Handle results
+      switch (ret.type) {
+        case "error":
+          // Set compilation error and show modal
+          root.assemblyError = ret.msg
+          root.$emit("show-assembly-error")
+          break
+
+        case "warning":
+          show_notification(ret.token, ret.bgcolor)
+          // Still change to simulator view on warning
+          root.creator_mode = "simulator"
+          // Wait for next tick to ensure simulator view is mounted, then update UI
+          await this.$nextTick()
+          this.updateSimulatorUI(instructions, status)
+          break
+
+        default:
+          // Put rowVariant in entrypoint
+          const entrypoint = instructions.at(status.execution_index)
+          if (entrypoint) {
+            entrypoint._rowVariant = "success"
+          }
+          // Change to simulator view
+          root.creator_mode = "simulator"
+          // Wait for next tick to ensure simulator view is mounted, then update UI
+          await this.$nextTick()
+          this.updateSimulatorUI(instructions, status)
+          break
+      }
+    },
+
+    updateSimulatorUI(_instructions: any[], _status: any) {
+      // Update the simulator controls to enable buttons
+      const root = this.$root as any
+      const simulatorControls = root.$refs.navbar?.$refs?.simulatorControls
+      
+      if (simulatorControls) {
+        // Call execution_UI_reset to enable buttons and update execution table
+        simulatorControls.execution_UI_reset()
+      }
     },
 
     /* Load a selected example */
@@ -146,18 +205,12 @@ export default defineComponent({
         ;(this.$root as any).assembly_code = code
 
         if (assemble) {
-          // TODO: re-enable when fixed
-          // this.assemble()
+          // Assemble and switch to simulator view
+          await this.assemble()
+        } else {
+          // Just load the code and switch to assembly view
+          ;(this.$root as any).creator_mode = "assembly"
         }
-
-        // we change to the assembly view bc I'm not able to update the
-        // execution table (see assemble()) when that's fixed, delete this
-        ;(this.$root as any).creator_mode = "assembly"
-
-        show_notification(
-          " The selected example has been loaded correctly",
-          "success",
-        )
 
         /* Google Analytics */
         creator_ga("event", "example.loading", "example.loading.url")
@@ -170,7 +223,7 @@ export default defineComponent({
 </script>
 
 <template>
-  <b-modal :id="id" title="Available examples" no-footer scrollable>
+  <b-modal :id="id" class="bottomCard" title="Available examples" no-footer centered scrollable>
     <!-- set selector -->
     <b-form-radio-group
       v-if="example_set_options.length > 0 && example_set_options.length < 3"
@@ -185,7 +238,6 @@ export default defineComponent({
     <b-dropdown
       v-if="example_set_options.length > 2"
       id="examples_dropdown"
-      class="w-100 mb-3"
       size="sm"
     >
       <b-dropdown-item
@@ -203,7 +255,7 @@ export default defineComponent({
       "
       class="h6"
     >
-      There are no examples at the moment.
+      No examples available for this architecture.
     </span>
 
     <!-- examples -->

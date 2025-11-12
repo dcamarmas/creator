@@ -23,10 +23,7 @@ import { main_memory, stackTracker, BYTESIZE } from "../core.mjs";
 import { exit } from "../executor/executor.mjs";
 import { raise } from "./validation.mjs";
 import { crex_findReg } from "../register/registerLookup.mjs";
-import {
-    creator_callstack_newWrite,
-    creator_callstack_newRead,
-} from "../sentinel/sentinel.mjs";
+import { sentinel } from "../sentinel/sentinel.mjs";
 import { checkDeviceAddr, devices } from "../executor/devices.mts";
 import type { Memory } from "../memory/Memory.mts";
 import { toHex } from "@/web/utils.mjs";
@@ -255,7 +252,7 @@ export const MEM = {
             stackTracker.addHint(address, reg_name);
         }
 
-        creator_callstack_newWrite(i, j, address, byteArray.length);
+        sentinel.recordMemoryWrite(i, j, address, byteArray.length);
     },
 
     read(
@@ -316,9 +313,7 @@ export const MEM = {
         const i = find_ret.indexComp;
         const j = find_ret.indexElem;
 
-        creator_callstack_newRead(i, j, Number(address), bytes);
-
-        return ret;
+        sentinel.recordMemoryRead(i, j, address, bytes);        return ret;
     },
 
     alloc(_size: number): number {

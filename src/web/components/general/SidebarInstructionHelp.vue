@@ -88,7 +88,7 @@ export default defineComponent({
     >
       <template v-slot:cell(name)="row">
         <h4>{{ row.item.name }}</h4>
-        <em>{{ row.item.signature_definition }}</em>
+        <em>{{ row.item.signature_pretty }}</em>
         <br />
         {{ row.item.help }}
       </template>
