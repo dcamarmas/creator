@@ -160,26 +160,17 @@ export declare const stackTracker: StackTracker;
 export declare const BYTESIZE: number;
 export declare const WORDSIZE: number;
 
-type LibraryInstruction = {
-    Break: null | boolean;
-    Address: string;
-    Label: string;
-    loaded: string;
-    user: string | null;
-    _rowVariant: string;
-    visible: boolean;
-    globl: boolean;
-};
-
-type LibraryTag = {
-    tag: string;
-    addr: number;
-    globl: boolean;
+// Library format (YAML)
+type LibrarySymbolHelp = {
+    parameters?: Record<string, string>;
+    returns?: Record<string, string>;
+    description?: string;
 };
 
 type Library = {
-    instuctions_binary: LibraryInstruction[];
-    instructions_tag: LibraryTag[];
+    version: string;
+    binary: string;
+    symbols: Record<string, { addr: number; help?: LibrarySymbolHelp }>;
 };
 
 export declare const update_binary: Library;

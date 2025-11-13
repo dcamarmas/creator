@@ -37,37 +37,30 @@ import {
     writeMultiByteValueAsWords,
     setAddress,
     setInstructions,
+    setLibraryInstructions,
     formatErrorWithColors,
     getCleanErrorMessage,
     parseErrorForLinter,
 } from "../assembler.mjs";
 import { logger } from "../../utils/creator_logger.mjs";
 
-let instructions_binary = [];
+let libraryInstructions = [];
 
 /**
- * Common assembly compiler implementation shared between web and deno versions
- * @param {string} code - Assembly code to compile
- * @param {boolean} library - Whether this is a library compilation
- * @param {Object} wasmModules - WASM modules containing ArchitectureJS and DataCategoryJS
- * @returns {Object} Compilation result
+ * Initialize architecture and prepare for compilation
+ * @param {Object} wasmModules - WASM modules containing ArchitectureJS
+ * @returns {Object|null} Architecture instance or null if error occurred
  */
-// eslint-disable-next-line max-lines-per-function
-export function assembleCreatorBase(code, library, wasmModules) {
-    /* Google Analytics */
-    creator_ga("compile", "compile.assembly");
-    const color = 1;
-
-    const { ArchitectureJS, DataCategoryJS } = wasmModules;
-
-    let arch;
+function initializeArchitecture(wasmModules) {
+    const { ArchitectureJS } = wasmModules;
+    
     try {
-        arch = ArchitectureJS.from_json(JSON.stringify(architecture));
+        return ArchitectureJS.from_json(JSON.stringify(architecture));
     } catch (error) {
         logger.error("Error loading architecture:", error);
         const cleanErrorText = getCleanErrorMessage(error);
         const linterInfo = parseErrorForLinter(cleanErrorText);
-        return {
+        throw {
             type: "warning",
             token: error,
             bgcolor: "danger",
@@ -75,256 +68,183 @@ export function assembleCreatorBase(code, library, wasmModules) {
             linter: linterInfo,
         };
     }
-    const instructions = [];
+}
+
+/**
+ * Reset memory and execution state
+ */
+function resetMemoryAndState() {
     main_memory.zeroOut();
-    main_memory.clearHints(); // Clear any existing memory hints
+    main_memory.clearHints();
     status.execution_init = 1;
-
-    let library_offset = 0;
-    const library_instructions = loadedLibrary.instructions_binary?.length ?? 0;
-    for (let i = 0; i < library_instructions; i++) {
-        const instruction = loadedLibrary.instructions_binary[i];
-        instruction.hide = !(i === 0 || instruction.globl === true);
-        if (instruction.globl !== true) {
-            instruction.Label = "";
-        }
-        instructions.push(instruction);
-        library_offset =
-            parseInt(instruction.Address, 16) +
-            Math.ceil(instruction.loaded.length / 8);
-    }
-
-    // Convert the library labels to the format used by the compiler,
-    // filtering out non-global labels
-    const library_labels =
-        loadedLibrary.instructions_tag
-            ?.filter(x => x.globl)
-            .reduce((tbl, x) => {
-                tbl[x.tag] = x.addr;
-                return tbl;
-            }, {}) ?? {};
-    const labels_json = JSON.stringify(library_labels);
-
-    /*Allocation of memory addresses*/
     architecture.memory_layout.stack.start = backup_stack_address;
     architecture.memory_layout.data.end = backup_data_address;
+}
 
-    // Compile code
-    let label_table;
-    try {
-        // Compile assembly
-        const compiled = arch.compile(
-            code,
-            library_offset,
-            labels_json,
-            library ?? false,
-            color,
-        );
-        // Extract instructions
-        instructions.push(
-            ...compiled.instructions.map(x => ({
-                Address: x.address,
-                Label: x.labels[0] ?? "",
-                loaded: x.loaded,
-                binary: x.binary,
-                user: x.user,
-                Break: null,
-                hide: false,
-                visible: true,
-            })),
-        );
-        // Extract binary instructions for library
-        instructions_binary = instructions.map((x, idx) => ({
-            Address: x.Address,
-            Label: x.Label,
+/**
+ * Load library instructions and labels when compiling a normal program
+ * @param {Array} instructions - Array to populate with instructions
+ * @returns {Object} Information about loaded library
+ */
+function loadLibraryIfPresent(instructions) {
+    let library_offset = 0;
+    let library_instructions = 0;
+    const library_labels = {};
+    
+    if (!loadedLibrary || Object.keys(loadedLibrary).length === 0) {
+        return { library_offset, library_instructions, library_labels };
+    }
+    
+    // Validate library format
+    if (!loadedLibrary.version || !loadedLibrary.binary || !loadedLibrary.symbols) {
+        throw new Error("Invalid library format: missing required fields (version, binary, symbols)");
+    }
+
+    // Convert hex string to binary string
+    let binaryString = "";
+    for (let i = 0; i < loadedLibrary.binary.length; i += 2) {
+        const hexByte = loadedLibrary.binary.substr(i, 2);
+        const byte = parseInt(hexByte, 16);
+        binaryString += byte.toString(2).padStart(8, "0");
+    }
+
+    // Build a map of addresses to symbols
+    const symbolsByAddr = new Map();
+    for (const [name, symbolData] of Object.entries(loadedLibrary.symbols)) {
+        symbolsByAddr.set(symbolData.addr, name);
+        library_labels[name] = symbolData.addr;
+    }
+
+    // Calculate instruction size in bits
+    const instructionSizeBits = WORDSIZE;
+    const instructionSizeBytes = instructionSizeBits / 8;
+    
+    // Process each instruction
+    let currentAddr = 0;
+    for (let i = 0; i < binaryString.length; i += instructionSizeBits) {
+        const instructionBinary = binaryString.substr(i, instructionSizeBits);
+        const symbolName = symbolsByAddr.get(currentAddr);
+        const hasSymbol = symbolName !== undefined;
+        
+        const instruction = {
             Break: null,
-            // Newly compiled instructions have their binary encoding in the
-            // `binary` field, but instructions from the library store it in
-            // the `loaded` field. Read the corresponding field depending on
-            // where the instruction comes from, knowing that the first
-            // `library_instructions` instructions come from the library
-            loaded: idx < library_instructions ? x.loaded : x.binary,
-            visible: false,
+            Address: `0x${currentAddr.toString(16)}`,
+            Label: hasSymbol ? symbolName : "",
+            loaded: instructionBinary,
             user: null,
-        }));
-        // Extract label table for library
-        label_table = compiled.label_table.reduce((tbl, x) => {
-            tbl[x.name] = { address: x.address, global: x.global };
-            return tbl;
-        }, {});
-        // Extract data elements and load them on memory
-        const data_mem = compiled.data;
-        for (let i = 0; i < data_mem.length; i++) {
-            const data = data_mem[i];
-            // const size = BigInt(data.size());
-            const addr = BigInt(data.address());
-            const labels = data.labels();
+            _rowVariant: "",
+            visible: true,
+            globl: hasSymbol,
+            hide: !(library_instructions === 0 || hasSymbol),
+        };
+        
+        instructions.push(instruction);
+        library_instructions++;
+        library_offset = currentAddr + instructionSizeBytes;
+        currentAddr += instructionSizeBytes;
+    }
+    
+    return { library_offset, library_instructions, library_labels };
+}
 
-            switch (data.data_category()) {
-                case DataCategoryJS.Number:
-                    switch (data.type()) {
-                        case "float": {
-                            const floatValue = data.value(true);
-                            // Convert float to 32-bit IEEE 754 representation
-                            const buffer = new ArrayBuffer(4);
-                            const view = new DataView(buffer);
-                            view.setFloat32(0, floatValue, false);
+/**
+ * Load data elements from compilation into memory
+ * @param {Array} data_mem - Array of data elements from compiler
+ * @param {Object} DataCategoryJS - WASM DataCategory module
+ */
+// eslint-disable-next-line max-lines-per-function
+function loadDataIntoMemory(data_mem, DataCategoryJS) {
+    for (let i = 0; i < data_mem.length; i++) {
+        const data = data_mem[i];
+        const addr = BigInt(data.address());
+        const labels = data.labels();
 
-                            // Get word size from architecture configuration
+        switch (data.data_category()) {
+            case DataCategoryJS.Number:
+                switch (data.type()) {
+                    case "float": {
+                        const floatValue = data.value(true);
+                        const buffer = new ArrayBuffer(4);
+                        const view = new DataView(buffer);
+                        view.setFloat32(0, floatValue, false);
+
+                        const wordSizeBytes =
+                            newArchitecture.config.word_size /
+                            newArchitecture.config.byte_size;
+
+                        const floatBytes = new Uint8Array(4);
+                        for (let i = 0; i < 4; i++) {
+                            floatBytes[i] = view.getUint8(i);
+                        }
+
+                        writeMultiByteValueAsWords(
+                            addr,
+                            floatBytes,
+                            wordSizeBytes,
+                        );
+
+                        const floatTag = labels[0] ?? "";
+                        const floatType = "float32";
+                        main_memory.addHint(addr, floatTag, floatType, 32);
+                        break;
+                    }
+                    case "double": {
+                        const doubleValue = data.value(true);
+                        const buffer = new ArrayBuffer(8);
+                        const view = new DataView(buffer);
+                        view.setFloat64(0, doubleValue, false);
+
+                        const wordSizeBytes =
+                            newArchitecture.config.word_size /
+                            newArchitecture.config.byte_size;
+
+                        const doubleBytes = new Uint8Array(8);
+                        for (let i = 0; i < 8; i++) {
+                            doubleBytes[i] = view.getUint8(i);
+                        }
+
+                        writeMultiByteValueAsWords(
+                            addr,
+                            doubleBytes,
+                            wordSizeBytes,
+                        );
+
+                        const doubleTag = labels[0] ?? "";
+                        const doubleType = "float64";
+                        main_memory.addHint(
+                            addr,
+                            doubleTag,
+                            doubleType,
+                            64,
+                        );
+                        break;
+                    }
+                    case "byte": {
+                        const byteValue = Number("0x" + data.value(false));
+                        main_memory.write(addr, byteValue);
+
+                        const byteTag = labels[0] ?? "";
+                        const byteType = "byte";
+                        main_memory.addHint(addr, byteTag, byteType, 8);
+                        break;
+                    }
+                    case "word":
+                        {
+                            const wordValue = BigInt(
+                                "0x" + data.value(false),
+                            );
                             const wordSizeBytes =
                                 newArchitecture.config.word_size /
                                 newArchitecture.config.byte_size;
-
-                            // Extract bytes from the float's binary representation
-                            const floatBytes = new Uint8Array(4);
-                            for (let i = 0; i < 4; i++) {
-                                floatBytes[i] = view.getUint8(i);
-                            }
-
-                            // Write the float as words to memory
-                            writeMultiByteValueAsWords(
-                                addr,
-                                floatBytes,
-                                wordSizeBytes,
-                            );
-
-                            // Add memory hint for the float
-                            const floatTag = labels[0] ?? "";
-                            const floatType = "float32";
-                            main_memory.addHint(addr, floatTag, floatType, 32);
-                            break;
-                        }
-                        case "double": {
-                            const doubleValue = data.value(true);
-                            // Convert double to 64-bit IEEE 754 representation
-                            const buffer = new ArrayBuffer(8);
-                            const view = new DataView(buffer);
-                            view.setFloat64(0, doubleValue, false); // false = big-endian
-
-                            // Get word size from architecture configuration
-                            const wordSizeBytes =
-                                newArchitecture.config.word_size /
-                                newArchitecture.config.byte_size;
-
-                            // Extract bytes from the double's binary representation
-                            const doubleBytes = new Uint8Array(8);
-                            for (let i = 0; i < 8; i++) {
-                                doubleBytes[i] = view.getUint8(i);
-                            }
-
-                            // Write the double as words to memory
-                            writeMultiByteValueAsWords(
-                                addr,
-                                doubleBytes,
-                                wordSizeBytes,
-                            );
-
-                            // Add memory hint for the double
-                            const doubleTag = labels[0] ?? "";
-                            const doubleType = "float64";
-                            main_memory.addHint(
-                                addr,
-                                doubleTag,
-                                doubleType,
-                                64,
-                            );
-                            break;
-                        }
-                        case "byte": {
-                            const byteValue = Number("0x" + data.value(false));
-                            main_memory.write(addr, byteValue);
-
-                            // Add memory hint for the byte
-                            const byteTag = labels[0] ?? "";
-                            const byteType = "byte";
-                            main_memory.addHint(addr, byteTag, byteType, 8);
-                            break;
-                        }
-                        case "word":
-                            {
-                                const wordValue = BigInt(
-                                    "0x" + data.value(false),
-                                );
-                                // Get word size from architecture configuration
-                                const wordSizeBytes =
-                                    newArchitecture.config.word_size /
-                                    newArchitecture.config.byte_size;
-                                // Split the word into bytes
-                                const wordBytes = new Uint8Array(wordSizeBytes);
-
-                                // Extract bytes from the word value based on word size
-                                for (let i = 0; i < wordSizeBytes; i++) {
-                                    const shiftAmount = BigInt(
-                                        (wordSizeBytes - 1 - i) *
-                                            newArchitecture.config.byte_size,
-                                    );
-                                    wordBytes[i] = Number(
-                                        (wordValue >> shiftAmount) &
-                                            BigInt(
-                                                (1 <<
-                                                    newArchitecture.config
-                                                        .byte_size) -
-                                                    1,
-                                            ),
-                                    );
-                                }
-
-                                main_memory.writeWord(addr, wordBytes);
-
-                                // Add memory hint for the word
-                                const wordTag = labels[0] ?? "";
-                                const wordType = "word";
-                                main_memory.addHint(
-                                    addr,
-                                    wordTag,
-                                    wordType,
-                                    newArchitecture.config.word_size,
-                                );
-                            }
-
-                            break;
-
-                        case "double_word": {
-                            const dwordValue = BigInt("0x" + data.value(false));
-                            // Get word size from architecture configuration
-                            const wordSizeBytes =
-                                newArchitecture.config.word_size /
-                                newArchitecture.config.byte_size;
-
-                            // Split dword into two words (high and low)
-                            const highWord =
-                                dwordValue >>
-                                BigInt(newArchitecture.config.word_size);
-                            const lowWord =
-                                dwordValue &
-                                BigInt(
-                                    (1n <<
-                                        BigInt(
-                                            newArchitecture.config.word_size,
-                                        )) -
-                                        1n,
-                                );
-
-                            // Convert words to byte arrays
-                            const highWordBytes = new Uint8Array(wordSizeBytes);
-                            const lowWordBytes = new Uint8Array(wordSizeBytes);
+                            const wordBytes = new Uint8Array(wordSizeBytes);
 
                             for (let i = 0; i < wordSizeBytes; i++) {
                                 const shiftAmount = BigInt(
                                     (wordSizeBytes - 1 - i) *
                                         newArchitecture.config.byte_size,
                                 );
-                                highWordBytes[i] = Number(
-                                    (highWord >> shiftAmount) &
-                                        BigInt(
-                                            (1 <<
-                                                newArchitecture.config
-                                                    .byte_size) -
-                                                1,
-                                        ),
-                                );
-                                lowWordBytes[i] = Number(
-                                    (lowWord >> shiftAmount) &
+                                wordBytes[i] = Number(
+                                    (wordValue >> shiftAmount) &
                                         BigInt(
                                             (1 <<
                                                 newArchitecture.config
@@ -334,138 +254,291 @@ export function assembleCreatorBase(code, library, wasmModules) {
                                 );
                             }
 
-                            // Write two words to memory
-                            main_memory.writeWord(addr, highWordBytes);
-                            main_memory.writeWord(
-                                addr + BigInt(wordSizeBytes),
-                                lowWordBytes,
-                            );
+                            main_memory.writeWord(addr, wordBytes);
 
-                            // Add memory hint for the dword
-                            const dwordTag = labels[0] ?? "";
-                            const dwordType = "dword";
-                            main_memory.addHint(addr, dwordTag, dwordType, 64);
-                            break;
-                        }
-
-                        case "half": {
-                            const halfValue = BigInt("0x" + data.value(false));
-                            // Split the half-word into bytes
-                            const halfBytes = new Uint8Array(2);
-                            halfBytes[0] = Number((halfValue >> 8n) & 0xffn);
-                            halfBytes[1] = Number(halfValue & 0xffn);
-
-                            // Reorder bytes according to endianness
-                            // For half-word, we need to determine the byte order within a 2-byte boundary
-                            // Extract the relative ordering from ENDIANNESSARR for the first 2 bytes
-                            // This might seem obvious, but even though ENDIANNESSARR contains the ordering
-                            // of the bytes within a word, and it can be any order (not just big-endian or
-                            // little-endian), if we're looking at a half-word (2 bytes), the order can
-                            // ONLY be one of two possibilities:
-                            // 1. Big-endian: byte0 first, byte1 second
-                            // 2. Little-endian: byte1 first, byte0 second
-                            const orderedBytes = new Uint8Array(2);
-
-                            // Find which positions in ENDIANNESSARR correspond to bytes 0 and 1
-                            const byte0Pos = ENDIANNESSARR.indexOf(0);
-                            const byte1Pos = ENDIANNESSARR.indexOf(1);
-
-                            // Order the bytes according to their positions
-                            if (byte0Pos < byte1Pos) {
-                                // Big-endian order for half-word
-                                orderedBytes[0] = halfBytes[0];
-                                orderedBytes[1] = halfBytes[1];
-                            } else {
-                                // Little-endian order for half-word
-                                orderedBytes[0] = halfBytes[1];
-                                orderedBytes[1] = halfBytes[0];
-                            }
-
-                            // Write byte by byte
-                            main_memory.write(addr, orderedBytes[0]);
-                            main_memory.write(addr + 1n, orderedBytes[1]);
-
-                            // Add memory hint for the half-word
-                            const halfTag = labels[0] ?? "";
-                            const halfType = "half";
-                            main_memory.addHint(addr, halfTag, halfType, 16);
-
-                            break;
-                        }
-                        default: {
-                            throw new Error(
-                                `Unsupported number type: ${data.type()}`,
+                            const wordTag = labels[0] ?? "";
+                            const wordType = "word";
+                            main_memory.addHint(
+                                addr,
+                                wordTag,
+                                wordType,
+                                newArchitecture.config.word_size,
                             );
                         }
-                    }
+                        break;
 
-                    break;
-                case DataCategoryJS.String: {
-                    const encoder = new TextEncoder();
-                    let currentAddr = addr;
-                    const startAddr = addr;
+                    case "double_word": {
+                        const dwordValue = BigInt("0x" + data.value(false));
+                        const wordSizeBytes =
+                            newArchitecture.config.word_size /
+                            newArchitecture.config.byte_size;
 
-                    for (const ch_h of data.value(false)) {
-                        const bytes = new Uint8Array(4);
-                        const n = encoder.encodeInto(ch_h, bytes).written;
-                        // Write the string to memory
-                        for (let j = 0; j < n; j++) {
-                            main_memory.write(currentAddr, bytes[j]);
-                            currentAddr++;
+                        const highWord =
+                            dwordValue >>
+                            BigInt(newArchitecture.config.word_size);
+                        const lowWord =
+                            dwordValue &
+                            BigInt(
+                                (1n <<
+                                    BigInt(
+                                        newArchitecture.config.word_size,
+                                    )) -
+                                    1n,
+                            );
+
+                        const highWordBytes = new Uint8Array(wordSizeBytes);
+                        const lowWordBytes = new Uint8Array(wordSizeBytes);
+
+                        for (let i = 0; i < wordSizeBytes; i++) {
+                            const shiftAmount = BigInt(
+                                (wordSizeBytes - 1 - i) *
+                                    newArchitecture.config.byte_size,
+                            );
+                            highWordBytes[i] = Number(
+                                (highWord >> shiftAmount) &
+                                    BigInt(
+                                        (1 <<
+                                            newArchitecture.config
+                                                .byte_size) -
+                                            1,
+                                    ),
+                            );
+                            lowWordBytes[i] = Number(
+                                (lowWord >> shiftAmount) &
+                                    BigInt(
+                                        (1 <<
+                                            newArchitecture.config
+                                                .byte_size) -
+                                            1,
+                                    ),
+                            );
                         }
+
+                        main_memory.writeWord(addr, highWordBytes);
+                        main_memory.writeWord(
+                            addr + BigInt(wordSizeBytes),
+                            lowWordBytes,
+                        );
+
+                        const dwordTag = labels[0] ?? "";
+                        const dwordType = "dword";
+                        main_memory.addHint(addr, dwordTag, dwordType, 64);
+                        break;
                     }
 
-                    // Add memory hint for the string
-                    const stringLength = Number(currentAddr - startAddr);
-                    const stringTag = labels[0] ?? "";
-                    const stringType = "string";
-                    main_memory.addHint(
-                        startAddr,
-                        stringTag,
-                        stringType,
-                        stringLength * 8,
-                    ); // stringLength in bytes * 8 bits per byte
-                    break;
-                }
-                case DataCategoryJS.Padding:
-                case DataCategoryJS.Space: {
-                    const space_size = BigInt(data.size());
-                    if (space_size < 0n) {
-                        throw new Error(
-                            "The space directive value should be positive and greater than zero",
-                        );
-                    }
-                    if (space_size > 50n * 1024n * 1024n) {
-                        throw new Error(
-                            ".space value out of range (greater than 50MiB)",
-                        );
-                    }
-                    // Write zeroes to the memory
-                    for (let j = 0n; j < space_size; j++) {
-                        main_memory.write(addr + j, 0);
-                    }
+                    case "half": {
+                        const halfValue = BigInt("0x" + data.value(false));
+                        const halfBytes = new Uint8Array(2);
+                        halfBytes[0] = Number((halfValue >> 8n) & 0xffn);
+                        halfBytes[1] = Number(halfValue & 0xffn);
 
-                    // Add memory hint for the space/padding
-                    const spaceTag = labels[0] ?? "";
-                    const spaceType =
-                        data.data_category() === DataCategoryJS.Padding
-                            ? "padding"
-                            : "space";
-                    main_memory.addHint(
-                        addr,
-                        spaceTag,
-                        spaceType,
-                        Number(space_size) * 8,
-                    ); // space_size in bytes * 8 bits per byte
-                    break;
+                        const orderedBytes = new Uint8Array(2);
+                        const byte0Pos = ENDIANNESSARR.indexOf(0);
+                        const byte1Pos = ENDIANNESSARR.indexOf(1);
+
+                        if (byte0Pos < byte1Pos) {
+                            orderedBytes[0] = halfBytes[0];
+                            orderedBytes[1] = halfBytes[1];
+                        } else {
+                            orderedBytes[0] = halfBytes[1];
+                            orderedBytes[1] = halfBytes[0];
+                        }
+
+                        main_memory.write(addr, orderedBytes[0]);
+                        main_memory.write(addr + 1n, orderedBytes[1]);
+
+                        const halfTag = labels[0] ?? "";
+                        const halfType = "half";
+                        main_memory.addHint(addr, halfTag, halfType, 16);
+                        break;
+                    }
+                    default: {
+                        throw new Error(
+                            `Unsupported number type: ${data.type()}`,
+                        );
+                    }
                 }
-                default:
-                    throw new Error(
-                        `Unknown data category: ${data.data_category()}`,
-                    );
+                break;
+                
+            case DataCategoryJS.String: {
+                const encoder = new TextEncoder();
+                let currentAddr = addr;
+                const startAddr = addr;
+
+                for (const ch_h of data.value(false)) {
+                    const bytes = new Uint8Array(4);
+                    const n = encoder.encodeInto(ch_h, bytes).written;
+                    for (let j = 0; j < n; j++) {
+                        main_memory.write(currentAddr, bytes[j]);
+                        currentAddr++;
+                    }
+                }
+
+                const stringLength = Number(currentAddr - startAddr);
+                const stringTag = labels[0] ?? "";
+                const stringType = "string";
+                main_memory.addHint(
+                    startAddr,
+                    stringTag,
+                    stringType,
+                    stringLength * 8,
+                );
+                break;
             }
+            
+            case DataCategoryJS.Padding:
+            case DataCategoryJS.Space: {
+                const space_size = BigInt(data.size());
+                if (space_size < 0n) {
+                    throw new Error(
+                        "The space directive value should be positive and greater than zero",
+                    );
+                }
+                if (space_size > 50n * 1024n * 1024n) {
+                    throw new Error(
+                        ".space value out of range (greater than 50MiB)",
+                    );
+                }
+                for (let j = 0n; j < space_size; j++) {
+                    main_memory.write(addr + j, 0);
+                }
+
+                const spaceTag = labels[0] ?? "";
+                const spaceType =
+                    data.data_category() === DataCategoryJS.Padding
+                        ? "padding"
+                        : "space";
+                main_memory.addHint(
+                    addr,
+                    spaceTag,
+                    spaceType,
+                    Number(space_size) * 8,
+                );
+                break;
+            }
+            
+            default:
+                throw new Error(
+                    `Unknown data category: ${data.data_category()}`,
+                );
         }
-        // Catch any errors thrown by the compiler
+    }
+}
+
+/**
+ * Write library binary instructions to memory
+ */
+function writeLibraryToMemory() {
+    if (!loadedLibrary || Object.keys(loadedLibrary).length === 0) {
+        return;
+    }
+    
+    let binaryString = "";
+    for (let i = 0; i < loadedLibrary.binary.length; i += 2) {
+        const hexByte = loadedLibrary.binary.substr(i, 2);
+        const byte = parseInt(hexByte, 16);
+        binaryString += byte.toString(2).padStart(8, "0");
+    }
+
+    let currentAddr = 0;
+    const instructionSizeBits = WORDSIZE;
+    const instructionSizeBytes = instructionSizeBits / 8;
+    
+    for (let i = 0; i < binaryString.length; i += instructionSizeBits) {
+        const instructionBinary = binaryString.substr(i, instructionSizeBits);
+        
+        for (let j = 0; j < instructionBinary.length; j += WORDSIZE) {
+            const wordBinary = instructionBinary.substr(j, WORDSIZE);
+            const wordBytes = [];
+
+            for (let k = 0; k < wordBinary.length; k += BYTESIZE) {
+                const byte = parseInt(wordBinary.substr(k, BYTESIZE), 2);
+                wordBytes.push(byte);
+            }
+
+            main_memory.writeWord(BigInt(currentAddr + j / BYTESIZE), wordBytes);
+        }
+        
+        currentAddr += instructionSizeBytes;
+    }
+}
+
+/**
+ * Write compiled instructions to memory
+ * @param {Array} instructions - Array of instructions
+ * @param {number} library_instructions - Number of library instructions to skip
+ */
+function writeInstructionsToMemory(instructions, library_instructions) {
+    for (let i = library_instructions; i < instructions.length; i++) {
+        const instruction = instructions[i];
+        const baseAddr = parseInt(instruction.Address, 16);
+
+        for (let j = 0; j < instruction.binary.length; j += WORDSIZE) {
+            const wordBinary = instruction.binary.substr(j, WORDSIZE);
+            const wordBytes = [];
+
+            for (let k = 0; k < wordBinary.length; k += BYTESIZE) {
+                const byte = parseInt(wordBinary.substr(k, BYTESIZE), 2);
+                wordBytes.push(byte);
+            }
+
+            main_memory.writeWord(BigInt(baseAddr + j / BYTESIZE), wordBytes);
+        }
+    }
+}
+
+/**
+ * Compile assembly code as a library
+ * @param {string} code - Assembly code to compile
+ * @param {Object} wasmModules - WASM modules containing ArchitectureJS and DataCategoryJS
+ * @returns {Object} Compilation result
+ */
+export function assembleCreatorLibrary(code, wasmModules) {
+    /* Google Analytics */
+    creator_ga("compile", "compile.libraray");
+    const color = 1;
+
+    const { DataCategoryJS } = wasmModules;
+
+    let arch;
+    try {
+        arch = initializeArchitecture(wasmModules);
+    } catch (error) {
+        return error;
+    }
+
+    resetMemoryAndState();
+
+    // Compile code
+    let label_table;
+    try {
+        const compiled = arch.compile(
+            code,
+            0, // library_offset (not used for library compilation)
+            "{}", // no library labels
+            true, // library flag
+            color,
+        );
+        
+        // Library compilation: only binary instructions
+        libraryInstructions = compiled.instructions.map(x => ({
+            Address: x.address,
+            Label: x.labels[0] ?? "",
+            Break: null,
+            loaded: "0x" + parseInt(x.binary, 2).toString(16).padStart(WORDSIZE / 4, "0"),
+            visible: false,
+            user: null,
+        }));
+        
+        // Extract label table for library
+        label_table = compiled.label_table.reduce((tbl, x) => {
+            tbl[x.name] = { address: x.address, global: x.global };
+            return tbl;
+        }, {});
+        
+        // Extract data elements and load them on memory
+        const data_mem = compiled.data;
+        loadDataIntoMemory(data_mem, DataCategoryJS);
     } catch (error) {
         const cleanErrorText = getCleanErrorMessage(error);
         const linterInfo = parseErrorForLinter(cleanErrorText);
@@ -479,47 +552,8 @@ export function assembleCreatorBase(code, library, wasmModules) {
         };
     }
 
-    /* Enter the binary in the text segment */
-    for (const instruction of loadedLibrary.instructions_binary ?? []) {
-        const auxAddr = parseInt(instruction.Address, 16);
-
-        // Split binary into words and write to memory
-        for (let j = 0; j < instruction.loaded.length; j += WORDSIZE) {
-            const wordBinary = instruction.loaded.substr(j, WORDSIZE);
-            const wordBytes = [];
-
-            // Split word into bytes
-            for (let k = 0; k < wordBinary.length; k += BYTESIZE) {
-                const byte = parseInt(wordBinary.substr(k, BYTESIZE), 2);
-                wordBytes.push(byte);
-            }
-
-            main_memory.writeWord(BigInt(auxAddr + j / BYTESIZE), wordBytes);
-        }
-    }
-
-    /* Enter the assembled instructions in the text segment */
-    for (let i = library_instructions; i < instructions.length; i++) {
-        const instruction = instructions[i];
-        const baseAddr = parseInt(instruction.Address, 16);
-
-        // Split binary into words and write to memory
-        for (let j = 0; j < instruction.binary.length; j += WORDSIZE) {
-            const wordBinary = instruction.binary.substr(j, WORDSIZE);
-            const wordBytes = [];
-
-            // Split word into bytes
-            for (let k = 0; k < wordBinary.length; k += BYTESIZE) {
-                const byte = parseInt(wordBinary.substr(k, BYTESIZE), 2);
-                wordBytes.push(byte);
-            }
-
-            main_memory.writeWord(BigInt(baseAddr + j / BYTESIZE), wordBytes);
-        }
-    }
-
-    /*Save binary*/
-    for (const instruction of instructions_binary) {
+    // Mark global labels on library instructions
+    for (const instruction of libraryInstructions) {
         if (instruction.Label !== "") {
             if (label_table[instruction.Label].global === true) {
                 instruction.globl = true;
@@ -529,8 +563,97 @@ export function assembleCreatorBase(code, library, wasmModules) {
         }
     }
 
-    if (typeof document !== "undefined" && document.app)
-        document.app.$data.instructions = instructions;
+    // Set the libraryInstructions array for library export
+    setLibraryInstructions(libraryInstructions);
+    
+    return {
+        errorcode: "",
+        token: "",
+        type: "",
+        update: "",
+        status: "ok",
+    };
+}
+
+/**
+ * Compile assembly code as a normal program
+ * @param {string} code - Assembly code to compile
+ * @param {Object} wasmModules - WASM modules containing ArchitectureJS and DataCategoryJS
+ * @returns {Object} Compilation result
+ */
+export function assembleCreatorProgram(code, wasmModules) {
+    /* Google Analytics */
+    creator_ga("compile", "compile.assembly");
+    const color = 1;
+
+    const { DataCategoryJS } = wasmModules;
+
+    let arch;
+    try {
+        arch = initializeArchitecture(wasmModules);
+    } catch (error) {
+        return error;
+    }
+
+    const instructions = [];
+    resetMemoryAndState();
+
+    // Load library if present
+    const { library_offset, library_instructions, library_labels } = loadLibraryIfPresent(instructions);
+    const labels_json = JSON.stringify(library_labels);
+
+    // Compile code
+    let label_table;
+    try {
+        const compiled = arch.compile(
+            code,
+            library_offset,
+            labels_json,
+            false, // not a library
+            color,
+        );
+        
+        // Normal compilation: populate instructions for execution/display
+        instructions.push(
+            ...compiled.instructions.map(x => ({
+                Address: x.address,
+                Label: x.labels[0] ?? "",
+                loaded: x.loaded,
+                binary: x.binary,
+                user: x.user,
+                Break: null,
+                hide: false,
+                visible: true,
+            })),
+        );
+        
+        // Extract label table
+        label_table = compiled.label_table.reduce((tbl, x) => {
+            tbl[x.name] = { address: x.address, global: x.global };
+            return tbl;
+        }, {});
+        
+        // Extract data elements and load them on memory
+        const data_mem = compiled.data;
+        loadDataIntoMemory(data_mem, DataCategoryJS);
+    } catch (error) {
+        const cleanErrorText = getCleanErrorMessage(error);
+        const linterInfo = parseErrorForLinter(cleanErrorText);
+        return {
+            errorcode: "101",
+            type: "error",
+            bgcolor: "danger",
+            status: "error",
+            msg: formatErrorWithColors(error),
+            linter: linterInfo,
+        };
+    }
+
+    // Write library binary to memory if present
+    writeLibraryToMemory();
+
+    // Write assembled instructions to memory
+    writeInstructionsToMemory(instructions, library_instructions);
 
     const tag_instructions = {};
     for (const [name, info] of Object.entries(label_table)) {
@@ -543,6 +666,7 @@ export function assembleCreatorBase(code, library, wasmModules) {
     setAddress(architecture.memory_layout.text.start);
     setInstructions(instructions);
     set_tag_instructions(tag_instructions);
+    
     return {
         errorcode: "",
         token: "",
@@ -550,4 +674,19 @@ export function assembleCreatorBase(code, library, wasmModules) {
         update: "",
         status: "ok",
     };
+}
+
+/**
+ * Common assembly compiler implementation shared between web and deno versions
+ * @param {string} code - Assembly code to compile
+ * @param {boolean} library - Whether this is a library compilation
+ * @param {Object} wasmModules - WASM modules containing ArchitectureJS and DataCategoryJS
+ * @returns {Object} Compilation result
+ */
+export function assembleCreatorBase(code, library, wasmModules) {
+    if (library) {
+        return assembleCreatorLibrary(code, wasmModules);
+    } else {
+        return assembleCreatorProgram(code, wasmModules);
+    }
 }

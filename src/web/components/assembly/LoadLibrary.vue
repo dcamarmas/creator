@@ -69,7 +69,7 @@ export default defineComponent({
       v-model="library"
       :state="library !== null"
       placeholder="Choose a file..."
-      accept=".o"
+      accept=".yml"
       id="binary_file"
     />
   </b-modal>

@@ -20,28 +20,17 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 
 <script lang="ts">
 import { defineComponent, type PropType } from "vue"
-import {
-  loadDefaultArchitecture,
-  loadCustomArchitecture,
-} from "@/web/utils.mjs"
-import { initCAPI } from "@/core/capi/initCAPI.mts"
-import { architecture } from "@/core/core"
-
-interface AvailableArch {
-  name: string
-  alias: string[]
-  file?: string
-  img?: string
-  alt?: string
-  id: string
-  examples: string[]
-  description: string
-  guide?: string
-  available: boolean
-  default?: boolean
-}
+import ArchitectureItem from "../select_architecture/ArchitectureItem.vue"
+import DeleteArchitecture from "../select_architecture/DeleteArchitecture.vue"
+import { useArchitectureSelect } from '@/web/composables/useArchitectureSelect'
+import { useArchitectureUpload, type AvailableArch } from '@/web/composables/useArchitectureUpload'
 
 export default defineComponent({
+  components: {
+    ArchitectureItem,
+    DeleteArchitecture,
+  },
+
   props: {
     arch_available: { type: Array as PropType<AvailableArch[]>, required: true },
     dark: { type: [Boolean, null], required: true },
@@ -49,28 +38,49 @@ export default defineComponent({
 
   emits: [
     "select-architecture", // architecture has been selected
+    "architecture-deleted", // custom architecture has been deleted
   ],
+
+  setup(_props, { emit }) {
+    // Use composables for shared logic
+    const {
+      archToDelete,
+      showDeleteModal,
+      handleSelectArchitecture,
+      handleDeleteArchitecture,
+      handleArchitectureDeleted,
+    } = useArchitectureSelect(
+      (arch_name: string) => emit("select-architecture", arch_name),
+      (arch_name: string) => emit("architecture-deleted", arch_name)
+    )
+
+    const {
+      showLoadModal,
+      customArchName,
+      customArchDescription,
+      customArchFile,
+      openLoadArchModal,
+      loadCustomArch,
+    } = useArchitectureUpload((arch_name: string) => emit('select-architecture', arch_name))
+
+    return {
+      archToDelete,
+      showDeleteModal,
+      handleSelectArchitecture,
+      handleDeleteArchitecture,
+      handleArchitectureDeleted,
+      showLoadModal,
+      customArchName,
+      customArchDescription,
+      customArchFile,
+      openLoadArchModal,
+      loadCustomArch,
+    }
+  },
 
   computed: {
     availableArchitectures() {
       return this.arch_available.filter(arch => arch.available)
-    },
-  },
-
-  methods: {
-    /**
-     * Selects an architecture by emitting the 'select-architecture' event
-     */
-    async select_arch(arch: AvailableArch) {
-      if (arch.default) {
-        await loadDefaultArchitecture(arch as any)
-      } else {
-        loadCustomArchitecture(arch)
-      }
-      const pluginName = architecture.config.plugin
-      // Now we can initialize the CAPI with the plugin name
-      initCAPI(pluginName)
-      this.$emit("select-architecture", arch.name)
     },
   },
 })
@@ -87,29 +97,82 @@ export default defineComponent({
     </div>
 
     <div class="mobile-arch-list">
-      <div
+      <!-- Architecture Items -->
+      <ArchitectureItem
         v-for="arch in availableArchitectures"
         :key="arch.id"
-        class="arch-item"
-        @click="select_arch(arch)"
+        :arch="arch"
+        :mobile="true"
+        @select="handleSelectArchitecture(arch)"
+        @delete="handleDeleteArchitecture(arch.name)"
+      />
+
+      <!-- Load Custom Architecture Button -->
+      <div 
+        class="arch-item load-custom"
+        @click="openLoadArchModal"
       >
-        <div class="arch-item-content">
-          <div class="arch-logo">
-            <img
-              :src="`img/logos/${arch.img}` || 'img/logos/default.webp'"
-              :alt="arch.alt"
-              class="arch-image"
-            />
-          </div>
-          <div class="arch-info">
-            <h3 class="arch-name">{{ arch.name }}</h3>
-          </div>
+        <div class="arch-logo load-logo">
+          <font-awesome-icon :icon="['fas', 'file-import']" />
         </div>
-        <div class="arch-arrow">
-          <font-awesome-icon :icon="['fas', 'chevron-right']" />
+        
+        <div class="arch-info">
+          <h3 class="arch-name">Load Custom Architecture</h3>
+          <p class="arch-description">Import your own architecture definition file (.yml)</p>
+        </div>
+
+        <div class="arch-actions">
+          <div class="select-indicator">
+            <font-awesome-icon :icon="['fas', 'plus']" />
+          </div>
         </div>
       </div>
     </div>
+
+    <!-- Load Custom Architecture Modal -->
+    <b-modal 
+      v-model="showLoadModal" 
+      title="Load Custom Architecture" 
+      @ok="loadCustomArch"
+    >
+      <b-form>
+        <b-form-group label="Architecture Name" label-for="arch-name">
+          <b-form-input
+            id="arch-name"
+            v-model="customArchName"
+            placeholder="Enter architecture name"
+            required
+          />
+        </b-form-group>
+
+        <b-form-group label="Description" label-for="arch-description">
+          <b-form-textarea
+            id="arch-description"
+            v-model="customArchDescription"
+            placeholder="Enter architecture description"
+            rows="3"
+          />
+        </b-form-group>
+
+        <b-form-group label="Architecture File" label-for="arch-file">
+          <b-form-file
+            id="arch-file"
+            v-model="customArchFile"
+            accept=".yml"
+            placeholder="Choose a .yml file..."
+            required
+          />
+        </b-form-group>
+      </b-form>
+    </b-modal>
+
+    <!-- Delete Architecture Modal -->
+    <DeleteArchitecture 
+      id="modal-delete-arch-mobile" 
+      v-model="showDeleteModal"
+      :arch="archToDelete"
+      @architecture-deleted="handleArchitectureDeleted"
+    />
   </div>
 </template>
 
@@ -195,33 +258,30 @@ export default defineComponent({
   }
 }
 
-.arch-item {
-  background-color: transparent;
-  border: none;
-  border-radius: 8px;
-  margin-bottom: 0.5rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  overflow: hidden;
+/* Load Custom Architecture Item */
+.arch-item.load-custom {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 0.75rem;
   padding: 1rem;
+  border-radius: 8px;
+  background-color: transparent;
+  border: 2px dashed rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition: all 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
   color: #6c757d;
-  position: relative;
-  user-select: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-
-  // Dark mode
+  margin-bottom: 0.5rem;
+  
   [data-bs-theme="dark"] & {
     color: #adb5bd;
+    border-color: rgba(255, 255, 255, 0.2);
   }
 
   &:active {
     color: #2196f3;
     background-color: rgba(33, 150, 243, 0.08);
+    border-color: rgba(33, 150, 243, 0.3);
+    border-style: solid;
     transform: scale(0.98);
 
     [data-bs-theme="dark"] & {
@@ -229,17 +289,22 @@ export default defineComponent({
       background-color: rgba(100, 181, 246, 0.12);
     }
   }
-
-  &:last-child {
-    margin-bottom: 0;
-  }
 }
 
-.arch-item-content {
+.load-logo {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  flex: 1;
+  justify-content: center;
+  background-color: rgba(var(--bs-primary-rgb), 0.1);
+  border-radius: 8px;
+  
+  svg {
+    font-size: 1.5rem;
+    color: var(--bs-primary);
+  }
 }
 
 .arch-logo {
@@ -253,12 +318,6 @@ export default defineComponent({
   align-items: center;
   justify-content: center;
   padding: 0.375rem;
-}
-
-.arch-image {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
 }
 
 .arch-info {
@@ -286,7 +345,19 @@ export default defineComponent({
   }
 }
 
-.arch-arrow {
+.arch-actions {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.select-indicator {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: var(--bs-body-color-secondary);
   opacity: 0.6;
   font-size: 0.9rem;
@@ -304,28 +375,21 @@ export default defineComponent({
 
 // Touch-friendly interactions
 @media (hover: none) and (pointer: coarse) {
-  .arch-item {
-    min-height: 72px; // Minimum touch target
+  .arch-item.load-custom {
+    min-height: 72px;
     padding: 1.25rem;
 
-    .arch-item-content {
-      gap: 0.875rem;
-    }
-
-    .arch-logo {
+    .load-logo {
       width: 50px;
       height: 50px;
-      padding: 0.4rem;
     }
 
-    .arch-info {
-      .arch-name {
-        font-size: 1rem;
-      }
+    .arch-name {
+      font-size: 1rem;
+    }
 
-      .arch-description {
-        font-size: 0.85rem;
-      }
+    .arch-description {
+      font-size: 0.85rem;
     }
   }
 }
@@ -348,31 +412,24 @@ export default defineComponent({
     padding: 0.25rem;
   }
 
-  .arch-item {
+  .arch-item.load-custom {
     padding: 0.875rem;
     margin-bottom: 0.25rem;
 
-    .arch-item-content {
-      gap: 0.625rem;
-    }
-
-    .arch-logo {
+    .load-logo {
       width: 44px;
       height: 44px;
-      padding: 0.35rem;
     }
 
-    .arch-info {
-      .arch-name {
-        font-size: 0.95rem;
-      }
-
-      .arch-description {
-        font-size: 0.8rem;
-      }
+    .arch-name {
+      font-size: 0.95rem;
     }
 
-    .arch-arrow {
+    .arch-description {
+      font-size: 0.8rem;
+    }
+
+    .select-indicator {
       font-size: 0.8rem;
     }
   }

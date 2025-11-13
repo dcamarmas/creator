@@ -45,7 +45,18 @@ export default {
       if (this.libraryVersion < 0 || !this.libraryLoaded) {
         return []
       }
-      return loadedLibrary?.instructions_tag?.filter(t => t.globl) || []
+      
+      // YAML format: symbols is an object with symbol names as keys
+      if (!loadedLibrary.symbols) {
+        return []
+      }
+      
+      return Object.entries(loadedLibrary.symbols).map(([name, data]) => ({
+        tag: name,
+        addr: data.addr,
+        globl: true,
+        help: data.help
+      }))
     },
     
     libraryName() {
@@ -97,15 +108,83 @@ export default {
       <b-list-group-item 
         v-for="tag of libraryTags" 
         :key="tag.tag"
-        class="d-flex justify-content-between align-items-center"
+        class="function-item"
       >
-        <div>
-          <b-badge pill variant="primary" class="me-2">
-            {{ tag.tag }}
-          </b-badge>
-          <span v-if="tag.description" class="text-muted small">
-            {{ tag.description }}
+        <!-- Function signature -->
+        <div class="function-signature">
+          <code class="function-name">{{ tag.tag }}</code>
+          <span class="function-params">(</span>
+          <span 
+            v-if="tag.help?.parameters && Object.keys(tag.help.parameters).length > 0"
+            class="param-list"
+          >
+            <span
+              v-for="(desc, param, index) in tag.help.parameters"
+              :key="param"
+            >
+              <code class="param-name">{{ param }}</code><span v-if="index < Object.keys(tag.help.parameters).length - 1">, </span>
+            </span>
           </span>
+          <span class="function-params">)</span>
+          
+          <!-- Return values indicator -->
+          <span 
+            v-if="tag.help?.returns && Object.keys(tag.help.returns).length > 0"
+            class="return-indicator"
+          >
+            →
+            <span
+              v-for="(desc, ret, index) in tag.help.returns"
+              :key="ret"
+            >
+              <code class="return-name">{{ ret }}</code><span v-if="index < Object.keys(tag.help.returns).length - 1">, </span>
+            </span>
+          </span>
+          
+          <!-- Address -->
+          <span class="ms-2">
+            <code class="address-label">@0x{{ (tag.addr || 0).toString(16).padStart(8, '0') }}</code>
+          </span>
+        </div>
+
+        <!-- Function documentation -->
+        <div v-if="tag.help" class="function-docs mt-3">
+          <!-- Description -->
+          <div v-if="tag.help.description" class="description mb-3">
+            <div class="doc-comment">{{ tag.help.description }}</div>
+          </div>
+          
+          <!-- Parameters documentation -->
+          <div 
+            v-if="tag.help.parameters && Object.keys(tag.help.parameters).length > 0" 
+            class="params-section mb-2"
+          >
+            <div class="section-title">Parameters:</div>
+            <div
+              v-for="(desc, param) in tag.help.parameters"
+              :key="param"
+              class="param-doc"
+            >
+              <code class="param-name-doc">{{ param }}</code>
+              <span class="param-desc">– {{ desc }}</span>
+            </div>
+          </div>
+          
+          <!-- Returns documentation -->
+          <div 
+            v-if="tag.help.returns && Object.keys(tag.help.returns).length > 0" 
+            class="returns-section"
+          >
+            <div class="section-title">Returns:</div>
+            <div
+              v-for="(desc, ret) in tag.help.returns"
+              :key="ret"
+              class="return-doc"
+            >
+              <code class="return-name-doc">{{ ret }}</code>
+              <span class="return-desc">– {{ desc }}</span>
+            </div>
+          </div>
         </div>
       </b-list-group-item>
     </b-list-group>
@@ -123,6 +202,171 @@ export default {
   
   &:last-child {
     border-bottom: none;
+  }
+}
+
+.function-item {
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
+  padding: 1rem 1.25rem;
+}
+
+.function-signature {
+  font-size: 1rem;
+  line-height: 1.5;
+  
+  .function-name {
+    color: #0969da;
+    font-weight: 600;
+    font-size: 1.1em;
+    background: transparent;
+  }
+  
+  .function-params {
+    color: #6e7781;
+  }
+  
+  .param-list {
+    color: #1f2328;
+    
+    .param-name {
+      color: #953800;
+      font-weight: 500;
+      background: transparent;
+    }
+  }
+  
+  .return-indicator {
+    color: #6e7781;
+    margin-left: 0.5rem;
+    
+    .return-name {
+      color: #116329;
+      font-weight: 500;
+      background: transparent;
+    }
+  }
+  
+  .address-label {
+    font-size: 0.85em;
+    color: #6e7781;
+    opacity: 0.8;
+    background: transparent;
+  }
+}
+
+.function-docs {
+  margin-left: 0.25rem;
+  padding-left: 1rem;
+  border-left: 3px solid #d0d7de;
+  
+  .description {
+    color: #57606a;
+    font-style: italic;
+    font-size: 0.95em;
+    line-height: 1.5;
+  }
+  
+  .doc-comment {
+    &::before {
+      content: '// ';
+      color: #6e7781;
+      font-weight: 600;
+    }
+  }
+  
+  .section-title {
+    font-weight: 600;
+    font-size: 0.875em;
+    color: #1f2328;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  
+  .param-doc, .return-doc {
+    margin-left: 1rem;
+    margin-bottom: 0.25rem;
+    font-size: 0.9em;
+    
+    .param-name-doc, .return-name-doc {
+      color: #953800;
+      font-weight: 500;
+      background: transparent;
+    }
+    
+    .param-desc, .return-desc {
+      color: #57606a;
+    }
+  }
+  
+  .return-doc {
+    .return-name-doc {
+      color: #116329;
+    }
+  }
+}
+
+[data-bs-theme="dark"] {
+  .function-signature {
+    .function-name {
+      color: #58a6ff;
+    }
+    
+    .function-params {
+      color: #8b949e;
+    }
+    
+    .param-list {
+      color: #e6edf3;
+      
+      .param-name {
+        color: #ffa657;
+      }
+    }
+    
+    .return-indicator {
+      color: #8b949e;
+      
+      .return-name {
+        color: #7ee787;
+      }
+    }
+    
+    .address-label {
+      color: #8b949e;
+    }
+  }
+  
+  .function-docs {
+    border-left-color: #30363d;
+    
+    .description {
+      color: #8b949e;
+    }
+    
+    .doc-comment::before {
+      color: #8b949e;
+    }
+    
+    .section-title {
+      color: #e6edf3;
+    }
+    
+    .param-doc, .return-doc {
+      .param-name-doc, .return-name-doc {
+        color: #ffa657;
+      }
+      
+      .param-desc, .return-desc {
+        color: #8b949e;
+      }
+    }
+    
+    .return-doc {
+      .return-name-doc {
+        color: #7ee787;
+      }
+    }
   }
 }
 

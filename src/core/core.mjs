@@ -50,7 +50,7 @@ import { resetDevices } from "./executor/devices.mts";
 import { compileTimerFunctions } from "./executor/timers.mts";
 import * as archProcessor from "./utils/architectureProcessor.mjs";
 
-/** @type {import("./core.d.ts").Library} */
+/** @type {import("./core.d.ts").Library | import("./core.d.ts").LegacyLibrary} */
 export let loadedLibrary = {};
 export let backup_stack_address;
 export let backup_data_address;
@@ -227,8 +227,13 @@ export function loadArchitecture(architectureYaml, isa = []) {
  * @throws {SyntaxError} If the library is invalid
  */
 export function load_library(lib_str) {
-    loadedLibrary = JSON.parse(lib_str);
-    coreEvents.emit("library-loaded");
+    // Parse YAML library format
+    import('js-yaml').then(yaml => {
+        loadedLibrary = yaml.load(lib_str);
+        coreEvents.emit("library-loaded");
+    }).catch(error => {
+        throw new SyntaxError(`Invalid library format: ${error.message}`);
+    });
 }
 
 /**

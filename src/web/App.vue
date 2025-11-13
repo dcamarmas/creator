@@ -123,6 +123,9 @@ export default {
       // Force recomputation of arch_available when architectures change
       customArchitecturesKey: 0,
 
+      // Track assembly completion to force instructions table refresh
+      assemblyCompletedKey: 0,
+
       // Architecture name and guide
       architecture_name: "",
       architecture_guide: "",
@@ -604,12 +607,12 @@ export default {
     showToast(toastData: {
       message: string
       title: string
-      variant: "success" | "danger" | "warning" | "info"
+      variant: string
     }) {
       this.createToast({
         title: toastData.title,
         body: toastData.message,
-        variant: toastData.variant,
+        variant: toastData.variant as "success" | "danger" | "warning" | "info",
         solid: true,
       })
     },
@@ -697,6 +700,7 @@ export default {
         mobileView = 'code'
       }
     "
+    @architecture-deleted="handleArchitectureDeleted"
   />
 
   <!----------------------->
@@ -776,7 +780,7 @@ export default {
     :display="display"
     :keyboard="keyboard"
     :dark="dark!"
-    :key="simulatorViewKey"
+    :key="simulatorViewKey + '-' + assemblyCompletedKey"
     :callee_frame="callee_frame!"
     :caller_frame="caller_frame!"
     :assembly_code="assembly_code"

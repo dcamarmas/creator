@@ -1,26 +1,10 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { type BvTriggerableEvent } from 'bootstrap-vue-next'
 
+import ArchitectureItem from './select_architecture/ArchitectureItem.vue'
 import DeleteArchitecture from './select_architecture/DeleteArchitecture.vue'
-import { loadDefaultArchitecture, loadCustomArchitecture, show_notification } from '@/web/utils.mjs'
-import { initCAPI } from '@/core/capi/initCAPI.mts'
-import { architecture } from '@/core/core'
-
-interface AvailableArch {
-  name: string
-  alias: string[]
-  file?: string
-  img?: string
-  alt?: string
-  id: string
-  examples: string[]
-  description: string
-  guide?: string
-  available: boolean
-  default?: boolean
-  definition?: string
-}
+import { useArchitectureSelect } from '@/web/composables/useArchitectureSelect'
+import { useArchitectureUpload, type AvailableArch } from '@/web/composables/useArchitectureUpload'
 
 interface Props {
   arch_available: AvailableArch[]
@@ -38,95 +22,33 @@ interface Emits {
 const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
 
-const archToDelete = ref<string | null>(null)
 const hoveredArch = ref<string | null>(null)
-const selectedArch = ref<string | null>(null)
-
-// Delete modal control
-const showDeleteModal = ref(false)
-
-// Load custom architecture modal
-const showLoadModal = ref(false)
-const customArchName = ref('')
-const customArchDescription = ref('')
-const customArchFile = ref<File | null>(null)
 
 const availableArchitectures = computed(() =>
   props.arch_available.filter(arch => arch.available)
 )
 
-const handleSelectArchitecture = async (arch: AvailableArch) => {
-  selectedArch.value = arch.name
-  
-  if (arch.default) {
-    await loadDefaultArchitecture(arch as any)
-  } else {
-    loadCustomArchitecture(arch as any)
-  }
-  
-  const pluginName = architecture.config.plugin
-  initCAPI(pluginName)
-  
-  emit('select-architecture', arch.name)
-}
+// Use composables for shared logic
+const {
+  selectedArch,
+  archToDelete,
+  showDeleteModal,
+  handleSelectArchitecture,
+  handleDeleteArchitecture,
+  handleArchitectureDeleted,
+} = useArchitectureSelect(
+  (arch_name) => emit('select-architecture', arch_name),
+  (arch_name) => emit('architecture-deleted', arch_name)
+)
 
-const handleDeleteArchitecture = (arch_name: string) => {
-  archToDelete.value = arch_name
-  showDeleteModal.value = true
-}
-
-const handleArchitectureDeleted = (arch_name: string) => {
-  emit('architecture-deleted', arch_name)
-}
-
-const openLoadArchModal = () => {
-  showLoadModal.value = true
-}
-
-const loadCustomArch = (event: BvTriggerableEvent) => {
-  event.preventDefault()
-
-  if (!customArchFile.value || !customArchName.value) {
-    show_notification('Please provide both a name and a file', 'danger')
-    return
-  }
-
-  const reader = new FileReader()
-  reader.onload = _event => {
-    const archDefinition = reader.result as string
-
-    const newArchitecture: AvailableArch = {
-      name: customArchName.value,
-      alias: [],
-      id: `select_conf${customArchName.value}`,
-      examples: [],
-      description: customArchDescription.value,
-      definition: archDefinition,
-      available: true,
-      default: false,
-    }
-
-    // Add to localStorage
-    const customArchs = JSON.parse(localStorage.getItem('customArchitectures') || '[]')
-    customArchs.unshift(newArchitecture)
-    localStorage.setItem('customArchitectures', JSON.stringify(customArchs))
-
-    // Load architecture
-    loadCustomArchitecture(newArchitecture)
-
-    // Notify architecture has been selected
-    emit('select-architecture', customArchName.value)
-
-    // Close modal and clean form
-    showLoadModal.value = false
-    customArchName.value = ''
-    customArchDescription.value = ''
-    customArchFile.value = null
-  }
-
-  reader.onerror = () => show_notification('Error loading file', 'danger')
-  reader.readAsText(customArchFile.value)
-}
+const {
+  showLoadModal,
+  customArchName,
+  customArchDescription,
+  customArchFile,
+  openLoadArchModal,
+  loadCustomArch,
+} = useArchitectureUpload((arch_name) => emit('select-architecture', arch_name))
 </script>
 
 <template>
@@ -135,50 +57,15 @@ const loadCustomArch = (event: BvTriggerableEvent) => {
 
       <!-- Architecture List -->
       <div class="architecture-list">
-        <!-- Default Architectures -->
-        <div 
+        <!-- Default and Custom Architectures -->
+        <ArchitectureItem
           v-for="arch in availableArchitectures" 
           :key="arch.id"
-          class="arch-item"
-          :class="{ 
-            selected: selectedArch === arch.name,
-            custom: !arch.default
-          }"
-          @click="handleSelectArchitecture(arch)"
-          @mouseenter="hoveredArch = arch.name"
-          @mouseleave="hoveredArch = null"
-        >
-          <div class="arch-logo">
-            <img 
-              :src="`img/logos/${arch.img}` || 'img/logos/default.webp'"
-              :alt="arch.alt"
-            />
-          </div>
-          
-          <div class="arch-info">
-            <div class="arch-header">
-              <h3 class="arch-name">{{ arch.name }}</h3>
-              <div class="arch-badges">
-                <span v-if="!arch.default" class="badge custom-badge">Custom</span>
-              </div>
-            </div>
-            <p class="arch-description">{{ arch.description }}</p>
-          </div>
-
-          <div class="arch-actions">
-            <button 
-              v-if="!arch.default"
-              class="action-button delete-button"
-              @click.stop="handleDeleteArchitecture(arch.name)"
-              title="Delete custom architecture"
-            >
-              <font-awesome-icon :icon="['fas', 'trash-can']" />
-            </button>
-            <div class="select-indicator">
-              <font-awesome-icon :icon="['fas', 'chevron-right']" />
-            </div>
-          </div>
-        </div>
+          :arch="arch"
+          :selected="selectedArch === arch.name"
+          @select="handleSelectArchitecture(arch)"
+          @delete="handleDeleteArchitecture(arch.name)"
+        />
 
         <!-- Load Custom Architecture Button -->
         <div 
@@ -273,43 +160,6 @@ const loadCustomArch = (event: BvTriggerableEvent) => {
   gap: 1rem;
 }
 
-/* Header */
-.selector-header {
-  flex-shrink: 0;
-  text-align: center;
-  padding-bottom: 1rem;
-  border-bottom: 2px solid rgba(0, 0, 0, 0.1);
-}
-
-.header-content {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.title {
-  margin: 0;
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: var(--bs-body-color);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-
-  svg {
-    color: var(--bs-primary);
-    font-size: 1.25rem;
-  }
-}
-
-.subtitle {
-  margin: 0;
-  font-size: 0.9rem;
-  color: rgba(var(--bs-body-color-rgb), 0.7);
-  font-weight: 400;
-}
-
 /* Architecture List */
 .architecture-list {
   flex: 1;
@@ -342,36 +192,38 @@ const loadCustomArch = (event: BvTriggerableEvent) => {
   }
 }
 
-/* Architecture Item */
-.arch-item {
+/* Load Custom Architecture Item */
+.arch-item.load-custom {
   display: flex;
   align-items: center;
   gap: 1rem;
   padding: 1rem;
   border-radius: 8px;
   background-color: rgba(var(--bs-secondary-rgb), 0.05);
-  border: 2px solid rgba(0, 0, 0, 0.08);
+  border: 2px dashed rgba(0, 0, 0, 0.08);
   cursor: pointer;
   transition: all 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  position: relative;
-
+  
   &:hover {
     background-color: rgba(var(--bs-primary-rgb), 0.08);
     border-color: rgba(var(--bs-primary-rgb), 0.3);
+    border-style: solid;
   }
+}
 
-  &.selected {
-    background-color: rgba(var(--bs-primary-rgb), 0.15);
-    border-color: var(--bs-primary);
-    box-shadow: 0 4px 12px rgba(var(--bs-primary-rgb), 0.2);
-  }
-
-  &.load-custom {
-    border-style: dashed;
-    
-    &:hover {
-      border-style: solid;
-    }
+.load-logo {
+  flex-shrink: 0;
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(var(--bs-primary-rgb), 0.1);
+  border-radius: 8px;
+  
+  svg {
+    font-size: 2rem;
+    color: var(--bs-primary);
   }
 }
 
@@ -391,15 +243,6 @@ const loadCustomArch = (event: BvTriggerableEvent) => {
     height: 100%;
     object-fit: contain;
   }
-
-  &.load-logo {
-    background-color: rgba(var(--bs-primary-rgb), 0.1);
-    
-    svg {
-      font-size: 2rem;
-      color: var(--bs-primary);
-    }
-  }
 }
 
 .arch-info {
@@ -410,48 +253,11 @@ const loadCustomArch = (event: BvTriggerableEvent) => {
   gap: 0.5rem;
 }
 
-.arch-header {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-}
-
 .arch-name {
   margin: 0;
   font-size: 1.2rem;
   font-weight: 600;
   color: var(--bs-body-color);
-}
-
-.arch-badges {
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-}
-
-.badge {
-  padding: 0.2rem 0.4rem;
-  border-radius: 4px;
-  font-size: 0.65rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-
-  &.custom-badge {
-    background-color: rgba(var(--bs-warning-rgb), 0.2);
-    color: var(--bs-warning);
-    border: 1px solid rgba(var(--bs-warning-rgb), 0.4);
-  }
-
-  &.guide-badge {
-    background-color: rgba(var(--bs-info-rgb), 0.2);
-    color: var(--bs-info);
-    border: 1px solid rgba(var(--bs-info-rgb), 0.4);
-  }
 }
 
 .arch-description {
@@ -466,29 +272,6 @@ const loadCustomArch = (event: BvTriggerableEvent) => {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-}
-
-.action-button {
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  border-radius: 6px;
-  background-color: transparent;
-  cursor: pointer;
-  transition: all 150ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  color: rgba(var(--bs-body-color-rgb), 0.6);
-
-  &:hover {
-    background-color: rgba(var(--bs-danger-rgb), 0.15);
-    color: var(--bs-danger);
-  }
-
-  &:active {
-    transform: scale(0.95);
-  }
 }
 
 .select-indicator {
@@ -511,11 +294,7 @@ const loadCustomArch = (event: BvTriggerableEvent) => {
 
 /* Dark Theme */
 .architecture-selector.dark {
-  .selector-header {
-    border-bottom-color: rgba(255, 255, 255, 0.1);
-  }
-
-  .arch-item {
+  .arch-item.load-custom {
     background-color: rgba(255, 255, 255, 0.05);
     border-color: rgba(255, 255, 255, 0.1);
 
@@ -523,17 +302,10 @@ const loadCustomArch = (event: BvTriggerableEvent) => {
       background-color: rgba(var(--bs-primary-rgb), 0.15);
       border-color: rgba(var(--bs-primary-rgb), 0.5);
     }
-
-    &.selected {
-      background-color: rgba(var(--bs-primary-rgb), 0.25);
-    }
   }
 
-  .arch-logo {
-
-    &.load-logo {
-      background-color: rgba(var(--bs-primary-rgb), 0.2);
-    }
+  .load-logo {
+    background-color: rgba(var(--bs-primary-rgb), 0.2);
   }
 }
 </style>

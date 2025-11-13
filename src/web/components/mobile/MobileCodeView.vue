@@ -18,108 +18,90 @@ You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<script lang="ts">
-import { defineComponent } from "vue"
-import { assembly_compile, status, architecture } from "@/core/core.mjs"
-import { resetStats } from "@/core/executor/stats.mts"
-import { assemblerMap, getDefaultCompiler } from "@/web/assemblers"
+<script setup lang="ts">
+import { ref, watch } from "vue"
+import { getDefaultCompiler } from "@/web/assemblers"
 import MobileEditor from "@/web/components/assembly/MobileEditor.vue"
 import Examples from "@/web/components/assembly/Examples.vue"
 import MobileInstructionHelp from "@/web/components/mobile/MobileInstructionHelp.vue"
 import LoadLibrary from "@/web/components/assembly/LoadLibrary.vue"
 import LibraryTags from "@/web/components/assembly/LibraryTags.vue"
+import { useAssembly, type AssemblyResult } from "@/web/composables/useAssembly"
 
-export default defineComponent({
-  props: {
-    architecture_name: { type: String, required: true },
-    assembly_code: { type: String, required: true },
-    dark: { type: [Boolean, null], required: true },
-  },
+interface Props {
+  architecture_name: string
+  assembly_code: string
+  dark: boolean | null
+}
 
-  emits: [
-    "update:assembly_code",
-    "assembly-error",
-    "switch-to-simulator",
-    "reset-simulator",
-    "show-toast",
-    "reset-code",
-  ],
+interface Emits {
+  (e: 'update:assembly_code', value: string): void
+  (e: 'assembly-error', msg: string): void
+  (e: 'switch-to-simulator'): void
+  (e: 'reset-simulator'): void
+  (e: 'show-toast', toast: { message: string; title: string; variant: string }): void
+  (e: 'reset-code'): void
+}
 
-  components: {
-    MobileEditor,
-    Examples,
-    MobileInstructionHelp,
-    LoadLibrary,
-    LibraryTags,
-  },
+const props = defineProps<Props>()
+const emit = defineEmits<Emits>()
 
-  data() {
-    return {
-      code: this.assembly_code,
-      isAssembled: false,
-    }
-  },
+const code = ref(props.assembly_code)
+const isAssembled = ref(false)
 
-  watch: {
-    assembly_code: {
-      handler(newCode: string) {
-        this.code = newCode
-      },
-      immediate: true,
-    },
-    code: {
-      handler(newCode: string) {
-        this.$emit("update:assembly_code", newCode)
-      },
-    },
-  },
-
-  methods: {
-    async assemble() {
-      // Reset simulator state (emit events instead of direct access)
-      this.$emit("reset-simulator")
-
-      // Reset stats
-      resetStats()
-      status.executedInstructions = 0
-      status.clkCycles = 0
-
-      // Assemble the code - use default compiler for mobile
-      const defaultCompiler = getDefaultCompiler(architecture)
-      const assemblerFn = assemblerMap[defaultCompiler]
-      const ret = await assembly_compile(this.code, assemblerFn)
-
-      // Handle results
-      if (ret.status !== "ok") {
-        this.isAssembled = false
-        this.$emit("assembly-error", ret.msg)
-        // Emit toast event
-        this.$emit("show-toast", {
-          message: ret.msg,
-          title: "Assembly Error",
-          variant: "danger"
-        })
-      } else {
-        this.isAssembled = true
-        // Compilation successful - switch to simulator
-        this.$emit("switch-to-simulator")
-        // Reset to normal after 2 seconds
-        setTimeout(() => {
-          this.isAssembled = false
-        }, 2000)
-      }
-
-      return true // Return true for keymap handler
-    },
-
-    resetCode() {
-      this.code = ""
-      this.$emit("update:assembly_code", "")
-      this.$emit("reset-code")
-      this.isAssembled = false
-    },
-  },
+// Watch for prop changes
+watch(() => props.assembly_code, (newCode) => {
+  code.value = newCode
 })
+
+watch(code, (newCode) => {
+  emit('update:assembly_code', newCode)
+})
+
+// Use assembly composable
+const {
+  assemble
+} = useAssembly({
+  resetSimulator: false, // Mobile component emits events instead
+  onError: (result: AssemblyResult) => {
+    isAssembled.value = false
+    emit('assembly-error', result.msg || 'Unknown error')
+    emit('show-toast', {
+      message: result.msg || 'Unknown error',
+      title: 'Assembly Error',
+      variant: 'danger'
+    })
+  },
+  onWarning: (_result: AssemblyResult) => {
+    // Handle warnings if needed
+  },
+  onSuccess: () => {
+    isAssembled.value = true
+    emit('switch-to-simulator')
+    // Reset to normal after 2 seconds
+    setTimeout(() => {
+      isAssembled.value = false
+    }, 2000)
+  }
+})
+
+async function assembleCode() {
+  // Reset simulator state (emit events instead of direct access)
+  emit('reset-simulator')
+
+  // Use default compiler for mobile
+  const defaultCompiler = getDefaultCompiler({ config: { assemblers: [] } })
+  await assemble(code.value, defaultCompiler)
+
+  return true // Return true for keymap handler
+}
+
+function resetCode() {
+  code.value = ''
+  emit('update:assembly_code', '')
+  emit('reset-code')
+  isAssembled.value = false
+}
 </script>
 
 <template>
@@ -136,7 +118,7 @@ export default defineComponent({
         <b-button
           :variant="isAssembled ? 'success' : 'primary'"
           size="sm"
-          @click="assemble"
+          @click="assembleCode"
           title="Assemble"
         >
           <font-awesome-icon :icon="isAssembled ? ['fas', 'check'] : ['fas', 'play']" />

@@ -28,6 +28,7 @@ import LoadAssembly from "./assembly/LoadAssembly.vue"
 import DownloadPopup from "./general/DownloadModal.vue"
 import MakeURI from "./assembly/MakeURI.vue"
 import LoadLibrary from "./assembly/LoadLibrary.vue"
+import SaveLibrary from "./assembly/SaveLibrary.vue"
 import LibraryTags from "./assembly/LibraryTags.vue"
 
 export default defineComponent({
@@ -57,6 +58,7 @@ export default defineComponent({
     DownloadPopup,
     MakeURI,
     LoadLibrary,
+    SaveLibrary,
     LibraryTags,
   },
 })
@@ -99,7 +101,7 @@ export default defineComponent({
     <LoadLibrary id="load_binary" />
 
     <!-- Save binary form -->
-    <!-- <SaveLibrary id="save_binary" /> -->
+    <SaveLibrary id="save_binary" />
 
     <!-- Library tags modal -->
     <LibraryTags id="library_tags" />

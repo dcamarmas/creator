@@ -311,6 +311,33 @@ export default defineComponent({
       if (!this.exponent) return 0
       return parseInt(this.exponent, 2) - this.exponentBias
     },
+
+    isNormalized(): boolean {
+      if (!this.exponent) return false
+      const e = parseInt(this.exponent, 2)
+      return e !== 0 && e !== ((1 << this.exponentBits) - 1)
+    },
+
+    isDenormalized(): boolean {
+      if (!this.exponent) return false
+      const e = parseInt(this.exponent, 2)
+      const m = this.mantissa ? parseInt(this.mantissa, 2) : 0
+      return e === 0 && m !== 0
+    },
+
+    getFormulaExponent(): string {
+      if (this.isDenormalized()) {
+        return `1 - ${this.exponentBias}`
+      }
+      return `exponent - ${this.exponentBias}`
+    },
+
+    getFormulaMantissaPart(): string {
+      if (this.isDenormalized()) {
+        return "0 + mantissa"
+      }
+      return "1 + mantissa"
+    },
   },
 })
 </script>
@@ -390,7 +417,7 @@ export default defineComponent({
           </div>
           <!-- Formula -->
           <div class="formula-box">
-            <code class="formula">value = (-1)<sup>sign</sup> × 2<sup>exponent - {{ exponentBias }}</sup> × (1 + mantissa)</code>
+            <code class="formula">value = (-1)<sup>sign</sup> × 2<sup>{{ getFormulaExponent() }}</sup> × ({{ getFormulaMantissaPart() }})</code>
           </div>
         </div>
 

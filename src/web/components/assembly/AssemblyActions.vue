@@ -21,13 +21,12 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, onBeforeUnmount } from "vue"
 import { useToggle } from "bootstrap-vue-next"
-import { assembly_compile, reset, status, architecture, loadedLibrary } from "@/core/core.mjs"
-import { resetStats } from "@/core/executor/stats.mts"
-import { instructions } from "@/core/assembler/assembler.mjs"
-import { show_notification, storeBackup } from "@/web/utils.mjs"
-import { assemblerMap, getDefaultCompiler } from "@/web/assemblers"
+import { architecture, loadedLibrary } from "@/core/core.mjs"
+import { show_notification } from "@/web/utils.mjs"
+import { getDefaultCompiler } from "@/web/assemblers"
 import { creator_ga } from "@/core/utils/creator_ga.mjs"
 import { coreEvents } from "@/core/events.mjs"
+import { useAssembly, type AssemblyResult } from "@/web/composables/useAssembly"
 
 // State for dropdown visibility
 const dropdownOpen = ref(false)
@@ -45,13 +44,28 @@ const emit = defineEmits<{
 }>()
 
 // State
-const compiling = ref(false)
 const selectedCompiler = ref("")
-const isAssembled = ref(false)
 
 // Composables
 const showAssemblyError = useToggle("modalAssemblyError").show
 const showLibraryTags = useToggle("library_tags").show
+
+// Use assembly composable
+const {
+  compiling,
+  isAssembled,
+  assemble
+} = useAssembly({
+  onError: (result: AssemblyResult) => compile_error(result.msg || "Unknown error"),
+  onWarning: (result: AssemblyResult) => {
+    if (result.token && result.bgcolor) {
+      show_notification(result.token, result.bgcolor)
+    }
+  },
+  onSuccess: () => {
+    // Success handling is done in the composable
+  }
+})
 
 // Computed
 const compilerOptions = computed(() => {
@@ -86,7 +100,13 @@ const libraryLoaded = computed(() => {
 const libraryTagsCount = computed(() => {
   // Access libraryVersion to make this reactive
   if (libraryVersion.value < 0 || !libraryLoaded.value) return 0
-  return loadedLibrary?.instructions_tag?.filter((t: any) => t.globl)?.length || 0
+  
+  // YAML format: symbols is an object with symbol names as keys
+  if ((loadedLibrary as any)?.symbols) {
+    return Object.keys((loadedLibrary as any).symbols).length
+  }
+  
+  return 0
 })
 
 const usesCreatorAssembler = computed(() => {
@@ -129,100 +149,17 @@ const root = (document as any).app
 
 // Methods
 async function assembly_compiler_only() {
-  // Reset simulator
-  root.keyboard = ""
-  root.display = ""
-  root.enter = null
-  reset()
-
-  compiling.value = true
-
-  // Assemble
-  const assemblerFn = assemblerMap[selectedCompiler.value]
-  const ret = await (assemblerFn
-    ? assembly_compile(root.assembly_code, assemblerFn)
-    : assembly_compile(root.assembly_code))
-
-  /* Reset stats */
-  resetStats()
-  status.executedInstructions = 0
-  status.clkCycles = 0
-
-  compiling.value = false
-
-  // Show error/warning
-  switch (ret.type) {
-    case "error":
-      compile_error(ret.msg)
-      break
-
-    case "warning":
-      show_notification(ret.token, ret.bgcolor)
-      break
-
-    default:
-      // Put rowVariant in entrypoint
-      const entrypoint = instructions.at(status.execution_index)
-      if (entrypoint) {
-        entrypoint._rowVariant = "success"
-      }
-      isAssembled.value = true
-      // Reset to normal after 2 seconds
-      setTimeout(() => {
-        isAssembled.value = false
-      }, 2000)
-      break
-  }
-
-  storeBackup()
+  const root = (document as any).app
+  await assemble(root.assembly_code, selectedCompiler.value)
 }
 
 async function assembly_compiler() {
   const root = (document as any).app
-
-  // Reset simulator
-  root.keyboard = ""
-  root.display = ""
-  root.enter = null
-  reset()
-
-  compiling.value = true
-
-  // Assemble
-  const assemblerFn = assemblerMap[selectedCompiler.value]
-  const ret = await (assemblerFn
-    ? assembly_compile(root.assembly_code, assemblerFn)
-    : assembly_compile(root.assembly_code))
-
-  /* Reset stats */
-  resetStats()
-  status.executedInstructions = 0
-  status.clkCycles = 0
-
-  compiling.value = false
-
-  // Show error/warning
-  switch (ret.type) {
-    case "error":
-      compile_error(ret.msg)
-      break
-
-    case "warning":
-      show_notification(ret.token, ret.bgcolor)
-      break
-
-    default:
-      // Put rowVariant in entrypoint
-      const entrypoint = instructions.at(status.execution_index)
-      if (entrypoint) {
-        entrypoint._rowVariant = "success"
-      }
-      // Change to simulator view and run
-      emit("changeMode", "simulator")
-      break
+  const result = await assemble(root.assembly_code, selectedCompiler.value)
+  if (result.type === 'success') {
+    // Change to simulator view and run
+    emit("changeMode", "simulator")
   }
-
-  storeBackup()
 }
 
 function toggleVim() {

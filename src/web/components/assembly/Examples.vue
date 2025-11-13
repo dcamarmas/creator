@@ -18,208 +18,165 @@ You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<script lang="ts">
-import { defineComponent } from "vue"
+<script setup lang="ts">
+import { ref, computed, nextTick } from "vue"
 import { useToggle } from "bootstrap-vue-next"
 
 import { creator_ga } from "@/core/utils/creator_ga.mjs"
 import { show_notification } from "@/web/utils.mjs"
+import { useAssembly, type AssemblyResult } from "@/web/composables/useAssembly"
 
 // import example_set from "#/examples/example_set.json"
 import example_set from "../../../../examples/example_set.json"
 
 import MakeURI from "./MakeURI.vue"
 
-export default defineComponent({
-  props: {
-    id: { type: String, required: true },
-    architecture_name: { type: String, required: true },
-    compile: { type: Boolean, required: true },
+interface Props {
+  id: string
+  architecture_name: string
+  compile: boolean
+}
+
+const props = defineProps<Props>()
+
+// this HAS to be defined here
+// as we can have various of these components almost simultaneately (when
+// transitioning from simulator to assembly, for example), we'll set an ID
+// for the URI modal that is based on this component's own ID
+const showLink = useToggle(`${props.id}_uri`).show
+const hideModal = useToggle(props.id).hide
+
+const selected_set = ref("default") // selected example set
+const selected_example = ref<string | null>(null) // selected example id
+const available_sets = ref<{ [key: string]: ExampleSet }>({}) // loaded example sets
+
+const example_set_options = computed(() =>
+  Object.entries(available_sets.value).map(([id, set]) => ({
+    text: set.name,
+    value: id,
+  }))
+)
+
+// Use assembly composable
+const { assemble } = useAssembly({
+  onError: (result: AssemblyResult) => {
+    const root = (document as any).app
+    // Set compilation error and show modal
+    root.assemblyError = result.msg
+    root.$emit("show-assembly-error")
   },
-
-  components: { MakeURI },
-
-  setup(props) {
-    // this HAS to be defined here
-    // as we can have various of these components almost simultaneately (when
-    // transitioning from simulator to assembly, for example), we'll set an ID
-    // for the URI modal that is based on this component's own ID
-    return {
-      showLink: useToggle(`${props.id}_uri`).show,
-      hideModal: useToggle(props.id).hide,
+  onWarning: async (result: AssemblyResult) => {
+    if (result.token && result.bgcolor) {
+      show_notification(result.token, result.bgcolor)
     }
+    // Still change to simulator view on warning
+    const root = (document as any).app
+    root.creator_mode = "simulator"
+    // Wait for next tick to ensure simulator view is mounted, then update UI
+    await nextTick()
+    updateSimulatorUI()
   },
-
-  computed: {
-    example_set_options() {
-      return Object.entries(this.available_sets).map(([id, set]) => ({
-        text: set.name,
-        value: id,
-      }))
-    },
+  onSuccess: async () => {
+    // Change to simulator view
+    const root = (document as any).app
+    root.creator_mode = "simulator"
+    // Wait for next tick to ensure simulator view is mounted, then update UI
+    await nextTick()
+    updateSimulatorUI()
   },
-
-  data() {
-    return {
-      selected_set: "default", // selected example set
-      selected_example: null as string | null, // selected example id
-      available_sets: {} as { [key: string]: ExampleSet }, // loaded example sets
-    }
-  },
-
-  async mounted() {
-    await this.loadAvailableSets()
-  },
-
-  methods: {
-    async loadAvailableSets(): Promise<{ [key: string]: ExampleSet }> {
-      const sets = example_set
-        .filter(set => set.architecture === this.architecture_name)
-        // convert sets to object ({"default": {...}, ...})
-        .reduce((obj: { [key: string]: ExampleSet }, item) => {
-          obj[item.id] = {
-            name: item.name,
-            description: item.description,
-            url: item.url,
-          }
-          return obj
-        }, {})
-
-      // load examples
-      for (const [_key, set] of Object.entries(sets)) {
-        try {
-          const response = await fetch(set.url!)
-          if (response.ok) {
-            set.examples = await response.json()
-          } else {
-            set.examples = []
-          }
-        } catch (_error) {
-          set.examples = []
-        }
-        delete set.url
-      }
-
-      this.available_sets = sets
-
-      return sets
-    },
-
-    get_example_set() {
-      return example_set
-    },
-
-    async assemble() {
-      // Import the necessary modules for compilation
-      const { assembly_compile, reset, status } = await import("@/core/core.mjs")
-      const { resetStats } = await import("@/core/executor/stats.mts")
-      const { instructions } = await import("@/core/assembler/assembler.mjs")
-      const { show_notification } = await import("@/web/utils.mjs")
-      const { assemblerMap, getDefaultCompiler } = await import("@/web/assemblers")
-      const { architecture } = await import("@/core/core.mjs")
-      
-      const root = this.$root as any
-
-      // Reset simulator
-      root.keyboard = ""
-      root.display = ""
-      root.enter = null
-      reset()
-
-      // Get default compiler for the architecture
-      const defaultCompiler = getDefaultCompiler(architecture)
-      const assemblerFn = assemblerMap[defaultCompiler]
-      
-      // Assemble the code
-      const ret = await (assemblerFn
-        ? assembly_compile(root.assembly_code, assemblerFn)
-        : assembly_compile(root.assembly_code))
-
-      // Reset stats
-      resetStats()
-      status.executedInstructions = 0
-      status.clkCycles = 0
-
-      // Handle results
-      switch (ret.type) {
-        case "error":
-          // Set compilation error and show modal
-          root.assemblyError = ret.msg
-          root.$emit("show-assembly-error")
-          break
-
-        case "warning":
-          show_notification(ret.token, ret.bgcolor)
-          // Still change to simulator view on warning
-          root.creator_mode = "simulator"
-          // Wait for next tick to ensure simulator view is mounted, then update UI
-          await this.$nextTick()
-          this.updateSimulatorUI(instructions, status)
-          break
-
-        default:
-          // Put rowVariant in entrypoint
-          const entrypoint = instructions.at(status.execution_index)
-          if (entrypoint) {
-            entrypoint._rowVariant = "success"
-          }
-          // Change to simulator view
-          root.creator_mode = "simulator"
-          // Wait for next tick to ensure simulator view is mounted, then update UI
-          await this.$nextTick()
-          this.updateSimulatorUI(instructions, status)
-          break
-      }
-    },
-
-    updateSimulatorUI(_instructions: any[], _status: any) {
-      // Update the simulator controls to enable buttons
-      const root = this.$root as any
-      const simulatorControls = root.$refs.navbar?.$refs?.simulatorControls
-      
-      if (simulatorControls) {
-        // Call execution_UI_reset to enable buttons and update execution table
-        simulatorControls.execution_UI_reset()
-      }
-    },
-
-    /* Load a selected example */
-    /**
-     * Loads and (optionally) assembles an example
-     *
-     * @param url URL of the example file (.s)
-     * @param assemble Set to automatically assemble the example
-     */
-    async load_example(url: string, assemble: boolean) {
-      // close modal
-      this.hideModal()
-
-      try {
-        const response = await fetch(url)
-
-        if (!response.ok) {
-          throw new Error("Failed to load example")
-        }
-
-        const code = await response.text()
-        ;(this.$root as any).assembly_code = code
-
-        if (assemble) {
-          // Assemble and switch to simulator view
-          await this.assemble()
-        } else {
-          // Just load the code and switch to assembly view
-          ;(this.$root as any).creator_mode = "assembly"
-        }
-
-        /* Google Analytics */
-        creator_ga("event", "example.loading", "example.loading.url")
-      } catch (_error) {
-        show_notification("Failed to load example", "danger")
-      }
-    },
-  },
+  emitAssemblyEvent: true // Emit event to force instructions table refresh
 })
+
+async function loadAvailableSets(): Promise<{ [key: string]: ExampleSet }> {
+  const sets = example_set
+    .filter(set => set.architecture === props.architecture_name)
+    // convert sets to object ({"default": {...}, ...})
+    .reduce((obj: { [key: string]: ExampleSet }, item) => {
+      obj[item.id] = {
+        name: item.name,
+        description: item.description,
+        url: item.url,
+      }
+      return obj
+    }, {})
+
+  // load examples
+  for (const [_key, set] of Object.entries(sets)) {
+    try {
+      const response = await fetch(set.url!)
+      if (response.ok) {
+        set.examples = await response.json()
+      } else {
+        set.examples = []
+      }
+    } catch (_error) {
+      set.examples = []
+    }
+    delete set.url
+  }
+
+  available_sets.value = sets
+
+  return sets
+}
+
+async function assembleExample() {
+  const root = (document as any).app
+
+  // Get default compiler for the architecture
+  await assemble(root.assembly_code)
+}
+
+function updateSimulatorUI() {
+  // Update the simulator controls to enable buttons
+  const root = (document as any).app
+  const simulatorControls = root.$refs.navbar?.$refs?.simulatorControls
+
+  if (simulatorControls) {
+    // Call execution_UI_reset to enable buttons and update execution table
+    simulatorControls.execution_UI_reset()
+  }
+}
+
+/* Load a selected example */
+/**
+ * Loads and (optionally) assembles an example
+ *
+ * @param url URL of the example file (.s)
+ * @param assemble Set to automatically assemble the example
+ */
+async function load_example(url: string, shouldAssemble: boolean) {
+  // close modal
+  hideModal()
+
+  try {
+    const response = await fetch(url)
+
+    if (!response.ok) {
+      throw new Error("Failed to load example")
+    }
+
+    const code = await response.text()
+    const root = (document as any).app
+    root.assembly_code = code
+
+    if (shouldAssemble) {
+      // Assemble and switch to simulator view
+      await assembleExample()
+    } else {
+      // Just load the code and switch to assembly view
+      root.creator_mode = "assembly"
+    }
+
+    /* Google Analytics */
+    creator_ga("event", "example.loading", "example.loading.url")
+  } catch (_error) {
+    show_notification("Failed to load example", "danger")
+  }
+}
+
+// Load available sets on mount
+loadAvailableSets()
 </script>
 
 <template>

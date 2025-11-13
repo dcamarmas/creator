@@ -42,6 +42,16 @@ export function clear_instructions() {
 export function setInstructions(instructions_) {
     instructions.splice(0, instructions.length, ...instructions_);
 }
+
+/** @type {import("./assembler.d.ts").Instruction[]} */
+export const libraryInstructions = [];
+export function clearLibraryInstructions() {
+    libraryInstructions.splice(0, libraryInstructions.length);
+}
+export function setLibraryInstructions(instructions_) {
+    libraryInstructions.splice(0, libraryInstructions.length, ...instructions_);
+}
+
 export let tag_instructions = {};
 
 export function set_tag_instructions(tag_instructions_) {

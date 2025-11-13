@@ -1,4 +1,7 @@
- .text
+.data
+newline: .string "\r\n"
+
+.text
 
     main:   
         li  a0, 5
@@ -7,8 +10,8 @@
         li  a7, 1
         ecall
 
-        li  a0, '\n'
-        li  a7, 11
+        la  a0, newline
+        li  a7, 4
         ecall
 
         li  a0, 5
@@ -17,8 +20,8 @@
         li  a7, 1
         ecall
 
-        li  a0, '\n'
-        li  a7, 11
+        la  a0, newline
+        li  a7, 4
         ecall
 
         li a7, 10
