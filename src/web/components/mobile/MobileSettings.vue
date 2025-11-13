@@ -389,7 +389,7 @@ export default defineComponent({
         <div class="setting-item">
           <div class="setting-label">
             <font-awesome-icon :icon="['fas', 'hashtag']" />
-            Integer Format
+            Register Format
           </div>
           <b-form-select
             v-model="reg_representation_int_value"

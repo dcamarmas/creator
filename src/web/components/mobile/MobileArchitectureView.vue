@@ -133,23 +133,6 @@ export default defineComponent({
     </div>
 
     <div class="mobile-architecture-content">
-      <!-- Edit architecture modal -->
-      <EditArchitecture
-        id="edit_architecture_mobile"
-        :arch_code="arch_code"
-        :dark="dark"
-      />
-
-      <!-- Download architecture modal -->
-      <DownloadPopup
-        id="save_architecture_mobile"
-        type="architecture"
-        title="Download Architecture"
-        extension=".yml"
-        :fileData="arch_code"
-        default-filename="architecture"
-      />
-
       <!-- Architecture content area -->
       <!-- Architecture Info view -->
       <div v-if="currentView === 'arch-info'" class="architecture-section">
@@ -253,10 +236,10 @@ export default defineComponent({
 }
 
 .mobile-guide-link {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: 8px;
-  margin: 1rem;
+  margin: 1rem auto;
   padding: 10px 16px;
   background: var(--bs-primary);
   color: white;
@@ -266,6 +249,7 @@ export default defineComponent({
   font-weight: 500;
   transition: all 0.2s ease;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  max-width: fit-content;
 
   &:hover {
     background: color-mix(in srgb, var(--bs-primary) 90%, black);

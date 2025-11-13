@@ -7,6 +7,7 @@ type Instruction = {
     loaded: string;
     user: string;
     visible: boolean;
+    globl?: boolean;
     _rowVariant?: string;
 };
 
