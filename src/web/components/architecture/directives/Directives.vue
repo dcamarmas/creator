@@ -1,6 +1,5 @@
 <!--
-Copyright 2018-2025 Felix Garcia Carballeira, Diego Camarmas Alonso,
-                    Alejandro Calderon Mateos, Jorge Ramos Santana
+Copyright 2018-2025 CREATOR Team.
 
 This file is part of CREATOR.
 
@@ -17,10 +16,9 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
-
 <script lang="ts">
-import { defineComponent, type PropType } from "vue"
-import type { Directive } from "@/core/core"
+import { defineComponent, type PropType } from "vue";
+import type { Directive } from "@/core/core";
 
 export default defineComponent({
   props: {
@@ -35,14 +33,15 @@ export default defineComponent({
         { key: "action", thClass: "col-action" },
         { key: "size", thClass: "col-size" },
       ],
-    }
+    };
   },
-})
+});
 </script>
 
 <template>
+
   <div class="directives-container">
-    <b-table
+     <b-table
       small
       :items="directives"
       :fields="directivesFields"
@@ -50,12 +49,13 @@ export default defineComponent({
       hover
       responsive
       sticky-header="100%"
+      > <template v-slot:cell(name)="row"
+        > <code class="directive-name">{{ row.item.name }}</code
+        > </template
+      > </b-table
     >
-      <template v-slot:cell(name)="row">
-        <code class="directive-name">{{ row.item.name }}</code>
-      </template>
-    </b-table>
   </div>
+
 </template>
 
 <style lang="scss" scoped>
@@ -140,3 +140,4 @@ export default defineComponent({
   }
 }
 </style>
+

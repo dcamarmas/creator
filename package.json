@@ -61,6 +61,7 @@
   },
   "devDependencies": {
     "@floating-ui/vue": "^1.1.9",
+    "@prettier/plugin-pug": "^3.4.2",
     "@tsconfig/node22": "^22.0.2",
     "@types/colors": "^1.2.4",
     "@types/js-yaml": "^4.0.9",
@@ -77,6 +78,7 @@
     "jiti": "^2.6.1",
     "npm-run-all2": "^8.0.4",
     "prettier": "^3.6.2",
+    "prettier-plugin-vue": "^1.1.6",
     "sass-embedded": "^1.92.1",
     "sharp": "^0.34.3",
     "svgo": "^4.0.0",

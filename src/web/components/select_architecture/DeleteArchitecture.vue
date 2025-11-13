@@ -1,6 +1,5 @@
 <!--
-Copyright 2018-2025 Felix Garcia Carballeira, Diego Camarmas Alonso,
-                    Alejandro Calderon Mateos, Luis Daniel Casais Mezquida
+Copyright 2018-2025 CREATOR Team.
 
 This file is part of CREATOR.
 
@@ -17,11 +16,10 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
-
 <script lang="ts">
-import { defineComponent } from "vue"
+import { defineComponent } from "vue";
 
-import { show_notification } from "@/web/utils.mjs"
+import { show_notification } from "@/web/utils.mjs";
 
 export default defineComponent({
   props: {
@@ -30,17 +28,17 @@ export default defineComponent({
     modelValue: { type: Boolean, default: false },
   },
 
-  emits: ['update:modelValue', 'architecture-deleted'],
+  emits: ["update:modelValue", "architecture-deleted"],
 
   computed: {
     showModal: {
       get() {
-        return this.modelValue
+        return this.modelValue;
       },
       set(value: boolean) {
-        this.$emit('update:modelValue', value)
-      }
-    }
+        this.$emit("update:modelValue", value);
+      },
+    },
   },
 
   methods: {
@@ -49,36 +47,37 @@ export default defineComponent({
       // remove from localstorage
       const customArchitectures = JSON.parse(
         localStorage.getItem("customArchitectures") || "[]",
-      ) as AvailableArch[]
+      ) as AvailableArch[];
 
-      const updatedArchitectures = customArchitectures.filter(a => a.name !== name)
+      const updatedArchitectures = customArchitectures.filter(
+        a => a.name !== name,
+      );
 
       localStorage.setItem(
         "customArchitectures",
         JSON.stringify(updatedArchitectures),
-      )
+      );
 
       // Close the modal
-      this.$emit('update:modelValue', false)
+      this.$emit("update:modelValue", false);
 
       // Emit event to parent to notify deletion
-      this.$emit('architecture-deleted', name)
-
+      this.$emit("architecture-deleted", name);
     },
   },
-})
+});
 </script>
 
 <template>
-  <b-modal
+   <b-modal
     :id="id"
     v-model="showModal"
     title="Delete Architecture"
     ok-variant="danger"
     ok-title="Delete"
     @ok="removeArch(arch!)"
+    > Are you sure you want to delete the '<i>{{ arch }}</i
+    >' architecture? </b-modal
   >
-    Are you sure you want to delete the '<i>{{ arch }}</i
-    >' architecture?
-  </b-modal>
 </template>
+

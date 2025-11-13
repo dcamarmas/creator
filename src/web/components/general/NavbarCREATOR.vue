@@ -1,7 +1,5 @@
 <!--
-Copyright 2018-2025 Felix Garcia Carballeira, Diego Camarmas Alonso,
-                    Alejandro Calderon Mateos, Luis Daniel Casais Mezquida,
-                    Jorge Ramos Santana
+Copyright 2018-2025 CREATOR Team.
 
 This file is part of CREATOR.
 
@@ -18,7 +16,6 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
-
 <script lang="ts">
 import {
   defineComponent,
@@ -26,16 +23,16 @@ import {
   ref,
   onMounted,
   onUnmounted,
-} from "vue"
+} from "vue";
 
-import SimulatorControls from "../simulator/SimulatorControls.vue"
-import AssemblyActions from "../assembly/AssemblyActions.vue"
-import MenuItems from "./MenuItems.vue"
-import SentinelErrorsDropdown from "../simulator/SentinelErrorsDropdown.vue"
-import type { Instruction } from "@/core/assembler/assembler"
-import type { BDropdown } from "bootstrap-vue-next"
-import { coreEvents, CoreEventTypes } from "@/core/events.mjs"
-import { remove_library, architecture } from "@/core/core.mjs"
+import SimulatorControls from "../simulator/SimulatorControls.vue";
+import AssemblyActions from "../assembly/AssemblyActions.vue";
+import MenuItems from "./MenuItems.vue";
+import SentinelErrorsDropdown from "../simulator/SentinelErrorsDropdown.vue";
+import type { Instruction } from "@/core/assembler/assembler";
+import type { BDropdown } from "bootstrap-vue-next";
+import { coreEvents, CoreEventTypes } from "@/core/events.mjs";
+import { remove_library, architecture } from "@/core/core.mjs";
 
 export default defineComponent({
   props: {
@@ -63,33 +60,33 @@ export default defineComponent({
   setup() {
     const sentinelDropdownRef = ref<InstanceType<
       typeof SentinelErrorsDropdown
-    > | null>(null)
+    > | null>(null);
 
     const handleSentinelError = (event: unknown) => {
       const errorEvent = event as {
-        functionName: string
-        message: string
-        ok: boolean
-      }
+        functionName: string;
+        message: string;
+        ok: boolean;
+      };
       if (sentinelDropdownRef.value) {
         sentinelDropdownRef.value.checkForErrors(
           { ok: errorEvent.ok, msg: errorEvent.message },
           errorEvent.functionName,
-        )
+        );
       }
-    }
+    };
 
     onMounted(() => {
-      coreEvents.on(CoreEventTypes.SENTINEL_ERROR, handleSentinelError)
-    })
+      coreEvents.on(CoreEventTypes.SENTINEL_ERROR, handleSentinelError);
+    });
 
     onUnmounted(() => {
-      coreEvents.off(CoreEventTypes.SENTINEL_ERROR, handleSentinelError)
-    })
+      coreEvents.off(CoreEventTypes.SENTINEL_ERROR, handleSentinelError);
+    });
 
     return {
       sentinelDropdownRef,
-    }
+    };
   },
 
   data() {
@@ -102,89 +99,89 @@ export default defineComponent({
         | "data"
         | "architecture"
         | "settings", // Track current mobile view
-    }
+    };
   },
   computed: {
     showViewMenu() {
       return ["architecture", "assembly", "simulator"].includes(
         this.creator_mode,
-      )
+      );
     },
     showFileMenu() {
-      return this.creator_mode === "assembly"
+      return this.creator_mode === "assembly";
     },
     showArchitectureMenu() {
-      return this.creator_mode === "architecture"
+      return this.creator_mode === "architecture";
     },
     showExecuteMenu() {
-      return this.creator_mode === "simulator"
+      return this.creator_mode === "simulator";
     },
     showCompileButton() {
-      return this.creator_mode === "assembly"
+      return this.creator_mode === "assembly";
     },
     showLibraryMenu() {
       if (this.creator_mode !== "assembly") {
-        return false
+        return false;
       }
       // Only show library menu if using CREATOR assembler
-      const assemblers = architecture?.config?.assemblers || []
+      const assemblers = architecture?.config?.assemblers || [];
       // If no assemblers configured, default is CREATOR
       if (assemblers.length === 0) {
-        return true
+        return true;
       }
       // Check if CreatorCompiler is in the list
-      return assemblers.some((asm: any) => asm.name === "CreatorCompiler")
+      return assemblers.some((asm: any) => asm.name === "CreatorCompiler");
     },
 
     // Hide mobile navbar when selecting architecture
     showMobileNavbar() {
-      return this.creator_mode !== "select_architecture"
+      return this.creator_mode !== "select_architecture";
     },
   },
   mounted() {
     // Listen for escape key to close dropdowns
-    document.addEventListener("keydown", this.handleEscapeKey)
+    document.addEventListener("keydown", this.handleEscapeKey);
     // Listen for clicks outside to disable hover switching
-    document.addEventListener("click", this.handleDocumentClick)
+    document.addEventListener("click", this.handleDocumentClick);
   },
   beforeUnmount() {
-    document.removeEventListener("keydown", this.handleEscapeKey)
-    document.removeEventListener("click", this.handleDocumentClick)
+    document.removeEventListener("keydown", this.handleEscapeKey);
+    document.removeEventListener("click", this.handleDocumentClick);
   },
   methods: {
     handleEscapeKey(event: KeyboardEvent) {
       if (event.key === "Escape" && this.openDropdown) {
-        this.closeAllDropdowns()
+        this.closeAllDropdowns();
       }
     },
     handleDocumentClick(event: MouseEvent) {
       // Check if click is outside any dropdown
-      const target = event.target as HTMLElement
+      const target = event.target as HTMLElement;
       const isDropdownClick = target?.closest(
         ".dropdown, .nav-item, .dropdown-menu",
-      )
+      );
       if (!isDropdownClick) {
-        this.hoverSwitchEnabled = false
-        this.closeAllDropdowns()
+        this.hoverSwitchEnabled = false;
+        this.closeAllDropdowns();
       }
     },
     handleDropdownShow(dropdownId: string) {
       // Close any other open dropdown
       if (this.openDropdown && this.openDropdown !== dropdownId) {
-        this.closeDropdown(this.openDropdown)
+        this.closeDropdown(this.openDropdown);
       }
-      this.openDropdown = dropdownId
-      this.hoverSwitchEnabled = true
+      this.openDropdown = dropdownId;
+      this.hoverSwitchEnabled = true;
     },
     handleDropdownHide(dropdownId: string) {
       if (this.openDropdown === dropdownId) {
-        this.openDropdown = null
+        this.openDropdown = null;
         // Small delay before disabling hover switch
         setTimeout(() => {
           if (!this.openDropdown) {
-            this.hoverSwitchEnabled = false
+            this.hoverSwitchEnabled = false;
           }
-        }, 100)
+        }, 100);
       }
     },
     handleDropdownHover(dropdownId: string) {
@@ -195,10 +192,10 @@ export default defineComponent({
         this.openDropdown !== dropdownId
       ) {
         // Close current dropdown and open the hovered one
-        this.closeDropdown(this.openDropdown)
+        this.closeDropdown(this.openDropdown);
         setTimeout(() => {
-          this.openDropdownById(dropdownId)
-        }, 50)
+          this.openDropdownById(dropdownId);
+        }, 50);
       }
     },
     closeAllDropdowns() {
@@ -211,58 +208,58 @@ export default defineComponent({
         "libraryDropdown",
         "toolsDropdown",
         "helpDropdown",
-      ]
+      ];
 
-      dropdownRefs.forEach(refName => this.closeDropdown(refName))
+      dropdownRefs.forEach(refName => this.closeDropdown(refName));
 
-      this.openDropdown = null
-      this.hoverSwitchEnabled = false
+      this.openDropdown = null;
+      this.hoverSwitchEnabled = false;
     },
     toggleDropdown(dropdownId: string, shouldOpen: boolean) {
-      const dropdown = this.$refs[dropdownId] as InstanceType<typeof BDropdown>
+      const dropdown = this.$refs[dropdownId] as InstanceType<typeof BDropdown>;
       if (dropdown?.$el) {
-        const toggleBtn = dropdown.$el.querySelector(".dropdown-toggle")
-        const isExpanded = toggleBtn?.getAttribute("aria-expanded") === "true"
+        const toggleBtn = dropdown.$el.querySelector(".dropdown-toggle");
+        const isExpanded = toggleBtn?.getAttribute("aria-expanded") === "true";
         if (toggleBtn && isExpanded !== shouldOpen) {
-          toggleBtn.click()
+          toggleBtn.click();
         }
       }
     },
     closeDropdown(dropdownId: string) {
-      this.toggleDropdown(dropdownId, false)
+      this.toggleDropdown(dropdownId, false);
     },
     openDropdownById(dropdownId: string) {
-      this.toggleDropdown(dropdownId, true)
+      this.toggleDropdown(dropdownId, true);
     },
     setMobileView(
       view: "code" | "instructions" | "data" | "architecture" | "settings",
     ) {
-      this.mobileView = view
+      this.mobileView = view;
       // Emit event so parent components can react to view changes
-      this.$emit("mobile-view-change", view)
+      this.$emit("mobile-view-change", view);
     },
     // Simple action methods
     changeUIMode(mode: string) {
       if ((this.$root as any).creator_mode !== mode) {
-        ;(this.$root as any).creator_mode = mode
+        (this.$root as any).creator_mode = mode;
       }
     },
     newAssembly() {
-      ;(this.$root as any).assembly_code = ""
+      (this.$root as any).assembly_code = "";
     },
     removeLibrary() {
-      remove_library()
+      remove_library();
     },
   },
-})
+});
 </script>
 
 <template>
-  <!-- Top navbar (hidden on mobile, shown on tablet+) -->
-  <b-navbar toggleable="md" class="header py-3 top-navbar">
-    <!-- Creator Dropdown Menu -->
-    <b-navbar-nav class="creator-brand">
-      <b-nav-item-dropdown
+   <!-- Top navbar (hidden on mobile, shown on tablet+) --> <b-navbar
+    toggleable="md"
+    class="header py-3 top-navbar"
+    > <!-- Creator Dropdown Menu --> <b-navbar-nav class="creator-brand"
+      > <b-nav-item-dropdown
         class="navMenu creator-menu"
         no-caret
         no-animation
@@ -270,12 +267,9 @@ export default defineComponent({
         @show="handleDropdownShow('creatorDropdown')"
         @hide="handleDropdownHide('creatorDropdown')"
         @mouseenter="handleDropdownHover('creatorDropdown')"
-      >
-        <template #button-content>
-          <span class="headerText text-uppercase"> Creator </span>
-        </template>
-
-        <MenuItems
+        > <template #button-content
+          > <span class="headerText text-uppercase"> Creator </span> </template
+        > <MenuItems
           :items="[
             ...(architecture_name ? ['btn_architecture_info', 'divider'] : []),
             'btn_home',
@@ -284,14 +278,10 @@ export default defineComponent({
           ]"
           :architecture-name="architecture_name"
           @item-clicked="closeDropdown('creatorDropdown')"
-        />
-      </b-nav-item-dropdown>
-    </b-navbar-nav>
-
-    <!-- Main menu (left side) -->
-    <b-navbar-nav class="me-auto">
-      <!-- View Menu -->
-      <b-nav-item-dropdown
+        /> </b-nav-item-dropdown
+      > </b-navbar-nav
+    > <!-- Main menu (left side) --> <b-navbar-nav class="me-auto"
+      > <!-- View Menu --> <b-nav-item-dropdown
         v-if="showViewMenu"
         text="View"
         class="navMenu"
@@ -301,35 +291,25 @@ export default defineComponent({
         @show="handleDropdownShow('viewDropdown')"
         @hide="handleDropdownHide('viewDropdown')"
         @mouseenter="handleDropdownHover('viewDropdown')"
-      >
-        <b-dropdown-item
+        > <b-dropdown-item
           @click="changeUIMode('assembly')"
           :disabled="creator_mode === 'assembly'"
-        >
-          <font-awesome-icon :icon="['fas', 'hashtag']" class="me-2" />
-          Editor
-        </b-dropdown-item>
-        <b-dropdown-item
+          > <font-awesome-icon :icon="['fas', 'hashtag']" class="me-2" /> Editor
+          </b-dropdown-item
+        > <b-dropdown-item
           @click="changeUIMode('simulator')"
           :disabled="creator_mode === 'simulator'"
-        >
-          <font-awesome-icon :icon="['fas', 'gears']" class="me-2" />
-          Simulator
-        </b-dropdown-item>
-        <b-dropdown-item
+          > <font-awesome-icon :icon="['fas', 'gears']" class="me-2" />
+          Simulator </b-dropdown-item
+        > <b-dropdown-item
           @click="changeUIMode('architecture')"
           :disabled="creator_mode === 'architecture'"
-        >
-          <font-awesome-icon
+          > <font-awesome-icon
             :icon="['fas', 'screwdriver-wrench']"
             class="me-2"
-          />
-          Architecture
-        </b-dropdown-item>
-      </b-nav-item-dropdown>
-
-      <!-- File Menu (Assembly View) -->
-      <b-nav-item-dropdown
+          /> Architecture </b-dropdown-item
+        > </b-nav-item-dropdown
+      > <!-- File Menu (Assembly View) --> <b-nav-item-dropdown
         v-if="showFileMenu"
         text="File"
         class="navMenu"
@@ -339,31 +319,23 @@ export default defineComponent({
         @show="handleDropdownShow('fileDropdown')"
         @hide="handleDropdownHide('fileDropdown')"
         @mouseenter="handleDropdownHover('fileDropdown')"
-      >
-        <b-dropdown-item @click="newAssembly">
-          <font-awesome-icon :icon="['far', 'file']" class="me-2" />
-          New Assembly File
-        </b-dropdown-item>
-        <b-dropdown-item v-b-modal.load_assembly>
-          <font-awesome-icon :icon="['fas', 'upload']" class="me-2" />
-          Open File...
-        </b-dropdown-item>
-        <b-dropdown-item v-b-modal.save_assembly>
-          <font-awesome-icon :icon="['fas', 'download']" class="me-2" />
-          Save As...
-        </b-dropdown-item>
-        <b-dropdown-item v-b-modal.examples-assembly>
-          <font-awesome-icon :icon="['fas', 'file-lines']" class="me-2" />
-          Examples...
-        </b-dropdown-item>
-        <b-dropdown-item v-b-modal.make_uri>
-          <font-awesome-icon :icon="['fas', 'link']" class="me-2" />
-          Get code as URI...
-        </b-dropdown-item>
-      </b-nav-item-dropdown>
-
-      <!-- Architecture Menu (Architecture View)-->
-      <b-nav-item-dropdown
+        > <b-dropdown-item @click="newAssembly"
+          > <font-awesome-icon :icon="['far', 'file']" class="me-2" /> New
+          Assembly File </b-dropdown-item
+        > <b-dropdown-item v-b-modal.load_assembly
+          > <font-awesome-icon :icon="['fas', 'upload']" class="me-2" /> Open
+          File... </b-dropdown-item
+        > <b-dropdown-item v-b-modal.save_assembly
+          > <font-awesome-icon :icon="['fas', 'download']" class="me-2" /> Save
+          As... </b-dropdown-item
+        > <b-dropdown-item v-b-modal.examples-assembly
+          > <font-awesome-icon :icon="['fas', 'file-lines']" class="me-2" />
+          Examples... </b-dropdown-item
+        > <b-dropdown-item v-b-modal.make_uri
+          > <font-awesome-icon :icon="['fas', 'link']" class="me-2" /> Get code
+          as URI... </b-dropdown-item
+        > </b-nav-item-dropdown
+      > <!-- Architecture Menu (Architecture View)--> <b-nav-item-dropdown
         v-if="showArchitectureMenu"
         text="Architecture"
         class="navMenu"
@@ -373,19 +345,14 @@ export default defineComponent({
         @show="handleDropdownShow('architectureDropdown')"
         @hide="handleDropdownHide('architectureDropdown')"
         @mouseenter="handleDropdownHover('architectureDropdown')"
-      >
-        <b-dropdown-item v-b-modal.edit_architecture>
-          <font-awesome-icon :icon="['fas', 'pen-to-square']" class="me-2" />
-          Edit Architecture
-        </b-dropdown-item>
-        <b-dropdown-item v-b-modal.save_architecture>
-          <font-awesome-icon :icon="['fas', 'download']" class="me-2" />
-          Save Architecture
-        </b-dropdown-item>
-      </b-nav-item-dropdown>
-
-      <!-- Library Menu (Assembly View) -->
-      <b-nav-item-dropdown
+        > <b-dropdown-item v-b-modal.edit_architecture
+          > <font-awesome-icon :icon="['fas', 'pen-to-square']" class="me-2" />
+          Edit Architecture </b-dropdown-item
+        > <b-dropdown-item v-b-modal.save_architecture
+          > <font-awesome-icon :icon="['fas', 'download']" class="me-2" /> Save
+          Architecture </b-dropdown-item
+        > </b-nav-item-dropdown
+      > <!-- Library Menu (Assembly View) --> <b-nav-item-dropdown
         v-if="showLibraryMenu"
         text="Library"
         class="navMenu"
@@ -395,24 +362,17 @@ export default defineComponent({
         @show="handleDropdownShow('libraryDropdown')"
         @hide="handleDropdownHide('libraryDropdown')"
         @mouseenter="handleDropdownHover('libraryDropdown')"
-      >
-        <b-dropdown-item v-b-modal.load_binary>
-          <font-awesome-icon :icon="['fas', 'upload']" class="me-2" />
-          Load Library...
-        </b-dropdown-item>
-        <b-dropdown-item v-b-modal.save_binary>
-          <font-awesome-icon :icon="['fas', 'floppy-disk']" class="me-2" />
-          Save as Library...
-        </b-dropdown-item>
-        <b-dropdown-divider />
-        <b-dropdown-item @click="removeLibrary">
-          <font-awesome-icon :icon="['fas', 'trash-can']" class="me-2" />
-          Remove Library
-        </b-dropdown-item>
-      </b-nav-item-dropdown>
-
-      <!-- Tools Menu (Simulator View) -->
-      <b-nav-item-dropdown
+        > <b-dropdown-item v-b-modal.load_binary
+          > <font-awesome-icon :icon="['fas', 'upload']" class="me-2" /> Load
+          Library... </b-dropdown-item
+        > <b-dropdown-item v-b-modal.save_binary
+          > <font-awesome-icon :icon="['fas', 'floppy-disk']" class="me-2" />
+          Save as Library... </b-dropdown-item
+        > <b-dropdown-divider /> <b-dropdown-item @click="removeLibrary"
+          > <font-awesome-icon :icon="['fas', 'trash-can']" class="me-2" />
+          Remove Library </b-dropdown-item
+        > </b-nav-item-dropdown
+      > <!-- Tools Menu (Simulator View) --> <b-nav-item-dropdown
         v-if="showExecuteMenu"
         text="Tools"
         class="navMenu"
@@ -422,20 +382,14 @@ export default defineComponent({
         @show="handleDropdownShow('toolsDropdown')"
         @hide="handleDropdownHide('toolsDropdown')"
         @mouseenter="handleDropdownHover('toolsDropdown')"
-      >
-        <b-dropdown-item v-b-modal.examples-simulator>
-          <font-awesome-icon :icon="['fas', 'file-lines']" class="me-2" />
-          Examples...
-        </b-dropdown-item>
-        <b-dropdown-divider />
-        <MenuItems
+        > <b-dropdown-item v-b-modal.examples-simulator
+          > <font-awesome-icon :icon="['fas', 'file-lines']" class="me-2" />
+          Examples... </b-dropdown-item
+        > <b-dropdown-divider /> <MenuItems
           :items="['btn_flash', 'btn_calculator']"
           @item-clicked="closeDropdown('toolsDropdown')"
-        />
-      </b-nav-item-dropdown>
-
-      <!-- Help Menu -->
-      <b-nav-item-dropdown
+        /> </b-nav-item-dropdown
+      > <!-- Help Menu --> <b-nav-item-dropdown
         text="Help"
         class="navMenu"
         no-caret
@@ -444,8 +398,7 @@ export default defineComponent({
         @show="handleDropdownShow('helpDropdown')"
         @hide="handleDropdownHide('helpDropdown')"
         @mouseenter="handleDropdownHover('helpDropdown')"
-      >
-        <MenuItems
+        > <MenuItems
           :items="[
             'btn_help',
             'divider',
@@ -456,27 +409,24 @@ export default defineComponent({
             'btn_about',
           ]"
           @item-clicked="closeDropdown('helpDropdown')"
-        />
-      </b-nav-item-dropdown>
-
-      <!-- Separator for buttons -->
+        /> </b-nav-item-dropdown
+      > <!-- Separator for buttons -->
       <div
         v-if="showExecuteMenu || showCompileButton"
         class="button-separator"
       ></div>
-
-      <!-- Compile Buttons (Assembly View) -->
-      <b-nav-item v-if="showCompileButton" class="compile-item">
-        <AssemblyActions
+       <!-- Compile Buttons (Assembly View) --> <b-nav-item
+        v-if="showCompileButton"
+        class="compile-item"
+        > <AssemblyActions
           :dark="dark"
           mode="toolbar-split"
           @change-mode="changeUIMode"
-        />
-      </b-nav-item>
-
-      <!-- Execute Controls (Simulator View) -->
-      <b-nav-item v-if="showExecuteMenu" class="execute-controls">
-        <SimulatorControls
+        /> </b-nav-item
+      > <!-- Execute Controls (Simulator View) --> <b-nav-item
+        v-if="showExecuteMenu"
+        class="execute-controls"
+        > <SimulatorControls
           ref="simulatorControls"
           :instructions="instructions || []"
           :autoscroll="autoscroll"
@@ -484,99 +434,86 @@ export default defineComponent({
           :browser="browser || ''"
           :dark="dark"
           mode="toolbar"
-        />
-      </b-nav-item>
-
-      <!-- Sentinel Errors Dropdown (Simulator View Only) -->
+        /> </b-nav-item
+      > <!-- Sentinel Errors Dropdown (Simulator View Only) -->
       <SentinelErrorsDropdown
         v-if="showExecuteMenu"
         ref="sentinelDropdownRef"
         :dark="dark"
         class="ms-auto"
-      />
-    </b-navbar-nav>
-
-    <!-- Right side actions -->
-    <b-navbar-nav class="ms-auto">
-      <!-- Notifications Button -->
-      <b-nav-item
+      /> </b-navbar-nav
+    > <!-- Right side actions --> <b-navbar-nav class="ms-auto"
+      > <!-- Notifications Button --> <b-nav-item
         v-b-modal.notifications
         class="icon-button"
         aria-label="Notifications"
-      >
-        <font-awesome-icon :icon="['fas', 'bell']" />
-      </b-nav-item>
-
-      <!-- Settings Button -->
-      <b-nav-item
+        > <font-awesome-icon :icon="['fas', 'bell']" /> </b-nav-item
+      > <!-- Settings Button --> <b-nav-item
         v-b-modal.configuration
         class="icon-button"
         aria-label="Settings"
-      >
-        <font-awesome-icon :icon="['fas', 'cog']" />
-      </b-nav-item>
-    </b-navbar-nav>
-  </b-navbar>
-
-  <!-- Mobile bottom navbar (shown only on mobile) -->
+        > <font-awesome-icon :icon="['fas', 'cog']" /> </b-nav-item
+      > </b-navbar-nav
+    > </b-navbar
+  > <!-- Mobile bottom navbar (shown only on mobile) -->
   <nav v-if="showMobileNavbar" class="mobile-bottom-navbar">
+
     <div class="bottom-nav-container">
-      <!-- Code Tab -->
-      <button
+       <!-- Code Tab --> <button
         class="bottom-nav-item"
         :class="{ active: mobileView === 'code' }"
         @click="setMobileView('code')"
         aria-label="Code"
       >
-        <font-awesome-icon :icon="['fas', 'code']" />
-        <span class="bottom-nav-label">Code</span>
-      </button>
-
-      <!-- Instructions Tab -->
-      <button
+         <font-awesome-icon :icon="['fas', 'code']" /> <span
+          class="bottom-nav-label"
+          >Code</span
+        > </button
+      > <!-- Instructions Tab --> <button
         class="bottom-nav-item"
         :class="{ active: mobileView === 'instructions' }"
         @click="setMobileView('instructions')"
         aria-label="Instructions"
       >
-        <font-awesome-icon :icon="['fas', 'book']" />
-        <span class="bottom-nav-label">Instructions</span>
-      </button>
-
-      <!-- Data Tab -->
-      <button
+         <font-awesome-icon :icon="['fas', 'book']" /> <span
+          class="bottom-nav-label"
+          >Instructions</span
+        > </button
+      > <!-- Data Tab --> <button
         class="bottom-nav-item"
         :class="{ active: mobileView === 'data' }"
         @click="setMobileView('data')"
         aria-label="Data"
       >
-        <font-awesome-icon :icon="['fas', 'database']" />
-        <span class="bottom-nav-label">State</span>
-      </button>
-
-      <!-- Architecture Tab -->
-      <button
+         <font-awesome-icon :icon="['fas', 'database']" /> <span
+          class="bottom-nav-label"
+          >State</span
+        > </button
+      > <!-- Architecture Tab --> <button
         class="bottom-nav-item"
         :class="{ active: mobileView === 'architecture' }"
         @click="setMobileView('architecture')"
         aria-label="Architecture"
       >
-        <font-awesome-icon :icon="['fas', 'microchip']" />
-        <span class="bottom-nav-label">Architecture</span>
-      </button>
-
-      <!-- Settings Tab -->
-      <button
+         <font-awesome-icon :icon="['fas', 'microchip']" /> <span
+          class="bottom-nav-label"
+          >Architecture</span
+        > </button
+      > <!-- Settings Tab --> <button
         class="bottom-nav-item"
         :class="{ active: mobileView === 'settings' }"
         @click="setMobileView('settings')"
         aria-label="Settings"
       >
-        <font-awesome-icon :icon="['fas', 'cog']" />
-        <span class="bottom-nav-label">Settings</span>
-      </button>
+         <font-awesome-icon :icon="['fas', 'cog']" /> <span
+          class="bottom-nav-label"
+          >Settings</span
+        > </button
+      >
     </div>
+
   </nav>
+
 </template>
 
 <style lang="scss" scoped>
@@ -888,3 +825,4 @@ export default defineComponent({
   }
 }
 </style>
+

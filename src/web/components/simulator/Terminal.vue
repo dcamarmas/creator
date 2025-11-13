@@ -1,6 +1,5 @@
 <!--
-Copyright 2018-2025 Felix Garcia Carballeira, Diego Camarmas Alonso,
-                    Alejandro Calderon Mateos, Jorge Ramos Santana
+Copyright 2018-2025 CREATOR Team.
 
 This file is part of CREATOR.
 
@@ -17,19 +16,19 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
-
 <template>
-  <b-container fluid class="mx-0 px-0 terminal-wrapper">
-
+   <b-container fluid class="mx-0 px-0 terminal-wrapper"
+    >
     <div ref="terminalContainer" class="terminal-container"></div>
-  </b-container>
+     </b-container
+  >
 </template>
 
 <script>
-import { Terminal } from 'xterm'
-import { FitAddon } from '@xterm/addon-fit'
-import 'xterm/css/xterm.css'
-import { execution_mode, status } from "@/core/core.mjs"
+import { Terminal } from "xterm";
+import { FitAddon } from "@xterm/addon-fit";
+import "xterm/css/xterm.css";
+import { execution_mode, status } from "@/core/core.mjs";
 
 export default {
   props: {
@@ -42,22 +41,22 @@ export default {
     return {
       terminal: null,
       fitAddon: null,
-      inputBuffer: '',
+      inputBuffer: "",
       inputMode: false, // Whether we're waiting for user input
-    }
+    };
   },
 
   mounted() {
-    this.initTerminal()
+    this.initTerminal();
   },
 
   beforeUnmount() {
     // Remove window resize listener
-    window.removeEventListener('resize', this.handleResize)
-    
+    window.removeEventListener("resize", this.handleResize);
+
     // Clear references
-    this.terminal = null
-    this.fitAddon = null
+    this.terminal = null;
+    this.fitAddon = null;
   },
 
   watch: {
@@ -65,12 +64,12 @@ export default {
       // When display changes, write to terminal
       if (this.terminal && newValue !== oldValue) {
         // If newValue is empty, clear the terminal completely
-        if (newValue === '') {
-          this.terminal.reset()
-          this.inputBuffer = ''
+        if (newValue === "") {
+          this.terminal.reset();
+          this.inputBuffer = "";
         } else {
-          const diff = newValue.slice(oldValue.length)
-          this.terminal.write(diff)
+          const diff = newValue.slice(oldValue.length);
+          this.terminal.write(diff);
         }
       }
     },
@@ -80,129 +79,132 @@ export default {
     initTerminal() {
       // Check if container ref is available
       if (!this.$refs.terminalContainer) {
-        console.warn('Terminal container not available')
-        return
+        console.warn("Terminal container not available");
+        return;
       }
 
       try {
         this.terminal = new Terminal({
           cursorBlink: true,
-          cursorStyle: 'block',
+          cursorStyle: "block",
           fontSize: 14,
-          fontFamily: '"Fira Code", "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace',
-          fontWeight: '400',
-          fontWeightBold: '700',
+          fontFamily:
+            '"Fira Code", "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace',
+          fontWeight: "400",
+          fontWeightBold: "700",
           letterSpacing: 0,
           lineHeight: 1.2,
           theme: {
-            background: '#0d1117',
-            foreground: '#c9d1d9',
-            cursor: '#58a6ff',
-            cursorAccent: '#0d1117',
-            selectionBackground: '#1f6feb44',
-            black: '#484f58',
-            red: '#ff7b72',
-            green: '#3fb950',
-            yellow: '#d29922',
-            blue: '#58a6ff',
-            magenta: '#bc8cff',
-            cyan: '#39c5cf',
-            white: '#b1bac4',
-            brightBlack: '#6e7681',
-            brightRed: '#ffa198',
-            brightGreen: '#56d364',
-            brightYellow: '#e3b341',
-            brightBlue: '#79c0ff',
-            brightMagenta: '#d2a8ff',
-            brightCyan: '#56d4dd',
-            brightWhite: '#f0f6fc',
+            background: "#0d1117",
+            foreground: "#c9d1d9",
+            cursor: "#58a6ff",
+            cursorAccent: "#0d1117",
+            selectionBackground: "#1f6feb44",
+            black: "#484f58",
+            red: "#ff7b72",
+            green: "#3fb950",
+            yellow: "#d29922",
+            blue: "#58a6ff",
+            magenta: "#bc8cff",
+            cyan: "#39c5cf",
+            white: "#b1bac4",
+            brightBlack: "#6e7681",
+            brightRed: "#ffa198",
+            brightGreen: "#56d364",
+            brightYellow: "#e3b341",
+            brightBlue: "#79c0ff",
+            brightMagenta: "#d2a8ff",
+            brightCyan: "#56d4dd",
+            brightWhite: "#f0f6fc",
           },
           rows: 10,
           cols: 80,
           scrollback: 1000,
           allowTransparency: true,
-        })
+        });
 
         // Add addons
-        this.fitAddon = new FitAddon()
-        this.terminal.loadAddon(this.fitAddon)
+        this.fitAddon = new FitAddon();
+        this.terminal.loadAddon(this.fitAddon);
 
         // Open terminal in the container
-        this.terminal.open(this.$refs.terminalContainer)
-        this.fitAddon.fit()
+        this.terminal.open(this.$refs.terminalContainer);
+        this.fitAddon.fit();
 
         // Handle input
         this.terminal.onData(data => {
-          this.handleInput(data)
-        })
+          this.handleInput(data);
+        });
 
         // Handle window resize
-        window.addEventListener('resize', this.handleResize)
-        
+        window.addEventListener("resize", this.handleResize);
+
         // Write initial display content if any
         if (this.display) {
-          this.terminal.write(this.display)
+          this.terminal.write(this.display);
         }
       } catch (error) {
-        console.error('Error initializing terminal:', error)
+        console.error("Error initializing terminal:", error);
       }
     },
 
     handleInput(data) {
       // Handle special keys
-      if (data === '\r') { // Enter key
-        this.terminal.write('\r\n')
-        this.submitInput()
-        return
+      if (data === "\r") {
+        // Enter key
+        this.terminal.write("\r\n");
+        this.submitInput();
+        return;
       }
-      
-      if (data === '\u007F') { // Backspace
+
+      if (data === "\u007F") {
+        // Backspace
         if (this.inputBuffer.length > 0) {
-          this.inputBuffer = this.inputBuffer.slice(0, -1)
-          this.terminal.write('\b \b')
+          this.inputBuffer = this.inputBuffer.slice(0, -1);
+          this.terminal.write("\b \b");
         }
-        return
+        return;
       }
-      
+
       // Add to buffer and echo to terminal
-      this.inputBuffer += data
-      this.terminal.write(data)
-      
+      this.inputBuffer += data;
+      this.terminal.write(data);
+
       // Update keyboard value in real-time
-      this.$root.keyboard = this.inputBuffer
+      this.$root.keyboard = this.inputBuffer;
     },
 
     submitInput() {
       if (this.inputBuffer !== "") {
-        this.$root.keyboard = this.inputBuffer
-        status.run_program = execution_mode
-        this.inputBuffer = ''
+        this.$root.keyboard = this.inputBuffer;
+        status.run_program = execution_mode;
+        this.inputBuffer = "";
       }
     },
 
     clearTerminal() {
       if (this.terminal) {
-        this.terminal.clear()
-        this.inputBuffer = ''
-        this.$root.keyboard = ""
-        this.$root.display = ""
+        this.terminal.clear();
+        this.inputBuffer = "";
+        this.$root.keyboard = "";
+        this.$root.display = "";
       }
     },
 
     handleResize() {
       if (this.fitAddon) {
-        this.fitAddon.fit()
+        this.fitAddon.fit();
       }
     },
 
     // Method to write output to terminal
     writeOutput(text) {
       if (this.terminal) {
-        this.terminal.write(text)
+        this.terminal.write(text);
       }
     },
   },
-}
+};
 </script>
 
 <style scoped>
@@ -320,3 +322,4 @@ export default {
   text-rendering: optimizeLegibility;
 }
 </style>
+

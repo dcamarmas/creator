@@ -1,6 +1,5 @@
 <!--
-Copyright 2018-2025 Felix Garcia Carballeira, Diego Camarmas Alonso,
-                    Alejandro Calderon Mateos, Luis Daniel Casais Mezquida
+Copyright 2018-2025 CREATOR Team.
 
 This file is part of CREATOR.
 
@@ -17,11 +16,10 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
-
 <script lang="ts">
-import { defineComponent, type PropType } from "vue"
+import { defineComponent, type PropType } from "vue";
 
-import { Vim } from "@replit/codemirror-vim"
+import { Vim } from "@replit/codemirror-vim";
 
 export default defineComponent({
   props: {
@@ -47,7 +45,7 @@ export default defineComponent({
         lhs: "",
         rhs: "",
       },
-    }
+    };
   },
 
   computed: {
@@ -57,20 +55,20 @@ export default defineComponent({
     // modifySelectedVimKeybind
     modifiedVimKeybind() {
       // copy selected keybind
-      return { ...this.vim_custom_keybinds_value[this.selected_vim_keybind!]! }
+      return { ...this.vim_custom_keybinds_value[this.selected_vim_keybind!]! };
     },
 
     keybind() {
-      return this.type === "new" ? this.newVimKeybind : this.modifiedVimKeybind
+      return this.type === "new" ? this.newVimKeybind : this.modifiedVimKeybind;
     },
 
     // modifying this will modify the parent
     vim_custom_keybinds_value: {
       get() {
-        return this.vim_custom_keybinds
+        return this.vim_custom_keybinds;
       },
       set(value: VimKeybind[]) {
-        this.$emit("update:vim_custom_keybinds", value)
+        this.$emit("update:vim_custom_keybinds", value);
       },
     },
   },
@@ -80,26 +78,26 @@ export default defineComponent({
       Vim.unmap(
         this.vim_custom_keybinds_value[this.selected_vim_keybind!]!.lhs,
         this.vim_custom_keybinds_value[this.selected_vim_keybind!]!.mode,
-      )
-      Vim.map(lhs, rhs, mode)
+      );
+      Vim.map(lhs, rhs, mode);
 
       this.vim_custom_keybinds_value.splice(
         this.selected_vim_keybind!,
         1,
         { ...this.modifiedVimKeybind }, // copy
-      )
+      );
     },
 
     addVimKeybind(mode: string, lhs: string, rhs: string) {
-      Vim.map(lhs, rhs, mode)
+      Vim.map(lhs, rhs, mode);
 
       this.vim_custom_keybinds_value.push({
         mode,
         lhs,
         rhs,
-      })
+      });
 
-      this.resetNewKeybind()
+      this.resetNewKeybind();
     },
 
     resetNewKeybind() {
@@ -107,14 +105,14 @@ export default defineComponent({
         mode: "normal",
         lhs: "",
         rhs: "",
-      }
+      };
     },
   },
-})
+});
 </script>
 
 <template>
-  <b-modal
+   <b-modal
     :id="id"
     centered
     :title="title"
@@ -126,11 +124,10 @@ export default defineComponent({
       )
     "
     @cancel="resetNewKeybind"
-  >
-    <b-form class="d-flex flex-row align-items-center flex-wrap">
-      <!-- v-if="type === 'new' || selected_vim_keybind !== null" -->
+    > <b-form class="d-flex flex-row align-items-center flex-wrap"
+      > <!-- v-if="type === 'new' || selected_vim_keybind !== null" -->
       <div class="col-4">
-        <b-form-select
+         <b-form-select
           class="col-lg-2"
           v-model="keybind.mode"
           :options="[
@@ -140,28 +137,30 @@ export default defineComponent({
           ]"
         />
       </div>
-      <label class="col-form-label visually-hidden" for="inline-form-input-lhs">
-        lhs
-      </label>
+       <label class="col-form-label visually-hidden" for="inline-form-input-lhs"
+        > lhs </label
+      >
       <div class="col-4">
-        <b-form-floating-label label="LHS" label-for="vim-form-input-lhs">
-          <b-form-input
+         <b-form-floating-label label="LHS" label-for="vim-form-input-lhs"
+          > <b-form-input
             class="font-monospace"
             v-model="keybind.lhs"
             id="vim-form-input-lhs"
-          />
-        </b-form-floating-label>
+          /> </b-form-floating-label
+        >
       </div>
 
       <div class="col-4">
-        <b-form-floating-label label="RHS" label-for="vim-form-input-rhs">
-          <b-form-input
+         <b-form-floating-label label="RHS" label-for="vim-form-input-rhs"
+          > <b-form-input
             class="font-monospace"
             v-model="keybind.rhs"
             id="vim-form-input-rhs"
-          />
-        </b-form-floating-label>
+          /> </b-form-floating-label
+        >
       </div>
-    </b-form>
-  </b-modal>
+       </b-form
+    > </b-modal
+  >
 </template>
+

@@ -1,6 +1,5 @@
 <!--
-Copyright 2018-2025 Felix Garcia Carballeira, Diego Camarmas Alonso,
-                    Alejandro Calderon Mateos, Luis Daniel Casais Mezquida
+Copyright 2018-2025 CREATOR Team.
 
 This file is part of CREATOR.
 
@@ -17,13 +16,12 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
-
 <script lang="ts">
-import { defineComponent, type PropType } from "vue"
+import { defineComponent, type PropType } from "vue";
 
-import type { Register } from "@/core/core"
-import { creator_ga } from "@/core/utils/creator_ga.mjs"
-import { bi_BigIntTofloat, bi_BigIntTodouble } from "@/core/utils/bigint.mjs"
+import type { Register } from "@/core/core";
+import { creator_ga } from "@/core/utils/creator_ga.mjs";
+import { bi_BigIntTofloat, bi_BigIntTodouble } from "@/core/utils/bigint.mjs";
 import {
   hex2float,
   hex2double,
@@ -32,12 +30,12 @@ import {
   float2int_v2,
   double2int_v2,
   double2bin,
-} from "@/core/utils/utils.mjs"
+} from "@/core/utils/utils.mjs";
 import {
   isRegisterGlowing,
   setRegisterGlow,
   clearRegisterGlow,
-} from "@/core/register/registerGlowState.mjs"
+} from "@/core/register/registerGlowState.mjs";
 
 export default defineComponent({
   props: {
@@ -56,42 +54,42 @@ export default defineComponent({
     return {
       render: false, // toggle this to trigger reactive recalculation
       glow: false, // whether the button is glowing or not (persistent until next step)
-    }
+    };
   },
 
   mounted() {
     // Restore glow state from persistent store
-    this.glow = isRegisterGlowing(this.indexComp, this.indexElem)
+    this.glow = isRegisterGlowing(this.indexComp, this.indexElem);
   },
 
   computed: {
     popoverId() {
-      return "popoverValueContent" + this.register.name[0]
+      return "popoverValueContent" + this.register.name[0];
     },
 
     // Format register names horizontally separated by |
     formattedRegNames() {
-      let names: string[]
-      
+      let names: string[];
+
       switch (this.name_representation) {
         case "logical":
-          names = [this.register.name[0] ?? ""]
-          break
+          names = [this.register.name[0] ?? ""];
+          break;
         case "alias":
           if (typeof this.register.name[1] === "undefined") {
-            names = [this.register.name[0] ?? ""]
+            names = [this.register.name[0] ?? ""];
           } else {
-            names = this.register.name.slice(1, this.register.name.length)
+            names = this.register.name.slice(1, this.register.name.length);
           }
-          break
+          break;
         case "all":
-          names = this.register.name
-          break
+          names = this.register.name;
+          break;
         default:
-          names = []
+          names = [];
       }
-      
-      return names.join(" | ")
+
+      return names.join(" | ");
     },
 
     // Now a computed property! The render variable acts as a dependency
@@ -99,8 +97,8 @@ export default defineComponent({
     reg_value(): string {
       // Access render to create a reactive dependency
       // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-      this.render
-      return this.show_value(this.value_representation).toString()
+      this.render;
+      return this.show_value(this.value_representation).toString();
     },
   },
 
@@ -109,16 +107,16 @@ export default defineComponent({
 
     refresh() {
       // toggle to trigger computed property recalculation
-      this.render = !this.render
+      this.render = !this.render;
       // make it glow (persisted in global store)
-      this.glow = true
-      setRegisterGlow(this.indexComp, this.indexElem)
+      this.glow = true;
+      setRegisterGlow(this.indexComp, this.indexElem);
     },
 
     clearGlow() {
       // clear the glow effect (from both component and global store)
-      this.glow = false
-      clearRegisterGlow(this.indexComp, this.indexElem)
+      this.glow = false;
+      clearRegisterGlow(this.indexComp, this.indexElem);
     },
 
     showDetails() {
@@ -132,103 +130,104 @@ export default defineComponent({
         char: this.show_value("char"),
         ieee32: this.show_value("ieee32"),
         ieee64: this.show_value("ieee64"),
-      })
-      creator_ga("data", "data.view", "data.view.registers_details")
+      });
+      creator_ga("data", "data.view", "data.view.registers_details");
     },
 
     // TODO: move to utils
     is_positive(value: number | bigint, nbits: number) {
-      return value.toString(2).padStart(nbits, "0").charAt(0) === "0"
+      return value.toString(2).padStart(nbits, "0").charAt(0) === "0";
     },
 
     show_value(representation: string): number | string {
-      let ret
+      let ret;
 
       switch (representation) {
         case "signed":
           if (this.type === "ctrl_registers" || this.type === "int_registers") {
             if (this.is_positive(this.register.value, this.register.nbits)) {
-              ret = this.register.value.toString(10)
+              ret = this.register.value.toString(10);
             } else {
               ret = (
                 this.register.value -
                 2n ** BigInt(this.register.nbits)
-              ).toString(10)
+              ).toString(10);
             }
           } else if (!this.double_precision) {
-            ret = float2int_v2(bi_BigIntTofloat(this.register.value))
+            ret = float2int_v2(bi_BigIntTofloat(this.register.value));
           } else {
-            ret = double2int_v2(bi_BigIntTodouble(this.register.value))
+            ret = double2int_v2(bi_BigIntTodouble(this.register.value));
           }
-          break
+          break;
 
         case "unsigned":
           if (this.type === "ctrl_registers" || this.type === "int_registers") {
-            ret = parseInt(this.register.value.toString(10), 10) >>> 0
+            ret = parseInt(this.register.value.toString(10), 10) >>> 0;
           } else if (!this.double_precision) {
-            ret = float2int_v2(bi_BigIntTofloat(this.register.value)) >>> 0
+            ret = float2int_v2(bi_BigIntTofloat(this.register.value)) >>> 0;
           } else {
-            ret = double2int_v2(bi_BigIntTodouble(this.register.value)) >>> 0
+            ret = double2int_v2(bi_BigIntTodouble(this.register.value)) >>> 0;
           }
-          break
+          break;
 
         case "ieee32":
           if (this.type === "ctrl_registers" || this.type === "int_registers") {
             ret = hex2float(
               "0x" + this.register.value.toString(16).padStart(8, "0"),
-            )
+            );
           } else {
-            ret = bi_BigIntTofloat(this.register.value)
+            ret = bi_BigIntTofloat(this.register.value);
           }
-          break
+          break;
 
         case "ieee64":
           // FIXME: this is wrong...
           if (this.type === "ctrl_registers" || this.type === "int_registers") {
             ret = hex2double(
               "0x" + this.register.value.toString(16).padStart(16, "0"),
-            )
+            );
           } else {
-            ret = bi_BigIntTodouble(this.register.value)
+            ret = bi_BigIntTodouble(this.register.value);
           }
-          break
+          break;
 
         case "hex":
           ret = this.register.value
             .toString(16)
             .padStart(this.register.nbits / 4, "0")
-            .toUpperCase()
-          
-          break
+            .toUpperCase();
+
+          break;
 
         case "bin":
           if (this.type === "ctrl_registers" || this.type === "int_registers") {
             ret = this.register.value
               .toString(2)
-              .padStart(this.register.nbits, "0")
+              .padStart(this.register.nbits, "0");
           } else if (this.double_precision !== null) {
-            ret = float2bin(bi_BigIntTofloat(this.register.value))
+            ret = float2bin(bi_BigIntTofloat(this.register.value));
           } else {
-            ret = double2bin(bi_BigIntTodouble(this.register.value))
+            ret = double2bin(bi_BigIntTodouble(this.register.value));
           }
-          break
+          break;
 
         case "char":
-          ret = String.fromCharCode(Number(this.register.value))
+          ret = String.fromCharCode(Number(this.register.value));
 
-          break
+          break;
 
         default:
-          return "N/A"
+          return "N/A";
       }
 
-      return ret
+      return ret;
     },
   },
-})
+});
 </script>
 
 <template>
+
   <div
     class="register-row"
     :class="{ 'register-row-glow': glow }"
@@ -236,15 +235,19 @@ export default defineComponent({
     :key="+render"
     @click="showDetails"
   >
+
     <div class="register">
+
       <div class="register-name register-name-horizontal">
-        {{ formattedRegNames }}
+         {{ formattedRegNames }}
       </div>
-      <div class="register-value">
-        {{ reg_value }}
-      </div>
+
+      <div class="register-value"> {{ reg_value }} </div>
+
     </div>
+
   </div>
+
 </template>
 
 <style lang="scss" scoped>
@@ -318,3 +321,4 @@ export default defineComponent({
   }
 }
 </style>
+

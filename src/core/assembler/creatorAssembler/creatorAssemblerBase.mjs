@@ -1,22 +1,20 @@
 /**
- *  Copyright 2018-2025 Felix Garcia Carballeira, Alejandro Calderon Mateos,
- *                      Diego Camarmas Alonso, Jorge Ramos Santana
+ * Copyright 2018-2025 CREATOR Team.
  *
- *  This file is part of CREATOR.
+ * This file is part of CREATOR.
  *
- *  CREATOR is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU Lesser General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
+ * CREATOR is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *  CREATOR is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU Lesser General Public License for more details.
+ * CREATOR is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
  *
- *  You should have received a copy of the GNU Lesser General Public License
- *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
- *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 import {
@@ -53,7 +51,7 @@ let libraryInstructions = [];
  */
 function initializeArchitecture(wasmModules) {
     const { ArchitectureJS } = wasmModules;
-    
+
     try {
         return ArchitectureJS.from_json(JSON.stringify(architecture));
     } catch (error) {
@@ -90,14 +88,20 @@ function loadLibraryIfPresent(instructions) {
     let library_offset = 0;
     let library_instructions = 0;
     const library_labels = {};
-    
+
     if (!loadedLibrary || Object.keys(loadedLibrary).length === 0) {
         return { library_offset, library_instructions, library_labels };
     }
-    
+
     // Validate library format
-    if (!loadedLibrary.version || !loadedLibrary.binary || !loadedLibrary.symbols) {
-        throw new Error("Invalid library format: missing required fields (version, binary, symbols)");
+    if (
+        !loadedLibrary.version ||
+        !loadedLibrary.binary ||
+        !loadedLibrary.symbols
+    ) {
+        throw new Error(
+            "Invalid library format: missing required fields (version, binary, symbols)",
+        );
     }
 
     // Convert hex string to binary string
@@ -118,14 +122,14 @@ function loadLibraryIfPresent(instructions) {
     // Calculate instruction size in bits
     const instructionSizeBits = WORDSIZE;
     const instructionSizeBytes = instructionSizeBits / 8;
-    
+
     // Process each instruction
     let currentAddr = 0;
     for (let i = 0; i < binaryString.length; i += instructionSizeBits) {
         const instructionBinary = binaryString.substr(i, instructionSizeBits);
         const symbolName = symbolsByAddr.get(currentAddr);
         const hasSymbol = symbolName !== undefined;
-        
+
         const instruction = {
             Break: null,
             Address: `0x${currentAddr.toString(16)}`,
@@ -137,13 +141,13 @@ function loadLibraryIfPresent(instructions) {
             globl: hasSymbol,
             hide: !(library_instructions === 0 || hasSymbol),
         };
-        
+
         instructions.push(instruction);
         library_instructions++;
         library_offset = currentAddr + instructionSizeBytes;
         currentAddr += instructionSizeBytes;
     }
-    
+
     return { library_offset, library_instructions, library_labels };
 }
 
@@ -211,12 +215,7 @@ function loadDataIntoMemory(data_mem, DataCategoryJS) {
 
                         const doubleTag = labels[0] ?? "";
                         const doubleType = "float64";
-                        main_memory.addHint(
-                            addr,
-                            doubleTag,
-                            doubleType,
-                            64,
-                        );
+                        main_memory.addHint(addr, doubleTag, doubleType, 64);
                         break;
                     }
                     case "byte": {
@@ -230,9 +229,7 @@ function loadDataIntoMemory(data_mem, DataCategoryJS) {
                     }
                     case "word":
                         {
-                            const wordValue = BigInt(
-                                "0x" + data.value(false),
-                            );
+                            const wordValue = BigInt("0x" + data.value(false));
                             const wordSizeBytes =
                                 newArchitecture.config.word_size /
                                 newArchitecture.config.byte_size;
@@ -280,9 +277,7 @@ function loadDataIntoMemory(data_mem, DataCategoryJS) {
                             dwordValue &
                             BigInt(
                                 (1n <<
-                                    BigInt(
-                                        newArchitecture.config.word_size,
-                                    )) -
+                                    BigInt(newArchitecture.config.word_size)) -
                                     1n,
                             );
 
@@ -298,8 +293,7 @@ function loadDataIntoMemory(data_mem, DataCategoryJS) {
                                 (highWord >> shiftAmount) &
                                     BigInt(
                                         (1 <<
-                                            newArchitecture.config
-                                                .byte_size) -
+                                            newArchitecture.config.byte_size) -
                                             1,
                                     ),
                             );
@@ -307,8 +301,7 @@ function loadDataIntoMemory(data_mem, DataCategoryJS) {
                                 (lowWord >> shiftAmount) &
                                     BigInt(
                                         (1 <<
-                                            newArchitecture.config
-                                                .byte_size) -
+                                            newArchitecture.config.byte_size) -
                                             1,
                                     ),
                             );
@@ -359,7 +352,7 @@ function loadDataIntoMemory(data_mem, DataCategoryJS) {
                     }
                 }
                 break;
-                
+
             case DataCategoryJS.String: {
                 const encoder = new TextEncoder();
                 let currentAddr = addr;
@@ -385,7 +378,7 @@ function loadDataIntoMemory(data_mem, DataCategoryJS) {
                 );
                 break;
             }
-            
+
             case DataCategoryJS.Padding:
             case DataCategoryJS.Space: {
                 const space_size = BigInt(data.size());
@@ -416,7 +409,7 @@ function loadDataIntoMemory(data_mem, DataCategoryJS) {
                 );
                 break;
             }
-            
+
             default:
                 throw new Error(
                     `Unknown data category: ${data.data_category()}`,
@@ -432,7 +425,7 @@ function writeLibraryToMemory() {
     if (!loadedLibrary || Object.keys(loadedLibrary).length === 0) {
         return;
     }
-    
+
     let binaryString = "";
     for (let i = 0; i < loadedLibrary.binary.length; i += 2) {
         const hexByte = loadedLibrary.binary.substr(i, 2);
@@ -443,10 +436,10 @@ function writeLibraryToMemory() {
     let currentAddr = 0;
     const instructionSizeBits = WORDSIZE;
     const instructionSizeBytes = instructionSizeBits / 8;
-    
+
     for (let i = 0; i < binaryString.length; i += instructionSizeBits) {
         const instructionBinary = binaryString.substr(i, instructionSizeBits);
-        
+
         for (let j = 0; j < instructionBinary.length; j += WORDSIZE) {
             const wordBinary = instructionBinary.substr(j, WORDSIZE);
             const wordBytes = [];
@@ -456,9 +449,12 @@ function writeLibraryToMemory() {
                 wordBytes.push(byte);
             }
 
-            main_memory.writeWord(BigInt(currentAddr + j / BYTESIZE), wordBytes);
+            main_memory.writeWord(
+                BigInt(currentAddr + j / BYTESIZE),
+                wordBytes,
+            );
         }
-        
+
         currentAddr += instructionSizeBytes;
     }
 }
@@ -519,23 +515,27 @@ export function assembleCreatorLibrary(code, wasmModules) {
             true, // library flag
             color,
         );
-        
+
         // Library compilation: only binary instructions
         libraryInstructions = compiled.instructions.map(x => ({
             Address: x.address,
             Label: x.labels[0] ?? "",
             Break: null,
-            loaded: "0x" + parseInt(x.binary, 2).toString(16).padStart(WORDSIZE / 4, "0"),
+            loaded:
+                "0x" +
+                parseInt(x.binary, 2)
+                    .toString(16)
+                    .padStart(WORDSIZE / 4, "0"),
             visible: false,
             user: null,
         }));
-        
+
         // Extract label table for library
         label_table = compiled.label_table.reduce((tbl, x) => {
             tbl[x.name] = { address: x.address, global: x.global };
             return tbl;
         }, {});
-        
+
         // Extract data elements and load them on memory
         const data_mem = compiled.data;
         loadDataIntoMemory(data_mem, DataCategoryJS);
@@ -565,7 +565,7 @@ export function assembleCreatorLibrary(code, wasmModules) {
 
     // Set the libraryInstructions array for library export
     setLibraryInstructions(libraryInstructions);
-    
+
     return {
         errorcode: "",
         token: "",
@@ -599,7 +599,8 @@ export function assembleCreatorProgram(code, wasmModules) {
     resetMemoryAndState();
 
     // Load library if present
-    const { library_offset, library_instructions, library_labels } = loadLibraryIfPresent(instructions);
+    const { library_offset, library_instructions, library_labels } =
+        loadLibraryIfPresent(instructions);
     const labels_json = JSON.stringify(library_labels);
 
     // Compile code
@@ -612,7 +613,7 @@ export function assembleCreatorProgram(code, wasmModules) {
             false, // not a library
             color,
         );
-        
+
         // Normal compilation: populate instructions for execution/display
         instructions.push(
             ...compiled.instructions.map(x => ({
@@ -626,13 +627,13 @@ export function assembleCreatorProgram(code, wasmModules) {
                 visible: true,
             })),
         );
-        
+
         // Extract label table
         label_table = compiled.label_table.reduce((tbl, x) => {
             tbl[x.name] = { address: x.address, global: x.global };
             return tbl;
         }, {});
-        
+
         // Extract data elements and load them on memory
         const data_mem = compiled.data;
         loadDataIntoMemory(data_mem, DataCategoryJS);
@@ -666,7 +667,7 @@ export function assembleCreatorProgram(code, wasmModules) {
     setAddress(architecture.memory_layout.text.start);
     setInstructions(instructions);
     set_tag_instructions(tag_instructions);
-    
+
     return {
         errorcode: "",
         token: "",

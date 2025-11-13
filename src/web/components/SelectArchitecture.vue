@@ -1,32 +1,53 @@
-<script setup lang="ts">
-import { ref, computed } from 'vue'
+<!--
+Copyright 2018-2025 CREATOR Team.
 
-import ArchitectureItem from './select_architecture/ArchitectureItem.vue'
-import DeleteArchitecture from './select_architecture/DeleteArchitecture.vue'
-import { useArchitectureSelect } from '@/web/composables/useArchitectureSelect'
-import { useArchitectureUpload, type AvailableArch } from '@/web/composables/useArchitectureUpload'
+This file is part of CREATOR.
+
+CREATOR is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+CREATOR is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<script setup lang="ts">
+import { ref, computed } from "vue";
+
+import ArchitectureItem from "./select_architecture/ArchitectureItem.vue";
+import DeleteArchitecture from "./select_architecture/DeleteArchitecture.vue";
+import { useArchitectureSelect } from "@/web/composables/useArchitectureSelect";
+import {
+  useArchitectureUpload,
+  type AvailableArch,
+} from "@/web/composables/useArchitectureUpload";
 
 interface Props {
-  arch_available: AvailableArch[]
-  browser: string
-  os: string
-  dark: boolean
-  windowHeight: number
+  arch_available: AvailableArch[];
+  browser: string;
+  os: string;
+  dark: boolean;
+  windowHeight: number;
 }
 
 interface Emits {
-  (e: 'select-architecture', arch_name: string): void
-  (e: 'architecture-deleted', arch_name: string): void
+  (e: "select-architecture", arch_name: string): void;
+  (e: "architecture-deleted", arch_name: string): void;
 }
 
-const props = defineProps<Props>()
-const emit = defineEmits<Emits>()
+const props = defineProps<Props>();
+const emit = defineEmits<Emits>();
 
-const hoveredArch = ref<string | null>(null)
+const hoveredArch = ref<string | null>(null);
 
 const availableArchitectures = computed(() =>
-  props.arch_available.filter(arch => arch.available)
-)
+  props.arch_available.filter(arch => arch.available),
+);
 
 // Use composables for shared logic
 const {
@@ -37,9 +58,9 @@ const {
   handleDeleteArchitecture,
   handleArchitectureDeleted,
 } = useArchitectureSelect(
-  (arch_name) => emit('select-architecture', arch_name),
-  (arch_name) => emit('architecture-deleted', arch_name)
-)
+  arch_name => emit("select-architecture", arch_name),
+  arch_name => emit("architecture-deleted", arch_name),
+);
 
 const {
   showLoadModal,
@@ -48,95 +69,95 @@ const {
   customArchFile,
   openLoadArchModal,
   loadCustomArch,
-} = useArchitectureUpload((arch_name) => emit('select-architecture', arch_name))
+} = useArchitectureUpload(arch_name => emit("select-architecture", arch_name));
 </script>
 
 <template>
-  <div class="architecture-selector" :class="{ dark: dark }">
-    <div class="selector-container">
 
-      <!-- Architecture List -->
+  <div class="architecture-selector" :class="{ dark: dark }">
+
+    <div class="selector-container">
+       <!-- Architecture List -->
       <div class="architecture-list">
-        <!-- Default and Custom Architectures -->
-        <ArchitectureItem
-          v-for="arch in availableArchitectures" 
+         <!-- Default and Custom Architectures --> <ArchitectureItem
+          v-for="arch in availableArchitectures"
           :key="arch.id"
           :arch="arch"
           :selected="selectedArch === arch.name"
           @select="handleSelectArchitecture(arch)"
           @delete="handleDeleteArchitecture(arch.name)"
-        />
-
-        <!-- Load Custom Architecture Button -->
-        <div 
+        /> <!-- Load Custom Architecture Button -->
+        <div
           class="arch-item load-custom"
           @click="openLoadArchModal"
           @mouseenter="hoveredArch = 'load-custom'"
           @mouseleave="hoveredArch = null"
         >
+
           <div class="arch-logo load-logo">
-            <font-awesome-icon :icon="['fas', 'file-import']" />
+             <font-awesome-icon :icon="['fas', 'file-import']" />
           </div>
-          
+
           <div class="arch-info">
+
             <h3 class="arch-name">Load Custom Architecture</h3>
-            <p class="arch-description">Import your own architecture definition file (.yml)</p>
+
+            <p class="arch-description">
+               Import your own architecture definition file (.yml)
+            </p>
+
           </div>
 
           <div class="arch-actions">
-            <div class="select-indicator">
-              <font-awesome-icon :icon="['fas', 'plus']" />
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
 
-    <!-- Load Custom Architecture Modal -->
-    <b-modal 
-      v-model="showLoadModal" 
-      title="Load Custom Architecture" 
+            <div class="select-indicator">
+               <font-awesome-icon :icon="['fas', 'plus']" />
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+     <!-- Load Custom Architecture Modal --> <b-modal
+      v-model="showLoadModal"
+      title="Load Custom Architecture"
       @ok="loadCustomArch"
-    >
-      <b-form>
-        <b-form-group label="Architecture Name" label-for="arch-name">
-          <b-form-input
+      > <b-form
+        > <b-form-group label="Architecture Name" label-for="arch-name"
+          > <b-form-input
             id="arch-name"
             v-model="customArchName"
             placeholder="Enter architecture name"
             required
-          />
-        </b-form-group>
-
-        <b-form-group label="Description" label-for="arch-description">
-          <b-form-textarea
+          /> </b-form-group
+        > <b-form-group label="Description" label-for="arch-description"
+          > <b-form-textarea
             id="arch-description"
             v-model="customArchDescription"
             placeholder="Enter architecture description"
             rows="3"
-          />
-        </b-form-group>
-
-        <b-form-group label="Architecture File" label-for="arch-file">
-          <b-form-file
+          /> </b-form-group
+        > <b-form-group label="Architecture File" label-for="arch-file"
+          > <b-form-file
             id="arch-file"
             v-model="customArchFile"
             accept=".yml"
             placeholder="Choose a .yml file..."
             required
-          />
-        </b-form-group>
-      </b-form>
-    </b-modal>
-
-    <!-- Delete Architecture Modal -->
-    <DeleteArchitecture 
-      id="modal-delete-arch" 
+          /> </b-form-group
+        > </b-form
+      > </b-modal
+    > <!-- Delete Architecture Modal --> <DeleteArchitecture
+      id="modal-delete-arch"
       v-model="showDeleteModal"
       :arch="archToDelete"
       @architecture-deleted="handleArchitectureDeleted"
     />
   </div>
+
 </template>
 
 <style lang="scss" scoped>
@@ -309,3 +330,4 @@ const {
   }
 }
 </style>
+

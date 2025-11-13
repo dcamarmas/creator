@@ -1,6 +1,5 @@
 <!--
-Copyright 2018-2025 Felix Garcia Carballeira, Diego Camarmas Alonso,
-                    Alejandro Calderon Mateos, Luis Daniel Casais Mezquida
+Copyright 2018-2025 CREATOR Team.
 
 This file is part of CREATOR.
 
@@ -17,184 +16,191 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
-
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, onBeforeUnmount } from "vue"
-import { useToggle } from "bootstrap-vue-next"
-import { architecture, loadedLibrary } from "@/core/core.mjs"
-import { show_notification } from "@/web/utils.mjs"
-import { getDefaultCompiler } from "@/web/assemblers"
-import { creator_ga } from "@/core/utils/creator_ga.mjs"
-import { coreEvents } from "@/core/events.mjs"
-import { useAssembly, type AssemblyResult } from "@/web/composables/useAssembly"
+import { ref, computed, watch, onMounted, onBeforeUnmount } from "vue";
+import { useToggle } from "bootstrap-vue-next";
+import { architecture, loadedLibrary } from "@/core/core.mjs";
+import { show_notification } from "@/web/utils.mjs";
+import { getDefaultCompiler } from "@/web/assemblers";
+import { creator_ga } from "@/core/utils/creator_ga.mjs";
+import { coreEvents } from "@/core/events.mjs";
+import {
+  useAssembly,
+  type AssemblyResult,
+} from "@/web/composables/useAssembly";
 
 // State for dropdown visibility
-const dropdownOpen = ref(false)
-const libraryVersion = ref(0)
+const dropdownOpen = ref(false);
+const libraryVersion = ref(0);
 
 defineProps({
   dark: {
     type: Boolean,
     default: false,
   },
-})
+});
 
 const emit = defineEmits<{
-  changeMode: [mode: string]
-}>()
+  changeMode: [mode: string];
+}>();
 
 // State
-const selectedCompiler = ref("")
+const selectedCompiler = ref("");
 
 // Composables
-const showAssemblyError = useToggle("modalAssemblyError").show
-const showLibraryTags = useToggle("library_tags").show
+const showAssemblyError = useToggle("modalAssemblyError").show;
+const showLibraryTags = useToggle("library_tags").show;
 
 // Use assembly composable
-const {
-  compiling,
-  isAssembled,
-  assemble
-} = useAssembly({
-  onError: (result: AssemblyResult) => compile_error(result.msg || "Unknown error"),
+const { compiling, isAssembled, assemble } = useAssembly({
+  onError: (result: AssemblyResult) =>
+    compile_error(result.msg || "Unknown error"),
   onWarning: (result: AssemblyResult) => {
     if (result.token && result.bgcolor) {
-      show_notification(result.token, result.bgcolor)
+      show_notification(result.token, result.bgcolor);
     }
   },
   onSuccess: () => {
     // Success handling is done in the composable
-  }
-})
+  },
+});
 
 // Computed
 const compilerOptions = computed(() => {
-  const assemblers = architecture?.config?.assemblers || []
+  const assemblers = architecture?.config?.assemblers || [];
 
   if (assemblers.length === 0) {
-    return [{ value: "CreatorCompiler", text: "CREATOR" }]
+    return [{ value: "CreatorCompiler", text: "CREATOR" }];
   }
 
   return assemblers.map((asm: { name: string }) => ({
     value: asm.name,
     text: asm.name === "CreatorCompiler" ? "CREATOR" : asm.name.toUpperCase(),
-  }))
-})
+  }));
+});
 
-const showCompilerDropdown = computed(() => compilerOptions.value.length > 1)
+const showCompilerDropdown = computed(() => compilerOptions.value.length > 1);
 
-const defaultCompiler = computed(() => getDefaultCompiler(architecture))
+const defaultCompiler = computed(() => getDefaultCompiler(architecture));
 
 const selectedCompilerLabel = computed(() => {
   const found = compilerOptions.value.find(
     opt => opt.value === selectedCompiler.value,
-  )
-  return found ? found.text : "CREATOR"
-})
+  );
+  return found ? found.text : "CREATOR";
+});
 
 const libraryLoaded = computed(() => {
   // Access libraryVersion to make this reactive to library changes
-  return libraryVersion.value >= 0 && loadedLibrary && Object.keys(loadedLibrary).length !== 0
-})
+  return (
+    libraryVersion.value >= 0 &&
+    loadedLibrary &&
+    Object.keys(loadedLibrary).length !== 0
+  );
+});
 
 const libraryTagsCount = computed(() => {
   // Access libraryVersion to make this reactive
-  if (libraryVersion.value < 0 || !libraryLoaded.value) return 0
-  
+  if (libraryVersion.value < 0 || !libraryLoaded.value) return 0;
+
   // YAML format: symbols is an object with symbol names as keys
   if ((loadedLibrary as any)?.symbols) {
-    return Object.keys((loadedLibrary as any).symbols).length
+    return Object.keys((loadedLibrary as any).symbols).length;
   }
-  
-  return 0
-})
+
+  return 0;
+});
 
 const usesCreatorAssembler = computed(() => {
-  const assemblers = architecture?.config?.assemblers || []
+  const assemblers = architecture?.config?.assemblers || [];
   // If no assemblers configured, default is CREATOR
   if (assemblers.length === 0) {
-    return true
+    return true;
   }
   // Check if CreatorCompiler is in the list
-  return assemblers.some((asm: { name: string }) => asm.name === "CreatorCompiler")
-})
+  return assemblers.some(
+    (asm: { name: string }) => asm.name === "CreatorCompiler",
+  );
+});
 
 const showLibraryButton = computed(() => {
-  return usesCreatorAssembler.value && libraryLoaded.value
-})
+  return usesCreatorAssembler.value && libraryLoaded.value;
+});
 
 // Watch for architecture changes
 watch(
   defaultCompiler,
   newCompiler => {
     if (newCompiler) {
-      selectedCompiler.value = newCompiler
+      selectedCompiler.value = newCompiler;
     }
   },
   { immediate: true },
-)
+);
 
 // Listen for library load/remove events
 onMounted(() => {
-  coreEvents.on("library-loaded", () => libraryVersion.value++)
-  coreEvents.on("library-removed", () => libraryVersion.value++)
-})
+  coreEvents.on("library-loaded", () => libraryVersion.value++);
+  coreEvents.on("library-removed", () => libraryVersion.value++);
+});
 
 onBeforeUnmount(() => {
-  coreEvents.off("library-loaded", () => libraryVersion.value++)
-  coreEvents.off("library-removed", () => libraryVersion.value++)
-})
+  coreEvents.off("library-loaded", () => libraryVersion.value++);
+  coreEvents.off("library-removed", () => libraryVersion.value++);
+});
 
-const root = (document as any).app
+const root = (document as any).app;
 
 // Methods
 async function assembly_compiler_only() {
-  const root = (document as any).app
-  await assemble(root.assembly_code, selectedCompiler.value)
+  const root = (document as any).app;
+  await assemble(root.assembly_code, selectedCompiler.value);
 }
 
 async function assembly_compiler() {
-  const root = (document as any).app
-  const result = await assemble(root.assembly_code, selectedCompiler.value)
-  if (result.type === 'success') {
+  const root = (document as any).app;
+  const result = await assemble(root.assembly_code, selectedCompiler.value);
+  if (result.type === "success") {
     // Change to simulator view and run
-    emit("changeMode", "simulator")
+    emit("changeMode", "simulator");
   }
 }
 
 function toggleVim() {
-  root.vim_mode = !root.vim_mode
-  localStorage.setItem("conf_vim_mode", root.vim_mode.toString())
+  root.vim_mode = !root.vim_mode;
+  localStorage.setItem("conf_vim_mode", root.vim_mode.toString());
 
   // Google Analytics
   creator_ga(
     "configuration",
     "configuration.vim_mode",
     "configuration.vim_mode." + root.vim_mode,
-  )
+  );
 }
 
 function compile_error(msg: string) {
-  const root = (document as any).app
+  const root = (document as any).app;
 
   // Set compilation msg
-  root.assemblyError = msg
+  root.assemblyError = msg;
 
   // Show assembly error modal
-  showAssemblyError()
+  showAssemblyError();
 }
 
 function handleBlur() {
-  window.setTimeout(() => (dropdownOpen.value = false), 200)
+  window.setTimeout(() => (dropdownOpen.value = false), 200);
 }
 </script>
 
 <template>
+
   <div class="button-group">
-    <!-- Assemble button with optional compiler dropdown -->
+     <!-- Assemble button with optional compiler dropdown -->
     <div v-if="showCompilerDropdown" class="assemble-dropdown-wrapper">
+
       <div class="split-button-group">
-        <button
+         <button
           class="asm-button split-main"
           :class="{
             'asm-button-dark': dark,
@@ -203,16 +209,13 @@ function handleBlur() {
           :disabled="compiling"
           @click="assembly_compiler_only"
         >
-          <font-awesome-icon
+           <font-awesome-icon
             :icon="isAssembled ? ['fas', 'check'] : ['fas', 'hammer']"
             class="icon-spacing"
-          />
-          <span class="button-text"
+          /> <span class="button-text"
             >Assemble ({{ selectedCompilerLabel }})</span
-          >
-          <span v-if="compiling" class="spinner" />
-        </button>
-        <button
+          > <span v-if="compiling" class="spinner" /> </button
+        > <button
           class="asm-button split-toggle"
           :class="{
             'asm-button-dark': dark,
@@ -223,11 +226,10 @@ function handleBlur() {
           @click="dropdownOpen = !dropdownOpen"
           @blur="handleBlur"
         >
-          <font-awesome-icon :icon="['fas', 'chevron-down']" />
-        </button>
+           <font-awesome-icon :icon="['fas', 'chevron-down']" /> </button
+        >
       </div>
-
-      <!--
+       <!--
       <div v-if="dropdownOpen" class="dropdown-menu">
         <button
           v-for="option in compilerOptions"
@@ -250,9 +252,7 @@ function handleBlur() {
       </div>
       -->
     </div>
-
-    <!-- Simple assemble button (when only one compiler) -->
-    <button
+     <!-- Simple assemble button (when only one compiler) --> <button
       v-else
       class="asm-button"
       :class="{
@@ -262,57 +262,50 @@ function handleBlur() {
       :disabled="compiling"
       @click="assembly_compiler_only"
     >
-      <font-awesome-icon
+       <font-awesome-icon
         :icon="isAssembled ? ['fas', 'check'] : ['fas', 'hammer']"
         class="icon-spacing"
-      />
-      <span class="button-text">Assemble</span>
-      <span v-if="compiling" class="spinner" />
-    </button>
-
-    <!-- Assemble & Run button -->
-    <button
+      /> <span class="button-text">Assemble</span> <span
+        v-if="compiling"
+        class="spinner"
+      /> </button
+    > <!-- Assemble & Run button --> <button
       class="asm-button"
       :class="{ 'asm-button-dark': dark }"
       :disabled="compiling"
       @click="assembly_compiler"
     >
-      <font-awesome-icon
+       <font-awesome-icon
         :icon="['fas', 'right-to-bracket']"
         class="icon-spacing"
-      />
-      <span class="button-text">Assemble & Run</span>
-      <span v-if="compiling" class="spinner" />
-    </button>
-
-    <!-- Vim mode -->
-    <button
+      /> <span class="button-text">Assemble & Run</span> <span
+        v-if="compiling"
+        class="spinner"
+      /> </button
+    > <!-- Vim mode --> <button
       class="asm-button"
       :class="{ 'asm-button-dark': dark }"
       @click="toggleVim"
     >
-      <font-awesome-icon
+       <font-awesome-icon
         :icon="['fa-brands', 'vimeo-v']"
         class="icon-spacing"
-      />
-      <span class="button-text">Vim: {{ root.vim_mode ? "on" : "off" }}</span>
-    </button>
-
-    <!-- Library Tags button (only shown when library is loaded) -->
-    <button
+      /> <span class="button-text">Vim: {{ root.vim_mode ? "on" : "off" }}</span
+      > </button
+    > <!-- Library Tags button (only shown when library is loaded) --> <button
       v-if="showLibraryButton"
       class="asm-button library-tags-button"
       :class="{ 'asm-button-dark': dark }"
       @click="() => showLibraryTags()"
       :title="`View ${libraryTagsCount} library tag${libraryTagsCount !== 1 ? 's' : ''}`"
     >
-      <font-awesome-icon
-        :icon="['fas', 'tags']"
-        class="icon-spacing"
-      />
-      <span class="button-text">Library ({{ libraryTagsCount }})</span>
-    </button>
+       <font-awesome-icon :icon="['fas', 'tags']" class="icon-spacing" /> <span
+        class="button-text"
+        >Library ({{ libraryTagsCount }})</span
+      > </button
+    >
   </div>
+
 </template>
 
 <style lang="scss" scoped>
@@ -506,3 +499,4 @@ function handleBlur() {
   }
 }
 </style>
+

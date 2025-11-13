@@ -1,6 +1,5 @@
 <!--
-Copyright 2018-2025 Felix Garcia Carballeira, Diego Camarmas Alonso,
-                    Alejandro Calderon Mateos, Luis Daniel Casais Mezquida
+Copyright 2018-2025 CREATOR Team.
 
 This file is part of CREATOR.
 
@@ -17,9 +16,8 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
-
 <script lang="ts">
-import { defineComponent } from "vue"
+import { defineComponent } from "vue";
 
 const configMap = new Map<string, string>([
   ["name", "Name"],
@@ -34,14 +32,14 @@ const configMap = new Map<string, string>([
   ["start_address", "Start Address"],
   ["pc_offset", "PC Offset"],
   ["byte_size", "Byte Size"],
-])
+]);
 
 function formatValue(attr: string, value: string) {
   if (attr === "endianness") {
     if (value === "big_endian") {
-      return "Big Endian"
+      return "Big Endian";
     } else if (value === "little_endian") {
-      return "Little Endian"
+      return "Little Endian";
     }
   } else if (
     [
@@ -50,10 +48,10 @@ function formatValue(attr: string, value: string) {
       "sensitive_register_name",
     ].includes(attr)
   ) {
-    return value ? "Enabled" : "Disabled"
+    return value ? "Enabled" : "Disabled";
   }
 
-  return value
+  return value;
 }
 
 export default defineComponent({
@@ -68,25 +66,28 @@ export default defineComponent({
         .map(([attr, value]) => ({
           name: configMap.get(attr),
           value: formatValue(attr, value),
-        }))
+        }));
     },
   },
-})
+});
 </script>
 
 <template>
+
   <div class="arch-config">
+
     <div class="config-grid">
-      <div
-        v-for="item in config"
-        :key="item.name"
-        class="config-item"
-      >
-        <span class="config-label">{{ item.name }}</span>
-        <span class="config-value">{{ item.value }}</span>
+
+      <div v-for="item in config" :key="item.name" class="config-item">
+         <span class="config-label">{{ item.name }}</span
+        > <span class="config-value">{{ item.value }}</span
+        >
       </div>
+
     </div>
+
   </div>
+
 </template>
 
 <style lang="scss" scoped>
@@ -151,3 +152,4 @@ export default defineComponent({
   }
 }
 </style>
+

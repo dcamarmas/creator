@@ -1,6 +1,5 @@
 <!--
-Copyright 2018-2025 Felix Garcia Carballeira, Diego Camarmas Alonso,
-                    Alejandro Calderon Mateos, Luis Daniel Casais Mezquida
+Copyright 2018-2025 CREATOR Team.
 
 This file is part of CREATOR.
 
@@ -17,19 +16,18 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
-
 <script lang="ts">
-import { defineComponent, type PropType } from "vue"
+import { defineComponent, type PropType } from "vue";
 
-import TextareaAssembly from "./assembly/TextareaAssembly.vue"
-import AssemblyError from "./assembly/AssemblyError.vue"
-import Examples from "./assembly/Examples.vue"
-import LoadAssembly from "./assembly/LoadAssembly.vue"
-import DownloadPopup from "./general/DownloadModal.vue"
-import MakeURI from "./assembly/MakeURI.vue"
-import LoadLibrary from "./assembly/LoadLibrary.vue"
-import SaveLibrary from "./assembly/SaveLibrary.vue"
-import LibraryTags from "./assembly/LibraryTags.vue"
+import TextareaAssembly from "./assembly/TextareaAssembly.vue";
+import AssemblyError from "./assembly/AssemblyError.vue";
+import Examples from "./assembly/Examples.vue";
+import LoadAssembly from "./assembly/LoadAssembly.vue";
+import DownloadPopup from "./general/DownloadModal.vue";
+import MakeURI from "./assembly/MakeURI.vue";
+import LoadLibrary from "./assembly/LoadLibrary.vue";
+import SaveLibrary from "./assembly/SaveLibrary.vue";
+import LibraryTags from "./assembly/LibraryTags.vue";
 
 export default defineComponent({
   props: {
@@ -61,19 +59,13 @@ export default defineComponent({
     SaveLibrary,
     LibraryTags,
   },
-})
+});
 </script>
 
 <template>
-  <b-container fluid align-h="center" id="assembly" class="p-0">
-    <!-- Navbar -->
-
-    <!-- Assembly navbar modals -->
-
-    <!-- Load assembly form -->
-    <LoadAssembly id="load_assembly" />
-
-    <!-- Save assembly form -->
+   <b-container fluid align-h="center" id="assembly" class="p-0"
+    > <!-- Navbar --> <!-- Assembly navbar modals --> <!-- Load assembly form -->
+    <LoadAssembly id="load_assembly" /> <!-- Save assembly form -->
     <DownloadPopup
       id="save_assembly"
       type="assembly"
@@ -81,49 +73,33 @@ export default defineComponent({
       default-filename="assembly"
       extension=".s"
       :fileData="assembly_code"
-    />
-
-    <!-- Examples modal -->
-    <Examples
+    /> <!-- Examples modal --> <Examples
       id="examples-assembly"
       :architecture_name="architecture_name"
       :compile="false"
-    />
-
-    <!-- Get uri -->
-    <MakeURI
+    /> <!-- Get uri --> <MakeURI
       id="make_uri"
       :architecture_name="architecture_name"
       :assembly_code="assembly_code"
-    />
-
-    <!-- Load binary form -->
-    <LoadLibrary id="load_binary" />
-
-    <!-- Save binary form -->
-    <SaveLibrary id="save_binary" />
-
-    <!-- Library tags modal -->
-    <LibraryTags id="library_tags" />
-
-    <!-- Assembly textarea-->
-    <TextareaAssembly
+    /> <!-- Load binary form --> <LoadLibrary id="load_binary" /> <!-- Save binary form -->
+    <SaveLibrary id="save_binary" /> <!-- Library tags modal --> <LibraryTags
+      id="library_tags"
+    /> <!-- Assembly textarea--> <TextareaAssembly
       :os="os"
       :assembly_code="assembly_code"
       :vim_mode="vim_mode"
       :vim_custom_keybinds="vim_custom_keybinds"
       height="calc(100vh - 40px)"
       :dark="dark"
-    />
-
-    <!-- Compile error modal -->
-    <AssemblyError
+    /> <!-- Compile error modal --> <AssemblyError
       id="modalAssemblyError"
       reff="errorAssembly"
       :assembly_error="assembly_error"
-    />
-  </b-container>
+    /> </b-container
+  >
 </template>
 
 <style scoped>
+
 </style>
+

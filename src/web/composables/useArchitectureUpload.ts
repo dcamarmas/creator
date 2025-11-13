@@ -1,6 +1,5 @@
 /**
- * Copyright 2018-2025 Felix Garcia Carballeira, Diego Camarmas Alonso,
- *                     Alejandro Calderon Mateos, Jorge Ramos Santana
+ * Copyright 2018-2025 CREATOR Team.
  *
  * This file is part of CREATOR.
  *
@@ -18,98 +17,108 @@
  * along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ref } from 'vue'
-import type { BvTriggerableEvent } from 'bootstrap-vue-next'
-import { loadCustomArchitecture, show_notification } from '@/web/utils.mjs'
+import { ref } from "vue";
+import type { BvTriggerableEvent } from "bootstrap-vue-next";
+import { loadCustomArchitecture, show_notification } from "@/web/utils.mjs";
 
 export interface AvailableArch {
-  name: string
-  alias: string[]
-  file?: string
-  img?: string
-  alt?: string
-  id: string
-  examples: string[]
-  description: string
-  guide?: string
-  available: boolean
-  default?: boolean
-  definition?: string
+    name: string;
+    alias: string[];
+    file?: string;
+    img?: string;
+    alt?: string;
+    id: string;
+    examples: string[];
+    description: string;
+    guide?: string;
+    available: boolean;
+    default?: boolean;
+    definition?: string;
 }
 
 /**
  * Composable for handling custom architecture upload functionality
  */
-export function useArchitectureUpload(emitCallback: (archName: string) => void) {
-  const showLoadModal = ref(false)
-  const customArchName = ref('')
-  const customArchDescription = ref('')
-  const customArchFile = ref<File | null>(null)
+export function useArchitectureUpload(
+    emitCallback: (archName: string) => void,
+) {
+    const showLoadModal = ref(false);
+    const customArchName = ref("");
+    const customArchDescription = ref("");
+    const customArchFile = ref<File | null>(null);
 
-  const openLoadArchModal = () => {
-    showLoadModal.value = true
-  }
+    const openLoadArchModal = () => {
+        showLoadModal.value = true;
+    };
 
-  const resetForm = () => {
-    customArchName.value = ''
-    customArchDescription.value = ''
-    customArchFile.value = null
-  }
+    const resetForm = () => {
+        customArchName.value = "";
+        customArchDescription.value = "";
+        customArchFile.value = null;
+    };
 
-  const loadCustomArch = (event: BvTriggerableEvent) => {
-    event.preventDefault()
+    const loadCustomArch = (event: BvTriggerableEvent) => {
+        event.preventDefault();
 
-    if (!customArchFile.value || !customArchName.value) {
-      show_notification('Please provide both a name and a file', 'danger')
-      return
-    }
+        if (!customArchFile.value || !customArchName.value) {
+            show_notification(
+                "Please provide both a name and a file",
+                "danger",
+            );
+            return;
+        }
 
-    const reader = new FileReader()
-    
-    reader.onload = () => {
-      const archDefinition = reader.result as string
+        const reader = new FileReader();
 
-      const newArchitecture: AvailableArch = {
-        name: customArchName.value,
-        alias: [],
-        id: `select_conf${customArchName.value}`,
-        examples: [],
-        description: customArchDescription.value,
-        definition: archDefinition,
-        available: true,
-        default: false,
-      }
+        reader.onload = () => {
+            const archDefinition = reader.result as string;
 
-      // Add to localStorage
-      const customArchs = JSON.parse(localStorage.getItem('customArchitectures') || '[]')
-      customArchs.unshift(newArchitecture)
-      localStorage.setItem('customArchitectures', JSON.stringify(customArchs))
+            const newArchitecture: AvailableArch = {
+                name: customArchName.value,
+                alias: [],
+                id: `select_conf${customArchName.value}`,
+                examples: [],
+                description: customArchDescription.value,
+                definition: archDefinition,
+                available: true,
+                default: false,
+            };
 
-      // Load architecture
-      loadCustomArchitecture(newArchitecture)
+            // Add to localStorage
+            const customArchs = JSON.parse(
+                localStorage.getItem("customArchitectures") || "[]",
+            );
+            customArchs.unshift(newArchitecture);
+            localStorage.setItem(
+                "customArchitectures",
+                JSON.stringify(customArchs),
+            );
 
-      // Notify parent component
-      emitCallback(customArchName.value)
+            // Load architecture
+            loadCustomArchitecture(newArchitecture);
 
-      // Close modal and clean form
-      showLoadModal.value = false
-      resetForm()
-    }
+            // Notify parent component
+            emitCallback(customArchName.value);
 
-    reader.onerror = () => {
-      show_notification('Error loading file', 'danger')
-    }
+            // Close modal and clean form
+            showLoadModal.value = false;
+            resetForm();
+        };
 
-    reader.readAsText(customArchFile.value)
-  }
+        reader.onerror = () => {
+            show_notification("Error loading file", "danger");
+        };
 
-  return {
-    showLoadModal,
-    customArchName,
-    customArchDescription,
-    customArchFile,
-    openLoadArchModal,
-    loadCustomArch,
-    resetForm,
-  }
+        reader.readAsText(customArchFile.value);
+    };
+
+    return {
+        showLoadModal,
+        customArchName,
+        customArchDescription,
+        customArchFile,
+        openLoadArchModal,
+        loadCustomArch,
+        resetForm,
+    };
 }

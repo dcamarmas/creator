@@ -1,22 +1,20 @@
 /**
- *  Copyright 2018-2025 Felix Garcia Carballeira, Alejandro Calderon Mateos,
- *                      Diego Camarmas Alonso, Jorge Ramos Santana
+ * Copyright 2018-2025 CREATOR Team.
  *
- *  This file is part of CREATOR.
+ * This file is part of CREATOR.
  *
- *  CREATOR is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU Lesser General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
+ * CREATOR is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *  CREATOR is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU Lesser General Public License for more details.
+ * CREATOR is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
  *
- *  You should have received a copy of the GNU Lesser General Public License
- *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
- *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 import { raise } from "../capi/validation.mjs";
@@ -119,35 +117,37 @@ export function getCleanErrorMessage(error) {
  * @returns {{errorText: string, line: number, column: number} | null} Parsed error information or null if parsing fails
  */
 export function parseErrorForLinter(cleanErrorMessage) {
-    if (!cleanErrorMessage || typeof cleanErrorMessage !== 'string') {
+    if (!cleanErrorMessage || typeof cleanErrorMessage !== "string") {
         return null;
     }
 
     // Extract the main error text (first line with [EXX] Error: ...)
     // Pattern: [E02] Error: ...
     const errorTextMatch = cleanErrorMessage.match(/^\[E\d+\]\s+Error:.*$/m);
-    const errorText = errorTextMatch ? errorTextMatch[0].trim() : '';
+    const errorText = errorTextMatch ? errorTextMatch[0].trim() : "";
 
     // Extract line and column from the assembly:LINE:COLUMN pattern
     // Pattern: assembly:3:1
     const locationMatch = cleanErrorMessage.match(/assembly:(\d+):(\d+)/);
-    
+
     if (!locationMatch) {
         // If we can't find location info, return null or a default
-        return errorText ? {
-            errorText,
-            line: 1,
-            column: 1
-        } : null;
+        return errorText
+            ? {
+                  errorText,
+                  line: 1,
+                  column: 1,
+              }
+            : null;
     }
 
     const line = parseInt(locationMatch[1], 10);
     const column = parseInt(locationMatch[2], 10);
 
     return {
-        errorText: errorText || 'Compilation error',
+        errorText: errorText || "Compilation error",
         line,
-        column
+        column,
     };
 }
 
@@ -158,47 +158,50 @@ export function parseErrorForLinter(cleanErrorMessage) {
  * @returns {{errorText: string, line: number, column: number}[]} Array of parsed error information
  */
 export function parseRasmErrorsForLinter(cleanErrorMessage) {
-    if (!cleanErrorMessage || typeof cleanErrorMessage !== 'string') {
+    if (!cleanErrorMessage || typeof cleanErrorMessage !== "string") {
         return [];
     }
 
     const errors = [];
-    
+
     // RASM error format: [filename:LINE] Error message
     // Pattern: [program.asm:2] Unknown LD format
     const errorPattern = /\[([^\]]+):(\d+)\]\s*(.+)/g;
     let match;
-    
+
     while ((match = errorPattern.exec(cleanErrorMessage)) !== null) {
         const line = parseInt(match[2], 10);
         const errorMessage = match[3].trim();
-        
+
         errors.push({
             errorText: errorMessage,
             line,
             column: 1, // RASM doesn't provide column info, default to 1
         });
     }
-    
+
     // If no errors were found using the pattern, try to extract a general error
     if (errors.length === 0) {
-        const lines = cleanErrorMessage.split('\n').filter(l => l.trim().length > 0);
+        const lines = cleanErrorMessage
+            .split("\n")
+            .filter(l => l.trim().length > 0);
         // Look for lines that might contain error info (not pre-processing/assembling messages)
-        const errorLines = lines.filter(l => 
-            !l.includes('Pre-processing') && 
-            !l.includes('Assembling') && 
-            !l.match(/^\d+\s+errors?$/) // Skip "2 errors" summary line
+        const errorLines = lines.filter(
+            l =>
+                !l.includes("Pre-processing") &&
+                !l.includes("Assembling") &&
+                !l.match(/^\d+\s+errors?$/), // Skip "2 errors" summary line
         );
-        
+
         if (errorLines.length > 0) {
             errors.push({
-                errorText: errorLines.join(' '),
+                errorText: errorLines.join(" "),
                 line: 1,
                 column: 1,
             });
         }
     }
-    
+
     return errors;
 }
 

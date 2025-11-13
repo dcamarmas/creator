@@ -1,6 +1,5 @@
 <!--
-Copyright 2018-2025 Felix Garcia Carballeira, Diego Camarmas Alonso,
-                    Alejandro Calderon Mateos, Jorge Ramos Santana
+Copyright 2018-2025 CREATOR Team.
 
 This file is part of CREATOR.
 
@@ -17,173 +16,168 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
-
 <script setup lang="ts">
-import { ref, watch } from "vue"
-import { getDefaultCompiler } from "@/web/assemblers"
-import MobileEditor from "@/web/components/assembly/MobileEditor.vue"
-import Examples from "@/web/components/assembly/Examples.vue"
-import MobileInstructionHelp from "@/web/components/mobile/MobileInstructionHelp.vue"
-import LoadLibrary from "@/web/components/assembly/LoadLibrary.vue"
-import LibraryTags from "@/web/components/assembly/LibraryTags.vue"
-import { useAssembly, type AssemblyResult } from "@/web/composables/useAssembly"
+import { ref, watch } from "vue";
+import { getDefaultCompiler } from "@/web/assemblers";
+import MobileEditor from "@/web/components/assembly/MobileEditor.vue";
+import Examples from "@/web/components/assembly/Examples.vue";
+import MobileInstructionHelp from "@/web/components/mobile/MobileInstructionHelp.vue";
+import LoadLibrary from "@/web/components/assembly/LoadLibrary.vue";
+import LibraryTags from "@/web/components/assembly/LibraryTags.vue";
+import {
+  useAssembly,
+  type AssemblyResult,
+} from "@/web/composables/useAssembly";
 
 interface Props {
-  architecture_name: string
-  assembly_code: string
-  dark: boolean | null
+  architecture_name: string;
+  assembly_code: string;
+  dark: boolean | null;
 }
 
 interface Emits {
-  (e: 'update:assembly_code', value: string): void
-  (e: 'assembly-error', msg: string): void
-  (e: 'switch-to-simulator'): void
-  (e: 'reset-simulator'): void
-  (e: 'show-toast', toast: { message: string; title: string; variant: string }): void
-  (e: 'reset-code'): void
+  (e: "update:assembly_code", value: string): void;
+  (e: "assembly-error", msg: string): void;
+  (e: "switch-to-simulator"): void;
+  (e: "reset-simulator"): void;
+  (
+    e: "show-toast",
+    toast: { message: string; title: string; variant: string },
+  ): void;
+  (e: "reset-code"): void;
 }
 
-const props = defineProps<Props>()
-const emit = defineEmits<Emits>()
+const props = defineProps<Props>();
+const emit = defineEmits<Emits>();
 
-const code = ref(props.assembly_code)
-const isAssembled = ref(false)
+const code = ref(props.assembly_code);
+const isAssembled = ref(false);
 
 // Watch for prop changes
-watch(() => props.assembly_code, (newCode) => {
-  code.value = newCode
-})
+watch(
+  () => props.assembly_code,
+  newCode => {
+    code.value = newCode;
+  },
+);
 
-watch(code, (newCode) => {
-  emit('update:assembly_code', newCode)
-})
+watch(code, newCode => {
+  emit("update:assembly_code", newCode);
+});
 
 // Use assembly composable
-const {
-  assemble
-} = useAssembly({
+const { assemble } = useAssembly({
   resetSimulator: false, // Mobile component emits events instead
   onError: (result: AssemblyResult) => {
-    isAssembled.value = false
-    emit('assembly-error', result.msg || 'Unknown error')
-    emit('show-toast', {
-      message: result.msg || 'Unknown error',
-      title: 'Assembly Error',
-      variant: 'danger'
-    })
+    isAssembled.value = false;
+    emit("assembly-error", result.msg || "Unknown error");
+    emit("show-toast", {
+      message: result.msg || "Unknown error",
+      title: "Assembly Error",
+      variant: "danger",
+    });
   },
   onWarning: (_result: AssemblyResult) => {
     // Handle warnings if needed
   },
   onSuccess: () => {
-    isAssembled.value = true
-    emit('switch-to-simulator')
+    isAssembled.value = true;
+    emit("switch-to-simulator");
     // Reset to normal after 2 seconds
     setTimeout(() => {
-      isAssembled.value = false
-    }, 2000)
-  }
-})
+      isAssembled.value = false;
+    }, 2000);
+  },
+});
 
 async function assembleCode() {
   // Reset simulator state (emit events instead of direct access)
-  emit('reset-simulator')
+  emit("reset-simulator");
 
   // Use default compiler for mobile
-  const defaultCompiler = getDefaultCompiler({ config: { assemblers: [] } })
-  await assemble(code.value, defaultCompiler)
+  const defaultCompiler = getDefaultCompiler({ config: { assemblers: [] } });
+  await assemble(code.value, defaultCompiler);
 
-  return true // Return true for keymap handler
+  return true; // Return true for keymap handler
 }
 
 function resetCode() {
-  code.value = ''
-  emit('update:assembly_code', '')
-  emit('reset-code')
-  isAssembled.value = false
+  code.value = "";
+  emit("update:assembly_code", "");
+  emit("reset-code");
+  isAssembled.value = false;
 }
 </script>
 
 <template>
+
   <div class="mobile-code-view">
+
     <div class="mobile-code-header">
+
       <div class="code-info">
+
         <h3 class="code-title">
-          <font-awesome-icon :icon="['fas', 'code']" />
-          Assembly
+           <font-awesome-icon :icon="['fas', 'code']" /> Assembly
         </h3>
+
       </div>
 
       <div class="code-actions">
-        <b-button
+         <b-button
           :variant="isAssembled ? 'success' : 'primary'"
           size="sm"
           @click="assembleCode"
           title="Assemble"
-        >
-          <font-awesome-icon :icon="isAssembled ? ['fas', 'check'] : ['fas', 'play']" />
-          <span class="btn-text">Assemble</span>
-        </b-button>
-        <b-dropdown
+          > <font-awesome-icon
+            :icon="isAssembled ? ['fas', 'check'] : ['fas', 'play']"
+          /> <span class="btn-text">Assemble</span> </b-button
+        > <b-dropdown
           variant="outline-secondary"
           size="sm"
           title="More"
           no-caret
+          > <template #button-content
+            > <font-awesome-icon :icon="['fas', 'bars']" /> </template
+          > <b-dropdown-item v-b-modal.instruction-help-mobile
+            > <font-awesome-icon :icon="['fas', 'question-circle']" />
+            Instruction Help </b-dropdown-item
+          > <b-dropdown-item v-b-modal.examples-mobile
+            > <font-awesome-icon :icon="['fas', 'file-lines']" /> Examples
+            </b-dropdown-item
+          > <b-dropdown-item v-b-modal.load-library-mobile
+            > <font-awesome-icon :icon="['fas', 'upload']" /> Load Library
+            </b-dropdown-item
+          > <b-dropdown-item v-b-modal.library-tags-mobile
+            > <font-awesome-icon :icon="['fas', 'tags']" /> View Library Tags
+            </b-dropdown-item
+          > <b-dropdown-item @click="resetCode"
+            > <font-awesome-icon :icon="['fas', 'trash']" /> Clear
+            </b-dropdown-item
+          > </b-dropdown
         >
-          <template #button-content>
-            <font-awesome-icon :icon="['fas', 'bars']" />
-          </template>
-          <b-dropdown-item v-b-modal.instruction-help-mobile>
-            <font-awesome-icon :icon="['fas', 'question-circle']" />
-            Instruction Help
-          </b-dropdown-item>
-          <b-dropdown-item v-b-modal.examples-mobile>
-            <font-awesome-icon :icon="['fas', 'file-lines']" />
-            Examples
-          </b-dropdown-item>
-          <b-dropdown-item v-b-modal.load-library-mobile>
-            <font-awesome-icon :icon="['fas', 'upload']" />
-            Load Library
-          </b-dropdown-item>
-          <b-dropdown-item v-b-modal.library-tags-mobile>
-            <font-awesome-icon :icon="['fas', 'tags']" />
-            View Library Tags
-          </b-dropdown-item>
-          <b-dropdown-item @click="resetCode">
-            <font-awesome-icon :icon="['fas', 'trash']" />
-            Clear
-          </b-dropdown-item>
-        </b-dropdown>
       </div>
+
     </div>
 
     <div class="mobile-code-editor">
-      <MobileEditor
+       <MobileEditor
         :os="'mobile'"
         :assembly_code="code"
         height="100%"
         :dark="dark || false"
       />
     </div>
-  </div>
 
-  <!-- Examples modal -->
-  <Examples
+  </div>
+   <!-- Examples modal --> <Examples
     id="examples-mobile"
     :architecture_name="architecture_name"
     :compile="false"
-  />
-
-  <!-- Instruction Help modal -->
-  <MobileInstructionHelp
+  /> <!-- Instruction Help modal --> <MobileInstructionHelp
     id="instruction-help-mobile"
     :architecture_name="architecture_name"
-  />
-
-  <!-- Load Library modal -->
-  <LoadLibrary id="load-library-mobile" />
-
-  <!-- Library Tags modal -->
+  /> <!-- Load Library modal --> <LoadLibrary id="load-library-mobile" /> <!-- Library Tags modal -->
   <LibraryTags id="library-tags-mobile" />
 </template>
 
@@ -392,3 +386,4 @@ function resetCode() {
   }
 }
 </style>
+

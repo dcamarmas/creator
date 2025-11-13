@@ -1,6 +1,5 @@
 <!--
-Copyright 2018-2025 Felix Garcia Carballeira, Diego Camarmas Alonso,
-                    Alejandro Calderon Mateos, Luis Daniel Casais Mezquida
+Copyright 2018-2025 CREATOR Team.
 
 This file is part of CREATOR.
 
@@ -17,16 +16,15 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
-
 <script lang="ts">
-import { defineComponent, type PropType } from "vue"
+import { defineComponent, type PropType } from "vue";
 
 import {
   loadDefaultArchitecture,
   loadCustomArchitecture,
-} from "@/web/utils.mjs"
-import { initCAPI } from "@/core/capi/initCAPI.mts"
-import { architecture } from "@/core/core"
+} from "@/web/utils.mjs";
+import { initCAPI } from "@/core/capi/initCAPI.mts";
+import { architecture } from "@/core/core";
 
 export default defineComponent({
   props: {
@@ -42,7 +40,7 @@ export default defineComponent({
   data() {
     return {
       selected: false,
-    }
+    };
   },
 
   methods: {
@@ -52,59 +50,49 @@ export default defineComponent({
      */
     async select_arch() {
       if (this.architecture.default) {
-        await loadDefaultArchitecture(this.architecture)
+        await loadDefaultArchitecture(this.architecture);
       } else {
-        loadCustomArchitecture(this.architecture)
+        loadCustomArchitecture(this.architecture);
       }
-      const pluginName = architecture.config.plugin
+      const pluginName = architecture.config.plugin;
       // Now we can initialize the CAPI with the plugin name
-      initCAPI(pluginName)
-      this.$emit("select-architecture", this.architecture.name) // emit to our grandparent
+      initCAPI(pluginName);
+      this.$emit("select-architecture", this.architecture.name); // emit to our grandparent
     },
 
     deleteArch() {
-      this.$emit("delete-architecture", this.architecture.name)
+      this.$emit("delete-architecture", this.architecture.name);
     },
   },
-})
+});
 </script>
 
 <template>
-  <b-card
+   <b-card
     :class="{ selectedCard: selected }"
     style="cursor: pointer"
     footer-class="text-center"
     :footer-bg-variant="dark ? 'dark' : 'light-subtle'"
     @mouseover="selected = true"
     @mouseleave="selected = false"
-  >
-    <template #img>
-      <b-img
+    > <template #img
+      > <b-img
         :src="`img/logos/${architecture.img}` || 'img/logos/default.webp'"
         :alt="architecture.alt"
         @click="select_arch"
-      />
-    </template>
-
-    <b-card-title @click="select_arch">
-      {{ architecture.name }}
-    </b-card-title>
-
-    <b-card-text class="justify" @click="select_arch">
-      {{ architecture.description }}
-    </b-card-text>
-
-    <!-- Delete button -->
-    <template #footer v-if="!architecture.default">
-      <b-button
+      /> </template
+    > <b-card-title @click="select_arch"> {{ architecture.name }} </b-card-title
+    > <b-card-text class="justify" @click="select_arch"
+      > {{ architecture.description }} </b-card-text
+    > <!-- Delete button --> <template #footer v-if="!architecture.default"
+      > <b-button
         class="my-1 w-75 center"
         size="sm"
         variant="outline-danger"
         @click="deleteArch"
-      >
-        <font-awesome-icon :icon="['fas', 'trash-can']" />
-        Delete
-      </b-button>
-    </template>
-  </b-card>
+        > <font-awesome-icon :icon="['fas', 'trash-can']" /> Delete </b-button
+      > </template
+    > </b-card
+  >
 </template>
+

@@ -1,6 +1,5 @@
 <!--
-Copyright 2018-2025 Felix Garcia Carballeira, Diego Camarmas Alonso,
-                    Alejandro Calderon Mateos, Jorge Ramos Santana
+Copyright 2018-2025 CREATOR Team.
 
 This file is part of CREATOR.
 
@@ -17,12 +16,11 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
-
 <script lang="ts">
-import { defineComponent, type PropType } from "vue"
-import TableExecution from "@/web/components/simulator/TableExecution.vue"
-import SimulatorControls from "@/web/components/simulator/SimulatorControls.vue"
-import type { Instruction } from "@/core/assembler/assembler"
+import { defineComponent, type PropType } from "vue";
+import TableExecution from "@/web/components/simulator/TableExecution.vue";
+import SimulatorControls from "@/web/components/simulator/SimulatorControls.vue";
+import type { Instruction } from "@/core/assembler/assembler";
 
 export default defineComponent({
   props: {
@@ -33,10 +31,7 @@ export default defineComponent({
     dark: { type: Boolean, required: true },
   },
 
-  emits: [
-    "reset-simulator",
-    "show-toast",
-  ],
+  emits: ["reset-simulator", "show-toast"],
 
   components: {
     TableExecution,
@@ -46,24 +41,27 @@ export default defineComponent({
   data() {
     return {
       // Execution controls will be handled by SimulatorControls
-    }
+    };
   },
-})
+});
 </script>
 
 <template>
+
   <div class="mobile-instructions-view">
-    <!-- Header with execution controls -->
+     <!-- Header with execution controls -->
     <div class="mobile-instructions-header">
+
       <div class="instructions-info">
+
         <h3 class="instructions-title">
-          <font-awesome-icon :icon="['fas', 'book']" />
-          Instructions
+           <font-awesome-icon :icon="['fas', 'book']" /> Instructions
         </h3>
+
       </div>
 
       <div class="execution-controls">
-        <SimulatorControls
+         <SimulatorControls
           :browser="browser"
           :os="os"
           :dark="dark"
@@ -73,25 +71,35 @@ export default defineComponent({
           ref="executionControls"
         />
       </div>
-    </div>
 
-    <!-- Instructions table -->
+    </div>
+     <!-- Instructions table -->
     <div class="mobile-instructions-table">
-      <TableExecution
+       <TableExecution
         v-if="instructions && instructions.length > 0"
         :instructions="instructions"
         :enter="enter"
         ref="tableExecution"
       />
       <div v-else class="no-instructions">
+
         <div class="no-instructions-content">
-          <font-awesome-icon :icon="['fas', 'book-open']" class="no-instructions-icon" />
+           <font-awesome-icon
+            :icon="['fas', 'book-open']"
+            class="no-instructions-icon"
+          />
           <h4>No Instructions</h4>
+
           <p>Assemble your code to see the instruction table here.</p>
+
         </div>
+
       </div>
+
     </div>
+
   </div>
+
 </template>
 
 <style lang="scss" scoped>
@@ -269,3 +277,4 @@ export default defineComponent({
   }
 }
 </style>
+

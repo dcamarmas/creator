@@ -1,6 +1,5 @@
 <!--
-Copyright 2018-2025 Felix Garcia Carballeira, Diego Camarmas Alonso,
-                    Alejandro Calderon Mateos, Jorge Ramos Santana
+Copyright 2018-2025 CREATOR Team.
 
 This file is part of CREATOR.
 
@@ -17,21 +16,20 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
-
 <script setup lang="ts">
-import { ref, watch, onMounted, onBeforeUnmount, type PropType } from "vue"
-import * as monaco from "monaco-editor"
-import { initVimMode, VimMode } from "monaco-vim"
+import { ref, watch, onMounted, onBeforeUnmount, type PropType } from "vue";
+import * as monaco from "monaco-editor";
+import { initVimMode, VimMode } from "monaco-vim";
 
-import { assembly_compile, reset, status, architecture } from "@/core/core.mjs"
-import { resetStats } from "@/core/executor/stats.mts"
-import { registerAssemblyLanguages } from "@/web/monaco/languages/index"
-import { registerCreatorThemes } from "@/web/monaco/themes"
+import { assembly_compile, reset, status, architecture } from "@/core/core.mjs";
+import { resetStats } from "@/core/executor/stats.mts";
+import { registerAssemblyLanguages } from "@/web/monaco/languages/index";
+import { registerCreatorThemes } from "@/web/monaco/themes";
 import {
   setupSemanticValidation,
   clearValidationMarkers,
-} from "@/web/monaco/validation"
-import { assemblerMap, getDefaultCompiler } from "@/web/assemblers"
+} from "@/web/monaco/validation";
+import { assemblerMap, getDefaultCompiler } from "@/web/assemblers";
 
 // Setup Monaco Environment for Vite
 self.MonacoEnvironment = {
@@ -44,47 +42,47 @@ self.MonacoEnvironment = {
           name: label,
           type: "module",
         },
-      )
-    }
+      );
+    };
 
     switch (label) {
       case "json":
         return getWorkerModule(
           "/monaco-editor/esm/vs/language/json/json.worker?worker",
           label,
-        )
+        );
       case "css":
       case "scss":
       case "less":
         return getWorkerModule(
           "/monaco-editor/esm/vs/language/css/css.worker?worker",
           label,
-        )
+        );
       case "html":
       case "handlebars":
       case "razor":
         return getWorkerModule(
           "/monaco-editor/esm/vs/language/html/html.worker?worker",
           label,
-        )
+        );
       case "typescript":
       case "javascript":
         return getWorkerModule(
           "/monaco-editor/esm/vs/language/typescript/ts.worker?worker",
           label,
-        )
+        );
       default:
         return getWorkerModule(
           "/monaco-editor/esm/vs/editor/editor.worker?worker",
           label,
-        )
+        );
     }
   },
-}
+};
 
 // Register custom themes once (using IIFE to avoid lint warning)
 
-registerCreatorThemes()
+registerCreatorThemes();
 
 const props = defineProps({
   os: { type: String, required: true },
@@ -96,23 +94,23 @@ const props = defineProps({
   },
   height: { type: String, required: true },
   dark: { type: Boolean, required: true },
-})
+});
 
-const editorContainer = ref<HTMLDivElement | null>(null)
-let editor: monaco.editor.IStandaloneCodeEditor | null = null
-let validationDisposable: monaco.IDisposable | null = null
+const editorContainer = ref<HTMLDivElement | null>(null);
+let editor: monaco.editor.IStandaloneCodeEditor | null = null;
+let validationDisposable: monaco.IDisposable | null = null;
 
 // Get the selected compiler from the architecture or use default
 const getSelectedCompiler = () => {
-  const defaultCompiler = getDefaultCompiler(architecture)
+  const defaultCompiler = getDefaultCompiler(architecture);
 
   // Try to get the selected compiler from AssemblyActions component if available
-  const root = (document as any).app
-  const assemblyActions = root?.$refs?.navbar?.$refs?.assemblyActions
-  const selectedCompiler = assemblyActions?.selectedCompiler || defaultCompiler
+  const root = (document as any).app;
+  const assemblyActions = root?.$refs?.navbar?.$refs?.assemblyActions;
+  const selectedCompiler = assemblyActions?.selectedCompiler || defaultCompiler;
 
-  return selectedCompiler
-}
+  return selectedCompiler;
+};
 
 /**
  * Handler for the Ctrl-s keydown event that disables its default action
@@ -122,53 +120,53 @@ const ctrlSHandler = (e: KeyboardEvent) => {
     e.key === "s" &&
     (navigator.userAgent.includes("Mac") ? e.metaKey : e.ctrlKey)
   ) {
-    e.preventDefault()
+    e.preventDefault();
   }
-}
+};
 
 const assemble = async () => {
   // TODO: call the function defined in AssemblyActions.vue
 
   // Get root - document.app is the mounted root component (App.vue)
-  const root = (document as any).app
+  const root = (document as any).app;
 
   if (!root) {
-    console.error("Could not access root component")
-    return true
+    console.error("Could not access root component");
+    return true;
   }
 
   // Reset simulator
-  root.keyboard = ""
-  root.display = ""
-  root.enter = null
-  reset()
+  root.keyboard = "";
+  root.display = "";
+  root.enter = null;
+  reset();
 
   // Reset stats
-  resetStats()
-  status.executedInstructions = 0
-  status.clkCycles = 0
+  resetStats();
+  status.executedInstructions = 0;
+  status.clkCycles = 0;
 
   // Get the selected compiler and assemble the code
-  const selectedCompilerName = getSelectedCompiler()
-  const assemblerFn = assemblerMap[selectedCompilerName]
+  const selectedCompilerName = getSelectedCompiler();
+  const assemblerFn = assemblerMap[selectedCompilerName];
   const ret = await (assemblerFn
     ? assembly_compile(root.assembly_code, assemblerFn)
-    : assembly_compile(root.assembly_code))
+    : assembly_compile(root.assembly_code));
 
   // Handle results
   if (ret.status !== "ok") {
-    root.assemblyError = ret.msg
+    root.assemblyError = ret.msg;
     // Trigger error modal - emit event to show error
-    root.$emit("show-assembly-error")
+    root.$emit("show-assembly-error");
   } else {
     // Compilation successful
-    root.creator_mode = "simulator"
+    root.creator_mode = "simulator";
   }
 
-  return true
-}
+  return true;
+};
 
-let vimMode: any
+let vimMode: any;
 const setVimMode = (enabled: boolean) => {
   if (enabled) {
     // enable Vim
@@ -177,38 +175,38 @@ const setVimMode = (enabled: boolean) => {
       // initVimMode requires an ICoreEditor, so...
       // editor!.getEditors().at(0),
       document.getElementById("vim-statusbar"),
-    )
+    );
 
     // add commands
-    VimMode.Vim.defineEx("write", "w", assemble)
-    VimMode.Vim.defineEx("xit", "x", assemble)
+    VimMode.Vim.defineEx("write", "w", assemble);
+    VimMode.Vim.defineEx("xit", "x", assemble);
 
     // add keybindings
     for (const { mode, lhs, rhs } of props.vim_custom_keybinds) {
-      VimMode.Vim.map(lhs, rhs, mode)
+      VimMode.Vim.map(lhs, rhs, mode);
     }
   } else {
     // disable Vim
-    vimMode?.dispose()
+    vimMode?.dispose();
   }
-}
+};
 
 onMounted(() => {
-  document.addEventListener("keydown", ctrlSHandler, false)
+  document.addEventListener("keydown", ctrlSHandler, false);
 
-  if (!editorContainer.value) return
+  if (!editorContainer.value) return;
 
   // Register language support dynamically from architecture
   // Cast to any to handle extended properties not in the type definition
-  registerAssemblyLanguages(architecture as any)
+  registerAssemblyLanguages(architecture as any);
 
   // Determine language ID (same logic as in registerAssemblyLanguages):
   // 1. If syntax is explicitly set, use it (could be custom language or "plaintext")
   // 2. Otherwise, use architecture name
-  const architectureName = (architecture?.config as any)?.name || "Assembly"
+  const architectureName = (architecture?.config as any)?.name || "Assembly";
   const languageId = (architecture?.config as any)?.syntax
     ? (architecture?.config as any).syntax
-    : architectureName.toLowerCase().replace(/\s+/g, "-")
+    : architectureName.toLowerCase().replace(/\s+/g, "-");
 
   // Create Monaco Editor instance
   editor = monaco.editor.create(editorContainer.value, {
@@ -226,33 +224,33 @@ onMounted(() => {
     lineNumbersMinChars: 3,
     occurrencesHighlight: "off",
     stickyScroll: { enabled: false },
-  })
+  });
 
   // Add Ctrl+S / Cmd+S keybinding
   editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => {
-    assemble()
-  })
+    assemble();
+  });
 
   // Listen to content changes and update parent immediately
   editor.onDidChangeModelContent(() => {
     // document.app is the mounted root component (App.vue)
-    const root = (document as any).app
+    const root = (document as any).app;
     if (root && editor) {
-      const newValue = editor.getValue()
-      root.assembly_code = newValue
+      const newValue = editor.getValue();
+      root.assembly_code = newValue;
 
       // Also save to localStorage for persistence
       try {
-        localStorage.setItem("creator_assembly_code", newValue)
+        localStorage.setItem("creator_assembly_code", newValue);
       } catch (e) {
-        console.warn("Failed to save to localStorage:", e)
+        console.warn("Failed to save to localStorage:", e);
       }
     }
-  })
+  });
 
   // Auto-focus on desktop
   if (props.os !== "mobile") {
-    editor.focus()
+    editor.focus();
   }
 
   // Setup semantic validation
@@ -261,25 +259,25 @@ onMounted(() => {
     editor,
     architecture as any,
     1500, // 1.5 second debounce
-  )
+  );
 
   // vim mode
-  setVimMode(props.vim_mode)
-})
+  setVimMode(props.vim_mode);
+});
 
 onBeforeUnmount(() => {
-  document.removeEventListener("keydown", ctrlSHandler)
+  document.removeEventListener("keydown", ctrlSHandler);
 
   // Clean up validation
   if (validationDisposable) {
-    validationDisposable.dispose()
+    validationDisposable.dispose();
   }
 
   // Dispose editor - no need to save since onDidChangeModelContent already handles it
   if (editor) {
-    editor.dispose()
+    editor.dispose();
   }
-})
+});
 
 // Watch for external code changes (e.g., when loading a new file)
 watch(
@@ -287,27 +285,27 @@ watch(
   newCode => {
     if (editor && editor.getValue() !== newCode) {
       // Preserve cursor position if possible
-      const position = editor.getPosition()
-      editor.setValue(newCode)
+      const position = editor.getPosition();
+      editor.setValue(newCode);
       if (position) {
-        editor.setPosition(position)
+        editor.setPosition(position);
       }
     }
   },
-)
+);
 
 // Watch for theme changes
 watch(
   () => props.dark,
   isDark => {
     if (editor) {
-      monaco.editor.setTheme(isDark ? "creator-dark" : "creator-light")
+      monaco.editor.setTheme(isDark ? "creator-dark" : "creator-light");
     }
   },
-)
+);
 
 // Watch for Vim mode
-watch(() => props.vim_mode, setVimMode)
+watch(() => props.vim_mode, setVimMode);
 
 // Watch for architecture changes and update language support
 watch(
@@ -315,42 +313,47 @@ watch(
   newArchitecture => {
     if (newArchitecture && editor) {
       // Register new language support
-      registerAssemblyLanguages(newArchitecture as any)
+      registerAssemblyLanguages(newArchitecture as any);
 
       // Determine language ID (same logic as above)
       const architectureName =
-        (newArchitecture?.config as any)?.name || "Assembly"
+        (newArchitecture?.config as any)?.name || "Assembly";
       const languageId = (newArchitecture?.config as any)?.syntax
         ? (newArchitecture?.config as any).syntax
-        : architectureName.toLowerCase().replace(/\s+/g, "-")
+        : architectureName.toLowerCase().replace(/\s+/g, "-");
 
-      const model = editor.getModel()
+      const model = editor.getModel();
       if (model) {
-        monaco.editor.setModelLanguage(model, languageId)
+        monaco.editor.setModelLanguage(model, languageId);
       }
 
       // Restart validation with new architecture
       // The validation system will automatically detect the correct assembler
       if (validationDisposable) {
-        validationDisposable.dispose()
+        validationDisposable.dispose();
       }
-      clearValidationMarkers(editor)
+      clearValidationMarkers(editor);
       validationDisposable = setupSemanticValidation(
         editor,
         newArchitecture as any,
         1500, // 1.5 second debounce
-      )
+      );
     }
   },
   { deep: true },
-)
+);
 </script>
 
 <template>
+
   <div class="editor-wrapper" :style="{ height: height }">
+
     <div ref="editorContainer" class="monaco-editor-container" />
+
     <div id="vim-statusbar" class="vim-statusbar"></div>
+
   </div>
+
 </template>
 
 <style lang="scss" scoped>
@@ -375,3 +378,4 @@ watch(
   flex-shrink: 0;
 }
 </style>
+

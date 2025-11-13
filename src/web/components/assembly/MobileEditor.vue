@@ -1,6 +1,5 @@
 <!--
-Copyright 2018-2025 Felix Garcia Carballeira, Diego Camarmas Alonso,
-                    Alejandro Calderon Mateos, Luis Daniel Casais Mezquida
+Copyright 2018-2025 CREATOR Team.
 
 This file is part of CREATOR.
 
@@ -17,15 +16,14 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
-
 <script lang="ts">
-import { defineComponent } from "vue"
-import Codemirror from "vue-codemirror6"
-import { type LanguageSupport, StreamLanguage } from "@codemirror/language"
-import { gas } from "@codemirror/legacy-modes/mode/gas"
-import { EditorView } from "codemirror"
-import { tags as t } from "@lezer/highlight"
-import { createTheme } from "@uiw/codemirror-themes"
+import { defineComponent } from "vue";
+import Codemirror from "vue-codemirror6";
+import { type LanguageSupport, StreamLanguage } from "@codemirror/language";
+import { gas } from "@codemirror/legacy-modes/mode/gas";
+import { EditorView } from "codemirror";
+import { tags as t } from "@lezer/highlight";
+import { createTheme } from "@uiw/codemirror-themes";
 
 // themes designed by @joseaverde
 const creatorLightTheme = createTheme({
@@ -62,7 +60,7 @@ const creatorLightTheme = createTheme({
     { tag: t.tagName, color: "#b58900", fontWeight: "bold" },
     { tag: t.attributeName, color: "#cb4b16" },
   ],
-})
+});
 
 const creatorDarkTheme = createTheme({
   theme: "dark",
@@ -98,7 +96,7 @@ const creatorDarkTheme = createTheme({
     { tag: t.tagName, color: "#f0e68c", fontWeight: "bold" },
     { tag: t.attributeName, color: "#ffde9b" },
   ],
-})
+});
 
 export default defineComponent({
   props: {
@@ -114,19 +112,19 @@ export default defineComponent({
 
   setup() {
     // GNU Assembler
-    const lang = StreamLanguage.define(gas) as unknown as LanguageSupport
+    const lang = StreamLanguage.define(gas) as unknown as LanguageSupport;
 
-    return { lang }
+    return { lang };
   },
 
   computed: {
     code: {
       // sync with App's
       get() {
-        return this.assembly_code
+        return this.assembly_code;
       },
       set(value: string) {
-        ;(this.$root as any).assembly_code = value
+        (this.$root as any).assembly_code = value;
       },
     },
 
@@ -141,17 +139,16 @@ export default defineComponent({
           "&": { height: this.height, width: "100%" },
           ".cm-scroller": { overflow: "auto", height: "100%" },
         }),
-      ]
+      ];
 
-      return extensions
+      return extensions;
     },
   },
-})
-
+});
 </script>
 
 <template>
-  <Codemirror
+   <Codemirror
     ref="textarea"
     class="codeArea"
     placeholder="Assembly code..."
@@ -190,3 +187,4 @@ export default defineComponent({
   outline: none;
 }
 </style>
+

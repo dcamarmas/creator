@@ -1,6 +1,5 @@
 <!--
-Copyright 2018-2025 Felix Garcia Carballeira, Diego Camarmas Alonso,
-                    Alejandro Calderon Mateos, Jorge Ramos Santana
+Copyright 2018-2025 CREATOR Team.
 
 This file is part of CREATOR.
 
@@ -17,20 +16,19 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
-
 <script lang="ts">
-import { defineComponent, type PropType } from "vue"
+import { defineComponent, type PropType } from "vue";
 
-import { architecture } from "@/core/core.mjs"
-import available_arch from "../../../../architecture/available_arch.json"
+import { architecture } from "@/core/core.mjs";
+import available_arch from "../../../../architecture/available_arch.json";
 
-import EditArchitecture from "../architecture/EditArchitecture.vue"
-import DownloadPopup from "../general/DownloadModal.vue"
-import ArchConf from "../architecture/configuration/ArchConf.vue"
-import RegisterFileArch from "../architecture/register_file/RegisterFileArch.vue"
-import Instructions from "../architecture/instructions/Instructions.vue"
-import Directives from "../architecture/directives/Directives.vue"
-import Pseudoinstructions from "../architecture/pseudoinstructions/Pseudoinstructions.vue"
+import EditArchitecture from "../architecture/EditArchitecture.vue";
+import DownloadPopup from "../general/DownloadModal.vue";
+import ArchConf from "../architecture/configuration/ArchConf.vue";
+import RegisterFileArch from "../architecture/register_file/RegisterFileArch.vue";
+import Instructions from "../architecture/instructions/Instructions.vue";
+import Directives from "../architecture/directives/Directives.vue";
+import Pseudoinstructions from "../architecture/pseudoinstructions/Pseudoinstructions.vue";
 
 export default defineComponent({
   props: {
@@ -40,9 +38,18 @@ export default defineComponent({
     architecture_name: String,
     dark: { type: Boolean, required: true },
     arch_code: { type: String, required: true },
-    mobile_architecture_view: { type: String as PropType<'arch-info' | 'register-file' | 'instructions' | 'pseudoinstructions' | 'directives'>, required: true },
+    mobile_architecture_view: {
+      type: String as PropType<
+        | "arch-info"
+        | "register-file"
+        | "instructions"
+        | "pseudoinstructions"
+        | "directives"
+      >,
+      required: true,
+    },
   },
-  emits: ['update:mobile_architecture_view'],
+  emits: ["update:mobile_architecture_view"],
   components: {
     EditArchitecture,
     DownloadPopup,
@@ -55,122 +62,145 @@ export default defineComponent({
   data() {
     return {
       architecture,
-    }
+    };
   },
   computed: {
     architecture_guide() {
-      if (!this.architecture_name) return undefined
+      if (!this.architecture_name) return undefined;
       return available_arch.find(
         arch =>
           arch.name === this.architecture_name ||
           arch.alias.includes(this.architecture_name!),
-      )?.guide
+      )?.guide;
     },
 
     currentView: {
       get() {
-        return this.mobile_architecture_view
+        return this.mobile_architecture_view;
       },
       set(value: string) {
-        this.$emit('update:mobile_architecture_view', value)
-      }
+        this.$emit("update:mobile_architecture_view", value);
+      },
     },
 
     availableViews() {
       const views = [
-        { key: 'arch-info', label: 'Architecture Info', icon: ['fas', 'info-circle'] },
-        { key: 'register-file', label: 'Register File', icon: ['fas', 'database'] },
-        { key: 'instructions', label: 'Instructions', icon: ['fas', 'code'] },
-        { key: 'directives', label: 'Directives', icon: ['fas', 'cogs'] },
-      ]
+        {
+          key: "arch-info",
+          label: "Architecture Info",
+          icon: ["fas", "info-circle"],
+        },
+        {
+          key: "register-file",
+          label: "Register File",
+          icon: ["fas", "database"],
+        },
+        { key: "instructions", label: "Instructions", icon: ["fas", "code"] },
+        { key: "directives", label: "Directives", icon: ["fas", "cogs"] },
+      ];
 
       // Only include pseudoinstructions if they exist
-      if (architecture.pseudoinstructions && architecture.pseudoinstructions.length > 0) {
-        views.splice(3, 0, { key: 'pseudoinstructions', label: 'Pseudoinstructions', icon: ['fas', 'magic'] })
+      if (
+        architecture.pseudoinstructions &&
+        architecture.pseudoinstructions.length > 0
+      ) {
+        views.splice(3, 0, {
+          key: "pseudoinstructions",
+          label: "Pseudoinstructions",
+          icon: ["fas", "magic"],
+        });
       }
 
-      return views
+      return views;
     },
   },
   methods: {
     switchView(view: string) {
-      this.currentView = view as 'arch-info' | 'register-file' | 'instructions' | 'pseudoinstructions' | 'directives'
+      this.currentView = view as
+        | "arch-info"
+        | "register-file"
+        | "instructions"
+        | "pseudoinstructions"
+        | "directives";
     },
 
     getCurrentViewInfo() {
-      return this.availableViews.find(view => view.key === this.currentView)
+      return this.availableViews.find(view => view.key === this.currentView);
     },
   },
-})
+});
 </script>
 
 <template>
-  <div class="mobile-architecture-view">
-    <div class="mobile-architecture-header">
-      <h3 class="architecture-title">
-        <font-awesome-icon :icon="getCurrentViewInfo()?.icon || ['fas', 'database']" />
-        {{ getCurrentViewInfo()?.label || 'Architecture View' }}
-      </h3>
 
-      <b-dropdown
+  <div class="mobile-architecture-view">
+
+    <div class="mobile-architecture-header">
+
+      <h3 class="architecture-title">
+         <font-awesome-icon
+          :icon="getCurrentViewInfo()?.icon || ['fas', 'database']"
+        /> {{ getCurrentViewInfo()?.label || "Architecture View" }}
+      </h3>
+       <b-dropdown
         variant="outline-secondary"
         size="sm"
         title="Switch View"
         no-caret
-      >
-        <template #button-content>
-          <font-awesome-icon :icon="['fas', 'bars']" />
-        </template>
-        <b-dropdown-item
+        > <template #button-content
+          > <font-awesome-icon :icon="['fas', 'bars']" /> </template
+        > <b-dropdown-item
           v-for="view in availableViews"
           :key="view.key"
           @click="switchView(view.key)"
-        >
-          <font-awesome-icon :icon="view.icon" />
-          {{ view.label }}
-        </b-dropdown-item>
-      </b-dropdown>
+          > <font-awesome-icon :icon="view.icon" /> {{ view.label }}
+          </b-dropdown-item
+        > </b-dropdown
+      >
     </div>
 
     <div class="mobile-architecture-content">
-      <!-- Architecture content area -->
-      <!-- Architecture Info view -->
+       <!-- Architecture content area --> <!-- Architecture Info view -->
       <div v-if="currentView === 'arch-info'" class="architecture-section">
-        <!-- Architecture Guide Link -->
-        <a 
-          v-if="architecture_guide" 
-          :href="architecture_guide" 
-          target="_blank" 
+         <!-- Architecture Guide Link --> <a
+          v-if="architecture_guide"
+          :href="architecture_guide"
+          target="_blank"
           class="mobile-guide-link"
-        >
-          <font-awesome-icon :icon="['fas', 'file-pdf']" />
-          <span>{{ architecture_name }} Guide</span>
-          <font-awesome-icon :icon="['fas', 'external-link-alt']" class="external-icon" />
-        </a>
-        <ArchConf :conf="architecture.config" />
+          > <font-awesome-icon :icon="['fas', 'file-pdf']" /> <span
+            >{{ architecture_name }} Guide</span
+          > <font-awesome-icon
+            :icon="['fas', 'external-link-alt']"
+            class="external-icon"
+          /> </a
+        > <ArchConf :conf="architecture.config" />
       </div>
-
-      <!-- Register File view -->
+       <!-- Register File view -->
       <div v-if="currentView === 'register-file'" class="architecture-section">
-        <RegisterFileArch :register_file="architecture.components" />
+         <RegisterFileArch :register_file="architecture.components" />
       </div>
-
-      <!-- Instructions view -->
+       <!-- Instructions view -->
       <div v-if="currentView === 'instructions'" class="architecture-section">
-        <Instructions :instructions="architecture.instructions" />
+         <Instructions :instructions="architecture.instructions" />
       </div>
-
-      <!-- Pseudoinstructions view -->
-      <div v-if="currentView === 'pseudoinstructions'" class="architecture-section">
-        <Pseudoinstructions :pseudoinstructions="architecture.pseudoinstructions" />
+       <!-- Pseudoinstructions view -->
+      <div
+        v-if="currentView === 'pseudoinstructions'"
+        class="architecture-section"
+      >
+         <Pseudoinstructions
+          :pseudoinstructions="architecture.pseudoinstructions"
+        />
       </div>
-
-      <!-- Directives view -->
+       <!-- Directives view -->
       <div v-if="currentView === 'directives'" class="architecture-section">
-        <Directives :directives="architecture.directives" />
+         <Directives :directives="architecture.directives" />
       </div>
+
     </div>
+
   </div>
+
 </template>
 
 <style lang="scss" scoped>
@@ -298,3 +328,4 @@ export default defineComponent({
   }
 }
 </style>
+

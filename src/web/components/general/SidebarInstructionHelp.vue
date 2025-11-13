@@ -1,6 +1,5 @@
 <!--
-Copyright 2018-2025 Felix Garcia Carballeira, Diego Camarmas Alonso,
-                    Alejandro Calderon Mateos, Luis Daniel Casais Mezquida
+Copyright 2018-2025 CREATOR Team.
 
 This file is part of CREATOR.
 
@@ -17,13 +16,12 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
-
 <script lang="ts">
-import { defineComponent } from "vue"
+import { defineComponent } from "vue";
 
 // import available_arch from "#/architecture/available_arch.json"
-import available_arch from "../../../../architecture/available_arch.json"
-import { architecture } from "@/core/core.mjs"
+import available_arch from "../../../../architecture/available_arch.json";
+import { architecture } from "@/core/core.mjs";
 
 export default defineComponent({
   props: {
@@ -41,12 +39,12 @@ export default defineComponent({
       insHelpFields: ["name"],
 
       instructions: architecture.instructions,
-    }
+    };
   },
 
   computed: {
     width() {
-      return this.instruction_help_size + "vw"
+      return this.instruction_help_size + "vw";
     },
 
     architecture_guide() {
@@ -54,30 +52,28 @@ export default defineComponent({
         arch =>
           arch.name === this.architecture_name ||
           arch.alias.includes(this.architecture_name),
-      )?.guide
+      )?.guide;
     },
   },
-})
+});
 </script>
 
 <template>
-  <b-offcanvas :id="id" placement="end" :width="width" title="Instruction Help">
-    <b-form-input
+   <b-offcanvas :id="id" placement="end" :width="width" title="Instruction Help"
+    > <b-form-input
       id="filter-input"
       v-model="instHelpFilter"
       type="search"
       placeholder="Search instruction"
       size="sm"
-    />
-
-    <br />
-    <a v-if="architecture_guide" target="_blank" :href="architecture_guide">
-      <font-awesome-icon :icon="['fas', 'file-pdf']" />
-      {{ architecture_name }} Guide
-    </a>
-    <br />
-
-    <b-table
+    /> <br /> <a
+      v-if="architecture_guide"
+      target="_blank"
+      :href="architecture_guide"
+      > <font-awesome-icon :icon="['fas', 'file-pdf']" /> {{
+        architecture_name
+      }} Guide </a
+    > <br /> <b-table
       small
       :items="instructions"
       :fields="insHelpFields"
@@ -85,15 +81,14 @@ export default defineComponent({
       :filter="instHelpFilter"
       thead-class="d-none"
       primary-key="name"
-    >
-      <template v-slot:cell(name)="row">
+      > <template v-slot:cell(name)="row"
+        >
         <h4>{{ row.item.name }}</h4>
-        <em>{{ row.item.signature_pretty }}</em>
-        <br />
-        {{ row.item.help }}
-      </template>
-    </b-table>
-  </b-offcanvas>
+         <em>{{ row.item.signature_pretty }}</em
+        > <br /> {{ row.item.help }} </template
+      > </b-table
+    > </b-offcanvas
+  >
 </template>
 
 <style lang="scss" scoped>
@@ -104,3 +99,4 @@ export default defineComponent({
   -ms-overflow-style: -ms-autohiding-scrollbar;
 }
 </style>
+

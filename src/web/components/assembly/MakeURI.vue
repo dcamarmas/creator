@@ -1,6 +1,5 @@
 <!--
-Copyright 2018-2025 Felix Garcia Carballeira, Diego Camarmas Alonso,
-                    Alejandro Calderon Mateos, Luis Daniel Casais Mezquida
+Copyright 2018-2025 CREATOR Team.
 
 This file is part of CREATOR.
 
@@ -17,11 +16,10 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
-
 <script lang="ts">
-import { defineComponent } from "vue"
-import { useModal } from "bootstrap-vue-next"
-import QrcodeVue from "qrcode.vue"
+import { defineComponent } from "vue";
+import { useModal } from "bootstrap-vue-next";
+import QrcodeVue from "qrcode.vue";
 
 export default defineComponent({
   props: {
@@ -38,8 +36,8 @@ export default defineComponent({
 
   setup() {
     // this HAS to be defined here
-    const { hide } = useModal()
-    return { hide }
+    const { hide } = useModal();
+    return { hide };
   },
 
   data() {
@@ -47,7 +45,7 @@ export default defineComponent({
       // version 32, ECL M, Alphanumeric Mode (see
       // https://www.thonky.com/qr-code-tutorial/character-capacities)
       maxQRSize: 2238,
-    }
+    };
   },
 
   computed: {
@@ -55,32 +53,32 @@ export default defineComponent({
       let u =
         window.location.href.split("?")[0]!.split("#")[0] +
         "?architecture=" +
-        encodeURIComponent(this.architecture_name)
+        encodeURIComponent(this.architecture_name);
 
       if (this.assembly_code) {
-        u += `&asm=${encodeURIComponent(this.assembly_code)}`
+        u += `&asm=${encodeURIComponent(this.assembly_code)}`;
       } else if (this.example_set && this.example_id) {
         u +=
           `&example_set=${encodeURIComponent(this.example_set)}` +
-          `&example=${encodeURIComponent(this.example_id)}`
+          `&example=${encodeURIComponent(this.example_id)}`;
       }
 
-      return u
+      return u;
     },
   },
 
   methods: {
     copyURI() {
-      navigator.clipboard.writeText(this.uri)
-      this.hide()
+      navigator.clipboard.writeText(this.uri);
+      this.hide();
     },
   },
-})
+});
 </script>
 
 <template>
-  <b-modal :id="id" title="Share via URI" no-footer class="text-center">
-    <qrcode-vue
+   <b-modal :id="id" title="Share via URI" no-footer class="text-center"
+    > <qrcode-vue
       v-if="uri.length < maxQRSize"
       class="mb-3"
       :value="uri"
@@ -88,12 +86,13 @@ export default defineComponent({
       :size="300"
       :margin="1"
       render-as="canvas"
-    />
-    <b-input-group>
-      <b-form-input v-model="uri" readonly />
-      <b-button variant="info" @click="copyURI">
-        <font-awesome-icon :icon="['fas', 'copy']" /> Copy
-      </b-button>
-    </b-input-group>
-  </b-modal>
+    /> <b-input-group
+      > <b-form-input v-model="uri" readonly /> <b-button
+        variant="info"
+        @click="copyURI"
+        > <font-awesome-icon :icon="['fas', 'copy']" /> Copy </b-button
+      > </b-input-group
+    > </b-modal
+  >
 </template>
+

@@ -1,6 +1,5 @@
 <!--
-Copyright 2018-2025 Felix Garcia Carballeira, Diego Camarmas Alonso,
-                    Alejandro Calderon Mateos, Luis Daniel Casais Mezquida
+Copyright 2018-2025 CREATOR Team.
 
 This file is part of CREATOR.
 
@@ -17,178 +16,194 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
-
 <script>
-import { loadedLibrary } from "@/core/core.mjs"
-import { coreEvents } from "@/core/events.mjs"
+import { loadedLibrary } from "@/core/core.mjs";
+import { coreEvents } from "@/core/events.mjs";
 
 export default {
   props: {
     id: { type: String, required: true },
   },
-  
+
   data() {
     return {
       // Use a reactive trigger to force re-computation when library changes
       libraryVersion: 0,
-    }
+    };
   },
-  
+
   computed: {
     libraryLoaded() {
       // Access libraryVersion to make this reactive to library changes
-      return this.libraryVersion >= 0 && loadedLibrary && Object.keys(loadedLibrary).length !== 0
+      return (
+        this.libraryVersion >= 0 &&
+        loadedLibrary &&
+        Object.keys(loadedLibrary).length !== 0
+      );
     },
-    
+
     libraryTags() {
       // Access libraryVersion to make this reactive to library changes
       if (this.libraryVersion < 0 || !this.libraryLoaded) {
-        return []
+        return [];
       }
-      
+
       // YAML format: symbols is an object with symbol names as keys
       if (!loadedLibrary.symbols) {
-        return []
+        return [];
       }
-      
+
       return Object.entries(loadedLibrary.symbols).map(([name, data]) => ({
         tag: name,
         addr: data.addr,
         globl: true,
-        help: data.help
-      }))
+        help: data.help,
+      }));
     },
-    
+
     libraryName() {
       // Access libraryVersion to make this reactive to library changes
-      return this.libraryVersion >= 0 ? (loadedLibrary?.name || "Library") : "Library"
+      return this.libraryVersion >= 0
+        ? loadedLibrary?.name || "Library"
+        : "Library";
     },
   },
-  
+
   mounted() {
     // Listen for library load/remove events
-    coreEvents.on("library-loaded", this.onLibraryChange)
-    coreEvents.on("library-removed", this.onLibraryChange)
+    coreEvents.on("library-loaded", this.onLibraryChange);
+    coreEvents.on("library-removed", this.onLibraryChange);
   },
-  
+
   beforeUnmount() {
     // Clean up event listeners
-    coreEvents.off("library-loaded", this.onLibraryChange)
-    coreEvents.off("library-removed", this.onLibraryChange)
+    coreEvents.off("library-loaded", this.onLibraryChange);
+    coreEvents.off("library-removed", this.onLibraryChange);
   },
-  
+
   methods: {
     onLibraryChange() {
       // Increment version to trigger computed property re-computation
-      this.libraryVersion++
+      this.libraryVersion++;
     },
   },
-}
+};
 </script>
 
 <template>
-  <b-modal 
-    :id="id" 
-    :title="`${libraryName} Tags`" 
+   <b-modal
+    :id="id"
+    :title="`${libraryName} Tags`"
     size="md"
     ok-only
     ok-title="Close"
-  >
+    >
     <div v-if="!libraryLoaded" class="text-center text-muted py-4">
-      <font-awesome-icon :icon="['fas', 'book']" size="2x" class="mb-3" />
+       <font-awesome-icon :icon="['fas', 'book']" size="2x" class="mb-3" />
       <p>No library loaded</p>
+
     </div>
-    
-    <div v-else-if="libraryTags.length === 0" class="text-center text-muted py-4">
-      <font-awesome-icon :icon="['fas', 'tags']" size="2x" class="mb-3" />
+
+    <div
+      v-else-if="libraryTags.length === 0"
+      class="text-center text-muted py-4"
+    >
+       <font-awesome-icon :icon="['fas', 'tags']" size="2x" class="mb-3" />
       <p>No tags found in the loaded library</p>
+
     </div>
-    
-    <b-list-group v-else>
-      <b-list-group-item 
-        v-for="tag of libraryTags" 
+     <b-list-group v-else
+      > <b-list-group-item
+        v-for="tag of libraryTags"
         :key="tag.tag"
         class="function-item"
-      >
-        <!-- Function signature -->
+        > <!-- Function signature -->
         <div class="function-signature">
-          <code class="function-name">{{ tag.tag }}</code>
-          <span class="function-params">(</span>
-          <span 
-            v-if="tag.help?.parameters && Object.keys(tag.help.parameters).length > 0"
+           <code class="function-name">{{ tag.tag }}</code
+          > <span class="function-params">(</span> <span
+            v-if="
+              tag.help?.parameters &&
+              Object.keys(tag.help.parameters).length > 0
+            "
             class="param-list"
-          >
-            <span
+            > <span
               v-for="(desc, param, index) in tag.help.parameters"
               :key="param"
-            >
-              <code class="param-name">{{ param }}</code><span v-if="index < Object.keys(tag.help.parameters).length - 1">, </span>
-            </span>
-          </span>
-          <span class="function-params">)</span>
-          
-          <!-- Return values indicator -->
-          <span 
+              > <code class="param-name">{{ param }}</code
+              ><span v-if="index < Object.keys(tag.help.parameters).length - 1"
+                >, </span
+              > </span
+            > </span
+          > <span class="function-params">)</span> <!-- Return values indicator -->
+          <span
             v-if="tag.help?.returns && Object.keys(tag.help.returns).length > 0"
             class="return-indicator"
+            > → <span v-for="(desc, ret, index) in tag.help.returns" :key="ret"
+              > <code class="return-name">{{ ret }}</code
+              ><span v-if="index < Object.keys(tag.help.returns).length - 1"
+                >, </span
+              > </span
+            > </span
+          > <!-- Address --> <span class="ms-2"
+            > <code class="address-label"
+              >@0x{{ (tag.addr || 0).toString(16).padStart(8, "0") }}</code
+            > </span
           >
-            →
-            <span
-              v-for="(desc, ret, index) in tag.help.returns"
-              :key="ret"
-            >
-              <code class="return-name">{{ ret }}</code><span v-if="index < Object.keys(tag.help.returns).length - 1">, </span>
-            </span>
-          </span>
-          
-          <!-- Address -->
-          <span class="ms-2">
-            <code class="address-label">@0x{{ (tag.addr || 0).toString(16).padStart(8, '0') }}</code>
-          </span>
         </div>
-
-        <!-- Function documentation -->
+         <!-- Function documentation -->
         <div v-if="tag.help" class="function-docs mt-3">
-          <!-- Description -->
+           <!-- Description -->
           <div v-if="tag.help.description" class="description mb-3">
+
             <div class="doc-comment">{{ tag.help.description }}</div>
+
           </div>
-          
-          <!-- Parameters documentation -->
-          <div 
-            v-if="tag.help.parameters && Object.keys(tag.help.parameters).length > 0" 
+           <!-- Parameters documentation -->
+          <div
+            v-if="
+              tag.help.parameters && Object.keys(tag.help.parameters).length > 0
+            "
             class="params-section mb-2"
           >
+
             <div class="section-title">Parameters:</div>
+
             <div
               v-for="(desc, param) in tag.help.parameters"
               :key="param"
               class="param-doc"
             >
-              <code class="param-name-doc">{{ param }}</code>
-              <span class="param-desc">– {{ desc }}</span>
+               <code class="param-name-doc">{{ param }}</code
+              > <span class="param-desc">– {{ desc }}</span
+              >
             </div>
+
           </div>
-          
-          <!-- Returns documentation -->
-          <div 
-            v-if="tag.help.returns && Object.keys(tag.help.returns).length > 0" 
+           <!-- Returns documentation -->
+          <div
+            v-if="tag.help.returns && Object.keys(tag.help.returns).length > 0"
             class="returns-section"
           >
+
             <div class="section-title">Returns:</div>
+
             <div
               v-for="(desc, ret) in tag.help.returns"
               :key="ret"
               class="return-doc"
             >
-              <code class="return-name-doc">{{ ret }}</code>
-              <span class="return-desc">– {{ desc }}</span>
+               <code class="return-name-doc">{{ ret }}</code
+              > <span class="return-desc">– {{ desc }}</span
+              >
             </div>
+
           </div>
+
         </div>
-      </b-list-group-item>
-    </b-list-group>
-  </b-modal>
+         </b-list-group-item
+      > </b-list-group
+    > </b-modal
+  >
 </template>
 
 <style lang="scss" scoped>
@@ -376,3 +391,4 @@ export default {
   }
 }
 </style>
+

@@ -1,6 +1,5 @@
 <!--
-Copyright 2018-2025 Felix Garcia Carballeira, Diego Camarmas Alonso,
-                    Alejandro Calderon Mateos, Jorge Ramos Santana
+Copyright 2018-2025 CREATOR Team.
 
 This file is part of CREATOR.
 
@@ -17,10 +16,9 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
-
 <script lang="ts">
-import { defineComponent, type PropType } from "vue"
-import type { PseudoInstruction } from "@/core/core"
+import { defineComponent, type PropType } from "vue";
+import type { PseudoInstruction } from "@/core/core";
 
 export default defineComponent({
   props: {
@@ -42,60 +40,67 @@ export default defineComponent({
       ],
 
       searchTerm: "",
-    }
+    };
   },
 
   computed: {
     filteredPseudoinstructions() {
       return this.pseudoinstructions.filter(inst => {
-        const matchesSearch = !this.searchTerm ||
+        const matchesSearch =
+          !this.searchTerm ||
           inst.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-          inst.signature_pretty.toLowerCase().includes(this.searchTerm.toLowerCase())
+          inst.signature_pretty
+            .toLowerCase()
+            .includes(this.searchTerm.toLowerCase());
 
-        return matchesSearch
-      })
+        return matchesSearch;
+      });
     },
   },
 
-  methods: {
-  },
-})
+  methods: {},
+});
 </script>
 
 <template>
 
-
   <div class="pseudoinstructions-container">
-    <!-- Search Bar -->
+     <!-- Search Bar -->
     <div class="pseudoinstruction-toolbar">
-      <b-row class="align-items-center">
-        <b-col>
-          <b-form-input v-model="searchTerm" placeholder="Search pseudoinstructions..." size="sm" />
-        </b-col>
-        <b-col class="text-end">
-          <b-badge variant="primary" pill>
-            {{ filteredPseudoinstructions.length }} / {{ pseudoinstructions.length }}
-          </b-badge>
-        </b-col>
-      </b-row>
+       <b-row class="align-items-center"
+        > <b-col
+          > <b-form-input
+            v-model="searchTerm"
+            placeholder="Search pseudoinstructions..."
+            size="sm"
+          /> </b-col
+        > <b-col class="text-end"
+          > <b-badge variant="primary" pill
+            > {{ filteredPseudoinstructions.length }} / {{
+              pseudoinstructions.length
+            }} </b-badge
+          > </b-col
+        > </b-row
+      >
     </div>
-
-    <!-- Pseudoinstruction set table -->
-    <b-table small :items="filteredPseudoinstructions" :fields="pseudoinstructions_fields"
-      class="pseudoinstructions-table" hover responsive>
-      <!-- For each pseudoinstruction -->
-      <template v-slot:cell(name)="row">
-        <code class="pseudo-name">{{ row.item.name }}</code>
-      </template>
-
-      <template v-slot:cell(signature_pretty)="row">
-        <span class="syntax-text">{{ row.item.signature_pretty }}</span>
-      </template>
-
-      <template v-slot:cell(definition)="row">
-        <code class="definition-text">{{ row.item.definition }}</code>
-      </template>
-    </b-table>
+     <!-- Pseudoinstruction set table --> <b-table
+      small
+      :items="filteredPseudoinstructions"
+      :fields="pseudoinstructions_fields"
+      class="pseudoinstructions-table"
+      hover
+      responsive
+      > <!-- For each pseudoinstruction --> <template v-slot:cell(name)="row"
+        > <code class="pseudo-name">{{ row.item.name }}</code
+        > </template
+      > <template v-slot:cell(signature_pretty)="row"
+        > <span class="syntax-text">{{ row.item.signature_pretty }}</span
+        > </template
+      > <template v-slot:cell(definition)="row"
+        > <code class="definition-text">{{ row.item.definition }}</code
+        > </template
+      > </b-table
+    >
   </div>
 
 </template>
@@ -230,3 +235,4 @@ export default defineComponent({
   }
 }
 </style>
+

@@ -1,22 +1,20 @@
 /**
- *  Copyright 2018-2025 Felix Garcia Carballeira, Alejandro Calderon Mateos,
- *                      Diego Camarmas Alonso, Jorge Ramos Santana
+ * Copyright 2018-2025 CREATOR Team.
  *
- *  This file is part of CREATOR.
+ * This file is part of CREATOR.
  *
- *  CREATOR is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU Lesser General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
+ * CREATOR is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *  CREATOR is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU Lesser General Public License for more details.
+ * CREATOR is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
  *
- *  You should have received a copy of the GNU Lesser General Public License
- *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
- *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 import { architecture, REGISTERS, WORDSIZE } from "../core.mjs";
@@ -55,7 +53,6 @@ function decodeRegister(type, binaryValue) {
                 return register.name[0]; // Return the first name (canonical)
             }
         }
-
     }
 
     return null;
@@ -691,7 +688,8 @@ export function decode(toDecode) {
     let instructionAssembly = instructionArray
         .filter(x => x !== undefined)
         .map(x => x.prettyValue)
-        .join("").trim();
+        .join("")
+        .trim();
 
     // If the last character is a comma, remove it.
     // Honestly a hack, but any proper fix would require

@@ -1,6 +1,5 @@
 <!--
-Copyright 2018-2025 Felix Garcia Carballeira, Diego Camarmas Alonso,
-                    Alejandro Calderon Mateos, Luis Daniel Casais Mezquida
+Copyright 2018-2025 CREATOR Team.
 
 This file is part of CREATOR.
 
@@ -17,9 +16,8 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
-
 <script>
-import { creator_ga } from "@/core/utils/creator_ga.mjs"
+import { creator_ga } from "@/core/utils/creator_ga.mjs";
 
 export default {
   props: {
@@ -30,30 +28,26 @@ export default {
   data() {
     return {
       /*Instrutions table fields*/
-      archInstructions: [
-        "Address",
-        "userInstructions",
-        "loadedInstructions",
-      ],
-    }
+      archInstructions: ["Address", "userInstructions", "loadedInstructions"],
+    };
   },
 
   computed: {
     processedInstructions() {
       return this.instructions.map(instruction => ({
         ...instruction,
-        _cellVariants: {}
-      }))
-    }
+        _cellVariants: {},
+      }));
+    },
   },
 
   methods: {
     /* Filter table instructions */
     filter(row, _filter) {
       if (row.hide === true) {
-        return false
+        return false;
       } else {
-        return true
+        return true;
       }
     },
 
@@ -61,13 +55,13 @@ export default {
     breakPoint(record, index) {
       for (let i = 0; i < this.instructions.length; i++) {
         if (this.instructions[i].Address === record.Address) {
-          index = i
-          break
+          index = i;
+          break;
         }
       }
 
       if (this.instructions[index].Break === null) {
-        this.$root.instructions[index].Break = true
+        this.$root.instructions[index].Break = true;
 
         /* Google Analytics */
         creator_ga(
@@ -76,49 +70,58 @@ export default {
           "execute",
           "execute.breakpoint",
           "execute.breakpoint",
-        )
+        );
       } else if (this.instructions[index].Break) {
-        this.$root.instructions[index].Break = null
+        this.$root.instructions[index].Break = null;
       }
     },
   },
-}
+};
 </script>
 
 <template>
-  <b-table id="inst_table" sticky-header="100%" small hover :items="processedInstructions" :fields="archInstructions"
-    class="instructions_table" @row-clicked="breakPoint" :filter-function="filter" filter=" " primary-key="Address">
-    <!-- column headers -->
-    <template #head(userInstructions)="_row"> User Instruction </template>
-
-    <template #head(loadedInstructions)="_row">
-      Loaded Instructions
-    </template>
-
-    <!-- address -->
-    <template #cell(Address)="row">
-      <span v-if="row.item.Break" class="breakpoint-indicator" title="Breakpoint">●</span>
-      <span v-else class="breakpoint-space">&nbsp;</span>
-      <span>{{ row.item.Address }}</span>
-      <b-badge v-if="row.item.Label" pill variant="info" style="margin-left: 0.5em;">{{ row.item.Label }}</b-badge>
-    </template>
-
-    <!-- user instruction -->
-    <template #cell(userInstructions)="row">
-      <span v-if="row.item.visible">
-        {{ row.item.user }}
-      </span>
-      <span v-else> &lt;&lt;Hidden&gt;&gt; </span>
-    </template>
-
-    <!-- loaded instruction -->
-    <template #cell(loadedInstructions)="row">
-      <span v-if="row.item.visible">
-        {{ row.item.loaded }}
-      </span>
-      <span v-else> &lt;&lt;Hidden&gt;&gt; </span>
-    </template>
-  </b-table>
+   <b-table
+    id="inst_table"
+    sticky-header="100%"
+    small
+    hover
+    :items="processedInstructions"
+    :fields="archInstructions"
+    class="instructions_table"
+    @row-clicked="breakPoint"
+    :filter-function="filter"
+    filter=" "
+    primary-key="Address"
+    > <!-- column headers --> <template #head(userInstructions)="_row"
+      > User Instruction </template
+    > <template #head(loadedInstructions)="_row"> Loaded Instructions </template
+    > <!-- address --> <template #cell(Address)="row"
+      > <span
+        v-if="row.item.Break"
+        class="breakpoint-indicator"
+        title="Breakpoint"
+        >●</span
+      > <span v-else class="breakpoint-space">&nbsp;</span> <span>{{
+        row.item.Address
+      }}</span
+      > <b-badge
+        v-if="row.item.Label"
+        pill
+        variant="info"
+        style="margin-left: 0.5em"
+        >{{ row.item.Label }}</b-badge
+      > </template
+    > <!-- user instruction --> <template #cell(userInstructions)="row"
+      > <span v-if="row.item.visible"> {{ row.item.user }} </span> <span v-else
+        > &lt;&lt;Hidden&gt;&gt; </span
+      > </template
+    > <!-- loaded instruction --> <template #cell(loadedInstructions)="row"
+      > <span v-if="row.item.visible"> {{ row.item.loaded }} </span> <span
+        v-else
+        > &lt;&lt;Hidden&gt;&gt; </span
+      > </template
+    > </b-table
+  >
 </template>
 
 <style lang="scss" scoped>
@@ -164,3 +167,4 @@ export default {
   margin-right: 1em;
 }
 </style>
+
