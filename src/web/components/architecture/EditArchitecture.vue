@@ -1,6 +1,5 @@
 <!--
-Copyright 2018-2025 Felix Garcia Carballeira, Diego Camarmas Alonso,
-                    Alejandro Calderon Mateos, Luis Daniel Casais Mezquida
+Copyright 2018-2025 CREATOR Team.
 
 This file is part of CREATOR.
 
@@ -17,45 +16,51 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
-
 <script setup lang="ts">
-import { computed, defineProps, onMounted, onBeforeUnmount, ref, watch } from "vue"
+import {
+  computed,
+  defineProps,
+  onMounted,
+  onBeforeUnmount,
+  ref,
+  watch,
+} from "vue";
 
 /* Monaco */
-import * as monaco from "monaco-editor"
-import EditorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker"
-import { configureMonacoYaml, type JSONSchema } from "monaco-yaml"
-import YamlWorker from "./workaround-yaml.worker?worker"
+import * as monaco from "monaco-editor";
+import EditorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker";
+import { configureMonacoYaml, type JSONSchema } from "monaco-yaml";
+import YamlWorker from "./workaround-yaml.worker?worker";
 
-import { architecture, reset, loadArchitecture } from "@/core/core.mjs"
-import { show_notification, storeBackup } from "@/web/utils.mjs"
-import schema from "../../../../architecture/schema.json"
+import { architecture, reset, loadArchitecture } from "@/core/core.mjs";
+import { show_notification, storeBackup } from "@/web/utils.mjs";
+import schema from "../../../../architecture/schema.json";
 
 const props = defineProps({
   id: { type: String, required: true },
   arch_code: { type: String, required: true },
   dark: { type: Boolean, required: true },
   os: { type: String, required: true },
-})
+});
 
 // document.app is the mounted root component (App.vue)
-const $root = (document as any).app
-const editorContainer = ref<HTMLDivElement | null>(null)
-let editor: monaco.editor.IStandaloneCodeEditor | null = null
+const $root = (document as any).app;
+const editorContainer = ref<HTMLDivElement | null>(null);
+let editor: monaco.editor.IStandaloneCodeEditor | null = null;
 
 // Setup Monaco Environment for Vite
 self.MonacoEnvironment = {
   getWorker(_workerId: string, label: string) {
     switch (label) {
       case "editorWorkerService":
-        return new EditorWorker()
+        return new EditorWorker();
       case "yaml":
-        return new YamlWorker()
+        return new YamlWorker();
       default:
-        throw new Error(`Unknown label ${label}`)
+        throw new Error(`Unknown label ${label}`);
     }
   },
-}
+};
 
 configureMonacoYaml(monaco, {
   enableSchemaRequest: true,
@@ -66,45 +71,45 @@ configureMonacoYaml(monaco, {
       uri: `${document.URL}architecture/schema.json`,
     },
   ],
-})
+});
 
 const architecture_value = computed({
   // sync w/ App's
   get() {
-    return props.arch_code
+    return props.arch_code;
   },
   set(value: string) {
-    $root.arch_code = value
+    $root.arch_code = value;
   },
-})
+});
 
 // save edited architecture
 function saveArch() {
   try {
-    const result = loadArchitecture(architecture_value.value)
+    const result = loadArchitecture(architecture_value.value);
     if (result.status !== "ok") {
-      show_notification("Invalid architecture: " + result.token, "danger")
-      return
+      show_notification("Invalid architecture: " + result.token, "danger");
+      return;
     }
   } catch {
     show_notification(
       "Architecture not edited. Architecture format is incorrect",
       "danger",
-    )
-    return
+    );
+    return;
   }
 
   // update architecture data
-  $root.architecture_name = architecture.config.name
-  $root.architecture = architecture
+  $root.architecture_name = architecture.config.name;
+  $root.architecture = architecture;
 
   // reset execution
-  $root.instructions = []
-  reset()
+  $root.instructions = [];
+  reset();
 
-  show_notification("Architecture edited correctly", "success")
+  show_notification("Architecture edited correctly", "success");
 
-  storeBackup()
+  storeBackup();
 }
 
 // Watch for external code changes (e.g., when loading a new file)
@@ -113,31 +118,31 @@ watch(
   newCode => {
     if (editor && editor.getValue() !== newCode) {
       // Preserve cursor position if possible
-      const position = editor.getPosition()
-      editor.setValue(newCode)
+      const position = editor.getPosition();
+      editor.setValue(newCode);
       if (position) {
-        editor.setPosition(position)
+        editor.setPosition(position);
       }
     }
   },
-)
+);
 
 onMounted(() => {
-  if (!editorContainer.value) return
+  if (!editorContainer.value) return;
 
   // Get or create the model with a unique URI
-  const modelUri = monaco.Uri.parse("file:///architecture.yaml")
-  let model = monaco.editor.getModel(modelUri)
-  
+  const modelUri = monaco.Uri.parse("file:///architecture.yaml");
+  let model = monaco.editor.getModel(modelUri);
+
   if (!model) {
     model = monaco.editor.createModel(
       architecture_value.value,
       undefined,
       modelUri,
-    )
+    );
   } else {
     // Update existing model with current value
-    model.setValue(architecture_value.value)
+    model.setValue(architecture_value.value);
   }
 
   editor = monaco.editor.create(editorContainer.value, {
@@ -159,50 +164,51 @@ onMounted(() => {
       comments: false,
       strings: true,
     },
-  })
+  });
 
   // Add Ctrl+S / Cmd+S keybinding
   editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => {
-    saveArch()
-  })
+    saveArch();
+  });
 
   // Listen to content changes and update parent immediately
   editor.onDidChangeModelContent(() => {
     if ($root && editor) {
-      const newValue = editor.getValue()
-      $root.arch_code = newValue
+      const newValue = editor.getValue();
+      $root.arch_code = newValue;
     }
-  })
+  });
 
   // Auto-focus on desktop
   if (props.os !== "mobile") {
-    editor.focus()
+    editor.focus();
   }
-})
+});
 
 onBeforeUnmount(() => {
   // Dispose of the editor when component is unmounted
   if (editor) {
-    editor.dispose()
-    editor = null
+    editor.dispose();
+    editor = null;
   }
-})
+});
 </script>
 
 <template>
-  <b-modal
+   <b-modal
     :id="id"
     size="xl"
     title="Edit Architecture"
     ok-title="Save"
     @ok="saveArch"
-  >
+    >
     <div
       ref="editorContainer"
       style="height: 75vh"
       class="monaco-editor-container"
     ></div>
-  </b-modal>
+     </b-modal
+  >
 </template>
 
 <style lang="scss" scoped>
@@ -214,3 +220,4 @@ onBeforeUnmount(() => {
   overflow: hidden;
 }
 </style>
+

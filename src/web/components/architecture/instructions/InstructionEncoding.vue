@@ -1,6 +1,5 @@
 <!--
-Copyright 2018-2025 Felix Garcia Carballeira, Diego Camarmas Alonso,
-                    Alejandro Calderon Mateos, Jorge Ramos Santana
+Copyright 2018-2025 CREATOR Team.
 
 This file is part of CREATOR.
 
@@ -17,10 +16,9 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
-
 <script lang="ts">
-import { defineComponent, type PropType } from "vue"
-import { architecture, type Instruction } from "@/core/core"
+import { defineComponent, type PropType } from "vue";
+import { architecture, type Instruction } from "@/core/core";
 
 export default defineComponent({
   props: {
@@ -30,54 +28,56 @@ export default defineComponent({
   data() {
     return {
       architecture,
-    }
+    };
   },
 
   computed: {
-
     /**
      * Group fields by word for multi-word instructions
      * Handles non-contiguous fields (like RISC-V immediates)
      * Also handles fields that span multiple words (like Z80 16-bit immediates)
      */
     wordGroups() {
-      const groups = new Map<number, Array<{
-        name: string
-        type: string
-        startBit: number
-        endBit: number
-        width: number
-        value?: string
-        segmentIndex?: number
-        totalSegments?: number
-      }>>()
+      const groups = new Map<
+        number,
+        Array<{
+          name: string;
+          type: string;
+          startBit: number;
+          endBit: number;
+          width: number;
+          value?: string;
+          segmentIndex?: number;
+          totalSegments?: number;
+        }>
+      >();
 
       for (let i = 0; i < this.instruction.fields.length; i++) {
-        const field = this.instruction.fields[i]
-        if (!field) continue
-        
+        const field = this.instruction.fields[i];
+        if (!field) continue;
+
         // Handle non-contiguous fields (arrays of startbit/stopbit)
         if (Array.isArray(field.startbit) && Array.isArray(field.stopbit)) {
           // Field has multiple non-contiguous segments
-          const totalSegments = field.startbit.length
-          
+          const totalSegments = field.startbit.length;
+
           for (let segIdx = 0; segIdx < field.startbit.length; segIdx++) {
-            const startBit = field.startbit[segIdx]
-            const stopBit = field.stopbit[segIdx]
-            
-            if (startBit === undefined || stopBit === undefined) continue
-            
+            const startBit = field.startbit[segIdx];
+            const stopBit = field.stopbit[segIdx];
+
+            if (startBit === undefined || stopBit === undefined) continue;
+
             // Get word number for this segment
-            const wordNum = Array.isArray(field.word) 
-              ? (field.word[segIdx] ?? 0) 
-              : (field.word ?? 0)
-            
+            const wordNum = Array.isArray(field.word)
+              ? (field.word[segIdx] ?? 0)
+              : (field.word ?? 0);
+
             if (!groups.has(wordNum)) {
-              groups.set(wordNum, [])
+              groups.set(wordNum, []);
             }
-            
-            const width = Math.abs(stopBit - startBit) + 1
-            
+
+            const width = Math.abs(stopBit - startBit) + 1;
+
             groups.get(wordNum)!.push({
               name: field.name,
               type: field.type,
@@ -87,38 +87,42 @@ export default defineComponent({
               value: field.value,
               segmentIndex: segIdx,
               totalSegments,
-            })
+            });
           }
         } else {
           // Single startbit/stopbit value
-          const startBit = Array.isArray(field.startbit) ? field.startbit[0] : field.startbit
-          const stopBit = Array.isArray(field.stopbit) ? field.stopbit[0] : field.stopbit
-          
-          if (startBit === undefined || stopBit === undefined) continue
-          
+          const startBit = Array.isArray(field.startbit)
+            ? field.startbit[0]
+            : field.startbit;
+          const stopBit = Array.isArray(field.stopbit)
+            ? field.stopbit[0]
+            : field.stopbit;
+
+          if (startBit === undefined || stopBit === undefined) continue;
+
           // Check if field spans multiple words (word is an array)
           if (Array.isArray(field.word) && field.word.length > 1) {
             // Field spans multiple words - split it up
             // The startbit/stopbit represent the total range across all words
-            const totalWidth = Math.abs(stopBit - startBit) + 1
-            const wordSize = this.architecture.config.word_size
-            const numWords = field.word.length
-            
-            let remainingBits = totalWidth
-            
+            const totalWidth = Math.abs(stopBit - startBit) + 1;
+            const wordSize = this.architecture.config.word_size;
+            const numWords = field.word.length;
+
+            let remainingBits = totalWidth;
+
             // Process each word in the array
             for (let wordIdx = 0; wordIdx < numWords; wordIdx++) {
-              const wordNum = field.word[wordIdx] ?? 0
-              
+              const wordNum = field.word[wordIdx] ?? 0;
+
               if (!groups.has(wordNum)) {
-                groups.set(wordNum, [])
+                groups.set(wordNum, []);
               }
-              
+
               // Calculate how many bits of this field are in this word
-              const bitsInThisWord = Math.min(wordSize, remainingBits)
-              const wordStartBit = wordSize - 1
-              const wordStopBit = wordSize - bitsInThisWord
-              
+              const bitsInThisWord = Math.min(wordSize, remainingBits);
+              const wordStartBit = wordSize - 1;
+              const wordStopBit = wordSize - bitsInThisWord;
+
               groups.get(wordNum)!.push({
                 name: field.name,
                 type: field.type,
@@ -128,21 +132,21 @@ export default defineComponent({
                 value: field.value,
                 segmentIndex: wordIdx,
                 totalSegments: numWords,
-              })
-              
-              remainingBits -= bitsInThisWord
+              });
+
+              remainingBits -= bitsInThisWord;
             }
           } else {
             // Single word field (normal case)
-            const wordNum = Array.isArray(field.word) 
-              ? field.word[0] ?? 0 
-              : (field.word ?? 0)
-            
+            const wordNum = Array.isArray(field.word)
+              ? (field.word[0] ?? 0)
+              : (field.word ?? 0);
+
             if (!groups.has(wordNum)) {
-              groups.set(wordNum, [])
+              groups.set(wordNum, []);
             }
 
-            const width = Math.abs(stopBit - startBit) + 1
+            const width = Math.abs(stopBit - startBit) + 1;
 
             groups.get(wordNum)!.push({
               name: field.name,
@@ -151,31 +155,31 @@ export default defineComponent({
               endBit: stopBit,
               width,
               value: field.value,
-            })
+            });
           }
         }
       }
 
       // Sort blocks within each word by start bit (descending)
       groups.forEach(blocks => {
-        blocks.sort((a, b) => b.startBit - a.startBit)
-      })
+        blocks.sort((a, b) => b.startBit - a.startBit);
+      });
 
-      return groups
+      return groups;
     },
 
     /**
      * Get sorted word numbers
      */
     sortedWords(): number[] {
-      return Array.from(this.wordGroups.keys()).sort((a, b) => a - b)
+      return Array.from(this.wordGroups.keys()).sort((a, b) => a - b);
     },
 
     /**
      * Check if this is a multi-word instruction
      */
     isMultiWord(): boolean {
-      return this.instruction.nwords > 1
+      return this.instruction.nwords > 1;
     },
 
     /**
@@ -183,17 +187,17 @@ export default defineComponent({
      */
     getWordBitWidth() {
       return (wordNum: number): number => {
-        const fields = this.wordGroups.get(wordNum)
-        if (!fields || fields.length === 0) return 0
-        return fields.reduce((sum, field) => sum + field.width, 0)
-      }
+        const fields = this.wordGroups.get(wordNum);
+        if (!fields || fields.length === 0) return 0;
+        return fields.reduce((sum, field) => sum + field.width, 0);
+      };
     },
 
     /**
      * Calculate the total bit width for single-word instructions
      */
     totalBitWidth(): number {
-      return this.encodingBlocks.reduce((sum, block) => sum + block.width, 0)
+      return this.encodingBlocks.reduce((sum, block) => sum + block.width, 0);
     },
 
     /**
@@ -203,27 +207,27 @@ export default defineComponent({
      */
     encodingBlocks() {
       const blocks: Array<{
-        name: string
-        type: string
-        startBit: number
-        endBit: number
-        width: number
-        value?: string
-        segmentIndex?: number
-        totalSegments?: number
-      }> = []
+        name: string;
+        type: string;
+        startBit: number;
+        endBit: number;
+        width: number;
+        value?: string;
+        segmentIndex?: number;
+        totalSegments?: number;
+      }> = [];
 
       this.instruction.fields.forEach(field => {
         // Handle non-contiguous fields (arrays of startbit/stopbit)
         if (Array.isArray(field.startbit) && Array.isArray(field.stopbit)) {
-          const totalSegments = field.startbit.length
-          
+          const totalSegments = field.startbit.length;
+
           for (let segIdx = 0; segIdx < field.startbit.length; segIdx++) {
-            const startBit = field.startbit[segIdx]
-            const stopBit = field.stopbit[segIdx]
-            
-            if (startBit === undefined || stopBit === undefined) continue
-            const width = Math.abs(stopBit - startBit) + 1
+            const startBit = field.startbit[segIdx];
+            const stopBit = field.stopbit[segIdx];
+
+            if (startBit === undefined || stopBit === undefined) continue;
+            const width = Math.abs(stopBit - startBit) + 1;
 
             blocks.push({
               name: field.name,
@@ -234,15 +238,19 @@ export default defineComponent({
               value: field.value,
               segmentIndex: segIdx,
               totalSegments,
-            })
+            });
           }
         } else {
           // Contiguous field (normal case)
-          const startBit = Array.isArray(field.startbit) ? field.startbit[0] : field.startbit
-          const stopBit = Array.isArray(field.stopbit) ? field.stopbit[0] : field.stopbit
-          
-          if (startBit === undefined || stopBit === undefined) return
-          const width = Math.abs(stopBit - startBit) + 1
+          const startBit = Array.isArray(field.startbit)
+            ? field.startbit[0]
+            : field.startbit;
+          const stopBit = Array.isArray(field.stopbit)
+            ? field.stopbit[0]
+            : field.stopbit;
+
+          if (startBit === undefined || stopBit === undefined) return;
+          const width = Math.abs(stopBit - startBit) + 1;
 
           blocks.push({
             name: field.name,
@@ -251,12 +259,12 @@ export default defineComponent({
             endBit: stopBit,
             width,
             value: field.value,
-          })
+          });
         }
-      })
+      });
 
       // Sort by start bit (descending for visual representation)
-      return blocks.sort((a, b) => b.startBit - a.startBit)
+      return blocks.sort((a, b) => b.startBit - a.startBit);
     },
 
     /**
@@ -265,106 +273,124 @@ export default defineComponent({
     getFieldColor() {
       return (type: string): string => {
         const colorMap: Record<string, string> = {
-          'co': 'rgba(255, 99, 71, 0.3)',           // Red for opcode
-          'cop': 'rgba(255, 99, 71, 0.2)',          // Light red for extended opcode
-          'reg': 'rgba(54, 162, 235, 0.3)',         // Blue for registers
-          'imm-signed': 'rgba(75, 192, 192, 0.3)',  // Teal for signed immediate
-          'imm-unsigned': 'rgba(153, 102, 255, 0.3)', // Purple for unsigned immediate
-          'address': 'rgba(255, 206, 86, 0.3)',     // Yellow for address
-          'offset_bytes': 'rgba(255, 159, 64, 0.3)', // Orange for byte offset
-          'offset_words': 'rgba(255, 159, 64, 0.3)', // Orange for word offset
-        }
-        return colorMap[type] ?? 'rgba(199, 199, 199, 0.3)'
-      }
+          co: "rgba(255, 99, 71, 0.3)", // Red for opcode
+          cop: "rgba(255, 99, 71, 0.2)", // Light red for extended opcode
+          reg: "rgba(54, 162, 235, 0.3)", // Blue for registers
+          "imm-signed": "rgba(75, 192, 192, 0.3)", // Teal for signed immediate
+          "imm-unsigned": "rgba(153, 102, 255, 0.3)", // Purple for unsigned immediate
+          address: "rgba(255, 206, 86, 0.3)", // Yellow for address
+          offset_bytes: "rgba(255, 159, 64, 0.3)", // Orange for byte offset
+          offset_words: "rgba(255, 159, 64, 0.3)", // Orange for word offset
+        };
+        return colorMap[type] ?? "rgba(199, 199, 199, 0.3)";
+      };
     },
   },
-})
+});
 </script>
 
 <template>
-  <div class="encoding-container">
-    <!-- Multi-word instruction visualization -->
-    <template v-if="isMultiWord">
-      <div v-for="wordNum in sortedWords" :key="wordNum" class="word-container">
-        <div class="word-label">Word {{ wordNum }}</div>
-        
-        <!-- Bit ruler for this word -->
-        <div class="bit-ruler">
-          <span class="bit-number">{{ getWordBitWidth(wordNum) - 1 }}</span>
-          <span class="bit-spacer"></span>
-          <span class="bit-number">0</span>
-        </div>
 
-        <!-- Encoding blocks for this word -->
+  <div class="encoding-container">
+     <!-- Multi-word instruction visualization --> <template v-if="isMultiWord"
+      >
+      <div v-for="wordNum in sortedWords" :key="wordNum" class="word-container">
+
+        <div class="word-label">Word {{ wordNum }}</div>
+         <!-- Bit ruler for this word -->
+        <div class="bit-ruler">
+           <span class="bit-number">{{ getWordBitWidth(wordNum) - 1 }}</span
+          > <span class="bit-spacer"></span> <span class="bit-number">0</span>
+        </div>
+         <!-- Encoding blocks for this word -->
         <div class="encoding-blocks">
+
           <div
             v-for="(block, index) in wordGroups.get(wordNum)"
             :key="`word${wordNum}-${block.name}-${index}`"
             class="encoding-block"
-            :class="{ 'non-contiguous': block.totalSegments && block.totalSegments > 1 }"
+            :class="{
+              'non-contiguous': block.totalSegments && block.totalSegments > 1,
+            }"
             :style="{
               flex: block.width,
               background: getFieldColor(block.type),
             }"
-            :title="block.totalSegments && block.totalSegments > 1 
-              ? `${block.name} (${block.type}): bits ${block.startBit}-${block.endBit} [segment ${block.segmentIndex! + 1}/${block.totalSegments}]`
-              : `${block.name} (${block.type}): bits ${block.startBit}-${block.endBit}`"
+            :title="
+              block.totalSegments && block.totalSegments > 1
+                ? `${block.name} (${block.type}): bits ${block.startBit}-${block.endBit} [segment ${block.segmentIndex! + 1}/${block.totalSegments}]`
+                : `${block.name} (${block.type}): bits ${block.startBit}-${block.endBit}`
+            "
           >
+
             <div class="block-content">
-              <span class="block-name">
-                {{ block.name }}
-                <span v-if="block.totalSegments && block.totalSegments > 1" class="segment-marker">
-                  [{{ block.segmentIndex! + 1 }}/{{ block.totalSegments }}]
-                </span>
-              </span>
-              <span class="block-bits">{{ block.width }}</span>
-              <span v-if="block.value" class="block-value">{{ block.value }}</span>
+               <span class="block-name"
+                > {{ block.name }} <span
+                  v-if="block.totalSegments && block.totalSegments > 1"
+                  class="segment-marker"
+                  > [{{ block.segmentIndex! + 1 }}/{{ block.totalSegments }}]
+                  </span
+                > </span
+              > <span class="block-bits">{{ block.width }}</span
+              > <span v-if="block.value" class="block-value">{{
+                block.value
+              }}</span
+              >
             </div>
+
           </div>
+
         </div>
-      </div>
-    </template>
 
-    <!-- Single-word instruction visualization (legacy) -->
-    <template v-else>
-      <!-- Bit ruler at top -->
+      </div>
+       </template
+    > <!-- Single-word instruction visualization (legacy) --> <template v-else
+      > <!-- Bit ruler at top -->
       <div class="bit-ruler">
-        <span class="bit-number">{{ totalBitWidth - 1 }}</span>
-        <span class="bit-spacer"></span>
-        <span class="bit-number">0</span>
+         <span class="bit-number">{{ totalBitWidth - 1 }}</span
+        > <span class="bit-spacer"></span> <span class="bit-number">0</span>
       </div>
-
-      <!-- Encoding blocks -->
+       <!-- Encoding blocks -->
       <div class="encoding-blocks">
+
         <div
           v-for="(block, index) in encodingBlocks"
           :key="`${block.name}-${index}`"
           class="encoding-block"
-          :class="{ 'non-contiguous': block.totalSegments && block.totalSegments > 1 }"
+          :class="{
+            'non-contiguous': block.totalSegments && block.totalSegments > 1,
+          }"
           :style="{
             flex: block.width,
             background: getFieldColor(block.type),
           }"
-          :title="block.totalSegments && block.totalSegments > 1 
-            ? `${block.name} (${block.type}): bits ${block.startBit}-${block.endBit} [segment ${block.segmentIndex! + 1}/${block.totalSegments}]`
-            : `${block.name} (${block.type}): bits ${block.startBit}-${block.endBit}`"
+          :title="
+            block.totalSegments && block.totalSegments > 1
+              ? `${block.name} (${block.type}): bits ${block.startBit}-${block.endBit} [segment ${block.segmentIndex! + 1}/${block.totalSegments}]`
+              : `${block.name} (${block.type}): bits ${block.startBit}-${block.endBit}`
+          "
         >
-          <div class="block-content">
-            <span class="block-name">
-              {{ block.name }}
-              <span v-if="block.totalSegments && block.totalSegments > 1" class="segment-marker">
-                [{{ block.segmentIndex! + 1 }}/{{ block.totalSegments }}]
-              </span>
-            </span>
-            <span class="block-bits">{{ block.width }}</span>
-            <span v-if="block.value" class="block-value">{{ block.value }}</span>
-          </div>
-        </div>
-      </div>
-    </template>
 
-    <!-- Legend for field types -->
-    <!-- <div class="encoding-legend">
+          <div class="block-content">
+             <span class="block-name"
+              > {{ block.name }} <span
+                v-if="block.totalSegments && block.totalSegments > 1"
+                class="segment-marker"
+                > [{{ block.segmentIndex! + 1 }}/{{ block.totalSegments }}]
+                </span
+              > </span
+            > <span class="block-bits">{{ block.width }}</span
+            > <span v-if="block.value" class="block-value">{{
+              block.value
+            }}</span
+            >
+          </div>
+
+        </div>
+
+      </div>
+       </template
+    > <!-- Legend for field types --> <!-- <div class="encoding-legend">
       <span class="legend-item" v-if="instruction.co">
         <span class="legend-color" style="background: rgba(255, 99, 71, 0.3)"></span>
         CO: {{ instruction.co }}
@@ -374,6 +400,7 @@ export default defineComponent({
       </span>
     </div> -->
   </div>
+
 </template>
 
 <style lang="scss" scoped>
@@ -608,3 +635,4 @@ export default defineComponent({
   }
 }
 </style>
+

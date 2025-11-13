@@ -1,6 +1,5 @@
 <!--
-Copyright 2018-2025 Felix Garcia Carballeira, Diego Camarmas Alonso,
-                    Alejandro Calderon Mateos, Luis Daniel Casais Mezquida
+Copyright 2018-2025 CREATOR Team.
 
 This file is part of CREATOR.
 
@@ -17,9 +16,8 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
-
 <script lang="ts">
-import { defineComponent, type PropType } from "vue"
+import { defineComponent, type PropType } from "vue";
 
 export default defineComponent({
   props: {
@@ -29,44 +27,33 @@ export default defineComponent({
       required: true,
     },
   },
-})
+});
 </script>
 
 <template>
-  <b-modal :id="id" title="Notifications" scrollable no-footer>
-    <span class="h6" v-if="notifications.length === 0">
-      No notifications available.
-    </span>
-
-    <b-alert
+   <b-modal :id="id" title="Notifications" scrollable no-footer
+    > <span class="h6" v-if="notifications.length === 0"
+      > No notifications available. </span
+    > <b-alert
       :model-value="true"
       :variant="notif.color"
       v-for="notif in notifications.toReversed()"
-    >
-      <span class="h6">
-        <font-awesome-icon
+      > <span class="h6"
+        > <font-awesome-icon
           icon="fa-solid fa-info-circle"
           v-if="notif.color === 'info'"
-        />
-        <font-awesome-icon
+        /> <font-awesome-icon
           icon="fa-solid fa-circle-exclamation"
           v-if="notif.color === 'danger'"
-        />
-        <font-awesome-icon
+        /> <font-awesome-icon
           icon="fa-solid fa-exclamation-triangle"
           v-if="notif.color === 'warning'"
-        />
-        <font-awesome-icon
+        /> <font-awesome-icon
           icon="fa-solid fa-circle-check"
           v-if="notif.color === 'success'"
-        />
-
-        {{ notif.date }} - {{ notif.time }}
-
-        <br />
-
-        {{ notif.mess }}
-      </span>
-    </b-alert>
-  </b-modal>
+        /> {{ notif.date }} - {{ notif.time }} <br /> {{ notif.mess }} </span
+      > </b-alert
+    > </b-modal
+  >
 </template>
+

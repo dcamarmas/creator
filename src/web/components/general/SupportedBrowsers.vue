@@ -1,6 +1,5 @@
 <!--
-Copyright 2018-2025 Felix Garcia Carballeira, Diego Camarmas Alonso,
-                    Alejandro Calderon Mateos, Luis Daniel Casais Mezquida
+Copyright 2018-2025 CREATOR Team.
 
 This file is part of CREATOR.
 
@@ -17,7 +16,6 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
-
 <style lang="scss" scoped>
 .browserBadge {
   background-color: transparent;
@@ -30,7 +28,7 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 </style>
 
 <script lang="ts">
-import { defineComponent } from "vue"
+import { defineComponent } from "vue";
 
 export default defineComponent({
   props: {
@@ -40,7 +38,7 @@ export default defineComponent({
   data() {
     return {
       modalShow: false,
-    }
+    };
   },
 
   methods: {
@@ -49,71 +47,61 @@ export default defineComponent({
         case "Chrome":
         case "Firefox":
         case "Safari":
-          return true
+          return true;
 
         default:
-          return false
+          return false;
       }
     },
   },
 
   mounted() {
-    this.modalShow = !this.validate_browser()
+    this.modalShow = !this.validate_browser();
   },
-})
+});
 </script>
 
 <template>
-  <b-modal v-model="modalShow" title="Browser not supported" no-footer>
-    <span class="h6">
-      You are using an unsupported browser, please use one of the following:
-    </span>
-    <br />
-    <b-list-group>
-      <b-list-group-item
+   <b-modal v-model="modalShow" title="Browser not supported" no-footer
+    > <span class="h6"
+      > You are using an unsupported browser, please use one of the following:
+      </span
+    > <br /> <b-list-group
+      > <b-list-group-item
         class="d-flex justify-content-between align-items-center"
-      >
-        Google Chrome 70+
-        <b-badge pill class="browserBadge">
-          <b-img
+        > Google Chrome 70+ <b-badge pill class="browserBadge"
+          > <b-img
             src="@/web/assets/img/browsers/chrome.webp"
             class="shadow broserIcon"
             rounded="circle"
             fluid
             alt="Responsive image"
-          />
-        </b-badge>
-      </b-list-group-item>
-
-      <b-list-group-item
+          /> </b-badge
+        > </b-list-group-item
+      > <b-list-group-item
         class="d-flex justify-content-between align-items-center"
-      >
-        Mozilla Firefox 60+
-        <b-badge pill class="browserBadge">
-          <b-img
+        > Mozilla Firefox 60+ <b-badge pill class="browserBadge"
+          > <b-img
             src="@/web/assets/img/browsers/firefox.webp"
             class="shadow broserIcon"
             rounded="circle"
             fluid
             alt="Responsive image"
-          />
-        </b-badge>
-      </b-list-group-item>
-
-      <b-list-group-item
+          /> </b-badge
+        > </b-list-group-item
+      > <b-list-group-item
         class="d-flex justify-content-between align-items-center"
-      >
-        Apple Safari 12+
-        <b-badge pill class="browserBadge">
-          <b-img
+        > Apple Safari 12+ <b-badge pill class="browserBadge"
+          > <b-img
             src="@/web/assets/img/browsers/safari.webp"
             class="shadow broserIcon"
             rounded="circle"
             fluid
             alt="Responsive image"
-          />
-        </b-badge>
-      </b-list-group-item>
-    </b-list-group>
-  </b-modal>
+          /> </b-badge
+        > </b-list-group-item
+      > </b-list-group
+    > </b-modal
+  >
 </template>
+

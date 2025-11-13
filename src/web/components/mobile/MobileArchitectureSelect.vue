@@ -1,6 +1,5 @@
 <!--
-Copyright 2018-2025 Felix Garcia Carballeira, Diego Camarmas Alonso,
-                    Alejandro Calderon Mateos, Jorge Ramos Santana
+Copyright 2018-2025 CREATOR Team.
 
 This file is part of CREATOR.
 
@@ -17,13 +16,15 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
-
 <script lang="ts">
-import { defineComponent, type PropType } from "vue"
-import ArchitectureItem from "../select_architecture/ArchitectureItem.vue"
-import DeleteArchitecture from "../select_architecture/DeleteArchitecture.vue"
-import { useArchitectureSelect } from '@/web/composables/useArchitectureSelect'
-import { useArchitectureUpload, type AvailableArch } from '@/web/composables/useArchitectureUpload'
+import { defineComponent, type PropType } from "vue";
+import ArchitectureItem from "../select_architecture/ArchitectureItem.vue";
+import DeleteArchitecture from "../select_architecture/DeleteArchitecture.vue";
+import { useArchitectureSelect } from "@/web/composables/useArchitectureSelect";
+import {
+  useArchitectureUpload,
+  type AvailableArch,
+} from "@/web/composables/useArchitectureUpload";
 
 export default defineComponent({
   components: {
@@ -32,7 +33,10 @@ export default defineComponent({
   },
 
   props: {
-    arch_available: { type: Array as PropType<AvailableArch[]>, required: true },
+    arch_available: {
+      type: Array as PropType<AvailableArch[]>,
+      required: true,
+    },
     dark: { type: [Boolean, null], required: true },
   },
 
@@ -51,8 +55,8 @@ export default defineComponent({
       handleArchitectureDeleted,
     } = useArchitectureSelect(
       (arch_name: string) => emit("select-architecture", arch_name),
-      (arch_name: string) => emit("architecture-deleted", arch_name)
-    )
+      (arch_name: string) => emit("architecture-deleted", arch_name),
+    );
 
     const {
       showLoadModal,
@@ -61,7 +65,9 @@ export default defineComponent({
       customArchFile,
       openLoadArchModal,
       loadCustomArch,
-    } = useArchitectureUpload((arch_name: string) => emit('select-architecture', arch_name))
+    } = useArchitectureUpload((arch_name: string) =>
+      emit("select-architecture", arch_name),
+    );
 
     return {
       archToDelete,
@@ -75,105 +81,104 @@ export default defineComponent({
       customArchFile,
       openLoadArchModal,
       loadCustomArch,
-    }
+    };
   },
 
   computed: {
     availableArchitectures() {
-      return this.arch_available.filter(arch => arch.available)
+      return this.arch_available.filter(arch => arch.available);
     },
   },
-})
+});
 </script>
 
 <template>
+
   <div class="mobile-arch-select">
+
     <div class="mobile-arch-header">
+
       <h2 class="arch-title">
-        <font-awesome-icon :icon="['fas', 'microchip']" />
-        Select Architecture
+         <font-awesome-icon :icon="['fas', 'microchip']" /> Select Architecture
       </h2>
+
       <p class="arch-subtitle">Choose an architecture to start programming</p>
+
     </div>
 
     <div class="mobile-arch-list">
-      <!-- Architecture Items -->
-      <ArchitectureItem
+       <!-- Architecture Items --> <ArchitectureItem
         v-for="arch in availableArchitectures"
         :key="arch.id"
         :arch="arch"
         :mobile="true"
         @select="handleSelectArchitecture(arch)"
         @delete="handleDeleteArchitecture(arch.name)"
-      />
+      /> <!-- Load Custom Architecture Button -->
+      <div class="arch-item load-custom" @click="openLoadArchModal">
 
-      <!-- Load Custom Architecture Button -->
-      <div 
-        class="arch-item load-custom"
-        @click="openLoadArchModal"
-      >
         <div class="arch-logo load-logo">
-          <font-awesome-icon :icon="['fas', 'file-import']" />
+           <font-awesome-icon :icon="['fas', 'file-import']" />
         </div>
-        
+
         <div class="arch-info">
+
           <h3 class="arch-name">Load Custom Architecture</h3>
-          <p class="arch-description">Import your own architecture definition file (.yml)</p>
+
+          <p class="arch-description">
+             Import your own architecture definition file (.yml)
+          </p>
+
         </div>
 
         <div class="arch-actions">
-          <div class="select-indicator">
-            <font-awesome-icon :icon="['fas', 'plus']" />
-          </div>
-        </div>
-      </div>
-    </div>
 
-    <!-- Load Custom Architecture Modal -->
-    <b-modal 
-      v-model="showLoadModal" 
-      title="Load Custom Architecture" 
+          <div class="select-indicator">
+             <font-awesome-icon :icon="['fas', 'plus']" />
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+     <!-- Load Custom Architecture Modal --> <b-modal
+      v-model="showLoadModal"
+      title="Load Custom Architecture"
       @ok="loadCustomArch"
-    >
-      <b-form>
-        <b-form-group label="Architecture Name" label-for="arch-name">
-          <b-form-input
+      > <b-form
+        > <b-form-group label="Architecture Name" label-for="arch-name"
+          > <b-form-input
             id="arch-name"
             v-model="customArchName"
             placeholder="Enter architecture name"
             required
-          />
-        </b-form-group>
-
-        <b-form-group label="Description" label-for="arch-description">
-          <b-form-textarea
+          /> </b-form-group
+        > <b-form-group label="Description" label-for="arch-description"
+          > <b-form-textarea
             id="arch-description"
             v-model="customArchDescription"
             placeholder="Enter architecture description"
             rows="3"
-          />
-        </b-form-group>
-
-        <b-form-group label="Architecture File" label-for="arch-file">
-          <b-form-file
+          /> </b-form-group
+        > <b-form-group label="Architecture File" label-for="arch-file"
+          > <b-form-file
             id="arch-file"
             v-model="customArchFile"
             accept=".yml"
             placeholder="Choose a .yml file..."
             required
-          />
-        </b-form-group>
-      </b-form>
-    </b-modal>
-
-    <!-- Delete Architecture Modal -->
-    <DeleteArchitecture 
-      id="modal-delete-arch-mobile" 
+          /> </b-form-group
+        > </b-form
+      > </b-modal
+    > <!-- Delete Architecture Modal --> <DeleteArchitecture
+      id="modal-delete-arch-mobile"
       v-model="showDeleteModal"
       :arch="archToDelete"
       @architecture-deleted="handleArchitectureDeleted"
     />
   </div>
+
 </template>
 
 <style lang="scss" scoped>
@@ -435,3 +440,4 @@ export default defineComponent({
   }
 }
 </style>
+

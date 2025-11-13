@@ -1,6 +1,5 @@
 <!--
-Copyright 2018-2025 Felix Garcia Carballeira, Diego Camarmas Alonso,
-                    Alejandro Calderon Mateos, Luis Daniel Casais Mezquida
+Copyright 2018-2025 CREATOR Team.
 
 This file is part of CREATOR.
 
@@ -17,11 +16,10 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
-
 <script lang="ts">
-import { show_loading, hide_loading, show_notification } from "@/web/utils.mjs"
-import { load_library } from "@/core/core.mjs"
-import { defineComponent } from "vue"
+import { show_loading, hide_loading, show_notification } from "@/web/utils.mjs";
+import { load_library } from "@/core/core.mjs";
+import { defineComponent } from "vue";
 
 export default defineComponent({
   props: {
@@ -29,48 +27,49 @@ export default defineComponent({
   },
 
   data() {
-    return { library: null }
+    return { library: null };
   },
 
   methods: {
     load() {
       // read file
-      show_loading()
-      const reader = new FileReader()
+      show_loading();
+      const reader = new FileReader();
       reader.onload = _event => {
         try {
-          load_library(reader.result as string)
+          load_library(reader.result as string);
         } catch (_e) {
-          show_notification("Invalid library", "danger")
-          return
+          show_notification("Invalid library", "danger");
+          return;
         }
 
         // this.$root.librayLoaded = true
-        hide_loading()
-      }
+        hide_loading();
+      };
       reader.onerror = () =>
-        show_notification("Error loading library", "danger")
+        show_notification("Error loading library", "danger");
 
-      reader.readAsText(this.library!)
+      reader.readAsText(this.library!);
     },
   },
-})
+});
 </script>
 
 <template>
-  <b-modal
+   <b-modal
     :id="id"
     title="Load Binary"
     ok-title="Load from this File"
     @ok="load"
-  >
+    >
     <p>Please select the binary file to be loaded</p>
-    <b-form-file
+     <b-form-file
       v-model="library"
       :state="library !== null"
       placeholder="Choose a file..."
       accept=".yml"
       id="binary_file"
-    />
-  </b-modal>
+    /> </b-modal
+  >
 </template>
+

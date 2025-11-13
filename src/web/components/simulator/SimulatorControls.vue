@@ -1,6 +1,5 @@
 <!--
-Copyright 2018-2025 Felix Garcia Carballeira, Diego Camarmas Alonso,
-                    Alejandro Calderon Mateos, Luis Daniel Casais Mezquida
+Copyright 2018-2025 CREATOR Team.
 
 This file is part of CREATOR.
 
@@ -17,9 +16,8 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
-
 <script setup lang="ts">
-import { ref, computed, onMounted, watch, type PropType } from "vue"
+import { ref, computed, onMounted, watch, type PropType } from "vue";
 import {
   set_execution_mode,
   status,
@@ -27,125 +25,131 @@ import {
   instructions_packed,
   reset as coreReset,
   getPC,
-} from "@/core/core.mjs"
-import { instructions as coreInstructions, setInstructions } from "@/core/assembler/assembler.mjs"
-import { step } from "@/core/executor/executor.mjs"
-import { creator_ga } from "@/core/utils/creator_ga.mjs"
-import { packExecute } from "@/core/utils/utils.mjs"
-import { show_notification } from "@/web/utils.mjs"
-import type { Instruction } from "@/core/assembler/assembler"
+} from "@/core/core.mjs";
+import {
+  instructions as coreInstructions,
+  setInstructions,
+} from "@/core/assembler/assembler.mjs";
+import { step } from "@/core/executor/executor.mjs";
+import { creator_ga } from "@/core/utils/creator_ga.mjs";
+import { packExecute } from "@/core/utils/utils.mjs";
+import { show_notification } from "@/web/utils.mjs";
+import type { Instruction } from "@/core/assembler/assembler";
 
 const props = defineProps({
   instructions: {
     type: Array as PropType<Instruction[]>,
-    required: true
+    required: true,
   },
   autoscroll: {
     type: Boolean,
-    default: false
+    default: false,
   },
   os: {
     type: String,
-    required: true
+    required: true,
   },
   browser: {
     type: String,
-    required: true
+    required: true,
   },
   dark: {
     type: Boolean,
-    default: false
-  }
-})
+    default: false,
+  },
+});
 
 // Button state
-const reset_disable = ref(true)
-const instruction_disable = ref(false)
-const run_disable = ref(false)
-const stop_disable = ref(true)
+const reset_disable = ref(true);
+const instruction_disable = ref(false);
+const run_disable = ref(false);
+const stop_disable = ref(true);
 
 // Computed properties
 const instruction_values = computed({
   get() {
-    return props.instructions
+    return props.instructions;
   },
   set(value: Instruction[]) {
-    setInstructions(value)
-  }
-})
+    setInstructions(value);
+  },
+});
 
 const accesskey_prefix = computed(() => {
   if (props.os === "Mac") {
-    return "^ ⌥ "
+    return "^ ⌥ ";
   } else {
     switch (props.browser) {
       case "Chrome":
-        return "Alt+"
+        return "Alt+";
       case "Firefox":
-        return "Alt+Shift+"
+        return "Alt+Shift+";
       default:
-        return "???"
+        return "???";
     }
   }
-})
+});
 
 // Lifecycle
 onMounted(() => {
   // Enable execution buttons only if there are instructions to execute
-  const prepared_for_execution = props.instructions.length > 0
+  const prepared_for_execution = props.instructions.length > 0;
 
   if (status.run_program !== 3) {
-    run_disable.value = !prepared_for_execution
-    reset_disable.value = !prepared_for_execution
-    instruction_disable.value = !prepared_for_execution
+    run_disable.value = !prepared_for_execution;
+    reset_disable.value = !prepared_for_execution;
+    instruction_disable.value = !prepared_for_execution;
   }
-})
+});
 
 // Watch for changes in instructions to update button states
-watch(() => props.instructions.length, (newLength) => {
-  const prepared_for_execution = newLength > 0
-  
-  if (status.run_program !== 3) {
-    run_disable.value = !prepared_for_execution
-    reset_disable.value = !prepared_for_execution
-    instruction_disable.value = !prepared_for_execution
-  }
-})
+watch(
+  () => props.instructions.length,
+  newLength => {
+    const prepared_for_execution = newLength > 0;
+
+    if (status.run_program !== 3) {
+      run_disable.value = !prepared_for_execution;
+      reset_disable.value = !prepared_for_execution;
+      instruction_disable.value = !prepared_for_execution;
+    }
+  },
+);
 
 // Methods
 function execution_UI_update(ret: ExecutionResult | undefined) {
   if (ret === undefined) {
-    return
+    return;
   }
 
-  const root = (document as any).app
+  const root = (document as any).app;
 
   /* MEMORY */
-  root?.$refs.simulatorView?.$refs.memory?.refresh()
+  root?.$refs.simulatorView?.$refs.memory?.refresh();
 
   /* STATS */
-  root?.$refs.simulatorView?.$refs.stats?.refresh()
+  root?.$refs.simulatorView?.$refs.stats?.refresh();
 
   /* EXECUTION TABLE */
-  const currentPC = getPC()
-  const previousPC = guiVariables.previous_PC
-  const keep_highlighted = guiVariables.keep_highlighted
+  const currentPC = getPC();
+  const previousPC = guiVariables.previous_PC;
+  const keep_highlighted = guiVariables.keep_highlighted;
 
   for (let i = 0; i < instruction_values.value.length; i++) {
-    instruction_values.value[i]!._rowVariant = ""
-    
+    instruction_values.value[i]!._rowVariant = "";
+
     switch (BigInt(instruction_values.value[i]!.Address)) {
       case keep_highlighted:
-        instruction_values.value[i]!._rowVariant = "warning"
-        break
+        instruction_values.value[i]!._rowVariant = "warning";
+        break;
       case previousPC:
-        instruction_values.value[i]!._rowVariant = "info"
-        break
+        instruction_values.value[i]!._rowVariant = "info";
+        break;
       case currentPC:
-        instruction_values.value[i]!._rowVariant = "success"
-        break
+        instruction_values.value[i]!._rowVariant = "success";
+        break;
       default:
-        break
+        break;
     }
   }
 
@@ -159,33 +163,33 @@ function execution_UI_update(ret: ExecutionResult | undefined) {
       status.execution_index >= 0 &&
       status.execution_index < props.instructions.length
     ) {
-      let row = status.execution_index + 1
+      let row = status.execution_index + 1;
       if (status.execution_index + 1 === props.instructions.length) {
-        row = status.execution_index
+        row = status.execution_index;
       }
 
       const rowElement = document.querySelector(
         "#inst_table__row_" + props.instructions[row]!.Address,
-      ) as HTMLElement
-      const tableElement = document.querySelector(".instructions_table")
+      ) as HTMLElement;
+      const tableElement = document.querySelector(".instructions_table");
 
       if (rowElement && tableElement) {
-        const rowPos = rowElement.offsetTop
-        const tableHeight = tableElement.clientHeight
+        const rowPos = rowElement.offsetTop;
+        const tableHeight = tableElement.clientHeight;
 
         tableElement.scrollTo({
           top: rowPos - tableHeight / 2,
           behavior: "smooth",
-        })
+        });
       }
     } else {
-      const tableElement = document.querySelector(".instructions_table")
+      const tableElement = document.querySelector(".instructions_table");
 
       if (tableElement) {
         tableElement.scrollTo({
           top: tableElement.scrollHeight,
           behavior: "smooth",
-        })
+        });
       }
     }
   }
@@ -199,243 +203,241 @@ function execution_UI_reset() {
     warning: [],
     danger: [],
     flash: [],
-  }
+  };
 
   for (let i = 0; i < props.instructions.length; i++) {
-    draw.space.push(i)
+    draw.space.push(i);
   }
 
-  draw.success.push(status.execution_index)
+  draw.success.push(status.execution_index);
 
-  execution_UI_update(packExecute(false, null, null, draw))
-  
+  execution_UI_update(packExecute(false, null, null, draw));
+
   // Ensure buttons are enabled if there are instructions
-  const prepared_for_execution = props.instructions.length > 0
+  const prepared_for_execution = props.instructions.length > 0;
   if (prepared_for_execution && status.run_program !== 3) {
-    reset_disable.value = false
-    instruction_disable.value = false
-    run_disable.value = false
-    stop_disable.value = true
+    reset_disable.value = false;
+    instruction_disable.value = false;
+    run_disable.value = false;
+    stop_disable.value = true;
   }
 }
 
 function reset() {
-  creator_ga("execute", "execute.reset", "execute.reset")
+  creator_ga("execute", "execute.reset", "execute.reset");
 
-  const root = (document as any).app
+  const root = (document as any).app;
 
   // UI: reset I/O
-  root.keyboard = ""
-  root.display = ""
-  root.enter = null
+  root.keyboard = "";
+  root.display = "";
+  root.enter = null;
 
   // Reset button status
-  reset_disable.value = false
-  instruction_disable.value = false
-  run_disable.value = false
-  stop_disable.value = true
+  reset_disable.value = false;
+  instruction_disable.value = false;
+  run_disable.value = false;
+  stop_disable.value = true;
 
-  coreReset()
+  coreReset();
 
-  execution_UI_reset()
+  execution_UI_reset();
 }
 
 function execute_instruction() {
-  creator_ga("execute", "execute.instruction", "execute.instruction")
+  creator_ga("execute", "execute.instruction", "execute.instruction");
 
-  set_execution_mode(0)
+  set_execution_mode(0);
 
-  let ret
+  let ret;
   try {
-    ret = step() as unknown as ExecutionResult
+    ret = step() as unknown as ExecutionResult;
   } catch (err: any) {
-    console.error("Execution error:", err)
-    show_notification(`Execution error: ${err.message || err}`, "danger")
+    console.error("Execution error:", err);
+    show_notification(`Execution error: ${err.message || err}`, "danger");
 
     if (
       status.execution_index >= 0 &&
       status.execution_index < instruction_values.value.length
     ) {
-      instruction_values.value[status.execution_index]!._rowVariant = "danger"
+      instruction_values.value[status.execution_index]!._rowVariant = "danger";
     }
 
-    status.execution_index = -1
-    status.error = true
+    status.execution_index = -1;
+    status.error = true;
 
-    execution_UI_update({ error: true, msg: err.message || err })
-    return
+    execution_UI_update({ error: true, msg: err.message || err });
+    return;
   }
 
   if (status.run_program === 3) {
-    instruction_disable.value = true
-    run_disable.value = true
+    instruction_disable.value = true;
+    run_disable.value = true;
   }
 
   if (typeof ret === "undefined") {
-    console.log("Something weird happened :-S")
+    console.log("Something weird happened :-S");
   }
 
   if (ret.msg) {
-    show_notification(ret.msg, ret.type!)
+    show_notification(ret.msg, ret.type!);
   }
 
   if (ret.draw !== null) {
-    execution_UI_update(ret)
+    execution_UI_update(ret);
   }
 }
 
 function execute_program() {
-  creator_ga("execute", "execute.run", "execute.run")
+  creator_ga("execute", "execute.run", "execute.run");
 
-  set_execution_mode(1)
+  set_execution_mode(1);
 
   if (status.run_program === 0) {
-    status.run_program = 1
+    status.run_program = 1;
   }
 
   if (props.instructions.length === 0) {
-    show_notification("No instructions in memory", "danger")
-    status.run_program = 0
-    return
+    show_notification("No instructions in memory", "danger");
+    status.run_program = 0;
+    return;
   }
   if (status.execution_index < -1) {
-    show_notification("The program has finished", "warning")
-    status.run_program = 0
-    return
+    show_notification("The program has finished", "warning");
+    status.run_program = 0;
+    return;
   }
   if (status.execution_index === -1) {
-    show_notification("The program has finished with errors", "danger")
-    status.run_program = 0
-    return
+    show_notification("The program has finished with errors", "danger");
+    status.run_program = 0;
+    return;
   }
 
   // Change buttons status
-  reset_disable.value = true
-  instruction_disable.value = true
-  run_disable.value = true
-  stop_disable.value = false
+  reset_disable.value = true;
+  instruction_disable.value = true;
+  run_disable.value = true;
+  stop_disable.value = false;
 
-  execute_program_packed()
+  execute_program_packed();
 }
 
 function execute_program_packed() {
-  let ret = undefined
+  let ret = undefined;
 
-  for (
-    let i = 0;
-    i < instructions_packed && status.execution_index >= 0;
-    i++
-  ) {
+  for (let i = 0; i < instructions_packed && status.execution_index >= 0; i++) {
     if (
       status.run_program === 0 ||
       status.run_program === 3 ||
       (coreInstructions[status.execution_index]?.Break === true &&
         status.run_program !== 2)
     ) {
-      execution_UI_update(ret)
+      execution_UI_update(ret);
 
-      reset_disable.value = false
-      instruction_disable.value = false
-      run_disable.value = false
-      stop_disable.value = true
+      reset_disable.value = false;
+      instruction_disable.value = false;
+      run_disable.value = false;
+      stop_disable.value = true;
 
       if (coreInstructions[status.execution_index]?.Break === true) {
-        status.run_program = 2
+        status.run_program = 2;
       }
-      return
+      return;
     } else {
       if (status.run_program === 2) {
-        status.run_program = 1
+        status.run_program = 1;
       }
 
       try {
-        ret = step() as unknown as ExecutionResult
+        ret = step() as unknown as ExecutionResult;
       } catch (err: any) {
-        console.error("Execution error:", err)
-        show_notification(`Execution error: ${err.message || err}`, "danger")
+        console.error("Execution error:", err);
+        show_notification(`Execution error: ${err.message || err}`, "danger");
 
         if (
           status.execution_index >= 0 &&
           status.execution_index < instruction_values.value.length
         ) {
           instruction_values.value[status.execution_index]!._rowVariant =
-            "danger"
+            "danger";
         }
 
-        status.run_program = 0
-        status.execution_index = -1
-        status.error = true
+        status.run_program = 0;
+        status.execution_index = -1;
+        status.error = true;
 
-        execution_UI_update({ error: true, msg: err.message || err })
+        execution_UI_update({ error: true, msg: err.message || err });
 
-        reset_disable.value = false
-        instruction_disable.value = true
-        run_disable.value = true
-        stop_disable.value = true
+        reset_disable.value = false;
+        instruction_disable.value = true;
+        run_disable.value = true;
+        stop_disable.value = true;
 
-        return
+        return;
       }
 
       if (typeof ret === "undefined") {
-        console.log("Something weird happened :-S")
-        status.run_program = 0
+        console.log("Something weird happened :-S");
+        status.run_program = 0;
 
-        execution_UI_update(ret)
+        execution_UI_update(ret);
 
-        reset_disable.value = false
-        instruction_disable.value = true
-        run_disable.value = true
-        stop_disable.value = true
+        reset_disable.value = false;
+        instruction_disable.value = true;
+        run_disable.value = true;
+        stop_disable.value = true;
 
-        return
+        return;
       }
 
       if (ret.msg) {
-        show_notification(ret.msg, ret.type!)
+        show_notification(ret.msg, ret.type!);
 
-        execution_UI_update(ret)
+        execution_UI_update(ret);
 
-        reset_disable.value = false
-        instruction_disable.value = true
-        run_disable.value = true
-        stop_disable.value = true
+        reset_disable.value = false;
+        instruction_disable.value = true;
+        run_disable.value = true;
+        stop_disable.value = true;
       }
     }
   }
 
   if (status.execution_index >= 0) {
-    setTimeout(execute_program_packed, 15, ret)
+    setTimeout(execute_program_packed, 15, ret);
   } else {
-    execution_UI_update(ret)
-    reset_disable.value = false
-    instruction_disable.value = true
-    run_disable.value = true
-    stop_disable.value = true
+    execution_UI_update(ret);
+    reset_disable.value = false;
+    instruction_disable.value = true;
+    run_disable.value = true;
+    stop_disable.value = true;
   }
 }
 
 function stop_execution() {
-  status.run_program = 0
+  status.run_program = 0;
 
   // Only enable step and run if execution hasn't finished
-  const execution_finished = status.execution_index < 0 || status.run_program === 3
-  
-  reset_disable.value = false
-  instruction_disable.value = execution_finished
-  run_disable.value = execution_finished
-  stop_disable.value = true
+  const execution_finished =
+    status.execution_index < 0 || status.run_program === 3;
+
+  reset_disable.value = false;
+  instruction_disable.value = execution_finished;
+  run_disable.value = execution_finished;
+  stop_disable.value = true;
 }
 
 // Expose methods to parent components
 defineExpose({
   execution_UI_reset,
-  reset
-})
+  reset,
+});
 </script>
 
 <template>
+
   <div class="button-group">
-    <button
+     <button
       class="sim-button"
       :class="{ 'sim-button-dark': dark }"
       accesskey="x"
@@ -443,11 +445,9 @@ defineExpose({
       :title="`${accesskey_prefix}X`"
       @click="reset()"
     >
-      <font-awesome-icon :icon="['fas', 'power-off']" class="icon-spacing" />
-      <span class="button-text">Reset</span>
-    </button>
-
-    <button
+       <font-awesome-icon :icon="['fas', 'power-off']" class="icon-spacing" />
+      <span class="button-text">Reset</span> </button
+    > <button
       class="sim-button"
       :class="{ 'sim-button-dark': dark }"
       accesskey="a"
@@ -455,11 +455,11 @@ defineExpose({
       :title="`${accesskey_prefix}A`"
       @click="execute_instruction"
     >
-      <font-awesome-icon :icon="['fas', 'forward-step']" class="icon-spacing" />
-      <span class="button-text">Step</span>
-    </button>
-
-    <button
+       <font-awesome-icon
+        :icon="['fas', 'forward-step']"
+        class="icon-spacing"
+      /> <span class="button-text">Step</span> </button
+    > <button
       id="playExecution"
       class="sim-button"
       :class="{ 'sim-button-dark': dark }"
@@ -468,11 +468,11 @@ defineExpose({
       :title="`${accesskey_prefix}R`"
       @click="execute_program"
     >
-      <font-awesome-icon :icon="['fas', 'play']" class="icon-spacing" />
-      <span class="button-text">Run</span>
-    </button>
-
-    <button
+       <font-awesome-icon :icon="['fas', 'play']" class="icon-spacing" /> <span
+        class="button-text"
+        >Run</span
+      > </button
+    > <button
       id="stop_execution"
       class="sim-button"
       :class="{ 'sim-button-dark': dark }"
@@ -481,10 +481,13 @@ defineExpose({
       :title="`${accesskey_prefix}C`"
       @click="stop_execution"
     >
-      <font-awesome-icon :icon="['fas', 'stop']" class="icon-spacing" />
-      <span class="button-text">Stop</span>
-    </button>
+       <font-awesome-icon :icon="['fas', 'stop']" class="icon-spacing" /> <span
+        class="button-text"
+        >Stop</span
+      > </button
+    >
   </div>
+
 </template>
 
 <style lang="scss" scoped>
@@ -554,5 +557,5 @@ defineExpose({
 .icon-spacing {
   margin-right: 0.5rem;
 }
-
 </style>
+

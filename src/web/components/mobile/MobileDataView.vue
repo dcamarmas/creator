@@ -1,6 +1,5 @@
 <!--
-Copyright 2018-2025 Felix Garcia Carballeira, Diego Camarmas Alonso,
-                    Alejandro Calderon Mateos, Jorge Ramos Santana
+Copyright 2018-2025 CREATOR Team.
 
 This file is part of CREATOR.
 
@@ -17,18 +16,17 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
-
 <script lang="ts">
-import { defineComponent, type PropType } from "vue"
-import type { StackFrame } from "@/core/memory/StackTracker.mjs"
-import { architecture } from "@/core/core.mjs"
-import { main_memory } from "@/core/core"
-import { type Device, devices } from "@/core/executor/devices.mts"
+import { defineComponent, type PropType } from "vue";
+import type { StackFrame } from "@/core/memory/StackTracker.mjs";
+import { architecture } from "@/core/core.mjs";
+import { main_memory } from "@/core/core";
+import { type Device, devices } from "@/core/executor/devices.mts";
 
-import RegisterFile from "../simulator/RegisterFile.vue"
-import HexViewer from "../simulator/HexViewer.vue"
-import Stats from "../simulator/Stats.vue"
-import Terminal from "../simulator/Terminal.vue"
+import RegisterFile from "../simulator/RegisterFile.vue";
+import HexViewer from "../simulator/HexViewer.vue";
+import Stats from "../simulator/Stats.vue";
+import Terminal from "../simulator/Terminal.vue";
 
 export default defineComponent({
   props: {
@@ -45,10 +43,13 @@ export default defineComponent({
     dark: { type: Boolean, required: true },
     caller_frame: Object as PropType<StackFrame>,
     callee_frame: Object as PropType<StackFrame>,
-    mobile_data_view: { type: String as PropType<'registers' | 'memory' | 'stats' | 'console'>, required: true },
+    mobile_data_view: {
+      type: String as PropType<"registers" | "memory" | "stats" | "console">,
+      required: true,
+    },
   },
 
-  emits: ['update:mobile_data_view'],
+  emits: ["update:mobile_data_view"],
 
   components: {
     RegisterFile,
@@ -62,99 +63,99 @@ export default defineComponent({
       architecture,
       main_memory: main_memory as any,
       devices: devices as Map<string, any>,
-    }
+    };
   },
 
   computed: {
     currentView: {
       get() {
-        return this.mobile_data_view
+        return this.mobile_data_view;
       },
       set(value: string) {
-        this.$emit('update:mobile_data_view', value)
-      }
-    }
+        this.$emit("update:mobile_data_view", value);
+      },
+    },
   },
 
   methods: {
-    switchView(view: 'registers' | 'memory' | 'stats' | 'console') {
-      this.currentView = view
+    switchView(view: "registers" | "memory" | "stats" | "console") {
+      this.currentView = view;
     },
 
     getViewIcon(view: string) {
       switch (view) {
-        case 'registers':
-          return ['fas', 'microchip']
-        case 'memory':
-          return ['fas', 'memory']
-        case 'stats':
-          return ['fas', 'chart-line']
-        case 'console':
-          return ['fas', 'terminal']
+        case "registers":
+          return ["fas", "microchip"];
+        case "memory":
+          return ["fas", "memory"];
+        case "stats":
+          return ["fas", "chart-line"];
+        case "console":
+          return ["fas", "terminal"];
         default:
-          return ['fas', 'database']
+          return ["fas", "database"];
       }
     },
 
     getViewLabel(view: string) {
       switch (view) {
-        case 'registers':
-          return 'Registers'
-        case 'memory':
-          return 'Memory'
-        case 'stats':
-          return 'Statistics'
-        case 'console':
-          return 'Console'
+        case "registers":
+          return "Registers";
+        case "memory":
+          return "Memory";
+        case "stats":
+          return "Statistics";
+        case "console":
+          return "Console";
         default:
-          return 'Data View'
+          return "Data View";
       }
     },
   },
-})
+});
 </script>
 
 <template>
-  <div class="mobile-data-view">
-    <div class="mobile-data-header">
-      <h3 class="data-title">
-        <font-awesome-icon :icon="getViewIcon(currentView)" />
-        {{ getViewLabel(currentView) }}
-      </h3>
 
-      <b-dropdown
+  <div class="mobile-data-view">
+
+    <div class="mobile-data-header">
+
+      <h3 class="data-title">
+         <font-awesome-icon :icon="getViewIcon(currentView)" /> {{
+          getViewLabel(currentView)
+        }}
+      </h3>
+       <b-dropdown
         variant="outline-secondary"
         size="sm"
         title="Switch View"
         no-caret
+        > <template #button-content
+          > <font-awesome-icon :icon="['fas', 'bars']" /> </template
+        > <b-dropdown-item @click="switchView('registers')"
+          > <font-awesome-icon :icon="['fas', 'microchip']" /> Registers
+          </b-dropdown-item
+        > <b-dropdown-item @click="switchView('memory')"
+          > <font-awesome-icon :icon="['fas', 'memory']" /> Memory
+          </b-dropdown-item
+        > <b-dropdown-item @click="switchView('stats')"
+          > <font-awesome-icon :icon="['fas', 'chart-line']" /> Statistics
+          </b-dropdown-item
+        > <b-dropdown-item @click="switchView('console')"
+          > <font-awesome-icon :icon="['fas', 'terminal']" /> Console
+          </b-dropdown-item
+        > </b-dropdown
       >
-        <template #button-content>
-          <font-awesome-icon :icon="['fas', 'bars']" />
-        </template>
-        <b-dropdown-item @click="switchView('registers')">
-          <font-awesome-icon :icon="['fas', 'microchip']" />
-          Registers
-        </b-dropdown-item>
-        <b-dropdown-item @click="switchView('memory')">
-          <font-awesome-icon :icon="['fas', 'memory']" />
-          Memory
-        </b-dropdown-item>
-        <b-dropdown-item @click="switchView('stats')">
-          <font-awesome-icon :icon="['fas', 'chart-line']" />
-          Statistics
-        </b-dropdown-item>
-        <b-dropdown-item @click="switchView('console')">
-          <font-awesome-icon :icon="['fas', 'terminal']" />
-          Console
-        </b-dropdown-item>
-      </b-dropdown>
     </div>
 
-    <div class="mobile-data-content" :class="{ 'terminal-view': currentView === 'console' }">
-      <!-- Data Content Area -->
-      <!-- Registers view -->
+    <div
+      class="mobile-data-content"
+      :class="{ 'terminal-view': currentView === 'console' }"
+    >
+       <!-- Data Content Area --> <!-- Registers view -->
       <div v-if="currentView === 'registers'" class="data-section">
-        <RegisterFile
+         <RegisterFile
           ref="registerFile"
           :data_mode="'int_registers'"
           :reg_representation_int="reg_representation_int"
@@ -163,35 +164,31 @@ export default defineComponent({
           :dark="dark"
         />
       </div>
-
-      <!-- Memory view-->
+       <!-- Memory view-->
       <div v-if="currentView === 'memory'" class="data-section">
-        <HexViewer
+         <HexViewer
           :main_memory="main_memory"
           :devices="devices"
           :segment="memory_segment"
         />
       </div>
-
-      <!-- Stats view-->
+       <!-- Stats view-->
       <div v-if="currentView === 'stats'" class="data-section">
-        <Stats
+         <Stats
           :dark="dark"
           :representation="stat_representation"
           :type="stat_type"
         />
       </div>
-
-      <!-- Console view-->
+       <!-- Console view-->
       <div v-if="currentView === 'console'" class="data-section">
-        <Terminal
-          :display="display"
-          :keyboard="keyboard"
-          :enter="enter"
-        />
+         <Terminal :display="display" :keyboard="keyboard" :enter="enter" />
       </div>
+
     </div>
+
   </div>
+
 </template>
 
 <style lang="scss" scoped>
@@ -288,3 +285,4 @@ export default defineComponent({
   }
 }
 </style>
+

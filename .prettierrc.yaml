@@ -10,6 +10,8 @@ quoteProps: as-needed
 arrowParens: avoid
 singleAttributePerLine: false
 useTabs: false
+plugins:
+  - prettier-plugin-vue
 overrides:
   - files:
       - "*.vue"
@@ -29,7 +31,3 @@ overrides:
       - "*.jsonc"
     options:
       trailingComma: none
-  - files:
-      - "*.vue"
-    options:
-      semi: false

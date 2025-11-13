@@ -1,6 +1,5 @@
 <!--
-Copyright 2018-2025 Felix Garcia Carballeira, Diego Camarmas Alonso,
-                    Alejandro Calderon Mateos, Jorge Ramos Santana
+Copyright 2018-2025 CREATOR Team.
 
 This file is part of CREATOR.
 
@@ -17,26 +16,25 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
-
 <script lang="ts">
-import { defineComponent, type PropType } from "vue"
-import type { Memory } from "@/core/memory/Memory.mjs"
-import type { Device } from "@/core/executor/devices.mjs"
-import { coreEvents } from "@/core/events.mjs"
-import { stackTracker, architecture } from "@/core/core.mjs"
-import type { StackFrame } from "@/core/memory/StackTracker.mjs"
-import MemoryLayoutDiagram from "../architecture/memory_layout/MemoryLayoutDiagram.vue"
+import { defineComponent, type PropType } from "vue";
+import type { Memory } from "@/core/memory/Memory.mjs";
+import type { Device } from "@/core/executor/devices.mjs";
+import { coreEvents } from "@/core/events.mjs";
+import { stackTracker, architecture } from "@/core/core.mjs";
+import type { StackFrame } from "@/core/memory/StackTracker.mjs";
+import MemoryLayoutDiagram from "../architecture/memory_layout/MemoryLayoutDiagram.vue";
 
 interface MemoryDump {
-  addresses: number[]
-  values: number[]
-  highestAddress: number
+  addresses: number[];
+  values: number[];
+  highestAddress: number;
   hints: Array<{
-    address: string
-    tag: string
-    type: string
-    sizeInBits?: number
-  }>
+    address: string;
+    tag: string;
+    type: string;
+    sizeInBits?: number;
+  }>;
 }
 
 export default defineComponent({
@@ -57,8 +55,11 @@ export default defineComponent({
       showAscii: window.innerWidth >= 870,
       showAddresses: true,
       selectedByte: -1,
-      viewMode: 'hex' as 'hex' | 'ascii',
-      hintMap: new Map<number, { tag: string; type: string; sizeInBits?: number; colorIndex: number }>(),
+      viewMode: "hex" as "hex" | "ascii",
+      hintMap: new Map<
+        number,
+        { tag: string; type: string; sizeInBits?: number; colorIndex: number }
+      >(),
       hintTooltip: null as HTMLElement | null,
       showAllTags: false,
 
@@ -79,212 +80,261 @@ export default defineComponent({
 
       // Editing state
       editingByte: -1,
-      editingValue: '',
+      editingValue: "",
 
       // Memory layout modal
       showMemoryLayoutModal: false,
       architecture,
       invertMemoryLayout: true,
-    }
+    };
   },
 
   mounted() {
     // Calculate initial bytes per row and ASCII visibility based on window width
-    this.updateBytesPerRow()
-    this.updateAsciiVisibility()
+    this.updateBytesPerRow();
+    this.updateAsciiVisibility();
 
-    this.refreshMemory()
+    this.refreshMemory();
 
     // Subscribe to register update events
-    coreEvents.on("register-updated", this.onRegisterUpdated)
+    coreEvents.on("register-updated", this.onRegisterUpdated);
 
     // Setup resize handler
-    window.addEventListener("resize", this.handleResize)
+    window.addEventListener("resize", this.handleResize);
   },
 
   beforeUnmount() {
-    coreEvents.off("register-updated", this.onRegisterUpdated)
+    coreEvents.off("register-updated", this.onRegisterUpdated);
 
-    window.removeEventListener("resize", this.handleResize)
+    window.removeEventListener("resize", this.handleResize);
 
-    this.hideHintTooltip()
+    this.hideHintTooltip();
   },
 
   computed: {
     totalRows(): number {
-      if (!this.memoryDump || this.memoryDump.highestAddress === 0) return 0
-      return Math.ceil((this.memoryDump.highestAddress + 1) / this.bytesPerRow)
+      if (!this.memoryDump || this.memoryDump.highestAddress === 0) return 0;
+      return Math.ceil((this.memoryDump.highestAddress + 1) / this.bytesPerRow);
     },
 
     totalPages(): number {
-      return Math.ceil(this.totalRows / this.rowsPerPage)
+      return Math.ceil(this.totalRows / this.rowsPerPage);
     },
 
     hexColumnsHeader(): string[] {
-      const headers = []
+      const headers = [];
       for (let i = 0; i < this.bytesPerRow; i++) {
-        headers.push(i.toString(16).toUpperCase().padStart(2, "0"))
+        headers.push(i.toString(16).toUpperCase().padStart(2, "0"));
       }
-      return headers
+      return headers;
     },
 
     // Get visible rows for the current page only
     visibleRows(): number[] {
-      const startRow = this.currentPage * this.rowsPerPage
-      const endRow = Math.min(startRow + this.rowsPerPage, this.totalRows)
-      const rows: number[] = []
+      const startRow = this.currentPage * this.rowsPerPage;
+      const endRow = Math.min(startRow + this.rowsPerPage, this.totalRows);
+      const rows: number[] = [];
 
       for (let row = startRow; row < endRow; row++) {
-        rows.push(row)
+        rows.push(row);
       }
 
-      return rows
+      return rows;
     },
 
     selectionInfo(): string {
-      if (this.selectedByte < 0 || !this.memoryDump) return ""
+      if (this.selectedByte < 0 || !this.memoryDump) return "";
 
-      const address = this.selectedByte
-      const value = this.getMemoryValue(address)
-      const char = value >= 32 && value <= 126 ? String.fromCharCode(value) : "."
+      const address = this.selectedByte;
+      const value = this.getMemoryValue(address);
+      const char =
+        value >= 32 && value <= 126 ? String.fromCharCode(value) : ".";
 
-      let info = `Address: 0x${address.toString(16).toUpperCase().padStart(8, "0")}`
+      let info = `Address: 0x${address.toString(16).toUpperCase().padStart(8, "0")}`;
 
-      if (this.viewMode === 'hex') {
-        info += ` | Value: 0x${value.toString(16).toUpperCase().padStart(2, "0")} (${value}) | ASCII: '${char}'`
+      if (this.viewMode === "hex") {
+        info += ` | Value: 0x${value.toString(16).toUpperCase().padStart(2, "0")} (${value}) | ASCII: '${char}'`;
       } else {
-        info += ` | ASCII: '${char}' | Value: 0x${value.toString(16).toUpperCase().padStart(2, "0")} (${value})`
+        info += ` | ASCII: '${char}' | Value: 0x${value.toString(16).toUpperCase().padStart(2, "0")} (${value})`;
       }
 
-      const hintInfo = this.hintMap.get(address)
+      const hintInfo = this.hintMap.get(address);
       if (hintInfo) {
-        info += ` | Hint: ${hintInfo.tag}${hintInfo.type ? ` (${hintInfo.type})` : ""}`
+        info += ` | Hint: ${hintInfo.tag}${hintInfo.type ? ` (${hintInfo.type})` : ""}`;
       }
 
-      return info
+      return info;
     },
 
     segmentList(): Array<{ name: string; start: bigint }> {
-      return Array.from(this.memorySegments.entries()).map(([name, segment]) => ({
-        name,
-        start: segment.start
-      }))
+      return Array.from(this.memorySegments.entries()).map(
+        ([name, segment]) => ({
+          name,
+          start: segment.start,
+        }),
+      );
     },
 
     hasPreviousPage(): boolean {
-      return this.currentPage > 0
+      return this.currentPage > 0;
     },
 
     hasNextPage(): boolean {
-      return this.currentPage < this.totalPages - 1
+      return this.currentPage < this.totalPages - 1;
     },
 
     stackFrames(): StackFrame[] {
-      return stackTracker.getAllFrames()
+      return stackTracker.getAllFrames();
     },
 
     stackTop(): number | undefined {
-      return stackTracker.getCurrentFrame()?.end
+      return stackTracker.getCurrentFrame()?.end;
     },
 
     stackBottom(): number | undefined {
-      return stackTracker.getAllFrames().at(0)?.begin
+      return stackTracker.getAllFrames().at(0)?.begin;
     },
 
     // Group tags by row for efficient rendering
-    tagsByRow(): Map<number, Array<Array<{ startCol: number; endCol: number; tag: string; colorIndex: number; isStackFrame?: boolean; frameIndex?: number }>>> {
-      const tagsByRow = new Map<number, Array<Array<{ startCol: number; endCol: number; tag: string; colorIndex: number; isStackFrame?: boolean; frameIndex?: number }>>>()
+    tagsByRow(): Map<
+      number,
+      Array<
+        Array<{
+          startCol: number;
+          endCol: number;
+          tag: string;
+          colorIndex: number;
+          isStackFrame?: boolean;
+          frameIndex?: number;
+        }>
+      >
+    > {
+      const tagsByRow = new Map<
+        number,
+        Array<
+          Array<{
+            startCol: number;
+            endCol: number;
+            tag: string;
+            colorIndex: number;
+            isStackFrame?: boolean;
+            frameIndex?: number;
+          }>
+        >
+      >();
 
-      if (!this.memoryDump) return tagsByRow
+      if (!this.memoryDump) return tagsByRow;
 
       // Temporary storage: row -> flat list of tags
-      const flatTagsByRow = new Map<number, Array<{ startCol: number; endCol: number; tag: string; colorIndex: number; isStackFrame?: boolean; frameIndex?: number }>>()
+      const flatTagsByRow = new Map<
+        number,
+        Array<{
+          startCol: number;
+          endCol: number;
+          tag: string;
+          colorIndex: number;
+          isStackFrame?: boolean;
+          frameIndex?: number;
+        }>
+      >();
 
       // Add memory hint tags if showAllTags is enabled
       if (this.showAllTags) {
         // Track which addresses we've already processed to avoid duplicates
-        const processedTags = new Map<string, { address: number; sizeInBytes: number }>()
+        const processedTags = new Map<
+          string,
+          { address: number; sizeInBytes: number }
+        >();
 
         // First pass: collect unique tags
         for (const hint of this.memoryDump.hints) {
-          const address = parseInt(hint.address, 10)
-          const tagKey = `${address}:${hint.tag}`
+          const address = parseInt(hint.address, 10);
+          const tagKey = `${address}:${hint.tag}`;
 
           if (!processedTags.has(tagKey)) {
-            const sizeInBytes = hint.sizeInBits ? Math.ceil(hint.sizeInBits / 8) : 1
-            processedTags.set(tagKey, { address, sizeInBytes })
+            const sizeInBytes = hint.sizeInBits
+              ? Math.ceil(hint.sizeInBits / 8)
+              : 1;
+            processedTags.set(tagKey, { address, sizeInBytes });
           }
         }
 
         // Second pass: organize by row
-        for (const [tagKey, { address, sizeInBytes }] of processedTags.entries()) {
-          const tagName = tagKey.split(':')[1] || ''
-          const hintInfo = this.hintMap.get(address)
-          if (!hintInfo) continue
+        for (const [
+          tagKey,
+          { address, sizeInBytes },
+        ] of processedTags.entries()) {
+          const tagName = tagKey.split(":")[1] || "";
+          const hintInfo = this.hintMap.get(address);
+          if (!hintInfo) continue;
 
-          const startRow = Math.floor(address / this.bytesPerRow)
-          const startCol = address % this.bytesPerRow
-          const endAddress = address + sizeInBytes - 1
-          const endRow = Math.floor(endAddress / this.bytesPerRow)
-          const endCol = endAddress % this.bytesPerRow
+          const startRow = Math.floor(address / this.bytesPerRow);
+          const startCol = address % this.bytesPerRow;
+          const endAddress = address + sizeInBytes - 1;
+          const endRow = Math.floor(endAddress / this.bytesPerRow);
+          const endCol = endAddress % this.bytesPerRow;
 
           // Handle tags that span multiple rows
           for (let row = startRow; row <= endRow; row++) {
             if (!flatTagsByRow.has(row)) {
-              flatTagsByRow.set(row, [])
+              flatTagsByRow.set(row, []);
             }
 
-            const rowTags = flatTagsByRow.get(row)!
-            const rowStartCol = row === startRow ? startCol : 0
-            const rowEndCol = row === endRow ? endCol : this.bytesPerRow - 1
+            const rowTags = flatTagsByRow.get(row)!;
+            const rowStartCol = row === startRow ? startCol : 0;
+            const rowEndCol = row === endRow ? endCol : this.bytesPerRow - 1;
 
             rowTags.push({
               startCol: rowStartCol,
               endCol: rowEndCol,
-              tag: row === startRow ? tagName : '', // Only show tag on first row
+              tag: row === startRow ? tagName : "", // Only show tag on first row
               colorIndex: hintInfo.colorIndex,
-            })
+            });
           }
         }
       }
 
       // Always add stack frame information
-      if (this.stackFrames.length > 0 && this.stackTop !== undefined && this.stackBottom !== undefined) {
-        const frames = this.stackFrames.toReversed()
+      if (
+        this.stackFrames.length > 0 &&
+        this.stackTop !== undefined &&
+        this.stackBottom !== undefined
+      ) {
+        const frames = this.stackFrames.toReversed();
 
         for (let i = 0; i < frames.length; i++) {
-          const frame = frames[i]!
+          const frame = frames[i]!;
           // Frame range is [end, begin) - end is inclusive, begin is exclusive
-          const startAddress = frame.end
-          const endAddress = frame.begin - 1 // Make begin exclusive by subtracting 1
+          const startAddress = frame.end;
+          const endAddress = frame.begin - 1; // Make begin exclusive by subtracting 1
 
           // Skip if the range is invalid (empty)
-          if (startAddress > endAddress) continue
+          if (startAddress > endAddress) continue;
 
-          const startRow = Math.floor(startAddress / this.bytesPerRow)
-          const startCol = startAddress % this.bytesPerRow
-          const endRow = Math.floor(endAddress / this.bytesPerRow)
-          const endCol = endAddress % this.bytesPerRow
+          const startRow = Math.floor(startAddress / this.bytesPerRow);
+          const startCol = startAddress % this.bytesPerRow;
+          const endRow = Math.floor(endAddress / this.bytesPerRow);
+          const endCol = endAddress % this.bytesPerRow;
 
           // Handle frames that span multiple rows
           for (let row = startRow; row <= endRow; row++) {
             if (!flatTagsByRow.has(row)) {
-              flatTagsByRow.set(row, [])
+              flatTagsByRow.set(row, []);
             }
 
-            const rowTags = flatTagsByRow.get(row)!
-            const rowStartCol = row === startRow ? startCol : 0
-            const rowEndCol = row === endRow ? endCol : this.bytesPerRow - 1
+            const rowTags = flatTagsByRow.get(row)!;
+            const rowStartCol = row === startRow ? startCol : 0;
+            const rowEndCol = row === endRow ? endCol : this.bytesPerRow - 1;
 
             // Determine label prefix based on frame index
-            let frameLabel = ''
+            let frameLabel = "";
             if (row === startRow) {
               if (i === 0) {
-                frameLabel = `Callee: ${frame.name}`
+                frameLabel = `Callee: ${frame.name}`;
               } else if (i === 1) {
-                frameLabel = `Caller: ${frame.name}`
+                frameLabel = `Caller: ${frame.name}`;
               } else {
-                frameLabel = frame.name
+                frameLabel = frame.name;
               }
             }
 
@@ -295,19 +345,19 @@ export default defineComponent({
               colorIndex: -1, // Special color for stack frames
               isStackFrame: true,
               frameIndex: i,
-            })
+            });
           }
         }
       }
 
       // Always add stack hints (register hints for stack addresses)
-      const stackHints = stackTracker.getAllHints()
+      const stackHints = stackTracker.getAllHints();
       for (const [address, hintName] of stackHints.entries()) {
-        const row = Math.floor(address / this.bytesPerRow)
-        const col = address % this.bytesPerRow
+        const row = Math.floor(address / this.bytesPerRow);
+        const col = address % this.bytesPerRow;
 
         if (!flatTagsByRow.has(row)) {
-          flatTagsByRow.set(row, [])
+          flatTagsByRow.set(row, []);
         }
 
         flatTagsByRow.get(row)!.push({
@@ -316,66 +366,79 @@ export default defineComponent({
           tag: hintName,
           colorIndex: -2, // Special color for stack hints (different from frames)
           isStackFrame: false,
-        })
+        });
       }
 
       // Organize tags into levels to avoid overlaps
       // Hierarchy: stack frames (top) -> memory hints (middle) -> stack hints (bottom)
       for (const [row, tags] of flatTagsByRow.entries()) {
-        const levels: Array<Array<{ startCol: number; endCol: number; tag: string; colorIndex: number; isStackFrame?: boolean; frameIndex?: number }>> = []
+        const levels: Array<
+          Array<{
+            startCol: number;
+            endCol: number;
+            tag: string;
+            colorIndex: number;
+            isStackFrame?: boolean;
+            frameIndex?: number;
+          }>
+        > = [];
 
         // Sort tags by priority (stack frames first, then memory hints, then stack hints)
         // Within each priority, sort by start column
         tags.sort((a, b) => {
           // Determine priority: 0 = stack frames, 1 = memory hints, 2 = stack hints
           const getPriority = (tag: typeof a) => {
-            if (tag.isStackFrame) return 0
-            if (tag.colorIndex === -2) return 2 // stack hints
-            return 1 // memory hints
-          }
+            if (tag.isStackFrame) return 0;
+            if (tag.colorIndex === -2) return 2; // stack hints
+            return 1; // memory hints
+          };
 
-          const priorityDiff = getPriority(a) - getPriority(b)
-          if (priorityDiff !== 0) return priorityDiff
+          const priorityDiff = getPriority(a) - getPriority(b);
+          if (priorityDiff !== 0) return priorityDiff;
 
           // Same priority, sort by start column
-          return a.startCol - b.startCol
-        })
+          return a.startCol - b.startCol;
+        });
 
         for (const tag of tags) {
           // Find the first level where this tag doesn't overlap with existing tags
-          let placed = false
+          let placed = false;
           for (const level of levels) {
-            const hasOverlap = level.some(existingTag =>
-              !(tag.endCol < existingTag.startCol || tag.startCol > existingTag.endCol)
-            )
+            const hasOverlap = level.some(
+              existingTag =>
+                !(
+                  tag.endCol < existingTag.startCol ||
+                  tag.startCol > existingTag.endCol
+                ),
+            );
 
             if (!hasOverlap) {
-              level.push(tag)
-              placed = true
-              break
+              level.push(tag);
+              placed = true;
+              break;
             }
           }
 
           // If no suitable level found, create a new one
           if (!placed) {
-            levels.push([tag])
+            levels.push([tag]);
           }
         }
 
-        tagsByRow.set(row, levels)
+        tagsByRow.set(row, levels);
       }
 
-      return tagsByRow
+      return tagsByRow;
     },
   },
 
   watch: {
     segment() {
-      this.refreshMemory()
+      this.refreshMemory();
     },
 
     bytesPerRow() {
-      this.refreshMemory()
+      this.refreshMemory();
     },
   },
 
@@ -383,24 +446,22 @@ export default defineComponent({
     onRegisterUpdated() {
       // Refresh memory when registers change (e.g., SP, PC)
       // This will also trigger a re-computation of stack frames
-      this.refreshMemory()
+      this.refreshMemory();
     },
 
     refreshMemory() {
-      const dump = this.generateMemoryDump()
-      this.setMemoryDump(dump)
+      const dump = this.generateMemoryDump();
+      this.setMemoryDump(dump);
     },
 
     generateMemoryDump(): MemoryDump {
       // Get all written memory
-      const written = this.main_memory.getWritten()
-
-
+      const written = this.main_memory.getWritten();
 
       // Create a sparse array representation - we store written addresses and values
       // but display from 0 to highest address
-      const addresses = written.map(b => b.addr)
-      const values = written.map(b => b.value)
+      const addresses = written.map(b => b.addr);
+      const values = written.map(b => b.value);
 
       // Get all hints from memory
       const hints = this.main_memory.getAllHints().map(h => ({
@@ -408,44 +469,46 @@ export default defineComponent({
         tag: h.tag,
         type: h.type || "",
         sizeInBits: h.sizeInBits,
-      }))
+      }));
 
       // Get the highest possible address from memory segments
-      const segments = this.main_memory.getMemorySegments()
-      let highestAddress = 0
+      const segments = this.main_memory.getMemorySegments();
+      let highestAddress = 0;
       for (const segment of segments.values()) {
-        highestAddress = Math.max(highestAddress, Number(segment.end))
+        highestAddress = Math.max(highestAddress, Number(segment.end));
       }
 
-      return { addresses, values, highestAddress, hints }
+      return { addresses, values, highestAddress, hints };
     },
 
     setMemoryDump(dump: MemoryDump) {
-      this.renderState = {}
+      this.renderState = {};
 
       // Save current scroll position before updating
-      const hexViewerBody = this.$refs.hexViewerBody as HTMLElement
-      const savedScrollTop = hexViewerBody?.scrollTop ?? 0
+      const hexViewerBody = this.$refs.hexViewerBody as HTMLElement;
+      const savedScrollTop = hexViewerBody?.scrollTop ?? 0;
 
-      this.memoryDump = dump
-      this.selectedByte = -1
+      this.memoryDump = dump;
+      this.selectedByte = -1;
 
       // Build hint map with color assignment
-      this.hintMap.clear()
-      const hintColors = new Map<string, number>()
-      let colorIndex = 0
+      this.hintMap.clear();
+      const hintColors = new Map<string, number>();
+      let colorIndex = 0;
 
       for (const hint of dump.hints) {
-        const address = parseInt(hint.address, 10)
-        const tagTypeKey = `${hint.tag}:${hint.type}`
+        const address = parseInt(hint.address, 10);
+        const tagTypeKey = `${hint.tag}:${hint.type}`;
 
         if (!hintColors.has(tagTypeKey)) {
-          hintColors.set(tagTypeKey, colorIndex % 8)
-          colorIndex++
+          hintColors.set(tagTypeKey, colorIndex % 8);
+          colorIndex++;
         }
 
-        const hintColorIndex = hintColors.get(tagTypeKey)!
-        const sizeInBytes = hint.sizeInBits ? Math.ceil(hint.sizeInBits / 8) : 1
+        const hintColorIndex = hintColors.get(tagTypeKey)!;
+        const sizeInBytes = hint.sizeInBits
+          ? Math.ceil(hint.sizeInBits / 8)
+          : 1;
 
         for (let i = 0; i < sizeInBytes; i++) {
           this.hintMap.set(address + i, {
@@ -453,631 +516,801 @@ export default defineComponent({
             type: hint.type,
             sizeInBits: hint.sizeInBits,
             colorIndex: hintColorIndex,
-          })
+          });
         }
       }
 
       this.$nextTick(() => {
         // Restore scroll position after render
         if (hexViewerBody && savedScrollTop > 0) {
-          hexViewerBody.scrollTop = savedScrollTop
+          hexViewerBody.scrollTop = savedScrollTop;
         } else {
-          this.pageScrollTop = 0
+          this.pageScrollTop = 0;
         }
-      })
+      });
     },
 
     getMemoryValue(address: number): number {
-      if (!this.memoryDump) return 0
-      const index = this.memoryDump.addresses.indexOf(address)
-      return index !== -1 ? (this.memoryDump.values[index] ?? 0) : 0
+      if (!this.memoryDump) return 0;
+      const index = this.memoryDump.addresses.indexOf(address);
+      return index !== -1 ? (this.memoryDump.values[index] ?? 0) : 0;
     },
 
     saveScrollPosition() {
-      const hexViewerBody = this.$refs.hexViewerBody as HTMLElement
+      const hexViewerBody = this.$refs.hexViewerBody as HTMLElement;
       if (hexViewerBody) {
-        this.pageScrollTop = hexViewerBody.scrollTop
+        this.pageScrollTop = hexViewerBody.scrollTop;
       }
     },
 
     restoreScrollPosition() {
       this.$nextTick(() => {
-        const hexViewerBody = this.$refs.hexViewerBody as HTMLElement
+        const hexViewerBody = this.$refs.hexViewerBody as HTMLElement;
         if (hexViewerBody) {
-          hexViewerBody.scrollTop = this.pageScrollTop
+          hexViewerBody.scrollTop = this.pageScrollTop;
         }
-      })
+      });
     },
 
     nextPage() {
       if (this.hasNextPage) {
-        this.saveScrollPosition()
-        this.currentPage++
-        this.restoreScrollPosition()
+        this.saveScrollPosition();
+        this.currentPage++;
+        this.restoreScrollPosition();
       }
     },
 
     previousPage() {
       if (this.hasPreviousPage) {
-        this.saveScrollPosition()
-        this.currentPage--
-        this.restoreScrollPosition()
+        this.saveScrollPosition();
+        this.currentPage--;
+        this.restoreScrollPosition();
       }
     },
 
     handleScroll() {
       // Save scroll position as user scrolls
-      this.saveScrollPosition()
+      this.saveScrollPosition();
     },
 
     handleResize() {
-      this.windowWidth = window.innerWidth
-      this.updateBytesPerRow()
-      this.updateAsciiVisibility()
-      this.renderState = {}
+      this.windowWidth = window.innerWidth;
+      this.updateBytesPerRow();
+      this.updateAsciiVisibility();
+      this.renderState = {};
     },
 
     updateBytesPerRow() {
-      const newBytesPerRow = this.windowWidth > 1440 ? 16 : 8
+      const newBytesPerRow = this.windowWidth > 1440 ? 16 : 8;
       if (newBytesPerRow !== this.bytesPerRow) {
-        this.bytesPerRow = newBytesPerRow
+        this.bytesPerRow = newBytesPerRow;
       }
     },
 
     updateAsciiVisibility() {
-      const wasShowingAscii = this.showAscii
-      this.showAscii = this.windowWidth >= 870
+      const wasShowingAscii = this.showAscii;
+      this.showAscii = this.windowWidth >= 870;
 
       // Reset to hex view when ASCII column becomes visible
-      if (!wasShowingAscii && this.showAscii && this.viewMode === 'ascii') {
-        this.viewMode = 'hex'
+      if (!wasShowingAscii && this.showAscii && this.viewMode === "ascii") {
+        this.viewMode = "hex";
       }
     },
 
     handleGotoAddress(addrStr: string) {
-      if (!addrStr || addrStr.trim() === "" || !this.memoryDump) return
+      if (!addrStr || addrStr.trim() === "" || !this.memoryDump) return;
 
-      let parsedAddress = addrStr.startsWith("0x") || addrStr.startsWith("0X")
-        ? parseInt(addrStr, 16)
-        : parseInt(addrStr, 10)
+      let parsedAddress =
+        addrStr.startsWith("0x") || addrStr.startsWith("0X")
+          ? parseInt(addrStr, 16)
+          : parseInt(addrStr, 10);
 
-      if (isNaN(parsedAddress)) return
+      if (isNaN(parsedAddress)) return;
 
-      parsedAddress = Math.max(0, Math.min(parsedAddress, this.memoryDump.highestAddress))
+      parsedAddress = Math.max(
+        0,
+        Math.min(parsedAddress, this.memoryDump.highestAddress),
+      );
 
       // Calculate which page contains this address
-      const row = Math.floor(parsedAddress / this.bytesPerRow)
-      const targetPage = Math.floor(row / this.rowsPerPage)
+      const row = Math.floor(parsedAddress / this.bytesPerRow);
+      const targetPage = Math.floor(row / this.rowsPerPage);
 
       // Navigate to the target page
-      this.currentPage = targetPage
+      this.currentPage = targetPage;
 
       // Scroll to the row within the page
       this.$nextTick(() => {
-        const hexViewerBody = this.$refs.hexViewerBody as HTMLElement
+        const hexViewerBody = this.$refs.hexViewerBody as HTMLElement;
         if (hexViewerBody) {
-          const rowInPage = row % this.rowsPerPage
-          const scrollTop = rowInPage * this.rowHeight
-          hexViewerBody.scrollTop = scrollTop
-          this.pageScrollTop = scrollTop
+          const rowInPage = row % this.rowsPerPage;
+          const scrollTop = rowInPage * this.rowHeight;
+          hexViewerBody.scrollTop = scrollTop;
+          this.pageScrollTop = scrollTop;
 
           // Select the byte after scrolling
           this.$nextTick(() => {
-            this.selectByte(parsedAddress)
-          })
+            this.selectByte(parsedAddress);
+          });
         }
-      })
+      });
     },
 
     handleKeyDown(e: KeyboardEvent) {
-      if (!this.memoryDump || this.memoryDump.highestAddress === 0) return
+      if (!this.memoryDump || this.memoryDump.highestAddress === 0) return;
 
-      const maxIndex = this.memoryDump.highestAddress
-      const currentSelection = this.selectedByte
-      let newSelection: number
+      const maxIndex = this.memoryDump.highestAddress;
+      const currentSelection = this.selectedByte;
+      let newSelection: number;
 
       switch (e.key) {
         case "ArrowLeft":
-          newSelection = Math.max(0, currentSelection - 1)
-          break
+          newSelection = Math.max(0, currentSelection - 1);
+          break;
         case "ArrowRight":
-          newSelection = Math.min(maxIndex, currentSelection + 1)
-          break
+          newSelection = Math.min(maxIndex, currentSelection + 1);
+          break;
         case "ArrowUp":
-          newSelection = Math.max(0, currentSelection - this.bytesPerRow)
-          break
+          newSelection = Math.max(0, currentSelection - this.bytesPerRow);
+          break;
         case "ArrowDown":
-          newSelection = Math.min(maxIndex, currentSelection + this.bytesPerRow)
-          break
+          newSelection = Math.min(
+            maxIndex,
+            currentSelection + this.bytesPerRow,
+          );
+          break;
         case "Home":
-          newSelection = Math.floor(currentSelection / this.bytesPerRow) * this.bytesPerRow
-          break
+          newSelection =
+            Math.floor(currentSelection / this.bytesPerRow) * this.bytesPerRow;
+          break;
         case "End":
           newSelection = Math.min(
             maxIndex,
-            Math.floor(currentSelection / this.bytesPerRow) * this.bytesPerRow + this.bytesPerRow - 1
-          )
-          break
+            Math.floor(currentSelection / this.bytesPerRow) * this.bytesPerRow +
+              this.bytesPerRow -
+              1,
+          );
+          break;
         case "PageUp":
-          newSelection = Math.max(0, currentSelection - this.bytesPerRow * 10)
-          break
+          newSelection = Math.max(0, currentSelection - this.bytesPerRow * 10);
+          break;
         case "PageDown":
-          newSelection = Math.min(maxIndex, currentSelection + this.bytesPerRow * 10)
-          break
+          newSelection = Math.min(
+            maxIndex,
+            currentSelection + this.bytesPerRow * 10,
+          );
+          break;
         default:
-          return
+          return;
       }
 
-      e.preventDefault()
-      this.selectByte(newSelection)
+      e.preventDefault();
+      this.selectByte(newSelection);
     },
 
     handleByteClick(index: number, event: MouseEvent) {
-      this.selectByte(index)
+      this.selectByte(index);
 
-      const hintInfo = this.hintMap.get(index)
+      const hintInfo = this.hintMap.get(index);
       if (hintInfo) {
-        this.showHintTooltip(event.target as HTMLElement, hintInfo)
+        this.showHintTooltip(event.target as HTMLElement, hintInfo);
       }
     },
 
     handleByteDoubleClick(index: number) {
       // Start editing the byte
-      this.editingByte = index
-      const currentValue = this.getMemoryValue(index)
-      this.editingValue = this.viewMode === 'hex'
-        ? this.toHex(currentValue, 1)
-        : String.fromCharCode(currentValue >= 32 && currentValue <= 126 ? currentValue : 46) // 46 is '.'
+      this.editingByte = index;
+      const currentValue = this.getMemoryValue(index);
+      this.editingValue =
+        this.viewMode === "hex"
+          ? this.toHex(currentValue, 1)
+          : String.fromCharCode(
+              currentValue >= 32 && currentValue <= 126 ? currentValue : 46,
+            ); // 46 is '.'
 
       // Focus the input after it's rendered
       this.$nextTick(() => {
-        const input = this.$el.querySelector(`input.byte-editor[data-index="${index}"]`) as HTMLInputElement
+        const input = this.$el.querySelector(
+          `input.byte-editor[data-index="${index}"]`,
+        ) as HTMLInputElement;
         if (input) {
-          input.focus()
-          input.select()
+          input.focus();
+          input.select();
         }
-      })
+      });
     },
 
     handleEditInput(index: number) {
       // In hex mode, if user types 2 characters, save and move to next byte
-      if (this.viewMode === 'hex' && this.editingValue.length >= 2) {
+      if (this.viewMode === "hex" && this.editingValue.length >= 2) {
         // Validate it's a valid hex value
         if (/^[0-9a-fA-F]{2}$/.test(this.editingValue)) {
-          const success = this.saveByteEditAndContinue(index)
-          if (success && this.memoryDump && index < this.memoryDump.highestAddress) {
+          const success = this.saveByteEditAndContinue(index);
+          if (
+            success &&
+            this.memoryDump &&
+            index < this.memoryDump.highestAddress
+          ) {
             // Move to next byte
-            this.handleByteDoubleClick(index + 1)
+            this.handleByteDoubleClick(index + 1);
           }
         }
       }
     },
 
     handleEditKeyDown(event: KeyboardEvent, index: number) {
-      if (event.key === 'Enter') {
-        event.preventDefault()
-        this.saveByteEdit(index)
-      } else if (event.key === 'Escape') {
-        event.preventDefault()
-        this.cancelByteEdit()
+      if (event.key === "Enter") {
+        event.preventDefault();
+        this.saveByteEdit(index);
+      } else if (event.key === "Escape") {
+        event.preventDefault();
+        this.cancelByteEdit();
       }
     },
 
     saveByteEdit(index: number) {
-      if (this.editingByte !== index) return
+      if (this.editingByte !== index) return;
 
-      let newValue: number
+      let newValue: number;
 
-      if (this.viewMode === 'hex') {
+      if (this.viewMode === "hex") {
         // Parse hex value
-        const hexValue = this.editingValue.trim()
+        const hexValue = this.editingValue.trim();
         if (!/^[0-9a-fA-F]{1,2}$/.test(hexValue)) {
           // Invalid hex value, cancel edit
-          this.cancelByteEdit()
-          return
+          this.cancelByteEdit();
+          return;
         }
-        newValue = parseInt(hexValue, 16)
+        newValue = parseInt(hexValue, 16);
       } else {
         // Parse ASCII value
         if (this.editingValue.length === 0) {
-          this.cancelByteEdit()
-          return
+          this.cancelByteEdit();
+          return;
         }
-        newValue = this.editingValue.charCodeAt(0)
+        newValue = this.editingValue.charCodeAt(0);
       }
 
       // Validate the value is within byte range
       if (newValue < 0 || newValue > 255) {
-        this.cancelByteEdit()
-        return
+        this.cancelByteEdit();
+        return;
       }
 
       // Write to memory
       try {
-        this.main_memory.write(BigInt(index), newValue)
-        this.editingByte = -1
-        this.editingValue = ''
+        this.main_memory.write(BigInt(index), newValue);
+        this.editingByte = -1;
+        this.editingValue = "";
 
         // Refresh the memory view
-        this.refreshMemory()
+        this.refreshMemory();
       } catch (error) {
-        console.error('Error writing to memory:', error)
-        this.cancelByteEdit()
+        console.error("Error writing to memory:", error);
+        this.cancelByteEdit();
       }
     },
 
     saveByteEditAndContinue(index: number): boolean {
-      if (this.editingByte !== index) return false
+      if (this.editingByte !== index) return false;
 
-      let newValue: number
+      let newValue: number;
 
-      if (this.viewMode === 'hex') {
+      if (this.viewMode === "hex") {
         // Parse hex value
-        const hexValue = this.editingValue.trim()
+        const hexValue = this.editingValue.trim();
         if (!/^[0-9a-fA-F]{1,2}$/.test(hexValue)) {
-          return false
+          return false;
         }
-        newValue = parseInt(hexValue, 16)
+        newValue = parseInt(hexValue, 16);
       } else {
         // Parse ASCII value
         if (this.editingValue.length === 0) {
-          return false
+          return false;
         }
-        newValue = this.editingValue.charCodeAt(0)
+        newValue = this.editingValue.charCodeAt(0);
       }
 
       // Validate the value is within byte range
       if (newValue < 0 || newValue > 255) {
-        return false
+        return false;
       }
 
       // Write to memory
       try {
-        this.main_memory.write(BigInt(index), newValue)
-        this.editingByte = -1
-        this.editingValue = ''
+        this.main_memory.write(BigInt(index), newValue);
+        this.editingByte = -1;
+        this.editingValue = "";
 
         // Refresh the memory view
-        this.refreshMemory()
-        return true
+        this.refreshMemory();
+        return true;
       } catch (error) {
-        console.error('Error writing to memory:', error)
-        return false
+        console.error("Error writing to memory:", error);
+        return false;
       }
     },
 
     cancelByteEdit() {
-      this.editingByte = -1
-      this.editingValue = ''
+      this.editingByte = -1;
+      this.editingValue = "";
     },
 
     handleByteMouseOver(index: number, event: MouseEvent) {
-      const hintInfo = this.hintMap.get(index)
+      const hintInfo = this.hintMap.get(index);
       if (hintInfo) {
-        this.showHintTooltip(event.target as HTMLElement, hintInfo)
+        this.showHintTooltip(event.target as HTMLElement, hintInfo);
       }
     },
 
     handleByteMouseOut() {
-      this.hideHintTooltip()
+      this.hideHintTooltip();
     },
 
     showHintTooltip(element: HTMLElement, hintInfo: any) {
-      this.hideHintTooltip()
+      this.hideHintTooltip();
 
-      const tooltip = document.createElement("div")
-      tooltip.className = "hint-tooltip"
+      const tooltip = document.createElement("div");
+      tooltip.className = "hint-tooltip";
 
-      const header = document.createElement("div")
-      header.className = "hint-header"
-      header.textContent = hintInfo.tag + (hintInfo.type ? ` (${hintInfo.type})` : "")
-      tooltip.appendChild(header)
+      const header = document.createElement("div");
+      header.className = "hint-header";
+      header.textContent =
+        hintInfo.tag + (hintInfo.type ? ` (${hintInfo.type})` : "");
+      tooltip.appendChild(header);
 
       if (hintInfo.sizeInBits) {
-        const details = document.createElement("div")
-        details.className = "hint-details"
-        details.textContent = `Size: ${hintInfo.sizeInBits} bits (${Math.ceil(hintInfo.sizeInBits / 8)} bytes)`
-        tooltip.appendChild(details)
+        const details = document.createElement("div");
+        details.className = "hint-details";
+        details.textContent = `Size: ${hintInfo.sizeInBits} bits (${Math.ceil(hintInfo.sizeInBits / 8)} bytes)`;
+        tooltip.appendChild(details);
       }
 
-      document.body.appendChild(tooltip)
-      this.hintTooltip = tooltip
+      document.body.appendChild(tooltip);
+      this.hintTooltip = tooltip;
 
-      const rect = element.getBoundingClientRect()
-      tooltip.style.left = `${rect.left}px`
-      tooltip.style.top = `${rect.bottom + 5}px`
+      const rect = element.getBoundingClientRect();
+      tooltip.style.left = `${rect.left}px`;
+      tooltip.style.top = `${rect.bottom + 5}px`;
 
-      const tooltipRect = tooltip.getBoundingClientRect()
+      const tooltipRect = tooltip.getBoundingClientRect();
       if (tooltipRect.right > window.innerWidth) {
-        tooltip.style.left = `${window.innerWidth - tooltipRect.width - 10}px`
+        tooltip.style.left = `${window.innerWidth - tooltipRect.width - 10}px`;
       }
       if (tooltipRect.bottom > window.innerHeight) {
-        tooltip.style.top = `${rect.top - tooltipRect.height - 5}px`
+        tooltip.style.top = `${rect.top - tooltipRect.height - 5}px`;
       }
     },
 
     hideHintTooltip() {
       if (this.hintTooltip) {
-        this.hintTooltip.remove()
-        this.hintTooltip = null
+        this.hintTooltip.remove();
+        this.hintTooltip = null;
       }
     },
 
     selectByte(index: number) {
-      if (!this.memoryDump || index < 0 || index > this.memoryDump.highestAddress) return
+      if (
+        !this.memoryDump ||
+        index < 0 ||
+        index > this.memoryDump.highestAddress
+      )
+        return;
 
-      this.selectedByte = index
+      this.selectedByte = index;
 
       // Ensure the byte is on the current page
-      const row = Math.floor(index / this.bytesPerRow)
-      const targetPage = Math.floor(row / this.rowsPerPage)
+      const row = Math.floor(index / this.bytesPerRow);
+      const targetPage = Math.floor(row / this.rowsPerPage);
 
       if (this.currentPage !== targetPage) {
-        this.saveScrollPosition()
-        this.currentPage = targetPage
-        this.restoreScrollPosition()
+        this.saveScrollPosition();
+        this.currentPage = targetPage;
+        this.restoreScrollPosition();
       }
 
       this.$nextTick(() => {
-        const hexByte = this.$el.querySelector(`[data-index="${index}"].hex-byte`) as HTMLElement
+        const hexByte = this.$el.querySelector(
+          `[data-index="${index}"].hex-byte`,
+        ) as HTMLElement;
         if (hexByte) {
-          hexByte.scrollIntoView({ block: "nearest", behavior: "auto" })
+          hexByte.scrollIntoView({ block: "nearest", behavior: "auto" });
         }
-      })
+      });
     },
 
     getByteClass(byteIndex: number, value: number): string[] {
-      const classes = ["hex-byte"]
+      const classes = ["hex-byte"];
 
       if (byteIndex === this.selectedByte) {
-        classes.push("selected")
+        classes.push("selected");
       }
 
       if (value === 0) {
-        classes.push("zero")
+        classes.push("zero");
       }
 
-      const hintInfo = this.hintMap.get(byteIndex)
+      const hintInfo = this.hintMap.get(byteIndex);
       if (hintInfo) {
-        classes.push(`hint-${hintInfo.colorIndex}`)
+        classes.push(`hint-${hintInfo.colorIndex}`);
       }
 
-      return classes
+      return classes;
     },
 
     getAsciiCharClass(byteIndex: number): string[] {
-      const classes = ["ascii-char"]
+      const classes = ["ascii-char"];
 
       if (byteIndex === this.selectedByte) {
-        classes.push("selected")
+        classes.push("selected");
       }
 
-      const hintInfo = this.hintMap.get(byteIndex)
+      const hintInfo = this.hintMap.get(byteIndex);
       if (hintInfo) {
-        classes.push(`hint-${hintInfo.colorIndex}`)
+        classes.push(`hint-${hintInfo.colorIndex}`);
       }
 
-      return classes
+      return classes;
     },
 
     toHex(value: number, bytes: number): string {
-      return value.toString(16).toUpperCase().padStart(bytes * 2, "0")
+      return value
+        .toString(16)
+        .toUpperCase()
+        .padStart(bytes * 2, "0");
     },
 
     range(start: number, end: number): number[] {
-      return Array.from({ length: end - start }, (_, i) => start + i)
+      return Array.from({ length: end - start }, (_, i) => start + i);
     },
 
     getSegmentVariant(address: number): string {
-      const segmentName = this.main_memory.getSegmentForAddress(BigInt(address))
-      if (!segmentName) return 'secondary'
+      const segmentName = this.main_memory.getSegmentForAddress(
+        BigInt(address),
+      );
+      if (!segmentName) return "secondary";
 
       switch (segmentName.replace(/^\.+/, "")) {
         case "ktext":
         case "text":
-          return "info"
+          return "info";
         case "kdata":
         case "data":
-          return "warning"
+          return "warning";
         case "stack":
-          return "success"
+          return "success";
         default:
-          return "secondary"
+          return "secondary";
       }
     },
 
     refresh() {
-      this.refreshMemory()
+      this.refreshMemory();
     },
 
     jumpToSegment(segmentName: string) {
-      const segment = this.memorySegments.get(segmentName)
+      const segment = this.memorySegments.get(segmentName);
       if (segment) {
-        const startAddress = Number(segment.start)
-        this.handleGotoAddress(`0x${startAddress.toString(16)}`)
+        const startAddress = Number(segment.start);
+        this.handleGotoAddress(`0x${startAddress.toString(16)}`);
       }
     },
 
     jumpToMemoryLayoutSegment(segmentName: string) {
       // Close the modal
-      this.showMemoryLayoutModal = false
+      this.showMemoryLayoutModal = false;
 
       // Jump to the segment
-      const segment = (architecture.memory_layout as any)[segmentName]
+      const segment = (architecture.memory_layout as any)[segmentName];
       if (segment) {
-        const startAddress = Number(segment.start)
-        this.handleGotoAddress(`0x${startAddress.toString(16)}`)
+        const startAddress = Number(segment.start);
+        this.handleGotoAddress(`0x${startAddress.toString(16)}`);
       }
     },
   },
-})
+});
 </script>
 
 <template>
+
   <div class="hex-viewer" :class="{ 'modal-open': showMemoryLayoutModal }">
+
     <div class="hex-viewer-toolbar">
+
       <div class="toolbar-group">
-        <label for="goto-address">Go to address:</label>
-        <input id="goto-address" ref="gotoInput" class="address-input" type="text" placeholder="e.g. 0x200000"
-          @keydown.enter="handleGotoAddress(($refs.gotoInput as HTMLInputElement).value)" />
-        <button class="toolbar-button" @click="handleGotoAddress(($refs.gotoInput as HTMLInputElement).value)">
-          <font-awesome-icon :icon="['fas', 'arrow-right']" />
-          Go
-        </button>
+         <label for="goto-address">Go to address:</label> <input
+          id="goto-address"
+          ref="gotoInput"
+          class="address-input"
+          type="text"
+          placeholder="e.g. 0x200000"
+          @keydown.enter="
+            handleGotoAddress(($refs.gotoInput as HTMLInputElement).value)
+          "
+        /> <button
+          class="toolbar-button"
+          @click="
+            handleGotoAddress(($refs.gotoInput as HTMLInputElement).value)
+          "
+        >
+           <font-awesome-icon :icon="['fas', 'arrow-right']" /> Go </button
+        >
       </div>
+
       <div class="toolbar-group" v-if="segmentList.length > 0">
-        <label>Jump to:</label>
+         <label>Jump to:</label>
         <div class="segment-buttons">
-          <button v-for="segment in segmentList" :key="segment.name" class="toolbar-button segment-button"
+           <button
+            v-for="segment in segmentList"
+            :key="segment.name"
+            class="toolbar-button segment-button"
             @click="jumpToSegment(segment.name)"
-            :title="`Jump to ${segment.name} segment (0x${Number(segment.start).toString(16)})`">
-            {{ segment.name }}
-          </button>
+            :title="`Jump to ${segment.name} segment (0x${Number(segment.start).toString(16)})`"
+          >
+             {{ segment.name }} </button
+          >
         </div>
+
       </div>
+
       <div class="toolbar-group">
-        <button v-if="!showAscii" class="toolbar-button" @click="viewMode = viewMode === 'hex' ? 'ascii' : 'hex'"
-          :class="{ active: viewMode === 'ascii' }">
-          <font-awesome-icon :icon="['fas', 'exchange-alt']" />
-          {{ viewMode === 'hex' ? 'Hex' : 'ASCII' }}
-        </button>
-        <button class="toolbar-button" @click="showAllTags = !showAllTags" :class="{ active: showAllTags }"
-          title="Show all memory tags">
-          <font-awesome-icon :icon="['fas', 'tags']" />
-          Tags
-        </button>
-        <button class="toolbar-button" @click="showMemoryLayoutModal = true" title="Show memory layout diagram">
-          <font-awesome-icon :icon="['fas', 'sitemap']" />
-          Layout
-        </button>
+         <button
+          v-if="!showAscii"
+          class="toolbar-button"
+          @click="viewMode = viewMode === 'hex' ? 'ascii' : 'hex'"
+          :class="{ active: viewMode === 'ascii' }"
+        >
+           <font-awesome-icon :icon="['fas', 'exchange-alt']" /> {{
+            viewMode === "hex" ? "Hex" : "ASCII"
+          }} </button
+        > <button
+          class="toolbar-button"
+          @click="showAllTags = !showAllTags"
+          :class="{ active: showAllTags }"
+          title="Show all memory tags"
+        >
+           <font-awesome-icon :icon="['fas', 'tags']" /> Tags </button
+        > <button
+          class="toolbar-button"
+          @click="showMemoryLayoutModal = true"
+          title="Show memory layout diagram"
+        >
+           <font-awesome-icon :icon="['fas', 'sitemap']" /> Layout </button
+        >
       </div>
+
     </div>
 
     <div class="hex-viewer-content">
+
       <div class="hex-viewer-header">
+
         <div class="address-column-header">Address</div>
+
         <div class="hex-columns-header">
-          <span class="hex-column-header">
-            {{ viewMode === 'hex' ? 'Hex' : 'ASCII' }}
-          </span>
+           <span class="hex-column-header"
+            > {{ viewMode === "hex" ? "Hex" : "ASCII" }} </span
+          >
         </div>
+
         <div v-if="showAscii" class="ascii-column-header">ASCII</div>
+
       </div>
 
-      <div ref="hexViewerBody" class="hex-viewer-body" tabindex="0" @keydown="handleKeyDown" @scroll="handleScroll">
-        <div v-if="!memoryDump || memoryDump.highestAddress === 0" class="no-data">
-          No data in memory
+      <div
+        ref="hexViewerBody"
+        class="hex-viewer-body"
+        tabindex="0"
+        @keydown="handleKeyDown"
+        @scroll="handleScroll"
+      >
+
+        <div
+          v-if="!memoryDump || memoryDump.highestAddress === 0"
+          class="no-data"
+        >
+           No data in memory
         </div>
 
         <div v-else class="hex-rows">
-          <!-- Visible rows for current page only -->
+           <!-- Visible rows for current page only -->
           <div v-for="row in visibleRows" :key="row" class="hex-row-container">
-            <!-- Tag labels row (shown when showAllTags is true OR there are stack frames) -->
+             <!-- Tag labels row (shown when showAllTags is true OR there are stack frames) -->
+
             <div v-if="tagsByRow.has(row)" class="tag-labels-container">
+
               <div class="address-column-spacer"></div>
+
               <div class="tag-labels-wrapper">
-                <!-- Each level is a separate row of labels -->
-                <div v-for="(level, levelIdx) in tagsByRow.get(row)" :key="levelIdx" class="tag-labels-row">
+                 <!-- Each level is a separate row of labels -->
+                <div
+                  v-for="(level, levelIdx) in tagsByRow.get(row)"
+                  :key="levelIdx"
+                  class="tag-labels-row"
+                >
+
                   <div class="tag-labels">
-                    <span v-for="(tagInfo, idx) in level" :key="idx" class="tag-label"
-                      :class="tagInfo.isStackFrame ? `stack-frame-${tagInfo.frameIndex}` : `hint-${tagInfo.colorIndex}`"
+                     <span
+                      v-for="(tagInfo, idx) in level"
+                      :key="idx"
+                      class="tag-label"
+                      :class="
+                        tagInfo.isStackFrame
+                          ? `stack-frame-${tagInfo.frameIndex}`
+                          : `hint-${tagInfo.colorIndex}`
+                      "
                       :style="{
                         left: `${tagInfo.startCol * (24 + 8)}px`,
-                        width: `${(tagInfo.endCol - tagInfo.startCol + 1) * (24 + 8) - 8}px`
-                      }">
-                      {{ tagInfo.tag }}
-                    </span>
+                        width: `${(tagInfo.endCol - tagInfo.startCol + 1) * (24 + 8) - 8}px`,
+                      }"
+                      > {{ tagInfo.tag }} </span
+                    >
                   </div>
-                </div>
-              </div>
-            </div>
 
-            <!-- Data row -->
+                </div>
+
+              </div>
+
+            </div>
+             <!-- Data row -->
             <div class="hex-row" :style="{ height: rowHeight + 'px' }">
-              <div class="address-column" :class="`segment-${getSegmentVariant(row * bytesPerRow)}`">
-                {{ `0x${toHex(row * bytesPerRow, 4)}` }}
+
+              <div
+                class="address-column"
+                :class="`segment-${getSegmentVariant(row * bytesPerRow)}`"
+              >
+                 {{ `0x${toHex(row * bytesPerRow, 4)}` }}
               </div>
 
               <div class="hex-columns">
-                <span v-for="i in bytesPerRow" :key="i" :data-index="row * bytesPerRow + i - 1"
-                  :class="getByteClass(row * bytesPerRow + i - 1, getMemoryValue(row * bytesPerRow + i - 1))"
+                 <span
+                  v-for="i in bytesPerRow"
+                  :key="i"
+                  :data-index="row * bytesPerRow + i - 1"
+                  :class="
+                    getByteClass(
+                      row * bytesPerRow + i - 1,
+                      getMemoryValue(row * bytesPerRow + i - 1),
+                    )
+                  "
                   @click="handleByteClick(row * bytesPerRow + i - 1, $event)"
                   @dblclick="handleByteDoubleClick(row * bytesPerRow + i - 1)"
-                  @mouseover="handleByteMouseOver(row * bytesPerRow + i - 1, $event)" @mouseout="handleByteMouseOut">
-                  <input v-if="editingByte === row * bytesPerRow + i - 1" type="text" class="byte-editor"
-                    :data-index="row * bytesPerRow + i - 1" v-model="editingValue"
+                  @mouseover="
+                    handleByteMouseOver(row * bytesPerRow + i - 1, $event)
+                  "
+                  @mouseout="handleByteMouseOut"
+                  > <input
+                    v-if="editingByte === row * bytesPerRow + i - 1"
+                    type="text"
+                    class="byte-editor"
+                    :data-index="row * bytesPerRow + i - 1"
+                    v-model="editingValue"
                     @input="handleEditInput(row * bytesPerRow + i - 1)"
-                    @keydown="handleEditKeyDown($event, row * bytesPerRow + i - 1)"
-                    @blur="saveByteEdit(row * bytesPerRow + i - 1)" :maxlength="viewMode === 'hex' ? 2 : 1" />
-                  <template v-else>
-                    {{
+                    @keydown="
+                      handleEditKeyDown($event, row * bytesPerRow + i - 1)
+                    "
+                    @blur="saveByteEdit(row * bytesPerRow + i - 1)"
+                    :maxlength="viewMode === 'hex' ? 2 : 1"
+                  /> <template v-else
+                    > {{
                       (() => {
                         const value = getMemoryValue(row * bytesPerRow + i - 1);
-                        return viewMode === 'hex'
+                        return viewMode === "hex"
                           ? toHex(value, 1)
-                          : (value >= 32 && value <= 126 ? String.fromCharCode(value) : ".");
-                      })()}} </template>
-                </span>
+                          : value >= 32 && value <= 126
+                            ? String.fromCharCode(value)
+                            : ".";
+                      })()
+                    }} </template
+                  > </span
+                >
               </div>
 
               <div v-if="showAscii" class="ascii-column">
-                <span v-for="i in bytesPerRow" :key="i" :data-index="row * bytesPerRow + i - 1"
-                  :class="getAsciiCharClass(row * bytesPerRow + i - 1)">
-                  {{
+                 <span
+                  v-for="i in bytesPerRow"
+                  :key="i"
+                  :data-index="row * bytesPerRow + i - 1"
+                  :class="getAsciiCharClass(row * bytesPerRow + i - 1)"
+                  > {{
                     (() => {
                       const value = getMemoryValue(row * bytesPerRow + i - 1);
-                      return value >= 32 && value <= 126 ? String.fromCharCode(value) : ".";
-                    })()}} </span>
+                      return value >= 32 && value <= 126
+                        ? String.fromCharCode(value)
+                        : ".";
+                    })()
+                  }} </span
+                >
               </div>
+
             </div>
+
           </div>
+
         </div>
+
       </div>
+
     </div>
 
     <div class="hex-viewer-footer">
+
       <div class="pagination-controls">
-        <button class="pagination-button" :disabled="!hasPreviousPage" @click="previousPage">
-          <font-awesome-icon :icon="['fas', 'chevron-left']" />
-          Previous
-        </button>
-        <span class="page-info">
-          Page {{ currentPage + 1 }} of {{ totalPages || 1 }}
-        </span>
-        <button class="pagination-button" :disabled="!hasNextPage" @click="nextPage">
-          Next
-          <font-awesome-icon :icon="['fas', 'chevron-right']" />
-        </button>
+         <button
+          class="pagination-button"
+          :disabled="!hasPreviousPage"
+          @click="previousPage"
+        >
+           <font-awesome-icon :icon="['fas', 'chevron-left']" /> Previous </button
+        > <span class="page-info"
+          > Page {{ currentPage + 1 }} of {{ totalPages || 1 }} </span
+        > <button
+          class="pagination-button"
+          :disabled="!hasNextPage"
+          @click="nextPage"
+        >
+           Next <font-awesome-icon :icon="['fas', 'chevron-right']" /> </button
+        >
       </div>
-    </div>
-    <div class="hex-viewer-status">
-      <span class="selection-info">{{ selectionInfo }}</span>
+
     </div>
 
-    <!-- Memory Layout Modal -->
-    <transition name="modal-fade">
-      <div v-if="showMemoryLayoutModal" class="memory-layout-modal-overlay" @click="showMemoryLayoutModal = false">
+    <div class="hex-viewer-status">
+       <span class="selection-info">{{ selectionInfo }}</span
+      >
+    </div>
+     <!-- Memory Layout Modal --> <transition name="modal-fade"
+      >
+      <div
+        v-if="showMemoryLayoutModal"
+        class="memory-layout-modal-overlay"
+        @click="showMemoryLayoutModal = false"
+      >
+
         <div class="memory-layout-modal" @click.stop>
+
           <div class="memory-layout-modal-header">
+
             <h5>Memory Layout</h5>
+
             <div class="header-controls">
-              <button class="invert-button" @click="invertMemoryLayout = !invertMemoryLayout"
-                :title="invertMemoryLayout ? 'Show high to low addresses' : 'Show low to high addresses'">
-                <font-awesome-icon :icon="['fas', 'arrows-alt-v']" />
-              </button>
-              <button class="close-button" @click="showMemoryLayoutModal = false">
-                <font-awesome-icon :icon="['fas', 'times']" />
-              </button>
+               <button
+                class="invert-button"
+                @click="invertMemoryLayout = !invertMemoryLayout"
+                :title="
+                  invertMemoryLayout
+                    ? 'Show high to low addresses'
+                    : 'Show low to high addresses'
+                "
+              >
+                 <font-awesome-icon :icon="['fas', 'arrows-alt-v']" /> </button
+              > <button
+                class="close-button"
+                @click="showMemoryLayoutModal = false"
+              >
+                 <font-awesome-icon :icon="['fas', 'times']" /> </button
+              >
             </div>
+
           </div>
+
           <div class="memory-layout-modal-body">
-            <MemoryLayoutDiagram :memory_layout="architecture.memory_layout" :inverted="invertMemoryLayout"
-              :show-gaps="true" :clickable="true" @segment-click="jumpToMemoryLayoutSegment" />
+             <MemoryLayoutDiagram
+              :memory_layout="architecture.memory_layout"
+              :inverted="invertMemoryLayout"
+              :show-gaps="true"
+              :clickable="true"
+              @segment-click="jumpToMemoryLayoutSegment"
+            />
           </div>
+
         </div>
+
       </div>
-    </transition>
+       </transition
+    >
   </div>
+
 </template>
 
 <style scoped>
@@ -1840,3 +2073,4 @@ export default defineComponent({
   color: rgba(255, 255, 255, 0.8);
 }
 </style>
+

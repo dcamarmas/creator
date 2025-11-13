@@ -1,6 +1,5 @@
 <!--
-Copyright 2018-2025 Felix Garcia Carballeira, Diego Camarmas Alonso,
-                    Alejandro Calderon Mateos, Jorge Ramos Santana
+Copyright 2018-2025 CREATOR Team.
 
 This file is part of CREATOR.
 
@@ -17,92 +16,102 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
-
 <script setup lang="ts">
 interface AvailableArch {
-  name: string
-  alias: string[]
-  file?: string
-  img?: string
-  alt?: string
-  id: string
-  examples: string[]
-  description: string
-  guide?: string
-  available: boolean
-  default?: boolean
-  definition?: string
+  name: string;
+  alias: string[];
+  file?: string;
+  img?: string;
+  alt?: string;
+  id: string;
+  examples: string[];
+  description: string;
+  guide?: string;
+  available: boolean;
+  default?: boolean;
+  definition?: string;
 }
 
 interface Props {
-  arch: AvailableArch
-  selected?: boolean
-  mobile?: boolean
+  arch: AvailableArch;
+  selected?: boolean;
+  mobile?: boolean;
 }
 
 interface Emits {
-  (e: 'select'): void
-  (e: 'delete'): void
+  (e: "select"): void;
+  (e: "delete"): void;
 }
 
 withDefaults(defineProps<Props>(), {
   selected: false,
-  mobile: false
-})
+  mobile: false,
+});
 
-const emit = defineEmits<Emits>()
+const emit = defineEmits<Emits>();
 
 function handleSelect() {
-  emit('select')
+  emit("select");
 }
 
 function handleDelete(event: Event) {
-  event.stopPropagation()
-  emit('delete')
+  event.stopPropagation();
+  emit("delete");
 }
 </script>
 
 <template>
-  <div 
+
+  <div
     class="arch-item"
-    :class="{ 
+    :class="{
       selected: selected,
       custom: !arch.default,
-      mobile: mobile
+      mobile: mobile,
     }"
     @click="handleSelect"
   >
+
     <div class="arch-logo">
-      <img 
+       <img
         :src="`img/logos/${arch.img}` || 'img/logos/default.webp'"
         :alt="arch.alt"
       />
     </div>
-    
+
     <div class="arch-info">
+
       <div class="arch-header">
+
         <h3 class="arch-name">{{ arch.name }}</h3>
+
         <div class="arch-badges">
-          <span v-if="!arch.default" class="badge custom-badge">Custom</span>
+           <span v-if="!arch.default" class="badge custom-badge">Custom</span>
         </div>
+
       </div>
+
       <p class="arch-description">{{ arch.description }}</p>
+
     </div>
 
     <div class="arch-actions">
-      <button 
+       <button
         v-if="!arch.default"
         class="action-button delete-button"
         @click="handleDelete"
         :title="mobile ? 'Delete' : 'Delete custom architecture'"
       >
-        <font-awesome-icon :icon="['fas', 'trash-can']" />
-      </button>
+         <font-awesome-icon :icon="['fas', 'trash-can']" /> </button
+      >
       <div class="select-indicator">
-        <font-awesome-icon :icon="['fas', 'chevron-right']" />
+         <font-awesome-icon :icon="['fas', 'chevron-right']" />
       </div>
+
     </div>
+
   </div>
+
 </template>
 
 <style lang="scss" scoped>
@@ -387,3 +396,4 @@ function handleDelete(event: Event) {
   }
 }
 </style>
+

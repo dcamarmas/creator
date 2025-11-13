@@ -1,6 +1,5 @@
 <!--
-Copyright 2018-2025 Felix Garcia Carballeira, Diego Camarmas Alonso,
-                    Alejandro Calderon Mateos, Luis Daniel Casais Mezquida
+Copyright 2018-2025 CREATOR Team.
 
 This file is part of CREATOR.
 
@@ -17,122 +16,122 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
-
 <script setup lang="ts">
-import { computed, type PropType } from "vue"
-import { creator_ga } from "@/core/utils/creator_ga.mjs"
+import { computed, type PropType } from "vue";
+import { creator_ga } from "@/core/utils/creator_ga.mjs";
 
 defineProps({
   items: {
     type: Array as PropType<string[]>,
-    required: true
+    required: true,
   },
   architectureName: {
     type: String,
-    required: false
-  }
-})
+    required: false,
+  },
+});
 
-const emit = defineEmits(['item-clicked'])
+const emit = defineEmits(["item-clicked"]);
 
-const root = computed(() => (document as any).app)
+const root = computed(() => (document as any).app);
 
 function help_event(event: string) {
-  creator_ga("send", `help.${event}`, `help.${event}`)
+  creator_ga("send", `help.${event}`, `help.${event}`);
 }
 
 function handleItemClick() {
-  emit('item-clicked')
+  emit("item-clicked");
 }
 </script>
 
 <template>
-  <template v-for="(item, index) in items" :key="index">
-    <!-- Architecture info -->
-    <b-dropdown-item v-if="item === 'btn_architecture_info'" disabled>
-      <font-awesome-icon :icon="['fas', 'microchip']" class="me-2" />
-      <strong>{{ architectureName }}</strong>
-    </b-dropdown-item>
-
-    <!-- Divider -->
-    <b-dropdown-divider v-if="item === 'divider'" />
-
-    <!-- Home -->
-    <b-dropdown-item v-if="item === 'btn_home'" href=".">
-      <font-awesome-icon :icon="['fas', 'home']" class="me-2" />
-      Home
-    </b-dropdown-item>
-
-    <!-- Website -->
-    <b-dropdown-item v-if="item === 'btn_website'" href="https://creatorsim.github.io/" target="_blank">
-      <font-awesome-icon :icon="['fas', 'globe']" class="me-2" />
-      Project Website
-    </b-dropdown-item>
-
-    <!-- GitHub -->
-    <b-dropdown-item v-if="item === 'btn_github'" href="https://github.com/creatorsim/creator" target="_blank">
-      <font-awesome-icon :icon="['fab', 'github']" class="me-2" />
-      GitHub
-    </b-dropdown-item>
-
-    <!-- Configuration -->
-    <b-dropdown-item v-if="item === 'btn_configuration'" v-b-modal.configuration @click="handleItemClick">
-      <font-awesome-icon :icon="['fas', 'gears']" class="me-2" />
-      Settings...
-    </b-dropdown-item>
-
-    <!-- Help -->
-    <b-dropdown-item v-if="item === 'btn_help'" href="https://creatorsim.github.io/" target="_blank" @click="help_event('general_help'); handleItemClick()">
-      <font-awesome-icon :icon="['fas', 'circle-question']" class="me-2" />
-      Help
-    </b-dropdown-item>
-
-    <!-- Notifications -->
-    <b-dropdown-item v-if="item === 'btn_notifications'" v-b-modal.notifications @click="handleItemClick">
-      <font-awesome-icon :icon="['fas', 'bell']" class="me-2" />
-      Notifications
-    </b-dropdown-item>
-
-    <!-- Feedback -->
-    <b-dropdown-item v-if="item === 'btn_feedback'" href="https://docs.google.com/forms/d/e/1FAIpQLSdFbdy5istZbq2CErZs0cTV85Ur8aXiIlxvseLMhPgs0vHnlQ/viewform?usp=header" target="_blank">
-      <font-awesome-icon :icon="['fas', 'star']" class="me-2" />
-      Feedback
-    </b-dropdown-item>
-
-    <!-- Suggestions -->
-    <b-dropdown-item v-if="item === 'btn_suggestions'" href="https://docs.google.com/forms/d/e/1FAIpQLSfSclv1rKqBt5aIIP3jfTGbdu8m_vIgEAaiqpI2dGDcQFSg8g/viewform?usp=header" target="_blank">
-      <font-awesome-icon :icon="['fas', 'lightbulb']" class="me-2" />
-      Suggestions
-    </b-dropdown-item>
-
-    <!-- Community -->
-    <b-dropdown-item v-if="item === 'btn_institutions'" v-b-modal.institutions @click="handleItemClick">
-      <font-awesome-icon :icon="['fas', 'building-columns']" class="me-2" />
-      Community
-    </b-dropdown-item>
-
-    <!-- About -->
-    <b-dropdown-item v-if="item === 'btn_about'" v-b-modal.about @click="handleItemClick">
-      <font-awesome-icon :icon="['fas', 'address-card']" class="me-2" />
-      About Creator
-    </b-dropdown-item>
-
-    <!-- Flash -->
-    <b-dropdown-item v-if="item === 'btn_flash'" v-b-modal.flash @click="handleItemClick">
-      <font-awesome-icon :icon="['fab', 'usb']" class="me-2" />
-      Flash
-    </b-dropdown-item>
-
-    <!-- Calculator -->
-    <b-dropdown-item v-if="item === 'btn_calculator'" v-b-modal.calculator @click="handleItemClick">
-      <font-awesome-icon :icon="['fas', 'calculator']" class="me-2" />
-      IEEE754 Calculator
-    </b-dropdown-item>
-
-    <!-- Vim Mode Toggle -->
-    <b-dropdown-item v-if="item === 'btn_vim_toggle'" @click="root.vim_mode = !root.vim_mode">
-      <font-awesome-icon :icon="['fab', 'vimeo-v']" class="me-2" />
-      Vim Mode {{ root.vim_mode ? '(On)' : '(Off)' }}
-    </b-dropdown-item>
-  </template>
+   <template v-for="(item, index) in items" :key="index"
+    > <!-- Architecture info --> <b-dropdown-item
+      v-if="item === 'btn_architecture_info'"
+      disabled
+      > <font-awesome-icon :icon="['fas', 'microchip']" class="me-2" /> <strong
+        >{{ architectureName }}</strong
+      > </b-dropdown-item
+    > <!-- Divider --> <b-dropdown-divider v-if="item === 'divider'" /> <!-- Home -->
+    <b-dropdown-item v-if="item === 'btn_home'" href="."
+      > <font-awesome-icon :icon="['fas', 'home']" class="me-2" /> Home
+      </b-dropdown-item
+    > <!-- Website --> <b-dropdown-item
+      v-if="item === 'btn_website'"
+      href="https://creatorsim.github.io/"
+      target="_blank"
+      > <font-awesome-icon :icon="['fas', 'globe']" class="me-2" /> Project
+      Website </b-dropdown-item
+    > <!-- GitHub --> <b-dropdown-item
+      v-if="item === 'btn_github'"
+      href="https://github.com/creatorsim/creator"
+      target="_blank"
+      > <font-awesome-icon :icon="['fab', 'github']" class="me-2" /> GitHub
+      </b-dropdown-item
+    > <!-- Configuration --> <b-dropdown-item
+      v-if="item === 'btn_configuration'"
+      v-b-modal.configuration
+      @click="handleItemClick"
+      > <font-awesome-icon :icon="['fas', 'gears']" class="me-2" /> Settings...
+      </b-dropdown-item
+    > <!-- Help --> <b-dropdown-item
+      v-if="item === 'btn_help'"
+      href="https://creatorsim.github.io/"
+      target="_blank"
+      @click="
+        help_event('general_help');
+        handleItemClick();
+      "
+      > <font-awesome-icon :icon="['fas', 'circle-question']" class="me-2" />
+      Help </b-dropdown-item
+    > <!-- Notifications --> <b-dropdown-item
+      v-if="item === 'btn_notifications'"
+      v-b-modal.notifications
+      @click="handleItemClick"
+      > <font-awesome-icon :icon="['fas', 'bell']" class="me-2" /> Notifications
+      </b-dropdown-item
+    > <!-- Feedback --> <b-dropdown-item
+      v-if="item === 'btn_feedback'"
+      href="https://docs.google.com/forms/d/e/1FAIpQLSdFbdy5istZbq2CErZs0cTV85Ur8aXiIlxvseLMhPgs0vHnlQ/viewform?usp=header"
+      target="_blank"
+      > <font-awesome-icon :icon="['fas', 'star']" class="me-2" /> Feedback
+      </b-dropdown-item
+    > <!-- Suggestions --> <b-dropdown-item
+      v-if="item === 'btn_suggestions'"
+      href="https://docs.google.com/forms/d/e/1FAIpQLSfSclv1rKqBt5aIIP3jfTGbdu8m_vIgEAaiqpI2dGDcQFSg8g/viewform?usp=header"
+      target="_blank"
+      > <font-awesome-icon :icon="['fas', 'lightbulb']" class="me-2" />
+      Suggestions </b-dropdown-item
+    > <!-- Community --> <b-dropdown-item
+      v-if="item === 'btn_institutions'"
+      v-b-modal.institutions
+      @click="handleItemClick"
+      > <font-awesome-icon :icon="['fas', 'building-columns']" class="me-2" />
+      Community </b-dropdown-item
+    > <!-- About --> <b-dropdown-item
+      v-if="item === 'btn_about'"
+      v-b-modal.about
+      @click="handleItemClick"
+      > <font-awesome-icon :icon="['fas', 'address-card']" class="me-2" /> About
+      Creator </b-dropdown-item
+    > <!-- Flash --> <b-dropdown-item
+      v-if="item === 'btn_flash'"
+      v-b-modal.flash
+      @click="handleItemClick"
+      > <font-awesome-icon :icon="['fab', 'usb']" class="me-2" /> Flash
+      </b-dropdown-item
+    > <!-- Calculator --> <b-dropdown-item
+      v-if="item === 'btn_calculator'"
+      v-b-modal.calculator
+      @click="handleItemClick"
+      > <font-awesome-icon :icon="['fas', 'calculator']" class="me-2" /> IEEE754
+      Calculator </b-dropdown-item
+    > <!-- Vim Mode Toggle --> <b-dropdown-item
+      v-if="item === 'btn_vim_toggle'"
+      @click="root.vim_mode = !root.vim_mode"
+      > <font-awesome-icon :icon="['fab', 'vimeo-v']" class="me-2" /> Vim Mode
+      {{ root.vim_mode ? "(On)" : "(Off)" }} </b-dropdown-item
+    > </template
+  >
 </template>
+

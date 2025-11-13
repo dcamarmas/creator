@@ -1,6 +1,5 @@
 <!--
-Copyright 2018-2025 Felix Garcia Carballeira, Diego Camarmas Alonso,
-                    Alejandro Calderon Mateos, Jorge Ramos Santana
+Copyright 2018-2025 CREATOR Team.
 
 This file is part of CREATOR.
 
@@ -17,12 +16,11 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
-
 <script lang="ts">
-import { defineComponent, type PropType } from "vue"
+import { defineComponent, type PropType } from "vue";
 
-import { toHex } from "@/web/utils.mjs"
-import type { Register } from "@/core/core"
+import { toHex } from "@/web/utils.mjs";
+import type { Register } from "@/core/core";
 
 export default defineComponent({
   props: {
@@ -31,7 +29,7 @@ export default defineComponent({
   },
 
   methods: { toHex },
-})
+});
 </script>
 
 <style lang="scss" scoped>
@@ -142,41 +140,58 @@ export default defineComponent({
 </style>
 
 <template>
+
   <div class="registers-grid" v-if="registers.length > 0">
+
     <div
       v-for="(register, index) in registers"
       :key="index"
       class="register-card"
     >
+
       <div class="register-header">
-        <div class="register-names">
-          {{ register.name.join(" / ") }}
-        </div>
+
+        <div class="register-names"> {{ register.name.join(" / ") }} </div>
+
         <div class="register-id">#{{ index }}</div>
+
       </div>
 
       <div class="register-details">
+
         <div class="register-info">
-          <span class="info-label">Bits:</span>
-          <span class="info-value">{{ register.nbits }}</span>
+           <span class="info-label">Bits:</span> <span class="info-value">{{
+            register.nbits
+          }}</span
+          >
         </div>
+
         <div class="register-info">
-          <span class="info-label">Default:</span>
-          <span class="info-value font-monospace">0x{{ toHex(register.default_value, 4) }}</span>
+           <span class="info-label">Default:</span> <span
+            class="info-value font-monospace"
+            >0x{{ toHex(register.default_value, 4) }}</span
+          >
         </div>
+
       </div>
 
-      <div class="register-properties" v-if="register.properties && register.properties.length > 0">
-        <b-badge
+      <div
+        class="register-properties"
+        v-if="register.properties && register.properties.length > 0"
+      >
+         <b-badge
           v-for="property in register.properties"
           :key="property"
           pill
           variant="primary"
           class="property-badge"
+          > {{ property }} </b-badge
         >
-          {{ property }}
-        </b-badge>
       </div>
+
     </div>
+
   </div>
+
 </template>
+

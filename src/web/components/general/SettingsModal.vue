@@ -1,6 +1,5 @@
 <!--
-Copyright 2018-2025 Felix Garcia Carballeira, Diego Camarmas Alonso,
-                    Alejandro Calderon Mateos, Luis Daniel Casais Mezquida
+Copyright 2018-2025 CREATOR Team.
 
 This file is part of CREATOR.
 
@@ -17,14 +16,13 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
-
 <script lang="ts">
-import { creator_ga } from "@/core/utils/creator_ga.mjs"
-import { set_debug } from "@/core/core.mjs"
-import { Vim } from "@replit/codemirror-vim"
+import { creator_ga } from "@/core/utils/creator_ga.mjs";
+import { set_debug } from "@/core/core.mjs";
+import { Vim } from "@replit/codemirror-vim";
 
-import VimKeybindsModal from "./VimKeybindsModal.vue"
-import { defineComponent, type PropType } from "vue"
+import VimKeybindsModal from "./VimKeybindsModal.vue";
+import { defineComponent, type PropType } from "vue";
 
 export default defineComponent({
   props: {
@@ -60,26 +58,26 @@ export default defineComponent({
         lhs: "",
         rhs: "",
       },
-      
+
       // register representation options
       reg_name_representation_options: [
         { text: "Name", value: "logical" },
         { text: "Alias", value: "alias" },
         { text: "All", value: "all" },
       ],
-      
+
       reg_representation_int_options: [
         { text: "Signed", value: "signed" },
         { text: "Unsigned", value: "unsigned" },
         { text: "Hex", value: "hex" },
       ],
-      
+
       reg_representation_float_options: [
         { text: "IEEE 754 (32b)", value: "ieee32" },
         { text: "IEEE 754 (64b)", value: "ieee64" },
         { text: "Hex", value: "hex" },
       ],
-    }
+    };
   },
   emits: [
     // parent variables that will be updated
@@ -104,257 +102,257 @@ export default defineComponent({
     // modifySelectedVimKeybind
     modifiedVimKeybind(): VimKeybind {
       // copy selected keybind
-      return { ...this.vim_custom_keybinds_value[this.selected_vim_keybind!]! }
+      return { ...this.vim_custom_keybinds_value[this.selected_vim_keybind!]! };
     },
 
     // modifying these variables will update the corresponding parent's variables
     // see https://vuejs.org/guide/components/v-model
     default_architecture_value: {
       get() {
-        return this.default_architecture
+        return this.default_architecture;
       },
       set(value: string) {
-        this.$emit("update:default_architecture", value)
+        this.$emit("update:default_architecture", value);
 
-        localStorage.setItem("conf_default_architecture", value)
+        localStorage.setItem("conf_default_architecture", value);
 
         //Google Analytics
         creator_ga(
           "configuration",
           "configuration.default_architecture",
           "configuration.default_architecture." + value,
-        )
+        );
       },
     },
     stack_total_list_value: {
       get() {
-        return this.stack_total_list
+        return this.stack_total_list;
       },
       set(value: string) {
-        let val = parseInt(value, 10)
+        let val = parseInt(value, 10);
 
-        const prev = this.stack_total_list
+        const prev = this.stack_total_list;
 
         // enforce limit
         if (val < 20) {
-          val = 20
+          val = 20;
         } else if (val > 500) {
-          val = 500
+          val = 500;
         }
 
-        this.$emit("update:stack_total_list", val)
+        this.$emit("update:stack_total_list", val);
 
-        localStorage.setItem("conf_stack_total_list", val.toString())
+        localStorage.setItem("conf_stack_total_list", val.toString());
 
         //Google Analytics
         creator_ga(
           "configuration",
           "configuration.stack_total_list",
           "configuration.stack_total_list.speed_" + (prev > val).toString(),
-        )
+        );
       },
     },
     autoscroll_value: {
       get() {
-        return this.autoscroll
+        return this.autoscroll;
       },
       set(value: string) {
-        this.$emit("update:autoscroll", value)
+        this.$emit("update:autoscroll", value);
 
-        localStorage.setItem("conf_autoscroll", value)
+        localStorage.setItem("conf_autoscroll", value);
 
         //Google Analytics
         creator_ga(
           "configuration",
           "configuration.autoscroll",
           "configuration.autoscroll." + value,
-        )
+        );
       },
     },
     backup_value: {
       get() {
-        return this.backup
+        return this.backup;
       },
       set(value: string) {
-        this.$emit("update:backup", value)
+        this.$emit("update:backup", value);
 
-        localStorage.setItem("conf_backup", value)
+        localStorage.setItem("conf_backup", value);
 
         //Google Analytics
         creator_ga(
           "configuration",
           "configuration.backup",
           "configuration.backup." + value,
-        )
+        );
       },
     },
     notification_time_value: {
       get() {
-        return this.notification_time
+        return this.notification_time;
       },
       set(value: string) {
-        const prev = this.stack_total_list
+        const prev = this.stack_total_list;
 
-        let val = parseInt(value, 10)
+        let val = parseInt(value, 10);
 
         // enforce limit
         if (val < 1000) {
-          val = 1000
+          val = 1000;
         } else if (val > 5000) {
-          val = 5000
+          val = 5000;
         }
 
-        this.$emit("update:notification_time", val)
+        this.$emit("update:notification_time", val);
 
-        localStorage.setItem("conf_notification_time", val.toString())
+        localStorage.setItem("conf_notification_time", val.toString());
 
         //Google Analytics
         creator_ga(
           "configuration",
           "configuration.notification_time",
           "configuration.notification_time.time_" + (prev > val).toString(),
-        )
+        );
       },
     },
     instruction_help_size_value: {
       get() {
-        return this.instruction_help_size
+        return this.instruction_help_size;
       },
       set(value: string) {
-        const prev = this.stack_total_list
+        const prev = this.stack_total_list;
 
-        let val = parseInt(value, 10)
+        let val = parseInt(value, 10);
 
         // enforce limit
         if (val < 15) {
-          val = 15
+          val = 15;
         } else if (val > 65) {
-          val = 65
+          val = 65;
         }
 
-        this.$emit("update:instruction_help_size", val)
+        this.$emit("update:instruction_help_size", val);
 
-        localStorage.setItem("conf_instruction_help_size", val.toString())
+        localStorage.setItem("conf_instruction_help_size", val.toString());
 
         //Google Analytics
         creator_ga(
           "configuration",
           "configuration.instruction_help_size",
           "configuration.instruction_help_size.size_" + (prev > val).toString(),
-        )
+        );
       },
     },
     dark_mode_setting_value: {
       get() {
-        return this.dark_mode_setting
+        return this.dark_mode_setting;
       },
       set(value: string) {
-        this.$emit("update:dark_mode_setting", value)
+        this.$emit("update:dark_mode_setting", value);
 
         //Google Analytics
         creator_ga(
           "configuration",
           "configuration.dark_mode_setting",
           "configuration.dark_mode_setting." + value,
-        )
+        );
       },
     },
     c_debug_value: {
       get() {
-        return this.c_debug
+        return this.c_debug;
       },
       set(value: boolean) {
-        set_debug(value)
+        set_debug(value);
 
-        this.$emit("update:c_debug", value.toString())
+        this.$emit("update:c_debug", value.toString());
 
         //Google Analytics
         creator_ga(
           "configuration",
           "configuration.debug_mode",
           "configuration.debug_mode." + value,
-        )
+        );
       },
     },
     vim_custom_keybinds_value: {
       get() {
-        return this.vim_custom_keybinds
+        return this.vim_custom_keybinds;
       },
       set(value: VimKeybind[]) {
-        this.$emit("update:vim_custom_keybinds", value)
+        this.$emit("update:vim_custom_keybinds", value);
       },
     },
     vim_mode_value: {
       get() {
-        return this.vim_mode
+        return this.vim_mode;
       },
       set(value: boolean) {
-        this.$emit("update:vim_mode", value)
-        localStorage.setItem("conf_vim_mode", value.toString())
+        this.$emit("update:vim_mode", value);
+        localStorage.setItem("conf_vim_mode", value.toString());
 
         // Google Analytics
         creator_ga(
           "configuration",
           "configuration.vim_mode",
           "configuration.vim_mode." + value,
-        )
+        );
       },
     },
     reg_representation_int_value: {
       get() {
-        return this.reg_representation_int
+        return this.reg_representation_int;
       },
       set(value: string) {
-        this.$emit("update:reg_representation_int", value)
-        localStorage.setItem("conf_reg_representation_int", value)
+        this.$emit("update:reg_representation_int", value);
+        localStorage.setItem("conf_reg_representation_int", value);
 
         // Google Analytics
         creator_ga(
           "configuration",
           "configuration.reg_representation_int",
           "configuration.reg_representation_int." + value,
-        )
+        );
       },
     },
     reg_representation_float_value: {
       get() {
-        return this.reg_representation_float
+        return this.reg_representation_float;
       },
       set(value: string) {
-        this.$emit("update:reg_representation_float", value)
-        localStorage.setItem("conf_reg_representation_float", value)
+        this.$emit("update:reg_representation_float", value);
+        localStorage.setItem("conf_reg_representation_float", value);
 
         // Google Analytics
         creator_ga(
           "configuration",
           "configuration.reg_representation_float",
           "configuration.reg_representation_float." + value,
-        )
+        );
       },
     },
     reg_name_representation_value: {
       get() {
-        return this.reg_name_representation
+        return this.reg_name_representation;
       },
       set(value: string) {
-        this.$emit("update:reg_name_representation", value)
-        localStorage.setItem("conf_reg_name_representation", value)
+        this.$emit("update:reg_name_representation", value);
+        localStorage.setItem("conf_reg_name_representation", value);
 
         // Google Analytics
         creator_ga(
           "configuration",
           "configuration.reg_name_representation",
           "configuration.reg_name_representation." + value,
-        )
+        );
       },
     },
   },
   methods: {
     removeVimKeybind(index: number) {
-      const { lhs, mode } = this.vim_custom_keybinds_value[index]!
+      const { lhs, mode } = this.vim_custom_keybinds_value[index]!;
 
-      Vim.unmap(lhs, mode)
-      this.vim_custom_keybinds_value.splice(index, 1)
+      Vim.unmap(lhs, mode);
+      this.vim_custom_keybinds_value.splice(index, 1);
     },
   },
   watch: {
@@ -367,7 +365,7 @@ export default defineComponent({
           // if you store an object in localstorage, it saves it as the *string*
           // '[object Object]', so we'll have to serialize it manually
           JSON.stringify(value),
-        )
+        );
 
         // // Google Analytics
         // creator_ga(
@@ -379,13 +377,13 @@ export default defineComponent({
       deep: true,
     },
   },
-})
+});
 </script>
 
 <template>
-  <b-modal :id="id" scrollable title="Configuration">
-    <b-list-group class="compact-config">
-      <!--
+   <b-modal :id="id" scrollable title="Configuration"
+    > <b-list-group class="compact-config"
+      > <!--
       <b-list-group-item class="justify-content-between align-items-center config-item">
         <label for="range-5">Default Architecture:</label>
 
@@ -401,10 +399,9 @@ export default defineComponent({
           <BFormSelectOption value="'MIPS-32'">MIPS-32</BFormSelectOption>
         </b-form-select>
       </b-list-group-item>
-      -->
-
-      <b-list-group-item class="justify-content-between align-items-center config-item">
-        <label for="range-1">Maximum stack values listed:</label>
+      --> <b-list-group-item
+        class="justify-content-between align-items-center config-item"
+        > <label for="range-1">Maximum stack values listed:</label>
         <b-form-input
           id="range-1"
           v-model.number="stack_total_list_value"
@@ -414,12 +411,10 @@ export default defineComponent({
           step="5"
           title="Stack max view"
           class="number-input"
-        />
-      </b-list-group-item>
-
-      <b-list-group-item class="justify-content-between align-items-center config-item">
-        <label for="range-3">Notification Time (ms):</label>
-        <b-form-input
+        /> </b-list-group-item
+      > <b-list-group-item
+        class="justify-content-between align-items-center config-item"
+        > <label for="range-3">Notification Time (ms):</label> <b-form-input
           id="range-3"
           v-model.number="notification_time_value"
           type="number"
@@ -428,12 +423,10 @@ export default defineComponent({
           step="10"
           title="Notification Time"
           class="number-input"
-        />
-      </b-list-group-item>
-
-      <b-list-group-item class="justify-content-between align-items-center config-item">
-        <label for="range-4">Instruction Help Size (%):</label>
-        <b-form-input
+        /> </b-list-group-item
+      > <b-list-group-item
+        class="justify-content-between align-items-center config-item"
+        > <label for="range-4">Instruction Help Size (%):</label> <b-form-input
           id="range-4"
           v-model.number="instruction_help_size_value"
           type="number"
@@ -442,32 +435,26 @@ export default defineComponent({
           step="2"
           title="Instruction Help Size"
           class="number-input"
-        />
-      </b-list-group-item>
-
-      <b-list-group-item class="justify-content-between align-items-center config-item">
-        <label for="range-2">Execution Autoscroll:</label>
-        <b-form-checkbox
+        /> </b-list-group-item
+      > <b-list-group-item
+        class="justify-content-between align-items-center config-item"
+        > <label for="range-2">Execution Autoscroll:</label> <b-form-checkbox
           id="range-2"
           v-model="autoscroll_value"
           name="check-button"
           switch
           size="lg"
-        />
-      </b-list-group-item>
-
-      <b-list-group-item class="justify-content-between align-items-center config-item">
-        <label for="range-2">Automatic backup:</label>
-        <b-form-checkbox
+        /> </b-list-group-item
+      > <b-list-group-item
+        class="justify-content-between align-items-center config-item"
+        > <label for="range-2">Automatic backup:</label> <b-form-checkbox
           id="range-2"
           v-model="backup_value"
           name="check-button"
           switch
           size="lg"
-        />
-      </b-list-group-item>
-
-      <!--
+        /> </b-list-group-item
+      > <!--
       <b-list-group-item class="justify-content-between align-items-center config-item">
         <label for="range-4">Font Size:</label>
         <b-input-group>
@@ -476,62 +463,53 @@ export default defineComponent({
           <b-button variant="outline-secondary" @click="font_size_value += 1">+</b-button>
         </b-input-group>
       </b-list-group-item>
-      -->
-
-      <b-list-group-item class="justify-content-between align-items-center config-item">
-        <label for="range-5">Theme:</label>
-        <b-form-select
+      --> <b-list-group-item
+        class="justify-content-between align-items-center config-item"
+        > <label for="range-5">Theme:</label> <b-form-select
           id="range-5"
           v-model="dark_mode_setting_value"
           size="sm"
           title="Dark Mode Setting"
           class="representation-select"
-        >
-          <b-form-select-option value="system">System</b-form-select-option>
+          > <b-form-select-option value="system">System</b-form-select-option>
           <b-form-select-option value="dark">Dark</b-form-select-option>
           <b-form-select-option value="light">Light</b-form-select-option>
-        </b-form-select>
-      </b-list-group-item>
-
-      <b-list-group-item class="justify-content-between align-items-center config-item">
-        <label for="range-6">Debug:</label>
-        <b-form-checkbox
+          </b-form-select
+        > </b-list-group-item
+      > <b-list-group-item
+        class="justify-content-between align-items-center config-item"
+        > <label for="range-6">Debug:</label> <b-form-checkbox
           id="range-6"
           v-model="c_debug_value"
           name="check-button"
           switch
           size="lg"
-        />
-      </b-list-group-item>
-
-      <!-- Vim config -->
-      <b-list-group-item class="justify-content-between align-items-center config-item">
-        <label for="range-2">Vim mode:</label>
-        <b-form-checkbox
+        /> </b-list-group-item
+      > <!-- Vim config --> <b-list-group-item
+        class="justify-content-between align-items-center config-item"
+        > <label for="range-2">Vim mode:</label> <b-form-checkbox
           v-model="vim_mode_value"
           name="check-button"
           switch
           size="lg"
-        />
-      </b-list-group-item>
-
-      <b-list-group-item class="config-item vim-keybinds-section">
+        /> </b-list-group-item
+      > <b-list-group-item class="config-item vim-keybinds-section"
+        >
         <div class="vim-keybinds-header">
-          <label for="range-7">Vim Custom Keybinds:</label>
-          
-          <!-- toggle button -->
+           <label for="range-7">Vim Custom Keybinds:</label> <!-- toggle button -->
           <b-button
             @click="vim_expanded = !vim_expanded"
             :variant="vim_expanded ? 'secondary' : 'primary'"
             size="sm"
+            > <font-awesome-icon
+              v-if="vim_expanded"
+              icon="fa-solid fa-caret-up"
+            /> <font-awesome-icon v-else icon="fa-solid fa-caret-down" />
+            </b-button
           >
-            <font-awesome-icon v-if="vim_expanded" icon="fa-solid fa-caret-up" />
-            <font-awesome-icon v-else icon="fa-solid fa-caret-down" />
-          </b-button>
         </div>
-
-        <b-collapse v-model="vim_expanded" class="vim-keybinds-content">
-          <b-table
+         <b-collapse v-model="vim_expanded" class="vim-keybinds-content"
+          > <b-table
             small
             hover
             sticky-header="25vh"
@@ -542,74 +520,56 @@ export default defineComponent({
               { key: 'rhs', label: 'RHS', class: 'text-center font-monospace' },
               { key: 'buttons', label: '', class: 'text-center' },
             ]"
-          >
-            <!-- mode in uppercase -->
-            <template #cell(mode)="keybind">
-              {{ (keybind.value as string).toUpperCase() }}
-            </template>
-
-            <!-- edit buttons -->
-            <template #cell(buttons)="keybind">
-              <b-button-group size="sm">
-                <b-button
+            > <!-- mode in uppercase --> <template #cell(mode)="keybind"
+              > {{ (keybind.value as string).toUpperCase() }} </template
+            > <!-- edit buttons --> <template #cell(buttons)="keybind"
+              > <b-button-group size="sm"
+                > <b-button
                   variant="primary"
                   v-b-toggle.modal-vim-edit
                   @click="selected_vim_keybind = keybind.index"
-                >
-                  <font-awesome-icon :icon="['fas', 'pen-to-square']" />
-                </b-button>
-                <b-button
+                  > <font-awesome-icon :icon="['fas', 'pen-to-square']" />
+                  </b-button
+                > <b-button
                   variant="danger"
                   @click="removeVimKeybind(keybind.index)"
-                >
-                  <font-awesome-icon :icon="['fas', 'trash']" />
-                </b-button>
-              </b-button-group>
-            </template>
-          </b-table>
-
-          <b-container fluid>
-            <b-row align-h="end">
-              <b-button v-b-toggle.modal-vim-new variant="primary" size="sm">
-                <font-awesome-icon :icon="['fas', 'plus']" />
-              </b-button>
-            </b-row>
-          </b-container>
-        </b-collapse>
-      </b-list-group-item>
-
-      <!-- Register Representation Settings -->
-      <b-list-group-item class="justify-content-between align-items-center config-item">
-        <label>Register Name Representation:</label>
-        <b-form-select
+                  > <font-awesome-icon :icon="['fas', 'trash']" /> </b-button
+                > </b-button-group
+              > </template
+            > </b-table
+          > <b-container fluid
+            > <b-row align-h="end"
+              > <b-button v-b-toggle.modal-vim-new variant="primary" size="sm"
+                > <font-awesome-icon :icon="['fas', 'plus']" /> </b-button
+              > </b-row
+            > </b-container
+          > </b-collapse
+        > </b-list-group-item
+      > <!-- Register Representation Settings --> <b-list-group-item
+        class="justify-content-between align-items-center config-item"
+        > <label>Register Name Representation:</label> <b-form-select
           v-model="reg_name_representation_value"
           :options="reg_name_representation_options"
           size="sm"
           class="representation-select"
-        />
-      </b-list-group-item>
-
-      <b-list-group-item class="justify-content-between align-items-center config-item">
-        <label>Register Value Format:</label>
-        <b-form-select
+        /> </b-list-group-item
+      > <b-list-group-item
+        class="justify-content-between align-items-center config-item"
+        > <label>Register Value Format:</label> <b-form-select
           v-model="reg_representation_int_value"
           :options="reg_representation_int_options"
           size="sm"
           class="representation-select"
-        />
-      </b-list-group-item>
-    </b-list-group>
-  </b-modal>
-
-  <VimKeybindsModal
+        /> </b-list-group-item
+      > </b-list-group
+    > </b-modal
+  > <VimKeybindsModal
     id="modal-vim-edit"
     title="Edit Vim keybind"
     type="edit"
     :selected_vim_keybind="selected_vim_keybind"
     v-model:vim_custom_keybinds="vim_custom_keybinds_value"
-  />
-
-  <VimKeybindsModal
+  /> <VimKeybindsModal
     id="modal-vim-new"
     title="New Vim keybind"
     type="new"
@@ -697,3 +657,4 @@ export default defineComponent({
   }
 }
 </style>
+

@@ -1,6 +1,5 @@
 <!--
-Copyright 2018-2025 Felix Garcia Carballeira, Diego Camarmas Alonso,
-                    Alejandro Calderon Mateos, Jorge Ramos Santana
+Copyright 2018-2025 CREATOR Team.
 
 This file is part of CREATOR.
 
@@ -17,12 +16,11 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
-
 <script lang="ts">
-import { defineComponent } from "vue"
-import { stats, type Stat } from "@/core/executor/stats.mts"
-import { status } from "@/core/core.mjs"
-import { coreEvents } from "@/core/events.mjs"
+import { defineComponent } from "vue";
+import { stats, type Stat } from "@/core/executor/stats.mts";
+import { status } from "@/core/core.mjs";
+import { coreEvents } from "@/core/events.mjs";
 
 export default defineComponent({
   props: {
@@ -37,69 +35,69 @@ export default defineComponent({
       status,
       render: false, // toggle this to trigger reactive recalculation
       currentRepresentation: this.representation, // Local state for toggle
-    }
+    };
   },
 
   mounted() {
     // Subscribe to stats update events from core
-    coreEvents.on("stats-updated", this.onStatsUpdated)
+    coreEvents.on("stats-updated", this.onStatsUpdated);
   },
 
   beforeUnmount() {
     // Clean up event listener
-    coreEvents.off("stats-updated", this.onStatsUpdated)
+    coreEvents.off("stats-updated", this.onStatsUpdated);
   },
 
   computed: {
     // Get all stats as an array for display
     statsArray(): Array<{ type: string; stat: Stat }> {
       // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-      this.render // Create reactive dependency
-      
-      const arr: Array<{ type: string; stat: Stat }> = []
+      this.render; // Create reactive dependency
+
+      const arr: Array<{ type: string; stat: Stat }> = [];
       this.stats.forEach((stat, type) => {
-        arr.push({ type, stat })
-      })
-      return arr
+        arr.push({ type, stat });
+      });
+      return arr;
     },
 
     // Total instructions executed
     totalInstructions(): number {
       // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-      this.render
-      return this.status.executedInstructions
+      this.render;
+      return this.status.executedInstructions;
     },
 
     // Total cycles
     totalCycles(): number {
       // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-      this.render
-      return this.status.clkCycles
+      this.render;
+      return this.status.clkCycles;
     },
 
     // CPI (Cycles Per Instruction)
     cpi(): string {
       // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-      this.render
-      if (this.totalInstructions === 0) return "0.00"
-      return (this.totalCycles / this.totalInstructions).toFixed(2)
+      this.render;
+      if (this.totalInstructions === 0) return "0.00";
+      return (this.totalCycles / this.totalInstructions).toFixed(2);
     },
 
     // IPC (Instructions Per Cycle)
     ipc(): string {
       // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-      this.render
-      if (this.totalCycles === 0) return "0.00"
-      return (this.totalInstructions / this.totalCycles).toFixed(2)
+      this.render;
+      if (this.totalCycles === 0) return "0.00";
+      return (this.totalInstructions / this.totalCycles).toFixed(2);
     },
 
     // Filter based on type prop
     filteredStats(): Array<{ type: string; stat: Stat }> {
       // Show stats for "instruction_stats" or "instructions" (default)
       if (this.type === "instruction_stats" || this.type === "instructions") {
-        return this.statsArray
+        return this.statsArray;
       }
-      return this.statsArray // Default to showing all stats
+      return this.statsArray; // Default to showing all stats
     },
 
     // Display value based on current representation
@@ -107,118 +105,153 @@ export default defineComponent({
       return (stat: Stat) => {
         // Use local state for representation
         if (this.currentRepresentation === "cycles") {
-          return stat.cycles
+          return stat.cycles;
         }
         // Default to instructions
-        return stat.instructions
-      }
+        return stat.instructions;
+      };
     },
 
     // Get max value for progress bar calculation
     maxValue(): number {
-      if (this.filteredStats.length === 0) return 1
-      
-      const values = this.filteredStats.map(item => this.displayValue(item.stat))
-      const max = Math.max(...values)
-      return max > 0 ? max : 1
+      if (this.filteredStats.length === 0) return 1;
+
+      const values = this.filteredStats.map(item =>
+        this.displayValue(item.stat),
+      );
+      const max = Math.max(...values);
+      return max > 0 ? max : 1;
     },
   },
 
   methods: {
     onStatsUpdated() {
-      this.refresh()
+      this.refresh();
     },
 
     refresh() {
       // Toggle to trigger computed property recalculation
-      this.render = !this.render
+      this.render = !this.render;
     },
 
     // Calculate percentage for progress bar
     getPercentage(value: number): number {
-      if (this.maxValue === 0) return 0
-      return (value / this.maxValue) * 100
+      if (this.maxValue === 0) return 0;
+      return (value / this.maxValue) * 100;
     },
 
     // Format large numbers with commas
     formatNumber(num: number): string {
-      return num.toLocaleString()
+      return num.toLocaleString();
     },
 
     // Toggle between instructions and cycles
     setRepresentation(value: string) {
-      this.currentRepresentation = value
+      this.currentRepresentation = value;
     },
   },
-})
+});
 </script>
 
 <template>
-  <div class="stats-container">
-    <div class="stats-content">
-      <!-- Summary Section -->
-      <div class="stats-summary">
-        <div class="summary-card">
-          <div class="summary-label">Total Instructions</div>
-          <div class="summary-value">{{ formatNumber(totalInstructions) }}</div>
-        </div>
-        <div class="summary-card">
-          <div class="summary-label">Total Cycles</div>
-          <div class="summary-value">{{ formatNumber(totalCycles) }}</div>
-        </div>
-        <div class="summary-card">
-          <div class="summary-label">CPI</div>
-          <div class="summary-value">{{ cpi }}</div>
-        </div>
-        <div class="summary-card">
-          <div class="summary-label">IPC</div>
-          <div class="summary-value">{{ ipc }}</div>
-        </div>
-      </div>
 
-      <!-- Instruction Type Statistics -->
+  <div class="stats-container">
+
+    <div class="stats-content">
+       <!-- Summary Section -->
+      <div class="stats-summary">
+
+        <div class="summary-card">
+
+          <div class="summary-label">Total Instructions</div>
+
+          <div class="summary-value">{{ formatNumber(totalInstructions) }}</div>
+
+        </div>
+
+        <div class="summary-card">
+
+          <div class="summary-label">Total Cycles</div>
+
+          <div class="summary-value">{{ formatNumber(totalCycles) }}</div>
+
+        </div>
+
+        <div class="summary-card">
+
+          <div class="summary-label">CPI</div>
+
+          <div class="summary-value">{{ cpi }}</div>
+
+        </div>
+
+        <div class="summary-card">
+
+          <div class="summary-label">IPC</div>
+
+          <div class="summary-value">{{ ipc }}</div>
+
+        </div>
+
+      </div>
+       <!-- Instruction Type Statistics -->
       <div class="stats-section">
+
         <div class="section-header">
+
           <h6 class="section-title">Instruction Statistics</h6>
+
           <div class="view-toggle">
-            <button
+             <button
               class="toggle-btn"
               :class="{ active: currentRepresentation === 'instructions' }"
               @click="setRepresentation('instructions')"
             >
-              Count
-            </button>
-            <button
+               Count </button
+            > <button
               class="toggle-btn"
               :class="{ active: currentRepresentation === 'cycles' }"
               @click="setRepresentation('cycles')"
             >
-              Cycles
-            </button>
+               Cycles </button
+            >
           </div>
+
         </div>
 
         <div class="stats-list">
-          <div
-            v-for="item in filteredStats"
-            :key="item.type"
-            class="stat-item"
-          >
+
+          <div v-for="item in filteredStats" :key="item.type" class="stat-item">
+
             <div class="stat-info">
+
               <div class="stat-name">{{ item.type }}</div>
-              <div class="stat-value">{{ formatNumber(displayValue(item.stat)) }}</div>
+
+              <div class="stat-value">
+                 {{ formatNumber(displayValue(item.stat)) }}
+              </div>
+
             </div>
+
             <div class="stat-bar-container">
+
               <div
                 class="stat-bar"
                 :style="{ width: getPercentage(displayValue(item.stat)) + '%' }"
               ></div>
+
             </div>
+
           </div>
+
         </div>
+
       </div>
+
     </div>
+
   </div>
+
 </template>
 
 <style lang="scss" scoped>
@@ -493,3 +526,4 @@ export default defineComponent({
   }
 }
 </style>
+

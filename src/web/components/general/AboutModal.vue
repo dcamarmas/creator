@@ -1,6 +1,5 @@
 <!--
-Copyright 2018-2025 Felix Garcia Carballeira, Diego Camarmas Alonso,
-                    Alejandro Calderon Mateos, Luis Daniel Casais Mezquida
+Copyright 2018-2025 CREATOR Team.
 
 This file is part of CREATOR.
 
@@ -17,80 +16,81 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
-
 <script setup lang="ts">
-import authors from "@/web/assets/authors.json"
-import CardAuthor from "./CardAuthor.vue"
+import authors from "@/web/assets/authors.json";
+import CardAuthor from "./CardAuthor.vue";
 
 interface Props {
-  id: string
-  dark: boolean
+  id: string;
+  dark: boolean;
 }
 
-defineProps<Props>()
+defineProps<Props>();
 
-const contactMail = "creator.arcos.inf.uc3m.es@gmail.com"
-const projectVersion = "6.0"
-const projectLicense = "LGPL-2.1"
-const repositoryUrl = "https://github.com/creatorsim/creator"
+const contactMail = "creator.arcos.inf.uc3m.es@gmail.com";
+const projectVersion = "6.0";
+const projectLicense = "LGPL-2.1";
+const repositoryUrl = "https://github.com/creatorsim/creator";
 </script>
 
 <template>
-  <b-modal :id="id" title="About CREATOR" size="xl" scrollable hide-footer>
-    <!-- Project Header Section -->
+   <b-modal :id="id" title="About CREATOR" size="xl" scrollable hide-footer
+    > <!-- Project Header Section -->
     <section class="project-header mb-4">
+
       <div class="text-center mb-3">
+
         <h3 class="mb-2">CREATOR</h3>
+
         <p class="text-muted mb-2">
-          didaCtic and geneRic assEmbly educATional simulatOR
+           didaCtic and geneRic assEmbly educATional simulatOR
         </p>
+
         <div class="d-flex justify-content-center gap-3 flex-wrap">
-          <b-badge variant="primary" pill>
-            <font-awesome-icon :icon="['fas', 'code-branch']" class="me-1" />
-            Version {{ projectVersion }}
-          </b-badge>
-          <b-badge variant="info" pill>
-            <font-awesome-icon :icon="['fas', 'scale-balanced']" class="me-1" />
-            {{ projectLicense }}
-          </b-badge>
-          <b-link
+           <b-badge variant="primary" pill
+            > <font-awesome-icon :icon="['fas', 'code-branch']" class="me-1" />
+            Version {{ projectVersion }} </b-badge
+          > <b-badge variant="info" pill
+            > <font-awesome-icon
+              :icon="['fas', 'scale-balanced']"
+              class="me-1"
+            /> {{ projectLicense }} </b-badge
+          > <b-link
             :href="repositoryUrl"
             target="_blank"
             class="text-decoration-none"
+            > <b-badge variant="dark" pill
+              > <font-awesome-icon :icon="['fab', 'github']" class="me-1" />
+              GitHub </b-badge
+            > </b-link
           >
-            <b-badge variant="dark" pill>
-              <font-awesome-icon :icon="['fab', 'github']" class="me-1" />
-              GitHub
-            </b-badge>
-          </b-link>
         </div>
-      </div>
 
+      </div>
 
     </section>
 
     <hr class="my-4" />
-
-    <!-- Team Section -->
+     <!-- Team Section -->
     <section class="team-section mb-4">
+
       <div class="section-header mb-3">
+
         <h5 class="text-center mb-1">
-          <font-awesome-icon :icon="['fas', 'users']" class="me-2" />
+           <font-awesome-icon :icon="['fas', 'users']" class="me-2" />
           Development Team
         </h5>
-      </div>
 
-      <b-row class="g-3">
-        <b-col
+      </div>
+       <b-row class="g-3"
+        > <b-col
           v-for="author in authors"
           :key="author.id"
           cols="12"
           sm="6"
           lg="3"
           class="d-flex author-col"
-        >
-          <!-- Mobile: horizontal layout -->
-          <CardAuthor
+          > <!-- Mobile: horizontal layout --> <CardAuthor
             :img-src="`img/authors/${author.id}.webp`"
             :img-alt="`author_${author.id}`"
             :full-name="author.name"
@@ -100,9 +100,7 @@ const repositoryUrl = "https://github.com/creatorsim/creator"
             :dark="dark"
             :horizontal="true"
             class="w-100 d-sm-none"
-          />
-          <!-- Tablet/Desktop: vertical layout -->
-          <CardAuthor
+          /> <!-- Tablet/Desktop: vertical layout --> <CardAuthor
             :img-src="`img/authors/${author.id}.webp`"
             :img-alt="`author_${author.id}`"
             :full-name="author.name"
@@ -112,98 +110,106 @@ const repositoryUrl = "https://github.com/creatorsim/creator"
             :dark="dark"
             :horizontal="false"
             class="w-100 d-none d-sm-block"
-          />
-        </b-col>
-      </b-row>
+          /> </b-col
+        > </b-row
+      >
     </section>
 
     <hr class="my-4" />
-
-    <!-- Contact Section -->
+     <!-- Contact Section -->
     <section class="contact-section mb-4">
+
       <div class="section-header mb-3">
+
         <h5 class="text-center mb-1">
-          <font-awesome-icon :icon="['fas', 'envelope']" class="me-2" />
+           <font-awesome-icon :icon="['fas', 'envelope']" class="me-2" />
           Contact Us
         </h5>
-      </div>
 
-      <b-card class="shadow-sm">
+      </div>
+       <b-card class="shadow-sm"
+        >
         <div class="text-center">
-          <b-link
+           <b-link
             :href="`mailto:${contactMail}`"
             class="d-inline-flex align-items-center gap-2 text-decoration-none fs-5"
+            > <font-awesome-icon :icon="['fas', 'paper-plane']" /> {{
+              contactMail
+            }} </b-link
           >
-            <font-awesome-icon :icon="['fas', 'paper-plane']" />
-            {{ contactMail }}
-          </b-link>
         </div>
-      </b-card>
+         </b-card
+      >
     </section>
 
     <hr class="my-4" />
-
-    <!-- Affiliations Section -->
+     <!-- Affiliations Section -->
     <section class="affiliations-section">
-      <div class="section-header mb-3">
-        <h5 class="text-center mb-1">
-          <font-awesome-icon :icon="['fas', 'building-columns']" class="me-2" />
-          Affiliations
-        </h5>
-        <p class="text-center text-muted small mb-3">
-          Developed at Universidad Carlos III de Madrid
-        </p>
-      </div>
 
-      <b-card class="shadow-sm">
-        <b-row align-v="center" align-h="center" class="g-4">
-          <b-col cols="12" md="5" class="text-center">
-            <b-link
+      <div class="section-header mb-3">
+
+        <h5 class="text-center mb-1">
+           <font-awesome-icon
+            :icon="['fas', 'building-columns']"
+            class="me-2"
+          /> Affiliations
+        </h5>
+
+        <p class="text-center text-muted small mb-3">
+           Developed at Universidad Carlos III de Madrid
+        </p>
+
+      </div>
+       <b-card class="shadow-sm"
+        > <b-row align-v="center" align-h="center" class="g-4"
+          > <b-col cols="12" md="5" class="text-center"
+            > <b-link
               href="https://www.arcos.inf.uc3m.es/"
               target="_blank"
               class="d-block"
-            >
-              <b-img
+              > <b-img
                 src="@/web/assets/img/arcos.svg"
                 alt="ARCOS Research Group"
                 fluid
                 class="affiliation-logo"
                 style="max-height: 80px"
-              />
-            </b-link>
+              /> </b-link
+            >
             <p class="text-muted small mt-2 mb-0">ARCOS Research Group</p>
-          </b-col>
-
-          <b-col cols="12" md="7" class="text-center">
-            <b-link
+             </b-col
+          > <b-col cols="12" md="7" class="text-center"
+            > <b-link
               href="https://www.inf.uc3m.es/"
               target="_blank"
               class="d-block"
-            >
-              <b-img
+              > <b-img
                 src="@/web/assets/img/dptoinf.webp"
                 alt="Computer Science and Engineering Department - UC3M"
                 fluid
                 class="affiliation-logo dark-white-img"
                 style="max-height: 80px"
-              />
-            </b-link>
+              /> </b-link
+            >
             <p class="text-muted small mt-2 mb-0">
-              Computer Science & Engineering Department
+               Computer Science & Engineering Department
             </p>
-          </b-col>
-        </b-row>
-      </b-card>
+             </b-col
+          > </b-row
+        > </b-card
+      >
     </section>
-
-    <!-- Footer -->
+     <!-- Footer -->
     <div class="modal-footer-info mt-4 pt-3 border-top text-center">
+
       <p class="text-muted small mb-0">
-        &copy; 2018-2025 CREATOR Development Team. Licensed under
-        {{ projectLicense }}.
+         &copy; 2018-2025 CREATOR Development Team. Licensed under {{
+          projectLicense
+        }}.
       </p>
+
     </div>
-  </b-modal>
+     </b-modal
+  >
 </template>
 
 <style lang="scss" scoped>
@@ -288,3 +294,4 @@ const repositoryUrl = "https://github.com/creatorsim/creator"
   }
 }
 </style>
+

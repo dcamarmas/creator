@@ -1,6 +1,5 @@
 <!--
-Copyright 2018-2025 Felix Garcia Carballeira, Diego Camarmas Alonso,
-                    Alejandro Calderon Mateos, Luis Daniel Casais Mezquida
+Copyright 2018-2025 CREATOR Team.
 
 This file is part of CREATOR.
 
@@ -17,9 +16,8 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
-
 <script lang="ts">
-import { defineComponent } from "vue"
+import { defineComponent } from "vue";
 
 export default defineComponent({
   props: {
@@ -27,15 +25,17 @@ export default defineComponent({
     reff: { type: String, required: true },
     assembly_error: { type: String, required: true },
   },
-})
+});
 </script>
 
 <template>
-  <b-modal :id="id" title="Assembly Code Error" :ref="reff" no-footer size="lg">
+   <b-modal :id="id" title="Assembly Code Error" :ref="reff" no-footer size="lg"
+    >
     <div class="errorAssembly">
-      <span class="font-monospace lh-1" v-html="assembly_error" />
+       <span class="font-monospace lh-1" v-html="assembly_error" />
     </div>
-  </b-modal>
+     </b-modal
+  >
 </template>
 
 <style lang="scss" scoped>
@@ -49,3 +49,4 @@ export default defineComponent({
   border-radius: 3px;
 }
 </style>
+

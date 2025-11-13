@@ -1,6 +1,5 @@
 <!--
-Copyright 2018-2025 Felix Garcia Carballeira, Diego Camarmas Alonso,
-                    Alejandro Calderon Mateos, Luis Daniel Casais Mezquida
+Copyright 2018-2025 CREATOR Team.
 
 This file is part of CREATOR.
 
@@ -17,11 +16,10 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
-
 <script lang="ts">
-import { creator_ga } from "@/core/utils/creator_ga.mjs"
-import { downloadToFile } from "@/web/utils.mjs"
-import { defineComponent } from "vue"
+import { creator_ga } from "@/core/utils/creator_ga.mjs";
+import { downloadToFile } from "@/web/utils.mjs";
+import { defineComponent } from "vue";
 
 export default defineComponent({
   props: {
@@ -34,7 +32,7 @@ export default defineComponent({
   },
 
   data() {
-    return { filename: null }
+    return { filename: null };
   },
 
   methods: {
@@ -42,39 +40,35 @@ export default defineComponent({
       downloadToFile(
         this.fileData,
         (this.filename || this.defaultFilename) + this.extension,
-      )
+      );
 
       // Google Analytics
-      creator_ga(this.type, `${this.type}.save`, `${this.type}.save`)
+      creator_ga(this.type, `${this.type}.save`, `${this.type}.save`);
     },
   },
-})
+});
 </script>
 
 <template>
-  <b-modal
+   <b-modal
     :id="id"
     :title="title"
     ok-title="Save to File"
     @ok="download"
     @hidden="filename = null"
-  >
-    <b-form class="d-flex flex-row align-items-center flex-wrap">
-      <b-col>
-        <label class=".fs-3">Filename:</label>
-      </b-col>
-
-      <b-col cols="8">
-        <b-input-group :append="extension">
-          <b-form-input
+    > <b-form class="d-flex flex-row align-items-center flex-wrap"
+      > <b-col> <label class=".fs-3">Filename:</label> </b-col> <b-col cols="8"
+        > <b-input-group :append="extension"
+          > <b-form-input
             v-model="filename"
             class="text-end"
             autofocus
             type="text"
             :placeholder="defaultFilename"
-          />
-        </b-input-group>
-      </b-col>
-    </b-form>
-  </b-modal>
+          /> </b-input-group
+        > </b-col
+      > </b-form
+    > </b-modal
+  >
 </template>
+

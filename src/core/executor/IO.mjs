@@ -1,22 +1,22 @@
 /**
- *  Copyright 2018-2025 Felix Garcia Carballeira, Alejandro Calderon Mateos,
- *                      Diego Camarmas Alonso
+ * Copyright 2018-2025 CREATOR Team.
  *
- *  This file is part of CREATOR.
+ * This file is part of CREATOR.
  *
- *  CREATOR is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU Lesser General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
+ * CREATOR is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *  CREATOR is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
+ * CREATOR is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
  *
- *  You should have received a copy of the GNU Lesser General Public License
- *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
- *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 import { status, main_memory } from "../core.mjs";
 import {
     readRegister,
@@ -61,13 +61,14 @@ export function kbd_read_int(keystroke, params) {
                 `Invalid input: '${keystroke}' is not an integer`,
                 "danger",
             );
-        }
-        else {
-            throw new Error(`\nInvalid input: '${keystroke}' is not an integer`);
+        } else {
+            throw new Error(
+                `\nInvalid input: '${keystroke}' is not an integer`,
+            );
         }
         return null;
-    } 
-    
+    }
+
     value = BigInt(value);
 
     writeRegister(value, params.indexComp, params.indexElem);
@@ -185,7 +186,6 @@ export function keyboard_read(fn_post_read, fn_post_params) {
         status.run_program = 0; // Reset run_program status
 
         return null;
-
     }
 
     // Web/UI mode

@@ -1,22 +1,20 @@
 /**
- *  Copyright 2018-2025 Felix Garcia Carballeira, Alejandro Calderon Mateos,
- *                      Diego Camarmas Alonso, Jorge Ramos Santana
+ * Copyright 2018-2025 CREATOR Team.
  *
- *  This file is part of CREATOR.
+ * This file is part of CREATOR.
  *
- *  CREATOR is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU Lesser General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
+ * CREATOR is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *  CREATOR is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU Lesser General Public License for more details.
+ * CREATOR is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
  *
- *  You should have received a copy of the GNU Lesser General Public License
- *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
- *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 import { architecture, REGISTERS } from "../core.mjs";
@@ -70,11 +68,15 @@ class RegisterEvent {
     }
 
     get registerName() {
-        return REGISTERS[this.regIndex]?.elements[this.elemIndex]?.name || "unknown";
+        return (
+            REGISTERS[this.regIndex]?.elements[this.elemIndex]?.name ||
+            "unknown"
+        );
     }
 
     toString() {
-        const addr = this.address !== null ? ` @0x${this.address.toString(16)}` : "";
+        const addr =
+            this.address !== null ? ` @0x${this.address.toString(16)}` : "";
         const size = this.size !== null ? ` (${this.size} bytes)` : "";
         return `${this.type}: ${this.registerName}${addr}${size}`;
     }
@@ -104,7 +106,10 @@ class CallFrame {
 
     addEvent(event) {
         this.events.push(event);
-        console_log(`[EVENT] ${this.functionName}: ${event.toString()}`, "INFO");
+        console_log(
+            `[EVENT] ${this.functionName}: ${event.toString()}`,
+            "INFO",
+        );
     }
 
     /**
@@ -112,7 +117,7 @@ class CallFrame {
      */
     getRegisterEvents(regIndex, elemIndex) {
         return this.events.filter(
-            (e) => e.regIndex === regIndex && e.elemIndex === elemIndex
+            e => e.regIndex === regIndex && e.elemIndex === elemIndex,
         );
     }
 
@@ -121,10 +126,10 @@ class CallFrame {
      */
     getFirstSave(regIndex, elemIndex) {
         return this.events.find(
-            (e) =>
+            e =>
                 e.regIndex === regIndex &&
                 e.elemIndex === elemIndex &&
-                e.type === EventType.WRITE_MEMORY
+                e.type === EventType.WRITE_MEMORY,
         );
     }
 
@@ -133,10 +138,10 @@ class CallFrame {
      */
     getLastRestore(regIndex, elemIndex) {
         const restores = this.events.filter(
-            (e) =>
+            e =>
                 e.regIndex === regIndex &&
                 e.elemIndex === elemIndex &&
-                e.type === EventType.READ_MEMORY
+                e.type === EventType.READ_MEMORY,
         );
         return restores[restores.length - 1];
     }
@@ -157,9 +162,9 @@ class ConventionRules {
         // Rule 1: Saved registers must be saved before modification
         const firstSave = frame.getFirstSave(regIndex, elemIndex);
         const modifications = events.filter(
-            (e) =>
+            e =>
                 e.type === EventType.WRITE_REGISTER ||
-                e.type === EventType.READ_REGISTER
+                e.type === EventType.READ_REGISTER,
         );
 
         if (modifications.length > 0 && !firstSave) {
@@ -195,8 +200,14 @@ class ConventionRules {
             if (!bigintsEqual(firstSave.address, lastRestore.address)) {
                 const saveAddr = toBigIntSafe(firstSave.address);
                 const restoreAddr = toBigIntSafe(lastRestore.address);
-                const saveStr = saveAddr !== null ? `0x${saveAddr.toString(16)}` : String(firstSave.address);
-                const restoreStr = restoreAddr !== null ? `0x${restoreAddr.toString(16)}` : String(lastRestore.address);
+                const saveStr =
+                    saveAddr !== null
+                        ? `0x${saveAddr.toString(16)}`
+                        : String(firstSave.address);
+                const restoreStr =
+                    restoreAddr !== null
+                        ? `0x${restoreAddr.toString(16)}`
+                        : String(lastRestore.address);
                 violations.push({
                     rule: "RESTORE_ADDRESS_MISMATCH",
                     register: register.name,
@@ -210,8 +221,10 @@ class ConventionRules {
             const s1 = toBigIntSafe(firstSave.size);
             const s2 = toBigIntSafe(lastRestore.size);
             if (s1 === null || s2 === null || s1 !== s2) {
-                const s1Str = s1 !== null ? s1.toString() : String(firstSave.size);
-                const s2Str = s2 !== null ? s2.toString() : String(lastRestore.size);
+                const s1Str =
+                    s1 !== null ? s1.toString() : String(firstSave.size);
+                const s2Str =
+                    s2 !== null ? s2.toString() : String(lastRestore.size);
                 violations.push({
                     rule: "SIZE_MISMATCH",
                     register: register.name,
@@ -228,9 +241,10 @@ class ConventionRules {
         const curBig = toBigIntSafe(currentValue);
         const initBig = toBigIntSafe(initialValue);
 
-        const valueChanged = (curBig !== null && initBig !== null)
-            ? curBig !== initBig
-            : currentValue !== initialValue;
+        const valueChanged =
+            curBig !== null && initBig !== null
+                ? curBig !== initBig
+                : currentValue !== initialValue;
 
         if (valueChanged && modifications.length > 0) {
             violations.push({
@@ -250,8 +264,14 @@ class ConventionRules {
         const spEnter = toBigIntSafe(frame.enterStackPointer);
         const spNow = toBigIntSafe(currentStackPointer);
         if (spEnter === null || spNow === null || spEnter !== spNow) {
-            const enterStr = spEnter !== null ? `0x${spEnter.toString(16)}` : String(frame.enterStackPointer);
-            const nowStr = spNow !== null ? `0x${spNow.toString(16)}` : String(currentStackPointer);
+            const enterStr =
+                spEnter !== null
+                    ? `0x${spEnter.toString(16)}`
+                    : String(frame.enterStackPointer);
+            const nowStr =
+                spNow !== null
+                    ? `0x${spNow.toString(16)}`
+                    : String(currentStackPointer);
             return [
                 {
                     rule: "STACK_NOT_RESTORED",
@@ -294,14 +314,17 @@ class CallingConventionValidator {
         }
 
         const frame = this.callStack[this.callStack.length - 1];
-        console_log(`[SENTINEL] Leaving function: ${frame.functionName}`, "INFO");
+        console_log(
+            `[SENTINEL] Leaving function: ${frame.functionName}`,
+            "INFO",
+        );
 
         const violations = [];
 
         // Validate stack pointer
         const spViolations = ConventionRules.validateStackPointer(
             frame,
-            architecture.memory_layout.stack.start
+            architecture.memory_layout.stack.start,
         );
         violations.push(...spViolations);
 
@@ -309,13 +332,13 @@ class CallingConventionValidator {
         for (let i = 0; i < REGISTERS.length; i++) {
             for (let j = 0; j < REGISTERS[i].elements.length; j++) {
                 const register = REGISTERS[i].elements[j];
-                
+
                 // Only check registers that should be saved
                 if (register.properties.includes("saved")) {
                     const regViolations = ConventionRules.validateSavedRegister(
                         frame,
                         i,
-                        j
+                        j,
                     );
                     violations.push(...regViolations);
                 }
@@ -327,7 +350,7 @@ class CallingConventionValidator {
 
         // Return result
         if (violations.length > 0) {
-            const messages = violations.map((v) => `  - ${v.message}`).join("\n");
+            const messages = violations.map(v => `  - ${v.message}`).join("\n");
             return {
                 ok: false,
                 msg: `Calling convention violations in ${frame.functionName}:\n${messages}`,
@@ -342,7 +365,10 @@ class CallingConventionValidator {
      */
     recordMemoryWrite(regIndex, elemIndex, address, size) {
         if (this.callStack.length === 0) {
-            console_log("[SENTINEL] Warning: Memory write outside function context", "WARN");
+            console_log(
+                "[SENTINEL] Warning: Memory write outside function context",
+                "WARN",
+            );
             return;
         }
 
@@ -352,7 +378,7 @@ class CallingConventionValidator {
             regIndex,
             elemIndex,
             address,
-            size
+            size,
         );
         frame.addEvent(event);
     }
@@ -362,7 +388,10 @@ class CallingConventionValidator {
      */
     recordMemoryRead(regIndex, elemIndex, address, size) {
         if (this.callStack.length === 0) {
-            console_log("[SENTINEL] Warning: Memory read outside function context", "WARN");
+            console_log(
+                "[SENTINEL] Warning: Memory read outside function context",
+                "WARN",
+            );
             return;
         }
 
@@ -372,7 +401,7 @@ class CallingConventionValidator {
             regIndex,
             elemIndex,
             address,
-            size
+            size,
         );
         frame.addEvent(event);
     }
@@ -389,7 +418,7 @@ class CallingConventionValidator {
         const event = new RegisterEvent(
             EventType.WRITE_REGISTER,
             regIndex,
-            elemIndex
+            elemIndex,
         );
         frame.addEvent(event);
     }
@@ -406,7 +435,7 @@ class CallingConventionValidator {
         const event = new RegisterEvent(
             EventType.READ_REGISTER,
             regIndex,
-            elemIndex
+            elemIndex,
         );
         frame.addEvent(event);
     }
@@ -443,7 +472,7 @@ const validator = new CallingConventionValidator();
 
 // Public API - Direct validator interface
 export const sentinel = {
-    enter: (functionName) => validator.enter(functionName),
+    enter: functionName => validator.enter(functionName),
     leave: () => validator.leave(),
     recordMemoryWrite: (regIndex, elemIndex, address, size) =>
         validator.recordMemoryWrite(regIndex, elemIndex, address, size),

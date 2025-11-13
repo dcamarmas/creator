@@ -1,6 +1,5 @@
 <!--
-Copyright 2018-2025 Felix Garcia Carballeira, Diego Camarmas Alonso,
-                    Alejandro Calderon Mateos, Luis Daniel Casais Mezquida
+Copyright 2018-2025 CREATOR Team.
 
 This file is part of CREATOR.
 
@@ -17,24 +16,23 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
-
 <script lang="ts">
-import { defineComponent, type PropType } from "vue"
+import { defineComponent, type PropType } from "vue";
 
-import type { StackFrame } from "@/core/memory/StackTracker.mjs"
-import { architecture } from "@/core/core.mjs"
-import { main_memory } from "@/core/core"
-import { type Device, devices } from "@/core/executor/devices.mts"
+import type { StackFrame } from "@/core/memory/StackTracker.mjs";
+import { architecture } from "@/core/core.mjs";
+import { main_memory } from "@/core/core";
+import { type Device, devices } from "@/core/executor/devices.mts";
 
-import TableExecution from "./simulator/TableExecution.vue"
-import DataViewSelector from "./simulator/DataViewSelector.vue"
-import RegisterFile from "./simulator/RegisterFile.vue"
-import Examples from "./assembly/Examples.vue"
-import HexViewer from "./simulator/HexViewer.vue"
-import Calculator from "./simulator/Calculator.vue"
-import Terminal from "./simulator/Terminal.vue"
-import Stats from "./simulator/Stats.vue"
-import Flash from "./simulator/Flash.vue"
+import TableExecution from "./simulator/TableExecution.vue";
+import DataViewSelector from "./simulator/DataViewSelector.vue";
+import RegisterFile from "./simulator/RegisterFile.vue";
+import Examples from "./assembly/Examples.vue";
+import HexViewer from "./simulator/HexViewer.vue";
+import Calculator from "./simulator/Calculator.vue";
+import Terminal from "./simulator/Terminal.vue";
+import Stats from "./simulator/Stats.vue";
+import Flash from "./simulator/Flash.vue";
 
 export default defineComponent({
   props: {
@@ -84,21 +82,16 @@ export default defineComponent({
       architecture,
       main_memory: main_memory as any,
       devices: devices as Map<string, any>,
-    }
+    };
   },
-})
+});
 </script>
 
 <template>
-  <b-container fluid align-h="center" id="simulator">
-    <b-row>
-      <b-col>
-        <!-- Navbar -->
-
-        <!-- Simulator navbar modals -->
-
-        <!-- Flash -->
-        <Flash
+   <b-container fluid align-h="center" id="simulator"
+    > <b-row
+      > <b-col
+        > <!-- Navbar --> <!-- Simulator navbar modals --> <!-- Flash --> <Flash
           id="flash"
           :os="os"
           :assembly_code="assembly_code"
@@ -107,73 +100,61 @@ export default defineComponent({
           :target_board="target_board"
           :target_port="target_port"
           :flash_url="flash_url"
-        />
-
-        <!-- Examples modal -->
-        <Examples
+        /> <!-- Examples modal --> <Examples
           id="examples-simulator"
           :architecture_name="architecture_name"
           :compile="true"
-        />
-
-        <!-- Calculator -->
-        <Calculator id="calculator" />
-
-        <b-row align-h="center" class="simulator-main-row">
-          <!-- Column 1: Execution instruction -->
-          <b-col cols="12" sm="12" md="5" lg="5" class="execution-instruction-col">
-            <TableExecution
+        /> <!-- Calculator --> <Calculator id="calculator" /> <b-row
+          align-h="center"
+          class="simulator-main-row"
+          > <!-- Column 1: Execution instruction --> <b-col
+            cols="12"
+            sm="12"
+            md="5"
+            lg="5"
+            class="execution-instruction-col"
+            > <TableExecution
               :instructions="instructions"
               :enter="enter"
               ref="tableExecution"
-            />
-          </b-col>
-
-          <!-- Column 2: Execution data (split into top: data, bottom: terminal) -->
-          <b-col cols="12" sm="12" md="7" lg="7" class="execution-data-col">
-            <!-- Top row: current execution data -->
+            /> </b-col
+          > <!-- Column 2: Execution data (split into top: data, bottom: terminal) -->
+          <b-col cols="12" sm="12" md="7" lg="7" class="execution-data-col"
+            > <!-- Top row: current execution data -->
             <div class="execution-data-container">
+
               <div class="execution-data-header">
-                <!-- View selector as tabs -->
-                <DataViewSelector
+                 <!-- View selector as tabs --> <DataViewSelector
                   :data_mode="data_mode"
                   :register_file_num="architecture.components.length"
                   :dark="dark"
                 />
               </div>
-              
+
               <div class="execution-data-content">
-                <!-- Registers view -->
-                <RegisterFile
-                  v-if="data_mode == 'int_registers' || data_mode == 'fp_registers'"
+                 <!-- Registers view --> <RegisterFile
+                  v-if="
+                    data_mode == 'int_registers' || data_mode == 'fp_registers'
+                  "
                   :data_mode="data_mode"
                   :reg_representation_int="reg_representation_int"
                   :reg_representation_float="reg_representation_float"
                   :reg_name_representation="reg_name_representation"
                   :dark="dark"
                   ref="registerFile"
-                />
-
-                <!-- Memory view-->
-                <HexViewer
+                /> <!-- Memory view--> <HexViewer
                   v-if="data_mode === 'memory'"
                   ref="memory"
                   :main_memory="main_memory"
                   :devices="devices"
                   :segment="memory_segment"
-                />
-
-                <!-- Stats view--->
-                <Stats
+                /> <!-- Stats view---> <Stats
                   v-if="data_mode === 'stats'"
                   ref="stats"
                   :dark="dark"
                   :representation="stat_representation"
                   :type="stat_type"
-                />
-
-                <!-- Terminal view -->
-                <Terminal
+                /> <!-- Terminal view --> <Terminal
                   v-if="data_mode === 'terminal'"
                   :display="display"
                   :keyboard="keyboard"
@@ -181,14 +162,14 @@ export default defineComponent({
                   ref="terminal"
                 />
               </div>
+
             </div>
-          </b-col>
-
-
-        </b-row>
-      </b-col>
-    </b-row>
-  </b-container>
+             </b-col
+          > </b-row
+        > </b-col
+      > </b-row
+    > </b-container
+  >
 </template>
 
 <style lang="scss" scoped>
@@ -312,3 +293,4 @@ export default defineComponent({
   font-size: 0.7em;
 }
 </style>
+

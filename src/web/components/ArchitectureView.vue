@@ -1,6 +1,5 @@
 <!--
-Copyright 2018-2025 Felix Garcia Carballeira, Diego Camarmas Alonso,
-                    Alejandro Calderon Mateos, Luis Daniel Casais Mezquida
+Copyright 2018-2025 CREATOR Team.
 
 This file is part of CREATOR.
 
@@ -17,20 +16,19 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
-
 <script lang="ts">
-import { defineComponent, type PropType } from "vue"
+import { defineComponent, type PropType } from "vue";
 
-import { architecture } from "@/core/core.mjs"
-import available_arch from "../../../architecture/available_arch.json"
+import { architecture } from "@/core/core.mjs";
+import available_arch from "../../../architecture/available_arch.json";
 
-import EditArchitecture from "./architecture/EditArchitecture.vue"
-import DownloadPopup from "./general/DownloadModal.vue"
-import ArchConf from "./architecture/configuration/ArchConf.vue"
-import RegisterFileArch from "./architecture/register_file/RegisterFileArch.vue"
-import Instructions from "./architecture/instructions/Instructions.vue"
-import Directives from "./architecture/directives/Directives.vue"
-import Pseudoinstructions from "./architecture/pseudoinstructions/Pseudoinstructions.vue"
+import EditArchitecture from "./architecture/EditArchitecture.vue";
+import DownloadPopup from "./general/DownloadModal.vue";
+import ArchConf from "./architecture/configuration/ArchConf.vue";
+import RegisterFileArch from "./architecture/register_file/RegisterFileArch.vue";
+import Instructions from "./architecture/instructions/Instructions.vue";
+import Directives from "./architecture/directives/Directives.vue";
+import Pseudoinstructions from "./architecture/pseudoinstructions/Pseudoinstructions.vue";
 
 export default defineComponent({
   props: {
@@ -56,85 +54,74 @@ export default defineComponent({
     return {
       architecture,
       activeTab: "instructions",
-    }
+    };
   },
   computed: {
     architecture_guide() {
-      if (!this.architecture_name) return undefined
+      if (!this.architecture_name) return undefined;
       return available_arch.find(
         arch =>
           arch.name === this.architecture_name ||
           arch.alias.includes(this.architecture_name!),
-      )?.guide
+      )?.guide;
     },
 
     archCodeWSchema() {
-      return `# yaml-language-server: $schema=${document.URL}architecture/schema.json\n${this.arch_code}`
+      return `# yaml-language-server: $schema=${document.URL}architecture/schema.json\n${this.arch_code}`;
     },
   },
-})
+});
 </script>
 
 <template>
+
   <div class="architecture-view" id="architecture_menu">
-    <!-- Edit architecture modal -->
-    <EditArchitecture
+     <!-- Edit architecture modal --> <EditArchitecture
       id="edit_architecture"
       :arch_code="arch_code"
       :dark="dark"
       :os="os"
-    />
-
-    <!-- Download architecture modal -->
-
-    <DownloadPopup
+    /> <!-- Download architecture modal --> <DownloadPopup
       id="save_architecture"
       type="architecture"
       title="Download Architecture"
       extension=".yml"
       :fileData="archCodeWSchema"
       default-filename="architecture"
-    />
-
-    <!-- Architecture information with side-by-side layout -->
+    /> <!-- Architecture information with side-by-side layout -->
     <div class="architecture-layout">
-      <!-- Left Sidebar: Overview -->
+       <!-- Left Sidebar: Overview -->
       <div class="sidebar-left">
-        <!-- Architecture Guide Link -->
+         <!-- Architecture Guide Link -->
         <div v-if="architecture_guide" class="architecture-guide-link">
-          <a :href="architecture_guide" target="_blank" class="guide-link">
-            <font-awesome-icon :icon="['fas', 'file-pdf']" />
-            <span>{{ architecture_name }} Guide</span>
-            <font-awesome-icon
+           <a :href="architecture_guide" target="_blank" class="guide-link"
+            > <font-awesome-icon :icon="['fas', 'file-pdf']" /> <span
+              >{{ architecture_name }} Guide</span
+            > <font-awesome-icon
               :icon="['fas', 'external-link-alt']"
               class="external-icon"
-            />
-          </a>
+            /> </a
+          >
         </div>
-
-        <b-card no-body class="overview-card mb-3">
-          <b-card-body class="p-3">
-            <ArchConf :conf="architecture.config" />
-          </b-card-body>
-        </b-card>
+         <b-card no-body class="overview-card mb-3"
+          > <b-card-body class="p-3"
+            > <ArchConf :conf="architecture.config" /> </b-card-body
+          > </b-card
+        >
       </div>
-
-      <!-- Main Content Area: Instructions & ISA -->
+       <!-- Main Content Area: Instructions & ISA -->
       <div class="main-content">
-        <!-- View selector as buttons -->
+         <!-- View selector as buttons -->
         <div class="architecture-view-selector">
+
           <div class="tabs-container">
-            <!-- Instructions Tab -->
-            <button
+             <!-- Instructions Tab --> <button
               :class="['tab', { active: activeTab === 'instructions' }]"
               @click="activeTab = 'instructions'"
             >
-              <font-awesome-icon :icon="['fas', 'code']" />
-              <span>Instructions</span>
-            </button>
-
-            <!-- Pseudoinstruction Tab -->
-            <button
+               <font-awesome-icon :icon="['fas', 'code']" />
+              <span>Instructions</span> </button
+            > <!-- Pseudoinstruction Tab --> <button
               v-if="
                 architecture.pseudoinstructions &&
                 architecture.pseudoinstructions.length > 0
@@ -142,59 +129,57 @@ export default defineComponent({
               :class="['tab', { active: activeTab === 'pseudoinstructions' }]"
               @click="activeTab = 'pseudoinstructions'"
             >
-              <font-awesome-icon :icon="['fas', 'layer-group']" />
-              <span>Pseudoinstructions</span>
-            </button>
-
-            <!-- Directives Tab -->
-            <button
+               <font-awesome-icon :icon="['fas', 'layer-group']" />
+              <span>Pseudoinstructions</span> </button
+            > <!-- Directives Tab --> <button
               v-if="
                 architecture.directives && architecture.directives.length > 0
               "
               :class="['tab', { active: activeTab === 'directives' }]"
               @click="activeTab = 'directives'"
             >
-              <font-awesome-icon :icon="['fas', 'cogs']" />
-              <span>Assembler Directives</span>
-            </button>
-
-            <!-- Registers Tab -->
-            <button
+               <font-awesome-icon :icon="['fas', 'cogs']" /> <span
+                >Assembler Directives</span
+              > </button
+            > <!-- Registers Tab --> <button
               :class="['tab', { active: activeTab === 'registers' }]"
               @click="activeTab = 'registers'"
             >
-              <font-awesome-icon :icon="['fas', 'database']" />
-              <span>Registers</span>
-            </button>
+               <font-awesome-icon :icon="['fas', 'database']" />
+              <span>Registers</span> </button
+            >
           </div>
+
         </div>
 
         <div class="isa-content">
-          <!-- Instruction definition -->
+           <!-- Instruction definition -->
           <div v-if="activeTab === 'instructions'">
-            <Instructions :instructions="architecture.instructions" />
+             <Instructions :instructions="architecture.instructions" />
           </div>
-
-          <!-- Pseudoinstruction definition -->
+           <!-- Pseudoinstruction definition -->
           <div v-if="activeTab === 'pseudoinstructions'">
-            <Pseudoinstructions
+             <Pseudoinstructions
               :pseudoinstructions="architecture.pseudoinstructions"
             />
           </div>
-
-          <!-- Directives definition -->
+           <!-- Directives definition -->
           <div v-if="activeTab === 'directives'">
-            <Directives :directives="architecture.directives" />
+             <Directives :directives="architecture.directives" />
+          </div>
+           <!-- Registers -->
+          <div v-if="activeTab === 'registers'">
+             <RegisterFileArch :register_file="architecture.components" />
           </div>
 
-          <!-- Registers -->
-          <div v-if="activeTab === 'registers'">
-            <RegisterFileArch :register_file="architecture.components" />
-          </div>
         </div>
+
       </div>
+
     </div>
+
   </div>
+
 </template>
 
 <style lang="scss" scoped>
@@ -415,3 +400,4 @@ export default defineComponent({
   }
 }
 </style>
+

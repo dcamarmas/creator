@@ -1,6 +1,5 @@
 <!--
-Copyright 2018-2025 Felix Garcia Carballeira, Diego Camarmas Alonso,
-                    Alejandro Calderon Mateos, Luis Daniel Casais Mezquida
+Copyright 2018-2025 CREATOR Team.
 
 This file is part of CREATOR.
 
@@ -17,11 +16,10 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
-
 <script lang="ts">
-import { defineComponent } from "vue"
+import { defineComponent } from "vue";
 
-import { creator_ga } from "@/core/utils/creator_ga.mjs"
+import { creator_ga } from "@/core/utils/creator_ga.mjs";
 
 export default defineComponent({
   props: {
@@ -34,24 +32,24 @@ export default defineComponent({
     current_reg_type: {
       // sync with App's data_mode
       get() {
-        return this.data_mode
+        return this.data_mode;
       },
       set(value: string) {
-        ;(this.$root as any).data_mode = value
+        (this.$root as any).data_mode = value;
 
         /* Google Analytics */
-        creator_ga("send", "event", "data.view." + value)
+        creator_ga("send", "event", "data.view." + value);
       },
     },
     current_reg_name() {
       switch (this.current_reg_type) {
         case "int_registers":
-          return "INT/Ctrl Registers"
+          return "INT/Ctrl Registers";
         case "fp_registers":
-          return "FP Registers"
+          return "FP Registers";
 
         default:
-          return ""
+          return "";
       }
     },
   },
@@ -63,33 +61,33 @@ export default defineComponent({
         { text: "FP Registers", value: "fp_registers" },
       ],
       dropdownOpen: false,
-    }
+    };
   },
 
   mounted() {
     // Close dropdown when clicking outside
-    document.addEventListener('click', this.handleClickOutside)
+    document.addEventListener("click", this.handleClickOutside);
   },
 
   beforeUnmount() {
-    document.removeEventListener('click', this.handleClickOutside)
+    document.removeEventListener("click", this.handleClickOutside);
   },
 
   methods: {
     change_data_view(e: string) {
-      this.current_reg_type = e
-      this.dropdownOpen = false
+      this.current_reg_type = e;
+      this.dropdownOpen = false;
     },
 
     toggleDropdown(event: Event) {
-      event.stopPropagation()
-      this.dropdownOpen = !this.dropdownOpen
+      event.stopPropagation();
+      this.dropdownOpen = !this.dropdownOpen;
     },
 
     handleClickOutside(event: Event) {
-      const target = event.target as HTMLElement
-      if (!target.closest('.tab-dropdown')) {
-        this.dropdownOpen = false
+      const target = event.target as HTMLElement;
+      if (!target.closest(".tab-dropdown")) {
+        this.dropdownOpen = false;
       }
     },
 
@@ -98,83 +96,89 @@ export default defineComponent({
         this.current_reg_type === "int_registers" ||
         this.current_reg_type === "fp_registers"
       ) {
-        return "secondary"
+        return "secondary";
       }
 
-      return "outline-secondary"
+      return "outline-secondary";
     },
 
     isSelected(button: string): boolean {
-      return button === this.current_reg_type
+      return button === this.current_reg_type;
     },
   },
-})
+});
 </script>
 
 <template>
+
   <div class="data-view-selector">
+
     <div class="tabs-container">
-      <!-- Registers Tab -->
-      <button
+       <!-- Registers Tab --> <button
         v-if="register_file_num <= 4"
         :class="['tab', { active: current_reg_type === 'int_registers' }]"
         @click="change_data_view('int_registers')"
       >
-        <font-awesome-icon :icon="['fas', 'microchip']" />
-        <span>Registers</span>
-      </button>
-
-
-      <!-- Dropdown for multiple register banks -->
+         <font-awesome-icon :icon="['fas', 'microchip']" />
+        <span>Registers</span> </button
+      > <!-- Dropdown for multiple register banks -->
       <div v-if="register_file_num > 4" class="tab-dropdown">
-        <button
-          :class="['tab', { active: current_reg_type === 'int_registers' || current_reg_type === 'fp_registers' }]"
+         <button
+          :class="[
+            'tab',
+            {
+              active:
+                current_reg_type === 'int_registers' ||
+                current_reg_type === 'fp_registers',
+            },
+          ]"
           @click="toggleDropdown"
         >
-          <font-awesome-icon :icon="['fas', 'microchip']" />
-          <span>{{ current_reg_name }}</span>
-          <font-awesome-icon :icon="['fas', 'chevron-down']" class="dropdown-icon" />
-        </button>
+           <font-awesome-icon :icon="['fas', 'microchip']" /> <span>{{
+            current_reg_name
+          }}</span
+          > <font-awesome-icon
+            :icon="['fas', 'chevron-down']"
+            class="dropdown-icon"
+          /> </button
+        >
         <div v-if="dropdownOpen" class="dropdown-menu">
-          <button class="dropdown-item" @click="change_data_view('int_registers')">
-            CPU-INT/Ctrl Registers
-          </button>
-          <button class="dropdown-item" @click="change_data_view('fp_registers')">
-            CPU-FP Registers
-          </button>
+           <button
+            class="dropdown-item"
+            @click="change_data_view('int_registers')"
+          >
+             CPU-INT/Ctrl Registers </button
+          > <button
+            class="dropdown-item"
+            @click="change_data_view('fp_registers')"
+          >
+             CPU-FP Registers </button
+          >
         </div>
-      </div>
 
-      <!-- Memory Tab -->
-      <button
+      </div>
+       <!-- Memory Tab --> <button
         :class="['tab', { active: current_reg_type === 'memory' }]"
         @click="change_data_view('memory')"
       >
-        <font-awesome-icon :icon="['fas', 'memory']" />
-        <span>Memory</span>
-      </button>
-
-      <!-- Terminal Tab -->
-      <button
+         <font-awesome-icon :icon="['fas', 'memory']" /> <span>Memory</span> </button
+      > <!-- Terminal Tab --> <button
         :class="['tab', { active: current_reg_type === 'terminal' }]"
         @click="change_data_view('terminal')"
       >
-        <font-awesome-icon :icon="['fas', 'terminal']" />
-        <span>Terminal</span>
-      </button>
-      
-      <!-- Statistics Tab -->
-      <button
+         <font-awesome-icon :icon="['fas', 'terminal']" /> <span>Terminal</span>
+        </button
+      > <!-- Statistics Tab --> <button
         :class="['tab', { active: current_reg_type === 'stats' }]"
         @click="change_data_view('stats')"
       >
-        <font-awesome-icon :icon="['fas', 'chart-line']" />
-        <span>Statistics</span>
-      </button>
-
-
+         <font-awesome-icon :icon="['fas', 'chart-line']" />
+        <span>Statistics</span> </button
+      >
     </div>
+
   </div>
+
 </template>
 
 <style scoped>
@@ -215,3 +219,4 @@ export default defineComponent({
   }
 }
 </style>
+

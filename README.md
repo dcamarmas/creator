@@ -241,6 +241,7 @@
 
   - [x] **BREAKING CHANGES**:
      * New YAML architecture format (w/ [JSON schema](architecture/schema.json))
+     * New library format (Existing libraries must be recompiled)
   - [x] New functionality:
      * Interrupts and timers
      * Memory-mapped devices
@@ -253,6 +254,7 @@
         * Revamped memory viewer
         * Vastly improved mobile support
         * New [Monaco](https://microsoft.github.io/monaco-editor)-based editor
+        * Libraries now have metadata to display help
      * Vim mode in web editor
      * Revamped CLI version
   - [x] Modular design:

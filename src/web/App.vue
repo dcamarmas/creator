@@ -17,46 +17,45 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
-
 <script lang="ts">
-import { BOrchestrator, useToast } from "bootstrap-vue-next"
+import { BOrchestrator, useToast } from "bootstrap-vue-next";
 
 // import package_json from "#/package.json" // package info
-import package_json from "../../package.json" // package info
+import package_json from "../../package.json"; // package info
 // import arch_available from "#/architecture/available_arch.json"
-import arch_available from "../../architecture/available_arch.json"
+import arch_available from "../../architecture/available_arch.json";
 
 import {
   notifications,
   show_notification,
   loadDefaultArchitecture,
   loadExample,
-} from "./utils.mjs"
-import { set_debug, status, reset } from "@/core/core.mjs"
-import { stats } from "@/core/executor/stats.mts"
-import { instructions } from "@/core/assembler/assembler.mjs"
-import type { StackFrame } from "@/core/memory/StackTracker.mjs"
-import { creator_ga } from "@/core/utils/creator_ga.mjs"
+} from "./utils.mjs";
+import { set_debug, status, reset } from "@/core/core.mjs";
+import { stats } from "@/core/executor/stats.mts";
+import { instructions } from "@/core/assembler/assembler.mjs";
+import type { StackFrame } from "@/core/memory/StackTracker.mjs";
+import { creator_ga } from "@/core/utils/creator_ga.mjs";
 
-import SpinnerLoading from "./components/general/SpinnerLoading.vue"
-import SupportedBrowsers from "./components/general/SupportedBrowsers.vue"
-import FormConfiguration from "./components/general/SettingsModal.vue"
-import UIeltoNotifications from "./components/general/UIeltoNotifications.vue"
-import NavbarCREATOR from "./components/general/NavbarCREATOR.vue"
-import UIeltoInstitutions from "./components/general/UIeltoInstitutions.vue"
-import UIeltoAbout from "./components/general/AboutModal.vue"
-import UIeltoBackup from "./components/select_architecture/UIeltoBackup.vue"
-import MobileSettings from "./components/mobile/MobileSettings.vue"
-import MobileCodeView from "./components/mobile/MobileCodeView.vue"
-import MobileArchitectureSelect from "./components/mobile/MobileArchitectureSelect.vue"
-import MobileInstructionsView from "./components/mobile/MobileInstructionsView.vue"
-import MobileDataView from "./components/mobile/MobileDataView.vue"
-import MobileArchitectureView from "./components/mobile/MobileArchitectureView.vue"
+import SpinnerLoading from "./components/general/SpinnerLoading.vue";
+import SupportedBrowsers from "./components/general/SupportedBrowsers.vue";
+import FormConfiguration from "./components/general/SettingsModal.vue";
+import UIeltoNotifications from "./components/general/UIeltoNotifications.vue";
+import NavbarCREATOR from "./components/general/NavbarCREATOR.vue";
+import UIeltoInstitutions from "./components/general/UIeltoInstitutions.vue";
+import UIeltoAbout from "./components/general/AboutModal.vue";
+import UIeltoBackup from "./components/select_architecture/UIeltoBackup.vue";
+import MobileSettings from "./components/mobile/MobileSettings.vue";
+import MobileCodeView from "./components/mobile/MobileCodeView.vue";
+import MobileArchitectureSelect from "./components/mobile/MobileArchitectureSelect.vue";
+import MobileInstructionsView from "./components/mobile/MobileInstructionsView.vue";
+import MobileDataView from "./components/mobile/MobileDataView.vue";
+import MobileArchitectureView from "./components/mobile/MobileArchitectureView.vue";
 
-import SelectArchitecture from "./components/SelectArchitecture.vue"
-import ArchitectureView from "./components/ArchitectureView.vue"
-import SimulatorView from "./components/SimulatorView.vue"
-import AssemblyView from "./components/AssemblyView.vue"
+import SelectArchitecture from "./components/SelectArchitecture.vue";
+import ArchitectureView from "./components/ArchitectureView.vue";
+import SimulatorView from "./components/SimulatorView.vue";
+import AssemblyView from "./components/AssemblyView.vue";
 
 const creatorASCII = `
  ██████╗██████╗ ███████╗ █████╗ ████████╗ ██████╗ ██████╗
@@ -68,7 +67,7 @@ const creatorASCII = `
     didaCtic and geneRic assEmbly progrAmming simulaTOR
 
 ${("v." + package_json.version).padStart(58)}
-`
+`;
 
 export default {
   name: "app",
@@ -101,9 +100,9 @@ export default {
 
   setup() {
     // BV Composeables, such as these, should only be used inside setup
-    const createToast = useToast().create // shows a toast notification
+    const createToast = useToast().create; // shows a toast notification
 
-    return { createToast }
+    return { createToast };
   },
 
   data() {
@@ -157,7 +156,12 @@ export default {
         | "console",
 
       // Mobile architecture view state
-      mobileArchitectureView: 'arch-info' as 'arch-info' | 'register-file' | 'instructions' | 'pseudoinstructions' | 'directives',
+      mobileArchitectureView: "arch-info" as
+        | "arch-info"
+        | "register-file"
+        | "instructions"
+        | "pseudoinstructions"
+        | "directives",
 
       //
       // Current view
@@ -187,12 +191,12 @@ export default {
 
       // Auto Scroll
       autoscroll: (a => {
-        return a === null ? true : a === "true"
+        return a === null ? true : a === "true";
       })(localStorage.getItem("conf_autoscroll")), // if null, set to true, else respect the value
 
       // Backup
       backup: (a => {
-        return a === null ? true : a === "true"
+        return a === null ? true : a === "true";
       })(localStorage.getItem("conf_backup")), // if null, set to true, else respect the value
 
       // Font size
@@ -203,7 +207,8 @@ export default {
 
       // Dark Mode
       dark: false, // the actual dark mode state
-      dark_mode_setting: localStorage.getItem("conf_dark_mode_setting") || "system", // "system", "dark", or "light"
+      dark_mode_setting:
+        localStorage.getItem("conf_dark_mode_setting") || "system", // "system", "dark", or "light"
 
       mediaQuery: null as MediaQueryList | null,
 
@@ -302,32 +307,32 @@ export default {
       target_board: "",
       target_port: "",
       flash_url: "http://localhost:8080",
-    }
+    };
   },
 
   computed: {
     arch_available(): AvailableArch[] {
       // Use customArchitecturesKey to force recomputation when it changes
       // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-      this.customArchitecturesKey
+      this.customArchitecturesKey;
 
-      const architectures = arch_available.map(a => ({ ...a, default: true }))
+      const architectures = arch_available.map(a => ({ ...a, default: true }));
       const customArchs = JSON.parse(
         localStorage.getItem("customArchitectures") || "[]",
-      )
+      );
 
       if (customArchs && customArchs.length > 0) {
-        architectures.push(...customArchs)
+        architectures.push(...customArchs);
       }
 
-      return architectures
+      return architectures;
     },
 
     /**
      * @returns {boolean} True if the current viewport is mobile-sized
      */
     isMobile() {
-      return this.windowWidth <= 767
+      return this.windowWidth <= 767;
     },
   },
 
@@ -335,9 +340,9 @@ export default {
    * Created vue instance *
    ************************/
   created() {
-    this.os = this.detect_os()
-    this.browser = this.detect_browser()
-    this.target_port = this.get_target_port()
+    this.os = this.detect_os();
+    this.browser = this.detect_browser();
+    this.target_port = this.get_target_port();
   },
 
   /************************
@@ -345,30 +350,30 @@ export default {
    ************************/
   mounted() {
     // Preload following URL params
-    this.loadFromURI()
+    this.loadFromURI();
 
     // set config
-    this.set_dark_mode()
+    this.set_dark_mode();
 
     // Listen for changes in system dark mode preference if setting is system
     if (this.dark_mode_setting === "system") {
-      this.mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
-      this.mediaQuery.addEventListener('change', this.handleDarkModeChange)
+      this.mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+      this.mediaQuery.addEventListener("change", this.handleDarkModeChange);
     }
 
-    set_debug(this.c_debug)
+    set_debug(this.c_debug);
 
     // listener for window size changes
-    window.addEventListener("resize", this.resizeHandler)
+    window.addEventListener("resize", this.resizeHandler);
 
-    console.log(creatorASCII)
+    console.log(creatorASCII);
   },
 
   unmounted() {
     if (this.mediaQuery) {
-      this.mediaQuery.removeEventListener('change', this.handleDarkModeChange)
+      this.mediaQuery.removeEventListener("change", this.handleDarkModeChange);
     }
-    window.removeEventListener("resize", this.resizeHandler)
+    window.removeEventListener("resize", this.resizeHandler);
   },
 
   /***************
@@ -377,7 +382,7 @@ export default {
 
   watch: {
     dark_mode_setting(newSetting: string) {
-      this.handleDarkModeSettingChange(newSetting)
+      this.handleDarkModeSettingChange(newSetting);
     },
   },
 
@@ -395,7 +400,7 @@ export default {
      * Forces re-computation of arch_available computed property
      */
     handleArchitectureDeleted(_archName: string) {
-      this.customArchitecturesKey++
+      this.customArchitecturesKey++;
     },
 
     /**
@@ -405,18 +410,18 @@ export default {
      */
     detect_os(): string | undefined {
       if (navigator.userAgent.includes("Win")) {
-        return "Win"
+        return "Win";
       }
       if (navigator.userAgent.includes("Mac")) {
-        return "Mac"
+        return "Mac";
       }
       if (
         navigator.userAgent.includes("X11") ||
         navigator.userAgent.includes("Linux")
       ) {
-        return "Linux"
+        return "Linux";
       }
-      return undefined
+      return undefined;
     },
 
     /**
@@ -426,30 +431,30 @@ export default {
      */
     detect_browser(): string | undefined {
       if (navigator.userAgent.includes("Chrome")) {
-        return "Chrome"
+        return "Chrome";
       }
       if (navigator.userAgent.includes("Firefox")) {
-        return "Firefox"
+        return "Firefox";
       }
       if (navigator.userAgent.includes("Safari")) {
-        return "Safari"
+        return "Safari";
       }
-      return undefined
+      return undefined;
     },
 
     // Set dark mode based on setting
     set_dark_mode() {
       if (this.dark_mode_setting === "system") {
-        this.dark = window.matchMedia("(prefers-color-scheme: dark)").matches
+        this.dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
       } else {
-        this.dark = this.dark_mode_setting === "dark"
+        this.dark = this.dark_mode_setting === "dark";
       }
 
       // set dark mode (w/ bootstrap color themes)
       document.documentElement.setAttribute(
         "data-bs-theme",
         this.dark ? "dark" : "light",
-      )
+      );
     },
 
     /**
@@ -457,16 +462,16 @@ export default {
      */
     loadFromURI() {
       // get parameters
-      const params = new URL(window.location.toString()).searchParams
+      const params = new URL(window.location.toString()).searchParams;
 
-      const architecture_name = params.get("architecture")
-      const asm = params.get("asm")
-      const desired_set = params.get("example_set")
-      const desired_example = params.get("example")
+      const architecture_name = params.get("architecture");
+      const asm = params.get("asm");
+      const desired_set = params.get("example_set");
+      const desired_example = params.get("example");
 
       if (architecture_name === null) {
         // no URI or incomplete URI
-        return
+        return;
       }
 
       // load architecture
@@ -474,17 +479,17 @@ export default {
         arch =>
           arch.name === decodeURI(architecture_name) ||
           arch.alias.includes(decodeURI(architecture_name)),
-      )
+      );
       if (arch === undefined) {
         show_notification(
           `'${architecture_name}' architecture not found`,
           "danger",
           this,
-        )
-        return
+        );
+        return;
       }
 
-      this.architecture_name = arch.name
+      this.architecture_name = arch.name;
 
       // I'm going to do what's called a "pro gamer move"
       // In the underlaying function, as it belongs to a JS module, we can't
@@ -492,11 +497,11 @@ export default {
       // (App) in `document.app` once its mounted. But in this point of the
       // code, App is still not mounted, so `document.app` is undefined.
       // The hack is to pass the component to the function so it can use it.
-      loadDefaultArchitecture(arch, this)
+      loadDefaultArchitecture(arch, this);
 
       // load assembly code
       if (asm !== null) {
-        this.assembly_code = decodeURI(asm)
+        this.assembly_code = decodeURI(asm);
 
         // TODO: compile. It doesn't update the table execution, so...
         // this.$root.$refs.selectArchitectureView.$refs.toolbar.$refs.btngroup1
@@ -506,7 +511,7 @@ export default {
         // go directly to assembly view
         // FIXME: as we can't compile (see above), we go to the assembly view,
         // when we should go to simulator view
-        this.creator_mode = "assembly"
+        this.creator_mode = "assembly";
       }
 
       // load example code
@@ -516,7 +521,7 @@ export default {
           decodeURI(desired_set),
           decodeURI(desired_example),
           this,
-        )
+        );
       }
     },
 
@@ -530,113 +535,102 @@ export default {
       show_notification(
         "There has been an exception. Error description: '" + error,
         "danger",
-      )
+      );
 
       if (status.execution_index !== -1) {
-        instructions[status.execution_index]!._rowVariant = "danger"
+        instructions[status.execution_index]!._rowVariant = "danger";
       }
 
       /* Google Analytics */
-      creator_ga("execute", "execute.exception", "execute.exception." + error)
+      creator_ga("execute", "execute.exception", "execute.exception." + error);
     },
 
     //Get target por by SO
     get_target_port() {
-      return this.target_ports[this.os!]! ?? ""
+      return this.target_ports[this.os!]! ?? "";
     },
 
     resizeHandler(_e: any) {
-      this.windowHeight = window.innerHeight
-      this.windowWidth = window.innerWidth
+      this.windowHeight = window.innerHeight;
+      this.windowWidth = window.innerWidth;
     },
 
     // Handle changes in system dark mode preference
     handleDarkModeChange(e: MediaQueryListEvent) {
       if (this.dark_mode_setting === "system") {
-        this.dark = e.matches
+        this.dark = e.matches;
         document.documentElement.setAttribute(
           "data-bs-theme",
           this.dark ? "dark" : "light",
-        )
+        );
       }
     },
 
     // Handle dark mode setting change
     handleDarkModeSettingChange(newSetting: string) {
-      this.dark_mode_setting = newSetting
-      localStorage.setItem("conf_dark_mode_setting", newSetting)
+      this.dark_mode_setting = newSetting;
+      localStorage.setItem("conf_dark_mode_setting", newSetting);
 
       if (newSetting === "system") {
         // Add listener if not already
         if (!this.mediaQuery) {
-          this.mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
-          this.mediaQuery.addEventListener('change', this.handleDarkModeChange)
+          this.mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+          this.mediaQuery.addEventListener("change", this.handleDarkModeChange);
         }
-        this.dark = this.mediaQuery.matches
+        this.dark = this.mediaQuery.matches;
       } else {
         // Remove listener
         if (this.mediaQuery) {
-          this.mediaQuery.removeEventListener('change', this.handleDarkModeChange)
-          this.mediaQuery = null
+          this.mediaQuery.removeEventListener(
+            "change",
+            this.handleDarkModeChange,
+          );
+          this.mediaQuery = null;
         }
-        this.dark = newSetting === "dark"
+        this.dark = newSetting === "dark";
       }
 
       document.documentElement.setAttribute(
         "data-bs-theme",
         this.dark ? "dark" : "light",
-      )
+      );
     },
 
     // Handle mobile view changes from navbar
     handleMobileViewChange(
       view: "code" | "instructions" | "data" | "architecture" | "settings",
     ) {
-      this.mobileView = view
+      this.mobileView = view;
     },
 
     // Reset simulator state for mobile code view
     resetSimulator() {
-      this.keyboard = ""
-      this.display = ""
-      this.enter = null
-      reset()
+      this.keyboard = "";
+      this.display = "";
+      this.enter = null;
+      reset();
     },
 
     // Show toast notification for mobile code view
-    showToast(toastData: {
-      message: string
-      title: string
-      variant: string
-    }) {
+    showToast(toastData: { message: string; title: string; variant: string }) {
       this.createToast({
         title: toastData.title,
         body: toastData.message,
         variant: toastData.variant as "success" | "danger" | "warning" | "info",
         solid: true,
-      })
+      });
     },
   },
-}
+};
 </script>
 
 <template>
-  <!-- for showing bootstrap stuff from JS -->
-  <BOrchestrator />
-
-  <!------------------------>
-  <!-- General components -->
-  <!------------------------>
-
-  <!-- Loading spinner -->
-  <SpinnerLoading id="loading" style="display: none" />
-
-  <!-- Browser not supported modal -->
+   <!-- for showing bootstrap stuff from JS --> <BOrchestrator /> <!------------------------>
+  <!-- General components --> <!------------------------> <!-- Loading spinner -->
+  <SpinnerLoading id="loading" style="display: none" /> <!-- Browser not supported modal -->
   <SupportedBrowsers :browser="browser" />
-
   <header>
-    <!-- Navbar  -->
-    <NavbarCREATOR
+     <!-- Navbar  --> <NavbarCREATOR
       :version="version"
       :architecture_name="architecture_name"
       :creator_mode="creator_mode"
@@ -648,10 +642,7 @@ export default {
       :instructions="instructions"
       @mobile-view-change="handleMobileViewChange"
       ref="navbar"
-    />
-
-    <!-- Configuration modal -->
-    <FormConfiguration
+    /> <!-- Configuration modal --> <FormConfiguration
       id="configuration"
       class="bottomCard"
       v-model:arch_available="arch_available"
@@ -668,45 +659,30 @@ export default {
       v-model:reg_representation_int="reg_representation_int"
       v-model:reg_representation_float="reg_representation_float"
       v-model:reg_name_representation="reg_name_representation"
+    /> <!-- Information modals --> <!-- Notification modal -->
+    <UIeltoNotifications id="notifications" :notifications="notifications" /> <!-- Institutions modal -->
+    <UIeltoInstitutions id="institutions" /> <!-- About modal --> <UIeltoAbout
+      id="about"
+      :dark="dark!"
+    /> <!-- Backup modal --> <UIeltoBackup
+      id="copy"
+      @load-architecture="creator_mode = 'assembly'"
     />
-
-    <!-- Information modals -->
-
-    <!-- Notification modal -->
-    <UIeltoNotifications id="notifications" :notifications="notifications" />
-
-    <!-- Institutions modal -->
-    <UIeltoInstitutions id="institutions" />
-
-    <!-- About modal -->
-    <UIeltoAbout id="about" :dark="dark!" />
-
-    <!-- Backup modal -->
-    <UIeltoBackup id="copy" @load-architecture="creator_mode = 'assembly'" />
   </header>
-
-  <!-------------------->
-  <!-- Mobile Architecture Select -->
-  <!-------------------->
-
+   <!--------------------> <!-- Mobile Architecture Select --> <!-------------------->
   <MobileArchitectureSelect
     v-if="isMobile"
     :arch_available="arch_available"
     :dark="dark"
     @select-architecture="
       arch_name => {
-        architecture_name = arch_name
-        creator_mode = 'simulator'
-        mobileView = 'code'
+        architecture_name = arch_name;
+        creator_mode = 'simulator';
+        mobileView = 'code';
       }
     "
     @architecture-deleted="handleArchitectureDeleted"
-  />
-
-  <!----------------------->
-  <!-- Select architecture -->
-  <!----------------------->
-
+  /> <!-----------------------> <!-- Select architecture --> <!----------------------->
   <SelectArchitecture
     v-if="!isMobile && creator_mode === 'select_architecture'"
     :arch_available="arch_available"
@@ -717,17 +693,12 @@ export default {
     ref="selectArchitectureView"
     @select-architecture="
       arch_name => {
-        architecture_name = arch_name
-        creator_mode = 'simulator'
+        architecture_name = arch_name;
+        creator_mode = 'simulator';
       }
     "
     @architecture-deleted="handleArchitectureDeleted"
-  />
-
-  <!------------------>
-  <!-- Architecture -->
-  <!------------------>
-
+  /> <!------------------> <!-- Architecture --> <!------------------>
   <ArchitectureView
     v-if="!isMobile && creator_mode === 'architecture'"
     :architecture_name="architecture_name"
@@ -736,11 +707,7 @@ export default {
     :browser="browser!"
     :os="os!"
     :dark="dark!"
-  />
-
-  <!------------------->
-  <!-- Assembly view -->
-  <!------------------->
+  /> <!-------------------> <!-- Assembly view --> <!------------------->
   <AssemblyView
     v-if="!isMobile && creator_mode === 'assembly'"
     :architecture_name="architecture_name"
@@ -753,12 +720,7 @@ export default {
     :vim_custom_keybinds="vim_custom_keybinds"
     :dark="dark!"
     ref="assemblyView"
-  />
-
-  <!-------------------->
-  <!-- Simulator view -->
-  <!-------------------->
-
+  /> <!--------------------> <!-- Simulator view --> <!-------------------->
   <SimulatorView
     v-if="!isMobile && creator_mode === 'simulator'"
     ref="simulatorView"
@@ -789,12 +751,7 @@ export default {
     :target_board="target_board"
     :target_port="target_port"
     :flash_url="flash_url"
-  />
-
-  <!-------------------->
-  <!-- Mobile Settings -->
-  <!-------------------->
-
+  /> <!--------------------> <!-- Mobile Settings --> <!-------------------->
   <MobileSettings
     v-if="
       isMobile &&
@@ -813,12 +770,7 @@ export default {
     v-model:reg_representation_int="reg_representation_int"
     v-model:reg_representation_float="reg_representation_float"
     v-model:reg_name_representation="reg_name_representation"
-  />
-
-  <!-------------------->
-  <!-- Mobile Code View -->
-  <!-------------------->
-
+  /> <!--------------------> <!-- Mobile Code View --> <!-------------------->
   <MobileCodeView
     v-if="
       isMobile &&
@@ -832,12 +784,7 @@ export default {
     @switch-to-simulator="creator_mode = 'simulator'"
     @reset-simulator="resetSimulator"
     @show-toast="showToast"
-  />
-
-  <!-------------------->
-  <!-- Mobile Instructions View -->
-  <!-------------------->
-
+  /> <!--------------------> <!-- Mobile Instructions View --> <!-------------------->
   <MobileInstructionsView
     v-if="
       isMobile &&
@@ -851,12 +798,7 @@ export default {
     :dark="dark!"
     @reset-simulator="resetSimulator"
     @show-toast="showToast"
-  />
-
-  <!-------------------->
-  <!-- Mobile Data View -->
-  <!-------------------->
-
+  /> <!--------------------> <!-- Mobile Data View --> <!-------------------->
   <MobileDataView
     ref="mobileDataView"
     v-if="
@@ -879,12 +821,7 @@ export default {
     :callee_frame="callee_frame!"
     :mobile_data_view="mobileDataView"
     @update:mobile_data_view="mobileDataView = $event"
-  />
-
-  <!-------------------->
-  <!-- Mobile Architecture View -->
-  <!-------------------->
-
+  /> <!--------------------> <!-- Mobile Architecture View --> <!-------------------->
   <MobileArchitectureView
     v-if="
       isMobile &&
@@ -1052,3 +989,4 @@ export default {
   }
 }
 </style>
+

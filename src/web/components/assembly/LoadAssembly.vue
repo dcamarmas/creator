@@ -1,6 +1,5 @@
 <!--
-Copyright 2018-2025 Felix Garcia Carballeira, Diego Camarmas Alonso,
-                    Alejandro Calderon Mateos, Luis Daniel Casais Mezquida
+Copyright 2018-2025 CREATOR Team.
 
 This file is part of CREATOR.
 
@@ -17,12 +16,11 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
-
 <script lang="ts">
-import { defineComponent } from "vue"
+import { defineComponent } from "vue";
 
-import { show_loading, hide_loading, show_notification } from "@/web/utils.mjs"
-import { creator_ga } from "@/core/utils/creator_ga.mjs"
+import { show_loading, hide_loading, show_notification } from "@/web/utils.mjs";
+import { creator_ga } from "@/core/utils/creator_ga.mjs";
 
 export default defineComponent({
   props: {
@@ -30,45 +28,46 @@ export default defineComponent({
   },
 
   data() {
-    return { file: null as File | null }
+    return { file: null as File | null };
   },
 
   methods: {
     //Load new assembly code into text area
     loadAssembly() {
-      show_loading()
+      show_loading();
 
       // read file
-      const reader = new FileReader()
+      const reader = new FileReader();
       reader.onload = _event => {
-        ;(this.$root as any).assembly_code = reader.result
-        hide_loading()
-      }
-      reader.onerror = () => show_notification("Error loading file", "danger")
+        (this.$root as any).assembly_code = reader.result;
+        hide_loading();
+      };
+      reader.onerror = () => show_notification("Error loading file", "danger");
 
-      reader.readAsText(this.file!)
+      reader.readAsText(this.file!);
 
       /* Google Analytics */
-      creator_ga("assembly", "assembly.load", "assembly.load")
+      creator_ga("assembly", "assembly.load", "assembly.load");
     },
   },
-})
+});
 </script>
 
 <template>
-  <b-modal
+   <b-modal
     :id="id"
     title="Load Assembly"
     ok-title="Load from this File"
     @ok="loadAssembly"
-  >
+    >
     <p>Please select the assembly file to be loaded</p>
-    <b-form-file
+     <b-form-file
       v-model="file"
       :state="file !== null"
       placeholder="Choose a file..."
       accept=".s"
       id="assembly_file"
-    />
-  </b-modal>
+    /> </b-modal
+  >
 </template>
+

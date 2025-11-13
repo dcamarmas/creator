@@ -1,6 +1,5 @@
 <!--
-Copyright 2018-2025 Felix Garcia Carballeira, Diego Camarmas Alonso,
-                    Alejandro Calderon Mateos, Jorge Ramos Santana
+Copyright 2018-2025 CREATOR Team.
 
 This file is part of CREATOR.
 
@@ -17,12 +16,11 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
-
 <script lang="ts">
-import { defineComponent, type PropType } from "vue"
-import type { Instruction } from "@/core/core"
+import { defineComponent, type PropType } from "vue";
+import type { Instruction } from "@/core/core";
 
-import InstructionEncoding from "./InstructionEncoding.vue"
+import InstructionEncoding from "./InstructionEncoding.vue";
 
 export default defineComponent({
   props: {
@@ -37,134 +35,184 @@ export default defineComponent({
       searchTerm: "",
       selectedProperty: "all",
       selectedType: "all",
-    }
+    };
   },
 
   computed: {
     availableProperties() {
-      const props = new Set<string>()
+      const props = new Set<string>();
       this.instructions.forEach(inst => {
-        inst.properties?.forEach(p => props.add(p))
-      })
-      return Array.from(props).sort()
+        inst.properties?.forEach(p => props.add(p));
+      });
+      return Array.from(props).sort();
     },
 
     availableTypes() {
-      const types = new Set<string>()
+      const types = new Set<string>();
       this.instructions.forEach(inst => {
         if (inst.type) {
-          types.add(inst.type)
+          types.add(inst.type);
         }
-      })
-      return Array.from(types).sort()
+      });
+      return Array.from(types).sort();
     },
 
     filteredInstructions() {
       return this.instructions.filter(inst => {
         // Always check if instruction has the required fields
-        const matchesSearch = !this.searchTerm ||
-          (inst.name && inst.name.toLowerCase().includes(this.searchTerm.toLowerCase())) ||
-          (inst.signature_pretty && inst.signature_pretty.toLowerCase().includes(this.searchTerm.toLowerCase()))
+        const matchesSearch =
+          !this.searchTerm ||
+          (inst.name &&
+            inst.name.toLowerCase().includes(this.searchTerm.toLowerCase())) ||
+          (inst.signature_pretty &&
+            inst.signature_pretty
+              .toLowerCase()
+              .includes(this.searchTerm.toLowerCase()));
 
-        const matchesProperty = this.selectedProperty === "all" ||
-          (inst.properties && inst.properties.includes(this.selectedProperty))
+        const matchesProperty =
+          this.selectedProperty === "all" ||
+          (inst.properties && inst.properties.includes(this.selectedProperty));
 
-        const matchesType = this.selectedType === "all" ||
-          (inst.type && inst.type === this.selectedType)
+        const matchesType =
+          this.selectedType === "all" ||
+          (inst.type && inst.type === this.selectedType);
 
-        return matchesSearch && matchesProperty && matchesType
-      })
+        return matchesSearch && matchesProperty && matchesType;
+      });
     },
   },
 
-  methods: {
-  },
-})
+  methods: {},
+});
 </script>
 
 <template>
 
-
   <div class="instructions-container">
-    <!-- Search Bar and Filters -->
+     <!-- Search Bar and Filters -->
     <div class="instruction-toolbar">
-      <b-row class="align-items-center mb-2">
-        <b-col>
-          <b-form-input v-model="searchTerm" placeholder="Search instructions..." size="sm" />
-        </b-col>
-        <b-col class="text-end">
-          <b-badge variant="primary" pill>
-            {{ filteredInstructions.length }} / {{ instructions.length }}
-          </b-badge>
-        </b-col>
-      </b-row>
-      <b-row class="align-items-center" v-if="availableTypes.length > 0">
-        <b-col cols="auto">
-          <span class="filter-label">Type:</span>
-        </b-col>
-        <b-col>
-          <b-form-select v-model="selectedType" size="sm" class="type-filter">
+       <b-row class="align-items-center mb-2"
+        > <b-col
+          > <b-form-input
+            v-model="searchTerm"
+            placeholder="Search instructions..."
+            size="sm"
+          /> </b-col
+        > <b-col class="text-end"
+          > <b-badge variant="primary" pill
+            > {{ filteredInstructions.length }} / {{ instructions.length }}
+            </b-badge
+          > </b-col
+        > </b-row
+      > <b-row class="align-items-center" v-if="availableTypes.length > 0"
+        > <b-col cols="auto"> <span class="filter-label">Type:</span> </b-col>
+        <b-col
+          > <b-form-select v-model="selectedType" size="sm" class="type-filter"
+            >
             <option value="all">All Types</option>
+
             <option v-for="type in availableTypes" :key="type" :value="type">
-              {{ type }}
+               {{ type }}
             </option>
-          </b-form-select>
-        </b-col>
-      </b-row>
+             </b-form-select
+          > </b-col
+        > </b-row
+      >
     </div>
-
-    <!-- Instruction cards -->
+     <!-- Instruction cards -->
     <div class="cards-wrapper">
+
       <div class="instruction-cards">
-        <div v-for="(instruction, index) in filteredInstructions" :key="`${instruction.name}-${instruction.signature_pretty}-${index}`" class="instruction-card">
-          <!-- Card Header -->
+
+        <div
+          v-for="(instruction, index) in filteredInstructions"
+          :key="`${instruction.name}-${instruction.signature_pretty}-${index}`"
+          class="instruction-card"
+        >
+           <!-- Card Header -->
           <div class="card-header">
+
             <div class="header-main">
+
               <div class="mnemonic-section">
-                <code class="instruction-name">{{ instruction.name }}</code>
-                <div v-if="instruction.properties && instruction.properties.length > 0" class="properties-container">
-                  <b-badge v-for="property in instruction.properties" :key="property" class="property-badge" pill variant="info">
-                    {{ property }}
-                  </b-badge>
+                 <code class="instruction-name">{{ instruction.name }}</code
+                >
+                <div
+                  v-if="
+                    instruction.properties && instruction.properties.length > 0
+                  "
+                  class="properties-container"
+                >
+                   <b-badge
+                    v-for="property in instruction.properties"
+                    :key="property"
+                    class="property-badge"
+                    pill
+                    variant="info"
+                    > {{ property }} </b-badge
+                  >
                 </div>
+
               </div>
+
               <div class="stats-section">
+
                 <div class="stat-item">
-                  <span class="stat-label">Words:</span>
-                  <span class="stat-value">{{ instruction.nwords }}</span>
+                   <span class="stat-label">Words:</span> <span
+                    class="stat-value"
+                    >{{ instruction.nwords }}</span
+                  >
                 </div>
+
                 <div class="stat-item">
-                  <span class="stat-label">Cycles:</span>
-                  <span class="stat-value">{{ instruction.clk_cycles }}</span>
+                   <span class="stat-label">Cycles:</span> <span
+                    class="stat-value"
+                    >{{ instruction.clk_cycles }}</span
+                  >
                 </div>
+
               </div>
+
             </div>
+
             <div class="syntax-section">
-              <span class="syntax-label">Syntax</span>
-              <code class="syntax-text">{{ instruction.signature_pretty }}</code>
+               <span class="syntax-label">Syntax</span> <code
+                class="syntax-text"
+                >{{ instruction.signature_pretty }}</code
+              >
             </div>
-
-            <!-- Help Text -->
+             <!-- Help Text -->
             <div v-if="instruction.help" class="description-section">
-              <span class="syntax-label">Description</span>
+               <span class="syntax-label">Description</span>
               <div class="help-content">
+
                 <p>{{ instruction.help }}</p>
+
               </div>
+
             </div>
+
+          </div>
+           <!-- Card Body - Encoding -->
+          <div class="card-body">
+
+            <div class="encoding-section">
+               <InstructionEncoding :instruction="instruction" />
+            </div>
+
           </div>
 
-          <!-- Card Body - Encoding -->
-          <div class="card-body">
-            <div class="encoding-section">
-              <InstructionEncoding :instruction="instruction" />
-            </div>
-          </div>
         </div>
+
       </div>
+
     </div>
+
   </div>
 
-</template><style lang="scss" scoped>
+</template>
+
+<style lang="scss" scoped>
 .instructions-container {
   display: flex;
   flex-direction: column;
@@ -470,3 +518,4 @@ export default defineComponent({
   }
 }
 </style>
+

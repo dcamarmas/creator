@@ -1,6 +1,5 @@
 <!--
-Copyright 2018-2025 Felix Garcia Carballeira, Diego Camarmas Alonso,
-                    Alejandro Calderon Mateos, Jorge Ramos Santana
+Copyright 2018-2025 CREATOR Team.
 
 This file is part of CREATOR.
 
@@ -17,11 +16,10 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
-
 <script lang="ts">
-import { defineComponent, type PropType } from "vue"
-import { creator_ga } from "@/core/utils/creator_ga.mjs"
-import { set_debug } from "@/core/core.mjs"
+import { defineComponent, type PropType } from "vue";
+import { creator_ga } from "@/core/utils/creator_ga.mjs";
+import { set_debug } from "@/core/core.mjs";
 
 export default defineComponent({
   props: {
@@ -84,224 +82,228 @@ export default defineComponent({
         { text: "Dark", value: "dark" },
         { text: "Light", value: "light" },
       ],
-    }
+    };
   },
 
   computed: {
     // Computed properties for v-model binding
     stack_total_list_value: {
       get() {
-        return this.stack_total_list
+        return this.stack_total_list;
       },
       set(value: string) {
-        let val = parseInt(value, 10)
-        const prev = this.stack_total_list
+        let val = parseInt(value, 10);
+        const prev = this.stack_total_list;
 
         // enforce limit
         if (val < 20) {
-          val = 20
+          val = 20;
         } else if (val > 500) {
-          val = 500
+          val = 500;
         }
 
-        this.$emit("update:stack_total_list", val)
-        localStorage.setItem("conf_stack_total_list", val.toString())
+        this.$emit("update:stack_total_list", val);
+        localStorage.setItem("conf_stack_total_list", val.toString());
 
         //Google Analytics
         creator_ga(
           "configuration",
           "configuration.stack_total_list",
           "configuration.stack_total_list.speed_" + (prev > val).toString(),
-        )
+        );
       },
     },
 
     autoscroll_value: {
       get() {
-        return this.autoscroll
+        return this.autoscroll;
       },
       set(value: string) {
-        this.$emit("update:autoscroll", value)
-        localStorage.setItem("conf_autoscroll", value)
+        this.$emit("update:autoscroll", value);
+        localStorage.setItem("conf_autoscroll", value);
 
         //Google Analytics
         creator_ga(
           "configuration",
           "configuration.autoscroll",
           "configuration.autoscroll." + value,
-        )
+        );
       },
     },
 
     backup_value: {
       get() {
-        return this.backup
+        return this.backup;
       },
       set(value: string) {
-        this.$emit("update:backup", value)
-        localStorage.setItem("conf_backup", value)
+        this.$emit("update:backup", value);
+        localStorage.setItem("conf_backup", value);
 
         //Google Analytics
         creator_ga(
           "configuration",
           "configuration.backup",
           "configuration.backup." + value,
-        )
+        );
       },
     },
 
     notification_time_value: {
       get() {
-        return this.notification_time
+        return this.notification_time;
       },
       set(value: string) {
-        const prev = this.stack_total_list
+        const prev = this.stack_total_list;
 
-        let val = parseInt(value, 10)
+        let val = parseInt(value, 10);
 
         // enforce limit
         if (val < 1000) {
-          val = 1000
+          val = 1000;
         } else if (val > 5000) {
-          val = 5000
+          val = 5000;
         }
 
-        this.$emit("update:notification_time", val)
-        localStorage.setItem("conf_notification_time", val.toString())
+        this.$emit("update:notification_time", val);
+        localStorage.setItem("conf_notification_time", val.toString());
 
         //Google Analytics
         creator_ga(
           "configuration",
           "configuration.notification_time",
           "configuration.notification_time.time_" + (prev > val).toString(),
-        )
+        );
       },
     },
 
     dark_mode_setting_value: {
       get() {
-        return this.dark_mode_setting
+        return this.dark_mode_setting;
       },
       set(value: string) {
-        this.$emit("update:dark_mode_setting", value)
+        this.$emit("update:dark_mode_setting", value);
 
         //Google Analytics
         creator_ga(
           "configuration",
           "configuration.dark_mode_setting",
           "configuration.dark_mode_setting." + value,
-        )
+        );
       },
     },
 
     c_debug_value: {
       get() {
-        return this.c_debug
+        return this.c_debug;
       },
       set(value: boolean) {
-        set_debug(value)
-        this.$emit("update:c_debug", value.toString())
+        set_debug(value);
+        this.$emit("update:c_debug", value.toString());
 
         //Google Analytics
         creator_ga(
           "configuration",
           "configuration.debug_mode",
           "configuration.debug_mode." + value,
-        )
+        );
       },
     },
 
     vim_mode_value: {
       get() {
-        return this.vim_mode
+        return this.vim_mode;
       },
       set(value: boolean) {
-        this.$emit("update:vim_mode", value)
-        localStorage.setItem("conf_vim_mode", value.toString())
+        this.$emit("update:vim_mode", value);
+        localStorage.setItem("conf_vim_mode", value.toString());
 
         // Google Analytics
         creator_ga(
           "configuration",
           "configuration.vim_mode",
           "configuration.vim_mode." + value,
-        )
+        );
       },
     },
 
     reg_representation_int_value: {
       get() {
-        return this.reg_representation_int
+        return this.reg_representation_int;
       },
       set(value: string) {
-        this.$emit("update:reg_representation_int", value)
-        localStorage.setItem("conf_reg_representation_int", value)
+        this.$emit("update:reg_representation_int", value);
+        localStorage.setItem("conf_reg_representation_int", value);
 
         // Google Analytics
         creator_ga(
           "configuration",
           "configuration.reg_representation_int",
           "configuration.reg_representation_int." + value,
-        )
+        );
       },
     },
 
     reg_representation_float_value: {
       get() {
-        return this.reg_representation_float
+        return this.reg_representation_float;
       },
       set(value: string) {
-        this.$emit("update:reg_representation_float", value)
-        localStorage.setItem("conf_reg_representation_float", value)
+        this.$emit("update:reg_representation_float", value);
+        localStorage.setItem("conf_reg_representation_float", value);
 
         // Google Analytics
         creator_ga(
           "configuration",
           "configuration.reg_representation_float",
           "configuration.reg_representation_float." + value,
-        )
+        );
       },
     },
 
     reg_name_representation_value: {
       get() {
-        return this.reg_name_representation
+        return this.reg_name_representation;
       },
       set(value: string) {
-        this.$emit("update:reg_name_representation", value)
-        localStorage.setItem("conf_reg_name_representation", value)
+        this.$emit("update:reg_name_representation", value);
+        localStorage.setItem("conf_reg_name_representation", value);
 
         // Google Analytics
         creator_ga(
           "configuration",
           "configuration.reg_name_representation",
           "configuration.reg_name_representation." + value,
-        )
+        );
       },
     },
   },
-})
+});
 </script>
 
 <template>
+
   <div class="mobile-settings">
+
     <div class="mobile-settings-header">
+
       <h3 class="settings-title">
-        <font-awesome-icon :icon="['fas', 'cog']" />
-        Settings
+         <font-awesome-icon :icon="['fas', 'cog']" /> Settings
       </h3>
+
     </div>
 
     <div class="mobile-settings-content">
-      <!-- General Settings -->
+       <!-- General Settings -->
       <div class="settings-section">
+
         <h4 class="section-title">General</h4>
 
         <div class="setting-item">
+
           <div class="setting-label">
-            <font-awesome-icon :icon="['fas', 'moon']" />
-            Dark Mode
+             <font-awesome-icon :icon="['fas', 'moon']" /> Dark Mode
           </div>
-          <b-form-select
+           <b-form-select
             v-model="dark_mode_setting_value"
             :options="dark_mode_setting_options"
             class="setting-select"
@@ -309,11 +311,11 @@ export default defineComponent({
         </div>
 
         <div class="setting-item">
+
           <div class="setting-label">
-            <font-awesome-icon :icon="['fas', 'save']" />
-            Auto Backup
+             <font-awesome-icon :icon="['fas', 'save']" /> Auto Backup
           </div>
-          <b-form-checkbox
+           <b-form-checkbox
             v-model="backup_value"
             switch
             size="lg"
@@ -322,29 +324,30 @@ export default defineComponent({
         </div>
 
         <div class="setting-item">
+
           <div class="setting-label">
-            <font-awesome-icon :icon="['fas', 'arrow-down']" />
-            Auto Scroll
+             <font-awesome-icon :icon="['fas', 'arrow-down']" /> Auto Scroll
           </div>
-          <b-form-checkbox
+           <b-form-checkbox
             v-model="autoscroll_value"
             switch
             size="lg"
             class="setting-toggle"
           />
         </div>
-      </div>
 
-      <!-- Display Settings -->
+      </div>
+       <!-- Display Settings -->
       <div class="settings-section">
+
         <h4 class="section-title">Display</h4>
 
         <div class="setting-item">
+
           <div class="setting-label">
-            <font-awesome-icon :icon="['fas', 'list']" />
-            Stack Values
+             <font-awesome-icon :icon="['fas', 'list']" /> Stack Values
           </div>
-          <b-form-input
+           <b-form-input
             v-model.number="stack_total_list_value"
             type="number"
             min="20"
@@ -355,11 +358,12 @@ export default defineComponent({
         </div>
 
         <div class="setting-item">
+
           <div class="setting-label">
-            <font-awesome-icon :icon="['fas', 'bell']" />
-            Notification Time (ms)
+             <font-awesome-icon :icon="['fas', 'bell']" /> Notification Time
+            (ms)
           </div>
-          <b-form-input
+           <b-form-input
             v-model.number="notification_time_value"
             type="number"
             min="1000"
@@ -368,18 +372,19 @@ export default defineComponent({
             class="setting-input"
           />
         </div>
-      </div>
 
-      <!-- Register Settings -->
+      </div>
+       <!-- Register Settings -->
       <div class="settings-section">
+
         <h4 class="section-title">Registers</h4>
 
         <div class="setting-item">
+
           <div class="setting-label">
-            <font-awesome-icon :icon="['fas', 'tag']" />
-            Register Names
+             <font-awesome-icon :icon="['fas', 'tag']" /> Register Names
           </div>
-          <b-form-select
+           <b-form-select
             v-model="reg_name_representation_value"
             :options="reg_name_representation_options"
             class="setting-select"
@@ -387,19 +392,23 @@ export default defineComponent({
         </div>
 
         <div class="setting-item">
+
           <div class="setting-label">
-            <font-awesome-icon :icon="['fas', 'hashtag']" />
-            Register Format
+             <font-awesome-icon :icon="['fas', 'hashtag']" /> Register Format
           </div>
-          <b-form-select
+           <b-form-select
             v-model="reg_representation_int_value"
             :options="reg_representation_int_options"
             class="setting-select"
           />
         </div>
+
       </div>
+
     </div>
+
   </div>
+
 </template>
 
 <style lang="scss" scoped>
@@ -621,3 +630,4 @@ export default defineComponent({
   }
 }
 </style>
+
