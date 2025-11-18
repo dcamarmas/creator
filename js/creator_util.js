@@ -25,38 +25,41 @@
    */
 
   /**
-   * method in chage of map a float number separated in parts and determinte what it.
-   * @param s {Number} the sign of the number
-   * @param e {Number} the exponent of the number.
-   * @param m {Number} the mantinsa of the number
+   * method in charge of map a float number separated in parts and determine what it.
+   * @param s {string} the sign of the number
+   * @param e {string} the exponent of the number.
+   * @param m {string} the mantinsa of the number
    * @return {number} 2^n with n as
-   *      0 -> -infinite
+   *      0 -> -inf
    *      1 -> -normalized number
    *      2 -> -non-normalized number
    *      3 -> -0
    *      4 -> +0
-   *      5 -> +normalized number
-   *      6 -> +non-normalized number
+   *      5 -> +non-normalized number
+   *      6 -> +normalized number
    *      7 -> +inf
-   *      8 -> -NaN
-   *      9 -> +NaN
+   *      8 -> signaling NaN
+   *      9 -> quiet NaN
    */
   function checkTypeIEEE(s, e, m)
   {
       let rd = 0;
+      const s_int = parseInt(s, 2)
+      const e_int = parseInt(e, 2)
+      const m_int = parseInt(m, 2)
 
-      if (!m && !e)
-          rd = s ? 1<<3 : 1<<4;
-      else if (!e)
-          rd = s ? 1<<2 : 1<<5;
-      else if (!(e ^ 255))
-          if (m)
-              rd = s ? 1<<8 : 1<<9;
-          else
-              rd = s ? 1<<0 : 1<<7;
+      if (!m_int && !e_int) // mantisa and exponent are 0 => ±0
+          rd = s_int ? 3 : 4;
+      else if (!e_int) // exponent is 0 but mantisa isn't => ±non-normalized number
+          rd = s_int ? 2 : 5;
+      else if (!(e.includes("0"))) // exponent is all 1s 
+          if (m_int) // mantisa isn't 0 => NaN. It's signaling if the MSB of the mantisa is 0
+            rd = m[0] === "0" ? 8 : 9
+          else // mantisa is 0 => ±inf
+            rd = s_int ? 0 : 7
       else
-          rd = s ? 1<<1 : 1<<6;
-      return rd;
+          rd = s_int ? 1 : 6;
+      return 1 << rd;
   }
 
   /* 
