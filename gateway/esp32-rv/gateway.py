@@ -197,8 +197,8 @@ def do_flash_request(request):
       req_data['status'] += 'Error adapting assembly file...\n'
 
     # flashing steps...
-    if error == 0 :
-      error = check_uart_connection(target_device)
+    # if error == 0 :
+    #   error = check_uart_connection(target_device)
     if error != 0:
       req_data['status'] += 'No UART port found.\n'
       logging.error("No UART port found.")
@@ -217,7 +217,7 @@ def do_flash_request(request):
               "# CONFIG_ESP_SYSTEM_MEMPROT_FEATURE_LOCK is not set\n" 
           )
     #TODO: Add other boards here...
-    elif target_board == 'esp32c6': 
+    elif target_board == 'esp32c6' or target_board == 'esp32h2': 
           with open(defaults_path, "w") as f:
               f.write(
                   "CONFIG_FREERTOS_HZ=1000\n"
@@ -239,7 +239,7 @@ def do_flash_request(request):
             r'/^CONFIG_ESP_SYSTEM_MEMPROT_FEATURE_LOCK=/c\# CONFIG_ESP_SYSTEM_MEMPROT_FEATURE_LOCK is not set',
             sdkconfig_path
         ])
-      elif target_board == 'esp32c6':
+      elif target_board == 'esp32c6' or or target_board == 'esp32h2:
             #CONFIG_FREERTOS_HZ=1000
             do_cmd(req_data, [
                 'sed', '-i',
@@ -287,7 +287,7 @@ def do_monitor_request(request):
 
     build_root = BUILD_PATH +'/build'
     error = 0
-    error = check_uart_connection(target_device)
+    # error = check_uart_connection(target_device)
     if error != 0:
       logging.info("No UART found")
       req_data['status'] += "No UART port found\n"
@@ -475,9 +475,9 @@ def start_gdbgui(req_data):
         req_data['status'] += f"GDB route: {route} does not exist.\n"
         return jsonify(req_data)
     req_data['status'] = ''
-    if check_uart_connection(target_device) != 0:
-      req_data['status'] += f"No UART found\n"
-      return jsonify(req_data)
+    # if check_uart_connection(target_device) != 0:
+    #   req_data['status'] += f"No UART found\n"
+    #   return jsonify(req_data)
     
     logging.info("Starting GDBGUI...")
     gdbgui_cmd = ['idf.py', '-C', BUILD_PATH, 'gdbgui', '--gdbinit', route, 'monitor']
@@ -530,13 +530,13 @@ def do_debug_request(request):
                 kill_all_processes("openocd")
                 process_holder.pop('openocd', None)
             # Check UART
-            if  check_uart_connection(target_device) != 0:
-                req_data['status'] += f"No UART found\n"
-                return jsonify(req_data)    
+            # if  check_uart_connection(target_device) != 0:
+            #     req_data['status'] += f"No UART found\n"
+            #     return jsonify(req_data)    
             # Check if JTAG is connected
-            if not check_jtag_connection():
-                req_data['status'] += "No JTAG found\n"
-                return jsonify(req_data)
+            # if not check_jtag_connection():
+            #     req_data['status'] += "No JTAG found\n"
+            #     return jsonify(req_data)
 
             # Start OpenOCD
             logging.info("Starting OpenOCD...")
