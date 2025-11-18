@@ -199,10 +199,10 @@ def do_flash_request(request):
     # flashing steps...
     # if error == 0 :
     #   error = check_uart_connection(target_device)
-    if error != 0:
-      req_data['status'] += 'No UART port found.\n'
-      logging.error("No UART port found.")
-      raise  Exception("No UART port found")
+    # if error != 0:
+    #   req_data['status'] += 'No UART port found.\n'
+    #   logging.error("No UART port found.")
+    #   raise  Exception("No UART port found")
     if error == 0:
       error = do_cmd(req_data, ['idf.py',  'fullclean'])
     # Disable memory protection
@@ -239,7 +239,7 @@ def do_flash_request(request):
             r'/^CONFIG_ESP_SYSTEM_MEMPROT_FEATURE_LOCK=/c\# CONFIG_ESP_SYSTEM_MEMPROT_FEATURE_LOCK is not set',
             sdkconfig_path
         ])
-      elif target_board == 'esp32c6' or or target_board == 'esp32h2:
+      elif target_board == 'esp32c6' or target_board == 'esp32h2':
             #CONFIG_FREERTOS_HZ=1000
             do_cmd(req_data, [
                 'sed', '-i',
