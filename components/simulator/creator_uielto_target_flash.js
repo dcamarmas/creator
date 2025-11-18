@@ -278,7 +278,10 @@
                         this_env = this;
                         gateway_remote_flash(this.flash_url + "/flash", farg).then( function(data)  { 
                                                                                                       this_env.flashing = false;
-                                                                                                      console.log(JSON.stringify(data, null, 2));
+                                                                                                      console.log("Message:"+ JSON.stringify(data, null, 2));
+                                                                                                     if (JSON.stringify(data, null, 2).includes('TypeError: NetworkError')) {
+                                                                                                        show_notification('Gateway not available at the moment. Please, execute python3 gateway.py, heck if port 8080 works fine and connect your board first\n', 'danger');
+                                                                                                      }
                                                                                                       if (JSON.stringify(data, null, 2).includes('Flash completed successfully')) {
                                                                                                         show_notification('Flashing program success.', 'success');
                                                                                                       }
@@ -308,6 +311,9 @@
                                                                                                           this_env.stoprunning = false; 
                                                                                                           //show_notification(data, 'danger') ;
                                                                                                           console.log(JSON.stringify(data, null, 2));
+                                                                                                          if (JSON.stringify(data, null, 2).includes('TypeError: NetworkError')) {
+                                                                                                            show_notification('Gateway not available at the moment. Please, execute python3 gateway.py, heck if port 8080 works fine and connect your board first\n', 'danger');
+                                                                                                          }
                                                                                                           if (JSON.stringify(data, null, 2).includes('Process stopped')) {
                                                                                                             show_notification('Process stopped.', 'success');
                                                                                                           }
@@ -336,6 +342,9 @@
                         gateway_remote_monitor(this.flash_url + "/monitor", farg).then( function(data)  { 
                                                                                                           this_env.running = false;
                                                                                                           console.log(JSON.stringify(data, null, 2)); 
+                                                                                                          if (JSON.stringify(data, null, 2).includes('TypeError: NetworkError')) {
+                                                                                                          show_notification('Gateway not available at the moment. Please, execute python3 gateway.py, heck if port 8080 works fine and connect your board first\n', 'danger');
+                                                                                                          }
                                                                                                           if (JSON.stringify(data, null, 2).includes('No UART port found')) {
                                                                                                             show_notification('Error: Not found UART port', 'danger');
                                                                                                           }
@@ -362,7 +371,10 @@
 
                         this_env = this;
                       gateway_remote_monitor(this.flash_url + "/debug", farg).then( function(data)  { 
-                                                                                                      this_env.debugging = false;                                                
+                                                                                                      this_env.debugging = false;
+                                                                                                      if (JSON.stringify(data, null, 2).includes('TypeError: NetworkError')) {
+                                                                                                          show_notification('Gateway not available at the moment. Please, execute python3 gateway.py, heck if port 8080 works fine and connect your board first\n', 'danger');
+                                                                                                      }                                                
                                                                                                       if (JSON.stringify(data, null, 2).includes('No ELF file found in build directory')) {
                                                                                                         show_notification('Error: Not found proyect to debug', 'danger');
                                                                                                       }
@@ -377,6 +389,8 @@
                         //Google Analytics
                         creator_ga('simulator', 'simulator.debug', 'simulator.debug');
                       },
+
+
 
                       showConfirmPopup(action) {
                           this.pendingAction = action;
@@ -408,6 +422,9 @@
                         this_env = this;
                         gateway_remote_monitor(this.flash_url + "/fullclean", farg).then( function(data)  { 
                                                                                                           this_env.fullclean = false;
+                                                                                                          if (JSON.stringify(data, null, 2).includes('TypeError: NetworkError')) {
+                                                                                                          show_notification('Gateway not available at the moment. Please, execute python3 gateway.py, heck if port 8080 works fine and connect your board first\n', 'danger');
+                                                                                                          }
                                                                                                           console.log(JSON.stringify(data, null, 2));
                                                                                                           if (JSON.stringify(data, null, 2).includes('Full clean done.')) {
                                                                                                             show_notification('Full clean done.', 'success');
@@ -438,6 +455,9 @@
                                                                                                           this_env.eraseflash = false; 
                                                                                                           //show_notification(data, 'danger') ;
                                                                                                           console.log(JSON.stringify(data, null, 2));
+                                                                                                          if (JSON.stringify(data, null, 2).includes('TypeError: NetworkError')) {
+                                                                                                          show_notification('Gateway not available at the moment. Please, execute python3 gateway.py, heck if port 8080 works fine and connect your board first\n', 'danger');
+                                                                                                          }
                                                                                                           if (JSON.stringify(data, null, 2).includes('Erase flash done')) {
                                                                                                             show_notification('Erase flash done. Please, unplug and plug the cable(s) again', 'success');
                                                                                                           }
