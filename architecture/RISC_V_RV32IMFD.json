@@ -1868,7 +1868,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "let a = capi_float2bin(rs1);\nrd=capi_check_ieee(parseInt(a[0]), parseInt(a.slice(1,12), 2), parseInt(a.slice(13), 2));",
+      "definition": "let a = capi_double2bin(rs1);\nrd=capi_check_ieee(a[0], a.slice(1,12), a.slice(13));",
       "separated": [
         false,
         false,
@@ -1930,7 +1930,7 @@
           "valueField": "001"
         }
       ],
-      "definition": "let a = capi_float2bin(rs1);\nrd=capi_check_ieee(parseInt(a[0]), parseInt(a.slice(1,9), 2), parseInt(a.slice(10), 2));",
+      "definition": "let a = capi_float2bin(rs1);\nrd=capi_check_ieee(a[0], a.slice(1,9), a.slice(10));",
       "separated": [
         false,
         false,
