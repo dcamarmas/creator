@@ -32,7 +32,7 @@ export function getPrimaryKey(instr) {
     let key = "";
     for (const field of instr.fields) {
         if (field.type === "co" || field.type === "cop") {
-            key += field.value;
+            key += `${field.value}:${field.startbit}:${field.stopbit}-`;
         }
     }
     return key;

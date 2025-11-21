@@ -18,6 +18,7 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <script lang="ts">
 import { defineComponent } from "vue";
+import { architecture } from "@/core/core";
 
 export default defineComponent({
   props: {
@@ -29,6 +30,7 @@ export default defineComponent({
 
   data() {
     return {
+      architecture,
       // Allow instruction with fractioned fields
       fragmet_data: [
         "imm-signed",
@@ -125,7 +127,7 @@ export default defineComponent({
               v-if="typeof field.startbit !== 'object'"
               type="number"
               min="0"
-              :max="32 * instruction.nwords - 1"
+              :max="architecture.config.word_size * instruction.nwords - 1"
               :model-value="field.startbit"
               readonly
               size="sm"
@@ -135,7 +137,7 @@ export default defineComponent({
                 v-for="(j, ind) in field.startbit"
                 type="number"
                 min="0"
-                :max="32 * instruction.nwords - 1"
+                :max="architecture.config.word_size * instruction.nwords - 1"
                 :model-value="field.startbit[ind]"
                 readonly
                 class="mb-2"
@@ -149,7 +151,7 @@ export default defineComponent({
               v-if="typeof field.stopbit !== 'object'"
               type="number"
               min="0"
-              :max="32 * instruction.nwords - 1"
+              :max="architecture.config.word_size * instruction.nwords - 1"
               :model-value="field.stopbit"
               readonly
               size="sm"
@@ -159,7 +161,7 @@ export default defineComponent({
                 v-for="bit in field.stopbit"
                 type="number"
                 min="0"
-                :max="32 * instruction.nwords - 1"
+                :max="architecture.config.word_size * instruction.nwords - 1"
                 :model-value="bit"
                 readonly
                 class="mb-2"

@@ -9,7 +9,8 @@
     "config",
     "instructions",
     "memory_layout",
-    "version"
+    "version",
+    "templates"
   ],
   "properties": {
     "version": {
@@ -915,9 +916,20 @@
               "enum": ["enum"]
             }
           }
+        },
+        {
+          "description": "Skip processing this field",
+          "type": "object",
+          "required": ["type"],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["skip"]
+            }
+          }
         }
       ],
-      "required": ["name", "startbit", "stopbit"],
+      "required": ["name"],
       "properties": {
         "name": {
           "description": "Name of the field",

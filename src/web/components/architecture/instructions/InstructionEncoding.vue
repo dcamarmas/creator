@@ -35,7 +35,7 @@ export default defineComponent({
     /**
      * Group fields by word for multi-word instructions
      * Handles non-contiguous fields (like RISC-V immediates)
-     * Also handles fields that span multiple words (like Z80 16-bit immediates)
+     * Calculates word numbers from absolute bit positions
      */
     wordGroups() {
       const groups = new Map<
@@ -52,6 +52,8 @@ export default defineComponent({
         }>
       >();
 
+      const wordSize = this.architecture.config.word_size;
+
       for (let i = 0; i < this.instruction.fields.length; i++) {
         const field = this.instruction.fields[i];
         if (!field) continue;
@@ -67,10 +69,8 @@ export default defineComponent({
 
             if (startBit === undefined || stopBit === undefined) continue;
 
-            // Get word number for this segment
-            const wordNum = Array.isArray(field.word)
-              ? (field.word[segIdx] ?? 0)
-              : (field.word ?? 0);
+            // Calculate word number from absolute bit position
+            const wordNum = Math.floor(startBit / wordSize);
 
             if (!groups.has(wordNum)) {
               groups.set(wordNum, []);
@@ -100,55 +100,19 @@ export default defineComponent({
 
           if (startBit === undefined || stopBit === undefined) continue;
 
-          // Check if field spans multiple words (word is an array)
-          if (Array.isArray(field.word) && field.word.length > 1) {
-            // Field spans multiple words - split it up
-            // The startbit/stopbit represent the total range across all words
-            const totalWidth = Math.abs(stopBit - startBit) + 1;
-            const wordSize = this.architecture.config.word_size;
-            const numWords = field.word.length;
+          // Calculate the word number(s) this field spans
+          const startWord = Math.floor(startBit / wordSize);
+          const stopWord = Math.floor(stopBit / wordSize);
 
-            let remainingBits = totalWidth;
-
-            // Process each word in the array
-            for (let wordIdx = 0; wordIdx < numWords; wordIdx++) {
-              const wordNum = field.word[wordIdx] ?? 0;
-
-              if (!groups.has(wordNum)) {
-                groups.set(wordNum, []);
-              }
-
-              // Calculate how many bits of this field are in this word
-              const bitsInThisWord = Math.min(wordSize, remainingBits);
-              const wordStartBit = wordSize - 1;
-              const wordStopBit = wordSize - bitsInThisWord;
-
-              groups.get(wordNum)!.push({
-                name: field.name,
-                type: field.type,
-                startBit: wordStartBit,
-                endBit: wordStopBit,
-                width: bitsInThisWord,
-                value: field.value,
-                segmentIndex: wordIdx,
-                totalSegments: numWords,
-              });
-
-              remainingBits -= bitsInThisWord;
-            }
-          } else {
-            // Single word field (normal case)
-            const wordNum = Array.isArray(field.word)
-              ? (field.word[0] ?? 0)
-              : (field.word ?? 0);
-
-            if (!groups.has(wordNum)) {
-              groups.set(wordNum, []);
+          if (startWord === stopWord) {
+            // Field is within a single word
+            if (!groups.has(startWord)) {
+              groups.set(startWord, []);
             }
 
             const width = Math.abs(stopBit - startBit) + 1;
 
-            groups.get(wordNum)!.push({
+            groups.get(startWord)!.push({
               name: field.name,
               type: field.type,
               startBit,
@@ -156,6 +120,38 @@ export default defineComponent({
               width,
               value: field.value,
             });
+          } else {
+            // Field spans multiple words - split it up
+            let currentBit = startBit;
+
+            // Process each word the field spans
+            for (let wordNum = startWord; wordNum >= stopWord; wordNum--) {
+              if (!groups.has(wordNum)) {
+                groups.set(wordNum, []);
+              }
+
+              // Calculate the bit range within this word
+              const wordStartBit = (wordNum + 1) * wordSize - 1;
+              const wordStopBit = wordNum * wordSize;
+
+              const segmentStartBit = Math.min(currentBit, wordStartBit);
+              const segmentStopBit = Math.max(stopBit, wordStopBit);
+
+              const bitsInThisWord = segmentStartBit - segmentStopBit + 1;
+
+              groups.get(wordNum)!.push({
+                name: field.name,
+                type: field.type,
+                startBit: segmentStartBit,
+                endBit: segmentStopBit,
+                width: bitsInThisWord,
+                value: field.value,
+                segmentIndex: startWord - wordNum,
+                totalSegments: startWord - stopWord + 1,
+              });
+
+              currentBit -= bitsInThisWord;
+            }
           }
         }
       }
