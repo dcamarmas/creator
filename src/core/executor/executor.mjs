@@ -430,7 +430,6 @@ export function step() {
         // If cycleResult is the instruction data itself
         instructionData = cycleResult;
     }
-
     // Return execution result with instruction data
     const result = {
         error: status.error,

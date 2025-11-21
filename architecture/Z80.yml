@@ -42,132 +42,138 @@ components:
       - name: [A]
         nbits: 8
         value: 0
-        encoding: 0
+        encoding: 7
         default_value: 0
         properties: [read, write]
       - name: [B]
         nbits: 8
         value: 0
-        encoding: 1
+        encoding: 0
         default_value: 0
         properties: [read, write]
       - name: [C]
         nbits: 8
         value: 0
-        encoding: 2
+        encoding: 1
         default_value: 0
         properties: [read, write]
       - name: [D]
         nbits: 8
-        encoding: 3
+        encoding: 2
         value: 0
         default_value: 0
         properties: [read, write]
       - name: [E]
         nbits: 8
-        encoding: 4
+        encoding: 3
         value: 0
         default_value: 0
         properties: [read, write]
       - name: [H]
         nbits: 8
-        encoding: 5
+        encoding: 4
         value: 0
         default_value: 0
         properties: [read, write]
       - name: [L]
         nbits: 8
-        encoding: 6
+        encoding: 5
         value: 0
         default_value: 0
         properties: [read, write]
       - name: [I]
         nbits: 8
-        encoding: 7
+        encoding: 8
+        value: 0
+        default_value: 0
+        properties: [read, write]
+      - name: [R]
+        nbits: 8
+        encoding: 23
         value: 0
         default_value: 0
         properties: [read, write]
       - name: ["A_prime"]
         nbits: 8
-        encoding: 8
+        encoding: 9
         value: 0
         default_value: 0
         properties: [read, write]
       - name: ["B_prime"]
         nbits: 8
-        encoding: 9
+        encoding: 10
         value: 0
         default_value: 0
         properties: [read, write]
       - name: ["C_prime"]
         nbits: 8
-        encoding: 10
+        encoding: 11
         value: 0
         default_value: 0
         properties: [read, write]
       - name: ["D_prime"]
         nbits: 8
-        encoding: 11
+        encoding: 12
         value: 0
         default_value: 0
         properties: [read, write]
       - name: ["E_prime"]
         nbits: 8
-        encoding: 12
+        encoding: 13
         value: 0
         default_value: 0
         properties: [read, write]
       - name: ["H_prime"]
         nbits: 8
-        encoding: 13
+        encoding: 14
         value: 0
         default_value: 0
         properties: [read, write]
       - name: ["L_prime"]
         nbits: 8
-        encoding: 14
+        encoding: 15
         value: 0
         default_value: 0
         properties: [read, write]
       - name: [SP]
         nbits: 16
-        encoding: 15
+        encoding: 16
         value: 65535
         default_value: 65535
         properties: [read, write, stack_pointer]
       - name: [IX]
         nbits: 16
-        encoding: 16
+        encoding: 17
         value: 0
         default_value: 0
         properties: [read, write]
       - name: [IY]
         nbits: 16
-        encoding: 17
+        encoding: 18
         value: 0
         default_value: 0
         properties: [read, write]
       - name: [F]
         nbits: 8
-        encoding: 18
+        encoding: 19
         value: 0
         default_value: 0
         properties: [read, write]
       - name: [F_prime]
         nbits: 8
-        encoding: 19
+        encoding: 20
         value: 0
         default_value: 0
         properties: [read, write]
       - name: [IFF1]
         nbits: 1
-        encoding: 20
+        encoding: 21
         value: 0
         default_value: 0
         properties: [read, write]
       - name: [IFF2]
         nbits: 1
-        encoding: 21
+        encoding: 22
         value: 0
         default_value: 0
         properties: [read, write]
@@ -194,7 +200,130 @@ templates:
         startbit: 7
         stopbit: 0
         order: 0
-        word: 0
+  
+  - name: alu_implicit # ALU Instructions (ADD ADC SBC)
+    nwords: 1
+    clk_cycles: 1
+    fields:
+      - name: opcode
+        type: co
+        startbit: 7
+        stopbit: 6
+        order: 0
+        value: "10"
+      - name: instructionFormatting
+        type: skip
+        value: "a"
+        suffix: ","
+        order: 1
+      - name: operation
+        type: cop
+        startbit: 5
+        stopbit: 3
+      - name: src
+        type: INT-Reg
+        startbit: 2
+        stopbit: 0
+        order: 2
+
+  - name: alu # ALU Instructions (SUB AND XOR OR CP)
+    nwords: 1
+    clk_cycles: 1
+    fields:
+      - name: opcode
+        type: co
+        startbit: 7
+        stopbit: 6
+        order: 0
+        value: "10"
+      - name: operation
+        type: cop
+        startbit: 5
+        stopbit: 3
+      - name: src
+        type: INT-Reg
+        startbit: 2
+        stopbit: 0
+        order: 1
+
+  # These names match the opcode tables in the official z80 documentation.
+  # pg. 42 of UM008011-0816
+  - name: ld_8b # LD r, r'
+    nwords: 1
+    clk_cycles: 1
+    fields:
+      - name: opcode
+        type: co
+        startbit: 7
+        stopbit: 6
+        order: 0
+        value: "01"
+
+  - name: ld_8b_srcRegIndirect # LD r, (HL)
+    nwords: 1
+    clk_cycles: 1
+    fields:
+      - name: opcode
+        type: co
+        startbit: 7
+        stopbit: 6
+        order: 0
+        value: "01"
+      - name: src
+        type: cop
+        startbit: 2
+        stopbit: 0
+        value: "110"
+  
+  - name: ld_8b_dstRegIndirect # LD (HL), r
+    nwords: 1
+    clk_cycles: 1
+    fields:
+      - name: opcode
+        type: co
+        startbit: 7
+        stopbit: 6
+        order: 0
+        value: "01"
+      - name: dst
+        type: cop
+        startbit: 5
+        stopbit: 3
+        value: "110"
+
+  - name: ld_8b_srcIndexed
+    nwords: 3
+    clk_cycles: 19
+    fields:
+      - name: opcode
+        type: co
+        startbit: 7
+        stopbit: 0
+        order: 0
+        value: "11011101" # DD
+      - name: d
+        type: imm-signed
+        startbit: 23
+        stopbit: 16
+        prefix: "(IX+"
+        suffix: ")"
+        order: 2
+
+  - name: ld_8b_srcImm
+    nwords: 2
+    clk_cycles: 7
+    fields:
+      - name: opcode
+        type: co
+        startbit: 7
+        stopbit: 6
+        order: 0
+        value: "00"
+      - name: n
+        type: imm-unsigned
+        startbit: 15
+        stopbit: 8
+        order: 2
 
   # IX Bit Instructions
   - name: DDCB
@@ -206,27 +335,23 @@ templates:
         startbit: 7
         stopbit: 0
         order: 0
-        word: 0
         value: "11011101"
       - name: opcode2
         type: cop
-        startbit: 7
-        stopbit: 0
-        word: 1
+        startbit: 15
+        stopbit: 8
         value: "11001011"
       - name: imm
         type: imm-unsigned
-        startbit: 7
-        stopbit: 0
+        startbit: 23
+        stopbit: 16
         prefix: "("
         suffix: ")"
         order: 1
-        word: 2
       - name: opcode3
         type: cop
-        startbit: 7
-        stopbit: 0
-        word: 3
+        startbit: 31
+        stopbit: 24
 
   # IX Instructions
   - name: DD
@@ -238,13 +363,11 @@ templates:
         startbit: 7
         stopbit: 0
         order: 0
-        word: 0
         value: "11011101"
       - name: opcode2
         type: cop
-        startbit: 7
-        stopbit: 0
-        word: 1
+        startbit: 15
+        stopbit: 8
 
   # Misc. Instructions
   - name: ED
@@ -256,13 +379,11 @@ templates:
         startbit: 7
         stopbit: 0
         order: 0
-        word: 0
         value: "11101101"
       - name: opcode2
         type: cop
-        startbit: 7
-        stopbit: 0
-        word: 1
+        startbit: 15
+        stopbit: 8
 
   # IY Instructions
   - name: FD
@@ -274,13 +395,11 @@ templates:
         startbit: 7
         stopbit: 0
         order: 0
-        word: 0
         value: "11111101"
       - name: opcode2
         type: cop
-        startbit: 7
-        stopbit: 0
-        word: 1
+        startbit: 15
+        stopbit: 8
 
   # IY Bit Instructions (IY-prefixed CB instructions)
   - name: FDCB
@@ -292,24 +411,20 @@ templates:
         startbit: 7
         stopbit: 0
         order: 0
-        word: 0
         value: "11111101" # 0xFD prefix
       - name: opcode2
         type: cop
-        startbit: 7
-        stopbit: 0
-        word: 1
+        startbit: 15
+        stopbit: 8
         value: "11001011" # 0xCB prefix
       - name: d
         type: imm-signed
-        startbit: 7
-        stopbit: 0
-        word: 2
+        startbit: 23
+        stopbit: 16
       - name: opcode3
         type: cop
-        startbit: 7
-        stopbit: 0
-        word: 3
+        startbit: 31
+        stopbit: 24
 
   # Bit Instructions
   - name: CB
@@ -321,13 +436,11 @@ templates:
         startbit: 7
         stopbit: 0
         order: 0
-        word: 0
         value: "11001011"
       - name: opcode2
         type: cop
-        startbit: 7
-        stopbit: 0
-        word: 1
+        startbit: 15
+        stopbit: 8
 
 instructions:
   base:
@@ -350,14 +463,27 @@ instructions:
           order: 1
         - field: nn
           type: imm-unsigned
-          startbit: 15
-          stopbit: 0
+          startbit: 23 # Two words
+          stopbit: 8
           order: 2
-          word: [2, 1]
       definition: |
         // Loads 16-bit immediate into BC. Low byte to C, high byte to B.
         registers.C = nn & 0xFFn;
         registers.B = (nn >> 8n) & 0xFFn;
+
+    - name: rlca
+      template: standard
+      clk_cycles: 4
+      fields:
+        - field: opcode
+          value: "0x07"
+      definition: |
+        const msb = (registers.A & 0x80n) ? 1n : 0n;
+        registers.A = ((registers.A << 1n) | msb) & 0xFFn;
+        let newF = registers.F & (CAPI.ARCH.S_FLAG | CAPI.ARCH.Z_FLAG | CAPI.ARCH.PV_FLAG); // Preserve S, Z, P/V
+        if (msb) newF |= CAPI.ARCH.C_FLAG; // Set C if bit 7 was 1
+        // N and H are reset
+        registers.F = newF;
 
     - name: ex
       template: standard
@@ -391,10 +517,9 @@ instructions:
           value: "0x10"
         - field: e
           type: imm-signed
-          startbit: 7
-          stopbit: 0
+          startbit: 15
+          stopbit: 8
           order: 1
-          word: 1
       definition: |
         registers.B = (registers.B - 1n) & 0xFFn;
         if (registers.B !== 0n) {
@@ -414,10 +539,9 @@ instructions:
           order: 1
         - field: nn
           type: imm-unsigned
-          startbit: 15
-          stopbit: 0
+          startbit: 23
+          stopbit: 8
           order: 2
-          word: [2, 1]
       definition: |
         // Loads 16-bit immediate into DE. Low byte to E, high byte to D.
         registers.E = nn & 0xFFn;
@@ -435,10 +559,9 @@ instructions:
           order: 1
         - field: nn
           type: imm-unsigned
-          startbit: 15
-          stopbit: 0
+          startbit: 23
+          stopbit: 8
           order: 2
-          word: [2, 1]
       definition: |
         // Loads 16-bit immediate into HL. Low byte to L, high byte to H.
         registers.L = nn & 0xFFn;
@@ -467,10 +590,9 @@ instructions:
           order: 1
         - field: nn
           type: imm-unsigned
-          startbit: 15
-          stopbit: 0
+          startbit: 23
+          stopbit: 8
           order: 2
-          word: [2, 1]
       definition: |
         // Loads 16-bit immediate into SP.
         registers.SP = nn;
@@ -483,10 +605,9 @@ instructions:
           value: "0xC3"
         - field: nn
           type: imm-unsigned
-          startbit: 15
-          stopbit: 0
+          startbit: 23
+          stopbit: 8
           order: 1
-          word: [2, 1]
       definition: "registers.PC = nn;"
 
     - name: jr
@@ -498,10 +619,9 @@ instructions:
           value: "0x18"
         - field: e
           type: imm-signed
-          startbit: 7
-          stopbit: 0
+          startbit: 15
+          stopbit: 8
           order: 1
-          word: 1
       definition: |
         // PC is already at address of next instruction, so add offset.
         registers.PC = (registers.PC + e) & 0xFFFFn;
@@ -518,10 +638,9 @@ instructions:
           order: 1
         - field: e
           type: imm-signed
-          startbit: 7
-          stopbit: 0
+          startbit: 15
+          stopbit: 8
           order: 2
-          word: 1
       definition: |
         // If the zero flag is unset, the signed value d is added to PC. 
         // The jump is measured from the start of the instruction opcode. 
@@ -541,10 +660,9 @@ instructions:
           order: 1
         - field: e
           type: imm-signed
-          startbit: 7
-          stopbit: 0
+          startbit: 15
+          stopbit: 8
           order: 2
-          word: 1
       definition: |
         if ((registers.F & CAPI.ARCH.Z_FLAG) !== 0n) {
             registers.PC = (registers.PC + e) & 0xFFFFn;
@@ -562,10 +680,9 @@ instructions:
           order: 1
         - field: e
           type: imm-signed
-          startbit: 7
-          stopbit: 0
+          startbit: 15
+          stopbit: 8
           order: 2
-          word: 1
       definition: |
         if ((registers.F & CAPI.ARCH.C_FLAG) === 0n) {
             registers.PC = (registers.PC + e) & 0xFFFFn;
@@ -583,10 +700,9 @@ instructions:
           order: 1
         - field: e
           type: imm-signed
-          startbit: 7
-          stopbit: 0
+          startbit: 15
+          stopbit: 8
           order: 2
-          word: 1
       definition: |
         if ((registers.F & CAPI.ARCH.C_FLAG) !== 0n) {
             registers.PC = (registers.PC + e) & 0xFFFFn;
@@ -604,10 +720,9 @@ instructions:
           order: 1
         - field: nn
           type: imm-unsigned
-          startbit: 15
-          stopbit: 0
+          startbit: 23
+          stopbit: 8
           order: 2
-          word: [2, 1]
       definition: |
         if ((registers.F & CAPI.ARCH.Z_FLAG) === 0n) {
             registers.PC = nn;
@@ -621,10 +736,9 @@ instructions:
           value: "0xCA"
         - field: nn
           type: imm-unsigned
-          startbit: 15
-          stopbit: 0
+          startbit: 23
+          stopbit: 8
           order: 2
-          word: [2, 1]
         - field: instructionFormatting
           type: skip
           value: "z,"
@@ -646,10 +760,9 @@ instructions:
           order: 1
         - field: nn
           type: imm-unsigned
-          startbit: 15
-          stopbit: 0
+          startbit: 23
+          stopbit: 8
           order: 2
-          word: [2, 1]
       definition: |
         if ((registers.F & CAPI.ARCH.C_FLAG) === 0n) {
             registers.PC = nn;
@@ -664,12 +777,11 @@ instructions:
           value: "0xD3"
         - field: n
           type: imm-unsigned
-          startbit: 7
-          stopbit: 0
+          startbit: 15
+          stopbit: 8
           prefix: "("
           suffix: ")"
           order: 1
-          word: 1
         - field: instructionFormatting
           type: skip
           value: ",a"
@@ -747,12 +859,11 @@ instructions:
           value: "0xDB"
         - field: n
           type: imm-unsigned
-          startbit: 7
-          stopbit: 0
+          startbit: 15
+          stopbit: 8
           prefix: "("
           suffix: ")"
           order: 2
-          word: 1
         - field: instructionFormatting
           type: skip
           value: ",a"
@@ -760,6 +871,28 @@ instructions:
       definition: |
         // Reads a byte from the I/O port specified by n and stores it in the Accumulator.
         registers.A = CAPI.ARCH.read(n);
+
+    - name: sbc
+      template: standard
+      nwords: 2
+      clk_cycles: 7
+      fields:
+        - field: opcode
+          value: "0xDE"
+        - field: instructionFormatting
+          type: skip
+          value: "a,"
+          order: 1
+        - field: n
+          type: imm-unsigned
+          startbit: 15
+          stopbit: 8
+          order: 2
+      definition: |
+        const oldValueA = registers.A;
+        const carry = registers.F & 0x01n;
+        registers.A = (oldValueA - n - carry) & 0xFFn;
+        registers.F = CAPI.ARCH.calculateFlags_SBC(oldValueA, n, registers.F);
 
     - name: jp
       template: standard
@@ -774,10 +907,9 @@ instructions:
           order: 1
         - field: nn
           type: imm-unsigned
-          startbit: 15
-          stopbit: 0
+          startbit: 23
+          stopbit: 8
           order: 2
-          word: [2, 1]
       definition: |
         if ((registers.F & CAPI.ARCH.C_FLAG) !== 0n) {
             registers.PC = nn;
@@ -795,10 +927,9 @@ instructions:
           order: 1
         - field: nn
           type: imm-unsigned
-          startbit: 15
-          stopbit: 0
+          startbit: 23
+          stopbit: 8
           order: 2
-          word: [2, 1]
       definition: |
         if ((registers.F & CAPI.ARCH.PV_FLAG) === 0n) {
             registers.PC = nn;
@@ -841,10 +972,9 @@ instructions:
           order: 1
         - field: nn
           type: imm-unsigned
-          startbit: 15
-          stopbit: 0
+          startbit: 23
+          stopbit: 8
           order: 2
-          word: [2, 1]
       definition: |
         if ((registers.F & CAPI.ARCH.PV_FLAG) !== 0n) {
             registers.PC = nn;
@@ -894,10 +1024,9 @@ instructions:
           order: 1
         - field: nn
           type: imm-unsigned
-          startbit: 15
-          stopbit: 0
+          startbit: 23
+          stopbit: 8
           order: 2
-          word: [2, 1]
       definition: |
         if ((registers.F & CAPI.ARCH.S_FLAG) === 0n) {
             registers.PC = nn;
@@ -915,894 +1044,346 @@ instructions:
           order: 1
         - field: nn
           type: imm-unsigned
-          startbit: 15
-          stopbit: 0
+          startbit: 23
+          stopbit: 8
           order: 2
-          word: [2, 1]
       definition: |
         if ((registers.F & CAPI.ARCH.S_FLAG) !== 0n) {
             registers.PC = nn;
         }
-
+  ################################################################################ 
+  # 8-bit Load Group LD
+  # Destination: Register
+  # Source: Implied
     - name: ld
-      template: standard
-      nwords: 1
-      clk_cycles: 4
+      template: ED
+      nwords: 2
+      clk_cycles: 9
       fields:
-        - field: opcode
-          value: "0x40"
-        - field: instructionFormatting
-          type: skip
-          value: "b, b"
-          order: 1
-      definition: |
-        registers.B = registers.B;
-    - name: ld
-      template: standard
-      nwords: 1
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0x41"
-        - field: instructionFormatting
-          type: skip
-          value: "b, c"
-          order: 1
-      definition: |
-        registers.B = registers.C;
-    - name: ld
-      template: standard
-      nwords: 1
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0x42"
-        - field: instructionFormatting
-          type: skip
-          value: "b, d"
-          order: 1
-      definition: |
-        registers.B = registers.D;
-    - name: ld
-      template: standard
-      nwords: 1
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0x43"
-        - field: instructionFormatting
-          type: skip
-          value: "b, e"
-          order: 1
-      definition: |
-        registers.B = registers.E;
-    - name: ld
-      template: standard
-      nwords: 1
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0x44"
-        - field: instructionFormatting
-          type: skip
-          value: "b, h"
-          order: 1
-      definition: |
-        registers.B = registers.H;
-    - name: ld
-      template: standard
-      nwords: 1
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0x45"
-        - field: instructionFormatting
-          type: skip
-          value: "b, l"
-          order: 1
-      definition: |
-        registers.B = registers.L;
-    - name: ld
-      template: standard
-      nwords: 1
-      clk_cycles: 7
-      fields:
-        - field: opcode
-          value: "0x46"
-        - field: instructionFormatting
-          type: skip
-          value: "b, (hl)"
-          order: 1
-      definition: |
-        registers.B = CAPI.MEM.read((registers.H << 8n) | registers.L, 1);
-    - name: ld
-      template: standard
-      nwords: 1
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0x47"
-        - field: instructionFormatting
-          type: skip
-          value: "b, a"
-          order: 1
-      definition: |
-        registers.B = registers.A;
-    - name: ld
-      template: standard
-      nwords: 1
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0x48"
-        - field: instructionFormatting
-          type: skip
-          value: "c, b"
-          order: 1
-      definition: |
-        registers.C = registers.B;
-    - name: ld
-      template: standard
-      nwords: 1
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0x49"
-        - field: instructionFormatting
-          type: skip
-          value: "c, c"
-          order: 1
-      definition: |
-        registers.C = registers.C;
-    - name: ld
-      template: standard
-      nwords: 1
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0x4A"
-        - field: instructionFormatting
-          type: skip
-          value: "c, d"
-          order: 1
-      definition: |
-        registers.C = registers.D;
-    - name: ld
-      template: standard
-      nwords: 1
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0x4B"
-        - field: instructionFormatting
-          type: skip
-          value: "c, e"
-          order: 1
-      definition: |
-        registers.C = registers.E;
-    - name: ld
-      template: standard
-      nwords: 1
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0x4C"
-        - field: instructionFormatting
-          type: skip
-          value: "c, h"
-          order: 1
-      definition: |
-        registers.C = registers.H;
-    - name: ld
-      template: standard
-      nwords: 1
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0x4D"
-        - field: instructionFormatting
-          type: skip
-          value: "c, l"
-          order: 1
-      definition: |
-        registers.C = registers.L;
-    - name: ld
-      template: standard
-      nwords: 1
-      clk_cycles: 7
-      fields:
-        - field: opcode
-          value: "0x4E"
-        - field: instructionFormatting
-          type: skip
-          value: "c, (hl)"
-          order: 1
-      definition: |
-        registers.C = CAPI.MEM.read((registers.H << 8n) | registers.L, 1);
-    - name: ld
-      template: standard
-      nwords: 1
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0x4F"
-        - field: instructionFormatting
-          type: skip
-          value: "c, a"
-          order: 1
-      definition: |
-        registers.C = registers.A;
-    - name: ld
-      template: standard
-      nwords: 1
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0x50"
-        - field: instructionFormatting
-          type: skip
-          value: "d, b"
-          order: 1
-      definition: |
-        registers.D = registers.B;
-    - name: ld
-      template: standard
-      nwords: 1
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0x51"
-        - field: instructionFormatting
-          type: skip
-          value: "d, c"
-          order: 1
-      definition: |
-        registers.D = registers.C;
-    - name: ld
-      template: standard
-      nwords: 1
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0x52"
-        - field: instructionFormatting
-          type: skip
-          value: "d, d"
-          order: 1
-      definition: |
-        registers.D = registers.D;
-    - name: ld
-      template: standard
-      nwords: 1
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0x53"
-        - field: instructionFormatting
-          type: skip
-          value: "d, e"
-          order: 1
-      definition: |
-        registers.D = registers.E;
-    - name: ld
-      template: standard
-      nwords: 1
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0x54"
-        - field: instructionFormatting
-          type: skip
-          value: "d, h"
-          order: 1
-      definition: |
-        registers.D = registers.H;
-    - name: ld
-      template: standard
-      nwords: 1
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0x55"
-        - field: instructionFormatting
-          type: skip
-          value: "d, l"
-          order: 1
-      definition: |
-        registers.D = registers.L;
-    - name: ld
-      template: standard
-      nwords: 1
-      clk_cycles: 7
-      fields:
-        - field: opcode
-          value: "0x56"
-        - field: instructionFormatting
-          type: skip
-          value: "d, (hl)"
-          order: 1
-      definition: |
-        registers.D = CAPI.MEM.read((registers.H << 8n) | registers.L, 1);
-    - name: ld
-      template: standard
-      nwords: 1
-      clk_cycles: 4
-      fields:
-        - field: opcode
+        - field: opcode2
           value: "0x57"
         - field: instructionFormatting
           type: skip
-          value: "d, a"
+          value: "A, I"
           order: 1
       definition: |
-        registers.D = registers.A;
+        // Loads the value of I into A.
+        registers.A = registers.I;
+
     - name: ld
-      template: standard
-      nwords: 1
-      clk_cycles: 4
+      template: ED
+      nwords: 2
+      clk_cycles: 9
       fields:
-        - field: opcode
-          value: "0x58"
-        - field: instructionFormatting
-          type: skip
-          value: "e, b"
-          order: 1
-      definition: |
-        registers.E = registers.B;
-    - name: ld
-      template: standard
-      nwords: 1
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0x59"
-        - field: instructionFormatting
-          type: skip
-          value: "e, c"
-          order: 1
-      definition: |
-        registers.E = registers.C;
-    - name: ld
-      template: standard
-      nwords: 1
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0x5A"
-        - field: instructionFormatting
-          type: skip
-          value: "e, d"
-          order: 1
-      definition: |
-        registers.E = registers.D;
-    - name: ld
-      template: standard
-      nwords: 1
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0x5B"
-        - field: instructionFormatting
-          type: skip
-          value: "e, e"
-          order: 1
-      definition: |
-        registers.E = registers.E;
-    - name: ld
-      template: standard
-      nwords: 1
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0x5C"
-        - field: instructionFormatting
-          type: skip
-          value: "e, h"
-          order: 1
-      definition: |
-        registers.E = registers.H;
-    - name: ld
-      template: standard
-      nwords: 1
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0x5D"
-        - field: instructionFormatting
-          type: skip
-          value: "e, l"
-          order: 1
-      definition: |
-        registers.E = registers.L;
-    - name: ld
-      template: standard
-      nwords: 1
-      clk_cycles: 7
-      fields:
-        - field: opcode
-          value: "0x5E"
-        - field: instructionFormatting
-          type: skip
-          value: "e, (hl)"
-          order: 1
-      definition: |
-        registers.E = CAPI.MEM.read((registers.H << 8n) | registers.L, 1);
-    - name: ld
-      template: standard
-      nwords: 1
-      clk_cycles: 4
-      fields:
-        - field: opcode
+        - field: opcode2
           value: "0x5F"
         - field: instructionFormatting
           type: skip
-          value: "e, a"
+          value: "A, R"
           order: 1
       definition: |
-        registers.E = registers.A;
+        // Loads the value of R into A.
+        registers.A = registers.R;
+  
+  ################################################################################ 
+  # 8-bit Load Group LD
+  # Destination: Register
+  # Source: Register
     - name: ld
-      template: standard
+      template: ld_8b
       nwords: 1
       clk_cycles: 4
       fields:
-        - field: opcode
-          value: "0x60"
-        - field: instructionFormatting
-          type: skip
-          value: "h, b"
+        - field: dest
+          type: INT-Reg
+          startbit: 5
+          stopbit: 3
           order: 1
+          suffix: ","
+        - field: src
+          type: INT-Reg
+          startbit: 2
+          stopbit: 0
+          order: 2
       definition: |
-        registers.H = registers.B;
-    - name: ld
-      template: standard
-      nwords: 1
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0x61"
-        - field: instructionFormatting
-          type: skip
-          value: "h, c"
-          order: 1
-      definition: |
-        registers.H = registers.C;
-    - name: ld
-      template: standard
-      nwords: 1
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0x62"
-        - field: instructionFormatting
-          type: skip
-          value: "h, d"
-          order: 1
-      definition: |
-        registers.H = registers.D;
-    - name: ld
-      template: standard
-      nwords: 1
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0x63"
-        - field: instructionFormatting
-          type: skip
-          value: "h, e"
-          order: 1
-      definition: |
-        registers.H = registers.E;
-    - name: ld
-      template: standard
-      nwords: 1
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0x64"
-        - field: instructionFormatting
-          type: skip
-          value: "h, h"
-          order: 1
-      definition: |
-        registers.H = registers.H;
-    - name: ld
-      template: standard
-      nwords: 1
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0x65"
-        - field: instructionFormatting
-          type: skip
-          value: "h, l"
-          order: 1
-      definition: |
-        registers.H = registers.L;
-    - name: ld
-      template: standard
-      nwords: 1
-      clk_cycles: 7
-      fields:
-        - field: opcode
-          value: "0x66"
-        - field: instructionFormatting
-          type: skip
-          value: "h, (hl)"
-          order: 1
-      definition: |
-        registers.H = CAPI.MEM.read((registers.H << 8n) | registers.L, 1);
-    - name: ld
-      template: standard
-      nwords: 1
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0x67"
-        - field: instructionFormatting
-          type: skip
-          value: "h, a"
-          order: 1
-      definition: |
-        registers.H = registers.A;
-    - name: ld
-      template: standard
-      nwords: 1
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0x68"
-        - field: instructionFormatting
-          type: skip
-          value: "l, b"
-          order: 1
-      definition: |
-        registers.L = registers.B;
-    - name: ld
-      template: standard
-      nwords: 1
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0x69"
-        - field: instructionFormatting
-          type: skip
-          value: "l, c"
-          order: 1
-      definition: |
-        registers.L = registers.C;
-    - name: ld
-      template: standard
-      nwords: 1
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0x6A"
-        - field: instructionFormatting
-          type: skip
-          value: "l, d"
-          order: 1
-      definition: |
-        registers.L = registers.D;
-    - name: ld
-      template: standard
-      nwords: 1
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0x6B"
-        - field: instructionFormatting
-          type: skip
-          value: "l, e"
-          order: 1
-      definition: |
-        registers.L = registers.E;
-    - name: ld
-      template: standard
-      nwords: 1
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0x6C"
-        - field: instructionFormatting
-          type: skip
-          value: "l, h"
-          order: 1
-      definition: |
-        registers.L = registers.H;
-    - name: ld
-      template: standard
-      nwords: 1
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0x6D"
-        - field: instructionFormatting
-          type: skip
-          value: "l, l"
-          order: 1
-      definition: |
-        registers.L = registers.L;
-    - name: ld
-      template: standard
-      nwords: 1
-      clk_cycles: 7
-      fields:
-        - field: opcode
-          value: "0x6E"
-        - field: instructionFormatting
-          type: skip
-          value: "l, (hl)"
-          order: 1
-      definition: |
-        registers.L = CAPI.MEM.read((registers.H << 8n) | registers.L, 1);
-    - name: ld
-      template: standard
-      nwords: 1
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0x6F"
-        - field: instructionFormatting
-          type: skip
-          value: "l, a"
-          order: 1
-      definition: |
-        registers.L = registers.A;
-    - name: ld
-      template: standard
-      nwords: 1
-      clk_cycles: 7
-      fields:
-        - field: opcode
-          value: "0x70"
-        - field: instructionFormatting
-          type: skip
-          value: "(hl), b"
-          order: 1
-      definition: |
-        CAPI.MEM.write((registers.H << 8n) | registers.L, 1, registers.B);
-    - name: ld
-      template: standard
-      nwords: 1
-      clk_cycles: 7
-      fields:
-        - field: opcode
-          value: "0x71"
-        - field: instructionFormatting
-          type: skip
-          value: "(hl), c"
-          order: 1
-      definition: |
-        CAPI.MEM.write((registers.H << 8n) | registers.L, 1, registers.C);
-    - name: ld
-      template: standard
-      nwords: 1
-      clk_cycles: 7
-      fields:
-        - field: opcode
-          value: "0x72"
-        - field: instructionFormatting
-          type: skip
-          value: "(hl), d"
-          order: 1
-      definition: |
-        CAPI.MEM.write((registers.H << 8n) | registers.L, 1, registers.D);
-    - name: ld
-      template: standard
-      nwords: 1
-      clk_cycles: 7
-      fields:
-        - field: opcode
-          value: "0x73"
-        - field: instructionFormatting
-          type: skip
-          value: "(hl), e"
-          order: 1
-      definition: |
-        CAPI.MEM.write((registers.H << 8n) | registers.L, 1, registers.E);
-    - name: ld
-      template: standard
-      nwords: 1
-      clk_cycles: 7
-      fields:
-        - field: opcode
-          value: "0x74"
-        - field: instructionFormatting
-          type: skip
-          value: "(hl), h"
-          order: 1
-      definition: |
-        CAPI.MEM.write((registers.H << 8n) | registers.L, 1, registers.H);
-    - name: ld
-      template: standard
-      nwords: 1
-      clk_cycles: 7
-      fields:
-        - field: opcode
-          value: "0x75"
-        - field: instructionFormatting
-          type: skip
-          value: "(hl), l"
-          order: 1
-      definition: |
-        CAPI.MEM.write((registers.H << 8n) | registers.L, 1, registers.L);
-    - name: ld
-      template: standard
-      nwords: 1
-      clk_cycles: 7
-      fields:
-        - field: opcode
-          value: "0x77"
-        - field: instructionFormatting
-          type: skip
-          value: "(hl), a"
-          order: 1
-      definition: |
-        CAPI.MEM.write((registers.H << 8n) | registers.L, 1, registers.A);
-    - name: ld
-      template: standard
-      nwords: 1
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0x78"
-        - field: instructionFormatting
-          type: skip
-          value: "a, b"
-          order: 1
-      definition: |
-        registers.A = registers.B;
-    - name: ld
-      template: standard
-      nwords: 1
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0x79"
-        - field: instructionFormatting
-          type: skip
-          value: "a, c"
-          order: 1
-      definition: |
-        registers.A = registers.C;
-    - name: ld
-      template: standard
-      nwords: 1
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0x7A"
-        - field: instructionFormatting
-          type: skip
-          value: "a, d"
-          order: 1
-      definition: |
-        registers.A = registers.D;
-    - name: ld
-      template: standard
-      nwords: 1
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0x7B"
-        - field: instructionFormatting
-          type: skip
-          value: "a, e"
-          order: 1
-      definition: |
-        registers.A = registers.E;
-    - name: ld
-      template: standard
-      nwords: 1
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0x7C"
-        - field: instructionFormatting
-          type: skip
-          value: "a, h"
-          order: 1
-      definition: |
-        registers.A = registers.H;
-    - name: ld
-      template: standard
-      nwords: 1
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0x7D"
-        - field: instructionFormatting
-          type: skip
-          value: "a, l"
-          order: 1
-      definition: |
-        registers.A = registers.L;
-    - name: ld
-      template: standard
-      nwords: 1
-      clk_cycles: 7
-      fields:
-        - field: opcode
-          value: "0x7E"
-        - field: instructionFormatting
-          type: skip
-          value: "a, (hl)"
-          order: 1
-      definition: |
-        registers.A = CAPI.MEM.read((registers.H << 8n) | registers.L, 1);
-    - name: ld
-      template: standard
-      nwords: 1
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0x7F"
-        - field: instructionFormatting
-          type: skip
-          value: "a, a"
-          order: 1
-      definition: |
-        registers.A = registers.A;
+        registers[dest] = registers[src];  
 
-    - name: add a, b
+  ################################################################################ 
+  # 8-bit Load Group LD
+  # Destination: Register
+  # Source: Indexed
+    - name: ld
+      template: ld_8b_srcIndexed
+      nwords: 3
+      clk_cycles: 19
+      fields:
+      - field: dest
+        type: INT-Reg
+        startbit: 13
+        stopbit: 11
+        order: 1
+        suffix: ","
+
+      definition: |
+        // Loads the value pointed to by IX plus d into destination register.
+        const addr = (registers.IX + d) & 0xFFFFn;
+        registers[dest] = CAPI.MEM.read(addr, 1);
+
+    - name: ld
+      template: ld_8b_srcIndexed
+      nwords: 3
+      clk_cycles: 19
+      fields:
+      - field: opcode
+        value: "0xFD"
+      - field: dest
+        type: INT-Reg
+        startbit: 13
+        stopbit: 11
+        order: 1
+        suffix: ","
+
+      definition: |
+        // Loads the value pointed to by IY plus d into destination register.
+        const addr = (registers.IY + d) & 0xFFFFn;
+        registers[dest] = CAPI.MEM.read(addr, 1);
+
+  ################################################################################ 
+  # 8-bit Load Group LD
+  # Destination: Register
+  # Source: Ext. Addr.
+
+    - name: ld
       template: standard
+      nwords: 3
+      clk_cycles: 7
       fields:
         - field: opcode
-          value: "0x80"
+          value: "0x3a"
+        - field: instructionFormatting
+          type: skip
+          value: "a,"
+          order: 1
+        - field: nn
+          type: imm-unsigned
+          startbit: 23
+          stopbit: 8
+          prefix: "("
+          suffix: ")"
+          order: 2
+      definition: |
+        // Loads the value pointed to by nn into A.
+        const value = CAPI.MEM.read(nn, 1);
+        registers.A = value & 0xFFn;
+
+  ################################################################################
+  # 8-bit Load Group LD
+  # Destination: Register
+  # Source: Immediate
+    - name: ld
+      template: ld_8b_srcImm
+      nwords: 2
+      fields:
+        - field: dst
+          type: INT-Reg
+          startbit: 5
+          stopbit: 3
+          order: 1
+          suffix: ","
+      definition: |
+        registers[dst] = n;
+
+  ################################################################################
+  # 8-bit Load Group LD
+  # Destination: Register
+  # Source: Register Indirect
+    - name: ld
+      template: ld_8b_srcRegIndirect
+      nwords: 1
+      clk_cycles: 7
+      fields:
+        - field: dest
+          type: INT-Reg
+          startbit: 5
+          stopbit: 3
+          order: 1
+          suffix: ", (HL)"
+      definition: |
+        registers[dest] = CAPI.MEM.read((registers.H << 8n) | registers.L, 1);
+
+    - name: ld
+      template: standard
+      nwords: 1
+      clk_cycles: 7
+      fields:
+        - field: opcode
+          value: "0x0a"
+        - field: instructionFormatting
+          type: skip
+          value: "a, (BC)"
+          order: 1
+      definition: |
+        registers.A = CAPI.MEM.read((registers.B << 8n) | registers.C, 1);
+
+    - name: ld
+      template: standard
+      nwords: 1
+      clk_cycles: 7
+      fields:
+        - field: opcode
+          value: "0x1a"
+        - field: instructionFormatting
+          type: skip
+          value: "a, (DE)"
+          order: 1
+      definition: |
+        registers.A = CAPI.MEM.read((registers.D << 8n) | registers.E, 1);
+
+  ################################################################################ 
+  # 8-bit Load Group LD
+  # Destination: Register Indirect
+  # Source: Register
+
+    - name: ld
+      template: ld_8b_dstRegIndirect
+      nwords: 1
+      clk_cycles: 7
+      fields:
+        - field: src
+          type: INT-Reg
+          startbit: 2
+          stopbit: 0
+          prefix: "(HL), "
+          order: 1
+      definition: |
+        CAPI.MEM.write((registers.H << 8n) | registers.L, 1, registers[src]);
+
+    - name: ld
+      template: standard
+      nwords: 1
+      clk_cycles: 7
+      fields:
+        - field: opcode
+          value: "0x02"
+        - field: instructionFormatting
+          type: skip
+          value: "(bc), a"
+          order: 1
+      definition: |
+        CAPI.MEM.write((registers.B << 8n) | registers.C, 1, registers.A);
+
+    - name: ld
+      template: standard
+      nwords: 1
+      clk_cycles: 7
+      fields:
+        - field: opcode
+          value: "0x12"
+        - field: instructionFormatting
+          type: skip
+          value: "(de), a"
+          order: 1
+      definition: |
+        CAPI.MEM.write((registers.D << 8n) | registers.E, 1, registers.A);
+        
+  ###############################################################################
+  # 8-bit Load Group LD
+  # Destination: Indexed
+  # Source: Immediate
+
+    - name: ld
+      template: FD
+      nwords: 4
+      clk_cycles: 19
+      fields:
+        - field: opcode2
+          value: "0x36"
+        - field: instructionFormatting
+          type: skip
+          value: "(iy+"
+          order: 1
+        - field: d
+          type: imm-signed
+          startbit: 23
+          stopbit: 16
+          order: 2
+        - field: instructionFormatting
+          type: skip
+          value: "),"
+          order: 3
+        - field: n
+          type: imm-unsigned
+          startbit: 31
+          stopbit: 24
+          order: 4
+      definition: |
+        // Loads the immediate value n into the memory location (IY + d).
+        const addr = (registers.IY + d) & 0xFFFFn;
+        CAPI.MEM.write(addr, 1, n);
+
+  ################################################################################
+  # 8-bit Load Group LD
+  # Destination: Register Indirect
+  # Source: Immediate
+    - name: ld # (hl), n
+      template: standard
+      nwords: 2
+      clk_cycles: 10
+      fields:
+        - field: opcode
+          value: "0x36"
+        - field: instructionFormatting
+          type: skip
+          value: "(hl),"
+          order: 1
+        - field: n
+          type: imm-unsigned
+          startbit: 15
+          stopbit: 8
+          order: 2
+      definition: |
+        CAPI.MEM.write((registers.H << 8n) | registers.L, 1, n);
+
+  ################################################################################
+  # 8-bit Load Group LD
+  # Destination: Ext. Addr.
+  # Source: Register
+
+    - name: ld
+      template: standard
+      nwords: 3
+      clk_cycles: 13
+      fields:
+        - field: opcode
+          value: "0x32"
+        - field: instructionFormatting
+          type: skip
+          value: ", a"
+          order: 2
+        - field: nn
+          type: imm-unsigned
+          startbit: 23
+          stopbit: 8
+          prefix: "("
+          suffix: ")"
+          order: 1
+      definition: |
+        CAPI.MEM.write(nn, 1, registers.A);
+
+  ################################################################################
+
+
+    - name: add # a, b
+      template: alu_implicit
+      fields:
+        - field: operation
+          value: "000"
+
       definition: |
         const oldValueA = registers.A;
-        registers.A = (oldValueA + registers.B) & 0xFFn;
-        registers.F = CAPI.ARCH.calculateFlags_ADD(oldValueA, registers.B);
-
-    - name: add a, c
-      template: standard
-      fields:
-        - field: opcode
-          value: "0x81"
-      definition: |
-        const oldValueA = registers.A;
-        registers.A = (oldValueA + registers.C) & 0xFFn;
-        registers.F = CAPI.ARCH.calculateFlags_ADD(oldValueA, registers.C);
-
-    - name: add a, d
-      template: standard
-      fields:
-        - field: opcode
-          value: "0x82"
-      definition: |
-        const oldValueA = registers.A;
-        registers.A = (oldValueA + registers.D) & 0xFFn;
-        registers.F = CAPI.ARCH.calculateFlags_ADD(oldValueA, registers.D);
-
-    - name: add a, e
-      template: standard
-      fields:
-        - field: opcode
-          value: "0x83"
-      definition: |
-        const oldValueA = registers.A;
-        registers.A = (oldValueA + registers.E) & 0xFFn;
-        registers.F = CAPI.ARCH.calculateFlags_ADD(oldValueA, registers.E);
-
-    - name: add a, h
-      template: standard
-      fields:
-        - field: opcode
-          value: "0x84"
-      definition: |
-        const oldValueA = registers.A;
-        registers.A = (oldValueA + registers.H) & 0xFFn;
-        registers.F = CAPI.ARCH.calculateFlags_ADD(oldValueA, registers.H);
-
-    - name: add a, l
-      template: standard
-      fields:
-        - field: opcode
-          value: "0x85"
-      definition: |
-        const oldValueA = registers.A;
-        registers.A = (oldValueA + registers.L) & 0xFFn;
-        registers.F = CAPI.ARCH.calculateFlags_ADD(oldValueA, registers.L);
+        const value = registers[src];
+        registers.A = (oldValueA + value) & 0xFFn;
+        registers.F = CAPI.ARCH.calculateFlags_ADD(oldValueA, value);
 
     - name: add a, (hl)
       template: standard
@@ -1816,82 +1397,16 @@ instructions:
         registers.A = (oldValueA + value) & 0xFFn;
         registers.F = CAPI.ARCH.calculateFlags_ADD(oldValueA, value);
 
-    - name: add a, a
-      template: standard
-      clk_cycles: 1
+    - name: adc # a, r
+      template: alu_implicit
       fields:
-        - field: opcode
-          value: "0x87"
+        - field: operation
+          value: "001"
       definition: |
         const oldValueA = registers.A;
-        registers.A = (oldValueA + oldValueA) & 0xFFn;
-        registers.F = CAPI.ARCH.calculateFlags_ADD(oldValueA, oldValueA);
-
-    - name: adc a, b
-      template: standard
-      fields:
-        - field: opcode
-          value: "0x88"
-      definition: |
-        const oldValueA = registers.A;
-        const valueB = registers.B;
-        registers.A = (oldValueA + valueB + (registers.F & 0x01n)) & 0xFFn;
-        registers.F = CAPI.ARCH.calculateFlags_ADC(oldValueA, valueB, registers.F);
-
-    - name: adc a, c
-      template: standard
-      fields:
-        - field: opcode
-          value: "0x89"
-      definition: |
-        const oldValueA = registers.A;
-        const valueC = registers.C;
-        registers.A = (oldValueA + valueC + (registers.F & 0x01n)) & 0xFFn;
-        registers.F = CAPI.ARCH.calculateFlags_ADC(oldValueA, valueC, registers.F);
-
-    - name: adc a, d
-      template: standard
-      fields:
-        - field: opcode
-          value: "0x8A"
-      definition: |
-        const oldValueA = registers.A;
-        const valueD = registers.D;
-        registers.A = (oldValueA + valueD + (registers.F & 0x01n)) & 0xFFn;
-        registers.F = CAPI.ARCH.calculateFlags_ADC(oldValueA, valueD, registers.F);
-
-    - name: adc a, e
-      template: standard
-      fields:
-        - field: opcode
-          value: "0x8B"
-      definition: |
-        const oldValueA = registers.A;
-        const valueE = registers.E;
-        registers.A = (oldValueA + valueE + (registers.F & 0x01n)) & 0xFFn;
-        registers.F = CAPI.ARCH.calculateFlags_ADC(oldValueA, valueE, registers.F);
-
-    - name: adc a, h
-      template: standard
-      fields:
-        - field: opcode
-          value: "0x8C"
-      definition: |
-        const oldValueA = registers.A;
-        const valueH = registers.H;
-        registers.A = (oldValueA + valueH + (registers.F & 0x01n)) & 0xFFn;
-        registers.F = CAPI.ARCH.calculateFlags_ADC(oldValueA, valueH, registers.F);
-
-    - name: adc a, l
-      template: standard
-      fields:
-        - field: opcode
-          value: "0x8D"
-      definition: |
-        const oldValueA = registers.A;
-        const valueL = registers.L;
-        registers.A = (oldValueA + valueL + (registers.F & 0x01n)) & 0xFFn;
-        registers.F = CAPI.ARCH.calculateFlags_ADC(oldValueA, valueL, registers.F);
+        const value = registers[src];
+        registers.A = (oldValueA + value + (registers.F & 0x01n)) & 0xFFn;
+        registers.F = CAPI.ARCH.calculateFlags_ADC(oldValueA, value, registers.F);
 
     - name: adc a, (hl)
       template: standard
@@ -1905,77 +1420,17 @@ instructions:
         registers.A = (oldValueA + value + (registers.F & 0x01n)) & 0xFFn;
         registers.F = CAPI.ARCH.calculateFlags_ADC(oldValueA, value, registers.F);
 
-    - name: adc a, a
-      template: standard
-      clk_cycles: 1
-      fields:
-        - field: opcode
-          value: "0x8F"
-      definition: |
-        const oldValueA = registers.A;
-        registers.A = (oldValueA + oldValueA + (registers.F & 0x01n)) & 0xFFn;
-        registers.F = CAPI.ARCH.calculateFlags_ADC(oldValueA, oldValueA, registers.F);
-
-    - name: sub b
-      template: standard
+    - name: sub # r
+      template: alu
       clk_cycles: 4
       fields:
-        - field: opcode
-          value: "0x90"
+        - field: operation
+          value: "010"
       definition: |
         const oldValueA = registers.A;
-        registers.A = (oldValueA - registers.B) & 0xFFn;
-        registers.F = CAPI.ARCH.calculateFlags_SUB(oldValueA, registers.B);
-    - name: sub c
-      template: standard
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0x91"
-      definition: |
-        const oldValueA = registers.A;
-        registers.A = (oldValueA - registers.C) & 0xFFn;
-        registers.F = CAPI.ARCH.calculateFlags_SUB(oldValueA, registers.C);
-    - name: sub d
-      template: standard
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0x92"
-      definition: |
-        const oldValueA = registers.A;
-        registers.A = (oldValueA - registers.D) & 0xFFn;
-        registers.F = CAPI.ARCH.calculateFlags_SUB(oldValueA, registers.D);
-    - name: sub e
-      template: standard
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0x93"
-      definition: |
-        const oldValueA = registers.A;
-        registers.A = (oldValueA - registers.E) & 0xFFn;
-        registers.F = CAPI.ARCH.calculateFlags_SUB(oldValueA, registers.E);
-    - name: sub h
-      template: standard
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0x94"
-      definition: |
-        const oldValueA = registers.A;
-        registers.A = (oldValueA - registers.H) & 0xFFn;
-        registers.F = CAPI.ARCH.calculateFlags_SUB(oldValueA, registers.H);
-    - name: sub l
-      template: standard
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0x95"
-      definition: |
-        const oldValueA = registers.A;
-        registers.A = (oldValueA - registers.L) & 0xFFn;
-        registers.F = CAPI.ARCH.calculateFlags_SUB(oldValueA, registers.L);
+        const value = registers[src];
+        registers.A = (oldValueA - value) & 0xFFn;
+        registers.F = CAPI.ARCH.calculateFlags_SUB(oldValueA, value);
     - name: sub (hl)
       template: standard
       clk_cycles: 7
@@ -1987,16 +1442,7 @@ instructions:
         const oldValueA = registers.A;
         registers.A = (oldValueA - value) & 0xFFn;
         registers.F = CAPI.ARCH.calculateFlags_SUB(oldValueA, value);
-    - name: sub a
-      template: standard
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0x97"
-      definition: |
-        const oldValueA = registers.A;
-        registers.A = 0n;
-        registers.F = CAPI.ARCH.calculateFlags_SUB(oldValueA, oldValueA);
+
     - name: sub
       template: standard
       clk_cycles: 7
@@ -2006,87 +1452,26 @@ instructions:
           value: "0xD6"
         - field: n
           type: imm-unsigned
-          startbit: 7
-          stopbit: 0
+          startbit: 15
+          stopbit: 8
           order: 1
-          word: 1
       definition: |
         const oldValueA = registers.A;
         registers.A = (oldValueA - n) & 0xFFn;
         registers.F = CAPI.ARCH.calculateFlags_SUB(oldValueA, n);
 
-    - name: sbc a, b
-      template: standard
+    - name: sbc # a, r
+      template: alu_implicit
       clk_cycles: 4
       fields:
-        - field: opcode
-          value: "0x98"
+        - field: operation
+          value: "011"
       definition: |
         const oldValueA = registers.A;
-        const valueB = registers.B;
+        const value = registers[src];
         const carry = registers.F & 0x01n;
-        registers.A = (oldValueA - valueB - carry) & 0xFFn;
-        registers.F = CAPI.ARCH.calculateFlags_SBC(oldValueA, valueB, registers.F);
-    - name: sbc a, c
-      template: standard
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0x99"
-      definition: |
-        const oldValueA = registers.A;
-        const valueC = registers.C;
-        const carry = registers.F & 0x01n;
-        registers.A = (oldValueA - valueC - carry) & 0xFFn;
-        registers.F = CAPI.ARCH.calculateFlags_SBC(oldValueA, valueC, registers.F);
-    - name: sbc a, d
-      template: standard
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0x9A"
-      definition: |
-        const oldValueA = registers.A;
-        const valueD = registers.D;
-        const carry = registers.F & 0x01n;
-        registers.A = (oldValueA - valueD - carry) & 0xFFn;
-        registers.F = CAPI.ARCH.calculateFlags_SBC(oldValueA, valueD, registers.F);
-    - name: sbc a, e
-      template: standard
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0x9B"
-      definition: |
-        const oldValueA = registers.A;
-        const valueE = registers.E;
-        const carry = registers.F & 0x01n;
-        registers.A = (oldValueA - valueE - carry) & 0xFFn;
-        registers.F = CAPI.ARCH.calculateFlags_SBC(oldValueA, valueE, registers.F);
-    - name: sbc a, h
-      template: standard
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0x9C"
-      definition: |
-        const oldValueA = registers.A;
-        const valueH = registers.H;
-        const carry = registers.F & 0x01n;
-        registers.A = (oldValueA - valueH - carry) & 0xFFn;
-        registers.F = CAPI.ARCH.calculateFlags_SBC(oldValueA, valueH, registers.F);
-    - name: sbc a, l
-      template: standard
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0x9D"
-      definition: |
-        const oldValueA = registers.A;
-        const valueL = registers.L;
-        const carry = registers.F & 0x01n;
-        registers.A = (oldValueA - valueL - carry) & 0xFFn;
-        registers.F = CAPI.ARCH.calculateFlags_SBC(oldValueA, valueL, registers.F);
+        registers.A = (oldValueA - value - carry) & 0xFFn;
+        registers.F = CAPI.ARCH.calculateFlags_SBC(oldValueA, value, registers.F);
     - name: sbc a, (hl)
       template: standard
       clk_cycles: 7
@@ -2119,59 +1504,14 @@ instructions:
             // Flags: S=1, Z=0, H=1, P/V=0, N=1, C=1
             registers.F = CAPI.ARCH.S_FLAG | CAPI.ARCH.H_FLAG | CAPI.ARCH.N_FLAG | CAPI.ARCH.C_FLAG;
         }
-    - name: and b
-      template: standard
+    - name: and # r
+      template: alu
       clk_cycles: 4
       fields:
-        - field: opcode
-          value: "0xA0"
+        - field: operation
+          value: "100"
       definition: |
-        registers.A = registers.A & registers.B;
-        registers.F = CAPI.ARCH.calculateFlags_LOGICAL(registers.A, 1);
-    - name: and c
-      template: standard
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0xA1"
-      definition: |
-        registers.A = registers.A & registers.C;
-        registers.F = CAPI.ARCH.calculateFlags_LOGICAL(registers.A, 1);
-    - name: and d
-      template: standard
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0xA2"
-      definition: |
-        registers.A = registers.A & registers.D;
-        registers.F = CAPI.ARCH.calculateFlags_LOGICAL(registers.A, 1);
-    - name: and e
-      template: standard
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0xA3"
-      definition: |
-        registers.A = registers.A & registers.E;
-        registers.F = CAPI.ARCH.calculateFlags_LOGICAL(registers.A, 1);
-    - name: and h
-      template: standard
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0xA4"
-      definition: |
-        registers.A = registers.A & registers.H;
-        registers.F = CAPI.ARCH.calculateFlags_LOGICAL(registers.A, 1);
-    - name: and l
-      template: standard
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0xA5"
-      definition: |
-        registers.A = registers.A & registers.L;
+        registers.A = registers.A & registers[src];
         registers.F = CAPI.ARCH.calculateFlags_LOGICAL(registers.A, 1);
     - name: and (hl)
       template: standard
@@ -2182,15 +1522,7 @@ instructions:
       definition: |
         registers.A = registers.A & CAPI.MEM.read((registers.H << 8n) | registers.L, 1);
         registers.F = CAPI.ARCH.calculateFlags_LOGICAL(registers.A, 1);
-    - name: and a
-      template: standard
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0xA7"
-      definition: |
-        registers.A = registers.A & registers.A;
-        registers.F = CAPI.ARCH.calculateFlags_LOGICAL(registers.A, 1);
+
     - name: and
       template: standard
       nwords: 2
@@ -2200,66 +1532,20 @@ instructions:
           value: "0xE6"
         - field: n
           type: imm-unsigned
-          startbit: 7
-          stopbit: 0
+          startbit: 15
+          stopbit: 8
           order: 1
-          word: 1
       definition: |
         registers.A = registers.A & n;
         registers.F = CAPI.ARCH.calculateFlags_LOGICAL(registers.A, 1);
-    - name: xor b
-      template: standard
+    - name: xor # r
+      template: alu
       clk_cycles: 4
       fields:
-        - field: opcode
-          value: "0xA8"
+        - field: operation
+          value: "101"
       definition: |
-        registers.A = registers.A ^ registers.B;
-        registers.F = CAPI.ARCH.calculateFlags_LOGICAL(registers.A, 0);
-    - name: xor c
-      template: standard
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0xA9"
-      definition: |
-        registers.A = registers.A ^ registers.C;
-        registers.F = CAPI.ARCH.calculateFlags_LOGICAL(registers.A, 0);
-    - name: xor d
-      template: standard
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0xAA"
-      definition: |
-        registers.A = registers.A ^ registers.D;
-        registers.F = CAPI.ARCH.calculateFlags_LOGICAL(registers.A, 0);
-    - name: xor e
-      template: standard
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0xAB"
-      definition: |
-        registers.A = registers.A ^ registers.E;
-        registers.F = CAPI.ARCH.calculateFlags_LOGICAL(registers.A, 0);
-    - name: xor h
-      template: standard
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0xAC"
-      definition: |
-        registers.A = registers.A ^ registers.H;
-        registers.F = CAPI.ARCH.calculateFlags_LOGICAL(registers.A, 0);
-    - name: xor l
-      template: standard
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0xAD"
-      definition: |
-        registers.A = registers.A ^ registers.L;
+        registers.A = registers.A ^ registers[src];
         registers.F = CAPI.ARCH.calculateFlags_LOGICAL(registers.A, 0);
     - name: xor (hl)
       template: standard
@@ -2270,68 +1556,15 @@ instructions:
       definition: |
         registers.A = registers.A ^ CAPI.MEM.read((registers.H << 8n) | registers.L, 1);
         registers.F = CAPI.ARCH.calculateFlags_LOGICAL(registers.A, 0);
-    - name: xor a
-      template: standard
+
+    - name: or # r
+      template: alu
       clk_cycles: 4
       fields:
-        - field: opcode
-          value: "0xAF"
+        - field: operation
+          value: "110"
       definition: |
-        registers.A = registers.A ^ registers.A;
-        registers.F = CAPI.ARCH.calculateFlags_LOGICAL(registers.A, 0);
-    - name: or b
-      template: standard
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0xB0"
-      definition: |
-        registers.A = registers.A | registers.B;
-        registers.F = CAPI.ARCH.calculateFlags_LOGICAL(registers.A, 0);
-    - name: or c
-      template: standard
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0xB1"
-      definition: |
-        registers.A = registers.A | registers.C;
-        registers.F = CAPI.ARCH.calculateFlags_LOGICAL(registers.A, 0);
-    - name: or d
-      template: standard
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0xB2"
-      definition: |
-        registers.A = registers.A | registers.D;
-        registers.F = CAPI.ARCH.calculateFlags_LOGICAL(registers.A, 0);
-    - name: or e
-      template: standard
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0xB3"
-      definition: |
-        registers.A = registers.A | registers.E;
-        registers.F = CAPI.ARCH.calculateFlags_LOGICAL(registers.A, 0);
-    - name: or h
-      template: standard
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0xB4"
-      definition: |
-        registers.A = registers.A | registers.H;
-        registers.F = CAPI.ARCH.calculateFlags_LOGICAL(registers.A, 0);
-    - name: or l
-      template: standard
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0xB5"
-      definition: |
-        registers.A = registers.A | registers.L;
+        registers.A = registers.A | registers[src];
         registers.F = CAPI.ARCH.calculateFlags_LOGICAL(registers.A, 0);
     - name: or (hl)
       template: standard
@@ -2342,63 +1575,15 @@ instructions:
       definition: |
         registers.A = registers.A | CAPI.MEM.read((registers.H << 8n) | registers.L, 1);
         registers.F = CAPI.ARCH.calculateFlags_LOGICAL(registers.A, 0);
-    - name: or a
-      template: standard
+
+    - name: cp # r
+      template: alu
       clk_cycles: 4
       fields:
-        - field: opcode
-          value: "0xB7"
+        - field: operation
+          value: "111"
       definition: |
-        registers.A = registers.A | registers.A;
-        registers.F = CAPI.ARCH.calculateFlags_LOGICAL(registers.A, 0);
-    - name: cp b
-      template: standard
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0xB8"
-      definition: |
-        registers.F = CAPI.ARCH.calculateFlags_CP(registers.A, registers.B);
-    - name: cp c
-      template: standard
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0xB9"
-      definition: |
-        registers.F = CAPI.ARCH.calculateFlags_CP(registers.A, registers.C);
-    - name: cp d
-      template: standard
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0xBA"
-      definition: |
-        registers.F = CAPI.ARCH.calculateFlags_CP(registers.A, registers.D);
-    - name: cp e
-      template: standard
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0xBB"
-      definition: |
-        registers.F = CAPI.ARCH.calculateFlags_CP(registers.A, registers.E);
-    - name: cp h
-      template: standard
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0xBC"
-      definition: |
-        registers.F = CAPI.ARCH.calculateFlags_CP(registers.A, registers.H);
-    - name: cp l
-      template: standard
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0xBD"
-      definition: |
-        registers.F = CAPI.ARCH.calculateFlags_CP(registers.A, registers.L);
+        registers.F = CAPI.ARCH.calculateFlags_CP(registers.A, registers[src]);
     - name: cp (hl)
       template: standard
       clk_cycles: 7
@@ -2408,14 +1593,6 @@ instructions:
       definition: |
         const value = CAPI.MEM.read((registers.H << 8n) | registers.L, 1);
         registers.F = CAPI.ARCH.calculateFlags_CP(registers.A, value);
-    - name: cp a
-      template: standard
-      clk_cycles: 4
-      fields:
-        - field: opcode
-          value: "0xBF"
-      definition: |
-        registers.F = CAPI.ARCH.calculateFlags_CP(registers.A, registers.A);
     - name: cp
       template: standard
       nwords: 2
@@ -2425,10 +1602,9 @@ instructions:
           value: "0xFE"
         - field: n
           type: imm-unsigned
-          startbit: 7
-          stopbit: 0
+          startbit: 15
+          stopbit: 8
           order: 1
-          word: 1
       definition: |
         registers.F = CAPI.ARCH.calculateFlags_CP(registers.A, n);
 
@@ -2445,10 +1621,9 @@ instructions:
           order: 1
         - field: n
           type: imm-unsigned
-          startbit: 7
-          stopbit: 0
+          startbit: 15
+          stopbit: 8
           order: 2
-          word: 1
       definition: |
         const oldValueA = registers.A;
         registers.A = (oldValueA + n + (registers.F & 0x01n)) & 0xFFn;
@@ -2467,80 +1642,13 @@ instructions:
           order: 1
         - field: n
           type: imm-unsigned
-          startbit: 7
-          stopbit: 0
+          startbit: 15
+          stopbit: 8
           order: 2
-          word: 1
       definition: |
         const oldValue = registers.A;
         registers.A = (oldValue + n) & 0xFFn;
         registers.F = CAPI.ARCH.calculateFlags_ADD(oldValue, n);
-
-    - name: ld
-      template: standard
-      nwords: 2
-      fields:
-        - field: opcode
-          value: "0x06"
-        - field: instructionFormatting
-          type: skip
-          value: "b,"
-          order: 1
-        - field: n
-          type: imm-unsigned
-          startbit: 7
-          stopbit: 0
-          order: 2
-          word: 1
-      definition: |
-        registers.B = n;
-
-    - name: ld
-      template: standard
-      nwords: 2
-      fields:
-        - field: opcode
-          value: "0x3e"
-        - field: instructionFormatting
-          type: skip
-          value: "a,"
-          order: 1
-        - field: n
-          type: imm-unsigned
-          startbit: 7
-          stopbit: 0
-          order: 2
-          word: 1
-      definition: |
-        registers.A = n;
-
-    - name: ld
-      template: standard
-      nwords: 1
-      clk_cycles: 7
-      fields:
-        - field: opcode
-          value: "0x02"
-        - field: instructionFormatting
-          type: skip
-          value: "(bc), a"
-          order: 1
-      definition: |
-        CAPI.MEM.write((registers.B << 8n) | registers.C, 1, registers.A);
-
-    - name: ld
-      template: standard
-      nwords: 1
-      clk_cycles: 7
-      fields:
-        - field: opcode
-          value: "0x12"
-        - field: instructionFormatting
-          type: skip
-          value: "(de), a"
-          order: 1
-      definition: |
-        CAPI.MEM.write((registers.D << 8n) | registers.E, 1, registers.A);
 
     - name: ld
       template: standard
@@ -2555,37 +1663,14 @@ instructions:
           order: 2
         - field: nn
           type: imm-unsigned
-          startbit: 15
-          stopbit: 0
+          startbit: 23
+          stopbit: 8
           prefix: "("
           suffix: ")"
           order: 1
-          word: [2, 1]
       definition: |
         CAPI.MEM.write(nn, 1, registers.L);
         CAPI.MEM.write(nn + 1n, 1, registers.H);
-
-    - name: ld
-      template: standard
-      nwords: 3
-      clk_cycles: 13
-      fields:
-        - field: opcode
-          value: "0x32"
-        - field: instructionFormatting
-          type: skip
-          value: ", a"
-          order: 2
-        - field: nn
-          type: imm-unsigned
-          startbit: 15
-          stopbit: 0
-          prefix: "("
-          suffix: ")"
-          order: 1
-          word: [2, 1]
-      definition: |
-        CAPI.MEM.write(nn, 1, registers.A);
 
     - name: inc bc
       template: standard
@@ -2755,34 +1840,6 @@ instructions:
 
     - name: ld
       template: standard
-      nwords: 1
-      clk_cycles: 7
-      fields:
-        - field: opcode
-          value: "0x0a"
-        - field: instructionFormatting
-          type: skip
-          value: "a, (bc)"
-          order: 1
-      definition: |
-        registers.A = CAPI.MEM.read((registers.B << 8n) | registers.C, 1);
-
-    - name: ld
-      template: standard
-      nwords: 1
-      clk_cycles: 7
-      fields:
-        - field: opcode
-          value: "0x1a"
-        - field: instructionFormatting
-          type: skip
-          value: "a, (de)"
-          order: 1
-      definition: |
-        registers.A = CAPI.MEM.read((registers.D << 8n) | registers.E, 1);
-
-    - name: ld
-      template: standard
       nwords: 3
       clk_cycles: 7
       fields:
@@ -2794,40 +1851,15 @@ instructions:
           order: 1
         - field: nn
           type: imm-unsigned
-          startbit: 15
-          stopbit: 0
+          startbit: 23
+          stopbit: 8
           prefix: "("
           suffix: ")"
           order: 2
-          word: [2, 1]
       definition: |
         // Loads the value pointed to by nn into HL.
         registers.L = CAPI.MEM.read(nn, 1); // little endian
         registers.H = CAPI.MEM.read(nn + 1n, 1);
-
-    - name: ld
-      template: standard
-      nwords: 3
-      clk_cycles: 7
-      fields:
-        - field: opcode
-          value: "0x3a"
-        - field: instructionFormatting
-          type: skip
-          value: "a,"
-          order: 1
-        - field: nn
-          type: imm-unsigned
-          startbit: 15
-          stopbit: 0
-          prefix: "("
-          suffix: ")"
-          order: 2
-          word: [2, 1]
-      definition: |
-        // Loads the value pointed to by nn into A.
-        const value = CAPI.MEM.read(nn, 1);
-        registers.A = value & 0xFFn;
 
     - name: inc c
       template: standard
@@ -3087,10 +2119,9 @@ instructions:
           value: "0xF6"
         - field: n
           type: imm-unsigned
-          startbit: 7
-          stopbit: 0
+          startbit: 15
+          stopbit: 8
           order: 1
-          word: 1
       definition: |
         // Performs a bitwise logical OR between the accumulator and the immediate value n.
         registers.A = registers.A | n;
@@ -3109,12 +2140,11 @@ instructions:
           order: 2
         - field: nn
           type: imm-unsigned
-          startbit: 15
-          stopbit: 0
+          startbit: 31
+          stopbit: 16
           prefix: "("
           suffix: ")"
           order: 1
-          word: [3, 2]
       definition: |
         // Stores BC into the memory location pointed to by nn.
         CAPI.MEM.write(nn, 1, registers.C);
@@ -3132,12 +2162,11 @@ instructions:
           order: 2
         - field: nn
           type: imm-unsigned
-          startbit: 15
-          stopbit: 0
+          startbit: 31
+          stopbit: 16
           prefix: "("
           suffix: ")"
           order: 1
-          word: [3, 2]
       definition: |
         // Stores DE into the memory location pointed to by nn.
         CAPI.MEM.write(nn, 1, registers.E);
@@ -3155,12 +2184,11 @@ instructions:
           order: 2
         - field: nn
           type: imm-unsigned
-          startbit: 15
-          stopbit: 0
+          startbit: 31
+          stopbit: 16
           prefix: "("
           suffix: ")"
           order: 1
-          word: [3, 2]
       definition: |
         // Stores HL into the memory location pointed to by nn.
         CAPI.MEM.write(nn, 1, registers.L);
@@ -3178,12 +2206,11 @@ instructions:
           order: 2
         - field: nn
           type: imm-unsigned
-          startbit: 15
-          stopbit: 0
+          startbit: 31
+          stopbit: 16
           prefix: "("
           suffix: ")"
           order: 1
-          word: [3, 2]
       definition: |
         // Stores SP into the memory location pointed to by nn.
         CAPI.MEM.write(nn, 2, registers.SP);
@@ -3200,12 +2227,11 @@ instructions:
           order: 1
         - field: nn
           type: imm-unsigned
-          startbit: 15
-          stopbit: 0
+          startbit: 31
+          stopbit: 16
           prefix: "("
           suffix: ")"
           order: 2
-          word: [3, 2]
       definition: |
         registers.C = CAPI.MEM.read(nn, 1);
         registers.B = CAPI.MEM.read(nn + 1n, 1);
@@ -3219,10 +2245,9 @@ instructions:
           value: "0x78"
         - field: port
           type: imm-unsigned
-          startbit: 7
-          stopbit: 0
+          startbit: 15
+          stopbit: 8
           order: 1
-          word: 1
       definition: |
         // A byte from the port at the 16-bit address contained in the BC register pair is written to A.
         registers.A = CAPI.ARCH.read((registers.B << 8n) | registers.C);
@@ -3239,116 +2264,6 @@ instructions:
         // N(bit 1) and H(bit 4) are cleared. C(bit 0) is set.
         const preservedFlags = registers.F & 0xC4n; // Mask for S, Z, P/V
         registers.F = preservedFlags | 0x01n;      // Set C flag
-
-    - name: ld
-      template: standard
-      nwords: 2
-      fields:
-        - field: opcode
-          value: "0x0E"
-        - field: instructionFormatting
-          type: skip
-          value: "c,"
-          order: 1
-        - field: n
-          type: imm-unsigned
-          startbit: 7
-          stopbit: 0
-          order: 2
-          word: 1
-      definition: "registers.C = n;"
-
-    - name: ld
-      template: standard
-      nwords: 2
-      fields:
-        - field: opcode
-          value: "0x16"
-        - field: instructionFormatting
-          type: skip
-          value: "d,"
-          order: 1
-        - field: n
-          type: imm-unsigned
-          startbit: 7
-          stopbit: 0
-          order: 2
-          word: 1
-      definition: "registers.D = n;"
-
-    - name: ld
-      template: standard
-      nwords: 2
-      fields:
-        - field: opcode
-          value: "0x1E"
-        - field: instructionFormatting
-          type: skip
-          value: "e,"
-          order: 1
-        - field: n
-          type: imm-unsigned
-          startbit: 7
-          stopbit: 0
-          order: 2
-          word: 1
-      definition: "registers.E = n;"
-
-    - name: ld
-      template: standard
-      nwords: 2
-      fields:
-        - field: opcode
-          value: "0x26"
-        - field: instructionFormatting
-          type: skip
-          value: "h,"
-          order: 1
-        - field: n
-          type: imm-unsigned
-          startbit: 7
-          stopbit: 0
-          order: 2
-          word: 1
-      definition: "registers.H = n;"
-
-    - name: ld # (hl), n
-      template: standard
-      nwords: 2
-      clk_cycles: 10
-      fields:
-        - field: opcode
-          value: "0x36"
-        - field: instructionFormatting
-          type: skip
-          value: "(hl),"
-          order: 1
-        - field: n
-          type: imm-unsigned
-          startbit: 7
-          stopbit: 0
-          order: 2
-          word: 1
-      definition: |
-        CAPI.MEM.write((registers.H << 8n) | registers.L, 1, n);
-
-    - name: ld
-      template: standard
-      nwords: 2
-      fields:
-        - field: opcode
-          value: "0x2E"
-        - field: instructionFormatting
-          type: skip
-          value: "l,"
-          order: 1
-        - field: n
-          type: imm-unsigned
-          startbit: 7
-          stopbit: 0
-          order: 2
-          word: 1
-      definition: "registers.L = n;"
 
     - name: ret
       template: standard
@@ -3442,10 +2357,9 @@ instructions:
           order: 1
         - field: nn
           type: imm-unsigned
-          startbit: 15
-          stopbit: 0
+          startbit: 23
+          stopbit: 8
           order: 2
-          word: [2, 1]
       definition: |
         if ((registers.F & CAPI.ARCH.Z_FLAG) === 0n) {
             registers.SP = (registers.SP - 1n) & 0xFFFFn;
@@ -3467,10 +2381,9 @@ instructions:
           order: 1
         - field: nn
           type: imm-unsigned
-          startbit: 15
-          stopbit: 0
+          startbit: 23
+          stopbit: 8
           order: 2
-          word: [2, 1]
       definition: |
         if ((registers.F & CAPI.ARCH.Z_FLAG) !== 0n) {
             registers.SP = (registers.SP - 1n) & 0xFFFFn;
@@ -3488,10 +2401,9 @@ instructions:
           value: "0xCD"
         - field: nn
           type: imm-unsigned
-          startbit: 15
-          stopbit: 0
+          startbit: 23
+          stopbit: 8
           order: 1
-          word: [2, 1]
       definition: |
         registers.SP = (registers.SP - 1n) & 0xFFFFn;
         CAPI.MEM.write(registers.SP, 1, (registers.PC >> 8n) & 0xFFn);
@@ -3546,10 +2458,9 @@ instructions:
           order: 1
         - field: nn
           type: imm-unsigned
-          startbit: 15
-          stopbit: 0
+          startbit: 23
+          stopbit: 8
           order: 2
-          word: [2, 1]
       definition: |
         if ((registers.F & CAPI.ARCH.C_FLAG) === 0n) {
             registers.SP = (registers.SP - 1n) & 0xFFFFn;
@@ -3595,10 +2506,9 @@ instructions:
           order: 1
         - field: nn
           type: imm-unsigned
-          startbit: 15
-          stopbit: 0
+          startbit: 23
+          stopbit: 8
           order: 2
-          word: [2, 1]
       definition: |
         if ((registers.F & CAPI.ARCH.C_FLAG) !== 0n) {
             registers.SP = (registers.SP - 1n) & 0xFFFFn;
@@ -3691,10 +2601,9 @@ instructions:
           order: 1
         - field: nn
           type: imm-unsigned
-          startbit: 15
-          stopbit: 0
+          startbit: 23
+          stopbit: 8
           order: 2
-          word: [2, 1]
       definition: |
         if ((registers.F & CAPI.ARCH.PV_FLAG) === 0n) {
             registers.SP = (registers.SP - 1n) & 0xFFFFn;
@@ -3740,10 +2649,9 @@ instructions:
           order: 1
         - field: nn
           type: imm-unsigned
-          startbit: 15
-          stopbit: 0
+          startbit: 23
+          stopbit: 8
           order: 2
-          word: [2, 1]
       definition: |
         if ((registers.F & CAPI.ARCH.PV_FLAG) !== 0n) {
             registers.SP = (registers.SP - 1n) & 0xFFFFn;
@@ -3762,10 +2670,9 @@ instructions:
           value: "0xEE"
         - field: n
           type: imm-unsigned
-          startbit: 7
-          stopbit: 0
+          startbit: 15
+          stopbit: 8
           order: 1
-          word: 1
       definition: |
         // Performs a bitwise logical XOR between the accumulator and the immediate value n.
         registers.A = registers.A ^ n;
@@ -3820,10 +2727,9 @@ instructions:
           order: 1
         - field: nn
           type: imm-unsigned
-          startbit: 15
-          stopbit: 0
+          startbit: 23
+          stopbit: 8
           order: 2
-          word: [2, 1]
       definition: |
         if ((registers.F & CAPI.ARCH.S_FLAG) === 0n) {
             registers.SP = (registers.SP - 1n) & 0xFFFFn;
@@ -3887,10 +2793,9 @@ instructions:
           order: 1
         - field: nn
           type: imm-unsigned
-          startbit: 15
-          stopbit: 0
+          startbit: 23
+          stopbit: 8
           order: 2
-          word: [2, 1]
       definition: |
         if ((registers.F & CAPI.ARCH.S_FLAG) !== 0n) {
             registers.SP = (registers.SP - 1n) & 0xFFFFn;
@@ -4185,10 +3090,9 @@ instructions:
           order: 1
         - field: nn
           type: imm-unsigned
-          startbit: 15
-          stopbit: 0
+          startbit: 31
+          stopbit: 16
           order: 2
-          word: [3, 2]
       definition: |
         // Loads nn into register IX.
         registers.IX = nn;
@@ -7073,12 +5977,11 @@ instructions:
           order: 1
         - field: nn
           type: imm-unsigned
-          startbit: 15
-          stopbit: 0
+          startbit: 31
+          stopbit: 16
           prefix: "("
           suffix: ")"
           order: 2
-          word: [3, 2]
       definition: |
         // Loads the value pointed to by nn into DE.
         registers.E = CAPI.MEM.read(nn, 1);
@@ -7097,12 +6000,11 @@ instructions:
           order: 1
         - field: nn
           type: imm-unsigned
-          startbit: 15
-          stopbit: 0
+          startbit: 31
+          stopbit: 16
           prefix: "("
           suffix: ")"
           order: 2
-          word: [3, 2]
       definition: |
         // Loads the value pointed to by nn into HL.
         registers.L = CAPI.MEM.read(nn, 1);
@@ -7121,12 +6023,11 @@ instructions:
           order: 1
         - field: nn
           type: imm-unsigned
-          startbit: 15
-          stopbit: 0
+          startbit: 31
+          stopbit: 16
           prefix: "("
           suffix: ")"
           order: 2
-          word: [3, 2]
       definition: |
         // Loads the value pointed to by nn into SP
         lowSP = CAPI.MEM.read(nn, 1);
@@ -7267,46 +6168,13 @@ instructions:
           order: 1
         - field: nn
           type: imm-unsigned
-          startbit: 15
-          stopbit: 0
+          startbit: 31
+          stopbit: 16
           order: 2
-          word: [3, 2]
       definition: |
         // Loads the 16-bit value nn into the IY register.
         // nn is a 16-bit unsigned integer.
         registers.IY = nn;
-
-    - name: ld
-      template: FD
-      nwords: 4
-      clk_cycles: 19
-      fields:
-        - field: opcode2
-          value: "0x36"
-        - field: instructionFormatting
-          type: skip
-          value: "(iy+"
-          order: 1
-        - field: d
-          type: imm-signed
-          startbit: 7
-          stopbit: 0
-          order: 2
-          word: 2
-        - field: instructionFormatting
-          type: skip
-          value: "),"
-          order: 3
-        - field: n
-          type: imm-unsigned
-          startbit: 7
-          stopbit: 0
-          order: 4
-          word: 3
-      definition: |
-        // Loads the immediate value n into the memory location (IY + d).
-        const addr = (registers.IY + d) & 0xFFFFn;
-        CAPI.MEM.write(addr, 1, n);
 
     - name: inc
       template: FD
@@ -7321,10 +6189,9 @@ instructions:
           order: 1
         - field: d
           type: imm-signed
-          startbit: 7
-          stopbit: 0
+          startbit: 23
+          stopbit: 16
           order: 2
-          word: 2
         - field: instructionFormatting
           type: skip
           value: ")"
@@ -7349,10 +6216,9 @@ instructions:
           order: 1
         - field: d
           type: imm-signed
-          startbit: 7
-          stopbit: 0
+          startbit: 23
+          stopbit: 16
           order: 2
-          word: 2
         - field: instructionFormatting
           type: skip
           value: ")"
@@ -7377,10 +6243,9 @@ instructions:
           order: 1
         - field: displacement
           type: imm-signed
-          startbit: 7
-          stopbit: 0
+          startbit: 23
+          stopbit: 16
           order: 2
-          word: 2
         - field: instructionFormatting2
           type: skip
           value: "),b"
@@ -7403,10 +6268,9 @@ instructions:
           order: 1
         - field: displacement
           type: imm-signed
-          startbit: 7
-          stopbit: 0
+          startbit: 23
+          stopbit: 16
           order: 2
-          word: 2
         - field: instructionFormatting2
           type: skip
           value: "),c"
@@ -7429,10 +6293,9 @@ instructions:
           order: 1
         - field: displacement
           type: imm-signed
-          startbit: 7
-          stopbit: 0
+          startbit: 23
+          stopbit: 16
           order: 2
-          word: 2
         - field: instructionFormatting2
           type: skip
           value: "),d"
@@ -7455,10 +6318,9 @@ instructions:
           order: 1
         - field: displacement
           type: imm-signed
-          startbit: 7
-          stopbit: 0
+          startbit: 23
+          stopbit: 16
           order: 2
-          word: 2
         - field: instructionFormatting2
           type: skip
           value: "),d"
@@ -7481,10 +6343,9 @@ instructions:
           order: 1
         - field: displacement
           type: imm-signed
-          startbit: 7
-          stopbit: 0
+          startbit: 23
+          stopbit: 16
           order: 2
-          word: 2
         - field: instructionFormatting2
           type: skip
           value: "),h"
@@ -7507,10 +6368,9 @@ instructions:
           order: 1
         - field: displacement
           type: imm-signed
-          startbit: 7
-          stopbit: 0
+          startbit: 23
+          stopbit: 16
           order: 2
-          word: 2
         - field: instructionFormatting2
           type: skip
           value: "),l"
@@ -7533,10 +6393,9 @@ instructions:
           order: 1
         - field: displacement
           type: imm-signed
-          startbit: 7
-          stopbit: 0
+          startbit: 23
+          stopbit: 16
           order: 2
-          word: 2
         - field: instructionFormatting2
           type: skip
           value: "),a"
@@ -7545,174 +6404,6 @@ instructions:
         // Stores A to the memory location pointed to by IY plus d.
         const addr = (registers.IY + displacement) & 0xFFFFn;
         CAPI.MEM.write(addr, 1, registers.A);
-
-    - name: ld
-      template: FD
-      nwords: 3
-      clk_cycles: 19
-      fields:
-        - field: opcode2
-          value: "0x4E"
-        - field: instructionFormatting
-          type: skip
-          value: "c,"
-          order: 1
-        - field: d
-          type: imm-signed
-          startbit: 7
-          stopbit: 0
-          prefix: "(iy+"
-          suffix: ")"
-          order: 2
-          word: 2
-      definition: |
-        // Loads the value pointed to by IY plus d into C.
-        const addr = (registers.IY + d) & 0xFFFFn;
-        registers.C = CAPI.MEM.read(addr, 1);
-
-    - name: ld
-      template: FD
-      nwords: 3
-      clk_cycles: 19
-      fields:
-        - field: opcode2
-          value: "0x5E"
-        - field: instructionFormatting
-          type: skip
-          value: "e,"
-          order: 1
-        - field: d
-          type: imm-signed
-          startbit: 7
-          stopbit: 0
-          prefix: "(iy+"
-          suffix: ")"
-          order: 2
-          word: 2
-      definition: |
-        // Loads the value pointed to by IY plus d into E.
-        const addr = (registers.IY + d) & 0xFFFFn;
-        registers.E = CAPI.MEM.read(addr, 1);
-
-    - name: ld
-      template: FD
-      nwords: 3
-      clk_cycles: 19
-      fields:
-        - field: opcode2
-          value: "0x6E"
-        - field: instructionFormatting
-          type: skip
-          value: "l,"
-          order: 1
-        - field: d
-          type: imm-signed
-          startbit: 7
-          stopbit: 0
-          prefix: "(iy+"
-          suffix: ")"
-          order: 2
-          word: 2
-      definition: |
-        // Loads the value pointed to by IY plus d into L.
-        const addr = (registers.IY + d) & 0xFFFFn;
-        registers.L = CAPI.MEM.read(addr, 1);
-
-    - name: ld
-      template: FD
-      nwords: 3
-      clk_cycles: 19
-      fields:
-        - field: opcode2
-          value: "0x7E"
-        - field: instructionFormatting
-          type: skip
-          value: "a,"
-          order: 1
-        - field: d
-          type: imm-signed
-          startbit: 7
-          stopbit: 0
-          prefix: "(iy+"
-          suffix: ")"
-          order: 2
-          word: 2
-      definition: |
-        // Loads the value pointed to by IY plus d into A.
-        const addr = (registers.IY + d) & 0xFFFFn;
-        registers.A = CAPI.MEM.read(addr, 1);
-
-    - name: ld
-      template: FD
-      nwords: 3
-      clk_cycles: 19
-      fields:
-        - field: opcode2
-          value: "0x46"
-        - field: instructionFormatting
-          type: skip
-          value: "b,"
-          order: 1
-        - field: d
-          type: imm-signed
-          startbit: 7
-          stopbit: 0
-          prefix: "(iy+"
-          suffix: ")"
-          order: 2
-          word: 2
-      definition: |
-        // Loads the value pointed to by IY plus d into B.
-        const addr = (registers.IY + d) & 0xFFFFn;
-        registers.B = CAPI.MEM.read(addr, 1);
-
-    - name: ld
-      template: FD
-      nwords: 3
-      clk_cycles: 19
-      fields:
-        - field: opcode2
-          value: "0x56"
-        - field: instructionFormatting
-          type: skip
-          value: "d,"
-          order: 1
-        - field: d
-          type: imm-signed
-          startbit: 7
-          stopbit: 0
-          prefix: "(iy+"
-          suffix: ")"
-          order: 2
-          word: 2
-      definition: |
-        // Loads the value pointed to by IY plus d into D.
-        const addr = (registers.IY + d) & 0xFFFFn;
-        registers.D = CAPI.MEM.read(addr, 1);
-
-    - name: ld
-      template: FD
-      nwords: 3
-      clk_cycles: 19
-      fields:
-        - field: opcode2
-          value: "0x66"
-        - field: instructionFormatting
-          type: skip
-          value: "h,"
-          order: 1
-        - field: d
-          type: imm-signed
-          startbit: 7
-          stopbit: 0
-          prefix: "(iy+"
-          suffix: ")"
-          order: 2
-          word: 2
-      definition: |
-        // Loads the value pointed to by IY plus d into H.
-        const addr = (registers.IY + d) & 0xFFFFn;
-        registers.H = CAPI.MEM.read(addr, 1);
 
     - name: add
       template: FD
@@ -7727,12 +6418,11 @@ instructions:
           order: 1
         - field: d
           type: imm-signed
-          startbit: 7
-          stopbit: 0
+          startbit: 23
+          stopbit: 16
           prefix: "(iy+"
           suffix: ")"
           order: 2
-          word: 2
       definition: |
         // Adds the value pointed to by IY plus d to A.
         const addr = (registers.IY + d) & 0xFFFFn;
@@ -7754,12 +6444,11 @@ instructions:
           order: 1
         - field: d
           type: imm-signed
-          startbit: 7
-          stopbit: 0
+          startbit: 23
+          stopbit: 16
           prefix: "(iy+"
           suffix: ")"
           order: 2
-          word: 2
       definition: |
         // Subtracts the value pointed to by IY plus d from A.
         const addr = (registers.IY + d) & 0xFFFFn;
@@ -7781,12 +6470,11 @@ instructions:
           order: 1
         - field: d
           type: imm-signed
-          startbit: 7
-          stopbit: 0
+          startbit: 23
+          stopbit: 16
           prefix: "(iy+"
           suffix: ")"
           order: 2
-          word: 2
       definition: |
         // Bitwise AND on A with the value pointed to by IY plus d.
         const addr = (registers.IY + d) & 0xFFFFn;
@@ -7807,12 +6495,11 @@ instructions:
           order: 1
         - field: d
           type: imm-signed
-          startbit: 7
-          stopbit: 0
+          startbit: 23
+          stopbit: 16
           prefix: "(iy+"
           suffix: ")"
           order: 2
-          word: 2
       definition: |
         // Bitwise OR on A with the value pointed to by IY plus d.
         const addr = (registers.IY + d) & 0xFFFFn;

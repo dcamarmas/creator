@@ -440,8 +440,15 @@ function writeLibraryToMemory() {
     for (let i = 0; i < binaryString.length; i += instructionSizeBits) {
         const instructionBinary = binaryString.substr(i, instructionSizeBits);
 
+        // Split into words, reverse order, and concatenate
+        const words = [];
         for (let j = 0; j < instructionBinary.length; j += WORDSIZE) {
-            const wordBinary = instructionBinary.substr(j, WORDSIZE);
+            words.push(instructionBinary.substr(j, WORDSIZE));
+        }
+        const reversedBinary = words.reverse().join('');
+
+        for (let j = 0; j < reversedBinary.length; j += WORDSIZE) {
+            const wordBinary = reversedBinary.substr(j, WORDSIZE);
             const wordBytes = [];
 
             for (let k = 0; k < wordBinary.length; k += BYTESIZE) {
@@ -469,8 +476,15 @@ function writeInstructionsToMemory(instructions, library_instructions) {
         const instruction = instructions[i];
         const baseAddr = parseInt(instruction.Address, 16);
 
+        // Split into words, reverse order, and concatenate
+        const words = [];
         for (let j = 0; j < instruction.binary.length; j += WORDSIZE) {
-            const wordBinary = instruction.binary.substr(j, WORDSIZE);
+            words.push(instruction.binary.substr(j, WORDSIZE));
+        }
+        const reversedBinary = words.reverse().join('');
+
+        for (let j = 0; j < reversedBinary.length; j += WORDSIZE) {
+            const wordBinary = reversedBinary.substr(j, WORDSIZE);
             const wordBytes = [];
 
             for (let k = 0; k < wordBinary.length; k += BYTESIZE) {

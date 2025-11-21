@@ -26,6 +26,13 @@ import * as creator from "../core/core.mjs";
 import { step } from "../core/executor/executor.mjs";
 import { logger } from "../core/utils/creator_logger.mjs";
 import { keyboardBuffer } from "../core/capi/arch/z80.mjs";
+import yaml from "js-yaml";
+
+interface ArchitectureConfig {
+    config: {
+        plugin: string;
+    };
+}
 
 /**
  * Parses command-line arguments using yargs.
@@ -48,6 +55,8 @@ function parseArguments() {
         .help().argv;
 }
 
+let pluginName: string | undefined = undefined;
+
 /**
  * The main function to set up and run the emulator.
  */
@@ -55,7 +64,6 @@ async function main() {
     const argv = await parseArguments();
 
     logger.disable();
-    creator.initCAPI();
 
     // --- Setup Host Input Listener (stdin) ---
     // The callback will be executed by the Deno
@@ -86,6 +94,8 @@ async function main() {
     // --- 1. Load the Architecture ---
     try {
         const architectureFile = fs.readFileSync(argv.architecture, "utf8");
+        const architectureObj = yaml.load(architectureFile) as ArchitectureConfig;
+        pluginName = architectureObj.config.plugin;
         const ret = creator.loadArchitecture(architectureFile);
         if (ret.status !== "ok") {
             console.error(`Error loading architecture: ${ret.token}.`);
@@ -99,6 +109,8 @@ async function main() {
         console.error(err);
         process.exit(1);
     }
+
+    creator.initCAPI(pluginName);
 
     // --- 2. Prepare the Emulator State ---
     creator.reset();
@@ -147,18 +159,18 @@ async function main() {
                 //     process.exit(0);
                 // }
 
-                // if (totalInstructions === 1000000) {
-                //     process.exit(0);
-                // }
-                // if (totalInstructions === 0) {
-                //     creator
-                //         .getRegistersByBank("int_registers")
-                //         .elements.forEach(reg => {
-                //             console.log(
-                //                 `    ${reg.name[0]}: 0x${reg.value.toString(16)}`,
-                //             );
-                //         });
-                // }
+                if (totalInstructions === 700000) {
+                    process.exit(0);
+                }
+                if (totalInstructions === 0) {
+                    creator
+                        .getRegistersByBank("int_registers")
+                        .elements.forEach(reg => {
+                            console.log(
+                                `    ${reg.name[0]}: 0x${reg.value.toString(16)}`,
+                            );
+                        });
+                }
                 const ret = step();
                 // if (totalInstructions > 0) {
                 //     creator
@@ -181,6 +193,12 @@ async function main() {
                     "|",
                     ret.instructionData.machineCode,
                 );
+                // Dump registers after each cycle on one line
+                const regBank = creator.getRegistersByBank("int_registers");
+                if (regBank) {
+                    const registers = regBank.elements.map(reg => `${reg.name[0]}:0x${reg.value.toString(16)}`);
+                    console.log(registers.join(' '));
+                }
                 if (creator.status.execution_index === -2) {
                     break;
                 }
@@ -188,7 +206,7 @@ async function main() {
         } catch (error) {
             console.error(
                 "\nAn error occurred during emulation:",
-                error.message,
+                error instanceof Error ? error.message : String(error),
             );
             process.exit(1);
         }
