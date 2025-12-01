@@ -63,9 +63,13 @@ export default defineComponent({
 </script>
 
 <template>
-   <b-container fluid align-h="center" id="assembly" class="p-0"
-    > <!-- Navbar --> <!-- Assembly navbar modals --> <!-- Load assembly form -->
-    <LoadAssembly id="load_assembly" /> <!-- Save assembly form -->
+  <b-container fluid align-h="center" id="assembly" class="p-0">
+    <!-- Navbar -->
+    <!-- Assembly navbar modals -->
+    <!-- Load assembly form -->
+    <LoadAssembly id="load_assembly" />
+
+    <!-- Save assembly form -->
     <DownloadPopup
       id="save_assembly"
       type="assembly"
@@ -73,33 +77,48 @@ export default defineComponent({
       default-filename="assembly"
       extension=".s"
       :fileData="assembly_code"
-    /> <!-- Examples modal --> <Examples
+    />
+
+    <!-- Examples modal -->
+    <Examples
       id="examples-assembly"
       :architecture_name="architecture_name"
       :compile="false"
-    /> <!-- Get uri --> <MakeURI
+    />
+
+    <!-- Get uri -->
+    <MakeURI
       id="make_uri"
       :architecture_name="architecture_name"
       :assembly_code="assembly_code"
-    /> <!-- Load binary form --> <LoadLibrary id="load_binary" /> <!-- Save binary form -->
-    <SaveLibrary id="save_binary" /> <!-- Library tags modal --> <LibraryTags
-      id="library_tags"
-    /> <!-- Assembly textarea--> <TextareaAssembly
+    />
+
+    <!-- Load binary form -->
+    <LoadLibrary id="load_binary" />
+
+    <!-- Save binary form -->
+    <SaveLibrary id="save_binary" />
+
+    <!-- Library tags modal -->
+    <LibraryTags id="library_tags" />
+
+    <!-- Assembly textarea-->
+    <TextareaAssembly
       :os="os"
       :assembly_code="assembly_code"
       :vim_mode="vim_mode"
       :vim_custom_keybinds="vim_custom_keybinds"
       height="calc(100vh - 40px)"
       :dark="dark"
-    /> <!-- Compile error modal --> <AssemblyError
+    />
+
+    <!-- Compile error modal -->
+    <AssemblyError
       id="modalAssemblyError"
       reff="errorAssembly"
       :assembly_error="assembly_error"
-    /> </b-container
-  >
+    />
+  </b-container>
 </template>
 
-<style scoped>
-
-</style>
-
+<style scoped></style>

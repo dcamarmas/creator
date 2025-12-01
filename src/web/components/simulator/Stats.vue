@@ -154,104 +154,79 @@ export default defineComponent({
 </script>
 
 <template>
-
   <div class="stats-container">
-
     <div class="stats-content">
-       <!-- Summary Section -->
+      <!-- Summary Section -->
       <div class="stats-summary">
-
         <div class="summary-card">
-
           <div class="summary-label">Total Instructions</div>
 
           <div class="summary-value">{{ formatNumber(totalInstructions) }}</div>
-
         </div>
 
         <div class="summary-card">
-
           <div class="summary-label">Total Cycles</div>
 
           <div class="summary-value">{{ formatNumber(totalCycles) }}</div>
-
         </div>
 
         <div class="summary-card">
-
           <div class="summary-label">CPI</div>
 
           <div class="summary-value">{{ cpi }}</div>
-
         </div>
 
         <div class="summary-card">
-
           <div class="summary-label">IPC</div>
 
           <div class="summary-value">{{ ipc }}</div>
-
         </div>
-
       </div>
-       <!-- Instruction Type Statistics -->
+
+      <!-- Instruction Type Statistics -->
       <div class="stats-section">
-
         <div class="section-header">
-
           <h6 class="section-title">Instruction Statistics</h6>
 
           <div class="view-toggle">
-             <button
+            <button
               class="toggle-btn"
               :class="{ active: currentRepresentation === 'instructions' }"
               @click="setRepresentation('instructions')"
             >
-               Count </button
-            > <button
+              Count
+            </button>
+            <button
               class="toggle-btn"
               :class="{ active: currentRepresentation === 'cycles' }"
               @click="setRepresentation('cycles')"
             >
-               Cycles </button
-            >
+              Cycles
+            </button>
           </div>
-
         </div>
 
         <div class="stats-list">
-
           <div v-for="item in filteredStats" :key="item.type" class="stat-item">
-
             <div class="stat-info">
-
               <div class="stat-name">{{ item.type }}</div>
 
               <div class="stat-value">
-                 {{ formatNumber(displayValue(item.stat)) }}
+                {{ formatNumber(displayValue(item.stat)) }}
               </div>
-
             </div>
 
             <div class="stat-bar-container">
-
               <div
                 class="stat-bar"
                 :style="{ width: getPercentage(displayValue(item.stat)) + '%' }"
               ></div>
-
             </div>
-
           </div>
-
         </div>
-
       </div>
-
     </div>
-
   </div>
-
 </template>
 
 <style lang="scss" scoped>
@@ -316,7 +291,9 @@ export default defineComponent({
   font-size: 1.125rem;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
-  font-family: ui-monospace, 'SF Mono', 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace;
+  font-family:
+    ui-monospace, "SF Mono", "Cascadia Code", "Source Code Pro", Menlo,
+    Consolas, "DejaVu Sans Mono", monospace;
   color: rgba(var(--bs-body-color-rgb), 1);
 }
 
@@ -420,7 +397,9 @@ export default defineComponent({
   font-size: 0.8rem;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
-  font-family: ui-monospace, 'SF Mono', 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace;
+  font-family:
+    ui-monospace, "SF Mono", "Cascadia Code", "Source Code Pro", Menlo,
+    Consolas, "DejaVu Sans Mono", monospace;
   color: rgba(var(--bs-primary-rgb), 1);
 }
 
@@ -434,8 +413,9 @@ export default defineComponent({
 
 .stat-bar {
   height: 100%;
-  background: linear-gradient(90deg, 
-    rgba(var(--bs-primary-rgb), 0.8) 0%, 
+  background: linear-gradient(
+    90deg,
+    rgba(var(--bs-primary-rgb), 0.8) 0%,
     rgba(var(--bs-primary-rgb), 1) 100%
   );
   border-radius: 2px;
@@ -526,4 +506,3 @@ export default defineComponent({
   }
 }
 </style>
-

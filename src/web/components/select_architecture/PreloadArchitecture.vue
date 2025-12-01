@@ -68,31 +68,36 @@ export default defineComponent({
 </script>
 
 <template>
-   <b-card
+  <b-card
     :class="{ selectedCard: selected }"
     style="cursor: pointer"
     footer-class="text-center"
     :footer-bg-variant="dark ? 'dark' : 'light-subtle'"
     @mouseover="selected = true"
     @mouseleave="selected = false"
-    > <template #img
-      > <b-img
+  >
+    <template #img>
+      <b-img
         :src="`img/logos/${architecture.img}` || 'img/logos/default.webp'"
         :alt="architecture.alt"
         @click="select_arch"
-      /> </template
-    > <b-card-title @click="select_arch"> {{ architecture.name }} </b-card-title
-    > <b-card-text class="justify" @click="select_arch"
-      > {{ architecture.description }} </b-card-text
-    > <!-- Delete button --> <template #footer v-if="!architecture.default"
-      > <b-button
+      />
+    </template>
+    <b-card-title @click="select_arch"> {{ architecture.name }} </b-card-title>
+    <b-card-text class="justify" @click="select_arch">
+      {{ architecture.description }}
+    </b-card-text>
+
+    <!-- Delete button -->
+    <template #footer v-if="!architecture.default">
+      <b-button
         class="my-1 w-75 center"
         size="sm"
         variant="outline-danger"
         @click="deleteArch"
-        > <font-awesome-icon :icon="['fas', 'trash-can']" /> Delete </b-button
-      > </template
-    > </b-card
-  >
+      >
+        <font-awesome-icon :icon="['fas', 'trash-can']" /> Delete
+      </b-button>
+    </template>
+  </b-card>
 </template>
-

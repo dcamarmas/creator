@@ -61,7 +61,6 @@ function handleDelete(event: Event) {
 </script>
 
 <template>
-
   <div
     class="arch-item"
     :class="{
@@ -71,47 +70,39 @@ function handleDelete(event: Event) {
     }"
     @click="handleSelect"
   >
-
     <div class="arch-logo">
-       <img
+      <img
         :src="`img/logos/${arch.img}` || 'img/logos/default.webp'"
         :alt="arch.alt"
       />
     </div>
 
     <div class="arch-info">
-
       <div class="arch-header">
-
         <h3 class="arch-name">{{ arch.name }}</h3>
 
         <div class="arch-badges">
-           <span v-if="!arch.default" class="badge custom-badge">Custom</span>
+          <span v-if="!arch.default" class="badge custom-badge">Custom</span>
         </div>
-
       </div>
 
       <p class="arch-description">{{ arch.description }}</p>
-
     </div>
 
     <div class="arch-actions">
-       <button
+      <button
         v-if="!arch.default"
         class="action-button delete-button"
         @click="handleDelete"
         :title="mobile ? 'Delete' : 'Delete custom architecture'"
       >
-         <font-awesome-icon :icon="['fas', 'trash-can']" /> </button
-      >
+        <font-awesome-icon :icon="['fas', 'trash-can']" />
+      </button>
       <div class="select-indicator">
-         <font-awesome-icon :icon="['fas', 'chevron-right']" />
+        <font-awesome-icon :icon="['fas', 'chevron-right']" />
       </div>
-
     </div>
-
   </div>
-
 </template>
 
 <style lang="scss" scoped>
@@ -396,4 +387,3 @@ function handleDelete(event: Event) {
   }
 }
 </style>
-

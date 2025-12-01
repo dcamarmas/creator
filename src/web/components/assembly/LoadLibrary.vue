@@ -56,20 +56,19 @@ export default defineComponent({
 </script>
 
 <template>
-   <b-modal
+  <b-modal
     :id="id"
     title="Load Binary"
     ok-title="Load from this File"
     @ok="load"
-    >
+  >
     <p>Please select the binary file to be loaded</p>
-     <b-form-file
+    <b-form-file
       v-model="library"
       :state="library !== null"
       placeholder="Choose a file..."
       accept=".yml"
       id="binary_file"
-    /> </b-modal
-  >
+    />
+  </b-modal>
 </template>
-

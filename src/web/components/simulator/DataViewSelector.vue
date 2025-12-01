@@ -110,20 +110,21 @@ export default defineComponent({
 </script>
 
 <template>
-
   <div class="data-view-selector">
-
     <div class="tabs-container">
-       <!-- Registers Tab --> <button
+      <!-- Registers Tab -->
+      <button
         v-if="register_file_num <= 4"
         :class="['tab', { active: current_reg_type === 'int_registers' }]"
         @click="change_data_view('int_registers')"
       >
-         <font-awesome-icon :icon="['fas', 'microchip']" />
-        <span>Registers</span> </button
-      > <!-- Dropdown for multiple register banks -->
+        <font-awesome-icon :icon="['fas', 'microchip']" />
+        <span>Registers</span>
+      </button>
+
+      <!-- Dropdown for multiple register banks -->
       <div v-if="register_file_num > 4" class="tab-dropdown">
-         <button
+        <button
           :class="[
             'tab',
             {
@@ -134,51 +135,55 @@ export default defineComponent({
           ]"
           @click="toggleDropdown"
         >
-           <font-awesome-icon :icon="['fas', 'microchip']" /> <span>{{
-            current_reg_name
-          }}</span
-          > <font-awesome-icon
+          <font-awesome-icon :icon="['fas', 'microchip']" />
+          <span>{{ current_reg_name }}</span>
+          <font-awesome-icon
             :icon="['fas', 'chevron-down']"
             class="dropdown-icon"
-          /> </button
-        >
+          />
+        </button>
         <div v-if="dropdownOpen" class="dropdown-menu">
-           <button
+          <button
             class="dropdown-item"
             @click="change_data_view('int_registers')"
           >
-             CPU-INT/Ctrl Registers </button
-          > <button
+            CPU-INT/Ctrl Registers
+          </button>
+          <button
             class="dropdown-item"
             @click="change_data_view('fp_registers')"
           >
-             CPU-FP Registers </button
-          >
+            CPU-FP Registers
+          </button>
         </div>
-
       </div>
-       <!-- Memory Tab --> <button
+
+      <!-- Memory Tab -->
+      <button
         :class="['tab', { active: current_reg_type === 'memory' }]"
         @click="change_data_view('memory')"
       >
-         <font-awesome-icon :icon="['fas', 'memory']" /> <span>Memory</span> </button
-      > <!-- Terminal Tab --> <button
+        <font-awesome-icon :icon="['fas', 'memory']" /> <span>Memory</span>
+      </button>
+
+      <!-- Terminal Tab -->
+      <button
         :class="['tab', { active: current_reg_type === 'terminal' }]"
         @click="change_data_view('terminal')"
       >
-         <font-awesome-icon :icon="['fas', 'terminal']" /> <span>Terminal</span>
-        </button
-      > <!-- Statistics Tab --> <button
+        <font-awesome-icon :icon="['fas', 'terminal']" /> <span>Terminal</span>
+      </button>
+
+      <!-- Statistics Tab -->
+      <button
         :class="['tab', { active: current_reg_type === 'stats' }]"
         @click="change_data_view('stats')"
       >
-         <font-awesome-icon :icon="['fas', 'chart-line']" />
-        <span>Statistics</span> </button
-      >
+        <font-awesome-icon :icon="['fas', 'chart-line']" />
+        <span>Statistics</span>
+      </button>
     </div>
-
   </div>
-
 </template>
 
 <style scoped>
@@ -196,7 +201,6 @@ export default defineComponent({
   overflow: hidden;
 }
 
-
 /* Dark theme support */
 [data-bs-theme="dark"] {
   .tabs-container {
@@ -209,7 +213,7 @@ export default defineComponent({
 
   .dropdown-menu {
     background: #2d2d2d;
-    box-shadow: 
+    box-shadow:
       0 2px 8px rgba(0, 0, 0, 0.3),
       0 0 0 1px rgba(255, 255, 255, 0.1);
   }
@@ -219,4 +223,3 @@ export default defineComponent({
   }
 }
 </style>
-

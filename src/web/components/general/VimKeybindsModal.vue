@@ -112,7 +112,7 @@ export default defineComponent({
 </script>
 
 <template>
-   <b-modal
+  <b-modal
     :id="id"
     centered
     :title="title"
@@ -124,10 +124,11 @@ export default defineComponent({
       )
     "
     @cancel="resetNewKeybind"
-    > <b-form class="d-flex flex-row align-items-center flex-wrap"
-      > <!-- v-if="type === 'new' || selected_vim_keybind !== null" -->
+  >
+    <b-form class="d-flex flex-row align-items-center flex-wrap">
+      <!-- v-if="type === 'new' || selected_vim_keybind !== null" -->
       <div class="col-4">
-         <b-form-select
+        <b-form-select
           class="col-lg-2"
           v-model="keybind.mode"
           :options="[
@@ -137,30 +138,28 @@ export default defineComponent({
           ]"
         />
       </div>
-       <label class="col-form-label visually-hidden" for="inline-form-input-lhs"
-        > lhs </label
-      >
+      <label class="col-form-label visually-hidden" for="inline-form-input-lhs">
+        lhs
+      </label>
       <div class="col-4">
-         <b-form-floating-label label="LHS" label-for="vim-form-input-lhs"
-          > <b-form-input
+        <b-form-floating-label label="LHS" label-for="vim-form-input-lhs">
+          <b-form-input
             class="font-monospace"
             v-model="keybind.lhs"
             id="vim-form-input-lhs"
-          /> </b-form-floating-label
-        >
+          />
+        </b-form-floating-label>
       </div>
 
       <div class="col-4">
-         <b-form-floating-label label="RHS" label-for="vim-form-input-rhs"
-          > <b-form-input
+        <b-form-floating-label label="RHS" label-for="vim-form-input-rhs">
+          <b-form-input
             class="font-monospace"
             v-model="keybind.rhs"
             id="vim-form-input-rhs"
-          /> </b-form-floating-label
-        >
+          />
+        </b-form-floating-label>
       </div>
-       </b-form
-    > </b-modal
-  >
+    </b-form>
+  </b-modal>
 </template>
-

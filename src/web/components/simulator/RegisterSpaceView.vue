@@ -118,73 +118,84 @@ export default defineComponent({
 </script>
 
 <template>
-   <b-modal
+  <b-modal
     :id="id"
     responsive
     no-footer
     centered
     :title="`Space view for ${item?.name.join(' | ')}`"
-    > <b-table-simple v-if="item" small responsive bordered
-      > <b-tbody
-        > <b-tr
-          > <b-td>Hexadecimal</b-td> <b-td
-            > <b-badge class="registerPopover"> {{ item.hex }} </b-badge> </b-td
-          > </b-tr
-        > <b-tr
-          > <b-td>Binary</b-td> <b-td
-            > <b-badge class="registerPopover"> {{ item.bin }} </b-badge> </b-td
-          > </b-tr
-        > <b-tr v-if="item.type !== 'fp_registers'"
-          > <b-td>Signed</b-td> <b-td
-            > <b-badge class="registerPopover"> {{ item.signed }} </b-badge>
-            </b-td
-          > </b-tr
-        > <b-tr v-if="item.type !== 'fp_registers'"
-          > <b-td>Unsigned</b-td> <b-td
-            > <b-badge class="registerPopover"> {{ item.unsigned }} </b-badge>
-            </b-td
-          > </b-tr
-        > <b-tr v-if="item.type !== 'fp_registers'"
-          > <b-td>Char</b-td> <b-td
-            > <b-badge class="registerPopover"> {{ item.char }} </b-badge>
-            </b-td
-          > </b-tr
-        > <b-tr
-          > <b-td>IEEE 754 (32 bits)</b-td> <b-td
-            > <b-badge class="registerPopover"> {{ item.ieee32 }} </b-badge>
-            </b-td
-          > </b-tr
-        > <b-tr
-          > <b-td>IEEE 754 (64 bits)</b-td> <b-td
-            > <b-badge class="registerPopover"> {{ item.ieee64 }} </b-badge>
-            </b-td
-          > </b-tr
-        > </b-tbody
-      > </b-table-simple
-    > <!-- Edit value --> <b-container
-      v-if="item"
-      fluid
-      align-h="center"
-      class="mx-0"
-      > <b-row align-h="center" :cols="doublePrecision ? 3 : 2"
-        > <b-col
-          > <b-form-input
+  >
+    <b-table-simple v-if="item" small responsive bordered>
+      <b-tbody>
+        <b-tr>
+          <b-td>Hexadecimal</b-td>
+          <b-td>
+            <b-badge class="registerPopover"> {{ item.hex }} </b-badge>
+          </b-td>
+        </b-tr>
+        <b-tr>
+          <b-td>Binary</b-td>
+          <b-td>
+            <b-badge class="registerPopover"> {{ item.bin }} </b-badge>
+          </b-td>
+        </b-tr>
+        <b-tr v-if="item.type !== 'fp_registers'">
+          <b-td>Signed</b-td>
+          <b-td>
+            <b-badge class="registerPopover"> {{ item.signed }} </b-badge>
+          </b-td>
+        </b-tr>
+        <b-tr v-if="item.type !== 'fp_registers'">
+          <b-td>Unsigned</b-td>
+          <b-td>
+            <b-badge class="registerPopover"> {{ item.unsigned }} </b-badge>
+          </b-td>
+        </b-tr>
+        <b-tr v-if="item.type !== 'fp_registers'">
+          <b-td>Char</b-td>
+          <b-td>
+            <b-badge class="registerPopover"> {{ item.char }} </b-badge>
+          </b-td>
+        </b-tr>
+        <b-tr>
+          <b-td>IEEE 754 (32 bits)</b-td>
+          <b-td>
+            <b-badge class="registerPopover"> {{ item.ieee32 }} </b-badge>
+          </b-td>
+        </b-tr>
+        <b-tr>
+          <b-td>IEEE 754 (64 bits)</b-td>
+          <b-td>
+            <b-badge class="registerPopover"> {{ item.ieee64 }} </b-badge>
+          </b-td>
+        </b-tr>
+      </b-tbody>
+    </b-table-simple>
+
+    <!-- Edit value -->
+    <b-container v-if="item" fluid align-h="center" class="mx-0">
+      <b-row align-h="center" :cols="doublePrecision ? 3 : 2">
+        <b-col>
+          <b-form-input
             v-model="newValue"
             type="text"
             size="sm"
             title="New Register Value"
             placeholder="Enter new value"
-          /> </b-col
-        > <b-col v-if="doublePrecision"
-          > <b-form-select v-model="precision" size="sm" block
-            > <b-form-select-option value="simple"
-              > Simple Precision </b-form-select-option
-            > <b-form-select-option value="double" active
-              > Double Precision </b-form-select-option
-            > </b-form-select
-          > </b-col
-        > <b-col
-          > <b-button
+          />
+        </b-col>
+        <b-col v-if="doublePrecision">
+          <b-form-select v-model="precision" size="sm" block>
+            <b-form-select-option value="simple">
+              Simple Precision
+            </b-form-select-option>
+            <b-form-select-option value="double" active>
+              Double Precision
+            </b-form-select-option>
+          </b-form-select>
+        </b-col>
+        <b-col>
+          <b-button
             class="w-100"
             variant="primary"
             size="sm"
@@ -195,11 +206,11 @@ export default defineComponent({
                 precision === 'double',
               )
             "
-            > Update </b-button
-          > </b-col
-        > </b-row
-      > </b-container
-    > </b-modal
-  >
+          >
+            Update
+          </b-button>
+        </b-col>
+      </b-row>
+    </b-container>
+  </b-modal>
 </template>
-

@@ -286,21 +286,20 @@ export default defineComponent({
 </script>
 
 <template>
-
   <div class="encoding-container">
-     <!-- Multi-word instruction visualization --> <template v-if="isMultiWord"
-      >
+    <!-- Multi-word instruction visualization -->
+    <template v-if="isMultiWord">
       <div v-for="wordNum in sortedWords" :key="wordNum" class="word-container">
-
         <div class="word-label">Word {{ wordNum }}</div>
-         <!-- Bit ruler for this word -->
-        <div class="bit-ruler">
-           <span class="bit-number">{{ getWordBitWidth(wordNum) - 1 }}</span
-          > <span class="bit-spacer"></span> <span class="bit-number">0</span>
-        </div>
-         <!-- Encoding blocks for this word -->
-        <div class="encoding-blocks">
 
+        <!-- Bit ruler for this word -->
+        <div class="bit-ruler">
+          <span class="bit-number">{{ getWordBitWidth(wordNum) - 1 }}</span>
+          <span class="bit-spacer"></span> <span class="bit-number">0</span>
+        </div>
+
+        <!-- Encoding blocks for this word -->
+        <div class="encoding-blocks">
           <div
             v-for="(block, index) in wordGroups.get(wordNum)"
             :key="`word${wordNum}-${block.name}-${index}`"
@@ -318,37 +317,36 @@ export default defineComponent({
                 : `${block.name} (${block.type}): bits ${block.startBit}-${block.endBit}`
             "
           >
-
             <div class="block-content">
-               <span class="block-name"
-                > {{ block.name }} <span
+              <span class="block-name">
+                {{ block.name }}
+                <span
                   v-if="block.totalSegments && block.totalSegments > 1"
                   class="segment-marker"
-                  > [{{ block.segmentIndex! + 1 }}/{{ block.totalSegments }}]
-                  </span
-                > </span
-              > <span class="block-bits">{{ block.width }}</span
-              > <span v-if="block.value" class="block-value">{{
+                >
+                  [{{ block.segmentIndex! + 1 }}/{{ block.totalSegments }}]
+                </span>
+              </span>
+              <span class="block-bits">{{ block.width }}</span>
+              <span v-if="block.value" class="block-value">{{
                 block.value
-              }}</span
-              >
+              }}</span>
             </div>
-
           </div>
-
         </div>
-
       </div>
-       </template
-    > <!-- Single-word instruction visualization (legacy) --> <template v-else
-      > <!-- Bit ruler at top -->
+    </template>
+
+    <!-- Single-word instruction visualization (legacy) -->
+    <template v-else>
+      <!-- Bit ruler at top -->
       <div class="bit-ruler">
-         <span class="bit-number">{{ totalBitWidth - 1 }}</span
-        > <span class="bit-spacer"></span> <span class="bit-number">0</span>
+        <span class="bit-number">{{ totalBitWidth - 1 }}</span>
+        <span class="bit-spacer"></span> <span class="bit-number">0</span>
       </div>
-       <!-- Encoding blocks -->
-      <div class="encoding-blocks">
 
+      <!-- Encoding blocks -->
+      <div class="encoding-blocks">
         <div
           v-for="(block, index) in encodingBlocks"
           :key="`${block.name}-${index}`"
@@ -366,27 +364,27 @@ export default defineComponent({
               : `${block.name} (${block.type}): bits ${block.startBit}-${block.endBit}`
           "
         >
-
           <div class="block-content">
-             <span class="block-name"
-              > {{ block.name }} <span
+            <span class="block-name">
+              {{ block.name }}
+              <span
                 v-if="block.totalSegments && block.totalSegments > 1"
                 class="segment-marker"
-                > [{{ block.segmentIndex! + 1 }}/{{ block.totalSegments }}]
-                </span
-              > </span
-            > <span class="block-bits">{{ block.width }}</span
-            > <span v-if="block.value" class="block-value">{{
+              >
+                [{{ block.segmentIndex! + 1 }}/{{ block.totalSegments }}]
+              </span>
+            </span>
+            <span class="block-bits">{{ block.width }}</span>
+            <span v-if="block.value" class="block-value">{{
               block.value
-            }}</span
-            >
+            }}</span>
           </div>
-
         </div>
-
       </div>
-       </template
-    > <!-- Legend for field types --> <!-- <div class="encoding-legend">
+    </template>
+
+    <!-- Legend for field types -->
+    <!-- <div class="encoding-legend">
       <span class="legend-item" v-if="instruction.co">
         <span class="legend-color" style="background: rgba(255, 99, 71, 0.3)"></span>
         CO: {{ instruction.co }}
@@ -396,7 +394,6 @@ export default defineComponent({
       </span>
     </div> -->
   </div>
-
 </template>
 
 <style lang="scss" scoped>
@@ -430,7 +427,9 @@ export default defineComponent({
   text-transform: uppercase;
   letter-spacing: 0.5px;
   margin-bottom: 2px;
-  font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+  font-family:
+    "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New",
+    monospace;
 }
 
 .bit-ruler {
@@ -438,7 +437,9 @@ export default defineComponent({
   justify-content: space-between;
   font-size: 0.6875rem;
   color: rgba(0, 0, 0, 0.6);
-  font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+  font-family:
+    "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New",
+    monospace;
   padding: 0 2px;
   margin-bottom: 2px;
 
@@ -483,7 +484,7 @@ export default defineComponent({
   &.non-contiguous {
     border: 2px dashed rgba(0, 0, 0, 0.3);
     border-right: 2px dashed rgba(0, 0, 0, 0.3);
-    
+
     &:last-child {
       border-right: 2px dashed rgba(0, 0, 0, 0.3);
     }
@@ -507,12 +508,14 @@ export default defineComponent({
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: 100%;
-    
+
     .segment-marker {
       font-size: 0.625rem;
       font-weight: 500;
       color: rgba(0, 0, 0, 0.6);
-      font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+      font-family:
+        "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas,
+        "Courier New", monospace;
     }
   }
 
@@ -524,7 +527,9 @@ export default defineComponent({
 
   .block-value {
     font-size: 0.625rem;
-    font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+    font-family:
+      "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas,
+      "Courier New", monospace;
     color: rgba(0, 0, 0, 0.9);
     font-weight: 700;
     background: rgba(0, 0, 0, 0.1);
@@ -546,7 +551,9 @@ export default defineComponent({
     display: flex;
     align-items: center;
     gap: 4px;
-    font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+    font-family:
+      "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas,
+      "Courier New", monospace;
     font-weight: 600;
   }
 
@@ -602,7 +609,7 @@ export default defineComponent({
 
     .block-name {
       color: rgba(255, 255, 255, 0.9);
-      
+
       .segment-marker {
         color: rgba(255, 255, 255, 0.6);
       }
@@ -631,4 +638,3 @@ export default defineComponent({
   }
 }
 </style>
-

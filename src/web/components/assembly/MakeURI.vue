@@ -77,8 +77,8 @@ export default defineComponent({
 </script>
 
 <template>
-   <b-modal :id="id" title="Share via URI" no-footer class="text-center"
-    > <qrcode-vue
+  <b-modal :id="id" title="Share via URI" no-footer class="text-center">
+    <qrcode-vue
       v-if="uri.length < maxQRSize"
       class="mb-3"
       :value="uri"
@@ -86,13 +86,13 @@ export default defineComponent({
       :size="300"
       :margin="1"
       render-as="canvas"
-    /> <b-input-group
-      > <b-form-input v-model="uri" readonly /> <b-button
-        variant="info"
-        @click="copyURI"
-        > <font-awesome-icon :icon="['fas', 'copy']" /> Copy </b-button
-      > </b-input-group
-    > </b-modal
-  >
-</template>
+    />
 
+    <b-input-group>
+      <b-form-input v-model="uri" readonly />
+      <b-button variant="info" @click="copyURI">
+        <font-awesome-icon :icon="['fas', 'copy']" /> Copy
+      </b-button>
+    </b-input-group>
+  </b-modal>
+</template>

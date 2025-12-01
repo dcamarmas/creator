@@ -31,29 +31,35 @@ export default defineComponent({
 </script>
 
 <template>
-   <b-modal :id="id" title="Notifications" scrollable no-footer
-    > <span class="h6" v-if="notifications.length === 0"
-      > No notifications available. </span
-    > <b-alert
+  <b-modal :id="id" title="Notifications" scrollable no-footer>
+    <span class="h6" v-if="notifications.length === 0">
+      No notifications available.
+    </span>
+    <b-alert
       :model-value="true"
       :variant="notif.color"
       v-for="notif in notifications.toReversed()"
-      > <span class="h6"
-        > <font-awesome-icon
+    >
+      <span class="h6">
+        <font-awesome-icon
           icon="fa-solid fa-info-circle"
           v-if="notif.color === 'info'"
-        /> <font-awesome-icon
+        />
+        <font-awesome-icon
           icon="fa-solid fa-circle-exclamation"
           v-if="notif.color === 'danger'"
-        /> <font-awesome-icon
+        />
+        <font-awesome-icon
           icon="fa-solid fa-exclamation-triangle"
           v-if="notif.color === 'warning'"
-        /> <font-awesome-icon
+        />
+        <font-awesome-icon
           icon="fa-solid fa-circle-check"
           v-if="notif.color === 'success'"
-        /> {{ notif.date }} - {{ notif.time }} <br /> {{ notif.mess }} </span
-      > </b-alert
-    > </b-modal
-  >
+        />
+        {{ notif.date }} - {{ notif.time }} <br />
+        {{ notif.mess }}
+      </span>
+    </b-alert>
+  </b-modal>
 </template>
-

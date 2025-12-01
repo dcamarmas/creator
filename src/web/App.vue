@@ -625,12 +625,22 @@ export default {
 </script>
 
 <template>
-   <!-- for showing bootstrap stuff from JS --> <BOrchestrator /> <!------------------------>
-  <!-- General components --> <!------------------------> <!-- Loading spinner -->
-  <SpinnerLoading id="loading" style="display: none" /> <!-- Browser not supported modal -->
+  <!-- for showing bootstrap stuff from JS -->
+  <BOrchestrator />
+
+  <!------------------------>
+  <!-- General components -->
+  <!------------------------>
+
+  <!-- Loading spinner -->
+  <SpinnerLoading id="loading" style="display: none" />
+
+  <!-- Browser not supported modal -->
   <SupportedBrowsers :browser="browser" />
+
   <header>
-     <!-- Navbar  --> <NavbarCREATOR
+    <!-- Navbar  -->
+    <NavbarCREATOR
       :version="version"
       :architecture_name="architecture_name"
       :creator_mode="creator_mode"
@@ -642,7 +652,10 @@ export default {
       :instructions="instructions"
       @mobile-view-change="handleMobileViewChange"
       ref="navbar"
-    /> <!-- Configuration modal --> <FormConfiguration
+    />
+
+    <!-- Configuration modal -->
+    <FormConfiguration
       id="configuration"
       class="bottomCard"
       v-model:arch_available="arch_available"
@@ -659,17 +672,27 @@ export default {
       v-model:reg_representation_int="reg_representation_int"
       v-model:reg_representation_float="reg_representation_float"
       v-model:reg_name_representation="reg_name_representation"
-    /> <!-- Information modals --> <!-- Notification modal -->
-    <UIeltoNotifications id="notifications" :notifications="notifications" /> <!-- Institutions modal -->
-    <UIeltoInstitutions id="institutions" /> <!-- About modal --> <UIeltoAbout
-      id="about"
-      :dark="dark!"
-    /> <!-- Backup modal --> <UIeltoBackup
-      id="copy"
-      @load-architecture="creator_mode = 'assembly'"
     />
+
+    <!-- Information modals -->
+
+    <!-- Notification modal -->
+    <UIeltoNotifications id="notifications" :notifications="notifications" />
+
+    <!-- Institutions modal -->
+    <UIeltoInstitutions id="institutions" />
+
+    <!-- About modal -->
+    <UIeltoAbout id="about" :dark="dark!" />
+
+    <!-- Backup modal -->
+    <UIeltoBackup id="copy" @load-architecture="creator_mode = 'assembly'" />
   </header>
-   <!--------------------> <!-- Mobile Architecture Select --> <!-------------------->
+
+  <!-------------------->
+  <!-- Mobile Architecture Select -->
+  <!-------------------->
+
   <MobileArchitectureSelect
     v-if="isMobile"
     :arch_available="arch_available"
@@ -682,7 +705,12 @@ export default {
       }
     "
     @architecture-deleted="handleArchitectureDeleted"
-  /> <!-----------------------> <!-- Select architecture --> <!----------------------->
+  />
+
+  <!----------------------->
+  <!-- Select architecture -->
+  <!----------------------->
+
   <SelectArchitecture
     v-if="!isMobile && creator_mode === 'select_architecture'"
     :arch_available="arch_available"
@@ -698,7 +726,12 @@ export default {
       }
     "
     @architecture-deleted="handleArchitectureDeleted"
-  /> <!------------------> <!-- Architecture --> <!------------------>
+  />
+
+  <!------------------>
+  <!-- Architecture -->
+  <!------------------>
+
   <ArchitectureView
     v-if="!isMobile && creator_mode === 'architecture'"
     :architecture_name="architecture_name"
@@ -707,7 +740,12 @@ export default {
     :browser="browser!"
     :os="os!"
     :dark="dark!"
-  /> <!-------------------> <!-- Assembly view --> <!------------------->
+  />
+
+  <!------------------->
+  <!-- Assembly view -->
+  <!------------------->
+
   <AssemblyView
     v-if="!isMobile && creator_mode === 'assembly'"
     :architecture_name="architecture_name"
@@ -720,7 +758,12 @@ export default {
     :vim_custom_keybinds="vim_custom_keybinds"
     :dark="dark!"
     ref="assemblyView"
-  /> <!--------------------> <!-- Simulator view --> <!-------------------->
+  />
+
+  <!-------------------->
+  <!-- Simulator view -->
+  <!-------------------->
+
   <SimulatorView
     v-if="!isMobile && creator_mode === 'simulator'"
     ref="simulatorView"
@@ -751,7 +794,12 @@ export default {
     :target_board="target_board"
     :target_port="target_port"
     :flash_url="flash_url"
-  /> <!--------------------> <!-- Mobile Settings --> <!-------------------->
+  />
+
+  <!-------------------->
+  <!-- Mobile Settings -->
+  <!-------------------->
+
   <MobileSettings
     v-if="
       isMobile &&
@@ -770,7 +818,12 @@ export default {
     v-model:reg_representation_int="reg_representation_int"
     v-model:reg_representation_float="reg_representation_float"
     v-model:reg_name_representation="reg_name_representation"
-  /> <!--------------------> <!-- Mobile Code View --> <!-------------------->
+  />
+
+  <!-------------------->
+  <!-- Mobile Code View -->
+  <!-------------------->
+
   <MobileCodeView
     v-if="
       isMobile &&
@@ -784,7 +837,12 @@ export default {
     @switch-to-simulator="creator_mode = 'simulator'"
     @reset-simulator="resetSimulator"
     @show-toast="showToast"
-  /> <!--------------------> <!-- Mobile Instructions View --> <!-------------------->
+  />
+
+  <!-------------------->
+  <!-- Mobile Instructions View -->
+  <!-------------------->
+
   <MobileInstructionsView
     v-if="
       isMobile &&
@@ -798,7 +856,12 @@ export default {
     :dark="dark!"
     @reset-simulator="resetSimulator"
     @show-toast="showToast"
-  /> <!--------------------> <!-- Mobile Data View --> <!-------------------->
+  />
+
+  <!-------------------->
+  <!-- Mobile Data View -->
+  <!-------------------->
+
   <MobileDataView
     ref="mobileDataView"
     v-if="
@@ -821,7 +884,12 @@ export default {
     :callee_frame="callee_frame!"
     :mobile_data_view="mobileDataView"
     @update:mobile_data_view="mobileDataView = $event"
-  /> <!--------------------> <!-- Mobile Architecture View --> <!-------------------->
+  />
+
+  <!-------------------->
+  <!-- Mobile Architecture View -->
+  <!-------------------->
+
   <MobileArchitectureView
     v-if="
       isMobile &&
@@ -989,4 +1057,3 @@ export default {
   }
 }
 </style>
-

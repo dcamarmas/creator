@@ -104,6 +104,14 @@ The recommended extensions are:
 - [`esbenp.prettier-vscode`](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
 - [`redhat.vscode-yaml`](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-yaml)
 
+> [!NOTE]
+> The recommended formatter to use with Vue files is Prettier (`esbenp.prettier-vscode`):
+> ```json
+> "[vue]": {
+>     "editor.defaultFormatter": "esbenp.prettier-vscode"
+> },
+> ```
+
 #### Debugging
 We provide some example [launch configurations](https://code.visualstudio.com/docs/debugtest/debugging-configuration#_launch-configurations):
 

@@ -408,55 +408,62 @@ export default defineComponent({
 </script>
 
 <template>
-   <b-modal :id="id" title="Target Board Flash" no-footer
-    > <b-tabs content-class="mt-3"
-      > <b-tab title="Local Device" active id="flash-tab-local"
-        > <label for="select-local-boards">(1) Select Target Board:</label>
+  <b-modal :id="id" title="Target Board Flash" no-footer>
+    <b-tabs content-class="mt-3">
+      <b-tab title="Local Device" active id="flash-tab-local">
+        <label for="select-local-boards">(1) Select Target Board:</label>
+
         <b-form-select
           id="select-local-boards"
           v-model="targetBoard"
           :options="target_boards"
           size="sm"
           class="mt-2"
-        /> <br /> <b-tabs content-class="mt-3" v-if="targetBoard"
-          > <b-tab title="Prerequisites" id="flash-tab-prerequisites"
-            > <b-tabs content-class="mt-3"
-              > <b-tab
+        />
+        <br />
+
+        <b-tabs content-class="mt-3" v-if="targetBoard">
+          <b-tab title="Prerequisites" id="flash-tab-prerequisites">
+            <b-tabs content-class="mt-3">
+              <b-tab
                 title="Docker Windows"
                 id="tab-docker-win"
                 :active="os === 'Win'"
-                > (2) Install Docker Desktop (only the first time): <b-card
-                  class="text-left my-2 mx-4"
-                  > Follow the instructions from <a
+              >
+                (2) Install Docker Desktop (only the first time):
+                <b-card class="text-left my-2 mx-4">
+                  Follow the instructions from
+                  <a
                     href="https://docs.docker.com/desktop/install/windows-install/"
                     target="_blank"
-                    > Docker's documentation </a
-                  > </b-card
-                > (3) Download esptool (only the first time): <b-card
-                  class="text-left my-2 mx-4"
-                  > Download from <a
+                  >
+                    Docker's documentation
+                  </a>
+                </b-card>
+                (3) Download esptool (only the first time):
+                <b-card class="text-left my-2 mx-4">
+                  Download from
+                  <a
                     href="https://github.com/espressif/esptool/releases"
                     target="_blank"
-                    > github.com/espressif/esptool/releases </a
-                  > </b-card
-                > (4) Pull <code>creator_gateway</code> image in Docker Desktop:
-                <b-card class="text-left my-2 mx-4"
                   >
+                    github.com/espressif/esptool/releases
+                  </a>
+                </b-card>
+                (4) Pull <code>creator_gateway</code> image in Docker Desktop:
+                <b-card class="text-left my-2 mx-4">
                   <ol class="mb-0">
-
                     <li>
-                       Search for <code>creatorsim/creator_gateway</code> in the
+                      Search for <code>creatorsim/creator_gateway</code> in the
                       Docker Desktop browser
                     </li>
 
                     <li>Click the "Pull" button</li>
-
                   </ol>
-                   </b-card
-                > (5) Run the image: <b-card class="text-left my-2 mx-4"
-                  >
+                </b-card>
+                (5) Run the image:
+                <b-card class="text-left my-2 mx-4">
                   <ol class="mb-0">
-
                     <li>Click the "Run" button</li>
 
                     <li>Click the "Optional settings" button</li>
@@ -464,160 +471,194 @@ export default defineComponent({
                     <li>Set the Host port to 8080</li>
 
                     <li>Click the "Run" button</li>
-
                   </ol>
-                   </b-card
-                > (6) Run start_gateway script in the container bash: <b-card
-                  class="text-left my-2 mx-4"
-                  >
+                </b-card>
+                (6) Run start_gateway script in the container bash:
+                <b-card class="text-left my-2 mx-4">
                   <ol class="mb-0">
-
                     <li>Click the "Exec" button</li>
 
                     <li>Execute <code>./start_gateway.sh</code></li>
-
                   </ol>
-                   </b-card
-                > (7) Run <code>esp_rfc2217_server</code> in windows cmd:
-                <b-card class="text-left my-2 mx-4"
-                  >
+                </b-card>
+                (7) Run <code>esp_rfc2217_server</code> in windows cmd:
+                <b-card class="text-left my-2 mx-4">
                   <ol class="mb-0">
-
                     <li>Execute the windows cmd in the esptool path</li>
 
                     <li>
-                       Execute <code
-                        > esp_rfc2217_server -v -p 4000 &lt;targetPort&gt;
-                        </code
-                      >
+                      Execute
+                      <code>
+                        esp_rfc2217_server -v -p 4000 &lt;targetPort&gt;
+                      </code>
                     </li>
-
                   </ol>
-                   More information in <a
+                  More information in
+                  <a
                     href="https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/tools/idf-docker-image.html#using-remote-serial-port"
                     target="_blank"
-                    > Espressiff's documentation </a
-                  > </b-card
-                > </b-tab
-              > <b-tab
+                  >
+                    Espressiff's documentation
+                  </a>
+                </b-card>
+              </b-tab>
+              <b-tab
                 title="Docker Linux/MacOS"
                 id="flash-tab-docker-unix"
                 :active="['Mac', 'Linux'].includes(os)"
-                > (2) Install Docker Engine (only the first time): <b-card
-                  class="text-left my-2 ms-4 me-4"
-                  > Follow the instructions from <a
+              >
+                (2) Install Docker Engine (only the first time):
+                <b-card class="text-left my-2 ms-4 me-4">
+                  Follow the instructions from
+                  <a
                     href="https://docs.docker.com/engine/install/"
                     target="_blank"
-                    > Docker's documentation </a
-                  > </b-card
-                > (3) Download the <code>creator_gateway</code> image: <b-card
-                  class="text-left my-2 mx-4"
-                  > <code>docker pull creatorsim/creator_gateway</code> </b-card
-                > (4) Run the image: <b-card class="text-left my-2 mx-4 bash"
-                  > <code
+                  >
+                    Docker's documentation
+                  </a>
+                </b-card>
+                (3) Download the <code>creator_gateway</code> image:
+                <b-card class="text-left my-2 mx-4">
+                  <code>docker pull creatorsim/creator_gateway</code>
+                </b-card>
+                (4) Run the image:
+                <b-card class="text-left my-2 mx-4 bash">
+                  <code
                     >docker run --init -it --device=&lt;targetPort&gt; -p
                     8080:8080 --name creator_gateway creatorsim/creator_gateway
-                    /bin/bash </code
-                  > </b-card
-                > (5) Run the <code>start_gateway.sh</code> script in the
-                container's shell: <b-card class="text-left my-2 mx-4"
-                  > <code>./start_gateway.sh</code> </b-card
-                > </b-tab
-              > <b-tab title="Native"
-                > (2) Install <a
+                    /bin/bash
+                  </code>
+                </b-card>
+                (5) Run the <code>start_gateway.sh</code> script in the
+                container's shell:
+                <b-card class="text-left my-2 mx-4">
+                  <code>./start_gateway.sh</code>
+                </b-card>
+              </b-tab>
+
+              <b-tab title="Native">
+                (2) Install
+                <a
                   href="https://www.python.org/downloads/release/python-3913/"
                   target="_blank"
-                  > Python 3.9 </a
-                > <b-card class="text-left my-2 mx-4"
-                  > <b>In Ubuntu</b> <br /> <code
-                    > sudo apt install software-properties-common<br /> sudo
-                    add-apt-repository ppa:deadsnakes/ppa<br /> sudo apt install
-                    python3.9<br /> </code
-                  > <!--
+                >
+                  Python 3.9
+                </a>
+                <b-card class="text-left my-2 mx-4">
+                  <b>In Ubuntu</b> <br />
+                  <code>
+                    sudo apt install software-properties-common<br />
+                    sudo add-apt-repository ppa:deadsnakes/ppa<br />
+                    sudo apt install python3.9<br />
+                  </code>
+                  <!--
                   <b>Setting Python 3.9 as the default version in Ubuntu</b>
                   <br />
                   <code>
                     sudo update-alternatives --set python3 /usr/bin/python3.9
                   </code>
-                  --> <b
-                    > With <a href="https://docs.astral.sh/uv" target="_blank"
-                      >uv</a
-                    > </b
-                  > <br /> <code>uv python install 3.9</code> </b-card
-                > (3) Install ESP-IDF framework (only the first time): <b-card
-                  class="text-left my-2 mx-4"
-                  > Follow the instructions from <a
+                  -->
+                  <b>
+                    With
+                    <a href="https://docs.astral.sh/uv" target="_blank">uv</a>
+                  </b>
+                  <br />
+                  <code>uv python install 3.9</code>
+                </b-card>
+
+                (3) Install ESP-IDF framework (only the first time):
+                <b-card class="text-left my-2 mx-4">
+                  Follow the instructions from
+                  <a
                     href="https://docs.espressif.com/projects/esp-idf/en/v5.5.1/esp32/get-started/linux-macos-setup.html"
                     target="_blank"
                     >Espressif's documentation</a
-                  >.<br /><br /> To ensure Python 3.9 is used for the
-                  installation, first create a virtual environment in
+                  >.<br /><br />
+                  To ensure Python 3.9 is used for the installation, first
+                  create a virtual environment in
                   <code>~/.espressif/python_env/idf5.3_py3.9_en</code>, and
                   activate it, before executing the <code>install.sh</code>
                   script.
                   <div class="bash mt-2">
-                     <code
-                      > python3.9 -m venv
-                      ~/.espressif/python_env/idf5.3_py3.9_en<br /> source
+                    <code>
+                      python3.9 -m venv
+                      ~/.espressif/python_env/idf5.3_py3.9_en<br />
+                      source
                       ~/.espressif/python_env/idf5.3_py3.9_env/bin/activate<br />
-                      </code
-                    >
+                    </code>
                   </div>
-                   </b-card
-                > (4) Download the driver: <br /> <b-container
-                  align-h="center"
-                  class="d-grid mb-1"
-                  > <b-button
+                </b-card>
+
+                (4) Download the driver: <br />
+                <b-container align-h="center" class="d-grid mb-1">
+                  <b-button
                     size="sm"
                     class="my-1 mx-3"
                     variant="outline-primary"
                     @click="download_driver"
-                    > <font-awesome-icon :icon="['fas', 'download']" /> Download
-                    Driver </b-button
-                  > </b-container
-                > (5) Run driver: <b-card class="text-left my-2 mx-4"
-                  > Unzip the <code>driver.zip</code> file and move into the
-                  driver directory associated to your board:<br /> <code
-                    > unzip driver.zip<br /> cd &lt;board&gt; </code
-                  > </b-card
-                > <b-card class="text-left my-2 mx-4"
-                  > Install the Python dependencies:<br /> <code
-                    > pip3 install -r requirements.txt </code
-                  > </b-card
-                > <b-card class="text-left my-2 mx-4"
-                  > <a
+                  >
+                    <font-awesome-icon :icon="['fas', 'download']" /> Download
+                    Driver
+                  </b-button>
+                </b-container>
+
+                (5) Run driver:
+                <b-card class="text-left my-2 mx-4">
+                  Unzip the <code>driver.zip</code> file and move into the
+                  driver directory associated to your board:<br />
+                  <code>
+                    unzip driver.zip<br />
+                    cd &lt;board&gt;
+                  </code>
+                </b-card>
+                <b-card class="text-left my-2 mx-4">
+                  Install the Python dependencies:<br />
+                  <code> pip3 install -r requirements.txt </code>
+                </b-card>
+                <b-card class="text-left my-2 mx-4">
+                  <a
                     href="https://docs.espressif.com/projects/esp-idf/en/v5.5.1/esp32/get-started/linux-macos-setup.html#step-4-set-up-the-environment-variables"
                     >Load the ESP-IDF environment variables</a
-                  > (<code>export.sh</code>) </b-card
-                > <b-card class="text-left my-2 mx-4"
-                  > Execute the gateway web service:<br /> <code
-                    >python3 gateway.py</code
-                  > </b-card
-                > </b-tab
-              > </b-tabs
-            > </b-tab
-          > <!-- Run --> <b-tab title="Run" active id="flash-tab-run"
-            > <label for="target-port"
-              > Target port (please verify the port on your computer): </label
-            > <b-form-input
+                  >
+                  (<code>export.sh</code>)
+                </b-card>
+                <b-card class="text-left my-2 mx-4">
+                  Execute the gateway web service:<br />
+                  <code>python3 gateway.py</code>
+                </b-card>
+              </b-tab>
+            </b-tabs>
+          </b-tab>
+
+          <!-- Run -->
+          <b-tab title="Run" active id="flash-tab-run">
+            <label for="target-port">
+              Target port (please verify the port on your computer):
+            </label>
+            <b-form-input
               id="target-port"
               type="text"
               v-model="targetPort"
               placeholder="Enter target port"
               size="sm"
               class="my-2"
-            /> <label for="flash-url"> Flash URL: </label> <b-form-input
+            />
+            <label for="flash-url"> Flash URL: </label>
+            <b-form-input
               id="flash-url"
               type="text"
               v-model="flashURL"
               placeholder="Enter flash URL"
               size="sm"
               class="my-2"
-            /> <b-container fluid align-h="center"
-              > <b-row align-h="center" class="mt-3"
-                > <!-- Columna 1: Flash, Clean y Erase Flash --> <b-col
-                  class="d-grid gap-3"
-                  > <!-- Botón Flash --> <b-button
+            />
+            <b-container fluid align-h="center">
+              <b-row align-h="center" class="mt-3">
+                <!-- Columna 1: Flash, Clean y Erase Flash -->
+
+                <b-col class="d-grid gap-3">
+                  <!-- Botón Flash -->
+                  <b-button
                     variant="primary"
                     @click="do_flash"
                     :pressed="flashing"
@@ -629,11 +670,14 @@ export default defineComponent({
                       stoprunning ||
                       eraseflash
                     "
-                    > <font-awesome-icon :icon="['fas', 'bolt-lightning']" />
-                    <span v-if="!flashing">&nbsp;Flash</span> <span v-else
-                      > &nbsp;Flashing... <b-spinner small /> </span
-                    > </b-button
-                  > <!-- Botón Clean --> <b-button
+                  >
+                    <font-awesome-icon :icon="['fas', 'bolt-lightning']" />
+                    <span v-if="!flashing">&nbsp;Flash</span>
+                    <span v-else> &nbsp;Flashing... <b-spinner small /> </span>
+                  </b-button>
+
+                  <!-- Botón Clean -->
+                  <b-button
                     class="btn btn-block"
                     variant="danger"
                     @click="showConfirmPopup('fullclean')"
@@ -646,12 +690,14 @@ export default defineComponent({
                       stoprunning ||
                       eraseflash
                     "
-                    > <font-awesome-icon :icon="['fas', 'trash']" /> <span
-                      v-if="!fullclean"
-                      >&nbsp;Clean</span
-                    > <span v-else> &nbsp;Cleaning... <b-spinner small /> </span
-                    > </b-button
-                  > <!-- Botón Erase Flash --> <b-button
+                  >
+                    <font-awesome-icon :icon="['fas', 'trash']" />
+                    <span v-if="!fullclean">&nbsp;Clean</span>
+                    <span v-else> &nbsp;Cleaning... <b-spinner small /> </span>
+                  </b-button>
+
+                  <!-- Botón Erase Flash -->
+                  <b-button
                     class="btn btn-block"
                     variant="danger"
                     @click="showConfirmPopup('eraseflash')"
@@ -664,22 +710,29 @@ export default defineComponent({
                       debugging ||
                       stoprunning
                     "
-                    > <font-awesome-icon :icon="['fas', 'broom']" /> <span
-                      v-if="!eraseflash"
-                      >&nbsp;Erase Flash</span
-                    > <span v-else> &nbsp;Erasing... <b-spinner small /> </span>
-                    </b-button
-                  > <!-- Popup de confirmación --> <b-modal
+                  >
+                    <font-awesome-icon :icon="['fas', 'broom']" />
+                    <span v-if="!eraseflash">&nbsp;Erase Flash</span>
+                    <span v-else> &nbsp;Erasing... <b-spinner small /> </span>
+                  </b-button>
+
+                  <!-- Popup de confirmación -->
+                  <b-modal
                     id="confirm-popup"
                     v-model="showPopup"
                     title="Confirm Action"
                     @ok="confirmAction"
-                    > This action will delete your previous work. Are you sure
-                    you want to proceed? </b-modal
-                  > </b-col
-                > <!-- Columna 2: Monitor, Debug y Stop --> <b-col
-                  class="d-grid gap-3"
-                  > <!-- Botón Monitor --> <b-button
+                  >
+                    This action will delete your previous work. Are you sure you
+                    want to proceed?
+                  </b-modal>
+                </b-col>
+
+                <!-- Columna 2: Monitor, Debug y Stop -->
+
+                <b-col class="d-grid gap-3">
+                  <!-- Botón Monitor -->
+                  <b-button
                     variant="primary"
                     @click="do_monitor"
                     :pressed="running"
@@ -691,12 +744,14 @@ export default defineComponent({
                       stoprunning ||
                       eraseflash
                     "
-                    > <font-awesome-icon :icon="['fas', 'desktop']" /> <span
-                      v-if="!running"
-                      >&nbsp;Monitor</span
-                    > <span v-else> &nbsp;Running... <b-spinner small /> </span>
-                    </b-button
-                  > <!-- Botón Debug --> <b-button
+                  >
+                    <font-awesome-icon :icon="['fas', 'desktop']" />
+                    <span v-if="!running">&nbsp;Monitor</span>
+                    <span v-else> &nbsp;Running... <b-spinner small /> </span>
+                  </b-button>
+
+                  <!-- Botón Debug -->
+                  <b-button
                     class="btn btn-block"
                     variant="primary"
                     @click="do_debug"
@@ -709,12 +764,14 @@ export default defineComponent({
                       stoprunning ||
                       eraseflash
                     "
-                    > <font-awesome-icon :icon="['fas', 'bug']" /> <span
-                      v-if="!debugging"
-                      >&nbsp;Debug</span
-                    > <span v-else> &nbsp;Debuging... <b-spinner small /> </span
-                    > </b-button
-                  > <!-- Botón Stop --> <b-button
+                  >
+                    <font-awesome-icon :icon="['fas', 'bug']" />
+                    <span v-if="!debugging">&nbsp;Debug</span>
+                    <span v-else> &nbsp;Debuging... <b-spinner small /> </span>
+                  </b-button>
+
+                  <!-- Botón Stop -->
+                  <b-button
                     class="btn btn-block"
                     variant="primary"
                     @click="do_stop_monitor"
@@ -725,18 +782,21 @@ export default defineComponent({
                       fullclean ||
                       eraseflash
                     "
-                    > <font-awesome-icon :icon="['fas', 'stop']" /> <span
-                      v-if="!stoprunning"
-                      > Stop</span
-                    > <span v-else> Stopping... <b-spinner small /> </span>
-                    </b-button
-                  > </b-col
-                > </b-row
-              > </b-container
-            > </b-tab
-          > </b-tabs
-        > </b-tab
-      > <!-- Remote --> <!-- TODO: Uncomment when tested --> <!--
+                  >
+                    <font-awesome-icon :icon="['fas', 'stop']" />
+                    <span v-if="!stoprunning"> Stop</span>
+                    <span v-else> Stopping... <b-spinner small /> </span>
+                  </b-button>
+                </b-col>
+              </b-row>
+            </b-container>
+          </b-tab>
+        </b-tabs>
+      </b-tab>
+
+      <!-- Remote -->
+      <!-- TODO: Uncomment when tested -->
+      <!--
       <b-tab title="Remote Device" id="flash-tab-remote">
         Remote Device URL:
         <b-form-input
@@ -813,9 +873,9 @@ export default defineComponent({
           our documentation</a
         >.
       </b-tab>
-    --> </b-tabs
-    > </b-modal
-  >
+    -->
+    </b-tabs>
+  </b-modal>
 </template>
 
 <style lang="scss" scoped>
@@ -824,4 +884,3 @@ export default defineComponent({
   overflow: auto;
 }
 </style>
-

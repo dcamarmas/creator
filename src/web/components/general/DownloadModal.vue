@@ -50,25 +50,26 @@ export default defineComponent({
 </script>
 
 <template>
-   <b-modal
+  <b-modal
     :id="id"
     :title="title"
     ok-title="Save to File"
     @ok="download"
     @hidden="filename = null"
-    > <b-form class="d-flex flex-row align-items-center flex-wrap"
-      > <b-col> <label class=".fs-3">Filename:</label> </b-col> <b-col cols="8"
-        > <b-input-group :append="extension"
-          > <b-form-input
+  >
+    <b-form class="d-flex flex-row align-items-center flex-wrap">
+      <b-col> <label class=".fs-3">Filename:</label> </b-col>
+      <b-col cols="8">
+        <b-input-group :append="extension">
+          <b-form-input
             v-model="filename"
             class="text-end"
             autofocus
             type="text"
             :placeholder="defaultFilename"
-          /> </b-input-group
-        > </b-col
-      > </b-form
-    > </b-modal
-  >
+          />
+        </b-input-group>
+      </b-col>
+    </b-form>
+  </b-modal>
 </template>
-

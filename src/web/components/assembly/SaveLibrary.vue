@@ -387,7 +387,7 @@ export default defineComponent({
 </script>
 
 <template>
-   <b-modal
+  <b-modal
     :id="id"
     :title="compiling ? 'Compiling Library...' : 'Save Library'"
     ok-title="Save to File"
@@ -396,61 +396,67 @@ export default defineComponent({
     @ok="handleOk"
     @shown="handleShown"
     @hidden="handleHidden"
-    > <!-- Compiling indicator -->
+  >
+    <!-- Compiling indicator -->
     <div v-if="compiling" class="text-center py-4">
-
       <div class="spinner-border text-primary" role="status">
-         <span class="visually-hidden">Compiling...</span>
+        <span class="visually-hidden">Compiling...</span>
       </div>
 
       <p class="mt-3">Compiling code as library...</p>
-
     </div>
-     <!-- Library configuration form -->
+
+    <!-- Library configuration form -->
     <div v-else>
-       <!-- Filename input --> <b-form-group
+      <!-- Filename input -->
+      <b-form-group
         label="Library filename:"
         label-for="library-filename"
         class="mb-4"
-        > <b-form-input
+      >
+        <b-form-input
           id="library-filename"
           v-model="name_binary_save"
           type="text"
           placeholder="Enter filename (without extension)"
           title="File name"
-        /> <small class="form-text text-muted"
+        />
+        <small class="form-text text-muted"
           >File will be saved as {{ name_binary_save || "library" }}.yml</small
-        > </b-form-group
-      >
+        >
+      </b-form-group>
       <hr class="my-4" />
-       <!-- Help documentation for symbols -->
+
+      <!-- Help documentation for symbols -->
       <h6 class="mb-3">Symbol Documentation</h6>
 
       <p class="text-muted small mb-3">
-         Configure optional help documentation for each exported symbol.
+        Configure optional help documentation for each exported symbol.
       </p>
-       <b-card
+      <b-card
         v-for="symbol in validSymbols"
         :key="symbol.name"
         :title="symbol.name"
         class="mb-3"
-        > <!-- Description --> <b-form-group
-          label="Description:"
-          label-for="`desc-${symbol.name}`"
-          > <b-form-textarea
+      >
+        <!-- Description -->
+        <b-form-group label="Description:" label-for="`desc-${symbol.name}`">
+          <b-form-textarea
             :id="`desc-${symbol.name}`"
             v-model="symbolHelp[symbol.name]!.description"
             placeholder="Describe what this function does"
             rows="2"
-          /> </b-form-group
-        > <!-- Parameters --> <b-form-group label="Parameters:" class="mt-3"
-          >
+          />
+        </b-form-group>
+
+        <!-- Parameters -->
+        <b-form-group label="Parameters:" class="mt-3">
           <div
             v-for="(value, key) in symbolHelp[symbol.name]!.parameters"
             :key="key"
             class="d-flex mb-2 gap-2"
           >
-             <b-form-input
+            <b-form-input
               :model-value="key"
               placeholder="Name (e.g., a0)"
               style="flex: 0 0 100px"
@@ -462,31 +468,37 @@ export default defineComponent({
                     (e.target as HTMLInputElement).value,
                   )
               "
-            /> <b-form-input
+            />
+            <b-form-input
               v-model="symbolHelp[symbol.name]!.parameters[key]"
               placeholder="Description (e.g., first integer)"
               class="flex-grow-1"
-            /> <b-button
+            />
+            <b-button
               variant="danger"
               size="sm"
               @click="removeParameter(symbol.name, key)"
-              > ✕ </b-button
             >
+              ✕
+            </b-button>
           </div>
-           <b-button
+          <b-button
             variant="secondary"
             size="sm"
             @click="addParameter(symbol.name)"
-            > + Add Parameter </b-button
-          > </b-form-group
-        > <!-- Returns --> <b-form-group label="Returns:" class="mt-3"
           >
+            + Add Parameter
+          </b-button>
+        </b-form-group>
+
+        <!-- Returns -->
+        <b-form-group label="Returns:" class="mt-3">
           <div
             v-for="(value, key) in symbolHelp[symbol.name]!.returns"
             :key="key"
             class="d-flex mb-2 gap-2"
           >
-             <b-form-input
+            <b-form-input
               :model-value="key"
               placeholder="Name (e.g., a0)"
               style="flex: 0 0 100px"
@@ -498,34 +510,35 @@ export default defineComponent({
                     (e.target as HTMLInputElement).value,
                   )
               "
-            /> <b-form-input
+            />
+            <b-form-input
               v-model="symbolHelp[symbol.name]!.returns[key]"
               placeholder="Description (e.g., maximum value)"
               class="flex-grow-1"
-            /> <b-button
+            />
+            <b-button
               variant="danger"
               size="sm"
               @click="removeReturn(symbol.name, key)"
-              > ✕ </b-button
             >
+              ✕
+            </b-button>
           </div>
-           <b-button
+          <b-button
             variant="secondary"
             size="sm"
             @click="addReturn(symbol.name)"
-            > + Add Return </b-button
-          > </b-form-group
-        > </b-card
-      >
+          >
+            + Add Return
+          </b-button>
+        </b-form-group>
+      </b-card>
       <p class="text-muted mt-3">
-         <small
-          > Note: You can leave fields empty if not needed. The library will
-          still work without help documentation. </small
-        >
+        <small>
+          Note: You can leave fields empty if not needed. The library will still
+          work without help documentation.
+        </small>
       </p>
-
     </div>
-     </b-modal
-  >
+  </b-modal>
 </template>
-

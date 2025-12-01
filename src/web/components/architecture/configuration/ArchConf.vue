@@ -73,21 +73,14 @@ export default defineComponent({
 </script>
 
 <template>
-
   <div class="arch-config">
-
     <div class="config-grid">
-
       <div v-for="item in config" :key="item.name" class="config-item">
-         <span class="config-label">{{ item.name }}</span
-        > <span class="config-value">{{ item.value }}</span
-        >
+        <span class="config-label">{{ item.name }}</span>
+        <span class="config-value">{{ item.value }}</span>
       </div>
-
     </div>
-
   </div>
-
 </template>
 
 <style lang="scss" scoped>
@@ -131,7 +124,9 @@ export default defineComponent({
   color: rgba(0, 0, 0, 0.9);
   font-weight: 500;
   word-break: break-word;
-  font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+  font-family:
+    "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New",
+    monospace;
 }
 
 [data-bs-theme="dark"] {
@@ -152,4 +147,3 @@ export default defineComponent({
   }
 }
 </style>
-

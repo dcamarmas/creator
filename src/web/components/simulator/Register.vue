@@ -25,7 +25,6 @@ import { bi_BigIntTofloat, bi_BigIntTodouble } from "@/core/utils/bigint.mjs";
 import {
   hex2float,
   hex2double,
-  bin2hex,
   float2bin,
   float2int_v2,
   double2int_v2,
@@ -227,7 +226,6 @@ export default defineComponent({
 </script>
 
 <template>
-
   <div
     class="register-row"
     :class="{ 'register-row-glow': glow }"
@@ -235,19 +233,14 @@ export default defineComponent({
     :key="+render"
     @click="showDetails"
   >
-
     <div class="register">
-
       <div class="register-name register-name-horizontal">
-         {{ formattedRegNames }}
+        {{ formattedRegNames }}
       </div>
 
-      <div class="register-value"> {{ reg_value }} </div>
-
+      <div class="register-value">{{ reg_value }}</div>
     </div>
-
   </div>
-
 </template>
 
 <style lang="scss" scoped>
@@ -278,7 +271,7 @@ export default defineComponent({
   font-weight: 600;
   font-size: 0.875rem;
   white-space: nowrap;
-  color: rgba(var(--bs-body-color-rgb), 1.0);
+  color: rgba(var(--bs-body-color-rgb), 1);
   letter-spacing: 0.01em;
   text-align: center;
   padding: 0;
@@ -289,7 +282,9 @@ export default defineComponent({
 .register-value {
   font-size: 0.875rem;
   font-variant-numeric: tabular-nums;
-  font-family: ui-monospace, 'SF Mono', 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace;
+  font-family:
+    ui-monospace, "SF Mono", "Cascadia Code", "Source Code Pro", Menlo,
+    Consolas, "DejaVu Sans Mono", monospace;
   color: rgba(var(--bs-body-color-rgb), 0.95);
   font-weight: 500;
   text-align: center;
@@ -300,25 +295,23 @@ export default defineComponent({
 // Dark mode adjustments
 [data-bs-theme="dark"] {
   .register-row {
-    
     &:hover {
       background-color: rgba(var(--bs-primary-rgb), 0.12);
     }
   }
-  
+
   .register {
     border-color: rgba(255, 255, 255, 0.15);
   }
-  
+
   .register-name {
-    color: rgba(255, 255, 255, 1.0);
+    color: rgba(255, 255, 255, 1);
     background-color: rgba(255, 255, 255, 0.05);
   }
-  
+
   .register-value {
     color: rgba(255, 255, 255, 0.95);
     background-color: rgba(0, 0, 0, 0.3);
   }
 }
 </style>
-

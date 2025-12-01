@@ -34,24 +34,25 @@ export default defineComponent({
 </script>
 
 <template>
-   <!-- Horizontal Layout --> <b-card v-if="horizontal" class="card-horizontal"
-    > <b-row no-gutters class="align-items-center"
-      > <b-col cols="4" class="card-img-col"
-        > <b-img
+  <!-- Horizontal Layout -->
+
+  <b-card v-if="horizontal" class="card-horizontal">
+    <b-row no-gutters class="align-items-center">
+      <b-col cols="4" class="card-img-col">
+        <b-img
           class="author-img"
           :src="imgSrc"
           :alt="`${dark ? 'evil_' : ''}${imgAlt}`"
           fluid
-        /> </b-col
-      > <b-col cols="8"
-        > <b-card-body class="py-2 px-3"
-          >
+        />
+      </b-col>
+      <b-col cols="8">
+        <b-card-body class="py-2 px-3">
           <div class="author-info">
-
             <h6 class="mb-2 fw-bold">{{ fullName }}</h6>
 
             <div class="social-links d-flex flex-column gap-1">
-               <b-link
+              <b-link
                 v-if="linkedin"
                 underline-opacity="0"
                 underline-opacity-hover="75"
@@ -59,12 +60,15 @@ export default defineComponent({
                 target="_blank"
                 :href="`https://www.linkedin.com/in/${linkedin}`"
                 class="social-link"
-                > <font-awesome-icon
+              >
+                <font-awesome-icon
                   :icon="['fab', 'linkedin']"
                   size="sm"
                   class="me-1"
-                /> <span class="social-text">LinkedIn</span> </b-link
-              > <b-link
+                />
+                <span class="social-text">LinkedIn</span>
+              </b-link>
+              <b-link
                 v-if="rgate"
                 underline-opacity="0"
                 underline-opacity-hover="75"
@@ -72,12 +76,15 @@ export default defineComponent({
                 target="_blank"
                 :href="`https://www.researchgate.net/profile/${rgate}`"
                 class="social-link"
-                > <font-awesome-icon
+              >
+                <font-awesome-icon
                   :icon="['fab', 'researchgate']"
                   size="sm"
                   class="me-1"
-                /> <span class="social-text">R-Gate</span> </b-link
-              > <b-link
+                />
+                <span class="social-text">R-Gate</span>
+              </b-link>
+              <b-link
                 v-if="github"
                 underline-opacity="0"
                 underline-opacity-hover="75"
@@ -85,70 +92,76 @@ export default defineComponent({
                 target="_blank"
                 :href="`https://github.com/${github}`"
                 class="social-link"
-                > <font-awesome-icon
+              >
+                <font-awesome-icon
                   :icon="['fab', 'github']"
                   size="sm"
                   class="me-1"
-                /> <span class="social-text">GitHub</span> </b-link
-              >
+                />
+                <span class="social-text">GitHub</span>
+              </b-link>
             </div>
-
           </div>
-           </b-card-body
-        > </b-col
-      > </b-row
-    > </b-card
-  > <!-- Vertical Layout --> <b-card v-else
-    > <template #img
-      > <!-- we do this to use the custom class --> <b-img
+        </b-card-body>
+      </b-col>
+    </b-row>
+  </b-card>
+
+  <!-- Vertical Layout -->
+  <b-card v-else>
+    <template #img>
+      <!-- we do this to use the custom class -->
+      <b-img
         class="author-img"
         :src="imgSrc"
         :alt="`${dark ? 'evil_' : ''}${imgAlt}`"
-      /> </template
-    > <b-card-text class="text-center"
-      > {{ fullName }}
+      />
+    </template>
+    <b-card-text class="text-center">
+      {{ fullName }}
       <hr />
 
       <div v-if="linkedin">
-         <b-link
+        <b-link
           underline-opacity="0"
           underline-opacity-hover="75"
           aria-label="linkedin"
           target="_blank"
           :href="`https://www.linkedin.com/in/${linkedin}`"
-          > <font-awesome-icon :icon="['fab', 'linkedin']" /> LinkedIn </b-link
         >
+          <font-awesome-icon :icon="['fab', 'linkedin']" /> LinkedIn
+        </b-link>
       </div>
-       <br v-else />
+      <br v-else />
       <hr />
 
       <div v-if="rgate">
-         <b-link
+        <b-link
           underline-opacity="0"
           underline-opacity-hover="75"
           aria-label="researchgate"
           target="_blank"
           :href="`https://www.researchgate.net/profile/${rgate}`"
-          > <font-awesome-icon :icon="['fab', 'researchgate']" /> R-Gate
-          </b-link
         >
+          <font-awesome-icon :icon="['fab', 'researchgate']" /> R-Gate
+        </b-link>
       </div>
-       <br v-else />
+      <br v-else />
       <hr />
 
       <div v-if="github">
-         <b-link
+        <b-link
           underline-opacity="0"
           underline-opacity-hover="75"
           aria-label="github"
           target="_blank"
           :href="`https://github.com/${github}`"
-          > <font-awesome-icon :icon="['fab', 'github']" /> GitHub </b-link
         >
+          <font-awesome-icon :icon="['fab', 'github']" /> GitHub
+        </b-link>
       </div>
-       </b-card-text
-    > </b-card
-  >
+    </b-card-text>
+  </b-card>
 </template>
 
 <style lang="scss" scoped>
@@ -175,7 +188,7 @@ export default defineComponent({
     display: flex;
     align-items: center;
     padding: 0;
-    
+
     .author-img {
       width: 100%;
       height: 100%;
@@ -200,11 +213,10 @@ export default defineComponent({
   .social-link {
     display: flex;
     align-items: center;
-    
+
     .social-text {
       font-size: 0.8rem;
     }
   }
 }
 </style>
-

@@ -29,13 +29,11 @@ export default defineComponent({
 </script>
 
 <template>
-   <b-modal :id="id" title="Assembly Code Error" :ref="reff" no-footer size="lg"
-    >
+  <b-modal :id="id" title="Assembly Code Error" :ref="reff" no-footer size="lg">
     <div class="errorAssembly">
-       <span class="font-monospace lh-1" v-html="assembly_error" />
+      <span class="font-monospace lh-1" v-html="assembly_error" />
     </div>
-     </b-modal
-  >
+  </b-modal>
 </template>
 
 <style lang="scss" scoped>
@@ -49,4 +47,3 @@ export default defineComponent({
   border-radius: 3px;
 }
 </style>
-

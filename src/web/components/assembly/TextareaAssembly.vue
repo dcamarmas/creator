@@ -345,15 +345,11 @@ watch(
 </script>
 
 <template>
-
   <div class="editor-wrapper" :style="{ height: height }">
-
     <div ref="editorContainer" class="monaco-editor-container" />
 
     <div id="vim-statusbar" class="vim-statusbar"></div>
-
   </div>
-
 </template>
 
 <style lang="scss" scoped>
@@ -378,4 +374,3 @@ watch(
   flex-shrink: 0;
 }
 </style>
-

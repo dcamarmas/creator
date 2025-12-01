@@ -281,29 +281,23 @@ export default defineComponent({
 </script>
 
 <template>
-
   <div class="mobile-settings">
-
     <div class="mobile-settings-header">
-
       <h3 class="settings-title">
-         <font-awesome-icon :icon="['fas', 'cog']" /> Settings
+        <font-awesome-icon :icon="['fas', 'cog']" /> Settings
       </h3>
-
     </div>
 
     <div class="mobile-settings-content">
-       <!-- General Settings -->
+      <!-- General Settings -->
       <div class="settings-section">
-
         <h4 class="section-title">General</h4>
 
         <div class="setting-item">
-
           <div class="setting-label">
-             <font-awesome-icon :icon="['fas', 'moon']" /> Dark Mode
+            <font-awesome-icon :icon="['fas', 'moon']" /> Dark Mode
           </div>
-           <b-form-select
+          <b-form-select
             v-model="dark_mode_setting_value"
             :options="dark_mode_setting_options"
             class="setting-select"
@@ -311,11 +305,10 @@ export default defineComponent({
         </div>
 
         <div class="setting-item">
-
           <div class="setting-label">
-             <font-awesome-icon :icon="['fas', 'save']" /> Auto Backup
+            <font-awesome-icon :icon="['fas', 'save']" /> Auto Backup
           </div>
-           <b-form-checkbox
+          <b-form-checkbox
             v-model="backup_value"
             switch
             size="lg"
@@ -324,30 +317,27 @@ export default defineComponent({
         </div>
 
         <div class="setting-item">
-
           <div class="setting-label">
-             <font-awesome-icon :icon="['fas', 'arrow-down']" /> Auto Scroll
+            <font-awesome-icon :icon="['fas', 'arrow-down']" /> Auto Scroll
           </div>
-           <b-form-checkbox
+          <b-form-checkbox
             v-model="autoscroll_value"
             switch
             size="lg"
             class="setting-toggle"
           />
         </div>
-
       </div>
-       <!-- Display Settings -->
-      <div class="settings-section">
 
+      <!-- Display Settings -->
+      <div class="settings-section">
         <h4 class="section-title">Display</h4>
 
         <div class="setting-item">
-
           <div class="setting-label">
-             <font-awesome-icon :icon="['fas', 'list']" /> Stack Values
+            <font-awesome-icon :icon="['fas', 'list']" /> Stack Values
           </div>
-           <b-form-input
+          <b-form-input
             v-model.number="stack_total_list_value"
             type="number"
             min="20"
@@ -358,12 +348,10 @@ export default defineComponent({
         </div>
 
         <div class="setting-item">
-
           <div class="setting-label">
-             <font-awesome-icon :icon="['fas', 'bell']" /> Notification Time
-            (ms)
+            <font-awesome-icon :icon="['fas', 'bell']" /> Notification Time (ms)
           </div>
-           <b-form-input
+          <b-form-input
             v-model.number="notification_time_value"
             type="number"
             min="1000"
@@ -372,19 +360,17 @@ export default defineComponent({
             class="setting-input"
           />
         </div>
-
       </div>
-       <!-- Register Settings -->
-      <div class="settings-section">
 
+      <!-- Register Settings -->
+      <div class="settings-section">
         <h4 class="section-title">Registers</h4>
 
         <div class="setting-item">
-
           <div class="setting-label">
-             <font-awesome-icon :icon="['fas', 'tag']" /> Register Names
+            <font-awesome-icon :icon="['fas', 'tag']" /> Register Names
           </div>
-           <b-form-select
+          <b-form-select
             v-model="reg_name_representation_value"
             :options="reg_name_representation_options"
             class="setting-select"
@@ -392,23 +378,18 @@ export default defineComponent({
         </div>
 
         <div class="setting-item">
-
           <div class="setting-label">
-             <font-awesome-icon :icon="['fas', 'hashtag']" /> Register Format
+            <font-awesome-icon :icon="['fas', 'hashtag']" /> Register Format
           </div>
-           <b-form-select
+          <b-form-select
             v-model="reg_representation_int_value"
             :options="reg_representation_int_options"
             class="setting-select"
           />
         </div>
-
       </div>
-
     </div>
-
   </div>
-
 </template>
 
 <style lang="scss" scoped>
@@ -417,8 +398,10 @@ export default defineComponent({
   top: env(safe-area-inset-top);
   left: 0;
   right: 0;
-  bottom: calc(56px + env(safe-area-inset-bottom)); // Above mobile navbar + safe area
-  
+  bottom: calc(
+    56px + env(safe-area-inset-bottom)
+  ); // Above mobile navbar + safe area
+
   // Reduce bottom spacing on very small screens to match navbar height
   @media (max-width: 320px) {
     bottom: calc(48px + env(safe-area-inset-bottom));
@@ -630,4 +613,3 @@ export default defineComponent({
   }
 }
 </style>
-

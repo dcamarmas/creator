@@ -194,144 +194,141 @@ defineExpose({
 </script>
 
 <template>
-   <b-nav-item-dropdown
+  <b-nav-item-dropdown
     class="sentinel-dropdown"
     :class="{ 'has-errors': hasErrors, 'dark-theme': dark }"
     no-caret
     right
-    > <template #button-content
-      > <font-awesome-icon
+  >
+    <template #button-content>
+      <font-awesome-icon
         :icon="['fas', 'shield-halved']"
         :class="{ 'text-danger': hasErrors, 'text-success': !hasErrors }"
-      /> <b-badge v-if="hasErrors" :variant="'danger'" pill class="error-badge"
-        > {{ errorCount }} </b-badge
-      > </template
-    >
+      />
+      <b-badge v-if="hasErrors" :variant="'danger'" pill class="error-badge">
+        {{ errorCount }}
+      </b-badge>
+    </template>
     <div class="sentinel-dropdown-content" @click.stop>
-       <!-- Header -->
+      <!-- Header -->
       <div class="sentinel-header">
-
         <div class="sentinel-title">
-           <font-awesome-icon
+          <font-awesome-icon
             :icon="['fas', 'shield-halved']"
             class="me-2"
             :class="{ 'text-danger': hasErrors, 'text-success': !hasErrors }"
-          /> <span class="fw-bold">Calling Convention</span>
+          />
+          <span class="fw-bold">Calling Convention</span>
         </div>
 
         <div class="sentinel-stats">
-           <b-badge
+          <b-badge
             :variant="hasErrors ? 'danger' : 'success'"
             pill
             class="me-2"
-            > {{ errorCount }} {{ errorCount === 1 ? "error" : "errors" }}
-            </b-badge
-          > <b-badge v-if="hasErrors" variant="warning" pill class="me-2"
-            > {{ totalViolations }} {{
-              totalViolations === 1 ? "violation" : "violations"
-            }} </b-badge
-          > <b-button
+          >
+            {{ errorCount }} {{ errorCount === 1 ? "error" : "errors" }}
+          </b-badge>
+          <b-badge v-if="hasErrors" variant="warning" pill class="me-2">
+            {{ totalViolations }}
+            {{ totalViolations === 1 ? "violation" : "violations" }}
+          </b-badge>
+          <b-button
             v-if="hasErrors"
             size="sm"
             variant="outline-secondary"
             @click.stop="clearErrors"
-            > <font-awesome-icon :icon="['fas', 'trash']" /> </b-button
           >
+            <font-awesome-icon :icon="['fas', 'trash']" />
+          </b-button>
         </div>
-
       </div>
-       <!-- Content -->
-      <div class="sentinel-content">
 
+      <!-- Content -->
+      <div class="sentinel-content">
         <div v-if="!hasErrors" class="no-errors-message">
-           <font-awesome-icon
+          <font-awesome-icon
             :icon="['fas', 'circle-check']"
             size="2x"
             class="text-success mb-2"
           />
           <p class="text-muted mb-0">No violations detected</p>
-
         </div>
 
         <div v-else class="errors-list">
-           <b-card
+          <b-card
             v-for="(error, index) in errors"
             :key="index"
             class="error-card mb-2"
             :class="{ 'dark-card': dark }"
-            > <!-- Function header --> <template #header
-              >
+          >
+            <!-- Function header -->
+            <template #header>
               <div class="d-flex justify-content-between align-items-center">
-
                 <div class="function-info">
-                   <font-awesome-icon
+                  <font-awesome-icon
                     :icon="['fas', 'function']"
                     class="me-2 text-primary"
-                  /> <strong>{{ error.functionName }}</strong
-                  >
+                  />
+                  <strong>{{ error.functionName }}</strong>
                 </div>
 
                 <div class="error-meta">
-                   <b-badge variant="secondary" pill class="me-2"
-                    > {{ error.timestamp }} </b-badge
-                  > <b-badge variant="danger" pill
-                    > {{ error.violations.length }} </b-badge
-                  >
+                  <b-badge variant="secondary" pill class="me-2">
+                    {{ error.timestamp }}
+                  </b-badge>
+                  <b-badge variant="danger" pill>
+                    {{ error.violations.length }}
+                  </b-badge>
                 </div>
-
               </div>
-               </template
-            > <!-- Violations list --> <b-list-group flush
-              > <b-list-group-item
+            </template>
+
+            <!-- Violations list -->
+            <b-list-group flush>
+              <b-list-group-item
                 v-for="(violation, vIndex) in error.violations"
                 :key="vIndex"
                 class="violation-item"
                 :variant="getRuleVariant(violation.rule) as any"
-                >
+              >
                 <div class="d-flex align-items-start">
-                   <font-awesome-icon
+                  <font-awesome-icon
                     :icon="['fas', getRuleIcon(violation.rule)]"
                     class="me-2 mt-1 violation-icon"
                   />
                   <div class="violation-details flex-grow-1">
-
                     <div
                       class="violation-header d-flex justify-content-between align-items-start mb-1"
                     >
-                       <strong class="violation-rule">{{
+                      <strong class="violation-rule">{{
                         violation.rule.replace(/_/g, " ")
-                      }}</strong
-                      > <b-badge
+                      }}</strong>
+                      <b-badge
                         v-if="violation.register"
                         variant="secondary"
                         class="ms-2"
-                        > {{ violation.register }} </b-badge
                       >
+                        {{ violation.register }}
+                      </b-badge>
                     </div>
 
                     <p class="violation-description text-muted mb-1">
-                       <em>{{ getRuleDescription(violation.rule) }}</em
-                      >
+                      <em>{{ getRuleDescription(violation.rule) }}</em>
                     </p>
 
                     <p class="violation-message mb-0">
-                       {{ violation.message }}
+                      {{ violation.message }}
                     </p>
-
                   </div>
-
                 </div>
-                 </b-list-group-item
-              > </b-list-group
-            > </b-card
-          >
+              </b-list-group-item>
+            </b-list-group>
+          </b-card>
         </div>
-
       </div>
-
     </div>
-     </b-nav-item-dropdown
-  >
+  </b-nav-item-dropdown>
 </template>
 
 <style lang="scss" scoped>
@@ -401,7 +398,7 @@ defineExpose({
 .sentinel-content {
   overflow-y: auto;
   max-height: calc(80vh - 60px);
-  
+
   &::-webkit-scrollbar {
     width: 8px;
   }
@@ -431,7 +428,7 @@ defineExpose({
 
 .error-card {
   border: 1px solid var(--bs-border-color);
-  
+
   &.dark-card {
     background: #2d2d2d;
     border-color: #404040;
@@ -506,7 +503,7 @@ defineExpose({
 }
 
 .violation-message {
-  font-family: 'SF Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-family: "SF Mono", "Consolas", "Monaco", "Courier New", monospace;
   font-size: 0.8rem;
   line-height: 1.3;
   word-wrap: break-word;
@@ -534,4 +531,3 @@ defineExpose({
   }
 }
 </style>
-

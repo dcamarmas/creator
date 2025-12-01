@@ -45,49 +45,41 @@ export default defineComponent({
 </script>
 
 <template>
-   <b-modal :id="id" size="lg" :title="`Fields of ${name}`" no-footer
-    > <b-form
-      > <!-- headers -->
+  <b-modal :id="id" size="lg" :title="`Fields of ${name}`" no-footer>
+    <b-form>
+      <!-- headers -->
       <div class="col-lg-14 col-sm-14 row">
-
         <div class="col-lg-1 col-1 fields" />
-
-        <div class="col-lg-2 col-2 fields"> <span class="h6">Name</span> </div>
-
-        <div class="col-lg-2 col-2 fields"> <span class="h6">Type</span> </div>
-
-        <div class="col-lg-1 col-1 fields"> <span class="h6">Break</span> </div>
-
+        <div class="col-lg-2 col-2 fields"><span class="h6">Name</span></div>
+        <div class="col-lg-2 col-2 fields"><span class="h6">Type</span></div>
+        <div class="col-lg-1 col-1 fields"><span class="h6">Break</span></div>
         <div class="col-lg-2 col-2 fields">
-           <span class="h6">Start Bit</span>
+          <span class="h6">Start Bit</span>
+        </div>
+        <div class="col-lg-2 col-2 fields">
+          <span class="h6">End Bit</span>
         </div>
 
-        <div class="col-lg-2 col-2 fields">
-           <span class="h6">End Bit</span>
-        </div>
-
-        <div class="col-lg-2 col-2 fields"> <span class="h6">Value</span> </div>
-
+        <div class="col-lg-2 col-2 fields"><span class="h6">Value</span></div>
       </div>
-       <!-- fields -->
+
+      <!-- fields -->
       <div v-for="(field, field_index) in instruction.fields" :key="field.name">
-
         <div class="col-lg-14 col-sm-14 row">
-
           <div class="col-lg-1 col-1 fields">
-             <span class="h6">Field {{ field_index }}</span
-            >
+            <span class="h6">Field {{ field_index }}</span>
           </div>
 
           <div class="col-lg-2 col-2 fields">
-             <b-form-input
+            <b-form-input
               v-if="field_index != 0"
               type="text"
               :model-value="field.name"
               readonly
               size="sm"
               title="Field name"
-            /> <b-form-input
+            />
+            <b-form-input
               v-else
               type="text"
               :model-value="field.name"
@@ -98,7 +90,7 @@ export default defineComponent({
           </div>
 
           <div class="col-lg-2 col-2 fields">
-             <b-form-input
+            <b-form-input
               type="text"
               :model-value="field.type"
               readonly
@@ -111,7 +103,7 @@ export default defineComponent({
             v-if="typeof instruction.separated !== 'undefined'"
             class="col-lg-1 col-1 fields"
           >
-             <b-form-checkbox
+            <b-form-checkbox
               v-if="
                 fragmet_data.indexOf(instruction.separated[field_index]) !== -1
               "
@@ -121,9 +113,10 @@ export default defineComponent({
               disabled
             />
           </div>
-           <!-- start bit description -->
+
+          <!-- start bit description -->
           <div class="col-lg-2 col-2 fields">
-             <b-form-input
+            <b-form-input
               v-if="typeof field.startbit !== 'object'"
               type="number"
               min="0"
@@ -132,8 +125,9 @@ export default defineComponent({
               readonly
               size="sm"
               title="Field start bit"
-            /> <b-form-group v-else
-              > <b-form-input
+            />
+            <b-form-group v-else>
+              <b-form-input
                 v-for="(j, ind) in field.startbit"
                 type="number"
                 min="0"
@@ -142,12 +136,13 @@ export default defineComponent({
                 readonly
                 class="mb-2"
                 title="Field start bit"
-              /> </b-form-group
-            >
+              />
+            </b-form-group>
           </div>
-           <!-- stop bit description -->
+
+          <!-- stop bit description -->
           <div class="col-lg-2 col-2 fields">
-             <b-form-input
+            <b-form-input
               v-if="typeof field.stopbit !== 'object'"
               type="number"
               min="0"
@@ -156,8 +151,9 @@ export default defineComponent({
               readonly
               size="sm"
               title="Field end bit"
-            /> <b-form-group v-else
-              > <b-form-input
+            />
+            <b-form-group v-else>
+              <b-form-input
                 v-for="bit in field.stopbit"
                 type="number"
                 min="0"
@@ -166,12 +162,12 @@ export default defineComponent({
                 readonly
                 class="mb-2"
                 title="Field end bit"
-              /> </b-form-group
-            >
+              />
+            </b-form-group>
           </div>
 
           <div class="col-lg-2 col-2 fields" v-if="field.type == 'co'">
-             <b-form-input
+            <b-form-input
               type="text"
               :model-value="instruction.co"
               readonly
@@ -181,7 +177,7 @@ export default defineComponent({
           </div>
 
           <div class="col-lg-2 col-2 fields" v-if="field.type == 'cop'">
-             <b-form-input
+            <b-form-input
               type="text"
               :model-value="field.value"
               readonly
@@ -189,12 +185,8 @@ export default defineComponent({
               title="Field value"
             />
           </div>
-
         </div>
-
       </div>
-       </b-form
-    > </b-modal
-  >
+    </b-form>
+  </b-modal>
 </template>
-

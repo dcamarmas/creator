@@ -94,7 +94,9 @@ async function main() {
     // --- 1. Load the Architecture ---
     try {
         const architectureFile = fs.readFileSync(argv.architecture, "utf8");
-        const architectureObj = yaml.load(architectureFile) as ArchitectureConfig;
+        const architectureObj = yaml.load(
+            architectureFile,
+        ) as ArchitectureConfig;
         pluginName = architectureObj.config.plugin;
         const ret = creator.loadArchitecture(architectureFile);
         if (ret.status !== "ok") {
@@ -196,8 +198,10 @@ async function main() {
                 // Dump registers after each cycle on one line
                 const regBank = creator.getRegistersByBank("int_registers");
                 if (regBank) {
-                    const registers = regBank.elements.map(reg => `${reg.name[0]}:0x${reg.value.toString(16)}`);
-                    console.log(registers.join(' '));
+                    const registers = regBank.elements.map(
+                        reg => `${reg.name[0]}:0x${reg.value.toString(16)}`,
+                    );
+                    console.log(registers.join(" "));
                 }
                 if (creator.status.execution_index === -2) {
                     break;

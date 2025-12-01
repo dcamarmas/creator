@@ -435,9 +435,8 @@ defineExpose({
 </script>
 
 <template>
-
   <div class="button-group">
-     <button
+    <button
       class="sim-button"
       :class="{ 'sim-button-dark': dark }"
       accesskey="x"
@@ -445,9 +444,11 @@ defineExpose({
       :title="`${accesskey_prefix}X`"
       @click="reset()"
     >
-       <font-awesome-icon :icon="['fas', 'power-off']" class="icon-spacing" />
-      <span class="button-text">Reset</span> </button
-    > <button
+      <font-awesome-icon :icon="['fas', 'power-off']" class="icon-spacing" />
+      <span class="button-text">Reset</span>
+    </button>
+
+    <button
       class="sim-button"
       :class="{ 'sim-button-dark': dark }"
       accesskey="a"
@@ -455,11 +456,11 @@ defineExpose({
       :title="`${accesskey_prefix}A`"
       @click="execute_instruction"
     >
-       <font-awesome-icon
-        :icon="['fas', 'forward-step']"
-        class="icon-spacing"
-      /> <span class="button-text">Step</span> </button
-    > <button
+      <font-awesome-icon :icon="['fas', 'forward-step']" class="icon-spacing" />
+      <span class="button-text">Step</span>
+    </button>
+
+    <button
       id="playExecution"
       class="sim-button"
       :class="{ 'sim-button-dark': dark }"
@@ -468,11 +469,11 @@ defineExpose({
       :title="`${accesskey_prefix}R`"
       @click="execute_program"
     >
-       <font-awesome-icon :icon="['fas', 'play']" class="icon-spacing" /> <span
-        class="button-text"
-        >Run</span
-      > </button
-    > <button
+      <font-awesome-icon :icon="['fas', 'play']" class="icon-spacing" />
+      <span class="button-text">Run</span>
+    </button>
+
+    <button
       id="stop_execution"
       class="sim-button"
       :class="{ 'sim-button-dark': dark }"
@@ -481,13 +482,10 @@ defineExpose({
       :title="`${accesskey_prefix}C`"
       @click="stop_execution"
     >
-       <font-awesome-icon :icon="['fas', 'stop']" class="icon-spacing" /> <span
-        class="button-text"
-        >Stop</span
-      > </button
-    >
+      <font-awesome-icon :icon="['fas', 'stop']" class="icon-spacing" />
+      <span class="button-text">Stop</span>
+    </button>
   </div>
-
 </template>
 
 <style lang="scss" scoped>
@@ -558,4 +556,3 @@ defineExpose({
   margin-right: 0.5rem;
 }
 </style>
-

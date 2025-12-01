@@ -181,14 +181,16 @@ loadAvailableSets();
 </script>
 
 <template>
-   <b-modal
+  <b-modal
     :id="id"
     class="bottomCard"
     title="Available examples"
     no-footer
     centered
     scrollable
-    > <!-- set selector --> <b-form-radio-group
+  >
+    <!-- set selector -->
+    <b-form-radio-group
       v-if="example_set_options.length > 0 && example_set_options.length < 3"
       class="w-100 mb-3"
       v-model="selected_set"
@@ -196,35 +198,43 @@ loadAvailableSets();
       button-variant="outline-secondary"
       size="sm"
       buttons
-    /> <b-dropdown
+    />
+    <b-dropdown
       v-if="example_set_options.length > 2"
       id="examples_dropdown"
       size="sm"
-      > <b-dropdown-item
+    >
+      <b-dropdown-item
         v-for="item in example_set_options"
         @click="selected_set = item.value"
-        > {{ item.text }} </b-dropdown-item
-      > </b-dropdown
-    > <span
+      >
+        {{ item.text }}
+      </b-dropdown-item>
+    </b-dropdown>
+    <span
       v-if="
         example_set_options.length === 0 ||
         available_sets[selected_set]?.examples?.length === 0
       "
       class="h6"
-      > No examples available for this architecture. </span
-    > <!-- examples --> <b-list-group
-      > <b-button-group
+    >
+      No examples available for this architecture.
+    </span>
+
+    <!-- examples -->
+    <b-list-group>
+      <b-button-group
         v-for="example in available_sets[selected_set]?.examples"
         :key="example.id"
         size="sm"
         class="p-1"
-        > <b-col cols="11"
-          > <b-list-group-item
-            button
-            @click="load_example(example.url, compile)"
-            > {{ example.name }}: {{ example.description }} </b-list-group-item
-          > </b-col
-        > <b-button
+      >
+        <b-col cols="11">
+          <b-list-group-item button @click="load_example(example.url, compile)">
+            {{ example.name }}: {{ example.description }}
+          </b-list-group-item>
+        </b-col>
+        <b-button
           @click="
             () => {
               selected_example = example.id;
@@ -232,15 +242,17 @@ loadAvailableSets();
             }
           "
           size="sm"
-          > <font-awesome-icon :icon="['fas', 'link']" /> </b-button
-        > </b-button-group
-      > </b-list-group
-    > </b-modal
-  > <MakeURI
+        >
+          <font-awesome-icon :icon="['fas', 'link']" />
+        </b-button>
+      </b-button-group>
+    </b-list-group>
+  </b-modal>
+
+  <MakeURI
     :id="`${id}_uri`"
     :architecture_name="architecture_name"
     :example_set="selected_set"
     :example_id="selected_example!"
   />
 </template>
-

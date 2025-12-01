@@ -39,9 +39,8 @@ export default defineComponent({
 </script>
 
 <template>
-
   <div class="directives-container">
-     <b-table
+    <b-table
       small
       :items="directives"
       :fields="directivesFields"
@@ -49,13 +48,12 @@ export default defineComponent({
       hover
       responsive
       sticky-header="100%"
-      > <template v-slot:cell(name)="row"
-        > <code class="directive-name">{{ row.item.name }}</code
-        > </template
-      > </b-table
     >
+      <template v-slot:cell(name)="row">
+        <code class="directive-name">{{ row.item.name }}</code>
+      </template>
+    </b-table>
   </div>
-
 </template>
 
 <style lang="scss" scoped>
@@ -107,7 +105,9 @@ export default defineComponent({
 }
 
 .directive-name {
-  font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+  font-family:
+    "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New",
+    monospace;
   font-weight: 600;
   font-size: 0.875rem;
   color: rgba(0, 0, 0, 0.9);
@@ -140,4 +140,3 @@ export default defineComponent({
   }
 }
 </style>
-

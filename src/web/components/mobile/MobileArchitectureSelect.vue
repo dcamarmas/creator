@@ -93,92 +93,91 @@ export default defineComponent({
 </script>
 
 <template>
-
   <div class="mobile-arch-select">
-
     <div class="mobile-arch-header">
-
       <h2 class="arch-title">
-         <font-awesome-icon :icon="['fas', 'microchip']" /> Select Architecture
+        <font-awesome-icon :icon="['fas', 'microchip']" /> Select Architecture
       </h2>
 
       <p class="arch-subtitle">Choose an architecture to start programming</p>
-
     </div>
 
     <div class="mobile-arch-list">
-       <!-- Architecture Items --> <ArchitectureItem
+      <!-- Architecture Items -->
+      <ArchitectureItem
         v-for="arch in availableArchitectures"
         :key="arch.id"
         :arch="arch"
         :mobile="true"
         @select="handleSelectArchitecture(arch)"
         @delete="handleDeleteArchitecture(arch.name)"
-      /> <!-- Load Custom Architecture Button -->
-      <div class="arch-item load-custom" @click="openLoadArchModal">
+      />
 
+      <!-- Load Custom Architecture Button -->
+      <div class="arch-item load-custom" @click="openLoadArchModal">
         <div class="arch-logo load-logo">
-           <font-awesome-icon :icon="['fas', 'file-import']" />
+          <font-awesome-icon :icon="['fas', 'file-import']" />
         </div>
 
         <div class="arch-info">
-
           <h3 class="arch-name">Load Custom Architecture</h3>
 
           <p class="arch-description">
-             Import your own architecture definition file (.yml)
+            Import your own architecture definition file (.yml)
           </p>
-
         </div>
 
         <div class="arch-actions">
-
           <div class="select-indicator">
-             <font-awesome-icon :icon="['fas', 'plus']" />
+            <font-awesome-icon :icon="['fas', 'plus']" />
           </div>
-
         </div>
-
       </div>
-
     </div>
-     <!-- Load Custom Architecture Modal --> <b-modal
+
+    <!-- Load Custom Architecture Modal -->
+    <b-modal
       v-model="showLoadModal"
       title="Load Custom Architecture"
       @ok="loadCustomArch"
-      > <b-form
-        > <b-form-group label="Architecture Name" label-for="arch-name"
-          > <b-form-input
+    >
+      <b-form>
+        <b-form-group label="Architecture Name" label-for="arch-name">
+          <b-form-input
             id="arch-name"
             v-model="customArchName"
             placeholder="Enter architecture name"
             required
-          /> </b-form-group
-        > <b-form-group label="Description" label-for="arch-description"
-          > <b-form-textarea
+          />
+        </b-form-group>
+        <b-form-group label="Description" label-for="arch-description">
+          <b-form-textarea
             id="arch-description"
             v-model="customArchDescription"
             placeholder="Enter architecture description"
             rows="3"
-          /> </b-form-group
-        > <b-form-group label="Architecture File" label-for="arch-file"
-          > <b-form-file
+          />
+        </b-form-group>
+        <b-form-group label="Architecture File" label-for="arch-file">
+          <b-form-file
             id="arch-file"
             v-model="customArchFile"
             accept=".yml"
             placeholder="Choose a .yml file..."
             required
-          /> </b-form-group
-        > </b-form
-      > </b-modal
-    > <!-- Delete Architecture Modal --> <DeleteArchitecture
+          />
+        </b-form-group>
+      </b-form>
+    </b-modal>
+
+    <!-- Delete Architecture Modal -->
+    <DeleteArchitecture
       id="modal-delete-arch-mobile"
       v-model="showDeleteModal"
       :arch="archToDelete"
       @architecture-deleted="handleArchitectureDeleted"
     />
   </div>
-
 </template>
 
 <style lang="scss" scoped>
@@ -276,7 +275,7 @@ export default defineComponent({
   transition: all 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
   color: #6c757d;
   margin-bottom: 0.5rem;
-  
+
   [data-bs-theme="dark"] & {
     color: #adb5bd;
     border-color: rgba(255, 255, 255, 0.2);
@@ -305,7 +304,7 @@ export default defineComponent({
   justify-content: center;
   background-color: rgba(var(--bs-primary-rgb), 0.1);
   border-radius: 8px;
-  
+
   svg {
     font-size: 1.5rem;
     color: var(--bs-primary);
@@ -440,4 +439,3 @@ export default defineComponent({
   }
 }
 </style>
-

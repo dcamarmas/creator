@@ -62,46 +62,57 @@ export default defineComponent({
 </script>
 
 <template>
-   <b-modal v-model="modalShow" title="Browser not supported" no-footer
-    > <span class="h6"
-      > You are using an unsupported browser, please use one of the following:
-      </span
-    > <br /> <b-list-group
-      > <b-list-group-item
+  <b-modal v-model="modalShow" title="Browser not supported" no-footer>
+    <span class="h6">
+      You are using an unsupported browser, please use one of the following:
+    </span>
+    <br />
+
+    <b-list-group>
+      <b-list-group-item
         class="d-flex justify-content-between align-items-center"
-        > Google Chrome 70+ <b-badge pill class="browserBadge"
-          > <b-img
+      >
+        Google Chrome 70+
+        <b-badge pill class="browserBadge">
+          <b-img
             src="@/web/assets/img/browsers/chrome.webp"
             class="shadow broserIcon"
             rounded="circle"
             fluid
             alt="Responsive image"
-          /> </b-badge
-        > </b-list-group-item
-      > <b-list-group-item
+          />
+        </b-badge>
+      </b-list-group-item>
+
+      <b-list-group-item
         class="d-flex justify-content-between align-items-center"
-        > Mozilla Firefox 60+ <b-badge pill class="browserBadge"
-          > <b-img
+      >
+        Mozilla Firefox 60+
+        <b-badge pill class="browserBadge">
+          <b-img
             src="@/web/assets/img/browsers/firefox.webp"
             class="shadow broserIcon"
             rounded="circle"
             fluid
             alt="Responsive image"
-          /> </b-badge
-        > </b-list-group-item
-      > <b-list-group-item
+          />
+        </b-badge>
+      </b-list-group-item>
+
+      <b-list-group-item
         class="d-flex justify-content-between align-items-center"
-        > Apple Safari 12+ <b-badge pill class="browserBadge"
-          > <b-img
+      >
+        Apple Safari 12+
+        <b-badge pill class="browserBadge">
+          <b-img
             src="@/web/assets/img/browsers/safari.webp"
             class="shadow broserIcon"
             rounded="circle"
             fluid
             alt="Responsive image"
-          /> </b-badge
-        > </b-list-group-item
-      > </b-list-group
-    > </b-modal
-  >
+          />
+        </b-badge>
+      </b-list-group-item>
+    </b-list-group>
+  </b-modal>
 </template>
-

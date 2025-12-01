@@ -87,129 +87,107 @@ export default defineComponent({
 </script>
 
 <template>
-
   <div class="instructions-container">
-     <!-- Search Bar and Filters -->
+    <!-- Search Bar and Filters -->
     <div class="instruction-toolbar">
-       <b-row class="align-items-center mb-2"
-        > <b-col
-          > <b-form-input
+      <b-row class="align-items-center mb-2">
+        <b-col>
+          <b-form-input
             v-model="searchTerm"
             placeholder="Search instructions..."
             size="sm"
-          /> </b-col
-        > <b-col class="text-end"
-          > <b-badge variant="primary" pill
-            > {{ filteredInstructions.length }} / {{ instructions.length }}
-            </b-badge
-          > </b-col
-        > </b-row
-      > <b-row class="align-items-center" v-if="availableTypes.length > 0"
-        > <b-col cols="auto"> <span class="filter-label">Type:</span> </b-col>
-        <b-col
-          > <b-form-select v-model="selectedType" size="sm" class="type-filter"
-            >
+          />
+        </b-col>
+        <b-col class="text-end">
+          <b-badge variant="primary" pill>
+            {{ filteredInstructions.length }} / {{ instructions.length }}
+          </b-badge>
+        </b-col>
+      </b-row>
+      <b-row class="align-items-center" v-if="availableTypes.length > 0">
+        <b-col cols="auto"> <span class="filter-label">Type:</span> </b-col>
+        <b-col>
+          <b-form-select v-model="selectedType" size="sm" class="type-filter">
             <option value="all">All Types</option>
 
             <option v-for="type in availableTypes" :key="type" :value="type">
-               {{ type }}
+              {{ type }}
             </option>
-             </b-form-select
-          > </b-col
-        > </b-row
-      >
+          </b-form-select>
+        </b-col>
+      </b-row>
     </div>
-     <!-- Instruction cards -->
+
+    <!-- Instruction cards -->
     <div class="cards-wrapper">
-
       <div class="instruction-cards">
-
         <div
           v-for="(instruction, index) in filteredInstructions"
           :key="`${instruction.name}-${instruction.signature_pretty}-${index}`"
           class="instruction-card"
         >
-           <!-- Card Header -->
+          <!-- Card Header -->
           <div class="card-header">
-
             <div class="header-main">
-
               <div class="mnemonic-section">
-                 <code class="instruction-name">{{ instruction.name }}</code
-                >
+                <code class="instruction-name">{{ instruction.name }}</code>
                 <div
                   v-if="
                     instruction.properties && instruction.properties.length > 0
                   "
                   class="properties-container"
                 >
-                   <b-badge
+                  <b-badge
                     v-for="property in instruction.properties"
                     :key="property"
                     class="property-badge"
                     pill
                     variant="info"
-                    > {{ property }} </b-badge
                   >
+                    {{ property }}
+                  </b-badge>
                 </div>
-
               </div>
 
               <div class="stats-section">
-
                 <div class="stat-item">
-                   <span class="stat-label">Words:</span> <span
-                    class="stat-value"
-                    >{{ instruction.nwords }}</span
-                  >
+                  <span class="stat-label">Words:</span>
+                  <span class="stat-value">{{ instruction.nwords }}</span>
                 </div>
 
                 <div class="stat-item">
-                   <span class="stat-label">Cycles:</span> <span
-                    class="stat-value"
-                    >{{ instruction.clk_cycles }}</span
-                  >
+                  <span class="stat-label">Cycles:</span>
+                  <span class="stat-value">{{ instruction.clk_cycles }}</span>
                 </div>
-
               </div>
-
             </div>
 
             <div class="syntax-section">
-               <span class="syntax-label">Syntax</span> <code
-                class="syntax-text"
-                >{{ instruction.signature_pretty }}</code
-              >
+              <span class="syntax-label">Syntax</span>
+              <code class="syntax-text">{{
+                instruction.signature_pretty
+              }}</code>
             </div>
-             <!-- Help Text -->
+
+            <!-- Help Text -->
             <div v-if="instruction.help" class="description-section">
-               <span class="syntax-label">Description</span>
+              <span class="syntax-label">Description</span>
               <div class="help-content">
-
                 <p>{{ instruction.help }}</p>
-
               </div>
-
             </div>
-
           </div>
-           <!-- Card Body - Encoding -->
+
+          <!-- Card Body - Encoding -->
           <div class="card-body">
-
             <div class="encoding-section">
-               <InstructionEncoding :instruction="instruction" />
+              <InstructionEncoding :instruction="instruction" />
             </div>
-
           </div>
-
         </div>
-
       </div>
-
     </div>
-
   </div>
-
 </template>
 
 <style lang="scss" scoped>
@@ -303,7 +281,9 @@ export default defineComponent({
 }
 
 .instruction-name {
-  font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+  font-family:
+    "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New",
+    monospace;
   font-weight: 600;
   font-size: 1rem;
   color: rgba(0, 0, 0, 0.9);
@@ -353,7 +333,9 @@ export default defineComponent({
   font-size: 1.25rem;
   font-weight: 700;
   color: rgba(0, 0, 0, 0.9);
-  font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+  font-family:
+    "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New",
+    monospace;
 }
 
 .syntax-section {
@@ -378,7 +360,9 @@ export default defineComponent({
 }
 
 .syntax-text {
-  font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+  font-family:
+    "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New",
+    monospace;
   font-size: 0.875rem;
   color: rgba(0, 0, 0, 0.85);
   background: rgba(0, 0, 0, 0.03);
@@ -518,4 +502,3 @@ export default defineComponent({
   }
 }
 </style>
-

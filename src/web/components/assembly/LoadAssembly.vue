@@ -54,20 +54,19 @@ export default defineComponent({
 </script>
 
 <template>
-   <b-modal
+  <b-modal
     :id="id"
     title="Load Assembly"
     ok-title="Load from this File"
     @ok="loadAssembly"
-    >
+  >
     <p>Please select the assembly file to be loaded</p>
-     <b-form-file
+    <b-form-file
       v-model="file"
       :state="file !== null"
       placeholder="Choose a file..."
       accept=".s"
       id="assembly_file"
-    /> </b-modal
-  >
+    />
+  </b-modal>
 </template>
-

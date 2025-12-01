@@ -354,148 +354,142 @@ export default defineComponent({
 </script>
 
 <template>
-   <b-modal
+  <b-modal
     :id="id"
     title="IEEE 754 Floating Point Converter"
     size="xl"
     hide-footer
     body-class="p-0"
-    >
+  >
     <div class="calculator-container">
-       <!-- Format selector header -->
+      <!-- Format selector header -->
       <div class="calculator-header">
-
         <div class="format-selector">
-           <button
+          <button
             :class="['tab', { active: format === 'ieee32' }]"
             @click="
               format = 'ieee32';
               changeFormat();
             "
           >
-             <font-awesome-icon :icon="['fas', 'microchip']" /> <span
-              >32-bit (Float)</span
-            > </button
-          > <button
+            <font-awesome-icon :icon="['fas', 'microchip']" />
+            <span>32-bit (Float)</span>
+          </button>
+          <button
             :class="['tab', { active: format === 'ieee64' }]"
             @click="
               format = 'ieee64';
               changeFormat();
             "
           >
-             <font-awesome-icon :icon="['fas', 'memory']" /> <span
-              >64-bit (Double)</span
-            > </button
-          >
+            <font-awesome-icon :icon="['fas', 'memory']" />
+            <span>64-bit (Double)</span>
+          </button>
         </div>
-         <button class="clear-btn" @click="clear" title="Clear all fields">
-           <font-awesome-icon icon="fa-solid fa-trash" /> </button
-        >
+        <button class="clear-btn" @click="clear" title="Clear all fields">
+          <font-awesome-icon icon="fa-solid fa-trash" />
+        </button>
       </div>
-       <!-- Error display --> <b-alert
+
+      <!-- Error display -->
+      <b-alert
         v-if="error"
         variant="danger"
         show
         dismissible
         @dismissed="error = ''"
         class="m-3 mb-0"
-        > {{ error }} </b-alert
-      > <!-- Main content -->
+      >
+        {{ error }}
+      </b-alert>
+
+      <!-- Main content -->
       <div class="calculator-content">
-         <!-- IEEE 754 Breakdown -->
+        <!-- IEEE 754 Breakdown -->
         <div class="section">
-
           <div class="section-title">IEEE 754 Breakdown</div>
-           <!-- Visual representation with editable fields -->
+          <!-- Visual representation with editable fields -->
           <div class="ieee-visual">
-
             <div class="ieee-bit-group sign">
-
               <div class="ieee-label">Sign</div>
-               <b-form-input
+              <b-form-input
                 v-model="sign"
                 class="ieee-input font-monospace"
                 placeholder="0"
                 @input="onBinaryPartChange"
                 maxlength="1"
                 size="sm"
-              ></b-form-input
-              >
+              ></b-form-input>
             </div>
 
             <div class="ieee-bit-group exponent">
-
               <div class="ieee-label">Exponent ({{ exponentBits }}b)</div>
-               <b-form-input
+              <b-form-input
                 v-model="exponent"
                 class="ieee-input font-monospace"
                 :placeholder="'0'.repeat(exponentBits)"
                 @input="onBinaryPartChange"
                 :maxlength="exponentBits"
                 size="sm"
-              ></b-form-input
-              >
+              ></b-form-input>
             </div>
 
             <div class="ieee-bit-group mantissa">
-
               <div class="ieee-label">Mantissa ({{ mantissaBits }}b)</div>
-               <b-form-input
+              <b-form-input
                 v-model="mantissa"
                 class="ieee-input font-monospace"
                 :placeholder="'0'.repeat(mantissaBits)"
                 @input="onBinaryPartChange"
                 :maxlength="mantissaBits"
                 size="sm"
-              ></b-form-input
-              >
+              ></b-form-input>
             </div>
-
           </div>
-           <!-- Formula -->
+
+          <!-- Formula -->
           <div class="formula-box">
-             <code class="formula"
+            <code class="formula"
               >value = (-1)<sup>sign</sup> × 2<sup>{{
                 getFormulaExponent()
-              }}</sup
-              > × ({{ getFormulaMantissaPart() }})</code
+              }}</sup>
+              × ({{ getFormulaMantissaPart() }})</code
             >
           </div>
-
         </div>
-         <!-- Value representations -->
-        <div class="section">
 
+        <!-- Value representations -->
+        <div class="section">
           <div class="section-title">Value Representations</div>
 
           <div class="value-inputs">
-             <!-- Decimal -->
+            <!-- Decimal -->
             <div class="input-row">
-               <label class="input-label">Decimal</label>
+              <label class="input-label">Decimal</label>
               <div class="input-wrapper">
-                 <b-form-input
+                <b-form-input
                   v-model="decimalInput"
                   type="text"
                   placeholder="e.g., 3.14159"
                   @input="convertFromDecimal"
                   size="sm"
-                ></b-form-input
-                > <button
+                />
+                <button
                   class="copy-btn"
                   @click="copyToClipboard(decimalInput)"
                   title="Copy"
                   :disabled="!decimalInput"
                 >
-                   <font-awesome-icon icon="fa-solid fa-copy" /> </button
-                >
+                  <font-awesome-icon icon="fa-solid fa-copy" />
+                </button>
               </div>
-
             </div>
-             <!-- Hexadecimal -->
+
+            <!-- Hexadecimal -->
             <div class="input-row">
-               <label class="input-label">Hexadecimal</label>
+              <label class="input-label">Hexadecimal</label>
               <div class="input-wrapper">
-                 <b-form-input
+                <b-form-input
                   v-model="hexInput"
                   type="text"
                   :placeholder="
@@ -506,23 +500,23 @@ export default defineComponent({
                   @input="convertFromHex"
                   class="font-monospace"
                   size="sm"
-                ></b-form-input
-                > <button
+                />
+                <button
                   class="copy-btn"
                   @click="copyToClipboard(hexInput)"
                   title="Copy"
                   :disabled="!hexInput"
                 >
-                   <font-awesome-icon icon="fa-solid fa-copy" /> </button
-                >
+                  <font-awesome-icon icon="fa-solid fa-copy" />
+                </button>
               </div>
-
             </div>
-             <!-- Binary -->
+
+            <!-- Binary -->
             <div class="input-row">
-               <label class="input-label">Binary</label>
+              <label class="input-label">Binary</label>
               <div class="input-wrapper">
-                 <b-form-input
+                <b-form-input
                   v-model="binaryInput"
                   type="text"
                   :placeholder="
@@ -532,28 +526,22 @@ export default defineComponent({
                   class="font-monospace"
                   size="sm"
                   style="font-size: 0.75rem"
-                ></b-form-input
-                > <button
+                />
+                <button
                   class="copy-btn"
                   @click="copyToClipboard(binaryInput)"
                   title="Copy"
                   :disabled="!binaryInput"
                 >
-                   <font-awesome-icon icon="fa-solid fa-copy" /> </button
-                >
+                  <font-awesome-icon icon="fa-solid fa-copy" />
+                </button>
               </div>
-
             </div>
-
           </div>
-
         </div>
-
       </div>
-
     </div>
-     </b-modal
-  >
+  </b-modal>
 </template>
 
 <style scoped lang="scss">
@@ -721,7 +709,6 @@ export default defineComponent({
   }
 }
 
-
 .info-row {
   display: flex;
   justify-content: space-between;
@@ -796,7 +783,8 @@ export default defineComponent({
 
     &:focus {
       border-color: var(--bs-primary);
-      box-shadow: 0 0 0 3px color-mix(in srgb, var(--bs-primary) 15%, transparent);
+      box-shadow: 0 0 0 3px
+        color-mix(in srgb, var(--bs-primary) 15%, transparent);
     }
   }
 }
@@ -920,7 +908,5 @@ export default defineComponent({
       flex: 1 1 auto;
     }
   }
-
 }
 </style>
-

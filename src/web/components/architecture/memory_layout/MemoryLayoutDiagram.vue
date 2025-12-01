@@ -118,25 +118,25 @@ export default defineComponent({
 </script>
 
 <template>
-
   <div class="memory-layout-diagram">
-
     <div class="memory-layout-container">
-       <!-- High/Low Addresses Label -->
+      <!-- High/Low Addresses Label -->
       <div
         class="address-label"
         :class="inverted ? 'low-address' : 'high-address'"
       >
-         {{ inverted ? "Low Addresses" : "High Addresses" }}
+        {{ inverted ? "Low Addresses" : "High Addresses" }}
       </div>
-       <!-- All memory segments dynamically generated -->
+
+      <!-- All memory segments dynamically generated -->
       <div class="memory-layout-segments">
-         <template
+        <template
           v-for="(segment, index) in displayMemoryLayoutSegments"
           :key="segment.name"
-          > <!-- Gap indicator between non-contiguous segments --> <template
-            v-if="showGaps"
-            > <!-- High to Low: current segment's end < previous segment's start means there's a gap -->
+        >
+          <!-- Gap indicator between non-contiguous segments -->
+          <template v-if="showGaps">
+            <!-- High to Low: current segment's end < previous segment's start means there's a gap -->
 
             <div
               v-if="
@@ -148,24 +148,21 @@ export default defineComponent({
               "
               class="memory-segment segment-secondary segment-empty"
             >
-
               <div class="segment-name">...</div>
 
               <div class="segment-addresses">
-
                 <div class="segment-gap-size">
-                   {{
+                  {{
                     formatGapSize(
                       (displayMemoryLayoutSegments[index - 1]?.start || 0) -
                         segment.end,
                     )
                   }}
                 </div>
-
               </div>
-
             </div>
-             <!-- Low to High: current segment's start > previous segment's end means there's a gap -->
+
+            <!-- Low to High: current segment's start > previous segment's end means there's a gap -->
 
             <div
               v-if="
@@ -177,57 +174,53 @@ export default defineComponent({
               "
               class="memory-segment segment-secondary segment-empty"
             >
-
               <div class="segment-name">...</div>
 
               <div class="segment-addresses">
-
                 <div class="segment-gap-size">
-                   {{
+                  {{
                     formatGapSize(
                       segment.start -
                         (displayMemoryLayoutSegments[index - 1]?.end || 0),
                     )
                   }}
                 </div>
-
               </div>
-
             </div>
-             </template
-          > <!-- Data/Heap growth arrow --> <!-- When NOT inverted (high→low): arrow ABOVE data, pointing UP -->
+          </template>
+
+          <!-- Data/Heap growth arrow -->
+          <!-- When NOT inverted (high→low): arrow ABOVE data, pointing UP -->
           <!-- When inverted (low→high): arrow BELOW data, pointing DOWN -->
           <div
             v-if="segment.name.toLowerCase().includes('data') && !inverted"
             class="growth-indicator-row data-growth"
           >
-
             <div class="growth-label">Heap grows</div>
 
             <div class="growth-arrow">↑</div>
-
           </div>
-           <!-- Stack growth arrow --> <!-- When NOT inverted (high→low): arrow BELOW stack, pointing DOWN -->
+
+          <!-- Stack growth arrow -->
+          <!-- When NOT inverted (high→low): arrow BELOW stack, pointing DOWN -->
           <!-- When inverted (low→high): arrow ABOVE stack, pointing UP -->
           <div
             v-if="segment.name.toLowerCase().includes('stack') && inverted"
             class="growth-indicator-row stack-growth"
           >
-
             <div class="growth-arrow">↑</div>
 
             <div class="growth-label">Stack grows</div>
-
           </div>
-           <!-- Actual segment -->
+
+          <!-- Actual segment -->
           <div
             class="memory-segment"
             :class="[`segment-${segment.variant}`, { clickable }]"
             @click="handleSegmentClick(segment.name)"
           >
-
             <div class="segment-addresses segment-address-top">
-               0x{{
+              0x{{
                 (inverted ? segment.start : segment.end)
                   .toString(16)
                   .toUpperCase()
@@ -236,66 +229,60 @@ export default defineComponent({
             </div>
 
             <div class="segment-content">
-
               <div class="segment-name">
-                 {{
+                {{
                   segment.name.startsWith(".")
                     ? segment.name
                     : `.${segment.name}`
                 }}
               </div>
-
             </div>
 
             <div class="segment-addresses segment-address-bottom">
-               0x{{
+              0x{{
                 (inverted ? segment.end : segment.start)
                   .toString(16)
                   .toUpperCase()
                   .padStart(8, "0")
               }}
             </div>
-
           </div>
-           <!-- Stack growth arrow --> <!-- When NOT inverted (high→low): arrow BELOW stack, pointing DOWN -->
+
+          <!-- Stack growth arrow -->
+          <!-- When NOT inverted (high→low): arrow BELOW stack, pointing DOWN -->
           <!-- When inverted (low→high): arrow ABOVE stack, pointing UP -->
           <div
             v-if="segment.name.toLowerCase().includes('stack') && !inverted"
             class="growth-indicator-row stack-growth"
           >
-
             <div class="growth-arrow">↓</div>
 
             <div class="growth-label">Stack grows</div>
-
           </div>
-           <!-- Data/Heap growth arrow --> <!-- When NOT inverted (high→low): arrow ABOVE data, pointing UP -->
+
+          <!-- Data/Heap growth arrow -->
+          <!-- When NOT inverted (high→low): arrow ABOVE data, pointing UP -->
           <!-- When inverted (low→high): arrow BELOW data, pointing DOWN -->
           <div
             v-if="segment.name.toLowerCase().includes('data') && inverted"
             class="growth-indicator-row data-growth"
           >
-
             <div class="growth-label">Heap grows</div>
 
             <div class="growth-arrow">↓</div>
-
           </div>
-           </template
-        >
+        </template>
       </div>
-       <!-- Low/High Addresses Label -->
+
+      <!-- Low/High Addresses Label -->
       <div
         class="address-label"
         :class="inverted ? 'high-address' : 'low-address'"
       >
-         {{ inverted ? "High Addresses" : "Low Addresses" }}
+        {{ inverted ? "High Addresses" : "Low Addresses" }}
       </div>
-
     </div>
-
   </div>
-
 </template>
 
 <style lang="scss" scoped>
@@ -354,7 +341,9 @@ export default defineComponent({
   border: 1.5px solid rgba(0, 0, 0, 0.3);
   border-left: none;
   border-right: none;
-  font-family: "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace;
+  font-family:
+    "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New",
+    monospace;
   min-height: 50px;
   position: relative;
 }
@@ -462,7 +451,8 @@ export default defineComponent({
 }
 
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0.7;
     transform: scale(1);
   }
@@ -534,4 +524,3 @@ export default defineComponent({
   }
 }
 </style>
-

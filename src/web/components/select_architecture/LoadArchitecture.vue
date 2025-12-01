@@ -98,47 +98,55 @@ export default defineComponent({
 </script>
 
 <template>
-   <b-card
+  <b-card
     v-b-modal.load_arch
     :class="{ selectedCard: selected }"
     title="Load Custom Architecture"
     style="cursor: pointer"
     @mouseover="selected = true"
     @mouseleave="selected = false"
-    > <template #img
-      > <b-img
+  >
+    <template #img>
+      <b-img
         class="mt-2 w-75 load-img"
         style="padding-bottom: 1.2vh"
         placement="center"
         src="@/web/assets/img/load_icon.webp"
         alt="load icon"
-      /> </template
-    > <b-card-text class="justify"
-      > Allows to load the definition of an already created architecture.
-      </b-card-text
-    > <b-modal id="load_arch" title="Load Architecture" @ok="loadArch"
-      > <!-- TODO: link to template arch --> <b-form
-        :valid="name.length > 0 && file !== null"
-        > <b-form-input
+      />
+    </template>
+
+    <b-card-text class="justify">
+      Allows to load the definition of an already created architecture.
+    </b-card-text>
+
+    <b-modal id="load_arch" title="Load Architecture" @ok="loadArch">
+      <!-- TODO: link to template arch -->
+      <b-form :valid="name.length > 0 && file !== null">
+        <b-form-input
           v-model="name"
           placeholder="Enter the name of the architecture"
           :state="name.length > 0"
           title="Architecture Name"
-        /> <br /> <b-form-textarea
+        />
+        <br />
+        <b-form-textarea
           v-model="description"
           placeholder="Enter a description of the architecture"
           rows="3"
           title="Architecture Description"
-        /> <br /> <b-form-file
+        />
+        <br />
+        <b-form-file
           v-model="file"
           placeholder="Choose a file..."
           id="arch_file"
           accept=".yml"
           :state="file !== null"
-        /> </b-form
-      > </b-modal
-    > </b-card
-  >
+        />
+      </b-form>
+    </b-modal>
+  </b-card>
 </template>
 
 <style lang="scss" scoped>
@@ -148,4 +156,3 @@ export default defineComponent({
   }
 }
 </style>
-

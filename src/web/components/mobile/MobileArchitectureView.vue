@@ -132,75 +132,81 @@ export default defineComponent({
 </script>
 
 <template>
-
   <div class="mobile-architecture-view">
-
     <div class="mobile-architecture-header">
-
       <h3 class="architecture-title">
-         <font-awesome-icon
+        <font-awesome-icon
           :icon="getCurrentViewInfo()?.icon || ['fas', 'database']"
-        /> {{ getCurrentViewInfo()?.label || "Architecture View" }}
+        />
+        {{ getCurrentViewInfo()?.label || "Architecture View" }}
       </h3>
-       <b-dropdown
+      <b-dropdown
         variant="outline-secondary"
         size="sm"
         title="Switch View"
         no-caret
-        > <template #button-content
-          > <font-awesome-icon :icon="['fas', 'bars']" /> </template
-        > <b-dropdown-item
+      >
+        <template #button-content>
+          <font-awesome-icon :icon="['fas', 'bars']" />
+        </template>
+        <b-dropdown-item
           v-for="view in availableViews"
           :key="view.key"
           @click="switchView(view.key)"
-          > <font-awesome-icon :icon="view.icon" /> {{ view.label }}
-          </b-dropdown-item
-        > </b-dropdown
-      >
+        >
+          <font-awesome-icon :icon="view.icon" /> {{ view.label }}
+        </b-dropdown-item>
+      </b-dropdown>
     </div>
 
     <div class="mobile-architecture-content">
-       <!-- Architecture content area --> <!-- Architecture Info view -->
+      <!-- Architecture content area -->
+
+      <!-- Architecture Info view -->
       <div v-if="currentView === 'arch-info'" class="architecture-section">
-         <!-- Architecture Guide Link --> <a
+        <!-- Architecture Guide Link -->
+        <a
           v-if="architecture_guide"
           :href="architecture_guide"
           target="_blank"
           class="mobile-guide-link"
-          > <font-awesome-icon :icon="['fas', 'file-pdf']" /> <span
-            >{{ architecture_name }} Guide</span
-          > <font-awesome-icon
+        >
+          <font-awesome-icon :icon="['fas', 'file-pdf']" />
+          <span>{{ architecture_name }} Guide</span>
+          <font-awesome-icon
             :icon="['fas', 'external-link-alt']"
             class="external-icon"
-          /> </a
-        > <ArchConf :conf="architecture.config" />
+          />
+        </a>
+        <ArchConf :conf="architecture.config" />
       </div>
-       <!-- Register File view -->
+
+      <!-- Register File view -->
       <div v-if="currentView === 'register-file'" class="architecture-section">
-         <RegisterFileArch :register_file="architecture.components" />
+        <RegisterFileArch :register_file="architecture.components" />
       </div>
-       <!-- Instructions view -->
+
+      <!-- Instructions view -->
       <div v-if="currentView === 'instructions'" class="architecture-section">
-         <Instructions :instructions="architecture.instructions" />
+        <Instructions :instructions="architecture.instructions" />
       </div>
-       <!-- Pseudoinstructions view -->
+
+      <!-- Pseudoinstructions view -->
       <div
         v-if="currentView === 'pseudoinstructions'"
         class="architecture-section"
       >
-         <Pseudoinstructions
+        <Pseudoinstructions
           :pseudoinstructions="architecture.pseudoinstructions"
         />
       </div>
-       <!-- Directives view -->
+
+      <!-- Directives view -->
       <div v-if="currentView === 'directives'" class="architecture-section">
-         <Directives :directives="architecture.directives" />
+        <Directives :directives="architecture.directives" />
       </div>
-
     </div>
-
   </div>
-
 </template>
 
 <style lang="scss" scoped>
@@ -209,8 +215,10 @@ export default defineComponent({
   top: env(safe-area-inset-top);
   left: 0;
   right: 0;
-  bottom: calc(56px + env(safe-area-inset-bottom)); // Above mobile navbar + safe area
-  
+  bottom: calc(
+    56px + env(safe-area-inset-bottom)
+  ); // Above mobile navbar + safe area
+
   // Reduce bottom spacing on very small screens to match navbar height
   @media (max-width: 320px) {
     bottom: calc(48px + env(safe-area-inset-bottom));
@@ -328,4 +336,3 @@ export default defineComponent({
   }
 }
 </style>
-

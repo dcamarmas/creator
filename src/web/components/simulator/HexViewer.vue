@@ -196,6 +196,7 @@ export default defineComponent({
     },
 
     // Group tags by row for efficient rendering
+    // eslint-disable-next-line max-lines-per-function
     tagsByRow(): Map<
       number,
       Array<
@@ -1012,13 +1013,11 @@ export default defineComponent({
 </script>
 
 <template>
-
   <div class="hex-viewer" :class="{ 'modal-open': showMemoryLayoutModal }">
-
     <div class="hex-viewer-toolbar">
-
       <div class="toolbar-group">
-         <label for="goto-address">Go to address:</label> <input
+        <label for="goto-address">Go to address:</label>
+        <input
           id="goto-address"
           ref="gotoInput"
           class="address-input"
@@ -1027,74 +1026,71 @@ export default defineComponent({
           @keydown.enter="
             handleGotoAddress(($refs.gotoInput as HTMLInputElement).value)
           "
-        /> <button
+        />
+        <button
           class="toolbar-button"
           @click="
             handleGotoAddress(($refs.gotoInput as HTMLInputElement).value)
           "
         >
-           <font-awesome-icon :icon="['fas', 'arrow-right']" /> Go </button
-        >
+          <font-awesome-icon :icon="['fas', 'arrow-right']" /> Go
+        </button>
       </div>
 
       <div class="toolbar-group" v-if="segmentList.length > 0">
-         <label>Jump to:</label>
+        <label>Jump to:</label>
         <div class="segment-buttons">
-           <button
+          <button
             v-for="segment in segmentList"
             :key="segment.name"
             class="toolbar-button segment-button"
             @click="jumpToSegment(segment.name)"
             :title="`Jump to ${segment.name} segment (0x${Number(segment.start).toString(16)})`"
           >
-             {{ segment.name }} </button
-          >
+            {{ segment.name }}
+          </button>
         </div>
-
       </div>
 
       <div class="toolbar-group">
-         <button
+        <button
           v-if="!showAscii"
           class="toolbar-button"
           @click="viewMode = viewMode === 'hex' ? 'ascii' : 'hex'"
           :class="{ active: viewMode === 'ascii' }"
         >
-           <font-awesome-icon :icon="['fas', 'exchange-alt']" /> {{
-            viewMode === "hex" ? "Hex" : "ASCII"
-          }} </button
-        > <button
+          <font-awesome-icon :icon="['fas', 'exchange-alt']" />
+          {{ viewMode === "hex" ? "Hex" : "ASCII" }}
+        </button>
+        <button
           class="toolbar-button"
           @click="showAllTags = !showAllTags"
           :class="{ active: showAllTags }"
           title="Show all memory tags"
         >
-           <font-awesome-icon :icon="['fas', 'tags']" /> Tags </button
-        > <button
+          <font-awesome-icon :icon="['fas', 'tags']" /> Tags
+        </button>
+        <button
           class="toolbar-button"
           @click="showMemoryLayoutModal = true"
           title="Show memory layout diagram"
         >
-           <font-awesome-icon :icon="['fas', 'sitemap']" /> Layout </button
-        >
+          <font-awesome-icon :icon="['fas', 'sitemap']" /> Layout
+        </button>
       </div>
-
     </div>
 
     <div class="hex-viewer-content">
-
       <div class="hex-viewer-header">
-
         <div class="address-column-header">Address</div>
 
         <div class="hex-columns-header">
-           <span class="hex-column-header"
-            > {{ viewMode === "hex" ? "Hex" : "ASCII" }} </span
-          >
+          <span class="hex-column-header">
+            {{ viewMode === "hex" ? "Hex" : "ASCII" }}
+          </span>
         </div>
 
         <div v-if="showAscii" class="ascii-column-header">ASCII</div>
-
       </div>
 
       <div
@@ -1104,33 +1100,30 @@ export default defineComponent({
         @keydown="handleKeyDown"
         @scroll="handleScroll"
       >
-
         <div
           v-if="!memoryDump || memoryDump.highestAddress === 0"
           class="no-data"
         >
-           No data in memory
+          No data in memory
         </div>
 
         <div v-else class="hex-rows">
-           <!-- Visible rows for current page only -->
+          <!-- Visible rows for current page only -->
           <div v-for="row in visibleRows" :key="row" class="hex-row-container">
-             <!-- Tag labels row (shown when showAllTags is true OR there are stack frames) -->
+            <!-- Tag labels row (shown when showAllTags is true OR there are stack frames) -->
 
             <div v-if="tagsByRow.has(row)" class="tag-labels-container">
-
               <div class="address-column-spacer"></div>
 
               <div class="tag-labels-wrapper">
-                 <!-- Each level is a separate row of labels -->
+                <!-- Each level is a separate row of labels -->
                 <div
                   v-for="(level, levelIdx) in tagsByRow.get(row)"
                   :key="levelIdx"
                   class="tag-labels-row"
                 >
-
                   <div class="tag-labels">
-                     <span
+                    <span
                       v-for="(tagInfo, idx) in level"
                       :key="idx"
                       class="tag-label"
@@ -1143,27 +1136,25 @@ export default defineComponent({
                         left: `${tagInfo.startCol * (24 + 8)}px`,
                         width: `${(tagInfo.endCol - tagInfo.startCol + 1) * (24 + 8) - 8}px`,
                       }"
-                      > {{ tagInfo.tag }} </span
                     >
+                      {{ tagInfo.tag }}
+                    </span>
                   </div>
-
                 </div>
-
               </div>
-
             </div>
-             <!-- Data row -->
-            <div class="hex-row" :style="{ height: rowHeight + 'px' }">
 
+            <!-- Data row -->
+            <div class="hex-row" :style="{ height: rowHeight + 'px' }">
               <div
                 class="address-column"
                 :class="`segment-${getSegmentVariant(row * bytesPerRow)}`"
               >
-                 {{ `0x${toHex(row * bytesPerRow, 4)}` }}
+                {{ `0x${toHex(row * bytesPerRow, 4)}` }}
               </div>
 
               <div class="hex-columns">
-                 <span
+                <span
                   v-for="i in bytesPerRow"
                   :key="i"
                   :data-index="row * bytesPerRow + i - 1"
@@ -1179,7 +1170,8 @@ export default defineComponent({
                     handleByteMouseOver(row * bytesPerRow + i - 1, $event)
                   "
                   @mouseout="handleByteMouseOut"
-                  > <input
+                >
+                  <input
                     v-if="editingByte === row * bytesPerRow + i - 1"
                     type="text"
                     class="byte-editor"
@@ -1191,8 +1183,9 @@ export default defineComponent({
                     "
                     @blur="saveByteEdit(row * bytesPerRow + i - 1)"
                     :maxlength="viewMode === 'hex' ? 2 : 1"
-                  /> <template v-else
-                    > {{
+                  />
+                  <template v-else>
+                    {{
                       (() => {
                         const value = getMemoryValue(row * bytesPerRow + i - 1);
                         return viewMode === "hex"
@@ -1201,80 +1194,73 @@ export default defineComponent({
                             ? String.fromCharCode(value)
                             : ".";
                       })()
-                    }} </template
-                  > </span
-                >
+                    }}
+                  </template>
+                </span>
               </div>
 
               <div v-if="showAscii" class="ascii-column">
-                 <span
+                <span
                   v-for="i in bytesPerRow"
                   :key="i"
                   :data-index="row * bytesPerRow + i - 1"
                   :class="getAsciiCharClass(row * bytesPerRow + i - 1)"
-                  > {{
+                >
+                  {{
                     (() => {
                       const value = getMemoryValue(row * bytesPerRow + i - 1);
                       return value >= 32 && value <= 126
                         ? String.fromCharCode(value)
                         : ".";
                     })()
-                  }} </span
-                >
+                  }}
+                </span>
               </div>
-
             </div>
-
           </div>
-
         </div>
-
       </div>
-
     </div>
 
     <div class="hex-viewer-footer">
-
       <div class="pagination-controls">
-         <button
+        <button
           class="pagination-button"
           :disabled="!hasPreviousPage"
           @click="previousPage"
         >
-           <font-awesome-icon :icon="['fas', 'chevron-left']" /> Previous </button
-        > <span class="page-info"
-          > Page {{ currentPage + 1 }} of {{ totalPages || 1 }} </span
-        > <button
+          <font-awesome-icon :icon="['fas', 'chevron-left']" /> Previous
+        </button>
+        <span class="page-info">
+          Page {{ currentPage + 1 }} of {{ totalPages || 1 }}
+        </span>
+        <button
           class="pagination-button"
           :disabled="!hasNextPage"
           @click="nextPage"
         >
-           Next <font-awesome-icon :icon="['fas', 'chevron-right']" /> </button
-        >
+          Next <font-awesome-icon :icon="['fas', 'chevron-right']" />
+        </button>
       </div>
-
     </div>
 
     <div class="hex-viewer-status">
-       <span class="selection-info">{{ selectionInfo }}</span
-      >
+      <span class="selection-info">{{ selectionInfo }}</span>
     </div>
-     <!-- Memory Layout Modal --> <transition name="modal-fade"
-      >
+
+    <!-- Memory Layout Modal -->
+    <transition name="modal-fade">
       <div
         v-if="showMemoryLayoutModal"
         class="memory-layout-modal-overlay"
         @click="showMemoryLayoutModal = false"
       >
-
         <div class="memory-layout-modal" @click.stop>
-
           <div class="memory-layout-modal-header">
-
             <h5>Memory Layout</h5>
 
             <div class="header-controls">
-               <button
+              <button
                 class="invert-button"
                 @click="invertMemoryLayout = !invertMemoryLayout"
                 :title="
@@ -1283,19 +1269,19 @@ export default defineComponent({
                     : 'Show low to high addresses'
                 "
               >
-                 <font-awesome-icon :icon="['fas', 'arrows-alt-v']" /> </button
-              > <button
+                <font-awesome-icon :icon="['fas', 'arrows-alt-v']" />
+              </button>
+              <button
                 class="close-button"
                 @click="showMemoryLayoutModal = false"
               >
-                 <font-awesome-icon :icon="['fas', 'times']" /> </button
-              >
+                <font-awesome-icon :icon="['fas', 'times']" />
+              </button>
             </div>
-
           </div>
 
           <div class="memory-layout-modal-body">
-             <MemoryLayoutDiagram
+            <MemoryLayoutDiagram
               :memory_layout="architecture.memory_layout"
               :inverted="invertMemoryLayout"
               :show-gaps="true"
@@ -1303,14 +1289,10 @@ export default defineComponent({
               @segment-click="jumpToMemoryLayoutSegment"
             />
           </div>
-
         </div>
-
       </div>
-       </transition
-    >
+    </transition>
   </div>
-
 </template>
 
 <style scoped>
@@ -1557,7 +1539,9 @@ export default defineComponent({
   line-height: 16px;
   height: 18px;
   box-sizing: border-box;
-  font-family: "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace;
+  font-family:
+    "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New",
+    monospace;
 }
 
 /* Stack frame colors - matching MemoryTable.vue */
@@ -1603,7 +1587,9 @@ export default defineComponent({
   flex-shrink: 0;
   color: var(--bs-secondary-color);
   padding-right: 12px;
-  font-family: "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace;
+  font-family:
+    "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New",
+    monospace;
   padding-left: 6px;
   border-left: 4px solid transparent;
   transition: border-color 0.2s ease;
@@ -1641,7 +1627,9 @@ export default defineComponent({
   cursor: pointer;
   border-radius: 3px;
   transition: background-color 0.1s ease;
-  font-family: "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace;
+  font-family:
+    "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New",
+    monospace;
   position: relative;
 }
 
@@ -1656,7 +1644,9 @@ export default defineComponent({
   border-radius: 3px;
   background-color: var(--bs-body-bg);
   color: var(--bs-body-color);
-  font-family: "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace;
+  font-family:
+    "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New",
+    monospace;
   font-size: inherit;
   padding: 0;
   margin: 0;
@@ -1700,7 +1690,9 @@ export default defineComponent({
   cursor: pointer;
   border-radius: 3px;
   transition: background-color 0.1s ease;
-  font-family: "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace;
+  font-family:
+    "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New",
+    monospace;
 }
 
 .ascii-char.selected {
@@ -2073,4 +2065,3 @@ export default defineComponent({
   color: rgba(255, 255, 255, 0.8);
 }
 </style>
-

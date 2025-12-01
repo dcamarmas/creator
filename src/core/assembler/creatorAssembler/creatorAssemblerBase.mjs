@@ -445,7 +445,7 @@ function writeLibraryToMemory() {
         for (let j = 0; j < instructionBinary.length; j += WORDSIZE) {
             words.push(instructionBinary.substr(j, WORDSIZE));
         }
-        const reversedBinary = words.reverse().join('');
+        const reversedBinary = words.reverse().join("");
 
         for (let j = 0; j < reversedBinary.length; j += WORDSIZE) {
             const wordBinary = reversedBinary.substr(j, WORDSIZE);
@@ -481,7 +481,7 @@ function writeInstructionsToMemory(instructions, library_instructions) {
         for (let j = 0; j < instruction.binary.length; j += WORDSIZE) {
             words.push(instruction.binary.substr(j, WORDSIZE));
         }
-        const reversedBinary = words.reverse().join('');
+        const reversedBinary = words.reverse().join("");
 
         for (let j = 0; j < reversedBinary.length; j += WORDSIZE) {
             const wordBinary = reversedBinary.substr(j, WORDSIZE);

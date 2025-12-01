@@ -63,46 +63,47 @@ export default defineComponent({
 </script>
 
 <template>
-
   <div class="pseudoinstructions-container">
-     <!-- Search Bar -->
+    <!-- Search Bar -->
     <div class="pseudoinstruction-toolbar">
-       <b-row class="align-items-center"
-        > <b-col
-          > <b-form-input
+      <b-row class="align-items-center">
+        <b-col>
+          <b-form-input
             v-model="searchTerm"
             placeholder="Search pseudoinstructions..."
             size="sm"
-          /> </b-col
-        > <b-col class="text-end"
-          > <b-badge variant="primary" pill
-            > {{ filteredPseudoinstructions.length }} / {{
-              pseudoinstructions.length
-            }} </b-badge
-          > </b-col
-        > </b-row
-      >
+          />
+        </b-col>
+        <b-col class="text-end">
+          <b-badge variant="primary" pill>
+            {{ filteredPseudoinstructions.length }} /
+            {{ pseudoinstructions.length }}
+          </b-badge>
+        </b-col>
+      </b-row>
     </div>
-     <!-- Pseudoinstruction set table --> <b-table
+
+    <!-- Pseudoinstruction set table -->
+    <b-table
       small
       :items="filteredPseudoinstructions"
       :fields="pseudoinstructions_fields"
       class="pseudoinstructions-table"
       hover
       responsive
-      > <!-- For each pseudoinstruction --> <template v-slot:cell(name)="row"
-        > <code class="pseudo-name">{{ row.item.name }}</code
-        > </template
-      > <template v-slot:cell(signature_pretty)="row"
-        > <span class="syntax-text">{{ row.item.signature_pretty }}</span
-        > </template
-      > <template v-slot:cell(definition)="row"
-        > <code class="definition-text">{{ row.item.definition }}</code
-        > </template
-      > </b-table
     >
+      <!-- For each pseudoinstruction -->
+      <template v-slot:cell(name)="row">
+        <code class="pseudo-name">{{ row.item.name }}</code>
+      </template>
+      <template v-slot:cell(signature_pretty)="row">
+        <span class="syntax-text">{{ row.item.signature_pretty }}</span>
+      </template>
+      <template v-slot:cell(definition)="row">
+        <code class="definition-text">{{ row.item.definition }}</code>
+      </template>
+    </b-table>
   </div>
-
 </template>
 
 <style lang="scss" scoped>
@@ -172,7 +173,9 @@ export default defineComponent({
 }
 
 .pseudo-name {
-  font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+  font-family:
+    "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New",
+    monospace;
   font-weight: 600;
   font-size: 0.875rem;
   color: rgba(0, 0, 0, 0.9);
@@ -182,13 +185,17 @@ export default defineComponent({
 }
 
 .syntax-text {
-  font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+  font-family:
+    "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New",
+    monospace;
   font-size: 0.8125rem;
   color: rgba(0, 0, 0, 0.7);
 }
 
 .definition-text {
-  font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+  font-family:
+    "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New",
+    monospace;
   font-size: 0.75rem;
   color: rgba(0, 0, 0, 0.6);
   background: rgba(0, 0, 0, 0.02);
@@ -235,4 +242,3 @@ export default defineComponent({
   }
 }
 </style>
-

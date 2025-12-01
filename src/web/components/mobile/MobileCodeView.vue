@@ -110,74 +110,77 @@ function resetCode() {
 </script>
 
 <template>
-
   <div class="mobile-code-view">
-
     <div class="mobile-code-header">
-
       <div class="code-info">
-
         <h3 class="code-title">
-           <font-awesome-icon :icon="['fas', 'code']" /> Assembly
+          <font-awesome-icon :icon="['fas', 'code']" /> Assembly
         </h3>
-
       </div>
 
       <div class="code-actions">
-         <b-button
+        <b-button
           :variant="isAssembled ? 'success' : 'primary'"
           size="sm"
           @click="assembleCode"
           title="Assemble"
-          > <font-awesome-icon
-            :icon="isAssembled ? ['fas', 'check'] : ['fas', 'play']"
-          /> <span class="btn-text">Assemble</span> </b-button
-        > <b-dropdown
-          variant="outline-secondary"
-          size="sm"
-          title="More"
-          no-caret
-          > <template #button-content
-            > <font-awesome-icon :icon="['fas', 'bars']" /> </template
-          > <b-dropdown-item v-b-modal.instruction-help-mobile
-            > <font-awesome-icon :icon="['fas', 'question-circle']" />
-            Instruction Help </b-dropdown-item
-          > <b-dropdown-item v-b-modal.examples-mobile
-            > <font-awesome-icon :icon="['fas', 'file-lines']" /> Examples
-            </b-dropdown-item
-          > <b-dropdown-item v-b-modal.load-library-mobile
-            > <font-awesome-icon :icon="['fas', 'upload']" /> Load Library
-            </b-dropdown-item
-          > <b-dropdown-item v-b-modal.library-tags-mobile
-            > <font-awesome-icon :icon="['fas', 'tags']" /> View Library Tags
-            </b-dropdown-item
-          > <b-dropdown-item @click="resetCode"
-            > <font-awesome-icon :icon="['fas', 'trash']" /> Clear
-            </b-dropdown-item
-          > </b-dropdown
         >
+          <font-awesome-icon
+            :icon="isAssembled ? ['fas', 'check'] : ['fas', 'play']"
+          />
+          <span class="btn-text">Assemble</span>
+        </b-button>
+        <b-dropdown variant="outline-secondary" size="sm" title="More" no-caret>
+          <template #button-content>
+            <font-awesome-icon :icon="['fas', 'bars']" />
+          </template>
+          <b-dropdown-item v-b-modal.instruction-help-mobile>
+            <font-awesome-icon :icon="['fas', 'question-circle']" /> Instruction
+            Help
+          </b-dropdown-item>
+          <b-dropdown-item v-b-modal.examples-mobile>
+            <font-awesome-icon :icon="['fas', 'file-lines']" /> Examples
+          </b-dropdown-item>
+          <b-dropdown-item v-b-modal.load-library-mobile>
+            <font-awesome-icon :icon="['fas', 'upload']" /> Load Library
+          </b-dropdown-item>
+          <b-dropdown-item v-b-modal.library-tags-mobile>
+            <font-awesome-icon :icon="['fas', 'tags']" /> View Library Tags
+          </b-dropdown-item>
+          <b-dropdown-item @click="resetCode">
+            <font-awesome-icon :icon="['fas', 'trash']" /> Clear
+          </b-dropdown-item>
+        </b-dropdown>
       </div>
-
     </div>
 
     <div class="mobile-code-editor">
-       <MobileEditor
+      <MobileEditor
         :os="'mobile'"
         :assembly_code="code"
         height="100%"
         :dark="dark || false"
       />
     </div>
-
   </div>
-   <!-- Examples modal --> <Examples
+
+  <!-- Examples modal -->
+  <Examples
     id="examples-mobile"
     :architecture_name="architecture_name"
     :compile="false"
-  /> <!-- Instruction Help modal --> <MobileInstructionHelp
+  />
+
+  <!-- Instruction Help modal -->
+  <MobileInstructionHelp
     id="instruction-help-mobile"
     :architecture_name="architecture_name"
-  /> <!-- Load Library modal --> <LoadLibrary id="load-library-mobile" /> <!-- Library Tags modal -->
+  />
+
+  <!-- Load Library modal -->
+  <LoadLibrary id="load-library-mobile" />
+
+  <!-- Library Tags modal -->
   <LibraryTags id="library-tags-mobile" />
 </template>
 
@@ -187,8 +190,10 @@ function resetCode() {
   top: env(safe-area-inset-top);
   left: 0;
   right: 0;
-  bottom: calc(56px + env(safe-area-inset-bottom)); // Above mobile navbar + safe area
-  
+  bottom: calc(
+    56px + env(safe-area-inset-bottom)
+  ); // Above mobile navbar + safe area
+
   // Reduce bottom spacing on very small screens to match navbar height
   @media (max-width: 320px) {
     bottom: calc(48px + env(safe-area-inset-bottom));
@@ -378,7 +383,7 @@ function resetCode() {
     :deep(.btn) {
       min-height: 44px; // Minimum touch target
     }
-    
+
     :deep(.dropdown-toggle) {
       min-height: 44px; // Minimum touch target
       min-width: 44px;
@@ -386,4 +391,3 @@ function resetCode() {
   }
 }
 </style>
-

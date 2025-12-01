@@ -88,10 +88,14 @@ export default defineComponent({
 </script>
 
 <template>
-   <b-container fluid align-h="center" id="simulator"
-    > <b-row
-      > <b-col
-        > <!-- Navbar --> <!-- Simulator navbar modals --> <!-- Flash --> <Flash
+  <b-container fluid align-h="center" id="simulator">
+    <b-row>
+      <b-col>
+        <!-- Navbar -->
+        <!-- Simulator navbar modals -->
+
+        <!-- Flash -->
+        <Flash
           id="flash"
           :os="os"
           :assembly_code="assembly_code"
@@ -100,31 +104,41 @@ export default defineComponent({
           :target_board="target_board"
           :target_port="target_port"
           :flash_url="flash_url"
-        /> <!-- Examples modal --> <Examples
+        />
+
+        <!-- Examples modal -->
+        <Examples
           id="examples-simulator"
           :architecture_name="architecture_name"
           :compile="true"
-        /> <!-- Calculator --> <Calculator id="calculator" /> <b-row
-          align-h="center"
-          class="simulator-main-row"
-          > <!-- Column 1: Execution instruction --> <b-col
+        />
+
+        <!-- Calculator -->
+        <Calculator id="calculator" />
+        <b-row align-h="center" class="simulator-main-row">
+          <!-- Column 1: Execution instruction -->
+          <b-col
             cols="12"
             sm="12"
             md="5"
             lg="5"
             class="execution-instruction-col"
-            > <TableExecution
+          >
+            <TableExecution
               :instructions="instructions"
               :enter="enter"
               ref="tableExecution"
-            /> </b-col
-          > <!-- Column 2: Execution data (split into top: data, bottom: terminal) -->
-          <b-col cols="12" sm="12" md="7" lg="7" class="execution-data-col"
-            > <!-- Top row: current execution data -->
-            <div class="execution-data-container">
+            />
+          </b-col>
 
+          <!-- Column 2: Execution data (split into top: data, bottom: terminal) -->
+
+          <b-col cols="12" sm="12" md="7" lg="7" class="execution-data-col">
+            <!-- Top row: current execution data -->
+            <div class="execution-data-container">
               <div class="execution-data-header">
-                 <!-- View selector as tabs --> <DataViewSelector
+                <!-- View selector as tabs -->
+                <DataViewSelector
                   :data_mode="data_mode"
                   :register_file_num="architecture.components.length"
                   :dark="dark"
@@ -132,7 +146,8 @@ export default defineComponent({
               </div>
 
               <div class="execution-data-content">
-                 <!-- Registers view --> <RegisterFile
+                <!-- Registers view -->
+                <RegisterFile
                   v-if="
                     data_mode == 'int_registers' || data_mode == 'fp_registers'
                   "
@@ -142,19 +157,28 @@ export default defineComponent({
                   :reg_name_representation="reg_name_representation"
                   :dark="dark"
                   ref="registerFile"
-                /> <!-- Memory view--> <HexViewer
+                />
+
+                <!-- Memory view-->
+                <HexViewer
                   v-if="data_mode === 'memory'"
                   ref="memory"
                   :main_memory="main_memory"
                   :devices="devices"
                   :segment="memory_segment"
-                /> <!-- Stats view---> <Stats
+                />
+
+                <!-- Stats view--->
+                <Stats
                   v-if="data_mode === 'stats'"
                   ref="stats"
                   :dark="dark"
                   :representation="stat_representation"
                   :type="stat_type"
-                /> <!-- Terminal view --> <Terminal
+                />
+
+                <!-- Terminal view -->
+                <Terminal
                   v-if="data_mode === 'terminal'"
                   :display="display"
                   :keyboard="keyboard"
@@ -162,14 +186,12 @@ export default defineComponent({
                   ref="terminal"
                 />
               </div>
-
             </div>
-             </b-col
-          > </b-row
-        > </b-col
-      > </b-row
-    > </b-container
-  >
+          </b-col>
+        </b-row>
+      </b-col>
+    </b-row>
+  </b-container>
 </template>
 
 <style lang="scss" scoped>
@@ -293,4 +315,3 @@ export default defineComponent({
   font-size: 0.7em;
 }
 </style>
-

@@ -17,14 +17,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <script setup lang="ts">
-import {
-  computed,
-  defineProps,
-  onMounted,
-  onBeforeUnmount,
-  ref,
-  watch,
-} from "vue";
+import { computed, onMounted, onBeforeUnmount, ref, watch } from "vue";
 
 /* Monaco */
 import * as monaco from "monaco-editor";
@@ -195,20 +188,19 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-   <b-modal
+  <b-modal
     :id="id"
     size="xl"
     title="Edit Architecture"
     ok-title="Save"
     @ok="saveArch"
-    >
+  >
     <div
       ref="editorContainer"
       style="height: 75vh"
       class="monaco-editor-container"
     ></div>
-     </b-modal
-  >
+  </b-modal>
 </template>
 
 <style lang="scss" scoped>
@@ -220,4 +212,3 @@ onBeforeUnmount(() => {
   overflow: hidden;
 }
 </style>
-
