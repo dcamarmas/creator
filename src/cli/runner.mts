@@ -18,6 +18,9 @@
  *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+// Runner for Z80 architecture ROMs
+// usage: deno -A --unstable-node-globals ./src/cli/runner.mts -a ./architecture/Z80.yml --bin ./sinclair.bin
+
 import fs from "node:fs";
 import process from "node:process";
 import yargs from "yargs";
@@ -60,6 +63,7 @@ let pluginName: string | undefined = undefined;
 /**
  * The main function to set up and run the emulator.
  */
+// eslint-disable-next-line max-lines-per-function
 async function main() {
     const argv = await parseArguments();
 
@@ -115,6 +119,7 @@ async function main() {
     creator.initCAPI(pluginName);
 
     // --- 2. Prepare the Emulator State ---
+    CAPI.INTERRUPTS.setCustomHandler();
     creator.reset();
 
     // Load the user-provided program into memory.
@@ -143,7 +148,7 @@ async function main() {
 
         try {
             for (let i = 0; i < INSTRUCTIONS_PER_CHUNK; i++) {
-                let pc_value = creator.getRegisterInfo("PC").value;
+                let pc_value = creator.getRegisterInfo("PC")!.value;
                 // const breakpoint = 0x0E4D;
                 // if (creator.getRegisterInfo("PC").value === BigInt(breakpoint)) {
                 //     console.log(
@@ -161,12 +166,12 @@ async function main() {
                 //     process.exit(0);
                 // }
 
-                if (totalInstructions === 700000) {
+                if (totalInstructions === 780000) {
                     process.exit(0);
                 }
                 if (totalInstructions === 0) {
                     creator
-                        .getRegistersByBank("int_registers")
+                        .getRegistersByBank("int_registers")!
                         .elements.forEach(reg => {
                             console.log(
                                 `    ${reg.name[0]}: 0x${reg.value.toString(16)}`,

@@ -17,7 +17,8 @@
  * along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { status } from "../core.mjs";
+import { REGISTERS, architecture, status } from "../core.mjs";
+import { InterruptType } from "./InterruptManager.mts";
 
 interface DecodedField {
     type: string;
@@ -30,20 +31,21 @@ interface InstructionDescriptor {
     fields: Array<DecodedField & { order?: number }>;
 }
 
-const registers = new Proxy(
+export const registerProxy = new Proxy(
     {},
     {
         get(_target, prop) {
             if (typeof prop !== "string") {
                 throw new Error("Register name must be a string");
             }
-            // Special case for PC register - read virtual PC from status
-            if (prop === "PC") {
-                return status.virtual_PC;
+            // Special case for PC register - "virtual PC"
+            if (status.pcRegisterNames.includes(prop)) {
+                const offset = BigInt(architecture.config.pc_offset || 0n);
+                return CAPI.REG.read(prop) + offset;
             }
             return CAPI.REG.read(prop);
         },
-        set(_target, prop, value) {
+        set(_target, prop, value: bigint) {
             if (typeof prop !== "string") {
                 throw new Error("Register name must be a string");
             }
@@ -67,6 +69,25 @@ const registers = new Proxy(
         },
     },
 );
+
+/**
+ * Builds a custom `Function` with injected `CAPI`, `status`, `registers` and
+ * `InterruptType` local variables
+ * @param args `Function` parameters (arguments and function body)
+ * @returns Modified function
+ */
+export function injectedFunction(...args: string[]) {
+    const f = new Function(
+        "CAPI",
+        "status",
+        "registers",
+        "InterruptType",
+        ...args,
+    );
+    return (...sargs: unknown[]) => {
+        return f(CAPI, status, registerProxy, InterruptType, ...sargs);
+    };
+}
 
 export function compileInstruction(instruction: InstructionDescriptor) {
     const parameters: Array<string | undefined> = [];
@@ -99,15 +120,6 @@ export function compileInstruction(instruction: InstructionDescriptor) {
         (param): param is string => typeof param === "string",
     );
 
-    const func = new Function(
-        "status",
-        "registers",
-        ...orderedParameters,
-        instruction.definition,
-    );
-
     // Return a wrapper function that injects the status and registers objects
-    return function (...args: unknown[]) {
-        return func(status, registers, ...args);
-    };
+    return injectedFunction(...orderedParameters, instruction.definition);
 }

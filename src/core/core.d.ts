@@ -29,6 +29,8 @@
  * {import("./core.d.ts").Stuff})
  *  */
 
+// TODO: extract this data from the assembler
+
 type RegisterBank = {
     name: string;
     type: string;
@@ -100,6 +102,23 @@ type Directive = { name: string; action: string };
 
 export declare const REGISTERS: RegisterBank[];
 
+type ArchitectureInterrupts = {
+    handlers: {
+        creator_syscall?: string;
+        custom?: string;
+    };
+    enable?: string;
+    global_enable: string;
+    disable?: string;
+    global_disable: string;
+    check: string;
+    is_enabled?: string;
+    is_global_enabled: string;
+    clear?: string;
+    global_clear: string;
+    create: string;
+};
+
 type Architecture = {
     config: {
         name: string;
@@ -124,15 +143,7 @@ type Architecture = {
     instructions: Instruction[];
     pseudoinstructions: PseudoInstruction[];
     directives: Directive[];
-    interrupts: {
-        enabled: boolean;
-        enable: string;
-        disable: string;
-        check: string;
-        clear: string;
-        get_handler_addr: string;
-        create: string;
-    };
+    interrupts?: ArchitectureInterrupts;
     timer: {
         tick_cycles: number;
         advance: string;
@@ -144,7 +155,10 @@ type Architecture = {
 };
 export declare const architecture: Architecture;
 
-import type { ExecutionMode } from "./executor/interrupts.mts";
+import type {
+    ExecutionMode,
+    InterruptHandlerType,
+} from "./executor/InterruptManager.mts";
 
 type Status = {
     execution_init: number;
@@ -155,10 +169,10 @@ type Status = {
     keyboard: string;
     display: string;
     execution_index: number;
-    virtual_PC: bigint;
     error: boolean;
     execution_mode: ExecutionMode;
-    interrupts_enabled: boolean;
+    interrupt_handler: InterruptHandlerType;
+    pcRegisterNames: string[];
 };
 export declare const status: Status;
 

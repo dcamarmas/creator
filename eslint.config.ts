@@ -66,7 +66,6 @@ export default defineConfigWithVueTs(
       "dot-notation": "error",
       "max-params": ["warn", 5],
       "no-div-regex": "error",
-      "no-empty-function": "warn",
       "no-implicit-coercion": "error",
       "no-invalid-this": "error",
       "no-iterator": "error",

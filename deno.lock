@@ -1,7 +1,6 @@
 {
   "version": "5",
   "specifiers": {
-    "npm:@types/yargs@^17.0.33": "17.0.33",
     "npm:readline-sync@^1.4.10": "1.4.10"
   },
   "npm": {
@@ -323,15 +322,6 @@
       "os": ["win32"],
       "cpu": ["x64"]
     },
-    "@types/yargs-parser@21.0.3": {
-      "integrity": "sha512-I4q9QU9MQv4oEOz4tAHJtNz1cwuLxn2F3xcc2iV5WdqLPpUnj30aUuxt1mAxYTG+oe8CZMV/+6rU4S4gRDzqtQ=="
-    },
-    "@types/yargs@17.0.33": {
-      "integrity": "sha512-WpxBCKWPLr4xSsHgz511rFJAM+wS28w2zEO1QDNY5zM/S8ok70NNfztH0xwhqKyaK0OHCbN98LDAZuy1ctxDkA==",
-      "dependencies": [
-        "@types/yargs-parser"
-      ]
-    },
     "detect-libc@1.0.3": {
       "integrity": "sha512-pGjwhsmsp4kL2RTz08wcOlGN83otlqHeD/Z5T8GXZB+/YcpQ/dgo+lbU8ZsGxV0HIvqqxo9l7mqYwyYMD9bKDg==",
       "bin": true
@@ -509,14 +499,14 @@
         "npm:@fortawesome/vue-fontawesome@^3.1.2",
         "npm:@prettier/plugin-pug@^3.4.2",
         "npm:@replit/codemirror-vim@^6.3.0",
-        "npm:@tsconfig/node22@^22.0.2",
+        "npm:@tsconfig/node22@^22.0.5",
         "npm:@types/colors@^1.2.4",
         "npm:@types/humanize-duration@^3.27.4",
         "npm:@types/js-yaml@^4.0.9",
-        "npm:@types/node@^24.9.1",
-        "npm:@types/yargs@^17.0.33",
+        "npm:@types/node@^24.10.1",
+        "npm:@types/yargs@^17.0.35",
         "npm:@uiw/codemirror-themes@^4.25.1",
-        "npm:@vitejs/plugin-vue@^6.0.1",
+        "npm:@vitejs/plugin-vue@^6.0.2",
         "npm:@vue/eslint-config-prettier@^10.2.0",
         "npm:@vue/eslint-config-typescript@^14.6.0",
         "npm:@vue/tsconfig@~0.8.1",
@@ -532,8 +522,8 @@
         "npm:colors@^1.4.0",
         "npm:deno@^2.5.4",
         "npm:eslint-plugin-vue@^10.5.1",
-        "npm:eslint@^9.38.0",
-        "npm:globals@^16.4.0",
+        "npm:eslint@^9.39.1",
+        "npm:globals@^16.5.0",
         "npm:humanize-duration@^3.33.0",
         "npm:jiti@^2.6.1",
         "npm:js-yaml@^4.1.0",
@@ -543,23 +533,23 @@
         "npm:monaco-yaml@^5.4.0",
         "npm:npm-run-all2@^8.0.4",
         "npm:prettier-plugin-vue@^1.1.6",
-        "npm:prettier@^3.6.2",
+        "npm:prettier@^3.7.3",
         "npm:qrcode.vue@^3.6.0",
         "npm:readline-sync@^1.4.10",
-        "npm:sass-embedded@^1.92.1",
-        "npm:sharp@~0.34.3",
+        "npm:sass-embedded@^1.93.3",
+        "npm:sharp@~0.34.5",
         "npm:svgo@4",
         "npm:typescript@~5.9.3",
         "npm:unplugin-vue-components@30",
-        "npm:vite-multiple-assets@^2.2.5",
+        "npm:vite-multiple-assets@^2.2.6",
         "npm:vite-node@^3.2.4",
-        "npm:vite-plugin-image-optimizer@^2.0.2",
-        "npm:vite-plugin-vue-devtools@^8.0.3",
+        "npm:vite-plugin-image-optimizer@^2.0.3",
+        "npm:vite-plugin-vue-devtools@^8.0.5",
         "npm:vite-plugin-wasm@^3.5.0",
-        "npm:vite@^7.1.12",
+        "npm:vite@^7.2.4",
         "npm:vue-codemirror6@^1.4.1",
         "npm:vue-router@^4.6.3",
-        "npm:vue-tsc@^3.0.7",
+        "npm:vue-tsc@^3.1.4",
         "npm:vue@^3.5.21",
         "npm:xterm@^5.3.0",
         "npm:yargs@18"
