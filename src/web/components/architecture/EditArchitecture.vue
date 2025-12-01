@@ -61,7 +61,7 @@ configureMonacoYaml(monaco, {
     {
       fileMatch: ["**/architecture.yaml"],
       schema: schema as unknown as JSONSchema,
-      uri: `${document.URL}architecture/schema.json`,
+      uri: `${document.URL.replace(/\/#$/, "/")}architecture/schema.json`,
     },
   ],
 });

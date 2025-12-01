@@ -18,6 +18,7 @@
  */
 
 import { architecture, status } from "../core.mjs";
+import { injectedFunction } from "./instructionCompiler.mts";
 
 let timerAdvance: () => void;
 let timerHandler: () => void;
@@ -25,11 +26,9 @@ let timerIsEnabled: () => boolean;
 
 export function compileTimerFunctions() {
     if (!architecture.timer) return;
-    timerAdvance = new Function(architecture.timer.advance) as () => void;
-    timerHandler = new Function(architecture.timer.handler) as () => void;
-    timerIsEnabled = new Function(
-        architecture.timer.is_enabled,
-    ) as () => boolean;
+    timerAdvance = injectedFunction(architecture.timer.advance);
+    timerHandler = injectedFunction(architecture.timer.handler);
+    timerIsEnabled = injectedFunction(architecture.timer.is_enabled);
 }
 
 export function handleTimer() {

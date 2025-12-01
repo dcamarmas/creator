@@ -23,7 +23,6 @@ import { MAXNWORDS } from "../utils/architectureProcessor.mjs";
 import { decode } from "../executor/decoder.mjs";
 import ansicolor from "ansicolor";
 import { resetStats } from "../executor/stats.mts";
-import { enableInterrupts } from "@/core/executor/interrupts.mts";
 
 /*Instructions memory address*/
 export let address;
@@ -338,9 +337,6 @@ export function assembly_compiler(code, library, compiler) {
     resetStats();
     status.executedInstructions = 0;
     status.clkCycles = 0;
-
-    // enable interrupts
-    if (architecture.interrupts?.enabled) enableInterrupts();
 
     return compiler(code, library);
 }
