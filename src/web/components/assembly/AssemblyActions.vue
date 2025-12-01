@@ -194,13 +194,11 @@ function handleBlur() {
 </script>
 
 <template>
-
   <div class="button-group">
-     <!-- Assemble button with optional compiler dropdown -->
+    <!-- Assemble button with optional compiler dropdown -->
     <div v-if="showCompilerDropdown" class="assemble-dropdown-wrapper">
-
       <div class="split-button-group">
-         <button
+        <button
           class="asm-button split-main"
           :class="{
             'asm-button-dark': dark,
@@ -209,13 +207,16 @@ function handleBlur() {
           :disabled="compiling"
           @click="assembly_compiler_only"
         >
-           <font-awesome-icon
+          <font-awesome-icon
             :icon="isAssembled ? ['fas', 'check'] : ['fas', 'hammer']"
             class="icon-spacing"
-          /> <span class="button-text"
+          />
+          <span class="button-text"
             >Assemble ({{ selectedCompilerLabel }})</span
-          > <span v-if="compiling" class="spinner" /> </button
-        > <button
+          >
+          <span v-if="compiling" class="spinner" />
+        </button>
+        <button
           class="asm-button split-toggle"
           :class="{
             'asm-button-dark': dark,
@@ -226,10 +227,10 @@ function handleBlur() {
           @click="dropdownOpen = !dropdownOpen"
           @blur="handleBlur"
         >
-           <font-awesome-icon :icon="['fas', 'chevron-down']" /> </button
-        >
+          <font-awesome-icon :icon="['fas', 'chevron-down']" />
+        </button>
       </div>
-       <!--
+      <!--
       <div v-if="dropdownOpen" class="dropdown-menu">
         <button
           v-for="option in compilerOptions"
@@ -252,7 +253,9 @@ function handleBlur() {
       </div>
       -->
     </div>
-     <!-- Simple assemble button (when only one compiler) --> <button
+
+    <!-- Simple assemble button (when only one compiler) -->
+    <button
       v-else
       class="asm-button"
       :class="{
@@ -262,50 +265,53 @@ function handleBlur() {
       :disabled="compiling"
       @click="assembly_compiler_only"
     >
-       <font-awesome-icon
+      <font-awesome-icon
         :icon="isAssembled ? ['fas', 'check'] : ['fas', 'hammer']"
         class="icon-spacing"
-      /> <span class="button-text">Assemble</span> <span
-        v-if="compiling"
-        class="spinner"
-      /> </button
-    > <!-- Assemble & Run button --> <button
+      />
+      <span class="button-text">Assemble</span>
+      <span v-if="compiling" class="spinner" />
+    </button>
+
+    <!-- Assemble & Run button -->
+    <button
       class="asm-button"
       :class="{ 'asm-button-dark': dark }"
       :disabled="compiling"
       @click="assembly_compiler"
     >
-       <font-awesome-icon
+      <font-awesome-icon
         :icon="['fas', 'right-to-bracket']"
         class="icon-spacing"
-      /> <span class="button-text">Assemble & Run</span> <span
-        v-if="compiling"
-        class="spinner"
-      /> </button
-    > <!-- Vim mode --> <button
+      />
+      <span class="button-text">Assemble & Run</span>
+      <span v-if="compiling" class="spinner" />
+    </button>
+    <!-- Vim mode -->
+    <button
       class="asm-button"
       :class="{ 'asm-button-dark': dark }"
       @click="toggleVim"
     >
-       <font-awesome-icon
+      <font-awesome-icon
         :icon="['fa-brands', 'vimeo-v']"
         class="icon-spacing"
-      /> <span class="button-text">Vim: {{ root.vim_mode ? "on" : "off" }}</span
-      > </button
-    > <!-- Library Tags button (only shown when library is loaded) --> <button
+      />
+      <span class="button-text">Vim: {{ root.vim_mode ? "on" : "off" }}</span>
+    </button>
+
+    <!-- Library Tags button (only shown when library is loaded) -->
+    <button
       v-if="showLibraryButton"
       class="asm-button library-tags-button"
       :class="{ 'asm-button-dark': dark }"
       @click="() => showLibraryTags()"
       :title="`View ${libraryTagsCount} library tag${libraryTagsCount !== 1 ? 's' : ''}`"
     >
-       <font-awesome-icon :icon="['fas', 'tags']" class="icon-spacing" /> <span
-        class="button-text"
-        >Library ({{ libraryTagsCount }})</span
-      > </button
-    >
+      <font-awesome-icon :icon="['fas', 'tags']" class="icon-spacing" />
+      <span class="button-text">Library ({{ libraryTagsCount }})</span>
+    </button>
   </div>
-
 </template>
 
 <style lang="scss" scoped>
@@ -499,4 +505,3 @@ function handleBlur() {
   }
 }
 </style>
-

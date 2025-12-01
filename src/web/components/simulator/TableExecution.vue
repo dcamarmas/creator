@@ -80,7 +80,7 @@ export default {
 </script>
 
 <template>
-   <b-table
+  <b-table
     id="inst_table"
     sticky-header="100%"
     small
@@ -92,36 +92,42 @@ export default {
     :filter-function="filter"
     filter=" "
     primary-key="Address"
-    > <!-- column headers --> <template #head(userInstructions)="_row"
-      > User Instruction </template
-    > <template #head(loadedInstructions)="_row"> Loaded Instructions </template
-    > <!-- address --> <template #cell(Address)="row"
-      > <span
+  >
+    <!-- column headers -->
+    <template #head(userInstructions)="_row"> User Instruction </template>
+    <template #head(loadedInstructions)="_row"> Loaded Instructions </template>
+
+    <!-- address -->
+    <template #cell(Address)="row">
+      <span
         v-if="row.item.Break"
         class="breakpoint-indicator"
         title="Breakpoint"
         >●</span
-      > <span v-else class="breakpoint-space">&nbsp;</span> <span>{{
-        row.item.Address
-      }}</span
-      > <b-badge
+      >
+      <span v-else class="breakpoint-space">&nbsp;</span>
+      <span>{{ row.item.Address }}</span>
+      <b-badge
         v-if="row.item.Label"
         pill
         variant="info"
         style="margin-left: 0.5em"
         >{{ row.item.Label }}</b-badge
-      > </template
-    > <!-- user instruction --> <template #cell(userInstructions)="row"
-      > <span v-if="row.item.visible"> {{ row.item.user }} </span> <span v-else
-        > &lt;&lt;Hidden&gt;&gt; </span
-      > </template
-    > <!-- loaded instruction --> <template #cell(loadedInstructions)="row"
-      > <span v-if="row.item.visible"> {{ row.item.loaded }} </span> <span
-        v-else
-        > &lt;&lt;Hidden&gt;&gt; </span
-      > </template
-    > </b-table
-  >
+      >
+    </template>
+
+    <!-- user instruction -->
+    <template #cell(userInstructions)="row">
+      <span v-if="row.item.visible"> {{ row.item.user }} </span>
+      <span v-else> &lt;&lt;Hidden&gt;&gt; </span>
+    </template>
+
+    <!-- loaded instruction -->
+    <template #cell(loadedInstructions)="row">
+      <span v-if="row.item.visible"> {{ row.item.loaded }} </span>
+      <span v-else> &lt;&lt;Hidden&gt;&gt; </span>
+    </template>
+  </b-table>
 </template>
 
 <style lang="scss" scoped>
@@ -167,4 +173,3 @@ export default {
   margin-right: 1em;
 }
 </style>
-

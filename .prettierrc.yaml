@@ -10,8 +10,6 @@ quoteProps: as-needed
 arrowParens: avoid
 singleAttributePerLine: false
 useTabs: false
-plugins:
-  - prettier-plugin-vue
 overrides:
   - files:
       - "*.vue"

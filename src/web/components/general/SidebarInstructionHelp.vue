@@ -59,21 +59,21 @@ export default defineComponent({
 </script>
 
 <template>
-   <b-offcanvas :id="id" placement="end" :width="width" title="Instruction Help"
-    > <b-form-input
+  <b-offcanvas :id="id" placement="end" :width="width" title="Instruction Help">
+    <b-form-input
       id="filter-input"
       v-model="instHelpFilter"
       type="search"
       placeholder="Search instruction"
       size="sm"
-    /> <br /> <a
-      v-if="architecture_guide"
-      target="_blank"
-      :href="architecture_guide"
-      > <font-awesome-icon :icon="['fas', 'file-pdf']" /> {{
-        architecture_name
-      }} Guide </a
-    > <br /> <b-table
+    />
+    <br />
+    <a v-if="architecture_guide" target="_blank" :href="architecture_guide">
+      <font-awesome-icon :icon="['fas', 'file-pdf']" />
+      {{ architecture_name }} Guide
+    </a>
+    <br />
+    <b-table
       small
       :items="instructions"
       :fields="insHelpFields"
@@ -81,14 +81,14 @@ export default defineComponent({
       :filter="instHelpFilter"
       thead-class="d-none"
       primary-key="name"
-      > <template v-slot:cell(name)="row"
-        >
+    >
+      <template v-slot:cell(name)="row">
         <h4>{{ row.item.name }}</h4>
-         <em>{{ row.item.signature_pretty }}</em
-        > <br /> {{ row.item.help }} </template
-      > </b-table
-    > </b-offcanvas
-  >
+        <em>{{ row.item.signature_pretty }}</em> <br />
+        {{ row.item.help }}
+      </template>
+    </b-table>
+  </b-offcanvas>
 </template>
 
 <style lang="scss" scoped>
@@ -99,4 +99,3 @@ export default defineComponent({
   -ms-overflow-style: -ms-autohiding-scrollbar;
 }
 </style>
-

@@ -47,59 +47,49 @@ export default defineComponent({
 </script>
 
 <template>
-
   <div class="mobile-instructions-view">
-     <!-- Header with execution controls -->
+    <!-- Header with execution controls -->
     <div class="mobile-instructions-header">
-
       <div class="instructions-info">
-
         <h3 class="instructions-title">
-           <font-awesome-icon :icon="['fas', 'book']" /> Instructions
+          <font-awesome-icon :icon="['fas', 'book']" /> Instructions
         </h3>
-
       </div>
 
       <div class="execution-controls">
-         <SimulatorControls
+        <SimulatorControls
           :browser="browser"
           :os="os"
           :dark="dark"
-          :instructions="instructions"
+          :instructions="instructions!"
           :autoscroll="true"
           mode="toolbar"
           ref="executionControls"
         />
       </div>
-
     </div>
-     <!-- Instructions table -->
+
+    <!-- Instructions table -->
     <div class="mobile-instructions-table">
-       <TableExecution
+      <TableExecution
         v-if="instructions && instructions.length > 0"
         :instructions="instructions"
         :enter="enter"
         ref="tableExecution"
       />
       <div v-else class="no-instructions">
-
         <div class="no-instructions-content">
-           <font-awesome-icon
+          <font-awesome-icon
             :icon="['fas', 'book-open']"
             class="no-instructions-icon"
           />
           <h4>No Instructions</h4>
 
           <p>Assemble your code to see the instruction table here.</p>
-
         </div>
-
       </div>
-
     </div>
-
   </div>
-
 </template>
 
 <style lang="scss" scoped>
@@ -108,8 +98,10 @@ export default defineComponent({
   top: env(safe-area-inset-top);
   left: 0;
   right: 0;
-  bottom: calc(56px + env(safe-area-inset-bottom)); // Above mobile navbar + safe area
-  
+  bottom: calc(
+    56px + env(safe-area-inset-bottom)
+  ); // Above mobile navbar + safe area
+
   // Reduce bottom spacing on very small screens to match navbar height
   @media (max-width: 320px) {
     bottom: calc(48px + env(safe-area-inset-bottom));
@@ -256,8 +248,6 @@ export default defineComponent({
       }
     }
   }
-
-
 }
 
 // Touch-friendly interactions
@@ -277,4 +267,3 @@ export default defineComponent({
   }
 }
 </style>
-

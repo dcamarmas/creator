@@ -255,11 +255,11 @@ export default defineComponent({
 </script>
 
 <template>
-   <!-- Top navbar (hidden on mobile, shown on tablet+) --> <b-navbar
-    toggleable="md"
-    class="header py-3 top-navbar"
-    > <!-- Creator Dropdown Menu --> <b-navbar-nav class="creator-brand"
-      > <b-nav-item-dropdown
+  <!-- Top navbar (hidden on mobile, shown on tablet+) -->
+  <b-navbar toggleable="md" class="header py-3 top-navbar">
+    <!-- Creator Dropdown Menu -->
+    <b-navbar-nav class="creator-brand">
+      <b-nav-item-dropdown
         class="navMenu creator-menu"
         no-caret
         no-animation
@@ -267,9 +267,11 @@ export default defineComponent({
         @show="handleDropdownShow('creatorDropdown')"
         @hide="handleDropdownHide('creatorDropdown')"
         @mouseenter="handleDropdownHover('creatorDropdown')"
-        > <template #button-content
-          > <span class="headerText text-uppercase"> Creator </span> </template
-        > <MenuItems
+      >
+        <template #button-content>
+          <span class="headerText text-uppercase"> Creator </span>
+        </template>
+        <MenuItems
           :items="[
             ...(architecture_name ? ['btn_architecture_info', 'divider'] : []),
             'btn_home',
@@ -278,10 +280,14 @@ export default defineComponent({
           ]"
           :architecture-name="architecture_name"
           @item-clicked="closeDropdown('creatorDropdown')"
-        /> </b-nav-item-dropdown
-      > </b-navbar-nav
-    > <!-- Main menu (left side) --> <b-navbar-nav class="me-auto"
-      > <!-- View Menu --> <b-nav-item-dropdown
+        />
+      </b-nav-item-dropdown>
+    </b-navbar-nav>
+
+    <!-- Main menu (left side) -->
+    <b-navbar-nav class="me-auto">
+      <!-- View Menu -->
+      <b-nav-item-dropdown
         v-if="showViewMenu"
         text="View"
         class="navMenu"
@@ -291,25 +297,33 @@ export default defineComponent({
         @show="handleDropdownShow('viewDropdown')"
         @hide="handleDropdownHide('viewDropdown')"
         @mouseenter="handleDropdownHover('viewDropdown')"
-        > <b-dropdown-item
+      >
+        <b-dropdown-item
           @click="changeUIMode('assembly')"
           :disabled="creator_mode === 'assembly'"
-          > <font-awesome-icon :icon="['fas', 'hashtag']" class="me-2" /> Editor
-          </b-dropdown-item
-        > <b-dropdown-item
+        >
+          <font-awesome-icon :icon="['fas', 'hashtag']" class="me-2" /> Editor
+        </b-dropdown-item>
+        <b-dropdown-item
           @click="changeUIMode('simulator')"
           :disabled="creator_mode === 'simulator'"
-          > <font-awesome-icon :icon="['fas', 'gears']" class="me-2" />
-          Simulator </b-dropdown-item
-        > <b-dropdown-item
+        >
+          <font-awesome-icon :icon="['fas', 'gears']" class="me-2" /> Simulator
+        </b-dropdown-item>
+        <b-dropdown-item
           @click="changeUIMode('architecture')"
           :disabled="creator_mode === 'architecture'"
-          > <font-awesome-icon
+        >
+          <font-awesome-icon
             :icon="['fas', 'screwdriver-wrench']"
             class="me-2"
-          /> Architecture </b-dropdown-item
-        > </b-nav-item-dropdown
-      > <!-- File Menu (Assembly View) --> <b-nav-item-dropdown
+          />
+          Architecture
+        </b-dropdown-item>
+      </b-nav-item-dropdown>
+
+      <!-- File Menu (Assembly View) -->
+      <b-nav-item-dropdown
         v-if="showFileMenu"
         text="File"
         class="navMenu"
@@ -319,23 +333,31 @@ export default defineComponent({
         @show="handleDropdownShow('fileDropdown')"
         @hide="handleDropdownHide('fileDropdown')"
         @mouseenter="handleDropdownHover('fileDropdown')"
-        > <b-dropdown-item @click="newAssembly"
-          > <font-awesome-icon :icon="['far', 'file']" class="me-2" /> New
-          Assembly File </b-dropdown-item
-        > <b-dropdown-item v-b-modal.load_assembly
-          > <font-awesome-icon :icon="['fas', 'upload']" class="me-2" /> Open
-          File... </b-dropdown-item
-        > <b-dropdown-item v-b-modal.save_assembly
-          > <font-awesome-icon :icon="['fas', 'download']" class="me-2" /> Save
-          As... </b-dropdown-item
-        > <b-dropdown-item v-b-modal.examples-assembly
-          > <font-awesome-icon :icon="['fas', 'file-lines']" class="me-2" />
-          Examples... </b-dropdown-item
-        > <b-dropdown-item v-b-modal.make_uri
-          > <font-awesome-icon :icon="['fas', 'link']" class="me-2" /> Get code
-          as URI... </b-dropdown-item
-        > </b-nav-item-dropdown
-      > <!-- Architecture Menu (Architecture View)--> <b-nav-item-dropdown
+      >
+        <b-dropdown-item @click="newAssembly">
+          <font-awesome-icon :icon="['far', 'file']" class="me-2" /> New
+          Assembly File
+        </b-dropdown-item>
+        <b-dropdown-item v-b-modal.load_assembly>
+          <font-awesome-icon :icon="['fas', 'upload']" class="me-2" /> Open
+          File...
+        </b-dropdown-item>
+        <b-dropdown-item v-b-modal.save_assembly>
+          <font-awesome-icon :icon="['fas', 'download']" class="me-2" /> Save
+          As...
+        </b-dropdown-item>
+        <b-dropdown-item v-b-modal.examples-assembly>
+          <font-awesome-icon :icon="['fas', 'file-lines']" class="me-2" />
+          Examples...
+        </b-dropdown-item>
+        <b-dropdown-item v-b-modal.make_uri>
+          <font-awesome-icon :icon="['fas', 'link']" class="me-2" /> Get code as
+          URI...
+        </b-dropdown-item>
+      </b-nav-item-dropdown>
+
+      <!-- Architecture Menu (Architecture View)-->
+      <b-nav-item-dropdown
         v-if="showArchitectureMenu"
         text="Architecture"
         class="navMenu"
@@ -345,14 +367,19 @@ export default defineComponent({
         @show="handleDropdownShow('architectureDropdown')"
         @hide="handleDropdownHide('architectureDropdown')"
         @mouseenter="handleDropdownHover('architectureDropdown')"
-        > <b-dropdown-item v-b-modal.edit_architecture
-          > <font-awesome-icon :icon="['fas', 'pen-to-square']" class="me-2" />
-          Edit Architecture </b-dropdown-item
-        > <b-dropdown-item v-b-modal.save_architecture
-          > <font-awesome-icon :icon="['fas', 'download']" class="me-2" /> Save
-          Architecture </b-dropdown-item
-        > </b-nav-item-dropdown
-      > <!-- Library Menu (Assembly View) --> <b-nav-item-dropdown
+      >
+        <b-dropdown-item v-b-modal.edit_architecture>
+          <font-awesome-icon :icon="['fas', 'pen-to-square']" class="me-2" />
+          Edit Architecture
+        </b-dropdown-item>
+        <b-dropdown-item v-b-modal.save_architecture>
+          <font-awesome-icon :icon="['fas', 'download']" class="me-2" /> Save
+          Architecture
+        </b-dropdown-item>
+      </b-nav-item-dropdown>
+
+      <!-- Library Menu (Assembly View) -->
+      <b-nav-item-dropdown
         v-if="showLibraryMenu"
         text="Library"
         class="navMenu"
@@ -362,17 +389,24 @@ export default defineComponent({
         @show="handleDropdownShow('libraryDropdown')"
         @hide="handleDropdownHide('libraryDropdown')"
         @mouseenter="handleDropdownHover('libraryDropdown')"
-        > <b-dropdown-item v-b-modal.load_binary
-          > <font-awesome-icon :icon="['fas', 'upload']" class="me-2" /> Load
-          Library... </b-dropdown-item
-        > <b-dropdown-item v-b-modal.save_binary
-          > <font-awesome-icon :icon="['fas', 'floppy-disk']" class="me-2" />
-          Save as Library... </b-dropdown-item
-        > <b-dropdown-divider /> <b-dropdown-item @click="removeLibrary"
-          > <font-awesome-icon :icon="['fas', 'trash-can']" class="me-2" />
-          Remove Library </b-dropdown-item
-        > </b-nav-item-dropdown
-      > <!-- Tools Menu (Simulator View) --> <b-nav-item-dropdown
+      >
+        <b-dropdown-item v-b-modal.load_binary>
+          <font-awesome-icon :icon="['fas', 'upload']" class="me-2" /> Load
+          Library...
+        </b-dropdown-item>
+        <b-dropdown-item v-b-modal.save_binary>
+          <font-awesome-icon :icon="['fas', 'floppy-disk']" class="me-2" /> Save
+          as Library...
+        </b-dropdown-item>
+        <b-dropdown-divider />
+        <b-dropdown-item @click="removeLibrary">
+          <font-awesome-icon :icon="['fas', 'trash-can']" class="me-2" /> Remove
+          Library
+        </b-dropdown-item>
+      </b-nav-item-dropdown>
+
+      <!-- Tools Menu (Simulator View) -->
+      <b-nav-item-dropdown
         v-if="showExecuteMenu"
         text="Tools"
         class="navMenu"
@@ -382,14 +416,20 @@ export default defineComponent({
         @show="handleDropdownShow('toolsDropdown')"
         @hide="handleDropdownHide('toolsDropdown')"
         @mouseenter="handleDropdownHover('toolsDropdown')"
-        > <b-dropdown-item v-b-modal.examples-simulator
-          > <font-awesome-icon :icon="['fas', 'file-lines']" class="me-2" />
-          Examples... </b-dropdown-item
-        > <b-dropdown-divider /> <MenuItems
+      >
+        <b-dropdown-item v-b-modal.examples-simulator>
+          <font-awesome-icon :icon="['fas', 'file-lines']" class="me-2" />
+          Examples...
+        </b-dropdown-item>
+        <b-dropdown-divider />
+        <MenuItems
           :items="['btn_flash', 'btn_calculator']"
           @item-clicked="closeDropdown('toolsDropdown')"
-        /> </b-nav-item-dropdown
-      > <!-- Help Menu --> <b-nav-item-dropdown
+        />
+      </b-nav-item-dropdown>
+
+      <!-- Help Menu -->
+      <b-nav-item-dropdown
         text="Help"
         class="navMenu"
         no-caret
@@ -398,7 +438,8 @@ export default defineComponent({
         @show="handleDropdownShow('helpDropdown')"
         @hide="handleDropdownHide('helpDropdown')"
         @mouseenter="handleDropdownHover('helpDropdown')"
-        > <MenuItems
+      >
+        <MenuItems
           :items="[
             'btn_help',
             'divider',
@@ -409,24 +450,27 @@ export default defineComponent({
             'btn_about',
           ]"
           @item-clicked="closeDropdown('helpDropdown')"
-        /> </b-nav-item-dropdown
-      > <!-- Separator for buttons -->
+        />
+      </b-nav-item-dropdown>
+
+      <!-- Separator for buttons -->
       <div
         v-if="showExecuteMenu || showCompileButton"
         class="button-separator"
       ></div>
-       <!-- Compile Buttons (Assembly View) --> <b-nav-item
-        v-if="showCompileButton"
-        class="compile-item"
-        > <AssemblyActions
+
+      <!-- Compile Buttons (Assembly View) -->
+      <b-nav-item v-if="showCompileButton" class="compile-item">
+        <AssemblyActions
           :dark="dark"
           mode="toolbar-split"
           @change-mode="changeUIMode"
-        /> </b-nav-item
-      > <!-- Execute Controls (Simulator View) --> <b-nav-item
-        v-if="showExecuteMenu"
-        class="execute-controls"
-        > <SimulatorControls
+        />
+      </b-nav-item>
+
+      <!-- Execute Controls (Simulator View) -->
+      <b-nav-item v-if="showExecuteMenu" class="execute-controls">
+        <SimulatorControls
           ref="simulatorControls"
           :instructions="instructions || []"
           :autoscroll="autoscroll"
@@ -434,86 +478,99 @@ export default defineComponent({
           :browser="browser || ''"
           :dark="dark"
           mode="toolbar"
-        /> </b-nav-item
-      > <!-- Sentinel Errors Dropdown (Simulator View Only) -->
+        />
+      </b-nav-item>
+
+      <!-- Sentinel Errors Dropdown (Simulator View Only) -->
       <SentinelErrorsDropdown
         v-if="showExecuteMenu"
         ref="sentinelDropdownRef"
         :dark="dark"
         class="ms-auto"
-      /> </b-navbar-nav
-    > <!-- Right side actions --> <b-navbar-nav class="ms-auto"
-      > <!-- Notifications Button --> <b-nav-item
+      />
+    </b-navbar-nav>
+
+    <!-- Right side actions -->
+    <b-navbar-nav class="ms-auto">
+      <!-- Notifications Button -->
+      <b-nav-item
         v-b-modal.notifications
         class="icon-button"
         aria-label="Notifications"
-        > <font-awesome-icon :icon="['fas', 'bell']" /> </b-nav-item
-      > <!-- Settings Button --> <b-nav-item
+      >
+        <font-awesome-icon :icon="['fas', 'bell']" />
+      </b-nav-item>
+
+      <!-- Settings Button -->
+      <b-nav-item
         v-b-modal.configuration
         class="icon-button"
         aria-label="Settings"
-        > <font-awesome-icon :icon="['fas', 'cog']" /> </b-nav-item
-      > </b-navbar-nav
-    > </b-navbar
-  > <!-- Mobile bottom navbar (shown only on mobile) -->
-  <nav v-if="showMobileNavbar" class="mobile-bottom-navbar">
+      >
+        <font-awesome-icon :icon="['fas', 'cog']" />
+      </b-nav-item>
+    </b-navbar-nav>
+  </b-navbar>
 
+  <!-- Mobile bottom navbar (shown only on mobile) -->
+  <nav v-if="showMobileNavbar" class="mobile-bottom-navbar">
     <div class="bottom-nav-container">
-       <!-- Code Tab --> <button
+      <!-- Code Tab -->
+      <button
         class="bottom-nav-item"
         :class="{ active: mobileView === 'code' }"
         @click="setMobileView('code')"
         aria-label="Code"
       >
-         <font-awesome-icon :icon="['fas', 'code']" /> <span
-          class="bottom-nav-label"
-          >Code</span
-        > </button
-      > <!-- Instructions Tab --> <button
+        <font-awesome-icon :icon="['fas', 'code']" />
+        <span class="bottom-nav-label">Code</span>
+      </button>
+
+      <!-- Instructions Tab -->
+      <button
         class="bottom-nav-item"
         :class="{ active: mobileView === 'instructions' }"
         @click="setMobileView('instructions')"
         aria-label="Instructions"
       >
-         <font-awesome-icon :icon="['fas', 'book']" /> <span
-          class="bottom-nav-label"
-          >Instructions</span
-        > </button
-      > <!-- Data Tab --> <button
+        <font-awesome-icon :icon="['fas', 'book']" />
+        <span class="bottom-nav-label">Instructions</span>
+      </button>
+
+      <!-- Data Tab -->
+      <button
         class="bottom-nav-item"
         :class="{ active: mobileView === 'data' }"
         @click="setMobileView('data')"
         aria-label="Data"
       >
-         <font-awesome-icon :icon="['fas', 'database']" /> <span
-          class="bottom-nav-label"
-          >State</span
-        > </button
-      > <!-- Architecture Tab --> <button
+        <font-awesome-icon :icon="['fas', 'database']" />
+        <span class="bottom-nav-label">State</span>
+      </button>
+
+      <!-- Architecture Tab -->
+      <button
         class="bottom-nav-item"
         :class="{ active: mobileView === 'architecture' }"
         @click="setMobileView('architecture')"
         aria-label="Architecture"
       >
-         <font-awesome-icon :icon="['fas', 'microchip']" /> <span
-          class="bottom-nav-label"
-          >Architecture</span
-        > </button
-      > <!-- Settings Tab --> <button
+        <font-awesome-icon :icon="['fas', 'microchip']" />
+        <span class="bottom-nav-label">Architecture</span>
+      </button>
+
+      <!-- Settings Tab -->
+      <button
         class="bottom-nav-item"
         :class="{ active: mobileView === 'settings' }"
         @click="setMobileView('settings')"
         aria-label="Settings"
       >
-         <font-awesome-icon :icon="['fas', 'cog']" /> <span
-          class="bottom-nav-label"
-          >Settings</span
-        > </button
-      >
+        <font-awesome-icon :icon="['fas', 'cog']" />
+        <span class="bottom-nav-label">Settings</span>
+      </button>
     </div>
-
   </nav>
-
 </template>
 
 <style lang="scss" scoped>
@@ -825,4 +882,3 @@ export default defineComponent({
   }
 }
 </style>
-

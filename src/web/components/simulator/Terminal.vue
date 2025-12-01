@@ -17,11 +17,9 @@ You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <template>
-   <b-container fluid class="mx-0 px-0 terminal-wrapper"
-    >
+  <b-container fluid class="mx-0 px-0 terminal-wrapper">
     <div ref="terminalContainer" class="terminal-container"></div>
-     </b-container
-  >
+  </b-container>
 </template>
 
 <script>
@@ -224,13 +222,12 @@ export default {
   }
 }
 
-
-
 .terminal-title {
   font-size: 12px;
   font-weight: 600;
   color: #8b949e;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
   letter-spacing: 0.5px;
 }
 
@@ -316,10 +313,11 @@ export default {
 
 /* Better text rendering */
 .terminal-container :deep(.xterm-rows) {
-  font-feature-settings: "liga" 1, "calt" 1;
+  font-feature-settings:
+    "liga" 1,
+    "calt" 1;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
 }
 </style>
-

@@ -21,7 +21,7 @@ import { defineComponent } from "vue";
 
 import { loadArchitecture, architecture } from "@/core/core.mjs";
 import { initCAPI } from "@/core/capi/initCAPI.mts";
-import { show_notification, formatRelativeDate } from "@/web/utils.mjs";
+import { formatRelativeDate } from "@/web/utils.mjs";
 
 export default defineComponent({
   props: {
@@ -78,7 +78,7 @@ export default defineComponent({
 </script>
 
 <template>
-   <b-modal
+  <b-modal
     :id="id"
     v-model="show_modal"
     hide-header
@@ -86,19 +86,19 @@ export default defineComponent({
     no-header
     no-footer
     centered
-    >
+  >
     <h6>
-       A <i>{{ backup_arch_name }}</i
-      > backup is available.
+      A <i>{{ backup_arch_name }}</i> backup is available.
     </h6>
 
     <h6 class="fst-italic">
-       {{ formatRelativeDate(backup_date) }} <br /> ({{
-        backup_date.toDateString()
-      }} &ndash; {{ backup_date.toLocaleTimeString() }})
+      {{ formatRelativeDate(backup_date) }} <br />
+      ({{ backup_date.toDateString() }} &ndash;
+      {{ backup_date.toLocaleTimeString() }})
     </h6>
-     <b-container fluid align-h="center" class="mx-0 mt-3 px-0"
-      > <b-row
+
+    <b-container fluid align-h="center" class="mx-0 mt-3 px-0">
+      <b-row
         cols-xl="2"
         cols-lg="2"
         cols-md="2"
@@ -106,17 +106,18 @@ export default defineComponent({
         cols-xs="1"
         cols="1"
         align-h="center"
-        > <b-col class="d-grid gap-2"
-          > <b-button variant="danger" size="sm" @click="remove_copy"
-            > Discard </b-button
-          > </b-col
-        > <b-col class="d-grid gap-2"
-          > <b-button variant="primary" size="sm" @click="load_copy"
-            > Load </b-button
-          > </b-col
-        > </b-row
-      > </b-container
-    > </b-modal
-  >
+      >
+        <b-col class="d-grid gap-2">
+          <b-button variant="danger" size="sm" @click="remove_copy">
+            Discard
+          </b-button>
+        </b-col>
+        <b-col class="d-grid gap-2">
+          <b-button variant="primary" size="sm" @click="load_copy">
+            Load
+          </b-button>
+        </b-col>
+      </b-row>
+    </b-container>
+  </b-modal>
 </template>
-

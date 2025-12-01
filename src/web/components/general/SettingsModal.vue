@@ -381,9 +381,9 @@ export default defineComponent({
 </script>
 
 <template>
-   <b-modal :id="id" scrollable title="Configuration"
-    > <b-list-group class="compact-config"
-      > <!--
+  <b-modal :id="id" scrollable title="Configuration">
+    <b-list-group class="compact-config">
+      <!--
       <b-list-group-item class="justify-content-between align-items-center config-item">
         <label for="range-5">Default Architecture:</label>
 
@@ -399,9 +399,11 @@ export default defineComponent({
           <BFormSelectOption value="'MIPS-32'">MIPS-32</BFormSelectOption>
         </b-form-select>
       </b-list-group-item>
-      --> <b-list-group-item
+      -->
+      <b-list-group-item
         class="justify-content-between align-items-center config-item"
-        > <label for="range-1">Maximum stack values listed:</label>
+      >
+        <label for="range-1">Maximum stack values listed:</label>
         <b-form-input
           id="range-1"
           v-model.number="stack_total_list_value"
@@ -411,10 +413,13 @@ export default defineComponent({
           step="5"
           title="Stack max view"
           class="number-input"
-        /> </b-list-group-item
-      > <b-list-group-item
+        />
+      </b-list-group-item>
+      <b-list-group-item
         class="justify-content-between align-items-center config-item"
-        > <label for="range-3">Notification Time (ms):</label> <b-form-input
+      >
+        <label for="range-3">Notification Time (ms):</label>
+        <b-form-input
           id="range-3"
           v-model.number="notification_time_value"
           type="number"
@@ -423,10 +428,13 @@ export default defineComponent({
           step="10"
           title="Notification Time"
           class="number-input"
-        /> </b-list-group-item
-      > <b-list-group-item
+        />
+      </b-list-group-item>
+      <b-list-group-item
         class="justify-content-between align-items-center config-item"
-        > <label for="range-4">Instruction Help Size (%):</label> <b-form-input
+      >
+        <label for="range-4">Instruction Help Size (%):</label>
+        <b-form-input
           id="range-4"
           v-model.number="instruction_help_size_value"
           type="number"
@@ -435,26 +443,33 @@ export default defineComponent({
           step="2"
           title="Instruction Help Size"
           class="number-input"
-        /> </b-list-group-item
-      > <b-list-group-item
+        />
+      </b-list-group-item>
+      <b-list-group-item
         class="justify-content-between align-items-center config-item"
-        > <label for="range-2">Execution Autoscroll:</label> <b-form-checkbox
+      >
+        <label for="range-2">Execution Autoscroll:</label>
+        <b-form-checkbox
           id="range-2"
           v-model="autoscroll_value"
           name="check-button"
           switch
           size="lg"
-        /> </b-list-group-item
-      > <b-list-group-item
+        />
+      </b-list-group-item>
+      <b-list-group-item
         class="justify-content-between align-items-center config-item"
-        > <label for="range-2">Automatic backup:</label> <b-form-checkbox
+      >
+        <label for="range-2">Automatic backup:</label>
+        <b-form-checkbox
           id="range-2"
           v-model="backup_value"
           name="check-button"
           switch
           size="lg"
-        /> </b-list-group-item
-      > <!--
+        />
+      </b-list-group-item>
+      <!--
       <b-list-group-item class="justify-content-between align-items-center config-item">
         <label for="range-4">Font Size:</label>
         <b-input-group>
@@ -463,53 +478,65 @@ export default defineComponent({
           <b-button variant="outline-secondary" @click="font_size_value += 1">+</b-button>
         </b-input-group>
       </b-list-group-item>
-      --> <b-list-group-item
+      -->
+      <b-list-group-item
         class="justify-content-between align-items-center config-item"
-        > <label for="range-5">Theme:</label> <b-form-select
+      >
+        <label for="range-5">Theme:</label>
+        <b-form-select
           id="range-5"
           v-model="dark_mode_setting_value"
           size="sm"
           title="Dark Mode Setting"
           class="representation-select"
-          > <b-form-select-option value="system">System</b-form-select-option>
+        >
+          <b-form-select-option value="system">System</b-form-select-option>
           <b-form-select-option value="dark">Dark</b-form-select-option>
           <b-form-select-option value="light">Light</b-form-select-option>
-          </b-form-select
-        > </b-list-group-item
-      > <b-list-group-item
+        </b-form-select>
+      </b-list-group-item>
+      <b-list-group-item
         class="justify-content-between align-items-center config-item"
-        > <label for="range-6">Debug:</label> <b-form-checkbox
+      >
+        <label for="range-6">Debug:</label>
+        <b-form-checkbox
           id="range-6"
           v-model="c_debug_value"
           name="check-button"
           switch
           size="lg"
-        /> </b-list-group-item
-      > <!-- Vim config --> <b-list-group-item
+        />
+      </b-list-group-item>
+      <!-- Vim config -->
+      <b-list-group-item
         class="justify-content-between align-items-center config-item"
-        > <label for="range-2">Vim mode:</label> <b-form-checkbox
+      >
+        <label for="range-2">Vim mode:</label>
+        <b-form-checkbox
           v-model="vim_mode_value"
           name="check-button"
           switch
           size="lg"
-        /> </b-list-group-item
-      > <b-list-group-item class="config-item vim-keybinds-section"
-        >
+        />
+      </b-list-group-item>
+      <b-list-group-item class="config-item vim-keybinds-section">
         <div class="vim-keybinds-header">
-           <label for="range-7">Vim Custom Keybinds:</label> <!-- toggle button -->
+          <label for="range-7">Vim Custom Keybinds:</label>
+          <!-- toggle button -->
           <b-button
             @click="vim_expanded = !vim_expanded"
             :variant="vim_expanded ? 'secondary' : 'primary'"
             size="sm"
-            > <font-awesome-icon
+          >
+            <font-awesome-icon
               v-if="vim_expanded"
               icon="fa-solid fa-caret-up"
-            /> <font-awesome-icon v-else icon="fa-solid fa-caret-down" />
-            </b-button
-          >
+            />
+            <font-awesome-icon v-else icon="fa-solid fa-caret-down" />
+          </b-button>
         </div>
-         <b-collapse v-model="vim_expanded" class="vim-keybinds-content"
-          > <b-table
+        <b-collapse v-model="vim_expanded" class="vim-keybinds-content">
+          <b-table
             small
             hover
             sticky-header="25vh"
@@ -520,56 +547,77 @@ export default defineComponent({
               { key: 'rhs', label: 'RHS', class: 'text-center font-monospace' },
               { key: 'buttons', label: '', class: 'text-center' },
             ]"
-            > <!-- mode in uppercase --> <template #cell(mode)="keybind"
-              > {{ (keybind.value as string).toUpperCase() }} </template
-            > <!-- edit buttons --> <template #cell(buttons)="keybind"
-              > <b-button-group size="sm"
-                > <b-button
+          >
+            <!-- mode in uppercase -->
+            <template #cell(mode)="keybind">
+              {{ (keybind.value as string).toUpperCase() }}
+            </template>
+
+            <!-- edit buttons -->
+            <template #cell(buttons)="keybind">
+              <b-button-group size="sm">
+                <b-button
                   variant="primary"
                   v-b-toggle.modal-vim-edit
                   @click="selected_vim_keybind = keybind.index"
-                  > <font-awesome-icon :icon="['fas', 'pen-to-square']" />
-                  </b-button
-                > <b-button
+                >
+                  <font-awesome-icon :icon="['fas', 'pen-to-square']" />
+                </b-button>
+                <b-button
                   variant="danger"
                   @click="removeVimKeybind(keybind.index)"
-                  > <font-awesome-icon :icon="['fas', 'trash']" /> </b-button
-                > </b-button-group
-              > </template
-            > </b-table
-          > <b-container fluid
-            > <b-row align-h="end"
-              > <b-button v-b-toggle.modal-vim-new variant="primary" size="sm"
-                > <font-awesome-icon :icon="['fas', 'plus']" /> </b-button
-              > </b-row
-            > </b-container
-          > </b-collapse
-        > </b-list-group-item
-      > <!-- Register Representation Settings --> <b-list-group-item
+                >
+                  <font-awesome-icon :icon="['fas', 'trash']" />
+                </b-button>
+              </b-button-group>
+            </template>
+          </b-table>
+
+          <b-container fluid>
+            <b-row align-h="end">
+              <b-button v-b-toggle.modal-vim-new variant="primary" size="sm">
+                <font-awesome-icon :icon="['fas', 'plus']" />
+              </b-button>
+            </b-row>
+          </b-container>
+        </b-collapse>
+      </b-list-group-item>
+
+      <!-- Register Representation Settings -->
+      <b-list-group-item
         class="justify-content-between align-items-center config-item"
-        > <label>Register Name Representation:</label> <b-form-select
+      >
+        <label>Register Name Representation:</label>
+        <b-form-select
           v-model="reg_name_representation_value"
           :options="reg_name_representation_options"
           size="sm"
           class="representation-select"
-        /> </b-list-group-item
-      > <b-list-group-item
+        />
+      </b-list-group-item>
+      <b-list-group-item
         class="justify-content-between align-items-center config-item"
-        > <label>Register Value Format:</label> <b-form-select
+      >
+        <label>Register Value Format:</label>
+        <b-form-select
           v-model="reg_representation_int_value"
           :options="reg_representation_int_options"
           size="sm"
           class="representation-select"
-        /> </b-list-group-item
-      > </b-list-group
-    > </b-modal
-  > <VimKeybindsModal
+        />
+      </b-list-group-item>
+    </b-list-group>
+  </b-modal>
+
+  <VimKeybindsModal
     id="modal-vim-edit"
     title="Edit Vim keybind"
     type="edit"
     :selected_vim_keybind="selected_vim_keybind"
     v-model:vim_custom_keybinds="vim_custom_keybinds_value"
-  /> <VimKeybindsModal
+  />
+
+  <VimKeybindsModal
     id="modal-vim-new"
     title="New Vim keybind"
     type="new"
@@ -657,4 +705,3 @@ export default defineComponent({
   }
 }
 </style>
-

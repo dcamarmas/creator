@@ -108,23 +108,8 @@ export function hide_loading() {
 }
 
 /**
- * @typedef {Object} DefaultArchitecture
- * @property {string} name Architecture name
- * @property {Array<string>} alias Name aliases
- * @property {string} file Architecture definition file name (inside /architectures/ folder)
- * @property {string} img Architecture image file location (absolute)
- * @property {string} alt Alternative name
- * @property {string} id ID (select_conf<something>)
- * @property {Array<string>} examples List of example sets
- * @property {string} description
- * @property {string} guide Path to guide file (absolute)
- * @property {boolean} available Whether it's available or not
- * @property {boolean} [default=true]
- */
-
-/**
  * Loads the specified default architecture
- * @param {DefaultArchitecture} arch Architecture object, as defined in available_arch.json
+ * @param {AvailableArch} arch Architecture object, as defined in available_arch.json
  * @param {Object} [root] Root Vue component (App)
  */
 export async function loadDefaultArchitecture(arch, root = document.app) {

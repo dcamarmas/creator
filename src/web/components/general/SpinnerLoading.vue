@@ -17,25 +17,19 @@ You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <template>
-
   <div>
-
     <div id="spinnerBack" class="spinnerBack" ref="spinnerBack" />
 
     <div id="spinner" class="spinner">
-
       <div class="spinnerBox">
-         <b-spinner variant="primary" class="spinnerIcon"></b-spinner>
+        <b-spinner variant="primary" class="spinnerIcon"></b-spinner>
       </div>
 
       <div>
-         <span class="text-primary"> <strong>Loading...</strong> </span>
+        <span class="text-primary"> <strong>Loading...</strong> </span>
       </div>
-
     </div>
-
   </div>
-
 </template>
 
 <style lang="scss" scoped>
@@ -74,4 +68,3 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
   height: 3rem;
 }
 </style>
-

@@ -148,7 +148,7 @@ export default defineComponent({
 </script>
 
 <template>
-   <Codemirror
+  <Codemirror
     ref="textarea"
     class="codeArea"
     placeholder="Assembly code..."
@@ -187,4 +187,3 @@ export default defineComponent({
   outline: none;
 }
 </style>
-

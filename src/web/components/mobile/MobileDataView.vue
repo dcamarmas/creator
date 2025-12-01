@@ -116,46 +116,45 @@ export default defineComponent({
 </script>
 
 <template>
-
   <div class="mobile-data-view">
-
     <div class="mobile-data-header">
-
       <h3 class="data-title">
-         <font-awesome-icon :icon="getViewIcon(currentView)" /> {{
-          getViewLabel(currentView)
-        }}
+        <font-awesome-icon :icon="getViewIcon(currentView)" />
+        {{ getViewLabel(currentView) }}
       </h3>
-       <b-dropdown
+
+      <b-dropdown
         variant="outline-secondary"
         size="sm"
         title="Switch View"
         no-caret
-        > <template #button-content
-          > <font-awesome-icon :icon="['fas', 'bars']" /> </template
-        > <b-dropdown-item @click="switchView('registers')"
-          > <font-awesome-icon :icon="['fas', 'microchip']" /> Registers
-          </b-dropdown-item
-        > <b-dropdown-item @click="switchView('memory')"
-          > <font-awesome-icon :icon="['fas', 'memory']" /> Memory
-          </b-dropdown-item
-        > <b-dropdown-item @click="switchView('stats')"
-          > <font-awesome-icon :icon="['fas', 'chart-line']" /> Statistics
-          </b-dropdown-item
-        > <b-dropdown-item @click="switchView('console')"
-          > <font-awesome-icon :icon="['fas', 'terminal']" /> Console
-          </b-dropdown-item
-        > </b-dropdown
       >
+        <template #button-content>
+          <font-awesome-icon :icon="['fas', 'bars']" />
+        </template>
+        <b-dropdown-item @click="switchView('registers')">
+          <font-awesome-icon :icon="['fas', 'microchip']" /> Registers
+        </b-dropdown-item>
+        <b-dropdown-item @click="switchView('memory')">
+          <font-awesome-icon :icon="['fas', 'memory']" /> Memory
+        </b-dropdown-item>
+        <b-dropdown-item @click="switchView('stats')">
+          <font-awesome-icon :icon="['fas', 'chart-line']" /> Statistics
+        </b-dropdown-item>
+        <b-dropdown-item @click="switchView('console')">
+          <font-awesome-icon :icon="['fas', 'terminal']" /> Console
+        </b-dropdown-item>
+      </b-dropdown>
     </div>
 
     <div
       class="mobile-data-content"
       :class="{ 'terminal-view': currentView === 'console' }"
     >
-       <!-- Data Content Area --> <!-- Registers view -->
+      <!-- Data Content Area -->
+      <!-- Registers view -->
       <div v-if="currentView === 'registers'" class="data-section">
-         <RegisterFile
+        <RegisterFile
           ref="registerFile"
           :data_mode="'int_registers'"
           :reg_representation_int="reg_representation_int"
@@ -164,31 +163,31 @@ export default defineComponent({
           :dark="dark"
         />
       </div>
-       <!-- Memory view-->
+
+      <!-- Memory view-->
       <div v-if="currentView === 'memory'" class="data-section">
-         <HexViewer
+        <HexViewer
           :main_memory="main_memory"
           :devices="devices"
           :segment="memory_segment"
         />
       </div>
-       <!-- Stats view-->
+
+      <!-- Stats view-->
       <div v-if="currentView === 'stats'" class="data-section">
-         <Stats
+        <Stats
           :dark="dark"
           :representation="stat_representation"
           :type="stat_type"
         />
       </div>
-       <!-- Console view-->
+
+      <!-- Console view-->
       <div v-if="currentView === 'console'" class="data-section">
-         <Terminal :display="display" :keyboard="keyboard" :enter="enter" />
+        <Terminal :display="display" :keyboard="keyboard" :enter="enter" />
       </div>
-
     </div>
-
   </div>
-
 </template>
 
 <style lang="scss" scoped>
@@ -197,8 +196,10 @@ export default defineComponent({
   top: env(safe-area-inset-top);
   left: 0;
   right: 0;
-  bottom: calc(56px + env(safe-area-inset-bottom)); // Above mobile navbar + safe area
-  
+  bottom: calc(
+    56px + env(safe-area-inset-bottom)
+  ); // Above mobile navbar + safe area
+
   // Reduce bottom spacing on very small screens to match navbar height
   @media (max-width: 320px) {
     bottom: calc(48px + env(safe-area-inset-bottom));
@@ -285,4 +286,3 @@ export default defineComponent({
   }
 }
 </style>
-

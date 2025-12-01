@@ -34,33 +34,27 @@ export default defineComponent({
 </script>
 
 <template>
-   <!-- Register File Layout -->
+  <!-- Register File Layout -->
   <div class="register-files-container">
-     <!-- For each register file -->
+    <!-- For each register file -->
     <div
       v-for="(item, index) in register_file"
       :key="item.type"
       class="register-file-section"
     >
-
       <div class="register-file-header">
-
         <h5 class="register-file-title">{{ item.name }}</h5>
-         <span class="register-count">{{ item.elements.length }} registers</span
-        >
+        <span class="register-count">{{ item.elements.length }} registers</span>
       </div>
 
       <div class="register-file-content">
-         <Registers
+        <Registers
           :registers="register_file[index]!.elements"
           :register_file_index="index"
         />
       </div>
-
     </div>
-
   </div>
-
 </template>
 
 <style lang="scss" scoped>
@@ -128,4 +122,3 @@ export default defineComponent({
   }
 }
 </style>
-

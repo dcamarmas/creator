@@ -53,39 +53,44 @@ export default defineComponent({
 </script>
 
 <template>
-   <b-popover
+  <b-popover
     :target="target"
     title="Shortcuts"
     triggers="hover focus"
     placement="bottom-end"
-    >
+  >
     <div v-if="vim_mode">
-       <label> Commands </label> <b-list-group v-if="vim_mode"
-        > <b-list-group-item
+      <label> Commands </label>
+      <b-list-group v-if="vim_mode">
+        <b-list-group-item
           class="d-flex justify-content-between align-items-center"
           v-for="[name, binds] of Object.entries(vim_commands)"
-          > {{ name }} &nbsp;&nbsp; <b-badge
+        >
+          {{ name }} &nbsp;&nbsp;
+          <b-badge
             variant="primary"
             class="font-monospace"
             pill
             v-for="b in binds"
-            > {{ b }} </b-badge
-          > </b-list-group-item
-        > </b-list-group
-      > <br /> <label> INSERT mode </label>
+          >
+            {{ b }}
+          </b-badge>
+        </b-list-group-item>
+      </b-list-group>
+      <br />
+      <label> INSERT mode </label>
     </div>
-     <b-list-group
-      > <b-list-group-item
+
+    <b-list-group>
+      <b-list-group-item
         class="d-flex justify-content-between align-items-center"
         v-for="[name, binds] of Object.entries(keybinds)"
-        > {{ name }} &nbsp;&nbsp; <b-badge
-          variant="primary"
-          pill
-          v-for="b in binds"
-          > {{ `${modifierKey}${b.toUpperCase()}` }} </b-badge
-        > </b-list-group-item
-      > </b-list-group
-    > </b-popover
-  >
+      >
+        {{ name }} &nbsp;&nbsp;
+        <b-badge variant="primary" pill v-for="b in binds">
+          {{ `${modifierKey}${b.toUpperCase()}` }}
+        </b-badge>
+      </b-list-group-item>
+    </b-list-group>
+  </b-popover>
 </template>
-

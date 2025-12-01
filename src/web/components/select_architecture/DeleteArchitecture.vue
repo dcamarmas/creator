@@ -69,15 +69,15 @@ export default defineComponent({
 </script>
 
 <template>
-   <b-modal
+  <b-modal
     :id="id"
     v-model="showModal"
     title="Delete Architecture"
     ok-variant="danger"
     ok-title="Delete"
     @ok="removeArch(arch!)"
-    > Are you sure you want to delete the '<i>{{ arch }}</i
-    >' architecture? </b-modal
   >
+    Are you sure you want to delete the '<i>{{ arch }}</i
+    >' architecture?
+  </b-modal>
 </template>
-

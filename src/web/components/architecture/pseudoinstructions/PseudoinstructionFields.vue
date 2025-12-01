@@ -35,60 +35,51 @@ export default defineComponent({
 </script>
 
 <template>
-   <b-modal :id="id" size="lg" :title="`Fields of ${name}`" no-footer
-    > <b-form
-      > <!-- headers -->
+  <b-modal :id="id" size="lg" :title="`Fields of ${name}`" no-footer>
+    <b-form>
+      <!-- headers -->
       <div class="col-lg-12 col-sm-12 row">
-
         <div class="col-lg-4 col-4 fields"></div>
 
-        <div class="col-lg-4 col-4 fields"> <span class="h6">Name</span> </div>
+        <div class="col-lg-4 col-4 fields"><span class="h6">Name</span></div>
 
-        <div class="col-lg-4 col-4 fields"> <span class="h6">Type</span> </div>
-
+        <div class="col-lg-4 col-4 fields"><span class="h6">Type</span></div>
       </div>
 
       <div
         v-for="(field, field_index) in pseudoinstruction.fields"
         :key="field.name"
       >
-
         <div class="col-lg-12 col-sm-12 row">
-
           <div class="col-lg-4 col-4 fields">
-             <span class="h6">Field {{ field_index }}</span
-            >
+            <span class="h6">Field {{ field_index }}</span>
           </div>
 
           <div class="col-lg-4 col-4 fields">
-             <b-form-group
-              > <b-form-input
+            <b-form-group>
+              <b-form-input
                 type="text"
                 :model-value="field.name"
                 readonly
                 size="sm"
                 title="Field name"
-              /> </b-form-group
-            >
+              />
+            </b-form-group>
           </div>
 
           <div class="col-lg-4 col-4 fields">
-             <b-form-group
-              > <b-form-input
+            <b-form-group>
+              <b-form-input
                 :model-value="field.type"
                 readonly
                 type="text"
                 size="sm"
                 title="Field type"
-              /> </b-form-group
-            >
+              />
+            </b-form-group>
           </div>
-
         </div>
-
       </div>
-       </b-form
-    > </b-modal
-  >
+    </b-form>
+  </b-modal>
 </template>
-

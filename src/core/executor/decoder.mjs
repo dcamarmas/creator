@@ -459,7 +459,7 @@ function findMatchingInstruction(binaryInstruction) {
                 // Calculate total matched bits (opcode + function fields)
                 const functionBits = candidate.functionMasks.reduce(
                     (sum, mask) => sum + (mask.startbit - mask.stopbit + 1),
-                    0
+                    0,
                 );
                 candidate.totalMatchedBits = opcodeBits + functionBits;
                 matchingCandidates.push(candidate);
@@ -472,10 +472,15 @@ function findMatchingInstruction(binaryInstruction) {
         // If more than one match, handle ambiguity
         if (matchingCandidates.length > 1) {
             // Sort by total matched bits descending (prefer the most specific match)
-            matchingCandidates.sort((a, b) => b.totalMatchedBits - a.totalMatchedBits);
+            matchingCandidates.sort(
+                (a, b) => b.totalMatchedBits - a.totalMatchedBits,
+            );
 
             // If the first candidate matches more bits than the second, prefer it
-            if (matchingCandidates[0].totalMatchedBits > matchingCandidates[1].totalMatchedBits) {
+            if (
+                matchingCandidates[0].totalMatchedBits >
+                matchingCandidates[1].totalMatchedBits
+            ) {
                 return matchingCandidates[0].instruction;
             }
 

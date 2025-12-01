@@ -73,91 +73,91 @@ const {
 </script>
 
 <template>
-
   <div class="architecture-selector" :class="{ dark: dark }">
-
     <div class="selector-container">
-       <!-- Architecture List -->
+      <!-- Architecture List -->
       <div class="architecture-list">
-         <!-- Default and Custom Architectures --> <ArchitectureItem
+        <!-- Default and Custom Architectures -->
+        <ArchitectureItem
           v-for="arch in availableArchitectures"
           :key="arch.id"
           :arch="arch"
           :selected="selectedArch === arch.name"
           @select="handleSelectArchitecture(arch)"
           @delete="handleDeleteArchitecture(arch.name)"
-        /> <!-- Load Custom Architecture Button -->
+        />
+
+        <!-- Load Custom Architecture Button -->
         <div
           class="arch-item load-custom"
           @click="openLoadArchModal"
           @mouseenter="hoveredArch = 'load-custom'"
           @mouseleave="hoveredArch = null"
         >
-
           <div class="arch-logo load-logo">
-             <font-awesome-icon :icon="['fas', 'file-import']" />
+            <font-awesome-icon :icon="['fas', 'file-import']" />
           </div>
 
           <div class="arch-info">
-
             <h3 class="arch-name">Load Custom Architecture</h3>
 
             <p class="arch-description">
-               Import your own architecture definition file (.yml)
+              Import your own architecture definition file (.yml)
             </p>
-
           </div>
 
           <div class="arch-actions">
-
             <div class="select-indicator">
-               <font-awesome-icon :icon="['fas', 'plus']" />
+              <font-awesome-icon :icon="['fas', 'plus']" />
             </div>
-
           </div>
-
         </div>
-
       </div>
-
     </div>
-     <!-- Load Custom Architecture Modal --> <b-modal
+
+    <!-- Load Custom Architecture Modal -->
+    <b-modal
       v-model="showLoadModal"
       title="Load Custom Architecture"
       @ok="loadCustomArch"
-      > <b-form
-        > <b-form-group label="Architecture Name" label-for="arch-name"
-          > <b-form-input
+    >
+      <b-form>
+        <b-form-group label="Architecture Name" label-for="arch-name">
+          <b-form-input
             id="arch-name"
             v-model="customArchName"
             placeholder="Enter architecture name"
             required
-          /> </b-form-group
-        > <b-form-group label="Description" label-for="arch-description"
-          > <b-form-textarea
+          />
+        </b-form-group>
+        <b-form-group label="Description" label-for="arch-description">
+          <b-form-textarea
             id="arch-description"
             v-model="customArchDescription"
             placeholder="Enter architecture description"
             rows="3"
-          /> </b-form-group
-        > <b-form-group label="Architecture File" label-for="arch-file"
-          > <b-form-file
+          />
+        </b-form-group>
+        <b-form-group label="Architecture File" label-for="arch-file">
+          <b-form-file
             id="arch-file"
             v-model="customArchFile"
             accept=".yml"
             placeholder="Choose a .yml file..."
             required
-          /> </b-form-group
-        > </b-form
-      > </b-modal
-    > <!-- Delete Architecture Modal --> <DeleteArchitecture
+          />
+        </b-form-group>
+      </b-form>
+    </b-modal>
+
+    <!-- Delete Architecture Modal -->
+    <DeleteArchitecture
       id="modal-delete-arch"
       v-model="showDeleteModal"
       :arch="archToDelete"
       @architecture-deleted="handleArchitectureDeleted"
     />
   </div>
-
 </template>
 
 <style lang="scss" scoped>
@@ -224,7 +224,7 @@ const {
   border: 2px dashed rgba(0, 0, 0, 0.08);
   cursor: pointer;
   transition: all 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  
+
   &:hover {
     background-color: rgba(var(--bs-primary-rgb), 0.08);
     border-color: rgba(var(--bs-primary-rgb), 0.3);
@@ -241,7 +241,7 @@ const {
   justify-content: center;
   background-color: rgba(var(--bs-primary-rgb), 0.1);
   border-radius: 8px;
-  
+
   svg {
     font-size: 2rem;
     color: var(--bs-primary);
@@ -330,4 +330,3 @@ const {
   }
 }
 </style>
-

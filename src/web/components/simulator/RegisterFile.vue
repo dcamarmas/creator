@@ -125,21 +125,23 @@ export default defineComponent({
 </script>
 
 <template>
-   <b-container
+  <b-container
     fluid
     align-h="center"
     class="mx-0 px-0 my-0 register-file-container"
-    > <b-row align-h="center" cols="1" class="register-file-content"
-      > <b-col v-for="bank in register_file" :key="bank.name"
-        > <b-container fluid
-          > <!-- Register bank name with collapse button --> <b-row
-            > <b-col
-              > <button
+  >
+    <b-row align-h="center" cols="1" class="register-file-content">
+      <b-col v-for="bank in register_file" :key="bank.name">
+        <b-container fluid>
+          <!-- Register bank name with collapse button -->
+          <b-row>
+            <b-col>
+              <button
                 class="bank-header"
                 @click="toggleBank(bank.name)"
                 :aria-expanded="!isBankCollapsed(bank.name)"
               >
-                 <font-awesome-icon
+                <font-awesome-icon
                   :icon="[
                     'fas',
                     isBankCollapsed(bank.name)
@@ -148,24 +150,27 @@ export default defineComponent({
                   ]"
                   class="collapse-icon"
                 />
-                <h5 class="mb-0 bank-title"> {{ bank.name }} </h5>
-                 </button
-              > </b-col
-            > </b-row
-          > <!-- Collapsible register content --> <b-collapse
-            :visible="!isBankCollapsed(bank.name)"
-            > <b-row
+                <h5 class="mb-0 bank-title">{{ bank.name }}</h5>
+              </button>
+            </b-col>
+          </b-row>
+
+          <!-- Collapsible register content -->
+          <b-collapse :visible="!isBankCollapsed(bank.name)">
+            <b-row
               align-h="start"
               cols="2"
               cols-sm="3"
               cols-md="3"
               cols-lg="4"
               cols-xl="5"
-              > <b-col
+            >
+              <b-col
                 class="p-1 mx-0"
                 v-for="(register, regIndex) in bank.elements"
                 :key="register.name[0]"
-                > <Register
+              >
+                <Register
                   :type="bank.type"
                   :double_precision="bank.double_precision"
                   :register="register"
@@ -180,20 +185,24 @@ export default defineComponent({
                       showSpaceView();
                     }
                   "
-                /> </b-col
-              > </b-row
-            > </b-collapse
-          > </b-container
-        > </b-col
-      > </b-row
-    > </b-container
-  > <!-- Space view --> <!--
+                />
+              </b-col>
+            </b-row>
+          </b-collapse>
+        </b-container>
+      </b-col>
+    </b-row>
+  </b-container>
+
+  <!-- Space view -->
+  <!--
   I'd like to have this information as a popover in the register, like in
   CREATOR 5, but unfortunately this creates so many components Vue craps its
   pants, so we'll have to use a modal.
   If you'd like to check how it was before, go to Register.vue on commit
   8fddb81c.
-  --> <RegisterSpaceView id="registerSpaceView" :item="spaceItem" />
+  -->
+  <RegisterSpaceView id="registerSpaceView" :item="spaceItem" />
 </template>
 
 <style scoped>
@@ -275,10 +284,9 @@ export default defineComponent({
   .bank-header:hover {
     background-color: color-mix(in srgb, currentColor 15%, transparent);
   }
-  
+
   .bank-header:active {
     background-color: color-mix(in srgb, currentColor 20%, transparent);
   }
 }
 </style>
-
