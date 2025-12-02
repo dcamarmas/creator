@@ -28,7 +28,7 @@ import { Vim } from "@replit/codemirror-vim";
 
 import VimKeybindsModal from "./VimKeybindsModal.vue";
 import { defineComponent, type PropType } from "vue";
-import type { InterruptHandlerType } from "@/core/executor/InterruptManager.mjs";
+import { InterruptHandlerType } from "@/core/executor/InterruptManager.mts";
 
 export default defineComponent({
   props: {
@@ -90,8 +90,8 @@ export default defineComponent({
       ],
 
       interrupt_handler_options: [
-        { text: "CREATOR", value: 0 },
-        { text: "Custom (architecture)", value: 1 },
+        { text: "CREATOR", value: InterruptHandlerType.CREATOR },
+        { text: "Custom (architecture)", value: InterruptHandlerType.Custom },
       ],
     };
   },
