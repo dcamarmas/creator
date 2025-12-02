@@ -2757,8 +2757,7 @@ instructions:
         - field: opcode
           value: "0xFB"
       definition: |
-        registers['IFF1'] = 1n;
-        registers['IFF2'] = 1n;
+        CAPI.INTERRUPTS.globalEnable();
     - name: ret m
       template: standard
       clk_cycles: 11 # 5 if not taken
@@ -2811,8 +2810,8 @@ instructions:
         - field: opcode
           value: "0xF3"
       definition: |
-        registers['IFF1'] = 0n;
-        registers['IFF2'] = 0n;
+        registers.IFF1 = 0n;
+        registers.IFF2 = 0n;
 
     - name: rst 38h
       template: standard
@@ -6149,9 +6148,13 @@ instructions:
         - field: opcode2
           value: "0x4D"
       definition: |
-        // Return from interrupt
-        // Restore IFF1 from IFF2 (re-enable interrupts if they were enabled before)
-        registers['IFF1'] = registers['IFF2'];
+        // Restore IFF1 from IFF2 (re-enable interrupts if they were enabled
+        // before)
+        registers.IFF1 = registers.IFF2;
+
+        // clear interrupts
+        CAPI.INTERRUPTS.globalClear();
+
         // Pop return address from stack
         registers.PC = CAPI.MEM.read(registers.SP, 1) | (CAPI.MEM.read((registers.SP + 1n) & 0xFFFFn, 1) << 8n);
         registers.SP = (registers.SP + 2n) & 0xFFFFn;
@@ -6891,57 +6894,50 @@ instructions:
         CAPI.MEM.write(addr, 1, value & ~0x80n);
 
 interrupts:
-  enabled: true
-  check: |
-    if (CAPI.ARCH.interruptPin) {
-      // If we have an interrupts request (INT pin is asserted)
+  handlers:
+    custom: |
+      CAPI.INTERRUPTS.globalDisable();
+      CAPI.INTERRUPTS.clear(type); // ACK
 
       // Save the current PC on the stack, so we know where to return
       // Z80 pushes high byte first, then low byte (little endian)
-      let returnAddress = CAPI.REG.read('PC');
-      let sp = CAPI.REG.read('SP');
-      
-      // Push high byte first
-      sp = (sp - 1n) & 0xFFFFn;
-      CAPI.MEM.write(sp, 1, (returnAddress >> 8n) & 0xFFn);
-      
-      // Then push low byte
-      sp = (sp - 1n) & 0xFFFFn;
-      CAPI.MEM.write(sp, 1, returnAddress & 0xFFn);
-      
-      // Update SP
-      CAPI.REG.write(sp, 'SP');
 
-      return InterruptType.External;
-    } else {
-      return null;
-    }
-  is_enabled: |
+      // high byte
+      registers.SP = (registers.SP - 1n) & 0xFFFFn;
+      CAPI.MEM.write(registers.SP, 1, (registers.PC >> 8n) & 0xFFn);
+
+      // low byte
+      registers.SP = (registers.SP - 1n) & 0xFFFFn;
+      CAPI.MEM.write(registers.SP, 1, registers.PC & 0xFFn);
+
+      // jump to RST 38h (0x0038)
+      registers.PC = 0x0038n;
+
+  check: |
+    if (!CAPI.ARCH.interruptPin) return null;
+    if (CAPI.ARCH.timerCounter === 1n) return InterruptType.Timer;
+    return InterruptType.Maskable;
+
+  is_global_enabled: |
     // Check if interrupts are enabled (IFF1 flag)
-    return !!(CAPI.REG.read('IFF1') & 1n);
-  enable: |
+    return !!(registers.IFF1 & 1n);
+
+  global_enable: |
     // Enable interrupts - set both IFF1 and IFF2
-    CAPI.REG.write(1n, 'IFF1');
-    CAPI.REG.write(1n, 'IFF2');
-  disable: |
-    // Disable interrupts - clear both IFF1 and IFF2  
-    CAPI.REG.write(0n, 'IFF1');
-    CAPI.REG.write(0n, 'IFF2');
-  get_handler_addr: |
-    if (CAPI.ARCH.interruptMode === 1) {
-      // Mode 1: Always jump to RST 38h (0x0038)
-      return 0x0038n;
-    } else if (CAPI.ARCH.interruptMode === 0) {
-      // Mode 0: Execute instruction from data bus (simplified as RST 38h)
-      return 0x0038n;
-    } else {
-      return 0x0038n;
-    }
-  clear: |
+    registers.IFF1 = 1n;
+    registers.IFF2 = 1n;
+
+  global_disable: |
+    // Disable interrupts - clear both IFF1 and IFF2
+    registers.IFF1 = 0n;
+    registers.IFF2 = 0n;
+
+  global_clear: |
     // Clear the simulated INT pin
     if (typeof CAPI.ARCH.interruptPin  !== 'undefined') {
       CAPI.ARCH.interruptPin = false;
     }
+
   create: |
     // Simulate asserting the INT pin (like external hardware would do)
     if (typeof CAPI.ARCH.interruptPin === 'undefined') {
@@ -6965,9 +6961,11 @@ timer:
   advance: |
     CAPI.ARCH.timerCounter++;
   handler: |
-    if (CAPI.ARCH.timerCounter >= 70000n) { // Sinclair ZX Spectrum ~50Hz (70000 cycles at 3.5MHz)
+    // Sinclair ZX Spectrum generates a maskable interrupt each ~50Hz (70000
+    // cycles at 3.5MHz)
+    if (CAPI.ARCH.timerCounter >= 70000n) { 
       CAPI.ARCH.timerCounter = 0n;
-      CAPI.INTERRUPTS.make(CAPI.INTERRUPTS.Type.Timer);
+      CAPI.INTERRUPTS.create(InterruptType.Maskable);
     }
   is_enabled: |
     // Timer interrupts enabled if global interrupts are enabled

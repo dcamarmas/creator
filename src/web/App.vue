@@ -36,10 +36,11 @@ import { stats } from "@/core/executor/stats.mts";
 import { instructions } from "@/core/assembler/assembler.mjs";
 import type { StackFrame } from "@/core/memory/StackTracker.mjs";
 import { creator_ga } from "@/core/utils/creator_ga.mjs";
+import { InterruptHandlerType } from "@/core/executor/InterruptManager.mjs";
 
 import SpinnerLoading from "./components/general/SpinnerLoading.vue";
 import SupportedBrowsers from "./components/general/SupportedBrowsers.vue";
-import FormConfiguration from "./components/general/SettingsModal.vue";
+import SettingsModal from "./components/general/SettingsModal.vue";
 import UIeltoNotifications from "./components/general/UIeltoNotifications.vue";
 import NavbarCREATOR from "./components/general/NavbarCREATOR.vue";
 import UIeltoInstitutions from "./components/general/UIeltoInstitutions.vue";
@@ -75,7 +76,7 @@ export default {
     BOrchestrator,
     SpinnerLoading,
     SupportedBrowsers,
-    FormConfiguration,
+    SettingsModal,
     UIeltoNotifications,
     NavbarCREATOR,
     UIeltoInstitutions,
@@ -172,6 +173,9 @@ export default {
       //
       // Configuration
       //
+
+      // interrupt handler
+      interrupt_handler: InterruptHandlerType.CREATOR,
 
       // Default architecture
       default_architecture:
@@ -648,16 +652,15 @@ export default {
       :os="os"
       :dark="dark"
       :arch_available="arch_available"
-      :assembly_code="assembly_code"
       :instructions="instructions"
       @mobile-view-change="handleMobileViewChange"
       ref="navbar"
     />
 
     <!-- Configuration modal -->
-    <FormConfiguration
+    <SettingsModal
       id="configuration"
-      class="bottomCard"
+      :architecture_name="architecture_name"
       v-model:arch_available="arch_available"
       v-model:default_architecture="default_architecture"
       v-model:stack_total_list="stack_total_list"
@@ -672,6 +675,7 @@ export default {
       v-model:reg_representation_int="reg_representation_int"
       v-model:reg_representation_float="reg_representation_float"
       v-model:reg_name_representation="reg_name_representation"
+      v-model:interrupt_handler="interrupt_handler"
     />
 
     <!-- Information modals -->
@@ -806,6 +810,7 @@ export default {
       mobileView === 'settings' &&
       creator_mode !== 'select_architecture'
     "
+    :architecture_name="architecture_name"
     v-model:stack_total_list="stack_total_list"
     v-model:autoscroll="autoscroll"
     v-model:backup="backup"
@@ -818,6 +823,7 @@ export default {
     v-model:reg_representation_int="reg_representation_int"
     v-model:reg_representation_float="reg_representation_float"
     v-model:reg_name_representation="reg_name_representation"
+    v-model:interrupt_handler="interrupt_handler"
   />
 
   <!-------------------->

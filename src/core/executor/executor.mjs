@@ -20,6 +20,7 @@
 import { instructions, tag_instructions } from "../assembler/assembler.mjs";
 import {
     status,
+    interruptManager,
     WORDSIZE,
     BYTESIZE,
     main_memory,
@@ -41,11 +42,7 @@ import { logger } from "../utils/creator_logger.mjs";
 import { getPrimaryKey } from "../utils/utils.mjs";
 import { decode } from "./decoder.mjs";
 import { updateStats } from "./stats.mts";
-import {
-    checkInterrupt,
-    handleInterrupt,
-    ExecutionMode,
-} from "./interrupts.mts";
+import { ExecutionMode } from "./InterruptManager.mts";
 import { handleDevices } from "./devices.mts";
 import { handleTimer } from "./timers.mts";
 import { compileInstruction } from "./instructionCompiler.mts";
@@ -56,6 +53,7 @@ const instructionCache = new Map();
 const compiledFunctions = new Map();
 
 export function compileArchitectureFunctions(architecture) {
+    // initCAPI(architecture.config.plugin);
     instructionCache.clear();
     compiledFunctions.clear();
     for (const instr of architecture.instructions) {
@@ -136,16 +134,28 @@ export function init() {
 }
 
 function handleInterrupts() {
-    if (status.interrupts_enabled && checkInterrupt()) {
-        handleInterrupt();
-        guiVariables.keep_highlighted = guiVariables.previous_PC;
+    // check interrupt
+    if (!interruptManager.isGlobalEnabled()) return;
+    const interrupt = interruptManager.check();
+    if (interrupt === null) return;
+    if (!interruptManager.isEnabled(interrupt)) return;
 
-        // update execution_index accordingly
-        const currentIndex = instructions.findIndex(
-            i => parseInt(i.Address, 16) === Number(getPC()),
-        );
-        status.execution_index = currentIndex === -1 ? 0 : currentIndex;
+    // set UI
+    guiVariables.keep_highlighted = guiVariables.previous_PC;
+
+    // handle
+    interruptManager.handle(interrupt);
+
+    if (status.execution_index < 0) {
+        // error/exit
+        return;
     }
+
+    // update execution_index accordingly
+    const currentIndex = instructions.findIndex(
+        i => parseInt(i.Address, 16) === Number(getPC()),
+    );
+    status.execution_index = currentIndex === -1 ? 0 : currentIndex;
 }
 
 function updateExecutionStatus() {
@@ -216,10 +226,6 @@ function incrementProgramCounter(nwords) {
     guiVariables.previous_PC = BigInt(pc_element.value);
     // Direct write
     pc_element.value = new_pc;
-
-    // Update virtual_PC (required for correct execution)
-    const offset = BigInt(newArchitecture.config.pc_offset || 0n);
-    status.virtual_PC = new_pc + offset;
 
     // Notify UI layers about PC update
     notifyRegisterUpdate(PC_REG_INDEX.indexComp, PC_REG_INDEX.indexElem);

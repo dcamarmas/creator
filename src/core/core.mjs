@@ -40,10 +40,10 @@ import { resetStats } from "./executor/stats.mts";
 import { resetDecoderCache } from "./executor/decoder.mjs";
 import { coreEvents } from "./events.mjs";
 import {
-    compileInterruptFunctions,
-    enableInterrupts,
     ExecutionMode,
-} from "./executor/interrupts.mts";
+    InterruptHandlerType,
+    InterruptManager,
+} from "./executor/InterruptManager.mts";
 import { init, compileArchitectureFunctions } from "./executor/executor.mjs";
 import { resetDevices } from "./executor/devices.mts";
 import { compileTimerFunctions } from "./executor/timers.mts";
@@ -70,10 +70,10 @@ export let status = {
     keyboard: "",
     display: "",
     execution_index: 0,
-    virtual_PC: 0n, // This is the PC the instructions see.
     error: false,
     execution_mode: ExecutionMode.User,
-    interrupts_enabled: false,
+    interrupt_handler: InterruptHandlerType.CREATOR,
+    pcRegisterNames: [], // TODO: move this out of here
 };
 /** @type {import("./core.d.ts").GUIVariables} */
 export const guiVariables = {
@@ -94,6 +94,16 @@ export const register_size_bits = 64; //TODO: load from architecture
 export let main_memory;
 /** @type {StackTracker} */
 export let stackTracker;
+/** @type {InterruptManager} */
+export let interruptManager;
+/**
+ * Sets `interruptManager`.
+ *
+ * @param {InterruptManager} value
+ */
+export function setInterruptManager(value) {
+    interruptManager = value;
+}
 /** @type {Memory} */
 export let main_memory_backup;
 export function updateMainMemoryBackup(value) {
@@ -165,6 +175,9 @@ export function loadArchitecture(architectureYaml, isa = []) {
     }
 
     REGISTERS = architecture.components;
+    status.pcRegisterNames = REGISTERS.flatMap(bank => bank.elements).find(
+        reg => reg.properties.includes("program_counter"),
+    ).name;
     crex_clearRegisterCache();
 
     backup_stack_address = architecture.memory_layout.stack.start;
@@ -197,6 +210,7 @@ export function loadArchitecture(architectureYaml, isa = []) {
     // Initialize stack tracker and other related components
     // This must happen before creating the register backup
     stackTracker = new StackTracker();
+    interruptManager = new InterruptManager(status.interrupt_handler);
 
     // Create deep copy backup of REGISTERS after all initialization is complete
     // This ensures the backup contains the correct values for all registers, including SP
@@ -205,7 +219,6 @@ export function loadArchitecture(architectureYaml, isa = []) {
     PC_REG_INDEX = crex_findReg_bytag("program_counter");
 
     compileTimerFunctions();
-    compileInterruptFunctions();
 
     compileArchitectureFunctions(architecture);
 
@@ -330,14 +343,13 @@ export function reset() {
     sentinel.reset();
 
     // clear all read timeouts
-    // eslint-disable-next-line no-empty-function
     let id = setTimeout(() => {}, 0); // dummy timeout to get max ID
     while (id--) {
         clearTimeout(id); // will do nothing if no timeout with id is present
     }
 
     // reset interrupts
-    if (newArchitecture.interrupts?.enabled) enableInterrupts();
+    interruptManager.reset();
 
     // reset devices
     resetDevices();
@@ -591,8 +603,5 @@ export function getPC() {
 export function setPC(value) {
     writeRegister(value, PC_REG_INDEX.indexComp, PC_REG_INDEX.indexElem);
 
-    const offset = BigInt(newArchitecture.config.pc_offset || 0n);
-    status.virtual_PC = BigInt(value + offset);
-    logger.debug("Virtual PC register updated to " + status.virtual_PC);
     return null;
 }

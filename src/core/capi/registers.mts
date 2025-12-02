@@ -37,10 +37,11 @@ export const REG = {
 
     write: (value: bigint, name: string) => {
         const reg = crex_findReg(name);
-        const nbits =
-            architecture.components[reg.indexComp!]!.elements[reg.indexElem!]!
-                .nbits;
         if (reg.match) {
+            const nbits =
+                architecture.components[reg.indexComp!]!.elements[
+                    reg.indexElem!
+                ]!.nbits;
             writeRegister(
                 BigInt.asUintN(nbits, value),
                 reg.indexComp!,

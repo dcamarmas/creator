@@ -50,12 +50,16 @@ Deno.test(
 
         // Execute the program
         const result = executeN(1000);
-        assertEquals(result.error, false, "Execution should not error");
+        assertEquals(
+            result.error,
+            false,
+            `Execution should not error. ${result.output}`,
+        );
 
         // Assert all expected state using the wrapper function
         assertSimulatorState({
             registers: {
-                x10: 0x22n, // a0 should contain 34 (0x22)
+                a0: 0x22n, // a0 should contain 34 (0x22)
             },
             display: "1234", // Should show '1234' (12 followed by 34)
             keyboard: "", // Keyboard buffer should be empty
