@@ -18,16 +18,23 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <script lang="ts">
 import { creator_ga } from "@/core/utils/creator_ga.mjs";
-import { set_debug } from "@/core/core.mjs";
+import {
+  interruptManager,
+  set_debug,
+  setInterruptManager,
+  status,
+} from "@/core/core.mjs";
 import { Vim } from "@replit/codemirror-vim";
 
 import VimKeybindsModal from "./VimKeybindsModal.vue";
 import { defineComponent, type PropType } from "vue";
+import type { InterruptHandlerType } from "@/core/executor/InterruptManager.mjs";
 
 export default defineComponent({
   props: {
     id: { type: String, required: true },
     arch_available: Array as PropType<AvailableArch[]>,
+    architecture_name: { type: String, required: true },
     default_architecture: { type: String, required: true },
     stack_total_list: { type: Number, required: true },
     autoscroll: { type: Boolean, required: true },
@@ -44,6 +51,10 @@ export default defineComponent({
     reg_representation_int: { type: String, required: true },
     reg_representation_float: { type: String, required: true },
     reg_name_representation: { type: String, required: true },
+    interrupt_handler: {
+      type: String as PropType<InterruptHandlerType>,
+      required: true,
+    },
   },
 
   components: { VimKeybindsModal },
@@ -77,8 +88,14 @@ export default defineComponent({
         { text: "IEEE 754 (64b)", value: "ieee64" },
         { text: "Hex", value: "hex" },
       ],
+
+      interrupt_handler_options: [
+        { text: "CREATOR", value: 0 },
+        { text: "Custom (architecture)", value: 1 },
+      ],
     };
   },
+
   emits: [
     // parent variables that will be updated
     "update:default_architecture",
@@ -94,7 +111,9 @@ export default defineComponent({
     "update:reg_representation_int",
     "update:reg_representation_float",
     "update:reg_name_representation",
+    "update:interrupt_handler",
   ],
+
   computed: {
     // placeholder for editing a vim keybind
     // we create a copy bc we don't want to sync the value automatically, we
@@ -346,6 +365,27 @@ export default defineComponent({
         );
       },
     },
+    interrupt_handler_value: {
+      get() {
+        return this.interrupt_handler;
+      },
+      set(value: InterruptHandlerType) {
+        this.$emit("update:interrupt_handler", value);
+        status.interrupt_handler = value;
+
+        // if arch loaded, switch interruptManager
+        if (this.architecture_name !== "") {
+          setInterruptManager(interruptManager.switchHandler(value));
+        }
+
+        // Google Analytics
+        creator_ga(
+          "configuration",
+          "configuration.interrupt_handler",
+          "configuration.interrupt_handler." + value,
+        );
+      },
+    },
   },
   methods: {
     removeVimKeybind(index: number) {
@@ -445,6 +485,19 @@ export default defineComponent({
           class="number-input"
         />
       </b-list-group-item>
+
+      <b-list-group-item
+        class="justify-content-between align-items-center config-item"
+      >
+        <label>Interrupt handler:</label>
+        <b-form-select
+          v-model="interrupt_handler_value"
+          :options="interrupt_handler_options"
+          size="sm"
+          class="representation-select"
+        />
+      </b-list-group-item>
+
       <b-list-group-item
         class="justify-content-between align-items-center config-item"
       >
@@ -469,8 +522,9 @@ export default defineComponent({
           size="lg"
         />
       </b-list-group-item>
+
       <!--
-      <b-list-group-item class="justify-content-between align-items-center config-item">
+        <b-list-group-item class="justify-content-between align-items-center config-item">
         <label for="range-4">Font Size:</label>
         <b-input-group>
           <b-button variant="outline-secondary" @click="font_size_value -= 1">-</b-button>
@@ -479,6 +533,7 @@ export default defineComponent({
         </b-input-group>
       </b-list-group-item>
       -->
+
       <b-list-group-item
         class="justify-content-between align-items-center config-item"
       >
@@ -507,7 +562,9 @@ export default defineComponent({
           size="lg"
         />
       </b-list-group-item>
+
       <!-- Vim config -->
+
       <b-list-group-item
         class="justify-content-between align-items-center config-item"
       >
@@ -584,6 +641,7 @@ export default defineComponent({
       </b-list-group-item>
 
       <!-- Register Representation Settings -->
+
       <b-list-group-item
         class="justify-content-between align-items-center config-item"
       >

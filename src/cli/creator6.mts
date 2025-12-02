@@ -36,6 +36,7 @@ import { Buffer } from "node:buffer";
 import { sjasmplusAssemble } from "../core/assembler/sjasmplus/deno/sjasmplus.mjs";
 import { assembleCreator } from "../core/assembler/creatorAssembler/deno/creatorAssembler.mjs";
 import { rasmAssemble } from "../core/assembler/rasm/deno/rasm.mjs";
+import { InterruptHandlerType } from "@/core/executor/InterruptManager.mts";
 
 const MAX_INSTRUCTIONS = 10000000000;
 const CLI_VERSION = "0.1.0";
@@ -76,6 +77,7 @@ interface ArgvOptions {
     accessible: boolean;
     tutorial: boolean;
     config?: string; // Add config file option
+    interruptHandler: InterruptHandlerType;
 }
 
 interface ReturnType {
@@ -1537,6 +1539,12 @@ function parseArguments(): ArgvOptions {
             describe: "Path to configuration file",
             default: CONFIG_PATH,
         })
+        .option("interrupt-handler", {
+            choices: Object.values(InterruptHandlerType),
+            describe:
+                "Interrupt handler to use, either CREATOR's default handler or a custom architecture-defined one.",
+            default: InterruptHandlerType.CREATOR,
+        })
         .help().argv as ArgvOptions;
 }
 
@@ -1767,6 +1775,8 @@ async function main() {
     if (!argv.debug) {
         logger.disable();
     }
+
+    creator.status.interrupt_handler = argv.interruptHandler;
 
     TUTORIAL_MODE = argv.tutorial;
 

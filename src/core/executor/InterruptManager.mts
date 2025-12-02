@@ -22,23 +22,24 @@ import { architecture, guiVariables } from "../core.mjs";
 import { injectedFunction } from "./instructionCompiler.mts";
 
 export enum InterruptType {
-    // TODO: moar
-    Software,
-    Timer,
-    External,
-    EnvironmentCall,
-    Maskable,
-    NonMaskable,
+    // we use string values so it's easier to work with
+    // `Object.values(InterruptType)`
+    Software = "software",
+    Timer = "timer",
+    External = "external",
+    EnvironmentCall = "ecall",
+    Maskable = "maskable",
+    NonMaskable = "nonmaskable",
 }
 
 export enum ExecutionMode {
-    User,
-    Kernel,
+    User = "user",
+    Kernel = "kernel",
 }
 
 export enum InterruptHandlerType {
-    CREATOR,
-    Custom,
+    CREATOR = "default",
+    Custom = "custom",
 }
 
 interface InterruptStatus {
@@ -215,22 +216,18 @@ export class InterruptManager {
     /** Status of the interrupt manager, used to sync between handlers */
     private status: InterruptStatus = {
         globalEnabled: true,
-        enabled: new Map([
-            [InterruptType.EnvironmentCall, true],
-            [InterruptType.External, true],
-            [InterruptType.Software, true],
-            [InterruptType.Timer, true],
-            [InterruptType.Maskable, true],
-            [InterruptType.NonMaskable, true],
-        ]),
-        pendingInterrupts: new Map([
-            [InterruptType.EnvironmentCall, false],
-            [InterruptType.External, false],
-            [InterruptType.Software, false],
-            [InterruptType.Timer, false],
-            [InterruptType.Maskable, false],
-            [InterruptType.NonMaskable, false],
-        ]),
+        enabled: new Map(
+            Object.values(InterruptType).map(type => [
+                type as InterruptType,
+                true,
+            ]),
+        ),
+        pendingInterrupts: new Map(
+            Object.values(InterruptType).map(type => [
+                type as InterruptType,
+                false,
+            ]),
+        ),
     };
 
     private customHandlerAllowed: boolean;

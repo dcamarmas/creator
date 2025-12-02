@@ -19,11 +19,18 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 <script lang="ts">
 import { defineComponent, type PropType } from "vue";
 import { creator_ga } from "@/core/utils/creator_ga.mjs";
-import { set_debug } from "@/core/core.mjs";
+import {
+  interruptManager,
+  set_debug,
+  setInterruptManager,
+  status,
+} from "@/core/core.mjs";
+import type { InterruptHandlerType } from "@/core/executor/InterruptManager.mjs";
 
 export default defineComponent({
   props: {
     // Configuration props
+    architecture_name: { type: String, required: true },
     stack_total_list: { type: Number, required: true },
     autoscroll: { type: Boolean, required: true },
     backup: { type: Boolean, required: true },
@@ -39,6 +46,10 @@ export default defineComponent({
     reg_representation_int: { type: String, required: true },
     reg_representation_float: { type: String, required: true },
     reg_name_representation: { type: String, required: true },
+    interrupt_handler: {
+      type: String as PropType<InterruptHandlerType>,
+      required: true,
+    },
   },
 
   emits: [
@@ -54,6 +65,7 @@ export default defineComponent({
     "update:reg_representation_int",
     "update:reg_representation_float",
     "update:reg_name_representation",
+    "update:interrupt_handler",
   ],
 
   data() {
@@ -81,6 +93,11 @@ export default defineComponent({
         { text: "System", value: "system" },
         { text: "Dark", value: "dark" },
         { text: "Light", value: "light" },
+      ],
+
+      interrupt_handler_options: [
+        { text: "CREATOR", value: 0 },
+        { text: "Custom (architecture)", value: 1 },
       ],
     };
   },
@@ -276,6 +293,28 @@ export default defineComponent({
         );
       },
     },
+
+    interrupt_handler_value: {
+      get() {
+        return this.interrupt_handler;
+      },
+      set(value: InterruptHandlerType) {
+        this.$emit("update:interrupt_handler", value);
+        status.interrupt_handler = value;
+
+        // if arch loaded, switch interruptManager
+        if (this.architecture_name !== "") {
+          setInterruptManager(interruptManager.switchHandler(value));
+        }
+
+        // Google Analytics
+        creator_ga(
+          "configuration",
+          "configuration.interrupt_handler",
+          "configuration.interrupt_handler." + value,
+        );
+      },
+    },
   },
 });
 </script>
@@ -290,6 +329,7 @@ export default defineComponent({
 
     <div class="mobile-settings-content">
       <!-- General Settings -->
+
       <div class="settings-section">
         <h4 class="section-title">General</h4>
 
@@ -300,6 +340,18 @@ export default defineComponent({
           <b-form-select
             v-model="dark_mode_setting_value"
             :options="dark_mode_setting_options"
+            class="setting-select"
+          />
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-label">
+            <font-awesome-icon :icon="['fas', 'bolt-lightning']" /> Interrupt
+            handler
+          </div>
+          <b-form-select
+            v-model="interrupt_handler_value"
+            :options="interrupt_handler_options"
             class="setting-select"
           />
         </div>
