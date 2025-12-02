@@ -1153,49 +1153,77 @@
       "type": "string",
       "enum": ["byte", "half_word", "word", "double_word"]
     },
+    "InterruptHandlers": {
+      "type": "object",
+      "properties": {
+        "creator_syscall": {
+          "description": "JS Handler for CREATOR interrupt handler's syscall interrupt",
+          "type": ["string", "null"]
+        },
+        "custom": {
+          "description": "JS Handler for the custom interrupt handler",
+          "type": ["string", "null"]
+        }
+      }
+    },
     "Interrupts": {
       "type": "object",
       "required": [
         "check",
-        "clear",
         "create",
-        "disable",
-        "enable",
-        "enabled",
-        "get_handler_addr",
-        "is_enabled"
+        "global_clear",
+        "global_disable",
+        "global_enable",
+        "handlers",
+        "is_global_enabled"
       ],
       "properties": {
         "check": {
-          "description": "JS code to be executed in order to check whether an interrupt happened. It must return an `InterruptType` (if an interrupt happened) or `null` (if it didn't)",
+          "description": "JS code to be executed in order to check what type of interrupt ocurred. It must return an `InterruptType` (if an interrupt happened) or `null` (if it didn't)",
           "type": "string"
         },
         "clear": {
-          "description": "JS code to be executed in order to clear an interrupt",
-          "type": "string"
+          "description": "JS code to be executed in order to clear an interrupt of the specified `type`. Defaults to `global_clear`",
+          "type": ["string", "null"]
         },
         "create": {
-          "description": "JS arrow (lambda) function to be executed in order to set an interrupt given an interrupt type",
+          "description": "JS code to be executed in order to set an interrupt given an interrupt `type`",
           "type": "string"
         },
         "disable": {
-          "description": "JS code to be executed in order to disable interrupts",
-          "type": "string"
+          "description": "JS code to be executed in order to disable the specified interrupt `type`. Defaults to `global_disable`",
+          "type": ["string", "null"]
         },
         "enable": {
-          "description": "JS code to be executed in order to enable interrupts",
+          "description": "JS code to be executed in order to enable the specified interrupt `type`. Defaults to `global_enable`",
+          "type": ["string", "null"]
+        },
+        "global_clear": {
+          "description": "JS code to be executed in order to clear all interrupts",
           "type": "string"
         },
-        "enabled": {
-          "description": "Controls whether interrupts are enabled by default (`true`) or not (`false`)",
-          "type": "boolean"
-        },
-        "get_handler_addr": {
-          "description": "JS code to be executed in order to obtain the interrupt handler address",
+        "global_disable": {
+          "description": "JS code to be executed in order to globally disable interrupts",
           "type": "string"
+        },
+        "global_enable": {
+          "description": "JS code to be executed in order to globally enable interrupts",
+          "type": "string"
+        },
+        "handlers": {
+          "description": "Interrupt handler configuration",
+          "allOf": [
+            {
+              "$ref": "#/definitions/InterruptHandlers"
+            }
+          ]
         },
         "is_enabled": {
-          "description": "JS code to be executed in order to check whether interrupts are enabled",
+          "description": "JS code to check whether the specified interrupt `type` is enabled. Must return a boolean. Defaults to `is_global_enabled`",
+          "type": ["string", "null"]
+        },
+        "is_global_enabled": {
+          "description": "JS code to check whether interrupts are globally is enabled. Must return a boolean",
           "type": "string"
         }
       }

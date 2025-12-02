@@ -50,6 +50,8 @@ export default defineComponent({
     instructions: Array as PropType<Instruction[]>,
   },
 
+  emits: ["mobile-view-change"],
+
   components: {
     SimulatorControls,
     AssemblyActions,

@@ -178,7 +178,7 @@ const setVimMode = (enabled: boolean) => {
     );
 
     // add commands
-    VimMode.Vim.defineEx("write", "w", assemble);
+    VimMode.Vim.defineEx("write", "w", assemble); // TODO: don't change view
     VimMode.Vim.defineEx("xit", "x", assemble);
 
     // add keybindings

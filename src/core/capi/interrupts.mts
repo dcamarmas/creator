@@ -17,12 +17,17 @@
  * along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { status, guiVariables } from "../core.mjs";
+import {
+    status,
+    guiVariables,
+    interruptManager,
+    setInterruptManager,
+} from "../core.mjs";
 import {
     ExecutionMode,
+    InterruptHandlerType,
     InterruptType,
-    makeInterrupt,
-} from "../executor/interrupts.mts";
+} from "../executor/InterruptManager.mts";
 
 export const INTERRUPTS = {
     setUserMode: () => {
@@ -34,9 +39,28 @@ export const INTERRUPTS = {
         status.execution_mode = ExecutionMode.Kernel;
     },
 
-    make: makeInterrupt,
+    create: (type: InterruptType) => interruptManager.create(type),
+    enable: (type: InterruptType) => interruptManager.enable(type),
+    globalEnable: () => interruptManager.globalEnable(),
+    disable: (type: InterruptType) => interruptManager.disable(type),
+    globalDisable: () => interruptManager.globalDisable(),
+    isEnabled: (type: InterruptType) => interruptManager.isEnabled(type),
+    isGlobalEnabled: () => interruptManager.isGlobalEnabled(),
+    clear: (type: InterruptType) => interruptManager.clear(type),
+    globalClear: () => interruptManager.globalClear(),
 
-    Type: InterruptType,
+    setCREATORHandler: () => {
+        setInterruptManager(
+            interruptManager.switchHandler(InterruptHandlerType.CREATOR),
+        );
+    },
 
-    // TODO: enable/disable interrupts
+    setCustomHandler: () => {
+        setInterruptManager(
+            interruptManager.switchHandler(InterruptHandlerType.Custom),
+        );
+    },
+
+    setHighlight: () => (guiVariables.keep_highlighted = -1n),
+    clearHighlight: () => (guiVariables.keep_highlighted = -1n),
 };

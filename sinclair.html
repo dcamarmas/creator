@@ -735,6 +735,9 @@ Executed instructions will appear here...</pre
                 return; // Pause without executing
               }
 
+              // if (totalInstructions === 709195) {
+              //   debugger;
+              // }
               const ret = step();
               if (ret.error) {
                 haltEmulation(`Runtime Error: ${ret.msg}`, "error");
@@ -846,6 +849,7 @@ Executed instructions will appear here...</pre
               const archRet = creator.loadArchitecture(arch.content);
               if (archRet.status !== "ok")
                 throw new Error(`Architecture Error: ${archRet.token}.`);
+              CAPI.INTERRUPTS.setCustomHandler();
               creator.reset();
               creator.main_memory.loadROM(new Uint8Array(rom.content), 0n);
               localStorage.setItem("savedArchContent", arch.content);
