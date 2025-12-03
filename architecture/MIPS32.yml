@@ -16,7 +16,7 @@ config:
   byte_size: 8
   plugin: mips
   assemblers:
-    - name: "CreatorCompiler"
+    - name: CreatorAssembler
       description: "Default Creator Compiler"
 
 components:

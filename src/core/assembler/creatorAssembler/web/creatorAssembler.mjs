@@ -22,7 +22,7 @@ import { assembleCreatorBase } from "../creatorAssemblerBase.mjs";
 import wasm_web_init, {
     ArchitectureJS,
     DataCategoryJS,
-} from "./wasm/creator_compiler.js";
+} from "./wasm/creator_assembler.js";
 
 /**
  * Web-specific assembly compiler that initializes WASM

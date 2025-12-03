@@ -70,12 +70,12 @@ const compilerOptions = computed(() => {
   const assemblers = architecture?.config?.assemblers || [];
 
   if (assemblers.length === 0) {
-    return [{ value: "CreatorCompiler", text: "CREATOR" }];
+    return [{ value: "CreatorAssembler", text: "CREATOR" }];
   }
 
   return assemblers.map((asm: { name: string }) => ({
     value: asm.name,
-    text: asm.name === "CreatorCompiler" ? "CREATOR" : asm.name.toUpperCase(),
+    text: asm.name === "CreatorAssembler" ? "CREATOR" : asm.name.toUpperCase(),
   }));
 });
 
@@ -117,9 +117,9 @@ const usesCreatorAssembler = computed(() => {
   if (assemblers.length === 0) {
     return true;
   }
-  // Check if CreatorCompiler is in the list
+  // Check if CreatorAssembler is in the list
   return assemblers.some(
-    (asm: { name: string }) => asm.name === "CreatorCompiler",
+    (asm: { name: string }) => asm.name === "CreatorAssembler",
   );
 });
 

@@ -20,7 +20,7 @@ config:
   plugin: riscv
   syntax: riscv
   assemblers:
-    - name: "CreatorCompiler"
+    - name: CreatorAssembler
       description: "Default Creator Compiler"
 
 extensions:

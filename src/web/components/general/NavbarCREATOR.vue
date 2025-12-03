@@ -131,8 +131,8 @@ export default defineComponent({
       if (assemblers.length === 0) {
         return true;
       }
-      // Check if CreatorCompiler is in the list
-      return assemblers.some((asm: any) => asm.name === "CreatorCompiler");
+      // Check if CreatorAssmbler is in the list
+      return assemblers.some((asm: any) => asm.name === "CreatorAssmbler");
     },
 
     // Hide mobile navbar when selecting architecture

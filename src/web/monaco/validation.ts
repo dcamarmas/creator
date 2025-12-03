@@ -85,13 +85,13 @@ function getCompilerFunction(
         (architecture?.config as { assemblers?: Array<{ name: string }> })
             ?.assemblers || [];
 
-    // Use the first assembler from the architecture config, or default to CreatorCompiler
+    // Use the first assembler from the architecture config, or default to CreatorAssembler
     const defaultAssembler =
-        assemblers.length > 0 ? assemblers[0]?.name : "CreatorCompiler";
+        assemblers.length > 0 ? assemblers[0]?.name : "CreatorAssembler";
 
-    const compiler = assemblerMap[defaultAssembler ?? "CreatorCompiler"];
-    // Always return CreatorCompiler as fallback since it's guaranteed to exist
-    return compiler ?? (assemblerMap.CreatorCompiler as CompilerFunction);
+    const compiler = assemblerMap[defaultAssembler ?? "CreatorAssembler"];
+    // Always return CreatorAssembler as fallback since it's guaranteed to exist
+    return compiler ?? (assemblerMap.CreatorAssembler as CompilerFunction);
 }
 
 /**

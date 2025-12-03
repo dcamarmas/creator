@@ -310,7 +310,7 @@
             {
               "description": "Default architecture-agnostic CREATOR assembler",
               "type": "string",
-              "enum": ["CreatorCompiler"]
+              "enum": ["CreatorAssembler"]
             },
             {
               "description": "SjasmPlus Z80 Assembler",

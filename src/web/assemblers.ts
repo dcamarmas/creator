@@ -36,7 +36,7 @@ type AssemblerFunction = (...args: any[]) => Promise<any>;
  */
 export const assemblerMap: Record<string, AssemblerFunction> = {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    CreatorCompiler: assembleCreator as any,
+    CreatorAssembler: assembleCreator as any,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     RASM: rasmAssemble as any,
 };
@@ -58,6 +58,6 @@ interface ArchitectureConfig {
 export function getDefaultCompiler(architecture: ArchitectureConfig): string {
     const assemblers = architecture?.config?.assemblers || [];
     return assemblers.length > 0
-        ? (assemblers[0]?.name ?? "CreatorCompiler")
-        : "CreatorCompiler";
+        ? (assemblers[0]?.name ?? "CreatorAssembler")
+        : "CreatorAssembler";
 }

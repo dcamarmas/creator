@@ -159,7 +159,7 @@ export default defineComponent({
       // Check if architecture uses Creator assembler
       if (
         !architecture?.config?.assemblers?.some(
-          (a: any) => a.name === "CreatorCompiler",
+          (a: any) => a.name === "CreatorAssembler",
         )
       ) {
         show_notification(

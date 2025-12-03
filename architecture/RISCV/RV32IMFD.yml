@@ -19,7 +19,7 @@ config:
   byte_size: 8
   plugin: riscv
   assemblers:
-    - name: CreatorCompiler
+    - name: CreatorAssembler
       description: Default Creator Compiler
 extensions:
   I:
