@@ -204,14 +204,8 @@ export function parseRasmErrorsForLinter(cleanErrorMessage) {
     return errors;
 }
 
-//
-// Compiler
-//
-
-/*Compile assembly code*/
-
 export function precomputeInstructions(sourceCode, sourceMap, tags = null) {
-    // When we don't use the default compiler, we need to precompute the instructions.
+    // When we don't use the default assembler, we need to precompute the instructions.
     // This is the array used to display the instructions in the UI.
     // To do so, we iterate through the binary file, and decode the instructions, adding them to the instructions array.
 

@@ -20,7 +20,7 @@ config:
   plugin: riscv
   assemblers:
     - name: CreatorAssembler
-      description: Default Creator Compiler
+      description: Default CREATOR assembler
 extensions:
   I:
     description: RV32I Base Instruction Set

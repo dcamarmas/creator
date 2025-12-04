@@ -17,7 +17,7 @@ jobs:
           submodules: recursive
       - name: Install dependencies
         uses: ./.github/actions/dependencies
-      - name: Build compiler web
+      - name: Build assembler web
         env:
           REPO: ${{ github.event.repository.name }}
         run: |
@@ -38,10 +38,10 @@ jobs:
           submodules: recursive
       - name: Install dependencies
         uses: ./.github/actions/dependencies
-      - name: Build compiler cli
+      - name: Build assembler cli
         run: bun wasm:cli
       - name: Cleanup artifact
-        run: rm -rf CreatorCompiler node_modules
+        run: rm -rf CreatorAssembler node_modules
       - name: Upload cli artifact
         uses: pyTooling/upload-artifact@v4
         with:

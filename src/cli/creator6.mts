@@ -1,21 +1,20 @@
 /**
- *  Copyright 2018-2025 Felix Garcia Carballeira, Alejandro Calderon Mateos,
- *                      Diego Camarmas Alonso, Jorge Ramos Santana
+ * Copyright 2018-2025 CREATOR Team.
  *
- *  This file is part of CREATOR.
+ * This file is part of CREATOR.
  *
- *  CREATOR is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU Lesser General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
+ * CREATOR is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *  CREATOR is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU Lesser General Public License for more details.
+ * CREATOR is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
  *
- *  You should have received a copy of the GNU Lesser General Public License
- *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 import fs from "node:fs";
@@ -70,7 +69,7 @@ interface ArgvOptions {
     bin: string;
     library: string;
     assembly: string;
-    compiler: string;
+    assembler: string;
     debug: boolean;
     reference: string;
     state: string;
@@ -372,21 +371,21 @@ const assembler_map = {
     sjasmplus: sjasmplusAssemble,
     rasm: rasmAssemble,
 };
-async function assemble(filePath: string, compiler?: string) {
+async function assemble(filePath: string, assembler?: string) {
     if (!filePath) {
         console.log("No assembly file specified.");
         return;
     }
-    // get function from the compiler map, with type safety
-    const compilerKey =
-        compiler && compiler in assembler_map
-            ? (compiler as keyof typeof assembler_map)
+    // get function from the assembler map, with type safety
+    const assemblerKey =
+        assembler && assembler in assembler_map
+            ? (assembler as keyof typeof assembler_map)
             : "default";
-    const compilerFunction = assembler_map[compilerKey];
+    const assemblerFunction = assembler_map[assemblerKey];
     const assemblyFile = fs.readFileSync(filePath, "utf8");
     const ret: ReturnType = await creator.assembly_compile(
         assemblyFile,
-        compilerFunction,
+        assemblerFunction,
     );
     if (ret && ret.status !== "ok") {
         console.error(ret.msg);
@@ -1498,10 +1497,10 @@ function parseArguments(): ArgvOptions {
             nargs: 1,
             default: "",
         })
-        .option("compiler", {
+        .option("assembler", {
             alias: "C",
             type: "string",
-            describe: "Compiler backend to use (default, sjasmplus, etc)",
+            describe: "Assembler backend to use (default, sjasmplus, etc)",
             default: "default",
         })
         .option("debug", {
@@ -1802,7 +1801,7 @@ async function main() {
             loadLibrary(argv.library);
         }
         if (argv.assembly) {
-            await assemble(argv.assembly, argv.compiler);
+            await assemble(argv.assembly, argv.assembler);
         }
     }
 

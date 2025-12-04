@@ -271,7 +271,7 @@
 <summary>:atom: 5.0.x:</summary>
 
   - [x] New functionality:
-     * New compiler based on Rust
+     * New assembler based on Rust
      * New architecture editor based on CodeMirror
   - [x] User Interface:
      * Several improvements and minor bugs fixed

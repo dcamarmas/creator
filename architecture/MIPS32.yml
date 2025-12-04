@@ -17,7 +17,7 @@ config:
   plugin: mips
   assemblers:
     - name: CreatorAssembler
-      description: "Default Creator Compiler"
+      description: "Default CREATOR assembler"
 
 components:
   - name: Control registers

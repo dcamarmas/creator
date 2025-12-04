@@ -21,7 +21,7 @@ config:
   syntax: riscv
   assemblers:
     - name: CreatorAssembler
-      description: "Default Creator Compiler"
+      description: "Default CREATOR assembler"
 
 extensions:
   I:
