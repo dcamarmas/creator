@@ -24,10 +24,14 @@ import * as monaco from "monaco-editor";
 import EditorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker";
 import { configureMonacoYaml, type JSONSchema } from "monaco-yaml";
 import YamlWorker from "./workaround-yaml.worker?worker";
+import { registerCreatorThemes } from "@/web/monaco/themes";
 
 import { architecture, reset, loadArchitecture } from "@/core/core.mjs";
 import { show_notification, storeBackup } from "@/web/utils.mjs";
 import schema from "../../../../architecture/schema.json";
+
+// Register custom themes
+registerCreatorThemes();
 
 const props = defineProps({
   id: { type: String, required: true },
@@ -116,6 +120,16 @@ watch(
       if (position) {
         editor.setPosition(position);
       }
+    }
+  },
+);
+
+// Watch for dark mode changes
+watch(
+  () => props.dark,
+  isDark => {
+    if (editor) {
+      monaco.editor.setTheme(isDark ? "creator-dark" : "creator-light");
     }
   },
 );

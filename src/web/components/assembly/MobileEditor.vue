@@ -65,16 +65,17 @@ const creatorLightTheme = createTheme({
 const creatorDarkTheme = createTheme({
   theme: "dark",
   settings: {
-    background: "#333333",
+    // Colors aligned with Bootstrap 5 dark mode (gray-900: #212529)
+    background: "#212529",
     backgroundImage: "",
-    foreground: "#ffffff",
-    caret: "#f0f0f0",
-    selection: "#f0f0f040",
-    selectionMatch: "#f0f0f040",
-    lineHighlight: "#f0f0f020",
-    gutterBorder: "1px solid #ffffff10",
-    gutterBackground: "#202020",
-    gutterForeground: "#f0f0f0",
+    foreground: "#dee2e6",
+    caret: "#dee2e6",
+    selection: "#495057",
+    selectionMatch: "#495057",
+    lineHighlight: "#2c3034",
+    gutterBorder: "1px solid #343a40",
+    gutterBackground: "#1a1d21",
+    gutterForeground: "#6c757d",
   },
   styles: [
     { tag: t.comment, color: "#6dceeb", fontStyle: "italic" },
