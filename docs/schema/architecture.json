@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft-07/schema",
-  "$id": "https://creatorsim.github.io/creator/architecture/schema.json",
+  "$id": "https://creatorsim.github.io/creator/schema/architecture.json",
   "title": "CREATOR Architecture definition",
   "description": "v2",
   "type": "object",

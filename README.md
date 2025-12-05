@@ -240,7 +240,7 @@
 <summary>:atom: 6.0.x:</summary>
 
   - [x] **BREAKING CHANGES**:
-     * New YAML architecture format (w/ [JSON schema](architecture/schema.json))
+     * New YAML architecture format (w/ [JSON schema](docs/schema/architecture.json))
      * New library format (Existing libraries must be recompiled)
   - [x] New functionality:
      * Interrupts and timers

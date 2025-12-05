@@ -20,7 +20,7 @@
 import { Ajv } from "ajv";
 
 // this HAS to use `with` or else Deno screams, and `with` is only supported on `TypeScript`, so...
-import schema from "../../../architecture/schema.json" with { type: "json" };
+import archSchema from "../../../docs/schema/architecture.json" with { type: "json" };
 
 export function validateArchSchema(architectureObj: object): boolean {
     // we need to do this, else the validator screams

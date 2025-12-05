@@ -53,6 +53,10 @@ export default defineConfig({
         input: "gateway/**",
         output: "/gateway",
       },
+      {
+        input: "docs/schema/**",
+        output: "/schema",
+      },
     ]) as PluginOption,
   ],
 
