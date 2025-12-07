@@ -1,0 +1,98 @@
+[
+  {
+    "id": "t1",
+    "name": "Tutoría 1, uso de vector de enteros con MIPS",
+    "url": "examples/ocw-uc3m-ec/asm_tutoria1_vector.s",
+    "description": "Representación de un vector y acceso a elementos del mismo"
+  },
+  {
+    "id": "t2",
+    "name": "Tutoría 1, uso de matriz de enteros con MIPS",
+    "url": "examples/ocw-uc3m-ec/asm_tutoria1_matrices.s",
+    "description": "Representación de una matriz y subrutina que rellena con ceros"
+  },
+  {
+    "id": "e1",
+    "name": "T3-ensamblador_1.pdf, Slide 30",
+    "url": "examples/ocw-uc3m-ec/asm_l3a_t30.s",
+    "description": "Code Snip from <a target=\"_blank\" href='https://aulaglobal.uc3m.es/pluginfile.php/3965677/mod_resource/content/4/T3-ensamblador_1.pdf#page30'>compute structure slides</a>"
+  },
+  {
+    "id": "e2",
+    "name": "T3-ensamblador_1.pdf, Slide 32",
+    "url": "examples/ocw-uc3m-ec/asm_l3a_t32.s",
+    "description": "Code Snip from <a target=\"_blank\" href='https://aulaglobal.uc3m.es/pluginfile.php/3965677/mod_resource/content/4/T3-ensamblador_1.pdf#page32'>compute structure slides</a>"
+  },
+  {
+    "id": "e3",
+    "name": "T3-ensamblador_1.pdf, Slide 35",
+    "url": "examples/ocw-uc3m-ec/asm_l3a_t35.s",
+    "description": "Code Snip from <a target=\"_blank\" href='https://aulaglobal.uc3m.es/pluginfile.php/3965677/mod_resource/content/4/T3-ensamblador_1.pdf#page35'>compute structure slides</a>"
+  },
+  {
+    "id": "e4",
+    "name": "T3-ensamblador_1.pdf, Slide 48",
+    "url": "examples/ocw-uc3m-ec/asm_l3a_t48.s",
+    "description": "Code Snip from <a target=\"_blank\" href='https://aulaglobal.uc3m.es/pluginfile.php/3965677/mod_resource/content/4/T3-ensamblador_1.pdf#page48'>compute structure slides</a>"
+  },
+  {
+    "id": "e5",
+    "name": "T3-ensamblador_1.pdf, Slide 55",
+    "url": "examples/ocw-uc3m-ec/asm_l3a_t55.s",
+    "description": "Code Snip from <a target=\"_blank\" href='https://aulaglobal.uc3m.es/pluginfile.php/3965677/mod_resource/content/4/T3-ensamblador_1.pdf#page55'>compute structure slides</a>"
+  },
+  {
+    "id": "e6",
+    "name": "T3-ensamblador_1.pdf, Slide 59",
+    "url": "examples/ocw-uc3m-ec/asm_l3a_t59.s",
+    "description": "Code Snip from <a target=\"_blank\" href='https://aulaglobal.uc3m.es/pluginfile.php/3965677/mod_resource/content/4/T3-ensamblador_1.pdf#page59'>compute structure slides</a>"
+  },
+  {
+    "id": "e7",
+    "name": "T3-ensamblador_1.pdf, Slide 63",
+    "url": "examples/ocw-uc3m-ec/asm_l3a_t63.s",
+    "description": "Code Snip from <a target=\"_blank\" href='https://aulaglobal.uc3m.es/pluginfile.php/3965677/mod_resource/content/4/T3-ensamblador_1.pdf#page63'>compute structure slides</a>"
+  },
+  {
+    "id": "e8",
+    "name": "T3-ensamblador_1.pdf, Slide 68",
+    "url": "examples/ocw-uc3m-ec/asm_l3a_t68.s",
+    "description": "Code Snip from <a target=\"_blank\" href='https://aulaglobal.uc3m.es/pluginfile.php/3965677/mod_resource/content/4/T3-ensamblador_1.pdf#page68'>compute structure slides</a>"
+  },
+  {
+    "id": "e9",
+    "name": "T3-ensamblador_1.pdf, Slide 69",
+    "url": "examples/ocw-uc3m-ec/asm_l3a_t69.s",
+    "description": "Code Snip from <a target=\"_blank\" href='https://aulaglobal.uc3m.es/pluginfile.php/3965677/mod_resource/content/4/T3-ensamblador_1.pdf#page69'>compute structure slides</a>"
+  },
+  {
+    "id": "e10",
+    "name": "T3-ensamblador_1.pdf, Slide 70",
+    "url": "examples/ocw-uc3m-ec/asm_l3a_t70.s",
+    "description": "Code Snip from <a target=\"_blank\" href='https://aulaglobal.uc3m.es/pluginfile.php/3965677/mod_resource/content/4/T3-ensamblador_1.pdf#page70'>compute structure slides</a>"
+  },
+  {
+    "id": "e11",
+    "name": "T3-ensamblador_1.pdf, Slide 72",
+    "url": "examples/ocw-uc3m-ec/asm_l3a_t72.s",
+    "description": "Code Snip from <a target=\"_blank\" href='https://aulaglobal.uc3m.es/pluginfile.php/3965677/mod_resource/content/4/T3-ensamblador_1.pdf#page72'>compute structure slides</a>"
+  },
+  {
+    "id": "e12",
+    "name": "T3-ensamblador_1.pdf, Slide 79",
+    "url": "examples/ocw-uc3m-ec/asm_l3a_t79.s",
+    "description": "Code Snip from <a target=\"_blank\" href='https://aulaglobal.uc3m.es/pluginfile.php/3965677/mod_resource/content/4/T3-ensamblador_1.pdf#page79'>compute structure slides</a>"
+  },
+  {
+    "id": "e13",
+    "name": "T3-ensamblador_4.pdf, Slide 87",
+    "url": "examples/ocw-uc3m-ec/asm_l3d_t87.s",
+    "description": "Code Snip from <a target=\"_blank\" href='https://aulaglobal.uc3m.es/pluginfile.php/3965680/mod_resource/content/3/T3-ensamblador_4.pdf#page87'>compute structure slides</a>"
+  },
+  {
+    "id": "e14",
+    "name": "T3-ensamblador_4.pdf, Slide 111",
+    "url": "examples/ocw-uc3m-ec/asm_l3d_t111.s",
+    "description": "Code Snip from <a target=\"_blank\" href='https://aulaglobal.uc3m.es/pluginfile.php/3965680/mod_resource/content/3/T3-ensamblador_4.pdf#page111'>compute structure slides</a>"
+  }
+]

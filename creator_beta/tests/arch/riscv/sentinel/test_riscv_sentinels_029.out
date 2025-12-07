@@ -1,0 +1,4 @@
+
+DANGER: Stack memory has not been released successfully
+cr[PC]:0xc; ir[x1,ra]:0x4; ir[x2,sp]:0x10000000; ir[x17,a7]:0xa; keyboard[0x0]:''; display[0x0]:''; 
+

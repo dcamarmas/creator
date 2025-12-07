@@ -1,0 +1,31 @@
+singleQuote: false
+trailingComma: all
+semi: true
+tabWidth: 4
+embeddedLanguageFormatting: auto
+endOfLine: lf
+printWidth: 80
+vueIndentScriptAndStyle: false
+quoteProps: as-needed
+arrowParens: avoid
+singleAttributePerLine: false
+useTabs: false
+overrides:
+  - files:
+      - "*.vue"
+      - "*.json"
+      - "*.jsonc"
+      - "*.html"
+      - "*.css"
+      - "*.config.ts"
+      - "*.lock"
+      - "*.yaml"
+      - "*.yml"
+      - ".editorconfig"
+    options:
+      tabWidth: 2
+  - files:
+      - "*.json"
+      - "*.jsonc"
+    options:
+      trailingComma: none

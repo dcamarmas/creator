@@ -1,0 +1,11 @@
+
+
+Error at line 12 (s50):
+Register 's50' not found
+
+  11 main:
+->12 	add t0, t1, s50
+
+Not executed
+keyboard[0x0]:''; display[0x0]:''; 
+

@@ -1,0 +1,74 @@
+[
+  {
+    "name": "Example 1",
+    "id": "e1",
+    "url": "examples/MIPS/example1.s",
+    "description": "Data Storage"
+  },
+  {
+    "name": "Example 2",
+    "id": "e2",
+    "url": "examples/MIPS/example2.s",
+    "description": "ALU operations"
+  },
+  {
+    "name": "Example 3",
+    "id": "e3",
+    "url": "examples/MIPS/example3.s",
+    "description": "Store/Load Data in Memory"
+  },
+  {
+    "name": "Example 4",
+    "id": "e4",
+    "url": "examples/MIPS/example4.s",
+    "description": "FPU operations"
+  },
+  {
+    "name": "Example 5",
+    "id": "e5",
+    "url": "examples/MIPS/example5.s",
+    "description": "Loop"
+  },
+  {
+    "name": "Example 6",
+    "id": "e6",
+    "url": "examples/MIPS/example6.s",
+    "description": "Branch"
+  },
+  {
+    "name": "Example 7",
+    "id": "e7",
+    "url": "examples/MIPS/example7.s",
+    "description": "Loop + Memory"
+  },
+  {
+    "name": "Example 8",
+    "id": "e8",
+    "url": "examples/MIPS/example8.s",
+    "description": "Copy of matrices"
+  },
+  {
+    "name": "Example 9",
+    "id": "e9",
+    "url": "examples/MIPS/example9.s",
+    "description": "I/O Syscalls"
+  },
+  {
+    "name": "Example 10",
+    "id": "e10",
+    "url": "examples/MIPS/example10.s",
+    "description": "I/O Syscalls + Strings"
+  },
+  {
+    "name": "Example 11",
+    "id": "e11",
+    "url": "examples/MIPS/example11.s",
+    "description": "Subroutines"
+  },
+  {
+    "name": "Example 12",
+    "id": "e12",
+    "url": "examples/MIPS/example12.s",
+    "description": "Factorial"
+  }
+]

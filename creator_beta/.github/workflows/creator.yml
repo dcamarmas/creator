@@ -1,0 +1,171 @@
+name: CREATOR CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-web:
+    name: Build CREATOR web
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          submodules: recursive
+      - name: Install dependencies
+        uses: ./.github/actions/dependencies
+      - name: Build compiler web
+        env:
+          REPO: ${{ github.event.repository.name }}
+        run: |
+          bun install -g wasm-pack
+          bun build:web
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./dist/web/creatorV/
+
+  build-cli:
+    name: Build CREATOR cli
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          submodules: recursive
+      - name: Install dependencies
+        uses: ./.github/actions/dependencies
+      - name: Build compiler cli
+        run: bun wasm:cli
+      - name: Cleanup artifact
+        run: rm -rf CreatorCompiler node_modules
+      - name: Upload cli artifact
+        uses: pyTooling/upload-artifact@v4
+        with:
+          name: cli-artifact
+          working-directory: "."
+          path: |
+            *
+            .github
+          include-hidden-files: true
+          if-no-files-found: error
+
+  build-cli-binaries:
+    name: Build CREATOR cli binaries
+    runs-on: ubuntu-latest
+    needs: build-cli
+    if: github.event_name != 'pull_request'
+    steps:
+      - name: Download artifact
+        uses: pyTooling/download-artifact@v5
+        with:
+          name: cli-artifact
+      - name: Install dependencies
+        uses: ./.github/actions/dependencies
+      - name: Build cli binaries
+        env:
+          PAGE: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
+        run: |
+          bun run-p build:cli:windows build:cli:mac-x64 build:cli:mac-arm build:cli:linux-x64 build:cli:linux-arm
+          sed --in-place --expression 's\^# yaml-language-server: $schema=.*schema.json\# yaml-language-server: $schema='"$PAGE"'/architecture/schema.json\' architecture/*.yml architecture/**/*.yml
+          zip --recurse-paths --include '*.yml' --junk-paths architectures.zip architecture/
+      - name: Upload cli binaries artifact
+        uses: pyTooling/upload-artifact@v4
+        with:
+          name: cli-binaries
+          working-directory: "."
+          path: |
+            creator-cli-*
+            architectures.zip
+          if-no-files-found: error
+          compression-level: 3
+
+  test:
+    name: Run CREATOR tests
+    runs-on: ubuntu-latest
+    needs: build-cli
+    steps:
+      - name: Download artifact
+        uses: pyTooling/download-artifact@v5
+        with:
+          name: cli-artifact
+      - name: Install dependencies
+        uses: ./.github/actions/dependencies
+      - name: Run tests
+        run: deno test -A --unstable-node-globals --parallel --ignore=tests/unit/core/executor/decoder/
+
+  publish-nightly:
+    name: Publish nightly release
+    runs-on: ubuntu-latest
+    needs: [build-cli-binaries, test]
+    concurrency:
+      group: nightly-release
+      cancel-in-progress: false
+    permissions:
+      contents: write
+    steps:
+      - name: Download artifact
+        uses: pyTooling/download-artifact@v5
+        with:
+          name: cli-binaries
+      - name: Delete nightly tag
+        run: gh release delete nightly --cleanup-tag || true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Publish nightly release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Nightly release
+          prerelease: true
+          tag_name: nightly
+          target_commitish: ${{ github.sha }}
+          fail_on_unmatched_files: true
+          files: |
+            creator-cli-*
+            architectures.zip
+
+  publish-stable:
+    name: Publish latest tagged release
+    runs-on: ubuntu-latest
+    needs: [build-cli-binaries, test]
+    if: github.ref_type == 'tag'
+    concurrency:
+      group: stable-release
+      cancel-in-progress: false
+    permissions:
+      contents: write
+    steps:
+      - name: Download artifact
+        uses: pyTooling/download-artifact@v5
+        with:
+          name: cli-binaries
+      - name: Publish latest release
+        uses: softprops/action-gh-release@v2
+        with:
+          make_latest: true
+          fail_on_unmatched_files: true
+          files: |
+            creator-cli-*
+            architectures.zip
+
+  deploy-pages:
+    name: Deploy CREATOR to GitHub Pages
+    runs-on: ubuntu-latest
+    needs: [build-web, test]
+    if: github.event_name != 'pull_request'
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    permissions:
+      pages: write # to deploy to Pages
+      id-token: write # to verify the deployment originates from an appropriate source
+    # Deploy to the github-pages environment
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4

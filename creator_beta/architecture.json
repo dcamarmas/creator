@@ -1,0 +1,307 @@
+{
+  "version": "2.0.0",
+  "config": {
+    "name": "Simple8Bit",
+    "word_size": 8,
+    "byte_size": 8,
+    "description": "A simple custom 8-bit architecture",
+    "endianness": "little_endian",
+    "memory_alignment": true,
+    "passing_convention": true,
+    "sensitive_register_name": false,
+    "main_function": "main",
+    "comment_prefix": ";",
+    "start_address": 0,
+    "pc_offset": 0
+  },
+  "templates": [
+    {
+      "name": "standard",
+      "nwords": 1,
+      "clk_cycles": 1,
+      "fields": [
+        {
+          "name": "opcode",
+          "type": "co",
+          "startbit": 7,
+          "stopbit": 0,
+          "order": 0
+        }
+      ]
+    }
+  ],
+  "components": [
+    {
+      "name": "Control registers",
+      "type": "ctrl_registers",
+      "double_precision": false,
+      "elements": [
+        {
+          "name": [
+            "PC"
+          ],
+          "nbits": 8,
+          "encoding": 0,
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write",
+            "program_counter"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Integer registers",
+      "type": "int_registers",
+      "double_precision": false,
+      "elements": [
+        {
+          "name": [
+            "A"
+          ],
+          "encoding": 0,
+          "nbits": 8,
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": [
+            "B"
+          ],
+          "encoding": 1,
+          "nbits": 8,
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": [
+            "SP"
+          ],
+          "encoding": 2,
+          "nbits": 8,
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write",
+            "stack_pointer"
+          ]
+        }
+      ]
+    }
+  ],
+  "memory_layout": {
+    "text": {
+      "start": 0,
+      "end": 1023
+    },
+    "data": {
+      "start": 1024,
+      "end": 32767
+    },
+    "stack": {
+      "start": 32768,
+      "end": 65535
+    }
+  },
+  "instructions": [
+    {
+      "name": "nop",
+      "nwords": 1,
+      "clk_cycles": 1,
+      "fields": [
+        {
+          "name": "opcode",
+          "type": "co",
+          "startbit": 7,
+          "stopbit": 0,
+          "order": 0,
+          "value": "00000000"
+        }
+      ],
+      "template": "standard",
+      "definition": "",
+      "type": "Other",
+      "help": "",
+      "signature_definition": "F0",
+      "signature_pretty": "nop",
+      "co": "00000000"
+    },
+    {
+      "name": "add",
+      "nwords": 3,
+      "clk_cycles": 5,
+      "fields": [
+        {
+          "name": "opcode",
+          "type": "co",
+          "startbit": 7,
+          "stopbit": 0,
+          "order": 0,
+          "value": "00100000"
+        },
+        {
+          "type": "INT-Reg",
+          "word": 1,
+          "startbit": 7,
+          "stopbit": 0,
+          "order": 1,
+          "suffix": ",",
+          "name": "reg1"
+        },
+        {
+          "type": "INT-Reg",
+          "word": 2,
+          "order": 2,
+          "startbit": 7,
+          "stopbit": 0,
+          "name": "reg2"
+        }
+      ],
+      "template": "standard",
+      "definition": "registers[reg1] = (registers[reg1] + registers[reg2]) & 0xFFn;\n",
+      "type": "Other",
+      "help": "",
+      "signature_definition": "F0 F1, F2",
+      "signature_pretty": "add reg1, reg2",
+      "co": "00100000"
+    },
+    {
+      "name": "load",
+      "nwords": 3,
+      "clk_cycles": 4,
+      "fields": [
+        {
+          "name": "opcode",
+          "type": "co",
+          "startbit": 7,
+          "stopbit": 0,
+          "order": 0,
+          "value": "10000001"
+        },
+        {
+          "type": "INT-Reg",
+          "word": 1,
+          "startbit": 7,
+          "stopbit": 0,
+          "order": 1,
+          "suffix": ",",
+          "name": "reg"
+        },
+        {
+          "type": "imm-signed",
+          "word": 2,
+          "startbit": 7,
+          "stopbit": 0,
+          "order": 2,
+          "name": "number"
+        }
+      ],
+      "template": "standard",
+      "definition": "registers[reg] = number\n",
+      "type": "Other",
+      "help": "",
+      "signature_definition": "F0 F1, F2",
+      "signature_pretty": "load reg, number",
+      "co": "10000001"
+    }
+  ],
+  "directives": [
+    {
+      "name": ".data",
+      "action": "data_segment",
+      "size": null
+    },
+    {
+      "name": ".text",
+      "action": "code_segment",
+      "size": null
+    },
+    {
+      "name": ".bss",
+      "action": "global_symbol",
+      "size": null
+    },
+    {
+      "name": ".zero",
+      "action": "space",
+      "size": 1
+    },
+    {
+      "name": ".space",
+      "action": "space",
+      "size": 1
+    },
+    {
+      "name": ".align",
+      "action": "align",
+      "size": null
+    },
+    {
+      "name": ".balign",
+      "action": "balign",
+      "size": null
+    },
+    {
+      "name": ".globl",
+      "action": "global_symbol",
+      "size": null
+    },
+    {
+      "name": ".string",
+      "action": "ascii_null_end",
+      "size": null
+    },
+    {
+      "name": ".asciz",
+      "action": "ascii_null_end",
+      "size": null
+    },
+    {
+      "name": ".ascii",
+      "action": "ascii_not_null_end",
+      "size": null
+    },
+    {
+      "name": ".byte",
+      "action": "byte",
+      "size": 1
+    },
+    {
+      "name": ".half",
+      "action": "half_word",
+      "size": 2
+    },
+    {
+      "name": ".word",
+      "action": "word",
+      "size": 4
+    },
+    {
+      "name": ".dword",
+      "action": "double_word",
+      "size": 8
+    },
+    {
+      "name": ".float",
+      "action": "float",
+      "size": 4
+    },
+    {
+      "name": ".double",
+      "action": "double",
+      "size": 8
+    }
+  ],
+  "pseudoinstructions": []
+}

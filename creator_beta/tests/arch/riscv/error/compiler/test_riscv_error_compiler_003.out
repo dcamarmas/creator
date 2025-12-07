@@ -1,0 +1,11 @@
+
+
+Error at line 12 (add rd rs1 rs2):
+Incorrect instruction syntax for 'add rd rs1 rs2'
+
+  11 main:
+->12    add t0, t1
+
+Not executed
+keyboard[0x0]:''; display[0x0]:''; 
+

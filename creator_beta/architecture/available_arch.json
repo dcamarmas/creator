@@ -1,0 +1,66 @@
+[
+  {
+    "name": "RISC-V (RV32IMFD)",
+    "alias": [
+      "RISC-V (RV32IMFD)",
+      "RISC-V",
+      "risc-v",
+      "RV",
+      "rv",
+      "RV32",
+      "rv32"
+    ],
+    "file": "RISCV/RV32IMFD",
+    "img": "riscv.png",
+    "alt": "RISC-V",
+    "id": "select_confRISV",
+    "examples": ["default"],
+    "description": "RISC-V is an instruction set architecture (ISA) based on the RISC type and its hardware is free. This architecture was created in 2010 at the University of California, Berkeley.",
+    "guide": "guides/riscv.pdf",
+    "available": true
+  },
+    {
+    "name": "RISC-V (RV64IMFD)",
+    "alias": [
+      "RISC-V (RV64IMFD)",
+      "RISC-V",
+      "risc-v",
+      "RV",
+      "rv",
+      "RV64",
+      "rv64"
+    ],
+    "file": "RISCV/RV64IMFD",
+    "img": "riscv.png",
+    "alt": "RISC-V",
+    "id": "select_confRISV",
+    "examples": ["default"],
+    "description": "RISC-V is an instruction set architecture (ISA) based on the RISC type and its hardware is free. This architecture was created in 2010 at the University of California, Berkeley.",
+    "guide": "/guides/riscv.pdf",
+    "available": true
+  },
+  {
+    "name": "MIPS-32",
+    "alias": ["MIPS-32", "mips-32", "MIPS32", "mips32"],
+    "file": "MIPS32",
+    "img": "mips.png",
+    "alt": "MIPS-32",
+    "id": "select_confMIPS",
+    "examples": ["default"],
+    "description": "The MIPS processor was developed by Dr.John Hennessey and his graduate students at Stanford University in the early 1980s. It is currently one of the major processors in the embedded processor market.",
+    "guide": "guides/mips32.pdf",
+    "available": true
+  },
+  {
+    "name": "Z80",
+    "alias": ["Z80"],
+    "file": "Z80",
+    "img": "zilog.svg",
+    "alt": "Z80",
+    "id": "select_confZ80",
+    "examples": [],
+    "description": "The Z80 is an 8-bit microprocessor that was designed by Zilog and introduced in 1976. It became very popular in the late 1970s and early 1980s, especially in home computers and embedded systems.",
+    "guide": "",
+    "available": true
+  }
+]
