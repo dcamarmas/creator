@@ -1,0 +1,43 @@
+// Custom Bootstrap variable overrides
+// IMPORTANT: These must be defined BEFORE importing Bootstrap
+
+// Table customization
+$table-bg-scale: -35%;
+
+// // Body colors
+// $body-bg: #ffffff;
+// $body-color: #000000;
+
+// $modal-header-padding-y: 0.2rem;
+// $modal-transition: none;
+// $modal-fade-transform: none;
+// $modal-scale-transform: none;
+
+// $modal-backdrop-opacity: 0.1;
+
+// $btn-color: #000000;
+
+// $body-bg-dark: #000000;
+// $body-color-dark: #ffffff;
+
+// Import Bootstrap (after variable overrides)
+@import "bootstrap/scss/bootstrap";
+@import "bootstrap-vue-next/dist/bootstrap-vue-next.css";
+
+// Import shared styles
+@import "tab-buttons";
+
+// Mobile modal styles
+@media (max-width: 767px) {
+    .modal.bottomCard {
+        .modal-dialog {
+            transform: translateY(100%) !important;
+            transition: transform 0.4s cubic-bezier(0, 1.2, 0.5, 1);
+        }
+
+        // Slide up from bottom when shown
+        &.show .modal-dialog {
+            transform: translateY(0) !important;
+        }
+    }
+}

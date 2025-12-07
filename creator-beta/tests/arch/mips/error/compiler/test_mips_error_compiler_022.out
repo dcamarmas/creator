@@ -1,0 +1,12 @@
+
+
+Error at line 7 (-10):
+The space directive value should be positive and greater than zero
+
+  6  .data
+->7     .space -10
+  8     
+
+Not executed
+keyboard[0x0]:''; display[0x0]:''; 
+

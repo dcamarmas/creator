@@ -1,0 +1,4 @@
+
+DANGER: Possible failure in the parameter passing convention
+cr[PC]:0x10; ir[1,at]:0xc; ir[2,v0]:0xa; ir[20,s4]:0x2; ir[31,ra]:0x8; keyboard[0x0]:''; display[0x0]:''; 
+

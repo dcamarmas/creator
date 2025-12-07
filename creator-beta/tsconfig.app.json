@@ -1,0 +1,24 @@
+{
+  "extends": "@vue/tsconfig/tsconfig.dom.json",
+
+  "include": [
+    "env.d.ts",
+    "src/**/*.ts",
+    "src/**/*.mts",
+    "src/core/utils/bigint.mjs",
+    "src/**/*.vue",
+    "src/cli/creator.mjs"
+  ],
+  "exclude": ["src/**/__tests__/*"],
+  "compilerOptions": {
+    "target": "es2024",
+    "lib": ["dom", "es2024"],
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
+    "allowJs": true,
+    // "moduleResolution": "node",
+    "types": ["node"],
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  }
+}

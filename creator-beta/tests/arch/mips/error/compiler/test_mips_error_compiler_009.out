@@ -1,0 +1,11 @@
+
+
+Error at line 8 (0xhello):
+Immediate number '0xhello' is not valid
+
+  7 main:
+->8    j 0xhello
+
+Not executed
+keyboard[0x0]:''; display[0x0]:''; 
+

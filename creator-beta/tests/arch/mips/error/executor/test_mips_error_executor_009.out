@@ -1,0 +1,6 @@
+
+
+ Error found.
+ The register 0 | zero cannot be written
+cr[PC]:0x4; keyboard[0x0]:''; display[0x0]:''; 
+

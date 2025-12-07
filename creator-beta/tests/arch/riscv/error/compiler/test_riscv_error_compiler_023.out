@@ -1,0 +1,11 @@
+
+
+Error at line 10:
+Empty directive
+
+  9    example2:	.half	
+->10     
+
+Not executed
+keyboard[0x0]:''; display[0x0]:''; 
+

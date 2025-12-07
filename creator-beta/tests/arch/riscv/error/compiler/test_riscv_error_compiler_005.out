@@ -1,0 +1,12 @@
+
+
+Error at line 7 (0x123):
+Number '0x123' is too big
+
+  6  .data
+->7     a:      .byte 0x123
+  8     
+
+Not executed
+keyboard[0x0]:''; display[0x0]:''; 
+

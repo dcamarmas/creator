@@ -1,0 +1,59 @@
+# CREATOR CLI Configuration
+
+# General settings
+settings:
+  # Maximum number of states to keep for unstepping
+  # -1: unlimited, 0: disabled, positive number: maximum states to keep
+  max_states: 0
+
+  # Accessible mode for screen readers
+  accessible: false
+
+  keyboard_shortcuts: true
+
+  auto_list_after_shortcuts: true
+
+# Command aliases
+# Format: "alias_name": "actual_command with arguments"
+aliases:
+  # Basic command shortcuts
+  r: "run"
+  s: "step"
+  u: "unstep"
+  q: "quit"
+  l: "list"
+  c: "continue"
+  b: "break"
+  h: "help"
+  sr: "silent"
+  rst: "reset"
+  i: "insn"
+  sv: "save"
+  snap: "snapshot"
+  load: "restore"
+  exit: "quit"
+  data: "mem 0x200000 64"
+
+# Keyboard shortcuts
+# Format: ctrl_key: "command"
+shortcuts:
+  # Ctrl+X - Reset program
+  "\u0018": "reset"
+  # Ctrl+N - Next instruction
+  "\u000e": "step"
+  # Ctrl+P - Previous instruction (unstep)
+  "\u0010": "unstep"
+  # Ctrl+R - Run program
+  "\u0012": "run"
+  # Ctrl+L - List instructions
+  "\u000c": "list"
+  # Ctrl+H - Show help
+  "\u0008": "help"
+  # Ctrl+S - View stack
+  "\u0013": "stack"
+  # Ctrl+B - Toggle breakpoint at current PC
+  "\u0002": "break"
+  # Ctrl+E - Clear console
+  "\u0005": "clear"
+  # Ctrl+K - Pause
+  "\u000b": "pause"

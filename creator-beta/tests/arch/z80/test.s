@@ -1,0 +1,2 @@
+ld a, 0x7f
+add a, a

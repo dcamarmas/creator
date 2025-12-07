@@ -1,0 +1,7 @@
+
+Segmentation fault. You tried to read in the text segment
+
+ Error found.
+ The program has finished with errors
+cr[PC]:0x8; ir[8,t0]:0x2008000a; keyboard[0x0]:''; display[0x0]:''; 
+

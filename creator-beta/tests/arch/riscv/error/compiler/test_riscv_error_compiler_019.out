@@ -1,0 +1,12 @@
+
+
+Error at line 7 (0x):
+Number '0x' is empty
+
+  6  .data
+->7     .byte 0x
+  8     
+
+Not executed
+keyboard[0x0]:''; display[0x0]:''; 
+

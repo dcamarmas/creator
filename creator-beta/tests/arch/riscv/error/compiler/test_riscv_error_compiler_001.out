@@ -1,0 +1,11 @@
+
+
+Error at line 9 (A):
+Repeated tag: A
+
+  8    a:		.byte -1
+->9 	A:		.half 23
+
+Not executed
+keyboard[0x0]:''; display[0x0]:''; 
+

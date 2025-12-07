@@ -1,0 +1,6 @@
+
+
+ Error found.
+ Stack pointer cannot be placed in the data segment
+cr[PC]:0xc; ir[1,at]:0x200000; ir[29,sp]:0x200000; keyboard[0x0]:''; display[0x0]:''; 
+

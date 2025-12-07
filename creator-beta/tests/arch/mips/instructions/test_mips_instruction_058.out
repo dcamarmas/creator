@@ -1,0 +1,5 @@
+
+Square root of a negative number is not allowed.
+Square root of a negative number is not allowed.
+cr[PC]:0x8c; ir[1,at]:0x46100000; ir[2,v0]:0xa; sfpr[f0]:0x40700000; sfpr[f2]:0xC0AB3200; sfpr[f4]:0x40B56400; sfpr[f6]:0x46192400; sfpr[f7]:0xC6016400; sfpr[f8]:0x46100000; sfpr[f10]:0x40300000; sfpr[f14]:0x40528000; sfpr[f16]:0x42C60000; sfpr[f18]:0x42C00000; dfpr[FP0]:0x4070000000000000; dfpr[FP2]:0xC0AB320000000000; dfpr[FP4]:0x40B5640000000000; dfpr[FP6]:0x46192400C6016400; dfpr[FP8]:0x4610000000000000; dfpr[FP10]:0x4030000000000000; dfpr[FP14]:0x4052800000000000; dfpr[FP16]:0x42C6000000000000; dfpr[FP18]:0x42C0000000000000; keyboard[0x0]:''; display[0x0]:''; 
+

@@ -1,0 +1,11 @@
+
+
+Error at line 8 (.directive):
+Invalid directive: .directive
+
+  7  	.align 2
+->8     example:	.directive 221
+
+Not executed
+keyboard[0x0]:''; display[0x0]:''; 
+

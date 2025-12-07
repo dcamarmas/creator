@@ -1,0 +1,12 @@
+
+
+Error at line 8 (hello):
+Invalid value 'hello' as number.
+
+  7    .align 2
+->8     example:   .word hello
+  9 
+
+Not executed
+keyboard[0x0]:''; display[0x0]:''; 
+

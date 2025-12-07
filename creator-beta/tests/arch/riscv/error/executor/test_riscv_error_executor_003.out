@@ -1,0 +1,6 @@
+
+
+ Error found.
+ Stack pointer cannot be placed in the text segment
+cr[PC]:0x4; ir[x2,sp]:0x0; keyboard[0x0]:''; display[0x0]:''; 
+

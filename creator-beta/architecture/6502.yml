@@ -1,0 +1,206 @@
+# yaml-language-server: $schema=schema.json
+version: 2.0.0
+
+config:
+  name: "6502"
+  word_size: 8 # 8-bit word size, which is the same as the byte size
+  byte_size: 8
+  description: "6502 Architecture"
+  endianness: little_endian
+  memory_alignment: true
+  main_function: main
+  passing_convention: true
+  sensitive_register_name: true
+  start_address: 0x0
+  pc_offset: 0
+
+components:
+  - name: Control registers
+    type: ctrl_registers
+    double_precision: false
+    elements:
+      - name:
+          - PC
+        nbits: 8
+        encoding: 0
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+          - program_counter
+  - name: Integer registers
+    type: int_registers
+    double_precision: false
+    elements:
+      - name:
+          - A
+        encoding: 0
+        nbits: 8
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - P
+        encoding: 1
+        nbits: 7
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - S
+        encoding: 2
+        nbits: 8
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+          - stack_pointer
+      - name:
+          - X
+        encoding: 3
+        nbits: 8
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+      - name:
+          - Y
+        encoding: 4
+        nbits: 8
+        value: 0
+        default_value: 0
+        properties:
+          - read
+          - write
+
+directives:
+  - name: .data
+    action: data_segment
+    size: null
+  - name: .text
+    action: code_segment
+    size: null
+  - name: .bss
+    action: global_symbol
+    size: null
+  - name: .zero
+    action: space
+    size: 1
+  - name: .space
+    action: space
+    size: 1
+  - name: .align
+    action: align
+    size: null
+  - name: .balign
+    action: balign
+    size: null
+  - name: .globl
+    action: global_symbol
+    size: null
+  - name: .string
+    action: ascii_null_end
+    size: null
+  - name: .asciz
+    action: ascii_null_end
+    size: null
+  - name: .ascii
+    action: ascii_not_null_end
+    size: null
+  - name: .byte
+    action: byte
+    size: 1
+  - name: .half
+    action: half_word
+    size: 2
+  - name: .word
+    action: word
+    size: 4
+  - name: .dword
+    action: double_word
+    size: 8
+  - name: .float
+    action: float
+    size: 4
+  - name: .double
+    action: double
+    size: 8
+
+memory_layout:
+  text:
+    start: 0x0000
+    end: 0x1000
+  data:
+    start: 0x1010
+    end: 0x2000
+  stack:
+    start: 0xFFFE
+    end: 0xFFFF
+
+templates:
+  - name: Custom
+    nwords: 1
+    clk_cycles: 1
+    fields:
+      - name: opcode
+        type: co
+        startbit: 7
+        stopbit: 0
+        order: 0
+
+instructions:
+  base:
+    - name: nop
+      template: Custom
+      fields:
+        - field: opcode
+          value: "11101010"
+      definition: ""
+    - name: lda
+      template: Custom
+      fields:
+        - field: opcode
+          value: "10101001"
+        - field: imm
+          type: imm-unsigned
+          startbit: 15
+          stopbit: 8
+          order: 1
+          prefix: "#"
+      definition: "A = imm"
+    - name: lda
+      template: Custom
+      nwords: 2
+      fields:
+        - field: opcode
+          value: "10101101"
+        - field: imm
+          type: imm-unsigned
+          startbit: 15
+          stopbit: 8
+          order: 1
+          prefix: "%"
+        - field: imm2
+          type: imm-unsigned
+          startbit: 24
+          stopbit: 16
+          order: 2
+          prefix: "%"
+        - field: zeros
+          type: co
+          startbit: 32
+          stopbit: 25
+          value: "00000000"
+      definition: "A = imm + imm2"
+
+pseudoinstructions:
+  base:
+    - name: nop2
+      definition: "nop"

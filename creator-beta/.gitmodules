@@ -1,0 +1,6 @@
+[submodule "CreatorCompiler"]
+	path = CreatorCompiler
+	url = https://github.com/ALVAROPING1/CreatorCompiler.git
+[submodule "creatorDriver"]
+	path = creatorDriver
+	url = https://github.com/EUtrilla2002/creatorDriver.git
