@@ -1,0 +1,11 @@
+
+
+Error at line 8:
+Please check instruction syntax, inmediate ranges, register name, etc.
+
+  7 main:
+->8    j 0x12345678
+
+Not executed
+keyboard[0x0]:''; display[0x0]:''; 
+

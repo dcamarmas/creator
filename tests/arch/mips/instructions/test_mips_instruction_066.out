@@ -1,0 +1,12 @@
+
+
+Error at line 15 (t0):
+Register 't0' not found
+
+  14     
+->15     cvt.w.d $t0, $FP0
+  16     cvt.w.d $t1, $FP2
+
+Not executed
+keyboard[0x0]:''; display[0x0]:''; 
+

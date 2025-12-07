@@ -1,4 +1,3 @@
-
 #
 # Creator (https://creatorsim.github.io/creator/)
 #
@@ -21,6 +20,7 @@
       li t5, 555
       beq x0, x0, jump2
 
-      #return
-      jr ra
+      # return
+      li a7, 10
+      ecall
 

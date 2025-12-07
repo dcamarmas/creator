@@ -1,11 +1,11 @@
-
 #
 # Creator (https://creatorsim.github.io/creator/)
 #
 
 .data
-    string1: .string "Insert the string length (no more than 100 characters) "
-    string2: .string "Insert the string "
+    string1: .string "Insert the string length (no more than 100 characters): "
+    string2: .string "Insert the string: "
+    enter:   .string "\n"
     space:   .zero 100
 
 .text
@@ -21,6 +21,11 @@ main:
 
     add t0, a0, zero
 
+    # print enter
+    la a0, enter
+    li a7, 4
+    ecall
+
     # print "Insert string..."
     la a0, string2
     li a7, 4
@@ -31,6 +36,11 @@ main:
     add a1, t0, zero
     li a7, 8
     ecall
+    
+    # print enter
+    la a0, enter
+    li a7, 4
+    ecall
 
     # print string
     la a0, space
@@ -38,5 +48,6 @@ main:
     ecall
 
     # return
-    jr ra
+    li a7, 10
+    ecall
 

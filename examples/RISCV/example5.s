@@ -1,4 +1,3 @@
-
 #
 # Creator (https://creatorsim.github.io/creator/)
 #
@@ -22,5 +21,6 @@
     end_while: 	li a7, 1
 		ecall # print_int
 
-		#return
-		jr ra
+		# return
+		li a7, 10
+		ecall

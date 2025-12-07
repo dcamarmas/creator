@@ -1,4 +1,3 @@
-
 #
 # Creator (https://creatorsim.github.io/creator/)
 #
@@ -43,6 +42,7 @@ main:
     li a7, 1
     ecall
 
-    # return 
-    jr ra
+    # return
+    li a7, 10
+    ecall
 

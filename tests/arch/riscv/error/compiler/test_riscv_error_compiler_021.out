@@ -1,0 +1,12 @@
+
+
+Error at line 9:
+The data must be aligned
+
+  8  	example:	.byte 	23
+->9     example2:	.half	2
+  10     string:		.string "hello"
+
+Not executed
+keyboard[0x0]:''; display[0x0]:''; 
+
