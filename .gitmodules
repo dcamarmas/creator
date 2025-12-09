@@ -1,6 +1,6 @@
 [submodule "creatorDriver"]
 	path = creatorDriver
 	url = https://github.com/EUtrilla2002/creatorDriver.git
-[submodule "CreatorAssembler"]
-	path = CreatorAssembler
-	url = https://github.com/creatorsim-community/CreatorAssembler.git
+[submodule "creator-assembler"]
+	path = creator-assembler
+	url = https://github.com/creatorsim/creator-assembler.git

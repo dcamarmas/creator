@@ -1,5 +1,5 @@
 # CREATOR Assembler
-The source code is located at [creatorsim-community/CreatorAssembler](https://github.com/creatorsim-community/CreatorAssembler) (specifically, version 2), and must be built for both the CLI and Web versions.
+The source code is located at [creatorsim-community/creator-assembler](https://github.com/creatorsim-community/creator-assembler) (specifically, version 2), and must be built for both the CLI and Web versions.
 
 Building requires [rustup](https://rustup.rs/).
 
