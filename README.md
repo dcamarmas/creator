@@ -13,7 +13,7 @@
 |                              | URL                                             | 
 |:----------------------------:|:------------------------------------------------| 
 | Creator                      | https://creatorsim.github.io/creator/           |
-| Documentation                | https://creatorsim-community.github.io/wiki     | 
+| Documentation                | https://creatorsim.github.io/wiki               |
 | Examples included            | :point_right: [RISC-V](docs/examples.md#point_right---risc-v) :point_right: [MIPS-32](docs/examples.md#point_right---mips) | 
 
 ### Dockers for CREATOR
@@ -28,7 +28,7 @@
 |                              | URL                                             | 
 |:----------------------------:|:------------------------------------------------| 
 | Source Code                  | https://github.com/creatorsim/creator/| 
-| :microscope: Nightly build   | https://github.com/creatorsim-community/creator-beta/|
+| :microscope: Nightly build   | https://github.com/creatorsim/creator-beta/|
 | :clipboard:  Tests           | [Test Descriptions](docs/test.md)               | 
 
 ### Supported Internet Browsers
