@@ -41,8 +41,6 @@ export default defineComponent({
       type: Array as PropType<VimKeybind[]>,
       required: true,
     },
-    reg_representation_int: { type: String, required: true },
-    reg_representation_float: { type: String, required: true },
     reg_name_representation: { type: String, required: true },
     interrupt_handler: {
       type: String as PropType<InterruptHandlerType>,
@@ -58,8 +56,6 @@ export default defineComponent({
     "update:c_debug",
     "update:vim_mode",
     "update:backup",
-    "update:reg_representation_int",
-    "update:reg_representation_float",
     "update:reg_name_representation",
     "update:interrupt_handler",
   ],
@@ -71,18 +67,6 @@ export default defineComponent({
         { text: "Name", value: "logical" },
         { text: "Alias", value: "alias" },
         { text: "All", value: "all" },
-      ],
-
-      reg_representation_int_options: [
-        { text: "Signed", value: "signed" },
-        { text: "Unsigned", value: "unsigned" },
-        { text: "Hex", value: "hex" },
-      ],
-
-      reg_representation_float_options: [
-        { text: "IEEE 754 (32b)", value: "ieee32" },
-        { text: "IEEE 754 (64b)", value: "ieee64" },
-        { text: "Hex", value: "hex" },
       ],
 
       dark_mode_setting_options: [
@@ -206,40 +190,6 @@ export default defineComponent({
           "configuration",
           "configuration.vim_mode",
           "configuration.vim_mode." + value,
-        );
-      },
-    },
-
-    reg_representation_int_value: {
-      get() {
-        return this.reg_representation_int;
-      },
-      set(value: string) {
-        this.$emit("update:reg_representation_int", value);
-        localStorage.setItem("conf_reg_representation_int", value);
-
-        // Google Analytics
-        creator_ga(
-          "configuration",
-          "configuration.reg_representation_int",
-          "configuration.reg_representation_int." + value,
-        );
-      },
-    },
-
-    reg_representation_float_value: {
-      get() {
-        return this.reg_representation_float;
-      },
-      set(value: string) {
-        this.$emit("update:reg_representation_float", value);
-        localStorage.setItem("conf_reg_representation_float", value);
-
-        // Google Analytics
-        creator_ga(
-          "configuration",
-          "configuration.reg_representation_float",
-          "configuration.reg_representation_float." + value,
         );
       },
     },
@@ -378,17 +328,6 @@ export default defineComponent({
           <b-form-select
             v-model="reg_name_representation_value"
             :options="reg_name_representation_options"
-            class="setting-select"
-          />
-        </div>
-
-        <div class="setting-item">
-          <div class="setting-label">
-            <font-awesome-icon :icon="['fas', 'hashtag']" /> Register Format
-          </div>
-          <b-form-select
-            v-model="reg_representation_int_value"
-            :options="reg_representation_int_options"
             class="setting-select"
           />
         </div>

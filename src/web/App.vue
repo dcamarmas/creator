@@ -265,8 +265,6 @@ export default {
       // we must store this data in the root, bc it resets when re-mounting a
       // component (in this case, RegisterFile)
       data_mode: "int_registers",
-      reg_representation_int: "hex",
-      reg_representation_float: "ieee32",
       reg_name_representation: "alias",
       memory_segment: "data",
 
@@ -665,8 +663,6 @@ export default {
       v-model:c_debug="c_debug"
       v-model:vim_custom_keybinds="vim_custom_keybinds"
       v-model:vim_mode="vim_mode"
-      v-model:reg_representation_int="reg_representation_int"
-      v-model:reg_representation_float="reg_representation_float"
       v-model:reg_name_representation="reg_name_representation"
       v-model:interrupt_handler="interrupt_handler"
     />
@@ -765,8 +761,6 @@ export default {
     v-if="!isMobile && creator_mode === 'simulator'"
     ref="simulatorView"
     :data_mode="data_mode"
-    :reg_representation_int="reg_representation_int"
-    :reg_representation_float="reg_representation_float"
     :reg_name_representation="reg_name_representation"
     :stat_representation="stat_representation"
     :stat_type="stat_type"
@@ -810,8 +804,6 @@ export default {
     v-model:dark_mode_setting="dark_mode_setting"
     v-model:vim_mode="vim_mode"
     v-model:vim_custom_keybinds="vim_custom_keybinds"
-    v-model:reg_representation_int="reg_representation_int"
-    v-model:reg_representation_float="reg_representation_float"
     v-model:reg_name_representation="reg_name_representation"
     v-model:interrupt_handler="interrupt_handler"
   />
@@ -866,8 +858,6 @@ export default {
       creator_mode !== 'select_architecture'
     "
     :data_mode="data_mode"
-    :reg_representation_int="reg_representation_int"
-    :reg_representation_float="reg_representation_float"
     :reg_name_representation="reg_name_representation"
     :stat_representation="stat_representation"
     :stat_type="stat_type"

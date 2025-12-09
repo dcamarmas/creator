@@ -26,6 +26,7 @@ export default defineComponent({
     data_mode: { type: String, required: true },
     register_file_num: { type: Number, required: true },
     dark: { type: Boolean, required: true },
+    enter: { type: [Boolean, null] as any, required: true },
   },
 
   computed: {
@@ -51,6 +52,9 @@ export default defineComponent({
         default:
           return "";
       }
+    },
+    isWaitingForInput() {
+      return this.enter === false;
     },
   },
 
@@ -168,7 +172,7 @@ export default defineComponent({
 
       <!-- Terminal Tab -->
       <button
-        :class="['tab', { active: current_reg_type === 'terminal' }]"
+        :class="['tab', { active: current_reg_type === 'terminal', 'flash-attention': isWaitingForInput }]"
         @click="change_data_view('terminal')"
       >
         <font-awesome-icon :icon="['fas', 'terminal']" /> <span>Terminal</span>
@@ -199,6 +203,28 @@ export default defineComponent({
   background: transparent;
   border-bottom: 1px solid rgba(0, 0, 0, 0.07);
   overflow: hidden;
+}
+
+/* Flash animation for terminal button when waiting for input */
+@keyframes flash-pulse {
+  0%,
+  100% {
+    background-color: color-mix(in srgb, #58a6ff 20%, transparent);
+    box-shadow: 0 0 0 0 rgba(88, 166, 255, 0);
+  }
+  50% {
+    background-color: color-mix(in srgb, #58a6ff 35%, transparent);
+    box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.2);
+  }
+}
+
+.flash-attention {
+  animation: flash-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  color: #58a6ff;
+}
+
+.flash-attention .svg-inline--fa {
+  color: #58a6ff;
 }
 
 /* Dark theme support */

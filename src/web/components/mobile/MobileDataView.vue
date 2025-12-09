@@ -31,8 +31,6 @@ import Terminal from "../simulator/Terminal.vue";
 export default defineComponent({
   props: {
     data_mode: { type: String, required: true },
-    reg_representation_int: { type: String, required: true },
-    reg_representation_float: { type: String, required: true },
     reg_name_representation: { type: String, required: true },
     stat_representation: { type: String, required: true },
     stat_type: { type: String, required: true },
@@ -157,8 +155,6 @@ export default defineComponent({
         <RegisterFile
           ref="registerFile"
           :data_mode="'int_registers'"
-          :reg_representation_int="reg_representation_int"
-          :reg_representation_float="reg_representation_float"
           :reg_name_representation="reg_name_representation"
           :dark="dark"
         />

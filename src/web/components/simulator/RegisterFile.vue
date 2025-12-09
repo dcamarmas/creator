@@ -29,8 +29,6 @@ import { defineComponent } from "vue";
 export default defineComponent({
   props: {
     data_mode: { type: String, required: true },
-    reg_representation_int: { type: String, required: true },
-    reg_representation_float: { type: String, required: true },
     reg_name_representation: { type: String, required: true },
     dark: { type: Boolean, required: true },
   },
@@ -55,11 +53,29 @@ export default defineComponent({
 
       // collapsible state for each register bank
       collapsedBanks: {} as Record<string, boolean>,
+
+      // per-bank visualization preferences
+      bankVisualizations: {} as Record<string, string>,
+
+      // dropdown state
+      openDropdown: null as string | null,
+
+      // visualization options
+      reg_representation_int_options: [
+        { text: "Signed", value: "signed" },
+        { text: "Unsigned", value: "unsigned" },
+        { text: "Hex", value: "hex" },
+      ],
+      reg_representation_float_options: [
+        { text: "IEEE 754 (32b)", value: "ieee32" },
+        { text: "IEEE 754 (64b)", value: "ieee64" },
+        { text: "Hex", value: "hex" },
+      ],
     };
   },
 
   mounted() {
-    // Initialize all banks as expanded
+    // Initialize all banks as expanded and set default visualizations
     this.register_file.forEach((bank: any) => {
       this.collapsedBanks[bank.name] = false;
     });
@@ -68,6 +84,9 @@ export default defineComponent({
     coreEvents.on("register-updated", this.onRegisterUpdated);
     coreEvents.on("registers-reset", this.onRegistersReset);
     coreEvents.on("step-about-to-execute", this.clearAllGlows);
+
+    // Close dropdown when clicking outside
+    document.addEventListener("click", this.handleClickOutside);
   },
 
   beforeUnmount() {
@@ -75,6 +94,7 @@ export default defineComponent({
     coreEvents.off("register-updated", this.onRegisterUpdated);
     coreEvents.off("registers-reset", this.onRegistersReset);
     coreEvents.off("step-about-to-execute", this.clearAllGlows);
+    document.removeEventListener("click", this.handleClickOutside);
   },
 
   methods: {
@@ -120,6 +140,42 @@ export default defineComponent({
     isBankCollapsed(bankName: string): boolean {
       return this.collapsedBanks[bankName] || false;
     },
+
+    setBankVisualization(bankName: string, value: string) {
+      this.bankVisualizations[bankName] = value;
+      this.openDropdown = null;
+    },
+
+    getBankVisualization(bank: any): string {
+      // Return bank-specific visualization if set, otherwise use hex as default
+      return this.bankVisualizations[bank.name] || 'hex';
+    },
+
+    getBankVisualizationOptions(bank: any) {
+      // Return appropriate options based on bank type
+      return bank.type.includes('float') || bank.type.includes('fp')
+        ? this.reg_representation_float_options
+        : this.reg_representation_int_options;
+    },
+
+    isBankFloatingPoint(bank: any): boolean {
+      return bank.type.includes('float') || bank.type.includes('fp');
+    },
+
+    toggleVisualizationDropdown(bankName: string) {
+      if (this.openDropdown === bankName) {
+        this.openDropdown = null;
+      } else {
+        this.openDropdown = bankName;
+      }
+    },
+
+    handleClickOutside(event: Event) {
+      const target = event.target as HTMLElement;
+      if (!target.closest(".bank-viz-dropdown")) {
+        this.openDropdown = null;
+      }
+    },
   },
 });
 </script>
@@ -134,24 +190,55 @@ export default defineComponent({
       <b-col v-for="bank in register_file" :key="bank.name">
         <b-container fluid>
           <!-- Register bank name with collapse button -->
-          <b-row>
+          <b-row class="align-items-center">
             <b-col>
-              <button
-                class="bank-header"
-                @click="toggleBank(bank.name)"
-                :aria-expanded="!isBankCollapsed(bank.name)"
-              >
-                <font-awesome-icon
-                  :icon="[
-                    'fas',
-                    isBankCollapsed(bank.name)
-                      ? 'chevron-right'
-                      : 'chevron-down',
-                  ]"
-                  class="collapse-icon"
-                />
-                <h5 class="mb-0 bank-title">{{ bank.name }}</h5>
-              </button>
+              <div class="bank-header-container">
+                <button
+                  class="bank-header"
+                  @click="toggleBank(bank.name)"
+                  :aria-expanded="!isBankCollapsed(bank.name)"
+                >
+                  <font-awesome-icon
+                    :icon="[
+                      'fas',
+                      isBankCollapsed(bank.name)
+                        ? 'chevron-right'
+                        : 'chevron-down',
+                    ]"
+                    class="collapse-icon"
+                  />
+                  <h5 class="mb-0 bank-title">{{ bank.name }}</h5>
+                </button>
+                
+                <!-- Visualization dropdown -->
+                <div class="bank-viz-dropdown" @click.stop>
+                  <button
+                    class="viz-dropdown-toggle"
+                    :class="{ 'is-open': openDropdown === bank.name }"
+                    @click="toggleVisualizationDropdown(bank.name)"
+                  >
+                    {{ getBankVisualizationOptions(bank).find(opt => opt.value === getBankVisualization(bank))?.text || 'Format' }}
+                    <font-awesome-icon
+                      :icon="['fas', 'chevron-down']"
+                      class="dropdown-chevron"
+                    />
+                  </button>
+                  <div
+                    v-if="openDropdown === bank.name"
+                    class="viz-dropdown-menu"
+                  >
+                    <button
+                      v-for="option in getBankVisualizationOptions(bank)"
+                      :key="option.value"
+                      class="viz-dropdown-item"
+                      :class="{ 'is-active': getBankVisualization(bank) === option.value }"
+                      @click="setBankVisualization(bank.name, option.value)"
+                    >
+                      {{ option.text }}
+                    </button>
+                  </div>
+                </div>
+              </div>
             </b-col>
           </b-row>
 
@@ -175,7 +262,7 @@ export default defineComponent({
                   :double_precision="bank.double_precision"
                   :register="register"
                   :name_representation="reg_name_representation"
-                  :value_representation="reg_representation_int"
+                  :value_representation="getBankVisualization(bank)"
                   :indexComp="register_file.indexOf(bank)"
                   :indexElem="regIndex"
                   :ref="`reg${register.name[0]}`"
@@ -238,12 +325,19 @@ export default defineComponent({
   min-height: min-content;
 }
 
-/* Collapsible bank header - libadwaita style */
-.bank-header {
+/* Bank header container with dropdown */
+.bank-header-container {
   display: flex;
   align-items: center;
   gap: 8px;
   width: 100%;
+}
+
+.bank-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
   padding: 4px 8px;
   border: none;
   background: transparent;
@@ -279,6 +373,105 @@ export default defineComponent({
   user-select: none;
 }
 
+/* Visualization dropdown styling */
+.bank-viz-dropdown {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.viz-dropdown-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 24px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: none;
+  font-weight: 600;
+  font-size: 0.75rem;
+  font-family: inherit;
+  color: rgba(0, 0, 0, 0.8);
+  background-color: rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: all 150ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  user-select: none;
+}
+
+.viz-dropdown-toggle:hover {
+  background-color: rgba(0, 0, 0, 0.15);
+}
+
+.viz-dropdown-toggle:active,
+.viz-dropdown-toggle.is-open {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.viz-dropdown-toggle:focus-visible {
+  outline: 2px solid rgba(0, 0, 0, 0.5);
+  outline-offset: 2px;
+}
+
+.dropdown-chevron {
+  font-size: 10px;
+  opacity: 0.7;
+  transition: transform 150ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.viz-dropdown-toggle.is-open .dropdown-chevron {
+  transform: rotate(180deg);
+}
+
+.viz-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  min-width: 140px;
+  background: white;
+  border-radius: 8px;
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.12),
+    0 4px 16px rgba(0, 0, 0, 0.08);
+  padding: 6px;
+  z-index: 1000;
+  overflow: hidden;
+}
+
+.viz-dropdown-item {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 8px 12px;
+  border: none;
+  background: transparent;
+  color: rgba(0, 0, 0, 0.8);
+  font-family: inherit;
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+  transition: none;
+  font-weight: 400;
+  border-radius: 4px;
+  margin-bottom: 2px;
+}
+
+.viz-dropdown-item:last-child {
+  margin-bottom: 0;
+}
+
+.viz-dropdown-item:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.viz-dropdown-item:active {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.viz-dropdown-item.is-active {
+  background-color: rgba(0, 123, 255, 0.1);
+  color: #0056b3;
+  font-weight: 600;
+}
+
 /* Dark theme support */
 @media (prefers-color-scheme: dark) {
   .bank-header:hover {
@@ -287,6 +480,94 @@ export default defineComponent({
 
   .bank-header:active {
     background-color: color-mix(in srgb, currentColor 20%, transparent);
+  }
+
+  .viz-dropdown-toggle {
+    color: rgba(255, 255, 255, 0.9);
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .viz-dropdown-toggle:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+  }
+
+  .viz-dropdown-toggle:active,
+  .viz-dropdown-toggle.is-open {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+
+  .viz-dropdown-toggle:focus-visible {
+    outline-color: rgba(255, 255, 255, 0.5);
+  }
+
+  .viz-dropdown-menu {
+    background: #2d2d2d;
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow:
+      0 2px 8px rgba(0, 0, 0, 0.3),
+      0 0 0 1px rgba(255, 255, 255, 0.1);
+  }
+
+  .viz-dropdown-item {
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  .viz-dropdown-item:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+  }
+
+  .viz-dropdown-item:active {
+    background-color: rgba(255, 255, 255, 0.12);
+  }
+
+  .viz-dropdown-item.is-active {
+    background-color: rgba(99, 179, 237, 0.2);
+    color: #63b3ed;
+  }
+}
+
+[data-bs-theme="dark"] {
+  .viz-dropdown-toggle {
+    color: rgba(255, 255, 255, 0.9);
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .viz-dropdown-toggle:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+  }
+
+  .viz-dropdown-toggle:active,
+  .viz-dropdown-toggle.is-open {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+
+  .viz-dropdown-toggle:focus-visible {
+    outline-color: rgba(255, 255, 255, 0.5);
+  }
+
+  .viz-dropdown-menu {
+    background: #2d2d2d;
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow:
+      0 2px 8px rgba(0, 0, 0, 0.3),
+      0 0 0 1px rgba(255, 255, 255, 0.1);
+  }
+
+  .viz-dropdown-item {
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  .viz-dropdown-item:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+  }
+
+  .viz-dropdown-item:active {
+    background-color: rgba(255, 255, 255, 0.12);
+  }
+
+  .viz-dropdown-item.is-active {
+    background-color: rgba(99, 179, 237, 0.2);
+    color: #63b3ed;
   }
 }
 </style>

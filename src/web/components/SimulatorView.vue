@@ -45,8 +45,6 @@ export default defineComponent({
     arch_available: Array,
     architecture_name: { type: String, required: true },
     data_mode: { type: String, required: true },
-    reg_representation_int: { type: String, required: true },
-    reg_representation_float: { type: String, required: true },
     reg_name_representation: { type: String, required: true },
     stat_representation: { type: String, required: true },
     stat_type: { type: String, required: true },
@@ -142,6 +140,7 @@ export default defineComponent({
                   :data_mode="data_mode"
                   :register_file_num="architecture.components.length"
                   :dark="dark"
+                  :enter="enter"
                 />
               </div>
 
@@ -152,8 +151,6 @@ export default defineComponent({
                     data_mode == 'int_registers' || data_mode == 'fp_registers'
                   "
                   :data_mode="data_mode"
-                  :reg_representation_int="reg_representation_int"
-                  :reg_representation_float="reg_representation_float"
                   :reg_name_representation="reg_name_representation"
                   :dark="dark"
                   ref="registerFile"
