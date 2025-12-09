@@ -36,11 +36,9 @@ export default defineComponent({
     arch_available: Array as PropType<AvailableArch[]>,
     architecture_name: { type: String, required: true },
     default_architecture: { type: String, required: true },
-    stack_total_list: { type: Number, required: true },
     autoscroll: { type: Boolean, required: true },
     backup: { type: Boolean, required: true },
     notification_time: { type: Number, required: true },
-    instruction_help_size: { type: Number, required: true },
     dark_mode_setting: { type: String, required: true },
     c_debug: { type: Boolean, required: true },
     vim_custom_keybinds: {
@@ -99,10 +97,8 @@ export default defineComponent({
   emits: [
     // parent variables that will be updated
     "update:default_architecture",
-    "update:stack_total_list",
     "update:autoscroll",
     "update:notification_time",
-    "update:instruction_help_size",
     "update:dark_mode_setting",
     "update:c_debug",
     "update:vim_custom_keybinds",
@@ -140,34 +136,6 @@ export default defineComponent({
           "configuration",
           "configuration.default_architecture",
           "configuration.default_architecture." + value,
-        );
-      },
-    },
-    stack_total_list_value: {
-      get() {
-        return this.stack_total_list;
-      },
-      set(value: string) {
-        let val = parseInt(value, 10);
-
-        const prev = this.stack_total_list;
-
-        // enforce limit
-        if (val < 20) {
-          val = 20;
-        } else if (val > 500) {
-          val = 500;
-        }
-
-        this.$emit("update:stack_total_list", val);
-
-        localStorage.setItem("conf_stack_total_list", val.toString());
-
-        //Google Analytics
-        creator_ga(
-          "configuration",
-          "configuration.stack_total_list",
-          "configuration.stack_total_list.speed_" + (prev > val).toString(),
         );
       },
     },
@@ -210,8 +178,6 @@ export default defineComponent({
         return this.notification_time;
       },
       set(value: string) {
-        const prev = this.stack_total_list;
-
         let val = parseInt(value, 10);
 
         // enforce limit
@@ -229,35 +195,7 @@ export default defineComponent({
         creator_ga(
           "configuration",
           "configuration.notification_time",
-          "configuration.notification_time.time_" + (prev > val).toString(),
-        );
-      },
-    },
-    instruction_help_size_value: {
-      get() {
-        return this.instruction_help_size;
-      },
-      set(value: string) {
-        const prev = this.stack_total_list;
-
-        let val = parseInt(value, 10);
-
-        // enforce limit
-        if (val < 15) {
-          val = 15;
-        } else if (val > 65) {
-          val = 65;
-        }
-
-        this.$emit("update:instruction_help_size", val);
-
-        localStorage.setItem("conf_instruction_help_size", val.toString());
-
-        //Google Analytics
-        creator_ga(
-          "configuration",
-          "configuration.instruction_help_size",
-          "configuration.instruction_help_size.size_" + (prev > val).toString(),
+          "configuration.notification_time.time_" + val.toString(),
         );
       },
     },
@@ -394,6 +332,43 @@ export default defineComponent({
       Vim.unmap(lhs, mode);
       this.vim_custom_keybinds_value.splice(index, 1);
     },
+    resetToDefaults() {
+      // Clear all configuration from localStorage
+      localStorage.removeItem("conf_notification_time");
+      localStorage.removeItem("conf_autoscroll");
+      localStorage.removeItem("conf_backup");
+      localStorage.removeItem("conf_dark_mode_setting");
+      localStorage.removeItem("conf_vim_mode");
+      localStorage.removeItem("conf_vim_custom_keybinds");
+      localStorage.removeItem("conf_reg_representation_int");
+      localStorage.removeItem("conf_reg_representation_float");
+      localStorage.removeItem("conf_reg_name_representation");
+      localStorage.removeItem("conf_default_architecture");
+
+      // Clear custom vim keybinds
+      while (this.vim_custom_keybinds_value.length > 0) {
+        this.removeVimKeybind(0);
+      }
+
+      // Reset to default values (will use defaults from data() on next load)
+      this.notification_time_value = "2000";
+      this.autoscroll_value = "true";
+      this.backup_value = "true";
+      this.dark_mode_setting_value = "system";
+      this.c_debug_value = false;
+      this.vim_mode_value = false;
+      this.reg_representation_int_value = "hex";
+      this.reg_representation_float_value = "ieee32";
+      this.reg_name_representation_value = "alias";
+      this.interrupt_handler_value = InterruptHandlerType.CREATOR;
+
+      // Google Analytics
+      creator_ga(
+        "configuration",
+        "configuration.reset_defaults",
+        "configuration.reset_defaults.triggered",
+      );
+    },
   },
   watch: {
     // as we're not replacing this property, but mutating it, it will not
@@ -443,21 +418,6 @@ export default defineComponent({
       <b-list-group-item
         class="justify-content-between align-items-center config-item"
       >
-        <label for="range-1">Maximum stack values listed:</label>
-        <b-form-input
-          id="range-1"
-          v-model.number="stack_total_list_value"
-          type="number"
-          min="20"
-          max="500"
-          step="5"
-          title="Stack max view"
-          class="number-input"
-        />
-      </b-list-group-item>
-      <b-list-group-item
-        class="justify-content-between align-items-center config-item"
-      >
         <label for="range-3">Notification Time (ms):</label>
         <b-form-input
           id="range-3"
@@ -470,22 +430,6 @@ export default defineComponent({
           class="number-input"
         />
       </b-list-group-item>
-      <b-list-group-item
-        class="justify-content-between align-items-center config-item"
-      >
-        <label for="range-4">Instruction Help Size (%):</label>
-        <b-form-input
-          id="range-4"
-          v-model.number="instruction_help_size_value"
-          type="number"
-          min="15"
-          max="65"
-          step="2"
-          title="Instruction Help Size"
-          class="number-input"
-        />
-      </b-list-group-item>
-
       <b-list-group-item
         class="justify-content-between align-items-center config-item"
       >
@@ -665,6 +609,18 @@ export default defineComponent({
         />
       </b-list-group-item>
     </b-list-group>
+
+    <template #footer="{ hide }">
+      <div class="w-100 d-flex justify-content-between align-items-center">
+        <b-button variant="outline-danger" size="sm" @click="resetToDefaults">
+          <font-awesome-icon :icon="['fas', 'rotate-left']" class="me-2" />
+          Reset to Defaults
+        </b-button>
+        <b-button variant="primary" @click="hide">
+          Close
+        </b-button>
+      </div>
+    </template>
   </b-modal>
 
   <VimKeybindsModal

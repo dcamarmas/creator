@@ -194,21 +194,28 @@ defineExpose({
 </script>
 
 <template>
-  <b-nav-item-dropdown
-    class="sentinel-dropdown"
-    :class="{ 'has-errors': hasErrors, 'dark-theme': dark }"
-    no-caret
-    right
-  >
-    <template #button-content>
-      <font-awesome-icon
-        :icon="['fas', 'shield-halved']"
-        :class="{ 'text-danger': hasErrors, 'text-success': !hasErrors }"
-      />
-      <b-badge v-if="hasErrors" :variant="'danger'" pill class="error-badge">
-        {{ errorCount }}
-      </b-badge>
-    </template>
+  <div class="sentinel-button-container">
+    <b-nav-item-dropdown
+      class="sentinel-dropdown"
+      :class="{ 'has-errors': hasErrors, 'dark-theme': dark }"
+      no-caret
+      right
+    >
+      <template #button-content>
+        <button
+          class="sentinel-button"
+          :class="{ 'sentinel-button-dark': dark, 'has-errors': hasErrors }"
+        >
+          <font-awesome-icon
+            :icon="['fas', 'shield-halved']"
+            class="icon-spacing"
+          />
+          <span class="button-text">Sentinel</span>
+          <b-badge v-if="hasErrors" variant="danger" pill class="error-count">
+            {{ errorCount }}
+          </b-badge>
+        </button>
+      </template>
     <div class="sentinel-dropdown-content" @click.stop>
       <!-- Header -->
       <div class="sentinel-header">
@@ -329,28 +336,102 @@ defineExpose({
       </div>
     </div>
   </b-nav-item-dropdown>
+  </div>
 </template>
 
 <style lang="scss" scoped>
-.sentinel-dropdown {
+.sentinel-button-container {
+  display: flex;
+  align-items: center;
+}
+
+.sentinel-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 24px;
+  min-width: 16px;
+  padding: 5px 10px;
+  border-radius: 6px;
+  border: none;
+  font-weight: 600;
+  font-size: 0.8125rem;
+  font-family: inherit;
+  color: rgba(0, 0, 0, 0.8);
+  background-color: rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: all 150ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  user-select: none;
   position: relative;
 
-  &.has-errors {
-    :deep(.nav-link) {
-      position: relative;
+  &:hover:not(:disabled) {
+    background-color: rgba(0, 0, 0, 0.15);
+  }
+
+  &:active:not(:disabled) {
+    background-color: rgba(0, 0, 0, 0.3);
+  }
+
+  &:focus-visible {
+    outline: 2px solid rgba(0, 0, 0, 0.4);
+    outline-offset: 2px;
+  }
+
+  &.sentinel-button-dark {
+    color: rgba(255, 255, 255, 0.9);
+    background-color: rgba(255, 255, 255, 0.1);
+
+    &:hover:not(:disabled) {
+      background-color: rgba(255, 255, 255, 0.15);
+    }
+
+    &:active:not(:disabled) {
+      background-color: rgba(255, 255, 255, 0.3);
+    }
+
+    &:focus-visible {
+      outline-color: rgba(255, 255, 255, 0.4);
     }
   }
 
-  .error-badge {
-    position: absolute;
-    top: 2px;
-    right: -2px;
+  &.has-errors {
+    background-color: rgba(220, 53, 69, 0.15);
+    color: #dc3545;
+
+    &:hover {
+      background-color: rgba(220, 53, 69, 0.25);
+    }
+
+    &.sentinel-button-dark {
+      background-color: rgba(220, 53, 69, 0.2);
+      color: #f8d7da;
+
+      &:hover {
+        background-color: rgba(220, 53, 69, 0.3);
+      }
+    }
+  }
+
+  .icon-spacing {
+    margin-right: 0.35rem;
+  }
+
+  .button-text {
+    white-space: nowrap;
+  }
+
+  .error-count {
+    margin-left: 0.35rem;
     font-size: 0.65rem;
     min-width: 18px;
     height: 18px;
     padding: 2px 4px;
     line-height: 14px;
   }
+}
+
+.sentinel-dropdown {
+  position: relative;
 
   :deep(.dropdown-menu) {
     min-width: 500px;

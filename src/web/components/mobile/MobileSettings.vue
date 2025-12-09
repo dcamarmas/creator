@@ -31,11 +31,9 @@ export default defineComponent({
   props: {
     // Configuration props
     architecture_name: { type: String, required: true },
-    stack_total_list: { type: Number, required: true },
     autoscroll: { type: Boolean, required: true },
     backup: { type: Boolean, required: true },
     notification_time: { type: Number, required: true },
-    instruction_help_size: { type: Number, required: true },
     dark_mode_setting: { type: String, required: true },
     c_debug: { type: Boolean, required: true },
     vim_mode: { type: Boolean, required: true },
@@ -54,10 +52,8 @@ export default defineComponent({
 
   emits: [
     // parent variables that will be updated
-    "update:stack_total_list",
     "update:autoscroll",
     "update:notification_time",
-    "update:instruction_help_size",
     "update:dark_mode_setting",
     "update:c_debug",
     "update:vim_mode",
@@ -104,33 +100,6 @@ export default defineComponent({
 
   computed: {
     // Computed properties for v-model binding
-    stack_total_list_value: {
-      get() {
-        return this.stack_total_list;
-      },
-      set(value: string) {
-        let val = parseInt(value, 10);
-        const prev = this.stack_total_list;
-
-        // enforce limit
-        if (val < 20) {
-          val = 20;
-        } else if (val > 500) {
-          val = 500;
-        }
-
-        this.$emit("update:stack_total_list", val);
-        localStorage.setItem("conf_stack_total_list", val.toString());
-
-        //Google Analytics
-        creator_ga(
-          "configuration",
-          "configuration.stack_total_list",
-          "configuration.stack_total_list.speed_" + (prev > val).toString(),
-        );
-      },
-    },
-
     autoscroll_value: {
       get() {
         return this.autoscroll;
@@ -170,8 +139,6 @@ export default defineComponent({
         return this.notification_time;
       },
       set(value: string) {
-        const prev = this.stack_total_list;
-
         let val = parseInt(value, 10);
 
         // enforce limit
@@ -188,7 +155,7 @@ export default defineComponent({
         creator_ga(
           "configuration",
           "configuration.notification_time",
-          "configuration.notification_time.time_" + (prev > val).toString(),
+          "configuration.notification_time.time_" + val.toString(),
         );
       },
     },
@@ -384,20 +351,6 @@ export default defineComponent({
       <!-- Display Settings -->
       <div class="settings-section">
         <h4 class="section-title">Display</h4>
-
-        <div class="setting-item">
-          <div class="setting-label">
-            <font-awesome-icon :icon="['fas', 'list']" /> Stack Values
-          </div>
-          <b-form-input
-            v-model.number="stack_total_list_value"
-            type="number"
-            min="20"
-            max="500"
-            step="5"
-            class="setting-input"
-          />
-        </div>
 
         <div class="setting-item">
           <div class="setting-label">

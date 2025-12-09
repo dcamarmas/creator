@@ -104,6 +104,15 @@ export default defineComponent({
     };
   },
   computed: {
+    architectureGuide() {
+      if (!this.architecture_name || !this.arch_available) return undefined;
+      const arch = this.arch_available.find(
+        (a: AvailableArch) =>
+          a.name === this.architecture_name ||
+          a.alias?.includes(this.architecture_name),
+      );
+      return arch?.guide;
+    },
     showViewMenu() {
       return ["architecture", "assembly", "simulator"].includes(
         this.creator_mode,
@@ -279,6 +288,11 @@ export default defineComponent({
             'btn_home',
             'btn_website',
             'btn_github',
+            'divider',
+            'btn_feedback',
+            'btn_suggestions',
+            'btn_institutions',
+            'btn_about',
           ]"
           :architecture-name="architecture_name"
           @item-clicked="closeDropdown('creatorDropdown')"
@@ -419,11 +433,6 @@ export default defineComponent({
         @hide="handleDropdownHide('toolsDropdown')"
         @mouseenter="handleDropdownHover('toolsDropdown')"
       >
-        <b-dropdown-item v-b-modal.examples-simulator>
-          <font-awesome-icon :icon="['fas', 'file-lines']" class="me-2" />
-          Examples...
-        </b-dropdown-item>
-        <b-dropdown-divider />
         <MenuItems
           :items="['btn_flash', 'btn_calculator']"
           @item-clicked="closeDropdown('toolsDropdown')"
@@ -444,15 +453,17 @@ export default defineComponent({
         <MenuItems
           :items="[
             'btn_help',
-            'divider',
-            'btn_feedback',
-            'btn_suggestions',
-            'divider',
-            'btn_institutions',
-            'btn_about',
+            ...(architectureGuide ? ['btn_architecture_guide'] : []),
           ]"
+          :architecture-name="architecture_name"
+          :architecture-guide="architectureGuide"
           @item-clicked="closeDropdown('helpDropdown')"
         />
+        <b-dropdown-divider />
+        <b-dropdown-item v-b-modal.examples-simulator>
+          <font-awesome-icon :icon="['fas', 'file-lines']" class="me-2" />
+          Examples...
+        </b-dropdown-item>
       </b-nav-item-dropdown>
 
       <!-- Separator for buttons -->
@@ -482,6 +493,12 @@ export default defineComponent({
           mode="toolbar"
         />
       </b-nav-item>
+
+      <!-- Separator before Sentinel button -->
+      <div
+        v-if="showExecuteMenu"
+        class="button-separator"
+      ></div>
 
       <!-- Sentinel Errors Dropdown (Simulator View Only) -->
       <SentinelErrorsDropdown

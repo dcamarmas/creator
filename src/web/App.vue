@@ -180,10 +180,6 @@ export default {
       default_architecture:
         localStorage.getItem("conf_default_architecture") || "none",
 
-      // Stack total list values
-      stack_total_list:
-        parseInt(localStorage.getItem("conf_stack_total_list")!, 10) || 40,
-
       // Notification speed
       notification_time:
         parseInt(localStorage.getItem("conf_notification_time")!, 10) || 1500,
@@ -662,10 +658,8 @@ export default {
       :architecture_name="architecture_name"
       v-model:arch_available="arch_available"
       v-model:default_architecture="default_architecture"
-      v-model:stack_total_list="stack_total_list"
       v-model:autoscroll="autoscroll"
       v-model:backup="backup"
-      v-model:instruction_help_size="instruction_help_size"
       v-model:notification_time="notification_time"
       v-model:dark_mode_setting="dark_mode_setting"
       v-model:c_debug="c_debug"
@@ -810,13 +804,10 @@ export default {
       creator_mode !== 'select_architecture'
     "
     :architecture_name="architecture_name"
-    v-model:stack_total_list="stack_total_list"
     v-model:autoscroll="autoscroll"
     v-model:backup="backup"
     v-model:notification_time="notification_time"
-    v-model:instruction_help_size="instruction_help_size"
     v-model:dark_mode_setting="dark_mode_setting"
-    v-model:c_debug="c_debug"
     v-model:vim_mode="vim_mode"
     v-model:vim_custom_keybinds="vim_custom_keybinds"
     v-model:reg_representation_int="reg_representation_int"

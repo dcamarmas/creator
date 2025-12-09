@@ -275,6 +275,12 @@ function execute_instruction() {
     run_disable.value = true;
   }
 
+  // Disable buttons if program has finished (execution_index === -2)
+  if (status.execution_index === -2) {
+    instruction_disable.value = true;
+    run_disable.value = true;
+  }
+
   if (typeof ret === "undefined") {
     console.log("Something weird happened :-S");
   }

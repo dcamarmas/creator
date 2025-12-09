@@ -124,8 +124,37 @@ export default {
 
     <!-- loaded instruction -->
     <template #cell(loadedInstructions)="row">
-      <span v-if="row.item.visible"> {{ row.item.loaded }} </span>
-      <span v-else> &lt;&lt;Hidden&gt;&gt; </span>
+      <div class="loaded-instruction-cell">
+        <span v-if="row.item.visible" class="instruction-text">
+          {{ row.item.loaded }}
+        </span>
+        <span v-else class="instruction-text"> &lt;&lt;Hidden&gt;&gt; </span>
+        <!-- Execution state badges - small and discrete, absolutely positioned on the right -->
+        <b-badge
+          v-if="row.item._rowVariant === 'success'"
+          pill
+          variant="success"
+          class="execution-badge"
+          title="Next instruction"
+          >next</b-badge
+        >
+        <b-badge
+          v-else-if="row.item._rowVariant === 'info'"
+          pill
+          variant="info"
+          class="execution-badge"
+          title="Previous instruction"
+          >executed</b-badge
+        >
+        <b-badge
+          v-else-if="row.item._rowVariant === 'warning'"
+          pill
+          variant="warning"
+          class="execution-badge"
+          title="Next instruction"
+          >next</b-badge
+        >
+      </div>
     </template>
   </b-table>
 </template>
@@ -152,6 +181,27 @@ export default {
   // @media (max-width: 480px) {
   //   font-size: 1rem;
   // }
+}
+
+.loaded-instruction-cell {
+  position: relative;
+  width: 100%;
+  padding-right: 3rem; // Space for the badge
+
+  .instruction-text {
+    display: block;
+    width: 100%;
+  }
+
+  .execution-badge {
+    position: absolute;
+    right: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.7rem;
+    font-weight: 500;
+    opacity: 0.85;
+  }
 }
 
 [data-bs-theme="dark"] {

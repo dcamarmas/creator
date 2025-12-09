@@ -296,7 +296,7 @@ export function reset() {
     status.execution_init = 1;
     status.run_program = 0;
 
-    guiVariables.previous_PC = 0n;
+    guiVariables.previous_PC = -1n;
     guiVariables.keep_highlighted = -1n;
 
     // Reset stats
@@ -328,6 +328,7 @@ export function reset() {
 
     // Notify UI layers that all registers have been reset
     coreEvents.emit("registers-reset");
+    coreEvents.emit("step-about-to-execute");
 
     architecture.memory_layout.stack.start = backup_stack_address;
     delete architecture.memory_layout.stack.size;

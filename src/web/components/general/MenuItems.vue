@@ -17,7 +17,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <script setup lang="ts">
-import { computed, type PropType } from "vue";
+import { type PropType } from "vue";
 import { creator_ga } from "@/core/utils/creator_ga.mjs";
 
 defineProps({
@@ -29,11 +29,13 @@ defineProps({
     type: String,
     required: false,
   },
+  architectureGuide: {
+    type: String,
+    required: false,
+  },
 });
 
 const emit = defineEmits(["item-clicked"]);
-
-const root = computed(() => (document as any).app);
 
 function help_event(event: string) {
   creator_ga("send", `help.${event}`, `help.${event}`);
@@ -99,6 +101,19 @@ function handleItemClick() {
       "
     >
       <font-awesome-icon :icon="['fas', 'circle-question']" class="me-2" /> Help
+    </b-dropdown-item>
+
+    <!-- Architecture Guide (if available) -->
+    <b-dropdown-item
+      v-if="item === 'btn_architecture_guide'"
+      :href="architectureGuide"
+      target="_blank"
+      @click="
+        help_event('architecture_guide');
+        handleItemClick();
+      "
+    >
+      <font-awesome-icon :icon="['fas', 'file-pdf']" class="me-2" /> {{ architectureName }} Guide
     </b-dropdown-item>
 
     <!-- Notifications -->

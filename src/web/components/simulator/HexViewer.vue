@@ -61,7 +61,7 @@ export default defineComponent({
         { tag: string; type: string; sizeInBits?: number; colorIndex: number }
       >(),
       hintTooltip: null as HTMLElement | null,
-      showAllTags: false,
+      showAllTags: true,
 
       memorySegments: this.main_memory.getMemorySegments(),
       deviceIDs: Array.from(this.devices.keys()),
