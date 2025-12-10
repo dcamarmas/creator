@@ -20,8 +20,8 @@
 import { MEM } from "./memory.mts";
 import { SYSCALL } from "./syscall.mts";
 import { VALIDATION } from "./validation.mjs";
-import { CHECK_STACK } from "./checkStack.mjs";
-import { DRAW_STACK } from "./drawStack.mjs";
+import { CHECK_STACK } from "./checkStack.mts";
+import { DRAW_STACK } from "./drawStack.mts";
 import { FP } from "./fp.mjs";
 import { ARCH as RISCV } from "./arch/riscv.mjs";
 import { ARCH as Z80 } from "./arch/z80.mjs";

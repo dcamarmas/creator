@@ -12,3 +12,7 @@ type Instruction = {
 };
 
 export declare const instructions: Instruction[];
+
+type InstructionTagMap = { [addr: number]: { tag: string; global: boolean } };
+
+export declare let tag_instructions: InstructionTagMap;

@@ -17,18 +17,22 @@
  * along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { REGISTERS, stackTracker } from "../core.mjs";
+import { getPC, REGISTERS, stackTracker } from "../core.mjs";
 import { tag_instructions } from "../assembler/assembler.mjs";
 
 export const DRAW_STACK = {
-    begin(addr) {
+    begin(addr?: bigint) {
         let function_name = "";
+
+        if (addr === undefined) {
+            addr = getPC();
+        }
 
         // 1.- get function name
         if (typeof REGISTERS[0] !== "undefined") {
-            if (typeof tag_instructions[addr] === "undefined")
-                function_name = "0x" + parseInt(addr, 10).toString(16);
-            else function_name = tag_instructions[addr].tag;
+            if (typeof tag_instructions[Number(addr)] === "undefined")
+                function_name = "0x" + addr.toString(16);
+            else function_name = tag_instructions[Number(addr)]!.tag;
         }
 
         // 2.- callstack_enter
@@ -41,7 +45,7 @@ export const DRAW_STACK = {
     },
 
     // Add a hint for a specific memory address
-    addHint(address, name) {
+    addHint(address: bigint, name: string) {
         stackTracker.addHint(address, name);
     },
 };
