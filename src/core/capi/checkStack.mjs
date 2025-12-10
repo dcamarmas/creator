@@ -76,6 +76,6 @@ export const CHECK_STACK = {
         );
 
         // User notification
-        crex_show_notification(ret.msg, "danger");
+        crex_show_notification(ret.msg, "warning");
     },
 };

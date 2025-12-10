@@ -63,5 +63,6 @@
       ecall
       
       # Return
-      jr ra
+      li a7, 10
+      ecall
 
