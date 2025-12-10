@@ -50,11 +50,11 @@ The resulting bundle will be saved to `dist/web/`.
 > [!TIP]
 > To test locally the bundle version, as it will be deployed in GitHub Pages:
 > ```bash
-> REPO="creatorV" bun build:web
+> REPO="creator" bun build:web
 > cd dist/web
 > python -m http.server 8080
 > ```
-> And go to [localhost:8080/creatorV/](https://localhost:8080/creatorV/)
+> And go to [localhost:8080/creator/](https://localhost:8080/creator/)
 
 <!--
 TODO: when the code is type-safe, replace build:web to:

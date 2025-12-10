@@ -52,7 +52,7 @@ export default defineComponent({
     return {
       memoryDump: null as MemoryDump | null,
       bytesPerRow: 8,
-      showAscii: window.innerWidth >= 870,
+      showAscii: window.innerWidth >= 1220,
       showAddresses: true,
       selectedByte: -1,
       viewMode: "hex" as "hex" | "ascii",
@@ -582,7 +582,7 @@ export default defineComponent({
     },
 
     updateBytesPerRow() {
-      const newBytesPerRow = this.windowWidth > 1440 ? 16 : 8;
+      const newBytesPerRow = this.windowWidth > 900 ? 16 : 8;
       if (newBytesPerRow !== this.bytesPerRow) {
         this.bytesPerRow = newBytesPerRow;
       }
@@ -590,7 +590,7 @@ export default defineComponent({
 
     updateAsciiVisibility() {
       const wasShowingAscii = this.showAscii;
-      this.showAscii = this.windowWidth >= 870;
+      this.showAscii = this.windowWidth >= 1220;
 
       // Reset to hex view when ASCII column becomes visible
       if (!wasShowingAscii && this.showAscii && this.viewMode === "ascii") {
@@ -1016,7 +1016,7 @@ export default defineComponent({
   <div class="hex-viewer" :class="{ 'modal-open': showMemoryLayoutModal }">
     <div class="hex-viewer-toolbar">
       <div class="toolbar-group">
-        <label for="goto-address">Go to address:</label>
+        <label for="goto-address">Go to:</label>
         <input
           id="goto-address"
           ref="gotoInput"
@@ -1032,12 +1032,14 @@ export default defineComponent({
           @click="
             handleGotoAddress(($refs.gotoInput as HTMLInputElement).value)
           "
+          title="Go to address"
         >
-          <font-awesome-icon :icon="['fas', 'arrow-right']" /> Go
+          <font-awesome-icon :icon="['fas', 'arrow-right']" />
+          <span class="button-text">Go</span>
         </button>
       </div>
 
-      <div class="toolbar-group" v-if="segmentList.length > 0">
+      <div class="toolbar-group segment-group" v-if="segmentList.length > 0">
         <label>Jump to:</label>
         <div class="segment-buttons">
           <button
@@ -1058,9 +1060,12 @@ export default defineComponent({
           class="toolbar-button"
           @click="viewMode = viewMode === 'hex' ? 'ascii' : 'hex'"
           :class="{ active: viewMode === 'ascii' }"
+          :title="viewMode === 'hex' ? 'Switch to ASCII view' : 'Switch to Hex view'"
         >
           <font-awesome-icon :icon="['fas', 'exchange-alt']" />
-          {{ viewMode === "hex" ? "Hex" : "ASCII" }}
+          <span class="button-text">
+            {{ viewMode === "hex" ? "Hex" : "ASCII" }}
+          </span>
         </button>
         <button
           class="toolbar-button"
@@ -1068,14 +1073,16 @@ export default defineComponent({
           :class="{ active: showAllTags }"
           title="Show all memory tags"
         >
-          <font-awesome-icon :icon="['fas', 'tags']" /> Tags
+          <font-awesome-icon :icon="['fas', 'tags']" />
+          <span class="button-text">Tags</span>
         </button>
         <button
           class="toolbar-button"
           @click="showMemoryLayoutModal = true"
           title="Show memory layout diagram"
         >
-          <font-awesome-icon :icon="['fas', 'sitemap']" /> Layout
+          <font-awesome-icon :icon="['fas', 'sitemap']" />
+          <span class="button-text keep-on-mobile">Layout</span>
         </button>
       </div>
     </div>
@@ -1133,8 +1140,8 @@ export default defineComponent({
                           : `hint-${tagInfo.colorIndex}`
                       "
                       :style="{
-                        left: `${tagInfo.startCol * (24 + 8)}px`,
-                        width: `${(tagInfo.endCol - tagInfo.startCol + 1) * (24 + 8) - 8}px`,
+                        left: `calc(${tagInfo.startCol} * (var(--byte-width) + var(--byte-gap)))`,
+                        width: `calc((${tagInfo.endCol - tagInfo.startCol + 1}) * (var(--byte-width) + var(--byte-gap)) - var(--byte-gap))`,
                       }"
                     >
                       {{ tagInfo.tag }}
@@ -1308,6 +1315,37 @@ export default defineComponent({
   color: var(--bs-body-color);
   position: relative;
   overflow: hidden;
+
+  /* CSS custom properties for byte sizing */
+  --byte-width: 18px;
+  --byte-gap: 6px;
+  --byte-font-size: 13px;
+}
+
+/* Media queries for responsive byte sizing */
+@media (min-width: 1000px) {
+  .hex-viewer {
+    --byte-width: 20px;
+    --byte-gap: 7px;
+    --byte-font-size: 13px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .hex-viewer {
+    --byte-width: 24px;
+    --byte-gap: 8px;
+    --byte-font-size: 14px;
+  }
+}
+
+/* Mobile byte sizing */
+@media (max-width: 767px) {
+  .hex-viewer {
+    --byte-width: 24px;
+    --byte-gap: 8px;
+    --byte-font-size: 14px;
+  }
 }
 
 .hex-viewer-toolbar {
@@ -1333,10 +1371,22 @@ export default defineComponent({
   color: rgba(0, 0, 0, 0.7);
 }
 
+/* Mobile toolbar optimization */
+@media (max-width: 767px) {
+  .hex-viewer-toolbar {
+    gap: 0.5rem;
+    padding: 4px;
+  }
+}
+
 .toolbar-button {
-  padding: 5px 10px;
-  min-height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   min-width: 16px;
+  height: 28px;
+  padding: 5px 10px;
   cursor: pointer;
   position: relative;
   border: none;
@@ -1344,15 +1394,13 @@ export default defineComponent({
   font-size: 0.8125rem;
   font-weight: bold;
 
+
   /* Light theme colors */
   color: rgba(0, 0, 0, 0.8);
   background-color: color-mix(in srgb, currentColor 10%, transparent);
   box-shadow: none;
 
   transition: all 150ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  display: flex;
-  align-items: center;
-  gap: 6px;
 }
 
 .toolbar-button:hover {
@@ -1382,10 +1430,37 @@ export default defineComponent({
   transition: outline 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
+.toolbar-button svg,
+.toolbar-button i {
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+.toolbar-button.active svg,
+.toolbar-button.active i {
+  opacity: 1;
+}
+
+/* Mobile toolbar button optimization */
+@media (max-width: 767px) {
+
+  /* Hide button text on mobile, show only icons (except Layout) */
+  .toolbar-button .button-text:not(.keep-on-mobile) {
+    display: none;
+  }
+}
+
 .segment-buttons {
   display: flex;
   gap: 4px;
   flex-wrap: wrap;
+}
+
+/* Hide segment buttons on mobile */
+@media (max-width: 999px) {
+  .toolbar-group.segment-group {
+    display: none;
+  }
 }
 
 .segment-button {
@@ -1407,6 +1482,15 @@ export default defineComponent({
   background-color: color-mix(in srgb, currentColor 30%, transparent);
 }
 
+/* Mobile segment button optimization */
+@media (max-width: 767px) {
+  .segment-button {
+    padding: 2px 4px;
+    font-size: 9px;
+    letter-spacing: 0.3px;
+  }
+}
+
 .address-input {
   padding: 4px 8px;
   border: 1px solid rgba(0, 0, 0, 0.2);
@@ -1417,6 +1501,15 @@ export default defineComponent({
   font-size: 12px;
   width: 120px;
   transition: all 150ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Mobile address input optimization */
+@media (max-width: 767px) {
+  .address-input {
+    padding: 3px 6px;
+    font-size: 11px;
+    width: 90px;
+  }
 }
 
 .address-input:focus {
@@ -1462,8 +1555,9 @@ export default defineComponent({
 }
 
 .hex-column-header {
-  width: 24px;
+  width: var(--byte-width);
   text-align: center;
+  font-size: var(--byte-font-size);
 }
 
 .ascii-column-header {
@@ -1618,11 +1712,11 @@ export default defineComponent({
 .hex-columns {
   flex: 1;
   display: flex;
-  gap: 8px;
+  gap: var(--byte-gap);
 }
 
 .hex-byte {
-  width: 24px;
+  width: var(--byte-width);
   text-align: center;
   cursor: pointer;
   border-radius: 3px;
@@ -1631,6 +1725,7 @@ export default defineComponent({
     "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New",
     monospace;
   position: relative;
+  font-size: var(--byte-font-size);
 }
 
 .hex-byte .byte-editor {
@@ -1685,7 +1780,7 @@ export default defineComponent({
 }
 
 .ascii-char {
-  width: 11px;
+  width: calc(var(--byte-width) * 0.46);
   text-align: center;
   cursor: pointer;
   border-radius: 3px;
@@ -1693,12 +1788,28 @@ export default defineComponent({
   font-family:
     "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New",
     monospace;
+  font-size: var(--byte-font-size);
 }
 
 .ascii-char.selected {
   filter: brightness(0.5);
   font-weight: 600;
   box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.2);
+}
+
+/* Dark theme selected byte visibility improvements */
+[data-bs-theme="dark"] {
+  .hex-byte.selected {
+    filter: brightness(1.5);
+    background-color: rgba(255, 255, 255, 0.2);
+    box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.3);
+  }
+
+  .ascii-char.selected {
+    filter: brightness(1.5);
+    background-color: rgba(255, 255, 255, 0.15);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.3);
+  }
 }
 
 .ascii-char.empty {
@@ -1720,9 +1831,13 @@ export default defineComponent({
 }
 
 .pagination-button {
-  padding: 5px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   min-height: 24px;
   min-width: 16px;
+  padding: 5px 10px;
   cursor: pointer;
   position: relative;
   border: none;
@@ -1736,9 +1851,6 @@ export default defineComponent({
   box-shadow: none;
 
   transition: all 150ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  display: flex;
-  align-items: center;
-  gap: 6px;
 }
 
 .pagination-button:hover:not(:disabled) {
@@ -1758,6 +1870,12 @@ export default defineComponent({
   outline: 2px solid color-mix(in srgb, currentColor 50%, transparent);
   outline-offset: 2px;
   transition: outline 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.pagination-button svg,
+.pagination-button i {
+  font-size: 14px;
+  opacity: 0.9;
 }
 
 .page-info {

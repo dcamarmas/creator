@@ -36,7 +36,7 @@ The RPC server exposes a comprehensive set of methods to control and interact wi
 
 ### Running the Server
 
-1.  Navigate to the root of the `creatorV` project.
+1.  Navigate to the root of the `creator` project.
 2.  Start the server using the following command:
 
     ```bash

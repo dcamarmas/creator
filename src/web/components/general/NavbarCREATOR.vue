@@ -24,10 +24,10 @@ import {
   onMounted,
   onUnmounted,
 } from "vue";
+import yaml from "js-yaml";
 
 import SimulatorControls from "../simulator/SimulatorControls.vue";
 import AssemblyActions from "../assembly/AssemblyActions.vue";
-import MenuItems from "./MenuItems.vue";
 import SentinelErrorsDropdown from "../simulator/SentinelErrorsDropdown.vue";
 import type { Instruction } from "@/core/assembler/assembler";
 import type { BDropdown } from "bootstrap-vue-next";
@@ -55,7 +55,6 @@ export default defineComponent({
   components: {
     SimulatorControls,
     AssemblyActions,
-    MenuItems,
     SentinelErrorsDropdown,
   },
 
@@ -101,6 +100,12 @@ export default defineComponent({
         | "data"
         | "architecture"
         | "settings", // Track current mobile view
+      showAnnouncementTooltip: false, // Show tooltip only when text is truncated
+      announcement: { 
+        text: "", // Don't modify it here! Use the announcement.yml file in /public
+        link: "",
+      },
+      dismissedAnnouncement: false, // Track if user dismissed the announcement
     };
   },
   computed: {
@@ -148,16 +153,28 @@ export default defineComponent({
     showMobileNavbar() {
       return this.creator_mode !== "select_architecture";
     },
+    
+    // Show announcement only if there's text and user hasn't dismissed it
+    showAnnouncement() {
+      return this.announcement.text && !this.dismissedAnnouncement;
+    },
   },
-  mounted() {
+  async mounted() {
     // Listen for escape key to close dropdowns
     document.addEventListener("keydown", this.handleEscapeKey);
     // Listen for clicks outside to disable hover switching
     document.addEventListener("click", this.handleDocumentClick);
+    // Check if announcement text is truncated on mount and resize
+    this.checkAnnouncementTruncation();
+    window.addEventListener("resize", this.checkAnnouncementTruncation);
+    
+    // Load announcement from YAML file
+    await this.loadAnnouncement();
   },
   beforeUnmount() {
     document.removeEventListener("keydown", this.handleEscapeKey);
     document.removeEventListener("click", this.handleDocumentClick);
+    window.removeEventListener("resize", this.checkAnnouncementTruncation);
   },
   methods: {
     handleEscapeKey(event: KeyboardEvent) {
@@ -261,6 +278,45 @@ export default defineComponent({
     removeLibrary() {
       remove_library();
     },
+    checkAnnouncementTruncation() {
+      // Use nextTick to ensure DOM is updated
+      this.$nextTick(() => {
+        const textElement = this.$refs.announcementText as HTMLElement;
+        if (textElement) {
+          // Check if text is truncated by comparing scroll width with client width
+          this.showAnnouncementTooltip = textElement.scrollWidth > textElement.clientWidth;
+        }
+      });
+    },
+    async loadAnnouncement() {
+      try {
+        const response = await fetch("announcement.yml");
+        if (response.ok) {
+          const yamlText = await response.text();
+          const data = yaml.load(yamlText) as { text?: string; link?: string };
+          this.announcement = {
+            text: data.text || "",
+            link: data.link || "",
+          };
+          
+          // Check if user previously dismissed this announcement
+          const dismissedText = localStorage.getItem("dismissedAnnouncement");
+          if (dismissedText === this.announcement.text) {
+            this.dismissedAnnouncement = true;
+          }
+          
+          // Re-check truncation after announcement loads
+          this.checkAnnouncementTruncation();
+        }
+      } catch (error) {
+        console.warn("Failed to load announcement:", error);
+      }
+    },
+    dismissAnnouncement() {
+      this.dismissedAnnouncement = true;
+      // Save dismissed announcement text to localStorage
+      localStorage.setItem("dismissedAnnouncement", this.announcement.text);
+    },
   },
 });
 </script>
@@ -282,21 +338,49 @@ export default defineComponent({
         <template #button-content>
           <span class="headerText text-uppercase"> Creator </span>
         </template>
-        <MenuItems
-          :items="[
-            ...(architecture_name ? ['btn_architecture_info', 'divider'] : []),
-            'btn_home',
-            'btn_website',
-            'btn_github',
-            'divider',
-            'btn_feedback',
-            'btn_suggestions',
-            'btn_institutions',
-            'btn_about',
-          ]"
-          :architecture-name="architecture_name"
-          @item-clicked="closeDropdown('creatorDropdown')"
-        />
+        <b-dropdown-item v-if="architecture_name" disabled>
+          <font-awesome-icon :icon="['fas', 'microchip']" class="me-2" />
+          <strong>{{ architecture_name }}</strong>
+        </b-dropdown-item>
+        <b-dropdown-divider v-if="architecture_name" />
+        <b-dropdown-item href=".">
+          <font-awesome-icon :icon="['fas', 'home']" class="me-2" /> Home
+        </b-dropdown-item>
+        <b-dropdown-item
+          href="https://creatorsim.github.io/"
+          target="_blank"
+        >
+          <font-awesome-icon :icon="['fas', 'globe']" class="me-2" /> Project
+          Website
+        </b-dropdown-item>
+        <b-dropdown-item
+          href="https://github.com/creatorsim/creator"
+          target="_blank"
+        >
+          <font-awesome-icon :icon="['fab', 'github']" class="me-2" /> GitHub
+        </b-dropdown-item>
+        <b-dropdown-divider />
+        <b-dropdown-item
+          href="https://docs.google.com/forms/d/e/1FAIpQLSdFbdy5istZbq2CErZs0cTV85Ur8aXiIlxvseLMhPgs0vHnlQ/viewform?usp=header"
+          target="_blank"
+        >
+          <font-awesome-icon :icon="['fas', 'star']" class="me-2" /> Feedback
+        </b-dropdown-item>
+        <b-dropdown-item
+          href="https://docs.google.com/forms/d/e/1FAIpQLSfSclv1rKqBt5aIIP3jfTGbdu8m_vIgEAaiqpI2dGDcQFSg8g/viewform?usp=header"
+          target="_blank"
+        >
+          <font-awesome-icon :icon="['fas', 'lightbulb']" class="me-2" />
+          Suggestions
+        </b-dropdown-item>
+        <b-dropdown-item v-b-modal.institutions>
+          <font-awesome-icon :icon="['fas', 'building-columns']" class="me-2" />
+          Community
+        </b-dropdown-item>
+        <b-dropdown-item v-b-modal.about>
+          <font-awesome-icon :icon="['fas', 'address-card']" class="me-2" /> About
+          Creator
+        </b-dropdown-item>
       </b-nav-item-dropdown>
     </b-navbar-nav>
 
@@ -433,10 +517,13 @@ export default defineComponent({
         @hide="handleDropdownHide('toolsDropdown')"
         @mouseenter="handleDropdownHover('toolsDropdown')"
       >
-        <MenuItems
-          :items="['btn_flash', 'btn_calculator']"
-          @item-clicked="closeDropdown('toolsDropdown')"
-        />
+        <b-dropdown-item v-b-modal.flash>
+          <font-awesome-icon :icon="['fab', 'usb']" class="me-2" /> Flash
+        </b-dropdown-item>
+        <b-dropdown-item v-b-modal.calculator>
+          <font-awesome-icon :icon="['fas', 'calculator']" class="me-2" /> IEEE754
+          Calculator
+        </b-dropdown-item>
       </b-nav-item-dropdown>
 
       <!-- Help Menu -->
@@ -450,15 +537,19 @@ export default defineComponent({
         @hide="handleDropdownHide('helpDropdown')"
         @mouseenter="handleDropdownHover('helpDropdown')"
       >
-        <MenuItems
-          :items="[
-            'btn_help',
-            ...(architectureGuide ? ['btn_architecture_guide'] : []),
-          ]"
-          :architecture-name="architecture_name"
-          :architecture-guide="architectureGuide"
-          @item-clicked="closeDropdown('helpDropdown')"
-        />
+        <b-dropdown-item
+          href="https://creatorsim.github.io/"
+          target="_blank"
+        >
+          <font-awesome-icon :icon="['fas', 'circle-question']" class="me-2" /> Help
+        </b-dropdown-item>
+        <b-dropdown-item
+          v-if="architectureGuide"
+          :href="architectureGuide"
+          target="_blank"
+        >
+          <font-awesome-icon :icon="['fas', 'file-pdf']" class="me-2" /> {{ architecture_name }} Guide
+        </b-dropdown-item>
         <b-dropdown-divider />
         <b-dropdown-item v-b-modal.examples-simulator>
           <font-awesome-icon :icon="['fas', 'file-lines']" class="me-2" />
@@ -508,6 +599,43 @@ export default defineComponent({
         class="ms-auto"
       />
     </b-navbar-nav>
+
+    <!-- Announcement Section (shown when viewport > 1000px and text is present) -->
+    <div v-if="showAnnouncement" class="announcement-section">
+      <a 
+        v-if="announcement.link"
+        :href="announcement.link"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="announcement-content announcement-link"
+        v-b-tooltip.hover.bottom="showAnnouncementTooltip ? announcement.text : ''"
+      >
+        <font-awesome-icon :icon="['fas', 'bullhorn']" class="announcement-icon" />
+        <span class="announcement-text" ref="announcementText">{{ announcement.text }}</span>
+        <button 
+          class="announcement-close"
+          @click.prevent="dismissAnnouncement"
+          aria-label="Dismiss announcement"
+        >
+          <font-awesome-icon :icon="['fas', 'xmark']" />
+        </button>
+      </a>
+      <div 
+        v-else
+        class="announcement-content"
+        v-b-tooltip.hover.bottom="showAnnouncementTooltip ? announcement.text : ''"
+      >
+        <font-awesome-icon :icon="['fas', 'bullhorn']" class="announcement-icon" />
+        <span class="announcement-text" ref="announcementText">{{ announcement.text }}</span>
+        <button 
+          class="announcement-close"
+          @click="dismissAnnouncement"
+          aria-label="Dismiss announcement"
+        >
+          <font-awesome-icon :icon="['fas', 'xmark']" />
+        </button>
+      </div>
+    </div>
 
     <!-- Right side actions -->
     <b-navbar-nav class="ms-auto">
@@ -790,6 +918,102 @@ export default defineComponent({
   }
 }
 
+// Announcement section (only visible > 1000px)
+.announcement-section {
+  display: none; // Hidden by default
+  align-items: center;
+  padding: 0 12px;
+  flex: 1;
+  min-width: 0; // Allow flex shrinking
+  max-width: 500px;
+
+  // Show when viewport is greater than 1000px
+  @media (min-width: 1001px) {
+    display: flex;
+  }
+
+  // Hide on smaller screens to prevent clipping
+  @media (max-width: 1200px) {
+    max-width: 300px;
+  }
+
+  @media (max-width: 1100px) {
+    max-width: 200px;
+  }
+}
+
+.announcement-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 14px;
+  background-color: rgba(33, 150, 243, 0.08);
+  border-radius: 6px;
+  border-left: 3px solid #2196f3;
+  transition: all 0.2s ease;
+  width: 100%;
+  min-width: 0; // Allow flex shrinking
+
+  &:hover {
+    background-color: rgba(33, 150, 243, 0.12);
+  }
+}
+
+.announcement-link {
+  text-decoration: none;
+  cursor: pointer;
+
+  &:hover {
+    background-color: rgba(33, 150, 243, 0.15);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.announcement-icon {
+  color: #2196f3;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.announcement-text {
+  font-size: 13px;
+  color: #495057;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+  min-width: 0; // Allow text to shrink properly
+}
+
+.announcement-close {
+  background: none;
+  border: none;
+  color: #6c757d;
+  cursor: pointer;
+  padding: 4px 6px;
+  margin-left: 8px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  font-size: 14px;
+
+  &:hover {
+    color: #2196f3;
+    background-color: rgba(33, 150, 243, 0.1);
+  }
+
+  &:active {
+    transform: scale(0.9);
+  }
+}
+
 // Dropdown menu styling
 :deep(.dropdown-menu) {
   border-radius: 8px;
@@ -863,6 +1087,33 @@ export default defineComponent({
         color: #64b5f6;
         background-color: rgba(100, 181, 246, 0.12);
       }
+    }
+  }
+
+  // Announcement section in dark mode
+  .announcement-content {
+    background-color: rgba(100, 181, 246, 0.12);
+    border-left-color: #64b5f6;
+
+    &:hover {
+      background-color: rgba(100, 181, 246, 0.18);
+    }
+  }
+
+  .announcement-icon {
+    color: #64b5f6;
+  }
+
+  .announcement-text {
+    color: #e9ecef;
+  }
+
+  .announcement-close {
+    color: #adb5bd;
+
+    &:hover {
+      color: #64b5f6;
+      background-color: rgba(100, 181, 246, 0.15);
     }
   }
 

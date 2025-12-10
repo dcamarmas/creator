@@ -69,7 +69,7 @@ export default defineConfig({
   base: "/" + (process.env.REPO ?? ""), // repository name (for github pages deployment)
 
   build: {
-    outDir: "dist/web/creatorV",
+    outDir: "dist/web/creator",
     emptyOutDir: true,
     target: "esnext", // browsers can handle the latest ES features
 

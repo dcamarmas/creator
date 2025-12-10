@@ -17,10 +17,18 @@ You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <script lang="ts">
-import { defineComponent, type PropType } from "vue";
+import {
+  defineComponent,
+  type PropType,
+  ref,
+  onMounted,
+  onUnmounted,
+} from "vue";
 import TableExecution from "@/web/components/simulator/TableExecution.vue";
 import SimulatorControls from "@/web/components/simulator/SimulatorControls.vue";
+import SentinelErrorsDropdown from "@/web/components/simulator/SentinelErrorsDropdown.vue";
 import type { Instruction } from "@/core/assembler/assembler";
+import { coreEvents, CoreEventTypes } from "@/core/events.mjs";
 
 export default defineComponent({
   props: {
@@ -36,6 +44,39 @@ export default defineComponent({
   components: {
     TableExecution,
     SimulatorControls,
+    SentinelErrorsDropdown,
+  },
+
+  setup() {
+    const sentinelDropdownRef = ref<InstanceType<
+      typeof SentinelErrorsDropdown
+    > | null>(null);
+
+    const handleSentinelError = (event: unknown) => {
+      const errorEvent = event as {
+        functionName: string;
+        message: string;
+        ok: boolean;
+      };
+      if (sentinelDropdownRef.value) {
+        sentinelDropdownRef.value.checkForErrors(
+          { ok: errorEvent.ok, msg: errorEvent.message },
+          errorEvent.functionName,
+        );
+      }
+    };
+
+    onMounted(() => {
+      coreEvents.on(CoreEventTypes.SENTINEL_ERROR, handleSentinelError);
+    });
+
+    onUnmounted(() => {
+      coreEvents.off(CoreEventTypes.SENTINEL_ERROR, handleSentinelError);
+    });
+
+    return {
+      sentinelDropdownRef,
+    };
   },
 
   data() {
@@ -56,16 +97,25 @@ export default defineComponent({
         </h3>
       </div>
 
-      <div class="execution-controls">
-        <SimulatorControls
-          :browser="browser"
-          :os="os"
-          :dark="dark"
-          :instructions="instructions!"
-          :autoscroll="true"
-          mode="toolbar"
-          ref="executionControls"
-        />
+      <div class="controls-row">
+        <div class="execution-controls">
+          <SimulatorControls
+            :browser="browser"
+            :os="os"
+            :dark="dark"
+            :instructions="instructions!"
+            :autoscroll="true"
+            mode="toolbar"
+            ref="executionControls"
+          />
+        </div>
+
+        <div class="sentinel-container">
+          <SentinelErrorsDropdown
+            ref="sentinelDropdownRef"
+            :dark="dark"
+          />
+        </div>
       </div>
     </div>
 
@@ -127,6 +177,8 @@ export default defineComponent({
   flex-direction: column;
   gap: 1rem;
   flex-shrink: 0;
+  position: relative;
+  z-index: 10;
 
   .instructions-info {
     display: flex;
@@ -162,11 +214,19 @@ export default defineComponent({
     }
   }
 
-  .execution-controls {
+  .controls-row {
     display: flex;
+    align-items: center;
     gap: 0.5rem;
     overflow-x: auto;
     padding-bottom: 0.25rem;
+  }
+
+  .execution-controls {
+    display: flex;
+    gap: 0.5rem;
+    flex: 1;
+    min-width: 0;
 
     // Style the SimulatorControls buttons for mobile
     :deep(.btn) {
@@ -188,7 +248,6 @@ export default defineComponent({
     }
   }
 }
-
 .mobile-instructions-table {
   flex: 1;
   overflow: hidden;

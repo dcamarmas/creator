@@ -144,7 +144,7 @@ export default {
           variant="info"
           class="execution-badge"
           title="Previous instruction"
-          >executed</b-badge
+          ></b-badge
         >
         <b-badge
           v-else-if="row.item._rowVariant === 'warning'"

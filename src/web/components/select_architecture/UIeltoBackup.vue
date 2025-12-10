@@ -82,42 +82,109 @@ export default defineComponent({
     :id="id"
     v-model="show_modal"
     hide-header
-    size="sm"
+    size="md"
     no-header
     no-footer
     centered
   >
-    <h6>
-      A <i>{{ backup_arch_name }}</i> backup is available.
-    </h6>
+    <div class="backup-modal-content">
+      <div class="backup-header mb-3">
+        <h4 class="mb-1 fw-semibold">Backup Available</h4>
+        <p class="text-muted mb-0">A previous session was found</p>
+      </div>
 
-    <h6 class="fst-italic">
-      {{ formatRelativeDate(backup_date) }} <br />
-      ({{ backup_date.toDateString() }} &ndash;
-      {{ backup_date.toLocaleTimeString() }})
-    </h6>
+      <div class="backup-details p-3 mb-3">
+        <div class="d-flex align-items-center mb-2">
+          <strong class="me-2">Architecture:</strong>
+          <code class="backup-arch-name">{{ backup_arch_name }}</code>
+        </div>
+        <div class="d-flex flex-column">
+          <small class="text-muted">
+            <strong>Saved:</strong> {{ formatRelativeDate(backup_date) }}
+          </small>
+          <small class="text-muted">
+            {{ backup_date.toLocaleDateString() }} at
+            {{ backup_date.toLocaleTimeString() }}
+          </small>
+        </div>
+      </div>
 
-    <b-container fluid align-h="center" class="mx-0 mt-3 px-0">
-      <b-row
-        cols-xl="2"
-        cols-lg="2"
-        cols-md="2"
-        cols-sm="1"
-        cols-xs="1"
-        cols="1"
-        align-h="center"
-      >
-        <b-col class="d-grid gap-2">
-          <b-button variant="danger" size="sm" @click="remove_copy">
-            Discard
-          </b-button>
-        </b-col>
-        <b-col class="d-grid gap-2">
-          <b-button variant="primary" size="sm" @click="load_copy">
-            Load
-          </b-button>
-        </b-col>
-      </b-row>
-    </b-container>
+      <div class="backup-actions d-flex gap-2">
+        <b-button variant="outline-secondary" class="flex-fill" @click="remove_copy">
+
+          Discard
+        </b-button>
+        <b-button variant="primary" class="flex-fill" @click="load_copy">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            fill="currentColor"
+            class="me-1"
+            viewBox="0 0 16 16"
+          >
+            <path
+              d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"
+            />
+            <path
+              d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"
+            />
+          </svg>
+          Restore Backup
+        </b-button>
+      </div>
+    </div>
   </b-modal>
 </template>
+
+<style scoped>
+.backup-modal-content {
+  padding: 1rem;
+}
+
+.backup-header {
+  text-align: center;
+}
+
+.backup-icon {
+  opacity: 0.9;
+}
+
+.backup-details {
+  background-color: #f8f9fa;
+  border-radius: 0.375rem;
+  border: 1px solid #dee2e6;
+}
+
+.backup-arch-name {
+  background-color: #e9ecef;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  color: #495057;
+  font-size: 0.9rem;
+}
+
+.backup-actions .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.625rem 1rem;
+  font-weight: 500;
+}
+
+.backup-actions .btn svg {
+  vertical-align: middle;
+}
+
+@media (prefers-color-scheme: dark) {
+  .backup-details {
+    background-color: #212529;
+    border-color: #495057;
+  }
+
+  .backup-arch-name {
+    background-color: #343a40;
+    color: #dee2e6;
+  }
+}
+</style>

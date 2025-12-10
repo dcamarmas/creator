@@ -4,7 +4,6 @@ import { assertEquals } from "https://deno.land/std/assert/mod.ts";
 import { decode } from "@/core/executor/decoder.mjs";
 
 export const RV32IMFD_PATH = "./architecture/RISCV/RV32IMFD.yml";
-export const RV32IMFD_INT_PATH = "./architecture/RISCV/RV32IMFD-Interrupts.yml";
 export function setupArchitecture(
     architecturePath = "./architecture/RISCV/RV32IMFD.yml",
 ) {

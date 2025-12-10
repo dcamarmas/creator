@@ -1,0 +1,9 @@
+# Announcement configuration
+# Leave text empty to hide the announcement
+# Link is optional. Leave empty for no link.
+
+# The announcements are user dismissible and will not show again once closed.
+# If the text is changed, it will show again to all users.
+
+text: "Welcome to the CREATOR V6 Beta!"
+link: "https://creatorsim.github.io/creator-beta/"

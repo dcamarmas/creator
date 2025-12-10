@@ -364,6 +364,13 @@ defineExpose({
   user-select: none;
   position: relative;
 
+  // Match icon button height when text is hidden
+  @media (max-width: 825px) {
+    min-height: 30px;
+    min-width: 32px;
+    padding: 8px;
+  }
+
   &:hover:not(:disabled) {
     background-color: rgba(0, 0, 0, 0.15);
   }
@@ -414,10 +421,20 @@ defineExpose({
 
   .icon-spacing {
     margin-right: 0.35rem;
+
+    // Remove margin when text is hidden to center the icon
+    @media (max-width: 825px) {
+      margin-right: 0;
+    }
   }
 
   .button-text {
     white-space: nowrap;
+
+    // Hide text on tablet screens to save space
+    @media (max-width: 825px) {
+      display: none;
+    }
   }
 
   .error-count {
@@ -427,11 +444,43 @@ defineExpose({
     height: 18px;
     padding: 2px 4px;
     line-height: 14px;
+
+    // Adjust position when text is hidden
+    @media (max-width: 825px) {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      margin-left: 0;
+    }
   }
 }
 
 .sentinel-dropdown {
   position: relative;
+  list-style: none !important;
+
+  // Hide the dropdown toggle caret/indicator
+  :deep(.dropdown-toggle::after) {
+    display: none !important;
+  }
+
+  :deep(.nav-link) {
+    padding: 0;
+    border: none;
+    background: none;
+  }
+
+  :deep(li) {
+    list-style: none !important;
+  }
+
+  // Hide any ::marker pseudo-elements
+  &::marker,
+  :deep(li::marker),
+  :deep(.nav-item::marker) {
+    display: none !important;
+    content: none !important;
+  }
 
   :deep(.dropdown-menu) {
     min-width: 500px;
@@ -441,6 +490,8 @@ defineExpose({
     padding: 0;
     border-radius: 8px;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    position: fixed !important;
+    z-index: 9999;
   }
 }
 
