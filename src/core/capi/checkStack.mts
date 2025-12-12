@@ -22,7 +22,7 @@ import { crex_show_notification } from "../../web/utils.mjs";
 import { tag_instructions } from "../assembler/assembler.mjs";
 import { sentinel } from "../sentinel/sentinel.mjs";
 import { creator_ga } from "../utils/creator_ga.mjs";
-import { coreEvents, CoreEventTypes } from "../events.mjs";
+import { coreEvents, CoreEventTypes } from "../events.mts";
 
 export const CHECK_STACK = {
     begin(addr?: bigint) {

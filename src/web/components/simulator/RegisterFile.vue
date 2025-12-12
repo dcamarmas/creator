@@ -18,7 +18,7 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <script lang="ts">
 import { REGISTERS } from "@/core/core.mjs";
-import { coreEvents } from "@/core/events.mjs";
+import { coreEvents } from "../../../core/events.mts";
 import { clearAllRegisterGlows } from "@/core/register/registerGlowState.mjs";
 
 import Register from "./Register.vue";

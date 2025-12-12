@@ -18,7 +18,7 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <script>
 import { loadedLibrary } from "@/core/core.mjs";
-import { coreEvents } from "@/core/events.mjs";
+import { coreEvents } from "../../../core/events.mts";
 
 export default {
   props: {

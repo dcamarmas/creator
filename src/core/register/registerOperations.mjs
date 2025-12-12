@@ -22,7 +22,7 @@ import { writeStackLimit } from "../executor/executor.mjs";
 import { instructions } from "../assembler/assembler.mjs";
 import { sentinel } from "../sentinel/sentinel.mjs";
 import { packExecute } from "../utils/utils.mjs";
-import { coreEvents } from "../events.mjs";
+import { coreEvents } from "../events.mts";
 import { setRegisterGlow } from "./registerGlowState.mjs";
 
 /**

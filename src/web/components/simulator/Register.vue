@@ -292,6 +292,20 @@ export default defineComponent({
   background-color: rgba(var(--bs-light-rgb), 0.4);
 }
 
+// Responsive sizing for 64-bit registers on smaller screens
+@media (max-width: 1345px) and (min-width: 768px) {
+  .register-value {
+    font-size: 0.75rem;
+  }
+}
+
+// Mobile view - keep normal size
+@media (max-width: 767px) {
+  .register-value {
+    font-size: 0.875rem;
+  }
+}
+
 // Dark mode adjustments
 [data-bs-theme="dark"] {
   .register-row {

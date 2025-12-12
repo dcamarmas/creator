@@ -24,6 +24,7 @@ import { float2bin, double2bin, packExecute } from "../utils/utils.mjs";
 import { SYSCALL } from "../capi/syscall.mts";
 import { MEM } from "../capi/memory.mts";
 import { Memory, type MemoryBackup } from "../memory/Memory.mts";
+import { coreEvents, CoreEventTypes } from "../events.mts";
 
 /**
  * A CREATOR device.
@@ -209,6 +210,14 @@ class ConsoleDevice extends Device {
 
         // stop program to wait for read
         status.run_program = 3;
+        
+        // Emit event to disable buttons in UI
+        if (typeof document !== "undefined") {
+            coreEvents.emit(CoreEventTypes.EXECUTOR_BUTTONS_UPDATE, {
+                instruction_disable: true,
+                run_disable: true,
+            });
+        }
     }
 
     override handler(): void {

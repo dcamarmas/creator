@@ -32,6 +32,7 @@ import {
 import { readRegister } from "../register/registerOperations.mjs";
 import { creator_ga } from "../utils/creator_ga.mjs";
 import type { Memory } from "../memory/Memory.mts";
+import { coreEvents, CoreEventTypes } from "../events.mts";
 
 export const SYSCALL = {
     exit() {
@@ -94,6 +95,15 @@ export const SYSCALL = {
             }
         }
         status.run_program = 3;
+        
+        // Emit event to disable buttons in UI
+        if (typeof document !== "undefined" && document.app) {
+            coreEvents.emit(CoreEventTypes.EXECUTOR_BUTTONS_UPDATE, {
+                instruction_disable: true,
+                run_disable: true,
+            });
+        }
+        
         const register = crex_findReg(dest_reg_info);
         if (register.match === 0) {
             throw new Error(

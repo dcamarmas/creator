@@ -20,7 +20,7 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 import { defineComponent } from "vue";
 import { stats, type Stat } from "@/core/executor/stats.mts";
 import { status } from "@/core/core.mjs";
-import { coreEvents } from "@/core/events.mjs";
+import { coreEvents } from "../../../core/events.mts";
 
 export default defineComponent({
   props: {

@@ -46,7 +46,7 @@ import { ExecutionMode } from "./InterruptManager.mts";
 import { handleDevices } from "./devices.mts";
 import { handleTimer } from "./timers.mts";
 import { compileInstruction } from "./instructionCompiler.mts";
-import { coreEvents } from "../events.mjs";
+import { coreEvents } from "../events.mts";
 import { clearAllRegisterGlows } from "../register/registerGlowState.mjs";
 
 const instructionCache = new Map();

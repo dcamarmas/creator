@@ -23,7 +23,7 @@ import { architecture, loadedLibrary } from "@/core/core.mjs";
 import { show_notification } from "@/web/utils.mjs";
 import { getDefaultCompiler } from "@/web/assemblers";
 import { creator_ga } from "@/core/utils/creator_ga.mjs";
-import { coreEvents } from "@/core/events.mjs";
+import { coreEvents } from "../../../core/events.mts";
 import {
   useAssembly,
   type AssemblyResult,

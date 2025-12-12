@@ -20,7 +20,7 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 import { defineComponent, type PropType } from "vue";
 import type { Memory } from "@/core/memory/Memory.mjs";
 import type { Device } from "@/core/executor/devices.mjs";
-import { coreEvents } from "@/core/events.mjs";
+import { coreEvents } from "../../../core/events.mts";
 import { stackTracker, architecture } from "@/core/core.mjs";
 import type { StackFrame } from "@/core/memory/StackTracker.mjs";
 import MemoryLayoutDiagram from "../architecture/memory_layout/MemoryLayoutDiagram.vue";

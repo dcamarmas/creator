@@ -31,7 +31,7 @@ import AssemblyActions from "../assembly/AssemblyActions.vue";
 import SentinelErrorsDropdown from "../simulator/SentinelErrorsDropdown.vue";
 import type { Instruction } from "@/core/assembler/assembler";
 import type { BDropdown } from "bootstrap-vue-next";
-import { coreEvents, CoreEventTypes } from "@/core/events.mjs";
+import { coreEvents, CoreEventTypes } from "../../../core/events.mts";
 import { remove_library, architecture } from "@/core/core.mjs";
 
 export default defineComponent({

@@ -38,7 +38,7 @@ import { creator_ga } from "./utils/creator_ga.mjs";
 import { sentinel } from "./sentinel/sentinel.mjs";
 import { resetStats } from "./executor/stats.mts";
 import { resetDecoderCache } from "./executor/decoder.mjs";
-import { coreEvents } from "./events.mjs";
+import { coreEvents } from "./events.mts";
 import {
     ExecutionMode,
     InterruptHandlerType,

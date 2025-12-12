@@ -17,7 +17,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <script setup lang="ts">
-import { ref, computed, onMounted, watch, type PropType } from "vue";
+import { ref, computed, onMounted, onBeforeUnmount, watch, type PropType } from "vue";
 import {
   set_execution_mode,
   status,
@@ -35,6 +35,7 @@ import { creator_ga } from "@/core/utils/creator_ga.mjs";
 import { packExecute } from "@/core/utils/utils.mjs";
 import { show_notification } from "@/web/utils.mjs";
 import type { Instruction } from "@/core/assembler/assembler";
+import { coreEvents, CoreEventTypes } from "@/core/events.mjs";
 
 const props = defineProps({
   instructions: {
@@ -100,7 +101,31 @@ onMounted(() => {
     reset_disable.value = !prepared_for_execution;
     instruction_disable.value = !prepared_for_execution;
   }
+  
+  // Subscribe to executor button update events
+  coreEvents.on(CoreEventTypes.EXECUTOR_BUTTONS_UPDATE, handleButtonStateUpdate);
 });
+
+onBeforeUnmount(() => {
+  // Clean up event listener
+  coreEvents.off(CoreEventTypes.EXECUTOR_BUTTONS_UPDATE, handleButtonStateUpdate);
+});
+
+// Handler for button state updates from core
+function handleButtonStateUpdate(event: any) {
+  if (event.reset_disable !== undefined) {
+    reset_disable.value = event.reset_disable;
+  }
+  if (event.instruction_disable !== undefined) {
+    instruction_disable.value = event.instruction_disable;
+  }
+  if (event.run_disable !== undefined) {
+    run_disable.value = event.run_disable;
+  }
+  if (event.stop_disable !== undefined) {
+    stop_disable.value = event.stop_disable;
+  }
+}
 
 // Watch for changes in instructions to update button states
 watch(

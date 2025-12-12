@@ -27,6 +27,7 @@ import { packExecute } from "../utils/utils.mjs";
 import os from "node:os";
 import { show_notification } from "@/web/utils.mjs";
 import { instructions } from "../assembler/assembler.mjs";
+import { coreEvents, CoreEventTypes } from "../events.mts";
 
 export function display_print(info) {
     if (typeof document !== "undefined" && document.app) {
@@ -231,11 +232,12 @@ export function keyboard_read(fn_post_read, fn_post_params) {
         }
     }
 
-    // re-enable buttons
-    const executeGroup = document.app.$root.$refs.navbar?.$refs?.executeGroup;
-    if (executeGroup) {
-        executeGroup.instruction_disable = false;
-        executeGroup.run_disable = false;
+    // Re-enable buttons using event emitter for proper reactivity
+    if (typeof document !== "undefined" && document.app) {
+        coreEvents.emit(CoreEventTypes.EXECUTOR_BUTTONS_UPDATE, {
+            instruction_disable: false,
+            run_disable: false,
+        });
     }
 
     return draw;

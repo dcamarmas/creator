@@ -18,7 +18,7 @@
  */
 
 import { status } from "../core.mjs";
-import { coreEvents } from "../events.mjs";
+import { coreEvents } from "../events.mts";
 
 export type Stat = {
     instructions: number;

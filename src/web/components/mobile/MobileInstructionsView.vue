@@ -28,7 +28,7 @@ import TableExecution from "@/web/components/simulator/TableExecution.vue";
 import SimulatorControls from "@/web/components/simulator/SimulatorControls.vue";
 import SentinelErrorsDropdown from "@/web/components/simulator/SentinelErrorsDropdown.vue";
 import type { Instruction } from "@/core/assembler/assembler";
-import { coreEvents, CoreEventTypes } from "@/core/events.mjs";
+import { coreEvents, CoreEventTypes } from "../../../core/events.mts";
 
 export default defineComponent({
   props: {
