@@ -33,6 +33,7 @@ export default defineComponent({
     result_email: { type: String, required: true },
     target_board: { type: String, required: true },
     target_port: { type: String, required: true },
+    target_location: { type: String, required: true },
     flash_url: { type: String, required: true },
     assembly_code: { type: String, required: true },
   },
@@ -79,6 +80,32 @@ export default defineComponent({
         (this.$root as any).flash_url = value;
       },
     },
+    targetLocation: {
+      get() {
+        return this.target_location;
+      },
+      set(value: string) {
+        (this.$root as any).target_location = value;
+      },
+    },
+  },
+
+  watch: {
+    selectedOption(newVal: string, _oldVal: string) {
+      this.targetBoard = "";
+      this.activeTab = false;
+      // Prefill targetLocation when switching to SBC
+      if (newVal === "sbc") {
+        this.targetLocation = "~/creator";
+      }
+    },
+    targetBoard(newVal: string, _oldVal: string) {
+      if (!newVal) {
+        this.activeTab = false;
+      } else {
+        this.activeTab = true;
+      }
+    },
   },
 
   data() {
@@ -114,6 +141,14 @@ export default defineComponent({
         // { text: "ESP32-S2 (MIPS-32)", value: "esp32s2" },
         // { text: "ESP32-S3 (MIPS-32)", value: "esp32s3" },
       ],
+
+      sbc_target_boards: [
+        { text: "Please select an option", value: null, disabled: true },
+        { text: "SBC (RISC-V)", value: "sbcriscv" },
+      ],
+
+      selectedOption: "esp32" as "esp32" | "sbc",
+      activeTab: false,
 
       flashing: false,
       running: false,
@@ -227,7 +262,7 @@ export default defineComponent({
     //
 
     download_driver() {
-      downloadFile(`/gateway/${this.targetBoard}.zip`, "driver");
+      downloadFile(`/gateway/${this.selectedOption}.zip`, `${this.selectedOption}.zip`);
 
       //Google Analytics
       creator_ga(
@@ -235,6 +270,26 @@ export default defineComponent({
         "simulator.download_driver",
         "simulator.download_driver",
       );
+    },
+
+    download_scripts() {
+      downloadFile("/gateway/openocd_scripts.zip", "openocd");
+
+      //Google Analytics
+      creator_ga(
+        "simulator",
+        "simulator.download_openocd",
+        "simulator.download_openocd",
+      );
+    },
+
+    onTabChange() {
+      if (this.targetBoard.startsWith("sbc")) {
+        this.targetPort = "ubuntu@127.0.0.1";
+        this.targetLocation = "~/creator";
+      } else {
+        this.targetPort = this.$root!.target_ports[this.os] || "";
+      }
     },
 
     do_flash() {
@@ -248,22 +303,42 @@ export default defineComponent({
       LOCALLAB.gateway_flash(this.flashURL + "/flash", {
         target_board: this.targetBoard,
         target_port: this.targetPort,
+        target_location: this.targetLocation,
         assembly: this.assembly_code,
       }).then(data => {
         this.flashing = false;
         console_log(JSON.stringify(data, null, 2), "DEBUG");
-        if (
-          JSON.stringify(data, null, 2).includes("Flash completed successfully")
-        ) {
+        const dataStr = JSON.stringify(data, null, 2);
+        
+        if (dataStr.includes("TypeError: NetworkError")) {
+          show_notification(
+            "Gateway not available at the moment. Please, execute python3 gateway.py, check if port 8080 works fine and connect your board first",
+            "danger",
+          );
+        }
+        if (dataStr.includes("Flash completed successfully")) {
           show_notification("Flashing program success.", "success");
         }
-        if (JSON.stringify(data, null, 2).includes("No UART port found")) {
+        if (dataStr.includes("Target location is blank")) {
+          show_notification("Error flashing: Blank target location", "danger");
+        }
+        if (dataStr.includes("Target port is blank")) {
+          show_notification("Error flashing: Blank target port", "danger");
+        }
+        if (dataStr.includes("Unreachable host")) {
+          show_notification("Error flashing: Unreachable host", "danger");
+        }
+        if (dataStr.includes("Problem with sending code to the SBC")) {
+          show_notification(
+            "Error flashing: Check if the target location exists in your SBC or if the target port user exists",
+            "danger",
+          );
+        }
+        if (dataStr.includes("No UART port found")) {
           show_notification("Error flashing: Not found UART port", "danger");
         }
         if (
-          JSON.stringify(data, null, 2).includes(
-            "cr_ functions are not supported in this mode",
-          )
+          dataStr.includes("cr_ functions are not supported in this mode")
         ) {
           show_notification(
             'CREATino code in CREATOR module. Make sure the "Arduino Support" checkbox is selected',
@@ -282,11 +357,29 @@ export default defineComponent({
       LOCALLAB.gateway_monitor(this.flashURL + "/stopmonitor", {
         target_board: this.targetBoard,
         target_port: this.targetPort,
+        target_location: this.targetLocation,
         assembly: this.assembly_code,
       }).then(data => {
         this.stoprunning = false;
-        console_log(JSON.stringify(data, null, 2), "DEBUG");
-        if (JSON.stringify(data, null, 2).includes("Process stopped")) {
+        const dataStr = JSON.stringify(data, null, 2);
+        console_log(dataStr, "DEBUG");
+        
+        if (dataStr.includes("TypeError: NetworkError")) {
+          show_notification(
+            "Gateway not available at the moment. Please, execute python3 gateway.py, check if port 8080 works fine and connect your board first",
+            "danger",
+          );
+        }
+        if (dataStr.includes("Target location is blank")) {
+          show_notification("Error monitoring: Blank target location", "danger");
+        }
+        if (dataStr.includes("Target port is blank")) {
+          show_notification("Error monitoring: Blank target port", "danger");
+        }
+        if (dataStr.includes("Unreachable host")) {
+          show_notification("Error monitoring: Unreachable host", "danger");
+        }
+        if (dataStr.includes("Process stopped")) {
           show_notification("Process stopped.", "success");
         }
       });
@@ -302,13 +395,33 @@ export default defineComponent({
       LOCALLAB.gateway_monitor(this.flashURL + "/monitor", {
         target_board: this.targetBoard,
         target_port: this.targetPort,
+        target_location: this.targetLocation,
         assembly: this.assembly_code,
       }).then(data => {
         this.running = false;
-
-        console_log(JSON.stringify(data, null, 2), "DEBUG");
-        if (JSON.stringify(data, null, 2).includes("No UART port found")) {
+        const dataStr = JSON.stringify(data, null, 2);
+        console_log(dataStr, "DEBUG");
+        
+        if (dataStr.includes("TypeError: NetworkError")) {
+          show_notification(
+            "Gateway not available at the moment. Please, execute python3 gateway.py, check if port 8080 works fine and connect your board first",
+            "danger",
+          );
+        }
+        if (dataStr.includes("No UART port found")) {
           show_notification("Error: Not found UART port", "danger");
+        }
+        if (dataStr.includes("No ELF file found")) {
+          show_notification("Error: Built proyect not found", "danger");
+        }
+        if (dataStr.includes("Target location is blank")) {
+          show_notification("Error flashing: Blank target location", "danger");
+        }
+        if (dataStr.includes("Target port is blank")) {
+          show_notification("Error flashing: Blank target port", "danger");
+        }
+        if (dataStr.includes("Unreachable host")) {
+          show_notification("Error flashing: Unreachable host", "danger");
         }
       });
 
@@ -322,10 +435,30 @@ export default defineComponent({
       LOCALLAB.gateway_monitor(this.flashURL + "/debug", {
         target_board: this.targetBoard,
         target_port: this.targetPort,
+        target_location: this.targetLocation,
         assembly: this.assembly_code,
-      }).then(_data => {
+      }).then(data => {
         this.debugging = false;
-        // show_notification(_data, 'danger') ;
+        const dataStr = JSON.stringify(data, null, 2);
+        
+        if (dataStr.includes("TypeError: NetworkError")) {
+          show_notification(
+            "Gateway not available at the moment. Please, execute python3 gateway.py, check if port 8080 works fine and connect your board first",
+            "danger",
+          );
+        }
+        if (dataStr.includes("No ELF file found in build directory")) {
+          show_notification("Error: Not found proyect to debug", "danger");
+        }
+        if (dataStr.includes("Target location is blank")) {
+          show_notification("Error debugging: Blank target location", "danger");
+        }
+        if (dataStr.includes("Target port is blank")) {
+          show_notification("Error debugging: Blank target port", "danger");
+        }
+        if (dataStr.includes("Unreachable host")) {
+          show_notification("Error debugging: Unreachable host", "danger");
+        }
       });
 
       //Google Analytics
@@ -353,14 +486,23 @@ export default defineComponent({
       LOCALLAB.gateway_monitor(this.flashURL + "/fullclean", {
         target_board: this.targetBoard,
         target_port: this.targetPort,
+        target_location: this.targetLocation,
         assembly: this.assembly_code,
       }).then(data => {
         this.fullclean = false;
-        console_log(JSON.stringify(data, null, 2), "DEBUG");
-        if (JSON.stringify(data, null, 2).includes("Full clean done.")) {
+        const dataStr = JSON.stringify(data, null, 2);
+        console_log(dataStr, "DEBUG");
+        
+        if (dataStr.includes("TypeError: NetworkError")) {
+          show_notification(
+            "Gateway not available at the moment. Please, execute python3 gateway.py, check if port 8080 works fine and connect your board first",
+            "danger",
+          );
+        }
+        if (dataStr.includes("Full clean done.")) {
           show_notification("Full clean done.", "success");
         }
-        if (JSON.stringify(data, null, 2).includes("Nothing to clean")) {
+        if (dataStr.includes("Nothing to clean")) {
           show_notification("Nothing to clean", "success");
         }
       });
@@ -375,21 +517,39 @@ export default defineComponent({
       LOCALLAB.gateway_monitor(this.flashURL + "/eraseflash", {
         target_board: this.targetBoard,
         target_port: this.targetPort,
+        target_location: this.targetLocation,
         assembly: this.assembly_code,
       }).then(data => {
         this.eraseflash = false;
+        const dataStr = JSON.stringify(data, null, 2);
+        console_log(dataStr, "DEBUG");
 
-        //show_notification(data, 'danger')
-        console_log(JSON.stringify(data, null, 2), "DEBUG");
-
-        if (JSON.stringify(data, null, 2).includes("Erase flash done")) {
+        if (dataStr.includes("TypeError: NetworkError")) {
+          show_notification(
+            "Gateway not available at the moment. Please, execute python3 gateway.py, check if port 8080 works fine and connect your board first",
+            "danger",
+          );
+        }
+        if (dataStr.includes("Erase flash done")) {
           show_notification(
             "Erase flash done. Please, unplug and plug the cable(s) again",
             "success",
           );
         }
+        if (dataStr.includes("Target location is blank")) {
+          show_notification(
+            "Error erase-flashing: Blank target location",
+            "danger",
+          );
+        }
+        if (dataStr.includes("Target port is blank")) {
+          show_notification("Error erase-flashing: Blank target port", "danger");
+        }
+        if (dataStr.includes("Unreachable host")) {
+          show_notification("Error erase-flashing: Unreachable host", "danger");
+        }
         if (
-          JSON.stringify(data, null, 2).includes(
+          dataStr.includes(
             "Could not open /dev/ttyUSB0, the port is busy or doesn't exist",
           )
         ) {
@@ -408,27 +568,61 @@ export default defineComponent({
 </script>
 
 <template>
-  <b-modal :id="id" title="Target Board Flash" no-footer>
+  <b-modal :id="id" scrollable title="Target Board Flash" no-footer>
     <b-tabs content-class="mt-3">
       <b-tab title="Local Device" active id="flash-tab-local">
+        <div class="d-flex flex-column align-items-center my-4">
+          <span style="margin-bottom: 10px; font-weight: bold">
+            Select Device Type:
+          </span>
+          <div class="d-flex">
+            <div class="form-check mx-2">
+              <input
+                class="form-check-input"
+                type="radio"
+                id="radioEspressif"
+                value="esp32"
+                v-model="selectedOption"
+              />
+              <label class="form-check-label" for="radioEspressif">
+                Espressif
+              </label>
+            </div>
+            <div class="form-check mx-2">
+              <input
+                class="form-check-input"
+                type="radio"
+                id="radioSBC"
+                value="sbc"
+                v-model="selectedOption"
+              />
+              <label class="form-check-label" for="radioSBC">SBC</label>
+            </div>
+          </div>
+        </div>
+
         <label for="select-local-boards">(1) Select Target Board:</label>
 
         <b-form-select
           id="select-local-boards"
           v-model="targetBoard"
-          :options="target_boards"
+          :options="
+            selectedOption === 'esp32' ? target_boards : sbc_target_boards
+          "
           size="sm"
           class="mt-2"
+          @change="onTabChange"
         />
         <br />
 
-        <b-tabs content-class="mt-3" v-if="targetBoard">
+        <b-tabs content-class="mt-3" v-if="targetBoard && activeTab">
           <b-tab title="Prerequisites" id="flash-tab-prerequisites">
             <b-tabs content-class="mt-3">
               <b-tab
                 title="Docker Windows"
                 id="tab-docker-win"
                 :active="os === 'Win'"
+                v-if="selectedOption === 'esp32'"
               >
                 (2) Install Docker Desktop (only the first time):
                 <b-card class="text-left my-2 mx-4">
@@ -506,6 +700,7 @@ export default defineComponent({
                 title="Docker Linux/MacOS"
                 id="flash-tab-docker-unix"
                 :active="['Mac', 'Linux'].includes(os)"
+                v-if="selectedOption === 'esp32'"
               >
                 (2) Install Docker Engine (only the first time):
                 <b-card class="text-left my-2 ms-4 me-4">
@@ -536,7 +731,95 @@ export default defineComponent({
                 </b-card>
               </b-tab>
 
-              <b-tab title="Native">
+              <b-tab title="Linux/MacOS" v-if="selectedOption === 'sbc'">
+                (2) Setup Ubuntu in the SBC chosen and connect it to Internet:
+                <b-card class="text-left my-2 mx-4">
+                  <b
+                    >Check if your board has canonical Ubuntu support (if not
+                    founded in official SBC documentation):</b
+                  >
+                  <a
+                    href="https://canonical-ubuntu-boards.readthedocs-hosted.com/en/latest/how-to/"
+                    target="_blank"
+                  >
+                    Canonical Ubuntu Boards Documentation
+                  </a>
+                  <br /><br />
+                  <b>Check the IP of your SBC:</b>
+                  <div class="bash mt-2">
+                    <code>ip a</code>
+                  </div>
+                </b-card>
+
+                (3) Create the directory where the project will be saved:
+                <b-card class="text-left my-2 mx-4">
+                  <b>Create the directory:</b>
+                  <div class="bash mt-2">
+                    <code>mkdir -p ~/creator</code>
+                  </div>
+                  <b>Check if the system allows SSH:</b>
+                  <div class="bash mt-2">
+                    <code>systemctl status ssh</code>
+                  </div>
+                </b-card>
+
+                (4) Install GDB UI in SBC:
+                <b-card class="text-left my-2 mx-4">
+                  <b>Create a virtual environment:</b>
+                  <div class="bash mt-2">
+                    <code>
+                      sudo apt install python3.12-venv<br />
+                      python3 -m venv ~/gdbgui-venv<br />
+                      source ~/gdbgui-venv/bin/activate
+                    </code>
+                  </div>
+                  <b>Install and adapt GDBGUI:</b>
+                  <div class="bash mt-2">
+                    <code>
+                      sudo apt install build-essential python3-dev python3-pip
+                      python3-setuptools python3-wheel gdb<br />
+                      pip3 install gdbgui<br />
+                      sed -i "/extra_files=get_extra_files()/a\
+                      allow_unsafe_werkzeug=True,"
+                      ~/gdbgui-venv/lib/python3.12/site-packages/gdbgui/server/server.py
+                    </code>
+                  </div>
+                </b-card>
+
+                (5) Download the driver: <br />
+                <b-container align-h="center" class="d-grid mb-1">
+                  <b-button
+                    size="sm"
+                    class="my-1 mx-3"
+                    variant="outline-primary"
+                    @click="download_driver"
+                  >
+                    <font-awesome-icon :icon="['fas', 'download']" /> Download
+                    Driver
+                  </b-button>
+                </b-container>
+
+                (6) Install python3 packages in your computer:
+                <b-card class="text-left my-2 mx-4">
+                  <code>pip3 install flask flask_cors</code>
+                </b-card>
+
+                (7) Run driver:
+                <b-card class="text-left my-2 mx-4">
+                  <b>Unzip the driver.zip file:</b>
+                  <div class="bash mt-2">
+                    <code>
+                      unzip driver.zip<br />
+                      cd sbc
+                    </code>
+                  </div>
+                  <b>Execute the gateway web service:</b>
+                  <br />
+                  <code>python3 gateway.py</code>
+                </b-card>
+              </b-tab>
+
+              <b-tab title="Native" v-if="selectedOption === 'esp32'">
                 (2) Install
                 <a
                   href="https://www.python.org/downloads/release/python-3913/"
@@ -630,20 +913,100 @@ export default defineComponent({
             </b-tabs>
           </b-tab>
 
+          <b-tab title="Debug" v-if="selectedOption === 'esp32'">
+            (2) Start the environment of your choice
+            <br /><br />
+
+            (3) Connect your JTAG device
+            <b-card class="text-left my-2 mx-4">
+              Checkout how debugging works in your board:
+              <a
+                href="https://docs.espressif.com/projects/esp-idf/en/stable/esp32c3/api-guides/jtag-debugging/configure-builtin-jtag.html"
+                target="_blank"
+              >
+                Espressif JTAG Debugging Documentation
+              </a>
+            </b-card>
+
+            (4) Install OpenOCD (not necessary in Native environment):
+            <b-card class="text-left my-2 mx-4">
+              Install the correct openocd distribution:
+              <a
+                href="https://github.com/espressif/openocd-esp32/releases/tag/v0.12.0-esp32-20241016"
+                target="_blank"
+              >
+                OpenOCD ESP32 Releases
+              </a>
+            </b-card>
+
+            (5) Download openocd scripts <br />
+            <b-container align-h="center" class="d-grid mb-1">
+              <b-button
+                size="sm"
+                class="my-1 mx-3"
+                variant="outline-primary"
+                @click="download_scripts"
+              >
+                <font-awesome-icon :icon="['fas', 'download']" /> Download
+                Scripts
+              </b-button>
+            </b-container>
+
+            (6) Run openocd_start script:
+            <b-card class="text-left my-2 mx-4">
+              <code>./openocd_start.sh esp32c3</code>
+            </b-card>
+
+            (7) Open where Debug UI will be placed, as Docker cannot open pages
+            in host:
+            <b-card class="text-left my-2 mx-4">
+              <a href="http://localhost:5000/" target="_blank">
+                http://localhost:5000/
+              </a>
+            </b-card>
+          </b-tab>
+
           <!-- Run -->
           <b-tab title="Run" active id="flash-tab-run">
-            <label for="target-port">
-              Target port (please verify the port on your computer):
-            </label>
-            <b-form-input
-              id="target-port"
-              type="text"
-              v-model="targetPort"
-              placeholder="Enter target port"
-              size="sm"
-              class="my-2"
-            />
-            <label for="flash-url"> Flash URL: </label>
+            <div v-if="targetBoard.startsWith('sbc')">
+              <label for="target-user">
+                (2-1) Target User: (please verify your board user)
+              </label>
+              <b-form-input
+                id="target-port"
+                type="text"
+                v-model="targetPort"
+                placeholder="Enter target user"
+                size="sm"
+                class="my-2"
+              />
+
+              <label for="target-location">
+                (2-2) Target Location: (please verify the route exists in your
+                board)
+              </label>
+              <b-form-input
+                id="target-location"
+                type="text"
+                v-model="targetLocation"
+                size="sm"
+                class="my-2"
+              />
+            </div>
+            <div v-else>
+              <label for="target-port">
+                (2) Target port (please verify the port on your computer):
+              </label>
+              <b-form-input
+                id="target-port"
+                type="text"
+                v-model="targetPort"
+                placeholder="Enter target port"
+                size="sm"
+                class="my-2"
+              />
+            </div>
+            <label for="flash-url"> (3) Flash URL: </label>
             <b-form-input
               id="flash-url"
               type="text"

@@ -60,6 +60,7 @@ export default defineComponent({
     result_email: { type: String, required: true },
     target_board: { type: String, required: true },
     target_port: { type: String, required: true },
+    target_location: { type: String, required: true },
     flash_url: { type: String, required: true },
   },
 
@@ -101,6 +102,7 @@ export default defineComponent({
           :result_email="result_email"
           :target_board="target_board"
           :target_port="target_port"
+          :target_location="target_location"
           :flash_url="flash_url"
         />
 

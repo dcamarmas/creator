@@ -303,6 +303,7 @@ export default {
       result_email: "",
       target_board: "",
       target_port: "",
+      target_location: "~/creator",
       flash_url: "http://localhost:8080",
     };
   },
@@ -784,6 +785,7 @@ export default {
     :result_email="result_email"
     :target_board="target_board"
     :target_port="target_port"
+    :target_location="target_location"
     :flash_url="flash_url"
   />
 
