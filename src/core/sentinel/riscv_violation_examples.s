@@ -207,6 +207,6 @@ main:
     jal ra, goodFunction
 
     # Exit
-    li a7, 93          # syscall exit
+    li a7, 10          # syscall exit
     li a0, 0           # exit code 0
     ecall

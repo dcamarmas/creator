@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=../schema.json
+# yaml-language-server: $schema=../../docs/schema/architecture.json
 version: 2.0.0
 
 # ASCII text generated w/ https://patorjk.com/software/taag/#p=display&h=1&f=Standard
@@ -1603,7 +1603,8 @@ instructions:
       definition: |
         registers[rd] = registers.pc + 4n;
         registers.pc = (registers[rs1] + imm) & ~1n;
-        CAPI.CHECK_STACK.end(); CAPI.DRAW_STACK.end(registers.pc);
+        CAPI.CHECK_STACK.end();
+        CAPI.DRAW_STACK.end();
       help: Jump to address and place return address in rd.
 
     - name: lb
@@ -1790,9 +1791,9 @@ instructions:
           value: "1101111"
       definition: |
         registers[rd] = registers.pc + 4n;
-        registers.pc = registers.pc + imm;
-        CAPI.CHECK_STACK.begin(registers.pc + imm);
-        CAPI.DRAW_STACK.begin(registers.pc + imm);
+        registers.pc += imm;
+        CAPI.CHECK_STACK.begin();
+        CAPI.DRAW_STACK.begin();
       help: Jump to address and place return address in rd.
 
     # R-type instructions
@@ -2034,8 +2035,8 @@ instructions:
           value: "0000000000000000000000000"
       definition: |
         CAPI.INTERRUPTS.create(InterruptType.EnvironmentCall);
-        CAPI.CHECK_STACK.begin(registers.pc);
-        CAPI.DRAW_STACK.begin(registers.pc);
+        CAPI.CHECK_STACK.begin();
+        CAPI.DRAW_STACK.begin();
       help: Make a request to the supporting execution environment. When
         executed in U-mode, S-mode, or M-mode, it generates an
         environment-call-from-U-mode exception, environment-call-from-S-mode

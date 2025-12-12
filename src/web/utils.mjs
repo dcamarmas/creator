@@ -74,7 +74,7 @@ export function show_notification(msg, type, root = document.app) {
 
 export function crex_show_notification(msg, level) {
     if (typeof window !== "undefined") show_notification(msg, level);
-    else console.log(level.toUpperCase() + ": " + msg);
+    else clog(level.toUpperCase() + ": " + msg, "INFO");
 }
 
 /*

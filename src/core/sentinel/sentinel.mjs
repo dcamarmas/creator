@@ -471,6 +471,7 @@ class CallingConventionValidator {
 const validator = new CallingConventionValidator();
 
 // Public API - Direct validator interface
+// yes, it HAS to be with arrow functions
 export const sentinel = {
     enter: functionName => validator.enter(functionName),
     leave: () => validator.leave(),

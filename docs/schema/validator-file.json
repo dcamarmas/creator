@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "$id": "https://creatorsim.github.io/creator/schema/validator-file.json",
+  "title": "CREATOR validator file definition",
+  "description": "v1",
+  "type": "object",
+  "required": ["maxCycles", "state"],
+  "properties": {
+    "maxCycles": {
+      "description": "Maximum number of cycles to execute",
+      "type": "number"
+    },
+    "floatThreshold": {
+      "description": "Threshold for floating point comparisons",
+      "type": "number"
+    },
+    "sentinel": {
+      "description": "Whether to fail on calling convention errors (default `true`)",
+      "type": "boolean"
+    },
+    "state": {
+      "description": "Expected final state",
+      "$ref": "#/definitions/State"
+    }
+  },
+  "definitions": {
+    "State": {
+      "type": "object",
+      "properties": {
+        "registers": {
+          "description": "Expected register values",
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer"
+          }
+        },
+        "floatRegisters": {
+          "description": "Expected floating register values",
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer"
+          }
+        },
+        "memory": {
+          "description": "Expected memory values",
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer"
+          }
+        },
+        "display": {
+          "description": "Expected display output",
+          "type": "string"
+        }
+      }
+    }
+  }
+}

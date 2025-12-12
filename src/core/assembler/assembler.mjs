@@ -49,6 +49,7 @@ export function setLibraryInstructions(instructions_) {
     libraryInstructions.splice(0, libraryInstructions.length, ...instructions_);
 }
 
+/** @type {import("./assembler.d.ts").InstructionTagMap} */
 export let tag_instructions = {};
 
 export function set_tag_instructions(tag_instructions_) {

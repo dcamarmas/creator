@@ -44,6 +44,7 @@ type Register = {
     value: bigint;
     default_value: bigint;
     properties: string[];
+    type: string;
 };
 
 type InstructionField = {
