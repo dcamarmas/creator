@@ -20,7 +20,8 @@
 import humanizeDuration from "humanize-duration";
 
 import { creator_ga } from "@/core/utils/creator_ga.mjs";
-import { loadArchitecture } from "@/core/core.mjs";
+import { architecture, loadArchitecture } from "@/core/core.mjs";
+import { initCAPI } from "@/core/capi/initCAPI.mts";
 import { console_log as clog } from "@/core/utils/creator_logger.mjs";
 import example_set from "../../examples/example_set.json" with { type: "json" };
 
@@ -131,6 +132,10 @@ export async function loadDefaultArchitecture(arch, root = document.app) {
             return;
         }
 
+        // Initialize CAPI with the plugin name from the loaded architecture
+        const pluginName = architecture.config.plugin;
+        initCAPI(pluginName);
+
         // remove schema comment
         cfg = cfg.replace(/^# yaml-language-server: \$schema=.+\n/, "");
 
@@ -169,6 +174,10 @@ export function loadCustomArchitecture(arch, root = document.app) {
 
         return;
     }
+
+    // Initialize CAPI with the plugin name from the loaded architecture
+    const pluginName = architecture.config.plugin;
+    initCAPI(pluginName);
 
     // store code to be edited
     root.arch_code = arch.definition;
@@ -250,11 +259,6 @@ export async function loadExample(
         // assembly view, when we should go to simulator view
         root.creator_mode = "assembly";
 
-        show_notification(
-            `Loaded example '${set_name}-${example_id}'`,
-            "success",
-            root,
-        );
     } catch (_error) {
         show_notification(`'${set_name}' set not found`, "danger", root);
     }
