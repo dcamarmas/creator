@@ -176,15 +176,13 @@ export default defineComponent({
   vertical-align: middle;
 }
 
-@media (prefers-color-scheme: dark) {
-  .backup-details {
-    background-color: #212529;
-    border-color: #495057;
-  }
+[data-bs-theme="dark"] .backup-details {
+  background-color: #212529;
+  border-color: #495057;
+}
 
-  .backup-arch-name {
-    background-color: #343a40;
-    color: #dee2e6;
-  }
+[data-bs-theme="dark"] .backup-arch-name {
+  background-color: #343a40;
+  color: #dee2e6;
 }
 </style>

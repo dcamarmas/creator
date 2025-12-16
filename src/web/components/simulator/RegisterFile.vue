@@ -482,7 +482,7 @@ export default defineComponent({
 }
 
 /* Dark theme support */
-@media (prefers-color-scheme: dark) {
+[data-bs-theme="dark"] {
   .bank-header:hover {
     background-color: color-mix(in srgb, currentColor 15%, transparent);
   }
@@ -491,51 +491,6 @@ export default defineComponent({
     background-color: color-mix(in srgb, currentColor 20%, transparent);
   }
 
-  .viz-dropdown-toggle {
-    color: rgba(255, 255, 255, 0.9);
-    background-color: rgba(255, 255, 255, 0.1);
-  }
-
-  .viz-dropdown-toggle:hover {
-    background-color: rgba(255, 255, 255, 0.15);
-  }
-
-  .viz-dropdown-toggle:active,
-  .viz-dropdown-toggle.is-open {
-    background-color: rgba(255, 255, 255, 0.2);
-  }
-
-  .viz-dropdown-toggle:focus-visible {
-    outline-color: rgba(255, 255, 255, 0.5);
-  }
-
-  .viz-dropdown-menu {
-    background: #2d2d2d;
-    border-color: rgba(255, 255, 255, 0.1);
-    box-shadow:
-      0 2px 8px rgba(0, 0, 0, 0.3),
-      0 0 0 1px rgba(255, 255, 255, 0.1);
-  }
-
-  .viz-dropdown-item {
-    color: rgba(255, 255, 255, 0.9);
-  }
-
-  .viz-dropdown-item:hover {
-    background-color: rgba(255, 255, 255, 0.08);
-  }
-
-  .viz-dropdown-item:active {
-    background-color: rgba(255, 255, 255, 0.12);
-  }
-
-  .viz-dropdown-item.is-active {
-    background-color: rgba(99, 179, 237, 0.2);
-    color: #63b3ed;
-  }
-}
-
-[data-bs-theme="dark"] {
   .viz-dropdown-toggle {
     color: rgba(255, 255, 255, 0.9);
     background-color: rgba(255, 255, 255, 0.1);
