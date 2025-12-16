@@ -107,6 +107,15 @@ export default defineComponent({
       // Update the specific register component
       const refs = this.$refs[`reg${register.name[0]}`] as any;
       refs?.at?.(0)?.refresh();
+
+      // If the space view modal is showing this register, refresh it
+      if (
+        this.spaceItem &&
+        this.spaceItem.indexComp === indexComp &&
+        this.spaceItem.indexElem === indexElem
+      ) {
+        refs?.at?.(0)?.showDetails();
+      }
     },
 
     onRegistersReset() {

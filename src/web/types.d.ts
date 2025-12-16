@@ -29,6 +29,8 @@ type RegisterDetailsItem = {
     char: string;
     ieee32: string;
     ieee64: string;
+    indexComp: number;
+    indexElem: number;
 };
 
 type AvailableArch = {

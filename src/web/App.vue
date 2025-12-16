@@ -265,7 +265,7 @@ export default {
       // we must store this data in the root, bc it resets when re-mounting a
       // component (in this case, RegisterFile)
       data_mode: "int_registers",
-      reg_name_representation: "alias",
+      reg_name_representation: "all",
       memory_segment: "data",
 
       // Stack

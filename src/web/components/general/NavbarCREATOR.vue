@@ -446,10 +446,6 @@ export default defineComponent({
           <font-awesome-icon :icon="['fas', 'download']" class="me-2" /> Save
           As...
         </b-dropdown-item>
-        <b-dropdown-item v-b-modal.examples-assembly>
-          <font-awesome-icon :icon="['fas', 'file-lines']" class="me-2" />
-          Examples...
-        </b-dropdown-item>
         <b-dropdown-item v-b-modal.make_uri>
           <font-awesome-icon :icon="['fas', 'link']" class="me-2" /> Get code as
           URI...
@@ -538,10 +534,25 @@ export default defineComponent({
         @mouseenter="handleDropdownHover('helpDropdown')"
       >
         <b-dropdown-item
-          href="https://creatorsim.github.io/"
+          v-if="creator_mode === 'assembly'"
+          v-b-modal.examples-assembly
+        >
+          <font-awesome-icon :icon="['fas', 'file-lines']" class="me-2" />
+          Examples...
+        </b-dropdown-item>
+        <b-dropdown-item
+          v-if="creator_mode === 'simulator'"
+          v-b-modal.examples-simulator
+        >
+          <font-awesome-icon :icon="['fas', 'file-lines']" class="me-2" />
+          Examples...
+        </b-dropdown-item>
+        <b-dropdown-divider v-if="creator_mode === 'assembly' || creator_mode === 'simulator'" />
+        <b-dropdown-item
+          href="https://creatorsim.github.io/creator-wiki"
           target="_blank"
         >
-          <font-awesome-icon :icon="['fas', 'circle-question']" class="me-2" /> Help
+          <font-awesome-icon :icon="['fas', 'circle-question']" class="me-2" /> CREATOR Help
         </b-dropdown-item>
         <b-dropdown-item
           v-if="architectureGuide"
@@ -549,11 +560,6 @@ export default defineComponent({
           target="_blank"
         >
           <font-awesome-icon :icon="['fas', 'file-pdf']" class="me-2" /> {{ architecture_name }} Guide
-        </b-dropdown-item>
-        <b-dropdown-divider />
-        <b-dropdown-item v-b-modal.examples-simulator>
-          <font-awesome-icon :icon="['fas', 'file-lines']" class="me-2" />
-          Examples...
         </b-dropdown-item>
       </b-nav-item-dropdown>
 

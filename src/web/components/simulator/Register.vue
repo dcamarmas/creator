@@ -129,6 +129,8 @@ export default defineComponent({
         char: this.show_value("char"),
         ieee32: this.show_value("ieee32"),
         ieee64: this.show_value("ieee64"),
+        indexComp: this.indexComp,
+        indexElem: this.indexElem,
       });
       creator_ga("data", "data.view", "data.view.registers_details");
     },

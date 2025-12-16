@@ -17,7 +17,8 @@ You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <script setup lang="ts">
-import authors from "@/web/assets/authors.json";
+import { ref, onMounted } from "vue";
+import yaml from "js-yaml";
 import CardAuthor from "./CardAuthor.vue";
 
 interface Props {
@@ -31,6 +32,28 @@ const contactMail = "creator.arcos.inf.uc3m.es@gmail.com";
 const projectVersion = "6.0";
 const projectLicense = "LGPL-2.1";
 const repositoryUrl = "https://github.com/creatorsim/creator";
+
+const authors = ref<Record<string, any>>({});
+const contributors = ref<any[]>([]);
+
+onMounted(async () => {
+  try {
+    const [authorsResponse, contributorsResponse] = await Promise.all([
+      fetch("https://creatorsim.github.io/web-beta/content/authors.yml"),
+      fetch("https://creatorsim.github.io/web-beta/content/contributors.yml"),
+    ]);
+
+    const authorsYaml = await authorsResponse.text();
+    const contributorsYaml = await contributorsResponse.text();
+
+    authors.value = yaml.load(authorsYaml) as Record<string, any>;
+    contributors.value = yaml.load(contributorsYaml) as any[];
+  } catch (error) {
+    console.error("Error loading authors or contributors:", error);
+    authors.value = {};
+    contributors.value = [];
+  }
+});
 </script>
 
 <template>
@@ -75,42 +98,148 @@ const repositoryUrl = "https://github.com/creatorsim/creator";
       <div class="section-header mb-3">
         <h5 class="text-center mb-1">
           <font-awesome-icon :icon="['fas', 'users']" class="me-2" />
-          Development Team
+          Authors
         </h5>
+        <p class="text-center text-muted small mb-0">
+          Meet the team behind CREATOR
+        </p>
       </div>
       <b-row class="g-3">
         <b-col
-          v-for="author in authors"
-          :key="author.id"
+          v-for="[id, author] in Object.entries(authors)"
+          :key="id"
           cols="12"
           sm="6"
-          lg="3"
-          class="d-flex author-col"
+          lg="4"
+          class="d-flex"
         >
-          <!-- Mobile: horizontal layout -->
-          <CardAuthor
-            :img-src="`img/authors/${author.id}.webp`"
-            :img-alt="`author_${author.id}`"
-            :full-name="author.name"
-            :linkedin="author.linkedin"
-            :rgate="author.rgate"
-            :github="author.github"
-            :dark="dark"
-            :horizontal="true"
-            class="w-100 d-sm-none"
-          />
-          <!-- Tablet/Desktop: vertical layout -->
-          <CardAuthor
-            :img-src="`img/authors/${author.id}.webp`"
-            :img-alt="`author_${author.id}`"
-            :full-name="author.name"
-            :linkedin="author.linkedin"
-            :rgate="author.rgate"
-            :github="author.github"
-            :dark="dark"
-            :horizontal="false"
-            class="w-100 d-none d-sm-block"
-          />
+          <b-card
+            class="author-card w-100 text-center shadow-sm hover-card"
+            :class="{ 'dark-card': dark }"
+          >
+            <b-img
+              :src="`img/authors/${id}.webp`"
+              :alt="author.name"
+              class="author-avatar mx-auto mb-3"
+            />
+            <h6 class="mb-1 fw-semibold">{{ author.name }}</h6>
+            <p class="text-muted small mb-2">{{ author.affiliation }}</p>
+            <div class="d-flex justify-content-center gap-3">
+              <b-link
+                v-if="author.links?.github"
+                :href="`https://github.com/${author.links.github}`"
+                target="_blank"
+                class="social-link"
+              >
+                <font-awesome-icon :icon="['fab', 'github']" />
+              </b-link>
+              <b-link
+                v-if="author.links?.researchgate"
+                :href="`https://www.researchgate.net/profile/${author.links.researchgate}`"
+                target="_blank"
+                class="social-link"
+              >
+                <font-awesome-icon :icon="['fab', 'researchgate']" />
+              </b-link>
+              <b-link
+                v-if="author.links?.linkedin"
+                :href="`https://www.linkedin.com/in/${author.links.linkedin}`"
+                target="_blank"
+                class="social-link"
+              >
+                <font-awesome-icon :icon="['fab', 'linkedin']" />
+              </b-link>
+              <b-link
+                v-if="author.links?.website"
+                :href="author.links.website"
+                target="_blank"
+                class="social-link"
+              >
+                <font-awesome-icon :icon="['fas', 'globe']" />
+              </b-link>
+            </div>
+          </b-card>
+        </b-col>
+      </b-row>
+    </section>
+
+    <hr class="my-4" />
+
+    <!-- Contributors Section -->
+
+    <section class="contributors-section mb-4">
+      <div class="section-header mb-3">
+        <h5 class="text-center mb-1">
+          <font-awesome-icon :icon="['fas', 'code']" class="me-2" />
+          Contributors
+        </h5>
+        <p class="text-center text-muted small mb-0">
+          Additional contributors to the CREATOR project
+        </p>
+      </div>
+      <b-row class="g-3">
+        <b-col
+          v-for="contributor in contributors"
+          :key="contributor.name"
+          cols="12"
+          sm="6"
+          lg="4"
+          class="d-flex"
+        >
+          <b-card
+            class="contributor-card w-100 text-center shadow-sm hover-card"
+            :class="{ 'dark-card': dark }"
+          >
+            <div class="contributor-icon mb-3">🧑‍💻</div>
+            <h6 class="mb-2 fw-semibold">{{ contributor.name }}</h6>
+            <div v-if="contributor.versions" class="mb-2">
+              <b-badge
+                v-for="version in contributor.versions"
+                :key="version"
+                variant="primary"
+                pill
+                class="me-1 mb-1"
+              >
+                <font-awesome-icon :icon="['fas', 'tag']" class="me-1" />
+                {{ version }}
+              </b-badge>
+            </div>
+            <p class="text-muted small mb-3">{{ contributor.description }}</p>
+            <div class="d-flex justify-content-center gap-3">
+              <b-link
+                v-if="contributor.links?.github"
+                :href="`https://github.com/${contributor.links.github}`"
+                target="_blank"
+                class="social-link"
+              >
+                <font-awesome-icon :icon="['fab', 'github']" />
+              </b-link>
+              <b-link
+                v-if="contributor.links?.researchgate"
+                :href="`https://www.researchgate.net/profile/${contributor.links.researchgate}`"
+                target="_blank"
+                class="social-link"
+              >
+                <font-awesome-icon :icon="['fab', 'researchgate']" />
+              </b-link>
+              <b-link
+                v-if="contributor.links?.linkedin"
+                :href="`https://www.linkedin.com/in/${contributor.links.linkedin}`"
+                target="_blank"
+                class="social-link"
+              >
+                <font-awesome-icon :icon="['fab', 'linkedin']" />
+              </b-link>
+              <b-link
+                v-if="contributor.links?.website"
+                :href="contributor.links.website"
+                target="_blank"
+                class="social-link"
+              >
+                <font-awesome-icon :icon="['fas', 'globe']" />
+              </b-link>
+            </div>
+          </b-card>
         </b-col>
       </b-row>
     </section>
@@ -149,10 +278,6 @@ const repositoryUrl = "https://github.com/creatorsim/creator";
           <font-awesome-icon :icon="['fas', 'building-columns']" class="me-2" />
           Affiliations
         </h5>
-
-        <p class="text-center text-muted small mb-3">
-          Developed at Universidad Carlos III de Madrid
-        </p>
       </div>
       <b-card class="shadow-sm">
         <b-row align-v="center" align-h="center" class="g-4">
@@ -163,14 +288,13 @@ const repositoryUrl = "https://github.com/creatorsim/creator";
               class="d-block"
             >
               <b-img
-                src="@/web/assets/img/arcos.svg"
+                src="@/web/assets/img/arcos.png"
                 alt="ARCOS Research Group"
                 fluid
                 class="affiliation-logo"
                 style="max-height: 80px"
               />
             </b-link>
-            <p class="text-muted small mt-2 mb-0">ARCOS Research Group</p>
           </b-col>
           <b-col cols="12" md="7" class="text-center">
             <b-link
@@ -186,9 +310,6 @@ const repositoryUrl = "https://github.com/creatorsim/creator";
                 style="max-height: 80px"
               />
             </b-link>
-            <p class="text-muted small mt-2 mb-0">
-              Computer Science & Engineering Department
-            </p>
           </b-col>
         </b-row>
       </b-card>
@@ -230,9 +351,53 @@ const repositoryUrl = "https://github.com/creatorsim/creator";
   transition: transform 0.2s ease;
 }
 
-// Cards
-.card {
+// Cards - Author and Contributor cards
+.author-card,
+.contributor-card {
   border: 1px solid var(--bs-border-color);
+  transition:
+    border-color 0.3s ease,
+    box-shadow 0.3s ease,
+    transform 0.2s ease;
+}
+
+.hover-card:hover {
+  border-color: var(--bs-primary);
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+// Author avatar
+.author-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.author-card:hover .author-avatar {
+  transform: scale(1.1);
+}
+
+// Contributor icon
+.contributor-icon {
+  font-size: 2.5rem;
+  transition: transform 0.3s ease;
+}
+
+.contributor-card:hover .contributor-icon {
+  transform: scale(1.1);
+}
+
+// Social links
+.social-link {
+  color: var(--bs-secondary);
+  transition: color 0.2s ease;
+  font-size: 1.1rem;
+
+  &:hover {
+    color: var(--bs-primary);
+  }
 }
 
 // Affiliations
@@ -248,19 +413,26 @@ const repositoryUrl = "https://github.com/creatorsim/creator";
     filter: brightness(0) invert(1);
   }
 
-  .card {
+  .dark-card {
     background-color: var(--bs-dark);
     border-color: var(--bs-gray-700);
+  }
+
+  .hover-card:hover {
+    border-color: var(--bs-info);
   }
 
   .project-header h3 {
     color: var(--bs-info);
   }
-}
 
-// Team section
-.author-col {
-  min-height: fit-content;
+  .social-link {
+    color: var(--bs-gray-400);
+
+    &:hover {
+      color: var(--bs-info);
+    }
+  }
 }
 
 // Responsive adjustments
@@ -273,16 +445,17 @@ const repositoryUrl = "https://github.com/creatorsim/creator";
     max-height: 60px !important;
   }
 
-  // Adjust team section for horizontal cards
-  .team-section {
-    .author-col {
-      margin-bottom: 0.5rem;
-    }
+  .author-avatar {
+    width: 60px;
+    height: 60px;
+  }
+
+  .contributor-icon {
+    font-size: 2rem;
   }
 }
 
 @media (max-width: 576px) {
-  // Ensure horizontal cards display properly on small screens
   .modal-xl {
     max-width: 100%;
   }
