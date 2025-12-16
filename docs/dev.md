@@ -158,6 +158,7 @@ We'll need to [launch the application in DEV mode](#compile-and-hot-reload-for-d
 - [MDN Web Docs](https://developer.mozilla.org/)
 - [The TypeScript Handbook](https://www.typescriptlang.org/docs/handbook/intro.html)
 - [D. Camarmas et al. - CREATOR: Simulador didáctico y genérico para la programación en ensamblador](https://zenodo.org/records/5130302)
+- [D. Camarmas - Diseño y desarrollo de un simulador genérico para programación en ensamblador](https://e-archivo.uc3m.es/entities/publication/ccca4c06-de17-48f9-9ff8-04bc66c54a74)
 
 
 ### Web

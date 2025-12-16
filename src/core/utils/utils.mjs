@@ -183,7 +183,7 @@ export function uint_to_float64(value0, value1) {
 /**
  * Converts a 64-bit float to two 32-bit unsigned integers.
  * @param {number} value - The 64-bit float to convert
- * @returns {number[]} Array containing [lower_32_bits, higher_32_bits]
+ * @returns {[number, number]} Array containing [lower_32_bits, higher_32_bits]
  */
 export function float64_to_uint(value) {
     const buf = new ArrayBuffer(8);

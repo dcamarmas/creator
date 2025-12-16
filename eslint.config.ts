@@ -64,7 +64,7 @@ export default defineConfigWithVueTs(
       "default-case": "error",
       "default-case-last": "warn",
       "dot-notation": "error",
-      "max-params": ["warn", 5],
+      "max-params": ["warn", 6],
       "no-div-regex": "error",
       "no-implicit-coercion": "error",
       "no-invalid-this": "error",

@@ -61,6 +61,7 @@ export const INTERRUPTS = {
         );
     },
 
-    setHighlight: () => (guiVariables.keep_highlighted = -1n),
+    setHighlight: () =>
+        (guiVariables.keep_highlighted = guiVariables.previous_PC),
     clearHighlight: () => (guiVariables.keep_highlighted = -1n),
 };

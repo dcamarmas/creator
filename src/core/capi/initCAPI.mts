@@ -19,10 +19,9 @@
 
 import { MEM } from "./memory.mts";
 import { SYSCALL } from "./syscall.mts";
-import { VALIDATION } from "./validation.mjs";
-import { CHECK_STACK } from "./checkStack.mts";
-import { DRAW_STACK } from "./drawStack.mts";
-import { FP } from "./fp.mjs";
+import { VALIDATION } from "./validation.mts";
+import { STACK } from "./stack.mts";
+import { FP } from "./fp.mts";
 import { ARCH as RISCV } from "./arch/riscv.mjs";
 import { ARCH as Z80 } from "./arch/z80.mjs";
 import { ARCH as MIPS } from "./arch/mips.mjs";
@@ -33,8 +32,7 @@ export interface CAPIType {
     MEM: typeof MEM;
     SYSCALL: typeof SYSCALL;
     VALIDATION: typeof VALIDATION;
-    CHECK_STACK: typeof CHECK_STACK;
-    DRAW_STACK: typeof DRAW_STACK;
+    STACK: typeof STACK;
     FP: typeof FP;
     ARCH: unknown; // The architecture plugin will be loaded here
     REG: typeof REG;
@@ -67,8 +65,7 @@ export function initCAPI(pluginName?: string) {
         MEM,
         SYSCALL,
         VALIDATION,
-        CHECK_STACK,
-        DRAW_STACK,
+        STACK,
         FP,
         ARCH: ARCH_PLUGIN,
         REG,

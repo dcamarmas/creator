@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=schema.json
+# yaml-language-server: $schema=../docs/schema/architecture.json
 version: 2.0.0
 
 config:
@@ -1323,8 +1323,7 @@ instructions:
       definition: |
         if (CAPI.FP.uint2int(registers[rs]) >= 0) {
           registers.PC = registers.PC - 4n + imm;
-          CAPI.CHECK_STACK.begin(registers[rs]);
-          CAPI.DRAW_STACK.begin(registers[rs]);
+          CAPI.STACK.beginFrame(registers[rs]);
         }
 
     - name: bgtz
@@ -2215,7 +2214,7 @@ instructions:
       definition: |-
         registers.ra = registers.PC;
         registers.PC = addr;
-        CAPI.CHECK_STACK.begin(addr); CAPI.DRAW_STACK.begin(addr);
+        CAPI.STACK.beginFrame();
     - name: jalr
       template: Custom
       type: Function call
@@ -2252,7 +2251,7 @@ instructions:
       definition: |-
         registers[rd] = registers.PC;
         registers.PC = registers[rs];
-        CAPI.CHECK_STACK.begin(registers[rs]); CAPI.DRAW_STACK.begin(registers[rs]);
+        CAPI.STACK.beginFrame();
     - name: jr
       template: Custom
       type: Unconditional bifurcation
@@ -2281,7 +2280,7 @@ instructions:
           value: "001000"
       definition: |-
         registers.PC = registers[rs];
-        CAPI.CHECK_STACK.end(); CAPI.DRAW_STACK.end();
+        CAPI.STACK.endFrame();
     - name: lb
       template: Custom
       type: Memory access

@@ -17,31 +17,71 @@
  * along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getPC, REGISTERS, stackTracker } from "../core.mjs";
+import { architecture, getPC, REGISTERS, stackTracker } from "../core.mjs";
 import { tag_instructions } from "../assembler/assembler.mjs";
+import { crex_show_notification } from "../../web/utils.mjs";
+import { sentinel } from "../sentinel/sentinel.mjs";
+import { creator_ga } from "../utils/creator_ga.mjs";
+import { coreEvents, CoreEventTypes } from "../events.mts";
 
-export const DRAW_STACK = {
-    begin(addr?: bigint) {
+export const STACK = {
+    beginFrame(addr?: bigint) {
         let function_name = "";
 
         if (addr === undefined) {
             addr = getPC();
         }
 
-        // 1.- get function name
+        // get function name
         if (typeof REGISTERS[0] !== "undefined") {
             if (typeof tag_instructions[Number(addr)] === "undefined")
                 function_name = "0x" + addr.toString(16);
             else function_name = tag_instructions[Number(addr)]!.tag;
         }
 
-        // 2.- callstack_enter
+        // stack tracker
         stackTracker.newFrame(function_name);
+
+        // sentinel
+        if (!architecture.config.passing_convention) {
+            sentinel.enter(function_name);
+        }
     },
-    end() {
-        // pop both frames
+    endFrame() {
+        // stack tracker: pop both frames
         stackTracker.popFrame();
         stackTracker.popFrame();
+
+        // sentinel
+        if (!architecture.config.passing_convention) {
+            return;
+        }
+
+        // get function name
+        const currentFunction = sentinel.getCurrentFunction() || "unknown";
+
+        const ret = sentinel.leave();
+
+        if (ret.ok) {
+            return;
+        }
+
+        // emit event for GUI
+        coreEvents.emit(CoreEventTypes.SENTINEL_ERROR, {
+            functionName: currentFunction,
+            message: ret.msg,
+            ok: false,
+        });
+
+        // Google Analytics
+        creator_ga(
+            "execute",
+            "execute.exception",
+            "execute.exception.protection_jrra" + ret.msg,
+        );
+
+        // user notification
+        crex_show_notification(ret.msg, "warning");
     },
 
     // Add a hint for a specific memory address

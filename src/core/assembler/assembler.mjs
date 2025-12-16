@@ -17,7 +17,7 @@
  * along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { raise } from "../capi/validation.mjs";
+import { raise } from "../capi/validation.mts";
 import { main_memory, status, architecture } from "../core.mjs";
 import { MAXNWORDS } from "../utils/architectureProcessor.mjs";
 import { decode } from "../executor/decoder.mjs";

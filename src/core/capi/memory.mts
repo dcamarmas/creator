@@ -19,7 +19,7 @@
 
 import { main_memory, stackTracker, BYTESIZE } from "../core.mjs";
 import { exit } from "../executor/executor.mjs";
-import { raise } from "./validation.mjs";
+import { raise } from "./validation.mts";
 import { crex_findReg } from "../register/registerLookup.mjs";
 import { sentinel } from "../sentinel/sentinel.mjs";
 import { checkDeviceAddr, devices } from "../executor/devices.mts";
@@ -139,7 +139,7 @@ function readValueFromMemory(address: bigint, bytes: number): bigint {
             if (byteIndex < wordSize) {
                 val =
                     (val << BigInt(memory.getBitsPerByte())) |
-                    BigInt(word[byteIndex]);
+                    BigInt(word[byteIndex]!);
             }
         }
         return val;
@@ -157,7 +157,7 @@ function readValueFromMemory(address: bigint, bytes: number): bigint {
             const startIdx = wordSize - bytesThisWord;
             for (let i = startIdx; i < wordSize; i++) {
                 val =
-                    (val << BigInt(memory.getBitsPerByte())) | BigInt(word[i]);
+                    (val << BigInt(memory.getBitsPerByte())) | BigInt(word[i]!);
             }
 
             currentAddr += BigInt(wordSize);
@@ -178,10 +178,10 @@ export const MEM = {
         address: bigint,
         bytes: number,
         value: bigint,
-        reg_name: string,
-        hint: string,
+        reg_name?: string,
+        hint?: string,
         noSegFault: boolean = true,
-    ) {
+    ): void {
         // get memory
         const deviceID = checkDeviceAddr(Number(address));
         const memory =
@@ -256,9 +256,9 @@ export const MEM = {
     read(
         address: bigint,
         bytes: number,
-        reg_name: string,
+        reg_name?: string,
         noSegFault: boolean = true,
-    ) {
+    ): bigint {
         // get memory
         const deviceID = checkDeviceAddr(Number(address));
         const memory =
@@ -303,19 +303,23 @@ export const MEM = {
         // Remove the call to undefined function
         const ret = val;
 
-        const find_ret = crex_findReg(reg_name);
-        if (find_ret.match === 0) {
-            return ret;
+        // write info about register
+        if (reg_name) {
+            const find_ret = crex_findReg(reg_name);
+            if (find_ret.match === 0) {
+                return ret;
+            }
+
+            const i = find_ret.indexComp;
+            const j = find_ret.indexElem;
+
+            sentinel.recordMemoryRead(i, j, address, bytes);
         }
 
-        const i = find_ret.indexComp;
-        const j = find_ret.indexElem;
-
-        sentinel.recordMemoryRead(i, j, address, bytes);
         return ret;
     },
 
-    alloc(_size: number): number {
+    alloc(bytes: number): number {
         // TODO
         raise("MEM.alloc is not implemented");
         return 0;

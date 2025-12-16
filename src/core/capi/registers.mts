@@ -25,7 +25,7 @@ import {
 } from "../register/registerOperations.mjs";
 
 export const REG = {
-    read: (name: string): bigint => {
+    read(name: string): bigint {
         const reg = crex_findReg(name);
 
         if (reg.match) {
@@ -35,7 +35,7 @@ export const REG = {
         throw new Error(`Register '${name}' not found.`);
     },
 
-    write: (value: bigint, name: string) => {
+    write(value: bigint, name: string) {
         const reg = crex_findReg(name);
         if (reg.match) {
             const nbits =

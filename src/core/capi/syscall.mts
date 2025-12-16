@@ -35,12 +35,15 @@ import type { Memory } from "../memory/Memory.mts";
 import { coreEvents, CoreEventTypes } from "../events.mts";
 
 export const SYSCALL = {
-    exit() {
+    exit(): void {
         creator_ga("execute", "execute.syscall", "execute.syscall.exit");
         return exit(false);
     },
 
-    print(value: number | bigint, type: string) {
+    print(
+        value: number | bigint,
+        type: "int32" | "float" | "double" | "char" | "string",
+    ): void {
         creator_ga(
             "execute",
             "execute.syscall",
@@ -60,7 +63,7 @@ export const SYSCALL = {
                 break;
             }
             case "char": {
-                const char_code = Number(value as bigint & 0xffn);
+                const char_code = Number(value);
                 display_print(String.fromCharCode(char_code));
                 break;
             }
@@ -81,14 +84,21 @@ export const SYSCALL = {
         }
     },
 
-    read(dest_reg_info: string, type: string, aux_info: string | null) {
+    read(
+        dest_reg_info: string,
+        type: "int32" | "float" | "double" | "char" | "string",
+        aux_info?: string,
+    ) {
         creator_ga(
             "execute",
             "execute.syscall",
             `execute.syscall.read.${type}`,
         );
 
-        if (typeof document !== "undefined" && document.app) {
+        if (
+            typeof document !== "undefined" &&
+            (document as unknown as { app: unknown }).app
+        ) {
             const element = document.getElementById("enter_keyboard");
             if (element) {
                 element.scrollIntoView();
@@ -112,7 +122,7 @@ export const SYSCALL = {
         }
 
         switch (type) {
-            case "int":
+            case "int32":
                 return keyboard_read(kbd_read_int, register);
             case "float":
                 return keyboard_read(kbd_read_float, register);
@@ -121,7 +131,7 @@ export const SYSCALL = {
             case "char":
                 return keyboard_read(kbd_read_char, register);
             case "string":
-                if (aux_info !== null) {
+                if (aux_info) {
                     const auxreg = crex_findReg(aux_info);
                     if (auxreg.match === 0) {
                         throw new Error(

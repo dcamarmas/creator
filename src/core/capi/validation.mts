@@ -17,18 +17,23 @@
  * along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { capi_uint2int } from "./fp.mjs";
+import { capi_uint2int } from "./fp.mts";
 
-export function raise(msg) {
+type Document = { app: { exception(msg: string): unknown } };
+
+export function raise(msg: string) {
     // TODO: make interrupt
-    if (typeof document !== "undefined" && document.app) {
-        document.app.exception(msg);
+    if (
+        typeof document !== "undefined" &&
+        (document as unknown as Document).app
+    ) {
+        (document as unknown as Document).app.exception(msg);
     } else {
         throw new Error(msg);
     }
 }
 
-export function isOverflow(op1, op2, res_u) {
+export function isOverflow(op1: bigint, op2: bigint, res_u: bigint) {
     const op1_u = capi_uint2int(op1);
     const op2_u = capi_uint2int(op2);
     res_u = capi_uint2int(res_u);
@@ -39,7 +44,7 @@ export function isOverflow(op1, op2, res_u) {
     );
 }
 
-export function isMisaligned(addr, type) {
+export function isMisaligned(addr: bigint, type: string) {
     return false;
 }
 

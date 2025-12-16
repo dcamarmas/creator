@@ -1603,8 +1603,7 @@ instructions:
       definition: |
         registers[rd] = registers.pc + 4n;
         registers.pc = (registers[rs1] + imm) & ~1n;
-        CAPI.CHECK_STACK.end();
-        CAPI.DRAW_STACK.end();
+        CAPI.STACK.endFrame();
       help: Jump to address and place return address in rd.
 
     - name: lb
@@ -1792,8 +1791,7 @@ instructions:
       definition: |
         registers[rd] = registers.pc + 4n;
         registers.pc += imm;
-        CAPI.CHECK_STACK.begin();
-        CAPI.DRAW_STACK.begin();
+        CAPI.STACK.beginFrame();
       help: Jump to address and place return address in rd.
 
     # R-type instructions
@@ -2035,8 +2033,7 @@ instructions:
           value: "0000000000000000000000000"
       definition: |
         CAPI.INTERRUPTS.create(InterruptType.EnvironmentCall);
-        CAPI.CHECK_STACK.begin();
-        CAPI.DRAW_STACK.begin();
+        CAPI.STACK.beginFrame();
       help: Make a request to the supporting execution environment. When
         executed in U-mode, S-mode, or M-mode, it generates an
         environment-call-from-U-mode exception, environment-call-from-S-mode
@@ -3683,7 +3680,7 @@ instructions:
       definition: |
         registers.pc = registers.mepc;
         CAPI.INTERRUPTS.globalClear();  // TODO: clear only pending interrupt
-        CAPI.DRAW_STACK.end();
+        CAPI.STACK.endFrame();
         CAPI.INTERRUPTS.setUserMode();
         CAPI.INTERRUPTS.clearHighlight();
       help: Return from traps in M-mode, and mret copies mpie into mie, then

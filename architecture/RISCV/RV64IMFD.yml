@@ -1535,7 +1535,7 @@ instructions:
       definition: |
         registers[rd] = registers["PC"] + 4n;
         registers["PC"] = (registers[rs1] + imm) & ~1n;
-        CAPI.CHECK_STACK.end(); CAPI.DRAW_STACK.end(registers["PC"]);
+        CAPI.STACK.endFrame();
       help: Jump to address and place return address in rd.
 
     - name: lb
@@ -1801,8 +1801,7 @@ instructions:
       definition: |
         registers[rd] = registers["PC"] + 4n;
         registers["PC"] = registers["PC"] + imm;
-        CAPI.CHECK_STACK.begin(registers["PC"] + imm);
-        CAPI.DRAW_STACK.begin(registers["PC"] + imm);
+        CAPI.STACK.beginFrame();
       help: Jump to address and place return address in rd.
 
     # R-type instructions

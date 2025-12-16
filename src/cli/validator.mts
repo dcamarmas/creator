@@ -21,7 +21,7 @@ import * as creator from "../core/core.mjs";
 import { step } from "../../src/core/executor/executor.mjs";
 import { crex_findReg } from "../../src/core/register/registerLookup.mjs";
 import { readRegister } from "../../src/core/register/registerOperations.mjs";
-import { raise } from "@/core/capi/validation.mjs";
+import { raise } from "@/core/capi/validation.mts";
 import { ARCH as RISCV } from "@/core/capi/arch/riscv.mjs";
 import { coreEvents, CoreEventTypes } from "@/core/events.mts";
 
