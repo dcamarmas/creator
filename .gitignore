@@ -37,3 +37,4 @@ out/
 vscode-extension/.vscode/*
 
 /creator-cli
+cli/node_modules

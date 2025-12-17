@@ -2146,7 +2146,7 @@ instructions:
       definition: |
         switch (registers["a7"]) {
           case 1n:
-            CAPI.SYSCALL.print(registers["a0"], 'int');
+            CAPI.SYSCALL.print(registers["a0"], 'int32');
             break;
           case 2n:
           case 3n:
@@ -2156,7 +2156,7 @@ instructions:
             CAPI.SYSCALL.print(registers["a0"], 'string');
             break;
           case 5n:
-            CAPI.SYSCALL.read('registers["a0"]', 'int');
+            CAPI.SYSCALL.read('registers["a0"]', 'int32');
             break;
           case 6n:
             CAPI.SYSCALL.read(fa0Value, 'float');

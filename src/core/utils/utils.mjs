@@ -438,3 +438,18 @@ export function* range(start, stop = undefined, step = 1) {
         start += step;
     }
 }
+
+/**
+ * Convert a number to an uppercase hexadecimal string.
+ *
+ * @param {number|bigint} value The number to convert
+ * @param {number} [padding=0] Padding, in bytes
+ *
+ * @returns {string} Uppercase hexadecimal string
+ */
+export function toHex(value, padding = 0) {
+    return value
+        .toString(16)
+        .padStart(padding * 2, "0")
+        .toUpperCase();
+}

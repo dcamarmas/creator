@@ -64,5 +64,5 @@ The Deno version of your assembler should:
 4.  Populate the internal structures as described above.
 5.  Clean up the temporary files.
 
-To add the newly created assembler to the system, the last step is to update the assembler map in the web and Deno modules. For the Deno version, you can add it to the `assembler_map` in `src/cli/creator6.mts`, and to the `assembler_map` in `rpc-server/server.mts`. For the web version, you can add it to the `assembler_map` in `src/core/assembler/web/web.mjs`.
+To add the newly created assembler to the system, the last step is to update the assembler map in the web and Deno modules. For the Deno version, you can add it to the `assembler_map` in `src/cli/creator-cli.mts`, and to the `assembler_map` in `rpc-server/server.mts`. For the web version, you can add it to the `assembler_map` in `src/core/assembler/web/web.mjs`.
 

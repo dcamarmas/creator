@@ -4098,7 +4098,7 @@ interrupts:
           CAPI.SYSCALL.print(registers.a0, 'string');
           break;
         case 5n:
-          CAPI.SYSCALL.read('a0', 'int');
+          CAPI.SYSCALL.read('a0', 'int32');
           break;
         case 6n:
           CAPI.SYSCALL.read('fa0', 'float');

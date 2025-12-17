@@ -133,7 +133,7 @@ We'll need to [launch the application in DEV mode](#compile-and-hot-reload-for-d
     "type": "node",
     "request": "launch",
     "name": "Debug CLI",
-    "program": "${workspaceFolder}/src/cli/creator6.mts",
+    "program": "${workspaceFolder}/src/cli/creator-cli.mts",
     "runtimeExecutable": "deno",
     "console": "integratedTerminal",
     "runtimeArgs": ["-A", "--unstable-node-globals", "--inspect-brk"],

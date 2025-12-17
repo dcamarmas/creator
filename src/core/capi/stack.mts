@@ -17,9 +17,9 @@
  * along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { architecture, getPC, REGISTERS, stackTracker } from "../core.mjs";
+import { architecture, REGISTERS, getPC, stackTracker } from "../core.mjs";
+import { crex_show_notification } from "../utils/notifications.mts";
 import { tag_instructions } from "../assembler/assembler.mjs";
-import { crex_show_notification } from "../../web/utils.mjs";
 import { sentinel } from "../sentinel/sentinel.mjs";
 import { creator_ga } from "../utils/creator_ga.mjs";
 import { coreEvents, CoreEventTypes } from "../events.mts";

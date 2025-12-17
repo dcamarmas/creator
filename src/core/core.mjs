@@ -58,8 +58,6 @@ export let backup_data_address;
 export let architecture = {};
 export let newArchitecture;
 
-/** @type {import("vue").ComponentPublicInstance}*/
-
 /** @type {import("./core.d.ts").Status} */
 export let status = {
     execution_init: 1,

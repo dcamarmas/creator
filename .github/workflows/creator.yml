@@ -63,13 +63,19 @@ jobs:
         uses: pyTooling/download-artifact@v5
         with:
           name: cli-artifact
-      - name: Install dependencies
-        uses: ./.github/actions/dependencies
+      - name: Install CLI dependencies
+        uses: ./.github/actions/cli-dependencies
       - name: Build cli binaries
         env:
           PAGE: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
+          CREATOR_CHANNEL: nightly
+          CREATOR_COMMIT: ${{ github.sha }}
         run: |
-          bun run-p build:cli:windows build:cli:mac-x64 build:cli:mac-arm build:cli:linux-x64 build:cli:linux-arm
+          ./scripts/build-cli.sh -o creator-cli-windows -t x86_64-pc-windows-msvc
+          ./scripts/build-cli.sh -o creator-cli-mac-x64 -t x86_64-apple-darwin
+          ./scripts/build-cli.sh -o creator-cli-mac-arm -t aarch64-apple-darwin
+          ./scripts/build-cli.sh -o creator-cli-linux-x64 -t x86_64-unknown-linux-gnu
+          ./scripts/build-cli.sh -o creator-cli-linux-arm -t aarch64-unknown-linux-gnu
           sed --in-place --expression 's\^# yaml-language-server: $schema=.*.json\# yaml-language-server: $schema='"$PAGE"'/schema/architecture.json\' architecture/*.yml architecture/**/*.yml
           zip --recurse-paths --include '*.yml' --junk-paths architectures.zip architecture/
       - name: Upload cli binaries artifact

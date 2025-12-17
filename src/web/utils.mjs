@@ -25,6 +25,14 @@ import { initCAPI } from "@/core/capi/initCAPI.mts";
 import { console_log as clog } from "@/core/utils/creator_logger.mjs";
 import example_set from "../../examples/example_set.json" with { type: "json" };
 
+// Re-export from core for backward compatibility
+export {
+    show_notification,
+    crex_show_notification,
+    notifications,
+} from "@/core/utils/notifications.mts";
+export { toHex } from "@/core/utils/utils.mjs";
+
 /*Stop the transmission of events to children*/
 export function destroyClickedElement(event) {
     document.body.removeChild(event.target);
@@ -34,48 +42,6 @@ export function console_log(msg, level = "INFO") {
     if (document.app.c_debug) {
         clog(msg, level);
     }
-}
-
-// eslint-disable-next-line prefer-const
-export let notifications = [];
-
-/**
- * Shows a notification on the UI and.
- *
- * @param {string} msg Notification message.
- * @param {string} type Type of notification, one of `'success'`, `'warning'` ,
- * `'info'` or `'danger'`.
- * @param {Object} [root] Root Vue component (App)
- *
- */
-export function show_notification(msg, type, root = document.app) {
-    // show notification
-    root.createToast({
-        props: {
-            title: " ", // TODO: use fontawesome icons here
-            body: msg,
-            variant: type,
-            position: "bottom-end",
-            value: root.notification_time,
-            // TODO: don't dismiss toast when type is danger
-        },
-    });
-
-    // add notification to the notification summary
-    const date = new Date();
-    notifications.push({
-        mess: msg,
-        color: type,
-        time: date.toLocaleTimeString("es-ES"),
-        date: date.toLocaleDateString("es-ES"),
-    });
-
-    return true;
-}
-
-export function crex_show_notification(msg, level) {
-    if (typeof window !== "undefined") show_notification(msg, level);
-    else clog(level.toUpperCase() + ": " + msg, "INFO");
 }
 
 /*
@@ -366,20 +332,4 @@ export function downloadFile(url, filename, notify = false) {
             }
         })
         .catch(() => show_notification("Error downloading file", "error"));
-}
-
-/**
- *
- * Transforms a value into a hextring.
- *
- * @param {number | bigint} value
- * @param {number} [padding=0] Padding, in bytes
- *
- * @returns {string}
- */
-export function toHex(value, padding = 0) {
-    return value
-        .toString(16)
-        .padStart(padding * 2, "0")
-        .toUpperCase();
 }

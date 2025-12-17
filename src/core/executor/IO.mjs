@@ -25,7 +25,7 @@ import {
 import process from "node:process";
 import { packExecute } from "../utils/utils.mjs";
 import os from "node:os";
-import { show_notification } from "@/web/utils.mjs";
+import { show_notification } from "../utils/notifications.mts";
 import { instructions } from "../assembler/assembler.mjs";
 import { coreEvents, CoreEventTypes } from "../events.mts";
 

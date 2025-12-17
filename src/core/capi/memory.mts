@@ -24,7 +24,7 @@ import { crex_findReg } from "../register/registerLookup.mjs";
 import { sentinel } from "../sentinel/sentinel.mjs";
 import { checkDeviceAddr, devices } from "../executor/devices.mts";
 import type { Memory } from "../memory/Memory.mts";
-import { toHex } from "@/web/utils.mjs";
+import { toHex } from "../utils/utils.mjs";
 
 /*
  *  CREATOR instruction description API:

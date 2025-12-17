@@ -20,7 +20,8 @@
 import * as creator from "../core/core.mjs";
 import readline from "node:readline";
 import process from "node:process";
-import { clearConsole, colorText, processCommand } from "./creator6.mts";
+import { clearConsole, colorText } from "./display.mts";
+import { processCommand } from "./interactive.mts";
 
 // Function to wrap text at specified width
 function wrapText(text: string, maxWidth: number = 80): string {

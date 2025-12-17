@@ -1,0 +1,14 @@
+{
+  "name": "creator-cli-deps",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Minimal dependencies for CREATOR CLI build",
+  "type": "module",
+  "dependencies": {
+    "ajv": "^8.17.1",
+    "ansicolor": "^2.0.3",
+    "js-yaml": "^4.1.0",
+    "mitt": "^3.0.1",
+    "yargs": "^18.0.0"
+  }
+}

@@ -17,7 +17,7 @@
  * along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { CONFIG } from "./creator6.mts";
+import { cliState } from "./state.mts";
 
 // eslint-disable-next-line max-lines-per-function
 export function displayHelp() {
@@ -49,9 +49,6 @@ export function displayHelp() {
     );
     console.log(
         "  mem <address> [count]                        - Display memory (count in bytes)",
-    );
-    console.log(
-        "  insn                                         - Show current instruction",
     );
     console.log(
         "  list                                         - Show all loaded instructions",
@@ -86,7 +83,7 @@ export function displayHelp() {
     );
 
     // Display keyboard shortcuts from configuration if they are enabled
-    if (CONFIG.settings.keyboard_shortcuts) {
+    if (cliState.config.settings.keyboard_shortcuts) {
         console.log("\nKeyboard shortcuts (when enabled):");
 
         // Create a map to display shortcuts in a more user-friendly way
@@ -120,7 +117,7 @@ export function displayHelp() {
         };
 
         // Format the shortcuts two per line
-        const shortcuts = CONFIG.shortcuts || {};
+        const shortcuts = cliState.config.shortcuts || {};
         const shortcutEntries = Object.entries(shortcuts);
 
         for (let i = 0; i < shortcutEntries.length; i += 2) {
