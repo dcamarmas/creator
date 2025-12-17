@@ -1,9 +1,9 @@
-[submodule "creatorDriver"]
-	path = gateway/creatorDriver
-	url = https://github.com/EUtrilla2002/creatorDriver.git
 [submodule "creator-assembler"]
 	path = creator-assembler
 	url = https://github.com/creatorsim/creator-assembler.git
-[submodule "OrangePiDriver"]
-	path = gateway/OrangePiDriver
-	url = https://github.com/EUtrilla2002/OrangePiDriver.git
+[submodule "creator-sbc-driver"]
+	path = gateway/creator-sbc-driver
+	url = https://github.com/creatorsim/creator-sbc-driver.git
+[submodule "creator-esp32-driver"]
+	path = gateway/creator-esp32-driver
+	url = https://github.com/creatorsim/creator-esp32-driver.git
