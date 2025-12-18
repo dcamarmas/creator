@@ -593,10 +593,22 @@ export function generateCompletionProvider(
 
             // Get the word being typed
             const word = model.getWordUntilPosition(position);
+
+            // If the character before the word is a dot, include it in the range
+            // to prevent double dots when autocompleting directives
+            let startColumn = word.startColumn;
+            if (
+                startColumn > 1 &&
+                model.getLineContent(position.lineNumber)[startColumn - 2] ===
+                    "."
+            ) {
+                startColumn--;
+            }
+
             const range = {
                 startLineNumber: position.lineNumber,
                 endLineNumber: position.lineNumber,
-                startColumn: word.startColumn,
+                startColumn: startColumn,
                 endColumn: word.endColumn,
             };
 
