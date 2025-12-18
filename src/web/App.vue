@@ -296,7 +296,7 @@ export default {
       target_ports: {
         Win: "rfc2217://host.docker.internal:4000?ign_set_control",
         Mac: "/dev/cu.usbserial-210",
-        Linux: "ubuntu@10.0.0.1",
+        Linux: "/dev/ttyUSB0",
       } as { [key: string]: string },
 
       lab_url: "",

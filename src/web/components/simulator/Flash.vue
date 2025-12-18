@@ -285,7 +285,7 @@ export default defineComponent({
 
     onTabChange() {
       if (this.targetBoard.startsWith("sbc")) {
-        this.targetPort = "ubuntu@127.0.0.1";
+        this.targetPort = "ubuntu@10.0.0.1";
         this.targetLocation = "~/creator";
       } else {
         this.targetPort = this.$root!.target_ports[this.os] || "";
