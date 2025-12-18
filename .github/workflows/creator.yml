@@ -17,6 +17,16 @@ jobs:
           submodules: recursive
       - name: Install dependencies
         uses: ./.github/actions/dependencies
+      - name: Cache Rust
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            creator-assembler/target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('creator-assembler/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
       - name: Build assembler web
         env:
           REPO: ${{ github.event.repository.name }}
@@ -28,8 +38,8 @@ jobs:
         with:
           path: ./dist/web/creator/
 
-  build-cli:
-    name: Build CREATOR cli
+  build-cli-wasm:
+    name: Build CREATOR cli WASM
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -38,66 +48,107 @@ jobs:
           submodules: recursive
       - name: Install dependencies
         uses: ./.github/actions/dependencies
+      - name: Cache Rust
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            creator-assembler/target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('creator-assembler/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
       - name: Build assembler cli
         run: bun wasm:cli
-      - name: Cleanup artifact
-        run: rm -rf CreatorAssembler node_modules
-      - name: Upload cli artifact
-        uses: pyTooling/upload-artifact@v4
+      - name: Upload WASM artifact
+        uses: actions/upload-artifact@v4
         with:
-          name: cli-artifact
-          working-directory: "."
-          path: |
-            *
-            .github
-          include-hidden-files: true
-          if-no-files-found: error
+          name: wasm-artifact
+          path: src/core/assembler/creatorAssembler/deno/wasm/
 
   build-cli-binaries:
-    name: Build CREATOR cli binaries
+    name: Build CLI (${{ matrix.os }})
     runs-on: ubuntu-latest
-    needs: build-cli
+    needs: build-cli-wasm
     if: github.event_name != 'pull_request'
+    strategy:
+      matrix:
+        include:
+          - target: x86_64-pc-windows-msvc
+            os: windows
+          - target: x86_64-apple-darwin
+            os: mac-x64
+          - target: aarch64-apple-darwin
+            os: mac-arm
+          - target: x86_64-unknown-linux-gnu
+            os: linux-x64
+          - target: aarch64-unknown-linux-gnu
+            os: linux-arm
     steps:
-      - name: Download artifact
-        uses: pyTooling/download-artifact@v5
+      - name: Checkout
+        uses: actions/checkout@v5
+      - name: Download WASM
+        uses: actions/download-artifact@v4
         with:
-          name: cli-artifact
+          name: wasm-artifact
+          path: src/core/assembler/creatorAssembler/deno/wasm/
       - name: Install CLI dependencies
         uses: ./.github/actions/cli-dependencies
-      - name: Build cli binaries
+      - name: Cache Deno
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/deno
+            ~/.deno
+          key: ${{ runner.os }}-deno-${{ matrix.target }}-${{ hashFiles('deno.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-deno-${{ matrix.target }}-
+      - name: Build cli binary
         env:
           PAGE: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
           CREATOR_CHANNEL: nightly
           CREATOR_COMMIT: ${{ github.sha }}
+        run: ./scripts/build-cli.sh -o creator-cli-${{ matrix.os }} -t ${{ matrix.target }}
+      - name: Upload binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: creator-cli-${{ matrix.os }}
+          path: creator-cli-${{ matrix.os }}*
+          if-no-files-found: error
+
+  package-architectures:
+    name: Package architectures
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+      - name: Package architectures
+        env:
+          PAGE: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
         run: |
-          ./scripts/build-cli.sh -o creator-cli-windows -t x86_64-pc-windows-msvc
-          ./scripts/build-cli.sh -o creator-cli-mac-x64 -t x86_64-apple-darwin
-          ./scripts/build-cli.sh -o creator-cli-mac-arm -t aarch64-apple-darwin
-          ./scripts/build-cli.sh -o creator-cli-linux-x64 -t x86_64-unknown-linux-gnu
-          ./scripts/build-cli.sh -o creator-cli-linux-arm -t aarch64-unknown-linux-gnu
           sed --in-place --expression 's\^# yaml-language-server: $schema=.*.json\# yaml-language-server: $schema='"$PAGE"'/schema/architecture.json\' architecture/*.yml architecture/**/*.yml
           zip --recurse-paths --include '*.yml' --junk-paths architectures.zip architecture/
-      - name: Upload cli binaries artifact
-        uses: pyTooling/upload-artifact@v4
+      - name: Upload architectures
+        uses: actions/upload-artifact@v4
         with:
-          name: cli-binaries
-          working-directory: "."
-          path: |
-            creator-cli-*
-            architectures.zip
+          name: architectures
+          path: architectures.zip
           if-no-files-found: error
-          compression-level: 3
 
   test:
     name: Run CREATOR tests
     runs-on: ubuntu-latest
-    needs: build-cli
+    needs: build-cli-wasm
     steps:
-      - name: Download artifact
-        uses: pyTooling/download-artifact@v5
+      - name: Checkout
+        uses: actions/checkout@v5
         with:
-          name: cli-artifact
+          submodules: recursive
+      - name: Download WASM
+        uses: actions/download-artifact@v4
+        with:
+          name: wasm-artifact
+          path: src/core/assembler/creatorAssembler/deno/wasm/
       - name: Install dependencies
         uses: ./.github/actions/dependencies
       - name: Run tests
@@ -106,37 +157,38 @@ jobs:
   publish-nightly:
     name: Publish nightly release
     runs-on: ubuntu-latest
-    needs: [build-cli-binaries, test]
+    needs: [build-cli-binaries, package-architectures, test]
     concurrency:
       group: nightly-release
       cancel-in-progress: false
     permissions:
       contents: write
     steps:
-      - name: Download artifact
-        uses: pyTooling/download-artifact@v5
+      - name: Checkout
+        uses: actions/checkout@v5
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
         with:
-          name: cli-binaries
+          path: artifacts
+          merge-multiple: true
       - name: Delete nightly tag
         run: gh release delete nightly --cleanup-tag || true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Publish nightly release
-        uses: softprops/action-gh-release@v2
-        with:
-          name: Nightly release
-          prerelease: true
-          tag_name: nightly
-          target_commitish: ${{ github.sha }}
-          fail_on_unmatched_files: true
-          files: |
-            creator-cli-*
-            architectures.zip
+        run: |
+          gh release create nightly artifacts/creator-cli-* artifacts/architectures.zip \
+            --title "Nightly release" \
+            --prerelease \
+            --target ${{ github.sha }} \
+            --notes "Nightly build from commit ${{ github.sha }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   publish-stable:
     name: Publish latest tagged release
     runs-on: ubuntu-latest
-    needs: [build-cli-binaries, test]
+    needs: [build-cli-binaries, package-architectures, test]
     if: github.ref_type == 'tag'
     concurrency:
       group: stable-release
@@ -144,18 +196,20 @@ jobs:
     permissions:
       contents: write
     steps:
-      - name: Download artifact
-        uses: pyTooling/download-artifact@v5
+      - name: Checkout
+        uses: actions/checkout@v5
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
         with:
-          name: cli-binaries
+          path: artifacts
+          merge-multiple: true
       - name: Publish latest release
-        uses: softprops/action-gh-release@v2
-        with:
-          make_latest: true
-          fail_on_unmatched_files: true
-          files: |
-            creator-cli-*
-            architectures.zip
+        run: |
+          gh release create ${{ github.ref_name }} artifacts/creator-cli-* artifacts/architectures.zip \
+            --generate-notes \
+            --latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   deploy-pages:
     name: Deploy CREATOR to GitHub Pages
