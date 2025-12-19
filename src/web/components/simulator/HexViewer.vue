@@ -21,9 +21,12 @@ import { defineComponent, type PropType } from "vue";
 import type { Memory } from "@/core/memory/Memory.mjs";
 import type { Device } from "@/core/executor/devices.mjs";
 import { coreEvents } from "../../../core/events.mts";
-import { stackTracker, architecture } from "@/core/core.mjs";
+import { stackTracker, architecture, getPC, PC_REG_INDEX, getSP, SP_REG_INDEX } from "@/core/core.mjs";
 import type { StackFrame } from "@/core/memory/StackTracker.mjs";
 import MemoryLayoutDiagram from "../architecture/memory_layout/MemoryLayoutDiagram.vue";
+import { decode } from "@/core/executor/decoder.mjs";
+import { MAXNWORDS } from "@/core/utils/architectureProcessor.mjs";
+import { instructions } from "@/core/assembler/assembler.mjs";
 
 interface MemoryDump {
   addresses: number[];
@@ -51,6 +54,8 @@ export default defineComponent({
   data() {
     return {
       memoryDump: null as MemoryDump | null,
+      pc: -1,
+      sp: -1,
       bytesPerRow: 8,
       showAscii: window.innerWidth >= 1220,
       showAddresses: true,
@@ -94,6 +99,8 @@ export default defineComponent({
     this.updateBytesPerRow();
     this.updateAsciiVisibility();
 
+    this.updatePC();
+    this.updateSP();
     this.refreshMemory();
 
     // Subscribe to register update events
@@ -447,7 +454,34 @@ export default defineComponent({
     onRegisterUpdated() {
       // Refresh memory when registers change (e.g., SP, PC)
       // This will also trigger a re-computation of stack frames
+      this.updatePC();
+      this.updateSP();
       this.refreshMemory();
+    },
+
+    updatePC() {
+      if (PC_REG_INDEX) {
+        try {
+          this.pc = Number(getPC());
+        } catch (e) {
+          this.pc = -1;
+        }
+      } else {
+        this.pc = -1;
+      }
+    },
+
+    updateSP() {
+      if (SP_REG_INDEX) {
+        try {
+          const spValue = getSP();
+          this.sp = spValue !== null ? Number(spValue) : -1;
+        } catch (e) {
+          this.sp = -1;
+        }
+      } else {
+        this.sp = -1;
+      }
     },
 
     refreshMemory() {
@@ -471,6 +505,51 @@ export default defineComponent({
         type: h.type || "",
         sizeInBits: h.sizeInBits,
       }));
+
+      // Add instruction hints from loaded instructions
+      if (instructions && instructions.length > 0) {
+        const wordSizeBytes = architecture.config.word_size / architecture.config.byte_size;
+        
+        for (const instruction of instructions) {
+          try {
+            // Parse instruction address
+            const addr = parseInt(instruction.Address, 16);
+            
+            // Read the instruction bytes from memory for decoding
+            const allBytes = [];
+            for (let j = 0; j < MAXNWORDS; j++) {
+              const wordAddr = addr + j * wordSizeBytes;
+              try {
+                const wordBytes = this.main_memory.readWord(BigInt(wordAddr));
+                allBytes.push(...new Uint8Array(wordBytes));
+              } catch {
+                break; // Stop if we can't read more
+              }
+            }
+            
+            // Decode to get instruction metadata including nwords
+            if (allBytes.length > 0) {
+              const decoded = decode(new Uint8Array(allBytes));
+              
+              if (decoded.status === "ok") {
+                // Calculate instruction size in bits
+                const instructionSizeInBits = decoded.instruction.nwords * architecture.config.word_size;
+                
+                // Add hint for this instruction
+                hints.push({
+                  address: addr.toString(),
+                  tag: instruction.loaded || instruction.user,
+                  type: "instruction",
+                  sizeInBits: instructionSizeInBits,
+                });
+              }
+            }
+          } catch (error) {
+            // Skip instructions that can't be decoded
+            console.debug("Could not decode instruction at", instruction.Address, error);
+          }
+        }
+      }
 
       // Get the highest possible address from memory segments
       const segments = this.main_memory.getMemorySegments();
@@ -499,11 +578,16 @@ export default defineComponent({
 
       for (const hint of dump.hints) {
         const address = parseInt(hint.address, 10);
-        const tagTypeKey = `${hint.tag}:${hint.type}`;
+        // Use only type for instructions to give them all the same color
+        const tagTypeKey = hint.type === "instruction" ? "instruction" : `${hint.tag}:${hint.type}`;
 
         if (!hintColors.has(tagTypeKey)) {
-          hintColors.set(tagTypeKey, colorIndex % 8);
-          colorIndex++;
+          // Assign blue color (index 1) to instructions
+          const assignedColor = hint.type === "instruction" ? 1 : colorIndex % 8;
+          hintColors.set(tagTypeKey, assignedColor);
+          if (hint.type !== "instruction") {
+            colorIndex++;
+          }
         }
 
         const hintColorIndex = hintColors.get(tagTypeKey)!;
@@ -693,7 +777,17 @@ export default defineComponent({
       this.selectByte(index);
 
       const hintInfo = this.hintMap.get(index);
-      if (hintInfo) {
+      if (index === this.pc) {
+        this.showHintTooltip(event.target as HTMLElement, {
+          tag: "Program Counter",
+          type: "Register",
+        });
+      } else if (index === this.sp) {
+        this.showHintTooltip(event.target as HTMLElement, {
+          tag: "Stack Pointer",
+          type: "Register",
+        });
+      } else if (hintInfo) {
         this.showHintTooltip(event.target as HTMLElement, hintInfo);
       }
     },
@@ -839,7 +933,17 @@ export default defineComponent({
 
     handleByteMouseOver(index: number, event: MouseEvent) {
       const hintInfo = this.hintMap.get(index);
-      if (hintInfo) {
+      if (index === this.pc) {
+        this.showHintTooltip(event.target as HTMLElement, {
+          tag: "Program Counter",
+          type: "Register",
+        });
+      } else if (index === this.sp) {
+        this.showHintTooltip(event.target as HTMLElement, {
+          tag: "Stack Pointer",
+          type: "Register",
+        });
+      } else if (hintInfo) {
         this.showHintTooltip(event.target as HTMLElement, hintInfo);
       }
     },
@@ -927,7 +1031,15 @@ export default defineComponent({
         classes.push("selected");
       }
 
-      if (value === 0) {
+      if (byteIndex === this.pc) {
+        classes.push("pc-indicator");
+      }
+
+      if (byteIndex === this.sp) {
+        classes.push("sp-indicator");
+      }
+
+      if (value === 0 && byteIndex !== this.pc && byteIndex !== this.sp) {
         classes.push("zero");
       }
 
@@ -944,6 +1056,14 @@ export default defineComponent({
 
       if (byteIndex === this.selectedByte) {
         classes.push("selected");
+      }
+
+      if (byteIndex === this.pc) {
+        classes.push("pc-indicator");
+      }
+
+      if (byteIndex === this.sp) {
+        classes.push("sp-indicator");
       }
 
       const hintInfo = this.hintMap.get(byteIndex);
@@ -1178,6 +1298,18 @@ export default defineComponent({
                   "
                   @mouseout="handleByteMouseOut"
                 >
+                  <div
+                    v-if="row * bytesPerRow + i - 1 === pc"
+                    class="pc-badge-inline"
+                  >
+                    PC
+                  </div>
+                  <div
+                    v-if="row * bytesPerRow + i - 1 === sp"
+                    class="sp-badge-inline"
+                  >
+                    SP
+                  </div>
                   <input
                     v-if="editingByte === row * bytesPerRow + i - 1"
                     type="text"
@@ -1582,7 +1714,7 @@ export default defineComponent({
 }
 
 .hex-rows {
-  padding: 0;
+  padding: 6px 0;
 }
 
 .hex-row-container {
@@ -1669,6 +1801,40 @@ export default defineComponent({
   background-color: rgba(255, 193, 7, 0.3) !important;
   /* warning - stack hints */
   border-color: rgba(255, 193, 7, 0.5) !important;
+}
+
+.pc-badge-inline {
+  position: absolute;
+  top: -3px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: var(--bs-success); /* Green for consistency */
+  color: white;
+  font-size: 8px;
+  line-height: 1;
+  padding: 1px 2px;
+  border-radius: 2px;
+  font-weight: bold;
+  z-index: 2;
+  pointer-events: none;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.sp-badge-inline {
+  position: absolute;
+  bottom: -3px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: var(--bs-info); /* Blue for stack pointer */
+  color: white;
+  font-size: 8px;
+  line-height: 1;
+  padding: 1px 2px;
+  border-radius: 2px;
+  font-weight: bold;
+  z-index: 2;
+  pointer-events: none;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .hex-row {
@@ -1797,6 +1963,22 @@ export default defineComponent({
   box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.2);
 }
 
+.hex-byte.pc-indicator,
+.ascii-char.pc-indicator {
+  outline: 2px solid var(--bs-success); /* Green for consistency with instructions table */
+  outline-offset: -2px;
+  z-index: 1;
+  opacity: 1 !important;
+}
+
+.hex-byte.sp-indicator,
+.ascii-char.sp-indicator {
+  outline: 2px solid var(--bs-info); /* Blue for stack pointer */
+  outline-offset: -2px;
+  z-index: 1;
+  opacity: 1 !important;
+}
+
 /* Dark theme selected byte visibility improvements */
 [data-bs-theme="dark"] {
   .hex-byte.selected {
@@ -1809,6 +1991,16 @@ export default defineComponent({
     filter: brightness(1.5);
     background-color: rgba(255, 255, 255, 0.15);
     box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.3);
+  }
+
+  .hex-byte.pc-indicator,
+  .ascii-char.pc-indicator {
+    outline-color: var(--bs-success); /* Keep green for dark theme */
+  }
+
+  .hex-byte.sp-indicator,
+  .ascii-char.sp-indicator {
+    outline-color: var(--bs-info); /* Keep blue for dark theme */
   }
 }
 
@@ -2015,6 +2207,16 @@ export default defineComponent({
   .address-column.segment-secondary {
     border-left-color: #868e96;
     /* Lighter secondary color for dark theme */
+  }
+
+  .pc-badge-inline {
+    background-color: var(--bs-success);
+    color: white;
+  }
+
+  .sp-badge-inline {
+    background-color: var(--bs-info);
+    color: white;
   }
 }
 

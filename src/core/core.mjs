@@ -108,6 +108,7 @@ export function updateMainMemoryBackup(value) {
     main_memory_backup = value;
 }
 export let PC_REG_INDEX; // Index of the PC register (indexComp, indexElem). Set when loading architecture.
+export let SP_REG_INDEX; // Index of the SP register (indexComp, indexElem). Set when loading architecture.
 
 export let execution_mode = 0; // 0: instruction by instruction, 1: run program
 export function set_execution_mode(value) {
@@ -215,6 +216,7 @@ export function loadArchitecture(architectureYaml, isa = []) {
     REGISTERS_BACKUP = JSON.parse(JSON.stringify(REGISTERS));
 
     PC_REG_INDEX = crex_findReg_bytag("program_counter");
+    SP_REG_INDEX = crex_findReg_bytag("stack_pointer");
 
     compileTimerFunctions();
 
@@ -597,6 +599,17 @@ export function getPC() {
         PC_REG_INDEX.indexElem,
     );
     return BigInt(pc_address);
+}
+
+export function getSP() {
+    if (!SP_REG_INDEX || SP_REG_INDEX.match === 0) {
+        return null;
+    }
+    const sp_address = readRegister(
+        SP_REG_INDEX.indexComp,
+        SP_REG_INDEX.indexElem,
+    );
+    return BigInt(sp_address);
 }
 
 export function setPC(value) {
