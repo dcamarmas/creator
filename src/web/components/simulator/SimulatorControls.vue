@@ -58,6 +58,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  mode: {
+    type: String,
+    default: "default",
+  },
 });
 
 // Button state
@@ -65,6 +69,10 @@ const reset_disable = ref(true);
 const instruction_disable = ref(false);
 const run_disable = ref(false);
 const stop_disable = ref(true);
+
+const isFinished = ref(false);
+const hasError = ref(false);
+const errorMessage = ref("");
 
 // Computed properties
 const instruction_values = computed({
@@ -100,6 +108,12 @@ onMounted(() => {
     run_disable.value = !prepared_for_execution;
     reset_disable.value = !prepared_for_execution;
     instruction_disable.value = !prepared_for_execution;
+  }
+
+  if (status.execution_index === -2) {
+    isFinished.value = true;
+  } else if (status.execution_index === -1) {
+    hasError.value = true;
   }
   
   // Subscribe to executor button update events
@@ -264,6 +278,10 @@ function reset() {
   run_disable.value = false;
   stop_disable.value = true;
 
+  isFinished.value = false;
+  hasError.value = false;
+  errorMessage.value = "";
+
   coreReset();
 
   execution_UI_reset();
@@ -279,7 +297,7 @@ function execute_instruction() {
     ret = step() as unknown as ExecutionResult;
   } catch (err: any) {
     console.error("Execution error:", err);
-    show_notification(`Execution error: ${err.message || err}`, "danger");
+    errorMessage.value = `${err.message || err}`;
 
     if (
       status.execution_index >= 0 &&
@@ -290,6 +308,7 @@ function execute_instruction() {
 
     status.execution_index = -1;
     status.error = true;
+    hasError.value = true;
 
     execution_UI_update({ error: true, msg: err.message || err });
     return;
@@ -304,6 +323,16 @@ function execute_instruction() {
   if (status.execution_index === -2) {
     instruction_disable.value = true;
     run_disable.value = true;
+    isFinished.value = true;
+  }
+
+  if (status.execution_index === -1) {
+    instruction_disable.value = true;
+    run_disable.value = true;
+    hasError.value = true;
+    if (!errorMessage.value) {
+      errorMessage.value = "The program has finished with errors";
+    }
   }
 
   if (typeof ret === "undefined") {
@@ -311,7 +340,11 @@ function execute_instruction() {
   }
 
   if (ret.msg) {
-    show_notification(ret.msg, ret.type!);
+    if (status.execution_index === -1) {
+      errorMessage.value = ret.msg;
+    } else {
+      show_notification(ret.msg, ret.type!);
+    }
   }
 
   if (ret.draw !== null) {
@@ -334,12 +367,10 @@ function execute_program() {
     return;
   }
   if (status.execution_index < -1) {
-    show_notification("The program has finished", "warning");
     status.run_program = 0;
     return;
   }
   if (status.execution_index === -1) {
-    show_notification("The program has finished with errors", "danger");
     status.run_program = 0;
     return;
   }
@@ -383,7 +414,7 @@ function execute_program_packed() {
         ret = step() as unknown as ExecutionResult;
       } catch (err: any) {
         console.error("Execution error:", err);
-        show_notification(`Execution error: ${err.message || err}`, "danger");
+        errorMessage.value = `${err.message || err}`;
 
         if (
           status.execution_index >= 0 &&
@@ -396,6 +427,7 @@ function execute_program_packed() {
         status.run_program = 0;
         status.execution_index = -1;
         status.error = true;
+        hasError.value = true;
 
         execution_UI_update({ error: true, msg: err.message || err });
 
@@ -422,7 +454,11 @@ function execute_program_packed() {
       }
 
       if (ret.msg) {
-        show_notification(ret.msg, ret.type!);
+        if (status.execution_index === -1) {
+          errorMessage.value = ret.msg;
+        } else {
+          show_notification(ret.msg, ret.type!);
+        }
 
         execution_UI_update(ret);
 
@@ -430,6 +466,12 @@ function execute_program_packed() {
         instruction_disable.value = true;
         run_disable.value = true;
         stop_disable.value = true;
+
+        if (status.execution_index === -2) {
+          isFinished.value = true;
+        } else if (status.execution_index === -1) {
+          hasError.value = true;
+        }
       }
     }
   }
@@ -442,6 +484,13 @@ function execute_program_packed() {
     instruction_disable.value = true;
     run_disable.value = true;
     stop_disable.value = true;
+
+    if (status.execution_index === -2) {
+      isFinished.value = true;
+    } else if (status.execution_index === -1) {
+      hasError.value = true;
+      errorMessage.value = ret?.msg || errorMessage.value || "The program has finished with errors";
+    }
   }
 }
 
@@ -479,30 +528,66 @@ defineExpose({
       <span class="button-text">Reset</span>
     </button>
 
-    <button
-      class="sim-button"
-      :class="{ 'sim-button-dark': dark }"
-      accesskey="a"
-      :disabled="instruction_disable"
-      :title="`${accesskey_prefix}A`"
-      @click="execute_instruction"
-    >
-      <font-awesome-icon :icon="['fas', 'forward-step']" class="icon-spacing" />
-      <span class="button-text">Step</span>
-    </button>
+    <div class="execution-main-controls">
+      <button
+        class="sim-button"
+        :class="{ 'sim-button-dark': dark, 'is-hidden': isFinished || hasError }"
+        accesskey="a"
+        :disabled="instruction_disable || isFinished || hasError"
+        :title="`${accesskey_prefix}A`"
+        :tabindex="isFinished || hasError ? -1 : 0"
+        @click="execute_instruction"
+      >
+        <font-awesome-icon :icon="['fas', 'forward-step']" class="icon-spacing" />
+        <span class="button-text">Step</span>
+      </button>
 
-    <button
-      id="playExecution"
-      class="sim-button"
-      :class="{ 'sim-button-dark': dark }"
-      accesskey="r"
-      :disabled="run_disable"
-      :title="`${accesskey_prefix}R`"
-      @click="execute_program"
-    >
-      <font-awesome-icon :icon="['fas', 'play']" class="icon-spacing" />
-      <span class="button-text">Run</span>
-    </button>
+      <button
+        id="playExecution"
+        class="sim-button"
+        :class="{ 'sim-button-dark': dark, 'is-hidden': isFinished || hasError }"
+        accesskey="r"
+        :disabled="run_disable || isFinished || hasError"
+        :title="`${accesskey_prefix}R`"
+        :tabindex="isFinished || hasError ? -1 : 0"
+        @click="execute_program"
+      >
+        <font-awesome-icon :icon="['fas', 'play']" class="icon-spacing" />
+        <span class="button-text">Run</span>
+      </button>
+
+      <button
+        v-if="isFinished || hasError"
+        id="executionStatusButton"
+        class="sim-button big-button"
+        :class="{
+          'sim-button-dark': dark,
+          'execution-finished': isFinished,
+          'execution-error': hasError,
+        }"
+        :disabled="isFinished"
+      >
+        <font-awesome-icon
+          :icon="isFinished ? ['fas', 'check'] : ['fas', 'triangle-exclamation']"
+          class="icon-spacing"
+        />
+        <span class="button-text">{{ isFinished ? "Finished" : "Error" }}</span>
+      </button>
+
+      <b-popover
+        v-if="hasError"
+        target="executionStatusButton"
+        triggers="click"
+        placement="auto"
+        teleport-to="body"
+        custom-class="execution-error-popover"
+      >
+        <template #title>Execution Error</template>
+        <div class="error-popover-content">
+          {{ errorMessage }}
+        </div>
+      </b-popover>
+    </div>
 
     <button
       id="stop_execution"
@@ -580,10 +665,86 @@ defineExpose({
       outline-color: rgba(255, 255, 255, 0.5);
     }
   }
+
+  // Success state for execution
+  &.execution-finished {
+    background-color: #198754;
+    color: white;
+    opacity: 1 !important;
+
+    &:hover:not(:disabled) {
+      background-color: #157347;
+    }
+
+    &:active:not(:disabled) {
+      background-color: #146c43;
+    }
+
+    &:focus-visible {
+      outline-color: #198754;
+    }
+  }
+
+  // Error state for execution
+  &.execution-error {
+    background-color: #dc3545;
+    color: white;
+    opacity: 1 !important;
+    cursor: pointer;
+
+    &:hover:not(:disabled) {
+      background-color: #bb2d3b;
+    }
+
+    &:active:not(:disabled) {
+      background-color: #b02a37;
+    }
+
+    &:focus-visible {
+      outline-color: #dc3545;
+    }
+  }
 }
 
 // Icon spacing
 .icon-spacing {
   margin-right: 0.5rem;
+}
+
+.execution-main-controls {
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+  position: relative;
+
+  .is-hidden {
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .big-button {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    justify-content: center;
+    z-index: 1;
+  }
+}
+
+.error-popover-content {
+  max-width: 300px;
+  word-wrap: break-word;
+  font-size: 0.875rem;
+  color: #dc3545;
+  font-weight: 500;
+}
+</style>
+
+<style lang="scss">
+// Global style for the popover to ensure it's on top of everything
+.execution-error-popover {
+  z-index: 2000 !important;
 }
 </style>

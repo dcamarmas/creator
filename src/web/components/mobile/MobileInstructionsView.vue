@@ -217,19 +217,28 @@ export default defineComponent({
   .controls-row {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 1rem;
     overflow-x: auto;
-    padding-bottom: 0.25rem;
+    padding: 0.25rem 0.5rem;
+    -webkit-overflow-scrolling: touch;
+
+    // Hide scrollbar but keep functionality
+    &::-webkit-scrollbar {
+      display: none;
+    }
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
 
-  .execution-controls {
+  .execution-controls,
+  .sentinel-container {
     display: flex;
     gap: 0.5rem;
-    flex: 1;
-    min-width: 0;
+    flex-shrink: 0;
 
-    // Style the SimulatorControls buttons for mobile
-    :deep(.btn) {
+    // Style the SimulatorControls and Sentinel buttons for mobile
+    :deep(.sim-button),
+    :deep(.sentinel-button) {
       min-height: 44px; // Touch-friendly
       min-width: 60px;
       padding: 0.5rem;
@@ -244,6 +253,17 @@ export default defineComponent({
 
       &:disabled {
         opacity: 0.5;
+      }
+    }
+
+    // Hide text only for sentinel button on mobile
+    :deep(.sentinel-button) {
+      .icon-spacing {
+        margin-right: 0 !important;
+      }
+
+      .button-text {
+        display: none !important;
       }
     }
   }
@@ -294,10 +314,12 @@ export default defineComponent({
       }
     }
 
-    .execution-controls {
+    .execution-controls,
+    .sentinel-container {
       gap: 0.25rem;
 
-      :deep(.btn) {
+      :deep(.sim-button),
+      :deep(.sentinel-button) {
         min-width: 50px;
         padding: 0.4rem 0.3rem;
 

@@ -57,15 +57,6 @@ function parseStableVersion(version: string): { major: number; minor: number; pa
         prerelease: match[4],
     };
 }
-
-/**
- * Extract commit SHA from nightly version
- */
-function extractNightlyCommit(version: string): string | null {
-    const match = version.match(/^nightly-([0-9a-f]+)$/i);
-    return match ? match[1].toLowerCase() : null;
-}
-
 /**
  * Compare stable versions
  * Returns: 1 if v1 > v2, -1 if v1 < v2, 0 if equal
@@ -95,14 +86,6 @@ function compareStableVersions(v1: ReturnType<typeof parseStableVersion>, v2: Re
     }
     
     return 0;
-}
-
-/**
- * Compare nightly versions by commit SHA
- * Returns true if they're different (meaning there's an update)
- */
-function hasNightlyUpdate(currentCommit: string, latestCommit: string): boolean {
-    return currentCommit !== latestCommit;
 }
 
 /**

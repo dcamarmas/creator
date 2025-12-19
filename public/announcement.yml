@@ -5,5 +5,5 @@
 # The announcements are user dismissible and will not show again once closed.
 # If the text is changed, it will show again to all users.
 
-text: "Welcome to the CREATOR V6 Beta!"
-link: "https://creatorsim.github.io/creator-beta/"
+text: "Welcome to CREATOR V6! For V5, click here."
+link: "https://creatorsim.github.io/creator-v5.0/"

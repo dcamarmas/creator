@@ -18,7 +18,6 @@
  */
 
 import { architecture, REGISTERS, getPC, stackTracker } from "../core.mjs";
-import { crex_show_notification } from "../utils/notifications.mts";
 import { tag_instructions } from "../assembler/assembler.mjs";
 import { sentinel } from "../sentinel/sentinel.mjs";
 import { creator_ga } from "../utils/creator_ga.mjs";
@@ -79,9 +78,6 @@ export const STACK = {
             "execute.exception",
             "execute.exception.protection_jrra" + ret.msg,
         );
-
-        // user notification
-        crex_show_notification(ret.msg, "warning");
     },
 
     // Add a hint for a specific memory address
