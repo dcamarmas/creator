@@ -377,3 +377,9 @@
 
 ## Developing CREATOR
 See [`docs/dev.md`](docs/dev.md).
+
+
+
+## Sponsors
+Integrated development environment for teaching and research on RISC-V processors (PDC2023-145832-I00) funded by MICIU/AEI/ 10.13039/501100011033 and by the European Union NextGenerationEU/PRTR
+![sponsor logos](https://github.com/user-attachments/assets/a37ba843-dd07-4014-be3c-ee105bd2d463)
