@@ -50,10 +50,6 @@ export default defineConfig({
         output: "examples",
       },
       {
-        input: "gateway/**/*.zip",
-        output: "/gateway",
-      },
-      {
         input: "docs/schema/**",
         output: "/schema",
       },

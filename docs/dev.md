@@ -20,7 +20,6 @@ This project uses [Bun](https://bun.sh) (for Web) and
 ```sh
 bun install  # install dependencies
 bun dev:wasm  # build wasm dependencies
-bun build:gateway  # bundle gateway driver (optional)
 ```
 
 ### Compile Web and Hot-Reload for Development (with [Vite](https://vite.dev/))

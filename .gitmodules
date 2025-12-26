@@ -1,9 +1,3 @@
 [submodule "creator-assembler"]
 	path = creator-assembler
 	url = https://github.com/creatorsim/creator-assembler.git
-[submodule "creator-sbc-driver"]
-	path = gateway/creator-sbc-driver
-	url = https://github.com/creatorsim/creator-sbc-driver.git
-[submodule "creator-esp32-driver"]
-	path = gateway/creator-esp32-driver
-	url = https://github.com/creatorsim/creator-esp32-driver.git
