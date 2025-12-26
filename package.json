@@ -88,7 +88,8 @@
     "vite-plugin-image-optimizer": "^2.0.3",
     "vite-plugin-vue-devtools": "^8.0.5",
     "vue-router": "^4.6.3",
-    "vue-tsc": "^3.1.4"
+    "vue-tsc": "^3.1.4",
+    "wasm-pack": "^0.13.1"
   },
   "bin": {
     "creator": "./dist/cli/creator.js"
@@ -98,6 +99,7 @@
     "deno",
     "esbuild",
     "sharp",
-    "vue-demi"
+    "vue-demi",
+    "wasm-pack"
   ]
 }

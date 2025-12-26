@@ -31,7 +31,6 @@ jobs:
         env:
           REPO: ${{ github.event.repository.name }}
         run: |
-          bun install -g wasm-pack
           bun build:web
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

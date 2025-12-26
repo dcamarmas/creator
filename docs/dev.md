@@ -14,8 +14,7 @@ This project uses [Bun](https://bun.sh) (for Web) and
 
 > [!IMPORTANT]
 > Building the assembler dependency requires installing
-> [rustup](https://rustup.rs/), [Deno](https://deno.com/), and
-> [wasm-pack](https://drager.github.io/wasm-pack/).
+> [rustup](https://rustup.rs/) and [Deno](https://deno.com/)
 
 ```sh
 bun install  # install dependencies
