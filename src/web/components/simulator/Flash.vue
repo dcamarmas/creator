@@ -16,10 +16,12 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
+
 <script lang="ts">
 import { defineComponent } from "vue";
 
 import { LOCALLAB } from "@/web/src/localGateway.js";
+import { REMOTELAB } from "@/web/src/remoteLab.js";
 import { console_log, show_notification } from "@/web/utils.mjs";
 import { creator_ga } from "@/core/utils/creator_ga.mjs";
 import { instructions } from "@/core/assembler/assembler.mjs";
@@ -101,6 +103,30 @@ export default defineComponent({
 
   data() {
     return {
+      //
+      // Remote Device
+      //
+
+      remote_target_boards: [
+        { text: "Please select an option", value: null, disabled: true },
+        { text: "ESP32-C6 (RISC-V)", value: "esp32c6" },
+        { text: "ESP32-C3 (RISC-V)", value: "esp32c3" },
+        { text: "ESP32-H2 (RISC-V)", value: "esp32h2" },
+        // { text: "ESP32-S2 (MIPS-32)", value: "esp32s2" },
+        // { text: "ESP32-S3 (MIPS-32)", value: "esp32s3" },
+      ],
+
+      request_id: -1,
+      position: "",
+
+      boards: false,
+      enqueue: false,
+      status: false,
+
+      //
+      // Local Device
+      //
+
       target_boards: [
         { text: "ESP32-C6 (RISC-V)", value: "esp32c6" },
         { text: "ESP32-C3 (RISC-V)", value: "esp32c3" },
@@ -137,6 +163,101 @@ export default defineComponent({
       }
     },
 
+    //
+    // Remote Device
+    //
+
+    get_boards() {
+      if (this.labURL !== "") {
+        REMOTELAB.get_boards(this.labURL + "/target_boards").then(data => {
+          if (data !== "-1") {
+            const available_boards = JSON.parse(data);
+
+            // remove non-available boards
+            this.remote_target_boards = this.remote_target_boards.filter(
+              board => available_boards.includes(board.value),
+            );
+
+            this.boards = true;
+          }
+        });
+      } else {
+        this.boards = false;
+      }
+    },
+
+    do_enqueue() {
+      if (instructions.length === 0) {
+        show_notification("Compile a program first", "warning");
+        return;
+      }
+
+      if (this.resultEmail === "") {
+        show_notification("Please, enter your E-mail", "danger");
+        return;
+      }
+
+      REMOTELAB.enqueue(this.labURL + "/enqueue", {
+        target_board: this.targetBoard,
+        result_email: this.resultEmail,
+        assembly: this.assembly_code,
+      }).then(data => {
+        if (data !== "-1") {
+          this.request_id = data;
+          this.enqueue = true;
+          this.status = true;
+          this.position = "";
+          this.check_status();
+        }
+      });
+
+      //Google Analytics
+      creator_ga("simulator", "simulator.enqueue", "simulator.enqueue");
+    },
+
+    check_status() {
+      if (this.position !== "Completed" && this.position !== "Error") {
+        this.get_status();
+        setTimeout(this.check_status, 20000);
+      }
+    },
+
+    get_status() {
+      REMOTELAB.status(this.labURL + "/status", {
+        req_id: this.request_id,
+      }).then(data => {
+        if (data === "Completed") {
+          this.enqueue = false;
+        }
+        if (data !== "-1") {
+          if (data === "-2") {
+            this.position = "Error";
+            this.enqueue = false;
+          } else if (!isNaN(data)) {
+            this.position = "Queue position: " + data;
+          } else {
+            this.position = data;
+          }
+        }
+      });
+      // Google Analytics
+      creator_ga("simulator", "simulator.position", "simulator.position");
+    },
+
+    do_cancel() {
+      REMOTELAB.cancel(this.labURL + "/delete", {
+        req_id: this.request_id,
+      }).then(data => {
+        if (data !== "-1") {
+          this.enqueue = false;
+          this.position = "Canceled";
+        }
+      });
+
+      //Google Analytics
+      creator_ga("simulator", "simulator.cancel", "simulator.cancel");
+    },
+
     do_flash() {
       if (instructions.length === 0) {
         show_notification("Compile a program first", "warning");
@@ -154,7 +275,7 @@ export default defineComponent({
         this.flashing = false;
         console_log(JSON.stringify(data, null, 2), "DEBUG");
         const dataStr = JSON.stringify(data, null, 2);
-        
+
         if (dataStr.includes("TypeError: NetworkError")) {
           show_notification(
             "Gateway not available at the moment. Please, execute python3 gateway.py, check if port 8080 works fine and connect your board first",
@@ -182,9 +303,7 @@ export default defineComponent({
         if (dataStr.includes("No UART port found")) {
           show_notification("Error flashing: Not found UART port", "danger");
         }
-        if (
-          dataStr.includes("cr_ functions are not supported in this mode")
-        ) {
+        if (dataStr.includes("cr_ functions are not supported in this mode")) {
           show_notification(
             'CREATino code in CREATOR module. Make sure the "Arduino Support" checkbox is selected',
             "danger",
@@ -195,6 +314,10 @@ export default defineComponent({
       //Google Analytics
       creator_ga("simulator", "simulator.flash", "simulator.flash");
     },
+
+    //
+    // Local device
+    //
 
     do_stop_monitor() {
       this.stoprunning = true;
@@ -208,7 +331,7 @@ export default defineComponent({
         this.stoprunning = false;
         const dataStr = JSON.stringify(data, null, 2);
         console_log(dataStr, "DEBUG");
-        
+
         if (dataStr.includes("TypeError: NetworkError")) {
           show_notification(
             "Gateway not available at the moment. Please, execute python3 gateway.py, check if port 8080 works fine and connect your board first",
@@ -216,7 +339,10 @@ export default defineComponent({
           );
         }
         if (dataStr.includes("Target location is blank")) {
-          show_notification("Error monitoring: Blank target location", "danger");
+          show_notification(
+            "Error monitoring: Blank target location",
+            "danger",
+          );
         }
         if (dataStr.includes("Target port is blank")) {
           show_notification("Error monitoring: Blank target port", "danger");
@@ -246,7 +372,7 @@ export default defineComponent({
         this.running = false;
         const dataStr = JSON.stringify(data, null, 2);
         console_log(dataStr, "DEBUG");
-        
+
         if (dataStr.includes("TypeError: NetworkError")) {
           show_notification(
             "Gateway not available at the moment. Please, execute python3 gateway.py, check if port 8080 works fine and connect your board first",
@@ -285,7 +411,7 @@ export default defineComponent({
       }).then(data => {
         this.debugging = false;
         const dataStr = JSON.stringify(data, null, 2);
-        
+
         if (dataStr.includes("TypeError: NetworkError")) {
           show_notification(
             "Gateway not available at the moment. Please, execute python3 gateway.py, check if port 8080 works fine and connect your board first",
@@ -337,7 +463,7 @@ export default defineComponent({
         this.fullclean = false;
         const dataStr = JSON.stringify(data, null, 2);
         console_log(dataStr, "DEBUG");
-        
+
         if (dataStr.includes("TypeError: NetworkError")) {
           show_notification(
             "Gateway not available at the moment. Please, execute python3 gateway.py, check if port 8080 works fine and connect your board first",
@@ -388,7 +514,10 @@ export default defineComponent({
           );
         }
         if (dataStr.includes("Target port is blank")) {
-          show_notification("Error erase-flashing: Blank target port", "danger");
+          show_notification(
+            "Error erase-flashing: Blank target port",
+            "danger",
+          );
         }
         if (dataStr.includes("Unreachable host")) {
           show_notification("Error erase-flashing: Unreachable host", "danger");
@@ -414,244 +543,325 @@ export default defineComponent({
 
 <template>
   <b-modal :id="id" scrollable title="Target Board Flash" no-footer>
-    <div class="mb-3 text-center">
-      For instructions on how to use this feature, please refer to the
-      <a href="https://creatorsim.github.io/creator-wiki/web/gateway.html" target="_blank">Wiki</a>.
-    </div>
-
-    <div class="d-flex flex-column align-items-center my-4">
-      <span style="margin-bottom: 10px; font-weight: bold">
-        Select Device Type:
-      </span>
-      <div class="d-flex">
-        <div class="form-check mx-2">
-          <input
-            class="form-check-input"
-            type="radio"
-            id="radioEspressif"
-            value="esp32"
-            v-model="selectedOption"
-          />
-          <label class="form-check-label" for="radioEspressif">
-            Espressif
-          </label>
+    <b-tabs content-class="mt-3">
+      <b-tab title="Local Device" active id="flash-tab-local">
+        <div class="d-flex flex-column align-items-center mt-4 mb-2">
+          <span style="margin-bottom: 10px; font-weight: bold">
+            Device type:
+          </span>
+          <div class="d-flex">
+            <div class="form-check mx-2">
+              <input
+                class="form-check-input"
+                type="radio"
+                id="radioEspressif"
+                value="esp32"
+                v-model="selectedOption"
+              />
+              <label class="form-check-label" for="radioEspressif">
+                Espressif
+              </label>
+            </div>
+            <div class="form-check mx-2">
+              <input
+                class="form-check-input"
+                type="radio"
+                id="radioSBC"
+                value="sbc"
+                v-model="selectedOption"
+              />
+              <label class="form-check-label" for="radioSBC">SBC</label>
+            </div>
+          </div>
         </div>
-        <div class="form-check mx-2">
-          <input
-            class="form-check-input"
-            type="radio"
-            id="radioSBC"
-            value="sbc"
-            v-model="selectedOption"
+
+        <label for="select-local-boards">Target board:</label>
+
+        <b-form-select
+          id="select-local-boards"
+          v-model="targetBoard"
+          :options="
+            selectedOption === 'esp32' ? target_boards : sbc_target_boards
+          "
+          size="sm"
+          class="mt-2"
+          @change="onTabChange"
+        />
+
+        <div v-if="targetBoard" class="mt-3">
+          <div v-if="targetBoard.startsWith('sbc')">
+            <label for="target-user">
+              Target user: (please verify your board user)
+            </label>
+            <b-form-input
+              id="target-port"
+              type="text"
+              v-model="targetPort"
+              placeholder="Enter target user"
+              size="sm"
+              class="my-2"
+            />
+
+            <label for="target-location">
+              Target location: (please verify the route exists in your board)
+            </label>
+            <b-form-input
+              id="target-location"
+              type="text"
+              v-model="targetLocation"
+              size="sm"
+              class="my-2"
+            />
+          </div>
+          <div v-else>
+            <label for="target-port">
+              Target port (please verify the port on your computer):
+            </label>
+            <b-form-input
+              id="target-port"
+              type="text"
+              v-model="targetPort"
+              placeholder="Enter target port"
+              size="sm"
+              class="my-2"
+            />
+          </div>
+          <label for="flash-url"> (3) Flash URL: </label>
+          <b-form-input
+            id="flash-url"
+            type="text"
+            v-model="flashURL"
+            placeholder="Enter flash URL"
+            size="sm"
+            class="my-2"
           />
-          <label class="form-check-label" for="radioSBC">SBC</label>
+          <b-container fluid align-h="center">
+            <b-row align-h="center" class="mt-3">
+              <!-- Columna 1: Flash, Clean y Erase Flash -->
+
+              <b-col class="d-grid gap-3">
+                <!-- Botón Flash -->
+                <b-button
+                  variant="primary"
+                  @click="do_flash"
+                  :pressed="flashing"
+                  :disabled="
+                    flashing ||
+                    running ||
+                    debugging ||
+                    fullclean ||
+                    stoprunning ||
+                    eraseflash
+                  "
+                >
+                  <font-awesome-icon :icon="['fas', 'bolt-lightning']" />
+                  <span v-if="!flashing">&nbsp;Flash</span>
+                  <span v-else> &nbsp;Flashing... <b-spinner small /> </span>
+                </b-button>
+
+                <!-- Botón Clean -->
+                <b-button
+                  class="btn btn-block"
+                  variant="danger"
+                  @click="showConfirmPopup('fullclean')"
+                  :pressed="fullclean"
+                  :disabled="
+                    fullclean ||
+                    flashing ||
+                    running ||
+                    debugging ||
+                    stoprunning ||
+                    eraseflash
+                  "
+                >
+                  <font-awesome-icon :icon="['fas', 'trash']" />
+                  <span v-if="!fullclean">&nbsp;Clean</span>
+                  <span v-else> &nbsp;Cleaning... <b-spinner small /> </span>
+                </b-button>
+
+                <!-- Botón Erase Flash -->
+                <b-button
+                  class="btn btn-block"
+                  variant="danger"
+                  @click="showConfirmPopup('eraseflash')"
+                  :pressed="eraseflash"
+                  :disabled="
+                    eraseflash ||
+                    fullclean ||
+                    flashing ||
+                    running ||
+                    debugging ||
+                    stoprunning
+                  "
+                >
+                  <font-awesome-icon :icon="['fas', 'broom']" />
+                  <span v-if="!eraseflash">&nbsp;Erase Flash</span>
+                  <span v-else> &nbsp;Erasing... <b-spinner small /> </span>
+                </b-button>
+
+                <!-- Popup de confirmación -->
+                <b-modal
+                  id="confirm-popup"
+                  v-model="showPopup"
+                  title="Confirm Action"
+                  @ok="confirmAction"
+                >
+                  This action will delete your previous work. Are you sure you
+                  want to proceed?
+                </b-modal>
+              </b-col>
+
+              <!-- Columna 2: Monitor, Debug y Stop -->
+
+              <b-col class="d-grid gap-3">
+                <!-- Botón Monitor -->
+                <b-button
+                  variant="primary"
+                  @click="do_monitor"
+                  :pressed="running"
+                  :disabled="
+                    running ||
+                    flashing ||
+                    debugging ||
+                    fullclean ||
+                    stoprunning ||
+                    eraseflash
+                  "
+                >
+                  <font-awesome-icon :icon="['fas', 'desktop']" />
+                  <span v-if="!running">&nbsp;Monitor</span>
+                  <span v-else> &nbsp;Running... <b-spinner small /> </span>
+                </b-button>
+
+                <!-- Botón Debug -->
+                <b-button
+                  class="btn btn-block"
+                  variant="primary"
+                  @click="do_debug"
+                  :pressed="debugging"
+                  :disabled="
+                    debugging ||
+                    flashing ||
+                    running ||
+                    fullclean ||
+                    stoprunning ||
+                    eraseflash
+                  "
+                >
+                  <font-awesome-icon :icon="['fas', 'bug']" />
+                  <span v-if="!debugging">&nbsp;Debug</span>
+                  <span v-else> &nbsp;Debuging... <b-spinner small /> </span>
+                </b-button>
+
+                <!-- Botón Stop -->
+                <b-button
+                  class="btn btn-block"
+                  variant="primary"
+                  @click="do_stop_monitor"
+                  :pressed="stoprunning"
+                  :disabled="
+                    !(running || debugging) ||
+                    flashing ||
+                    fullclean ||
+                    eraseflash
+                  "
+                >
+                  <font-awesome-icon :icon="['fas', 'stop']" />
+                  <span v-if="!stoprunning"> Stop</span>
+                  <span v-else> Stopping... <b-spinner small /> </span>
+                </b-button>
+              </b-col>
+            </b-row>
+          </b-container>
         </div>
-      </div>
-    </div>
 
-    <label for="select-local-boards">(1) Select Target Board:</label>
+        <div class="mt-4 text-center">
+          For instructions on how to use this feature, please refer to the
+          <a
+            href="https://creatorsim.github.io/creator-wiki/web/gateway.html"
+            target="_blank"
+            >CREATOR Gateway Documentation</a
+          >.
+        </div>
+      </b-tab>
 
-    <b-form-select
-      id="select-local-boards"
-      v-model="targetBoard"
-      :options="
-        selectedOption === 'esp32' ? target_boards : sbc_target_boards
-      "
-      size="sm"
-      class="mt-2"
-      @change="onTabChange"
-    />
-    <br />
+      <!-- Remote -->
 
-    <div v-if="targetBoard" class="mt-3">
-      <div v-if="targetBoard.startsWith('sbc')">
-        <label for="target-user">
-          (2-1) Target User: (please verify your board user)
-        </label>
-        <b-form-input
-          id="target-port"
-          type="text"
-          v-model="targetPort"
-          placeholder="Enter target user"
-          size="sm"
-          class="my-2"
-        />
+      <b-tab title="Remote Device" id="flash-tab-remote">
+        Remote Device URL:
+        <b-input-group class="my-2">
+          <b-form-input
+            type="text"
+            v-model="labURL"
+            placeholder="Enter remote device URL"
+            size="sm"
+          />
 
-        <label for="target-location">
-          (2-2) Target Location: (please verify the route exists in your
-          board)
-        </label>
-        <b-form-input
-          id="target-location"
-          type="text"
-          v-model="targetLocation"
-          size="sm"
-          class="my-2"
-        />
-      </div>
-      <div v-else>
-        <label for="target-port">
-          (2) Target port (please verify the port on your computer):
-        </label>
-        <b-form-input
-          id="target-port"
-          type="text"
-          v-model="targetPort"
-          placeholder="Enter target port"
-          size="sm"
-          class="my-2"
-        />
-      </div>
-      <label for="flash-url"> (3) Flash URL: </label>
-      <b-form-input
-        id="flash-url"
-        type="text"
-        v-model="flashURL"
-        placeholder="Enter flash URL"
-        size="sm"
-        class="my-2"
-      />
-      <b-container fluid align-h="center">
-        <b-row align-h="center" class="mt-3">
-          <!-- Columna 1: Flash, Clean y Erase Flash -->
+          <b-button size="sm" variant="primary" @click="get_boards">
+            <font-awesome-icon :icon="['fas', 'link']" /> Connect
+          </b-button>
+        </b-input-group>
 
-          <b-col class="d-grid gap-3">
-            <!-- Botón Flash -->
-            <b-button
-              variant="primary"
-              @click="do_flash"
-              :pressed="flashing"
-              :disabled="
-                flashing ||
-                running ||
-                debugging ||
-                fullclean ||
-                stoprunning ||
-                eraseflash
-              "
-            >
-              <font-awesome-icon :icon="['fas', 'bolt-lightning']" />
-              <span v-if="!flashing">&nbsp;Flash</span>
-              <span v-else> &nbsp;Flashing... <b-spinner small /> </span>
-            </b-button>
+        <b-container fluid align-h="center" class="mx-0 px-0" v-if="boards">
+          <label for="select-remote-boards">Target board:</label>
+          <b-form-select
+            id="select-remote-boards"
+            v-model="targetBoard"
+            :options="remote_target_boards"
+            size="sm"
+          />
+          <br />
+        </b-container>
 
-            <!-- Botón Clean -->
-            <b-button
-              class="btn btn-block"
-              variant="danger"
-              @click="showConfirmPopup('fullclean')"
-              :pressed="fullclean"
-              :disabled="
-                fullclean ||
-                flashing ||
-                running ||
-                debugging ||
-                stoprunning ||
-                eraseflash
-              "
-            >
-              <font-awesome-icon :icon="['fas', 'trash']" />
-              <span v-if="!fullclean">&nbsp;Clean</span>
-              <span v-else> &nbsp;Cleaning... <b-spinner small /> </span>
-            </b-button>
+        <b-container fluid align-h="center" class="mx-0 px-0" v-if="boards">
+          E-mail to receive the execution results:
+          <b-form-input
+            type="text"
+            v-model="resultEmail"
+            placeholder="Enter E-mail"
+            size="sm"
+          />
+          <br />
+        </b-container>
 
-            <!-- Botón Erase Flash -->
-            <b-button
-              class="btn btn-block"
-              variant="danger"
-              @click="showConfirmPopup('eraseflash')"
-              :pressed="eraseflash"
-              :disabled="
-                eraseflash ||
-                fullclean ||
-                flashing ||
-                running ||
-                debugging ||
-                stoprunning
-              "
-            >
-              <font-awesome-icon :icon="['fas', 'broom']" />
-              <span v-if="!eraseflash">&nbsp;Erase Flash</span>
-              <span v-else> &nbsp;Erasing... <b-spinner small /> </span>
-            </b-button>
+        <div v-if="position">
+          Last program status: <b>{{ position }}</b>
+        </div>
 
-            <!-- Popup de confirmación -->
-            <b-modal
-              id="confirm-popup"
-              v-model="showPopup"
-              title="Confirm Action"
-              @ok="confirmAction"
-            >
-              This action will delete your previous work. Are you sure you
-              want to proceed?
-            </b-modal>
-          </b-col>
+        <div class="mt-3">
+          <!-- send button -->
+          <b-button
+            v-if="boards && targetBoard"
+            class="me-1"
+            size="sm"
+            variant="primary"
+            @click="do_enqueue"
+          >
+            <font-awesome-icon :icon="['fas', 'paper-plane']" />
+            Send program
+          </b-button>
 
-          <!-- Columna 2: Monitor, Debug y Stop -->
+          <!-- cancel button -->
+          <b-button
+            v-if="targetBoard && enqueue"
+            size="sm"
+            variant="danger"
+            @click="do_cancel"
+          >
+            <font-awesome-icon :icon="['fas', 'ban']" />
+            Cancel last program
+          </b-button>
+        </div>
 
-          <b-col class="d-grid gap-3">
-            <!-- Botón Monitor -->
-            <b-button
-              variant="primary"
-              @click="do_monitor"
-              :pressed="running"
-              :disabled="
-                running ||
-                flashing ||
-                debugging ||
-                fullclean ||
-                stoprunning ||
-                eraseflash
-              "
-            >
-              <font-awesome-icon :icon="['fas', 'desktop']" />
-              <span v-if="!running">&nbsp;Monitor</span>
-              <span v-else> &nbsp;Running... <b-spinner small /> </span>
-            </b-button>
-
-            <!-- Botón Debug -->
-            <b-button
-              class="btn btn-block"
-              variant="primary"
-              @click="do_debug"
-              :pressed="debugging"
-              :disabled="
-                debugging ||
-                flashing ||
-                running ||
-                fullclean ||
-                stoprunning ||
-                eraseflash
-              "
-            >
-              <font-awesome-icon :icon="['fas', 'bug']" />
-              <span v-if="!debugging">&nbsp;Debug</span>
-              <span v-else> &nbsp;Debuging... <b-spinner small /> </span>
-            </b-button>
-
-            <!-- Botón Stop -->
-            <b-button
-              class="btn btn-block"
-              variant="primary"
-              @click="do_stop_monitor"
-              :pressed="stoprunning"
-              :disabled="
-                !(running || debugging) ||
-                flashing ||
-                fullclean ||
-                eraseflash
-              "
-            >
-              <font-awesome-icon :icon="['fas', 'stop']" />
-              <span v-if="!stoprunning"> Stop</span>
-              <span v-else> Stopping... <b-spinner small /> </span>
-            </b-button>
-          </b-col>
-        </b-row>
-      </b-container>
-    </div>
+        <div class="mt-4 text-center">
+          For instructions on how to use this feature, please refer to the
+          <a
+            href="https://creatorsim.github.io/creator-wiki/web/remote-lab.html"
+            target="_blank"
+            >CREATOR Remote Laboratory Documentation</a
+          >.
+        </div>
+      </b-tab>
+    </b-tabs>
   </b-modal>
 </template>
-
-<style lang="scss" scoped>
-</style>

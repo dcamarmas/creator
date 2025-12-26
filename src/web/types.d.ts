@@ -117,6 +117,7 @@ interface AppRootInstance {
     vim_mode: boolean;
     autoscroll: boolean;
     instructions: unknown[];
+    target_ports: { [os: string]: string };
     $refs?: {
         simulatorView?: {
             $refs?: {
