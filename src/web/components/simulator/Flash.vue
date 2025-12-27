@@ -856,7 +856,7 @@ export default defineComponent({
         <div class="mt-4 text-center">
           For instructions on how to use this feature, please refer to the
           <a
-            href="https://creatorsim.github.io/creator-wiki/teaching-resources/remote-lab.html"
+            href="https://creatorsim.github.io/creator-wiki/web/remote-lab.html"
             target="_blank"
             >CREATOR Remote Laboratory Documentation</a
           >.
