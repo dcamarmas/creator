@@ -809,7 +809,7 @@ export default defineComponent({
           </b-button>
         </b-input-group>
 
-        <b-container fluid align-h="center" class="mx-0 px-0" v-if="boards">
+        <b-container fluid align-h="center" class="my-2 px-0" v-if="boards">
           <label for="select-remote-boards">Target board:</label>
           <b-form-select
             id="select-remote-boards"
@@ -817,10 +817,14 @@ export default defineComponent({
             :options="remote_target_boards"
             size="sm"
           />
-          <br />
         </b-container>
 
-        <b-container fluid align-h="center" class="mx-0 px-0" v-if="boards">
+        <b-container
+          fluid
+          align-h="center"
+          class="my-2 px-0"
+          v-if="boards && targetBoard"
+        >
           E-mail to receive the execution results:
           <b-form-input
             type="text"
@@ -828,17 +832,16 @@ export default defineComponent({
             placeholder="Enter E-mail"
             size="sm"
           />
-          <br />
         </b-container>
 
-        <div v-if="position">
+        <div class="mt-3" v-if="position">
           Last program status: <b>{{ position }}</b>
         </div>
 
         <div class="mt-3">
           <!-- send button -->
           <b-button
-            v-if="boards && targetBoard"
+            v-if="boards && targetBoard && !enqueue"
             class="me-1"
             size="sm"
             variant="primary"
