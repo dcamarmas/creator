@@ -229,16 +229,23 @@ export default defineComponent({
         if (data === "Completed") {
           this.enqueue = false;
         }
-        if (data !== "-1") {
-          if (data === "-2") {
-            this.position = "Error";
-            this.enqueue = false;
-          } else if (!isNaN(data)) {
-            this.position = "Queue position: " + data;
-          } else {
-            this.position = data;
-          }
+
+        if (data !== -1) {
+          return;
         }
+
+        if (data === -2) {
+          this.position = "Error";
+          this.enqueue = false;
+          return;
+        }
+
+        if (!isNaN(data)) {
+          this.position = "Queue position: " + data;
+          return;
+        }
+
+        this.position = data;
       });
       // Google Analytics
       creator_ga("simulator", "simulator.position", "simulator.position");

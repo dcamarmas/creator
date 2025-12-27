@@ -145,7 +145,7 @@ export const REMOTELAB = {
                     "Remote device not available at the moment. Please, try again later.",
                     "danger",
                 );
-                return "-2";
+                return -2;
             }
 
             return err.toString() + "\n";
