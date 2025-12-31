@@ -42,7 +42,7 @@ export const STACK = {
         stackTracker.newFrame(function_name);
 
         // sentinel
-        if (!architecture.config.passing_convention) {
+        if (architecture.config.passing_convention) {
             sentinel.enter(function_name);
         }
     },
