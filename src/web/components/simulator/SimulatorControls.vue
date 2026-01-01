@@ -1,5 +1,5 @@
 <!--
-Copyright 2018-2025 CREATOR Team.
+Copyright 2018-2026 CREATOR Team.
 
 This file is part of CREATOR.
 
@@ -17,7 +17,14 @@ You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <script setup lang="ts">
-import { ref, computed, onMounted, onBeforeUnmount, watch, type PropType } from "vue";
+import {
+  ref,
+  computed,
+  onMounted,
+  onBeforeUnmount,
+  watch,
+  type PropType,
+} from "vue";
 import {
   set_execution_mode,
   status,
@@ -115,14 +122,20 @@ onMounted(() => {
   } else if (status.execution_index === -1) {
     hasError.value = true;
   }
-  
+
   // Subscribe to executor button update events
-  coreEvents.on(CoreEventTypes.EXECUTOR_BUTTONS_UPDATE, handleButtonStateUpdate);
+  coreEvents.on(
+    CoreEventTypes.EXECUTOR_BUTTONS_UPDATE,
+    handleButtonStateUpdate,
+  );
 });
 
 onBeforeUnmount(() => {
   // Clean up event listener
-  coreEvents.off(CoreEventTypes.EXECUTOR_BUTTONS_UPDATE, handleButtonStateUpdate);
+  coreEvents.off(
+    CoreEventTypes.EXECUTOR_BUTTONS_UPDATE,
+    handleButtonStateUpdate,
+  );
 });
 
 // Handler for button state updates from core
@@ -489,7 +502,10 @@ function execute_program_packed() {
       isFinished.value = true;
     } else if (status.execution_index === -1) {
       hasError.value = true;
-      errorMessage.value = ret?.msg || errorMessage.value || "The program has finished with errors";
+      errorMessage.value =
+        ret?.msg ||
+        errorMessage.value ||
+        "The program has finished with errors";
     }
   }
 }
@@ -531,21 +547,30 @@ defineExpose({
     <div class="execution-main-controls">
       <button
         class="sim-button"
-        :class="{ 'sim-button-dark': dark, 'is-hidden': isFinished || hasError }"
+        :class="{
+          'sim-button-dark': dark,
+          'is-hidden': isFinished || hasError,
+        }"
         accesskey="a"
         :disabled="instruction_disable || isFinished || hasError"
         :title="`${accesskey_prefix}A`"
         :tabindex="isFinished || hasError ? -1 : 0"
         @click="execute_instruction"
       >
-        <font-awesome-icon :icon="['fas', 'forward-step']" class="icon-spacing" />
+        <font-awesome-icon
+          :icon="['fas', 'forward-step']"
+          class="icon-spacing"
+        />
         <span class="button-text">Step</span>
       </button>
 
       <button
         id="playExecution"
         class="sim-button"
-        :class="{ 'sim-button-dark': dark, 'is-hidden': isFinished || hasError }"
+        :class="{
+          'sim-button-dark': dark,
+          'is-hidden': isFinished || hasError,
+        }"
         accesskey="r"
         :disabled="run_disable || isFinished || hasError"
         :title="`${accesskey_prefix}R`"
@@ -568,7 +593,9 @@ defineExpose({
         :disabled="isFinished"
       >
         <font-awesome-icon
-          :icon="isFinished ? ['fas', 'check'] : ['fas', 'triangle-exclamation']"
+          :icon="
+            isFinished ? ['fas', 'check'] : ['fas', 'triangle-exclamation']
+          "
           class="icon-spacing"
         />
         <span class="button-text">{{ isFinished ? "Finished" : "Error" }}</span>

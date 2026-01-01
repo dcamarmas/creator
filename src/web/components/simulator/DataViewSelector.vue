@@ -1,5 +1,5 @@
 <!--
-Copyright 2018-2025 CREATOR Team.
+Copyright 2018-2026 CREATOR Team.
 
 This file is part of CREATOR.
 
@@ -172,7 +172,13 @@ export default defineComponent({
 
       <!-- Terminal Tab -->
       <button
-        :class="['tab', { active: current_reg_type === 'terminal', 'flash-attention': isWaitingForInput }]"
+        :class="[
+          'tab',
+          {
+            active: current_reg_type === 'terminal',
+            'flash-attention': isWaitingForInput,
+          },
+        ]"
         @click="change_data_view('terminal')"
       >
         <font-awesome-icon :icon="['fas', 'terminal']" /> <span>Terminal</span>

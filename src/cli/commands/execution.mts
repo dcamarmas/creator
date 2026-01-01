@@ -1,5 +1,5 @@
 /**
- * Copyright 2018-2025 CREATOR Team.
+ * Copyright 2018-2026 CREATOR Team.
  *
  * This file is part of CREATOR.
  *
@@ -213,7 +213,10 @@ export function handleNurCommand(): void {
     let iterations = 0;
     let breakpointHit = false;
 
-    while (cliState.hasPreviousStates() && iterations < cliState.MAX_INSTRUCTIONS) {
+    while (
+        cliState.hasPreviousStates() &&
+        iterations < cliState.MAX_INSTRUCTIONS
+    ) {
         const prevState = cliState.popState();
         if (!prevState) break;
 

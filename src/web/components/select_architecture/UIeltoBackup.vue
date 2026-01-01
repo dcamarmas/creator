@@ -1,5 +1,5 @@
 <!--
-Copyright 2018-2025 CREATOR Team.
+Copyright 2018-2026 CREATOR Team.
 
 This file is part of CREATOR.
 
@@ -110,8 +110,11 @@ export default defineComponent({
       </div>
 
       <div class="backup-actions d-flex gap-2">
-        <b-button variant="outline-secondary" class="flex-fill" @click="remove_copy">
-
+        <b-button
+          variant="outline-secondary"
+          class="flex-fill"
+          @click="remove_copy"
+        >
           Discard
         </b-button>
         <b-button variant="primary" class="flex-fill" @click="load_copy">

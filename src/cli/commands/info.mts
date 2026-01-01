@@ -1,5 +1,5 @@
 /**
- * Copyright 2018-2025 CREATOR Team.
+ * Copyright 2018-2026 CREATOR Team.
  *
  * This file is part of CREATOR.
  *
@@ -19,7 +19,12 @@
 
 import process from "node:process";
 import { cliState } from "../state.mts";
-import { clearConsole, colorText, CLI_VERSION, CREATOR_ASCII } from "../display.mts";
+import {
+    clearConsole,
+    colorText,
+    CLI_VERSION,
+    CREATOR_ASCII,
+} from "../display.mts";
 import { CONFIG_PATH } from "../config.mts";
 import { getVersion } from "../version.mts";
 
@@ -32,8 +37,7 @@ export function handleAboutCommand(): void {
     const creatorVersion = getVersion();
 
     if (!cliState.accessible) {
-        const coloredASCII = CREATOR_ASCII
-            .split("\n")
+        const coloredASCII = CREATOR_ASCII.split("\n")
             .map(line => colorText(line, "32"))
             .join("\n");
         console.log(coloredASCII);
@@ -51,7 +55,9 @@ export function handleAboutCommand(): void {
         console.log(
             "║" +
                 colorText(" 🚀 CREATOR Core Version:", "33") +
-                ` ${creatorVersion}`.padEnd(35 - creatorVersion.length + " 6.0.0".length) +
+                ` ${creatorVersion}`.padEnd(
+                    35 - creatorVersion.length + " 6.0.0".length,
+                ) +
                 "║",
         );
         console.log(

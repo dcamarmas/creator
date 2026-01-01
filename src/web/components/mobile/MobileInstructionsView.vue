@@ -1,5 +1,5 @@
 <!--
-Copyright 2018-2025 CREATOR Team.
+Copyright 2018-2026 CREATOR Team.
 
 This file is part of CREATOR.
 
@@ -111,10 +111,7 @@ export default defineComponent({
         </div>
 
         <div class="sentinel-container">
-          <SentinelErrorsDropdown
-            ref="sentinelDropdownRef"
-            :dark="dark"
-          />
+          <SentinelErrorsDropdown ref="sentinelDropdownRef" :dark="dark" />
         </div>
       </div>
     </div>

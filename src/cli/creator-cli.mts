@@ -1,5 +1,5 @@
 /**
- * Copyright 2018-2025 CREATOR Team.
+ * Copyright 2018-2026 CREATOR Team.
  *
  * This file is part of CREATOR.
  *
@@ -295,7 +295,7 @@ async function main(): Promise<void> {
     // Display welcome banner and start interactive mode
     displayWelcomeBanner();
     creator.reset();
-    interactiveMode((redrawPrompt) => {
+    interactiveMode(redrawPrompt => {
         // Store the redraw callback for use by the update checker
         redrawPromptCallback = redrawPrompt;
     });

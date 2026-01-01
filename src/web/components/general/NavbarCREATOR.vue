@@ -1,5 +1,5 @@
 <!--
-Copyright 2018-2025 CREATOR Team.
+Copyright 2018-2026 CREATOR Team.
 
 This file is part of CREATOR.
 
@@ -101,7 +101,7 @@ export default defineComponent({
         | "architecture"
         | "settings", // Track current mobile view
       showAnnouncementTooltip: false, // Show tooltip only when text is truncated
-      announcement: { 
+      announcement: {
         text: "", // Don't modify it here! Use the announcement.yml file in /public
         link: "",
       },
@@ -153,7 +153,7 @@ export default defineComponent({
     showMobileNavbar() {
       return this.creator_mode !== "select_architecture";
     },
-    
+
     // Show announcement only if there's text and user hasn't dismissed it
     showAnnouncement() {
       return this.announcement.text && !this.dismissedAnnouncement;
@@ -167,7 +167,7 @@ export default defineComponent({
     // Check if announcement text is truncated on mount and resize
     this.checkAnnouncementTruncation();
     window.addEventListener("resize", this.checkAnnouncementTruncation);
-    
+
     // Load announcement from YAML file
     await this.loadAnnouncement();
   },
@@ -284,7 +284,8 @@ export default defineComponent({
         const textElement = this.$refs.announcementText as HTMLElement;
         if (textElement) {
           // Check if text is truncated by comparing scroll width with client width
-          this.showAnnouncementTooltip = textElement.scrollWidth > textElement.clientWidth;
+          this.showAnnouncementTooltip =
+            textElement.scrollWidth > textElement.clientWidth;
         }
       });
     },
@@ -298,13 +299,13 @@ export default defineComponent({
             text: data.text || "",
             link: data.link || "",
           };
-          
+
           // Check if user previously dismissed this announcement
           const dismissedText = localStorage.getItem("dismissedAnnouncement");
           if (dismissedText === this.announcement.text) {
             this.dismissedAnnouncement = true;
           }
-          
+
           // Re-check truncation after announcement loads
           this.checkAnnouncementTruncation();
         }
@@ -346,10 +347,7 @@ export default defineComponent({
         <b-dropdown-item href=".">
           <font-awesome-icon :icon="['fas', 'home']" class="me-2" /> Home
         </b-dropdown-item>
-        <b-dropdown-item
-          href="https://creatorsim.github.io/"
-          target="_blank"
-        >
+        <b-dropdown-item href="https://creatorsim.github.io/" target="_blank">
           <font-awesome-icon :icon="['fas', 'globe']" class="me-2" /> Project
           Website
         </b-dropdown-item>
@@ -378,8 +376,8 @@ export default defineComponent({
           Community
         </b-dropdown-item>
         <b-dropdown-item v-b-modal.about>
-          <font-awesome-icon :icon="['fas', 'address-card']" class="me-2" /> About
-          Creator
+          <font-awesome-icon :icon="['fas', 'address-card']" class="me-2" />
+          About Creator
         </b-dropdown-item>
       </b-nav-item-dropdown>
     </b-navbar-nav>
@@ -517,8 +515,8 @@ export default defineComponent({
           <font-awesome-icon :icon="['fab', 'usb']" class="me-2" /> Flash
         </b-dropdown-item>
         <b-dropdown-item v-b-modal.calculator>
-          <font-awesome-icon :icon="['fas', 'calculator']" class="me-2" /> IEEE754
-          Calculator
+          <font-awesome-icon :icon="['fas', 'calculator']" class="me-2" />
+          IEEE754 Calculator
         </b-dropdown-item>
       </b-nav-item-dropdown>
 
@@ -547,19 +545,23 @@ export default defineComponent({
           <font-awesome-icon :icon="['fas', 'file-lines']" class="me-2" />
           Examples...
         </b-dropdown-item>
-        <b-dropdown-divider v-if="creator_mode === 'assembly' || creator_mode === 'simulator'" />
+        <b-dropdown-divider
+          v-if="creator_mode === 'assembly' || creator_mode === 'simulator'"
+        />
         <b-dropdown-item
           href="https://creatorsim.github.io/creator-wiki"
           target="_blank"
         >
-          <font-awesome-icon :icon="['fas', 'circle-question']" class="me-2" /> CREATOR Help
+          <font-awesome-icon :icon="['fas', 'circle-question']" class="me-2" />
+          CREATOR Help
         </b-dropdown-item>
         <b-dropdown-item
           v-if="architectureGuide"
           :href="architectureGuide"
           target="_blank"
         >
-          <font-awesome-icon :icon="['fas', 'file-pdf']" class="me-2" /> {{ architecture_name }} Guide
+          <font-awesome-icon :icon="['fas', 'file-pdf']" class="me-2" />
+          {{ architecture_name }} Guide
         </b-dropdown-item>
       </b-nav-item-dropdown>
 
@@ -592,10 +594,7 @@ export default defineComponent({
       </b-nav-item>
 
       <!-- Separator before Sentinel button -->
-      <div
-        v-if="showExecuteMenu"
-        class="button-separator"
-      ></div>
+      <div v-if="showExecuteMenu" class="button-separator"></div>
 
       <!-- Sentinel Errors Dropdown (Simulator View Only) -->
       <SentinelErrorsDropdown
@@ -608,17 +607,24 @@ export default defineComponent({
 
     <!-- Announcement Section (shown when viewport > 1000px and text is present) -->
     <div v-if="showAnnouncement" class="announcement-section">
-      <a 
+      <a
         v-if="announcement.link"
         :href="announcement.link"
         target="_blank"
         rel="noopener noreferrer"
         class="announcement-content announcement-link"
-        v-b-tooltip.hover.bottom="showAnnouncementTooltip ? announcement.text : ''"
+        v-b-tooltip.hover.bottom="
+          showAnnouncementTooltip ? announcement.text : ''
+        "
       >
-        <font-awesome-icon :icon="['fas', 'bullhorn']" class="announcement-icon" />
-        <span class="announcement-text" ref="announcementText">{{ announcement.text }}</span>
-        <button 
+        <font-awesome-icon
+          :icon="['fas', 'bullhorn']"
+          class="announcement-icon"
+        />
+        <span class="announcement-text" ref="announcementText">{{
+          announcement.text
+        }}</span>
+        <button
           class="announcement-close"
           @click.prevent="dismissAnnouncement"
           aria-label="Dismiss announcement"
@@ -626,14 +632,21 @@ export default defineComponent({
           <font-awesome-icon :icon="['fas', 'xmark']" />
         </button>
       </a>
-      <div 
+      <div
         v-else
         class="announcement-content"
-        v-b-tooltip.hover.bottom="showAnnouncementTooltip ? announcement.text : ''"
+        v-b-tooltip.hover.bottom="
+          showAnnouncementTooltip ? announcement.text : ''
+        "
       >
-        <font-awesome-icon :icon="['fas', 'bullhorn']" class="announcement-icon" />
-        <span class="announcement-text" ref="announcementText">{{ announcement.text }}</span>
-        <button 
+        <font-awesome-icon
+          :icon="['fas', 'bullhorn']"
+          class="announcement-icon"
+        />
+        <span class="announcement-text" ref="announcementText">{{
+          announcement.text
+        }}</span>
+        <button
           class="announcement-close"
           @click="dismissAnnouncement"
           aria-label="Dismiss announcement"

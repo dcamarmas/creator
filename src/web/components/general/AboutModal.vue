@@ -1,5 +1,5 @@
 <!--
-Copyright 2018-2025 CREATOR Team.
+Copyright 2018-2026 CREATOR Team.
 
 This file is part of CREATOR.
 
@@ -319,7 +319,7 @@ onMounted(async () => {
 
     <div class="modal-footer-info mt-4 pt-3 border-top text-center">
       <p class="text-muted small mb-0">
-        &copy; 2018-2025 CREATOR Development Team. Licensed under
+        &copy; 2018-2026 CREATOR Development Team. Licensed under
         {{ projectLicense }}.
       </p>
     </div>

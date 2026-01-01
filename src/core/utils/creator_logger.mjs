@@ -1,5 +1,5 @@
 /**
- * Copyright 2018-2025 CREATOR Team.
+ * Copyright 2018-2026 CREATOR Team.
  *
  * This file is part of CREATOR.
  *

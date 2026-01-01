@@ -1,5 +1,5 @@
 <!--
-Copyright 2018-2025 CREATOR Team.
+Copyright 2018-2026 CREATOR Team.
 
 This file is part of CREATOR.
 
@@ -28,7 +28,7 @@ import { registerCreatorThemes } from "@/web/monaco/themes";
 
 import { architecture, reset, loadArchitecture } from "@/core/core.mjs";
 import { show_notification, storeBackup } from "@/web/utils.mjs";
-import schema from "../../../../docs/schema/architecture.json"
+import schema from "../../../../docs/schema/architecture.json";
 
 // Register custom themes
 registerCreatorThemes();

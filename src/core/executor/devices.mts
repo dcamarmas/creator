@@ -1,5 +1,5 @@
 /**
- * Copyright 2018-2025 CREATOR Team.
+ * Copyright 2018-2026 CREATOR Team.
  *
  * This file is part of CREATOR.
  *
@@ -210,7 +210,7 @@ class ConsoleDevice extends Device {
 
         // stop program to wait for read
         status.run_program = 3;
-        
+
         // Emit event to disable buttons in UI
         if (typeof document !== "undefined") {
             coreEvents.emit(CoreEventTypes.EXECUTOR_BUTTONS_UPDATE, {

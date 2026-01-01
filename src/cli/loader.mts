@@ -1,5 +1,5 @@
 /**
- * Copyright 2018-2025 CREATOR Team.
+ * Copyright 2018-2026 CREATOR Team.
  *
  * This file is part of CREATOR.
  *
@@ -40,7 +40,10 @@ export const assemblerMap = {
 /**
  * Load architecture from file
  */
-export function loadArchitecture(filePath: string, isaExtensions: string[]): void {
+export function loadArchitecture(
+    filePath: string,
+    isaExtensions: string[],
+): void {
     const architectureFile = fs.readFileSync(filePath, "utf8");
     const architectureObj = yaml.load(architectureFile) as Architecture;
     cliState.pluginName = architectureObj.config.plugin;
@@ -115,7 +118,10 @@ export function loadLibrary(filePath: string): void {
 /**
  * Assemble an assembly file
  */
-export async function assemble(filePath: string, assembler?: string): Promise<void> {
+export async function assemble(
+    filePath: string,
+    assembler?: string,
+): Promise<void> {
     if (!filePath) {
         console.log("No assembly file specified.");
         return;

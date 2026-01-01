@@ -1,5 +1,5 @@
 /**
- * Copyright 2018-2025 CREATOR Team.
+ * Copyright 2018-2026 CREATOR Team.
  *
  * This file is part of CREATOR.
  *
@@ -38,7 +38,9 @@ export function handleStackCommand(args: string[]): void {
     }
 
     // 1. Display call stack hierarchy
-    console.log(cliState.accessible ? "Call Stack:" : colorText("Call Stack:", "36"));
+    console.log(
+        cliState.accessible ? "Call Stack:" : colorText("Call Stack:", "36"),
+    );
 
     for (const [i, frame] of stackFrames.toReversed().entries()) {
         const functionName = frame.name ?? "";
