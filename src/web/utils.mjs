@@ -1,5 +1,5 @@
 /**
- * Copyright 2018-2025 CREATOR Team.
+ * Copyright 2018-2026 CREATOR Team.
  *
  * This file is part of CREATOR.
  *
@@ -224,7 +224,6 @@ export async function loadExample(
         // FIXME: as we can't compile (see above), we go to the
         // assembly view, when we should go to simulator view
         root.creator_mode = "assembly";
-
     } catch (_error) {
         show_notification(`'${set_name}' set not found`, "danger", root);
     }

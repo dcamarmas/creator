@@ -1,5 +1,5 @@
 <!--
-Copyright 2018-2025 CREATOR Team.
+Copyright 2018-2026 CREATOR Team.
 
 This file is part of CREATOR.
 
@@ -157,18 +157,18 @@ export default defineComponent({
 
     getBankVisualization(bank: any): string {
       // Return bank-specific visualization if set, otherwise use hex as default
-      return this.bankVisualizations[bank.name] || 'hex';
+      return this.bankVisualizations[bank.name] || "hex";
     },
 
     getBankVisualizationOptions(bank: any) {
       // Return appropriate options based on bank type
-      return bank.type.includes('float') || bank.type.includes('fp')
+      return bank.type.includes("float") || bank.type.includes("fp")
         ? this.reg_representation_float_options
         : this.reg_representation_int_options;
     },
 
     isBankFloatingPoint(bank: any): boolean {
-      return bank.type.includes('float') || bank.type.includes('fp');
+      return bank.type.includes("float") || bank.type.includes("fp");
     },
 
     toggleVisualizationDropdown(bankName: string) {
@@ -218,7 +218,7 @@ export default defineComponent({
                   />
                   <h5 class="mb-0 bank-title">{{ bank.name }}</h5>
                 </button>
-                
+
                 <!-- Visualization dropdown -->
                 <div class="bank-viz-dropdown" @click.stop>
                   <button
@@ -226,7 +226,11 @@ export default defineComponent({
                     :class="{ 'is-open': openDropdown === bank.name }"
                     @click="toggleVisualizationDropdown(bank.name)"
                   >
-                    {{ getBankVisualizationOptions(bank).find(opt => opt.value === getBankVisualization(bank))?.text || 'Format' }}
+                    {{
+                      getBankVisualizationOptions(bank).find(
+                        opt => opt.value === getBankVisualization(bank),
+                      )?.text || "Format"
+                    }}
                     <font-awesome-icon
                       :icon="['fas', 'chevron-down']"
                       class="dropdown-chevron"
@@ -240,7 +244,10 @@ export default defineComponent({
                       v-for="option in getBankVisualizationOptions(bank)"
                       :key="option.value"
                       class="viz-dropdown-item"
-                      :class="{ 'is-active': getBankVisualization(bank) === option.value }"
+                      :class="{
+                        'is-active':
+                          getBankVisualization(bank) === option.value,
+                      }"
                       @click="setBankVisualization(bank.name, option.value)"
                     >
                       {{ option.text }}

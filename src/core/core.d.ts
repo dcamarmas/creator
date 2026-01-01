@@ -1,5 +1,5 @@
 /**
- * Copyright 2018-2025 CREATOR Team.
+ * Copyright 2018-2026 CREATOR Team.
  *
  * This file is part of CREATOR.
  *
@@ -188,8 +188,12 @@ import type { Memory } from "./memory/Memory.mts";
 export declare const main_memory: Memory;
 export declare const main_memory_backup: Memory;
 
-export declare const PC_REG_INDEX: { indexComp: number; indexElem: number } | undefined;
-export declare const SP_REG_INDEX: { indexComp: number; indexElem: number } | undefined;
+export declare const PC_REG_INDEX:
+    | { indexComp: number; indexElem: number }
+    | undefined;
+export declare const SP_REG_INDEX:
+    | { indexComp: number; indexElem: number }
+    | undefined;
 
 import type { StackTracker } from "./memory/StackTracker.mts";
 export declare const stackTracker: StackTracker;

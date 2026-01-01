@@ -1,5 +1,5 @@
 <!--
-Copyright 2018-2025 CREATOR Team.
+Copyright 2018-2026 CREATOR Team.
 
 This file is part of CREATOR.
 
@@ -21,7 +21,14 @@ import { defineComponent, type PropType } from "vue";
 import type { Memory } from "@/core/memory/Memory.mjs";
 import type { Device } from "@/core/executor/devices.mjs";
 import { coreEvents } from "../../../core/events.mts";
-import { stackTracker, architecture, getPC, PC_REG_INDEX, getSP, SP_REG_INDEX } from "@/core/core.mjs";
+import {
+  stackTracker,
+  architecture,
+  getPC,
+  PC_REG_INDEX,
+  getSP,
+  SP_REG_INDEX,
+} from "@/core/core.mjs";
 import type { StackFrame } from "@/core/memory/StackTracker.mjs";
 import MemoryLayoutDiagram from "../architecture/memory_layout/MemoryLayoutDiagram.vue";
 import { decode } from "@/core/executor/decoder.mjs";
@@ -508,13 +515,14 @@ export default defineComponent({
 
       // Add instruction hints from loaded instructions
       if (instructions && instructions.length > 0) {
-        const wordSizeBytes = architecture.config.word_size / architecture.config.byte_size;
-        
+        const wordSizeBytes =
+          architecture.config.word_size / architecture.config.byte_size;
+
         for (const instruction of instructions) {
           try {
             // Parse instruction address
             const addr = parseInt(instruction.Address, 16);
-            
+
             // Read the instruction bytes from memory for decoding
             const allBytes = [];
             for (let j = 0; j < MAXNWORDS; j++) {
@@ -526,15 +534,16 @@ export default defineComponent({
                 break; // Stop if we can't read more
               }
             }
-            
+
             // Decode to get instruction metadata including nwords
             if (allBytes.length > 0) {
               const decoded = decode(new Uint8Array(allBytes));
-              
+
               if (decoded.status === "ok") {
                 // Calculate instruction size in bits
-                const instructionSizeInBits = decoded.instruction.nwords * architecture.config.word_size;
-                
+                const instructionSizeInBits =
+                  decoded.instruction.nwords * architecture.config.word_size;
+
                 // Add hint for this instruction
                 hints.push({
                   address: addr.toString(),
@@ -546,7 +555,11 @@ export default defineComponent({
             }
           } catch (error) {
             // Skip instructions that can't be decoded
-            console.debug("Could not decode instruction at", instruction.Address, error);
+            console.debug(
+              "Could not decode instruction at",
+              instruction.Address,
+              error,
+            );
           }
         }
       }
@@ -579,11 +592,15 @@ export default defineComponent({
       for (const hint of dump.hints) {
         const address = parseInt(hint.address, 10);
         // Use only type for instructions to give them all the same color
-        const tagTypeKey = hint.type === "instruction" ? "instruction" : `${hint.tag}:${hint.type}`;
+        const tagTypeKey =
+          hint.type === "instruction"
+            ? "instruction"
+            : `${hint.tag}:${hint.type}`;
 
         if (!hintColors.has(tagTypeKey)) {
           // Assign blue color (index 1) to instructions
-          const assignedColor = hint.type === "instruction" ? 1 : colorIndex % 8;
+          const assignedColor =
+            hint.type === "instruction" ? 1 : colorIndex % 8;
           hintColors.set(tagTypeKey, assignedColor);
           if (hint.type !== "instruction") {
             colorIndex++;
@@ -1180,7 +1197,9 @@ export default defineComponent({
           class="toolbar-button"
           @click="viewMode = viewMode === 'hex' ? 'ascii' : 'hex'"
           :class="{ active: viewMode === 'ascii' }"
-          :title="viewMode === 'hex' ? 'Switch to ASCII view' : 'Switch to Hex view'"
+          :title="
+            viewMode === 'hex' ? 'Switch to ASCII view' : 'Switch to Hex view'
+          "
         >
           <font-awesome-icon :icon="['fas', 'exchange-alt']" />
           <span class="button-text">
@@ -1526,7 +1545,6 @@ export default defineComponent({
   font-size: 0.8125rem;
   font-weight: bold;
 
-
   /* Light theme colors */
   color: rgba(0, 0, 0, 0.8);
   background-color: color-mix(in srgb, currentColor 10%, transparent);
@@ -1575,7 +1593,6 @@ export default defineComponent({
 
 /* Mobile toolbar button optimization */
 @media (max-width: 767px) {
-
   /* Hide button text on mobile, show only icons (except Layout) */
   .toolbar-button .button-text:not(.keep-on-mobile) {
     display: none;

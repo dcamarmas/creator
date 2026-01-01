@@ -1,5 +1,5 @@
 /**
- * Copyright 2018-2025 CREATOR Team.
+ * Copyright 2018-2026 CREATOR Team.
  *
  * This file is part of CREATOR.
  *
@@ -105,7 +105,7 @@ export const SYSCALL = {
             }
         }
         status.run_program = 3;
-        
+
         // Emit event to disable buttons in UI
         if (typeof document !== "undefined" && document.app) {
             coreEvents.emit(CoreEventTypes.EXECUTOR_BUTTONS_UPDATE, {
@@ -113,7 +113,7 @@ export const SYSCALL = {
                 run_disable: true,
             });
         }
-        
+
         const register = crex_findReg(dest_reg_info);
         if (register.match === 0) {
             throw new Error(

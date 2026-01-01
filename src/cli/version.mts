@@ -1,5 +1,5 @@
 /**
- * Copyright 2018-2025 CREATOR Team.
+ * Copyright 2018-2026 CREATOR Team.
  *
  * This file is part of CREATOR.
  *
@@ -40,7 +40,7 @@ function isNightlyBuild(): boolean {
     if (channel === "stable") {
         return false;
     }
-    
+
     // Infer from package.json version
     // If version contains prerelease identifiers, treat as nightly
     return /-(beta|alpha|rc|nightly)/i.test(packageJson.version);
@@ -56,7 +56,7 @@ function generateNightlyVersion(): string {
         // If unset, it's a dev build
         return "nightly-dev";
     }
-    
+
     // Use first 7 characters of commit SHA (standard short SHA length)
     const shortSha = commitSha.substring(0, 7);
     return `nightly-${shortSha}`;
@@ -64,7 +64,7 @@ function generateNightlyVersion(): string {
 
 /**
  * Get the current version of CREATOR
- * 
+ *
  * - Nightly channel: Returns nightly-<commit-sha> (from CREATOR_COMMIT env var)
  * - Stable channel: Returns version from package.json
  */
@@ -72,8 +72,6 @@ export function getVersion(): string {
     if (isNightlyBuild()) {
         return generateNightlyVersion();
     }
-    
+
     return packageJson.version;
 }
-
-

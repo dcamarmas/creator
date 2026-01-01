@@ -1,5 +1,5 @@
 /**
- * Copyright 2018-2025 CREATOR Team.
+ * Copyright 2018-2026 CREATOR Team.
  *
  * This file is part of CREATOR.
  *
@@ -87,7 +87,10 @@ export function show_notification(
  * @param msg Notification message.
  * @param level Notification level: 'success', 'warning', 'info', or 'danger'.
  */
-export function crex_show_notification(msg: string, level: NotificationType): void {
+export function crex_show_notification(
+    msg: string,
+    level: NotificationType,
+): void {
     if (typeof window !== "undefined") {
         show_notification(msg, level);
     } else {

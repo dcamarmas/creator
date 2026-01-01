@@ -1,5 +1,5 @@
 <!--
-Copyright 2018-2025 CREATOR Team.
+Copyright 2018-2026 CREATOR Team.
 
 This file is part of CREATOR.
 
@@ -144,8 +144,7 @@ export default {
           variant="info"
           class="execution-badge"
           title="Previous instruction"
-          ></b-badge
-        >
+        ></b-badge>
         <b-badge
           v-else-if="row.item._rowVariant === 'warning'"
           pill

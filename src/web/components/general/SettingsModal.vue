@@ -1,5 +1,5 @@
 <!--
-Copyright 2018-2025 CREATOR Team.
+Copyright 2018-2026 CREATOR Team.
 
 This file is part of CREATOR.
 
@@ -555,9 +555,7 @@ export default defineComponent({
           <font-awesome-icon :icon="['fas', 'rotate-left']" class="me-2" />
           Reset to Defaults
         </b-button>
-        <b-button variant="primary" @click="hide">
-          Close
-        </b-button>
+        <b-button variant="primary" @click="hide"> Close </b-button>
       </div>
     </template>
   </b-modal>

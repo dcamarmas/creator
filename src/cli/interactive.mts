@@ -1,5 +1,5 @@
 /**
- * Copyright 2018-2025 CREATOR Team.
+ * Copyright 2018-2026 CREATOR Team.
  *
  * This file is part of CREATOR.
  *
@@ -195,7 +195,9 @@ export function processCommand(cmd: string, args: string[]): boolean {
 /**
  * Start the interactive CLI mode
  */
-export function interactiveMode(onReady?: (redrawPrompt: () => void) => void): void {
+export function interactiveMode(
+    onReady?: (redrawPrompt: () => void) => void,
+): void {
     const rl = readline.createInterface({
         input: process.stdin,
         output: process.stdout,
@@ -239,7 +241,10 @@ export function interactiveMode(onReady?: (redrawPrompt: () => void) => void): v
                 return;
             }
 
-            if (cliState.config.shortcuts && cliState.config.shortcuts[keyStr]) {
+            if (
+                cliState.config.shortcuts &&
+                cliState.config.shortcuts[keyStr]
+            ) {
                 const cmd = cliState.config.shortcuts[keyStr];
 
                 if (cmd === "break") {

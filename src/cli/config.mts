@@ -1,5 +1,5 @@
 /**
- * Copyright 2018-2025 CREATOR Team.
+ * Copyright 2018-2026 CREATOR Team.
  *
  * This file is part of CREATOR.
  *
@@ -47,7 +47,9 @@ export const DEFAULT_CONFIG: ConfigType = {
  * Load configuration from YAML file
  * Creates default config if file doesn't exist
  */
-export function loadConfiguration(configPath: string = CONFIG_PATH): ConfigType {
+export function loadConfiguration(
+    configPath: string = CONFIG_PATH,
+): ConfigType {
     try {
         // Ensure the directory exists
         const configDir = path.dirname(configPath);
