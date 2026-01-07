@@ -29,6 +29,7 @@ import yaml from "js-yaml";
 import SimulatorControls from "../simulator/SimulatorControls.vue";
 import AssemblyActions from "../assembly/AssemblyActions.vue";
 import SentinelErrorsDropdown from "../simulator/SentinelErrorsDropdown.vue";
+import ThemeToggle from "./ThemeToggle.vue";
 import type { Instruction } from "@/core/assembler/assembler";
 import type { BDropdown } from "bootstrap-vue-next";
 import { coreEvents, CoreEventTypes } from "../../../core/events.mts";
@@ -42,6 +43,7 @@ export default defineComponent({
     browser: { type: String, required: false },
     os: { type: String, required: false },
     dark: { type: Boolean, required: false, default: false },
+    darkModeSetting: { type: String, required: false, default: "system" },
     arch_available: {
       type: Array as PropType<AvailableArch[]>,
       required: false,
@@ -50,12 +52,13 @@ export default defineComponent({
     instructions: Array as PropType<Instruction[]>,
   },
 
-  emits: ["mobile-view-change"],
+  emits: ["mobile-view-change", "update:darkModeSetting"],
 
   components: {
     SimulatorControls,
     AssemblyActions,
     SentinelErrorsDropdown,
+    ThemeToggle,
   },
 
   setup() {
@@ -658,6 +661,12 @@ export default defineComponent({
 
     <!-- Right side actions -->
     <b-navbar-nav class="ms-auto">
+      <!-- Theme Toggle -->
+      <ThemeToggle
+        :dark-mode-setting="darkModeSetting"
+        @update:dark-mode-setting="$emit('update:darkModeSetting', $event)"
+      />
+
       <!-- Notifications Button -->
       <b-nav-item
         v-b-modal.notifications

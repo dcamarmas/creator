@@ -365,7 +365,7 @@ defineExpose({
   position: relative;
 
   // Match icon button height when text is hidden
-  @media (max-width: 825px) {
+  @media (max-width: 860px) {
     min-height: 30px;
     min-width: 32px;
     padding: 8px;
@@ -423,7 +423,7 @@ defineExpose({
     margin-right: 0.35rem;
 
     // Remove margin when text is hidden to center the icon
-    @media (max-width: 825px) {
+    @media (max-width: 860px) {
       margin-right: 0;
     }
   }
@@ -432,7 +432,7 @@ defineExpose({
     white-space: nowrap;
 
     // Hide text on tablet screens to save space
-    @media (max-width: 825px) {
+    @media (max-width: 860px) {
       display: none;
     }
   }
@@ -446,7 +446,7 @@ defineExpose({
     line-height: 14px;
 
     // Adjust position when text is hidden
-    @media (max-width: 825px) {
+    @media (max-width: 860px) {
       position: absolute;
       top: -4px;
       right: -4px;

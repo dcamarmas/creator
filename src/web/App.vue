@@ -645,9 +645,11 @@ export default {
       :browser="browser"
       :os="os"
       :dark="dark"
+      :dark-mode-setting="dark_mode_setting"
       :arch_available="arch_available"
       :instructions="instructions"
       @mobile-view-change="handleMobileViewChange"
+      @update:dark-mode-setting="handleDarkModeSettingChange"
       ref="navbar"
     />
 
