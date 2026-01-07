@@ -82,4 +82,29 @@ export const FP = {
     float2bin(f: number): string {
         return float2bin(f);
     },
+
+    /**
+     * Checks if a value is NaN, supporting both JS numbers and BigInt representations
+     * of IEEE 754 floating-point NaN values.
+     * 
+     * For BigInts, checks if the bit pattern represents a NaN according to IEEE 754:
+     * - Float32 NaN: exponent bits are all 1s (0xFF) and mantissa is non-zero
+     * - Float64 NaN: exponent bits are all 1s (0x7FF) and mantissa is non-zero
+     */
+    isNaN(value: number | bigint): boolean {
+        if (typeof value === "bigint") {
+            // Check for 32-bit float NaN pattern
+            const exp32Mask = 0x7F800000n;
+            const mantissa32Mask = 0x007FFFFFn;
+            const isNaN32 = (value & exp32Mask) === exp32Mask && (value & mantissa32Mask) !== 0n;
+            
+            // Check for 64-bit float NaN pattern
+            const exp64Mask = 0x7FF0000000000000n;
+            const mantissa64Mask = 0x000FFFFFFFFFFFFFn;
+            const isNaN64 = (value & exp64Mask) === exp64Mask && (value & mantissa64Mask) !== 0n;
+            
+            return isNaN32 || isNaN64;
+        }
+        return Number.isNaN(value);
+    },
 };
