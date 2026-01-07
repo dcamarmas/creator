@@ -39,9 +39,57 @@ export default {
         _cellVariants: {},
       }));
     },
+
+    // Find the index of the currently executing instruction
+    currentInstructionIndex() {
+      return this.instructions.findIndex(
+        inst => inst._rowVariant === "success" || inst._rowVariant === "warning"
+      );
+    },
+  },
+
+  watch: {
+    // Watch for changes in the current instruction and scroll to it
+    currentInstructionIndex: {
+      handler(newIndex) {
+        if (newIndex >= 0) {
+          this.$nextTick(() => {
+            this.scrollToCurrentInstruction(newIndex);
+          });
+        }
+      },
+      immediate: true,
+    },
   },
 
   methods: {
+    // Scroll to the currently executing instruction
+    scrollToCurrentInstruction(index) {
+      // The b-table with sticky-header wraps the table in a div with class 'b-table-sticky-header'
+      // which is the scrollable container
+      const scrollContainer = this.$el;
+      if (!scrollContainer) return;
+
+      const tbody = scrollContainer.querySelector("tbody");
+      if (!tbody) return;
+
+      const rows = tbody.querySelectorAll("tr");
+      const targetRow = rows[index];
+      if (!targetRow) return;
+
+      // Calculate scroll position to center the row in view
+      const containerHeight = scrollContainer.clientHeight;
+      const rowTop = targetRow.offsetTop;
+      const rowHeight = targetRow.offsetHeight;
+      const scrollTop = rowTop - (containerHeight / 2) + (rowHeight / 2);
+
+      scrollContainer.scrollTo({
+        top: Math.max(0, scrollTop),
+        behavior: "auto",
+      });
+    },
+
+
     /* Filter table instructions */
     filter(row, _filter) {
       if (row.hide === true) {
