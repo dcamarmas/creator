@@ -53,6 +53,23 @@ function bigintsEqual(a, b) {
     return A === B;
 }
 
+function valuesEqual(a, b) {
+    // Handle null/undefined
+    if (a === null || a === undefined || b === null || b === undefined) {
+        return a === b;
+    }
+
+    // Try BigInt comparison first
+    const A = toBigIntSafe(a);
+    const B = toBigIntSafe(b);
+    if (A !== null && B !== null) {
+        return A === B;
+    }
+    
+    // Fallback to strict equality
+    return a === b;
+}
+
 /**
  * Represents a single event in the register lifecycle
  */
@@ -237,14 +254,7 @@ class ConventionRules {
         const currentValue = REGISTERS[regIndex].elements[elemIndex].value;
         const initialValue = frame.initialRegisterValues[regIndex]?.[elemIndex];
 
-        // Try to compare as BigInt when possible, otherwise fall back to strict equality
-        const curBig = toBigIntSafe(currentValue);
-        const initBig = toBigIntSafe(initialValue);
-
-        const valueChanged =
-            curBig !== null && initBig !== null
-                ? curBig !== initBig
-                : currentValue !== initialValue;
+        const valueChanged = !valuesEqual(currentValue, initialValue);
 
         if (valueChanged && modifications.length > 0) {
             violations.push({

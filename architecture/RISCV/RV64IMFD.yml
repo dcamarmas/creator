@@ -2402,7 +2402,7 @@ instructions:
         [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
         [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
-        if (isNaN(result)) {
+        if (CAPI.FP.isNaN(result)) {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaN32");
         } else {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaNBfloat32_64");
@@ -2428,24 +2428,17 @@ instructions:
         - field: rd
           type: INT-Reg
       preoperation: |
-        let rs1Value, rs2Value, type_rs1, type_rs2;
+        let rs1Value, type_rs1;
         [rs1Value, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
-        [rs2Value, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
-        if (isNaN(registers[rd])) {
-          registers[rd] = CAPI.ARCH.toBigInt(registers[rd], "NaN32");
-        } else {
-          registers[rd] = CAPI.ARCH.toBigInt(registers[rd], "NaNBfloat32_64");
-        }
         registers[rs1] = CAPI.ARCH.toBigInt(rs1Value, type_rs1);
-        registers[rs2] = CAPI.ARCH.toBigInt(rs2Value, type_rs2);
       definition: |
-        let a = CAPI.FP.float2bin(registers[rs1]);
-        registers[rd] = CAPI.FP.check_ieee(
+        let a = CAPI.FP.float2bin(rs1Value);
+        registers[rd] = BigInt(CAPI.FP.check_ieee(
           a[0],
           a.slice(1, 9),
           a.slice(10),
-        );
+        ));
       help: Examines the value in floating-point register rs1 and writes to integer register rd a 10-bit mask that indicates the class of the floating-point number. The corresponding bit in rd will be set if the property is true and clear otherwise. All other bits in rd are cleared. Note that exactly one bit in rd will be set.
     - name: fcvt.s.w
       template: R-IntToFloat
@@ -2504,7 +2497,7 @@ instructions:
         [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
         [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
-        if (isNaN(result)) {
+        if (CAPI.FP.isNaN(result)) {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaN32");
         } else {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaNBfloat32_64");
@@ -2533,7 +2526,7 @@ instructions:
         [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
         [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
-        if (isNaN(result)) {
+        if (CAPI.FP.isNaN(result)) {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaN32");
         } else {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaNBfloat32_64");
@@ -2559,7 +2552,7 @@ instructions:
         [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
         [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
-        if (isNaN(result)) {
+        if (CAPI.FP.isNaN(result)) {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaN32");
         } else {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaNBfloat32_64");
@@ -2585,7 +2578,7 @@ instructions:
         [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
         [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
-        if (isNaN(result)) {
+        if (CAPI.FP.isNaN(result)) {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaN32");
         } else {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaNBfloat32_64");
@@ -2611,7 +2604,7 @@ instructions:
         [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
         [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
-        if (isNaN(result)) {
+        if (CAPI.FP.isNaN(result)) {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaN32");
         } else {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaNBfloat32_64");
@@ -2637,7 +2630,7 @@ instructions:
         [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
         [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
-        if (isNaN(result)) {
+        if (CAPI.FP.isNaN(result)) {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaN32");
         } else {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaNBfloat32_64");
@@ -2661,7 +2654,7 @@ instructions:
         [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
         [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
-        if (isNaN(result)) {
+        if (CAPI.FP.isNaN(result)) {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaN32");
         } else {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaNBfloat32_64");
@@ -2685,7 +2678,7 @@ instructions:
         [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
         [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
-        if (isNaN(result)) {
+        if (CAPI.FP.isNaN(result)) {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaN32");
         } else {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaNBfloat32_64");
@@ -2711,7 +2704,7 @@ instructions:
         [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
         [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
-        if (isNaN(result)) {
+        if (CAPI.FP.isNaN(result)) {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaN32");
         } else {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaNBfloat32_64");
@@ -2734,9 +2727,8 @@ instructions:
       preoperation: |
         let result, rs1Number, rs2Number, type_rs1, type_rs2;
         [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
-        [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
-        if (isNaN(result)) {
+        if (CAPI.FP.isNaN(result)) {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaN32");
         } else {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaNBfloat32_64");
@@ -2761,7 +2753,7 @@ instructions:
         let result, rs1Number, type_rs1;
         [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
       postoperation: |
-        if (isNaN(result)) {
+        if (CAPI.FP.isNaN(result)) {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaN32");
         } else {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaNBfloat32_64");
@@ -2785,7 +2777,7 @@ instructions:
         [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
         [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
-        if (isNaN(result)) {
+        if (CAPI.FP.isNaN(result)) {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaN32");
         } else {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaNBfloat32_64");
@@ -2808,7 +2800,7 @@ instructions:
         [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
         [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
-        if (isNaN(result)) {
+        if (CAPI.FP.isNaN(result)) {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaN32");
         } else {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaNBfloat32_64");
@@ -2830,7 +2822,7 @@ instructions:
         [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
         [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
-        if (isNaN(result)) {
+        if (CAPI.FP.isNaN(result)) {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaN32");
         } else {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaNBfloat32_64");
@@ -2861,7 +2853,7 @@ instructions:
         [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
         [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
-        if (isNaN(result)) {
+        if (CAPI.FP.isNaN(result)) {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaN32");
         } else {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaNBfloat32_64");
@@ -2893,7 +2885,7 @@ instructions:
         [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
         [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
-        if (isNaN(result)) {
+        if (CAPI.FP.isNaN(result)) {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaN32");
         } else {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaNBfloat32_64");
@@ -2921,7 +2913,7 @@ instructions:
         [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
         [rs3Number, type_rs3] = CAPI.ARCH.toJSNumberD(rs3);
       postoperation: |
-        if (isNaN(result)) {
+        if (CAPI.FP.isNaN(result)) {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaN32");
         } else {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaNBfloat32_64");
@@ -2949,7 +2941,7 @@ instructions:
         [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
         [rs3Number, type_rs3] = CAPI.ARCH.toJSNumberD(rs3);
       postoperation: |
-        if (isNaN(result)) {
+        if (CAPI.FP.isNaN(result)) {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaN32");
         } else {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaNBfloat32_64");
@@ -2977,7 +2969,7 @@ instructions:
         [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
         [rs3Number, type_rs3] = CAPI.ARCH.toJSNumberD(rs3);
       postoperation: |
-        if (isNaN(result)) {
+        if (CAPI.FP.isNaN(result)) {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaN32");
         } else {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaNBfloat32_64");
@@ -3005,7 +2997,7 @@ instructions:
         [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
         [rs3Number, type_rs3] = CAPI.ARCH.toJSNumberD(rs3);
       postoperation: |
-        if (isNaN(result)) {
+        if (CAPI.FP.isNaN(result)) {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaN32");
         } else {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaNBfloat32_64");
@@ -3070,7 +3062,7 @@ instructions:
         [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
         [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
-        if (isNaN(result)) {
+        if (CAPI.FP.isNaN(result)) {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaN64");
         } else {
           registers[rd] = CAPI.ARCH.toBigInt(result, "float64");
@@ -3099,7 +3091,7 @@ instructions:
         [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
         [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
-        if (isNaN(result)) {
+        if (CAPI.FP.isNaN(result)) {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaN64");
         } else {
           registers[rd] = CAPI.ARCH.toBigInt(result, "float64");
@@ -3135,7 +3127,7 @@ instructions:
         [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
         [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
-        if (isNaN(result)) {
+        if (CAPI.FP.isNaN(result)) {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaN64");
         } else {
           registers[rd] = CAPI.ARCH.toBigInt(result, "float64");
@@ -3194,7 +3186,7 @@ instructions:
         [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
         [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
-        if (isNaN(result)) {
+        if (CAPI.FP.isNaN(result)) {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaN64");
         } else {
           registers[rd] = CAPI.ARCH.toBigInt(result, "float64");
@@ -3226,7 +3218,7 @@ instructions:
         [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
         [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
-        if (isNaN(result)) {
+        if (CAPI.FP.isNaN(result)) {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaN64");
         } else {
           registers[rd] = CAPI.ARCH.toBigInt(result, "float64");
@@ -3258,7 +3250,7 @@ instructions:
         [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
         [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
-        if (isNaN(result)) {
+        if (CAPI.FP.isNaN(result)) {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaN64");
         } else {
           registers[rd] = CAPI.ARCH.toBigInt(result, "float64");
@@ -3291,7 +3283,7 @@ instructions:
         [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
         [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
-        if (isNaN(result)) {
+        if (CAPI.FP.isNaN(result)) {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaN64");
         } else {
           registers[rd] = CAPI.ARCH.toBigInt(result, "float64");
@@ -3318,7 +3310,7 @@ instructions:
         [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
         [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
-        if (isNaN(result)) {
+        if (CAPI.FP.isNaN(result)) {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaN64");
         } else {
           registers[rd] = CAPI.ARCH.toBigInt(result, "float64");
@@ -3404,7 +3396,7 @@ instructions:
         [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
         [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
-        if (isNaN(result)) {
+        if (CAPI.FP.isNaN(result)) {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaN64");
         } else {
           registers[rd] = CAPI.ARCH.toBigInt(result, "float64");
@@ -3428,7 +3420,7 @@ instructions:
         [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
         [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
-        if (isNaN(result)) {
+        if (CAPI.FP.isNaN(result)) {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaN64");
         } else {
           registers[rd] = CAPI.ARCH.toBigInt(result, "float64");
@@ -3455,7 +3447,7 @@ instructions:
         [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
         [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
-        if (isNaN(result)) {
+        if (CAPI.FP.isNaN(result)) {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaN64");
         } else {
           registers[rd] = CAPI.ARCH.toBigInt(result, "float64");
@@ -3479,7 +3471,7 @@ instructions:
         [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
         [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
-        if (isNaN(result)) {
+        if (CAPI.FP.isNaN(result)) {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaN64");
         } else {
           registers[rd] = CAPI.ARCH.toBigInt(result, "float64");
@@ -3502,7 +3494,7 @@ instructions:
         [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
         [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
-        if (isNaN(result)) {
+        if (CAPI.FP.isNaN(result)) {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaN64");
         } else {
           registers[rd] = CAPI.ARCH.toBigInt(result, "float64");
@@ -3526,7 +3518,7 @@ instructions:
         [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
         [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
-        if (isNaN(result)) {
+        if (CAPI.FP.isNaN(result)) {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaN64");
         } else {
           registers[rd] = CAPI.ARCH.toBigInt(result, "float64");
@@ -3558,7 +3550,7 @@ instructions:
         [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
         [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
-        if (isNaN(result)) {
+        if (CAPI.FP.isNaN(result)) {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaN64");
         } else {
           registers[rd] = CAPI.ARCH.toBigInt(result, "float64");
@@ -3590,7 +3582,7 @@ instructions:
         [rs1Number, type_rs1] = CAPI.ARCH.toJSNumberD(registers[rs1]);
         [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
       postoperation: |
-        if (isNaN(result)) {
+        if (CAPI.FP.isNaN(result)) {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaN64");
         } else {
           registers[rd] = CAPI.ARCH.toBigInt(result, "float64");
@@ -3618,7 +3610,7 @@ instructions:
         [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
         [rs3Number, type_rs3] = CAPI.ARCH.toJSNumberD(registers[rs3]);
       postoperation: |
-        if (isNaN(result)) {
+        if (CAPI.FP.isNaN(result)) {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaN64");
         } else {
           registers[rd] = CAPI.ARCH.toBigInt(result, "float64");
@@ -3647,7 +3639,7 @@ instructions:
         [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
         [rs3Number, type_rs3] = CAPI.ARCH.toJSNumberD(registers[rs3]);
       postoperation: |
-        if (isNaN(result)) {
+        if (CAPI.FP.isNaN(result)) {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaN64");
         } else {
           registers[rd] = CAPI.ARCH.toBigInt(result, "float64");
@@ -3676,7 +3668,7 @@ instructions:
         [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
         [rs3Number, type_rs3] = CAPI.ARCH.toJSNumberD(registers[rs3]);
       postoperation: |
-        if (isNaN(result)) {
+        if (CAPI.FP.isNaN(result)) {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaN64");
         } else {
           registers[rd] = CAPI.ARCH.toBigInt(result, "float64");
@@ -3705,7 +3697,7 @@ instructions:
         [rs2Number, type_rs2] = CAPI.ARCH.toJSNumberD(registers[rs2]);
         [rs3Number, type_rs3] = CAPI.ARCH.toJSNumberD(registers[rs3]);
       postoperation: |
-        if (isNaN(result)) {
+        if (CAPI.FP.isNaN(result)) {
           registers[rd] = CAPI.ARCH.toBigInt(result, "NaN64");
         } else {
           registers[rd] = CAPI.ARCH.toBigInt(result, "float64");
