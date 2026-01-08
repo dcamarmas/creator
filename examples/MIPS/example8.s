@@ -25,8 +25,8 @@ main:
     
 loop1:  beq $t2, $t4, end1
 loop2:  beq $t3, $t5, end2
-        l.s $f0, 0 ($t0)
-        s.s $f0, 0 ($t1)
+        l.s $f0, 0($t0)
+        s.s $f0, 0($t1)
         addi $t0, $t0, 4
         addi $t1, $t1, 4
         addi $t5, $t5, 1

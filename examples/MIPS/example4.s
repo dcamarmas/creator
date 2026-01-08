@@ -16,19 +16,19 @@ main:
     la $t2, c
     la $t3, d
     
-    l.d $FP0, 0 ($t0)
-    l.d $FP2, 0 ($t1)
-    l.d $FP10, 0 ($t2)
-    add.d $FP0, $FP0, $FP0
-    sub.d $FP4, $FP10, $FP0
-    div.d $FP12, $FP10, $FP2
-    
-    s.d $FP0, 0 ($t3)
-    addi $t3, $t3, 8
-    s.d $FP4, 0  ($t3)
-    addi $t3, $t3, 8
-    s.d $FP12, 0 ($t3)
+    l.d $f0, 0($t0)
+    l.d $f2, 0($t1)
+    l.d $f10, 0($t2)
+    add.d $f0, $f0, $f0
+    sub.d $f4, $f10, $f0
+    div.d $f12, $f10, $f2
 
-    # exit
+    s.d $f0, 0($t3)
+    addi $t3, $t3, 8
+    s.d $f4, 0($t3)
+    addi $t3, $t3, 8
+    s.d $f12, 0($t3)
+
     li $v0, 10
     syscall
+    
