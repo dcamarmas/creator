@@ -30,6 +30,7 @@ import {
   clearValidationMarkers,
 } from "@/web/monaco/validation";
 import { assemblerMap, getDefaultCompiler } from "@/web/assemblers";
+import { SailCompile } from "@/core/assembler/sailAssembler/web/CNAssambler.mjs";
 
 // Setup Monaco Environment for Vite
 self.MonacoEnvironment = {

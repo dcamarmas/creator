@@ -119,12 +119,12 @@ const usesCreatorAssembler = computed(() => {
   }
   // Check if CreatorAssembler is in the list
   return assemblers.some(
-    (asm: { name: string }) => asm.name === "CreatorAssembler",
+    (asm: { name: string }) => (asm.name === "CreatorAssembler" || asm.name === "Sail"),
   );
 });
 
 const showLibraryButton = computed(() => {
-  return usesCreatorAssembler.value && libraryLoaded.value;
+  return ((usesCreatorAssembler.value && libraryLoaded.value) || architecture.config.name.includes("SRV"));
 });
 
 // Watch for architecture changes

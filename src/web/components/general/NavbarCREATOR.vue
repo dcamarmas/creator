@@ -149,7 +149,7 @@ export default defineComponent({
         return true;
       }
       // Check if CreatorAssembler is in the list
-      return assemblers.some((asm: any) => asm.name === "CreatorAssembler");
+      return assemblers.some((asm: any) => (asm.name === "CreatorAssembler" || asm.name === "Sail"));
     },
 
     // Hide mobile navbar when selecting architecture

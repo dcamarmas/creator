@@ -204,6 +204,9 @@ export default {
       // Debug
       c_debug: false,
 
+      // Integrated Kernel (exclusive to Sail Version)
+      c_kernel: true,
+
       // Dark Mode
       dark: false, // the actual dark mode state
       dark_mode_setting:
@@ -664,6 +667,7 @@ export default {
       v-model:notification_time="notification_time"
       v-model:dark_mode_setting="dark_mode_setting"
       v-model:c_debug="c_debug"
+      v-model:c_kernel="c_kernel"
       v-model:vim_custom_keybinds="vim_custom_keybinds"
       v-model:vim_mode="vim_mode"
       v-model:reg_name_representation="reg_name_representation"

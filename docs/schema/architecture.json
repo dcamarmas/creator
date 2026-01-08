@@ -201,6 +201,16 @@
           "description": "Floating point registers",
           "type": "string",
           "enum": ["fp_registers"]
+        },
+        {
+          "description": "Vector registers",
+          "type": "string",
+          "enum": ["v_registers"]
+        },
+        {
+          "description": "Control state registers",
+          "type": "string",
+          "enum": ["csr_registers"]
         }
       ]
     },
@@ -307,6 +317,11 @@
       "properties": {
         "name": {
           "oneOf": [
+            {
+              "description": "Architecture compiled with Sail specification",
+              "type": "string",
+              "enum": ["Sail"]
+            },
             {
               "description": "Default architecture-agnostic CREATOR assembler",
               "type": "string",
@@ -499,6 +514,10 @@
         },
         "name": {
           "description": "Name of the instruction",
+          "type": "string"
+        },
+        "extension": {
+          "description": "Extension of the instruction",
           "type": "string"
         },
         "nwords": {
@@ -1145,6 +1164,7 @@
         "Function call",
         "Transfer between registers",
         "Memory access",
+        "Vector Set Length Instruction with an inmediate",
         "Other"
       ]
     },
@@ -1355,10 +1375,14 @@
       "required": ["end", "start"],
       "properties": {
         "end": {
-          "type": "integer"
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 18446744073709551615
         },
         "start": {
-          "type": "integer"
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 18446744073709551615
         }
       }
     },

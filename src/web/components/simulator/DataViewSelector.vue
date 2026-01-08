@@ -48,6 +48,10 @@ export default defineComponent({
           return "INT/Ctrl Registers";
         case "fp_registers":
           return "FP Registers";
+        case "v_registers":
+          return "Vector Registers";
+        case "csr_registers":
+          return "Control state Registers";
 
         default:
           return "";
@@ -63,6 +67,8 @@ export default defineComponent({
       reg_representation_options: [
         { text: "INT/Ctrl Registers", value: "int_registers" },
         { text: "FP Registers", value: "fp_registers" },
+        { text: "Vector Registers", value: "v_registers" },
+        { text: "Control state Registers", value: "csr_registers" },
       ],
       dropdownOpen: false,
     };
@@ -98,7 +104,9 @@ export default defineComponent({
     getVariant(): "secondary" | "outline-secondary" {
       if (
         this.current_reg_type === "int_registers" ||
-        this.current_reg_type === "fp_registers"
+        this.current_reg_type === "fp_registers" || 
+        this.current_reg_type === "v_registers" || 
+        this.current_reg_type === "csr_registers"
       ) {
         return "secondary";
       }
@@ -118,7 +126,7 @@ export default defineComponent({
     <div class="tabs-container">
       <!-- Registers Tab -->
       <button
-        v-if="register_file_num <= 4"
+        v-if="register_file_num <= 5"
         :class="['tab', { active: current_reg_type === 'int_registers' }]"
         @click="change_data_view('int_registers')"
       >
@@ -127,14 +135,16 @@ export default defineComponent({
       </button>
 
       <!-- Dropdown for multiple register banks -->
-      <div v-if="register_file_num > 4" class="tab-dropdown">
+      <div v-if="register_file_num > 5" class="tab-dropdown">
         <button
           :class="[
             'tab',
             {
               active:
                 current_reg_type === 'int_registers' ||
-                current_reg_type === 'fp_registers',
+                current_reg_type === 'fp_registers' ||
+                current_reg_type === 'v_registers' ||
+                current_reg_type === 'csr_registers',
             },
           ]"
           @click="toggleDropdown"
@@ -158,6 +168,18 @@ export default defineComponent({
             @click="change_data_view('fp_registers')"
           >
             CPU-FP Registers
+          </button>
+          <button
+            class="dropdown-item"
+            @click="change_data_view('v_registers')"
+          >
+            CPU-V Registers
+          </button>
+          <button
+            class="dropdown-item"
+            @click="change_data_view('csr_registers')"
+          >
+            CPU-CSR Registers
           </button>
         </div>
       </div>

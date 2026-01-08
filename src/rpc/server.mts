@@ -36,6 +36,7 @@ import { instructions } from "../core/assembler/assembler.mjs";
 import { sjasmplusAssemble } from "../core/assembler/sjasmplus/deno/sjasmplus.mjs";
 import { assembleCreator } from "../core/assembler/creatorAssembler/deno/creatorAssembler.mjs";
 import { rasmAssemble } from "../core/assembler/rasm/deno/rasm.mjs";
+import { SailCompile } from "../core/assembler/sailAssembler/web/CNAssambler.mjs";
 import fs from "node:fs";
 import type { StackTracker } from "@/core/memory/StackTracker.mjs";
 
@@ -44,6 +45,7 @@ const assembler_map = {
     default: assembleCreator,
     sjasmplus: sjasmplusAssemble,
     rasm: rasmAssemble,
+    Sail: SailCompile,
 } as const;
 
 type CompilerType = keyof typeof assembler_map;

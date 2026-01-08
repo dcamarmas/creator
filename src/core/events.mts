@@ -31,6 +31,7 @@ export const CoreEventTypes = {
     LIBRARY_LOADED: "library-loaded",
     LIBRARY_REMOVED: "library-removed",
     EXECUTOR_BUTTONS_UPDATE: "executor-buttons-update",
+    PAUSE_EXEC: "pause-execution",
 } as const;
 
 /**
