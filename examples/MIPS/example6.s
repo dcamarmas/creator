@@ -10,6 +10,8 @@
       
     jump2: 
       li $t3, 34
+      
+      # exit
       li $v0, 10
       syscall
 

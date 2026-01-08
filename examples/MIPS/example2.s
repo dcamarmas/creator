@@ -14,3 +14,7 @@ main:
     sub $t5, $t2, $t3 # 45-33
     mul $t6, $t3, $t3 # 33*33
     div $t7, $t6, $t1 # $t6/13
+
+    # exit
+    li $v0, 10
+    syscall
