@@ -32,5 +32,6 @@
       li $v0, 1
       syscall
 
-      #return
-      jr $ra
+      # exit
+      li $v0, 10
+      syscall
