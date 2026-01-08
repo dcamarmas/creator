@@ -68,17 +68,11 @@ export default defineComponent({
   },
 
   methods: {
-    /**
-     * Converts binary string to hex string
-     */
-    binaryToHex(binary: string): string {
-      let hex = "";
-      for (let i = 0; i < binary.length; i += 8) {
-        const byte = binary.substr(i, 8);
-        const hexByte = parseInt(byte, 2).toString(16).padStart(2, "0");
-        hex += hexByte;
-      }
-      return hex;
+
+    concatHexStrings(hexStrings: string[]): string {
+      return hexStrings
+        .map(hex => (hex.startsWith("0x") ? hex.slice(2) : hex))
+        .join("");
     },
 
     /**
@@ -102,15 +96,15 @@ export default defineComponent({
         }
       }
 
-      // Build binary string from all instructions
-      let binaryString = "";
+      // Build hex string from all instructions
+      const hexStrings: string[] = [];
       const symbols: Array<{ name: string; addr: number }> = [];
 
       for (const instruction of libraryInstructions) {
         // Get the binary data (prefer binary over loaded)
         const instructionBinary = instruction.binary || instruction.loaded;
         if (instructionBinary) {
-          binaryString += instructionBinary;
+          hexStrings.push(instructionBinary);
         }
 
         // Add symbol if instruction has a global label
@@ -128,8 +122,7 @@ export default defineComponent({
         }
       }
 
-      // Convert binary to hex
-      this.binaryHex = this.binaryToHex(binaryString);
+      this.binaryHex = this.concatHexStrings(hexStrings);
       this.symbols = symbols;
 
       // Initialize help data for each symbol
