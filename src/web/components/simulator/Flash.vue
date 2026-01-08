@@ -795,12 +795,12 @@ export default defineComponent({
       <!-- Remote -->
 
       <b-tab title="Remote Device" id="flash-tab-remote">
-        Remote Device URL:
+        Remote Laboratory URL:
         <b-input-group class="my-2">
           <b-form-input
             type="text"
             v-model="labURL"
-            placeholder="Enter remote device URL"
+            placeholder="Enter remote laboratory URL"
             size="sm"
           />
 
