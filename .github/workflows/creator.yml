@@ -8,6 +8,35 @@ on:
   workflow_dispatch:
 
 jobs:
+  update-organization-readme:
+    name: Update organization Readme
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source Repo
+        uses: actions/checkout@v4
+      - name: Checkout Destination Repo
+        uses: actions/checkout@v4
+        with:
+          repository: creatorsim/.github 
+          path: destination-repo
+          token: ${{ secrets.API_TOKEN_GITHUB }} 
+      - name: Copy README
+        run: |
+          mkdir -p destination-repo/profile
+          cp README.md destination-repo/profile/README.md
+      - name: Push changes to .github repo
+        cd destination-repo
+        run: |
+          git config user.name "README-Sync-Bot"
+          git config user.email "actions@github.com"
+          git add profile/README.md
+          if git diff --staged --quiet; then
+            echo "No changes detected in README"
+          else
+            git commit -m "Auto-update profile README from project source"
+            git push
+          fi
+          
   build-web:
     name: Build CREATOR web
     runs-on: ubuntu-latest
