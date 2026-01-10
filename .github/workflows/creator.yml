@@ -9,23 +9,33 @@ on:
 
 jobs:
   update-organization-readme:
-    name: Update organization Readme
+    name: Update organization README
     if: github.repository == 'creatorsim/creator'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Source Repo
         uses: actions/checkout@v4
+      - name: Check for README changes
+        uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            readme:
+              - 'README.md'
       - name: Checkout Destination Repo
+        if: steps.filter.outputs.readme == 'true'
         uses: actions/checkout@v4
         with:
           repository: creatorsim/.github 
           path: destination-repo
           token: ${{ secrets.API_TOKEN_GITHUB }} 
       - name: Copy README
+        if: steps.filter.outputs.readme == 'true'
         run: |
           mkdir -p destination-repo/profile
           cp README.md destination-repo/profile/README.md
       - name: Push changes to .github repo
+        if: steps.filter.outputs.readme == 'true'
         run: |
           cd destination-repo
           git config user.name "README-Sync-Bot"
