@@ -25,8 +25,8 @@ jobs:
           mkdir -p destination-repo/profile
           cp README.md destination-repo/profile/README.md
       - name: Push changes to .github repo
-        cd destination-repo
         run: |
+          cd destination-repo
           git config user.name "README-Sync-Bot"
           git config user.email "actions@github.com"
           git add profile/README.md
