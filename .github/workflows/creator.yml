@@ -10,6 +10,7 @@ on:
 jobs:
   update-organization-readme:
     name: Update organization Readme
+    if: github.repository == 'creatorsim/creator'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Source Repo
