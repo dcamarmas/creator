@@ -3937,9 +3937,9 @@ pseudoinstructions:
       definition: |
         no_ret_op{
           value = Field.2.(63,0).int;
-          instructions = CAPI.ARCH.generateLoadImmediate(value, reg_name{1})
+          res_instructions = CAPI.ARCH.generateLoadImmediate(value, reg_name{1});
         };
-        op{instructions};
+        op{res_instructions};
 
     - name: mv
       fields:
