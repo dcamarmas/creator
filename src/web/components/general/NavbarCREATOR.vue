@@ -33,7 +33,7 @@ import ThemeToggle from "./ThemeToggle.vue";
 import type { Instruction } from "@/core/assembler/assembler";
 import type { BDropdown } from "bootstrap-vue-next";
 import { coreEvents, CoreEventTypes } from "../../../core/events.mts";
-import { remove_library, architecture } from "@/core/core.mjs";
+import { remove_library, architecture, load_CREATino } from "@/core/core.mjs";
 
 export default defineComponent({
   props: {
@@ -281,6 +281,9 @@ export default defineComponent({
     removeLibrary() {
       remove_library();
     },
+    loadCREATino() {
+      load_CREATino();
+    },
     checkAnnouncementTruncation() {
       // Use nextTick to ensure DOM is updated
       this.$nextTick(() => {
@@ -495,11 +498,16 @@ export default defineComponent({
           <font-awesome-icon :icon="['fas', 'floppy-disk']" class="me-2" /> Save
           as Library...
         </b-dropdown-item>
+        <b-dropdown-item @click="loadCREATino">
+          <font-awesome-icon :icon="['fas', 'infinity']" class="me-2" /> Add Arduino
+          Library
+        </b-dropdown-item>
         <b-dropdown-divider />
         <b-dropdown-item @click="removeLibrary">
           <font-awesome-icon :icon="['fas', 'trash-can']" class="me-2" /> Remove
-          Library
+          Library...
         </b-dropdown-item>
+
       </b-nav-item-dropdown>
 
       <!-- Tools Menu (Simulator View) -->

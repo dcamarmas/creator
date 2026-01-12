@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 import { initCAPI } from "./capi/initCAPI.mts";
 import { getHexTwosComplement } from "./utils/utils.mjs";
 import { logger } from "./utils/creator_logger.mjs";
@@ -249,13 +248,30 @@ export function load_library(lib_str) {
             throw new SyntaxError(`Invalid library format: ${error.message}`);
         });
 }
-
 /**
  * Removes a library.
  */
 export function remove_library() {
     loadedLibrary = {};
     coreEvents.emit("library-removed");
+}
+export async function load_CREATino() {
+  //show_loading();
+  try {
+    const baseUrl = window.location.origin;
+    const filePath = `${baseUrl}/libraries/creatino.yml`;
+
+    const response = await fetch(filePath);
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+    const fileContent = await response.text();
+    load_library(fileContent);
+
+    //hide_loading();
+    coreEvents.emit("library-loaded");
+  } catch (error) {
+    throw new SyntaxError(`Invalid library format: ${error.message}`);
+  }
 }
 
 // compilation
