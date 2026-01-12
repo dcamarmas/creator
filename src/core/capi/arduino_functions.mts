@@ -1,0 +1,453 @@
+
+
+import { SYSCALL } from "./syscall.mts";
+import { crex_findReg } from "../register/registerLookup.mjs";
+import { packExecute } from "../utils/utils.mjs";
+import { readRegister, writeRegister } from "../register/registerOperations.mjs";
+import { ARCH as RISCV } from "@/core/capi/arch/riscv.mjs";
+import { REGISTERS } from "../core.mjs";
+//import hookMap from '../../web/components/simulator/CreatinoMaker/components/BoardElements/esp32c3devkit2.js';
+//import {connections,compState,svgRef,positions} from '../../web/components/simulator/CreatinoMaker/App.vue'
+//import { connections, positions, compState, svgRef } from '../../web/components/simulator/CreatinoMaker/state';
+
+/*
+ *  CREATOR instruction description API:
+ *  CREATino functions module
+ */
+//Variables
+let serial_begin = 0; // TODO: Which baud rate can we accept?
+let initArduino = 0; // Flag to check if initArduino has been called
+let _seed = 1;
+//Functions
+export function cr_initArduino() { 
+    console.log("cr_initArduino called");
+    if (initArduino === 0) 
+    {
+        initArduino = 1; 
+        console.log("initArduino: " + initArduino);
+    } 
+}
+export function cr_digitalRead() { console.log("cr_digitalRead called"); 
+     hookMap[0x4](connections.value, (val) => (compState.value = val), svgRef, positions);
+}
+export function cr_pinMode() { console.log("cr_pinMode called"); }
+export function cr_digitalWrite() { console.log("cr_digitalWrite called"); 
+    hookMap[0xc](connections.value,(val) => (compState.value = val), svgRef, positions);
+}
+export function cr_analogRead() { console.log("cr_analogRead called"); }
+export function cr_analogReadResolution() { console.log("cr_analogReadResolution called"); }
+export function cr_analogWrite() { console.log("cr_analogWrite called"); }
+export function cr_map() { 
+    console.log("cr_map called");
+		var ret1 = crex_findReg('a0');
+		if (ret1.match === 0) {
+			throw packExecute(true, "capi_arduino: register a0 not found", 'danger', null);	
+		}
+		var value = BigInt.asIntN(32,readRegister(ret1.indexComp, ret1.indexElem));
+		//fromLow the lower bound of the value’s current range.
+		var ret2 = crex_findReg('a1');
+		if (ret2.match === 0) {
+			throw packExecute(true, "capi_arduino: register a1 not found", 'danger', null);	
+		}
+		var fromLow = BigInt.asIntN(32,readRegister(ret2.indexComp, ret2.indexElem));
+		//fromHigh the upper bound of the value’s current range.
+		var ret3 = crex_findReg('a2');
+		if (ret3.match === 0) {
+			throw packExecute(true, "capi_arduino: register a2 not found", 'danger', null);	
+		}
+		var fromHigh = BigInt.asIntN(32,readRegister(ret3.indexComp, ret3.indexElem));
+		//toLow the lower bound of the value’s target range.
+		var ret4 = crex_findReg('a3');
+		if (ret4.match === 0) {
+			throw packExecute(true, "capi_arduino: register a3 not found", 'danger', null);	
+		}
+		var toLow = BigInt.asIntN(32,readRegister(ret4.indexComp, ret4.indexElem));
+		//toHigh the upper bound of the value’s target range.
+		var ret5 = crex_findReg('a4');
+		if (ret5.match === 0) {
+			throw packExecute(true, "capi_arduino: register a4 not found", 'danger', null);	
+		}
+		var toHigh = BigInt.asIntN(32,readRegister(ret5.indexComp, ret5.indexElem));
+        const mappedValue = (value - fromLow) * (toHigh - toLow) / (fromHigh - fromLow) + toLow;
+        console.log(mappedValue);
+		writeRegister(mappedValue, ret1.indexComp, ret1.indexElem);
+     }
+export function cr_constrain() { 
+    console.log("cr_constrain called");
+    // Value to constrain
+    var ret1 = crex_findReg('a0');
+    if (ret1.match === 0) {
+        throw packExecute(true, "capi_arduino: register a0 not found", 'danger', null);	
+    }
+    var value = BigInt.asIntN(32,readRegister(ret1.indexComp, ret1.indexElem));
+    //lower end
+    var ret2 = crex_findReg('a1');
+    if (ret2.match === 0) {
+        throw packExecute(true, "capi_arduino: register a1 not found", 'danger', null);	
+    }
+    var lower = BigInt.asIntN(32,readRegister(ret2.indexComp, ret2.indexElem));
+    //upper end
+    var ret3 = crex_findReg('a2');
+    if (ret3.match === 0) {
+        throw packExecute(true, "capi_arduino: register a2 not found", 'danger', null);	
+    }
+    var upper = BigInt.asIntN(32,readRegister(ret3.indexComp, ret3.indexElem));
+
+    // Always a int cause we use a0
+    var constrained = Math.max(Number(lower), Math.min(Number(value), Number(upper)));
+    console.log(BigInt(constrained));
+    writeRegister(BigInt(constrained), ret1.indexComp, ret1.indexElem);
+     }
+export function cr_abs() { 
+    console.log("cr_abs called");
+    var ret1 = crex_findReg('a0');
+    if (ret1.match === 0) {
+        throw packExecute(true, "capi_syscall: register a0 not found", 'danger', null);
+    }
+    var value = BigInt.asIntN(32,readRegister(ret1.indexComp, ret1.indexElem));
+    console.log("abs: value = " + value);
+    // Calculate the absolute value
+    value = value > 0 ? value : -value;
+    writeRegister(BigInt(value), ret1.indexComp, ret1.indexElem);
+ }
+export function cr_max() { 
+    //Var 1: Expected always an int32
+    console.log("cr_max called"); 
+    var ret1 = crex_findReg('a0');
+    if (ret1.match === 0) {
+        throw packExecute(true, "capi_syscall: register a0 not found", 'danger', null);	
+    } 
+    var value1 = BigInt.asIntN(32,readRegister(ret1.indexComp, ret1.indexElem));
+    // Var2: Expected always an int32
+    var ret2 = crex_findReg('a1');
+    if (ret2.match === 0) {
+        throw packExecute(true, "capi_syscall: register a0 not found", 'danger', null);	
+    } 
+    var value2 = BigInt.asIntN(32,readRegister(ret2.indexComp, ret2.indexElem));
+    // Find the maximum value
+    const max = (value1 > value2) ? value1 : value2;
+    console.log(max);
+    writeRegister(BigInt(max), ret1.indexComp, ret1.indexElem);
+
+}
+export function cr_min() { 
+    console.log("cr_min called");
+        //Var 1: Expected always an int32
+    var ret1 = crex_findReg('a0');
+    if (ret1.match === 0) {
+        throw packExecute(true, "capi_syscall: register a0 not found", 'danger', null);	
+    } 
+    var value1 = BigInt.asIntN(32,readRegister(ret1.indexComp, ret1.indexElem));
+        //Var 2: Expected always an int32 
+    var ret2 = crex_findReg('a1');
+    if (ret2.match === 0) {
+        throw packExecute(true, "capi_syscall: register a0 not found", 'danger', null);	
+    } 
+    var value2 = BigInt.asIntN(32,readRegister(ret2.indexComp, ret2.indexElem));
+    		// Find the minimun value
+    const min = (value1 < value2) ? value1 : value2;
+    console.log(min);
+    writeRegister(BigInt(min), ret1.indexComp, ret1.indexElem);
+
+}
+export function cr_pow() { console.log("cr_pow called");
+    var ret1 = crex_findReg('a0');
+    if (ret1.match === 0) {
+        throw packExecute(true, "capi_syscall: register a0 not found", 'danger', null);	
+    } 
+    var value1 = BigInt.asIntN(32,readRegister(ret1.indexComp, ret1.indexElem));
+        //Var 2: Expected always an int32 
+    var ret2 = crex_findReg('a1');
+    if (ret2.match === 0) {
+        throw packExecute(true, "capi_syscall: register a0 not found", 'danger', null);	
+    } 
+    var value2 = BigInt.asIntN(32,readRegister(ret2.indexComp, ret2.indexElem));
+    const pow = Math.pow(Number(value1), Number(value2));
+	writeRegister(BigInt(pow), ret1.indexComp, ret1.indexElem);
+
+ }
+export function cr_bit() { console.log("cr_bit called");
+    var ret1 = crex_findReg('a0');
+    if (ret1.match === 0) {
+        throw packExecute(true, "capi_syscall: register a0 not found", 'danger', null);	
+    } 
+    var value1 = BigInt.asUintN(32,readRegister(ret1.indexComp, ret1.indexElem)); //bit functions in arduino work with uint8_t numbers
+    var res = 0n;
+    if (value1 < 0n || value1 > 31n) {
+        res = 0n; // Invalid bit position
+    } else {
+        res = 1n << value1; // Calculate the bit value
+    }
+    console.log(res);
+    writeRegister(BigInt(res), ret1.indexComp, ret1.indexElem);
+
+
+ }
+export function cr_bitClear() { console.log("cr_bitClear called"); 
+	//Numeric variable whose bit to clear
+    var ret1 = crex_findReg('a0');
+    if (ret1.match === 0) {
+        throw packExecute(true, "capi_syscall: register a0 not found", 'danger', null);	
+    } 
+    var value1 = BigInt.asUintN(32,readRegister(ret1.indexComp, ret1.indexElem)); //bit functions in arduino work with uint8_t numbers
+    var res = 0n;
+    //Bit to clear, starting 0 for least-significant
+    var ret2 = crex_findReg('a1');
+    if (ret2.match === 0) {
+        throw packExecute(true, "capi_syscall: register a0 not found", 'danger', null);	
+    } 
+    var value2 = BigInt.asUintN(32,readRegister(ret2.indexComp, ret2.indexElem)); 
+    if (value2 < 0n || value2 > 31n) {
+        res = value1; // Invalid bit position, return original value
+    } else {
+        res = value1 & ~(1n << value2); // Clear the specified bit
+    }
+    console.log(res);
+    writeRegister(BigInt(res), ret1.indexComp, ret1.indexElem);
+
+
+}
+export function cr_bitRead() { console.log("cr_bitRead called");
+    //Numeric variable whose bit to read
+    var ret1 = crex_findReg('a0');
+    if (ret1.match === 0) {
+        throw packExecute(true, "capi_syscall: register a0 not found", 'danger', null);	
+    } 
+    var value1 = BigInt.asUintN(32,readRegister(ret1.indexComp, ret1.indexElem)); //bit functions in arduino work with uint8_t numbers
+    var res = 0n;
+    //Bit to read, starting 0 for least-significant
+    var ret2 = crex_findReg('a1');
+    if (ret2.match === 0) {
+        throw packExecute(true, "capi_syscall: register a0 not found", 'danger', null);	
+    } 
+    var value2 = BigInt.asUintN(32,readRegister(ret2.indexComp, ret2.indexElem)); 
+    if (value2 < 0n || value2 > 31n) {
+        res = 0n; // Invalid bit position, return 0
+    } else {
+        res = (value1 & (1n << value2)) !== 0n ? 1n : 0n; // Read the specified bit
+    }
+    console.log(res);
+    writeRegister(BigInt(res), ret1.indexComp, ret1.indexElem);
+ }
+export function cr_bitSet() { console.log("cr_bitSet called"); 
+    //Numeric variable whose bit to set
+    var ret1 = crex_findReg('a0');
+    if (ret1.match === 0) {
+        throw packExecute(true, "capi_syscall: register a0 not found", 'danger', null);	
+    } 
+    var value1 = BigInt.asUintN(32,readRegister(ret1.indexComp, ret1.indexElem)); //bit functions in arduino work with uint8_t numbers
+    var res = 0n;
+    //Bit to set, starting 0 for least-significant
+    var ret2 = crex_findReg('a1');
+    if (ret2.match === 0) {
+        throw packExecute(true, "capi_syscall: register a0 not found", 'danger', null);	
+    } 
+    var value2 = BigInt.asUintN(32,readRegister(ret2.indexComp, ret2.indexElem)); 
+    if (value2 < 0n || value2 > 31n) {
+        res = 0n; // Invalid bit position, return 0
+    } else {
+        res = value1 | (1n << value2); // Set the specified bit
+    }
+    console.log(res);
+    writeRegister(BigInt(res), ret1.indexComp, ret1.indexElem);
+}
+export function cr_bitWrite() { console.log("cr_bitWrite called"); 
+        //Numeric variable whose bit to write
+    var ret1 = crex_findReg('a0');
+    if (ret1.match === 0) {
+        throw packExecute(true, "capi_syscall: register a0 not found", 'danger', null);	
+    } 
+    var value1 = BigInt.asUintN(32,readRegister(ret1.indexComp, ret1.indexElem)); //bit functions in arduino work with uint8_t numbers
+    var res = 0n;
+    //Bit to write, starting 0 for least-significant
+    var ret2 = crex_findReg('a1');
+    if (ret2.match === 0) {
+        throw packExecute(true, "capi_syscall: register a0 not found", 'danger', null);	
+    } 
+    var value2 = BigInt.asUintN(32,readRegister(ret2.indexComp, ret2.indexElem)); 
+    //console.log(value2);
+    // Value to write
+        var ret3 = crex_findReg('a2');
+    if (ret3.match === 0) {
+        throw packExecute(true, "capi_syscall: register a0 not found", 'danger', null);	
+    } 
+    var value3 = BigInt.asUintN(32,readRegister(ret3.indexComp, ret3.indexElem)); 
+    console.log(value3);
+
+    if (value2 < 0n || value2 > 31n) {
+        res = value1; // Invalid bit position, return original value
+    } 
+    else {
+        if (value3 == 0n) {
+            res = value1 & ~(1n << value2); // Clear the specified bit
+        } else if (value3 == 1n) {
+            res = value1 | (1n << value2); // Set the specified bit
+        } else {
+            throw packExecute(true, "capi_syscall: invalid value for bitWrite", 'danger', null);
+        }
+    }
+    console.log(res);
+    writeRegister(BigInt(res), ret1.indexComp, ret1.indexElem);
+
+}
+export function cr_highByte() { console.log("cr_highByte called"); 
+    var ret1 = crex_findReg('a0');
+    if (ret1.match === 0) {
+        throw packExecute(true, "capi_syscall: register a0 not found", 'danger', null);	
+    } 
+    var value1 = BigInt.asUintN(32,readRegister(ret1.indexComp, ret1.indexElem)); //bit functions in arduino work with uint8_t numbers
+    var res = 0n;
+    res = (value1 >> 8n) & 0xFFn; // Get the high byte
+    console.log(res);
+    writeRegister(BigInt(res), ret1.indexComp, ret1.indexElem)
+
+}
+export function cr_lowByte() { console.log("cr_lowByte called");
+    var ret1 = crex_findReg('a0');
+    if (ret1.match === 0) {
+        throw packExecute(true, "capi_syscall: register a0 not found", 'danger', null);	
+    } 
+    var value1 = BigInt.asUintN(32,readRegister(ret1.indexComp, ret1.indexElem)); //bit functions in arduino work with uint8_t numbers
+    let res = value1 & 0xFFn; // Get the low byte
+    console.log(res);
+    writeRegister(BigInt(res), ret1.indexComp, ret1.indexElem)
+
+ }
+export function cr_sqrt() { console.log("cr_sqrt called"); }
+export function cr_sq() { console.log("cr_sq called"); }
+export function cr_cos() { console.log("cr_cos called"); }
+export function cr_sin() { console.log("cr_sin called"); }
+export function cr_tan() { console.log("cr_tan called"); }
+export function cr_attachInterrupt() { console.log("cr_attachInterrupt called"); }
+export function cr_detachInterrupt() { console.log("cr_detachInterrupt called"); }
+export function cr_digitalPinToInterrupt() { console.log("cr_digitalPinToInterrupt called"); }
+export function cr_interrupts() { console.log("cr_interrupts called"); }
+export function cr_nointerrupts() { console.log("cr_nointerrupts called"); }
+export function cr_isDigit() { console.log("cr_isDigit called"); }
+export function cr_isAlpha() { console.log("cr_isAlpha called"); }
+export function cr_isAlphaNumeric() { console.log("cr_isAlphaNumeric called"); }
+export function cr_isAscii() { console.log("cr_isAscii called"); }
+export function cr_isControl() { console.log("cr_isControl called"); }
+export function cr_isPunct() { console.log("cr_isPunct called"); }
+export function cr_isHexadecimalDigit() { console.log("cr_isHexadecimalDigit called"); }
+export function cr_isUpperCase() { console.log("cr_isUpperCase called"); }
+export function cr_isLowerCase() { console.log("cr_isLowerCase called"); }
+export function cr_isPrintable() { console.log("cr_isPrintable called"); }
+export function cr_isGraph() { console.log("cr_isGraph called"); }
+export function cr_isSpace() { console.log("cr_isSpace called"); }
+export function cr_isWhiteSpace() { console.log("cr_isWhiteSpace called"); }
+export function cr_delay() { console.log("cr_delay called"); }
+export function cr_delayMicroseconds() { console.log("cr_delayMicroseconds called"); }
+export function cr_randomSeed() { console.log("cr_randomSeed called"); }
+export function cr_random() { console.log("cr_random called"); }
+export function cr_serial_available() { console.log("cr_serial_available called"); }
+export function cr_serial_availableForWrite() { console.log("cr_serial_availableForWrite called"); }
+export function cr_serial_begin() { console.log("cr_serial_begin called"); }
+export function cr_serial_end() { console.log("cr_serial_end called"); }
+export function cr_serial_find() { console.log("cr_serial_find called"); }
+export function cr_serial_findUntil() { console.log("cr_serial_findUntil called"); }
+export function cr_serial_flush() { console.log("cr_serial_flush called"); }
+export function cr_serial_parseFloat() { console.log("cr_serial_parseFloat called"); }
+export function cr_serial_parseInt() { console.log("cr_serial_parseInt called"); }
+export function cr_serial_read() { console.log("cr_serial_read called"); }
+export function cr_serial_readBytes() { console.log("cr_serial_readBytes called"); }
+export function cr_serial_readBytesUntil() { console.log("cr_serial_readBytesUntil called"); }
+export function cr_serial_write() { console.log("cr_serial_write called"); }
+export function cr_serial_printf() { 
+    console.log("cr_serial_printf called"); 
+    //TODO: Comprobations
+    //console.log(REGISTERS[1]?.elements.name)
+    // search a0
+    const a0 = crex_findReg("a0")
+    /// a0 can have elements to add in other 
+
+    SYSCALL.print(readRegister(a0.indexComp, a0.indexElem),'string')
+    }
+export function cr_fabs() { console.log("cr_fabs called"); }
+export function cr_fmax() { console.log("cr_fmax called"); }
+export function cr_fmin() { console.log("cr_fmin called"); }
+export function cr_sqrtf() { console.log("cr_sqrtf called"); }
+export function cr_sqf() { console.log("cr_sqf called"); }
+export function cr_tone() { console.log("cr_tone called"); }
+export function cr_noTone() { console.log("cr_noTone called"); }
+export function cr_pulseIn() { console.log("cr_pulseIn called"); }
+export function cr_pulseInLong() { console.log("cr_pulseInLong called"); }
+export function cr_shiftIn() { console.log("cr_shiftIn called"); }
+export function cr_shiftOut() { console.log("cr_shiftOut called"); }
+
+//Order
+export const hookOrder = [
+  "cr_initArduino",
+  "cr_digitalRead",
+  "cr_pinMode",
+  "cr_digitalWrite",
+  "cr_analogRead",
+  "cr_analogReadResolution",
+  "cr_analogWrite",
+  "cr_map",
+  "cr_constrain",
+  "cr_abs",
+  "cr_max",
+  "cr_min",
+  "cr_pow",
+  "cr_bit",
+  "cr_bitClear",
+  "cr_bitRead",
+  "cr_bitSet",
+  "cr_bitWrite",
+  "cr_highByte",
+  "cr_lowByte",
+  "cr_sqrt",
+  "cr_sq",
+  "cr_cos",
+  "cr_sin",
+  "cr_tan",
+  "cr_attachInterrupt",
+  "cr_detachInterrupt",
+  "cr_digitalPinToInterrupt",
+  "cr_pulseIn",          // ✅ en tu JSON pulseIn va aquí
+  "cr_pulseInLong",
+  "cr_shiftIn",
+  "cr_shiftOut",
+  "cr_interrupts",
+  "cr_nointerrupts",
+  "cr_isDigit",
+  "cr_isAlpha",
+  "cr_isAlphaNumeric",
+  "cr_isAscii",
+  "cr_isControl",
+  "cr_isPunct",
+  "cr_isHexadecimalDigit",
+  "cr_isUpperCase",
+  "cr_isLowerCase",
+  "cr_isPrintable",
+  "cr_isGraph",
+  "cr_isSpace",
+  "cr_isWhiteSpace",
+  "cr_delay",
+  "cr_delayMicroseconds",
+  "cr_randomSeed",
+  "cr_random",
+  "cr_serial_available",
+  "cr_serial_availableForWrite",
+  "cr_serial_begin",
+  "cr_serial_end",
+  "cr_serial_find",
+  "cr_serial_findUntil",
+  "cr_serial_flush",
+  "cr_serial_parseFloat",
+  "cr_serial_parseInt",
+  "cr_serial_read",
+  "cr_serial_readBytes",
+  "cr_serial_readBytesUntil",
+  "cr_serial_write",
+  "cr_serial_printf",
+  "cr_fabs",
+  "cr_fmax",
+  "cr_fmin",
+  "cr_sqrtf",
+  "cr_sqf",
+  "cr_tone",
+  "cr_noTone"
+];
+
