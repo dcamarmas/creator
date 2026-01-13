@@ -6,9 +6,9 @@ import { packExecute } from "../utils/utils.mjs";
 import { readRegister, writeRegister } from "../register/registerOperations.mjs";
 import { ARCH as RISCV } from "@/core/capi/arch/riscv.mjs";
 import { REGISTERS } from "../core.mjs";
-//import hookMap from '../../web/components/simulator/CreatinoMaker/components/BoardElements/esp32c3devkit2.js';
+import hookMap from '../../web/components/simulator/CreatinoMaker/components/BoardElements/esp32c3devkit2.js';
 //import {connections,compState,svgRef,positions} from '../../web/components/simulator/CreatinoMaker/App.vue'
-//import { connections, positions, compState, svgRef } from '../../web/components/simulator/CreatinoMaker/state';
+import { connections, positions, compState, svgRef } from '../../web/components/simulator/CreatinoMaker/state';
 
 /*
  *  CREATOR instruction description API:

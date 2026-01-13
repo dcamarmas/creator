@@ -192,6 +192,15 @@ export default defineComponent({
         <font-awesome-icon :icon="['fas', 'chart-line']" />
         <span>Statistics</span>
       </button>
+
+      <!-- Maker Tab -->
+      <button
+        :class="['tab', { active: current_reg_type === 'maker', border: dark }]"
+        @click="change_data_view('maker')"
+      >
+        <font-awesome-icon :icon="['fas', 'pen']" />
+        <span>Creatino Maker</span>
+      </button>
     </div>
   </div>
 </template>

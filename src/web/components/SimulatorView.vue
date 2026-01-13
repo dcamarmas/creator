@@ -33,6 +33,7 @@ import Calculator from "./simulator/Calculator.vue";
 import Terminal from "./simulator/Terminal.vue";
 import Stats from "./simulator/Stats.vue";
 import Flash from "./simulator/Flash.vue";
+import App from "./simulator/CreatinoMaker/App.vue"
 
 export default defineComponent({
   props: {
@@ -74,6 +75,7 @@ export default defineComponent({
     Stats,
     Flash,
     Terminal,
+    App
   },
 
   data() {
@@ -184,6 +186,14 @@ export default defineComponent({
                   :enter="enter"
                   ref="terminal"
                 />
+                <!-- Maker view -->
+                  <App
+                    v-if="data_mode === 'maker'"
+                    ref="maker"
+                    :dark="dark"
+                    :representation="stat_representation"
+                    :type="stat_type"
+                  />
               </div>
             </div>
           </b-col>
