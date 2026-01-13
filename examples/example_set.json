@@ -1,19 +1,5 @@
 [
   {
-    "name": "RISC-V Examples",
-    "id": "default",
-    "architecture": "RISC-V Sail 32",
-    "url": "examples/RISCV-Sail/list.json",
-    "description": "RISC-V Sail 32 examples"
-  },
-  {
-    "name": "RISC-V Examples",
-    "id": "default",
-    "architecture": "RISC-V Sail 64",
-    "url": "examples/RISCV-Sail/list.json",
-    "description": "RISC-V Sail 64 examples"
-  },
-  {
     "name": "MIPS Examples",
     "id": "default",
     "architecture": "MIPS-32",
@@ -54,5 +40,19 @@
     "architecture": "RISC-V (RV32IMFD, Interrupts)",
     "url": "examples/RISCV-devices/list.json",
     "description": "RISC-V devices examples"
+  },
+  {
+    "name": "RISC-V Examples",
+    "id": "default",
+    "architecture": "RISC-V Sail 32",
+    "url": "examples/RISCV-Sail/list.json",
+    "description": "RISC-V Sail 32 examples"
+  },
+  {
+    "name": "RISC-V Examples",
+    "id": "default",
+    "architecture": "RISC-V Sail 64",
+    "url": "examples/RISCV-Sail/list.json",
+    "description": "RISC-V Sail 64 examples"
   }
 ]
