@@ -1245,7 +1245,8 @@ export async function SailCompile(files, libs){
 
   // update the last state of code
   let a = assembly_files.value.findIndex(file => file.editing_now);
-  assembly_files.value[a].code = files;
+  if (a !== -1) 
+    assembly_files.value[a].code = files;
 
 
   vectoren = false;
@@ -1292,6 +1293,12 @@ export async function SailCompile(files, libs){
     update: "",
     status: "ok"
   };
+
+  if (filesToCompile.length === 0){
+    ret.status = "error";
+    ret.msg = "There is no assembly files selected to compile. Check if it is any file selected to compile.";
+    return ret;
+  }
   for (let k = 0; k < filesToCompile.length; k++) {
     var code_assembly_array = filesToCompile[k].code.split('\n').map(line => line.split('#')[0].trim()).filter(line => line !== '');
     

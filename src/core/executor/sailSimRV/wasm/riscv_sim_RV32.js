@@ -928,7 +928,7 @@ var Module = (() => {
             document.app.$data.is_breakpoint = instructions[(next_add_to_jump !== undefined) ? next_add_to_jump : (current_ins + 1)].Break;
           }
           if (current_ins > 0 || prev_add_to_jump !== undefined)
-            instructions[(prev_add_to_jump !== undefined && prev_add_to_jump !== current_ins) ? prev_add_to_jump : (current_ins -1)]._rowVariant = '';
+            instructions[(prev_add_to_jump !== undefined && prev_add_to_jump !== current_ins) ? prev_add_to_jump : ((current_ins > 0) ? current_ins -1 : 0)]._rowVariant = '';
         }
         // Para el caso de run without stop y la siguiente instruccion es un breakpoint
         else if (document.app.$data.execution_mode_run === 0){
@@ -953,7 +953,7 @@ var Module = (() => {
             instructions[current_ins]._rowVariant = '';
           }
           if (current_ins > 0  || prev_add_to_jump !== undefined)
-            instructions[(prev_add_to_jump !== undefined && prev_add_to_jump !== current_ins) ? prev_add_to_jump : (current_ins -1)]._rowVariant = '';
+            instructions[(prev_add_to_jump !== undefined && prev_add_to_jump !== current_ins) ? prev_add_to_jump : ((current_ins > 0) ? current_ins -1 : 0)]._rowVariant = '';
 
         }
         else
