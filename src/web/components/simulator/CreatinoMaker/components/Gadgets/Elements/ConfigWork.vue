@@ -1,5 +1,5 @@
 <template>
-  <div class="menu-panel bg-white border rounded-3 shadow-sm p-3" :class="{ 'bg-dark text-light': isDark }" style="width:220px;max-height:300px;overflow-y:auto;">
+  <div class="menu-panel bg-white border rounded-3 shadow-sm p-3" :class="{ 'bg-dark text-light': isDark }" style="width:220px;max-height:300px;z-index: 10;overflow-y:auto;">
     <!-- Component List -->
     <div v-for="category in filteredCategories" :key="category.name" class="mb-3">
       <div class="fw-bold fs-6 mb-1">{{ category.name }}</div>

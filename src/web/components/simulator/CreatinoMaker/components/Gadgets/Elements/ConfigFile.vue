@@ -1,5 +1,5 @@
 <template>
-  <div class="menu-panel" :class="{ 'bg-dark text-light': isDark }">
+  <div class="menu-panel" :class="{ 'bg-dark text-light': isDark }" style="z-index: 10;">
     <!-- Component List -->
     <div v-for="category in filteredCategories" :key="category.name" class="category-block">
       <div class="category-title fw-bold fs-6 mb-1">{{ category.name }}</div>

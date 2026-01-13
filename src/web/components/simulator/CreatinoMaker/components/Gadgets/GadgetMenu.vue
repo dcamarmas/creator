@@ -1,5 +1,5 @@
 <template>
-  <div class="menu-panel" :class="{ 'bg-dark text-light': isDark }" style="width:220px;max-height:300px;overflow-y:auto;">
+  <div class="menu-panel" :class="{ 'bg-dark text-light': isDark }" style="width:220px;max-height:300px;overflow-y:auto; z-index: 10;">
     <!-- Search Bar -->
     <div class="p-2">
       <input

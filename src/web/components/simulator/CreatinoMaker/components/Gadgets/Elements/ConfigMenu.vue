@@ -10,7 +10,7 @@
       'p-2',
       isDark ? 'bg-dark text-light' : 'bg-white'
     ]"
-    style="width: 110px; min-height: 80px; z-index: 1000;"
+    style="width: 110px; min-height: 80px; z-index: 10;"
   >
     <div v-for="category in filteredCategories" :key="category.name" class="mb-2">
       <div class="fw-semibold fs-7 mb-1">

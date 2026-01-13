@@ -37,7 +37,7 @@ import Buzzer from './components/Gadgets/Elements/Buzzer.vue';
 import BoardSelect from './components/Gadgets/Elements/BoardSelect.vue';
 // import TextareaAssembly from '@/web/components/assembly/TextareaAssembly.vue'; // Ajusta la ruta si es necesario
 import { getCurrentInstance } from 'vue';
-import { connections, positions, compState, svgRef } from './state';
+import { connections, positions, compState, svgRef } from './state.js';
 const workspaceRef = ref<HTMLDivElement | null>(null);
 const boardDataMutable = ref({ ...boardData });
 
@@ -724,9 +724,9 @@ onMounted(() => {
 <template>
   <div id="app-main" class="App" @mousemove="handleMouseMove" @mouseup="handleMouseUp" style="width: 100%; height: 100%; position: relative; overflow: hidden;">
     <!-- Adjusted the size of the App container to match DataView.vue -->
-    <Menu v-if="showMenu" :dark-mode="darkMode" style="position: absolute; bottom:350px; right: 180px; z-index: 1000;" @add-gadget="handleAddGadget" />
-    <FileMenu v-if="showFile" style="position: absolute; top: 90px; right: 180px; z-index: 1000;" @file-action="onFileAction" />
-    <WorkMenu v-if="showWork" style="position: absolute; top: 90px; left:100px; z-index: 1000;" @work-action="onWorkAction" />
+    <Menu v-if="showMenu" :dark-mode="darkMode" style="position: absolute; bottom:100px; right: 100px; " @add-gadget="handleAddGadget" />
+    <FileMenu v-if="showFile" style="position: absolute; top: 90px; right: 180px;" @file-action="onFileAction" />
+    <WorkMenu v-if="showWork" style="position: absolute; top: 90px; left:100px; " @work-action="onWorkAction" />
         <!-- <button @click="loadPreloadedFile" style="position: absolute; top: 20px; left: 20px; z-index: 1000;">
       Cargar archivo precargado
     </button> -->
@@ -945,6 +945,7 @@ onMounted(() => {
   transition: background 0.2s, color 0.2s;
   font-weight: 500;
   padding: 0.5rem 1rem;
+  z-index: 1 !important;
 }
 #app-main button:hover,
 #app-main .btn:hover {
@@ -977,7 +978,7 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 3000;
+  z-index: 3000 ;
 }
 .modal-center {
   background: #fff;

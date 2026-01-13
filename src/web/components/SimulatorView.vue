@@ -33,7 +33,7 @@ import Calculator from "./simulator/Calculator.vue";
 import Terminal from "./simulator/Terminal.vue";
 import Stats from "./simulator/Stats.vue";
 import Flash from "./simulator/Flash.vue";
-import App from "./simulator/CreatinoMaker/App.vue"
+import App from "./simulator/CreatinoMaker/Maker.vue"
 
 export default defineComponent({
   props: {
