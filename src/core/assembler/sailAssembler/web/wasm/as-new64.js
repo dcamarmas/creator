@@ -4821,10 +4821,15 @@ function run(args = arguments_) {
     Module["calledRun"] = true;
     if (ABORT) return;
     initRuntime();
-    for (var i = 2; i < args.length; i++){
-      FS.writeFile('./code' + (i - 2) + '.s', args[2]);
-      args[i] = 'code' + (i - 2) + '.s';
+    var asm_files = args.pop();
+    for (let i = 0; i < asm_files.length; i ++ ){
+      FS.writeFile('./'+asm_files[i].name, asm_files[i].code);
+      args.push('./'+asm_files[i].name);
     }
+    // for(var i = 2; i < args.length; i++) {
+    //   FS.writeFile('./code' + (i - 2) + '.s', args[i]);
+    //   args[i] = 'code' + (i - 2) + '.s';
+    // }
     args = ["-o","out.o", ...args, /*"-march=rv64imfdv", "-mabi=lp64d", "code.s"*/];
     preMain();
     Module["onRuntimeInitialized"]?.();

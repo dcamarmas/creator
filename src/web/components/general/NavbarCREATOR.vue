@@ -34,6 +34,7 @@ import type { Instruction } from "@/core/assembler/assembler";
 import type { BDropdown } from "bootstrap-vue-next";
 import { coreEvents, CoreEventTypes } from "../../../core/events.mts";
 import { remove_library, architecture } from "@/core/core.mjs";
+import { createFile } from "../assembly/MultifileEditor.mjs";
 
 export default defineComponent({
   props: {
@@ -276,7 +277,13 @@ export default defineComponent({
       }
     },
     newAssembly() {
-      (this.$root as any).assembly_code = "";
+      if (architecture.config.name.includes("SRV")){
+        // Call modal to create new File
+        (this.$root as any).assembly_code = createFile((this.$root as any).assembly_code);
+      }else {
+        (this.$root as any).assembly_code = "";
+      }
+
     },
     removeLibrary() {
       remove_library();

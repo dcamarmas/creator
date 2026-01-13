@@ -17,10 +17,10 @@ You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <script setup lang="ts">
-import { ref, watch, onMounted, onBeforeUnmount, type PropType } from "vue";
+import { ref, watch, onMounted, onBeforeUnmount, type PropType, computed } from "vue";
 import * as monaco from "monaco-editor";
 import { initVimMode, VimMode } from "monaco-vim";
-
+import { assembly_files, DeleteFile, showFileEditor, switchApplyFile, tabCounter } from "@/web/components/assembly/MultifileEditor.mjs";
 import { assembly_compile, reset, status, architecture } from "@/core/core.mjs";
 import { resetStats } from "@/core/executor/stats.mts";
 import { registerAssemblyLanguages } from "@/web/monaco/languages/index";
@@ -96,6 +96,11 @@ const props = defineProps({
   height: { type: String, required: true },
   dark: { type: Boolean, required: true },
 });
+
+
+// List of current files created
+const files = computed(() => assembly_files.value);
+const activeTabIndex = ref(0);
 
 const editorContainer = ref<HTMLDivElement | null>(null);
 let editor: monaco.editor.IStandaloneCodeEditor | null = null;
@@ -192,6 +197,12 @@ const setVimMode = (enabled: boolean) => {
   }
 };
 
+const showFile = (filename: String) => {
+  if (editor && filename !== "")
+    editor.setValue(showFileEditor(filename, editor.getValue()));
+}
+
+
 onMounted(() => {
   document.addEventListener("keydown", ctrlSHandler, false);
 
@@ -264,6 +275,13 @@ onMounted(() => {
 
   // vim mode
   setVimMode(props.vim_mode);
+
+  const saved = Number(localStorage.getItem("activeTabEditor"));
+  const arr = files.value;
+  if (!arr.length) return;
+
+  const idx = saved ? saved : -1;
+  activeTabIndex.value = idx >= 0 ? idx : 0;
 });
 
 onBeforeUnmount(() => {
@@ -278,6 +296,38 @@ onBeforeUnmount(() => {
   if (editor) {
     editor.dispose();
   }
+});
+
+// Watch to check if there are tabs and which is active
+watch(() => files.value,
+(arr) => {
+  if (!arr || arr.length === 0) {
+    activeTabIndex.value = 0;
+    return;
+  }
+  
+  const i = arr.findIndex(file => file.editing_now === true);
+  activeTabIndex.value = (i >= 0) ? i : 0;
+},
+{ immediate: true, deep: true}
+);
+
+watch( activeTabIndex, (i) => {
+
+  const arr = files.value;
+  var tab;
+  var tabindex = i;
+  if (!arr || arr.length === 0) return;
+  if (typeof i === "number"){
+    tab = arr[tabindex];
+    if (!tab || !tab.filename) return;
+  } else {
+    tabindex = arr.findIndex(file => file.filename === i);
+    tab = arr[tabindex];
+    if (!tab || !tab.filename) return;
+  }
+  localStorage.setItem("activeTabEditor", String(tabindex));
+  showFile(tab.filename);
 });
 
 // Watch for external code changes (e.g., when loading a new file)
@@ -345,8 +395,32 @@ watch(
 );
 </script>
 
-<template>
+<template> 
+ <!-- Editor monaco  --><!--:id="tab.filen" -->
   <div class="editor-wrapper" :style="{ height: height }">
+    <div v-if="architecture.config.name.includes('SRV') && files.length > 0" class="tabs-editor">
+      <b-tabs content-class="mt-3" v-model="activeTabIndex">
+        <b-tab v-for="(tab, i) in files" 
+               :key="tab.filename"
+               :id="i"
+               class="tab-editor">
+          <template #title>
+            <span class="tab-title d-inline-flex align-items-center gap-2">
+              <span class="me-1">{{ tab.filename }}</span>
+              <b-form-checkbox switch v-model="tab.to_compile" class="mb-0"/>
+              <b-button size="sm" 
+                        class="close-button" 
+                        :class="{ 'close-button-dark': dark }"
+                        @click.stop="DeleteFile(tab.filename)"
+              >X</b-button>
+            </span>
+
+
+          </template>      
+        </b-tab>
+
+      </b-tabs>
+    </div>
     <div ref="editorContainer" class="monaco-editor-container" />
 
     <div id="vim-statusbar" class="vim-statusbar"></div>
@@ -354,6 +428,13 @@ watch(
 </template>
 
 <style lang="scss" scoped>
+.tab-editor {
+  display: ruby;
+}
+.tabs-editor {
+  height: 5%;
+  width: 100%;
+}
 .editor-wrapper {
   width: 100%;
   display: flex;
@@ -373,5 +454,77 @@ watch(
 .vim-statusbar {
   width: 100%;
   flex-shrink: 0;
+}
+
+.close-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 24px;
+  min-width: 16px;
+  padding: 5px 10px;
+  border-radius: 6px;
+  border: none;
+  font-weight: 600;
+  font-size: 0.8125rem;
+  font-family: inherit;
+  color: rgba(0, 0, 0, 0.8);
+  background-color: rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: all 150ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  user-select: none;
+
+  &:hover:not(:disabled) {
+    background-color: rgba(0, 0, 0, 0.15);
+  }
+
+  &:active:not(:disabled) {
+    background-color: rgba(0, 0, 0, 0.3);
+  }
+
+  &:focus-visible {
+    outline: 2px solid rgba(0, 0, 0, 0.5);
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  &.close-button-dark {
+    color: rgba(255, 255, 255, 0.9);
+    background-color: rgba(255, 255, 255, 0.1);
+
+    &:hover:not(:disabled) {
+      background-color: rgba(255, 255, 255, 0.15);
+    }
+
+    &:active:not(:disabled) {
+      background-color: rgba(255, 255, 255, 0.3);
+    }
+
+    &:focus-visible {
+      outline-color: rgba(255, 255, 255, 0.5);
+    }
+  }
+
+  // Success state for assembled
+  &.assembled-success {
+    background-color: #198754;
+    color: white;
+
+    &:hover:not(:disabled) {
+      background-color: #157347;
+    }
+
+    &:active:not(:disabled) {
+      background-color: #146c43;
+    }
+
+    &:focus-visible {
+      outline-color: #198754;
+    }
+  }
 }
 </style>

@@ -14,6 +14,7 @@ import { vectorins, loadlinker} from "../CREATORNAssembler.mjs"
 import { architecture, loadedLibrary, setPC } from "../../../core.mjs";
 import { updateMainMemoryBackup, main_memory, WORDSIZE, BYTESIZE, backup_stack_address, backup_data_address } from "@/core/core.mjs";
 import { show_notification } from "../../../../web/utils.mjs";
+import { assembly_files } from "@/web/components/assembly/MultifileEditor.mjs";
 // import { init } from "@/core/executor/executor.mjs";
 
 let sailas, sailld, saildump = null;
@@ -24,6 +25,7 @@ var align = 1;
 var stack_address = 0;
 var ins_filter;
 var extensions = [];
+var filesToCompile = [];
 export var outfile = null;
 export var vectoren = false;
 export var doubleen = false;
@@ -835,7 +837,7 @@ export function writeDataDumpMemory64(){
         architecture.components[1].elements[2].default_value = stack_address;
     }
 }
-export async function as(code){
+export async function as(files){
     /* Initialize the assembler compiler */
     let depsLeft = Infinity;
     // if (sailas !== null) sailas = null;
@@ -919,10 +921,13 @@ export async function as(code){
         }
       }
       for (const vext of vectorins ?? []) {
-        if (code.includes(vext) && !vectoren){
-          march = march + "v";
-          mabi = "-mabi=ilp32d";
-          vectoren = !vectoren;
+        for (let j = 0; j < files.length; j++){
+          var code = files[j].code;
+          if (code.includes(vext) && !vectoren){
+            march = march + "v";
+            mabi = "-mabi=ilp32d";
+            vectoren = !vectoren;
+          }
         }
       }
       // if (vectoren && doubleen)
@@ -954,10 +959,13 @@ export async function as(code){
         }
       }
       for (const vext of vectorins ?? []) {
-        if (code.includes(vext) && !vectoren){
-          march = march + "v";
-          mabi = "-mabi=lp64d";
-          vectoren = !vectoren;
+        for (let j = 0; j < files.length; j++){
+          var code = files[j].code;
+          if (code.includes(vext) && !vectoren){
+            march = march + "v";
+            mabi = "-mabi=lp64d";
+            vectoren = !vectoren;
+          }
         }
       }
     }
@@ -965,7 +973,7 @@ export async function as(code){
     if (!document.app.$data.c_kernel) // Custom kernel case
       march = march + "_zicsr";
 
-    let asargs = [march, mabi, code];
+    let asargs = [march, mabi, files];
     console.log(asargs);
     let outfile = null;
     /* Once it is initialized we proceed to assemble code */
@@ -1234,187 +1242,204 @@ export async function dump(file){
 }
 
 export async function SailCompile(files, libs){
+
+  // update the last state of code
+  let a = assembly_files.value.findIndex(file => file.editing_now);
+  assembly_files.value[a].code = files;
+
+
   vectoren = false;
   doubleen = false;
   extensions.length = 0;
-    ins_filter = (ins_filter === undefined) ? architecture.instructions.map(insn => ({opcode: insn.name, type: insn.extension})) : ins_filter;
-    // console.log("SAil assemble");
-    libs_to_load.length = 0;
-    dumptextinstructions64.length = 0;
-    dumpdatainstructions64.length = 0;
-    dumptextinstructions32.length = 0;
-    dumpdatainstructions32.length = 0;
-    list_data_instructions.length = 0;
-    list_user_instructions.length = 0;
-    main_memory.zeroOut();
-    main_memory.clearHints();
-    instructions.length = 0;
-    // creator_memory_clear();
-    var explabel = /^(\w+):/;
-    var expvalue = /\.(\w+)\s+(.+)/;
-    var expalign = /^\.align\s+(\d+)/;
-    var data_alignment = 0;
-    var is_text = false;
-    var is_data = false;
-    var labeltext = "";
-    var data_to_store = {
-      align: 0,
-      value: 0,
-      label: "",
-      type: ""
+  ins_filter = (ins_filter === undefined) ? architecture.instructions.map(insn => ({opcode: insn.name, type: insn.extension})) : ins_filter;
+  // console.log("SAil assemble");
+  libs_to_load.length = 0;
+  
+  dumptextinstructions64.length = 0;
+  dumpdatainstructions64.length = 0;
+  dumptextinstructions32.length = 0;
+  dumpdatainstructions32.length = 0;
+  list_data_instructions.length = 0;
+  list_user_instructions.length = 0;
+  filesToCompile.length = 0;
+  // files now create a struct to store files to compile
+  for (var j = 0; j < assembly_files.value.length; j++){
+    if (assembly_files.value[j].to_compile){
+      filesToCompile.push({name: assembly_files.value[j].filename, code: assembly_files.value[j].code});
     }
-    var ret = {
-        errorcode: "",
-        token: "",
-        type: "",
-        update: "",
-        status: "ok"};
-
-        var code_assembly_array = files.split('\n').map(line => line.split('#')[0].trim()).filter(line => line !== '');
-        for (let i = 0; i < code_assembly_array.length; i++){
-          if (code_assembly_array[i].search(".text") != -1){
-            is_data = false;
-            is_text = true;
-          }
-          else if(code_assembly_array[i].search(".data") != -1){
-            is_data = true;
-            is_text = false;
-          }
-
-          if (is_data){
-            let matchlabel = code_assembly_array[i].match(explabel);
-            let matchalign = code_assembly_array[i].match(expalign);
-            let matchvalue = code_assembly_array[i].match(expvalue);
-            // console.log("label:", matchlabel);
-            // console.log("align:", matchalign);
-            // console.log("value:", matchvalue);
-            if (matchlabel){
-
-              data_to_store.label = matchlabel[1];
-            }
-            if (matchalign){
-
-              data_to_store.align = parseInt(matchalign[1], 10);
-            }
-            if (matchvalue && !(code_assembly_array[i].includes(".align") || code_assembly_array[i].includes("section") || code_assembly_array[i].includes("data") )){
-              data_to_store.type = matchvalue[1];
-              switch(data_to_store.type){
-                case "half":
-                  if(matchvalue[2].includes(","))
-                    data_to_store.value = matchvalue[2].trim().split(",");
-                  else
-                    data_to_store.value = matchvalue[2];
-                  break;
-                case "byte":
-                  if (matchvalue[2].includes(","))
-                    data_to_store.value = matchvalue[2].trim().split(",");
-                  else
-                    data_to_store.value = parseInt(matchvalue[2]).toString(16);
-                  break;
-                case "word":
-                case "dword":
-                case "integer":
-                  if (matchvalue[2].includes(","))
-                    data_to_store.value = matchvalue[2].trim().split(",");
-                  else
-                    data_to_store.value = parseInt(matchvalue[2]).toString(16);
-                  break;
-
-                case "float":
-                  if (matchvalue[2].includes(","))
-                    data_to_store.value = matchvalue[2].trim().split(",");
-                  else
-                    data_to_store.value = parseFloat(matchvalue[2]);
-                  if (extensions.findIndex(ext => "F".includes(ext)) === -1)
-                    extensions.push("F");
-                  break;
-                case "double":
-                  if (matchvalue[2].includes(","))
-                    data_to_store.value = matchvalue[2].trim().split(",");
-                  else
-                    data_to_store.value = parseFloat(matchvalue[2]).toString(16);
-                  if (extensions.findIndex(ext => "D".includes(ext)) === -1)
-                    extensions.push("D");
-                  break;
-
-                case "asciz":
-                  data_to_store.value = matchvalue[2];
-                  break;
-
-                case "ascii":
-                  data_to_store.value = matchvalue[2];
-                  break;
-
-                case "space":
-                case "zero":
-                  data_to_store.value = matchvalue[2];
-                  break;
-              }
-              list_data_instructions.push(data_to_store);
-              data_to_store = Object.assign({}, {
-                align: 0,
-                value: 0,
-                label: "",
-                type: ""
-              });
-            }
-          }
-
-          if (is_text && code_assembly_array[i].endsWith(':'))
-            labeltext = code_assembly_array[i].slice(0, -1);
-          else if (is_text && labeltext !== ""){
-            identify_pseudo(code_assembly_array[i]);
-          }
-        }
-        // filenames.push(assembly_files[j].filename);
+  }
+  main_memory.zeroOut();
+  main_memory.clearHints();
+  instructions.length = 0;
+  // creator_memory_clear();
+  var explabel = /^(\w+):/;
+  var expvalue = /\.(\w+)\s+(.+)/;
+  var expalign = /^\.align\s+(\d+)/;
+  var data_alignment = 0;
+  var is_text = false;
+  var is_data = false;
+  var labeltext = "";
+  var data_to_store = {
+    align: 0,
+    value: 0,
+    label: "",
+    type: ""
+  }
+  var ret = {
+    errorcode: "",
+    token: "",
+    type: "",
+    update: "",
+    status: "ok"
+  };
+  for (let k = 0; k < filesToCompile.length; k++) {
+    var code_assembly_array = filesToCompile[k].code.split('\n').map(line => line.split('#')[0].trim()).filter(line => line !== '');
+    
+    for (let i = 0; i < code_assembly_array.length; i++){
+      if (code_assembly_array[i].search(".text") != -1){
         is_data = false;
+        is_text = true;
+      }
+      else if(code_assembly_array[i].search(".data") != -1){
+        is_data = true;
         is_text = false;
-    
+      }
 
+      if (is_data){
+        let matchlabel = code_assembly_array[i].match(explabel);
+        let matchalign = code_assembly_array[i].match(expalign);
+        let matchvalue = code_assembly_array[i].match(expvalue);
+        // console.log("label:", matchlabel);
+        // console.log("align:", matchalign);
+        // console.log("value:", matchvalue);
+        if (matchlabel){
 
+          data_to_store.label = matchlabel[1];
+        }
+        if (matchalign){
 
+          data_to_store.align = parseInt(matchalign[1], 10);
+        }
+        if (matchvalue && !(code_assembly_array[i].includes(".align") || code_assembly_array[i].includes("section") || code_assembly_array[i].includes("data") )){
+          data_to_store.type = matchvalue[1];
+          switch(data_to_store.type){
+            case "half":
+              if(matchvalue[2].includes(","))
+                data_to_store.value = matchvalue[2].trim().split(",");
+              else
+                data_to_store.value = matchvalue[2];
+              break;
+            case "byte":
+              if (matchvalue[2].includes(","))
+                data_to_store.value = matchvalue[2].trim().split(",");
+              else
+                data_to_store.value = parseInt(matchvalue[2]).toString(16);
+              break;
+            case "word":
+            case "dword":
+            case "integer":
+              if (matchvalue[2].includes(","))
+                data_to_store.value = matchvalue[2].trim().split(",");
+              else
+                data_to_store.value = parseInt(matchvalue[2]).toString(16);
+              break;
 
-    if (sailas !== null || sailld !== null || saildump !== null)
-    {   
-      sailas = null;
-      sailld = null;
-      saildump = null;
-      outfile = null;
+            case "float":
+              if (matchvalue[2].includes(","))
+                data_to_store.value = matchvalue[2].trim().split(",");
+              else
+                data_to_store.value = parseFloat(matchvalue[2]);
+              if (extensions.findIndex(ext => "F".includes(ext)) === -1)
+                extensions.push("F");
+              break;
+            case "double":
+              if (matchvalue[2].includes(","))
+                data_to_store.value = matchvalue[2].trim().split(",");
+              else
+                data_to_store.value = parseFloat(matchvalue[2]).toString(16);
+              if (extensions.findIndex(ext => "D".includes(ext)) === -1)
+                extensions.push("D");
+              break;
+
+            case "asciz":
+              data_to_store.value = matchvalue[2];
+              break;
+
+            case "ascii":
+              data_to_store.value = matchvalue[2];
+              break;
+
+            case "space":
+            case "zero":
+              data_to_store.value = matchvalue[2];
+              break;
+          }
+          list_data_instructions.push(data_to_store);
+          data_to_store = Object.assign({}, {
+            align: 0,
+            value: 0,
+            label: "",
+            type: ""
+          });
+        }
+      }
+
+      if (is_text && code_assembly_array[i].endsWith(':'))
+        labeltext = code_assembly_array[i].slice(0, -1);
+      else if (is_text && labeltext !== ""){
+        identify_pseudo(code_assembly_array[i]);
+      }
     }
-
-    outfile = await as(files);
-    let elffile = await ld(outfile, libs);
-    let outdump = await dump(elffile);
-    document.app.$data.L1_I_num_lines  = 32;
-    document.app.$data.L1_D_num_lines  = 32;
-    document.app.$data.L1_num_lines  = 32;
-    document.app.$data.L2_num_lines  = 32;
-    document.app.$data.L2_I_num_lines  = 32;
-    document.app.$data.L2_D_num_lines  = 32;
-    document.app.$data.L1_size  = 32;
-    document.app.$data.L1_I_size  = 32;
-    document.app.$data.L1_D_size  = 32;
-    document.app.$data.L1_size_block  = 32;
-    document.app.$data.L1_I_size_block  = 32;
-    document.app.$data.L1_D_size_block  = 32;
-    document.app.$data.L2_size  = 32;
-    document.app.$data.L2_I_size  = 32;
-    document.app.$data.L2_D_size  = 32;
-    document.app.$data.L2_size_block  = 32;
-    document.app.$data.L2_I_size_block  = 32;
-    document.app.$data.L2_D_size_block  = 32;
-    document.app.$data.cache_type = 0;
-    document.app.$data.isDirect = 0;
-    document.app.$data.cache_location = "Associative";
-    document.app.$data.cache_policy = "FIFO";
-    document.app.$data.execution_mode_run = -1;
-    document.app.$data.is_breakpoint = 0;
-    document.app.$data.binary = elffile;
-    // document.app.$data.c_kernel = true;
-    document.app.$data.instructions = instructions;
-    // setPC(BigInt(parseInt(document.app.$data.entry_elf, 16)));
+    // filenames.push(assembly_files[j].filename);
+    is_data = false;
+    is_text = false;
     
-    // console.log(ins_filter);
-    // console.log(architecture.instructions);
-    return outdump;
+  }
+
+
+
+
+  if (sailas !== null || sailld !== null || saildump !== null)
+  {   
+    sailas = null;
+    sailld = null;
+    saildump = null;
+    outfile = null;
+  }
+
+  outfile = await as(filesToCompile);//as(files);
+  let elffile = await ld(outfile, libs);
+  let outdump = await dump(elffile);
+  document.app.$data.L1_I_num_lines  = 32;
+  document.app.$data.L1_D_num_lines  = 32;
+  document.app.$data.L1_num_lines  = 32;
+  document.app.$data.L2_num_lines  = 32;
+  document.app.$data.L2_I_num_lines  = 32;
+  document.app.$data.L2_D_num_lines  = 32;
+  document.app.$data.L1_size  = 32;
+  document.app.$data.L1_I_size  = 32;
+  document.app.$data.L1_D_size  = 32;
+  document.app.$data.L1_size_block  = 32;
+  document.app.$data.L1_I_size_block  = 32;
+  document.app.$data.L1_D_size_block  = 32;
+  document.app.$data.L2_size  = 32;
+  document.app.$data.L2_I_size  = 32;
+  document.app.$data.L2_D_size  = 32;
+  document.app.$data.L2_size_block  = 32;
+  document.app.$data.L2_I_size_block  = 32;
+  document.app.$data.L2_D_size_block  = 32;
+  document.app.$data.cache_type = 0;
+  document.app.$data.isDirect = 0;
+  document.app.$data.cache_location = "Associative";
+  document.app.$data.cache_policy = "FIFO";
+  document.app.$data.execution_mode_run = -1;
+  document.app.$data.is_breakpoint = 0;
+  document.app.$data.binary = elffile;
+  // document.app.$data.c_kernel = true;
+  document.app.$data.instructions = instructions;
+  // setPC(BigInt(parseInt(document.app.$data.entry_elf, 16)));
+  
+  // console.log(ins_filter);
+  // console.log(architecture.instructions);
+  return outdump;
 }

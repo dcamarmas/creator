@@ -5759,10 +5759,16 @@ function run(args) {
   Module["calledRun"] = true;
   if (ABORT) return;
   initRuntime();
-  for(var i = 2; i < args.length; i++) {
-    FS.writeFile('./code' + (i - 2) + '.s', args[i]);
-    args[i] = 'code' + (i - 2) + '.s';
+  // at args[2], we have a list of assembly programs to compile
+  var asm_files = args.pop();
+  for (let i = 0; i < asm_files.length; i ++ ){
+    FS.writeFile('./'+asm_files[i].name, asm_files[i].code);
+    args.push('./'+asm_files[i].name);
   }
+  // for(var i = 2; i < args.length; i++) {
+  //   FS.writeFile('./code' + (i - 2) + '.s', args[i]);
+  //   args[i] = 'code' + (i - 2) + '.s';
+  // }
   // console.log(FS.readdir("./"));
   args = ["-o","out.o", ...args /*"-march=rv32imfdv", "-mabi=ilp32d", "code.s"*/];
   preMain();
