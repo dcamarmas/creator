@@ -3955,8 +3955,9 @@ pseudoinstructions:
         xori reg1, reg2, -1;
 
     - name: ret
+      # TODO: check this!
       definition: |
-        jalr x0, 0(x1); # TODO: check this!
+        jalr x0, 0(x1);
 
     - name: seqz
       fields:
