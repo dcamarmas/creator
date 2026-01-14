@@ -5,10 +5,12 @@ import { crex_findReg } from "../register/registerLookup.mjs";
 import { packExecute } from "../utils/utils.mjs";
 import { readRegister, writeRegister } from "../register/registerOperations.mjs";
 import { ARCH as RISCV } from "@/core/capi/arch/riscv.mjs";
-import { REGISTERS } from "../core.mjs";
+import { REGISTERS, main_memory } from "../core.mjs";
+import { display_print } from "../executor/IO.mjs";
 import hookMap from '../../web/components/simulator/CreatinoMaker/components/BoardElements/esp32c3devkit2.js';
 //import {connections,compState,svgRef,positions} from '../../web/components/simulator/CreatinoMaker/App.vue'
 import { connections, positions, compState, svgRef } from '../../web/components/simulator/CreatinoMaker/state';
+import { Memory } from "../memory/Memory.mts";
 
 /*
  *  CREATOR instruction description API:
@@ -323,19 +325,136 @@ export function cr_detachInterrupt() { console.log("cr_detachInterrupt called");
 export function cr_digitalPinToInterrupt() { console.log("cr_digitalPinToInterrupt called"); }
 export function cr_interrupts() { console.log("cr_interrupts called"); }
 export function cr_nointerrupts() { console.log("cr_nointerrupts called"); }
-export function cr_isDigit() { console.log("cr_isDigit called"); }
-export function cr_isAlpha() { console.log("cr_isAlpha called"); }
-export function cr_isAlphaNumeric() { console.log("cr_isAlphaNumeric called"); }
-export function cr_isAscii() { console.log("cr_isAscii called"); }
-export function cr_isControl() { console.log("cr_isControl called"); }
-export function cr_isPunct() { console.log("cr_isPunct called"); }
-export function cr_isHexadecimalDigit() { console.log("cr_isHexadecimalDigit called"); }
-export function cr_isUpperCase() { console.log("cr_isUpperCase called"); }
-export function cr_isLowerCase() { console.log("cr_isLowerCase called"); }
-export function cr_isPrintable() { console.log("cr_isPrintable called"); }
-export function cr_isGraph() { console.log("cr_isGraph called"); }
-export function cr_isSpace() { console.log("cr_isSpace called"); }
-export function cr_isWhiteSpace() { console.log("cr_isWhiteSpace called"); }
+export function cr_isDigit() { 
+    console.log("cr_isDigit called"); 
+    var ret1 = crex_findReg('a0');
+    if (ret1.match === 0) {
+        throw packExecute(true, "capi_syscall: register a0 not found", 'danger', null);	
+    }
+    var value1 = BigInt.asUintN(32,readRegister(ret1.indexComp, ret1.indexElem));
+    let res = (value1 >= 48n && value1 <= 57n) ? 1n : 0n;
+    writeRegister(BigInt(res), ret1.indexComp, ret1.indexElem); 
+}
+export function cr_isAlpha() { 
+    console.log("cr_isAlpha called"); 
+    var ret1 = crex_findReg('a0');
+    if (ret1.match === 0) {
+        throw packExecute(true, "capi_syscall: register a0 not found", 'danger', null);	
+    }
+    var value1 = BigInt.asUintN(32,readRegister(ret1.indexComp, ret1.indexElem));
+    let res = (value1 >= 65n && value1 <= 90n) || (value1 >= 97n && value1 <= 122n) ? 1n : 0n;
+    writeRegister(BigInt(res), ret1.indexComp, ret1.indexElem); 
+}
+export function cr_isAlphaNumeric() { 
+    console.log("cr_isAlphaNumeric called"); 
+    var ret1 = crex_findReg('a0');
+    if (ret1.match === 0) {
+        throw packExecute(true, "capi_syscall: register a0 not found", 'danger', null);	
+    }
+    var value1 = BigInt.asUintN(32,readRegister(ret1.indexComp, ret1.indexElem));
+    let res = (value1 >= 65n && value1 <= 90n) || (value1 >= 97n && value1 <= 122n) ? 1n : 0n;
+    writeRegister(BigInt(res), ret1.indexComp, ret1.indexElem); 
+}
+export function cr_isAscii() { 
+    console.log("cr_isAscii called"); 
+    var ret1 = crex_findReg('a0');
+    if (ret1.match === 0) {
+        throw packExecute(true, "capi_syscall: register a0 not found", 'danger', null);	
+    }
+    var value1 = BigInt.asUintN(32,readRegister(ret1.indexComp, ret1.indexElem));
+    let res = (value1 >= 0n && value1 <= 127n) ? 1n : 0n;
+    writeRegister(BigInt(res), ret1.indexComp, ret1.indexElem); 
+}
+export function cr_isControl() { 
+    console.log("cr_isControl called"); 
+    var ret1 = crex_findReg('a0');
+    if (ret1.match === 0) {
+        throw packExecute(true, "capi_syscall: register a0 not found", 'danger', null);	
+    }
+    var value1 = BigInt.asUintN(32,readRegister(ret1.indexComp, ret1.indexElem));
+    let res = (value1 >= 0n && value1 <= 31n) || (value1 === 127n) ? 1n : 0n;
+    writeRegister(BigInt(res), ret1.indexComp, ret1.indexElem); 
+}
+export function cr_isPunct() { 
+    console.log("cr_isPunct called");
+    var ret1 = crex_findReg('a0');
+    if (ret1.match === 0) {
+        throw packExecute(true, "capi_syscall: register a0 not found", 'danger', null);	
+    }
+    var value1 = BigInt.asUintN(32,readRegister(ret1.indexComp, ret1.indexElem));
+    let res = (value1 >= 33n && value1 <= 47n) || (value1 >= 58n && value1 <= 64n) || (value1 >= 91n && value1 <= 96n) || (value1 >= 123n && value1 <= 126n) ? 1n : 0n;
+    writeRegister(BigInt(res), ret1.indexComp, ret1.indexElem); 
+}
+export function cr_isHexadecimalDigit() { 
+    console.log("cr_isHexadecimalDigit called"); 
+    var ret1 = crex_findReg('a0');
+    if (ret1.match === 0) {
+        throw packExecute(true, "capi_syscall: register a0 not found", 'danger', null);	
+    }
+    var value1 = BigInt.asUintN(32,readRegister(ret1.indexComp, ret1.indexElem));
+    let res = (value1 >= 48n && value1 <= 57n) || (value1 >= 65n && value1 <= 70n) || (value1 >= 97n && value1 <= 102n) ? 1n : 0n;
+    writeRegister(BigInt(res), ret1.indexComp, ret1.indexElem); 
+}
+export function cr_isUpperCase() { 
+    console.log("cr_isUpperCase called");
+    var ret1 = crex_findReg('a0');
+    if (ret1.match === 0) {
+        throw packExecute(true, "capi_syscall: register a0 not found", 'danger', null);	
+    }
+    var value1 = BigInt.asUintN(32,readRegister(ret1.indexComp, ret1.indexElem));
+    let res = (value1 >= 65n && value1 <= 90n) ? 1n : 0n;
+    writeRegister(BigInt(res), ret1.indexComp, ret1.indexElem); 
+}
+export function cr_isLowerCase() { 
+    console.log("cr_isLowerCase called");
+    var ret1 = crex_findReg('a0');
+    if (ret1.match === 0) {
+        throw packExecute(true, "capi_syscall: register a0 not found", 'danger', null);	
+    }
+    var value1 = BigInt.asUintN(32,readRegister(ret1.indexComp, ret1.indexElem));
+    let res = (value1 >= 97n && value1 <= 122n) ? 1n : 0n;
+    writeRegister(BigInt(res), ret1.indexComp, ret1.indexElem); 
+}
+export function cr_isPrintable() {
+     console.log("cr_isPrintable called");
+    var ret1 = crex_findReg('a0');
+    if (ret1.match === 0) {
+        throw packExecute(true, "capi_syscall: register a0 not found", 'danger', null);
+    }
+    var value1 = BigInt.asUintN(32,readRegister(ret1.indexComp, ret1.indexElem));
+    let res = (value1 >= 32n && value1 <= 126n) ? 1n : 0n;
+    writeRegister(BigInt(res), ret1.indexComp, ret1.indexElem); 
+}
+export function cr_isGraph() { 
+    console.log("cr_isGraph called"); 
+    var ret1 = crex_findReg('a0');
+    if (ret1.match === 0) {
+        throw packExecute(true, "capi_syscall: register a0 not found", 'danger', null);
+    }
+    var value1 = BigInt.asUintN(32,readRegister(ret1.indexComp, ret1.indexElem));
+    let res = (value1 >= 33n && value1 <= 126n) ? 1n : 0n;
+    writeRegister(BigInt(res), ret1.indexComp, ret1.indexElem);
+}
+export function cr_isSpace() { 
+    console.log("cr_isSpace called"); 
+    var ret1 = crex_findReg('a0');
+    if (ret1.match === 0) {
+        throw packExecute(true, "capi_syscall: register a0 not found", 'danger', null);
+    }
+    var value1 = BigInt.asUintN(32,readRegister(ret1.indexComp, ret1.indexElem));
+    let res = (value1 === 32n || value1 === 9n || value1 === 10n || value1 === 13n || value1 === 11n || value1 === 12n) ? 1n : 0n;
+    writeRegister(BigInt(res), ret1.indexComp, ret1.indexElem);
+}
+export function cr_isWhiteSpace() { 
+    console.log("cr_isWhiteSpace called");
+    var ret1 = crex_findReg('a0'); 
+    if (ret1.match === 0) {
+        throw packExecute(true, "capi_syscall: register a0 not found", 'danger', null);
+    }
+    var value1 = BigInt.asUintN(32,readRegister(ret1.indexComp, ret1.indexElem));
+    let res = (value1 === 32n || value1 === 9n || value1 === 10n || value1 === 13n || value1 === 11n || value1 === 12n) ? 1n : 0n;
+    writeRegister(BigInt(res), ret1.indexComp, ret1.indexElem);
+}
 export function cr_delay() { console.log("cr_delay called"); }
 export function cr_delayMicroseconds() { console.log("cr_delayMicroseconds called"); }
 export function cr_randomSeed() { console.log("cr_randomSeed called"); }
@@ -354,14 +473,55 @@ export function cr_serial_readBytes() { console.log("cr_serial_readBytes called"
 export function cr_serial_readBytesUntil() { console.log("cr_serial_readBytesUntil called"); }
 export function cr_serial_write() { console.log("cr_serial_write called"); }
 export function cr_serial_printf() { 
-    console.log("cr_serial_printf called"); 
-    //TODO: Comprobations
-    //console.log(REGISTERS[1]?.elements.name)
-    // search a0
-    const a0 = crex_findReg("a0")
-    /// a0 can have elements to add in other 
-
-    SYSCALL.print(readRegister(a0.indexComp, a0.indexElem),'string')
+    //console.log("cr_serial_printf called"); 
+    // Get the address from register a0
+    const valueReg = crex_findReg("a0");
+    if (valueReg.match === 0) {
+        throw packExecute(true, "capi_arduino: register a0 not found", 'danger', null);
+    }
+    // Read the address stored in the register (already BigInt)
+    let stringAddress = readRegister(valueReg.indexComp, valueReg.indexElem) as bigint;
+    
+    // Normalize address to positive range
+    stringAddress = BigInt.asUintN(32, stringAddress);
+    
+    // Get the memory instance
+    const memory = main_memory as Memory;
+    
+    // Validate address is within memory bounds
+    if (stringAddress >= BigInt(memory.getSize())) {
+        throw packExecute(true, "capi_arduino: invalid string address", 'danger', null);
+    }
+    
+    // Read the format string from memory
+    let formatString = "";
+    let memoryAddr = stringAddress;
+    while (memoryAddr < BigInt(memory.getSize())) {
+        const byte = memory.read(memoryAddr);
+        if (byte === 0) break; // Null terminator
+        formatString += String.fromCharCode(byte);
+        memoryAddr++;
+    }
+    
+    // Process format specifiers
+    let result = formatString;
+    const argRegisters = ['a1', 'a2', 'a3', 'a4', 'a5', 'a6', 'a7'];
+    
+    for (const reg of argRegisters) {
+        const argReg = crex_findReg(reg);
+        if (argReg.match === 0) break;
+        
+        const argValue = readRegister(argReg.indexComp, argReg.indexElem);
+        
+        // Replacements
+        result = result.replace("%d", String(BigInt.asIntN(32, argValue)));
+        result = result.replace("%u", String(BigInt.asUintN(32, argValue)));
+        result = result.replace("%x", BigInt.asUintN(32, argValue).toString(16));
+        result = result.replace("%c", String.fromCharCode(Number(BigInt.asUintN(8, argValue))));
+    }
+    
+    // Print the formatted string directly
+    display_print(result);
     }
 export function cr_fabs() { console.log("cr_fabs called"); }
 export function cr_fmax() { console.log("cr_fmax called"); }
