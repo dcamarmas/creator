@@ -72,7 +72,7 @@ function handleDelete(event: Event) {
   >
     <div class="arch-logo">
       <img
-        :src="`img/logos/${arch.img}` || 'img/logos/default.webp'"
+        :src="`img/logos/${arch.img}` || 'img/logos/default.jpg'"
         :alt="arch.alt"
       />
     </div>
