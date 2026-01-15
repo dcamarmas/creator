@@ -137,7 +137,7 @@ function loadLibraryIfPresent(instructions) {
             loaded: instructionBinary,
             user: null,
             _rowVariant: "",
-            visible: true,
+            visible: false,
             globl: hasSymbol,
             hide: !(library_instructions === 0 || hasSymbol),
         };
