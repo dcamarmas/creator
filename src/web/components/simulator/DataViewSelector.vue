@@ -27,6 +27,7 @@ export default defineComponent({
     register_file_num: { type: Number, required: true },
     dark: { type: Boolean, required: true },
     enter: { type: [Boolean, null] as any, required: true },
+    architecture_name: { type: String, required: true },
   },
 
   computed: {
@@ -195,6 +196,7 @@ export default defineComponent({
 
       <!-- Maker Tab -->
       <button
+        v-if="architecture_name.includes('RV32')"
         :class="['tab', { active: current_reg_type === 'maker', border: dark }]"
         @click="change_data_view('maker')"
       >

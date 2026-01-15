@@ -40,5 +40,17 @@
     "id": "example6",
     "url": "examples/RISCV-32-arduino/example6.s",
     "description": "Math functions (min.max, map, constrain) example"
+  },
+  {
+    "name": "Example 7",
+    "id": "example7",
+    "url": "examples/RISCV-32-arduino/example7.s",
+    "description": "Check if a char is a number example"
+  },
+  {
+    "name": "Example 8",
+    "id": "example8",
+    "url": "examples/RISCV-32-arduino/example8.s",
+    "description": "Random function example"
   }
 ]

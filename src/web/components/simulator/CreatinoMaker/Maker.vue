@@ -20,37 +20,56 @@
  */ -->
 
 <script setup lang="ts">
-import { ref, reactive, watch, nextTick, onMounted, computed , onBeforeUnmount} from 'vue'
-import BoardElement from './components/BoardElements/esp32c3devkit2.vue';
+import {
+  ref,
+  reactive,
+  watch,
+  nextTick,
+  onMounted,
+  computed,
+  onBeforeUnmount,
+} from "vue";
+import BoardElement from "./components/BoardElements/esp32c3devkit2.vue";
 import * as Emulator from "@aloeminium108/risc-v-emulator";
 const { Assembler, CPU } = Emulator.default;
-import hookMap from './components/BoardElements/esp32c3devkit2.js';
-import boardData from './components/BoardElements/esp32c3devkit2.json';
-import ConnectionsLines from './components/Gadgets/Lines.vue';
-import Menu from './components/Gadgets/GadgetMenu.vue';
-import LEDComponent from './components/Gadgets/Elements/LED.vue';
-import ButtonComponent from './components/Gadgets/Elements/Button.vue'; 
-import FileMenu from './components/Gadgets/Elements/ConfigFile.vue';
-import WorkMenu from './components/Gadgets/Elements/ConfigWork.vue';
-import Buzzer from './components/Gadgets/Elements/Buzzer.vue';
+import hookMap from "./components/BoardElements/esp32c3devkit2.js";
+import boardData from "./components/BoardElements/esp32c3devkit2.json";
+import ConnectionsLines from "./components/Gadgets/Lines.vue";
+import Menu from "./components/Gadgets/GadgetMenu.vue";
+import LEDComponent from "./components/Gadgets/Elements/LED.vue";
+import ButtonComponent from "./components/Gadgets/Elements/Button.vue";
+import FileMenu from "./components/Gadgets/Elements/ConfigFile.vue";
+import WorkMenu from "./components/Gadgets/Elements/ConfigWork.vue";
+import Buzzer from "./components/Gadgets/Elements/Buzzer.vue";
 // import JSZip from 'jszip';
-import BoardSelect from './components/Gadgets/Elements/BoardSelect.vue';
+import BoardSelect from "./components/Gadgets/Elements/BoardSelect.vue";
 // import TextareaAssembly from '@/web/components/assembly/TextareaAssembly.vue'; // Ajusta la ruta si es necesario
-import { getCurrentInstance } from 'vue';
-import { connections, positions, compState, svgRef } from './state.js';
+import { getCurrentInstance } from "vue";
+import { connections, positions, compState, svgRef } from "./state.js";
 const workspaceRef = ref<HTMLDivElement | null>(null);
 const boardDataMutable = ref({ ...boardData });
 
 /// -----------UNDO y REDO
-const undoStack = ref<Array<{ positions: typeof positions.value, connections: typeof connections.value }>>([]);
-const redoStack = ref<Array<{ positions: typeof positions.value, connections: typeof connections.value }>>([]);
-
+const undoStack = ref<
+  Array<{
+    positions: typeof positions.value;
+    connections: typeof connections.value;
+  }>
+>([]);
+const redoStack = ref<
+  Array<{
+    positions: typeof positions.value;
+    connections: typeof connections.value;
+  }>
+>([]);
 
 const gadgetRefs = ref<Record<string, any>>({});
 //Deformar líneas
 
 // Dibujo de líneas
-const tempLine = ref<{ x1: number, y1: number, x2: number, y2: number } | null>(null);
+const tempLine = ref<{ x1: number; y1: number; x2: number; y2: number } | null>(
+  null,
+);
 // Código
 
 // const asmCode = ref([
@@ -62,37 +81,35 @@ const tempLine = ref<{ x1: number, y1: number, x2: number, y2: number } | null>(
 //       "jal ra, 0x108",
 
 //     ]);
-const asmCode = ref('');
+const asmCode = ref("");
 const instance = getCurrentInstance();
-const root = instance?.proxy?.$root as any; 
+const root = instance?.proxy?.$root as any;
 
-const draggingId = ref<string | null>(null)
-const offset = reactive({ x: 0, y: 0 })
-const selectedPin = ref<string | null>(null)
+const draggingId = ref<string | null>(null);
+const offset = reactive({ x: 0, y: 0 });
+const selectedPin = ref<string | null>(null);
 
 const showSave = ref(false);
 const showUpload = ref(false);
-const filename = ref('board-state');
+const filename = ref("board-state");
 
-const SCALE= ref(1.5); // empieza en 1x
-
-
+const SCALE = ref(1.5); // empieza en 1x
 
 function handleMouseDown(e: MouseEvent, id: string) {
-  saveStateForUndo() 
+  saveStateForUndo();
   draggingId.value = id;
   const element = positions.value.find(item => item.id === id);
   if (!element) return;
 
   // Calcula offset relativo a la posición actual del elemento y ajusta por la escala
-  offset.x = (e.clientX / SCALE.value) - element.position.x;
-  offset.y = (e.clientY / SCALE.value) - element.position.y;
+  offset.x = e.clientX / SCALE.value - element.position.x;
+  offset.y = e.clientY / SCALE.value - element.position.y;
 }
 
 function handleFlip(id: string) {
   const led = positions.value.find(item => item.id === id);
   if (led) led.flipped = !led.flipped;
-  updateConnectionsPositions()
+  updateConnectionsPositions();
 }
 function handleColor(id: string) {
   const led = positions.value.find(item => item.id === id);
@@ -105,7 +122,7 @@ function handleRotate(id: string) {
 }
 
 function handleMouseMove(e: MouseEvent) {
-    if (!draggingId.value && selectedPin.value) {
+  if (!draggingId.value && selectedPin.value) {
     const workspaceRect = workspaceRef.value?.getBoundingClientRect();
     if (!workspaceRect) return;
 
@@ -118,8 +135,8 @@ function handleMouseMove(e: MouseEvent) {
 
     const pinRect = pinEl.getBoundingClientRect();
 
-    const x1 = (pinRect.left + pinRect.width / 2) - workspaceRect.left;
-    const y1 = (pinRect.top + pinRect.height / 2) - workspaceRect.top;
+    const x1 = pinRect.left + pinRect.width / 2 - workspaceRect.left;
+    const y1 = pinRect.top + pinRect.height / 2 - workspaceRect.top;
 
     const x2 = e.clientX - workspaceRect.left;
     const y2 = e.clientY - workspaceRect.top;
@@ -133,14 +150,14 @@ function handleMouseMove(e: MouseEvent) {
   const element = positions.value.find(item => item.id === draggingId.value);
   if (element) {
     // La posición se calcula dividiendo clientX/clientY por escala y restando el offset
-    element.position.x = (e.clientX / SCALE.value) - offset.x;
-    element.position.y = (e.clientY / SCALE.value) - offset.y;
+    element.position.x = e.clientX / SCALE.value - offset.x;
+    element.position.y = e.clientY / SCALE.value - offset.y;
     updateConnectionsPositions();
   }
 }
 function handleAddGadget(type: string) {
-  saveStateForUndo() 
-  if (type === 'LED') {
+  saveStateForUndo();
+  if (type === "LED") {
     const id = `led-${Date.now()}-${Math.random()}`;
     console.log("Adding LED with ID:", id);
     positions.value.push({
@@ -149,12 +166,11 @@ function handleAddGadget(type: string) {
       compState: true,
       flipped: false,
       rotation: 0,
-      color: 'red'
-
+      color: "red",
     });
     console.log(positions.value.length);
   }
-    if (type === 'BUTTON') {
+  if (type === "BUTTON") {
     const id = `button-${Date.now()}-${Math.random()}`;
     positions.value.push({
       id,
@@ -162,10 +178,10 @@ function handleAddGadget(type: string) {
       compState: false,
       flipped: false,
       rotation: 0,
-      color: 'gray'
+      color: "gray",
     });
   }
-  if (type === 'BUZZER') {
+  if (type === "BUZZER") {
     const id = `buzzer-${Date.now()}-${Math.random()}`;
     positions.value.push({
       id,
@@ -173,12 +189,15 @@ function handleAddGadget(type: string) {
       compState: false,
       flipped: false,
       rotation: 0,
-      color: 'gray'
+      color: "gray",
     });
   }
 }
-function handleLedStateChange(id: string, state: { flipped: boolean; rotation: number ,color: string}) {
-  saveStateForUndo() 
+function handleLedStateChange(
+  id: string,
+  state: { flipped: boolean; rotation: number; color: string },
+) {
+  saveStateForUndo();
   const led = positions.value.find(item => item.id === id);
   if (led) {
     led.flipped = state.flipped;
@@ -186,22 +205,20 @@ function handleLedStateChange(id: string, state: { flipped: boolean; rotation: n
     led.color = state.color;
     console.log(`LED ${id} state updated:`, led);
     nextTick(() => {
-      updateConnectionsPositions()
+      updateConnectionsPositions();
     });
   }
 }
 function removeLed(id: string) {
-  saveStateForUndo() 
-  positions.value = positions.value.filter(item => item.id !== id)
-  connections.value = connections.value.filter(conn =>
-  !conn.fromPinId.startsWith(id) && !conn.toPinId.startsWith(id)
-)
-
+  saveStateForUndo();
+  positions.value = positions.value.filter(item => item.id !== id);
+  connections.value = connections.value.filter(
+    conn => !conn.fromPinId.startsWith(id) && !conn.toPinId.startsWith(id),
+  );
 }
 function removeLine(id) {
   console.log("Removing line with ID:", id);
-  connections.value = connections.value.filter(conn => conn.id !== id
-)
+  connections.value = connections.value.filter(conn => conn.id !== id);
 }
 
 function updateConnectionsPositions() {
@@ -214,15 +231,15 @@ function updateConnectionsPositions() {
     const svg = svgRef.value?.svgEl;
     if (!svg) return conn;
 
-    const group = svg.querySelector<SVGElement>('#g147');
+    const group = svg.querySelector<SVGElement>("#g147");
     if (!group) return conn;
 
-    const pins = group.querySelectorAll<SVGElement>('[id]');
+    const pins = group.querySelectorAll<SVGElement>("[id]");
     const fromElement = Array.from(pins).find(el => el.id === conn.fromPinId);
     if (!fromElement) return conn;
 
-    const toId = conn.toPinId.substring(0, conn.toPinId.lastIndexOf('-'));
-    const side = conn.toPinId.substring(conn.toPinId.lastIndexOf('-') + 1);
+    const toId = conn.toPinId.substring(0, conn.toPinId.lastIndexOf("-"));
+    const side = conn.toPinId.substring(conn.toPinId.lastIndexOf("-") + 1);
 
     const toLedComponent = gadgetRefs.value[toId];
     if (!toLedComponent) return conn;
@@ -232,12 +249,15 @@ function updateConnectionsPositions() {
     const y1 = fromRect.top + fromRect.height / 2 - workspaceRect.top;
     let x2 = conn.x2;
     let y2 = conn.y2;
-    if (toId.includes('led') || toId.includes('buzzer') ){
+    if (toId.includes("led") || toId.includes("buzzer")) {
       const ledValues = toLedComponent.getPinCoords();
-      x2 = (side === 'left' ? ledValues.left.x : ledValues.right.x) - workspaceRect.left;
-      y2 = (side === 'left' ? ledValues.left.y : ledValues.right.y) - workspaceRect.top;
-    }
-    else if (toId.includes('button')) {
+      x2 =
+        (side === "left" ? ledValues.left.x : ledValues.right.x) -
+        workspaceRect.left;
+      y2 =
+        (side === "left" ? ledValues.left.y : ledValues.right.y) -
+        workspaceRect.top;
+    } else if (toId.includes("button")) {
       // side será 'upleft', 'upright', 'downleft', 'downright'
       const buttonValues = toLedComponent.getPinCoords();
       if (buttonValues && buttonValues[side]) {
@@ -252,15 +272,15 @@ function updateConnectionsPositions() {
       y1,
       x2,
       y2,
-      strokeWidth: 2 * SCALE.value
+      strokeWidth: 2 * SCALE.value,
     };
   });
 }
 
-
-
 function handlePinClick(ledId, side) {
-  console.log(`Pin ${side} clicked on LED with ID: ${ledId} and selected pin: ${selectedPin.value}`);
+  console.log(
+    `Pin ${side} clicked on LED with ID: ${ledId} and selected pin: ${selectedPin.value}`,
+  );
   if (!selectedPin.value || !tempLine.value) return;
 
   const { x1, y1, x2, y2 } = tempLine.value;
@@ -279,10 +299,10 @@ function handlePinClick(ledId, side) {
     codoY,
     fromPinId: selectedPin.value,
     toPinId: `${ledId}-${side}`,
-    stroke: 'black',
+    stroke: "black",
     strokeWidth: 2 * SCALE.value,
   });
-  console.log(connections.value)
+  console.log(connections.value);
 
   tempLine.value = null;
   selectedPin.value = null;
@@ -297,10 +317,9 @@ const lines = computed(() => {
     codoX: conn.codoX,
     codoY: conn.codoY,
     stroke: conn.stroke,
-    strokeWidth: 2 * SCALE.value
+    strokeWidth: 2 * SCALE.value,
   }));
 });
-
 
 function handleMouseUp() {
   draggingId.value = null;
@@ -330,7 +349,7 @@ function handleWorkspaceMouseMove(e: MouseEvent) {
 
 function handleWorkspaceMouseUp() {
   isPanning.value = false;
-  updateConnectionsPositions()
+  updateConnectionsPositions();
 }
 
 function setupPinListeners() {
@@ -341,13 +360,13 @@ function setupPinListeners() {
   if (!svg) return;
 
   // Buscamos el grupo donde están todos los pines
-  const group = svg.querySelector<SVGElement>('#g147');
+  const group = svg.querySelector<SVGElement>("#g147");
   console.log(group);
   if (!group) return;
 
   // Seleccionamos todos los hijos con id dentro del grupo GPIO5
-  const pins = group.querySelectorAll<SVGElement>('[id]');
-  
+  const pins = group.querySelectorAll<SVGElement>("[id]");
+
   pins.forEach(el => {
     const pinId = el.id;
     if ((boardDataMutable.value.pins as string[]).includes(pinId)) {
@@ -378,38 +397,50 @@ function setupPinListeners() {
     }
   });
 }
-watch(() => selectedPin.value, (newVal) => {
-  console.log('selectedPin changed to:', newVal);
-}, { immediate: true });
+watch(
+  () => selectedPin.value,
+  newVal => {
+    console.log("selectedPin changed to:", newVal);
+  },
+  { immediate: true },
+);
 
 // onMounted(() => {
 //   nextTick(() => {
 //     setupPinListeners();
 //   });
 // });
-watch(svgRef, async (newVal) => {
+watch(svgRef, async newVal => {
   if (newVal && newVal.svgEl) {
     await nextTick();
     setupPinListeners();
   }
 });
 
-watch(() => boardDataMutable.value.pins, () => {
-  nextTick(() => {
-    setupPinListeners();
-  });
-});
-watch(positions, (newPositions) => {
-  //console.log('Positions changed:', newPositions);
-  updateConnectionsPositions();
-}, { deep: true });
+watch(
+  () => boardDataMutable.value.pins,
+  () => {
+    nextTick(() => {
+      setupPinListeners();
+    });
+  },
+);
+watch(
+  positions,
+  newPositions => {
+    //console.log('Positions changed:', newPositions);
+    updateConnectionsPositions();
+  },
+  { deep: true },
+);
 
 const showMenu = ref(false);
 function setupMenu() {
-  showMenu.value = !showMenu.value; 
-}const showFile = ref(false);
+  showMenu.value = !showMenu.value;
+}
+const showFile = ref(false);
 function setupFile() {
-  showFile.value = !showFile.value; 
+  showFile.value = !showFile.value;
 }
 
 // Workspace button
@@ -418,20 +449,22 @@ function setupFile() {
 
 const showWork = ref(false);
 function setupWork() {
-  showWork.value = !showWork.value; 
+  showWork.value = !showWork.value;
 }
 
 function clearConnections() {
-  const shouldClear = window.confirm("Do you want to erase all? This action cannot be undone!!");
+  const shouldClear = window.confirm(
+    "Do you want to erase all? This action cannot be undone!!",
+  );
   if (!shouldClear) {
     return;
   }
 
   // 2. Restaurar color de los pines en el SVG
   if (svgRef.value) {
-    const group = svgRef.value.svgEl.querySelector<SVGElement>('#g147');
+    const group = svgRef.value.svgEl.querySelector<SVGElement>("#g147");
     if (group && boardDataMutable.value?.pins) {
-      const pins = group.querySelectorAll<SVGElement>('[id]');
+      const pins = group.querySelectorAll<SVGElement>("[id]");
       pins.forEach(el => {
         const pinId = el.id;
         if ((boardDataMutable.value.pins as string[]).includes(pinId)) {
@@ -440,16 +473,10 @@ function clearConnections() {
       });
     }
   }
-
-  // // 3. Eliminar LEDs que estaban conectados
-  // positions.value = positions.value.filter(component => {
-  //   // Si es un LED, lo eliminamos si hay alguna conexión cuyo id contenga el id del LED
-  //   if (component.id.startsWith('led-')) {
-  //     return !connections.value.some(conn => conn.id.includes(component.id));
-  //   }
-  //   return true; // mantener si no es LED
-  // });a
-  positions.value = positions.value.filter(component => component.id === 'board');
+  // 3. Resetear componentes y conexiones
+  positions.value = positions.value.filter(
+    component => component.id === "board",
+  );
   connections.value = [];
   undoStack.value = [];
   redoStack.value = [];
@@ -468,16 +495,30 @@ function zoomOut() {
   if (SCALE.value < 1) SCALE.value = 1; // Limitar a 2x
   updateConnectionsPositions();
 }
-const showBoardSelect = ref(false)
+const showBoardSelect = ref(false);
 function onWorkAction(action) {
-  switch(action){
-    case 'zoomin': zoomIn(); break;
-    case 'zoomout': zoomOut(); break;
-    case 'clean': clearConnections(); break;
-    case 'undo': undo(); break;
-    case 'redo': redo(); break;
-    case 'dark': changeDarkMode(); break;
-    case 'show': showBoardSelect.value = true; break; 
+  switch (action) {
+    case "zoomin":
+      zoomIn();
+      break;
+    case "zoomout":
+      zoomOut();
+      break;
+    case "clean":
+      clearConnections();
+      break;
+    case "undo":
+      undo();
+      break;
+    case "redo":
+      redo();
+      break;
+    case "dark":
+      changeDarkMode();
+      break;
+    case "show":
+      showBoardSelect.value = true;
+      break;
   }
 }
 function saveStateForUndo() {
@@ -523,38 +564,38 @@ const darkMode = ref(false);
 
 function changeDarkMode() {
   darkMode.value = !darkMode.value;
-  const app = document.getElementById('app-main');
+  const app = document.getElementById("app-main");
   if (darkMode.value) {
-    app?.classList.add('dark-mode');
+    app?.classList.add("dark-mode");
     localStorage.setItem("conf_dark_mode", "on");
   } else {
-    app?.classList.remove('dark-mode');
+    app?.classList.remove("dark-mode");
     localStorage.setItem("conf_dark_mode", "off");
   }
 }
 onMounted(() => {
-  const app = document.getElementById('app-main');
+  const app = document.getElementById("app-main");
   if (localStorage.getItem("conf_dark_mode") === "on") {
     darkMode.value = true;
-    app?.classList.add('dark-mode');
+    app?.classList.add("dark-mode");
   }
 });
 // Pantalla archivos
 function onFileAction(action) {
   console.log("File action received:", action);
-  if (action === 'save') {
+  if (action === "save") {
     console.log("Saving board state...");
     showSave.value = true;
   }
-  if (action === 'upload') {
+  if (action === "upload") {
     console.log("Uploading board state...");
     showUpload.value = true;
   }
   if (action.type == "example") {
     console.log("Loading example file:", action.file);
     loadPreloadedFile(action.file);
-    }
   }
+}
 
 function confirmDownload() {
   showSave.value = false;
@@ -573,18 +614,18 @@ function downloadState() {
     code: root?.assembly_code,
   };
   const json = JSON.stringify(state, null, 2);
-  const blob = new Blob([json], { type: 'application/json' });
+  const blob = new Blob([json], { type: "application/json" });
   const url = URL.createObjectURL(blob);
 
-  const a = document.createElement('a');
+  const a = document.createElement("a");
   a.href = url;
-  a.download = `${filename.value || 'board-state'}.json`;
+  a.download = `${filename.value || "board-state"}.json`;
   a.click();
 
   URL.revokeObjectURL(url);
 }
 
-// Upload file 
+// Upload file
 function handleFileUpload(event) {
   const file = event.target.files[0];
   if (!file) return;
@@ -602,14 +643,15 @@ function handleFileUpload(event) {
         compState: p.compState ?? true,
         flipped: p.flipped ?? false,
         rotation: p.rotation ?? 0,
-        color: p.color ?? 'red'
+        color: p.color ?? "red",
       }));
       console.log("Positions loaded:", positions.value);
 
       connections.value = parsed.connections || [];
-      boardDataMutable.value = parsed.boardData && parsed.boardData.pins
-  ? parsed.boardData
-  : { ...boardData }; // <-- fallback al boardData original si falta pins
+      boardDataMutable.value =
+        parsed.boardData && parsed.boardData.pins
+          ? parsed.boardData
+          : { ...boardData }; // <-- fallback al boardData original si falta pins
       root.assembly_code = parsed.code || [];
 
       nextTick(() => {
@@ -618,7 +660,7 @@ function handleFileUpload(event) {
 
       showSave.value = false;
     } catch (err) {
-      console.error('Error parsing uploaded JSON:', err);
+      console.error("Error parsing uploaded JSON:", err);
     }
   };
   reader.readAsText(file);
@@ -643,12 +685,13 @@ function loadPreloadedFile(file) {
         compState: p.compState ?? true,
         flipped: p.flipped ?? false,
         rotation: p.rotation ?? 0,
-        color: p.color ?? 'red'
+        color: p.color ?? "red",
       }));
       connections.value = parsed.connections || [];
-      boardDataMutable.value = parsed.boardData && parsed.boardData.pins
-        ? parsed.boardData
-        : { ...boardData };
+      boardDataMutable.value =
+        parsed.boardData && parsed.boardData.pins
+          ? parsed.boardData
+          : { ...boardData };
       asmCode.value = parsed.code || [];
 
       nextTick(() => {
@@ -656,7 +699,7 @@ function loadPreloadedFile(file) {
       });
     })
     .catch(err => {
-      console.error('Error loading precargado:', err);
+      console.error("Error loading precargado:", err);
     });
 }
 function handleUpdateBoardData(newBoardData) {
@@ -666,8 +709,8 @@ function handleUpdateBoardData(newBoardData) {
   saveStateForUndo();
 
   // Si hay rotación, actualízala en el objeto 'board' de positions
-  if (typeof newBoardData.rotation === 'number') {
-    const board = positions.value.find(item => item.id === 'board');
+  if (typeof newBoardData.rotation === "number") {
+    const board = positions.value.find(item => item.id === "board");
     if (board) board.rotation = newBoardData.rotation;
   }
 
@@ -678,15 +721,21 @@ function handleUpdateBoardData(newBoardData) {
     setupPinListeners();
   });
 }
-const boardComponent = ref(null)
-const boardJs = ref(null)
+const boardComponent = ref(null);
+const boardJs = ref(null);
 
 async function handleBoardSelect(base: string) {
   // Carga dinámica de los tres archivos
-  boardComponent.value = (await import(`./components/BoardElements/${base}.vue`)).default
-  boardDataMutable.value = (await import(`./components/BoardElements/${base}.json`)).default
-  boardJs.value = (await import(`./components/BoardElements/${base}.js`)).default
-  showBoardSelect.value = false
+  boardComponent.value = (
+    await import(`./components/BoardElements/${base}.vue`)
+  ).default;
+  boardDataMutable.value = (
+    await import(`./components/BoardElements/${base}.json`)
+  ).default;
+  boardJs.value = (
+    await import(`./components/BoardElements/${base}.js`)
+  ).default;
+  showBoardSelect.value = false;
 }
 // async function exportBoardAsZip() {
 //   const zip = new JSZip();
@@ -717,34 +766,72 @@ async function handleBoardSelect(base: string) {
 //   URL.revokeObjectURL(url);
 // }
 onMounted(() => {
-  handleBoardSelect('esp32c3devkit2')
-})
+  handleBoardSelect("esp32c3devkit2");
+});
 </script>
 
 <template>
-  <div id="app-main" class="App" @mousemove="handleMouseMove" @mouseup="handleMouseUp" style="width: 100%; height: 100%; position: relative; overflow: hidden;">
+  <div
+    id="app-main"
+    class="App"
+    @mousemove="handleMouseMove"
+    @mouseup="handleMouseUp"
+    style="width: 100%; height: 100%; position: relative; overflow: hidden"
+  >
     <!-- Adjusted the size of the App container to match DataView.vue -->
-    <Menu v-if="showMenu" :dark-mode="darkMode" style="position: absolute; bottom:100px; right: 100px; " @add-gadget="handleAddGadget" />
-    <FileMenu v-if="showFile" style="position: absolute; top: 90px; right: 180px;" @file-action="onFileAction" />
-    <WorkMenu v-if="showWork" style="position: absolute; top: 90px; left:100px; " @work-action="onWorkAction" />
-        <!-- <button @click="loadPreloadedFile" style="position: absolute; top: 20px; left: 20px; z-index: 1000;">
+    <Menu
+      v-if="showMenu"
+      :dark-mode="darkMode"
+      style="position: absolute; bottom: 100px; right: 100px"
+      @add-gadget="handleAddGadget"
+    />
+    <FileMenu
+      v-if="showFile"
+      style="position: absolute; top: 90px; right: 180px"
+      @file-action="onFileAction"
+    />
+    <WorkMenu
+      v-if="showWork"
+      style="position: absolute; top: 90px; left: 100px"
+      @work-action="onWorkAction"
+    />
+    <!-- <button @click="loadPreloadedFile" style="position: absolute; top: 20px; left: 20px; z-index: 1000;">
       Cargar archivo precargado
     </button> -->
 
     <!-- Pantalla save -->
-    <div class="modal fade show" tabindex="-1" style="display: block; z-index: 1200;" v-if="showSave" aria-modal="true" role="dialog">
+    <div
+      class="modal fade show"
+      tabindex="-1"
+      style="display: block; z-index: 1200"
+      v-if="showSave"
+      aria-modal="true"
+      role="dialog"
+    >
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title">Introduce a name for the save file:</h5>
-            <button type="button" class="btn-close" @click="cancelDownload"></button>
+            <button
+              type="button"
+              class="btn-close"
+              @click="cancelDownload"
+            ></button>
           </div>
           <div class="modal-body">
-            <input v-model="filename" class="form-control" placeholder="board-state" />
+            <input
+              v-model="filename"
+              class="form-control"
+              placeholder="board-state"
+            />
           </div>
           <div class="modal-footer">
-            <button class="btn btn-primary" @click="confirmDownload">Confirm</button>
-            <button class="btn btn-primary" @click="cancelDownload">Cancel</button>
+            <button class="btn btn-primary" @click="confirmDownload">
+              Confirm
+            </button>
+            <button class="btn btn-primary" @click="cancelDownload">
+              Cancel
+            </button>
           </div>
         </div>
       </div>
@@ -752,56 +839,136 @@ onMounted(() => {
     <div class="modal-backdrop fade show" v-if="showSave"></div>
 
     <!-- Pantalla upload -->
-    <div class="modal fade show" tabindex="-1" style="display: block; z-index: 1200;" v-if="showUpload" aria-modal="true" role="dialog">
+    <div
+      class="modal fade show"
+      tabindex="-1"
+      style="display: block; z-index: 1200"
+      v-if="showUpload"
+      aria-modal="true"
+      role="dialog"
+    >
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title">Upload a CREATino JSON file to load :</h5>
-            <button type="button" class="btn-close" @click="cancelUpload"></button>
+            <button
+              type="button"
+              class="btn-close"
+              @click="cancelUpload"
+            ></button>
           </div>
           <div class="modal-body">
-            <input type="file" @change="handleFileUpload" accept=".json" class="form-control" />
+            <input
+              type="file"
+              @change="handleFileUpload"
+              accept=".json"
+              class="form-control"
+            />
           </div>
           <div class="modal-footer">
-            <button class="btn btn-primary" @click="confirmUpload">Confirm</button>
-            <button class="btn btn-primary" @click="cancelUpload">Cancel</button>
+            <button class="btn btn-primary" @click="confirmUpload">
+              Confirm
+            </button>
+            <button class="btn btn-primary" @click="cancelUpload">
+              Cancel
+            </button>
           </div>
         </div>
       </div>
     </div>
     <div class="modal-backdrop fade show" v-if="showUpload"></div>
 
-    <div ref="workspaceRef" 
+    <div
+      ref="workspaceRef"
       @mousedown="handleWorkspaceMouseDown"
       @mousemove="handleWorkspaceMouseMove"
       @mouseup="handleWorkspaceMouseUp"
-      style="width: 100%; height: 95%; border: 2px solid #ccc; position: relative; margin-bottom: 1rem; overflow: hidden;">
+      style="
+        width: 100%;
+        height: 95%;
+        border: 2px solid #ccc;
+        position: relative;
+        margin-bottom: 1rem;
+        overflow: hidden;
+      "
+    >
       <!-- Elementos de zoom -->
-      <div style="position: absolute; top: 20px; left: 20px; z-index: 1100; display: flex; flex-direction: column;">
+      <div
+        style="
+          position: absolute;
+          top: 20px;
+          left: 20px;
+          z-index: 1100;
+          display: flex;
+          flex-direction: column;
+        "
+      >
         <!-- <button @click="zoomIn" style="font-size: 2rem; padding: 0.75rem 1.5rem; margin-bottom: 0.5rem;" id="menu-btn">
           <fa-icon :icon="['fas', 'magnifying-glass-plus']" style="width: 1em; height: 1em; color: white;" />
         </button>
         <button @click="zoomOut" style="font-size: 2rem; padding: 0.75rem 1.5rem;" id="menu-btn">
           <fa-icon :icon="['fas', 'magnifying-glass-minus']" style="width: 1em; height: 1em; color: white;" />
         </button> -->
-        <button @click="setupWork" style="font-size: 2rem; padding: 0.75rem 1.5rem; margin-bottom: 0.5rem;" id="work-btn">
-          <fa-icon :icon="['fas', 'wrench']" style="width: 1em; height: 1em; color: white;" />
+        <button
+          @click="setupWork"
+          style="
+            font-size: 2rem;
+            padding: 0.75rem 1.5rem;
+            margin-bottom: 0.5rem;
+          "
+          id="work-btn"
+        >
+          <fa-icon
+            :icon="['fas', 'wrench']"
+            style="width: 1em; height: 1em; color: white"
+          />
         </button>
       </div>
-      <div style="position: absolute; top: 20px; right: 20px; z-index: 1100; display: flex; flex-direction: column;">
-        <button @click="setupFile" style="font-size: 2rem; padding: 0.75rem 1.5rem; margin-bottom: 0.5rem;" id="menu-btn">
-          <fa-icon :icon="['fas', 'bars']" style="width: 1em; height: 1em; color: white;" />
+      <div
+        style="
+          position: absolute;
+          top: 20px;
+          right: 20px;
+          z-index: 1100;
+          display: flex;
+          flex-direction: column;
+        "
+      >
+        <button
+          @click="setupFile"
+          style="
+            font-size: 2rem;
+            padding: 0.75rem 1.5rem;
+            margin-bottom: 0.5rem;
+          "
+          id="menu-btn"
+        >
+          <fa-icon
+            :icon="['fas', 'bars']"
+            style="width: 1em; height: 1em; color: white"
+          />
         </button>
       </div>
 
-      <div style="position: absolute; bottom: 20px; right: 20px; z-index: 1100;">
+      <div style="position: absolute; bottom: 20px; right: 20px; z-index: 1100">
         <!-- Botones del fondo -->
-        <div style="position: relative; display: inline-block;">
-          <button @click="setupMenu" id="plus-btn" style="font-size: 1.5rem; padding: 0.75rem 1.5rem; margin-right: 0.5rem;">
-            <fa-icon :icon="['fas', 'circle-plus']" style="width: 1em; height: 1em; color: white;" />
+        <div style="position: relative; display: inline-block">
+          <button
+            @click="setupMenu"
+            id="plus-btn"
+            style="
+              font-size: 1.5rem;
+              padding: 0.75rem 1.5rem;
+              margin-right: 0.5rem;
+            "
+          >
+            <fa-icon
+              :icon="['fas', 'circle-plus']"
+              style="width: 1em; height: 1em; color: white"
+            />
           </button>
           <!--<button @click="runProgram" style="font-size: 1.5rem; padding: 0.75rem 1.5rem; margin-right: 0.5rem;"> -->
-            <!-- <fa-icon :icon="['fas', 'play']" style="width: 1em; height: 1em; color: white;" /> -->
+          <!-- <fa-icon :icon="['fas', 'play']" style="width: 1em; height: 1em; color: white;" /> -->
 
           <!-- 
           </button> -->
@@ -810,17 +977,18 @@ onMounted(() => {
             <fa-icon :icon="['fas', 'trash']" style="width: 1em; height: 1em; color: white;" />
           </button> -->
           <!-- <button @click="handleAddGadget('LED')" style="position: absolute; top: -80px; left: 10px;">Añadir LED</button> -->
-
         </div>
       </div>
-      <div 
-        :style="{ 
-          transform: `translate(${pan.x}px, ${pan.y}px) scale(${SCALE})`, 
-          transformOrigin: 'top left', 
-          display: 'inline-block' 
-        }">
-        
-        <component :is="boardComponent" v-if="boardComponent"
+      <div
+        :style="{
+          transform: `translate(${pan.x}px, ${pan.y}px) scale(${SCALE})`,
+          transformOrigin: 'top left',
+          display: 'inline-block',
+        }"
+      >
+        <component
+          :is="boardComponent"
+          v-if="boardComponent"
           :positions="positions"
           @handleMouseDown="handleMouseDown"
           @updateBoard="handleUpdateBoardData"
@@ -836,38 +1004,46 @@ onMounted(() => {
           :flipped="led.flipped"
           :rotation="led.rotation"
           :connections="connections"
-          @handleMouseDown="(e) => handleMouseDown(e, led.id)"
-          @handlePinClick="(side) => handlePinClick(led.id, side)"
+          @handleMouseDown="e => handleMouseDown(e, led.id)"
+          @handlePinClick="side => handlePinClick(led.id, side)"
           @delete="removeLed(led.id)"
           @flip="() => handleFlip(led.id)"
           @rotate="() => handleRotate(led.id)"
-          @updateState="(state) => handleLedStateChange(led.id, state)"
-          :ref="el => {
-            if (el) gadgetRefs[led.id] = el;
-            else delete gadgetRefs[led.id];
-          }"
+          @updateState="state => handleLedStateChange(led.id, state)"
+          :ref="
+            el => {
+              if (el) gadgetRefs[led.id] = el;
+              else delete gadgetRefs[led.id];
+            }
+          "
         />
         <ButtonComponent
-          v-for="button in positions.filter(item => item.id.startsWith('button-'))"
+          v-for="button in positions.filter(item =>
+            item.id.startsWith('button-'),
+          )"
           :id="button.id"
           :position="button.position"
           :buttonState="button.compState"
           :flipped="button.flipped"
           :rotation="button.rotation"
           :connections="connections"
-          @handleMouseDown="(e) => handleMouseDown(e, button.id)"
-          @handlePinClick="(side) => handlePinClick(button.id, side)"
+          @handleMouseDown="e => handleMouseDown(e, button.id)"
+          @handlePinClick="side => handlePinClick(button.id, side)"
           @delete="removeLed(button.id)"
           @flip="() => handleFlip(button.id)"
           @rotate="() => handleRotate(button.id)"
-          @updateState="(state) => handleLedStateChange(button.id, state)"
-          :ref="el => {
-            if (el) gadgetRefs[button.id] = el;
-            else delete gadgetRefs[button.id];
-          }"
+          @updateState="state => handleLedStateChange(button.id, state)"
+          :ref="
+            el => {
+              if (el) gadgetRefs[button.id] = el;
+              else delete gadgetRefs[button.id];
+            }
+          "
         />
-      <Buzzer
-          v-for="buzzer in positions.filter(item => item.id.startsWith('buzzer-'))"
+        <Buzzer
+          v-for="buzzer in positions.filter(item =>
+            item.id.startsWith('buzzer-'),
+          )"
           :key="buzzer.id"
           :id="buzzer.id"
           :position="buzzer.position"
@@ -875,16 +1051,18 @@ onMounted(() => {
           :flipped="buzzer.flipped"
           :rotation="buzzer.rotation"
           :connections="connections"
-          @handleMouseDown="(e) => handleMouseDown(e, buzzer.id)"
-          @handlePinClick="(side) => handlePinClick(buzzer.id, side)"
+          @handleMouseDown="e => handleMouseDown(e, buzzer.id)"
+          @handlePinClick="side => handlePinClick(buzzer.id, side)"
           @delete="removeLed(buzzer.id)"
           @flip="() => handleFlip(buzzer.id)"
           @rotate="() => handleRotate(buzzer.id)"
-          @updateState="(state) => handleLedStateChange(buzzer.id, state)"
-          :ref="el => {
-            if (el) gadgetRefs[buzzer.id] = el;
-            else delete gadgetRefs[buzzer.id];
-          }"
+          @updateState="state => handleLedStateChange(buzzer.id, state)"
+          :ref="
+            el => {
+              if (el) gadgetRefs[buzzer.id] = el;
+              else delete gadgetRefs[buzzer.id];
+            }
+          "
         />
       </div>
       <!-- <ConnectionsLines
@@ -901,32 +1079,48 @@ onMounted(() => {
         :tempLine="tempLine"
         :lines="lines"
         @delete="removeLine"
-        @update:lineValue="changelineValue => {
-          connections = connections.map(conn => {
-            if (conn.id === changelineValue.id) {
-              // Solo actualiza la propiedad indicada
-              return { ...conn, [changelineValue.property]: changelineValue.value };
-            }
-            return conn;
-          });
-        }"
-    />
-
+        @update:lineValue="
+          changelineValue => {
+            connections = connections.map(conn => {
+              if (conn.id === changelineValue.id) {
+                // Solo actualiza la propiedad indicada
+                return {
+                  ...conn,
+                  [changelineValue.property]: changelineValue.value,
+                };
+              }
+              return conn;
+            });
+          }
+        "
+      />
     </div>
 
     <!-- <textarea v-model="asmCode" readonly style="width: 100%;" rows="10"></textarea> -->
   </div>
-  <div id="overlay-container"
-     style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2000;">
-  </div>
+  <div
+    id="overlay-container"
+    style="
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 2000;
+    "
+  ></div>
   <teleport to="body">
-  <div v-if="showBoardSelect" class="modal-backdrop" style="z-index:3000;">
-    <div class="modal-center">
-      <BoardSelect @select="handleBoardSelect" @close-select="showBoardSelect = false" />
-      <!-- <button class="btn btn-secondary mt-2" @click="showBoardSelect = false">Cerrar</button> -->
+    <div v-if="showBoardSelect" class="modal-backdrop" style="z-index: 3000">
+      <div class="modal-center">
+        <BoardSelect
+          @select="handleBoardSelect"
+          @close-select="showBoardSelect = false"
+        />
+        <!-- <button class="btn btn-secondary mt-2" @click="showBoardSelect = false">Cerrar</button> -->
+      </div>
     </div>
-  </div>
-</teleport>
+  </teleport>
 </template>
 
 <style>
@@ -934,7 +1128,9 @@ onMounted(() => {
 #app-main {
   background-color: transparent;
   color: #212529;
-  transition: background 0.3s, color 0.3s;
+  transition:
+    background 0.3s,
+    color 0.3s;
 }
 #app-main button,
 #app-main .btn {
@@ -942,7 +1138,9 @@ onMounted(() => {
   color: #fff;
   border: 1px solid #0d6efd;
   border-radius: 0.25rem;
-  transition: background 0.2s, color 0.2s;
+  transition:
+    background 0.2s,
+    color 0.2s;
   font-weight: 500;
   padding: 0.5rem 1rem;
   z-index: 1 !important;
@@ -961,7 +1159,9 @@ onMounted(() => {
   border: 1px solid #ced4da;
   border-radius: 0.25rem;
   /* padding: 0.375rem 0.75rem; */
-  transition: background 0.2s, color 0.2s;
+  transition:
+    background 0.2s,
+    color 0.2s;
 }
 
 /* --------- Bootstrap Modal --------- */
@@ -969,22 +1169,25 @@ onMounted(() => {
   background-color: #fff !important;
   color: #23272b !important;
   border-radius: 0.7rem;
-  box-shadow: 0 8px 32px rgba(60,60,60,0.12);
+  box-shadow: 0 8px 32px rgba(60, 60, 60, 0.12);
 }
 .modal-backdrop {
   position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.5) !important;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5) !important;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 3000 ;
+  z-index: 3000;
 }
 .modal-center {
   background: #fff;
   padding: 2rem;
   border-radius: 1rem;
-  box-shadow: 0 2px 16px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.2);
   min-width: 320px;
   max-width: 90vw;
 }
@@ -993,7 +1196,7 @@ onMounted(() => {
   color: #fff !important;
   border-color: #0d6efd !important;
 }
-.modal-footer .btn:hover, 
+.modal-footer .btn:hover,
 .modal-footer .btn:focus {
   background-color: #0b5ed7 !important;
   border-color: #0a58ca !important;
@@ -1028,7 +1231,7 @@ onMounted(() => {
 .dark-mode .modal-content {
   background-color: #23272b !important;
   color: #f8f9fa !important;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.32);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.32);
 }
 .dark-mode .modal-footer .btn {
   background-color: #2563eb !important;
@@ -1040,7 +1243,7 @@ onMounted(() => {
   background-color: #1e40af !important;
   border-color: #1e40af !important;
   color: #fff !important;
-} 
+}
 .dark-mode .bg-white,
 .dark-mode .bg-light,
 .dark-mode .card,

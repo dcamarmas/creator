@@ -145,6 +145,7 @@ export default defineComponent({
                   :register_file_num="architecture.components.length"
                   :dark="dark"
                   :enter="enter"
+                  :architecture_name="architecture_name"
                 />
               </div>
 

@@ -1,5 +1,4 @@
-// src/hooks/hookMap.js
-// /home/elisa/creatorVcreatino/src/web/components/simulator/CreatinoMaker/components/BoardElements/esp32c3devkit2.js
+
 import boardData from "./esp32c3devkit2.json";
 import { crex_findReg } from "@/core/register/registerLookup.mjs";
 import { packExecute } from "@/core/utils/utils.mjs";
