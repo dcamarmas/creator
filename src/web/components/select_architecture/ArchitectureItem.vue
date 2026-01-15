@@ -72,7 +72,8 @@ function handleDelete(event: Event) {
   >
     <div class="arch-logo">
       <img
-        :src="`img/logos/${arch.img}` || 'img/logos/default.jpg'"
+        :src="`img/logos/${arch.img}`"
+        @error="$event.target.src = 'img/logos/default.png'"
         :alt="arch.alt"
       />
     </div>
