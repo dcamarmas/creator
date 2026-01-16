@@ -6,8 +6,8 @@
 
 ## CREATOR project
 
-![example workflow](https://github.com/creatorsim/creator/actions/workflows/creator_workflow.yml/badge.svg)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/296da1a3683f4e2c9d6d03edc99ec75a)](https://app.codacy.com/gh/creatorsim/web-beta/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
+![example workflow](https://github.com/creatorsim/creator/actions/workflows/creator.yml/badge.svg)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/267f311dd0dd4ce3affed76ac070f47a)](https://app.codacy.com/gh/creatorsim/creator/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 [![Generic badge](https://img.shields.io/badge/achecker-WCAG%202.0%20(Level%20AAA)-green.svg)](https://shields.io/)
 
 |                              | URL                                             | 
