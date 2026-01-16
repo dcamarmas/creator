@@ -6,7 +6,7 @@ import {
     writeRegister,
 } from "../register/registerOperations.mjs";
 import { ARCH as RISCV } from "@/core/capi/arch/riscv.mjs";
-import { REGISTERS, main_memory } from "../core.mjs";
+import { REGISTERS, main_memory, status } from "../core.mjs";
 import { display_print } from "../executor/IO.mjs";
 import hookMap from "../../web/components/simulator/CreatinoMaker/components/BoardElements/esp32c3devkit2.js";
 //import {connections,compState,svgRef,positions} from '../../web/components/simulator/CreatinoMaker/App.vue'
@@ -843,9 +843,45 @@ export function cr_isWhiteSpace() {
 }
 export function cr_delay() {
     console.log("cr_delay called");
+    var ret1 = crex_findReg("a0");
+    if (ret1.match === 0) {
+        throw packExecute(
+            true,
+            "capi_syscall: register a0 not found",
+            "danger",
+            null,
+        );
+    }
+    var value1 = BigInt.asUintN(
+        32,
+        readRegister(ret1.indexComp, ret1.indexElem),
+    );
+    // Simulate delay by busy-waiting
+    const start = Date.now();
+    while (Date.now() - start < Number(value1)) {
+        // Busy wait
+    }
 }
 export function cr_delayMicroseconds() {
     console.log("cr_delayMicroseconds called");
+    var ret1 = crex_findReg("a0");
+    if (ret1.match === 0) {
+        throw packExecute(
+            true,
+            "capi_syscall: register a0 not found",
+            "danger",
+            null,
+        );
+    }
+    var value1 = BigInt.asUintN(
+        32,
+        readRegister(ret1.indexComp, ret1.indexElem),
+    );
+    // Simulate microsecond delay by busy-waiting
+    const start = performance.now();
+    while (performance.now() - start < Number(value1) / 1000) {
+        // Busy wait
+    }
 }
 export function cr_randomSeed() {
     console.log("cr_randomSeed called");
@@ -901,15 +937,65 @@ export function cr_random() {
 }
 export function cr_serial_available() {
     console.log("cr_serial_available called");
+    var ret1 = crex_findReg("a0");
+    if (ret1.match === 0) {
+        throw packExecute(
+            true,
+            "capi_arduino: register a0 not found",
+            "danger",
+            null,
+        );
+    }
+    if (serial_begin != 0)  {
+             // Check how many bytes are available in the keyboard input buffer
+			var available = BigInt((typeof status.keyboard === "string") ? status.keyboard.length : 0);
+			writeRegister(available, ret1.indexComp, ret1.indexElem); 
+    }
+    else {
+			//ERROR
+			writeRegister(-1n, ret1.indexComp, ret1.indexElem);
+}
+
 }
 export function cr_serial_availableForWrite() {
     console.log("cr_serial_availableForWrite called");
+    var ret1 = crex_findReg('a0');
+    if (ret1.match === 0) {
+        throw packExecute(true, "capi_syscall: register a0 not found", 'danger', null);
+    }
+    if(serial_begin != 0 && initArduino != 0) {
+        // Ready but with nothing being sended TODO: simulate complex scenaries
+        writeRegister(64n, ret1.indexComp, ret1.indexElem);  //simulates 64k buffer
+        //in real hw it will only show data if its receiving data 
+    }
+    else {
+        //ERROR
+        writeRegister(-1n, ret1.indexComp, ret1.indexElem);
+    }
 }
 export function cr_serial_begin() {
     console.log("cr_serial_begin called");
+    if (initArduino != 0) {
+        if (serial_begin === 0) {
+            var ret1 = crex_findReg('a0') ;
+            if (ret1.match === 0) {
+                throw packExecute(true, "capi_syscall: register " + 'a0' + " not found", 'danger', null);
+            }
+
+            /* Print integer */
+            var value   = readRegister(ret1.indexComp, ret1.indexElem);
+            //TODO: put frequences accepted values check
+            var val_int = parseInt(value.toString()) >> 0 ;	
+            serial_begin = val_int; 
+            
+        }
+    }
 }
 export function cr_serial_end() {
     console.log("cr_serial_end called");
+    if (serial_begin != 0 && initArduino != 0) {
+			serial_begin = 0; // Reset serial_begin
+	}
 }
 export function cr_serial_find() {
     console.log("cr_serial_find called");
@@ -1072,7 +1158,7 @@ export const hookOrder = [
     "cr_attachInterrupt",
     "cr_detachInterrupt",
     "cr_digitalPinToInterrupt",
-    "cr_pulseIn", // ✅ en tu JSON pulseIn va aquí
+    "cr_pulseIn", 
     "cr_pulseInLong",
     "cr_shiftIn",
     "cr_shiftOut",

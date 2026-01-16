@@ -787,7 +787,7 @@ onMounted(() => {
     />
     <FileMenu
       v-if="showFile"
-      style="position: absolute; top: 90px; right: 180px"
+      style="position: absolute; top: 90px; right: 100px"
       @file-action="onFileAction"
     />
     <WorkMenu
