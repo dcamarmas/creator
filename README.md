@@ -18,7 +18,7 @@
   [![Codacy](https://app.codacy.com/project/badge/Grade/267f311dd0dd4ce3affed76ac070f47a)](https://app.codacy.com/gh/creatorsim/creator/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
   ![WCAG 2.1](https://img.shields.io/badge/WCAG_2.1-AA-gold?logo=w3c&logoColor=black)
   ![Stars](https://img.shields.io/github/stars/creatorsim/creator?style=social)
-  ![Forks](https://img.shields.io/github/forks/creatorsim/creator?style=social)
+  ![Forks](https://img.shields.io/github/forks/dcamarmas/creator?style=social)
   
   |                              | URL                                            |
   |:----------------------------:|:----------------------------------------------:|
