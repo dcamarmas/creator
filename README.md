@@ -1,46 +1,117 @@
 <html>
- <h1 align="center">CREATOR: <br>didaCtic and geneRic assEmbly progrAmming simulaTOR </h1>
+ <h1 align="center">CREATOR: <br>didaCtic and geneRic assEmbly progrAmming simulaTOR</h1>
  <img width="5120" height="3325" alt="creator interface" src="https://github.com/user-attachments/assets/bbfb18b4-8310-406b-aad7-89223b9c6d87" />
 </html>
 
 
-## CREATOR project
 
-![example workflow](https://github.com/creatorsim/creator/actions/workflows/creator_workflow.yml/badge.svg)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/296da1a3683f4e2c9d6d03edc99ec75a)](https://app.codacy.com/gh/creatorsim/web-beta/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
-[![Generic badge](https://img.shields.io/badge/achecker-WCAG%202.0%20(Level%20AAA)-green.svg)](https://shields.io/)
+<div align="center">
+ 
+  <h2 align="center">CREATOR Project</h2>
+  
+  ![Workflow](https://github.com/creatorsim/creator/actions/workflows/creator.yml/badge.svg)
+  ![Deploy](https://img.shields.io/badge/deploy-success-success?style=flat&logo=github-actions&logoColor=white)
+  ![Website](https://img.shields.io/website?url=https://creatorsim.github.io/creator/&up_message=online&down_message=offline)
+  ![Release](https://img.shields.io/github/v/release/creatorsim/creator)
+  ![License](https://img.shields.io/github/license/creatorsim/creator)
+  
+  [![Codacy](https://app.codacy.com/project/badge/Grade/267f311dd0dd4ce3affed76ac070f47a)](https://app.codacy.com/gh/creatorsim/creator/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
+  ![WCAG 2.1](https://img.shields.io/badge/WCAG_2.1-AA-gold?logo=w3c&logoColor=black)
+  ![Stars](https://img.shields.io/github/stars/creatorsim/creator?style=social)
+  ![Forks](https://img.shields.io/github/forks/dcamarmas/creator?style=social)
 
-|                              | URL                                             | 
-|:----------------------------:|:------------------------------------------------| 
-| Creator                      | https://creatorsim.github.io/creator/           |
-| Documentation                | https://creatorsim.github.io/wiki               |
-| Examples included            | :point_right: [RISC-V](docs/examples.md#point_right---risc-v) :point_right: [MIPS-32](docs/examples.md#point_right---mips) | 
+  |                              | URL                                            |
+  |:----------------------------:|:----------------------------------------------:|
+  | :computer: CREATOR           | https://creatorsim.github.io/creator           |
+  | :book: Documentation         | https://creatorsim.github.io/creator-wiki      |
+  | :package: Docker Hub         | https://hub.docker.com/repositories/creatorsim |
 
-### Dockers for CREATOR
+  <h3 align="center">Source Code</h3>
+  
+  ![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=flat&logo=html5&logoColor=white)
+  ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat&logo=javascript&logoColor=black)
+  ![Bootstrap](https://img.shields.io/badge/Bootstrap-7952B3?style=flat&logo=bootstrap&logoColor=white)
+  ![Vue 3](https://img.shields.io/badge/Vue%203-4FC08D?style=flat&logo=vue.js&logoColor=white)
+  ![WebAssembly](https://img.shields.io/badge/WebAssembly-654FF0?style=flat&logo=webassembly&logoColor=white)
+  ![Rust](https://img.shields.io/badge/Rust-e34c26?style=flat&logo=rust&logoColor=white)
+  
+  |                              | URL                                             |
+  |:----------------------------:|:-----------------------------------------------:|
+  | :clipboard:Source Code       | https://github.com/creatorsim/creator           |
+  | :hammer: Assembler           | https://github.com/creatorsim/creator-assembler |
+  | :microscope: Nightly Build   | https://github.com/creatorsim/creator-beta      |
+  
+  <h3 align="center">Supported Internet Browsers</h3>
+  
+  ![Chrome](https://img.shields.io/badge/Google%20Chrome-57+-4285F4?style=flat&logo=google-chrome&logoColor=white)
+  ![Firefox](https://img.shields.io/badge/Firefox-52+-FF7139?style=flat&logo=firefox-browser&logoColor=white)
+  ![Edge](https://img.shields.io/badge/Microsoft%20Edge-16+-0078D7?style=flat&logo=microsoft-edge&logoColor=white)
+  ![Safari](https://img.shields.io/badge/Safari-11+-000000?style=flat&logo=safari&logoColor=white)
+  ![Brave](https://img.shields.io/badge/Brave-1.0-FB542B?style=flat&logo=brave&logoColor=white)
+  
+</div>
 
-|                              | URL                                             | 
-|:----------------------------:|:------------------------------------------------|
-| Docker Hub                   | https://hub.docker.com/repositories/creatorsim  | 
-| Dockers Documentation        | :point_right: [Gateway](dockers/gateway) :point_right: [Remote Lab](dockers/remote_lab) | 
 
-### Source code and testing
 
-|                              | URL                                             | 
-|:----------------------------:|:------------------------------------------------| 
-| Source Code                  | https://github.com/creatorsim/creator/| 
-| :microscope: Nightly build   | https://github.com/creatorsim/creator-beta/|
-| :clipboard:  Tests           | [Test Descriptions](docs/test.md)               | 
+<div align="center">
+  <h2 align="center">Content</h2>
+</div>
 
-### Supported Internet Browsers
-
-![Edge](https://img.shields.io/badge/Edge-0078D7?style=for-the-badge&logo=Microsoft-edge&logoColor=white)
-![Firefox](https://img.shields.io/badge/Firefox-FF7139?style=for-the-badge&logo=Firefox-Browser&logoColor=white)
-![Google Chrome](https://img.shields.io/badge/Google%20Chrome-4285F4?style=for-the-badge&logo=GoogleChrome&logoColor=white)
-![Safari](https://img.shields.io/badge/Safari-000000?style=for-the-badge&logo=Safari&logoColor=white)
+1. [Hardware Integration](#hardware-integration)
+2. [Examples](#examples)
+3. [Publications](#publications)
+4. [Authors](#authors)
+5. [ChangeLog](#changelog)
+6. [Developing](#developing-creator)
+7. [Sponsors](#sponsors)
 
 
 
-## Publications
+<div align="center">
+ 
+  <h2 align="center">Hardware Integration</h2>
+
+  <h3 align="center">Local Device</h3>
+
+  |                              | Repository                                                                      | Documentation                                                                                                         | Docker                                                                                            |
+  |:----------------------------:|:-------------------------------------------------------------------------------:|:---------------------------------------------------------------------------------------------------------------------:|:-------------------------------------------------------------------------------------------------:|
+  | Espressif ESP32 Gateway      | [ESP32 Gateway Repository](https://github.com/creatorsim/creator-gateway-esp32) | [ESP32 Gateway Documentation](https://creatorsim.github.io/creator-wiki/web/gateway.html#executing-the-esp32-gateway) | [ESP32 Gateway Docker](https://hub.docker.com/repository/docker/creatorsim/creator-gateway-esp32) <br> <br> <img src="https://img.shields.io/docker/pulls/creatorsim/creator-gateway-esp32?style=flat&logo=docker&logoColor=white" alt="Docker Pulls" /> <img src="https://img.shields.io/docker/image-size/creatorsim/creator-gateway-esp32?sort=date&style=flat&logo=docker&logoColor=white" alt="Docker Image Size"/> |
+  | SBC Boards Gateway           | [SBC Gateway Repository](https://github.com/creatorsim/creator-gateway-sbc)     | [SBC Gateway Documentation](https://creatorsim.github.io/creator-wiki/web/gateway.html#executing-the-sbc-gateway)     |                                                                                                   |
+  <h3 align="center">Remote Device</h3>
+  
+  |                  | Repository                                                                       | Documentation                                                                                    | Docker                                                                                             |
+  |:----------------:|:--------------------------------------------------------------------------------:|:------------------------------------------------------------------------------------------------:|:--------------------------------------------------------------------------------------------------:|
+  | Remote Labortory | [Remote Laboratory Repository](https://github.com/creatorsim/creator-remote-lab) | [Remote Laboratory Documentation](https://creatorsim.github.io/creator-wiki/web/remote-lab.html) | [Remote Laboratory Docker](https://hub.docker.com/repository/docker/creatorsim/creator-remote-lab) <br> <br> <img src="https://img.shields.io/docker/pulls/creatorsim/creator-remote-lab?style=flat&logo=docker&logoColor=white" alt="Docker Pulls" /> <img src="https://img.shields.io/docker/image-size/creatorsim/creator-remote-lab?sort=date&style=flat&logo=docker&logoColor=white" alt="Docker Image Size"/> |
+  
+</div>
+
+
+
+<div align="center">
+ 
+  <h2 align="center">Examples</h2>
+
+  |                            | RISC-V (RV32IMFD)                                                                                                       | RISC-V (RV64IMFD)                                                                                                       | MIPS-32
+  |:--------------------------:|:-----------------------------------------------------------------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------------------:|
+  | ALU operations             | [Open Example](https://creatorsim.github.io/creator/?architecture=RISC-V%20(RV32IMFD)&example_set=default&example=e2)   | [Open Example](https://creatorsim.github.io/creator/?architecture=RISC-V%20(RV64IMFD)&example_set=default&example=e2)   | [Open Example](https://creatorsim.github.io/creator/?architecture=MIPS-32&example_set=default&example=e2)   |
+  | Store/Load Data in Memory  | [Open Example](https://creatorsim.github.io/creator/?architecture=RISC-V%20(RV32IMFD)&example_set=default&example=e3)   | [Open Example](https://creatorsim.github.io/creator/?architecture=RISC-V%20(RV64IMFD)&example_set=default&example=e3)   | [Open Example](https://creatorsim.github.io/creator/?architecture=MIPS-32&example_set=default&example=e3)   |
+  | FPU operations             | [Open Example](https://creatorsim.github.io/creator/?architecture=RISC-V%20(RV32IMFD)&example_set=default&example=e4)   | [Open Example](https://creatorsim.github.io/creator/?architecture=RISC-V%20(RV64IMFD)&example_set=default&example=e4)   | [Open Example](https://creatorsim.github.io/creator/?architecture=MIPS-32&example_set=default&example=e4)   |
+  | Loop                       | [Open Example](https://creatorsim.github.io/creator/?architecture=RISC-V%20(RV32IMFD)&example_set=default&example=e5)   | [Open Example](https://creatorsim.github.io/creator/?architecture=RISC-V%20(RV64IMFD)&example_set=default&example=e5)   | [Open Example](https://creatorsim.github.io/creator/?architecture=MIPS-32&example_set=default&example=e5)   |
+  | Branch                     | [Open Example](https://creatorsim.github.io/creator/?architecture=RISC-V%20(RV32IMFD)&example_set=default&example=e6)   | [Open Example](https://creatorsim.github.io/creator/?architecture=RISC-V%20(RV64IMFD)&example_set=default&example=e6)   | [Open Example](https://creatorsim.github.io/creator/?architecture=MIPS-32&example_set=default&example=e6)   |
+  | Loop + Memory              | [Open Example](https://creatorsim.github.io/creator/?architecture=RISC-V%20(RV32IMFD)&example_set=default&example=e7)   | [Open Example](https://creatorsim.github.io/creator/?architecture=RISC-V%20(RV64IMFD)&example_set=default&example=e7)   | [Open Example](https://creatorsim.github.io/creator/?architecture=MIPS-32&example_set=default&example=e7)   |
+  | Copy of matrices           | [Open Example](https://creatorsim.github.io/creator/?architecture=RISC-V%20(RV32IMFD)&example_set=default&example=e8)   | [Open Example](https://creatorsim.github.io/creator/?architecture=RISC-V%20(RV64IMFD)&example_set=default&example=e8)   | [Open Example](https://creatorsim.github.io/creator/?architecture=MIPS-32&example_set=default&example=e8)   |
+  | I/O Syscalls               | [Open Example](https://creatorsim.github.io/creator/?architecture=RISC-V%20(RV32IMFD)&example_set=default&example=e9)   | [Open Example](https://creatorsim.github.io/creator/?architecture=RISC-V%20(RV64IMFD)&example_set=default&example=e9)   | [Open Example](https://creatorsim.github.io/creator/?architecture=MIPS-32&example_set=default&example=e9)   |
+  | I/O Syscalls + Strings     | [Open Example](https://creatorsim.github.io/creator/?architecture=RISC-V%20(RV32IMFD)&example_set=default&example=e10)  | [Open Example](https://creatorsim.github.io/creator/?architecture=RISC-V%20(RV64IMFD)&example_set=default&example=e10)  | [Open Example](https://creatorsim.github.io/creator/?architecture=MIPS-32&example_set=default&example=e10)  |
+  | Subrutines                 | [Open Example](https://creatorsim.github.io/creator/?architecture=RISC-V%20(RV32IMFD)&example_set=default&example=e11)  | [Open Example](https://creatorsim.github.io/creator/?architecture=RISC-V%20(RV64IMFD)&example_set=default&example=e11)  | [Open Example](https://creatorsim.github.io/creator/?architecture=MIPS-32&example_set=default&example=e11)  |
+  | Factorial                  | [Open Example](https://creatorsim.github.io/creator/?architecture=RISC-V%20(RV32IMFD)&example_set=default&example=e12)  | [Open Example](https://creatorsim.github.io/creator/?architecture=RISC-V%20(RV64IMFD)&example_set=default&example=e12)  | [Open Example](https://creatorsim.github.io/creator/?architecture=MIPS-32&example_set=default&example=e12)  |
+  
+</div>
+
+
+
+<div align="center">
+  <h2 align="center">Publications</h2>
+</div>
 
 ### 2025
 
@@ -218,7 +289,10 @@
 
 
 
-## Authors
+<div align="center">
+  <h2 align="center">Authors</h2>
+</div>
+
   * :technologist: [Diego Camarmas Alonso](https://github.com/dcamarmas)
   * :technologist: [Félix García Carballeira](https://www.researchgate.net/profile/Felix_Garcia-Carballeira)
   * :technologist: [Alejandro Calderón Mateos](https://github.com/acaldero)
@@ -235,7 +309,9 @@
 
 
 
-## ChangeLog
+<div align="center">
+  <h2 align="center">ChangeLog</h2>
+</div>
 
 <details open>
 <summary>:atom: 6.0.x:</summary>
@@ -375,11 +451,17 @@
 
 
 
-## Developing CREATOR
+<div align="center">
+  <h2 align="center">Developing CREATOR</h2>
+</div>
+
 See [`docs/dev.md`](docs/dev.md).
 
 
 
-## Sponsors
+<div align="center">
+  <h2 align="center">Sponsors</h2>
+</div>
+
 Integrated development environment for teaching and research on RISC-V processors (PDC2023-145832-I00) funded by MICIU/AEI/ 10.13039/501100011033 and by the European Union NextGenerationEU/PRTR
 ![sponsor logos](https://github.com/user-attachments/assets/a37ba843-dd07-4014-be3c-ee105bd2d463)

@@ -122,6 +122,7 @@ export default defineComponent({
         v-if="instructions && instructions.length > 0"
         :instructions="instructions"
         :enter="enter"
+        :autoscroll="true"
         ref="tableExecution"
       />
       <div v-else class="no-instructions">

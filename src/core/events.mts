@@ -67,6 +67,12 @@ export interface ExecutorButtonsUpdateEvent {
     run_disable?: boolean;
     /** Whether to disable the stop button */
     stop_disable?: boolean;
+    /** Whether execution has finished */
+    isFinished?: boolean;
+    /** Whether there was an error */
+    hasError?: boolean;
+    /** Error message if any */
+    errorMessage?: string;
 }
 
 /**

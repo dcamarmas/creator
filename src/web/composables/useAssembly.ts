@@ -23,6 +23,7 @@ import { resetStats } from "@/core/executor/stats.mts";
 import { instructions } from "@/core/assembler/assembler.mjs";
 import { show_notification, storeBackup } from "@/web/utils.mjs";
 import { assemblerMap, getDefaultCompiler } from "@/web/assemblers";
+import { coreEvents, CoreEventTypes } from "@/core/events.mjs";
 
 export interface AssemblyResult {
     type: "success" | "error" | "warning";
@@ -118,6 +119,13 @@ export function useAssembly(options: UseAssemblyOptions = {}) {
                 setTimeout(() => {
                     isAssembled.value = false;
                 }, 2000);
+
+                // Emit event to reset execution finished state
+                coreEvents.emit(CoreEventTypes.EXECUTOR_BUTTONS_UPDATE, {
+                    isFinished: false,
+                    hasError: false,
+                    errorMessage: "",
+                });
 
                 if (switchToSimulator) {
                     // This would be handled by the component using the composable

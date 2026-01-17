@@ -779,6 +779,7 @@ export default {
     :display="display"
     :keyboard="keyboard"
     :dark="dark!"
+    :autoscroll="autoscroll"
     :key="simulatorViewKey + '-' + assemblyCompletedKey"
     :callee_frame="callee_frame!"
     :caller_frame="caller_frame!"
