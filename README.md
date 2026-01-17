@@ -19,7 +19,7 @@
   ![WCAG 2.1](https://img.shields.io/badge/WCAG_2.1-AA-gold?logo=w3c&logoColor=black)
   ![Stars](https://img.shields.io/github/stars/creatorsim/creator?style=social)
   ![Forks](https://img.shields.io/github/forks/dcamarmas/creator?style=social)
-  
+
   |                              | URL                                            |
   |:----------------------------:|:----------------------------------------------:|
   | :computer: CREATOR           | https://creatorsim.github.io/creator           |
@@ -43,31 +43,45 @@
   
   <h3 align="center">Supported Internet Browsers</h3>
   
-  ![Chrome](https://img.shields.io/badge/Google%20Chrome-Supported-4285F4?style=flat&logo=google-chrome&logoColor=white)
-  ![Firefox](https://img.shields.io/badge/Firefox-Supported-FF7139?style=flat&logo=firefox-browser&logoColor=white)
-  ![Edge](https://img.shields.io/badge/Microsoft%20Edge-Supported-0078D7?style=flat&logo=microsoft-edge&logoColor=white)
-  ![Safari](https://img.shields.io/badge/Safari-Supported-000000?style=flat&logo=safari&logoColor=white)
-  ![Brave](https://img.shields.io/badge/Brave-Supported-FB542B?style=flat&logo=brave&logoColor=white)
+  ![Chrome](https://img.shields.io/badge/Google%20Chrome-57+-4285F4?style=flat&logo=google-chrome&logoColor=white)
+  ![Firefox](https://img.shields.io/badge/Firefox-52+-FF7139?style=flat&logo=firefox-browser&logoColor=white)
+  ![Edge](https://img.shields.io/badge/Microsoft%20Edge-16+-0078D7?style=flat&logo=microsoft-edge&logoColor=white)
+  ![Safari](https://img.shields.io/badge/Safari-11+-000000?style=flat&logo=safari&logoColor=white)
+  ![Brave](https://img.shields.io/badge/Brave-1.0-FB542B?style=flat&logo=brave&logoColor=white)
   
 </div>
 
 
 
 <div align="center">
+  <h2 align="center">Content</h2>
+</div>
+
+1. [Hardware Integration](#hardware-integration)
+2. [Examples](#examples)
+3. [Publications](#publications)
+4. [Authors](#authors)
+5. [ChangeLog](#changelog)
+6. [Developing](#developing-creator)
+7. [Sponsors](#sponsors)
+
+
+
+<div align="center">
  
-  <h2 align="center">CREATOR Hardware Integration</h2>
+  <h2 align="center">Hardware Integration</h2>
 
   <h3 align="center">Local Device</h3>
 
   |                              | Repository                                                                      | Documentation                                                                                                         | Docker                                                                                            |
   |:----------------------------:|:-------------------------------------------------------------------------------:|:---------------------------------------------------------------------------------------------------------------------:|:-------------------------------------------------------------------------------------------------:|
-  | Espressif ESP32 Gateway      | [ESP32 Gateway Repository](https://github.com/creatorsim/creator-gateway-esp32) | [ESP32 Gateway Documentation](https://creatorsim.github.io/creator-wiki/web/gateway.html#executing-the-esp32-gateway) | [ESP32 Gateway Docker](https://hub.docker.com/repository/docker/creatorsim/creator-gateway-esp32) |
+  | Espressif ESP32 Gateway      | [ESP32 Gateway Repository](https://github.com/creatorsim/creator-gateway-esp32) | [ESP32 Gateway Documentation](https://creatorsim.github.io/creator-wiki/web/gateway.html#executing-the-esp32-gateway) | [ESP32 Gateway Docker](https://hub.docker.com/repository/docker/creatorsim/creator-gateway-esp32) <br> <br> <img src="https://img.shields.io/docker/pulls/creatorsim/creator-gateway-esp32?style=flat&logo=docker&logoColor=white" alt="Docker Pulls" /> <img src="https://img.shields.io/docker/image-size/creatorsim/creator-gateway-esp32?sort=date&style=flat&logo=docker&logoColor=white" alt="Docker Image Size"/> |
   | SBC Boards Gateway           | [SBC Gateway Repository](https://github.com/creatorsim/creator-gateway-sbc)     | [SBC Gateway Documentation](https://creatorsim.github.io/creator-wiki/web/gateway.html#executing-the-sbc-gateway)     |                                                                                                   |
   <h3 align="center">Remote Device</h3>
   
   |                  | Repository                                                                       | Documentation                                                                                    | Docker                                                                                             |
   |:----------------:|:--------------------------------------------------------------------------------:|:------------------------------------------------------------------------------------------------:|:--------------------------------------------------------------------------------------------------:|
-  | Remote Labortory | [Remote Laboratory Repository](https://github.com/creatorsim/creator-remote-lab) | [Remote Laboratory Documentation](https://creatorsim.github.io/creator-wiki/web/remote-lab.html) | [Remote Laboratory Docker](https://hub.docker.com/repository/docker/creatorsim/creator-remote-lab) |
+  | Remote Labortory | [Remote Laboratory Repository](https://github.com/creatorsim/creator-remote-lab) | [Remote Laboratory Documentation](https://creatorsim.github.io/creator-wiki/web/remote-lab.html) | [Remote Laboratory Docker](https://hub.docker.com/repository/docker/creatorsim/creator-remote-lab) <br> <br> <img src="https://img.shields.io/docker/pulls/creatorsim/creator-remote-lab?style=flat&logo=docker&logoColor=white" alt="Docker Pulls" /> <img src="https://img.shields.io/docker/image-size/creatorsim/creator-remote-lab?sort=date&style=flat&logo=docker&logoColor=white" alt="Docker Image Size"/> |
   
 </div>
 
@@ -75,40 +89,21 @@
 
 <div align="center">
  
-  <h2 align="center">CREATOR Examples</h2>
+  <h2 align="center">Examples</h2>
 
-  <h3 align="center">RISC-V</h3>
-
-  |                            | Link                                                                                                   |
-  |:--------------------------:|:------------------------------------------------------------------------------------------------------:| 
-  | ALU operations             | [Open Example](https://creatorsim.github.io/creator/?architecture=rv&example_set=default&example=e2)   |
-  | Store/Load Data in Memory  | [Open Example](https://creatorsim.github.io/creator/?architecture=rv&example_set=default&example=e3)   |
-  | FPU operations             | [Open Example](https://creatorsim.github.io/creator/?architecture=rv&example_set=default&example=e4)   |
-  | Loop                       | [Open Example](https://creatorsim.github.io/creator/?architecture=rv&example_set=default&example=e5)   |
-  | Branch                     | [Open Example](https://creatorsim.github.io/creator/?architecture=rv&example_set=default&example=e6)   |
-  | Loop + Memory              | [Open Example](https://creatorsim.github.io/creator/?architecture=rv&example_set=default&example=e7)   |
-  | Copy of matrices           | [Open Example](https://creatorsim.github.io/creator/?architecture=rv&example_set=default&example=e8)   |
-  | I/O Syscalls               | [Open Example](https://creatorsim.github.io/creator/?architecture=rv&example_set=default&example=e9)   |
-  | I/O Syscalls + Strings     | [Open Example](https://creatorsim.github.io/creator/?architecture=rv&example_set=default&example=e10)  |
-  | Subrutines                 | [Open Example](https://creatorsim.github.io/creator/?architecture=rv&example_set=default&example=e11)  |
-  | Factorial                  | [Open Example](https://creatorsim.github.io/creator/?architecture=rv&example_set=default&example=e12)  |
-  
-  <h3 align="center">MIPS</h3>
-  
-  |                            | Link                                                                                                        |
-  |:--------------------------:|:-----------------------------------------------------------------------------------------------------------:|
-  | Data Storage               | [Open Example](https://creatorsim.github.io/creator/?architecture=mips32&example_set=default&example=e1)    |
-  | ALU operations             | [Open Example](https://creatorsim.github.io/creator/?architecture=mips32&example_set=default&example=e2)    |
-  | Store/Load Data in Memory  | [Open Example](https://creatorsim.github.io/creator/?architecture=mips32&example_set=default&example=e3)    |
-  | FPU operations             | [Open Example](https://creatorsim.github.io/creator/?architecture=mips32&example_set=default&example=e4)    |
-  | Loop                       | [Open Example](https://creatorsim.github.io/creator/?architecture=mips32&example_set=default&example=e5)    |
-  | Branch                     | [Open Example](https://creatorsim.github.io/creator/?architecture=mips32&example_set=default&example=e6)    |
-  | Loop + Memory              | [Open Example](https://creatorsim.github.io/creator/?architecture=mips32&example_set=default&example=e7)    |
-  | Copy of matrices           | [Open Example](https://creatorsim.github.io/creator/?architecture=mips32&example_set=default&example=e8)    |
-  | I/O Syscalls               | [Open Example](https://creatorsim.github.io/creator/?architecture=mips32&example_set=default&example=e9)    |
-  | I/O Syscalls + Strings     | [Open Example](https://creatorsim.github.io/creator/?architecture=mips32&example_set=default&example=e10)   |
-  | Subrutines                 | [Open Example](https://creatorsim.github.io/creator/?architecture=mips32&example_set=default&example=e11)   |
-  | Factorial                  | [Open Example](https://creatorsim.github.io/creator/?architecture=mips32&example_set=default&example=e12)   |
+  |                            | RISC-V (RV32IMFD)                                                                                                       | RISC-V (RV64IMFD)                                                                                                       | MIPS-32
+  |:--------------------------:|:-----------------------------------------------------------------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------------------:|
+  | ALU operations             | [Open Example](https://creatorsim.github.io/creator/?architecture=RISC-V%20(RV32IMFD)&example_set=default&example=e2)   | [Open Example](https://creatorsim.github.io/creator/?architecture=RISC-V%20(RV64IMFD)&example_set=default&example=e2)   | [Open Example](https://creatorsim.github.io/creator/?architecture=MIPS-32&example_set=default&example=e2)   |
+  | Store/Load Data in Memory  | [Open Example](https://creatorsim.github.io/creator/?architecture=RISC-V%20(RV32IMFD)&example_set=default&example=e3)   | [Open Example](https://creatorsim.github.io/creator/?architecture=RISC-V%20(RV64IMFD)&example_set=default&example=e3)   | [Open Example](https://creatorsim.github.io/creator/?architecture=MIPS-32&example_set=default&example=e3)   |
+  | FPU operations             | [Open Example](https://creatorsim.github.io/creator/?architecture=RISC-V%20(RV32IMFD)&example_set=default&example=e4)   | [Open Example](https://creatorsim.github.io/creator/?architecture=RISC-V%20(RV64IMFD)&example_set=default&example=e4)   | [Open Example](https://creatorsim.github.io/creator/?architecture=MIPS-32&example_set=default&example=e4)   |
+  | Loop                       | [Open Example](https://creatorsim.github.io/creator/?architecture=RISC-V%20(RV32IMFD)&example_set=default&example=e5)   | [Open Example](https://creatorsim.github.io/creator/?architecture=RISC-V%20(RV64IMFD)&example_set=default&example=e5)   | [Open Example](https://creatorsim.github.io/creator/?architecture=MIPS-32&example_set=default&example=e5)   |
+  | Branch                     | [Open Example](https://creatorsim.github.io/creator/?architecture=RISC-V%20(RV32IMFD)&example_set=default&example=e6)   | [Open Example](https://creatorsim.github.io/creator/?architecture=RISC-V%20(RV64IMFD)&example_set=default&example=e6)   | [Open Example](https://creatorsim.github.io/creator/?architecture=MIPS-32&example_set=default&example=e6)   |
+  | Loop + Memory              | [Open Example](https://creatorsim.github.io/creator/?architecture=RISC-V%20(RV32IMFD)&example_set=default&example=e7)   | [Open Example](https://creatorsim.github.io/creator/?architecture=RISC-V%20(RV64IMFD)&example_set=default&example=e7)   | [Open Example](https://creatorsim.github.io/creator/?architecture=MIPS-32&example_set=default&example=e7)   |
+  | Copy of matrices           | [Open Example](https://creatorsim.github.io/creator/?architecture=RISC-V%20(RV32IMFD)&example_set=default&example=e8)   | [Open Example](https://creatorsim.github.io/creator/?architecture=RISC-V%20(RV64IMFD)&example_set=default&example=e8)   | [Open Example](https://creatorsim.github.io/creator/?architecture=MIPS-32&example_set=default&example=e8)   |
+  | I/O Syscalls               | [Open Example](https://creatorsim.github.io/creator/?architecture=RISC-V%20(RV32IMFD)&example_set=default&example=e9)   | [Open Example](https://creatorsim.github.io/creator/?architecture=RISC-V%20(RV64IMFD)&example_set=default&example=e9)   | [Open Example](https://creatorsim.github.io/creator/?architecture=MIPS-32&example_set=default&example=e9)   |
+  | I/O Syscalls + Strings     | [Open Example](https://creatorsim.github.io/creator/?architecture=RISC-V%20(RV32IMFD)&example_set=default&example=e10)  | [Open Example](https://creatorsim.github.io/creator/?architecture=RISC-V%20(RV64IMFD)&example_set=default&example=e10)  | [Open Example](https://creatorsim.github.io/creator/?architecture=MIPS-32&example_set=default&example=e10)  |
+  | Subrutines                 | [Open Example](https://creatorsim.github.io/creator/?architecture=RISC-V%20(RV32IMFD)&example_set=default&example=e11)  | [Open Example](https://creatorsim.github.io/creator/?architecture=RISC-V%20(RV64IMFD)&example_set=default&example=e11)  | [Open Example](https://creatorsim.github.io/creator/?architecture=MIPS-32&example_set=default&example=e11)  |
+  | Factorial                  | [Open Example](https://creatorsim.github.io/creator/?architecture=RISC-V%20(RV32IMFD)&example_set=default&example=e12)  | [Open Example](https://creatorsim.github.io/creator/?architecture=RISC-V%20(RV64IMFD)&example_set=default&example=e12)  | [Open Example](https://creatorsim.github.io/creator/?architecture=MIPS-32&example_set=default&example=e12)  |
   
 </div>
 
