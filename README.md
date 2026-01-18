@@ -20,11 +20,13 @@
   ![Stars](https://img.shields.io/github/stars/creatorsim/creator?style=social)
   ![Forks](https://img.shields.io/github/forks/dcamarmas/creator?style=social)
 
-  |                              | URL                                            |
-  |:----------------------------:|:----------------------------------------------:|
-  | :computer: CREATOR           | https://creatorsim.github.io/creator           |
-  | :book: Documentation         | https://creatorsim.github.io/creator-wiki      |
-  | :package: Docker Hub         | https://hub.docker.com/repositories/creatorsim |
+  |                                        | URL                                            |
+  |:--------------------------------------:|:----------------------------------------------:|
+  | :computer: CREATOR                     | https://creatorsim.github.io/creator           |
+  | :globe_with_meridians: Project Website | https://creatorsim.github.io                   |
+  | :book: Documentation                   | https://creatorsim.github.io/creator-wiki      |
+  | :package: Docker Hub                   | https://hub.docker.com/repositories/creatorsim |
+  | :email: Email                          | creator.arcos.inf.uc3m.es@gmail.com            |
 
   <h3 align="center">Source Code</h3>
   
@@ -63,7 +65,8 @@
 4. [Authors](#authors)
 5. [ChangeLog](#changelog)
 6. [Developing](#developing-creator)
-7. [Sponsors](#sponsors)
+7. [Community](#community)
+8. [Sponsors](#sponsors)
 
 
 
@@ -314,7 +317,7 @@
 </div>
 
 <details open>
-<summary>:atom: 6.0.x:</summary>
+<summary>:atom: 6.0.x</summary>
 
   - [x] **BREAKING CHANGES**:
      * New YAML architecture format (w/ [JSON schema](docs/schema/architecture.json))
@@ -342,33 +345,48 @@
      * Revamped unittests
   - [x] Other fixes:
      * Fix errors in instruction implementation
+       
+  <br>
+
+  - Source Code: https://github.com/creatorsim/creator-v6.0
+  - Try Version: https://creatorsim.github.io/creator-v6.0
 
 </details>
 
 <details>
-<summary>:atom: 5.0.x:</summary>
+<summary>:atom: 5.0.x</summary>
 
   - [x] New functionality:
      * New assembler based on Rust
      * New architecture editor based on CodeMirror
   - [x] User Interface:
      * Several improvements and minor bugs fixed
+       
+  <br>
+
+  - Source Code: https://github.com/creatorsim/creator-v5.0
+  - Try Version: https://creatorsim.github.io/creator-v5.0
 
 </details>
 
 <details>
-<summary>:atom: 4.1.x:</summary>
+<summary>:atom: 4.1.x</summary>
 
   - [x] New functionality:
      * CREATOR Remote Lab
      * Dockers for CREATOR
   - [x] User Interface:
      * Several improvements and minor bugs fixed
+       
+  <br>
+
+  - Source Code: https://github.com/creatorsim/creator-v4.1
+  - Try Version: https://creatorsim.github.io/creator-v4.1
 
 </details>
 
 <details>
-<summary>:atom: 4.0.x:</summary>
+<summary>:atom: 4.0.x</summary>
 
   - [x] New functionality:
      * Integration with real hardware based on RISC-V (ESP32)
@@ -378,11 +396,16 @@
      * Performance improvements (e.g. program execution, data segment loading, etc.)
      * Updating external dependencies (fontawesome v6.2.1, jquery v3.6.3, lodash v4.17.15, and Apexchart)
      * Several minor bugs fixed
+       
+  <br>
+
+  - Source Code: https://github.com/creatorsim/creator-v4.0
+  - Try Version: https://creatorsim.github.io/creator-v4.0
 
 </details>
 
 <details>
-<summary>:atom: 3.2.x:</summary>
+<summary>:atom: 3.2.x</summary>
 
   - [x] User Interface:
     * New link to the quick reference guide for instructions in PDF
@@ -392,10 +415,15 @@
     * Improved memory detail panel
     * Hardware counter updated to know the number of clock cycles consumed since the last reset
 
+  <br>
+
+  - Source Code: https://github.com/creatorsim/creator-v3.2
+  - Try Version: https://creatorsim.github.io/creator-v3.2
+
 </details>
 
 <details>
-<summary>:atom: 3.1.x:</summary>
+<summary>:atom: 3.1.x</summary>
 
   - [x] User Interface:
     * Example set added
@@ -407,11 +435,16 @@
     * Interface based on Vue components for all UI elements in CREATOR
     * Simulated main memory reworked
     * Architecture improved
+       
+  <br>
+
+  - Source Code: https://github.com/creatorsim/creator-v3.1
+  - Try Version: https://creatorsim.github.io/creator-v3.1
 
 </details>
 
 <details>
-<summary>:atom: 3.0.x:</summary>
+<summary>:atom: 3.0.x</summary>
 
   - [x] Several minor RISC-V improvements
   - [x] More modular design:
@@ -424,10 +457,15 @@
       * Colored stack
       * SP and FP pointers are shown on the memory stack detail panel
 
+  <br>
+
+  - Source Code: https://github.com/creatorsim/creator-v3.0
+  - Try Version: https://creatorsim.github.io/creator-v3.0
+
 </details>
 
 <details>
-<summary>:atom: 2.1.x:</summary>
+<summary>:atom: 2.1.x</summary>
 
   - [x] **RISC-V** supported (Thanks to Lucas Elvira Martín @luck5941)
   - [x] CREATOR **accessibility improved** up to WCAG 2.0 (Level AAA)
@@ -447,6 +485,23 @@
       * https://creatorsim.github.io/creator/?example_set=uc3m-ec&example=e3
   - [x] Bootstrap-vue upgraded up to v2.15.0
 
+  <br>
+
+  - Source Code: https://github.com/creatorsim/creator-v2.1
+  - Try Version: https://creatorsim.github.io/creator-v2.1
+
+</details>
+
+<details>
+<summary>:atom: 1.3.x</summary>
+
+  - [x] First CREATOR release
+
+  <br>
+
+  - Source Code: https://github.com/creatorsim/creator-v1.3
+  - Try Version: https://creatorsim.github.io/creator-v1.3
+
 </details>
 
 
@@ -456,6 +511,18 @@
 </div>
 
 See [`docs/dev.md`](docs/dev.md).
+
+
+
+<div align="center">
+  <h2 align="center">Community</h2>
+ 
+  <p align="center">
+    <img src="https://github.com/user-attachments/assets/681e1f79-d019-40d1-89da-e45326d84ab1" height="100" alt="Universidad Carlos III de Madrid Logo"/>
+    <img src="https://github.com/user-attachments/assets/c31a97e8-eaf7-4440-9f2a-dc7ca773b5a2" height="100" alt="Universidad Carlos III de Madrid Logo"/>
+    <img src="https://github.com/user-attachments/assets/28ae0396-852c-4c4c-8812-bc7dc494e3c3" height="100" alt="Universidad de Leon Logo"/
+  </p>
+</div>
 
 
 
