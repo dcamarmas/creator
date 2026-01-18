@@ -345,6 +345,11 @@
      * Revamped unittests
   - [x] Other fixes:
      * Fix errors in instruction implementation
+       
+  <br>
+
+  - Source Code: https://github.com/creatorsim/creator-v6.0
+  - Try Version: https://creatorsim.github.io/creator-v6.0
 
 </details>
 
@@ -356,6 +361,11 @@
      * New architecture editor based on CodeMirror
   - [x] User Interface:
      * Several improvements and minor bugs fixed
+       
+  <br>
+
+  - Source Code: https://github.com/creatorsim/creator-v5.0
+  - Try Version: https://creatorsim.github.io/creator-v5.0
 
 </details>
 
@@ -367,6 +377,11 @@
      * Dockers for CREATOR
   - [x] User Interface:
      * Several improvements and minor bugs fixed
+       
+  <br>
+
+  - Source Code: https://github.com/creatorsim/creator-v4.1
+  - Try Version: https://creatorsim.github.io/creator-v4.1
 
 </details>
 
@@ -381,6 +396,11 @@
      * Performance improvements (e.g. program execution, data segment loading, etc.)
      * Updating external dependencies (fontawesome v6.2.1, jquery v3.6.3, lodash v4.17.15, and Apexchart)
      * Several minor bugs fixed
+       
+  <br>
+
+  - Source Code: https://github.com/creatorsim/creator-v4.0
+  - Try Version: https://creatorsim.github.io/creator-v4.0
 
 </details>
 
@@ -394,6 +414,11 @@
     * Simplified pseudo-instruction forms
     * Improved memory detail panel
     * Hardware counter updated to know the number of clock cycles consumed since the last reset
+
+  <br>
+
+  - Source Code: https://github.com/creatorsim/creator-v3.2
+  - Try Version: https://creatorsim.github.io/creator-v3.2
 
 </details>
 
@@ -410,6 +435,11 @@
     * Interface based on Vue components for all UI elements in CREATOR
     * Simulated main memory reworked
     * Architecture improved
+       
+  <br>
+
+  - Source Code: https://github.com/creatorsim/creator-v3.1
+  - Try Version: https://creatorsim.github.io/creator-v3.1
 
 </details>
 
@@ -426,6 +456,11 @@
       * Checking saved registers on the stack are restored
       * Colored stack
       * SP and FP pointers are shown on the memory stack detail panel
+
+  <br>
+
+  - Source Code: https://github.com/creatorsim/creator-v3.0
+  - Try Version: https://creatorsim.github.io/creator-v3.0
 
 </details>
 
@@ -449,6 +484,23 @@
     * Preload example 'e3' from example set 'uc3m-ec':
       * https://creatorsim.github.io/creator/?example_set=uc3m-ec&example=e3
   - [x] Bootstrap-vue upgraded up to v2.15.0
+
+  <br>
+
+  - Source Code: https://github.com/creatorsim/creator-v2.1
+  - Try Version: https://creatorsim.github.io/creator-v2.1
+
+</details>
+
+<details>
+<summary>:atom: 1.3.x</summary>
+
+  - [x] First CREATOR release
+
+  <br>
+
+  - Source Code: https://github.com/creatorsim/creator-v1.3
+  - Try Version: https://creatorsim.github.io/creator-v1.3
 
 </details>
 
