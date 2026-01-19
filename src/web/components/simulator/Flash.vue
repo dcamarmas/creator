@@ -613,6 +613,7 @@ export default defineComponent({
 
         <b-col v-if="selectedOption === 'esp32' && targetBoard" class="mb-3">
           <b-form-checkbox
+          class ="mt-3"
             v-model="arduino_support"
             @change="handleCheckboxChange(arduino_support)"
           >
@@ -658,7 +659,7 @@ export default defineComponent({
               class="my-2"
             />
           </div>
-          <label for="flash-url"> (3) Flash URL: </label>
+          <label for="flash-url"> Flash URL: </label>
           <b-form-input
             id="flash-url"
             type="text"
@@ -900,12 +901,3 @@ export default defineComponent({
     </b-tabs>
   </b-modal>
 </template>
-<style>
-  .flash-zindex-modal {
-    z-index: 3001 !important;
-  }
-
-  .flash-zindex-modal .modal-backdrop {
-    z-index: 3000 !important;
-  }
-</style>

@@ -42,12 +42,14 @@ import FileMenu from "./components/Gadgets/Elements/ConfigFile.vue";
 import WorkMenu from "./components/Gadgets/Elements/ConfigWork.vue";
 import Buzzer from "./components/Gadgets/Elements/Buzzer.vue";
 // import JSZip from 'jszip';
+import { load_CREATino } from "@/core/core.mjs";
 import BoardSelect from "./components/Gadgets/Elements/BoardSelect.vue";
 // import TextareaAssembly from '@/web/components/assembly/TextareaAssembly.vue'; // Ajusta la ruta si es necesario
 import { getCurrentInstance } from "vue";
 import { connections, positions, compState, svgRef } from "./state.js";
 const workspaceRef = ref<HTMLDivElement | null>(null);
 const boardDataMutable = ref({ ...boardData });
+
 
 /// -----------UNDO y REDO
 const undoStack = ref<
@@ -83,7 +85,7 @@ const tempLine = ref<{ x1: number; y1: number; x2: number; y2: number } | null>(
 //     ]);
 const asmCode = ref("");
 const instance = getCurrentInstance();
-const root = instance?.proxy?.$root as any;
+const root = (document as any).app;
 
 const draggingId = ref<string | null>(null);
 const offset = reactive({ x: 0, y: 0 });
@@ -613,6 +615,7 @@ function downloadState() {
     boardData: boardDataMutable.value, // <--- usa boardData aquí
     code: root?.assembly_code,
   };
+  console.log("Downloading state:", state.code);
   const json = JSON.stringify(state, null, 2);
   const blob = new Blob([json], { type: "application/json" });
   const url = URL.createObjectURL(blob);
@@ -631,9 +634,11 @@ function handleFileUpload(event) {
   if (!file) return;
 
   const reader = new FileReader();
-  reader.onload = function (e) {
+
+  reader.onload = async function (e) {
     try {
-      const content = e.target.result as string;
+      var content = e.target.result as string;
+      content = content.trimStart();
       const parsed = JSON.parse(content);
 
       // Reemplaza todo el array con uno nuevo (gatilla la reactividad en Vue)
@@ -645,26 +650,37 @@ function handleFileUpload(event) {
         rotation: p.rotation ?? 0,
         color: p.color ?? "red",
       }));
-      console.log("Positions loaded:", positions.value);
 
       connections.value = parsed.connections || [];
+
       boardDataMutable.value =
         parsed.boardData && parsed.boardData.pins
           ? parsed.boardData
-          : { ...boardData }; // <-- fallback al boardData original si falta pins
-      root.assembly_code = parsed.code || [];
+          : { ...boardData };
 
-      nextTick(() => {
-        updateConnectionsPositions(); // Actualiza visualmente las líneas
-      });
+      // 🔑 Cargar código en el estado global (SIEMPRE string)
+      load_CREATino(); // Asegura que el módulo core esté cargado
+      root.assembly_code =
+        typeof parsed.code === "string" ? parsed.code : "";
 
+      // 🔑 Forzar vista Assembly para que la UI se actualice
+      root.creator_mode = "assembly";
+
+      console.log("Code loaded:", root.assembly_code);
+
+      await nextTick();
+      updateConnectionsPositions(); // Actualiza visualmente las líneas
+
+      root.creator_mode = "simulator";
       showSave.value = false;
     } catch (err) {
       console.error("Error parsing uploaded JSON:", err);
     }
   };
+
   reader.readAsText(file);
 }
+
 
 function confirmUpload() {
   showUpload.value = false;
