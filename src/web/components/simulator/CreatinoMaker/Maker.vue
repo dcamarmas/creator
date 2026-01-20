@@ -20,20 +20,8 @@
  */ -->
 
 <script setup lang="ts">
-import {
-  ref,
-  reactive,
-  watch,
-  nextTick,
-  onMounted,
-  computed,
-  onBeforeUnmount,
-} from "vue";
-import BoardElement from "./components/BoardElements/esp32c3devkit2.vue";
-import * as Emulator from "@aloeminium108/risc-v-emulator";
-const { Assembler, CPU } = Emulator.default;
-import hookMap from "./components/BoardElements/esp32c3devkit2.js";
-import boardData from "./components/BoardElements/esp32c3devkit2.json";
+import { ref, reactive, watch, nextTick, onMounted, computed } from "vue";
+import boardData from "./components/BoardElements/esp32c3devkit2.json" with { type: "json" };
 import ConnectionsLines from "./components/Gadgets/Lines.vue";
 import Menu from "./components/Gadgets/GadgetMenu.vue";
 import LEDComponent from "./components/Gadgets/Elements/LED.vue";
@@ -49,7 +37,6 @@ import { getCurrentInstance } from "vue";
 import { connections, positions, compState, svgRef } from "./state.js";
 const workspaceRef = ref<HTMLDivElement | null>(null);
 const boardDataMutable = ref({ ...boardData });
-
 
 /// -----------UNDO y REDO
 const undoStack = ref<
@@ -660,8 +647,7 @@ function handleFileUpload(event) {
 
       // 🔑 Cargar código en el estado global (SIEMPRE string)
       load_CREATino(); // Asegura que el módulo core esté cargado
-      root.assembly_code =
-        typeof parsed.code === "string" ? parsed.code : "";
+      root.assembly_code = typeof parsed.code === "string" ? parsed.code : "";
 
       // 🔑 Forzar vista Assembly para que la UI se actualice
       root.creator_mode = "assembly";
@@ -680,7 +666,6 @@ function handleFileUpload(event) {
 
   reader.readAsText(file);
 }
-
 
 function confirmUpload() {
   showUpload.value = false;
