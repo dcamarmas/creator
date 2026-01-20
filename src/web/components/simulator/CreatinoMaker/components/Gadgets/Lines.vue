@@ -330,7 +330,7 @@ function getPath(x1: number, y1: number, codoX: number, codoY: number, x2: numbe
   width: 100%;
   height: 100%;
   pointer-events: none;
-  z-index: 10;
+  z-index: 1;
 }
 
 .connections-lines path {

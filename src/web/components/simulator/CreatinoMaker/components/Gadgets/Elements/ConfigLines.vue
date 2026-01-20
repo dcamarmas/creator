@@ -135,7 +135,7 @@ onMounted(() => {
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.10);
   padding: 1rem !important; /* igual que p-3 de bootstrap */
   font-size: 0.95rem;       /* igual que ConfigWork */
-  z-index: 1000000;
+  z-index: 100;
   color: #212529;
   border: 1px solid #dee2e6;
 }

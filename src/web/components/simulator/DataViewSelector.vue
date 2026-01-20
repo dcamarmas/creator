@@ -201,7 +201,7 @@ export default defineComponent({
         @click="change_data_view('maker')"
       >
         <font-awesome-icon :icon="['fas', 'pen']" />
-        <span>Creatino Maker</span>
+        <span>Maker</span>
       </button>
     </div>
   </div>

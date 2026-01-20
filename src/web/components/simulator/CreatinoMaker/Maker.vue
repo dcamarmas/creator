@@ -899,7 +899,7 @@ onMounted(() => {
           position: absolute;
           top: 20px;
           left: 20px;
-          z-index: 1100;
+          z-index: 100;
           display: flex;
           flex-direction: column;
         "
@@ -930,7 +930,7 @@ onMounted(() => {
           position: absolute;
           top: 20px;
           right: 20px;
-          z-index: 1100;
+          z-index: 1;
           display: flex;
           flex-direction: column;
         "
@@ -951,7 +951,7 @@ onMounted(() => {
         </button>
       </div>
 
-      <div style="position: absolute; bottom: 20px; right: 20px; z-index: 1100">
+      <div style="position: absolute; bottom: 20px; right: 20px; z-index: 1">
         <!-- Botones del fondo -->
         <div style="position: relative; display: inline-block">
           <button
@@ -968,16 +968,6 @@ onMounted(() => {
               style="width: 1em; height: 1em; color: white"
             />
           </button>
-          <!--<button @click="runProgram" style="font-size: 1.5rem; padding: 0.75rem 1.5rem; margin-right: 0.5rem;"> -->
-          <!-- <fa-icon :icon="['fas', 'play']" style="width: 1em; height: 1em; color: white;" /> -->
-
-          <!-- 
-          </button> -->
-          <!-- <button @click="exportBoardAsZip">Exportar placa como ZIP</button> -->
-          <!-- <button @click="clearConnections" style="font-size: 1.5rem; padding: 0.75rem 1.5rem;">
-            <fa-icon :icon="['fas', 'trash']" style="width: 1em; height: 1em; color: white;" />
-          </button> -->
-          <!-- <button @click="handleAddGadget('LED')" style="position: absolute; top: -80px; left: 10px;">Añadir LED</button> -->
         </div>
       </div>
       <div
