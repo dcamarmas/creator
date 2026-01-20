@@ -18,7 +18,6 @@
  *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-import fs from "fs";
 import * as hooks from "./arduino_functions.mts";
 import { loadedCreatino } from "../core.mjs";
 
