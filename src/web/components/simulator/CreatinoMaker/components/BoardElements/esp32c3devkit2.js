@@ -1,5 +1,5 @@
 
-import boardData from "./esp32c3devkit2.json";
+import boardData from "./esp32c3devkit2.json" with { type: "json" };
 import { crex_findReg } from "@/core/register/registerLookup.mjs";
 import { packExecute } from "@/core/utils/utils.mjs";
 import { readRegister, writeRegister } from "@/core/register/registerOperations.mjs";
