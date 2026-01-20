@@ -36,12 +36,7 @@ export function cr_initArduino() {
 }
 export function cr_digitalRead() {
     console.log("cr_digitalRead called");
-    hookMap[0x4](
-        connections.value,
-        val => (compState.value = val),
-        svgRef,
-        positions,
-    );
+    hookMap[0x4](connections.value);
 }
 export function cr_pinMode() {
     console.log("cr_pinMode called");
@@ -890,7 +885,7 @@ export function cr_randomSeed() {
         throw packExecute(true, "capi_syscall: register a0 not found", 'danger', null);	
     } 
     var value1 = BigInt.asUintN(32, readRegister(ret1.indexComp, ret1.indexElem));
-    _seed = value1 >>> 0n; // Set the seed for random number generation
+    _seed = Number(value1) >>> 0;
 }
 export function cr_random() {
     console.log("cr_random called");
