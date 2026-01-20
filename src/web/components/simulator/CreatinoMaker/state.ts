@@ -30,29 +30,7 @@ export const connections = ref<Array<{
   stroke: string,
   strokeWidth: number
 }>>([]);
-// Código
 
-// const asmCode = ref([
-//       "addi a0, a0, 5",
-//       "jal ra, 0x104",
-//       "addi a0, a0, -4000",
-//       "addi a0, a0, 5",
-//       "addi a1, a1, 1",
-//       "jal ra, 0x108",
-
-//     ]);
-const asmCode = ref([
-      "addi a0, a0, 5",
-      "addi a1, a1, 1",
-      "jal ra, 0x100",
-      "addi a0, a0, -5",
-      "addi a0, a0, 1000",
-      "jal ra, 0x104",
-      "addi a0, a0, -1000",
-      "addi a0, a0, 5",
-      "addi a1, a1, -1",
-      "addi a1, a1, 0",
-      "jal ra, 0x100",
-    ]);
+type SVGSVGElement = any;
 
 export const svgRef = ref<SVGSVGElement | null>(null)

@@ -45,7 +45,7 @@ export function cr_digitalWrite() {
     console.log("cr_digitalWrite called");
     hookMap[0xc](
         connections.value,
-        val => (compState.value = val),
+        (val:any) => (compState.value = val),
         svgRef,
         positions,
     );
