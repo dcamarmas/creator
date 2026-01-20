@@ -265,7 +265,7 @@ export default defineComponent({
       //Google Analytics
       creator_ga("simulator", "simulator.cancel", "simulator.cancel");
     },
-        creatinoMode(isChecked: boolean) {
+    creatinoMode(isChecked: boolean) {
       LOCALLAB.gateway_monitor(this.flashURL + "/arduinoMode", {
         state: isChecked,
       }).then(data => {

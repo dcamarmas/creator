@@ -78,7 +78,7 @@
     "globals": "^16.5.0",
     "jiti": "^2.6.1",
     "npm-run-all2": "^8.0.4",
-    "prettier": "^3.7.3",
+    "prettier": "^3.7.4",
     "prettier-plugin-vue": "^1.1.6",
     "sass-embedded": "^1.93.3",
     "sharp": "^0.34.5",
