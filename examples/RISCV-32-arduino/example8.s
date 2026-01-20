@@ -3,7 +3,7 @@
 	msg: .string "%d"
 .text
 setup:
-    #Stablish a seed. using the same sied will lead to the same results
+    #Stablish a seed. using the same seed will lead to the same results
     li a0, 1234
     addi sp, sp, -4       
     sw ra, 0(sp) 
