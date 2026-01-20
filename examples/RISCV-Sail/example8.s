@@ -24,7 +24,7 @@ _main:
     la t3, v_2
     vle64.v v1, 0(t2)
     vle64.v v2, 0(t3)
-    vadd.vv v3, v1, v2
+    vfadd.vv v3, v1, v2
     la t1, v_mem
     vse64.v v3, 0(t1)
 

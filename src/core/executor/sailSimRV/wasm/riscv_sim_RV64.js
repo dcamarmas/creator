@@ -615,19 +615,23 @@ var Module = (() => {
           var size_elem = parseInt(CSRMatch[5], 16).toString(2).padStart(32, '0');
           size_elem = size_elem.slice(26, 29);
           console.log("Tamaño: ", size_elem);
-          // if(size_elem === "000"){
+          if(size_elem === "000"){
+            document.app.$data.v_length = 8;
             // length_vext = 8;
             // architecture.components[3].total_elements = 64;
-          // } else if (size_elem === "001") {
+          } else if (size_elem === "001") {
+            document.app.$data.v_length = 16;
             // length_vext = 16;
             // architecture.components[3].total_elements = 32;
-          // } else if (size_elem === "010"){
+          } else if (size_elem === "010"){
+            document.app.$data.v_length = 32;
             // length_vext = 32;
             // architecture.components[3].total_elements = 16;
-          // }else {
+          }else {
+            document.app.$data.v_length = 64;
             // length_vext = 64;
             // architecture.components[3].total_elements = 8;
-          // }
+          }
           // architecture.components[3].length_elem = length_vext;
         }
         else if (CSRMatch[2] === "vl"){

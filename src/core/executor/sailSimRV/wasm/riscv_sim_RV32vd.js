@@ -601,15 +601,18 @@ var Module = (() => {
           size_elem = size_elem.slice(26, 29);
           // console.log("Tamaño: ", size_elem);
           if(size_elem === "000"){
-            length_vext = 8;
-            architecture.components[3].total_elements = 64;
+            document.app.$data.v_length = 8;
+            // architecture.components[3].total_elements = 64;
           } else if (size_elem === "001") {
+            document.app.$data.v_length = 16;
             // length_vext = 16;
             // architecture.components[3].total_elements = 32;
           } else if (size_elem === "010"){
+            document.app.$data.v_length = 32;
             // length_vext = 32;
             // architecture.components[3].total_elements = 16;
           }else {
+            document.app.$data.v_length = 64;
             // length_vext = 64;
             // architecture.components[3].total_elements = 8;
           }

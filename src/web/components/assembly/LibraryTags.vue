@@ -17,8 +17,11 @@ You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <script>
-import { loadedLibrary } from "@/core/core.mjs";
+import { architecture, loadedLibrary } from "@/core/core.mjs";
 import { coreEvents } from "../../../core/events.mts";
+import { objectEntries } from "@vueuse/core";
+import { libtags32 } from "@/core/assembler/sailAssembler/web/wasm/objdump";
+import { libtags64 } from "@/core/assembler/sailAssembler/web/wasm/objdump64";
 
 export default {
   props: {
@@ -35,11 +38,19 @@ export default {
   computed: {
     libraryLoaded() {
       // Access libraryVersion to make this reactive to library changes
-      return (
-        this.libraryVersion >= 0 &&
-        loadedLibrary &&
-        Object.keys(loadedLibrary).length !== 0
-      );
+      if (architecture.config.name.includes("SRV"))
+        return (
+          this.libraryVersion >= 0 &&
+          loadedLibrary && (libtags32.length !== 0 || libtags64.length !== 0) &&
+          Object.keys(loadedLibrary).length !== 0
+        );
+      
+      else 
+        return (
+          this.libraryVersion >= 0 &&
+          loadedLibrary &&
+          Object.keys(loadedLibrary).length !== 0
+        );
     },
 
     libraryTags() {
@@ -49,16 +60,31 @@ export default {
       }
 
       // YAML format: symbols is an object with symbol names as keys
-      if (!loadedLibrary.symbols) {
+      if (!loadedLibrary.symbols && (!architecture.config.name.includes("SRV"))) {
         return [];
       }
-
-      return Object.entries(loadedLibrary.symbols).map(([name, data]) => ({
-        tag: name,
-        addr: data.addr,
-        globl: true,
-        help: data.help,
-      }));
+      if (architecture.config.name === ("SRV32")){
+        return libtags32.map(name => ({
+          tag: name,
+          addr: null,
+          globl: true,
+          help: null,
+        }));
+      } else if (architecture.config.name === ("SRV64")){
+        return libtags64.map(name => ({
+          tag: name,
+          addr: null,
+          globl: true,
+          help: null,
+        }));
+      }
+      else 
+        return Object.entries(loadedLibrary.symbols).map(([name, data]) => ({
+          tag: name,
+          addr: data.addr,
+          globl: true,
+          help: data.help,
+        }));
     },
 
     libraryName() {

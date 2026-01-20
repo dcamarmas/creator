@@ -3,9 +3,9 @@
 import as32Module from "./wasm/as-new.js"
 import wasmUrl from "./wasm/as-new.wasm?url";
 import ld32Module from "./wasm/ld-new.js"
-import dump32Module from "./wasm/objdump.js"
+import dump32Module, { islib32 } from "./wasm/objdump.js"
 import { /*entry_elf,*/ dumpdatainstructions32, dumptextinstructions32, dumplabels32, sectionasm32, inside_label32 } from "./wasm/objdump.js"
-import { /*entry_elf,*/ dumpdatainstructions64, dumptextinstructions64, dumplabels64, sectionasm64, inside_label64 } from "./wasm/objdump64.js"
+import { /*entry_elf,*/ dumpdatainstructions64, dumptextinstructions64, dumplabels64, sectionasm64, inside_label64, islib64 } from "./wasm/objdump64.js"
 import { writeMultiByteValueAsWords, instructions, setInstructions, setAddress } from "../../assembler.mjs";
 import as64Module from "./wasm/as-new64.js"
 import ld64Module from "./wasm/ld-new64.js"
@@ -1417,6 +1417,7 @@ export async function SailCompile(files, libs){
   outfile = await as(filesToCompile);//as(files);
   let elffile = await ld(outfile, libs);
   let outdump = await dump(elffile);
+  document.app.$data.v_length = 64;
   document.app.$data.L1_I_num_lines  = 32;
   document.app.$data.L1_D_num_lines  = 32;
   document.app.$data.L1_num_lines  = 32;

@@ -4,6 +4,8 @@ export var dumpdatainstructions64 = [];
 export var dumplabels64           = [];
 export var sectionasm64 = 0;
 export var inside_label64 = 0;
+export var islib64 = 0;
+export var libtags64 = [];
 // export var entry_elf = 0;
 var Module = (() => {
   var _scriptName = import.meta.url;
@@ -208,137 +210,158 @@ if (ENVIRONMENT_IS_WEB || ENVIRONMENT_IS_WORKER) {
 
 
   Module['print'] = function (message) {
-    // console.log(typeof message);
 
-    // console.log("En que seccion estoy: ", sectionasm64);
-    var auxinsn = [];
-    const auxiliar = message.trim();
-    const datamatch = auxiliar.match(/^([0-9a-fA-F]+):\s+((?:[0-9a-fA-F]{2,8}(?:\s+[0-9a-fA-F]{2,8})*))(?:.*?0x([0-9a-fA-F]+))?/); //  /^([0-9a-fA-F]+):.*?0x([0-9a-fA-F]+)/
-    const insnmatch = auxiliar.match(/^(\w+):\s+((?:fnmadd\.s|\w+|\.\w+))\s+([^\#]*)(?:#(.*))?$/); // /^(\w+):\s+(\w+)\s+([^\#]*)(?:#(.*))?$/
-    const labelmatch = auxiliar.match(/^([0-9a-f]{16})\s+<(.+?)>:$/);
-    if (insnmatch !== null && sectionasm64 === 1) {
-      const address = parseInt(insnmatch[1].trim(), 16).toString(16)//(insnmatch[1].trim().replace(/0+/,"") === "") ? "0" : insnmatch[1].trim().replace(/0+/,""); // Parte 1: dirección
-      const hexInstruction = insnmatch[2].trim();                // Parte 2: instrucción hexadecimal
-      const asmInstruction = (insnmatch[3].trim()).replace(/\\t/g, ' ');                // Parte 3: instrucción ensamblador (sin el comentario)
-      // const comment = match[4] ? insnmatchmatch[4].trim() : null;  // Parte 4: comentario (opcional)
-      let axx = dumptextinstructions64.findIndex(sublist => sublist.includes(address));
-      if (axx != -1 && sectionasm64 === 1) {
-        dumptextinstructions64[axx][1] = hexInstruction;
-        dumptextinstructions64[axx][2] = asmInstruction.replace(/\\t/g, ' ');
+    if (islib64) {
+      // Regex to get name function
+      if (sectionasm64 === 1){
+        const name_function = message.match(/^([0-9a-f]{16})\s+<(.+?)>:$/);
+        libtags64.push(name_function[2]);
       }
-      else if (sectionasm64 === 1){
-        auxinsn.push(address);
-        auxinsn.push(hexInstruction);
-        auxinsn.push(asmInstruction.replace(/\\t/g, ' '));
-        auxinsn.push(0);
-        auxinsn.push("");
-        dumptextinstructions64.push(auxinsn);
-      }
-    }
-    else if (datamatch !== null && sectionasm64 === 2){
-      let axx = dumpdatainstructions64.findIndex(sublist => sublist.includes(datamatch[1])); 
-      if (axx !== -1 && sectionasm64 === 2) {
-          dumpdatainstructions64[axx][1] = datamatch[2];
-          dumpdatainstructions64[axx][2] = ""; // asmInstruction.replace(/\\t/g, ' ');
-      }
-      else if (sectionasm64 === 2) {
-        auxinsn.push(datamatch[1]);
-        auxinsn.push(datamatch[2]);
-        auxinsn.push(""/*asmInstruction.replace(/\\t/g, ' ')*/);
-        auxinsn.push(0);
-        auxinsn.push("");
-        if(auxinsn[3] === 0){
-          // console.log("Exaa que se va a insertar en un dumpdata anterior: ", auxinsn);
-          // console.log("Que es esto: ", /[^0-9a-fA-F]/.test(auxinsn[1]));
-          if(/[^0-9a-fA-F]/.test(auxinsn[1])/*   auxinsn[1].includes("madd.s")*/){
-            //buscamos la palabra completa almacenada por el list_data_instructions
-            var auxda = list_data_instructions.findIndex(data => data.label === dumpdatainstructions64[dumpdatainstructions64.length -1][4]);
-            var list_data_elem;
-            var aux_index_value = list_data_instructions[auxda].value.length;
-            if (typeof list_data_instructions[auxda].value === "object"){
-              if (list_data_instructions[auxda].value[aux_index_value - 1].includes("-")){
-                // caso de ser el valor negativo
-                let buff, buff_view;
-                switch (list_data_instructions[auxda].type){
-                case "half":
-                  list_data_elem = (parseInt(list_data_instructions[auxda].value[aux_index_value - 1]) & 0xFFFF).toString(16).padStart(4, "0");
-                  break;
-                case "word":
-                  list_data_elem = (parseInt(list_data_instructions[auxda].value[aux_index_value - 1]) >>> 0).toString(16).padStart(8, "0");
-                  break;
-                case "byte":
-                  list_data_elem = (parseInt(list_data_instructions[auxda].value[aux_index_value - 1]) & 0xFF).toString(16).padStart(2, "0");
-                  break;
-                case "float":
-                  buff = new ArrayBuffer(4);
-                  buff_view = new DataView(buff);
-                  buff_view.setFloat32(0, parseFloat(list_data_instructions[auxda].value[aux_index_value - 1]), true);
-                  list_data_elem = buff_view.getUint32(0, true).toString(16).padStart(8, '0');
 
-                  // list_data_elem = (parseFloat(list_data_instructions[auxda].value[aux_index_value - 1])).toString(16);
-                  break;
-                case "double":
-                  buff = new ArrayBuffer(8);
-                  buff_view = new DataView(buff);
-                  buff_view.setFloat64(0, parseFloat(list_data_instructions[auxda].value[aux_index_value - 1]), true);
-                  let lo = buff_view.getUint32(0, true).toString(16).padStart(8, '0');
-                  let hi = buff_view.getUint32(4, true).toString(16).padStart(8, '0');
+      // Check which section
+      if (message.search(".text") != -1)
+        sectionasm64 = 1;
+      if (message.search(".data") != -1)
+        sectionasm64 = 2;
+      if (message.search(".riscv.attributes") != -1)
+        sectionasm64 = 0;
 
-                  list_data_elem = lo + hi;
-                  break;
-              }
-                dumpdatainstructions64[dumpdatainstructions64.length - 1][1] = list_data_elem + dumpdatainstructions64[dumpdatainstructions64.length -1][1];
-              }else { // Caso de ser el valor positivo o sin signo
-                dumpdatainstructions64[dumpdatainstructions64.length -1][1] = list_data_instructions[auxda].value[aux_index_value - 1].toString(16) + dumpdatainstructions64[dumpdatainstructions64.length -1][1];
+      
+    } else {
+
+      // console.log(typeof message);
+
+      // console.log("En que seccion estoy: ", sectionasm64);
+      var auxinsn = [];
+      const auxiliar = message.trim();
+      const datamatch = auxiliar.match(/^([0-9a-fA-F]+):\s+((?:[0-9a-fA-F]{2,8}(?:\s+[0-9a-fA-F]{2,8})*))(?:.*?0x([0-9a-fA-F]+))?/); //  /^([0-9a-fA-F]+):.*?0x([0-9a-fA-F]+)/
+      const insnmatch = auxiliar.match(/^(\w+):\s+((?:fnmadd\.s|\w+|\.\w+))\s+([^\#]*)(?:#(.*))?$/); // /^(\w+):\s+(\w+)\s+([^\#]*)(?:#(.*))?$/
+      const labelmatch = auxiliar.match(/^([0-9a-f]{16})\s+<(.+?)>:$/);
+      if (insnmatch !== null && sectionasm64 === 1) {
+        const address = parseInt(insnmatch[1].trim(), 16).toString(16)//(insnmatch[1].trim().replace(/0+/,"") === "") ? "0" : insnmatch[1].trim().replace(/0+/,""); // Parte 1: dirección
+        const hexInstruction = insnmatch[2].trim();                // Parte 2: instrucción hexadecimal
+        const asmInstruction = (insnmatch[3].trim()).replace(/\\t/g, ' ');                // Parte 3: instrucción ensamblador (sin el comentario)
+        // const comment = match[4] ? insnmatchmatch[4].trim() : null;  // Parte 4: comentario (opcional)
+        let axx = dumptextinstructions64.findIndex(sublist => sublist.includes(address));
+        if (axx != -1 && sectionasm64 === 1) {
+          dumptextinstructions64[axx][1] = hexInstruction;
+          dumptextinstructions64[axx][2] = asmInstruction.replace(/\\t/g, ' ');
+        }
+        else if (sectionasm64 === 1){
+          auxinsn.push(address);
+          auxinsn.push(hexInstruction);
+          auxinsn.push(asmInstruction.replace(/\\t/g, ' '));
+          auxinsn.push(0);
+          auxinsn.push("");
+          dumptextinstructions64.push(auxinsn);
+        }
+      }
+      else if (datamatch !== null && sectionasm64 === 2){
+        let axx = dumpdatainstructions64.findIndex(sublist => sublist.includes(datamatch[1])); 
+        if (axx !== -1 && sectionasm64 === 2) {
+            dumpdatainstructions64[axx][1] = datamatch[2];
+            dumpdatainstructions64[axx][2] = ""; // asmInstruction.replace(/\\t/g, ' ');
+        }
+        else if (sectionasm64 === 2) {
+          auxinsn.push(datamatch[1]);
+          auxinsn.push(datamatch[2]);
+          auxinsn.push(""/*asmInstruction.replace(/\\t/g, ' ')*/);
+          auxinsn.push(0);
+          auxinsn.push("");
+          if(auxinsn[3] === 0){
+            // console.log("Exaa que se va a insertar en un dumpdata anterior: ", auxinsn);
+            // console.log("Que es esto: ", /[^0-9a-fA-F]/.test(auxinsn[1]));
+            if(/[^0-9a-fA-F]/.test(auxinsn[1])/*   auxinsn[1].includes("madd.s")*/){
+              //buscamos la palabra completa almacenada por el list_data_instructions
+              var auxda = list_data_instructions.findIndex(data => data.label === dumpdatainstructions64[dumpdatainstructions64.length -1][4]);
+              var list_data_elem;
+              var aux_index_value = list_data_instructions[auxda].value.length;
+              if (typeof list_data_instructions[auxda].value === "object"){
+                if (list_data_instructions[auxda].value[aux_index_value - 1].includes("-")){
+                  // caso de ser el valor negativo
+                  let buff, buff_view;
+                  switch (list_data_instructions[auxda].type){
+                  case "half":
+                    list_data_elem = (parseInt(list_data_instructions[auxda].value[aux_index_value - 1]) & 0xFFFF).toString(16).padStart(4, "0");
+                    break;
+                  case "word":
+                    list_data_elem = (parseInt(list_data_instructions[auxda].value[aux_index_value - 1]) >>> 0).toString(16).padStart(8, "0");
+                    break;
+                  case "byte":
+                    list_data_elem = (parseInt(list_data_instructions[auxda].value[aux_index_value - 1]) & 0xFF).toString(16).padStart(2, "0");
+                    break;
+                  case "float":
+                    buff = new ArrayBuffer(4);
+                    buff_view = new DataView(buff);
+                    buff_view.setFloat32(0, parseFloat(list_data_instructions[auxda].value[aux_index_value - 1]), true);
+                    list_data_elem = buff_view.getUint32(0, true).toString(16).padStart(8, '0');
+
+                    // list_data_elem = (parseFloat(list_data_instructions[auxda].value[aux_index_value - 1])).toString(16);
+                    break;
+                  case "double":
+                    buff = new ArrayBuffer(8);
+                    buff_view = new DataView(buff);
+                    buff_view.setFloat64(0, parseFloat(list_data_instructions[auxda].value[aux_index_value - 1]), true);
+                    let lo = buff_view.getUint32(0, true).toString(16).padStart(8, '0');
+                    let hi = buff_view.getUint32(4, true).toString(16).padStart(8, '0');
+
+                    list_data_elem = lo + hi;
+                    break;
+                }
+                  dumpdatainstructions64[dumpdatainstructions64.length - 1][1] = list_data_elem + dumpdatainstructions64[dumpdatainstructions64.length -1][1];
+                }else { // Caso de ser el valor positivo o sin signo
+                  dumpdatainstructions64[dumpdatainstructions64.length -1][1] = list_data_instructions[auxda].value[aux_index_value - 1].toString(16) + dumpdatainstructions64[dumpdatainstructions64.length -1][1];
+                }
               }
             }
-          }
-          else dumpdatainstructions64[dumpdatainstructions64.length -1][1] = auxinsn[1] + dumpdatainstructions64[dumpdatainstructions64.length -1][1];
-          inside_label64 += 1;
-        }else 
+            else dumpdatainstructions64[dumpdatainstructions64.length -1][1] = auxinsn[1] + dumpdatainstructions64[dumpdatainstructions64.length -1][1];
+            inside_label64 += 1;
+          }else 
+            dumpdatainstructions64.push(auxinsn);
+        }
+      }
+      else if(labelmatch && sectionasm64 != 0){
+        // console.log("Identificado:", labelmatch);
+        auxinsn.push((labelmatch[1].trim().replace(/0+/,"") === "") ? "0" : labelmatch[1].trim().replace(/0+/,"")); 
+        auxinsn.push("");
+        auxinsn.push("");
+        auxinsn.push(1);
+        auxinsn.push(labelmatch[2].trim());
+        console.log("labelmatch: ", labelmatch);
+        if (!document.app.$data.c_kernel && labelmatch[2].trim().includes("kernel"))
+          document.app.$data.entry_elf = parseInt(labelmatch[1].trim(), 16).toString(16); // (labelmatch[1].trim().replace(/0+/,"") === "") ? "0" : labelmatch[1].trim().replace(/0+/,"");
+        else if(labelmatch[2].trim() === "_main" && document.app.$data.c_kernel){
+          document.app.$data.entry_elf = parseInt(labelmatch[1].trim(), 16).toString(16); // (labelmatch[1].trim().replace(/0+/,"") === "") ? "0" : labelmatch[1].trim().replace(/0+/,"");
+        }
+
+        if (document.app.$data.entry_elf !== undefined && !document.app.$data.entry_elf.startsWith("0x"))
+          document.app.$data.entry_elf = "0x" + document.app.$data.entry_elf;
+        
+        if (sectionasm64 === 1){
+          dumptextinstructions64.push(auxinsn);
+        }else if (sectionasm64 === 2){
           dumpdatainstructions64.push(auxinsn);
+          inside_label64 = 0;
+        }
+
       }
+
+      // else {
+      //   // console.log("objdump: 1", message);
+      // }
+
+      // identificacion de que seccion de codigo entramos.
+      if (message.search(".text") != -1)
+        sectionasm64 = 1;
+      if (message.search(".data") != -1)
+        sectionasm64 = 2;
+      if (message.search(".riscv.attributes") != -1)
+        sectionasm64 = 0;
+
+      console.log(message);
+      // console.log(dumpdatainstructions64); 
     }
-    else if(labelmatch && sectionasm64 != 0){
-      // console.log("Identificado:", labelmatch);
-      auxinsn.push((labelmatch[1].trim().replace(/0+/,"") === "") ? "0" : labelmatch[1].trim().replace(/0+/,"")); 
-      auxinsn.push("");
-      auxinsn.push("");
-      auxinsn.push(1);
-      auxinsn.push(labelmatch[2].trim());
-      console.log("labelmatch: ", labelmatch);
-      if (!document.app.$data.c_kernel && labelmatch[2].trim().includes("kernel"))
-        document.app.$data.entry_elf = parseInt(labelmatch[1].trim(), 16).toString(16); // (labelmatch[1].trim().replace(/0+/,"") === "") ? "0" : labelmatch[1].trim().replace(/0+/,"");
-      else if(labelmatch[2].trim() === "_main" && document.app.$data.c_kernel){
-        document.app.$data.entry_elf = parseInt(labelmatch[1].trim(), 16).toString(16); // (labelmatch[1].trim().replace(/0+/,"") === "") ? "0" : labelmatch[1].trim().replace(/0+/,"");
-      }
-
-      if (document.app.$data.entry_elf !== undefined && !document.app.$data.entry_elf.startsWith("0x"))
-        document.app.$data.entry_elf = "0x" + document.app.$data.entry_elf;
-      
-      if (sectionasm64 === 1){
-        dumptextinstructions64.push(auxinsn);
-      }else if (sectionasm64 === 2){
-        dumpdatainstructions64.push(auxinsn);
-        inside_label64 = 0;
-      }
-
-    }
-
-    // else {
-    //   // console.log("objdump: 1", message);
-    // }
-
-    // identificacion de que seccion de codigo entramos.
-    if (message.search(".text") != -1)
-      sectionasm64 = 1;
-    if (message.search(".data") != -1)
-      sectionasm64 = 2;
-    if (message.search(".riscv.attributes") != -1)
-      sectionasm64 = 0;
-
-    console.log(message);
-    // console.log(dumpdatainstructions64); 
+    
   }
 
   var out = Module["print"] || console.log.bind(console);
@@ -4446,6 +4469,7 @@ var _proc_exit = code => {
     readyPromiseReject(msg);
     err(msg);
   }
+  islib64 = 0;
   _proc_exit(status);
 };
 
@@ -5011,7 +5035,14 @@ function run(args = arguments_) {
     Module["calledRun"] = true;
     if (ABORT) return;
     initRuntime();
-    FS.writeFile("./input.elf", args[0]);
+
+    if (args[2].includes(".o")) { // Disassemble library 
+      FS.writeFile("./" + args[2], args[0]);
+      islib64 = 1;
+    }else {
+      FS.writeFile("./input.elf", args[0]);
+    }
+    // FS.writeFile("./input.elf", args[0]);
     args.shift();
     preMain();
     readyPromiseResolve(Module);

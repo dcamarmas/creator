@@ -28,6 +28,8 @@ import {
   useAssembly,
   type AssemblyResult,
 } from "@/web/composables/useAssembly";
+import { libtags32 } from "@/core/assembler/sailAssembler/web/wasm/objdump";
+import { libtags64 } from "@/core/assembler/sailAssembler/web/wasm/objdump64";
 
 // State for dropdown visibility
 const dropdownOpen = ref(false);
@@ -102,6 +104,10 @@ const libraryLoaded = computed(() => {
 const libraryTagsCount = computed(() => {
   // Access libraryVersion to make this reactive
   if (libraryVersion.value < 0 || !libraryLoaded.value) return 0;
+
+  // Counter to Sail Version of libs
+  if (libtags32.length !== 0 || libtags64.length !== 0)
+    return (libtags32.length + libtags64.length);
 
   // YAML format: symbols is an object with symbol names as keys
   if ((loadedLibrary as any)?.symbols) {

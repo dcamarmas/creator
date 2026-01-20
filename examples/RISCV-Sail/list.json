@@ -76,5 +76,11 @@
     "id": "e13",
     "url":"examples/RISCV-Sail/example13.s",
     "description": "Custom kernel"
+  },
+  {
+    "name": "Example 14",
+    "id": "e14",
+    "url":"examples/RISCV-Sail/example14.s",
+    "description": "Use custom instruction"
   }
 ]

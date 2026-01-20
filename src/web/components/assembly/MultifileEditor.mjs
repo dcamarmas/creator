@@ -1,6 +1,9 @@
 // Part of monaco editor to allow user create multiple file to edit in assembly
 import { as } from "@/core/assembler/sailAssembler/web/CNAssambler.mjs";
 import { ref } from "vue"; 
+import dump64Module, { libtags64 } from "@/core/assembler/sailAssembler/web/wasm/objdump64.js"
+import dump32Module, { libtags32 } from "@/core/assembler/sailAssembler/web/wasm/objdump.js"
+import { architecture } from "../../../core/core";
 
 export var tabs = ref([]);
 export var assembly_files = ref([]);
@@ -8,15 +11,19 @@ export var tabCounter = 0;
 export var tabskey = -1;
 // export var currentTab = -1;
 export var currentTab = -1;
+let libdump = null;
 
 export function createFile(storecode = "", filename ="", newcode = "" ) {
 
     var filename_prompt;
-    if (filename === "")
-        filename_prompt = prompt("Name of newFile");
+    if (filename === "") {
+        filename_prompt = prompt("Name of new File");
+        if (filename_prompt  === "" || filename_prompt === null)
+            return "";
+    }
     else 
         filename_prompt = filename;
-        filename_prompt = filename_prompt.replaceAll(" ", "");
+    filename_prompt = filename_prompt.replaceAll(" ", "");
     if (!filename_prompt.endsWith(".s"))
         filename_prompt = filename_prompt + ".s";
     let i = assembly_files.value.findIndex(file => file.filename === filename_prompt);
@@ -48,38 +55,6 @@ export function createFile(storecode = "", filename ="", newcode = "" ) {
         return assembly_files.value[i].code;
     }
 }   
-
-// const newFile = async (filename = "") => {
-//   var filename_prompt: String | null;
-//   /* GENERACION DEL NUEVO FICHERO */
-//   if (filename === "") {
-//   filename_prompt = prompt("Nombre del nuevo fichero");
-//   if(filename_prompt === null || filename_prompt === "") //Checkeamos que hay un nombre
-//     return;
-//   filename_prompt = filename_prompt.replaceAll(" ", "");
-//   if(!filename_prompt.endsWith(".s"))
-//     filename_prompt = filename_prompt + ".s";
-//   }
-//   else
-//     filename_prompt = filename;
-
-//   /* ACTUALIZACION DEL EDITOR DE CÓDIGO */
-
-//   var newAssemblyFile =  {
-//     filename: filename_prompt,
-//     code: ".section .data\n\n# Declare your data to use here\n\n.section .bss\n.align 8\ntohost:\t.dword 0\n\n.section .text.init\n.globl _main\n\n# Complete your main function here\n_main:",
-//     to_compile: false,
-//     editing_now: false
-//   }
-//   const newasm = props.files.find(asm => asm.filename === filename_prompt);
-//   if (newasm === undefined){
-
-//     props.files.push(newAssemblyFile);
-//     document.app.files_list.push({filename: filename_prompt, to_compile: false});
-//     const newId = app.addTab(filename_prompt);
-//   }
-//   openFile(filename_prompt);
-// }
 
 export function showFileEditor(filename, code) {
     let i = assembly_files.value.findIndex(file => file.editing_now === true);
@@ -117,3 +92,35 @@ export function DeleteFile(filename) {
     }
 }
 
+export async function disassemble_lib(lib) {
+    let depsLeft = Infinity;
+    if (architecture.config.name === "SRV32"){
+        libdump = await dump32Module({
+          monitorRunDependencies(left) {
+           depsLeft = left;    
+          console.log('[dump32] deps pendientes:', left);
+          },
+        });
+    } else {
+        libdump = await dump64Module({
+          monitorRunDependencies(left) {
+           depsLeft = left;    
+          console.log('[dump32] deps pendientes:', left);
+          },
+        });
+    }
+
+    await new Promise((resolve) => {
+        const check = () => {
+        if (depsLeft === 0) resolve();
+        else setTimeout(check, 10);
+        };
+        check();
+    });
+
+
+    libdump.run([lib.library_file, "-D", lib.name]);
+    console.log(libtags64);
+    console.log(libtags32);
+
+}

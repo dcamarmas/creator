@@ -204,6 +204,9 @@ export default {
       // Debug
       c_debug: false,
 
+      // Vector size elem
+      v_length: 64,
+
       // Integrated Kernel (exclusive to Sail Version)
       c_kernel: true,
 

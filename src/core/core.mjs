@@ -50,6 +50,7 @@ import { compileTimerFunctions } from "./executor/timers.mts";
 import * as archProcessor from "./utils/architectureProcessor.mjs";
 import { writeDataDumpMemory32, writeDataDumpMemory64 } from "./assembler/sailAssembler/web/CNAssambler.mjs";
 import { ref } from "vue";
+import { disassemble_lib } from "@/web/components/assembly/MultifileEditor.mjs";
 
 // Button state
 export const reset_disable = ref(true);
@@ -271,8 +272,9 @@ export function load_library(lib_str) {
  *
  */
 
-export function load_library_sail(lib, lib_name) {
+export async function load_library_sail(lib, lib_name) {
     loadedLibrary = {name: lib_name, library_file: lib};
+    await disassemble_lib(loadedLibrary);
     coreEvents.emit("library-loaded");
 }
 
