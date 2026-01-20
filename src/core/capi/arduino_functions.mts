@@ -15,7 +15,7 @@ import {
     positions,
     compState,
     svgRef,
-} from "../../web/components/simulator/CreatinoMaker/state";
+} from "../../web/components/simulator/CreatinoMaker/state.ts";
 import { Memory } from "../memory/Memory.mts";
 
 /*
