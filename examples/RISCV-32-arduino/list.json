@@ -52,5 +52,17 @@
     "id": "example8",
     "url": "examples/RISCV-32-arduino/example8.s",
     "description": "Random function example"
+  },
+    {
+    "name": "Example 9",
+    "id": "example9",
+    "url": "examples/RISCV-32-arduino/example9.s",
+    "description": "Serial Find example"
+  },
+  {
+    "name": "Example 10",
+    "id": "example10",
+    "url": "examples/RISCV-32-arduino/example10.s",
+    "description": "Serial FindUntil example"
   }
 ]

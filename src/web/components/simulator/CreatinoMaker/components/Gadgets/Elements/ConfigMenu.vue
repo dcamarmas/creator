@@ -13,18 +13,18 @@
     style="width: 110px; min-height: 80px; z-index: 10;"
   >
     <div v-for="category in filteredCategories" :key="category.name" class="mb-2">
-      <div class="fw-semibold fs-7 mb-1">
+      <div class="fw-bold  mb-1">
         {{ category.name }}
       </div>
 
       <hr class="my-1" />
 
-      <div class="d-flex flex-column gap-0">
+      <div class="d-flex flex-column gap-1">
         <button
           v-for="item in category.items"
           :key="item.label"
           :ref="item.label === 'Color' ? setColorButtonRef : null"
-          class="btn btn-light btn-sm text-start d-flex align-items-center px-2 py-1"
+          class="btn btn-primary btn-sm text-start d-flex align-items-center px-2 py-1"
           :class="{ active: selectedItem === item.label }"
           type="button"
           @click="onItemClick(item.label)"
@@ -144,7 +144,7 @@ onMounted(() => {
 
 <style>
 .menu-panel {
-  font-size: 1rem;
+  font-size: 0.8rem !important;
   background: #fff;
   border-radius: 1rem;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.10);

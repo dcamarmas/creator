@@ -11,7 +11,7 @@
     <!-- Popup anclado -->
     <div
       class="popup position-fixed bg-white border rounded shadow p-4"
-      :style="{ top: position.y + 'px', left: position.x + 'px', width: width + 'px', zIndex: 1050 }"
+      :style="{ top: position.y + 'px', left: position.x + 'px', width: width + 'px', zIndex: 10050 }"
     >
       <!-- Flecha decorativa opcional -->
       <div style="position:absolute;top:-10px;left:30px;width:0;height:0;border-left:10px solid transparent;border-right:10px solid transparent;border-bottom:10px solid #dee2e6;"></div>

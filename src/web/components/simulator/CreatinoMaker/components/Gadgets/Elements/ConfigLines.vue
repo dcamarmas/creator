@@ -1,30 +1,37 @@
 <template>
-    <div
-      class="menu-panel bg-white border rounded-3 shadow-sm p-3 "
-      :class="{ 'bg-dark text-light': isDark }"
-      style="width:220px;max-height:300px;overflow-y:auto;"
-    >
-    <div v-for="category in filteredCategories" :key="category.name" class="mb-2">
+  <div
+    class="menu-panel bg-white border rounded shadow-sm p-2"
+    :class="{ 'bg-dark text-light': isDark }"
+    style="max-height: 150px; overflow-y: auto; width: auto; min-width: 100px;"
+  >
+    <div v-for="category in filteredCategories" :key="category.name" class="mb-1">
       <div class="d-flex align-items-center justify-content-between mb-1">
-        <span class="fw-bold fs-6 ">{{ category.name }}</span>
-        <button class="btn btn-sm p-0 border-0 bg-transparent ms-2" @click="$emit('close')">&times;</button>
+        <span class="fw-bold fs-6">{{ category.name }}</span>
+        <button
+          class="btn btn-sm p-0 border-0 bg-transparent ms-2"
+          style="font-size: 1.2rem; line-height: 1; color: black;"
+          @click="$emit('close')"
+          aria-label="Cerrar menú"
+        >
+          &times;
+        </button>
       </div>
-      <hr class="my-2" />
-    <div class="d-flex flex-row gap-1 align-items-center">
-      <button
-        v-for="item in category.items"
-        :key="item.label"
-        :ref="item.label === 'Color' ? setColorButtonRef : null"
-        class="btn btn-light btn-sm d-flex align-items-center me-1 mb-0"
-        :class="{ active: selectedItem === item.label }"
-        type="button"
-        @click="onItemClick(item.label)"
-      >
-        <fa-icon :icon="item.icon" class="me-1" size="sm" />
-        <span class="small">{{ item.label }}</span>
-      </button>
-    </div>
-
+      <hr class="my-1" />
+      <div class="d-flex flex-row gap-1 flex-wrap">
+        <button
+          v-for="item in category.items"
+          :key="item.label"
+          :ref="item.label === 'Color' ? setColorButtonRef : null"
+          class="btn btn-light btn-sm d-flex align-items-center justify-content-center mb-1"
+          :class="{ active: selectedItem === item.label }"
+          type="button"
+          style="padding: 0.25rem 0.5rem; font-size: 0.75rem; min-width: 60px;"
+          @click="onItemClick(item.label)"
+        >
+          <fa-icon :icon="item.icon" class="me-1" size="xs" />
+          <span class="small">{{ item.label }}</span>
+        </button>
+      </div>
     </div>
 
     <!-- Popup anclado a la posición del botón -->
@@ -38,6 +45,7 @@
     />
   </div>
 </template>
+
 
 <script setup lang="ts">
 import { ref, computed, nextTick, onMounted , onBeforeUnmount} from 'vue'
@@ -128,7 +136,7 @@ onMounted(() => {
 
 <style scoped>
 .menu-panel {
-  width: 220px !important;
+  width: 170px !important;
   min-height: 10px;
   background: #fff !important;
   border-radius: 0.7rem;

@@ -7,7 +7,7 @@ import {
 } from "../register/registerOperations.mjs";
 import { ARCH as RISCV } from "@/core/capi/arch/riscv.mjs";
 import { REGISTERS, main_memory, status } from "../core.mjs";
-import { display_print } from "../executor/IO.mjs";
+import { display_print, keyboard_read_find, kbd_read_string } from "../executor/IO.mjs";
 import hookMap from "../../web/components/simulator/CreatinoMaker/components/BoardElements/esp32c3devkit2.js";
 //import {connections,compState,svgRef,positions} from '../../web/components/simulator/CreatinoMaker/App.vue'
 import {
@@ -941,7 +941,7 @@ export function cr_serial_available() {
             null,
         );
     }
-    if (serial_begin != 0)  {
+    if (serial_begin != 0 && initArduino != 0) {
              // Check how many bytes are available in the keyboard input buffer
 			var available = BigInt((typeof status.keyboard === "string") ? status.keyboard.length : 0);
 			writeRegister(available, ret1.indexComp, ret1.indexElem); 
@@ -994,9 +994,15 @@ export function cr_serial_end() {
 }
 export function cr_serial_find() {
     console.log("cr_serial_find called");
+    if (serial_begin != 0 && initArduino != 0) {
+			keyboard_read_find(kbd_read_string, 'a0','a1');
+	}
 }
 export function cr_serial_findUntil() {
     console.log("cr_serial_findUntil called");
+    if (serial_begin != 0 && initArduino != 0) {
+			keyboard_read_find(kbd_read_string, 'a0', 'x0', 'a1');
+	}
 }
 export function cr_serial_flush() {
     console.log("cr_serial_flush called");

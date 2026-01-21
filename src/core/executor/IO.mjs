@@ -29,6 +29,9 @@ import { show_notification } from "../utils/notifications.mts";
 import { instructions } from "../assembler/assembler.mjs";
 import { coreEvents, CoreEventTypes } from "../events.mts";
 
+import { crex_findReg } from "../register/registerLookup.mjs";
+import { Memory } from "../memory/Memory.mts";
+
 export function display_print(info) {
     if (typeof document !== "undefined" && document.app) {
         document.app.$data.display += info;
@@ -193,7 +196,7 @@ export function keyboard_read(fn_post_read, fn_post_params) {
     document.app.$data.enter = false; // signal UI to wait for keyboard read
 
     if (status.run_program === 3) {
-        setTimeout(keyboard_read, 1000, fn_post_read, fn_post_params);
+        setTimeout(keyboard_read, 1000, fn_post_read, fn_post_params, fn_post_length,fn_post_until);
         return draw;
     }
 
@@ -233,6 +236,188 @@ export function keyboard_read(fn_post_read, fn_post_params) {
     }
 
     // Re-enable buttons using event emitter for proper reactivity
+    if (typeof document !== "undefined" && document.app) {
+        coreEvents.emit(CoreEventTypes.EXECUTOR_BUTTONS_UPDATE, {
+            instruction_disable: false,
+            run_disable: false,
+        });
+    }
+
+    return draw;
+}
+
+export function keyboard_read_find(fn_post_read, fn_post_params,fn_post_length,fn_post_until=null) {
+    const draw = {
+        space: [],
+        info: [],
+        success: [],
+        warning: [],
+        danger: [],
+        flash: [],
+    };
+
+    // Resolve the target string from register
+    const ret1 = crex_findReg(fn_post_params);
+    if (ret1.match === 0) {
+        throw packExecute(
+            true,
+            "capi_syscall: register " + fn_post_params + " not found",
+            "danger",
+            null,
+        );
+    }
+
+    const addr = readRegister(ret1.indexComp, ret1.indexElem);
+    // Get the memory instance
+    const memory = main_memory;
+    
+    // Validate address is within memory bounds
+    if (addr >= BigInt(memory.getSize())) {
+        throw packExecute(
+            true,
+            "capi_arduino: invalid string address",
+            "danger",
+            null,
+        );
+    }
+
+    // Read the target from memory
+    let target = "";
+    let memoryAddr = addr;
+    while (memoryAddr < BigInt(memory.getSize())) {
+        const byte = memory.read(memoryAddr);
+        if (byte === 0) break; // Null terminator
+        target += String.fromCharCode(byte);
+        memoryAddr++;
+    }
+    //Read length if provided
+    let length = null;
+    if (fn_post_length && fn_post_length.length > 0) {
+        const ret2 = crex_findReg(fn_post_length);
+        if (ret2.match === 0) {
+            throw packExecute(
+                true,
+                "capi_syscall: register " + fn_post_length + " not found",
+                "danger",
+                null,
+            );
+        }
+        length = readRegister(ret2.indexComp, ret2.indexElem);
+    }
+
+
+    // Resolve the until string from register if provided (serial_findUntil)
+    let until = "";
+    if (fn_post_until && fn_post_until.length > 0) {
+        const ret2 = crex_findReg(fn_post_until);
+        if (ret2.match === 0) {
+            throw packExecute(
+                true,
+                "capi_syscall: register " + fn_post_until + " not found",
+                "danger",
+                null,
+            );
+        }
+        const addr_until = readRegister(ret2.indexComp, ret2.indexElem);
+        // until = readMemory(parseInt(addr_until), "string");
+            // Validate address is within memory bounds
+        if (addr_until >= BigInt(memory.getSize())) {
+            throw packExecute(
+                true,
+                "capi_arduino: invalid string address",
+                "danger",
+                null,
+            );
+        }
+
+        // Read the target from memory
+        memoryAddr = addr_until;
+            while (memoryAddr < BigInt(memory.getSize())) {
+                const byte = memory.read(memoryAddr);
+                if (byte === 0) break; // Null terminator
+                until += String.fromCharCode(byte);
+                memoryAddr++;
+            }
+
+        // console.log("Until string: ", until);    
+        }
+
+    // Deno / CLI mode 
+    if (typeof Deno !== "undefined") {
+        let keystroke = rawPrompt();
+
+        if (until && typeof until === "string") {
+            const idx = keystroke.indexOf(until);
+            if (idx !== -1) {
+                keystroke = keystroke.substring(0, idx);
+            }
+        }
+
+        if (keystroke.includes(target) && keystroke.length <= (length || keystroke.length) && !keystroke.includes(until)) {
+            writeRegister(1n, ret1.indexComp, ret1.indexElem);
+        } else {
+            writeRegister(0n, ret1.indexComp, ret1.indexElem);
+        }
+
+        status.run_program = 0;
+        return packExecute(
+            false,
+            "The result has been written to the register",
+            "info",
+            null,
+        );
+    }
+
+    // Web/UI mode
+    document.app.$data.enter = false; // wait for input
+
+    if (status.run_program === 3) {
+        setTimeout(keyboard_read_find, 1000, fn_post_read, fn_post_params, fn_post_length,fn_post_until);
+        return draw;
+    }
+
+    let keystroke = document.app.$data.keyboard;
+
+    if (!keystroke || keystroke.length === 0) {
+        status.run_program = 3;
+        return keyboard_read_find(fn_post_read, fn_post_params, fn_post_length,fn_post_until);
+    }
+
+    // Find logic
+    // console.log("keystroke:", `"${keystroke}"`, keystroke.length);
+    // console.log("until:", `"${until}"`, until.length);
+    if (keystroke.includes(target) && keystroke.length <= (length || keystroke.length) && !keystroke.includes(until)) {
+        writeRegister(1n, ret1.indexComp, ret1.indexElem);
+    } else {
+        writeRegister(0n, ret1.indexComp, ret1.indexElem);
+    }
+
+    document.app.$data.keyboard = "";
+    document.app.$data.enter = null;
+
+    draw.info.push("The result has been written to the register");
+
+    if (status.execution_index >= instructions.length) {
+        for (let i = 0; i < instructions.length; i++) {
+            draw.space.push(i);
+        }
+        status.execution_index = -2;
+        return packExecute(
+            true,
+            "The execution of the program has finished",
+            "success",
+            null,
+        );
+    }
+    // If program was running before waiting for input, continue execution automatically
+    if (status.run_program === 1) {
+        const playButton = document.getElementById("playExecution");
+        if (playButton) {
+            playButton.click();
+        }
+    }
+
+    // Re-enable buttons
     if (typeof document !== "undefined" && document.app) {
         coreEvents.emit(CoreEventTypes.EXECUTOR_BUTTONS_UPDATE, {
             instruction_disable: false,
