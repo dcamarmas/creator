@@ -260,8 +260,8 @@ export function remove_library() {
 export async function load_CREATino() {
   //show_loading();
   try {
-    const baseUrl = window.location.origin;
-    const filePath = `${baseUrl}/libraries/creatino.yml`;
+    const baseUrl = import.meta.env.BASE_URL
+    const filePath = `${baseUrl}libraries/creatino.yml`
 
     const response = await fetch(filePath);
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);

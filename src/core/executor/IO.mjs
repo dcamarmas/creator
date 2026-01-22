@@ -246,7 +246,7 @@ export function keyboard_read(fn_post_read, fn_post_params) {
     return draw;
 }
 
-export function keyboard_read_find(fn_post_read, fn_post_params,fn_post_length,fn_post_until=null) {
+export function keyboard_read_find(fn_post_read, fn_post_params,fn_post_length,fn_post_until) {
     const draw = {
         space: [],
         info: [],
