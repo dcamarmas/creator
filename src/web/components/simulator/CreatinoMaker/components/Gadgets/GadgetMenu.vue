@@ -41,14 +41,14 @@ function handleAddGadget(label) {
 }
 
 const search = ref('')
-const baseUrl = window.location.origin;
+const baseUrl = import.meta.env.BASE_URL
 const categories = ref([
   {
     name: 'Basic',
     items: [
-      { label: 'LED', icon: `${baseUrl}/public/maker/icons/led.svg`  },
-      { label: 'BUTTON', icon: `${baseUrl}/public/maker/icons/button.svg` },
-      { label: 'BUZZER', icon: `${baseUrl}/public/maker/icons/buzzer.svg` },
+      { label: 'LED', icon: `${baseUrl}maker/icons/led.svg`  },
+      { label: 'BUTTON', icon: `${baseUrl}maker/icons/button.svg` },
+      { label: 'BUZZER', icon: `${baseUrl}maker/icons/buzzer.svg` },
     ],
   },
 ])
