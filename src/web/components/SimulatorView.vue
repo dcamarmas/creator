@@ -53,6 +53,7 @@ export default defineComponent({
     enter: { type: [Boolean, null], required: true },
     display: { type: String, required: true },
     keyboard: { type: String, required: true },
+    autoscroll: { type: Boolean, default: false },
     caller_frame: Object as PropType<StackFrame>,
     callee_frame: Object as PropType<StackFrame>,
 
@@ -127,6 +128,7 @@ export default defineComponent({
             <TableExecution
               :instructions="instructions"
               :enter="enter"
+              :autoscroll="autoscroll"
               ref="tableExecution"
             />
           </b-col>

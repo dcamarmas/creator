@@ -2,13 +2,13 @@
   {
     "name": "Example 0",
     "id": "example0",
-    "url": "examples/RISCV-devices/example0.s",
+    "url": "examples/RISCV-32-devices/example0.s",
     "description": "Writting to console"
   },
   {
     "name": "Example 1",
     "id": "example1",
-    "url": "examples/RISCV-devices/example0.s",
+    "url": "examples/RISCV-32-devices/example0.s",
     "description": "Echo"
   }
 ]

@@ -3937,9 +3937,9 @@ pseudoinstructions:
       definition: |
         no_ret_op{
           value = Field.2.(63,0).int;
-          instructions = CAPI.ARCH.generateLoadImmediate(value, reg_name{1})
+          res_instructions = CAPI.ARCH.generateLoadImmediate(value, reg_name{1});
         };
-        op{instructions};
+        op{res_instructions};
 
     - name: mv
       fields:
@@ -3978,8 +3978,9 @@ pseudoinstructions:
         xori reg1, reg2, -1;
 
     - name: ret
+      # TODO: check this!
       definition: |
-        jalr x0, 0(x1); # TODO: check this!
+        jalr x0, 0(x1);
 
     - name: seqz
       fields:
