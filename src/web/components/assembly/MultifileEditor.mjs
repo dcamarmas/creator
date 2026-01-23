@@ -3,7 +3,7 @@ import { as } from "@/core/assembler/sailAssembler/web/CNAssambler.mjs";
 import { ref } from "vue"; 
 import dump64Module, { libtags64 } from "@/core/assembler/sailAssembler/web/wasm/objdump64.js"
 import dump32Module, { libtags32 } from "@/core/assembler/sailAssembler/web/wasm/objdump.js"
-import { architecture } from "../../../core/core";
+import { architecture } from "@/core/core.mjs";
 
 export var tabs = ref([]);
 export var assembly_files = ref([]);

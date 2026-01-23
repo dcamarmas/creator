@@ -5,8 +5,8 @@ import { status, set_execution_mode, PC_REG_INDEX, REGISTERS, getPC, main_memory
 import { setInstructions } from "@/core/assembler/assembler.mjs";
 // import { SYSCALL } from "@/core/capi/syscall.mts";
 import { display_print } from "../../IO.mjs";
-import { SYSCALL } from "@/core/capi/syscall.mjs";
-import { coreEvents } from "@/core/events.mjs";
+import { SYSCALL } from "@/core/capi/syscall.mts";
+import { coreEvents } from "@/core/events.mts";
 import { show_notification } from "@/web/utils.mjs";
 import { reset_disable, instruction_disable, run_disable, stop_disable, isFinished  } from "@/core/core.mjs";
 
@@ -20,25 +20,25 @@ var Module = (() => {
     var pc_min = parseInt("80000000", 16);
     var hiden_executed, hiden_next_execute;
 
-    var registers_before_function = [ 
+    var registers_before_function = [
       { name: "t0", can_operate : false},
       { name: "t1", can_operate : false},
       { name: "t2", can_operate : false},
       { name: "t3", can_operate : false},
-      { name: "t4", can_operate : false}, 
+      { name: "t4", can_operate : false},
       { name: "t5", can_operate : false},
       { name: "t6", can_operate : false},
       { name: "s0", can_operate : false},
       { name: "s1", can_operate : false},
       { name: "s2", can_operate : false},
       { name: "s3", can_operate : false},
-      { name: "s4", can_operate : false}, 
+      { name: "s4", can_operate : false},
       { name: "s5", can_operate : false},
       { name: "s6", can_operate : false},
       { name: "s7", can_operate : false},
       { name: "s8", can_operate : false},
       { name: "s9", can_operate : false},
-      { name: "s10", can_operate : false}, 
+      { name: "s10", can_operate : false},
       { name: "s11", can_operate : false}
     ]
     var callstack_convention = [];
@@ -365,7 +365,7 @@ var Module = (() => {
     var configCacheExp = /^Configuration:\s*([A-Za-z_][A-Za-z0-9_]*)\s*<-\s*(\S+)\s*$/;
 
     // var displayExp = /^[A-Za-z\s]+:\s*(.*)$/;
-    // var displayExp = /^([\w\s]+):\s*(.*)$/;       
+    // var displayExp = /^([\w\s]+):\s*(.*)$/;
     var displayExp = /^ECALL\s+(SIGNED|UNSIGNED|STRING|CHAR|FLOAT|DOUBLE):\s*(.+)$/;
     var userMode = false;
     var instoper = "";
@@ -629,16 +629,16 @@ var Module = (() => {
         if((instMatch[5] != "li" && instMatch[5] != "lui" && instMatch[5] != "la") ){
           for (var i = 0; i < callstack_convention[callstack_convention.length - 1].length; i++ ){
             (callstack_convention[callstack_convention.length - 1][i].name === instMatch[7] || callstack_convention[callstack_convention.length - 1][i].name === instMatch[8]) &&
-            (callstack_convention[callstack_convention.length - 1][i].can_operate === false) ? show_notification("Possible failure in the parameter passing convention", "warning") : 0 ; 
+            (callstack_convention[callstack_convention.length - 1][i].can_operate === false) ? show_notification("Possible failure in the parameter passing convention", "warning") : 0 ;
           }
-            
-            // callstack_convention[callstack_convention.length - 1].name 
+
+            // callstack_convention[callstack_convention.length - 1].name
 
         }
       }
       if (instMatch[6] !== undefined && (instMatch[6].includes("t") || (instMatch[6].includes("s") && !instMatch[6].includes("sp"))) && inside_function) {
         for (var i = 0; i < callstack_convention[callstack_convention.length - 1].length; i++ ){
-          callstack_convention[callstack_convention.length - 1][i].can_operate = (callstack_convention[callstack_convention.length - 1][i].name === instMatch[6]) ? true : callstack_convention[callstack_convention.length - 1][i].can_operate; 
+          callstack_convention[callstack_convention.length - 1][i].can_operate = (callstack_convention[callstack_convention.length - 1][i].name === instMatch[6]) ? true : callstack_convention[callstack_convention.length - 1][i].can_operate;
         }
       }
     }
@@ -704,7 +704,7 @@ var Module = (() => {
       let regiMatch        = message.match(registerExp);
       let memoMatch        = message.match(memoryExp);
       let printMatch       = message.match(displayExp);
-      let CSRMatch         = message.match(CSRTypeExp); 
+      let CSRMatch         = message.match(CSRTypeExp);
       let CSREMatch        = message.match(CSRExp);
       let vectorMatch      = message.match(vectorExp);
       let jumpMatch        = message.match(jumpExp);
@@ -728,7 +728,7 @@ var Module = (() => {
       //     }else {
       //       updateCacheStat(cache_inst, message);
       //     }
-          
+
       //   }
       // }
 
@@ -741,7 +741,7 @@ var Module = (() => {
 
       if (jumpMatch){
         const current_ins = instructions.findIndex(insn => insn.Address === (jumpMatch[1].toLowerCase()));
-        
+
           for (var i = 0; i < instructions.length; i++){
             if(instructions[i]._rowVariant === "success" && document.app.$data.execution_mode_run !== 0) // ajustar lo del user mode
               instructions[i]._rowVariant = "";
@@ -802,23 +802,23 @@ var Module = (() => {
       //     break;
       //     case "L1_D":
       //       updateCacheMem(parseInt(cacheMatch[1],10), cacheMatch[2], cacheMatch[3], app._data.L1_D_size_block);
-            
+
       //     break;
       //     case "L1":
       //       updateCacheMem(parseInt(cacheMatch[1],10), cacheMatch[2], cacheMatch[3], app._data.L1_size_block);
-            
+
       //     break;
       //     case "L2_I":
       //       updateCacheMem(parseInt(cacheMatch[1],10), cacheMatch[2], cacheMatch[3], app._data.L2_I_size_block);
-            
+
       //     break;
       //     case "L2_D":
       //       updateCacheMem(parseInt(cacheMatch[1],10), cacheMatch[2], cacheMatch[3], app._data.L2_D_size_block);
-            
+
       //     break;
       //     case "L2":
       //       updateCacheMem(parseInt(cacheMatch[1],10), cacheMatch[2], cacheMatch[3], app._data.L2_size_block);
-            
+
       //     break;
 
       //   }
@@ -863,7 +863,7 @@ var Module = (() => {
 
       if (instMatch && (/*instMatch[2] === 'U' ||*/ parseInt(instMatch[3], 16) >= pc_min)){
         console.log(document);
-        if (inside_function) 
+        if (inside_function)
           check_call_convention_temp_regs(instMatch);
 
         for (var i = 0; i < instructions.length; i++) {
@@ -889,13 +889,13 @@ var Module = (() => {
           const match = next_add[1].match(/(-?\d+)\((\w+)\)/);
           var aux_reg = crex_findReg(match[2]);
           var aux_val = readRegister(aux_reg.indexComp, aux_reg.indexElem);
-          
+
           next_add_to_jump = (aux_val + BigInt(parseInt(match[1], 10))).toString(16);
           next_add_to_jump = instructions.findIndex(insn => insn.Address === ("0x"+next_add_to_jump.toLowerCase()));
           prev_add_to_jump = current_ins;
 
           // var stack_entry_func = instructions[next_add_to_jump].label;
-          // creator_callstack_enter(instructions[next_add_to_jump].Label); 
+          // creator_callstack_enter(instructions[next_add_to_jump].Label);
           // track_stack_enter(instructions[next_add_to_jump].Label);
           // callstack_convention.push(structuredClone(registers_before_function));
           // inside_function = true;
@@ -914,7 +914,7 @@ var Module = (() => {
             // track_stack_leave();
             // creator_callstack_leave();
             // callstack_convention.pop();
-            // inside_function = (callstack_convention.length > 0); 
+            // inside_function = (callstack_convention.length > 0);
           }else
             next_add_to_jump = undefined;
         }
@@ -936,7 +936,7 @@ var Module = (() => {
           hiden_executed = current_ins;
           if (current_ins < instructions.length - 1  || next_add_to_jump !== undefined) {
             hiden_next_execute = (next_add_to_jump !== undefined) ? next_add_to_jump : current_ins + 1;
-          } else 
+          } else
             hiden_next_execute = current_ins + 1;
 
 
@@ -958,11 +958,11 @@ var Module = (() => {
         }
         else
           instructions[current_ins]._rowVariant = '';
-        
+
         if (instMatch[5] === "ecall"){
           let argument_register = crex_findReg("a7"); // obtenemos el registro para ver que llamada al sistema es
           let syscall_code = readRegister(argument_register.indexComp, argument_register.indexElem); // Lectura del registro para obtener el valor
-      
+
           switch(syscall_code){
             case 5n:
               if(document.app.$data.execution_mode_run === 0){
@@ -986,7 +986,7 @@ var Module = (() => {
                 instructions[current_ins]._rowVariant = "info";
                 if (current_ins < instructions.length -1 || next_add_to_jump !== undefined)
                   instructions[(next_add_to_jump !== undefined) ? next_add_to_jump : (current_ins + 1)]._rowVariant = 'success';
-            
+
                   // instructions[current_ins +1]._rowVariant = "success";
               }
               document.app.$data.last_execution_mode_run = document.app.$data.execution_mode_run;
@@ -1003,7 +1003,7 @@ var Module = (() => {
                 instructions[current_ins]._rowVariant = "info";
                 if (current_ins < instructions.length -1 || next_add_to_jump !== undefined)
                   instructions[(next_add_to_jump !== undefined) ? next_add_to_jump : (current_ins + 1)]._rowVariant = 'success';
-            
+
                   // instructions[current_ins +1]._rowVariant = "success";
               }
               document.app.$data.last_execution_mode_run = document.app.$data.execution_mode_run;
@@ -1018,7 +1018,7 @@ var Module = (() => {
                 instructions[current_ins]._rowVariant = "info";
                 if (current_ins < instructions.length -1 || next_add_to_jump !== undefined)
                   instructions[(next_add_to_jump !== undefined) ? next_add_to_jump : (current_ins + 1)]._rowVariant = 'success';
-            
+
                   // instructions[current_ins +1]._rowVariant = "success";
               }
               document.app.$data.last_execution_mode_run = document.app.$data.execution_mode_run;
@@ -1027,7 +1027,7 @@ var Module = (() => {
               // capi_read_string('a0','a1');
               SYSCALL.read("a0", "string", "a1");
               break;
-      
+
             case 12n:
               if(document.app.$data.execution_mode_run === 0){
                 instructions[current_ins]._rowVariant = "info";
@@ -1048,7 +1048,7 @@ var Module = (() => {
               syscall_print_code = syscall_code;
               break;
           }
-      
+
           next_add_to_jump = undefined;
         }
 
@@ -1094,12 +1094,12 @@ var Module = (() => {
             else{
                 writeRegister(BigInt("0x" + regiMatch[3]), regtowrite.indexComp, regtowrite.indexElem);
             }
-              
+
           }
-          else  
+          else
             writeRegister(BigInt(parseInt(regiMatch[3], 16)), regtowrite.indexComp, regtowrite.indexElem);
         }
-        
+
       }
 
       if (memoMatch /*&& userMode === true*/) {
@@ -1138,7 +1138,7 @@ var Module = (() => {
 
           // instoper = "";
         }
-      
+
       }
 
       if(printMatch && syscall_print_code !== -1){
@@ -1146,7 +1146,7 @@ var Module = (() => {
         let value_2_print = printMatch[2].trim();
         // console.log("Estoy dentro de ecall a imprimir");
         // console.log(message);
-        // console.log("Valor a imprimir: ", value_2_print); 
+        // console.log("Valor a imprimir: ", value_2_print);
         switch(syscall_print_code){
 
           case 1n: // Print int
@@ -1170,7 +1170,7 @@ var Module = (() => {
             syscall_print_code = -1;
             break;
 
-          case 4n: // Print String 
+          case 4n: // Print String
             display_print(value_2_print);
             syscall_print_code = -1;
             break;
@@ -1196,7 +1196,7 @@ var Module = (() => {
     Module['printErr'] = function (message) {
       // if (message.includes("Execution:") || message.includes("Instructions:") || message.includes("Perf:"))
         // show_notification(message, "success");
-      // else 
+      // else
       console.warn(message);
     }
 
@@ -6534,7 +6534,7 @@ var Module = (() => {
         abort(
           "'stringToUTF8Array' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)",
         );
-    
+
     Module["stringToUTF8"] = stringToUTF8;
     Module["lengthBytesUTF8"] = lengthBytesUTF8;
     if (!Object.getOwnPropertyDescriptor(Module, "stackTrace"))

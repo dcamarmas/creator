@@ -5,8 +5,8 @@ import { status, PC_REG_INDEX, REGISTERS, getPC, main_memory } from "@/core/core
 import { setInstructions } from "@/core/assembler/assembler.mjs";
 // import { SYSCALL } from "@/core/capi/syscall.mts";
 import { display_print } from "../../IO.mjs";
-import { SYSCALL } from "@/core/capi/syscall.mjs";
-import { coreEvents } from "@/core/events.mjs";
+import { SYSCALL } from "@/core/capi/syscall.mts";
+import { coreEvents } from "@/core/events.mts";
 import { show_notification } from "@/web/utils.mjs";
 import { reset_disable, instruction_disable, run_disable, stop_disable, isFinished } from "@/core/core.mjs";
 
