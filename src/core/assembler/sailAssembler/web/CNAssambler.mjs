@@ -1,7 +1,7 @@
 
 /* For 32 bits architecture */
 import as32Module from "./wasm/as-new.js"
-import wasmUrl from "./wasm/as-new.wasm?url";
+//import wasmUrl from "./wasm/as-new.wasm?url";
 import ld32Module from "./wasm/ld-new.js"
 import dump32Module, { islib32 } from "./wasm/objdump.js"
 import { /*entry_elf,*/ dumpdatainstructions32, dumptextinstructions32, dumplabels32, sectionasm32, inside_label32 } from "./wasm/objdump.js"
@@ -32,7 +32,7 @@ export var doubleen = false;
 
 const locateFile = (path) => {
   // Cuando Emscripten pida el .wasm, dale la URL real
-  if (path.endsWith('.wasm')) return wasmUrl;
+  // if (path.endsWith('.wasm')) return wasmUrl;
   // Para cualquier otro asset (data, worker…), resuélvelo relativo a este JS
   return new URL(path, import.meta.url).href;
 };
@@ -843,7 +843,7 @@ export async function as(files){
     // if (sailas !== null) sailas = null;
     if (architecture.config.name === "SRV32") {
       sailas = await as32Module({
-          locateFile,
+          // locateFile,
           noInitialRun: true,
           print: (t) => console.log('[as32]', t),
           printErr: (t) => console.error('[as32:err]', t),
