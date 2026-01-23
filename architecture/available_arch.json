@@ -1,5 +1,37 @@
 [
   {
+    "name": "RISC-V Sail 32",
+    "alias": [
+      "RISC-V (SRV32)",
+      "SRV32",
+      "srv32"
+    ],
+    "file": "RISCV/SRV32",
+    "img": "riscv.png",
+    "alt": "RISC-V",
+    "id": "select_confRISV",
+    "examples": ["default"],
+    "description": "RISC-V is an instruction set architecture (ISA) based on the RISC type and its hardware is free. This architecture was created in 2010 at the University of California, Berkeley.",
+    "guide": "/guides/riscv.pdf",
+    "available": true
+  },
+  {
+    "name": "RISC-V Sail 64",
+    "alias": [
+      "RISC-V (SRV64)",
+      "SRV64",
+      "srv64"
+    ],
+    "file": "RISCV/SRV64",
+    "img": "riscv.png",
+    "alt": "RISC-V",
+    "id": "select_confRISV",
+    "examples": ["default"],
+    "description": "RISC-V is an instruction set architecture (ISA) based on the RISC type and its hardware is free. This architecture was created in 2010 at the University of California, Berkeley.",
+    "guide": "/guides/riscv.pdf",
+    "available": true
+  },
+  {
     "name": "RISC-V (RV32IMFD)",
     "alias": [
       "RISC-V (RV32IMFD)",

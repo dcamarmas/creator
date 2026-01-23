@@ -152,7 +152,7 @@ export default defineComponent({
                 <!-- Registers view -->
                 <RegisterFile
                   v-if="
-                    data_mode == 'int_registers' || data_mode == 'fp_registers'
+                    data_mode == 'int_registers' || data_mode == 'fp_registers' || data_mode == 'v_registers' || data_mode == 'csr_registers'
                   "
                   :data_mode="data_mode"
                   :reg_name_representation="reg_name_representation"

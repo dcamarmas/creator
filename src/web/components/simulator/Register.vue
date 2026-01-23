@@ -97,7 +97,12 @@ export default defineComponent({
       // Access render to create a reactive dependency
       // eslint-disable-next-line @typescript-eslint/no-unused-expressions
       this.render;
-      return this.show_value(this.value_representation).toString();
+      if (this.type === "v_registers"){
+        // Only show the first elem of the vector
+        let elem_size = document.app.$data.v_length / 4; // hex format
+        return this.show_value(this.value_representation).toString().slice(-elem_size);
+      } else
+        return this.show_value(this.value_representation).toString();
     },
   },
 

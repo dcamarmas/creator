@@ -122,6 +122,9 @@ export async function validateAssemblyCode(
     const compilerFunction = getCompilerFunction(architecture);
 
     try {
+
+        if (architecture.config?.name?.includes("SRV"))
+            return;
         // Compile the code to check for errors
         const result = await compilerFunction(code, false);
 
