@@ -66,7 +66,7 @@ export default defineConfig({
     },
   },
 
-  base: "/" + (process.env.REPO ?? ""), // repository name (for github pages deployment)
+  base: process.env.REPO ? `/${process.env.REPO}/` : "/",// repository name (for github pages deployment)
 
   build: {
     outDir: "dist/web/creator",
