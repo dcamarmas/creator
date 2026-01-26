@@ -1,0 +1,74 @@
+[
+  {
+    "name": "Template",
+    "id": "template",
+    "url": "examples/RISCV-32-arduino/template.s",
+    "description": "Template to start Arduino proyects"
+  },
+  {
+    "name": "Example 1",
+    "id": "example1",
+    "url": "examples/RISCV-32-arduino/example1.s",
+    "description": "ESP32-C3 Blink LED example"
+  },
+  {
+    "name": "Example 2",
+    "id": "example2",
+    "url": "examples/RISCV-32-arduino/example2.s",
+    "description": "Button + LED example"
+  },
+  {
+    "name": "Example 3",
+    "id": "example3",
+    "url": "examples/RISCV-32-arduino/example3.s",
+    "description": "Serial communication example"
+  },
+  {
+    "name": "Example 4",
+    "id": "example4",
+    "url": "examples/RISCV-32-arduino/example4.s",
+    "description": "LDR example"
+  },
+  {
+    "name": "Example 5",
+    "id": "example5",
+    "url": "examples/RISCV-32-arduino/example5.s",
+    "description": "Piano using interruptions example"
+  },
+  {
+    "name": "Example 6",
+    "id": "example6",
+    "url": "examples/RISCV-32-arduino/example6.s",
+    "description": "Math functions (min.max, map, constrain) example"
+  },
+  {
+    "name": "Example 7",
+    "id": "example7",
+    "url": "examples/RISCV-32-arduino/example7.s",
+    "description": "Check if a char is a number example"
+  },
+  {
+    "name": "Example 8",
+    "id": "example8",
+    "url": "examples/RISCV-32-arduino/example8.s",
+    "description": "Random function example"
+  },
+    {
+    "name": "Example 9",
+    "id": "example9",
+    "url": "examples/RISCV-32-arduino/example9.s",
+    "description": "Serial Find example"
+  },
+  {
+    "name": "Example 10",
+    "id": "example10",
+    "url": "examples/RISCV-32-arduino/example10.s",
+    "description": "Serial FindUntil example"
+  },
+  {
+    "name": "Example 11",
+    "id": "example11",
+    "url": "examples/RISCV-32-arduino/example11.s",
+    "description": "Serial Flush example"
+  }
+]
