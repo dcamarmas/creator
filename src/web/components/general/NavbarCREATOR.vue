@@ -378,9 +378,13 @@ export default defineComponent({
           <font-awesome-icon :icon="['fas', 'building-columns']" class="me-2" />
           Community
         </b-dropdown-item>
+        <b-dropdown-item v-b-modal.statistics>
+          <font-awesome-icon :icon="['fas', 'chart-line']" class="me-2" />
+          Usage Statistics
+        </b-dropdown-item>
         <b-dropdown-item v-b-modal.about>
           <font-awesome-icon :icon="['fas', 'address-card']" class="me-2" />
-          About Creator
+          About CREATOR
         </b-dropdown-item>
       </b-nav-item-dropdown>
     </b-navbar-nav>
