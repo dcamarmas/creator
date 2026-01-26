@@ -52,12 +52,6 @@ import { writeDataDumpMemory32, writeDataDumpMemory64 } from "./assembler/sailAs
 import { ref } from "vue";
 import { disassemble_lib } from "@/web/components/assembly/MultifileEditor.mjs";
 
-// Button state
-export const reset_disable = ref(true);
-export const instruction_disable = ref(false);
-export const run_disable = ref(false);
-export const stop_disable = ref(true);
-export const isFinished = ref(false);
 /** @type {import("./core.d.ts").Library | import("./core.d.ts").LegacyLibrary} */
 export let loadedLibrary = {};
 export let backup_stack_address;
@@ -88,6 +82,13 @@ export const guiVariables = {
     keep_highlighted: -1n, // Address to keep highlighted (used to highlight interrupted instructions)
 };
 
+export var L1_cache_memory = [/*{id:0, addr: "0", binary: "0x00"}*/];
+export var L1_I_cache_memory = [];
+export var L1_D_cache_memory = [];
+export var L2_cache_memory = [];
+export var L2_I_cache_memory = [];
+export var L2_D_cache_memory = [];
+export var config_cache = [];
 /** @type {number} */
 export let WORDSIZE;
 /** @type {number} */
@@ -387,6 +388,14 @@ export function reset() {
                 main_memory.writeWord(BigInt(auxAddr + j / 8), wordBytes);
             }
         }
+        instructions.forEach(insn => {
+            insn.L1 = 0;
+            insn.L1_I = 0;
+            insn.L1_D = 0;
+            insn.L2 = 0;
+            insn.L2_I = 0;
+            insn.L2_D = 0;
+        });
         if (architecture.config.name === "SRV32")
             writeDataDumpMemory32();
         else
@@ -670,4 +679,81 @@ export function setPC(value) {
     writeRegister(value, PC_REG_INDEX.indexComp, PC_REG_INDEX.indexElem);
 
     return null;
+}
+
+export function updateCacheMem(index, type, addr, value) {
+    
+    // Identificamps primero a que cache afecta
+    // Despues comprobamos si ese bloque de cache ya existe
+    // Si existe se reemplaza, sino se hace un push de una nueva línea
+    switch(type) {
+        case "L1_I":
+        let L1_I_index = L1_I_cache_memory.findIndex(block => block.id === index);
+        if (L1_I_index === -1) {
+            let set_id = (document.app.$data.cache_location === "Associative_per_sets") ? Math.floor(index / document.app.$data.L1_I_num_lines) :  -1;
+            L1_I_cache_memory.push({set_id: set_id, id: index, addr: addr, size: /*value.slice(2).length * 4*/ value/*value.slice(2)*/});
+        } else {
+            
+            L1_I_cache_memory[L1_I_index].size = /*value.slice(2).length * 4*/ value; // Length in bits
+            L1_I_cache_memory[L1_I_index].addr = addr;
+        }
+        document.app.L1_I_cache_memory = L1_I_cache_memory;
+        break;
+        case "L1_D":
+        let L1_D_index = L1_D_cache_memory.findIndex(block => block.id === index);
+        if (L1_D_index === -1) {
+            let set_id = (document.app.$data.cache_location === "Associative_per_sets") ? Math.floor(index / document.app.$data.L1_D_num_lines) :  -1;
+            L1_D_cache_memory.push({set_id: set_id, id: index, addr: addr, size: /*value.slice(2).length * 4*/ value/*value.slice(2)*/});
+        } else {
+            
+            L1_D_cache_memory[L1_D_index].size = /*value.slice(2).length * 4*/ value; // Length in bits
+            L1_D_cache_memory[L1_D_index].addr = addr;
+        }
+        break;
+        case "L1":
+        let L1_index = L1_cache_memory.findIndex(block => block.id === index);
+        if (L1_index === -1) {
+            let set_id = (document.app.$data.cache_location === "Associative_per_sets") ? Math.floor(index / document.app.$data.L1_num_lines) :  -1;
+            L1_cache_memory.push({set_id: set_id, id: index, addr: addr, size: /*value.slice(2).length * 4*/ value/*value.slice(2)*/});
+        } else {
+            
+            L1_cache_memory[L1_index].size = /*value.slice(2).length * 4*/ value; // Length in bits
+            L1_cache_memory[L1_index].addr = addr;
+        }
+        break;
+        case "L2":
+        let L2_index = L2_cache_memory.findIndex(block => block.id === index);
+        if (L2_index === -1) {
+            let set_id = (document.app.$data.cache_location === "Associative_per_sets") ? Math.floor(index / document.app.$data.L2_num_lines) :  -1;
+            L2_cache_memory.push({set_id: set_id, id: index, addr: addr, size: /*value.slice(2).length * 4*/ value/*value.slice(2)*/});
+        } else {
+            
+            L2_cache_memory[L2_index].size = /*value.slice(2).length * 4*/ value; // Length in bits
+            L2_cache_memory[L2_index].addr = addr;
+        }
+        break;
+        case "L2_I":
+        let L2_I_index = L2_I_cache_memory.findIndex(block => block.id === index);
+        if (L2_I_index === -1) {
+            let set_id = (document.app.$data.cache_location === "Associative_per_sets") ? Math.floor(index / document.app.$data.L2_I_num_lines) :  -1;
+            L2_I_cache_memory.push({set_id: set_id, id: index, addr: addr, size: /*value.slice(2).length * 4*/ value/*value.slice(2)*/});
+        } else {
+            
+            L2_I_cache_memory[L2_I_index].size = /*value.slice(2).length * 4*/ value; // Length in bits
+            L2_I_cache_memory[L2_I_index].addr = addr;
+        }
+        document.app.L2_I_cache_memory = L2_I_cache_memory;
+        break;
+        case "L2_D":
+        let L2_D_index = L2_D_cache_memory.findIndex(block => block.id === index);
+        if (L2_D_index === -1) {
+            let set_id = (document.app.$data.cache_location === "Associative_per_sets") ? Math.floor(index / document.app.$data.L2_D_num_lines) :  -1;
+            L2_D_cache_memory.push({set_id: set_id, id: index, addr: addr, size: /*value.slice(2).length * 4*/ value/*value.slice(2)*/});
+        } else {
+            
+            L2_D_cache_memory[L2_D_index].size = /*value.slice(2).length * 4*/ value; // Length in bits
+            L2_D_cache_memory[L2_D_index].addr = addr;
+        }
+        break;
+    }
 }

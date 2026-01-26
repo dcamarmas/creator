@@ -1469,10 +1469,10 @@ memory_layout:
     end: 0x1FFFF
   data:
     start: 0x20000
-    end: 0x6FFFF
+    end: 0x0FFFFFFF
   stack:
-    start: 0xAFFFFFFC
-    end: 0xAFFFFFFF
+    start: 0x3FFFFFFC
+    end: 0x3FFFFFFF
 
 # memory_layout:
 #   text:

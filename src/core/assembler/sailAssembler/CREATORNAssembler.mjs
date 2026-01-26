@@ -62,18 +62,17 @@ export let vectorins = [ "vaadd.vv", "vaadd.vx", "vaaddu.vv",
    "vwsubu.vv", "vwsubu.vx", "vwsubu.wv", "vwsubu.wx", "vxor.vi", "vxor.vv", 
    "vxor.vx", "vzext.vf2", "vzext.vf4", "vzext.vf8"];
 
+export let privins = ["csrrw", "csrrs", "csrrc", "csrrwi", "csrrsi", "csrrci"];
+
 export async function loadlinker(is32b) {
   const file = is32b ? 'linker32.ld' : 'linker64.ld';
-
-  // Resuelve la ruta relativa al propio módulo (no a la página)
   const url = new URL(`./linkers/${file}`, import.meta.url);
-
   const res = await fetch(url);
   if (!res.ok) {
     throw new Error(`No se pudo cargar ${file}: ${res.status} ${res.statusText}`);
   }
 
-  linkerText = await res.text(); // <-- aquí sí con await
-//   console.log('Linker cargado:', file, '\n----\n', linkerText, '\n----');
+  linkerText = await res.text();
+
   return linkerText;
 }

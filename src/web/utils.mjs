@@ -24,6 +24,16 @@ import { architecture, loadArchitecture } from "@/core/core.mjs";
 import { initCAPI } from "@/core/capi/initCAPI.mts";
 import { console_log as clog } from "@/core/utils/creator_logger.mjs";
 import example_set from "../../examples/example_set.json" with { type: "json" };
+import { ref } from "vue";
+
+
+
+// Button state
+export const reset_disable = ref(true);
+export const instruction_disable = ref(false);
+export const run_disable = ref(false);
+export const stop_disable = ref(true);
+export const isFinished = ref(false);
 
 // Re-export from core for backward compatibility
 export {

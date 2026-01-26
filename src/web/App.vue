@@ -207,6 +207,41 @@ export default {
       // Vector size elem
       v_length: 64,
 
+      L1_I_num_lines : 32,
+      L1_D_num_lines : 32,
+      L1_num_lines : 32,
+      L2_num_lines : 32,
+      L2_I_num_lines : 32,
+      L2_D_num_lines : 32,
+      L1_size : 32,
+      L1_I_size : 32,
+      L1_D_size : 32,
+      L1_size_block : 32,
+      L1_I_size_block : 32,
+      L1_D_size_block : 32,
+      L2_size : 32,
+      L2_I_size : 32,
+      L2_D_size : 32,
+      L2_size_block : 32,
+      L2_I_size_block : 32,
+      L2_D_size_block : 32,
+
+      // Cache architecture
+      cache_type : 0,
+      isDirect : 0,
+      
+      // Cache Location
+      cache_location : "Associative",
+
+      // Cache policy
+      cache_policy : "FIFO",
+
+      // Execution run
+      execution_mode_run : -1,
+      
+      // Is a breakpoint instruction
+      is_breakpoint : 0,
+
       // Integrated Kernel (exclusive to Sail Version)
       c_kernel: true,
 
