@@ -10,12 +10,11 @@ import { writeMultiByteValueAsWords, instructions, setInstructions, setAddress }
 import as64Module from "./wasm/as-new64.js"
 import ld64Module from "./wasm/ld-new64.js"
 import dump64Module from "./wasm/objdump64.js"
-import { vectorins, loadlinker} from "../CREATORNAssembler.mjs"
+import { vectorins, loadlinker, privins} from "../CREATORNAssembler.mjs"
 import { architecture, loadedLibrary, setPC } from "../../../core.mjs";
 import { updateMainMemoryBackup, main_memory, WORDSIZE, BYTESIZE, backup_stack_address, backup_data_address } from "@/core/core.mjs";
 import { show_notification } from "../../../../web/utils.mjs";
 import { assembly_files } from "@/web/components/assembly/MultifileEditor.mjs";
-// import { init } from "@/core/executor/executor.mjs";
 
 let sailas, sailld, saildump = null;
 export var libs_to_load = [];
@@ -29,6 +28,7 @@ var filesToCompile = [];
 export var outfile = null;
 export var vectoren = false;
 export var doubleen = false;
+export var priven = false;
 
 const locateFile = (path) => {
   // Cuando Emscripten pida el .wasm, dale la URL real
@@ -43,7 +43,6 @@ function identify_pseudo(instruction_assembly){
     if(extensions.findIndex(ext => (ins_filter[extensionid].type).includes(ext)) === -1)
       extensions.push(ins_filter[extensionid].type);
   }
-  // console.log("architecture", architecture);
   if(instruction_assembly.search("li") != -1 && instruction_assembly.search("slli") === -1 && instruction_assembly.search("vsetvli") === -1 && !(instruction_assembly.includes(".section") || instruction_assembly.includes(".globl") || instruction_assembly.includes(".include") || instruction_assembly.includes(".init"))){
     list_user_instructions.push(instruction_assembly);
     let parts = instruction_assembly.split(',');
@@ -95,7 +94,7 @@ function process_data_to_store_memory32(){
 
       if(list_data_instructions[i].type === "asciz" || list_data_instructions[i].type === "ascii"){
         if (dumpdatainstructions32[dump_ins][1].length % 2 !== 0) {
-          console.warn("Dealineamiento de memoria en string.");
+          console.warn("String missaligned in memory.");
       }
 
       let bytes = dumpdatainstructions32[dump_ins][1].match(/.{1,2}/g);
@@ -126,7 +125,7 @@ function process_data_to_store_memory64(){
 
       if(list_data_instructions[i].type === "asciz" || list_data_instructions[i].type === "ascii"){
         if (dumpdatainstructions64[dump_ins][1].length % 2 !== 0) {
-          console.warn("Dealineamiento de memoria en string.");
+          console.warn("String missaligned in memory.");
       }
 
       let bytes = dumpdatainstructions64[dump_ins][1].match(/.{1,2}/g);
@@ -165,15 +164,12 @@ export function writeDataDumpMemory32(){
               var element_to_insert = dumpdatainstructions32[i][1].slice(dumpdatainstructions32[i][1].length - (j * 2 + 2) * 2, dumpdatainstructions32[i][1].length - (4 * j));
               if (j === 0 )
                   main_memory.write(BigInt(init_add), Number("0x" + element_to_insert));
-                  // creator_memory_data_compiler(init_add, element_to_insert, 2, dumpdatainstructions32[i][4], (parseInt(element_to_insert, 16) << 16) >> 16, dumpdatainstructions32[i][6],);
               else
                   main_memory.write(BigInt(init_add + j * 2), Number("0x" + element_to_insert));
-                  // creator_memory_data_compiler(init_add + j*2, element_to_insert, 2, null, (parseInt(element_to_insert, 16) << 16) >> 16, dumpdatainstructions32[i][6],);
 
               }
           }else {
-              main_memory.write(BigInt(parseInt(dumpdatainstructions32[i][0], 16)), Number("0x" + dumpdatainstructions32[i][1]));
-              // creator_memory_data_compiler(parseInt(dumpdatainstructions32[i][0], 16), dumpdatainstructions32[i][1], 2, dumpdatainstructions32[i][4], parseInt(dumpdatainstructions32[i][1], 16) >> 0, dumpdatainstructions32[i][6],);
+            main_memory.write(BigInt(parseInt(dumpdatainstructions32[i][0], 16)), Number("0x" + dumpdatainstructions32[i][1]));
           }
 
           const halfTag = dumpdatainstructions32[i][4] ?? "";
@@ -185,30 +181,6 @@ export function writeDataDumpMemory32(){
             const byteTag = dumpdatainstructions32[i][4] ?? "";
             const byteType = "byte";
             main_memory.addHint(BigInt(parseInt(dumpdatainstructions32[i][0], 16)), byteTag, byteType, 8);
-        
-            // if(dumpdatainstructions32[i][1].length > 2){
-            // var init_add = parseInt(dumpdatainstructions32[i][0], 16);
-            // var elements = Math.floor(dumpdatainstructions32[i][1].length / 2); // 4
-            // if(dumpdatainstructions32[i][1].length % 2 !== 0){
-            //     elements = elements + 1;
-            // }
-            // dumpdatainstructions32[i][1] = dumpdatainstructions32[i][1].padStart(elements * 2,"0");
-
-            // for (var j = 0; j < elements;j++){
-            //     var element_to_insert = dumpdatainstructions32[i][1].slice(dumpdatainstructions32[i][1].length - (j * 2 + 2), dumpdatainstructions32[i][1].length - (2 * j));
-            //     console.log("Insert: ", element_to_insert);
-            //     if (j === 0 )
-            //       main_memory.write(BigInt(init_add + j * 1), Number(element_to_insert));
-            //     // creator_memory_data_compiler(init_add + j*1, element_to_insert, 1, dumpdatainstructions32[i][4], (parseInt(element_to_insert, 16) << 24) >> 24, dumpdatainstructions32[i][6],);
-            //     else
-            //       main_memory.write(BigInt(init_add + j * 1), Number(element_to_insert));
-            //     // creator_memory_data_compiler(init_add + j*1, element_to_insert, 1, null, (parseInt(element_to_insert,16) << 24 ) >> 24, dumpdatainstructions32[i][6],);
-
-            // }
-            // }else {
-            //   main_memory.write(BigInt(parseInt(dumpdatainstructions32[i][0], 16)), Number("0x"+dumpdatainstructions32[i][1]));
-            // // creator_memory_data_compiler(parseInt(dumpdatainstructions32[i][0], 16), dumpdatainstructions32[i][1], 1, dumpdatainstructions32[i][4], parseInt(dumpdatainstructions32[i][1], 16) >> 0, dumpdatainstructions32[i][6],);
-            // }
             break;
         case "word":
         case "integer":
@@ -222,12 +194,7 @@ export function writeDataDumpMemory32(){
             for (var j = 0; j < elements; j++){
 
                 var element_to_insert = dumpdatainstructions32[i][1].slice(dumpdatainstructions32[i][1].length - (j + 1) * 8, dumpdatainstructions32[i][1].length - (8 * j));
-                // if (j === 0 )
                   main_memory.write(BigInt(init_add + j * 4), Number(element_to_insert));
-                // creator_memory_data_compiler(init_add + j*4, element_to_insert, 4, dumpdatainstructions32[i][4], parseInt(element_to_insert, 16) >> 0, dumpdatainstructions32[i][6],);
-                // else
-                // creator_memory_data_compiler(init_add + j*4, element_to_insert, 4, null, parseInt(element_to_insert, 16) >> 0, dumpdatainstructions32[i][6],);
-
             }
             }else {
               const wordValue = BigInt("0x" + dumpdatainstructions32[i][1]);
@@ -239,10 +206,7 @@ export function writeDataDumpMemory32(){
                 ));
               }
               main_memory.writeWord(BigInt("0x"+dumpdatainstructions32[i][0]), wordBytes);
-            // creator_memory_data_compiler(parseInt(dumpdatainstructions32[i][0], 16), dumpdatainstructions32[i][1], 8, dumpdatainstructions32[i][4], parseInt(dumpdatainstructions32[i][1], 16) >> 0, dumpdatainstructions32[i][6],);
             }
-              // main_memory.write(BigInt(parseInt(dumpdatainstructions32[i][0], 16)), Number("0x"+dumpdatainstructions32[i][1]));
-              // creator_memory_data_compiler(parseInt(dumpdatainstructions32[i][0], 16), dumpdatainstructions32[i][1], 4, dumpdatainstructions32[i][4], parseInt(dumpdatainstructions32[i][1], 16) >> 0, dumpdatainstructions32[i][6],);
             const wordTag = dumpdatainstructions32[i][4] ?? "";
             const wordType = "word";
             main_memory.addHint(BigInt(parseInt(dumpdatainstructions32[i][0], 16)), wordTag, wordType, 32);
@@ -256,13 +220,8 @@ export function writeDataDumpMemory32(){
                 dumpdatainstructions32[i][1] = dumpdatainstructions32[i][1].padStart(elements*16,"0");
             }
             for (var j = 0; j < elements; j++){
-                var element_to_insert = dumpdatainstructions32[i][1].slice(dumpdatainstructions32[i][1].length - (j + 1) * 16, dumpdatainstructions32[i][1].length - (16 * j));
-                main_memory.write(BigInt(init_add + j * 8), Number(element_to_insert));
-                // if (j === 0 )
-                // creator_memory_data_compiler(init_add + j*8, element_to_insert, 8, dumpdatainstructions32[i][4], element_to_insert >> 0, dumpdatainstructions32[i][6],);
-                // else
-                // creator_memory_data_compiler(init_add + j*8, element_to_insert, 8, null, element_to_insert >> 0, dumpdatainstructions32[i][6],);
-
+              var element_to_insert = dumpdatainstructions32[i][1].slice(dumpdatainstructions32[i][1].length - (j + 1) * 16, dumpdatainstructions32[i][1].length - (16 * j));
+              main_memory.write(BigInt(init_add + j * 8), Number(element_to_insert));
             }
             }else {
               const dwordValue = BigInt("0x" + dumpdatainstructions32[i][1]);
@@ -282,7 +241,6 @@ export function writeDataDumpMemory32(){
               }
               main_memory.writeWord(BigInt("0x" + dumpdatainstructions32[i][0]), highWordBytes);
               main_memory.writeWord(BigInt("0x" + dumpdatainstructions32[i][0]) + BigInt(4), lowWordBytes);
-            // creator_memory_data_compiler(parseInt(dumpdatainstructions32[i][0], 16), dumpdatainstructions32[i][1], 8, dumpdatainstructions32[i][4], parseInt(dumpdatainstructions32[i][1], 16) >> 0, dumpdatainstructions32[i][6],);
             }
             const dwordTag = dumpdatainstructions32[i][4] ?? "";
             const dwordType = "dword";
@@ -292,7 +250,7 @@ export function writeDataDumpMemory32(){
         case "float":
             align = 2;
 
-            if(dumpdatainstructions32[i][1].length > 8){ // Caso de que sea un vector de floats
+            if(dumpdatainstructions32[i][1].length > 8){ // Vector Float Case
             var init_add = parseInt(dumpdatainstructions32[i][0], 16);
             var elements = Math.floor(dumpdatainstructions32[i][1].length / 8);
             if(dumpdatainstructions32[i][1].length % 8 !== 0){
@@ -300,8 +258,6 @@ export function writeDataDumpMemory32(){
                 dumpdatainstructions32[i][1] = dumpdatainstructions32[i][1].padStart(elements*8,"0");
             }
             for (var j = 0; j < elements; j++){
-                // let buffer = new ArrayBuffer(4); // 4 bytes para float
-                // let view = new DataView(buffer);
 
                 var element_to_insert = dumpdatainstructions32[i][1].slice(dumpdatainstructions32[i][1].length - (j + 1) * 8, dumpdatainstructions32[i][1].length - (8 * j));
                 const floatValue = Number("0x" + element_to_insert);
@@ -314,12 +270,6 @@ export function writeDataDumpMemory32(){
                   floatBytes[k]= view.getUint8(k);
                 }
                 writeMultiByteValueAsWords(BigInt(init_add + (j *4)), floatBytes, 4);
-                // main_memory.write(BigInt(init_add + j * 4), Number(element_to_insert));
-                // if (j === 0 )
-                // creator_memory_data_compiler(init_add + j*4, element_to_insert, 4, dumpdatainstructions32[i][4], view.getFloat32(0, false), dumpdatainstructions32[i][6],);
-                // else
-                // creator_memory_data_compiler(init_add + j*4, element_to_insert, 4, null, view.getFloat32(0, false), dumpdatainstructions32[i][6],);
-
             }
               const floatTag = dumpdatainstructions32[i][4] ?? "";
               const floatType = "float";
@@ -327,7 +277,7 @@ export function writeDataDumpMemory32(){
 
             }else {
             const floatValue = Number("0x" + dumpdatainstructions32[i][1]);
-            const buffer = new ArrayBuffer(4); // 4 bytes para float
+            const buffer = new ArrayBuffer(4);
             const view = new DataView(buffer);
 
             view.setFloat32(0, floatValue, false);
@@ -339,25 +289,15 @@ export function writeDataDumpMemory32(){
             const floatTag = dumpdatainstructions32[i][4] ?? "";
             const floatType = "float";
             main_memory.addHint(BigInt(parseInt(dumpdatainstructions32[i][0], 16)), floatTag, floatType, 32);
-
-
-            // Convertir hexadecimal a entero
-            // let intVal = parseInt(dumpdatainstructions32[i][1], 16);
-
-            // Escribir el entero en el buffer como float
-            // view.setUint32(0, intVal, false);
-            // main_memory.write(BigInt(parseInt(dumpdatainstructions32[i][0], 16)), Number("0x" + dumpdatainstructions32[i][1]));
-            // creator_memory_data_compiler(parseInt(dumpdatainstructions32[i][0], 16), dumpdatainstructions32[i][1], 4, dumpdatainstructions32[i][4],view.getFloat32(0, false), dumpdatainstructions32[i][6],);
-            }
-
-            break;
+          }
+          break;
         case "double":
             if (dumpdatainstructions32[i][5] === 0){
               align = 2;
             } else {
               align = dumpdatainstructions32[i][5];
             }
-            if(dumpdatainstructions32[i][1].length > 16){
+            if(dumpdatainstructions32[i][1].length > 16){ // Vector double case
               var init_add = parseInt(dumpdatainstructions32[i][0], 16);
               var elements = Math.floor(dumpdatainstructions32[i][1].length / 16);
               if(dumpdatainstructions32[i][1].length % 16 !== 0){
@@ -368,7 +308,7 @@ export function writeDataDumpMemory32(){
 
                   const doubleValue = dumpdatainstructions32[i][1].slice(dumpdatainstructions32[i][1].length - (j + 1) * 16, dumpdatainstructions32[i][1].length - (16 * j));
 
-                  let bufferd = new ArrayBuffer(8); // 8 bytes para double
+                  let bufferd = new ArrayBuffer(8);
                   let viewd = new DataView(bufferd);
                   for (let j = 0; j < 8; j++){
                     viewd.setUint8(7 - j, parseInt(doubleValue.slice(j * 2, j * 2 + 2), 16));
@@ -389,8 +329,7 @@ export function writeDataDumpMemory32(){
               main_memory.addHint(BigInt(parseInt(dumpdatainstructions32[i][0], 16)), doubleTag, doubleType, 64 * elements);
             }else {
               const doubleValue = dumpdatainstructions32[i][1];
-              // console.log(doubleValue);
-              let bufferd = new ArrayBuffer(8); // 8 bytes para double
+              let bufferd = new ArrayBuffer(8);
               let viewd = new DataView(bufferd);
               for (let j = 0; j < 8; j++){
                 viewd.setUint8(7 - j, parseInt(doubleValue.slice(j * 2, j * 2 + 2), 16));
@@ -407,45 +346,28 @@ export function writeDataDumpMemory32(){
               const doubleTag = dumpdatainstructions32[i][4] ?? "";
               const doubleType = "float64";
               main_memory.addHint(BigInt(parseInt(dumpdatainstructions32[i][0], 16)), doubleTag, doubleType, 64);
-              // Convertir hexadecimal a entero
-              // let high = parseInt(dumpdatainstructions32[i][1].slice(0, 8), 16); // Parte alta
-              // let low = parseInt(dumpdatainstructions32[i][1].slice(8, 16), 16); // Parte baja
-
-              // // Escribir los valores en el buffer
-              // viewd.setUint32(0, high, false); // Parte alta
-              // viewd.setUint32(4, low, false);  // Parte baja
-
-              // // Leer como double de 64 bits
-              // main_memory.write(BigInt(parseInt(dumpdatainstructions32[i][0], 16)), Number("0x" + dumpdatainstructions32[i][1]));
-              // creator_memory_data_compiler(parseInt(dumpdatainstructions32[i][0], 16), dumpdatainstructions32[i][1], 8, dumpdatainstructions32[i][4], viewd.getFloat64(0, false), dumpdatainstructions32[i][6],);
             }
             align = 1;
             break;
 
         case "asciz":
         case "ascii":
-            const encoder = new TextEncoder();
-            let curraddr = BigInt(parseInt(dumpdatainstructions32[i][0], 16));
-            const startAddr = BigInt(parseInt(dumpdatainstructions32[i][0], 16));
-            for (const ch_h of dumpdatainstructions32[i][1]) {
-              const bytes = new Uint8Array(4);
-              const n = encoder.encodeInto(ch_h, bytes).written;
-              for (let j = 0; j < n; j++) {
-                main_memory.write(curraddr, bytes[j]);
-                curraddr++;
-              }
+          const encoder = new TextEncoder();
+          let curraddr = BigInt(parseInt(dumpdatainstructions32[i][0], 16));
+          const startAddr = BigInt(parseInt(dumpdatainstructions32[i][0], 16));
+          for (const ch_h of dumpdatainstructions32[i][1]) {
+            const bytes = new Uint8Array(4);
+            const n = encoder.encodeInto(ch_h, bytes).written;
+            for (let j = 0; j < n; j++) {
+              main_memory.write(curraddr, bytes[j]);
+              curraddr++;
             }
-            const stringLength = Number(curraddr - startAddr);
-            const stringTag = dumpdatainstructions32[i][4] ?? "";
-            const stringType = "string";
-            main_memory.addHint(startAddr, stringTag, stringType, stringLength * 8);
-            // creator_memory_data_compiler(parseInt(dumpdatainstructions32[i][0], 16), dumpdatainstructions32[i][1], 2, dumpdatainstructions32[i][4], parseInt(dumpdatainstructions32[i][1], 16) >> 0, dumpdatainstructions32[i][6],);
-            // creator_memory_storestring(dumpdatainstructions32[i][1], (dumpdatainstructions32[i][1].length / 2), parseInt(dumpdatainstructions32[i][0], 16), dumpdatainstructions32[i][4], dumpdatainstructions32[i][6], dumpdatainstructions32[i][5]);
-            break;
-
-            // creator_memory_storestring(dumpdatainstructions32[i][1], (dumpdatainstructions32[i][1].length / 2), parseInt(dumpdatainstructions32[i][0], 16), dumpdatainstructions32[i][4], dumpdatainstructions32[i][6], dumpdatainstructions32[i][5]);
-            break;
-
+          }
+          const stringLength = Number(curraddr - startAddr);
+          const stringTag = dumpdatainstructions32[i][4] ?? "";
+          const stringType = "string";
+          main_memory.addHint(startAddr, stringTag, stringType, stringLength * 8);
+          break;
         case "space":
         case "zero":
           let space_addr = BigInt(parseInt(dumpdatainstructions32[i][0], 16));
@@ -460,32 +382,19 @@ export function writeDataDumpMemory32(){
           const spaceTag = dumpdatainstructions32[i][4] ?? "";
           const spaceType = "space";
           main_memory.addHint(space_addr, spaceTag, spaceType, Number(size) * 8);
-          // creator_memory_storestring(dumpdatainstructions32[i][1], dumpdatainstructions32[i][1], parseInt(dumpdatainstructions32[i][0], 16), dumpdatainstructions32[i][4], dumpdatainstructions32[i][6], dumpdatainstructions32[i][5]);
           break;
         }
     }
-
-    // creator_memory_prereset();
-    // creator_memory_reset();
 
     // Initialize stack
     stack_address = parseInt(architecture.memory_layout.stack.start);
 
     main_memory.writeWord(BigInt(stack_address), [0x0, 0x0, 0x0, 0x0]); // writeMemory("00", parseInt(stack_address), "word") ;
     if (architecture.config.word_size == 32) {
-        architecture.components[1].elements[2].value = 
-        BigInt(parseInt(stack_address) >>> 0, 10);
-        
-        // bi_intToBigInt(
-        // stack_address,
-        // 10,
-        // );
-        architecture.components[1].elements[2].default_value = 
-          BigInt(parseInt(stack_address) >>> 0, 10);   
-        // bi_intToBigInt(
-        // stack_address,
-        // 10,
-        // );
+      architecture.components[1].elements[2].value = 
+      BigInt(parseInt(stack_address) >>> 0, 10);
+      architecture.components[1].elements[2].default_value = 
+        BigInt(parseInt(stack_address) >>> 0, 10);   
     }else {
         architecture.components[1].elements[2].value = stack_address;
         architecture.components[1].elements[2].default_value = stack_address;
@@ -508,91 +417,55 @@ export function writeDataDumpMemory64(){
               for (var j = 0; j < elements; j++){
               var element_to_insert = dumpdatainstructions64[i][1].slice(dumpdatainstructions64[i][1].length - (j * 2 + 2) * 2, dumpdatainstructions64[i][1].length - (4 * j));
               if (j === 0 )
-                  main_memory.write(BigInt(init_add), Number("0x" + element_to_insert));
-                  // creator_memory_data_compiler(init_add, element_to_insert, 2, dumpdatainstructions64[i][4], (parseInt(element_to_insert, 16) << 16) >> 16, dumpdatainstructions64[i][6],);
+                main_memory.write(BigInt(init_add), Number("0x" + element_to_insert));
               else
-                  main_memory.write(BigInt(init_add + j * 2), Number("0x" + element_to_insert));
-                  // creator_memory_data_compiler(init_add + j*2, element_to_insert, 2, null, (parseInt(element_to_insert, 16) << 16) >> 16, dumpdatainstructions64[i][6],);
-
+                main_memory.write(BigInt(init_add + j * 2), Number("0x" + element_to_insert));
               }
           }else {
-              main_memory.write(BigInt(parseInt(dumpdatainstructions64[i][0], 16)), Number("0x" + dumpdatainstructions64[i][1]));
-              // creator_memory_data_compiler(parseInt(dumpdatainstructions64[i][0], 16), dumpdatainstructions64[i][1], 2, dumpdatainstructions64[i][4], parseInt(dumpdatainstructions64[i][1], 16) >> 0, dumpdatainstructions64[i][6],);
+            main_memory.write(BigInt(parseInt(dumpdatainstructions64[i][0], 16)), Number("0x" + dumpdatainstructions64[i][1]));  
           }
 
           const halfTag = dumpdatainstructions64[i][4] ?? "";
           const halfType = "half";
           main_memory.addHint(BigInt(parseInt(dumpdatainstructions64[i][0], 16)), halfTag, halfType, 16);
-        break;
+          break;
         case "byte":
-            main_memory.write(BigInt(parseInt(dumpdatainstructions64[i][0], 16)), Number("0x"+dumpdatainstructions64[i][1].substring(2)));
-            const byteTag = dumpdatainstructions64[i][4] ?? "";
-            const byteType = "byte";
-            main_memory.addHint(BigInt(parseInt(dumpdatainstructions64[i][0], 16)), byteTag, byteType, 8);
-        
-            // if(dumpdatainstructions64[i][1].length > 2){
-            // var init_add = parseInt(dumpdatainstructions64[i][0], 16);
-            // var elements = Math.floor(dumpdatainstructions64[i][1].length / 2); // 4
-            // if(dumpdatainstructions64[i][1].length % 2 !== 0){
-            //     elements = elements + 1;
-            // }
-            // dumpdatainstructions64[i][1] = dumpdatainstructions64[i][1].padStart(elements * 2,"0");
-
-            // for (var j = 0; j < elements;j++){
-            //     var element_to_insert = dumpdatainstructions64[i][1].slice(dumpdatainstructions64[i][1].length - (j * 2 + 2), dumpdatainstructions64[i][1].length - (2 * j));
-            //     console.log("Insert: ", element_to_insert);
-            //     if (j === 0 )
-            //       main_memory.write(BigInt(init_add + j * 1), Number(element_to_insert));
-            //     // creator_memory_data_compiler(init_add + j*1, element_to_insert, 1, dumpdatainstructions64[i][4], (parseInt(element_to_insert, 16) << 24) >> 24, dumpdatainstructions64[i][6],);
-            //     else
-            //       main_memory.write(BigInt(init_add + j * 1), Number(element_to_insert));
-            //     // creator_memory_data_compiler(init_add + j*1, element_to_insert, 1, null, (parseInt(element_to_insert,16) << 24 ) >> 24, dumpdatainstructions64[i][6],);
-
-            // }
-            // }else {
-            //   main_memory.write(BigInt(parseInt(dumpdatainstructions64[i][0], 16)), Number("0x"+dumpdatainstructions64[i][1]));
-            // // creator_memory_data_compiler(parseInt(dumpdatainstructions64[i][0], 16), dumpdatainstructions64[i][1], 1, dumpdatainstructions64[i][4], parseInt(dumpdatainstructions64[i][1], 16) >> 0, dumpdatainstructions64[i][6],);
-            // }
-            break;
+          main_memory.write(BigInt(parseInt(dumpdatainstructions64[i][0], 16)), Number("0x"+dumpdatainstructions64[i][1].substring(2)));
+          const byteTag = dumpdatainstructions64[i][4] ?? "";
+          const byteType = "byte";
+          main_memory.addHint(BigInt(parseInt(dumpdatainstructions64[i][0], 16)), byteTag, byteType, 8);
+      
+          break;
         case "word":
         case "integer":
-            if(dumpdatainstructions64[i][1].length > 8){
+          if(dumpdatainstructions64[i][1].length > 8){
             var init_add = parseInt(dumpdatainstructions64[i][0], 16);
             var elements = Math.floor(dumpdatainstructions64[i][1].length / 8);
             if(dumpdatainstructions64[i][1].length % 8 !== 0){
                 elements = elements + 1;
                 dumpdatainstructions64[i][1] = dumpdatainstructions64[i][1].padStart(elements*8,"0");
             }
-            for (var j = 0; j < elements; j++){
-
-                var element_to_insert = dumpdatainstructions64[i][1].slice(dumpdatainstructions64[i][1].length - (j + 1) * 8, dumpdatainstructions64[i][1].length - (8 * j));
-                // if (j === 0 )
-                  main_memory.write(BigInt(init_add + j * 4), Number(element_to_insert));
-                // creator_memory_data_compiler(init_add + j*4, element_to_insert, 4, dumpdatainstructions64[i][4], parseInt(element_to_insert, 16) >> 0, dumpdatainstructions64[i][6],);
-                // else
-                // creator_memory_data_compiler(init_add + j*4, element_to_insert, 4, null, parseInt(element_to_insert, 16) >> 0, dumpdatainstructions64[i][6],);
-
+            for (var j = 0; j < elements; j++) {
+              var element_to_insert = dumpdatainstructions64[i][1].slice(dumpdatainstructions64[i][1].length - (j + 1) * 8, dumpdatainstructions64[i][1].length - (8 * j));
+              main_memory.write(BigInt(init_add + j * 4), Number(element_to_insert));  
             }
-            }else {
-              const wordValue = BigInt("0x" + dumpdatainstructions64[i][1]);
-              const wordBytes = new Uint8Array(4);
-              for (let j = 0; j < 4; j++) {
-                const shiftAmount = BigInt((4 - 1 - j) * 8);
-                wordBytes[j] = Number((wordValue >> shiftAmount) & BigInt(
-                  ( (1 << 8) - 1)
-                ));
-              }
-              main_memory.writeWord(BigInt("0x"+dumpdatainstructions64[i][0]), wordBytes);
-            // creator_memory_data_compiler(parseInt(dumpdatainstructions64[i][0], 16), dumpdatainstructions64[i][1], 8, dumpdatainstructions64[i][4], parseInt(dumpdatainstructions64[i][1], 16) >> 0, dumpdatainstructions64[i][6],);
+          }else {
+            const wordValue = BigInt("0x" + dumpdatainstructions64[i][1]);
+            const wordBytes = new Uint8Array(4);
+            for (let j = 0; j < 4; j++) {
+              const shiftAmount = BigInt((4 - 1 - j) * 8);
+              wordBytes[j] = Number((wordValue >> shiftAmount) & BigInt(
+                ( (1 << 8) - 1)
+              ));
             }
-              // main_memory.write(BigInt(parseInt(dumpdatainstructions64[i][0], 16)), Number("0x"+dumpdatainstructions64[i][1]));
-              // creator_memory_data_compiler(parseInt(dumpdatainstructions64[i][0], 16), dumpdatainstructions64[i][1], 4, dumpdatainstructions64[i][4], parseInt(dumpdatainstructions64[i][1], 16) >> 0, dumpdatainstructions64[i][6],);
-            const wordTag = dumpdatainstructions64[i][4] ?? "";
-            const wordType = "word";
-            main_memory.addHint(BigInt(parseInt(dumpdatainstructions64[i][0], 16)), wordTag, wordType, 32);
-            break;
+            main_memory.writeWord(BigInt("0x"+dumpdatainstructions64[i][0]), wordBytes);
+          }
+          const wordTag = dumpdatainstructions64[i][4] ?? "";
+          const wordType = "word";
+          main_memory.addHint(BigInt(parseInt(dumpdatainstructions64[i][0], 16)), wordTag, wordType, 32);
+          break;
         case "dword":
-            if(dumpdatainstructions64[i][1].length > 16){
+          if(dumpdatainstructions64[i][1].length > 16){
             var init_add = parseInt(dumpdatainstructions64[i][0], 16);
             var elements = Math.floor(dumpdatainstructions64[i][1].length / 16);
             if(dumpdatainstructions64[i][1].length % 16 !== 0){
@@ -600,76 +473,60 @@ export function writeDataDumpMemory64(){
                 dumpdatainstructions64[i][1] = dumpdatainstructions64[i][1].padStart(elements*16,"0");
             }
             for (var j = 0; j < elements; j++){
-                var element_to_insert = dumpdatainstructions64[i][1].slice(dumpdatainstructions64[i][1].length - (j + 1) * 16, dumpdatainstructions64[i][1].length - (16 * j));
-                main_memory.write(BigInt(init_add + j * 8), Number(element_to_insert));
-                // if (j === 0 )
-                // creator_memory_data_compiler(init_add + j*8, element_to_insert, 8, dumpdatainstructions64[i][4], element_to_insert >> 0, dumpdatainstructions64[i][6],);
-                // else
-                // creator_memory_data_compiler(init_add + j*8, element_to_insert, 8, null, element_to_insert >> 0, dumpdatainstructions64[i][6],);
-
+              var element_to_insert = dumpdatainstructions64[i][1].slice(dumpdatainstructions64[i][1].length - (j + 1) * 16, dumpdatainstructions64[i][1].length - (16 * j));
+              main_memory.write(BigInt(init_add + j * 8), Number(element_to_insert));
             }
-            }else {
-              const dwordValue = BigInt("0x" + dumpdatainstructions64[i][1]);
-              const wordBytes = new Uint8Array(4);
-              const highWord = dwordValue >> BigInt(32);
+          }else {
+            const dwordValue = BigInt("0x" + dumpdatainstructions64[i][1]);
+            const wordBytes = new Uint8Array(4);
+            const highWord = dwordValue >> BigInt(32);
 
-              const lowWord = dwordValue & BigInt( (1n << BigInt(32)) - 1n);
+            const lowWord = dwordValue & BigInt( (1n << BigInt(32)) - 1n);
 
-              const highWordBytes = new Uint8Array(4);
-              const lowWordBytes = new Uint8Array(4);
+            const highWordBytes = new Uint8Array(4);
+            const lowWordBytes = new Uint8Array(4);
 
-              for (let j = 0; j < 4; j++){
-                const shiftAmount =  BigInt(
-                  (4 - 1 - j) * 8);
-                highWordBytes[j] = Number((highWord >> shiftAmount) & BigInt((1 << 8) - 1));
-                lowWordBytes[j] = Number((lowWord >> shiftAmount) & BigInt((1 << 8) - 1));
-              }
-              main_memory.writeWord(BigInt("0x" + dumpdatainstructions64[i][0]), highWordBytes);
-              main_memory.writeWord(BigInt("0x" + dumpdatainstructions64[i][0]) + BigInt(4), lowWordBytes);
-            // creator_memory_data_compiler(parseInt(dumpdatainstructions64[i][0], 16), dumpdatainstructions64[i][1], 8, dumpdatainstructions64[i][4], parseInt(dumpdatainstructions64[i][1], 16) >> 0, dumpdatainstructions64[i][6],);
+            for (let j = 0; j < 4; j++){
+              const shiftAmount =  BigInt(
+                (4 - 1 - j) * 8);
+              highWordBytes[j] = Number((highWord >> shiftAmount) & BigInt((1 << 8) - 1));
+              lowWordBytes[j] = Number((lowWord >> shiftAmount) & BigInt((1 << 8) - 1));
             }
-            const dwordTag = dumpdatainstructions64[i][4] ?? "";
-            const dwordType = "dword";
-            main_memory.addHint(BigInt("0x" + dumpdatainstructions64[i][0]), dwordTag, dwordType, 64);
-            break;
+            main_memory.writeWord(BigInt("0x" + dumpdatainstructions64[i][0]), highWordBytes);
+            main_memory.writeWord(BigInt("0x" + dumpdatainstructions64[i][0]) + BigInt(4), lowWordBytes);
+          }
+          const dwordTag = dumpdatainstructions64[i][4] ?? "";
+          const dwordType = "dword";
+          main_memory.addHint(BigInt("0x" + dumpdatainstructions64[i][0]), dwordTag, dwordType, 64);
+          break;
 
         case "float":
-            align = 2;
+          align = 2;
 
-            if(dumpdatainstructions64[i][1].length > 8){ // Caso de que sea un vector de floats
+          if(dumpdatainstructions64[i][1].length > 8){ // Vector float case 
             var init_add = parseInt(dumpdatainstructions64[i][0], 16);
             var elements = Math.floor(dumpdatainstructions64[i][1].length / 8);
-            if(dumpdatainstructions64[i][1].length % 8 !== 0){
-                elements = elements + 1;
-                dumpdatainstructions64[i][1] = dumpdatainstructions64[i][1].padStart(elements*8,"0");
+          if(dumpdatainstructions64[i][1].length % 8 !== 0){
+            elements = elements + 1;
+            dumpdatainstructions64[i][1] = dumpdatainstructions64[i][1].padStart(elements*8,"0");
+          }
+          for (var j = 0; j < elements; j++){
+            var element_to_insert = dumpdatainstructions64[i][1].slice(dumpdatainstructions64[i][1].length - (j + 1) * 8, dumpdatainstructions64[i][1].length - (8 * j));
+            const floatValue = Number("0x" + element_to_insert);
+            const buffer = new ArrayBuffer(4);
+            const view = new DataView(buffer);
+
+            view.setFloat32(0, floatValue, false);
+            const floatBytes = new Uint8Array(4);
+            for (let k = 0; k < 4; k++) {
+              floatBytes[k]= view.getUint8(k);
             }
-            for (var j = 0; j < elements; j++){
-                // let buffer = new ArrayBuffer(4); // 4 bytes para float
-                // let view = new DataView(buffer);
-
-                var element_to_insert = dumpdatainstructions64[i][1].slice(dumpdatainstructions64[i][1].length - (j + 1) * 8, dumpdatainstructions64[i][1].length - (8 * j));
-                const floatValue = Number("0x" + element_to_insert);
-                const buffer = new ArrayBuffer(4);
-                const view = new DataView(buffer);
-
-                view.setFloat32(0, floatValue, false);
-                const floatBytes = new Uint8Array(4);
-                for (let k = 0; k < 4; k++) {
-                  floatBytes[k]= view.getUint8(k);
-                }
-                writeMultiByteValueAsWords(BigInt(init_add + (j *4)), floatBytes, 4);
-                // main_memory.write(BigInt(init_add + j * 4), Number(element_to_insert));
-                // if (j === 0 )
-                // creator_memory_data_compiler(init_add + j*4, element_to_insert, 4, dumpdatainstructions64[i][4], view.getFloat32(0, false), dumpdatainstructions64[i][6],);
-                // else
-                // creator_memory_data_compiler(init_add + j*4, element_to_insert, 4, null, view.getFloat32(0, false), dumpdatainstructions64[i][6],);
-
-            }
-              const floatTag = dumpdatainstructions64[i][4] ?? "";
-              const floatType = "float";
-              main_memory.addHint(BigInt(init_add), floatTag, floatType, (elements * 32));
-
-            }else {
+            writeMultiByteValueAsWords(BigInt(init_add + (j *4)), floatBytes, 4);
+          }
+            const floatTag = dumpdatainstructions64[i][4] ?? "";
+            const floatType = "float";
+            main_memory.addHint(BigInt(init_add), floatTag, floatType, (elements * 32));
+          } else {
             const floatValue = Number("0x" + dumpdatainstructions64[i][1]);
             const buffer = new ArrayBuffer(4); // 4 bytes para float
             const view = new DataView(buffer);
@@ -683,34 +540,23 @@ export function writeDataDumpMemory64(){
             const floatTag = dumpdatainstructions64[i][4] ?? "";
             const floatType = "float";
             main_memory.addHint(BigInt(parseInt(dumpdatainstructions64[i][0], 16)), floatTag, floatType, 32);
+          }
 
-
-            // Convertir hexadecimal a entero
-            // let intVal = parseInt(dumpdatainstructions64[i][1], 16);
-
-            // Escribir el entero en el buffer como float
-            // view.setUint32(0, intVal, false);
-            // main_memory.write(BigInt(parseInt(dumpdatainstructions64[i][0], 16)), Number("0x" + dumpdatainstructions64[i][1]));
-            // creator_memory_data_compiler(parseInt(dumpdatainstructions64[i][0], 16), dumpdatainstructions64[i][1], 4, dumpdatainstructions64[i][4],view.getFloat32(0, false), dumpdatainstructions64[i][6],);
-            }
-
-            break;
+          break;
         case "double":
-            if (dumpdatainstructions64[i][5] === 0){
+          if (dumpdatainstructions64[i][5] === 0)
             align = 2;
-            } else {
+          else 
             align = dumpdatainstructions64[i][5];
-            }
-            if(dumpdatainstructions64[i][1].length > 16){
+          
+          if(dumpdatainstructions64[i][1].length > 16){
             var init_add = parseInt(dumpdatainstructions64[i][0], 16);
             var elements = Math.floor(dumpdatainstructions64[i][1].length / 16);
             if(dumpdatainstructions64[i][1].length % 16 !== 0){
-                elements = elements + 1;
-                dumpdatainstructions64[i][1] = dumpdatainstructions64[i][1].padStart(elements*16,"0");
+              elements = elements + 1;
+              dumpdatainstructions64[i][1] = dumpdatainstructions64[i][1].padStart(elements*16,"0");
             }
             for (var j = 0; j < elements; j++){
-
-
               const doubleValue = dumpdatainstructions64[i][1].slice(dumpdatainstructions64[i][1].length - (j + 1) * 16, dumpdatainstructions64[i][1].length - (16 * j));
               // console.log(doubleValue);
               let bufferd = new ArrayBuffer(8); // 8 bytes para double
@@ -723,74 +569,52 @@ export function writeDataDumpMemory64(){
               for (let j = 0; j < 8; j++) {
                 doubleBytes[j] = viewd.getUint8(7 - j);
               }
-              
-
               writeMultiByteValueAsWords(BigInt(init_add + j *8), doubleBytes, 4);
 
             }
+            const doubleTag = dumpdatainstructions64[i][4] ?? "";
+            const doubleType = "float64";
+            main_memory.addHint(BigInt(parseInt(dumpdatainstructions64[i][0], 16)), doubleTag, doubleType, 64 * elements);
 
-              const doubleTag = dumpdatainstructions64[i][4] ?? "";
-              const doubleType = "float64";
-              main_memory.addHint(BigInt(parseInt(dumpdatainstructions64[i][0], 16)), doubleTag, doubleType, 64 * elements);
+          }else {
+            const doubleValue = dumpdatainstructions64[i][1];
+            let bufferd = new ArrayBuffer(8);
+            let viewd = new DataView(bufferd);
+            for (let j = 0; j < 8; j++){
+              viewd.setUint8(7 - j, parseInt(doubleValue.slice(j * 2, j * 2 + 2), 16));
 
-            }else {
-              const doubleValue = dumpdatainstructions64[i][1];
-              // console.log(doubleValue);
-              let bufferd = new ArrayBuffer(8); // 8 bytes para double
-              let viewd = new DataView(bufferd);
-              for (let j = 0; j < 8; j++){
-                viewd.setUint8(7 - j, parseInt(doubleValue.slice(j * 2, j * 2 + 2), 16));
-
-              }
-              const doubleBytes = new Uint8Array(8);
-              for (let j = 0; j < 8; j++) {
-                doubleBytes[j] = viewd.getUint8(7 - j);
-              }
-              
-
-              writeMultiByteValueAsWords(BigInt(parseInt(dumpdatainstructions64[i][0], 16)), doubleBytes, 4);
-
-              const doubleTag = dumpdatainstructions64[i][4] ?? "";
-              const doubleType = "float64";
-              main_memory.addHint(BigInt(parseInt(dumpdatainstructions64[i][0], 16)), doubleTag, doubleType, 64)
-              // Convertir hexadecimal a entero
-              // let high = parseInt(dumpdatainstructions64[i][1].slice(0, 8), 16); // Parte alta
-              // let low = parseInt(dumpdatainstructions64[i][1].slice(8, 16), 16); // Parte baja
-
-              // // Escribir los valores en el buffer
-              // viewd.setUint32(0, high, false); // Parte alta
-              // viewd.setUint32(4, low, false);  // Parte baja
-
-              // // Leer como double de 64 bits
-              // main_memory.write(BigInt(parseInt(dumpdatainstructions64[i][0], 16)), Number("0x" + dumpdatainstructions64[i][1]));
-              // creator_memory_data_compiler(parseInt(dumpdatainstructions64[i][0], 16), dumpdatainstructions64[i][1], 8, dumpdatainstructions64[i][4], viewd.getFloat64(0, false), dumpdatainstructions64[i][6],);
             }
-            align = 1;
-            break;
+            const doubleBytes = new Uint8Array(8);
+            for (let j = 0; j < 8; j++) {
+              doubleBytes[j] = viewd.getUint8(7 - j);
+            }
+            writeMultiByteValueAsWords(BigInt(parseInt(dumpdatainstructions64[i][0], 16)), doubleBytes, 4);
+
+            const doubleTag = dumpdatainstructions64[i][4] ?? "";
+            const doubleType = "float64";
+            main_memory.addHint(BigInt(parseInt(dumpdatainstructions64[i][0], 16)), doubleTag, doubleType, 64)
+          }
+          align = 1;
+          break;
 
         case "asciz":
         case "ascii":
-            const encoder = new TextEncoder();
-            let curraddr = BigInt(parseInt(dumpdatainstructions64[i][0], 16));
-            const startAddr = BigInt(parseInt(dumpdatainstructions64[i][0], 16));
-            for (const ch_h of dumpdatainstructions64[i][1]) {
-              const bytes = new Uint8Array(4);
-              const n = encoder.encodeInto(ch_h, bytes).written;
-              for (let j = 0; j < n; j++) {
-                main_memory.write(curraddr, bytes[j]);
-                curraddr++;
-              }
+          const encoder = new TextEncoder();
+          let curraddr = BigInt(parseInt(dumpdatainstructions64[i][0], 16));
+          const startAddr = BigInt(parseInt(dumpdatainstructions64[i][0], 16));
+          for (const ch_h of dumpdatainstructions64[i][1]) {
+            const bytes = new Uint8Array(4);
+            const n = encoder.encodeInto(ch_h, bytes).written;
+            for (let j = 0; j < n; j++) {
+              main_memory.write(curraddr, bytes[j]);
+              curraddr++;
             }
-            const stringLength = Number(curraddr - startAddr);
-            const stringTag = dumpdatainstructions64[i][4] ?? "";
-            const stringType = "string";
-            main_memory.addHint(startAddr, stringTag, stringType, stringLength * 8);
-            // creator_memory_data_compiler(parseInt(dumpdatainstructions64[i][0], 16), dumpdatainstructions64[i][1], 2, dumpdatainstructions64[i][4], parseInt(dumpdatainstructions64[i][1], 16) >> 0, dumpdatainstructions64[i][6],);
-            // creator_memory_storestring(dumpdatainstructions64[i][1], (dumpdatainstructions64[i][1].length / 2), parseInt(dumpdatainstructions64[i][0], 16), dumpdatainstructions64[i][4], dumpdatainstructions64[i][6], dumpdatainstructions64[i][5]);
-            break;
-
-            // creator_memory_storestring(dumpdatainstructions64[i][1], (dumpdatainstructions64[i][1].length / 2), parseInt(dumpdatainstructions64[i][0], 16), dumpdatainstructions64[i][4], dumpdatainstructions64[i][6], dumpdatainstructions64[i][5]);
-            break;
+          }
+          const stringLength = Number(curraddr - startAddr);
+          const stringTag = dumpdatainstructions64[i][4] ?? "";
+          const stringType = "string";
+          main_memory.addHint(startAddr, stringTag, stringType, stringLength * 8);
+          break;
 
         case "space":
         case "zero":
@@ -806,32 +630,19 @@ export function writeDataDumpMemory64(){
           const spaceTag = dumpdatainstructions64[i][4] ?? "";
           const spaceType = "space";
           main_memory.addHint(space_addr, spaceTag, spaceType, Number(size) * 8);
-          // creator_memory_storestring(dumpdatainstructions64[i][1], dumpdatainstructions64[i][1], parseInt(dumpdatainstructions64[i][0], 16), dumpdatainstructions64[i][4], dumpdatainstructions64[i][6], dumpdatainstructions64[i][5]);
           break;
         }
     }
-
-    // creator_memory_prereset();
-    // creator_memory_reset();
-
     // Initialize stack
     stack_address = parseInt(architecture.memory_layout.stack.start);
 
     main_memory.writeWord(BigInt(stack_address), [0x0, 0x0, 0x0, 0x0]); // writeMemory("00", parseInt(stack_address), "word") ;
     if (architecture.config.word_size == 32) {
-        architecture.components[1].elements[2].value = 
-        BigInt(parseInt(stack_address) >>> 0, 10);
-        
-        // bi_intToBigInt(
-        // stack_address,
-        // 10,
-        // );
-        architecture.components[1].elements[2].default_value = 
-          BigInt(parseInt(stack_address) >>> 0, 10);   
-        // bi_intToBigInt(
-        // stack_address,
-        // 10,
-        // );
+      architecture.components[1].elements[2].value = 
+      BigInt(parseInt(stack_address) >>> 0, 10);
+      
+      architecture.components[1].elements[2].default_value = 
+        BigInt(parseInt(stack_address) >>> 0, 10);   
     }else {
         architecture.components[1].elements[2].value = stack_address;
         architecture.components[1].elements[2].default_value = stack_address;
@@ -840,16 +651,14 @@ export function writeDataDumpMemory64(){
 export async function as(files){
     /* Initialize the assembler compiler */
     let depsLeft = Infinity;
-    // if (sailas !== null) sailas = null;
     if (architecture.config.name === "SRV32") {
       sailas = await as32Module({
+          // locateFile,
           // locateFile,
           noInitialRun: true,
           print: (t) => console.log('[as32]', t),
           printErr: (t) => console.error('[as32:err]', t),
           onAbort: (r) => console.error('[as32:abort]', r),
-
-          // Ver qué dependencia está pendiente (wasm, data, worker…)
           monitorRunDependencies(left) {
               depsLeft = left;
           console.log('[as32] deps pendientes:', left);
@@ -857,38 +666,24 @@ export async function as(files){
       });
     } else {
       sailas = await as64Module({
-          // locateFile,
           noInitialRun: true,
           print: (t) => console.log('[as64]', t),
           printErr: (t) => console.error('[as64:err]', t),
           onAbort: (r) => console.error('[as64:abort]', r),
-
-          // Ver qué dependencia está pendiente (wasm, data, worker…)
           monitorRunDependencies(left) {
               depsLeft = left;
           console.log('[as64] deps pendientes:', left);
           },
       });
     }
-      // Esperar a que depsLeft llegue a 0
+
     await new Promise((resolve) => {
         const check = () => {
         if (depsLeft === 0) resolve();
-        else setTimeout(check, 10); // chequea cada 10 ms
+        else setTimeout(check, 10); // check every 10ms
         };
         check();
     });
-    // sailas = await as32Module();
-    //     {
-    //     print: (text) => {
-
-    //     },
-    //     printErr: (text) => {
-    //     }
-    // }
-    // console.log("Codigo: ", code);
-
-
     /* Now we have to check which extensions are enabled during the process */
     var march = "-march=rv";
     var mabi = "-mabi=ilp";
@@ -930,8 +725,19 @@ export async function as(files){
           }
         }
       }
-      // if (vectoren && doubleen)
-      //   show_notification("Using double data type with vectors may generate and inconsistent execution result, try on 64 bits architecture", "warning");
+      for (const priv of privins ?? []) {
+        for (let j = 0; j < files.length; j++){
+          var code = files[j].code;
+          if (code.includes(priv) && !priven){
+            march = march + "_zicsr";
+            priven = !priven;
+            document.app.$data.c_kernel = false;
+
+          }
+        }
+      }
+
+
     } else {
       march = march + "64i";
       mabi = "-mabi=lp64";
@@ -968,21 +774,23 @@ export async function as(files){
           }
         }
       }
-    }
+      for (const priv of privins ?? []) {
+        for (let j = 0; j < files.length; j++){
+          var code = files[j].code;
+          if (code.includes(priv) && !priven){
+            march = march + "_zicsr";
+            priven = !priven;
+            document.app.$data.c_kernel = false;
+          }
+        }
+      }
 
-    if (!document.app.$data.c_kernel) // Custom kernel case
-      march = march + "_zicsr";
+    }
 
     let asargs = [march, mabi, files];
     console.log(asargs);
     let outfile = null;
-    /* Once it is initialized we proceed to assemble code */
-    /* Set arguments: extensions, input files, output name */
-    // sailas.shouldRunNow = true;
     outfile = await sailas.run(asargs);
-    // outfile = ofile;
-    // console.log(outfile);
-    // sailas.callMain(["-o","out.o","-march=rv32imfdv", "-mabi=ilp32d","code.s"]);
     return outfile/* REturn objfile to next step*/;
 }
 
@@ -994,8 +802,6 @@ export async function ld(objfile, libs) {
           print: (t) => console.log('[ld32]', t),
           printErr: (t) => console.error('[ld32:err]', t),
           onAbort: (r) => console.error('[ld32:abort]', r),
-
-          // Ver qué dependencia está pendiente (wasm, data, worker…)
           monitorRunDependencies(left) {
               depsLeft = left;
           console.log('[ld32] deps pendientes:', left);
@@ -1008,8 +814,6 @@ export async function ld(objfile, libs) {
           print: (t) => console.log('[ld64]', t),
           printErr: (t) => console.error('[ld64:err]', t),
           onAbort: (r) => console.error('[ld64:abort]', r),
-
-          // Ver qué dependencia está pendiente (wasm, data, worker…)
           monitorRunDependencies(left) {
               depsLeft = left;
           console.log('[ld64] deps pendientes:', left);
@@ -1021,7 +825,7 @@ export async function ld(objfile, libs) {
     await new Promise((resolve) => {
         const check = () => {
         if (depsLeft === 0) resolve();
-        else setTimeout(check, 10); // chequea cada 10 ms
+        else setTimeout(check, 10); // check every 10ms
         };
         check();
     });
@@ -1029,17 +833,13 @@ export async function ld(objfile, libs) {
     var linker;
 
 
+    /* Load linker script to generate elffile */
     if (architecture.config.name === "SRV32") {
       linker = await loadlinker(true);
     }
     else {
       linker = await loadlinker(false);
     }
-
-    console.log(linker);
-    // ld32Module.FS.writeFile('linker.ld', linker);
-
-    /* Load linker script to generate elffile */
     var elf;
     if (libs){
       libs_to_load.push({name: loadedLibrary.name, file: loadedLibrary.library_file});
@@ -1048,7 +848,6 @@ export async function ld(objfile, libs) {
       elf = sailld.run([linker, objfile, "-T", "linker.ld", "-o", "output.elf", "input.o"]);
     
     }
-    /* Load files to wasm program */
 
     return elf/* Return elfile to dump it*/;
 }
@@ -1060,11 +859,6 @@ export async function dump(file){
 
       saildump = await dump32Module({
           noInitialRun: true,
-          // print: (t) => console.log('[dump32]', t),
-          // printErr: (t) => console.error('[dump32:err]', t),
-          // onAbort: (r) => console.error('[dump32:abort]', r),
-
-          // Ver qué dependencia está pendiente (wasm, data, worker…)
           monitorRunDependencies(left) {
               depsLeft = left;
           console.log('[dump32] deps pendientes:', left);
@@ -1088,7 +882,7 @@ export async function dump(file){
     await new Promise((resolve) => {
         const check = () => {
         if (depsLeft === 0) resolve();
-        else setTimeout(check, 10); // chequea cada 10 ms
+        else setTimeout(check, 10); // check every 10ms
         };
         check();
     });
@@ -1100,17 +894,16 @@ export async function dump(file){
 
     align = 1;
     for (let i = 0; i < dumptextinstructions32.length; i++){
-        // creator_insert_instruction(parseInt(dumptextinstructions32[i][0], 16), dumptextinstructions32[i][2], dumptextinstructions32[i][2], false, dumptextinstructions32[i][1], "00", dumptextinstructions32[i][4]);
         instructions.push({
         Break: null,
         Address: "0x" + dumptextinstructions32[i][0],
         Label: dumptextinstructions32[i][4],
         loaded: dumptextinstructions32[i][2],
         user : list_user_instructions[i],
-        // L1_I: 0,
-        // L1_D: 0,
-        // L2_I: 0,
-        // L2_D: 0,
+        L1_I: 0,
+        L1_D: 0,
+        L2_I: 0,
+        L2_D: 0,
         hex: dumptextinstructions32[i][1].replace(/^0x/i, "")
         .split("")                       
         .map(c => parseInt(c, 16)        
@@ -1122,7 +915,6 @@ export async function dump(file){
         visible: true,
         hide: false,
         });
-        // console.log("entrada: ", entry_elf);
         if(architecture.config.word_size == 32){
         if (dumptextinstructions32[i][0] === document.app.$data.entry_elf || ("0x"+dumptextinstructions32[i][0]) === document.app.$data.entry_elf )
             instructions[i]._rowVariant = 'success';
@@ -1131,8 +923,6 @@ export async function dump(file){
             instructions[i]._rowVariant = 'success';
         }
     }
-    // WORDSIZE = 32;
-    // BYTESIZE = 8;
     // Split binary into words and write to memory
     for (const instruction of instructions ?? []){
       const auxAddr = parseInt(instruction.Address,16);
@@ -1166,17 +956,16 @@ export async function dump(file){
 
     align = 1;
     for (let i = 0; i < dumptextinstructions64.length; i++){
-        // creator_insert_instruction(parseInt(dumptextinstructions64[i][0], 16), dumptextinstructions64[i][2], dumptextinstructions64[i][2], false, dumptextinstructions64[i][1], "00", dumptextinstructions64[i][4]);
         instructions.push({
         Break: null,
         Address: "0x" + dumptextinstructions64[i][0],
         Label: dumptextinstructions64[i][4],
         loaded: dumptextinstructions64[i][2],
         user : list_user_instructions[i],
-        // L1_I: 0,
-        // L1_D: 0,
-        // L2_I: 0,
-        // L2_D: 0,
+        L1_I: 0,
+        L1_D: 0,
+        L2_I: 0,
+        L2_D: 0,
         hex: dumptextinstructions64[i][1].replace(/^0x/i, "")
         .split("")                       
         .map(c => parseInt(c, 16)        
@@ -1188,7 +977,6 @@ export async function dump(file){
         visible: true,
         hide: false,
         });
-        // console.log("entrada: ", entry_elf);
         if(architecture.config.word_size == 32){
         if (dumptextinstructions64[i][0] === document.app.$data.entry_elf || ("0x"+dumptextinstructions64[i][0]) === document.app.$data.entry_elf )
             instructions[i]._rowVariant = 'success';
@@ -1197,8 +985,6 @@ export async function dump(file){
             instructions[i]._rowVariant = 'success';
         }
     }
-    // WORDSIZE = 32;
-    // BYTESIZE = 8;
     // Split binary into words and write to memory
     for (const instruction of instructions ?? []){
       const auxAddr = parseInt(instruction.Address,16);
@@ -1251,9 +1037,9 @@ export async function SailCompile(files, libs){
 
   vectoren = false;
   doubleen = false;
+  priven = false; 
   extensions.length = 0;
   ins_filter = (ins_filter === undefined) ? architecture.instructions.map(insn => ({opcode: insn.name, type: insn.extension})) : ins_filter;
-  // console.log("SAil assemble");
   libs_to_load.length = 0;
   
   dumptextinstructions64.length = 0;
@@ -1272,7 +1058,6 @@ export async function SailCompile(files, libs){
   main_memory.zeroOut();
   main_memory.clearHints();
   instructions.length = 0;
-  // creator_memory_clear();
   var explabel = /^(\w+):/;
   var expvalue = /\.(\w+)\s+(.+)/;
   var expalign = /^\.align\s+(\d+)/;
@@ -1316,9 +1101,6 @@ export async function SailCompile(files, libs){
         let matchlabel = code_assembly_array[i].match(explabel);
         let matchalign = code_assembly_array[i].match(expalign);
         let matchvalue = code_assembly_array[i].match(expvalue);
-        // console.log("label:", matchlabel);
-        // console.log("align:", matchalign);
-        // console.log("value:", matchvalue);
         if (matchlabel){
 
           data_to_store.label = matchlabel[1];
@@ -1397,7 +1179,6 @@ export async function SailCompile(files, libs){
         identify_pseudo(code_assembly_array[i]);
       }
     }
-    // filenames.push(assembly_files[j].filename);
     is_data = false;
     is_text = false;
     
@@ -1414,40 +1195,35 @@ export async function SailCompile(files, libs){
     outfile = null;
   }
 
-  outfile = await as(filesToCompile);//as(files);
+  outfile = await as(filesToCompile);
   let elffile = await ld(outfile, libs);
   let outdump = await dump(elffile);
-  document.app.$data.v_length = 64;
-  document.app.$data.L1_I_num_lines  = 32;
-  document.app.$data.L1_D_num_lines  = 32;
-  document.app.$data.L1_num_lines  = 32;
-  document.app.$data.L2_num_lines  = 32;
-  document.app.$data.L2_I_num_lines  = 32;
-  document.app.$data.L2_D_num_lines  = 32;
-  document.app.$data.L1_size  = 32;
-  document.app.$data.L1_I_size  = 32;
-  document.app.$data.L1_D_size  = 32;
-  document.app.$data.L1_size_block  = 32;
-  document.app.$data.L1_I_size_block  = 32;
-  document.app.$data.L1_D_size_block  = 32;
-  document.app.$data.L2_size  = 32;
-  document.app.$data.L2_I_size  = 32;
-  document.app.$data.L2_D_size  = 32;
-  document.app.$data.L2_size_block  = 32;
-  document.app.$data.L2_I_size_block  = 32;
-  document.app.$data.L2_D_size_block  = 32;
-  document.app.$data.cache_type = 0;
-  document.app.$data.isDirect = 0;
-  document.app.$data.cache_location = "Associative";
-  document.app.$data.cache_policy = "FIFO";
+  // document.app.$data.v_length = 64;
+  // document.app.$data.L1_I_num_lines  = 32;
+  // document.app.$data.L1_D_num_lines  = 32;
+  // document.app.$data.L1_num_lines  = 32;
+  // document.app.$data.L2_num_lines  = 32;
+  // document.app.$data.L2_I_num_lines  = 32;
+  // document.app.$data.L2_D_num_lines  = 32;
+  // document.app.$data.L1_size  = 32;
+  // document.app.$data.L1_I_size  = 32;
+  // document.app.$data.L1_D_size  = 32;
+  // document.app.$data.L1_size_block  = 32;
+  // document.app.$data.L1_I_size_block  = 32;
+  // document.app.$data.L1_D_size_block  = 32;
+  // document.app.$data.L2_size  = 32;
+  // document.app.$data.L2_I_size  = 32;
+  // document.app.$data.L2_D_size  = 32;
+  // document.app.$data.L2_size_block  = 32;
+  // document.app.$data.L2_I_size_block  = 32;
+  // document.app.$data.L2_D_size_block  = 32;
+  // document.app.$data.cache_type = 0;
+  // document.app.$data.isDirect = 0;
+  // document.app.$data.cache_location = "Associative";
+  // document.app.$data.cache_policy = "FIFO";
   document.app.$data.execution_mode_run = -1;
   document.app.$data.is_breakpoint = 0;
   document.app.$data.binary = elffile;
-  // document.app.$data.c_kernel = true;
   document.app.$data.instructions = instructions;
-  // setPC(BigInt(parseInt(document.app.$data.entry_elf, 16)));
-  
-  // console.log(ins_filter);
-  // console.log(architecture.instructions);
   return outdump;
 }

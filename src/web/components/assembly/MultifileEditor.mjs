@@ -9,7 +9,6 @@ export var tabs = ref([]);
 export var assembly_files = ref([]);
 export var tabCounter = 0;
 export var tabskey = -1;
-// export var currentTab = -1;
 export var currentTab = -1;
 let libdump = null;
 
@@ -45,7 +44,7 @@ export function createFile(storecode = "", filename ="", newcode = "" ) {
         };
         assembly_files.value.push(newFile);
         console.log(assembly_files.value);
-        currentTab = assembly_files.value.length - 1;//tabCounter;
+        currentTab = assembly_files.value.length - 1; 
         // tabCounter++;
         return newFile.code;
     }else {
@@ -88,7 +87,8 @@ export function DeleteFile(filename) {
         if (assembly_files.value.length !== 0){
             currentTab = assembly_files.value[assembly_files.value.length - 1].id;
             assembly_files.value[assembly_files.value.length - 1].editing_now = true;
-        }
+        } else 
+            currentTab = -1;
     }
 }
 

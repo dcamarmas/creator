@@ -302,7 +302,7 @@ onBeforeUnmount(() => {
 watch(() => files.value,
 (arr) => {
   if (!arr || arr.length === 0) {
-    activeTabIndex.value = 0;
+    activeTabIndex.value = -1;
     return;
   }
   
@@ -317,7 +317,10 @@ watch( activeTabIndex, (i) => {
   const arr = files.value;
   var tab;
   var tabindex = i;
-  if (!arr || arr.length === 0) return;
+  if (!arr || arr.length === 0){
+    editor?.setValue("");
+    return;
+  }
   if (typeof i === "number"){
     tab = arr[tabindex];
     if (!tab || !tab.filename) return;
