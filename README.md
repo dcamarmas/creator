@@ -20,13 +20,14 @@
   ![Stars](https://img.shields.io/github/stars/creatorsim/creator?style=social)
   ![Forks](https://img.shields.io/github/forks/dcamarmas/creator?style=social)
 
-  |                                        | URL                                            |
-  |:--------------------------------------:|:----------------------------------------------:|
-  | :computer: CREATOR                     | https://creatorsim.github.io/creator           |
-  | :globe_with_meridians: Project Website | https://creatorsim.github.io                   |
-  | :book: Documentation                   | https://creatorsim.github.io/creator-wiki      |
-  | :package: Docker Hub                   | https://hub.docker.com/repositories/creatorsim |
-  | :email: Email                          | creator.arcos.inf.uc3m.es@gmail.com            |
+  |                                             | URL                                            |
+  |:-------------------------------------------:|:----------------------------------------------:|
+  | :computer: CREATOR                          | https://creatorsim.github.io/creator           |
+  | :globe_with_meridians: Project Website      | https://creatorsim.github.io                   |
+  | :book: Documentation                        | https://creatorsim.github.io/creator-wiki      |
+  | :package: Docker Hub                        | https://hub.docker.com/repositories/creatorsim |
+  | :chart_with_upwards_trend: Usage Statistics | https://lookerstudio.google.com/s/pQXDJar8aoM  |
+  | :email: Email                               | creator.arcos.inf.uc3m.es@gmail.com            |
 
   <h3 align="center">Source Code</h3>
   

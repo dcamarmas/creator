@@ -43,6 +43,7 @@ import SettingsModal from "./components/general/SettingsModal.vue";
 import UIeltoNotifications from "./components/general/UIeltoNotifications.vue";
 import NavbarCREATOR from "./components/general/NavbarCREATOR.vue";
 import UIeltoInstitutions from "./components/general/UIeltoInstitutions.vue";
+import UIeltoStatistics from "./components/general/UIeltoStatistics.vue";
 import UIeltoAbout from "./components/general/AboutModal.vue";
 import UIeltoBackup from "./components/select_architecture/UIeltoBackup.vue";
 import MobileSettings from "./components/mobile/MobileSettings.vue";
@@ -79,6 +80,7 @@ export default {
     UIeltoNotifications,
     NavbarCREATOR,
     UIeltoInstitutions,
+    UIeltoStatistics,
     UIeltoAbout,
     UIeltoBackup,
     MobileSettings,
@@ -677,6 +679,9 @@ export default {
 
     <!-- Institutions modal -->
     <UIeltoInstitutions id="institutions" />
+
+    <!-- Statistics modal -->
+    <UIeltoStatistics id="statistics" />
 
     <!-- About modal -->
     <UIeltoAbout id="about" :dark="dark!" />
