@@ -128,3 +128,39 @@ export async function disassemble_lib(lib) {
     console.log(libtags32);
 
 }
+
+export async function renameFile(oldName, newName) {
+
+
+    if (newName.endsWith(".s") && newName !== null)
+        newName = newName.slice(0,-2);
+    // first check new filename
+    if (newName === "" || newName === null)
+        newName = "AssemblyFile";
+
+    // check if newName and oldName are the same
+    if (newName === oldName.slice(0,-2)) return;
+
+    // Then check if there is anyfile with the same name. If it is add and index to diff files
+    var cond = true;
+    var index = 1;
+    while (cond) {
+        if (assembly_files.value.findIndex(file => file.filename.slice(0,-2) === newName) !== -1){
+            if (newName.endsWith(")"))
+                newName = newName.split("(")[0];
+
+            newName = newName + "(" + index + ")";
+            
+            if (newName === oldName.slice(0, -2))
+                cond = false;
+            else
+                index += 1;
+        }
+        else
+            cond = false;
+    }
+    newName += ".s";    
+
+    let i = assembly_files.value.findIndex(file => file.filename === oldName);
+    assembly_files.value[i].filename = newName;
+}
