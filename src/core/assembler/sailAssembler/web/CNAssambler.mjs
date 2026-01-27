@@ -11,8 +11,7 @@ import as64Module from "./wasm/as-new64.js"
 import ld64Module from "./wasm/ld-new64.js"
 import dump64Module from "./wasm/objdump64.js"
 import { vectorins, loadlinker, privins} from "../CREATORNAssembler.mjs"
-import { architecture, loadedLibrary, setPC } from "../../../core.mjs";
-import { updateMainMemoryBackup, main_memory, WORDSIZE, BYTESIZE, backup_stack_address, backup_data_address } from "@/core/core.mjs";
+import { architecture, loadedLibrary, setPC, status, updateMainMemoryBackup, main_memory, WORDSIZE, BYTESIZE, backup_stack_address, backup_data_address } from "@/core/core.mjs";
 import { show_notification } from "../../../../web/utils.mjs";
 import { assembly_files } from "@/web/components/assembly/MultifileEditor.mjs";
 
@@ -889,8 +888,8 @@ export async function dump(file){
     /* Load file into environment and executes dump*/
     saildump.run([file, "-D", "input.elf"]);
     if (architecture.config.name === "SRV32") {
-      console.log("Instructions:", dumptextinstructions32);
-      console.log("Data:", dumpdatainstructions32);
+      // console.log("Instructions:", dumptextinstructions32);
+      // console.log("Data:", dumpdatainstructions32);
 
     align = 1;
     for (let i = 0; i < dumptextinstructions32.length; i++){
@@ -978,11 +977,11 @@ export async function dump(file){
         hide: false,
         });
         if(architecture.config.word_size == 32){
-        if (dumptextinstructions64[i][0] === document.app.$data.entry_elf || ("0x"+dumptextinstructions64[i][0]) === document.app.$data.entry_elf )
-            instructions[i]._rowVariant = 'success';
+          if (dumptextinstructions64[i][0] === document.app.$data.entry_elf || ("0x"+dumptextinstructions64[i][0]) === document.app.$data.entry_elf )
+              instructions[i]._rowVariant = 'success';
         } else {
-        if ((dumptextinstructions64[i][0]) === document.app.$data.entry_elf || ("0x"+dumptextinstructions64[i][0]) === document.app.$data.entry_elf)
-            instructions[i]._rowVariant = 'success';
+          if ((dumptextinstructions64[i][0]) === document.app.$data.entry_elf || ("0x"+dumptextinstructions64[i][0]) === document.app.$data.entry_elf)
+              instructions[i]._rowVariant = 'success';
         }
     }
     // Split binary into words and write to memory
@@ -1013,7 +1012,6 @@ export async function dump(file){
     }
 
     setInstructions(instructions);
-    setAddress(architecture.memory_layout.text.start);
     if (document.app.$data.entry_elf !== undefined)
       setPC(BigInt(parseInt(document.app.$data.entry_elf, 16)));
     else { // Set first function to entry elf
@@ -1023,6 +1021,8 @@ export async function dump(file){
         setPC(BigInt(parseInt(document.app.$data.entry_elf, 16)));
       }
     }
+    setAddress(parseInt(document.app.$data.entry_elf, 16));
+    status.execution_index = instructions.findIndex(insn => insn.Address === document.app.$data.entry_elf);
 
     return {status: "ok", msg: ""}/* Return list of instructions and data to display in simulator view */;
 }

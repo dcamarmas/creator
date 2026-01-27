@@ -23,6 +23,8 @@ export function createFile(storecode = "", filename ="", newcode = "" ) {
     else 
         filename_prompt = filename;
     filename_prompt = filename_prompt.replaceAll(" ", "");
+    if (filename_prompt.includes(".s"))
+        filename_prompt = filename_prompt.slice(0, -2);
     // Check if there is an file with this filename
     var condition = true;
     var index = 1;
@@ -37,8 +39,7 @@ export function createFile(storecode = "", filename ="", newcode = "" ) {
             condition = false;
     }
 
-    if (!filename_prompt.endsWith(".s"))
-        filename_prompt = filename_prompt + ".s";
+    filename_prompt = filename_prompt + ".s";
 
     // First "close" current file editing
     let j = assembly_files.value.findIndex(file => file.editing_now === true);
