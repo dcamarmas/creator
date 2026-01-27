@@ -17,10 +17,10 @@ You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <script setup lang="ts">
-import { ref, watch, onMounted, onBeforeUnmount, type PropType, computed, registerRuntimeCompiler } from "vue";
+import { ref, watch, onMounted, onBeforeUnmount, type PropType, computed, registerRuntimeCompiler, reactive } from "vue";
 import * as monaco from "monaco-editor";
 import { initVimMode, VimMode } from "monaco-vim";
-import { assembly_files, DeleteFile, showFileEditor, createFile, switchApplyFile, tabCounter } from "@/web/components/assembly/MultifileEditor.mjs";
+import { assembly_files, DeleteFile, showFileEditor, createFile, renameFile } from "@/web/components/assembly/MultifileEditor.mjs";
 import { assembly_compile, reset, status, architecture } from "@/core/core.mjs";
 import { resetStats } from "@/core/executor/stats.mts";
 import { registerAssemblyLanguages } from "@/web/monaco/languages/index";
@@ -32,6 +32,7 @@ import {
 import { assemblerMap, getDefaultCompiler } from "@/web/assemblers";
 import { SailCompile } from "@/core/assembler/sailAssembler/web/CNAssambler.mjs";
 import { nextTick } from "vue";
+
 // Setup Monaco Environment for Vite
 self.MonacoEnvironment = {
   getWorker(_workerId: string, label: string) {
@@ -102,9 +103,77 @@ const props = defineProps({
 const files = computed(() => assembly_files.value);
 const activeTabIndex = ref(0);
 
+// Variables to tab menu to rename files
+const renameModalOpen = ref(false);
+const renameValue = ref("");
+const tabToRename = ref<any | null>(null);
+
+const closeTabMenu = () => {
+  tabMenu.visible = false;
+  tabMenu.tab = null;
+};
+
+const openTabMenu = (e: MouseEvent, tab: any) => {
+  tabMenu.visible = true;
+  tabMenu.x = e.clientX;
+  tabMenu.y = e.clientY;
+  tabMenu.tab = tab;
+
+  nextTick(() => {
+    window.addEventListener("click", closeTabMenu, {once: true});
+  });
+}
+
+
+
+const onRenameClick = () => {
+  if (!tabMenu.tab) 
+    return;
+
+    tabToRename.value = tabMenu.tab;
+    renameValue.value = tabMenu.tab.filename ?? "";
+    renameModalOpen.value = true;
+
+    closeTabMenu();
+}
+
+const confirmRename = () => {
+  const tab = tabToRename.value;
+  if (!tab)
+    return;
+
+  const newName = renameValue.value.trim();
+  renameFile(tab.filename, newName);
+
+  renameModalOpen.value = false;
+  tabToRename.value = null;
+
+}
+
+const onKeyDown = (e: KeyboardEvent) => {
+  if (e.key === "Escape") {
+    closeTabMenu();
+  }
+}
+
+window.addEventListener("keydown", onKeyDown);
+
+onBeforeUnmount(() => {
+  window.removeEventListener("keydown", onKeyDown);
+});
+
+
 const editorContainer = ref<HTMLDivElement | null>(null);
 let editor: monaco.editor.IStandaloneCodeEditor | null = null;
 let validationDisposable: monaco.IDisposable | null = null;
+
+const tabMenu = reactive({
+  visible: false,
+  x: 0,
+  y: 0,
+  tab: null as any | null,
+});
+
 
 // Get the selected compiler from the architecture or use default
 const getSelectedCompiler = () => {
@@ -431,7 +500,8 @@ watch(
                :id="i"
                class="tab-editor">
           <template #title>
-            <span class="tab-title d-inline-flex align-items-center gap-2">
+            <span class="tab-title d-inline-flex align-items-center gap-2"
+            @contextmenu.prevent.stop="openTabMenu($event, tab)">
               <span class="me-1">{{ tab.filename }}</span>
               <b-form-checkbox switch v-model="tab.to_compile" class="mb-0"/>
               <b-button size="sm" 
@@ -455,7 +525,29 @@ watch(
     <div ref="editorContainer" class="monaco-editor-container" v-show="files.length > 0 || !architecture.config.name.includes('SRV')"/>
 
     <div id="vim-statusbar" class="vim-statusbar"></div>
+    <b-modal v-model="renameModalOpen" title="Renombrar fichero" @ok="confirmRename">
+      <b-form-input
+        v-model="renameValue"
+        autofocus
+        @keydown.enter.prevent="confirmRename"
+        placeholder="New filename:"
+      />
+    </b-modal>
   </div>
+
+  <Teleport to="body">
+    <div
+      v-show="tabMenu.visible"
+      class="tab-context-menu"
+      :style="{ left: tabMenu.x + 'px', top: tabMenu.y + 'px' }"
+      @click.stop
+      @contextmenu.prevent
+    >
+      <button class="tab-context-item" @click="onRenameClick">
+        Rename file
+      </button>
+    </div>
+  </Teleport>
 </template>
 
 <style lang="scss" scoped>
@@ -572,5 +664,30 @@ watch(
 
 :deep(.nav-tabs .nav-link) {
   white-space: nowrap;
+}
+
+.tab-context-menu {
+  position: fixed;
+  z-index: 99999;
+  min-width: 180px;
+  background: white;
+  border: 1px solid rgba(0,0,0,.15);
+  border-radius: 8px;
+  box-shadow: 0 8px 30px rgba(0,0,0,.15);
+  padding: 6px;
+}
+
+.tab-context-item {
+  width: 100%;
+  text-align: left;
+  padding: 8px 10px;
+  border: 0;
+  background: transparent;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.tab-context-item:hover {
+  background: rgba(0,0,0,.06);
 }
 </style>
