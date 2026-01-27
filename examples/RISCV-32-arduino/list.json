@@ -11,6 +11,12 @@
     "url": "examples/RISCV-32-arduino/example1.s",
     "description": "ESP32-C3 Blink LED example"
   },
+    {
+    "name": "Example 1_b",
+    "id": "example1_b",
+    "url": "examples/RISCV-32-arduino/example1_b.s",
+    "description": "ESP32-C6 Blink LED example"
+  },
   {
     "name": "Example 2",
     "id": "example2",
@@ -64,5 +70,11 @@
     "id": "example10",
     "url": "examples/RISCV-32-arduino/example10.s",
     "description": "Serial FindUntil example"
+  },
+  {
+    "name": "Example 11",
+    "id": "example11",
+    "url": "examples/RISCV-32-arduino/example11.s",
+    "description": "Serial Flush example"
   }
 ]

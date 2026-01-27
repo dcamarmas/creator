@@ -7,7 +7,7 @@ import {
 } from "../register/registerOperations.mjs";
 import { ARCH as RISCV } from "@/core/capi/arch/riscv.mjs";
 import { REGISTERS, main_memory, status } from "../core.mjs";
-import { display_print, keyboard_read_find, kbd_read_string } from "../executor/IO.mjs";
+import { display_print, keyboard_read_find, kbd_read_string, keyboard_parseInt } from "../executor/IO.mjs";
 import hookMap from "../../web/components/simulator/CreatinoMaker/components/BoardElements/esp32c3devkit2.js";
 //import {connections,compState,svgRef,positions} from '../../web/components/simulator/CreatinoMaker/App.vue'
 import {
@@ -26,6 +26,7 @@ import { Memory } from "../memory/Memory.mts";
 let serial_begin = 0; // TODO: Which baud rate can we accept?
 let initArduino = 0; // Flag to check if initArduino has been called
 let _seed = 1;
+const root = (document as any).app;
 //Functions
 export function cr_initArduino() {
     console.log("cr_initArduino called");
@@ -1006,12 +1007,28 @@ export function cr_serial_findUntil() {
 }
 export function cr_serial_flush() {
     console.log("cr_serial_flush called");
+    //Cleans the serial buffer. Not exaclty what the board does, imitates Arduino 1.0
+
+    if (serial_begin != 0 && initArduino != 0) {
+        status.keyboard = "";
+        status.display = "";
+        if (root) {
+            root.keyboard = "";
+            root.display = "";
+            root.enter = null;
+        }
+    }
+
 }
 export function cr_serial_parseFloat() {
     console.log("cr_serial_parseFloat called");
 }
 export function cr_serial_parseInt() {
     console.log("cr_serial_parseInt called");
+    if (serial_begin != 0 && initArduino != 0) {
+        keyboard_parseInt(kbd_read_string,'a0');
+    
+    }
 }
 export function cr_serial_read() {
     console.log("cr_serial_read called");

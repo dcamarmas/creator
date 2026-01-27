@@ -1,7 +1,7 @@
 
 .data
     time:  .word 1000
-    buttonPin: .word  4
+    buttonPin: .word  21
     ledpin: .word 5
     buttonState:    .word   0
     msg:    .string     "Button Pressed!"
@@ -100,4 +100,3 @@ main:
     addi sp, sp, 16 
     j loop
     jr ra
-    ret 

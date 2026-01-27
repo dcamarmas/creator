@@ -172,6 +172,156 @@ function rawPrompt() {
     return chunks.join("");
 }
 
+
+
+export function keyboard_parseInt(fn_post_read, fn_post_params) {
+    const draw = {
+        space: [],
+        info: [],
+        success: [],
+        warning: [],
+        danger: [],
+        flash: [],
+    };
+
+    //-------LOOKAHEAD (optional):  mode used to look ahead in the stream for an integer
+    const ret1 = crex_findReg(fn_post_params);
+    if (ret1.match === 0) {
+        throw packExecute(
+            true,
+            "capi_syscall: register " + fn_post_params + " not found",
+            "danger",
+            null,
+        );
+    }
+
+    const addr = readRegister(ret1.indexComp, ret1.indexElem);
+    // Get the memory instance
+    const memory = main_memory;
+    
+    // Validate address is within memory bounds
+    if (addr >= BigInt(memory.getSize())) {
+        throw packExecute(
+            true,
+            "capi_arduino: invalid string address",
+            "danger",
+            null,
+        );
+    }
+
+    // Read the lookahead from memory
+    let target = "";
+    let memoryAddr = addr;
+    while (memoryAddr < BigInt(memory.getSize())) {
+        const byte = memory.read(memoryAddr);
+        if (byte === 0) break; // Null terminator
+        target += String.fromCharCode(byte);
+        memoryAddr++;
+    }
+    //LOOKAHEAD values
+    if (target === "" || target =="SKIP_ALL") {
+        var regex = new RegExp("\\s*(-?\\d+)", "g"); //Search the first number (negative or not)
+    }
+    else if (target === "SKIP_NONE") {
+        var regex = new RegExp("^(-?\\d+)");
+    }
+    else { // SKIP_WHITESPACE
+        var regex = new RegExp("^\\s*(-?\\d+)");
+
+    }
+    
+
+
+    // Deno / CLI mode 
+    if (typeof Deno !== "undefined") {
+        let keystroke = rawPrompt();
+        var match = regex.exec(keystroke);
+        if (match) {
+            keystroke = match[1]; //Extracted number as string
+            writeRegister(BigInt(keystroke), ret1.indexComp, ret1.indexElem);
+        } else {
+            keystroke = ""; //No number found
+            writeRegister(0n, ret1.indexComp, ret1.indexElem);
+        }
+
+        status.run_program = 0;
+        return packExecute(
+            false,
+            "The result has been written to the register",
+            "info",
+            null,
+        );
+    }
+
+    // Web/UI mode
+    document.app.$data.enter = false; // wait for input
+
+    if (status.run_program === 3) {
+        setTimeout(keyboard_parseInt, 1000, fn_post_read, fn_post_params);
+        return draw;
+    }
+
+    let keystroke = document.app.$data.keyboard;
+
+    if (!keystroke || keystroke.length === 0) {
+        status.run_program = 3;
+        return keyboard_parseInt(fn_post_read, fn_post_params);
+    }
+    var match = regex.exec(keystroke);
+    if (match) {
+        keystroke = match[1]; //Extracted number as string
+        if (keystroke.includes("-")) {
+            writeRegister(BigInt.asIntN(keystroke), ret1.indexComp, ret1.indexElem);
+        }
+        writeRegister(BigInt(keystroke), ret1.indexComp, ret1.indexElem);
+    } else {
+        keystroke = ""; //No number found
+        writeRegister(0n, ret1.indexComp, ret1.indexElem);
+    }
+    // if (keystroke.includes(target) && keystroke.length <= (length || keystroke.length) && !keystroke.includes(until)) {
+    //     writeRegister(1n, ret1.indexComp, ret1.indexElem);
+    // } else {
+    //     writeRegister(0n, ret1.indexComp, ret1.indexElem);
+    // }
+
+
+    document.app.$data.keyboard = "";
+    document.app.$data.enter = null;
+
+    draw.info.push("The result has been written to the register");
+
+    if (status.execution_index >= instructions.length) {
+        for (let i = 0; i < instructions.length; i++) {
+            draw.space.push(i);
+        }
+        status.execution_index = -2;
+        return packExecute(
+            true,
+            "The execution of the program has finished",
+            "success",
+            null,
+        );
+    }
+    // If program was running before waiting for input, continue execution automatically
+    if (status.run_program === 1) {
+        const playButton = document.getElementById("playExecution");
+        if (playButton) {
+            playButton.click();
+        }
+    }
+
+    // Re-enable buttons
+    if (typeof document !== "undefined" && document.app) {
+        coreEvents.emit(CoreEventTypes.EXECUTOR_BUTTONS_UPDATE, {
+            instruction_disable: false,
+            run_disable: false,
+        });
+    }
+
+    return draw;
+}
+
+
 export function keyboard_read(fn_post_read, fn_post_params) {
     const draw = {
         space: [],
@@ -196,7 +346,7 @@ export function keyboard_read(fn_post_read, fn_post_params) {
     document.app.$data.enter = false; // signal UI to wait for keyboard read
 
     if (status.run_program === 3) {
-        setTimeout(keyboard_read, 1000, fn_post_read, fn_post_params, fn_post_length,fn_post_until);
+        setTimeout(keyboard_read, 1000, fn_post_read, fn_post_params);
         return draw;
     }
 

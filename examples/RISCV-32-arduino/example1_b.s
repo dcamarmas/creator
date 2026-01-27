@@ -1,4 +1,4 @@
-# Creatino Example: Blink for ESP32-C3 BUILTIN LED
+# Creatino Example: Blink for BUILTIN RGB Led boards (ESP32-C6)
 .data
     time:
         .word 1000
@@ -14,18 +14,10 @@ main:
     j loop
     
 setup:
-    #pinMode(LED_BUILTIN, OUTPUT);
-    li a0,30
-    li a1,  0x03
-    addi sp, sp, -4       
-    sw ra, 0(sp)  
-    jal ra, pinMode
-    lw ra, 0(sp)          
-    addi sp, sp, 4
-    jr ra
+    nop
 loop:
     #digitalWrite(LED_BUILTIN, HIGH);
-    li a0,30 
+    li a0,8 
     li a1, 0x1
     addi sp, sp, -4       
     sw ra, 0(sp)
@@ -41,7 +33,7 @@ loop:
     lw ra, 0(sp)          
     addi sp, sp, 4 
     #digitalWrite(LED_BUILTIN, LOW);
-    li a0,30 
+    li a0,8 
     li a1, 0x0
     addi sp, sp, -4       
     sw ra, 0(sp)
