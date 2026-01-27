@@ -17,10 +17,10 @@ You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <script setup lang="ts">
-import { ref, watch, onMounted, onBeforeUnmount, type PropType, computed } from "vue";
+import { ref, watch, onMounted, onBeforeUnmount, type PropType, computed, registerRuntimeCompiler } from "vue";
 import * as monaco from "monaco-editor";
 import { initVimMode, VimMode } from "monaco-vim";
-import { assembly_files, DeleteFile, showFileEditor, switchApplyFile, tabCounter } from "@/web/components/assembly/MultifileEditor.mjs";
+import { assembly_files, DeleteFile, showFileEditor, createFile, switchApplyFile, tabCounter } from "@/web/components/assembly/MultifileEditor.mjs";
 import { assembly_compile, reset, status, architecture } from "@/core/core.mjs";
 import { resetStats } from "@/core/executor/stats.mts";
 import { registerAssemblyLanguages } from "@/web/monaco/languages/index";
@@ -31,7 +31,7 @@ import {
 } from "@/web/monaco/validation";
 import { assemblerMap, getDefaultCompiler } from "@/web/assemblers";
 import { SailCompile } from "@/core/assembler/sailAssembler/web/CNAssambler.mjs";
-
+import { nextTick } from "vue";
 // Setup Monaco Environment for Vite
 self.MonacoEnvironment = {
   getWorker(_workerId: string, label: string) {
@@ -202,6 +202,29 @@ const showFile = (filename: String) => {
     editor.setValue(showFileEditor(filename, editor.getValue()));
 }
 
+const scrollableTab = async () => {
+  await nextTick();
+
+  const tab = document.querySelector(".tab-editor .nav-tabs .nav-link-active");
+  (tab as HTMLElement | null)?.scrollIntoView({ behavior: "smooth", inline: "nearest"});
+}
+
+const addFile = () => {
+  
+
+  let i = (files.value).findIndex(file => file.editing_now);
+  if (i !== -1)
+    editor?.setValue(createFile(files.value[i].code));
+  else 
+    editor?.setValue(createFile());
+
+  nextTick(() => {
+    const n = files.value.length;
+    if (n > 0) activeTabIndex.value = n - 1; 
+    scrollableTab();
+  });
+
+}
 
 onMounted(() => {
   document.addEventListener("keydown", ctrlSHandler, false);
@@ -309,7 +332,7 @@ watch(() => files.value,
   const i = arr.findIndex(file => file.editing_now === true);
   activeTabIndex.value = (i >= 0) ? i : 0;
 },
-{ immediate: true, deep: true}
+{ immediate: true}
 );
 
 watch( activeTabIndex, (i) => {
@@ -399,9 +422,9 @@ watch(
 </script>
 
 <template> 
- <!-- Editor monaco  --><!--:id="tab.filen" -->
+ <!-- Editor monaco  -->
   <div class="editor-wrapper" :style="{ height: height }">
-    <div v-if="architecture.config.name.includes('SRV') && files.length > 0" class="tabs-editor">
+    <div v-if="architecture.config.name.includes('SRV') && files.length >= 0" class="tabs-editor">
       <b-tabs content-class="mt-3" v-model="activeTabIndex">
         <b-tab v-for="(tab, i) in files" 
                :key="tab.filename"
@@ -421,10 +444,15 @@ watch(
 
           </template>      
         </b-tab>
+        <template #tabs-end>
+          <li class="nav-item">
+            <a class="nav-link" @click.prevent.stop="addFile">+</a>
+          </li>
+        </template>
 
       </b-tabs>
     </div>
-    <div ref="editorContainer" class="monaco-editor-container" />
+    <div ref="editorContainer" class="monaco-editor-container" v-show="files.length > 0 || !architecture.config.name.includes('SRV')"/>
 
     <div id="vim-statusbar" class="vim-statusbar"></div>
   </div>
@@ -529,5 +557,20 @@ watch(
       outline-color: #198754;
     }
   }
+}
+:deep(.nav-tabs) {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+  -webkit-overflow-scrolling: touch;
+}
+
+:deep(.nav-tabs .nav-item) {
+  flex: 0 0 auto;
+}
+
+:deep(.nav-tabs .nav-link) {
+  white-space: nowrap;
 }
 </style>

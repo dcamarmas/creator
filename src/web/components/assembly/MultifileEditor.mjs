@@ -18,14 +18,28 @@ export function createFile(storecode = "", filename ="", newcode = "" ) {
     if (filename === "") {
         filename_prompt = prompt("Name of new File");
         if (filename_prompt  === "" || filename_prompt === null)
-            return "";
+            filename_prompt = "AssemblyFile";
     }
     else 
         filename_prompt = filename;
     filename_prompt = filename_prompt.replaceAll(" ", "");
+    // Check if there is an file with this filename
+    var condition = true;
+    var index = 1;
+    while (condition) {
+        if (assembly_files.value.findIndex(file => file.filename.slice(0,-2) === filename_prompt) !== -1){
+            if (filename_prompt.endsWith(")"))
+                filename_prompt = filename_prompt.split("(")[0];
+            filename_prompt = filename_prompt + "(" + index + ")";
+            index += 1;
+        }
+        else
+            condition = false;
+    }
+
     if (!filename_prompt.endsWith(".s"))
         filename_prompt = filename_prompt + ".s";
-    let i = assembly_files.value.findIndex(file => file.filename === filename_prompt);
+
     // First "close" current file editing
     let j = assembly_files.value.findIndex(file => file.editing_now === true);
     if (j !== -1){
@@ -33,8 +47,6 @@ export function createFile(storecode = "", filename ="", newcode = "" ) {
         assembly_files.value[j].code = storecode;
         assembly_files.value[j].editing_now = false;
     }
-    if (i === -1) { // There is any file with this filename
-        // Create new file
         let newFile = {
             filename: filename_prompt,
             code: (newcode === "") ? ".section .data\n\n# Declare your data to use here\n\n.section .bss\n.align 8\ntohost:\t.dword 0\n\n.section .text.init\n.globl _main\n\n# Complete your main function here\n_main:" : newcode,
@@ -43,16 +55,8 @@ export function createFile(storecode = "", filename ="", newcode = "" ) {
             id: assembly_files.value.length
         };
         assembly_files.value.push(newFile);
-        console.log(assembly_files.value);
         currentTab = assembly_files.value.length - 1; 
-        // tabCounter++;
         return newFile.code;
-    }else {
-        assembly_files.value[i].editing_now = true;
-        assembly_files.value[i].to_compile = true;
-        currentTab = assembly_files.value[i].id;
-        return assembly_files.value[i].code;
-    }
 }   
 
 export function showFileEditor(filename, code) {

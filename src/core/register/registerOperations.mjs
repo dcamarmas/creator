@@ -132,6 +132,8 @@ export function writeRegister(value, indexComp, indexElem) {
     }
     if (typeof document !== "undefined" && document?.app) {
         // Notify UI layers about the update (CLI ignores, web UI listens)
-        notifyRegisterUpdate(indexComp, indexElem);
+        // check if in RISC-V Sail has to be glowed the register by instruction execution
+        if (instructions.findIndex(insn => (insn._rowVariant !== "success" && insn._rowVariant !== "")) !== -1)
+            notifyRegisterUpdate(indexComp, indexElem);
     }
 }
