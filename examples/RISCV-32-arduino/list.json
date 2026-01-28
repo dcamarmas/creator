@@ -76,5 +76,23 @@
     "id": "example11",
     "url": "examples/RISCV-32-arduino/example11.s",
     "description": "Serial Flush example"
+  },
+  {
+    "name": "Example 12",
+    "id": "example12",
+    "url": "examples/RISCV-32-arduino/example12.s",
+    "description": "Serial parseInt example"
+  },
+  {
+    "name": "Example 13",
+    "id": "example13",
+    "url": "examples/RISCV-32-arduino/example13.s",
+    "description": "Serial readBytes example"
+  },
+  {
+    "name": "Example 14",
+    "id": "example14",
+    "url": "examples/RISCV-32-arduino/example14.s",
+    "description": "Serial readBytesUntil example"
   }
 ]

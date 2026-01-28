@@ -351,6 +351,7 @@ export function keyboard_read(fn_post_read, fn_post_params) {
     }
 
     const val = fn_post_read(document.app.$data.keyboard, fn_post_params);
+    writeRegister(BigInt(val.length), fn_post_params.indexComp, fn_post_params.indexElem);
 
     document.app.$data.keyboard = ""; // clear input
 
@@ -395,6 +396,124 @@ export function keyboard_read(fn_post_read, fn_post_params) {
 
     return draw;
 }
+
+export function keyboard_read_until(fn_post_read, fn_post_params, fn_post_until) {
+    const draw = {
+        space: [],
+        info: [],
+        success: [],
+        warning: [],
+        danger: [],
+        flash: [],
+    };
+    // if (typeof fn_post_until !== "string" || fn_post_until.length === 0) {
+    //     throw packExecute(
+    //         true,
+    //         "capi_syscall: invalid 'until' parameter for keyboard_read_until",
+    //         "danger",
+    //         null,
+    //     );
+    // }
+    const until = String.fromCharCode(Number(fn_post_until));
+    console.log(
+        "keyboard_read_until: waiting until",
+        `"${until}"`,
+        "type:",
+        typeof until,
+        "length:",
+        until?.length
+    );
+
+
+    // Check for Deno environment
+    if (typeof Deno !== "undefined") {
+        const keystroke = rawPrompt();
+        // Extract input until the 'until' character
+        if (typeof until === "string" && until.length > 0) {
+            const idx = keystroke.indexOf(until);
+            if (idx !== -1) {
+                keystroke = keystroke.slice(0, idx);
+            }
+            
+        }
+        // console.log("Extracted keystroke until 'until':", `"${keystroke}"`);    
+        const value = fn_post_read(keystroke, fn_post_params);
+        status.keyboard = status.keyboard + " " + value;
+        status.run_program = 0; // Reset run_program status
+
+        return null;
+    }
+
+    // Web/UI mode
+    document.app.$data.enter = false; // signal UI to wait for keyboard read
+
+    if (status.run_program === 3) {
+        setTimeout(keyboard_read_until, 1000, fn_post_read, fn_post_params, fn_post_until);
+        return draw;
+    }
+
+    // Extract input until the 'until' character
+    let keystroke = document.app.$data.keyboard;
+    if (until.length > 0) {
+        const idx = keystroke.indexOf(until);
+        if (idx !== -1) {
+            keystroke = keystroke.slice(0, idx);
+        }
+    }
+
+    const funct_params = {
+            indexComp: fn_post_params.indexComp,
+            indexElem: fn_post_params.indexElem,
+            size: keystroke.length,
+    };
+
+    const val = fn_post_read(keystroke, funct_params);
+    writeRegister(BigInt(val.length), fn_post_params.indexComp, fn_post_params.indexElem);
+
+    document.app.$data.keyboard = ""; // clear input
+
+    if (val === null) {
+        // error parsing input, retry
+        status.run_program = 3;
+        return keyboard_read_until(fn_post_read, fn_post_params,fn_post_until);
+    }
+
+    document.app.$data.enter = null; // reset keyboard
+
+    if (status.execution_index >= instructions.length) {
+        for (let i = 0; i < instructions.length; i++) {
+            draw.space.push(i);
+        }
+
+        status.execution_index = -2;
+        return packExecute(
+            true,
+            "The execution of the program has finished",
+            "success",
+            null,
+        );
+    }
+
+    // If program was running before waiting for input, continue execution automatically
+    if (status.run_program === 1) {
+        // Trigger the play button to continue execution
+        const playButton = document.getElementById("playExecution");
+        if (playButton) {
+            playButton.click();
+        }
+    }
+
+    // Re-enable buttons using event emitter for proper reactivity
+    if (typeof document !== "undefined" && document.app) {
+        coreEvents.emit(CoreEventTypes.EXECUTOR_BUTTONS_UPDATE, {
+            instruction_disable: false,
+            run_disable: false,
+        });
+    }
+
+    return draw;
+}
+
 
 export function keyboard_read_find(fn_post_read, fn_post_params,fn_post_length,fn_post_until) {
     const draw = {

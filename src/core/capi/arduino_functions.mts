@@ -7,7 +7,7 @@ import {
 } from "../register/registerOperations.mjs";
 import { ARCH as RISCV } from "@/core/capi/arch/riscv.mjs";
 import { REGISTERS, main_memory, status } from "../core.mjs";
-import { display_print, keyboard_read_find, kbd_read_string, keyboard_parseInt } from "../executor/IO.mjs";
+import { display_print, keyboard_read_find, kbd_read_string, keyboard_parseInt, keyboard_read, kbd_read_char, keyboard_read_until } from "../executor/IO.mjs";
 import hookMap from "../../web/components/simulator/CreatinoMaker/components/BoardElements/esp32c3devkit2.js";
 //import {connections,compState,svgRef,positions} from '../../web/components/simulator/CreatinoMaker/App.vue'
 import {
@@ -1032,12 +1032,71 @@ export function cr_serial_parseInt() {
 }
 export function cr_serial_read() {
     console.log("cr_serial_read called");
+    if (serial_begin != 0 && initArduino != 0) {
+        keyboard_read(kbd_read_char, 'a0');
+    }
 }
 export function cr_serial_readBytes() {
     console.log("cr_serial_readBytes called");
+    if (serial_begin != 0 && initArduino != 0) {
+        var register = crex_findReg('a0') ;
+        if (register.match === 0) {
+            throw packExecute(true, "capi_syscall: register " + 'a0' + " not found", 'danger', null);
+        }
+        // Length
+        const auxreg = crex_findReg('a1');
+        if (auxreg.match === 0) {
+            throw new Error(
+                "capi_syscall: register  a1 not found",
+            );
+        }
+        const size = readRegister(
+            auxreg.indexComp,
+            auxreg.indexElem,
+        );
+
+        const funct_params = {
+            indexComp: register.indexComp,
+            indexElem: register.indexElem,
+            size,
+        };
+        status.run_program = 3;
+        keyboard_read(kbd_read_string,funct_params);
+    }
 }
 export function cr_serial_readBytesUntil() {
     console.log("cr_serial_readBytesUntil called");
+    if (serial_begin != 0 && initArduino != 0) {
+            // Value 1 is the searched char
+            var ret1 = crex_findReg('a0');
+            if (ret1.match === 0) {
+                throw packExecute(true, "capi_syscall: register " + 'a0' + " not found", 'danger', null);
+            }
+            // Check if value1 is a number and is a valid ASCII character
+            var value1 = readRegister(ret1.indexComp, ret1.indexElem);
+            if (typeof value1 !== "bigint" || value1 < 0 || value1 > 255) {
+                throw packExecute(true, "capi_syscall: invalid value for searched character", 'danger', null);
+            }
+
+            // Value 2 is the buffer
+            var ret2 = crex_findReg('a1');
+            if (ret2.match === 0) {
+                throw packExecute(true, "capi_syscall: register " + 'a1' + " not found", 'danger', null);
+            }
+
+            // Value 3 is the length or end character
+            var ret3 = crex_findReg('a2');
+            if (ret3.match === 0) {
+                throw packExecute(true, "capi_syscall: register " + 'a2' + " not found", 'danger', null);
+            }
+            // Check if value3 is a number and greater than 0
+            var value3_check = readRegister(ret3.indexComp, ret3.indexElem);
+            if (typeof value3_check !== "bigint" || value3_check <= 0) {
+                throw packExecute(true, "capi_syscall: invalid value for length/end char", 'danger', null);
+            }
+            status.run_program = 3;
+            return keyboard_read_until(kbd_read_string, ret2, value1);
+    }
 }
 export function cr_serial_write() {
     console.log("cr_serial_write called");
@@ -1107,6 +1166,18 @@ export function cr_serial_printf() {
             "%c",
             String.fromCharCode(Number(BigInt.asUintN(8, argValue))),
         );
+         if (result.includes("%s")) {
+            let str = "";
+            let addr = argValue;
+
+            while (addr < BigInt(memory.getSize())) {
+                const byte = memory.read(addr);
+                if (byte === 0) break; // Null terminator
+                str += String.fromCharCode(byte);
+                addr++;
+            }
+            result = result.replace("%s", str);
+        }
     }
 
     // Print the formatted string directly
