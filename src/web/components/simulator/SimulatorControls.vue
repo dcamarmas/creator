@@ -131,7 +131,7 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
-  // Clean up event listener
+  // Clean up event listeners
   coreEvents.off(
     CoreEventTypes.EXECUTOR_BUTTONS_UPDATE,
     handleButtonStateUpdate,
@@ -151,6 +151,15 @@ function handleButtonStateUpdate(event: any) {
   }
   if (event.stop_disable !== undefined) {
     stop_disable.value = event.stop_disable;
+  }
+  if (event.isFinished !== undefined) {
+    isFinished.value = event.isFinished;
+  }
+  if (event.hasError !== undefined) {
+    hasError.value = event.hasError;
+  }
+  if (event.errorMessage !== undefined) {
+    errorMessage.value = event.errorMessage;
   }
 }
 
@@ -202,47 +211,6 @@ function execution_UI_update(ret: ExecutionResult | undefined) {
         break;
       default:
         break;
-    }
-  }
-
-  // Auto-scroll
-  if (
-    props.autoscroll &&
-    status.run_program !== 1 &&
-    props.instructions.length > 0
-  ) {
-    if (
-      status.execution_index >= 0 &&
-      status.execution_index < props.instructions.length
-    ) {
-      let row = status.execution_index + 1;
-      if (status.execution_index + 1 === props.instructions.length) {
-        row = status.execution_index;
-      }
-
-      const rowElement = document.querySelector(
-        "#inst_table__row_" + props.instructions[row]!.Address,
-      ) as HTMLElement;
-      const tableElement = document.querySelector(".instructions_table");
-
-      if (rowElement && tableElement) {
-        const rowPos = rowElement.offsetTop;
-        const tableHeight = tableElement.clientHeight;
-
-        tableElement.scrollTo({
-          top: rowPos - tableHeight / 2,
-          behavior: "smooth",
-        });
-      }
-    } else {
-      const tableElement = document.querySelector(".instructions_table");
-
-      if (tableElement) {
-        tableElement.scrollTo({
-          top: tableElement.scrollHeight,
-          behavior: "smooth",
-        });
-      }
     }
   }
 }

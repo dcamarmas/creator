@@ -23,6 +23,7 @@ export default {
   props: {
     instructions: { type: Array, required: true },
     enter: { type: [Boolean, null], required: true },
+    autoscroll: { type: Boolean, default: false },
   },
 
   data() {
@@ -52,7 +53,7 @@ export default {
     // Watch for changes in the current instruction and scroll to it
     currentInstructionIndex: {
       handler(newIndex) {
-        if (newIndex >= 0) {
+        if (newIndex >= 0 && this.autoscroll) {
           this.$nextTick(() => {
             this.scrollToCurrentInstruction(newIndex);
           });
