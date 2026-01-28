@@ -25,6 +25,7 @@ import { REMOTELAB } from "@/web/src/remoteLab.js";
 import { console_log, show_notification } from "@/web/utils.mjs";
 import { creator_ga } from "@/core/utils/creator_ga.mjs";
 import { instructions } from "@/core/assembler/assembler.mjs";
+import { loadedCreatino } from "@/core/core.mjs";
 
 export default defineComponent({
   props: {
@@ -294,6 +295,8 @@ export default defineComponent({
         target_port: this.targetPort,
         target_location: this.targetLocation,
         assembly: this.assembly_code,
+        arduino: loadedCreatino,
+
       }).then(data => {
         this.flashing = false;
         console_log(JSON.stringify(data, null, 2), "DEBUG");
@@ -350,6 +353,7 @@ export default defineComponent({
         target_port: this.targetPort,
         target_location: this.targetLocation,
         assembly: this.assembly_code,
+        arduino: loadedCreatino,
       }).then(data => {
         this.stoprunning = false;
         const dataStr = JSON.stringify(data, null, 2);
@@ -391,6 +395,7 @@ export default defineComponent({
         target_port: this.targetPort,
         target_location: this.targetLocation,
         assembly: this.assembly_code,
+        arduino: loadedCreatino,
       }).then(data => {
         this.running = false;
         const dataStr = JSON.stringify(data, null, 2);
@@ -431,6 +436,7 @@ export default defineComponent({
         target_port: this.targetPort,
         target_location: this.targetLocation,
         assembly: this.assembly_code,
+        arduino: loadedCreatino,
       }).then(data => {
         this.debugging = false;
         const dataStr = JSON.stringify(data, null, 2);
@@ -482,6 +488,7 @@ export default defineComponent({
         target_port: this.targetPort,
         target_location: this.targetLocation,
         assembly: this.assembly_code,
+        arduino: loadedCreatino,
       }).then(data => {
         this.fullclean = false;
         const dataStr = JSON.stringify(data, null, 2);
@@ -610,17 +617,6 @@ export default defineComponent({
           class="mt-2"
           @change="onTabChange"
         />
-
-        <b-col v-if="selectedOption === 'esp32' && targetBoard" class="mb-3">
-          <b-form-checkbox
-          class ="mt-3"
-            v-model="arduino_support"
-            @change="handleCheckboxChange(arduino_support)"
-          >
-            <span class="checkbox-label">Enable Arduino Support</span>
-          </b-form-checkbox>
-        </b-col>
-
         <div v-if="targetBoard" class="mt-3">
           <div v-if="targetBoard.startsWith('sbc')">
             <label for="target-user">
