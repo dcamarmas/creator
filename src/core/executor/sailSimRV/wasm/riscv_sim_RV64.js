@@ -9,6 +9,7 @@ import { coreEvents } from "@/core/events.mts";
 import { show_notification } from "@/web/utils.mjs";
 import { reset_disable, instruction_disable, run_disable, stop_disable, isFinished } from "@/web/utils.mjs";
 import { architecture } from "../../../core.mjs";
+import { clearAllRegisterGlows } from "@/core/register/registerGlowState.mjs";
 
 export var userMode64 = false;
 
@@ -645,6 +646,8 @@ var Module = (() => {
         writeRegister(vectorMatch[3], regtowrite.indexComp, regtowrite.indexElem);
       }
       if (instMatch && /*(instMatch[2] === 'U' ||*/ ((parseInt(instMatch[3], 16) >= pc_min) && parseInt(instMatch[3], 16) < parseInt("0x20000", 16) )){
+        clearAllRegisterGlows();
+        coreEvents.emit("step-about-to-execute");
         userMode64 = true;
         if (inside_function) 
           check_call_convention_temp_regs(instMatch);

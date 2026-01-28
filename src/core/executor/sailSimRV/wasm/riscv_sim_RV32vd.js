@@ -9,6 +9,7 @@ import { coreEvents } from "@/core/events.mts";
 import { show_notification } from "@/web/utils.mjs";
 import { reset_disable, instruction_disable, run_disable, stop_disable, isFinished } from "@/web/utils.mjs";
 import { architecture } from "../../../core.mjs";
+import { clearAllRegisterGlows } from "@/core/register/registerGlowState.mjs";
 
 
 export var userMode32vd = false;
@@ -630,7 +631,9 @@ var Module = (() => {
       }
 
       if (instMatch && (parseInt(instMatch[3], 16) >= pc_min && parseInt(instMatch[3], 16) <= pc_max )){
-        console.log(document);
+        clearAllRegisterGlows();
+        coreEvents.emit("step-about-to-execute");
+        userMode32vd = true;
         if (inside_function) 
           check_call_convention_temp_regs(instMatch);
 
@@ -644,7 +647,6 @@ var Module = (() => {
         // console.log("PC actual:",pc_sail);
 
 
-        userMode32vd = true;
         console.log("Instruccion: ", instMatch);
         const current_ins = instructions.findIndex(insn => insn.Address === ("0x"+instMatch[3].toLowerCase()));
         if(prev_add_to_jump !== undefined){
