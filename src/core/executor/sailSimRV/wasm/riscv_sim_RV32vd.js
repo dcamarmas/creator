@@ -8,6 +8,10 @@ import { SYSCALL } from "@/core/capi/syscall.mts";
 import { coreEvents } from "@/core/events.mts";
 import { show_notification } from "@/web/utils.mjs";
 import { reset_disable, instruction_disable, run_disable, stop_disable, isFinished } from "@/web/utils.mjs";
+import { architecture } from "../../../core.mjs";
+
+
+export var userMode32vd = false;
 
 var Module = (() => {
   var _scriptName = import.meta.url;
@@ -15,7 +19,8 @@ var Module = (() => {
 
   return async function (moduleArg = {}) {document.app.$data.is_breakpoint = instructions[0].Break;
     var pc_sail = crex_findReg_bytag("program_counter");
-    var pc_min = parseInt("80000000", 16);
+    var pc_min = architecture.memory_layout.text.start;
+    var pc_max = architecture.memory_layout.text.end;
     var hiden_executed, hiden_next_execute;
 
     var registers_before_function = [ 
@@ -129,7 +134,6 @@ var Module = (() => {
     // var displayExp = /^[A-Za-z\s]+:\s*(.*)$/;
     // var displayExp = /^([\w\s]+):\s*(.*)$/;       
     var displayExp = /^ECALL\s+(SIGNED|UNSIGNED|STRING|CHAR|FLOAT|DOUBLE):\s*(.+)$/;
-    var userMode = false;
     var instoper = "";
     var syscall_print_code = -1;
     var prev_add_to_jump;
@@ -625,7 +629,7 @@ var Module = (() => {
         writeRegister(vectorMatch[3], regtowrite.indexComp, regtowrite.indexElem);
       }
 
-      if (instMatch && (/*instMatch[2] === 'U' ||*/ parseInt(instMatch[3], 16) >= pc_min)){
+      if (instMatch && (parseInt(instMatch[3], 16) >= pc_min && parseInt(instMatch[3], 16) <= pc_max )){
         console.log(document);
         if (inside_function) 
           check_call_convention_temp_regs(instMatch);
@@ -640,7 +644,7 @@ var Module = (() => {
         // console.log("PC actual:",pc_sail);
 
 
-        userMode = true;
+        userMode32vd = true;
         console.log("Instruccion: ", instMatch);
         const current_ins = instructions.findIndex(insn => insn.Address === ("0x"+instMatch[3].toLowerCase()));
         if(prev_add_to_jump !== undefined){
@@ -827,20 +831,8 @@ var Module = (() => {
 
 
 
-      }
-
-      // else if (instMatch /*&& instMatch[2] !== 'U'*/){
-      //   // if (to_measure != ""){
-      //   //   end_m = performance.now();
-      //   //   var measure = end_m - start_m;
-      //   //   let string_to_print = "Execution time of " + to_measure + " :" + measure + " ms";
-      //   //   console.log(string_to_print);
-      //   //   to_measure = "";
-      //   // }
-      //   // start_m = performance.now();
-      //   // to_measure = instMatch[5];
-      // }
-      //   userMode = false;
+      } else if (instMatch && (parseInt(instMatch[3], 16) <= pc_min || parseInt(instMatch[3], 16) >= pc_max ))
+        userMode32vd = false;
 
       if (regiMatch /*&& userMode === true*/) {
         // En caso de ser escritura '<-' pintamos el valor en el registro que corresponde

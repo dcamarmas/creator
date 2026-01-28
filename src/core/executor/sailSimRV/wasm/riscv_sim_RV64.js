@@ -8,6 +8,9 @@ import { SYSCALL } from "@/core/capi/syscall.mts";
 import { coreEvents } from "@/core/events.mts";
 import { show_notification } from "@/web/utils.mjs";
 import { reset_disable, instruction_disable, run_disable, stop_disable, isFinished } from "@/web/utils.mjs";
+import { architecture } from "../../../core.mjs";
+
+export var userMode64 = false;
 
 var Module = (() => {
   var _scriptName = import.meta.url;
@@ -16,7 +19,8 @@ var Module = (() => {
   return async function (moduleArg = {}) {
     document.app.$data.is_breakpoint = instructions[0].Break;
     var pc_sail = crex_findReg_bytag("program_counter");
-    var pc_min = parseInt("0", 16);
+    var pc_min = architecture.memory_layout.text.start;
+    var pc_max = architecture.memory_layout.text.end;
     var hiden_executed, hiden_next_execute;
 
     var registers_before_function = [ 
@@ -129,8 +133,7 @@ var Module = (() => {
     var configCacheExp = /^Configuration:\s*([A-Za-z_][A-Za-z0-9_]*)\s*<-\s*(\S+)\s*$/;
     // var displayExp = /^[A-Za-z\s]+:\s*(.*)$/;
     // var displayExp = /^([\w\s]+):\s*(.*)$/;     
-    var displayExp = /^ECALL\s+(SIGNED|UNSIGNED|STRING|CHAR|FLOAT|DOUBLE):\s*(.+)$/;  
-    var userMode = false;
+    var displayExp = /^ECALL\s+(SIGNED|UNSIGNED|STRING|CHAR|FLOAT|DOUBLE):\s*(.+)$/; 
     var instoper = "";
     var syscall_print_code = -1;
     var prev_add_to_jump;
@@ -642,16 +645,10 @@ var Module = (() => {
         writeRegister(vectorMatch[3], regtowrite.indexComp, regtowrite.indexElem);
       }
       if (instMatch && /*(instMatch[2] === 'U' ||*/ ((parseInt(instMatch[3], 16) >= pc_min) && parseInt(instMatch[3], 16) < parseInt("0x20000", 16) )){
+        userMode64 = true;
         if (inside_function) 
           check_call_convention_temp_regs(instMatch);
 
-        // if (to_measure != ""){
-        //   end = performance.now();
-        //   var measure = end_m - start_m;
-        //   show_notification("Execution time of " + to_measure + " :" + measure + " ms", "warning");
-        //   to_measure = "";
-        // }
-        // start = performance.now();
 
         //Actualizamos el pc
         writeRegister(BigInt(parseInt(instMatch[3], 16)), pc_sail.indexComp, pc_sail.indexElem);
@@ -667,7 +664,6 @@ var Module = (() => {
         //   type_toWrite = 64;
         // else 
         //   type_toWrite = 0;
-        userMode = true;
         console.log("Instruccion: ", instMatch);
         const current_ins = instructions.findIndex(insn => ( '0x' + (insn.Address.slice(2)).padStart(16, '0')) === ("0x"+instMatch[3].toLowerCase()));
         if (current_ins !== -1) {
@@ -862,11 +858,9 @@ var Module = (() => {
 
       }
 
-      }
-      else if (instMatch /*&& instMatch[2] !== 'U'*/)
-        userMode = false;
-        // if (parseInt(instMatch[1], 10) > 400)
-        //   no_print_more = true;
+      } else if (instMatch && (parseInt(instMatch[3], 16) <= pc_min || parseInt(instMatch[3], 16) >= pc_max ))
+        userMode64 = false;
+
 
       if (regiMatch /*&& userMode === true*/) {
         // En caso de ser escritura '<-' pintamos el valor en el registro que corresponde
