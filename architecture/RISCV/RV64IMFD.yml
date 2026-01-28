@@ -2894,7 +2894,7 @@ instructions:
       definition: |
         result = rs1Number - rs2Number;
 
-      help: Perform single-precision floating-point substraction.
+      help: Perform single-precision floating-point subtraction.
     - name: fmadd.s
       template: R4
       fields:
