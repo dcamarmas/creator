@@ -48,7 +48,7 @@ import { handleTimer } from "./timers.mts";
 import { compileInstruction } from "./instructionCompiler.mts";
 import { coreEvents } from "../events.mts";
 import { clearAllRegisterGlows } from "../register/registerGlowState.mjs";
-import { architecture } from "../core";
+import { architecture } from "../core.mjs";
 
 const instructionCache = new Map();
 const compiledFunctions = new Map();
