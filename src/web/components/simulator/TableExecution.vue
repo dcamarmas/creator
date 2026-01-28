@@ -33,7 +33,7 @@ export default {
     CacheInfo
   },
   data() {
-    if (document.app.$data.architecture_name === "RISC-V Sail 32" || document.app.$data.architecture_name === "RISC-V Sail 64"){
+    if (document.app.$data.architecture_name === "RISC-V Sail 32 - Full Specification" || document.app.$data.architecture_name === "RISC-V Sail 64 - Full Specification"){
       switch(document.app.$data.cache_type) {
         case 0:
         case 1:
