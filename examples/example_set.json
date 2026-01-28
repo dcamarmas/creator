@@ -21,6 +21,13 @@
     "description": "RISC-V (RV32IMFD, Interrupts) Examples"
   },
   {
+    "name": "RISC-V (RV32IM) Arduino Examples",
+    "id": "devices",
+    "architecture": "RISC-V (RV32IMFD)",
+    "url": "examples/RISCV-32-arduino/list.json",
+    "description": "RISC-V (RV32IM, Interrupts) Arduino Examples"
+  },
+  {
     "name": "RISC-V (RV32IMFD, Interrupts) Devices Examples",
     "id": "devices",
     "architecture": "RISC-V (RV32IMFD, Interrupts)",
