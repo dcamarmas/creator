@@ -26,7 +26,7 @@ import { Memory } from "../memory/Memory.mts";
 let serial_begin = 0; // TODO: Which baud rate can we accept?
 let initArduino = 0; // Flag to check if initArduino has been called
 let _seed = 1;
-const root = (document as any).app;
+
 //Functions
 export function cr_initArduino() {
     console.log("cr_initArduino called");
@@ -949,7 +949,7 @@ export function cr_serial_available() {
     }
     else {
 			//ERROR
-			writeRegister(-1n, ret1.indexComp, ret1.indexElem);
+			writeRegister(BigInt.asIntN(32, -1n), ret1.indexComp, ret1.indexElem);
 }
 
 }
@@ -1012,6 +1012,7 @@ export function cr_serial_flush() {
     if (serial_begin != 0 && initArduino != 0) {
         status.keyboard = "";
         status.display = "";
+        const root = (document as any).app;
         if (root) {
             root.keyboard = "";
             root.display = "";
