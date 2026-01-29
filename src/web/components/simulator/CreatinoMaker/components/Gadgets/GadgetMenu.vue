@@ -1,7 +1,7 @@
 <template>
   <div class="menu-panel" :class="{ 'bg-dark text-light': isDark }" style="width:220px;max-height:300px;overflow-y:auto; z-index: 10;">
     <!-- Search Bar -->
-    <div class="p-2">
+    <div class="fw-bold mb-1 mt-3 ms-2 me-2">
       <input
         v-model="search"
         type="text"
@@ -12,13 +12,13 @@
 
     <!-- Component List -->
     <div v-for="category in filteredCategories" :key="category.name" class="category-block">
-      <div class="category-title fw-bold fs-6 mb-1">{{ category.name }}</div>
+      <div class="category-title fw-bold fs-6 mb-1 mt-2 ms-2 me-2">{{ category.name }}</div>
       <div class="category-divider"></div>
       <div class="flex-col">
         <button
           v-for="item in category.items"
           :key="item.label"
-          class="btn btn-light d-flex align-items-center mb-2"
+          class="btn btn-light d-flex align-items-center mb-2 ms-2 me-2"
           type="button"
           @click="handleAddGadget(item.label)"
         >
@@ -120,8 +120,8 @@ onMounted(() => {
 }
 
 .category-divider {
-  border-bottom: 1px solid #dee2e6;
-  margin: 0 1.5rem 0.5rem 1.5rem;
+  border-bottom: 1.5px solid #dee2e6;
+  margin: 0 0.5rem 0.5rem 0.5rem;
 }
 
 .flex-col {
