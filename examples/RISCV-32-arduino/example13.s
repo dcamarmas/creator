@@ -4,7 +4,13 @@ space: .zero 100
 
 .text
 setup:
-    nop
+    li a0, 11520
+    addi sp, sp, -4
+    sw   ra, 0(sp)
+    jal ra, serial_begin
+    lw   ra, 0(sp)
+    addi sp, sp, 4
+    jr ra
 loop:
 
     addi sp, sp, -4

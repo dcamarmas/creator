@@ -6,8 +6,15 @@
 
 .text
 setup:
-    nop
+    li a0, 11520
+    addi sp, sp, -4
+    sw   ra, 0(sp)
+    jal ra, serial_begin
+    lw   ra, 0(sp)
+    addi sp, sp, 4
+    jr ra
 loop:
+
     # read int
     la a0, char
     lb a0, 0(a0)
