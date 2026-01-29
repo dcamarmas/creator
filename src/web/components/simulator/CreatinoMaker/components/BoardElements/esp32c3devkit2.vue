@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, defineProps, defineEmits, defineExpose, nextTick, computed } from 'vue'
+import logoUrl from '/public/img/logos/uc3m.png'
 
 const configButtonRef = ref<SVGCircleElement | null>(null)
 // Props
@@ -1011,12 +1012,12 @@ function handleRotate() {
       /></g>
       <image
         id="image1"
-        x="18"
+        x="25"
         y="-5"
-        width="60" 
+        width="45" 
         height="80"
         preserveAspectRatio="xMidYMid meet"
-        href="/public/img/logos/uc3m.png" 
+        :href="logoUrl" 
         inkscape:label="logo" 
       />
        <!-- Botón Configuración -->
