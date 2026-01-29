@@ -3,126 +3,126 @@
     {
       "id": "board",
       "position": {
-        "x": 95,
-        "y": 55.5
+        "x": 308.66666666666663,
+        "y": 68.66666666666669
       },
       "compState": true,
       "flipped": false,
       "rotation": 0,
-      "color": "red"
+      "color": "black"
     },
     {
-      "id": "led-1750755441906-0.1509952947928508",
+      "id": "led-1769161610389-0.5286704886947441",
       "position": {
-        "x": -187,
-        "y": 42
+        "x": 123.99999999999989,
+        "y": 28.666666666666657
       },
       "compState": true,
       "flipped": true,
-      "rotation": 90,
+      "rotation": 0,
       "color": "red"
     },
     {
-      "id": "led-1750755556426-0.5748417813730818",
+      "id": "led-1769161611881-0.9009263571311963",
       "position": {
-        "x": -234.5,
+        "x": 125.33333333333326,
         "y": 110
       },
       "compState": true,
-      "flipped": false,
-      "rotation": 270,
-      "color": "#f7e91b"
+      "flipped": true,
+      "rotation": 0,
+      "color": "#f7d40c"
     },
     {
-      "id": "led-1750755807712-0.26431897980887775",
+      "id": "led-1769161612196-0.8816416224623339",
       "position": {
-        "x": -158.5,
-        "y": 136.5
+        "x": 124.66666666666674,
+        "y": 162.66666666666666
       },
       "compState": true,
-      "flipped": false,
-      "rotation": 270,
-      "color": "#09ed09"
+      "flipped": true,
+      "rotation": 0,
+      "color": "#02f05d"
     }
   ],
   "connections": [
     {
-      "id": "led-1750755441906-0.1509952947928508-left-GNDA",
-      "x1": 1057.2333679199219,
-      "y1": 111.64999389648438,
-      "x2": 549.5166778564453,
-      "y2": 84.89999389648438,
-      "codoX": 1062.433334350586,
-      "codoY": 80.06666564941406,
+      "id": "led-1769161610389-0.5286704886947441-left-GNDA",
+      "x1": 469.9583206176758,
+      "y1": 152.14999389648438,
+      "x2": 222.13330078125,
+      "y2": 121.84999084472656,
+      "codoX": 415.5999755859375,
+      "codoY": 113.19999694824219,
       "fromPinId": "GNDA",
-      "toPinId": "led-1750755441906-0.1509952947928508-left",
+      "toPinId": "led-1769161610389-0.5286704886947441-left",
       "stroke": "#FF0000",
-      "strokeWidth": 4
+      "strokeWidth": 3
     },
     {
-      "id": "led-1750755556426-0.5748417813730818-right-GPIO6",
-      "x1": 1057.2333679199219,
-      "y1": 226.86664581298828,
-      "x2": 454.5166778564453,
-      "y2": 222.8666534423828,
-      "codoX": 652.4333343505859,
-      "codoY": 222.06666564941406,
-      "fromPinId": "GPIO6",
-      "toPinId": "led-1750755556426-0.5748417813730818-right",
+      "id": "led-1769161611881-0.9009263571311963-left-GNDD",
+      "x1": 603.3916168212891,
+      "y1": 152.14999389648438,
+      "x2": 224.13330078125,
+      "y2": 243.84999084472656,
+      "codoX": 441.5999755859375,
+      "codoY": 219.1999969482422,
+      "fromPinId": "GNDD",
+      "toPinId": "led-1769161611881-0.9009263571311963-left",
       "stroke": "#ffd501",
-      "strokeWidth": 4
+      "strokeWidth": 3
     },
     {
-      "id": "led-1750755441906-0.1509952947928508-right-GPIO5",
-      "x1": 1057.2333679199219,
-      "y1": 207.6833267211914,
-      "x2": 549.5166778564453,
-      "y2": 104.89999389648438,
-      "codoX": 546.3333282470703,
-      "codoY": 209.6833267211914,
-      "fromPinId": "GPIO5",
-      "toPinId": "led-1750755441906-0.1509952947928508-right",
-      "stroke": "#FF0000",
-      "strokeWidth": 4
-    },
-    {
-      "id": "led-1750755807712-0.26431897980887775-left-GNDC",
-      "x1": 1057.2333679199219,
-      "y1": 361.3999938964844,
-      "x2": 606.5166778564453,
-      "y2": 295.8666534423828,
-      "codoX": 610.4333343505859,
-      "codoY": 363.06666564941406,
+      "id": "led-1769161612196-0.8816416224623339-left-GNDC",
+      "x1": 469.9583206176758,
+      "y1": 339.4499816894531,
+      "x2": 223.13330078125,
+      "y2": 322.84999084472656,
+      "codoX": 415.5999755859375,
+      "codoY": 343.1999969482422,
       "fromPinId": "GNDC",
-      "toPinId": "led-1750755807712-0.26431897980887775-left",
+      "toPinId": "led-1769161612196-0.8816416224623339-left",
       "stroke": "#28bd00",
-      "strokeWidth": 4
+      "strokeWidth": 3
     },
     {
-      "id": "led-1750755807712-0.26431897980887775-right-GPIO7",
-      "x1": 1057.2333679199219,
-      "y1": 246.08332061767578,
-      "x2": 606.5166778564453,
-      "y2": 275.8666534423828,
-      "codoX": 604.4333343505859,
-      "codoY": 240.06666564941406,
-      "fromPinId": "GPIO7",
-      "toPinId": "led-1750755807712-0.26431897980887775-right",
-      "stroke": "#28bd00",
-      "strokeWidth": 4
+      "id": "led-1769161610389-0.5286704886947441-right-GPIO4",
+      "x1": 469.9583206176758,
+      "y1": 209.71664428710938,
+      "x2": 207.13330078125,
+      "y2": 121.84999084472656,
+      "codoX": 355.5999755859375,
+      "codoY": 166.1999969482422,
+      "fromPinId": "GPIO4",
+      "toPinId": "led-1769161610389-0.5286704886947441-right",
+      "stroke": "#FF0000",
+      "strokeWidth": 3
     },
     {
-      "id": "led-1750755556426-0.5748417813730818-left-GNDI",
-      "x1": 1235.1500549316406,
-      "y1": 380.4833450317383,
-      "x2": 454.5166778564453,
-      "y2": 242.8666534423828,
-      "codoX": 458.3333282470703,
-      "codoY": 380.4833450317383,
-      "fromPinId": "GNDI",
-      "toPinId": "led-1750755556426-0.5748417813730818-left",
+      "id": "led-1769161611881-0.9009263571311963-right-GPIO5",
+      "x1": 469.9583206176758,
+      "y1": 224.16666412353516,
+      "x2": 209.13330078125,
+      "y2": 243.84999084472656,
+      "codoX": 430.5999755859375,
+      "codoY": 293.1999969482422,
+      "fromPinId": "GPIO5",
+      "toPinId": "led-1769161611881-0.9009263571311963-right",
       "stroke": "#ffd501",
-      "strokeWidth": 4
+      "strokeWidth": 3
+    },
+    {
+      "id": "led-1769161612196-0.8816416224623339-right-GPIO7",
+      "x1": 469.9583206176758,
+      "y1": 252.96664428710938,
+      "x2": 208.13330078125,
+      "y2": 322.84999084472656,
+      "codoX": 363.5999755859375,
+      "codoY": 405.3000030517578,
+      "fromPinId": "GPIO7",
+      "toPinId": "led-1769161612196-0.8816416224623339-right",
+      "stroke": "#28bd00",
+      "strokeWidth": 3
     }
   ],
   "boardData": {
@@ -160,39 +160,5 @@
       "GPIO8"
     ]
   },
-  "code": [
-    "addi a0, a0, 5",
-    "addi a1, a1, 1",
-    "jal ra, 0x100",
-    "addi a0, a0, -5",
-    "addi a0, a0, 1000",
-    "jal ra, 0x104",
-    "addi a0, a0, -1000",
-    "addi a0, a0, 5",
-    "addi a1, a1, -1",
-    "addi a1, a1, 0",
-    "jal ra, 0x100",
-    "addi a0, a0, 1",
-    "addi a1, a1, 1",
-    "jal ra, 0x100",
-    "addi a0, a0, -6",
-    "addi a0, a0, 1000",
-    "jal ra, 0x104",
-    "addi a0, a0, -1000",
-    "addi a0, a0, 6",
-    "addi a1, a1, -1",
-    "jal ra, 0x100",
-    "addi a0, a0, -6",
-    "addi a0, a0, 7",
-    "addi a1, a1, 1",
-    "jal ra, 0x100",
-    "addi a0, a0, -7",
-    "addi a0, a0, 1000",
-    "jal ra, 0x104",
-    "addi a0, a0, -1000",
-    "addi a0, a0, 7",
-    "addi a1, a1, -1",
-    "addi a1, a1, 0",
-    "jal ra, 0x100"
-  ]
+  "code": "#Creatino example: Semaphore with 3 LEDs\n\n.data\n    time:\n        .word 1000\n.text\nsetup:\n    li a0,  4   #RED PIN GPIO\n    li a1,  0x03 \n    addi sp, sp, -4       \n    sw ra, 0(sp)    \n    jal ra, pinMode\n    lw ra, 0(sp)          \n    addi sp, sp, 4  \n\n    li a0,  5   #YELLOW PIN GPIO\n    li a1,  0x03 \n    addi sp, sp, -4       \n    sw ra, 0(sp)    \n    jal ra, pinMode\n    lw ra, 0(sp)          \n    addi sp, sp, 4 \n\n    li a0,  7   #GREEN PIN GPIO\n    li a1,  0x03 \n    addi sp, sp, -4       \n    sw ra, 0(sp)    \n    jal ra, pinMode\n    lw ra, 0(sp)          \n    addi sp, sp, 4 \n\n    jr ra\nloop:\n    ## ---------------------RED PIN---------------------\n    li a0,4 \n    li a1, 0x1\n    addi sp, sp, -4       \n    sw ra, 0(sp)      \n    jal ra, digitalWrite\n    lw ra, 0(sp)          \n    addi sp, sp, 4    \n    la a0, time\n    lw a0, 0(a0)\n    addi sp, sp, -16      \n    sw ra, 12(sp)\n    jal ra, delay\n    lw ra, 12(sp)          \n    addi sp, sp, 16 \n    li a0,4 \n    li a1, 0x0\n    jal ra, digitalWrite\n    la a0, time\n    lw a0, 0(a0)\n    addi sp, sp, -16      \n    sw ra, 12(sp)\n    jal ra, delay\n    lw ra, 12(sp)          \n    addi sp, sp, 16\n\n    ## ---------------------Yellow PIN---------------------\n    li a0,5\n    li a1, 0x1\n    jal ra, digitalWrite\n    la a0, time\n    lw a0, 0(a0)\n    addi sp, sp, -16      \n    sw ra, 12(sp)\n    jal ra, delay\n    lw ra, 12(sp)          \n    addi sp, sp, 16 \n    li a0,5 \n    li a1, 0x0\n    jal ra, digitalWrite\n    la a0, time\n    lw a0, 0(a0)\n    addi sp, sp, -16      \n    sw ra, 12(sp)\n    jal ra, delay\n    lw ra, 12(sp)          \n    addi sp, sp, 16\n\n    ## ---------------------Green PIN---------------------\n    li a0,7 \n    li a1, 0x1\n    jal ra, digitalWrite\n    la a0, time\n    lw a0, 0(a0)\n    addi sp, sp, -16      \n    sw ra, 12(sp)\n    jal ra, delay\n    lw ra, 12(sp)          \n    addi sp, sp, 16 \n    li a0,7 \n    li a1, 0x0\n    jal ra, digitalWrite\n    la a0, time\n    lw a0, 0(a0)\n    addi sp, sp, -16      \n    sw ra, 12(sp)\n    jal ra, delay\n    lw ra, 12(sp)          \n    addi sp, sp, 16  \n\n    j loop\n    \nmain:\n    #Initialize Arduino\n    addi sp, sp, -16       \n    sw ra, 12(sp)          \n    jal ra, initArduino    \n    jal ra, setup\n    lw ra, 12(sp)          \n    addi sp, sp, 16             \n    j loop"
 }

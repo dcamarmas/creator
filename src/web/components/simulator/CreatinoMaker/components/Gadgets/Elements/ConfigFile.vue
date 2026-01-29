@@ -61,6 +61,7 @@ function handleExampleFile(file) {
 }
 
 const search = ref('')
+const baseUrl = import.meta.env.BASE_URL
 
 const categories = ref([
   {
@@ -73,9 +74,10 @@ const categories = ref([
   },
 ])
 const exampleFiles = [
-  { label: 'Semaphore', file: 'examples/semaphore.json' },
-  { label: 'Blink', file: 'examples/blink.json' },
-  { label: 'Buzzer', file: 'examples/buzzer.json' },
+  { label: 'Semaphore', file: `${baseUrl}maker/examples/semaphore.json` },
+  { label: 'Blink', file: `${baseUrl}maker/examples/blink.json` },
+  { label: 'Buzzer', file: `${baseUrl}maker/examples/buzzer.json` },
+  { label: 'Button', file: `${baseUrl}maker/examples/button.json` }
   // { label: 'Contador', file: 'counter.json' }
 ]
 const showExamplesDropdown = ref(false)

@@ -677,9 +677,38 @@ function cancelUpload() {
 
 //Ejemplos
 function loadPreloadedFile(file) {
+  console.log("🟡 Intentando cargar archivo desde:", file); // Paso 1: ¿La ruta es correcta?
+
   fetch(file)
-    .then(res => res.json())
+    .then(res => {
+      // console.log("🟢 Respuesta del servidor recibida:", res.status, res.statusText);
+      
+      if (!res.ok) {
+        throw new Error(`Error HTTP: ${res.status}. Posible ruta mal escrita o archivo inexistente.`);
+      }
+
+      // Verificamos si lo que llega es realmente un JSON
+      const contentType = res.headers.get("content-type");
+      // console.log("📄 Tipo de contenido:", contentType);
+
+      if (!contentType || !contentType.includes("application/json")) {
+        // console.warn("⚠️ ¡CUIDADO! El servidor no envió un JSON. Enviando texto para ver qué es...");
+        // return res.text().then(text => {
+        //   console.log("Contenido recibido (primeros 100 caracteres):", text.substring(0, 100));
+        //   throw new SyntaxError("El archivo no es un JSON válido.");
+        // });
+      }
+
+      return res.json();
+    })
     .then(parsed => {
+      console.log("✅ JSON parseado correctamente:", parsed);
+
+      // Verificamos si los datos esperados existen
+      if (!parsed.positions || !parsed.code) {
+        console.error("❌ El JSON cargado no tiene el formato esperado (faltan positions o code)");
+      }
+
       positions.value = (parsed.positions || []).map(p => ({
         id: p.id,
         position: p.position,
@@ -688,21 +717,28 @@ function loadPreloadedFile(file) {
         rotation: p.rotation ?? 0,
         color: p.color ?? "red",
       }));
+
       connections.value = parsed.connections || [];
       boardDataMutable.value =
         parsed.boardData && parsed.boardData.pins
           ? parsed.boardData
           : { ...boardData };
-      asmCode.value = parsed.code || [];
+
+      load_CREATino(); 
+      root.assembly_code = typeof parsed.code === "string" ? parsed.code : "";
+      root.creator_mode = "assembly";
+
+      console.log("🚀 Código cargado en el editor:", root.assembly_code.substring(0, 50) + "...");
 
       nextTick(() => {
         updateConnectionsPositions();
       });
     })
     .catch(err => {
-      console.error("Error loading precargado:", err);
+      console.error("🔴 Error detallado en loadPreloadedFile:", err.message);
     });
 }
+
 function handleUpdateBoardData(newBoardData) {
   console.log("Updating board data:", newBoardData);
 

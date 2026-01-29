@@ -3,8 +3,8 @@
     {
       "id": "board",
       "position": {
-        "x": 113.5,
-        "y": 63.5
+        "x": 109.5,
+        "y": 62.83333333333334
       },
       "compState": true,
       "flipped": false,
@@ -14,10 +14,10 @@
     {
       "id": "buzzer-1750761173513-0.023524703319372398",
       "position": {
-        "x": -133.5,
-        "y": 77
+        "x": -75.50000000000006,
+        "y": 147
       },
-      "compState": false,
+      "compState": true,
       "flipped": false,
       "rotation": 270,
       "color": "red"
@@ -26,29 +26,29 @@
   "connections": [
     {
       "id": "buzzer-1750761173513-0.023524703319372398-left-GNDA",
-      "x1": 1099.2333679199219,
-      "y1": 196.64999389648438,
-      "x2": 764.1666412353516,
-      "y2": 155.25,
-      "codoX": 1074.433334350586,
-      "codoY": 104.06666564941406,
+      "x1": 371.1083450317383,
+      "y1": 143.5,
+      "x2": 212.7833251953125,
+      "y2": 218.4666748046875,
+      "codoX": 329.3499755859375,
+      "codoY": 242.43333435058594,
       "fromPinId": "GNDA",
       "toPinId": "buzzer-1750761173513-0.023524703319372398-left",
       "stroke": "black",
-      "strokeWidth": 4
+      "strokeWidth": 3
     },
     {
       "id": "buzzer-1750761173513-0.023524703319372398-right-GPIO5",
-      "x1": 1099.2333679199219,
-      "y1": 292.6833267211914,
-      "x2": 764.1666412353516,
-      "y2": 135.25,
-      "codoX": 765.3333282470703,
-      "codoY": 292.6833267211914,
+      "x1": 371.1083450317383,
+      "y1": 215.51665496826172,
+      "x2": 212.7833251953125,
+      "y2": 203.4666748046875,
+      "codoX": 261.3499755859375,
+      "codoY": 158.43333435058594,
       "fromPinId": "GPIO5",
       "toPinId": "buzzer-1750761173513-0.023524703319372398-right",
       "stroke": "#FF0000",
-      "strokeWidth": 4
+      "strokeWidth": 3
     }
   ],
   "boardData": {
@@ -86,17 +86,5 @@
       "GPIO8"
     ]
   },
-  "code": [
-    "addi a0, a0, 5",
-    "addi a1, a1, 1",
-    "jal ra, 0x100",
-    "addi a0, a0, -5",
-    "addi a0, a0, 1000",
-    "jal ra, 0x104",
-    "addi a0, a0, -1000",
-    "addi a0, a0, 5",
-    "addi a1, a1, -1",
-    "addi a1, a1, 0",
-    "jal ra, 0x100"
-  ]
+  "code": ".data\n    time:\n        .word 1000\n.text\n\nmain:\n    addi sp, sp, -16       \n    sw ra, 12(sp)          \n    jal ra, initArduino    \n    jal ra, setup\n    lw ra, 12(sp)          \n    addi sp, sp, 16              \n    j loop\n    \nsetup:\n    #pinMode(LED_BUILTIN, OUTPUT);\n    li a0,5\n    li a1,  0x03 \n    jal ra, pinMode\nloop:\n    #digitalWrite(LED_BUILTIN, HIGH);\n    li a0,5 \n    li a1, 0x1\n    jal ra, digitalWrite\n        #delay(1000);\n    la a0, time\n    lw a0, 0(a0)\n    addi sp, sp, -16      \n    sw ra, 12(sp)\n    jal ra, delay\n    lw ra, 12(sp)          \n    addi sp, sp, 16 \n    #digitalWrite(LED_BUILTIN, LOW);\n    li a0,5\n    li a1, 0x0\n    jal ra, digitalWrite\n    #delay(1000);\n    la a0, time\n    lw a0, 0(a0)\n    addi sp, sp, -16      \n    sw ra, 12(sp)\n    jal ra, delay\n    lw ra, 12(sp)          \n    addi sp, sp, 16 \n    j loop\n\n"
 }
