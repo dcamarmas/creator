@@ -511,7 +511,7 @@
   <h2 align="center">Developing CREATOR</h2>
 </div>
 
-See [`docs/dev.md`](docs/dev.md).
+See [`docs/dev.md`](https://github.com/creatorsim/creator/blob/master/docs/dev.md).
 
 
 
@@ -531,5 +531,5 @@ See [`docs/dev.md`](docs/dev.md).
   <h2 align="center">Sponsors</h2>
 </div>
 
-Integrated development environment for teaching and research on RISC-V processors (PDC2023-145832-I00) funded by MICIU/AEI/ 10.13039/501100011033 and by the European Union NextGenerationEU/PRTR
+Integrated development environment for teaching and research on RISC-V processors (PDC2023-145832-I00) funded by MICIU/AEI/ 10.13039/501100011033 and by the European Union NextGenerationEU/PRTR. https://creatorsim.github.io/EDIRISC
 ![sponsor logos](https://github.com/user-attachments/assets/a37ba843-dd07-4014-be3c-ee105bd2d463)
