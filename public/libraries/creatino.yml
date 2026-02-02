@@ -26,7 +26,7 @@ symbols:
     help: {description: "Writes digital value", parameters: {pin: "Pin number", value: "HIGH/LOW"}, returns: {}}
   rgbLedWrite:
     addr: 16
-    help: {description: "Writes digital value in a RGB LED", parameters: {pin: "Pin number", value1: "Red value", value2: "Green value", value3: "Blue value"}, returns: {}}
+    help: {description: "Writes digital value in a RGB  WS2812 LED (ex. BUILTIN LED in ESP32-C6 and ESP32-H2 Devkit)", parameters: {pin: "Pin number", value1: "Red value", value2: "Green value", value3: "Blue value"}, returns: {}}
   analogRead:
     addr: 20
     help: {description: "Reads analog value", parameters: {pin: "Pin number"}, returns: {value: "0-1023"}}

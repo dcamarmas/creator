@@ -31,6 +31,7 @@ export const CoreEventTypes = {
     LIBRARY_LOADED: "library-loaded",
     LIBRARY_REMOVED: "library-removed",
     EXECUTOR_BUTTONS_UPDATE: "executor-buttons-update",
+    ARDUINO_TERMINAL_WRITE: "arduino-terminal-write",
 } as const;
 
 /**
@@ -95,7 +96,16 @@ export type CoreEvents = {
     "library-removed": void;
     /** Emitted when executor button states should be updated */
     "executor-buttons-update": ExecutorButtonsUpdateEvent;
+    /** Emitted when the simulator sends text to the Arduino Terminal */
+    "arduino-terminal-write": ArduinoTerminalWriteEvent; // <--- Nuevo
 };
+/**
+ * Emitted when the simulator sends text to the Arduino Terminal
+ */
+export interface ArduinoTerminalWriteEvent {
+    /** The text to be displayed in the terminal */
+    text: string;
+}
 
 /**
  * Global event emitter for CREATOR core events

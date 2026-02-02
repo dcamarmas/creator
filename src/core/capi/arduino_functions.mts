@@ -17,6 +17,7 @@ import {
     svgRef,
 } from "../../web/components/simulator/CreatinoMaker/state.ts";
 import { Memory } from "../memory/Memory.mts";
+import { coreEvents } from "@/core/events.mjs";
 
 /*
  *  CREATOR instruction description API:
@@ -26,6 +27,7 @@ import { Memory } from "../memory/Memory.mts";
 let serial_begin = 0; // TODO: Which baud rate can we accept?
 let initArduino = 0; // Flag to check if initArduino has been called
 let _seed = 1;
+// let traces = new ArduinoTerminal();
 
 //Functions
 export function cr_initArduino() {
@@ -34,6 +36,7 @@ export function cr_initArduino() {
         initArduino = 1;
         console.log("initArduino: " + initArduino);
     }
+    coreEvents.emit("arduino-terminal-write", { text: "initArduino()\n" });
 }
 export function cr_digitalRead() {
     console.log("cr_digitalRead called");
