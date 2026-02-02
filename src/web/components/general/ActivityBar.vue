@@ -1,4 +1,5 @@
 <script lang="ts">
+import { remove_library } from "@/core/core.mjs";
 import { defineComponent } from "vue";
 
 export default defineComponent({
@@ -25,6 +26,9 @@ export default defineComponent({
         this.$emit("update:modelValue", mode);
       }
     },
+    removeLibrary() {
+      remove_library();
+    },
   },
 });
 </script>
@@ -39,7 +43,7 @@ export default defineComponent({
         @click="selectMode('assembly')"
         title="Editor"
       >
-        <font-awesome-icon :icon="['fas', 'file-code']" size="lg" />
+        <font-awesome-icon :icon="['fas', 'hashtag']" size="lg" />
       </div>
 
       <div
@@ -51,13 +55,88 @@ export default defineComponent({
         <font-awesome-icon :icon="['fas', 'gears']" size="lg" />
       </div>
 
-      <div
+      <!-- <div
         class="activity-item"
         :class="{ active: modelValue === 'architecture' }"
         @click="selectMode('architecture')"
         title="Architecture"
       >
         <font-awesome-icon :icon="['fas', 'screwdriver-wrench']" size="lg" />
+      </div> -->
+      <hr/>
+      <div v-if="modelValue === 'assembly'">
+        <div
+          class="activity-item"
+          v-b-modal.examples-assembly
+          title="Examples"
+          >
+          <font-awesome-icon :icon="['fas', 'file-lines']" size="lg" />
+        </div>
+        <hr/>
+        <div
+          class="activity-item"
+          v-b-modal.load_assembly
+          title="Load file"
+          >
+          <font-awesome-icon :icon="['fas', 'upload']" size="lg" />
+        </div>
+        <div
+          class="activity-item"
+          v-b-modal.save_assembly
+          title="Save file"
+          >
+          <font-awesome-icon :icon="['fas', 'download']" size="lg" />
+        </div>
+        <div
+          class="activity-item"
+          v-b-modal.make_uri
+          title="Share as url"
+          >
+          <font-awesome-icon :icon="['fas', 'link']" size="lg" />
+        </div>
+        <hr/>
+        <div
+          class="activity-item"
+          v-b-modal.load_binary
+          title="Load library"
+          >
+          <font-awesome-icon :icon="['fas', 'file-arrow-up']" size="lg" />
+        </div>
+        <div
+          class="activity-item"
+          @click="removeLibrary"
+          title="Remove library"
+          >
+          <font-awesome-icon :icon="['fas', 'trash-can']" size="lg" />
+        </div>
+      </div>
+
+
+      <div v-if="modelValue === 'simulator'">
+        <div
+          class="activity-item"
+          v-b-modal.examples-simulator
+          title="Examples"
+        >
+          <font-awesome-icon :icon="['fas', 'file-lines']" size="lg" />
+        </div>
+        <hr/>
+        <div
+          class="activity-item"
+          v-b-modal.flash
+          title="Flash"
+        >
+          <font-awesome-icon :icon="['fab', 'usb']" size="lg" />
+        </div>
+        <div
+          class="activity-item"
+          v-b-modal.calculator
+          title="IEEE754 Calculator"
+        >
+          <font-awesome-icon :icon="['fas', 'calculator']" size="lg" />
+        </div>
+
+
       </div>
     </div>
     </div>
@@ -72,6 +151,11 @@ export default defineComponent({
   position: relative;
   transition: width 0.3s ease;
   z-index: 1000;
+
+  hr {
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
 
   &.autohide {
     width: 0; 
