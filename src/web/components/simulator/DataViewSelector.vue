@@ -200,8 +200,8 @@ export default defineComponent({
         :class="['tab', { active: current_reg_type === 'maker', border: dark }]"
         @click="change_data_view('maker')"
       >
-        <font-awesome-icon :icon="['fas', 'pen']" />
-        <span>Maker</span>
+        <font-awesome-icon :icon="['fas', 'infinity']" />
+        <span>Arduino</span>
       </button>
     </div>
   </div>

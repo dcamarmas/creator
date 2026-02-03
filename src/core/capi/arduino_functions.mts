@@ -1,4 +1,3 @@
-import { SYSCALL } from "./syscall.mts";
 import { crex_findReg } from "../register/registerLookup.mjs";
 import { packExecute } from "../utils/utils.mjs";
 import {
@@ -36,7 +35,7 @@ export function cr_initArduino() {
         initArduino = 1;
         console.log("initArduino: " + initArduino);
     }
-    coreEvents.emit("arduino-terminal-write", { text: "initArduino()\n" });
+    coreEvents.emit("arduino-terminal-write", { text: "initArduino()" });
 }
 export function cr_digitalRead() {
     console.log("cr_digitalRead called");

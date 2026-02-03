@@ -17,9 +17,6 @@ You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <template>
-  <!-- <b-container fluid class="mx-0 px-0 terminal-wrapper">
-    <div ref="terminalContainer" class="terminal-container"></div>
-  </b-container> -->
 <div ref="layoutContainer" class="arduino-layout" @mousemove="onMouseMove" @mouseup="onMouseUp">
     <div class="left-panel" :style="{ width: splitPercent + '%' }">
       <div class="panel-header">Arduino Function Tracer</div>
@@ -30,32 +27,54 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 
 <div class="right-panel" :style="{ width: (100 - splitPercent) + '%' }">
   <div class="panel-header">Hardware View</div>
+<div class="board-selector-inline">
+      <label>Board selected:</label>
+      <select v-model="selectedBoard" class="board-dropdown-minimal">
+        <option value="esp32c3">ESP32-C3 DevKit</option>
+      </select>
+    </div>
   
-  <div class="board-view-container">
-    <div class="svg-wrapper">
-      <img src="../../../../../public/maker/boards/esp32c3devkit2.svg" class="main-board-svg" />
-      
-      <div class="pins-column left">
-        <div v-for="(val, index) in digitalPins.slice(0, 8)" :key="'L'+index" class="pin-anchor">
-          <div class="reg-chip mini">
-            <span class="reg-id">D{{ index }}</span>
-            <span class="reg-val" :class="{ 'val-high': val }">{{ val ? 'HI' : 'LO' }}</span>
-          </div>
-          <div class="connector-line"></div>
-        </div>
+<div class="board-view-container">
+  <div class="svg-wrapper">
+    <div class="pins-column left">
+    <div v-for="pinName in pinLabels[0]" :key="pinName" class="pin-anchor">
+      <div class="reg-chip mini">
+        <span class="reg-id">{{ pinName }}</span>
+        <input 
+          type="text" 
+          class="reg-input"
+          :class="{ 'val-active': pinStates[pinName] > 0 }"
+          :value="pinStates[pinName]"
+          @change="updatePinValue($event, pinName)"
+          @keydown.enter="$event.target.blur()"
+        />
       </div>
+    </div>
+  </div>
 
-      <div class="pins-column right">
-        <div v-for="(val, index) in digitalPins.slice(8, 14)" :key="'R'+index" class="pin-anchor">
-          <div class="connector-line"></div>
-          <div class="reg-chip mini">
-            <span class="reg-id">D{{ index + 8 }}</span>
-            <span class="reg-val" :class="{ 'val-high': val }">{{ val ? 'HI' : 'LO' }}</span>
-          </div>
+    <img 
+      src="../../../../../public/maker/boards/esp32c3devkit2.svg" 
+      class="main-board-svg" 
+      :style="{ width: Math.max((100 - splitPercent) * 4, 120) + 'px' }"
+    />
+
+    <div class="pins-column right">
+      <div v-for="pinName in pinLabels[1]" :key="pinName" class="pin-anchor">
+        <div class="reg-chip mini">
+          <span class="reg-id">{{ pinName }}</span>
+          <input 
+            type="text" 
+            class="reg-input"
+            :class="{ 'val-active': pinStates[pinName] > 0 }"
+            :value="pinStates[pinName]"
+            @change="updatePinValue($event, pinName)"
+            @keydown.enter="$event.target.blur()"
+          />
         </div>
       </div>
     </div>
   </div>
+</div>
 </div>
 </div>
 </template>
@@ -81,7 +100,15 @@ export default {
       fitAddon: null,
       inputBuffer: "",
       inputMode: false,
-      digitalPins: new Array(14).fill(false),
+      pinLabels: [
+        ["GPIO4", "GPIO5", "GPIO6", "GPIO7", "GPIO8", "GPIO9"], // Columna Izquierda
+        ["GPIO0", "GPIO1", "GPIO2", "GPIO3", "GPIO20", "GPIO21", "GPIO18", "GPIO19"] // Columna Derecha
+      ],
+      pinStates: {
+        "GPIO4": 0, "GPIO5": 0, "GPIO6": 0, "GPIO7": 0, "GPIO8": 0, "GPIO9": 0,
+        "GPIO0": 0, "GPIO1": 0, "GPIO2": 0, "GPIO3": 0, "GPIO20": 0,
+        "GPIO21": 0, "GPIO18": 0, "GPIO19": 0
+      },
       splitPercent: 50, 
       isResizing: false,
     };
@@ -219,10 +246,10 @@ export default {
     // Method to write output to terminal
     writeOutput(text) {
       if (this.terminal) {
-        this.terminal.write(text);
+        this.terminal.write(`\r\n> ${text}\r\n`);
       }
     },
-    // Resizer methods
+  // Resizer methods
     onMouseDown() {
     this.isResizing = true;
     document.body.style.cursor = 'col-resize';
@@ -252,7 +279,28 @@ export default {
     this.isResizing = false;
     document.body.style.cursor = 'default';
   },
+  onBoardChange() {
+    console.log("Cambiando a la placa:", this.selectedBoard);
+    // Aquí podrías cargar las etiquetas de los pines (pinLabels) 
+    // y la imagen SVG correspondiente a la nueva placa.
   },
+   updatePinValue(event, pinName) {
+    const rawValue = event.target.value;
+ 
+    const intValue = parseInt(rawValue, 10);
+    
+    if (isNaN(intValue)) {
+      this.pinStates[pinName] = 0;
+    } else {
+      this.pinStates[pinName] = intValue;
+    }
+
+    event.target.value = this.pinStates[pinName];
+
+    console.log(`Pin ${pinName} changed to:`, this.pinStates[pinName]);
+  },
+  },
+ 
 };
 </script>
 
@@ -400,13 +448,46 @@ export default {
 .panel-header {
   font-family: "SF Mono" monospace;
   font-size: 0.8125rem;
-  color: #000000;
   padding: 6px 10px;
-  background: color-mix(in srgb, currentColor 40%, transparent);
+  background: color-mix(in srgb, currentColor 10%, transparent);
   font-weight: bold;
   
 }
+.board-selector-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: #020202;
+}
 
+.board-selector-inline {
+  margin-top: 40px;
+  margin-left: 10px;
+  margin-right: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  border: 1px solid #444;
+  z-index: 10;
+  
+}
+
+.board-selector-inline label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.board-dropdown-minimal {
+  margin-left:75px;
+  border: none;
+  font-weight: bold;
+  outline: none;
+  cursor: pointer;
+}
 .mini-reg-list {
   padding: 15px; 
   display: grid;
@@ -425,9 +506,14 @@ export default {
   background: RGBA(var(--bs-info-rgb), var(--bs-bg-opacity, 1)) !important; /* Un azul sólido para que resalte */
   border-radius: 8px !important;
   color: white;
-  font-family: "SF Mono", monospace;
   font-size: 14px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.reg-chip.mini {
+  padding: 4px 8px;
+  font-size: 11px;     /* Letra un poco más pequeña para que quepan bien */
+  min-width: 60px;
+  justify-content: space-around;
 }
 
 .reg-id {
@@ -440,6 +526,33 @@ export default {
   color: #484f58; /* Gris para LOW */
 }
 
+.reg-input {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid transparent;
+  border-radius: 3px;
+  color: #fff;
+  width: 25px; 
+  text-align: right;
+  font-size: 0.8rem;
+  outline: none;
+  padding: 0 2px;
+  transition: all 0.2s;
+  margin-left:5px;
+}
+
+.reg-input:focus {
+  border-color: #4a90e2;
+  background: #34669e;
+}
+
+.val-active {
+  font-weight: bold;
+}
+.reg-input::-webkit-inner-spin-button,
+.reg-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
 .val-high {
   color: #00FF41 !important; /* Verde para HIGH */
   text-shadow: 0 0 5px rgba(0, 255, 65, 0.4);
@@ -458,48 +571,40 @@ export default {
 /* Board */
 .board-view-container {
   flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center; /* Centra verticalmente */
-  /* background-color: #1c1c1c; */
-  overflow: hidden; /* Evita scrolls innecesarios */
-  padding: 20px;
-  position: relative;
-}
-
-/* El envoltorio que mantiene los pines y la placa juntos */
-.svg-wrapper {
-  position: relative;
+  flex-direction: column;
   display: flex;
   justify-content: center;
   align-items: center;
-  max-width: 90%; /* Evita que toque los bordes del panel */
-  max-height: 90%;
+  overflow: hidden; 
+  padding: 10px;
 }
 
-/* La placa SVG */
+.svg-wrapper {
+  display: flex;
+  align-items: center; /* Alinea pines y placa al centro horizontal */
+  gap: 15px;           /* Espacio entre pines y placa */
+  max-width: 100%;
+}
 .main-board-svg {
-  display: block;
-  width: auto;      /* Cambiado de 100% a auto */
-  max-width: 500px; /* Ajusta este valor al tamaño que desees para la placa */
   height: auto;
+  max-width: 200px;
+  transition: width 0.05s linear; /* Suaviza el cambio de tamaño al arrastrar */
   user-select: none;
-  
+  flex-shrink: 1;      /* Permite que la placa se encoja primero */
 }
 .pins-column {
-  position: absolute;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  z-index: 5;
+  gap: 6px;
+  flex-shrink: 0;      /* Evita que los pines se aplasten */
 }
 
 .pins-column.left {
-  left: -100px; /* Ajusta según la posición de los pads en tu SVG */
+  left: 10px;        /* Cambiado de negativo a positivo relativo al padding */
 }
 
 .pins-column.right {
-  right: -100px; /* Ajusta según la posición de los pads en tu SVG */
+  right: 10px;       /* Cambiado de negativo a positivo relativo al padding */
 }
 
 .pin-anchor {
