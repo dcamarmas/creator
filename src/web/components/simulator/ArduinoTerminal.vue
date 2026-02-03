@@ -85,6 +85,7 @@ import { FitAddon } from "@xterm/addon-fit";
 import "xterm/css/xterm.css";
 import { execution_mode, status } from "@/core/core.mjs";
 import { coreEvents } from "@/core/events.mjs";
+import { pinStates as sharedPinStates } from "../../../core/capi/pinstates.mjs";
 
 
 export default {
@@ -104,11 +105,7 @@ export default {
         ["GPIO4", "GPIO5", "GPIO6", "GPIO7", "GPIO8", "GPIO9"], // Columna Izquierda
         ["GPIO0", "GPIO1", "GPIO2", "GPIO3", "GPIO20", "GPIO21", "GPIO18", "GPIO19"] // Columna Derecha
       ],
-      pinStates: {
-        "GPIO4": 0, "GPIO5": 0, "GPIO6": 0, "GPIO7": 0, "GPIO8": 0, "GPIO9": 0,
-        "GPIO0": 0, "GPIO1": 0, "GPIO2": 0, "GPIO3": 0, "GPIO20": 0,
-        "GPIO21": 0, "GPIO18": 0, "GPIO19": 0
-      },
+      pinStates: sharedPinStates,
       splitPercent: 50, 
       isResizing: false,
     };
@@ -116,9 +113,24 @@ export default {
 
   mounted() {
     this.initTerminal();
+    // Terminal write
     coreEvents.on("arduino-terminal-write", (event) => {
       this.writeOutput(event.text);
     });
+    // Change pin values
+    coreEvents.on("arduino-pin-write", (event) => {
+      const pinName = `GPIO${event.pin}`;
+      if (this.pinStates.hasOwnProperty(pinName)) {
+        this.pinStates[pinName] = event.value;
+      }
+    });
+    // Reset pin values on Arduino reset
+    coreEvents.on("arduino-reset", () => {
+      for (const pin in this.pinStates) {
+        this.pinStates[pin] = 0;
+      }
+      this.clearTerminal();
+    })
   },
 
   beforeUnmount() {

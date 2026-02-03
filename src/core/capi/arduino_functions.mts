@@ -8,6 +8,7 @@ import { ARCH as RISCV } from "@/core/capi/arch/riscv.mjs";
 import { REGISTERS, main_memory, status } from "../core.mjs";
 import { display_print, keyboard_read_find, kbd_read_string, keyboard_parseInt, keyboard_read, kbd_read_char, keyboard_read_until } from "../executor/IO.mjs";
 import hookMap from "../../web/components/simulator/CreatinoMaker/components/BoardElements/esp32c3devkit2.js";
+import { pinStates } from "./pinstates.mjs";
 //import {connections,compState,svgRef,positions} from '../../web/components/simulator/CreatinoMaker/App.vue'
 import {
     connections,
@@ -17,6 +18,7 @@ import {
 } from "../../web/components/simulator/CreatinoMaker/state.ts";
 import { Memory } from "../memory/Memory.mts";
 import { coreEvents } from "@/core/events.mjs";
+import { write } from "fs";
 
 /*
  *  CREATOR instruction description API:
@@ -39,6 +41,23 @@ export function cr_initArduino() {
 }
 export function cr_digitalRead() {
     console.log("cr_digitalRead called");
+    var ret1 = crex_findReg("a0");
+    if (ret1.match === 0) {
+        throw packExecute(
+            true,
+            "capi_arduino: register a0 not found",
+            "danger",
+            null,
+        );
+    }
+    var pin = BigInt.asIntN(32, readRegister(ret1.indexComp, ret1.indexElem));
+    //Read from simulator
+    const pinName = `GPIO${pin}`;
+    const rawValue = pinStates.value[pinName] ?? 0;
+    const value = rawValue !== 0 ? 1 : 0;
+    writeRegister(BigInt(value), ret1.indexComp, ret1.indexElem);
+    coreEvents.emit("arduino-terminal-write", { text: `digitalRead(${pin}) = ${value}` });
+    // Graphic representation
     hookMap[0x4](connections.value);
 }
 export function cr_pinMode() {
@@ -46,21 +65,87 @@ export function cr_pinMode() {
 }
 export function cr_digitalWrite() {
     console.log("cr_digitalWrite called");
+    // Indicate in terminal
+    var ret1 = crex_findReg("a0");
+    if (ret1.match === 0) {
+        throw packExecute(
+            true,
+            "capi_arduino: register a0 not found",
+            "danger",
+            null,
+        );
+    }
+    var pin = BigInt.asIntN(32, readRegister(ret1.indexComp, ret1.indexElem));
+
+    var ret2 = crex_findReg("a1");
+    if (ret2.match === 0) {
+        throw packExecute(
+            true,
+            "capi_arduino: register a1 not found",
+            "danger",
+            null,
+        );
+    }
+    var rawValue = BigInt.asIntN(32, readRegister(ret2.indexComp, ret2.indexElem));
+    var value = rawValue !== 0n ? 1 : 0;
+    coreEvents.emit("arduino-terminal-write", { text: `digitalWrite(${pin}, ${value})` });
+    coreEvents.emit("arduino-pin-write", { pin: Number(pin), value: Number(value) });
     hookMap[0xc](
         connections.value,
         (val:any) => (compState.value = val),
         svgRef,
         positions,
     );
+
 }
 export function cr_analogRead() {
     console.log("cr_analogRead called");
+    var ret1 = crex_findReg("a0");
+    if (ret1.match === 0) {
+        throw packExecute(
+            true,
+            "capi_arduino: register a0 not found",
+            "danger",
+            null,
+        );
+    }
+    var pin = BigInt.asIntN(32, readRegister(ret1.indexComp, ret1.indexElem));
+    //Read from simulator
+    const pinName = `GPIO${pin}`;
+    const value = pinStates.value[pinName] ?? 0;
+    writeRegister(BigInt(value), ret1.indexComp, ret1.indexElem);
+    coreEvents.emit("arduino-terminal-write", { text: `analogRead(${pin}) = ${value}` });
+    
 }
 export function cr_analogReadResolution() {
     console.log("cr_analogReadResolution called");
 }
 export function cr_analogWrite() {
     console.log("cr_analogWrite called");
+    // Indicate in terminal
+    var ret1 = crex_findReg("a0");
+    if (ret1.match === 0) {
+        throw packExecute(
+            true,
+            "capi_arduino: register a0 not found",
+            "danger",
+            null,
+        );
+    }
+    var pin = BigInt.asIntN(32, readRegister(ret1.indexComp, ret1.indexElem));
+
+    var ret2 = crex_findReg("a1");
+    if (ret2.match === 0) {
+        throw packExecute(
+            true,
+            "capi_arduino: register a1 not found",
+            "danger",
+            null,
+        );
+    }
+    var value = BigInt.asIntN(32, readRegister(ret2.indexComp, ret2.indexElem));
+    coreEvents.emit("arduino-terminal-write", { text: `analogWrite(${pin}, ${value})` });
+    coreEvents.emit("arduino-pin-write", { pin: Number(pin), value: Number(value) });
 }
 export function cr_map() {
     console.log("cr_map called");
@@ -131,6 +216,7 @@ export function cr_map() {
         ((value - fromLow) * (toHigh - toLow)) / (fromHigh - fromLow) + toLow;
     console.log(mappedValue);
     writeRegister(mappedValue, ret1.indexComp, ret1.indexElem);
+    coreEvents.emit("arduino-terminal-write", { text: `map(${value}, ${fromLow}, ${fromHigh}, ${toLow}, ${toHigh})` });
 }
 export function cr_constrain() {
     console.log("cr_constrain called");
@@ -175,6 +261,7 @@ export function cr_constrain() {
     );
     console.log(BigInt(constrained));
     writeRegister(BigInt(constrained), ret1.indexComp, ret1.indexElem);
+    coreEvents.emit("arduino-terminal-write", { text: `constrain(${value}, ${lower}, ${upper})` });
 }
 export function cr_abs() {
     console.log("cr_abs called");
@@ -192,6 +279,7 @@ export function cr_abs() {
     // Calculate the absolute value
     value = value > 0 ? value : -value;
     writeRegister(BigInt(value), ret1.indexComp, ret1.indexElem);
+    coreEvents.emit("arduino-terminal-write", { text: `abs(${value})` });
 }
 export function cr_max() {
     //Var 1: Expected always an int32
@@ -227,6 +315,7 @@ export function cr_max() {
     const max = value1 > value2 ? value1 : value2;
     console.log(max);
     writeRegister(BigInt(max), ret1.indexComp, ret1.indexElem);
+    coreEvents.emit("arduino-terminal-write", { text: `max(${value1}, ${value2})` });
 }
 export function cr_min() {
     console.log("cr_min called");
@@ -262,6 +351,7 @@ export function cr_min() {
     const min = value1 < value2 ? value1 : value2;
     console.log(min);
     writeRegister(BigInt(min), ret1.indexComp, ret1.indexElem);
+    coreEvents.emit("arduino-terminal-write", { text: `min(${value1}, ${value2})` });
 }
 export function cr_pow() {
     console.log("cr_pow called");
@@ -294,6 +384,7 @@ export function cr_pow() {
     );
     const pow = Math.pow(Number(value1), Number(value2));
     writeRegister(BigInt(pow), ret1.indexComp, ret1.indexElem);
+    coreEvents.emit("arduino-terminal-write", { text: `pow(${value1}, ${value2})` });
 }
 export function cr_bit() {
     console.log("cr_bit called");
@@ -318,6 +409,7 @@ export function cr_bit() {
     }
     console.log(res);
     writeRegister(BigInt(res), ret1.indexComp, ret1.indexElem);
+    coreEvents.emit("arduino-terminal-write", { text: `bit(${value1})` });
 }
 export function cr_bitClear() {
     console.log("cr_bitClear called");
@@ -357,6 +449,7 @@ export function cr_bitClear() {
     }
     console.log(res);
     writeRegister(BigInt(res), ret1.indexComp, ret1.indexElem);
+    coreEvents.emit("arduino-terminal-write", { text: `bitClear(${value1}, ${value2})` });
 }
 export function cr_bitRead() {
     console.log("cr_bitRead called");
@@ -396,6 +489,7 @@ export function cr_bitRead() {
     }
     console.log(res);
     writeRegister(BigInt(res), ret1.indexComp, ret1.indexElem);
+    coreEvents.emit("arduino-terminal-write", { text: `bitRead(${value1}, ${value2})` });
 }
 export function cr_bitSet() {
     console.log("cr_bitSet called");
@@ -435,6 +529,7 @@ export function cr_bitSet() {
     }
     console.log(res);
     writeRegister(BigInt(res), ret1.indexComp, ret1.indexElem);
+    coreEvents.emit("arduino-terminal-write", { text: `bitSet(${value1}, ${value2})` });
 }
 export function cr_bitWrite() {
     console.log("cr_bitWrite called");
@@ -502,6 +597,7 @@ export function cr_bitWrite() {
     }
     console.log(res);
     writeRegister(BigInt(res), ret1.indexComp, ret1.indexElem);
+    coreEvents.emit("arduino-terminal-write", { text: `bitWrite(${value1}, ${value2}, ${value3})` });
 }
 export function cr_highByte() {
     console.log("cr_highByte called");
@@ -522,6 +618,7 @@ export function cr_highByte() {
     res = (value1 >> 8n) & 0xffn; // Get the high byte
     console.log(res);
     writeRegister(BigInt(res), ret1.indexComp, ret1.indexElem);
+    coreEvents.emit("arduino-terminal-write", { text: `highByte(${value1})` });
 }
 export function cr_lowByte() {
     console.log("cr_lowByte called");
@@ -541,21 +638,7 @@ export function cr_lowByte() {
     let res = value1 & 0xffn; // Get the low byte
     console.log(res);
     writeRegister(BigInt(res), ret1.indexComp, ret1.indexElem);
-}
-export function cr_sqrt() {
-    console.log("cr_sqrt called");
-}
-export function cr_sq() {
-    console.log("cr_sq called");
-}
-export function cr_cos() {
-    console.log("cr_cos called");
-}
-export function cr_sin() {
-    console.log("cr_sin called");
-}
-export function cr_tan() {
-    console.log("cr_tan called");
+    coreEvents.emit("arduino-terminal-write", { text: `lowByte(${value1})` });
 }
 export function cr_attachInterrupt() {
     console.log("cr_attachInterrupt called");
@@ -589,6 +672,7 @@ export function cr_isDigit() {
     );
     let res = value1 >= 48n && value1 <= 57n ? 1n : 0n;
     writeRegister(BigInt(res), ret1.indexComp, ret1.indexElem);
+    coreEvents.emit("arduino-terminal-write", { text: `isDigit(${value1})` });
 }
 export function cr_isAlpha() {
     console.log("cr_isAlpha called");
@@ -610,6 +694,7 @@ export function cr_isAlpha() {
             ? 1n
             : 0n;
     writeRegister(BigInt(res), ret1.indexComp, ret1.indexElem);
+    coreEvents.emit("arduino-terminal-write", { text: `isAlpha(${value1})` });
 }
 export function cr_isAlphaNumeric() {
     console.log("cr_isAlphaNumeric called");
@@ -631,6 +716,7 @@ export function cr_isAlphaNumeric() {
             ? 1n
             : 0n;
     writeRegister(BigInt(res), ret1.indexComp, ret1.indexElem);
+    coreEvents.emit("arduino-terminal-write", { text: `isAlphaNumeric(${value1})` });
 }
 export function cr_isAscii() {
     console.log("cr_isAscii called");
@@ -649,6 +735,7 @@ export function cr_isAscii() {
     );
     let res = value1 >= 0n && value1 <= 127n ? 1n : 0n;
     writeRegister(BigInt(res), ret1.indexComp, ret1.indexElem);
+    coreEvents.emit("arduino-terminal-write", { text: `isAscii(${value1})` });
 }
 export function cr_isControl() {
     console.log("cr_isControl called");
@@ -667,6 +754,7 @@ export function cr_isControl() {
     );
     let res = (value1 >= 0n && value1 <= 31n) || value1 === 127n ? 1n : 0n;
     writeRegister(BigInt(res), ret1.indexComp, ret1.indexElem);
+    coreEvents.emit("arduino-terminal-write", { text: `isControl(${value1})` });
 }
 export function cr_isPunct() {
     console.log("cr_isPunct called");
@@ -691,6 +779,7 @@ export function cr_isPunct() {
             ? 1n
             : 0n;
     writeRegister(BigInt(res), ret1.indexComp, ret1.indexElem);
+    coreEvents.emit("arduino-terminal-write", { text: `isPunct(${value1})` });
 }
 export function cr_isHexadecimalDigit() {
     console.log("cr_isHexadecimalDigit called");
@@ -714,6 +803,7 @@ export function cr_isHexadecimalDigit() {
             ? 1n
             : 0n;
     writeRegister(BigInt(res), ret1.indexComp, ret1.indexElem);
+    coreEvents.emit("arduino-terminal-write", { text: `isHexadecimalDigit(${value1})` });
 }
 export function cr_isUpperCase() {
     console.log("cr_isUpperCase called");
@@ -732,6 +822,7 @@ export function cr_isUpperCase() {
     );
     let res = value1 >= 65n && value1 <= 90n ? 1n : 0n;
     writeRegister(BigInt(res), ret1.indexComp, ret1.indexElem);
+    coreEvents.emit("arduino-terminal-write", { text: `isUpperCase(${value1})` });
 }
 export function cr_isLowerCase() {
     console.log("cr_isLowerCase called");
@@ -750,6 +841,7 @@ export function cr_isLowerCase() {
     );
     let res = value1 >= 97n && value1 <= 122n ? 1n : 0n;
     writeRegister(BigInt(res), ret1.indexComp, ret1.indexElem);
+    coreEvents.emit("arduino-terminal-write", { text: `isLowerCase(${value1})` });
 }
 export function cr_isPrintable() {
     console.log("cr_isPrintable called");
@@ -768,6 +860,7 @@ export function cr_isPrintable() {
     );
     let res = value1 >= 32n && value1 <= 126n ? 1n : 0n;
     writeRegister(BigInt(res), ret1.indexComp, ret1.indexElem);
+    coreEvents.emit("arduino-terminal-write", { text: `isPrintable(${value1})` });
 }
 export function cr_isGraph() {
     console.log("cr_isGraph called");
@@ -786,6 +879,7 @@ export function cr_isGraph() {
     );
     let res = value1 >= 33n && value1 <= 126n ? 1n : 0n;
     writeRegister(BigInt(res), ret1.indexComp, ret1.indexElem);
+    coreEvents.emit("arduino-terminal-write", { text: `isGraph(${value1})` });
 }
 export function cr_isSpace() {
     console.log("cr_isSpace called");
@@ -812,6 +906,7 @@ export function cr_isSpace() {
             ? 1n
             : 0n;
     writeRegister(BigInt(res), ret1.indexComp, ret1.indexElem);
+    coreEvents.emit("arduino-terminal-write", { text: `isSpace(${value1})` });
 }
 export function cr_isWhiteSpace() {
     console.log("cr_isWhiteSpace called");
@@ -838,6 +933,7 @@ export function cr_isWhiteSpace() {
             ? 1n
             : 0n;
     writeRegister(BigInt(res), ret1.indexComp, ret1.indexElem);
+    coreEvents.emit("arduino-terminal-write", { text: `isWhiteSpace(${value1})` });
 }
 export function cr_delay() {
     console.log("cr_delay called");
@@ -854,6 +950,7 @@ export function cr_delay() {
         32,
         readRegister(ret1.indexComp, ret1.indexElem),
     );
+    coreEvents.emit("arduino-terminal-write", { text: `delay(${value1})` });
     // Simulate delay by busy-waiting
     const start = Date.now();
     while (Date.now() - start < Number(value1)) {
@@ -876,6 +973,7 @@ export function cr_delayMicroseconds() {
         readRegister(ret1.indexComp, ret1.indexElem),
     );
     // Simulate microsecond delay by busy-waiting
+    coreEvents.emit("arduino-terminal-write", { text: `delayMicroseconds(${value1})` });
     const start = performance.now();
     while (performance.now() - start < Number(value1) / 1000) {
         // Busy wait
@@ -888,6 +986,7 @@ export function cr_randomSeed() {
         throw packExecute(true, "capi_syscall: register a0 not found", 'danger', null);	
     } 
     var value1 = BigInt.asUintN(32, readRegister(ret1.indexComp, ret1.indexElem));
+    coreEvents.emit("arduino-terminal-write", { text: `randomSeed(${value1})` });
     _seed = Number(value1) >>> 0;
 }
 export function cr_random() {
@@ -919,6 +1018,7 @@ export function cr_random() {
     if (value2 === 0n) {
 			// Return a random number between 0 and value1-1
 			var randomValue = Math.floor(rand * Number(value1));
+            coreEvents.emit("arduino-terminal-write", { text: `random(${value1})` });
 			writeRegister(BigInt(randomValue), ret1.indexComp, ret1.indexElem);
 	} 
     else {
@@ -929,6 +1029,7 @@ export function cr_random() {
 				value2 = temp;
 			}
 			var randomValue = Math.floor(rand * Number(value2 - value1)) + Number(value1);
+            coreEvents.emit("arduino-terminal-write", { text: `random(${value1}, ${value2})` });
 			writeRegister(BigInt(randomValue), ret1.indexComp, ret1.indexElem);
 		}
 
@@ -947,10 +1048,12 @@ export function cr_serial_available() {
     if (serial_begin != 0 && initArduino != 0) {
              // Check how many bytes are available in the keyboard input buffer
 			var available = BigInt((typeof status.keyboard === "string") ? status.keyboard.length : 0);
+            coreEvents.emit("arduino-terminal-write", { text: `serial_available()` });
 			writeRegister(available, ret1.indexComp, ret1.indexElem); 
     }
     else {
 			//ERROR
+            coreEvents.emit("arduino-terminal-write", { text: `serial_available() = -1` });
 			writeRegister(BigInt.asIntN(32, -1n), ret1.indexComp, ret1.indexElem);
 }
 
@@ -964,10 +1067,12 @@ export function cr_serial_availableForWrite() {
     if(serial_begin != 0 && initArduino != 0) {
         // Ready but with nothing being sended TODO: simulate complex scenaries
         writeRegister(64n, ret1.indexComp, ret1.indexElem);  //simulates 64k buffer
+        coreEvents.emit("arduino-terminal-write", { text: `serial_availableForWrite()` });
         //in real hw it will only show data if its receiving data 
     }
     else {
         //ERROR
+        coreEvents.emit("arduino-terminal-write", { text: `serial_availableForWrite()` });
         writeRegister(-1n, ret1.indexComp, ret1.indexElem);
     }
 }
@@ -984,6 +1089,7 @@ export function cr_serial_begin() {
             var value   = readRegister(ret1.indexComp, ret1.indexElem);
             //TODO: put frequences accepted values check
             var val_int = parseInt(value.toString()) >> 0 ;	
+            coreEvents.emit("arduino-terminal-write", { text: `serial_begin(${val_int})` });
             serial_begin = val_int; 
             
         }
@@ -992,6 +1098,7 @@ export function cr_serial_begin() {
 export function cr_serial_end() {
     console.log("cr_serial_end called");
     if (serial_begin != 0 && initArduino != 0) {
+        coreEvents.emit("arduino-terminal-write", { text: `serial_end()` });
 			serial_begin = 0; // Reset serial_begin
 	}
 }
@@ -1186,35 +1293,181 @@ export function cr_serial_printf() {
     // Print the formatted string directly
     display_print(result);
 }
-export function cr_fabs() {
-    console.log("cr_fabs called");
-}
-export function cr_fmax() {
-    console.log("cr_fmax called");
-}
-export function cr_fmin() {
-    console.log("cr_fmin called");
-}
-export function cr_sqrtf() {
-    console.log("cr_sqrtf called");
-}
-export function cr_sqf() {
-    console.log("cr_sqf called");
-}
 export function cr_tone() {
     console.log("cr_tone called");
+    var ret1 = crex_findReg("a0");
+    if (ret1.match === 0) {
+        throw packExecute(
+            true,
+            "capi_arduino: register a0 not found",
+            "danger",
+            null,
+        );
+    }
+    var pin = BigInt.asIntN(32, readRegister(ret1.indexComp, ret1.indexElem));
+
+    var ret2 = crex_findReg("a1");
+    if (ret2.match === 0) {
+        throw packExecute(
+            true,
+            "capi_arduino: register a1 not found",
+            "danger",
+            null,
+        );
+    }
+    var value = BigInt.asIntN(32, readRegister(ret2.indexComp, ret2.indexElem));
+
+    var ret3 = crex_findReg("a2");
+    if (ret3.match === 0) {
+        throw packExecute(
+            true,
+            "capi_arduino: register a2 not found",
+            "danger",
+            null,
+        );
+    }
+    var duration= BigInt.asIntN(32, readRegister(ret3.indexComp, ret3.indexElem));
+    coreEvents.emit("arduino-terminal-write", { text: `tone(${pin}, ${value}, ${duration})` });
+    coreEvents.emit("arduino-pin-write", { pin: Number(pin), value: Number(value) });
 }
 export function cr_noTone() {
     console.log("cr_noTone called");
+    var ret1 = crex_findReg("a0");
+    if (ret1.match === 0) {
+        throw packExecute(
+            true,
+            "capi_arduino: register a0 not found",
+            "danger",
+            null,
+        );
+    }
+    var pin = BigInt.asIntN(32, readRegister(ret1.indexComp, ret1.indexElem));
+    coreEvents.emit("arduino-terminal-write", { text: `noTone(${pin})` });
+    coreEvents.emit("arduino-pin-write", { pin: Number(pin), value: 0 });
 }
 export function cr_pulseIn() {
     console.log("cr_pulseIn called");
+    var ret1 = crex_findReg("a0");
+    if (ret1.match === 0) {
+        throw packExecute(
+            true,
+            "capi_arduino: register a0 not found",
+            "danger",
+            null,
+        );
+    }
+    var pin = BigInt.asIntN(32, readRegister(ret1.indexComp, ret1.indexElem));
+
+    var ret2 = crex_findReg("a1");
+    if (ret2.match === 0) {
+        throw packExecute(
+            true,
+            "capi_arduino: register a1 not found",
+            "danger",
+            null,
+        );
+    }
+    var value = BigInt.asIntN(32, readRegister(ret2.indexComp, ret2.indexElem));
+
+    var ret3 = crex_findReg("a2");
+    if (ret3.match === 0) {
+        throw packExecute(
+            true,
+            "capi_arduino: register a2 not found",
+            "danger",
+            null,
+        );
+    }
+    var duration= BigInt.asIntN(32, readRegister(ret3.indexComp, ret3.indexElem));
+    coreEvents.emit("arduino-terminal-write", { text: `pulseIn(${pin}, ${value}, ${duration})` });
+    coreEvents.emit("arduino-pin-write", { pin: Number(pin), value: Number(value) });
 }
 export function cr_pulseInLong() {
     console.log("cr_pulseInLong called");
+    var ret1 = crex_findReg("a0");
+    if (ret1.match === 0) {
+        throw packExecute(
+            true,
+            "capi_arduino: register a0 not found",
+            "danger",
+            null,
+        );
+    }
+    var pin = BigInt.asIntN(32, readRegister(ret1.indexComp, ret1.indexElem));
+
+    var ret2 = crex_findReg("a1");
+    if (ret2.match === 0) {
+        throw packExecute(
+            true,
+            "capi_arduino: register a1 not found",
+            "danger",
+            null,
+        );
+    }
+    var value = BigInt.asIntN(32, readRegister(ret2.indexComp, ret2.indexElem));
+
+    var ret3 = crex_findReg("a2");
+    if (ret3.match === 0) {
+        throw packExecute(
+            true,
+            "capi_arduino: register a2 not found",
+            "danger",
+            null,
+        );
+    }
+    var duration= BigInt.asIntN(32, readRegister(ret3.indexComp, ret3.indexElem));
+    coreEvents.emit("arduino-terminal-write", { text: `pulseInLong(${pin}, ${value}, ${duration})` });
+    coreEvents.emit("arduino-pin-write", { pin: Number(pin), value: Number(value) });
 }
 export function cr_shiftIn() {
     console.log("cr_shiftIn called");
+    let value = 0;
+    var ret1 = crex_findReg("a0");
+    if (ret1.match === 0) {
+        throw packExecute(
+            true,
+            "capi_arduino: register a0 not found",
+            "danger",
+            null,
+        );
+    }
+    var dataPin = BigInt.asIntN(32, readRegister(ret1.indexComp, ret1.indexElem));
+
+    var ret2 = crex_findReg("a1");
+    if (ret2.match === 0) {
+        throw packExecute(
+            true,
+            "capi_arduino: register a1 not found",
+            "danger",
+            null,
+        );
+    }
+    var clockPin = BigInt.asIntN(32, readRegister(ret2.indexComp, ret2.indexElem));
+
+    var ret3 = crex_findReg("a2");
+    if (ret3.match === 0) {
+        throw packExecute(
+            true,
+            "capi_arduino: register a2 not found",
+            "danger",
+            null,
+        );
+    }
+    var bitOrder = BigInt.asIntN(32, readRegister(ret3.indexComp, ret3.indexElem));
+    coreEvents.emit("arduino-terminal-write", { text: `shiftIn(${dataPin}, ${clockPin}, ${bitOrder})` });
+    for (let i = 0; i < 8; i++) {
+        let bit = (pinStates.value[`GPIO${dataPin}`] !== 0) ? 1 : 0;
+        if (bitOrder === 1n) { // MSBFIRST
+            value |= (bit << (7 - i));
+        } else { // LSBFIRST
+            value |= (bit << i);
+        }
+    }
+    writeRegister(BigInt(value), ret1.indexComp, ret1.indexElem);
+    coreEvents.emit("arduino-terminal-write", { 
+        text: `shiftIn(${dataPin}, ${clockPin}) -> Received Byte: 0x${value.toString(16).toUpperCase()} (${value})` 
+    });
+
 }
 export function cr_shiftOut() {
     console.log("cr_shiftOut called");

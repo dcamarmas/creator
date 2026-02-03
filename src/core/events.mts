@@ -18,6 +18,7 @@
  */
 
 import mitt, { type Emitter } from "mitt";
+import { ARDUINO } from "./capi/arduino.mts";
 
 /**
  * Event types for CREATOR core events
@@ -32,6 +33,8 @@ export const CoreEventTypes = {
     LIBRARY_REMOVED: "library-removed",
     EXECUTOR_BUTTONS_UPDATE: "executor-buttons-update",
     ARDUINO_TERMINAL_WRITE: "arduino-terminal-write",
+    ARDUINO_PIN_CHANGED: "arduino-pin-write",
+    ARDUINO_RESET: "arduino-reset",
 } as const;
 
 /**
@@ -97,7 +100,11 @@ export type CoreEvents = {
     /** Emitted when executor button states should be updated */
     "executor-buttons-update": ExecutorButtonsUpdateEvent;
     /** Emitted when the simulator sends text to the Arduino Terminal */
-    "arduino-terminal-write": ArduinoTerminalWriteEvent; // <--- Nuevo
+    "arduino-terminal-write": ArduinoTerminalWriteEvent;
+    /** Emitted when a Pin changes its values */
+    "arduino-pin-write": ArduinoPinChangedEvent;
+    /** Emitted when Arduino is reset */
+    "arduino-reset": void;
 };
 /**
  * Emitted when the simulator sends text to the Arduino Terminal
@@ -105,6 +112,15 @@ export type CoreEvents = {
 export interface ArduinoTerminalWriteEvent {
     /** The text to be displayed in the terminal */
     text: string;
+}
+/**
+ * Emitted when a Pin changes its value
+ */
+export interface ArduinoPinChangedEvent {
+    /** The pin number */
+    pin: number;
+    /** The new value of the pin */
+    value: number;
 }
 
 /**
