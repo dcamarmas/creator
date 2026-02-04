@@ -525,7 +525,7 @@ watch(
     <div ref="editorContainer" class="monaco-editor-container" v-show="files.length > 0 || !architecture.config.name.includes('SRV')"/>
 
     <div id="vim-statusbar" class="vim-statusbar"></div>
-    <b-modal v-model="renameModalOpen" title="Renombrar fichero" @ok="confirmRename">
+    <b-modal v-model="renameModalOpen" class="rename-button" :class="{ 'rename-button-dark': dark }" title="Rename file" @ok="confirmRename">
       <b-form-input
         v-model="renameValue"
         autofocus
@@ -538,7 +538,8 @@ watch(
   <Teleport to="body">
     <div
       v-show="tabMenu.visible"
-      class="tab-context-menu"
+      class="tab-context-menu rename-button"
+      :class="{ 'rename-button-dark': dark }" 
       :style="{ left: tabMenu.x + 'px', top: tabMenu.y + 'px' }"
       @click.stop
       @contextmenu.prevent
@@ -689,5 +690,41 @@ watch(
 
 .tab-context-item:hover {
   background: rgba(0,0,0,.06);
+}
+
+.rename-button {
+  opacity: 1;
+  color: rgba(0, 0, 0, 0.8);
+  background-color: rgb(255, 255, 255);
+
+  &:hover:not(:disabled) {
+    background-color: rgb(255, 255, 255);
+  }
+
+  &:active:not(:disabled) {
+    background-color: rgba(0, 0, 0, 0.3);
+  }
+
+  &:focus-visible {
+    outline: 2px solid rgba(0, 0, 0, 0.5);
+    outline-offset: 2px;
+  }
+
+  &.rename-button-dark {
+    color: rgb(255, 255, 255);
+    background-color: rgb(83, 83, 83);
+
+    &:hover:not(:disabled) {
+    background-color: rgb(61, 61, 61);
+    }
+
+    &:active:not(:disabled) {
+      background-color: rgba(255, 255, 255, 0.3);
+    }
+
+    &:focus-visible {
+      outline-color: rgba(255, 255, 255, 0.5);
+    }
+  }
 }
 </style>
