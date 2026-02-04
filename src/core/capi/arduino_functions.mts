@@ -18,7 +18,6 @@ import {
 } from "../../web/components/simulator/CreatinoMaker/state.ts";
 import { Memory } from "../memory/Memory.mts";
 import { coreEvents } from "@/core/events.mjs";
-import { write } from "fs";
 
 /*
  *  CREATOR instruction description API:
@@ -62,6 +61,31 @@ export function cr_digitalRead() {
 }
 export function cr_pinMode() {
     console.log("cr_pinMode called");
+    var ret1 = crex_findReg("a0");
+    if (ret1.match === 0) {
+        throw packExecute(
+            true,
+            "capi_arduino: register a0 not found",
+            "danger",
+            null,
+        );
+    }
+    var pin = BigInt.asIntN(32, readRegister(ret1.indexComp, ret1.indexElem));
+    var ret2 = crex_findReg("a1");
+    if (ret2.match === 0) {
+        throw packExecute(
+            true,
+            "capi_arduino: register a1 not found",
+            "danger",
+            null,
+        );
+    }
+    var mode = BigInt.asIntN(32, readRegister(ret2.indexComp, ret2.indexElem));
+    coreEvents.emit("arduino-terminal-write", { text: `pinMode(${pin},${mode})` });
+    coreEvents.emit("arduino-pin-mode", { 
+        pin: Number(pin), 
+        mode: Number(mode) 
+    });
 }
 export function cr_digitalWrite() {
     console.log("cr_digitalWrite called");

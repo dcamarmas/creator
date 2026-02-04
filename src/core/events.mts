@@ -105,6 +105,8 @@ export type CoreEvents = {
     "arduino-pin-write": ArduinoPinChangedEvent;
     /** Emitted when Arduino is reset */
     "arduino-reset": void;
+    /** Event is emmited when a pin in pinMode has been set to a mode */
+    "arduino-pin-mode":ArduinoPinMode;
 };
 /**
  * Emitted when the simulator sends text to the Arduino Terminal
@@ -121,6 +123,16 @@ export interface ArduinoPinChangedEvent {
     pin: number;
     /** The new value of the pin */
     value: number;
+}
+
+/**
+ * Emitted when a Pin changes its value
+ */
+export interface ArduinoPinMode{
+    /** The pin number */
+    pin: number;
+    /** The mode of the pin */
+    mode: number;
 }
 
 /**

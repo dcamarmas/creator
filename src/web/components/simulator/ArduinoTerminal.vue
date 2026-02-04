@@ -28,9 +28,10 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 <div class="right-panel" :style="{ width: (100 - splitPercent) + '%' }">
   <div class="panel-header">Hardware View</div>
 <div class="board-selector-inline">
-      <label>Board selected:</label>
-      <select v-model="selectedBoard" class="board-dropdown-minimal">
-        <option value="esp32c3">ESP32-C3 DevKit</option>
+    <label>Board selected:</label>
+      <select v-model="selectedBoard" @change="handleBoardChange">
+        <option value="esp32c3devkit2">ESP32-C3 DevKit</option>
+        <option value="esp32c6devkit1">ESP32-C6 DevKit</option>
       </select>
     </div>
   
@@ -38,7 +39,10 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
   <div class="svg-wrapper">
     <div class="pins-column left">
     <div v-for="pinName in pinLabels[0]" :key="pinName" class="pin-anchor">
-      <div class="reg-chip mini">
+      <div 
+        class="reg-chip mini" 
+        :style="{ backgroundColor: chipStyles[pinName] }"
+      >
         <span class="reg-id">{{ pinName }}</span>
         <input 
           type="text" 
@@ -53,14 +57,17 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
   </div>
 
     <img 
-      src="../../../../../public/maker/boards/esp32c3devkit2.svg" 
-      class="main-board-svg" 
-      :style="{ width: Math.max((100 - splitPercent) * 4, 120) + 'px' }"
-    />
+        :src="activeBoard.svg" 
+        class="main-board-svg" 
+        :style="{ width: Math.max((100 - splitPercent) * 4, 120) + 'px' }"
+      />
 
     <div class="pins-column right">
       <div v-for="pinName in pinLabels[1]" :key="pinName" class="pin-anchor">
-        <div class="reg-chip mini">
+        <div 
+          class="reg-chip mini" 
+          :style="{ backgroundColor: chipStyles[pinName] }"
+        >
           <span class="reg-id">{{ pinName }}</span>
           <input 
             type="text" 
@@ -85,10 +92,18 @@ import { FitAddon } from "@xterm/addon-fit";
 import "xterm/css/xterm.css";
 import { execution_mode, status } from "@/core/core.mjs";
 import { coreEvents } from "@/core/events.mjs";
-import { pinStates as sharedPinStates } from "../../../core/capi/pinstates.mjs";
+import { activeBoard, pinStates, pinLabels, switchBoard } from "../../../core/capi/pinstates.mjs";
 
 
 export default {
+  setup() {
+    return {
+      activeBoard,
+      pinStates,
+      pinLabels,
+      switchBoard
+    }
+  },
   props: {
     display: { type: String, required: true },
     keyboard: { type: String, required: true },
@@ -97,17 +112,14 @@ export default {
 
   data() {
     return {
+      selectedBoard: "esp32c3devkit2",
       terminal: null,
       fitAddon: null,
       inputBuffer: "",
       inputMode: false,
-      pinLabels: [
-        ["GPIO4", "GPIO5", "GPIO6", "GPIO7", "GPIO8", "GPIO9"], // Columna Izquierda
-        ["GPIO0", "GPIO1", "GPIO2", "GPIO3", "GPIO20", "GPIO21", "GPIO18", "GPIO19"] // Columna Derecha
-      ],
-      pinStates: sharedPinStates,
       splitPercent: 50, 
       isResizing: false,
+      chipStyles: {},
     };
   },
 
@@ -129,8 +141,30 @@ export default {
       for (const pin in this.pinStates) {
         this.pinStates[pin] = 0;
       }
+      for (const pinName in this.chipStyles) {
+        this.chipStyles[pinName] = "#0dcaf0";
+      }
       this.clearTerminal();
     })
+    //Changes pin mode color
+    coreEvents.on("arduino-pin-mode", (event) => {
+      const pinName = `GPIO${event.pin}`;
+      let color = "#0dcaf0"; 
+      switch(event.mode) {
+        case 0x1: color = "#ff6666"; break; // INPUT
+        case 0x3: color = "#66ff66"; break; // OUTPUT
+        case 0x4: 
+        case 0x5: color = "#0066ff"; break; // INPUT_PULLUP
+        case 0x9: color = "#9999ff"; break; // INPUT_PULLDOWN
+        case 0xC0: color = "#c2c2d6"; break; // ANALOG
+        default: color = "#0dcaf0"; 
+      }
+
+      this.chipStyles = {
+        ...this.chipStyles,
+        [pinName]: color
+      };
+    });
   },
 
   beforeUnmount() {
@@ -311,6 +345,9 @@ export default {
 
     console.log(`Pin ${pinName} changed to:`, this.pinStates[pinName]);
   },
+  handleBoardChange() {
+      switchBoard(this.selectedBoard);
+    }
   },
  
 };
@@ -515,7 +552,7 @@ export default {
   justify-content: space-between;
   align-items: center;
   padding: 5px 10px; 
-  background: RGBA(var(--bs-info-rgb), var(--bs-bg-opacity, 1)) !important; /* Un azul sólido para que resalte */
+  background: RGBA(var(--bs-info-rgb), var(--bs-bg-opacity, 1)); /* Un azul sólido para que resalte */
   border-radius: 8px !important;
   color: white;
   font-size: 14px;
