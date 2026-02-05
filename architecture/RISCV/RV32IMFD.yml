@@ -1713,7 +1713,7 @@ instructions:
         - field: funct3
           value: "010"
       definition: |
-        registers[rd] = (CAPI.FP.uint2int(registers[rs1]) < CAPI.FP.uint2int(imm)) ? 1 : 0;
+        registers[rd] = (CAPI.FP.uint2int(registers[rs1]) < CAPI.FP.uint2int(imm)) ? 1n : 0n;
       help: Place the value 1 in register rd if register rs1 is less than the
         signextended immediate when both are treated as signed numbers, else 0 is written to rd.
 
@@ -1726,7 +1726,7 @@ instructions:
         - field: funct3
           value: "011"
       definition: |
-        registers[rd] = (CAPI.FP.int2uint(registers[rs1]) < CAPI.FP.int2uint(imm)) ? 1: 0;
+        registers[rd] = (CAPI.FP.int2uint(registers[rs1]) < CAPI.FP.int2uint(imm)) ? 1n : 0n;
       help: Place the value 1 in register rd if register rs1 is less than the
         immediate when both are treated as unsigned numbers, else 0 is written to rd.
 
@@ -1868,7 +1868,7 @@ instructions:
         - field: funct3
           value: "010"
       definition: |
-        registers[rd] = (CAPI.FP.uint2int(registers[rs1]) < CAPI.FP.uint2int(registers[rs2])) ? 1 : 0;
+        registers[rd] = (CAPI.FP.uint2int(registers[rs1]) < CAPI.FP.uint2int(registers[rs2])) ? 1n : 0n;
       help: Place the value 1 in register rd if register rs1 is less than
         register rs2 when both are treated as signed numbers, else 0 is written to rd.
 
