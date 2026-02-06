@@ -150,7 +150,6 @@ export default defineComponent({
   flex-shrink: 0;
   position: relative;
   transition: width 0.3s ease;
-  z-index: 1000;
 
   hr {
     margin-top: 10px;
@@ -168,7 +167,6 @@ export default defineComponent({
       width: 50px;
       transform: translateX(-100%);
       transition: transform 0.3s ease;
-      z-index: 1001;
     }
     
     &::after {
@@ -178,7 +176,6 @@ export default defineComponent({
       top: 0;
       bottom: 0;
       width: 15px; 
-      z-index: 1000;
     }
 
     &:hover {
@@ -198,7 +195,6 @@ export default defineComponent({
   background-color: rgb(238, 238, 238); 
   border-right: 1px solid #dee2e6; 
   flex-shrink: 0;
-  z-index: 1000;
 
   &.dark-mode {
     background-color: hsl(214, 9%, 12%); 
