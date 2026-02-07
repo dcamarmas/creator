@@ -92,6 +92,9 @@ export default {
           fontWeightBold: "700",
           letterSpacing: 0,
           lineHeight: 1.2,
+          // Interprets \n as \r\n (move to the beginning of the next line)
+          // instead of just moving the cursor down
+          convertEol: true,
           theme: {
             background: "#0d1117",
             foreground: "#c9d1d9",
@@ -150,16 +153,17 @@ export default {
       // Handle special keys
       if (data === "\r") {
         // Enter key
-        this.terminal.write("\r\n");
+        this.terminal.write("\n");
+        this.inputBuffer += "\n";
         this.submitInput();
         return;
       }
 
       if (data === "\u007F") {
-        // Backspace
+        // Delete
         if (this.inputBuffer.length > 0) {
           this.inputBuffer = this.inputBuffer.slice(0, -1);
-          this.terminal.write("\b \b");
+          this.terminal.write("\b");
         }
         return;
       }
