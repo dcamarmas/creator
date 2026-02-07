@@ -1,7 +1,6 @@
-<html>
- <h1 align="center">CREATOR: <br>didaCtic and geneRic assEmbly progrAmming simulaTOR</h1>
- <img width="5120" height="3325" alt="creator interface" src="https://github.com/user-attachments/assets/bbfb18b4-8310-406b-aad7-89223b9c6d87" />
-</html>
+<div align="center">
+  <img src="https://github.com/user-attachments/assets/72ca6238-206e-4623-81e1-f6edb8224088" width="25%">
+</div>
 
 
 
