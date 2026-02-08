@@ -39,8 +39,8 @@ const contributors = ref<any[]>([]);
 onMounted(async () => {
   try {
     const [authorsResponse, contributorsResponse] = await Promise.all([
-      fetch("https://creatorsim.github.io/web-beta/content/authors.yml"),
-      fetch("https://creatorsim.github.io/web-beta/content/contributors.yml"),
+      fetch("https://creatorsim.github.io/content/authors.yml"),
+      fetch("https://creatorsim.github.io/content/contributors.yml"),
     ]);
 
     const authorsYaml = await authorsResponse.text();
