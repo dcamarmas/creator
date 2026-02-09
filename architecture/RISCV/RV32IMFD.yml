@@ -91,6 +91,7 @@ components:
         encoding: 2
         properties:
           - read
+          - write
       - name:
           - mstatus
         nbits: 32
@@ -4117,7 +4118,7 @@ interrupts:
     custom: |
       CAPI.INTERRUPTS.globalDisable();
       CAPI.INTERRUPTS.setKernelMode();
-      registers.epc = registers.pc;
+      registers.mepc = CAPI.REG.read("pc"); // get "real" PC (next instruction)
 
       // jump to handler
       if (registers.mtvec & 1n) { // vectored mode
@@ -4134,7 +4135,6 @@ interrupts:
     return null;
 
   is_enabled: |
-    if (!(registers.mstatus & 2n ** 3n)) return false; // MIE
     switch (type) {
       case InterruptType.Software:
       case InterruptType.EnvironmentCall:
@@ -4147,7 +4147,7 @@ interrupts:
     return false;
 
   is_global_enabled: |
-    return !(registers.mstatus & 2n ** 3n); // MIE
+    return !!(registers.mstatus & 2n ** 3n); // MIE
 
   enable: |
     switch (type) {
