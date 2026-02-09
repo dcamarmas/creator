@@ -7,15 +7,8 @@
     "description": "RISC-V (RV32IMFD) Examples"
   },
   {
-    "name": "RISC-V (RV64IMFD) Examples",
-    "id": "default",
-    "architecture": "RISC-V (RV64IMFD) - Partial Specification",
-    "url": "examples/RISCV-64/list.json",
-    "description": "RISC-V (RV64IMFD) Examples"
-  },
-  {
     "name": "RISC-V (RV32IMFD, Interrupts) Examples",
-    "id": "default",
+    "id": "interrupts",
     "architecture": "RISC-V (RV32IMFD) - Partial Specification",
     "url": "examples/RISCV-32-interrupts/list.json",
     "description": "RISC-V (RV32IMFD, Interrupts) Examples"
@@ -27,6 +20,38 @@
     "url": "examples/RISCV-32-devices/list.json",
     "description": "RISC-V (RV32IMFD, Interrupts) Devices Examples"
   },
+  {
+    "name": "RISC-V (RV32IMFD) from UC3M-AG",
+    "id": "uc3m-ec-ag",
+    "architecture": "RISC-V (RV32IMFD) - Partial Specification",
+    "url": "examples/ag-uc3m-ec/list.json",
+    "description": "RISC-V (RV32IMFD) examples for Aula Global at UC3M"
+  },
+
+
+  {
+    "name": "RISC-V (RV64IMFD) Examples",
+    "id": "default",
+    "architecture": "RISC-V (RV64IMFD) - Partial Specification",
+    "url": "examples/RISCV-64/list.json",
+    "description": "RISC-V (RV64IMFD) Examples"
+  },
+  {
+    "name": "RISC-V (RV64IMFD, Interrupts) Examples",
+    "id": "interrupts",
+    "architecture": "RISC-V (RV64IMFD) - Partial Specification",
+    "url": "examples/RISCV-64-interrupts/list.json",
+    "description": "RISC-V (RV64IMFD, Interrupts) Examples"
+  },
+  {
+    "name": "RISC-V (RV64IMFD, Interrupts) Devices Examples",
+    "id": "devices",
+    "architecture": "RISC-V (RV64IMFD) - Partial Specification",
+    "url": "examples/RISCV-64-devices/list.json",
+    "description": "RISC-V (RV64IMFD, Interrupts) Devices Examples"
+  },
+
+
   {
     "name": "MIPS-32 Examples",
     "id": "default",
@@ -41,13 +66,8 @@
     "url": "examples/ocw-uc3m-ec/list.json",
     "description": "MIPS-32 examples from UC3M course"
   },
-  {
-    "name": "RISC-V (RV32IMFD) from UC3M-AG",
-    "id": "uc3m-ec-ag",
-    "architecture": "RISC-V (RV32IMFD) - Partial Specification",
-    "url": "examples/ag-uc3m-ec/list.json",
-    "description": "RISC-V (RV32IMFD) examples for Aula Global at UC3M"
-  },
+
+
   {
     "name": "RISC-V Sail 32 Examples",
     "id": "default",
@@ -55,6 +75,8 @@
     "url": "examples/RISCV-Sail/list.json",
     "description": "RISC-V Sail 32 examples"
   },
+
+
   {
     "name": "RISC-V Sail 64 Examples",
     "id": "default",
