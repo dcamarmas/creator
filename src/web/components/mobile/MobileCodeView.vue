@@ -21,7 +21,6 @@ import { ref, watch } from "vue";
 import { getDefaultCompiler } from "@/web/assemblers";
 import MobileEditor from "@/web/components/assembly/MobileEditor.vue";
 import Examples from "@/web/components/assembly/Examples.vue";
-import MobileInstructionHelp from "@/web/components/mobile/MobileInstructionHelp.vue";
 import LoadLibrary from "@/web/components/assembly/LoadLibrary.vue";
 import LibraryTags from "@/web/components/assembly/LibraryTags.vue";
 import {
@@ -134,10 +133,6 @@ function resetCode() {
           <template #button-content>
             <font-awesome-icon :icon="['fas', 'bars']" />
           </template>
-          <b-dropdown-item v-b-modal.instruction-help-mobile>
-            <font-awesome-icon :icon="['fas', 'question-circle']" /> Instruction
-            Help
-          </b-dropdown-item>
           <b-dropdown-item v-b-modal.examples-mobile>
             <font-awesome-icon :icon="['fas', 'file-lines']" /> Examples
           </b-dropdown-item>
@@ -169,12 +164,6 @@ function resetCode() {
     id="examples-mobile"
     :architecture_name="architecture_name"
     :compile="false"
-  />
-
-  <!-- Instruction Help modal -->
-  <MobileInstructionHelp
-    id="instruction-help-mobile"
-    :architecture_name="architecture_name"
   />
 
   <!-- Load Library modal -->
