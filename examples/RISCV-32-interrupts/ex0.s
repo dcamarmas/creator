@@ -1,29 +1,32 @@
+#
+# Creator (https://creatorsim.github.io/creator/)
+#
+
 .data
 
 .text
+   rti:
+      # ...
 
-rti:   			# load mcause to t0
-                csrrw t0, MCAUSE, t0
-                csrrw t1, MSCRATCH, t1  # swap t1 w/ mscratch
+      # return from interrupt
+      mret
 
-                # treat interruption
+   main:
+      # enable interrupts (MIE=1)
+      csrrw zero, mstatus, t0
+      ori t0, t0, 3
+      csrrw zero, mstatus, t0
 
-                # if ecall
-                li t1, 256
-				beq t0, t1, rti_ecall
+      # enable software interrupts (MSIE=1)
+      csrrw zero, mie, t0
+      ori t0, t0, 3
+      csrrw zero, mie, t0
 
-rti_ecall:      li t1, 1
-				beq a7, t1, rti_print_int
+      # load rti addr to mtvec
+      la t0, rti
+      csrrw zero, mtvec, t0
 
-rti_print_int:  print_int
-				j rti_end
+      # return
+      li a7, 10
+      ecall
 
-rti_end:		csrrw t0, MCAUSE, t0  # restore t0
-				csrrw t1, MSCRATCH, t1  # restore t1
-				mret
-
-
-main:  			li a7, 1
-				li a0, 69
-				ecall
-                jr ra # TODO: Implement proper exit

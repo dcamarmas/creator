@@ -16,14 +16,14 @@
   {
     "name": "RISC-V (RV32IMFD, Interrupts) Examples",
     "id": "default",
-    "architecture": "RISC-V (RV32IMFD, Interrupts)",
+    "architecture": "RISC-V (RV32IMFD) - Partial Specification",
     "url": "examples/RISCV-32-interrupts/list.json",
     "description": "RISC-V (RV32IMFD, Interrupts) Examples"
   },
   {
     "name": "RISC-V (RV32IMFD, Interrupts) Devices Examples",
     "id": "devices",
-    "architecture": "RISC-V (RV32IMFD, Interrupts)",
+    "architecture": "RISC-V (RV32IMFD) - Partial Specification",
     "url": "examples/RISCV-32-devices/list.json",
     "description": "RISC-V (RV32IMFD, Interrupts) Devices Examples"
   },
