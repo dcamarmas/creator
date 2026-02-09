@@ -20,32 +20,33 @@ config:
   plugin: riscv
   assemblers:
     - name: CreatorAssembler
-      description: Default CREATOR assembler
+      description: "Default CREATOR assembler"
+
 extensions:
   I:
-    description: RV32I Base Instruction Set
+    description: "RV32I Base Instruction Set"
     template: Base
   M:
-    description: RV32M Integer Multiply/Divide Extension
+    description: "RV32M Integer Multiply/Divide Extension"
     type: extension
   F:
-    description: RV32F Single-Precision Floating-Point Extension
+    description: "RV32F Single-Precision Floating-Point Extension"
     type: extension
     implies:
       - Zicsr
   D:
-    description: RV32D Double-Precision Floating-Point Extension
+    description: "RV32D Double-Precision Floating-Point Extension"
     type: extension
     implies:
       - F
   Zifencei:
-    description: RV32/RV64 Zifencei Standard Extension
+    description: "RV32/RV64 Zifencei Standard Extension"
     type: extension
   Zicsr:
-    description: RV32/RV64 Zicsr Standard Extension
+    description: "RV32/RV64 Zicsr Standard Extension"
     type: extension
   Priv:
-    description: RV32/RV64 Privileged instructions
+    description: "RV32/RV64 Privileged instructions"
     type: extension
 
 components:
@@ -1491,7 +1492,7 @@ instructions:
           value: "000"
       definition: |
         if (registers[rs1] === registers[rs2])
-          registers.pc = registers.pc + imm;
+            registers.pc = registers.pc + imm;
       help: Take the branch if registers rs1 and rs2 are equal.
 
     - name: bge
@@ -1503,7 +1504,7 @@ instructions:
           value: "101"
       definition: |
         if (CAPI.FP.uint2int(registers[rs1]) >= CAPI.FP.uint2int(registers[rs2]))
-         registers.pc = registers.pc + imm;
+            registers.pc = registers.pc + imm;
       help: Take the branch if registers rs1 is greater than or equal to rs2,
         using signed comparison.
 
@@ -1516,7 +1517,7 @@ instructions:
           value: "111"
       definition: |
         if (CAPI.FP.int2uint(registers[rs1]) > CAPI.FP.int2uint(registers[rs2]))
-         registers.pc = registers.pc + imm;
+            registers.pc = registers.pc + imm;
       help: Take the branch if registers rs1 is greater than or equal to rs2,
         using unsigned comparison.
 
@@ -1529,9 +1530,8 @@ instructions:
           value: "100"
       definition: |
         if (CAPI.FP.uint2int(registers[rs1]) < CAPI.FP.uint2int(registers[rs2]))
-         registers.pc = registers.pc + imm;
-      help: Take the branch if registers rs1 is less than rs2, using signed
-        comparison.
+            registers.pc = registers.pc + imm;
+      help: Take the branch if registers rs1 is less than rs2, using signed comparison.
 
     - name: bltu
       template: B
@@ -1542,9 +1542,8 @@ instructions:
           value: "110"
       definition: |
         if (CAPI.FP.int2uint(registers[rs1]) < CAPI.FP.int2uint(registers[rs2]))
-         registers.pc = registers.pc + imm;
-      help: Take the branch if registers rs1 is less than rs2, using unsigned
-        comparison.
+            registers.pc = registers.pc + imm;
+      help: Take the branch if registers rs1 is less than rs2, using unsigned comparison.
 
     - name: bne
       template: B
@@ -1555,7 +1554,7 @@ instructions:
           value: "001"
       definition: |
         if (registers[rs1] !== registers[rs2])
-          registers.pc = registers.pc + imm;
+            registers.pc = registers.pc + imm;
       help: Take the branch if registers rs1 and rs2 are not equal.
 
     # I-type instructions
@@ -3678,7 +3677,7 @@ instructions:
     # TODO: Implement rest of CSR instructions
 
 
-  Zifencei:
+Zifencei:
     #   _____ _   __                          _
     #  |__  /(_) / _|  ___  _ __    ___  ___ (_)
     #    / / | || |_  / _ \| '_ \  / __|/ _ \| |
@@ -3712,6 +3711,7 @@ instructions:
         CAPI.VALIDATION.raise('fence.i not implemented');
       help: Provides explicit synchronization between writes to instruction
         memory and instruction fetches on the same hart.
+
 
 pseudoinstructions:
   # Make sure the definitions correspond with those in the RISC-V ASM manual (TODO: Check these!)
