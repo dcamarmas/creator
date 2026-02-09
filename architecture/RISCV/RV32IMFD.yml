@@ -1490,7 +1490,7 @@ instructions:
         - field: funct3
           value: "000"
       definition: |
-        if (registers[rs1] === registers[rs2]) 
+        if (registers[rs1] === registers[rs2])
           registers.pc = registers.pc + imm;
       help: Take the branch if registers rs1 and rs2 are equal.
 
@@ -1554,7 +1554,7 @@ instructions:
         - field: funct3
           value: "001"
       definition: |
-        if (registers[rs1] !== registers[rs2]) 
+        if (registers[rs1] !== registers[rs2])
           registers.pc = registers.pc + imm;
       help: Take the branch if registers rs1 and rs2 are not equal.
 
@@ -1590,8 +1590,7 @@ instructions:
           value: "111"
       definition: |
         registers[rd] = registers[rs1] & CAPI.FP.int2uint(imm);
-      help: Performs bitwise AND on register rs1 and the sign-extended 12-bit
-        immediate and place the result in rd.
+      help: Performs bitwise AND on register rs1 and the sign-extended 12-bit immediate and place the result in rd.
 
     - name: jalr
       template: I-Offset
@@ -1617,8 +1616,7 @@ instructions:
           value: "000"
       definition: |
         registers[rd] = CAPI.MEM.read(imm + registers[rs1], 1, rd);
-      help: Loads a 8-bit value from memory and sign-extends this to XLEN bits
-        before storing it in register rd.
+      help: Loads a 8-bit value from memory and sign-extends this to XLEN bits before storing it in register rd.
 
     - name: lbu
       template: I-Offset
@@ -1632,8 +1630,7 @@ instructions:
         let addr = CAPI.FP.int2uint(registers[rs1]) + imm;
         registers[rd] = CAPI.MEM.read(addr, 1, rd);
         registers[rd] = CAPI.FP.int2uint(registers[rd]);
-      help: Loads a 8-bit value from memory and zero-extends this to XLEN bits
-        before storing it in register rd.
+      help: Loads a 8-bit value from memory and zero-extends this to XLEN bits before storing it in register rd.
 
     - name: lh
       template: I-Offset
@@ -1645,8 +1642,7 @@ instructions:
           value: "001"
       definition: |
         registers[rd] = CAPI.MEM.read(imm + registers[rs1], 2, rd);
-      help: Loads a 16-bit value from memory and sign-extends this to XLEN bits
-        before storing it in register rd.
+      help: Loads a 16-bit value from memory and sign-extends this to XLEN bits before storing it in register rd.
 
     - name: lhu
       template: I-Offset
@@ -1660,8 +1656,7 @@ instructions:
         let addr = CAPI.FP.int2uint(registers[rs1], 32) + imm;
         registers[rd] = CAPI.MEM.read(addr, 2, rd);
         registers[rd] = CAPI.FP.int2uint(registers[rd]);
-      help: Loads a 16-bit value from memory and zero-extends this to XLEN bits
-        before storing it in register rd.
+      help: Loads a 16-bit value from memory and zero-extends this to XLEN bits before storing it in register rd.
 
     - name: lw
       template: I-Offset
@@ -1674,8 +1669,7 @@ instructions:
       definition: |
         let addr = CAPI.FP.int2uint(registers[rs1], 32) + imm;
         registers[rd] = CAPI.MEM.read(addr, 4, rd);
-      help: Loads a 32-bit value from memory and sign-extends this to XLEN bits
-        before storing it in register rd.
+      help: Loads a 32-bit value from memory and sign-extends this to XLEN bits before storing it in register rd.
 
     - name: ori
       template: I
@@ -1687,8 +1681,7 @@ instructions:
           value: "110"
       definition: |
         registers[rd] = registers[rs1] | imm;
-      help: Performs bitwise OR on register rs1 and the sign-extended 12-bit
-        immediate and place the result in rd.
+      help: Performs bitwise OR on register rs1 and the sign-extended 12-bit immediate and place the result in rd.
 
     - name: slli
       template: I-Shift
@@ -1828,8 +1821,7 @@ instructions:
           value: "111"
       definition: |
         registers[rd] = registers[rs1] & registers[rs2];
-      help: Performs bitwise AND on registers rs1 and rs2 and place the result
-        in rd.
+      help: Performs bitwise AND on registers rs1 and rs2 and place the result in rd.
 
     - name: or
       template: R
@@ -1842,8 +1834,8 @@ instructions:
           value: "110"
       definition: |
         registers[rd] = registers[rs1] | registers[rs2];
-      help: Performs bitwise OR on registers rs1 and rs2 and place the result in
-        rd.
+      help: Performs bitwise OR on registers rs1 and rs2 and place the result in rd.
+
     - name: sll
       template: R
       fields:
@@ -1915,8 +1907,7 @@ instructions:
       definition: |
         const shiftAmount = registers[rs2] & 0x1Fn;
         registers[rd] = (registers[rs1] >> shiftAmount) & 0xFFFFFFFFn;
-      help: Logical right shift on the value in register rs1 by the shift amount
-        held in the lower 5 bits of register rs2.
+      help: Logical right shift on the value in register rs1 by the shift amount held in the lower 5 bits of register rs2.
 
     - name: sub
       template: R
@@ -1944,8 +1935,7 @@ instructions:
           value: "100"
       definition: |
         registers[rd] = (registers[rs1] ^ registers[rs2]);
-      help: Performs bitwise XOR on registers rs1 and rs2 and place the result
-        in rd.
+      help: Performs bitwise XOR on registers rs1 and rs2 and place the result in rd.
 
     # S-type instructions
     #     31-25    24-20   19-15   14-12   11-7    6-0
@@ -2256,8 +2246,7 @@ instructions:
 
       postoperation: |
         registers[rd] = CAPI.ARCH.NaNBox(registers[rd]);
-      help: Load a single-precision floating-point value from memory into
-        floating-point register rd.
+      help: Load a single-precision floating-point value from memory into floating-point register rd.
 
     - name: fadd.s
       template: R-Floating
@@ -2339,8 +2328,7 @@ instructions:
         registers[rd] = CAPI.ARCH.toBigInt(registers[rd],'NaNBfloat32_64');
       definition: |
         registers[rd] = CAPI.FP.uint2int(registers[rs1])
-      help: Converts a 32-bit signed integer, in integer register rs1 into a
-        floating-point number in floating-point register rd.
+      help: Converts a 32-bit signed integer, in integer register rs1 into a floating-point number in floating-point register rd.
 
     - name: fcvt.s.wu
       template: R-IntToFloat
@@ -2358,8 +2346,7 @@ instructions:
           order: 3
       definition: |
         registers[rd] = CAPI.FP.int2uint(registers[rs1])
-      help: Converts a 32-bit unsigned integer, in integer register rs1 into a
-        floating-point number in floating-point register rd.
+      help: Converts a 32-bit unsigned integer, in integer register rs1 into a floating-point number in floating-point register rd.
 
     - name: fcvt.w.s
       template: R-FloatToInt
@@ -2387,8 +2374,7 @@ instructions:
         }
       definition: |
         result = parseInt(registers[rs1]);
-      help: Convert a floating-point number in floating-point register rs1 to a
-        signed 32-bit in integer register rd.
+      help: Convert a floating-point number in floating-point register rs1 to a signed 32-bit in integer register rd.
 
     - name: fcvt.wu.s
       template: R-FloatToInt
@@ -2416,8 +2402,7 @@ instructions:
         }
       definition: |
         registers[rd] = CAPI.FP.int2uint(parseInt(rs1Number));
-      help: Convert a floating-point number in floating-point register rs1 to a
-        signed 32-bit in unsigned integer register rd.
+      help: Convert a floating-point number in floating-point register rs1 to a signed 32-bit in unsigned integer register rd.
 
     - name: fdiv.s
       template: R-Floating
@@ -2676,8 +2661,7 @@ instructions:
         }
       definition: |
         result = (rs2Number >= 0) ? Math.abs(rs1Number) : -Math.abs(rs1Number);
-      help: Produce a result that takes all bits except the sign bit from rs1.
-        The result's sign bit is rs2's sign bit.
+      help: Produce a result that takes all bits except the sign bit from rs1. The result's sign bit is rs2's sign bit.
 
     - name: fsgnjn.s
       template: R-Floating
@@ -2700,8 +2684,7 @@ instructions:
         }
       definition: |
         result = (rs2Number <= 0) ? Math.abs(rs1Number) : -Math.abs(rs1Number);
-      help: Produce a result that takes all bits except the sign bit from rs1.
-        The result's sign bit is rs2's sign bit.
+      help: Produce a result that takes all bits except the sign bit from rs1. The result's sign bit is rs2's sign bit.
 
     - name: fsgnjx.s
       template: R-Floating
@@ -2726,8 +2709,7 @@ instructions:
         let a = rs1Number < 0;
         let b = rs2Number < 0;
         result = a ^ b ? -Math.abs(rs1Number) : Math.abs(rs1Number);
-      help: Produce a result that takes all bits except the sign bit from rs1.
-        The result's sign bit is XOR of sign bit of rs1 and rs2.
+      help: Produce a result that takes all bits except the sign bit from rs1. The result's sign bit is XOR of sign bit of rs1 and rs2.
 
     - name: fsqrt.s
       template: R-Floating
@@ -2911,8 +2893,7 @@ instructions:
       definition: |
         let value = registers[rs2] & 0xFFFFFFFFn;
         CAPI.MEM.write(registers[rs1] + imm, 4, value, rs2, 'float32');
-      help: Store a single-precision value from floating-point register rs2 to
-        memory.
+      help: Store a single-precision value from floating-point register rs2 to memory.
 
   D:
     #   ____ __     __ _____ ____   ____
@@ -2937,8 +2918,7 @@ instructions:
           CAPI.VALIDATION.raise('The memory must be aligned');
         }
         registers[rd] = CAPI.MEM.read(registers[rs1] + imm, 8, rd);
-      help: Load a double-precision floating-point value from memory into
-        floating-point register rd.
+      help: Load a double-precision floating-point value from memory into floating-point register rd.
 
     - name: fadd.d
       template: R-Double
@@ -3036,8 +3016,7 @@ instructions:
         }
       definition: |
         result = rs1Number; // TODO: This doesn't seem right, check the RISC-V manual
-      help: Converts double floating-point register in rs1 into a double
-        floating-point number in floating-point register rd.
+      help: Converts double floating-point register in rs1 into a double floating-point number in floating-point register rd.
 
     - name: fcvt.d.w
       template: R-Conversion
@@ -3064,8 +3043,7 @@ instructions:
         registers[rd] = CAPI.ARCH.toBigInt(result, 'float64');
       definition: |
         result = CAPI.FP.uint2int(rs1Number);
-      help: Converts a 32-bit signed integer, in integer register rs1 into a
-        double-precision floating-point number in floating-point register rd.
+      help: Converts a 32-bit signed integer, in integer register rs1 into a double-precision floating-point number in floating-point register rd.
 
     - name: fcvt.d.wu
       template: R-Conversion
@@ -3097,8 +3075,7 @@ instructions:
         }
       definition: |
         result = CAPI.FP.int2uint(parseFloat(rs1Number));
-      help: Converts a 32-bit unsigned integer, in integer register rs1 into a
-        double-precision floating-point number in floating-point register rd.
+      help: Converts a 32-bit unsigned integer, in integer register rs1 into a double-precision floating-point number in floating-point register rd.
 
     - name: fcvt.s.d
       template: R-Conversion
@@ -3130,8 +3107,7 @@ instructions:
         }
       definition: |
         result = rs1Number; // TODO: This doesn't seem right, check the RISC-V manual
-      help: Converts double floating-point register in rs1 into a floating-point
-        number in floating-point register rd.
+      help: Converts double floating-point register in rs1 into a floating-point number in floating-point register rd.
 
     - name: fcvt.w.d
       template: R-Conversion
@@ -3163,8 +3139,7 @@ instructions:
         }
       definition: |
         result = CAPI.FP.int2uint(parseInt(rs1Number));
-      help: Converts a double-precision floating-point number in floating-point
-        register rs1 to a signed 32-bit integer, in integer register rd.
+      help: Converts a double-precision floating-point number in floating-point register rs1 to a signed 32-bit integer, in integer register rd.
 
     - name: fcvt.wu.d
       template: R-Conversion
@@ -3196,8 +3171,7 @@ instructions:
         }
       definition: |
         result = CAPI.FP.int2uint(parseInt(rs1Number));
-      help: Converts a double-precision floating-point number in floating-point
-        register rs1 to a unsigned 32-bit integer, in integer register rd.
+      help: Converts a double-precision floating-point number in floating-point register rs1 to a unsigned 32-bit integer, in integer register rd.
 
     - name: fdiv.d
       template: R-Double
@@ -3677,6 +3651,7 @@ instructions:
       properties:
         - privileged
 
+
   Zicsr:
     #   _____ _
     #  |__  /(_)  ___  ___  _ __
@@ -3701,6 +3676,7 @@ instructions:
         The initial value in rs1 is written to the CSR.
 
     # TODO: Implement rest of CSR instructions
+
 
   Zifencei:
     #   _____ _   __                          _
@@ -3762,8 +3738,7 @@ pseudoinstructions:
           type: offset_bytes
       definition: |
         bge reg1, x0, off;
-      help: Take the branch if the value in register rs1 is greater or equal to
-        0.
+      help: Take the branch if the value in register rs1 is greater or equal to 0.
 
     - name: bgt
       fields:
@@ -4112,7 +4087,6 @@ interrupts:
           CAPI.SYSCALL.read('a0', 'char');
           break;
       }
-
       CAPI.INTERRUPTS.clearHighlight();
 
     custom: |
@@ -4236,3 +4210,4 @@ timer:
     registers.mie |= 2n ** 7n; // MTIE = 1
   disable: |
     registers.mie &= ~(2n ** 7n); // MTIE = 0
+
