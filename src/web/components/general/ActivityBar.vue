@@ -37,6 +37,7 @@ export default defineComponent({
   <div class="activity-bar-container" :class="{ 'autohide': autohide }">
     <div class="activity-bar" :class="{ 'dark-mode': dark }">
     <div class="activity-bar-content">
+      <hr/>
       <div
         class="activity-item"
         :class="{ active: modelValue === 'assembly' }"
@@ -135,6 +136,8 @@ export default defineComponent({
         >
           <font-awesome-icon :icon="['fas', 'calculator']" size="lg" />
         </div>
+
+        <hr/>
 
 
       </div>

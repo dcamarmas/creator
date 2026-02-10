@@ -333,6 +333,15 @@ export default defineComponent({
   <b-navbar toggleable="md" class="header py-3 top-navbar">
     <!-- Creator Dropdown Menu -->
     <b-navbar-nav class="creator-brand">
+      <b-navbar-brand>
+        <img 
+          src="/public/img/logos/creator_small.webp" 
+          alt="Creator Simulator Logo" 
+          class="w-auto transition-transform hover:scale-105"
+          style="height: 3vh;"
+        />
+      </b-navbar-brand>
+      
       <b-nav-item-dropdown
         class="navMenu creator-menu"
         no-caret
