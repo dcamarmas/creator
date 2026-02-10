@@ -9,6 +9,7 @@ import { coreEvents } from "@/core/events.mts";
 import { show_notification } from "@/web/utils.mjs";
 import { reset_disable, instruction_disable, run_disable, stop_disable, isFinished  } from "@/web/utils.mjs";
 import { architecture } from "../../../core.mjs";
+import { clearAllRegisterGlows } from "@/core/register/registerGlowState.mjs";
 
 
 export var userMode32 = false;
@@ -866,6 +867,9 @@ var Module = (() => {
 
       if (instMatch && (parseInt(instMatch[3], 16) >= pc_min && parseInt(instMatch[3], 16) <= pc_max )){
         userMode32 = true;
+
+        clearAllRegisterGlows();
+        coreEvents.emit("step-about-to-execute");
         if (inside_function)
           check_call_convention_temp_regs(instMatch);
 

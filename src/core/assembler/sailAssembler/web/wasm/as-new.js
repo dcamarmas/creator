@@ -1,3 +1,4 @@
+import { statecode } from "../CNAssambler.mjs";
 let ofile = null;
 var Module = (() => {
   var _scriptDir = import.meta.url;
@@ -251,6 +252,21 @@ if (ENVIRONMENT_IS_NODE) {
 }
 
 var out = Module["print"] || console.log.bind(console);
+
+var instErrExp = /^\.\/([^:]+):(\d+):\s*Error:\s*(.+)$/;
+var errstatus;
+
+Module["printErr"] = function (message) {
+  console.error(message);
+  let asmerror = message.match(instErrExp);
+
+  if (asmerror && !statecode.codeerror){
+    console.error(asmerror);
+    errstatus = {status: "error", msg: asmerror[1] + " at line " + asmerror[2] + ": " + asmerror[3]};
+    statecode.codeerror = true;
+  }
+
+};
 
 var err = Module["printErr"] || console.warn.bind(console);
 
@@ -5792,14 +5808,20 @@ function run(args) {
 
 //  readyPromiseResolve(Module);
 //  return Module.ready;
-  return ofile;
+  if (!statecode.codeerror)
+    return ofile;
+  else 
+    return errstatus;
 }
 
 Module["run"] = run;
 
 function exit(status, implicit) {
-  ofile = FS.readFile("./out.o");
-  console.log(ofile);
+
+  if (!statecode.codeerror){
+    ofile = FS.readFile("./out.o");
+    console.log(ofile);
+  }
  EXITSTATUS = status;
  if (keepRuntimeAlive()) {
   if (!implicit) {

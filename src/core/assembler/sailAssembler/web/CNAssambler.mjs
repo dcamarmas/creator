@@ -16,6 +16,7 @@ import { show_notification } from "../../../../web/utils.mjs";
 import { assembly_files } from "@/web/components/assembly/MultifileEditor.mjs";
 
 let sailas, sailld, saildump = null;
+export const statecode = { codeerror: false };
 export var libs_to_load = [];
 var list_data_instructions = [];
 var list_user_instructions = [];
@@ -1034,7 +1035,7 @@ export async function SailCompile(files, libs){
   if (a !== -1) 
     assembly_files.value[a].code = files;
 
-
+  statecode.codeerror = false;
   vectoren = false;
   doubleen = false;
   priven = false; 
@@ -1196,6 +1197,9 @@ export async function SailCompile(files, libs){
   }
 
   outfile = await as(filesToCompile);
+  if (statecode.codeerror) {
+    return outfile;
+  }
   let elffile = await ld(outfile, libs);
   let outdump = await dump(elffile);
   // document.app.$data.v_length = 64;

@@ -72,7 +72,7 @@
     "name": "RISC-V Sail 32 Examples",
     "id": "default",
     "architecture": "RISC-V Sail 32 - Full Specification",
-    "url": "examples/RISCV-Sail/list.json",
+    "url": "examples/RISCV-Sail/list32.json",
     "description": "RISC-V Sail 32 examples"
   },
 
@@ -81,7 +81,7 @@
     "name": "RISC-V Sail 64 Examples",
     "id": "default",
     "architecture": "RISC-V Sail 64 - Full Specification",
-    "url": "examples/RISCV-Sail/list.json",
+    "url": "examples/RISCV-Sail/list64.json",
     "description": "RISC-V Sail 64 examples"
   }
 ]

@@ -136,9 +136,11 @@ export function writeRegister(value, indexComp, indexElem) {
     if (typeof document !== "undefined" && document?.app) {
         // Notify UI layers about the update (CLI ignores, web UI listens)
         // check if in RISC-V Sail has to be glowed the register by instruction execution
-        if (architecture.config.name.includes("SRV")) {
+        if (architecture.config.name.includes("SRV")){
             if (userMode32 || userMode64 || userMode32vd)
                 notifyRegisterUpdate(indexComp, indexElem);
-        } else notifyRegisterUpdate(indexComp, indexElem);
+        }else 
+            notifyRegisterUpdate(indexComp, indexElem);
+            
     }
 }

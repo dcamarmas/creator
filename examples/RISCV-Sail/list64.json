@@ -74,7 +74,7 @@
   {
     "name": "Example 13",
     "id": "e13",
-    "url":"examples/RISCV-Sail/example13.s",
+    "url":"examples/RISCV-Sail/example13b.s",
     "description": "Custom kernel"
   },
   {

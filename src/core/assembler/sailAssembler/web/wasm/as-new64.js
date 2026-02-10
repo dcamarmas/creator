@@ -1,3 +1,4 @@
+import { statecode } from "../CNAssambler.mjs";
 let ofile = null;
 var Module = (() => {
   var _scriptName = import.meta.url;
@@ -201,6 +202,22 @@ if (ENVIRONMENT_IS_WEB || ENVIRONMENT_IS_WORKER) {
 }
 
 var out = Module["print"] || console.log.bind(console);
+
+var instErrExp = /^\.\/([^:]+):(\d+):\s*Error:\s*(.+)$/;
+var errstatus;
+
+Module["printErr"] = function (message) {
+  
+  let asmerror = message.match(instErrExp);
+
+  if (asmerror && !statecode.codeerror){
+    console.error(asmerror);
+    errstatus = {status: "error", msg: asmerror[1] + " at line " + asmerror[2] + ": " + asmerror[3]};
+    statecode.codeerror = true;
+  } else 
+    console.error(message);
+
+};
 
 var err = Module["printErr"] || console.error.bind(console);
 
