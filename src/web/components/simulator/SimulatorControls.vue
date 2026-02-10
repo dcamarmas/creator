@@ -319,7 +319,7 @@ function execute_instruction() {
       ret = step() as unknown as ExecutionResult;
     } catch (err: any) {
       console.error("Execution error:", err);
-      errorMessage.value = `${err.message || err}`;
+      errorMessage.value = `${err.message || err.msg || err}`;
 
       if (
         status.execution_index >= 0 &&

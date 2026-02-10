@@ -29,7 +29,7 @@ interface Props {
 defineProps<Props>();
 
 const contactMail = "creator.arcos.inf.uc3m.es@gmail.com";
-const projectVersion = "6.0";
+const projectVersion = "6.1.0";
 const projectLicense = "LGPL-2.1";
 const repositoryUrl = "https://github.com/creatorsim/creator";
 
@@ -39,8 +39,8 @@ const contributors = ref<any[]>([]);
 onMounted(async () => {
   try {
     const [authorsResponse, contributorsResponse] = await Promise.all([
-      fetch("https://creatorsim.github.io/web-beta/content/authors.yml"),
-      fetch("https://creatorsim.github.io/web-beta/content/contributors.yml"),
+      fetch("https://creatorsim.github.io/content/authors.yml"),
+      fetch("https://creatorsim.github.io/content/contributors.yml"),
     ]);
 
     const authorsYaml = await authorsResponse.text();

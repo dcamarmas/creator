@@ -121,7 +121,7 @@ export function writeRegister(value, indexComp, indexElem) {
 
         throw packExecute(
             true,
-            "The register " + elementName + " cannot be written",
+            "The register " + elementName + " is not writeable",
             "danger",
             null,
         );
