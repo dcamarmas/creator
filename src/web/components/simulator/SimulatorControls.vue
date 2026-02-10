@@ -43,16 +43,13 @@ import {
 import { step } from "@/core/executor/executor.mjs";
 import { creator_ga } from "@/core/utils/creator_ga.mjs";
 import { packExecute } from "@/core/utils/utils.mjs";
-import { show_notification,
-         reset_disable,
-         instruction_disable,
-         run_disable,
-         stop_disable,
-         isFinished } from "@/web/utils.mjs";
+import { show_notification} from "@/web/utils.mjs"; 
+import { useExecutionState } from "@/web/ExecutionState";
 import type { Instruction } from "@/core/assembler/assembler";
 import { coreEvents, CoreEventTypes } from "@/core/events.mjs";
 import { sailexec, SailExecute } from "@/core/executor/sailSimRV/sailExecutor.mjs";
 
+const executionState = useExecutionState();
 const props = defineProps({
   instructions: {
     type: Array as PropType<Instruction[]>,
@@ -80,13 +77,6 @@ const props = defineProps({
   },
 });
 
-// Button state
-// const reset_disable = ref(true);
-// const instruction_disable = ref(false);
-// const run_disable = ref(false);
-// const stop_disable = ref(true);
-
-// const isFinished = ref(false);
 const hasError = ref(false);
 const errorMessage = ref("");
 
@@ -122,13 +112,13 @@ onMounted(() => {
   coreEvents.on("pause-execution", pauseExec);
 
   if (status.run_program !== 3) {
-    run_disable.value = !prepared_for_execution;
-    reset_disable.value = !prepared_for_execution;
-    instruction_disable.value = !prepared_for_execution;
+    executionState.run_disable = !prepared_for_execution;
+    executionState.reset_disable = !prepared_for_execution;
+    executionState.instruction_disable = !prepared_for_execution;
   }
 
   if (status.execution_index === -2) {
-    isFinished.value = true;
+    executionState.isFinished = true;
   } else if (status.execution_index === -1) {
     hasError.value = true;
   }
@@ -155,19 +145,19 @@ onUnmounted(() => {
 // Handler for button state updates from core
 function handleButtonStateUpdate(event: any) {
   if (event.reset_disable !== undefined) {
-    reset_disable.value = event.reset_disable;
+    executionState.reset_disable = event.reset_disable;
   }
   if (event.instruction_disable !== undefined) {
-    instruction_disable.value = event.instruction_disable;
+    executionState.instruction_disable = event.instruction_disable;
   }
   if (event.run_disable !== undefined) {
-    run_disable.value = event.run_disable;
+    executionState.run_disable = event.run_disable;
   }
   if (event.stop_disable !== undefined) {
-    stop_disable.value = event.stop_disable;
+    executionState.stop_disable = event.stop_disable;
   }
   if (event.isFinished !== undefined) {
-    isFinished.value = event.isFinished;
+    executionState.isFinished = event.isFinished;
   }
   if (event.hasError !== undefined) {
     hasError.value = event.hasError;
@@ -184,19 +174,19 @@ watch(
     const prepared_for_execution = newLength > 0;
 
     if (status.run_program !== 3) {
-      run_disable.value = !prepared_for_execution;
-      reset_disable.value = !prepared_for_execution;
-      instruction_disable.value = !prepared_for_execution;
+      executionState.run_disable = !prepared_for_execution;
+      executionState.reset_disable = !prepared_for_execution;
+      executionState.instruction_disable = !prepared_for_execution;
     }
   },
 );
 
 // Methods
 function pauseExec() {
-  reset_disable.value = false;
-  instruction_disable.value = false;
-  run_disable.value = false;
-  stop_disable.value = true;
+  executionState.reset_disable = false;
+  executionState.instruction_disable = false;
+  executionState.run_disable = false;
+  executionState.stop_disable = true;
 }
 
 function execution_UI_update(ret: ExecutionResult | undefined) {
@@ -263,10 +253,10 @@ function execution_UI_reset() {
   // Ensure buttons are enabled if there are instructions
   const prepared_for_execution = props.instructions.length > 0;
   if (prepared_for_execution && status.run_program !== 3) {
-    reset_disable.value = false;
-    instruction_disable.value = false;
-    run_disable.value = false;
-    stop_disable.value = true;
+    executionState.reset_disable = false;
+    executionState.instruction_disable = false;
+    executionState.run_disable = false;
+    executionState.stop_disable = true;
   }
 }
 
@@ -281,12 +271,12 @@ function reset() {
   root.enter = null;
 
   // Reset button status
-  reset_disable.value = false;
-  instruction_disable.value = false;
-  run_disable.value = false;
-  stop_disable.value = true;
+  executionState.reset_disable = false;
+  executionState.instruction_disable = false;
+  executionState.run_disable = false;
+  executionState.stop_disable = true;
 
-  isFinished.value = false;
+  executionState.isFinished = false;
   hasError.value = false;
   errorMessage.value = "";
 
@@ -299,7 +289,7 @@ function execute_instruction() {
   creator_ga("execute", "execute.instruction", "execute.instruction");
   if (architecture.config.name.includes("SRV")) {
     if (status.run_program < 0) {
-      isFinished.value = true;
+      executionState.isFinished = true;
       show_notification("The program has finished", "warning");
     } else if (document.app.$data.execution_mode_run === -1) {
       document.app.$data.execution_mode_run = 1;
@@ -337,20 +327,20 @@ function execute_instruction() {
     }
 
     if (status.run_program === 3) {
-      instruction_disable.value = true;
-      run_disable.value = true;
+      executionState.instruction_disable = true;
+      executionState.run_disable = true;
     }
 
     // Disable buttons if program has finished (execution_index === -2)
     if (status.execution_index === -2) {
-      instruction_disable.value = true;
-      run_disable.value = true;
-      isFinished.value = true;
+      executionState.instruction_disable = true;
+      executionState.run_disable = true;
+      executionState.isFinished = true;
     }
 
     if (status.execution_index === -1) {
-      instruction_disable.value = true;
-      run_disable.value = true;
+      executionState.instruction_disable = true;
+      executionState.run_disable = true;
       hasError.value = true;
       if (!errorMessage.value) {
         errorMessage.value = "The program has finished with errors";
@@ -399,10 +389,10 @@ function execute_program() {
   }
 
   // Change buttons status
-  reset_disable.value = true;
-  instruction_disable.value = true;
-  run_disable.value = true;
-  stop_disable.value = false;
+  executionState.reset_disable = true;
+  executionState.instruction_disable = true;
+  executionState.run_disable = true;
+  executionState.stop_disable = false;
 
   execute_program_packed();
 }
@@ -410,7 +400,7 @@ function execute_program() {
 function execute_program_packed() {
   if ( architecture.config.name.includes("SRV")) {
     if (status.run_program < 0) {
-      isFinished.value = true;
+      executionState.isFinished = true;
       show_notification("The program has finished", "warning");
     } else if (document.app.$data.execution_mode_run === -1){
       status.run_program = 1;
@@ -433,10 +423,10 @@ function execute_program_packed() {
       ) {
         execution_UI_update(ret);
 
-        reset_disable.value = false;
-        instruction_disable.value = false;
-        run_disable.value = false;
-        stop_disable.value = true;
+        executionState.reset_disable = false;
+        executionState.instruction_disable = false;
+        executionState.run_disable = false;
+        executionState.stop_disable = true;
 
         if (coreInstructions[status.execution_index]?.Break === true) {
           status.run_program = 2;
@@ -468,10 +458,10 @@ function execute_program_packed() {
 
           execution_UI_update({ error: true, msg: err.message || err });
 
-          reset_disable.value = false;
-          instruction_disable.value = true;
-          run_disable.value = true;
-          stop_disable.value = true;
+          executionState.reset_disable = false;
+          executionState.instruction_disable = true;
+          executionState.run_disable = true;
+          executionState.stop_disable = true;
 
           return;
         }
@@ -482,10 +472,10 @@ function execute_program_packed() {
 
           execution_UI_update(ret);
 
-          reset_disable.value = false;
-          instruction_disable.value = true;
-          run_disable.value = true;
-          stop_disable.value = true;
+          executionState.reset_disable = false;
+          executionState.instruction_disable = true;
+          executionState.run_disable = true;
+          executionState.stop_disable = true;
 
           return;
         }
@@ -499,13 +489,13 @@ function execute_program_packed() {
 
           execution_UI_update(ret);
 
-          reset_disable.value = false;
-          instruction_disable.value = true;
-          run_disable.value = true;
-          stop_disable.value = true;
+          executionState.reset_disable = false;
+          executionState.instruction_disable = true;
+          executionState.run_disable = true;
+          executionState.stop_disable = true;
 
           if (status.execution_index === -2) {
-            isFinished.value = true;
+            executionState.isFinished = true;
           } else if (status.execution_index === -1) {
             hasError.value = true;
           }
@@ -517,13 +507,13 @@ function execute_program_packed() {
       setTimeout(execute_program_packed, 15, ret);
     } else {
       execution_UI_update(ret);
-      reset_disable.value = false;
-      instruction_disable.value = true;
-      run_disable.value = true;
-      stop_disable.value = true;
+      executionState.reset_disable = false;
+      executionState.instruction_disable = true;
+      executionState.run_disable = true;
+      executionState.stop_disable = true;
 
       if (status.execution_index === -2) {
-        isFinished.value = true;
+        executionState.isFinished = true;
       } else if (status.execution_index === -1) {
         hasError.value = true;
         errorMessage.value =
@@ -542,10 +532,10 @@ function stop_execution() {
   const execution_finished =
     status.execution_index < 0 || status.run_program === 3;
 
-  reset_disable.value = false;
-  instruction_disable.value = execution_finished;
-  run_disable.value = execution_finished;
-  stop_disable.value = true;
+  executionState.reset_disable = false;
+  executionState.instruction_disable = execution_finished;
+  executionState.run_disable = execution_finished;
+  executionState.stop_disable = true;
 }
 
 // Expose methods to parent components
@@ -561,7 +551,7 @@ defineExpose({
       class="sim-button"
       :class="{ 'sim-button-dark': dark }"
       accesskey="x"
-      :disabled="reset_disable"
+      :disabled="executionState.reset_disable"
       :title="`${accesskey_prefix}X`"
       @click="reset()"
     >
@@ -574,12 +564,12 @@ defineExpose({
         class="sim-button"
         :class="{
           'sim-button-dark': dark,
-          'is-hidden': isFinished || hasError,
+          'is-hidden': executionState.isFinished || hasError,
         }"
         accesskey="a"
-        :disabled="instruction_disable || isFinished || hasError"
+        :disabled="executionState.instruction_disable || executionState.isFinished || hasError"
         :title="`${accesskey_prefix}A`"
-        :tabindex="isFinished || hasError ? -1 : 0"
+        :tabindex="executionState.isFinished || hasError ? -1 : 0"
         @click="execute_instruction"
       >
         <font-awesome-icon
@@ -594,12 +584,12 @@ defineExpose({
         class="sim-button"
         :class="{
           'sim-button-dark': dark,
-          'is-hidden': isFinished || hasError,
+          'is-hidden': executionState.isFinished || hasError,
         }"
         accesskey="r"
-        :disabled="run_disable || isFinished || hasError"
+        :disabled="executionState.run_disable || executionState.isFinished || hasError"
         :title="`${accesskey_prefix}R`"
-        :tabindex="isFinished || hasError ? -1 : 0"
+        :tabindex="executionState.isFinished || hasError ? -1 : 0"
         @click="execute_program"
       >
         <font-awesome-icon :icon="['fas', 'play']" class="icon-spacing" />
@@ -607,23 +597,23 @@ defineExpose({
       </button>
 
       <button
-        v-if="isFinished || hasError"
+        v-if="executionState.isFinished || hasError"
         id="executionStatusButton"
         class="sim-button big-button"
         :class="{
           'sim-button-dark': dark,
-          'execution-finished': isFinished,
+          'execution-finished': executionState.isFinished,
           'execution-error': hasError,
         }"
-        :disabled="isFinished"
+        :disabled="executionState.isFinished"
       >
         <font-awesome-icon
           :icon="
-            isFinished ? ['fas', 'check'] : ['fas', 'triangle-exclamation']
+            executionState.isFinished ? ['fas', 'check'] : ['fas', 'triangle-exclamation']
           "
           class="icon-spacing"
         />
-        <span class="button-text">{{ isFinished ? "Finished" : "Error" }}</span>
+        <span class="button-text">{{ executionState.isFinished ? "Finished" : "Error" }}</span>
       </button>
 
       <b-popover
@@ -646,7 +636,7 @@ defineExpose({
       class="sim-button"
       :class="{ 'sim-button-dark': dark }"
       accesskey="c"
-      :disabled="stop_disable"
+      :disabled="executionState.stop_disable"
       :title="`${accesskey_prefix}C`"
       @click="stop_execution"
     >

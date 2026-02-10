@@ -7,7 +7,6 @@ import { display_print } from "../../IO.mjs";
 import { SYSCALL } from "@/core/capi/syscall.mts";
 import { coreEvents } from "@/core/events.mts";
 import { show_notification } from "@/web/utils.mjs";
-import { reset_disable, instruction_disable, run_disable, stop_disable, isFinished } from "@/web/utils.mjs";
 import { architecture } from "../../../core.mjs";
 import { clearAllRegisterGlows } from "@/core/register/registerGlowState.mjs";
 
@@ -4296,18 +4295,22 @@ var Module = (() => {
         }
         status.run_program = -1; // program finished
         if (statusw !== 0){
-          reset_disable.value = false;
-          instruction_disable.value = true;
-          run_disable.value = true;
-          stop_disable.value = false;
-          show_notification("Your program has finished with errors.", "danger");
-        } else {
-          reset_disable.value = false;
-          instruction_disable.value = false;
-          run_disable.value = false;
-          stop_disable.value = true;
-          isFinished.value = true;
-        }
+            coreEvents.emit("executor-buttons-update", {
+              reset_disable: false,
+              instruction_disable: true,
+              run_disable: true,
+              stop_disable: false,
+            });
+            show_notification("Your program has finished with errors.", "danger");
+          } else {
+            coreEvents.emit("executor-buttons-update", {
+              reset_disable: false,
+              instruction_disable: false,
+              run_disable: false,
+              stop_disable: true,
+              isFinished: true,
+            });
+          }
         var msg = `program exited (with status: ${statusw}), but keepRuntimeAlive() is set (counter=${runtimeKeepaliveCounter}) due to an async operation, so halting execution but not exiting the runtime or preventing further async execution (you can use emscripten_force_exit, if you want to force a true shutdown)`;
         readyPromiseReject(msg);
         err(msg);
