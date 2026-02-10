@@ -25,6 +25,8 @@ import { initCAPI } from "@/core/capi/initCAPI.mts";
 import { console_log as clog } from "@/core/utils/creator_logger.mjs";
 import example_set from "../../examples/example_set.json" with { type: "json" };
 import { ref } from "vue";
+import { assembly_files } from "./components/assembly/MultifileEditor.mjs";
+import { loadedLibrary } from "@/core/core.mjs";
 
 
 
@@ -254,7 +256,13 @@ export function storeBackup(root = document.app) {
         // disabled in config
         return;
     }
-
+    if (architecture.config.name.includes("SRV")){
+        // We must to store as a JSON the list of files and the list of libraries
+        localStorage.setItem("backup_files", JSON.stringify(assembly_files.value));
+        if (loadedLibrary)
+            loadedLibrary.library_file = Array.from(loadedLibrary.library_file);
+        localStorage.setItem("backup_libs", JSON.stringify(loadedLibrary));
+    }
     localStorage.setItem("backup_asm", root.assembly_code);
     localStorage.setItem("backup_arch", root.arch_code);
     localStorage.setItem("backup_arch_name", root.architecture_name);
