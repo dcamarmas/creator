@@ -259,7 +259,7 @@ export function storeBackup(root = document.app) {
     if (architecture.config.name.includes("SRV")){
         // We must to store as a JSON the list of files and the list of libraries
         localStorage.setItem("backup_files", JSON.stringify(assembly_files.value));
-        if (loadedLibrary)
+        if (Object.keys(loadedLibrary).length !== 0)
             loadedLibrary.library_file = Array.from(loadedLibrary.library_file);
         localStorage.setItem("backup_libs", JSON.stringify(loadedLibrary));
     }
