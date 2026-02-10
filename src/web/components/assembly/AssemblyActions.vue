@@ -300,7 +300,7 @@ function handleBlur() {
       @click="toggleVim"
     >
       <font-awesome-icon
-        :icon="['fa-brands', 'vimeo-v']"
+        :icon="['fa-brands', 'vim']"
         class="icon-spacing"
       />
       <span class="button-text">Vim: {{ root.vim_mode ? "on" : "off" }}</span>
