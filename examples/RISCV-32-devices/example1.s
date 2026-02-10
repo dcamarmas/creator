@@ -50,4 +50,5 @@
         sw t2, 0(t1)  # signal device to write a string
 
         # return
-        jr ra
+        li a7, 10
+        ecall
