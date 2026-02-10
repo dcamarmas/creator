@@ -49,7 +49,6 @@ import { resetDevices } from "./executor/devices.mts";
 import { compileTimerFunctions } from "./executor/timers.mts";
 import * as archProcessor from "./utils/architectureProcessor.mjs";
 import { writeDataDumpMemory32, writeDataDumpMemory64 } from "./assembler/sailAssembler/web/CNAssambler.mjs";
-import { ref } from "vue";
 import { disassemble_lib } from "@/web/components/assembly/MultifileEditor.mjs";
 
 /** @type {import("./core.d.ts").Library | import("./core.d.ts").LegacyLibrary} */
