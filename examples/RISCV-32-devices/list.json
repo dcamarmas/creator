@@ -8,7 +8,7 @@
   {
     "name": "Example 1",
     "id": "example1",
-    "url": "examples/RISCV-32-devices/example0.s",
+    "url": "examples/RISCV-32-devices/example1.s",
     "description": "Echo"
   }
 ]
