@@ -28,16 +28,6 @@ import { assembly_files } from "./components/assembly/MultifileEditor.mjs";
 import { loadedLibrary } from "@/core/core.mjs";
 
 
-
-// Button state
-export const executionState = {
-    reset_disable: true,
-    instruction_disable: false,
-    run_disable: false,
-    stop_disable: true,
-    isFinished: false
-};
-
 // Re-export from core for backward compatibility
 export {
     show_notification,
