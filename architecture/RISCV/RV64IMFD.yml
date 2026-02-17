@@ -3866,7 +3866,7 @@ pseudoinstructions:
         - field: off
           type: offset_bytes
       definition: |
-        ble x0, rs1, off;
+        bge x0, rs1, off;
 
     - name: bltz
       fields:
