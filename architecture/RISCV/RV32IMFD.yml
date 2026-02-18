@@ -7,6 +7,7 @@ version: 2.0.0
 config:
   name: RV32
   word_size: 32
+  byte_size: 8
   description: RISC-V is an instruction set architecture (ISA) based on the RISC type and its hardware is free. This architecture was created in 2010 at the University of California, Berkeley.
   endianness: big_endian
   memory_alignment: true
@@ -16,7 +17,6 @@ config:
   comment_prefix: "#"
   start_address: 0x0
   pc_offset: -4
-  byte_size: 8
   plugin: riscv
   assemblers:
     - name: CreatorAssembler
@@ -3835,7 +3835,7 @@ pseudoinstructions:
         - field: off
           type: offset_bytes
       definition: |
-        ble x0, rs1, off;
+        bge x0, rs1, off;
 
     - name: bltz
       fields:

@@ -88,7 +88,7 @@ export let ENDIANNESSARR = [];
 /** @type {import("./core.d.ts").RegisterBank[]} */
 export let REGISTERS;
 export let REGISTERS_BACKUP = [];
-export const register_size_bits = 64; //TODO: load from architecture
+export const register_size_bits = 32; //TODO: load from architecture
 /** @type {Memory} */
 export let main_memory;
 /** @type {StackTracker} */
