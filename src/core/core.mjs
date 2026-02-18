@@ -55,6 +55,7 @@ import { disassemble_lib } from "@/web/components/assembly/MultifileEditor.mjs";
 export let loadedLibrary = {};
 export let backup_stack_address;
 export let backup_data_address;
+export let loadedCreatino = false;
 
 /** @type {import("./core.d.ts").Architecture} */
 export let architecture = {};
@@ -96,7 +97,7 @@ export let ENDIANNESSARR = [];
 /** @type {import("./core.d.ts").RegisterBank[]} */
 export let REGISTERS;
 export let REGISTERS_BACKUP = [];
-export const register_size_bits = 64; //TODO: load from architecture
+export const register_size_bits = 32; //TODO: load from architecture
 /** @type {Memory} */
 export let main_memory;
 /** @type {StackTracker} */
@@ -283,7 +284,30 @@ export async function load_library_sail(lib, lib_name) {
  */
 export function remove_library() {
     loadedLibrary = {};
+    loadedCreatino = false;
     coreEvents.emit("library-removed");
+}
+/**
+ * Add CREATino library.
+ */
+export async function load_CREATino() {
+  //show_loading();
+  try {
+    const baseUrl = import.meta.env.BASE_URL
+    const filePath = `${baseUrl}libraries/creatino.yml`
+
+    const response = await fetch(filePath);
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+    const fileContent = await response.text();
+    load_library(fileContent);
+
+    //hide_loading();
+    loadedCreatino = true;
+    coreEvents.emit("library-loaded");
+  } catch (error) {
+    throw new SyntaxError(`Invalid library format: ${error.message}`);
+  }
 }
 
 // compilation

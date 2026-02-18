@@ -33,7 +33,7 @@ import ThemeToggle from "./ThemeToggle.vue";
 import type { Instruction } from "@/core/assembler/assembler";
 import type { BDropdown } from "bootstrap-vue-next";
 import { coreEvents, CoreEventTypes } from "../../../core/events.mts";
-import { remove_library, architecture } from "@/core/core.mjs";
+import { remove_library, architecture, load_CREATino } from "@/core/core.mjs";
 import { createFile } from "../assembly/MultifileEditor.mjs";
 
 export default defineComponent({
@@ -288,6 +288,9 @@ export default defineComponent({
     removeLibrary() {
       remove_library();
     },
+    loadCREATino() {
+      load_CREATino();
+    },
     checkAnnouncementTruncation() {
       // Use nextTick to ensure DOM is updated
       this.$nextTick(() => {
@@ -337,6 +340,15 @@ export default defineComponent({
   <b-navbar toggleable="md" class="header py-3 top-navbar">
     <!-- Creator Dropdown Menu -->
     <b-navbar-nav class="creator-brand">
+      <b-navbar-brand>
+        <img 
+          src="/public/img/logos/creator_small.webp" 
+          alt="Creator Simulator Logo" 
+          class="w-auto transition-transform hover:scale-105"
+          style="height: 3vh;"
+        />
+      </b-navbar-brand>
+      
       <b-nav-item-dropdown
         class="navMenu creator-menu"
         no-caret
@@ -505,6 +517,10 @@ export default defineComponent({
         <b-dropdown-item v-b-modal.save_binary>
           <font-awesome-icon :icon="['fas', 'floppy-disk']" class="me-2" /> Save
           as Library...
+        </b-dropdown-item>
+            <b-dropdown-item @click="loadCREATino">
+          <font-awesome-icon :icon="['fas', 'infinity']" class="me-2" /> Add Arduino
+          Library
         </b-dropdown-item>
         <b-dropdown-divider />
         <b-dropdown-item @click="removeLibrary">

@@ -53,6 +53,7 @@ export default defineComponent({
       type: String as PropType<InterruptHandlerType>,
       required: true,
     },
+    sidebar_mode: { type: String, required: true },
   },
 
   components: { VimKeybindsModal },
@@ -79,6 +80,11 @@ export default defineComponent({
         { text: "CREATOR", value: InterruptHandlerType.CREATOR },
         { text: "Custom (architecture)", value: InterruptHandlerType.Custom },
       ],
+      sidebar_mode_options: [
+        { text: "Disable", value: "disable" },
+        { text: "Automatic hide", value: "autohide" },
+        { text: "Show", value: "show" },
+      ],
     };
   },
 
@@ -95,6 +101,7 @@ export default defineComponent({
     "update:backup",
     "update:reg_name_representation",
     "update:interrupt_handler",
+    "update:sidebar_mode",
   ],
 
   computed: {
@@ -296,6 +303,15 @@ export default defineComponent({
         );
       },
     },
+    sidebar_mode_value: {
+      get() {
+        return this.sidebar_mode;
+      },
+      set(value: string) {
+        this.$emit("update:sidebar_mode", value);
+        localStorage.setItem("conf_sidebar_mode", value);
+      },
+    },
   },
   methods: {
     removeVimKeybind(index: number) {
@@ -474,6 +490,19 @@ export default defineComponent({
           name="check-button"
           switch
           size="lg"
+        />
+      </b-list-group-item>
+
+      <b-list-group-item
+        class="justify-content-between align-items-center config-item"
+      >
+        <label for="range-sidebar">Sidebar Mode:</label>
+        <b-form-select
+          id="range-sidebar"
+          v-model="sidebar_mode_value"
+          :options="sidebar_mode_options"
+          size="sm"
+          class="representation-select"
         />
       </b-list-group-item>
 
