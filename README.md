@@ -296,8 +296,8 @@
   <h2 align="center">Authors</h2>
 </div>
 
-  * :technologist: [Diego Camarmas Alonso](https://github.com/)
-  * :technologist: [Félix García Carballeira](https://www.researchgate.net/profile/Felix_Garcia-Carballeira)
+  * :technologist: [Diego Camarmas Alonso](https://github.com/dcamarmas)
+  * :technologist: [Félix García Carballeira](https://github.com/fgcarbal)
   * :technologist: [Alejandro Calderón Mateos](https://github.com/acaldero)
     
 ### Contributors
