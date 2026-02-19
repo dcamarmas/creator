@@ -6,9 +6,9 @@ version: 2.0.0
 
 config:
   name: RV64
-  word_size: 32 # In RV64, the word size is also 32 bits
+  word_size: 32 # In RV64, word size is also 32 bits
   byte_size: 8
-  description: RISC-V is an instruction set architecture (ISA) based on the RISC type and its hardware is free. This architecture was created in 2010 at the University of California, Berkeley.
+  description: RISC-V is a free and open standard ISA (Instruction Set Architecture) based on RISC (Reduced Instruction Set Computer) principles. It was created in 2010 at the University of California, Berkeley.
   endianness: big_endian
   memory_alignment: true
   main_function: main
