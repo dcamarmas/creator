@@ -53,7 +53,6 @@ export let loadedLibrary = {};
 export let backup_stack_address;
 export let backup_data_address;
 export let loadedCreatino = false;
-export let loadedCreatino = false;
 
 /** @type {import("./core.d.ts").Architecture} */
 export let architecture = {};
