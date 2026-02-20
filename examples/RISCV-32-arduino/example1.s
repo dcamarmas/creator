@@ -1,4 +1,4 @@
-# Creatino Example: Blink for ESP32-C3 BUILTIN LED
+
 .data
     time:
         .word 1000
