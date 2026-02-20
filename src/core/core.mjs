@@ -53,6 +53,7 @@ export let loadedLibrary = {};
 export let backup_stack_address;
 export let backup_data_address;
 export let loadedCreatino = false;
+export let loadedCreatino = false;
 
 /** @type {import("./core.d.ts").Architecture} */
 export let architecture = {};
@@ -87,7 +88,7 @@ export let ENDIANNESSARR = [];
 /** @type {import("./core.d.ts").RegisterBank[]} */
 export let REGISTERS;
 export let REGISTERS_BACKUP = [];
-export const register_size_bits = 64; //TODO: load from architecture
+export const register_size_bits = 32; //TODO: load from architecture
 /** @type {Memory} */
 export let main_memory;
 /** @type {StackTracker} */
@@ -257,6 +258,9 @@ export function remove_library() {
     loadedCreatino = false;
     coreEvents.emit("library-removed");
 }
+/**
+ * Add CREATino library.
+ */
 export async function load_CREATino() {
   //show_loading();
   try {
