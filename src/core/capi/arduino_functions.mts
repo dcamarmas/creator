@@ -18,6 +18,7 @@ import {
 } from "../../web/components/simulator/CreatinoMaker/state.ts";
 import { Memory } from "../memory/Memory.mts";
 import { coreEvents } from "@/core/events.mjs";
+import { ref } from 'vue';
 
 /*
  *  CREATOR instruction description API:
@@ -28,6 +29,17 @@ let serial_begin = 0; // TODO: Which baud rate can we accept?
 let initArduino = 0; // Flag to check if initArduino has been called
 let _seed = 1;
 // let traces = new ArduinoTerminal();
+
+// Vector table for ESP32 (for demonstration, not fully implemented): [pin,ISR,MODE]
+let esp32vect = ref<[bigint, bigint, string][]>(
+  Array.from({ length: 32 }, () => [0n, 0n, ""])
+);
+const entry = esp32vect.value[0];
+if (entry) {
+  entry[0] = 0xFFFFn; // pin
+  entry[1] = 0xFFFFn; // isr
+  entry[2] = "EXCEPTION"; // mode
+}
 
 //Functions
 export function cr_initArduino() {
@@ -666,12 +678,69 @@ export function cr_lowByte() {
 }
 export function cr_attachInterrupt() {
     console.log("cr_attachInterrupt called");
+    var ret1 = crex_findReg("a0");
+    if (ret1.match === 0) {
+        throw packExecute(
+            true,
+            "capi_syscall: register a0 not found",
+            "danger",
+            null,
+        );
+    }
+    var interr_pos = BigInt.asIntN(32, readRegister(ret1.indexComp, ret1.indexElem));
+    var ret2 = crex_findReg("a1");
+    if (ret2.match === 0) {
+        throw packExecute(
+            true,
+            "capi_syscall: register a1 not found",
+            "danger",
+            null,
+        );
+    }
+    var interr_isr = BigInt.asIntN(32, readRegister(ret2.indexComp, ret2.indexElem));
+    esp32vect.value[Number(interr_pos)]![1] = interr_isr;
+    //TODO: Modes
+    //TODO: Graphic retroalimentation
+    const gpiopin = "GPIO" + esp32vect.value[Number(interr_pos)]![0];
+    console.log(`Interrupt attached at position ${interr_pos} for pin ${gpiopin} with ISR at ${interr_isr}`);
+    coreEvents.emit("arduino-pin-interrupt", gpiopin);
 }
 export function cr_detachInterrupt() {
     console.log("cr_detachInterrupt called");
 }
 export function cr_digitalPinToInterrupt() {
     console.log("cr_digitalPinToInterrupt called");
+    // Returns the first interrupt place free
+    var ret1 = crex_findReg("a0");
+    if (ret1.match === 0) {
+        throw packExecute(
+            true,
+            "capi_syscall: register a0 not found",
+            "danger",
+            null,
+        );
+    }
+    var pin= BigInt.asUintN(
+        32,
+        readRegister(ret1.indexComp, ret1.indexElem),
+    );
+    //Find clean slot in the interrupt vector table
+    const pos = esp32vect.value.findIndex(
+        (slot) =>  slot[1] === 0n && slot[2] === ""
+    );
+
+    // Si no encuentra ninguna posición libre, findIndex devuelve -1
+    if (pos === -1) {
+        throw packExecute(
+            true,
+            "ESP32 Interrupt Table Full: No free slots available",
+            "warning",
+            null,
+        );
+    }
+    esp32vect.value[pos] = [BigInt(pin), 0n, ""]; // Mark the slot as used with the position
+    writeRegister(BigInt(pos), ret1.indexComp, ret1.indexElem);
+
 }
 export function cr_interrupts() {
     console.log("cr_interrupts called");

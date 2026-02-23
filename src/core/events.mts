@@ -35,6 +35,7 @@ export const CoreEventTypes = {
     ARDUINO_TERMINAL_WRITE: "arduino-terminal-write",
     ARDUINO_PIN_CHANGED: "arduino-pin-write",
     ARDUINO_RESET: "arduino-reset",
+    ARDUINO_PIN_INTERRUPT: "arduino-pin-interrupt",
 } as const;
 
 /**
@@ -107,6 +108,8 @@ export type CoreEvents = {
     "arduino-reset": void;
     /** Event is emmited when a pin in pinMode has been set to a mode */
     "arduino-pin-mode":ArduinoPinMode;
+    /** Event is emmited when a pin is set up in an interrupt */
+    "arduino-pin-interrupt":ArduinoPinInterruptEvent;
 };
 /**
  * Emitted when the simulator sends text to the Arduino Terminal
@@ -133,6 +136,14 @@ export interface ArduinoPinMode{
     pin: number;
     /** The mode of the pin */
     mode: number;
+}
+
+/** 
+ * Event is emmited when a pin is set up in an interrupt 
+ */
+export interface ArduinoPinInterruptEvent {
+  /** The pin number */
+  pin: string;
 }
 
 /**

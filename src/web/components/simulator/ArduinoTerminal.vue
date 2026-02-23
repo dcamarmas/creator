@@ -64,20 +64,34 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 
     <div class="pins-column right">
       <div v-for="pinName in pinLabels[1]" :key="pinName" class="pin-anchor">
-        <div 
-          class="reg-chip mini" 
-          :style="{ backgroundColor: chipStyles[pinName] }"
+<div class="chip-wrapper">
+      
+      <div 
+        class="reg-chip mini" 
+        :style="{ backgroundColor: chipStyles[pinName] }"
+      >
+        <span class="reg-id">{{ pinName }}</span>
+        <input 
+          type="text" 
+          class="reg-input"
+          :class="{ 'val-active': pinStates[pinName] > 0 }"
+          :value="pinStates[pinName]"
+          @change="updatePinValue($event, pinName)"
+          @keydown.enter="$event.target.blur()"
+        />
+      </div>
+
+      <transition name="fade">
+        <span
+          v-if="interrupt[pinName]"  
+          class="danger-icon"
+          title="Interrupt"
         >
-          <span class="reg-id">{{ pinName }}</span>
-          <input 
-            type="text" 
-            class="reg-input"
-            :class="{ 'val-active': pinStates[pinName] > 0 }"
-            :value="pinStates[pinName]"
-            @change="updatePinValue($event, pinName)"
-            @keydown.enter="$event.target.blur()"
-          />
-        </div>
+          ⚠️
+        </span>
+      </transition>
+
+    </div>
       </div>
     </div>
   </div>
@@ -120,6 +134,7 @@ export default {
       splitPercent: 50, 
       isResizing: false,
       chipStyles: {},
+      interrupt: {}
     };
   },
 
@@ -144,6 +159,7 @@ export default {
       for (const pinName in this.chipStyles) {
         this.chipStyles[pinName] = "#0dcaf0";
       }
+      this.interrupt = {};
       this.clearTerminal();
     })
     //Changes pin mode color
@@ -164,6 +180,11 @@ export default {
         ...this.chipStyles,
         [pinName]: color
       };
+    });
+
+    coreEvents.on("arduino-pin-interrupt", (pinName) => {
+      this.interrupt[pinName] = true;
+      console.log(`Interrupt set on pin ${pinName}`);
     });
   },
 
@@ -347,8 +368,15 @@ export default {
   },
   handleBoardChange() {
       switchBoard(this.selectedBoard);
-    }
+    }, 
+    
+    hasAlert(pinName) {
+    return true;
+  }
+
+
   },
+
  
 };
 </script>
@@ -659,6 +687,29 @@ export default {
 .pin-anchor {
   display: flex;
   align-items: center;
+}
+ /* Danger icon */
+ .chip-wrapper {
+  display: flex;
+  align-items: center; /* Centra el icono verticalmente con el chip */
+  justify-content: flex-start;
+  position: relative;
+}
+
+.danger-icon {
+  margin-left: 8px;    /* Espacio a la derecha del chip */
+  font-size: 14px;
+  cursor: help;
+  user-select: none;
+  filter: drop-shadow(0 0 2px rgba(255,0,0,0.5));
+}
+
+/* Animación suave para que no aparezca de golpe */
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.3s;
+}
+.fade-enter-from, .fade-leave-to {
+  opacity: 0;
 }
 
 </style>

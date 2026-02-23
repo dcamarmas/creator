@@ -427,7 +427,7 @@ export function keyboard_read_until(fn_post_read, fn_post_params, fn_post_until)
 
     // Check for Deno environment
     if (typeof Deno !== "undefined") {
-        const keystroke = rawPrompt();
+        let keystroke = rawPrompt();
         // Extract input until the 'until' character
         if (typeof until === "string" && until.length > 0) {
             const idx = keystroke.indexOf(until);
