@@ -94,5 +94,12 @@
     "id": "example14",
     "url": "examples/RISCV-32-arduino/example14.s",
     "description": "Serial readBytesUntil example"
+  },
+    {
+    "name": "Example 15",
+    "id": "example15",
+    "url": "examples/RISCV-32-arduino/example15.s",
+    "description": "High level interrupts example"
   }
+
 ]

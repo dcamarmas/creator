@@ -17,7 +17,12 @@ You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <template>
-<div ref="layoutContainer" class="arduino-layout" @mousemove="onMouseMove" @mouseup="onMouseUp">
+  <div
+    ref="layoutContainer"
+    class="arduino-layout"
+    @mousemove="onMouseMove"
+    @mouseup="onMouseUp"
+  >
     <div class="left-panel" :style="{ width: splitPercent + '%' }">
       <div class="panel-header">Arduino Function Tracer</div>
       <div ref="terminalContainer" class="terminal-container"></div>
@@ -25,79 +30,109 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 
     <div class="resizer" @mousedown="onMouseDown"></div>
 
-<div class="right-panel" :style="{ width: (100 - splitPercent) + '%' }">
-  <div class="panel-header">Hardware View</div>
-<div class="board-selector-inline">
-    <label>Board selected:</label>
-      <select v-model="selectedBoard" @change="handleBoardChange">
-        <option value="esp32c3devkit2">ESP32-C3 DevKit</option>
-        <option value="esp32c6devkit1">ESP32-C6 DevKit</option>
-      </select>
-    </div>
-  
-<div class="board-view-container">
-  <div class="svg-wrapper">
-    <div class="pins-column left">
-    <div v-for="pinName in pinLabels[0]" :key="pinName" class="pin-anchor">
-      <div 
-        class="reg-chip mini" 
-        :style="{ backgroundColor: chipStyles[pinName] }"
-      >
-        <span class="reg-id">{{ pinName }}</span>
-        <input 
-          type="text" 
-          class="reg-input"
-          :class="{ 'val-active': pinStates[pinName] > 0 }"
-          :value="pinStates[pinName]"
-          @change="updatePinValue($event, pinName)"
-          @keydown.enter="$event.target.blur()"
-        />
+    <div class="right-panel" :style="{ width: 100 - splitPercent + '%' }">
+      <div class="panel-header">Hardware View</div>
+      <div class="board-selector-inline">
+        <label>Board selected:</label>
+        <select v-model="selectedBoard" @change="handleBoardChange">
+          <option value="esp32c3devkit2">ESP32-C3 DevKit</option>
+          <option value="esp32c6devkit1">ESP32-C6 DevKit</option>
+        </select>
+      </div>
+
+      <div class="board-view-container">
+        <div class="svg-wrapper">
+          <div class="pins-column left">
+            <div
+              v-for="pinName in pinLabels[0]"
+              :key="pinName"
+              class="pin-anchor"
+            >
+              <div class="chip-wrapper">
+                <div
+                  class="reg-chip mini"
+                  :class="{ 'is-interrupt-btn': interrupt[pinName] }"
+                  :style="{ backgroundColor: chipStyles[pinName] }"
+                  @click="
+                    interrupt[pinName] ? handleInterruptClick(pinName) : null
+                  "
+                >
+                  <span class="reg-id">{{ pinName }}</span>
+
+                  <input
+                    type="text"
+                    class="reg-input"
+                    :class="{ 'val-active': pinStates[pinName] > 0 }"
+                    :value="pinStates[pinName]"
+                    @change="updatePinValue($event, pinName)"
+                    @keydown.enter="$event.target.blur()"
+                    @click.stop
+                  />
+                </div>
+
+                <transition name="fade">
+                  <span
+                    v-if="interrupt[pinName]"
+                    class="danger-icon"
+                    title="Interrupt"
+                  >
+                    ⚠️
+                  </span>
+                </transition>
+              </div>
+            </div>
+          </div>
+
+          <img
+            :src="activeBoard.svg"
+            class="main-board-svg"
+            :style="{ width: Math.max((100 - splitPercent) * 4, 120) + 'px' }"
+          />
+
+          <div class="pins-column right">
+            <div
+              v-for="pinName in pinLabels[1]"
+              :key="pinName"
+              class="pin-anchor"
+            >
+              <div class="chip-wrapper">
+                <div
+                  class="reg-chip mini"
+                  :class="{ 'is-interrupt-btn': interrupt[pinName] }"
+                  :style="{ backgroundColor: chipStyles[pinName] }"
+                  @click="
+                    interrupt[pinName] ? handleInterruptClick(pinName) : null
+                  "
+                >
+                  <span class="reg-id">{{ pinName }}</span>
+
+                  <input
+                    type="text"
+                    class="reg-input"
+                    :class="{ 'val-active': pinStates[pinName] > 0 }"
+                    :value="pinStates[pinName]"
+                    @change="updatePinValue($event, pinName)"
+                    @keydown.enter="$event.target.blur()"
+                    @click.stop
+                  />
+                </div>
+
+                <transition name="fade">
+                  <span
+                    v-if="interrupt[pinName]"
+                    class="danger-icon"
+                    title="Interrupt"
+                  >
+                    ⚠️
+                  </span>
+                </transition>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
-
-    <img 
-        :src="activeBoard.svg" 
-        class="main-board-svg" 
-        :style="{ width: Math.max((100 - splitPercent) * 4, 120) + 'px' }"
-      />
-
-    <div class="pins-column right">
-      <div v-for="pinName in pinLabels[1]" :key="pinName" class="pin-anchor">
-<div class="chip-wrapper">
-      
-      <div 
-        class="reg-chip mini" 
-        :style="{ backgroundColor: chipStyles[pinName] }"
-      >
-        <span class="reg-id">{{ pinName }}</span>
-        <input 
-          type="text" 
-          class="reg-input"
-          :class="{ 'val-active': pinStates[pinName] > 0 }"
-          :value="pinStates[pinName]"
-          @change="updatePinValue($event, pinName)"
-          @keydown.enter="$event.target.blur()"
-        />
-      </div>
-
-      <transition name="fade">
-        <span
-          v-if="interrupt[pinName]"  
-          class="danger-icon"
-          title="Interrupt"
-        >
-          ⚠️
-        </span>
-      </transition>
-
-    </div>
-      </div>
-    </div>
-  </div>
-</div>
-</div>
-</div>
 </template>
 
 <script>
@@ -106,8 +141,18 @@ import { FitAddon } from "@xterm/addon-fit";
 import "xterm/css/xterm.css";
 import { execution_mode, status } from "@/core/core.mjs";
 import { coreEvents } from "@/core/events.mjs";
-import { activeBoard, pinStates, pinLabels, switchBoard } from "../../../core/capi/pinstates.mjs";
-
+import {
+  activeBoard,
+  pinStates,
+  pinLabels,
+  switchBoard,
+  esp32vect,
+} from "../../../core/capi/pinstates.mjs";
+import {
+  writeRegister,
+  readRegister,
+} from "../../../core/register/registerOperations.mjs";
+import { crex_findReg } from "../../../core/register/registerLookup.mjs";
 
 export default {
   setup() {
@@ -115,8 +160,8 @@ export default {
       activeBoard,
       pinStates,
       pinLabels,
-      switchBoard
-    }
+      switchBoard,
+    };
   },
   props: {
     display: { type: String, required: true },
@@ -131,21 +176,21 @@ export default {
       fitAddon: null,
       inputBuffer: "",
       inputMode: false,
-      splitPercent: 50, 
+      splitPercent: 50,
       isResizing: false,
       chipStyles: {},
-      interrupt: {}
+      interrupt: {},
     };
   },
 
   mounted() {
     this.initTerminal();
     // Terminal write
-    coreEvents.on("arduino-terminal-write", (event) => {
+    coreEvents.on("arduino-terminal-write", event => {
       this.writeOutput(event.text);
     });
     // Change pin values
-    coreEvents.on("arduino-pin-write", (event) => {
+    coreEvents.on("arduino-pin-write", event => {
       const pinName = `GPIO${event.pin}`;
       if (this.pinStates.hasOwnProperty(pinName)) {
         this.pinStates[pinName] = event.value;
@@ -161,28 +206,39 @@ export default {
       }
       this.interrupt = {};
       this.clearTerminal();
-    })
+    });
     //Changes pin mode color
-    coreEvents.on("arduino-pin-mode", (event) => {
+    coreEvents.on("arduino-pin-mode", event => {
       const pinName = `GPIO${event.pin}`;
-      let color = "#0dcaf0"; 
-      switch(event.mode) {
-        case 0x1: color = "#ff6666"; break; // INPUT
-        case 0x3: color = "#66ff66"; break; // OUTPUT
-        case 0x4: 
-        case 0x5: color = "#0066ff"; break; // INPUT_PULLUP
-        case 0x9: color = "#9999ff"; break; // INPUT_PULLDOWN
-        case 0xC0: color = "#c2c2d6"; break; // ANALOG
-        default: color = "#0dcaf0"; 
+      let color = "#0dcaf0";
+      switch (event.mode) {
+        case 0x1:
+          color = "#ff6666";
+          break; // INPUT
+        case 0x3:
+          color = "#66ff66";
+          break; // OUTPUT
+        case 0x4:
+        case 0x5:
+          color = "#0066ff";
+          break; // INPUT_PULLUP
+        case 0x9:
+          color = "#9999ff";
+          break; // INPUT_PULLDOWN
+        case 0xc0:
+          color = "#c2c2d6";
+          break; // ANALOG
+        default:
+          color = "#0dcaf0";
       }
 
       this.chipStyles = {
         ...this.chipStyles,
-        [pinName]: color
+        [pinName]: color,
       };
     });
 
-    coreEvents.on("arduino-pin-interrupt", (pinName) => {
+    coreEvents.on("arduino-pin-interrupt", pinName => {
       this.interrupt[pinName] = true;
       console.log(`Interrupt set on pin ${pinName}`);
     });
@@ -316,71 +372,106 @@ export default {
         this.terminal.write(`\r\n> ${text}\r\n`);
       }
     },
-  // Resizer methods
+    // Resizer methods
     onMouseDown() {
-    this.isResizing = true;
-    document.body.style.cursor = 'col-resize';
-  },
-  onMouseMove(e) {
+      this.isResizing = true;
+      document.body.style.cursor = "col-resize";
+    },
+    onMouseMove(e) {
       if (!this.isResizing) return;
       const container = this.$refs.layoutContainer;
       if (!container) return;
 
       const rect = container.getBoundingClientRect();
-      
-      // Calculamos la posición del ratón relativa al inicio del contenedor
+
+      // Relative pos of mouse to container
       const mouseX = e.clientX - rect.left;
       let newPercent = (mouseX / rect.width) * 100;
 
-      // Límites de seguridad (10% a 90%)
       if (newPercent > 10 && newPercent < 90) {
         this.splitPercent = newPercent;
-        
-        // Forzamos a la terminal a ajustarse al nuevo ancho
+
+        // Adjust terminal size immediately for smoother experience
         if (this.fitAddon) {
           this.fitAddon.fit();
         }
       }
-  },
-  onMouseUp() {
-    this.isResizing = false;
-    document.body.style.cursor = 'default';
-  },
-  onBoardChange() {
-    console.log("Cambiando a la placa:", this.selectedBoard);
-    // Aquí podrías cargar las etiquetas de los pines (pinLabels) 
-    // y la imagen SVG correspondiente a la nueva placa.
-  },
-   updatePinValue(event, pinName) {
-    const rawValue = event.target.value;
- 
-    const intValue = parseInt(rawValue, 10);
-    
-    if (isNaN(intValue)) {
-      this.pinStates[pinName] = 0;
-    } else {
-      this.pinStates[pinName] = intValue;
-    }
+    },
+    onMouseUp() {
+      this.isResizing = false;
+      document.body.style.cursor = "default";
+    },
+    onBoardChange() {
+      console.log("Changing to  board:", this.selectedBoard);
+    },
+    updatePinValue(event, pinName) {
+      const rawValue = event.target.value;
 
-    event.target.value = this.pinStates[pinName];
+      const intValue = parseInt(rawValue, 10);
 
-    console.log(`Pin ${pinName} changed to:`, this.pinStates[pinName]);
-  },
-  handleBoardChange() {
+      if (isNaN(intValue)) {
+        this.pinStates[pinName] = 0;
+      } else {
+        this.pinStates[pinName] = intValue;
+      }
+
+      event.target.value = this.pinStates[pinName];
+
+      console.log(`Pin ${pinName} changed to:`, this.pinStates[pinName]);
+    },
+    handleBoardChange() {
       switchBoard(this.selectedBoard);
-    }, 
-    
-    hasAlert(pinName) {
-    return true;
-  }
+    },
 
+    //Interrupts
+    handleInterruptClick(pinName) {
+      const pinNumber = parseInt(pinName.replace(/\D/g, ""));
 
+      if (isNaN(pinNumber)) return;
+
+      // Search in interrupt vector
+      const targetPin = BigInt(pinNumber);
+      const index = esp32vect.value.findIndex(entry => entry[0] === targetPin);
+
+      if (index !== -1) {
+        const [pin, isr, mode] = esp32vect.value[index];
+        console.log(`Pin: ${pin} | ISR: 0x${isr.toString(16)} | Modo: ${mode}`);
+        //Jump to ISR
+        var ret1 = crex_findReg("pc");
+        if (ret1.match === 0) {
+          throw packExecute(
+            true,
+            "capi_arduino: register pc not found",
+            "danger",
+            null,
+          );
+        }
+        var pc = BigInt.asIntN(
+          32,
+          readRegister(ret1.indexComp, ret1.indexElem),
+        );
+        //Save ra
+        var ret2 = crex_findReg("ra");
+        if (ret2.match === 0) {
+          throw packExecute(
+            true,
+            "capi_arduino: register ra not found",
+            "danger",
+            null,
+          );
+        }
+        writeRegister(BigInt(pc), ret2.indexComp, ret2.indexElem);
+        writeRegister(BigInt(isr), ret1.indexComp, ret1.indexElem);
+        coreEvents.emit("arduino-terminal-write", {
+          text: `[INTERRUPT DETECTED] Jumping to ISR at 0x${isr.toString(16)}`,
+        });
+      } else {
+        console.warn(`No interrupt with pin: ${pinName}`);
+      }
+    },
   },
-
- 
 };
 </script>
-
 
 <style scoped>
 /* Terminal side */
@@ -502,7 +593,7 @@ export default {
 .arduino-layout {
   display: flex;
   height: 100%;
-  width: 100%; 
+  width: 100%;
   overflow: hidden;
   border-radius: 6px;
 }
@@ -511,7 +602,7 @@ export default {
   /* flex: 1; */
   display: flex;
   flex-direction: column;
-  min-width: 0; 
+  min-width: 0;
 }
 
 .right-panel {
@@ -528,7 +619,6 @@ export default {
   padding: 6px 10px;
   background: color-mix(in srgb, currentColor 10%, transparent);
   font-weight: bold;
-  
 }
 .board-selector-container {
   display: flex;
@@ -549,7 +639,6 @@ export default {
   border-radius: 20px;
   border: 1px solid #444;
   z-index: 10;
-  
 }
 
 .board-selector-inline label {
@@ -559,14 +648,14 @@ export default {
 }
 
 .board-dropdown-minimal {
-  margin-left:75px;
+  margin-left: 75px;
   border: none;
   font-weight: bold;
   outline: none;
   cursor: pointer;
 }
 .mini-reg-list {
-  padding: 15px; 
+  padding: 15px;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
   gap: 10px;
@@ -579,18 +668,21 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 5px 10px; 
-  background: RGBA(var(--bs-info-rgb), var(--bs-bg-opacity, 1)); /* Un azul sólido para que resalte */
+  padding: 5px 10px;
+  background: RGBA(
+    var(--bs-info-rgb),
+    var(--bs-bg-opacity, 1)
+  ); /* Un azul sólido para que resalte */
   border-radius: 8px !important;
   color: white;
   font-size: 14px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 .reg-chip.mini {
-  padding: 4px 8px;
-  font-size: 11px;     /* Letra un poco más pequeña para que quepan bien */
-  min-width: 60px;
-  justify-content: space-around;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  position: relative;
 }
 
 .reg-id {
@@ -608,13 +700,13 @@ export default {
   border: 1px solid transparent;
   border-radius: 3px;
   color: #fff;
-  width: 25px; 
+  width: 25px;
   text-align: right;
   font-size: 0.8rem;
   outline: none;
   padding: 0 2px;
   transition: all 0.2s;
-  margin-left:5px;
+  margin-left: 5px;
 }
 
 .reg-input:focus {
@@ -631,7 +723,7 @@ export default {
   margin: 0;
 }
 .val-high {
-  color: #00FF41 !important; /* Verde para HIGH */
+  color: #00ff41 !important; /* Verde para HIGH */
   text-shadow: 0 0 5px rgba(0, 255, 65, 0.4);
 }
 .resizer {
@@ -642,7 +734,8 @@ export default {
   z-index: 10;
 }
 
-.resizer:hover, .resizer:active {
+.resizer:hover,
+.resizer:active {
   background: #58a6ff; /* Se ilumina en azul al tocarlo */
 }
 /* Board */
@@ -652,14 +745,14 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow: hidden; 
+  overflow: hidden;
   padding: 10px;
 }
 
 .svg-wrapper {
   display: flex;
   align-items: center; /* Alinea pines y placa al centro horizontal */
-  gap: 15px;           /* Espacio entre pines y placa */
+  gap: 15px; /* Espacio entre pines y placa */
   max-width: 100%;
 }
 .main-board-svg {
@@ -667,49 +760,71 @@ export default {
   max-width: 200px;
   transition: width 0.05s linear; /* Suaviza el cambio de tamaño al arrastrar */
   user-select: none;
-  flex-shrink: 1;      /* Permite que la placa se encoja primero */
+  flex-shrink: 1; /* Permite que la placa se encoja primero */
 }
 .pins-column {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  flex-shrink: 0;      /* Evita que los pines se aplasten */
+  flex-shrink: 0; /* Evita que los pines se aplasten */
 }
 
 .pins-column.left {
-  left: 10px;        /* Cambiado de negativo a positivo relativo al padding */
+  left: 10px; /* Cambiado de negativo a positivo relativo al padding */
 }
 
 .pins-column.right {
-  right: 10px;       /* Cambiado de negativo a positivo relativo al padding */
+  right: 10px; /* Cambiado de negativo a positivo relativo al padding */
 }
 
 .pin-anchor {
   display: flex;
   align-items: center;
 }
- /* Danger icon */
- .chip-wrapper {
+/* Danger icon */
+.chip-wrapper {
   display: flex;
   align-items: center; /* Centra el icono verticalmente con el chip */
   justify-content: flex-start;
   position: relative;
 }
 
+.is-interrupt-btn {
+  cursor: pointer !important;
+  border: 1.5px solid #ff4d4d; /* Un borde sutil rojo */
+  box-shadow: 0 0 8px rgba(255, 77, 77, 0.3);
+}
+
+.is-interrupt-btn:hover {
+  filter: brightness(1.1);
+  transform: scale(1.05);
+  box-shadow: 0 0 12px rgba(255, 77, 77, 0.5);
+}
+
+.is-interrupt-btn:active {
+  transform: scale(0.98);
+}
+
+/* Evitar que el cursor de texto confunda si el chip es botón */
+.is-interrupt-btn .reg-id {
+  pointer-events: none;
+}
+
 .danger-icon {
-  margin-left: 8px;    /* Espacio a la derecha del chip */
+  margin-left: 8px; /* Espacio a la derecha del chip */
   font-size: 14px;
   cursor: help;
   user-select: none;
-  filter: drop-shadow(0 0 2px rgba(255,0,0,0.5));
+  filter: drop-shadow(0 0 2px rgba(255, 0, 0, 0.5));
 }
 
 /* Animación suave para que no aparezca de golpe */
-.fade-enter-active, .fade-leave-active {
+.fade-enter-active,
+.fade-leave-active {
   transition: opacity 0.3s;
 }
-.fade-enter-from, .fade-leave-to {
+.fade-enter-from,
+.fade-leave-to {
   opacity: 0;
 }
-
 </style>
