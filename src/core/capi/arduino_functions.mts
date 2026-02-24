@@ -738,13 +738,27 @@ export function cr_attachInterrupt() {
     );
     esp32vect.value[Number(interr_pos)]![1] = interr_isr;
     //TODO: Modes
+    var ret3 = crex_findReg("a2");
+    if (ret3.match === 0) {
+        throw packExecute(
+            true,
+            "capi_syscall: register a2 not found",
+            "danger",
+            null,
+        );
+    }
+    var mode =  BigInt.asIntN(
+        32,
+        readRegister(ret3.indexComp, ret3.indexElem),
+    );
+    esp32vect.value[Number(interr_pos)]![2] = mode;
     //TODO: Graphic retroalimentation
     const gpiopin = "GPIO" + esp32vect.value[Number(interr_pos)]![0];
     console.log(
-        `Interrupt attached at position ${interr_pos} for pin ${gpiopin} with ISR at ${interr_isr}`,
+        `Interrupt attached at position ${interr_pos} for pin ${gpiopin} with ISR at ${interr_isr}.Mode: ${mode}`,
     );
     coreEvents.emit("arduino-terminal-write", {
-        text: `attachInterrupt(${interr_pos}, 0x${interr_isr.toString(16)})`,
+        text: `attachInterrupt(${interr_pos}, 0x${interr_isr.toString(16)}, ${mode}) `,
     });
     coreEvents.emit("arduino-pin-interrupt", gpiopin);
 }
@@ -766,7 +780,7 @@ export function cr_digitalPinToInterrupt() {
     var pin = BigInt.asUintN(32, readRegister(ret1.indexComp, ret1.indexElem));
     //Find clean slot in the interrupt vector table
     const pos = esp32vect.value.findIndex(
-        slot => slot[1] === 0n && slot[2] === "",
+        slot => slot[1] === 0n && slot[2] === 0n,
     );
 
     // Si no encuentra ninguna posición libre, findIndex devuelve -1
@@ -778,7 +792,7 @@ export function cr_digitalPinToInterrupt() {
             null,
         );
     }
-    esp32vect.value[pos] = [BigInt(pin), 0n, ""]; // Mark the slot as used with the position
+    esp32vect.value[pos] = [BigInt(pin), 0n, 0n]; // Mark the slot as used with the position
     writeRegister(BigInt(pos), ret1.indexComp, ret1.indexElem);
     coreEvents.emit("arduino-terminal-write", {
         text: `digitalPinToInterrupt(${pin})`,

@@ -110,14 +110,14 @@ const BOARDS: Record<string, BoardConfig> = {
 
 // interrupt
 // Vector table for ESP32 (for demonstration, not fully implemented): [pin,ISR,MODE]
-let esp32vectRef = ref<[bigint, bigint, string][]>(
-    Array.from({ length: 32 }, () => [0n, 0n, ""]),
+let esp32vectRef = ref<[bigint, bigint, bigint][]>(
+    Array.from({ length: 32 }, () => [0n, 0n, 0n]),
 );
 const entry = esp32vectRef.value[0];
 if (entry) {
     entry[0] = 0xffffn; // pin
     entry[1] = 0xffffn; // isr
-    entry[2] = "EXCEPTION"; // mode
+    entry[2] = 0n; // mode
 }
 
 // States
