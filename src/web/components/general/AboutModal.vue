@@ -30,7 +30,7 @@ defineProps<Props>();
 
 const contactMail = "creator.arcos.inf.uc3m.es@gmail.com";
 const projectVersion = "6.1.0";
-const projectLicense = "LGPL-2.1";
+const projectLicense = "LGPL-3.0";
 const repositoryUrl = "https://github.com/creatorsim/creator";
 
 const authors = ref<Record<string, any>>({});
