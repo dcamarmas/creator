@@ -116,6 +116,7 @@ export default defineComponent({
 
         <!-- Calculator -->
         <Calculator id="calculator" />
+        
         <b-row align-h="center" class="simulator-main-row">
           <!-- Column 1: Execution instruction -->
           <b-col

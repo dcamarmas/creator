@@ -358,7 +358,7 @@ export default defineComponent({
     :id="id"
     title="IEEE 754 Floating Point Converter"
     size="xl"
-    hide-footer
+    footer-class="d-none"
     body-class="p-0"
   >
     <div class="calculator-container">
@@ -387,7 +387,7 @@ export default defineComponent({
           </button>
         </div>
         <button class="clear-btn" @click="clear" title="Clear all fields">
-          <font-awesome-icon icon="fa-solid fa-trash" />
+          <font-awesome-icon icon="fa-solid fa-broom" />
         </button>
       </div>
 
