@@ -525,8 +525,9 @@ export default defineComponent({
         <b-dropdown-divider />
         <b-dropdown-item @click="removeLibrary">
           <font-awesome-icon :icon="['fas', 'trash-can']" class="me-2" /> Remove
-          Library
+          Library...
         </b-dropdown-item>
+
       </b-nav-item-dropdown>
 
       <!-- Tools Menu (Simulator View) -->

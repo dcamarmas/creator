@@ -1776,10 +1776,16 @@ instructions:
       fields:
         - field: opcode
           value: "1101111"
+      # definition: |
+      #   registers[rd] = registers.pc + 4n;
+      #   registers.pc += imm;
+      #   CAPI.STACK.beginFrame();
       definition: |
+        if (CAPI.ARDUINO.check_arduino(imm,registers.pc) === false) {
         registers[rd] = registers.pc + 4n;
         registers.pc  = registers.pc + imm;
         CAPI.STACK.beginFrame();
+        } 
       help: Jump to address and place return address in rd.
 
     # R-type instructions

@@ -17,6 +17,9 @@ export default defineConfig({
       // see https://github.com/vitejs/vite-plugin-vue/tree/main/packages/plugin-vue#asset-url-handling
       // https://bootstrap-vue-next.github.io/bootstrap-vue-next/docs/reference/images.html
       template: {
+          compilerOptions: {
+            isCustomElement: (tag) => tag.startsWith("wokwi-"),
+          },
         transformAssetUrls: {
           img: ["src"],
           "b-img": ["src"],
@@ -66,6 +69,7 @@ export default defineConfig({
     },
   },
 
+  
   base: process.env.REPO ? `/${process.env.REPO}/` : "/",// repository name (for github pages deployment)
 
   build: {

@@ -1,0 +1,15 @@
+{
+  "name": "risv-esp32c3-devkitc-02",
+  "author": "Elisa Utrilla Arroyo - UC3M",
+  "pins": [
+    "GNDA", "3v3A", "3v3B",
+    "GPIO4", "GPIO5", "GPIO6",
+    "GPIO7", "GNDB", "GPIO9",
+    "5v5A", "5v5B", "GNDC",
+    "GNDD", "GPIO0", "GPIO1",
+    "GPIO2", "GPIO3", "GNDE",
+    "GPIO10", "GNDF", "GPIO20",
+    "GPIO21", "GNDG", "GPIO18",
+    "GPIO19", "GNDH", "GNDI","RST1","GPIO8"
+  ]
+}

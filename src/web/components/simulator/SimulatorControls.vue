@@ -289,6 +289,8 @@ function reset() {
   coreReset();
 
   execution_UI_reset();
+
+  coreEvents.emit('arduino-reset');
 }
 
 function execute_instruction() {

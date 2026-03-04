@@ -18,6 +18,7 @@
  */
 
 import mitt, { type Emitter } from "mitt";
+import { ARDUINO } from "./capi/arduino.mts";
 
 /**
  * Event types for CREATOR core events
@@ -32,6 +33,10 @@ export const CoreEventTypes = {
     LIBRARY_REMOVED: "library-removed",
     EXECUTOR_BUTTONS_UPDATE: "executor-buttons-update",
     PAUSE_EXEC: "pause-execution",
+    ARDUINO_TERMINAL_WRITE: "arduino-terminal-write",
+    ARDUINO_PIN_CHANGED: "arduino-pin-write",
+    ARDUINO_RESET: "arduino-reset",
+    ARDUINO_PIN_INTERRUPT: "arduino-pin-interrupt",
 } as const;
 
 /**
@@ -96,7 +101,51 @@ export type CoreEvents = {
     "library-removed": void;
     /** Emitted when executor button states should be updated */
     "executor-buttons-update": ExecutorButtonsUpdateEvent;
+    /** Emitted when the simulator sends text to the Arduino Terminal */
+    "arduino-terminal-write": ArduinoTerminalWriteEvent;
+    /** Emitted when a Pin changes its values */
+    "arduino-pin-write": ArduinoPinChangedEvent;
+    /** Emitted when Arduino is reset */
+    "arduino-reset": void;
+    /** Event is emmited when a pin in pinMode has been set to a mode */
+    "arduino-pin-mode":ArduinoPinMode;
+    /** Event is emmited when a pin is set up in an interrupt */
+    "arduino-pin-interrupt":ArduinoPinInterruptEvent;
 };
+/**
+ * Emitted when the simulator sends text to the Arduino Terminal
+ */
+export interface ArduinoTerminalWriteEvent {
+    /** The text to be displayed in the terminal */
+    text: string;
+}
+/**
+ * Emitted when a Pin changes its value
+ */
+export interface ArduinoPinChangedEvent {
+    /** The pin number */
+    pin: number;
+    /** The new value of the pin */
+    value: number;
+}
+
+/**
+ * Emitted when a Pin changes its value
+ */
+export interface ArduinoPinMode{
+    /** The pin number */
+    pin: number;
+    /** The mode of the pin */
+    mode: number;
+}
+
+/** 
+ * Event is emmited when a pin is set up in an interrupt 
+ */
+export interface ArduinoPinInterruptEvent {
+  /** The pin number */
+  pin: string;
+}
 
 /**
  * Global event emitter for CREATOR core events
