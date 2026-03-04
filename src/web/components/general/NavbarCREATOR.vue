@@ -544,7 +544,7 @@ export default defineComponent({
         <b-dropdown-item v-b-modal.flash>
           <font-awesome-icon :icon="['fab', 'usb']" class="me-2" /> Flash
         </b-dropdown-item>
-        <b-dropdown-item v-b-modal.calculator>
+        <b-dropdown-item v-b-modal.calculator_simulator>
           <font-awesome-icon :icon="['fas', 'calculator']" class="me-2" />
           IEEE754 Calculator
         </b-dropdown-item>
