@@ -563,14 +563,14 @@ export default defineComponent({
       >
         <b-dropdown-item
           v-if="creator_mode === 'assembly'"
-          v-b-modal.examples-assembly
+          v-b-modal.examples_assembly
         >
           <font-awesome-icon :icon="['fas', 'file-lines']" class="me-2" />
           Examples...
         </b-dropdown-item>
         <b-dropdown-item
           v-if="creator_mode === 'simulator'"
-          v-b-modal.examples-simulator
+          v-b-modal.examples_simulator
         >
           <font-awesome-icon :icon="['fas', 'file-lines']" class="me-2" />
           Examples...
