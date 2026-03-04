@@ -63,10 +63,6 @@ onMounted(async () => {
       <div class="text-center mb-3">
         <h3 class="mb-2">CREATOR</h3>
 
-        <p class="text-muted mb-2">
-          didaCtic and geneRic assEmbly educATional simulatOR
-        </p>
-
         <div class="d-flex justify-content-center gap-3 flex-wrap">
           <b-badge variant="primary" pill>
             <font-awesome-icon :icon="['fas', 'code-branch']" class="me-1" />
