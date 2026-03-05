@@ -139,7 +139,7 @@ function loadLibraryIfPresent(instructions) {
     // Convert hex string to binary string
     let binaryString = "";
     for (let i = 0; i < loadedLibrary.binary.length; i += 2) {
-        const hexByte = loadedLibrary.binary.substr(i, 2);
+        const hexByte = loadedLibrary.binary.slice(i, i+2);
         const byte = parseInt(hexByte, 16);
         binaryString += byte.toString(2).padStart(8, "0");
     }
@@ -158,7 +158,7 @@ function loadLibraryIfPresent(instructions) {
     // Process each instruction
     let currentAddr = 0;
     for (let i = 0; i < binaryString.length; i += instructionSizeBits) {
-        const instructionBinary = binaryString.substr(i, instructionSizeBits);
+        const instructionBinary = binaryString.slice(i, i + instructionSizeBits);
         const symbolName = symbolsByAddr.get(currentAddr);
         const hasSymbol = symbolName !== undefined;
 
@@ -456,7 +456,7 @@ function writeLibraryToMemory() {
 
     let binaryString = "";
     for (let i = 0; i < loadedLibrary.binary.length; i += 2) {
-        const hexByte = loadedLibrary.binary.substr(i, 2);
+        const hexByte = loadedLibrary.binary.slice(i, i+2);
         const byte = parseInt(hexByte, 16);
         binaryString += byte.toString(2).padStart(8, "0");
     }

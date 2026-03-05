@@ -406,12 +406,12 @@ export function reset() {
         for (const instruction of instructions ?? []){
             const auxAddr = parseInt(instruction.Address,16);
             for (let j = 0; j < instruction.hex.length; j += 32) {
-                const wordBinary = instruction.hex.substr(j, 32);
+                const wordBinary = instruction.hex.slice(j, j+32);
                 const wordBytes = [];
 
                 // Split word into bytes
                 for (let k = 0; k < wordBinary.length; k += 8) {
-                    const byte = parseInt(wordBinary.substr(k, 8), 2);
+                    const byte = parseInt(wordBinary.slice(k, k+8), 2);
                     wordBytes.push(byte);
                 }
 
