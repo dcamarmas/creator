@@ -419,6 +419,34 @@ function loadDataIntoMemory(data_mem, wasmModules) {
 }
 
 /**
+ * Write binary to memory
+ * @param {string} binary - Binary string to write
+ */
+function writeBinaryToMemory(binary, baseAddr) {
+    // Split into words, reverse order, and concatenate
+    const words = [];
+    for (let j = 0; j < binary.length; j += WORDSIZE) {
+        words.push(binary.slice(j, j+WORDSIZE));
+    }
+    const reversedBinary = words.reverse().join("");
+
+    for (let j = 0; j < reversedBinary.length; j += WORDSIZE) {
+        const wordBinary = reversedBinary.slice(j, j+WORDSIZE);
+        const wordBytes = [];
+
+        for (let k = 0; k < wordBinary.length; k += BYTESIZE) {
+            const byte = parseInt(wordBinary.slice(k, k+BYTESIZE), 2);
+            wordBytes.push(byte);
+        }
+
+        main_memory.writeWord(
+            BigInt(baseAddr + j / BYTESIZE),
+            wordBytes,
+        );
+    }
+}
+
+/**
  * Write library binary instructions to memory
  */
 function writeLibraryToMemory() {
@@ -438,30 +466,8 @@ function writeLibraryToMemory() {
     const instructionSizeBytes = instructionSizeBits / 8;
 
     for (let i = 0; i < binaryString.length; i += instructionSizeBits) {
-        const instructionBinary = binaryString.substr(i, instructionSizeBits);
-
-        // Split into words, reverse order, and concatenate
-        const words = [];
-        for (let j = 0; j < instructionBinary.length; j += WORDSIZE) {
-            words.push(instructionBinary.substr(j, WORDSIZE));
-        }
-        const reversedBinary = words.reverse().join("");
-
-        for (let j = 0; j < reversedBinary.length; j += WORDSIZE) {
-            const wordBinary = reversedBinary.substr(j, WORDSIZE);
-            const wordBytes = [];
-
-            for (let k = 0; k < wordBinary.length; k += BYTESIZE) {
-                const byte = parseInt(wordBinary.substr(k, BYTESIZE), 2);
-                wordBytes.push(byte);
-            }
-
-            main_memory.writeWord(
-                BigInt(currentAddr + j / BYTESIZE),
-                wordBytes,
-            );
-        }
-
+        const instructionBinary = binaryString.slice(i, i+instructionSizeBits);
+        writeBinaryToMemory(instructionBinary, currentAddr)
         currentAddr += instructionSizeBytes;
     }
 }
@@ -474,26 +480,8 @@ function writeLibraryToMemory() {
 function writeInstructionsToMemory(instructions, library_instructions) {
     for (let i = library_instructions; i < instructions.length; i++) {
         const instruction = instructions[i];
-        const baseAddr = parseInt(instruction.Address, 16);
-
-        // Split into words, reverse order, and concatenate
-        const words = [];
-        for (let j = 0; j < instruction.binary.length; j += WORDSIZE) {
-            words.push(instruction.binary.substr(j, WORDSIZE));
-        }
-        const reversedBinary = words.reverse().join("");
-
-        for (let j = 0; j < reversedBinary.length; j += WORDSIZE) {
-            const wordBinary = reversedBinary.substr(j, WORDSIZE);
-            const wordBytes = [];
-
-            for (let k = 0; k < wordBinary.length; k += BYTESIZE) {
-                const byte = parseInt(wordBinary.substr(k, BYTESIZE), 2);
-                wordBytes.push(byte);
-            }
-
-            main_memory.writeWord(BigInt(baseAddr + j / BYTESIZE), wordBytes);
-        }
+        const addr = parseInt(instruction.Address, 16);
+        writeBinaryToMemory(instruction.binary, addr)
     }
 }
 
