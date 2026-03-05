@@ -3856,13 +3856,13 @@ pseudoinstructions:
           type: imm-unsigned
       definition: |
         no_ret_op{
-          tmp = Field.2.(31,0).int;
-          tmp_pc_offset = (reg.pc - 4) & 0xFFF;
+          tmp = Field.2.(31,0).int - (reg.pc - 4);
           tmp_low = tmp & 0x00000FFF;
-          tmp_hi = tmp >> 12;
+          tmp_low = tmp_low>0x7FF? tmp_low - 0x1000 : tmp_low;
+          tmp_hi = (tmp - tmp_low) >> 12;
         };
         auipc rd, op{tmp_hi};
-        addi rd, rd, op{tmp_low - (tmp_pc_offset)};
+        addi rd, rd, op{tmp_low};
 
     - name: li
       fields:
