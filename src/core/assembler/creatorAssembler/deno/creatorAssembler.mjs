@@ -19,7 +19,11 @@
 
 import { assembleCreatorBase } from "../creatorAssemblerBase.mjs";
 
-import { ArchitectureJS, DataCategoryJS } from "./wasm/creator_assembler.js";
+import {
+    ArchitectureJS,
+    DataCategoryJS,
+    Color,
+} from "./wasm/creator_assembler.js";
 
 /**
  * Deno-specific assembly compiler that uses ANSI color configuration
@@ -33,6 +37,7 @@ export function assembleCreator(code, library) {
     const wasmModules = {
         ArchitectureJS,
         DataCategoryJS,
+        Color,
     };
 
     // Call the common base implementation

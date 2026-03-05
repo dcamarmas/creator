@@ -36,13 +36,30 @@ import {
     setAddress,
     setInstructions,
     setLibraryInstructions,
-    formatErrorWithColors,
     getCleanErrorMessage,
     parseErrorForLinter,
 } from "../assembler.mjs";
 import { logger } from "../../utils/creator_logger.mjs";
 
 let libraryInstructions = [];
+
+/**
+ * Handle compilation error
+ * @param {String} error - Error message returned by the assembler
+ * @returns {Object} Structured error data
+ */
+function handleError(error) {
+    const cleanErrorText = error.replace(/<.+?>/g, "");
+    const linterInfo = parseErrorForLinter(cleanErrorText);
+    return {
+        errorcode: "101",
+        type: "error",
+        bgcolor: "danger",
+        status: "error",
+        msg: error,
+        linter: linterInfo,
+    };
+}
 
 /**
  * Initialize architecture and prepare for compilation
@@ -505,10 +522,9 @@ function writeInstructionsToMemory(instructions, library_instructions) {
  */
 export function assembleCreatorLibrary(code, wasmModules) {
     /* Google Analytics */
-    creator_ga("compile", "compile.libraray");
-    const color = 1;
+    creator_ga("compile", "compile.library");
 
-    const { DataCategoryJS } = wasmModules;
+    const { DataCategoryJS, Color } = wasmModules;
 
     let arch;
     try {
@@ -527,7 +543,7 @@ export function assembleCreatorLibrary(code, wasmModules) {
             0, // library_offset (not used for library compilation)
             "{}", // no library labels
             true, // library flag
-            color,
+            Color.Html,
         );
 
         // Library compilation: only binary instructions
@@ -554,16 +570,7 @@ export function assembleCreatorLibrary(code, wasmModules) {
         const data_mem = compiled.data;
         loadDataIntoMemory(data_mem, DataCategoryJS);
     } catch (error) {
-        const cleanErrorText = getCleanErrorMessage(error);
-        const linterInfo = parseErrorForLinter(cleanErrorText);
-        return {
-            errorcode: "101",
-            type: "error",
-            bgcolor: "danger",
-            status: "error",
-            msg: formatErrorWithColors(error),
-            linter: linterInfo,
-        };
+        return handleError(error)
     }
 
     // Mark global labels on library instructions
@@ -598,9 +605,8 @@ export function assembleCreatorLibrary(code, wasmModules) {
 export function assembleCreatorProgram(code, wasmModules) {
     /* Google Analytics */
     creator_ga("compile", "compile.assembly");
-    const color = 1;
 
-    const { DataCategoryJS } = wasmModules;
+    const { DataCategoryJS, Color } = wasmModules;
 
     let arch;
     try {
@@ -625,7 +631,7 @@ export function assembleCreatorProgram(code, wasmModules) {
             library_offset,
             labels_json,
             false, // not a library
-            color,
+            Color.Html,
         );
 
         // Normal compilation: populate instructions for execution/display
@@ -652,16 +658,7 @@ export function assembleCreatorProgram(code, wasmModules) {
         const data_mem = compiled.data;
         loadDataIntoMemory(data_mem, DataCategoryJS);
     } catch (error) {
-        const cleanErrorText = getCleanErrorMessage(error);
-        const linterInfo = parseErrorForLinter(cleanErrorText);
-        return {
-            errorcode: "101",
-            type: "error",
-            bgcolor: "danger",
-            status: "error",
-            msg: formatErrorWithColors(error),
-            linter: linterInfo,
-        };
+        return handleError(error)
     }
 
     // Write library binary to memory if present

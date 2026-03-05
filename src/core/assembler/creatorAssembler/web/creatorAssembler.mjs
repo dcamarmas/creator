@@ -22,6 +22,7 @@ import { assembleCreatorBase } from "../creatorAssemblerBase.mjs";
 import wasm_web_init, {
     ArchitectureJS,
     DataCategoryJS,
+    Color,
 } from "./wasm/creator_assembler.js";
 
 /**
@@ -38,6 +39,7 @@ export async function assembleCreator(code, library) {
     const wasmModules = {
         ArchitectureJS,
         DataCategoryJS,
+        Color,
     };
 
     // Call the common base implementation
