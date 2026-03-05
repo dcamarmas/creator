@@ -41,19 +41,21 @@ import {
 } from "../assembler.mjs";
 import { logger } from "../../utils/creator_logger.mjs";
 
-// NOTE: the types are the same in the web and deno versions, so we can use either
+// NOTE: the types are the same in the web and deno versions, so we can use
+// either. However, tests download only the deno binaries, so it's better to use
+// that
 
 /**
  * Assembler's WASM modules
- * @typedef {import("./web/wasm/creator_assembler.d.ts")} WasmModules
+ * @typedef {import("./deno/wasm/creator_assembler.d.ts")} WasmModules
  */
 
 /**
- * @typedef {import("./web/wasm/creator_assembler.d.ts").ArchitectureJS} ArchitectureJS
+ * @typedef {import("./deno/wasm/creator_assembler.d.ts").ArchitectureJS} ArchitectureJS
  */
 
 /**
- * @typedef {import("./web/wasm/creator_assembler.d.ts").DataJS} DataJS
+ * @typedef {import("./deno/wasm/creator_assembler.d.ts").DataJS} DataJS
  */
 
 let libraryInstructions = [];
