@@ -404,18 +404,7 @@ function loadDataIntoMemory(data_mem, wasmModules) {
 
             case DataCategoryJS.Padding:
             case DataCategoryJS.Space: {
-                const space_size = BigInt(data.size());
-                if (space_size < 0n) {
-                    throw new Error(
-                        "The space directive value should be positive and greater than zero",
-                    );
-                }
-                if (space_size > 50n * 1024n * 1024n) {
-                    throw new Error(
-                        ".space value out of range (greater than 50MiB)",
-                    );
-                }
-                for (let j = 0n; j < space_size; j++) {
+                for (let j = 0n; j < size; j++) {
                     main_memory.write(addr + j, 0);
                 }
 
@@ -426,7 +415,7 @@ function loadDataIntoMemory(data_mem, wasmModules) {
                     addr,
                     spaceTag,
                     spaceType,
-                    Number(space_size) * 8,
+                    Number(size) * 8,
                 );
                 break;
             }
