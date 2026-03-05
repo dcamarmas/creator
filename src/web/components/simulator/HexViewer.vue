@@ -781,21 +781,7 @@ export default defineComponent({
 
     handleByteClick(index: number, event: MouseEvent) {
       this.selectByte(index);
-
-      const hintInfo = this.hintMap.get(index);
-      if (index === this.pc) {
-        this.showHintTooltip(event.target as HTMLElement, {
-          tag: "Program Counter",
-          type: "Register",
-        });
-      } else if (index === this.sp) {
-        this.showHintTooltip(event.target as HTMLElement, {
-          tag: "Stack Pointer",
-          type: "Register",
-        });
-      } else if (hintInfo) {
-        this.showHintTooltip(event.target as HTMLElement, hintInfo);
-      }
+      this.handleByteMouseOver(index, event);
     },
 
     handleByteDoubleClick(index: number) {
