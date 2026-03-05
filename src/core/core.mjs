@@ -308,11 +308,18 @@ export async function load_CREATino() {
 // compilation
 
 export async function assembly_compile(code, compiler) {
-var ret;
-    if (Object.keys(loadedLibrary).length === 0)
+    var ret;
+
+    if (architecture.config.name.includes("SRV")){
+        if (Object.keys(loadedLibrary).length === 0)
+            ret = await assembly_compiler(code, false, compiler);
+        else 
+            ret = await assembly_compiler(code, true, compiler);
+    }
+    else{
         ret = await assembly_compiler(code, false, compiler);
-    else 
-        ret = await assembly_compiler(code, true, compiler);
+    }
+
     switch (ret.status) {
         case "error":
             break;
@@ -327,7 +334,7 @@ var ret;
             break;
 
         default:
-            ret.msg = "Unknow assembly compiler code :-/";
+            ret.msg = "Unknown assembly compiler code :-/";
             break;
     }
 
@@ -394,12 +401,12 @@ export function reset() {
         for (const instruction of instructions ?? []){
             const auxAddr = parseInt(instruction.Address,16);
             for (let j = 0; j < instruction.hex.length; j += 32) {
-                const wordBinary = instruction.hex.substr(j, 32);
+                const wordBinary = instruction.hex.slice(j, j+32);
                 const wordBytes = [];
 
                 // Split word into bytes
                 for (let k = 0; k < wordBinary.length; k += 8) {
-                    const byte = parseInt(wordBinary.substr(k, 8), 2);
+                    const byte = parseInt(wordBinary.slice(k, k+8), 2);
                     wordBytes.push(byte);
                 }
 

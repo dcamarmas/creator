@@ -19,10 +19,7 @@
 
 import { assembleCreatorBase } from "../creatorAssemblerBase.mjs";
 
-import wasm_web_init, {
-    ArchitectureJS,
-    DataCategoryJS,
-} from "./wasm/creator_assembler.js";
+import wasm_web_init, * as wasmModules from "./wasm/creator_assembler.js";
 
 /**
  * Web-specific assembly compiler that initializes WASM
@@ -33,12 +30,6 @@ import wasm_web_init, {
 export async function assembleCreator(code, library) {
     // In the web, we MUST call the default WASM initialization
     await wasm_web_init();
-
-    // Prepare WASM modules for the base compiler
-    const wasmModules = {
-        ArchitectureJS,
-        DataCategoryJS,
-    };
 
     // Call the common base implementation
     return assembleCreatorBase(code, library, wasmModules);
