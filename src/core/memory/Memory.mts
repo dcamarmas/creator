@@ -628,7 +628,7 @@ export class Memory {
     }
 
     /**
-     * Returns the addreses that have been written
+     * Returns the addresses that have been written
      */
     getWritten(): Array<{ addr: number; value: number }> {
         return (
@@ -643,7 +643,7 @@ export class Memory {
     }
 
     /**
-     * Returns all memory addreses and values.
+     * Returns all memory addresses and values.
      */
     getAll(): Array<{ addr: number; value: number }> {
         return Array.from(this.uint8View).map((value, i) => ({
