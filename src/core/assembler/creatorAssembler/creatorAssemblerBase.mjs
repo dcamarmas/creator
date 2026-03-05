@@ -221,9 +221,8 @@ function loadDataIntoMemory(data_mem, wasmModules) {
                             wordSizeBytes,
                         );
 
-                        const floatTag = labels[0] ?? "";
                         const floatType = "float32";
-                        main_memory.addHint(addr, floatTag, floatType, 32);
+                        main_memory.addHint(addr, labels, floatType, 32);
                         break;
                     }
                     case "double": {
@@ -243,18 +242,16 @@ function loadDataIntoMemory(data_mem, wasmModules) {
                             wordSizeBytes,
                         );
 
-                        const doubleTag = labels[0] ?? "";
                         const doubleType = "float64";
-                        main_memory.addHint(addr, doubleTag, doubleType, 64);
+                        main_memory.addHint(addr, labels, doubleType, 64);
                         break;
                     }
                     case "byte": {
                         const byteValue = Number("0x" + data.value(false));
                         main_memory.write(addr, byteValue);
 
-                        const byteTag = labels[0] ?? "";
                         const byteType = "byte";
-                        main_memory.addHint(addr, byteTag, byteType, 8);
+                        main_memory.addHint(addr, labels, byteType, 8);
                         break;
                     }
                     case "word":
@@ -280,11 +277,10 @@ function loadDataIntoMemory(data_mem, wasmModules) {
 
                             main_memory.writeWord(addr, wordBytes);
 
-                            const wordTag = labels[0] ?? "";
                             const wordType = "word";
                             main_memory.addHint(
                                 addr,
-                                wordTag,
+                                labels,
                                 wordType,
                                 newArchitecture.config.word_size,
                             );
@@ -337,9 +333,8 @@ function loadDataIntoMemory(data_mem, wasmModules) {
                             lowWordBytes,
                         );
 
-                        const dwordTag = labels[0] ?? "";
                         const dwordType = "dword";
-                        main_memory.addHint(addr, dwordTag, dwordType, 64);
+                        main_memory.addHint(addr, labels, dwordType, 64);
                         break;
                     }
 
@@ -364,9 +359,8 @@ function loadDataIntoMemory(data_mem, wasmModules) {
                         main_memory.write(addr, orderedBytes[0]);
                         main_memory.write(addr + 1n, orderedBytes[1]);
 
-                        const halfTag = labels[0] ?? "";
                         const halfType = "half";
-                        main_memory.addHint(addr, halfTag, halfType, 16);
+                        main_memory.addHint(addr, labels, halfType, 16);
                         break;
                     }
                     default: {
@@ -391,11 +385,10 @@ function loadDataIntoMemory(data_mem, wasmModules) {
                 }
 
                 const stringLength = Number(size);
-                const stringTag = labels[0] ?? "";
                 const stringType = "string";
                 main_memory.addHint(
                     addr,
-                    stringTag,
+                    labels,
                     stringType,
                     stringLength * 8,
                 );
@@ -408,12 +401,11 @@ function loadDataIntoMemory(data_mem, wasmModules) {
                     main_memory.write(addr + j, 0);
                 }
 
-                const spaceTag = labels[0] ?? "";
                 const spaceType =
                     category === DataCategoryJS.Padding ? "padding" : "space";
                 main_memory.addHint(
                     addr,
-                    spaceTag,
+                    labels,
                     spaceType,
                     Number(size) * 8,
                 );
@@ -540,7 +532,7 @@ export function assembleCreatorLibrary(code, wasmModules) {
         // Library compilation: only binary instructions
         libraryInstructions = compiled.instructions.map(x => ({
             Address: x.address,
-            Label: x.labels[0] ?? "",
+            Label: x.labels,
             Break: null,
             loaded:
                 "0x" +
@@ -629,7 +621,7 @@ export function assembleCreatorProgram(code, wasmModules) {
         instructions.push(
             ...compiled.instructions.map(x => ({
                 Address: x.address,
-                Label: x.labels[0] ?? "",
+                Label: x.labels,
                 loaded: x.loaded,
                 binary: x.binary,
                 user: x.user,

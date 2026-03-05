@@ -30,22 +30,11 @@ import {
   SP_REG_INDEX,
 } from "@/core/core.mjs";
 import type { StackFrame } from "@/core/memory/StackTracker.mjs";
+import type { MemoryBackup } from "@/core/memory/Memory.mts";
 import MemoryLayoutDiagram from "../architecture/memory_layout/MemoryLayoutDiagram.vue";
 import { decode } from "@/core/executor/decoder.mjs";
 import { MAXNWORDS } from "@/core/utils/architectureProcessor.mjs";
 import { instructions } from "@/core/assembler/assembler.mjs";
-
-interface MemoryDump {
-  addresses: number[];
-  values: number[];
-  highestAddress: number;
-  hints: Array<{
-    address: string;
-    tag: string;
-    type: string;
-    sizeInBits?: number;
-  }>;
-}
 
 export default defineComponent({
   props: {
@@ -60,7 +49,7 @@ export default defineComponent({
 
   data() {
     return {
-      memoryDump: null as MemoryDump | null,
+      memoryDump: null as MemoryBackup | null,
       pc: -1,
       sp: -1,
       bytesPerRow: 8,
@@ -496,7 +485,7 @@ export default defineComponent({
       this.setMemoryDump(dump);
     },
 
-    generateMemoryDump(): MemoryDump {
+    generateMemoryDump(): MemoryBackup {
       // Get all written memory
       const written = this.main_memory.getWritten();
 
@@ -574,7 +563,7 @@ export default defineComponent({
       return { addresses, values, highestAddress, hints };
     },
 
-    setMemoryDump(dump: MemoryDump) {
+    setMemoryDump(dump: MemoryBackup) {
       this.renderState = {};
 
       // Save current scroll position before updating
@@ -614,7 +603,7 @@ export default defineComponent({
 
         for (let i = 0; i < sizeInBytes; i++) {
           this.hintMap.set(address + i, {
-            tag: hint.tag,
+            tag: typeof hint.tag === "string" ? hint.tag : hint.tag.join(", "),
             type: hint.type,
             sizeInBits: hint.sizeInBits,
             colorIndex: hintColorIndex,
