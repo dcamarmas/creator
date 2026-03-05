@@ -313,11 +313,18 @@ export async function load_CREATino() {
 // compilation
 
 export async function assembly_compile(code, compiler) {
-var ret;
-    if (Object.keys(loadedLibrary).length === 0)
+    var ret;
+
+    if (architecture.config.name.includes("SRV")){
+        if (Object.keys(loadedLibrary).length === 0)
+            ret = await assembly_compiler(code, false, compiler);
+        else 
+            ret = await assembly_compiler(code, true, compiler);
+    }
+    else{
         ret = await assembly_compiler(code, false, compiler);
-    else 
-        ret = await assembly_compiler(code, true, compiler);
+    }
+
     switch (ret.status) {
         case "error":
             break;

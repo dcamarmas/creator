@@ -427,9 +427,9 @@ export default {
     window.removeEventListener("resize", this.resizeHandler);
   },
 
-  /***************
+  /****************
    * Vue watchers *
-   ***************/
+   ****************/
 
   watch: {
     dark_mode_setting(newSetting: string) {
