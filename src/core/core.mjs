@@ -339,7 +339,7 @@ export async function assembly_compile(code, compiler) {
             break;
 
         default:
-            ret.msg = "Unknow assembly compiler code :-/";
+            ret.msg = "Unknown assembly compiler code :-/";
             break;
     }
 
