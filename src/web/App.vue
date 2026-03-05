@@ -67,7 +67,6 @@ const creatorASCII = `
 ██║     ██╔══██╗██╔══╝  ██╔══██║   ██║   ██║   ██║██╔══██╗
 ╚██████╗██║  ██║███████╗██║  ██║   ██║   ╚██████╔╝██║  ██║
  ╚═════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝   ╚═╝    ╚═════╝ ╚═╝  ╚═╝
-    didaCtic and geneRic assEmbly progrAmming simulaTOR
 
 ${("v." + package_json.version).padStart(58)}
 `;
@@ -428,9 +427,9 @@ export default {
     window.removeEventListener("resize", this.resizeHandler);
   },
 
-  /***************
+  /****************
    * Vue watchers *
-   ***************/
+   ****************/
 
   watch: {
     dark_mode_setting(newSetting: string) {

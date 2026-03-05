@@ -100,9 +100,9 @@ export default defineComponent({
 
     formatGapSize(bytes: number): string {
       if (bytes >= 1024 * 1024) {
-        return `${(bytes / (1024 * 1024)).toFixed(1)} MB gap`;
+        return `${(bytes / (1024 * 1024)).toFixed(1)} MiB gap`;
       } else if (bytes >= 1024) {
-        return `${(bytes / 1024).toFixed(1)} KB gap`;
+        return `${(bytes / 1024).toFixed(1)} KiB gap`;
       } else {
         return `${bytes} B gap`;
       }

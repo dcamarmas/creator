@@ -545,7 +545,7 @@ export default defineComponent({
         <b-dropdown-item v-b-modal.flash>
           <font-awesome-icon :icon="['fab', 'usb']" class="me-2" /> Flash
         </b-dropdown-item>
-        <b-dropdown-item v-b-modal.calculator>
+        <b-dropdown-item v-b-modal.calculator_simulator>
           <font-awesome-icon :icon="['fas', 'calculator']" class="me-2" />
           IEEE754 Calculator
         </b-dropdown-item>
@@ -564,14 +564,14 @@ export default defineComponent({
       >
         <b-dropdown-item
           v-if="creator_mode === 'assembly'"
-          v-b-modal.examples-assembly
+          v-b-modal.examples_assembly
         >
           <font-awesome-icon :icon="['fas', 'file-lines']" class="me-2" />
           Examples...
         </b-dropdown-item>
         <b-dropdown-item
           v-if="creator_mode === 'simulator'"
-          v-b-modal.examples-simulator
+          v-b-modal.examples_simulator
         >
           <font-awesome-icon :icon="['fas', 'file-lines']" class="me-2" />
           Examples...

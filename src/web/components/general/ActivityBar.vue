@@ -62,7 +62,7 @@ export default defineComponent({
         <div v-if="modelValue === 'assembly'">
           <div
             class="activity-item"
-            v-b-modal.examples-assembly
+            v-b-modal.examples_assembly
             title="Examples"
             >
             <font-awesome-icon :icon="['fas', 'file-lines']" size="lg" />
@@ -105,13 +105,21 @@ export default defineComponent({
             <font-awesome-icon :icon="['fas', 'trash-can']" size="lg" />
           </div>
           <hr/>
+          <div
+            class="activity-item"
+            v-b-modal.calculator_assembly
+            title="IEEE754 Calculator"
+          >
+            <font-awesome-icon :icon="['fas', 'calculator']" size="lg" />
+          </div>
+          <hr/>
         </div>
 
 
         <div v-if="modelValue === 'simulator'">
           <div
             class="activity-item"
-            v-b-modal.examples-simulator
+            v-b-modal.examples_simulator
             title="Examples"
           >
             <font-awesome-icon :icon="['fas', 'file-lines']" size="lg" />
@@ -126,7 +134,7 @@ export default defineComponent({
           </div>
           <div
             class="activity-item"
-            v-b-modal.calculator
+            v-b-modal.calculator_simulator
             title="IEEE754 Calculator"
           >
             <font-awesome-icon :icon="['fas', 'calculator']" size="lg" />

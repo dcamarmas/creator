@@ -114,6 +114,11 @@ export default defineComponent({
           return;
         }
 
+        if (this.decimalInput.includes(",")) {
+          this.error = "Use a period (.) instead of a comma (,) character for decimal numbers";
+          return;
+        }
+
         this.decimalValue = value;
 
         if (this.format === "ieee32") {
