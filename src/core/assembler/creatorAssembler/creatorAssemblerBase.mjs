@@ -197,6 +197,7 @@ function loadDataIntoMemory(data_mem, wasmModules) {
     for (let i = 0; i < data_mem.length; i++) {
         const data = data_mem[i];
         const addr = data.address();
+        const size = data.size();
         const labels = data.labels();
         const category = data.data_category();
 
@@ -379,7 +380,6 @@ function loadDataIntoMemory(data_mem, wasmModules) {
             case DataCategoryJS.String: {
                 const encoder = new TextEncoder();
                 let currentAddr = addr;
-                const startAddr = addr;
 
                 for (const ch_h of data.value(false)) {
                     const bytes = new Uint8Array(4);
@@ -390,11 +390,11 @@ function loadDataIntoMemory(data_mem, wasmModules) {
                     }
                 }
 
-                const stringLength = Number(currentAddr - startAddr);
+                const stringLength = Number(size);
                 const stringTag = labels[0] ?? "";
                 const stringType = "string";
                 main_memory.addHint(
-                    startAddr,
+                    addr,
                     stringTag,
                     stringType,
                     stringLength * 8,
