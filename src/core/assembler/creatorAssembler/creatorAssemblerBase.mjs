@@ -41,6 +41,21 @@ import {
 } from "../assembler.mjs";
 import { logger } from "../../utils/creator_logger.mjs";
 
+// NOTE: the types are the same in the web and deno versions, so we can use either
+
+/**
+ * Assembler's WASM modules
+ * @typedef {import("./web/wasm/creator_assembler.d.ts")} WasmModules
+ */
+
+/**
+ * @typedef {import("./web/wasm/creator_assembler.d.ts").ArchitectureJS} ArchitectureJS
+ */
+
+/**
+ * @typedef {import("./web/wasm/creator_assembler.d.ts").DataJS} DataJS
+ */
+
 let libraryInstructions = [];
 
 /**
@@ -63,8 +78,8 @@ function handleError(error) {
 
 /**
  * Initialize architecture and prepare for compilation
- * @param {Object} wasmModules - WASM modules containing ArchitectureJS
- * @returns {Object|null} Architecture instance or null if error occurred
+ * @param {WasmModules} wasmModules - Assembler's WASM modules
+ * @returns {ArchitectureJS} Architecture instance. If an error occurs, an exception is raised
  */
 function initializeArchitecture(wasmModules) {
     const { ArchitectureJS } = wasmModules;
@@ -170,11 +185,12 @@ function loadLibraryIfPresent(instructions) {
 
 /**
  * Load data elements from compilation into memory
- * @param {Array} data_mem - Array of data elements from compiler
- * @param {Object} DataCategoryJS - WASM DataCategory module
+ * @param {DataJS[]} data_mem - Array of data elements from compiler
+ * @param {WasmModules} wasmModules - Assembler's WASM modules
  */
 // eslint-disable-next-line max-lines-per-function
-function loadDataIntoMemory(data_mem, DataCategoryJS) {
+function loadDataIntoMemory(data_mem, wasmModules) {
+    const { DataCategoryJS } = wasmModules;
     for (let i = 0; i < data_mem.length; i++) {
         const data = data_mem[i];
         const addr = BigInt(data.address());
@@ -517,14 +533,14 @@ function writeInstructionsToMemory(instructions, library_instructions) {
 /**
  * Compile assembly code as a library
  * @param {string} code - Assembly code to compile
- * @param {Object} wasmModules - WASM modules containing ArchitectureJS and DataCategoryJS
+ * @param {WasmModules} wasmModules - Assembler's WASM modules
  * @returns {Object} Compilation result
  */
 export function assembleCreatorLibrary(code, wasmModules) {
     /* Google Analytics */
     creator_ga("compile", "compile.library");
 
-    const { DataCategoryJS, Color } = wasmModules;
+    const { Color } = wasmModules;
 
     let arch;
     try {
@@ -568,7 +584,7 @@ export function assembleCreatorLibrary(code, wasmModules) {
 
         // Extract data elements and load them on memory
         const data_mem = compiled.data;
-        loadDataIntoMemory(data_mem, DataCategoryJS);
+        loadDataIntoMemory(data_mem, wasmModules);
     } catch (error) {
         return handleError(error)
     }
@@ -599,14 +615,14 @@ export function assembleCreatorLibrary(code, wasmModules) {
 /**
  * Compile assembly code as a normal program
  * @param {string} code - Assembly code to compile
- * @param {Object} wasmModules - WASM modules containing ArchitectureJS and DataCategoryJS
+ * @param {WasmModules} wasmModules - Assembler's WASM modules
  * @returns {Object} Compilation result
  */
 export function assembleCreatorProgram(code, wasmModules) {
     /* Google Analytics */
     creator_ga("compile", "compile.assembly");
 
-    const { DataCategoryJS, Color } = wasmModules;
+    const { Color } = wasmModules;
 
     let arch;
     try {
@@ -656,7 +672,7 @@ export function assembleCreatorProgram(code, wasmModules) {
 
         // Extract data elements and load them on memory
         const data_mem = compiled.data;
-        loadDataIntoMemory(data_mem, DataCategoryJS);
+        loadDataIntoMemory(data_mem, wasmModules);
     } catch (error) {
         return handleError(error)
     }
@@ -692,7 +708,7 @@ export function assembleCreatorProgram(code, wasmModules) {
  * Common assembly compiler implementation shared between web and deno versions
  * @param {string} code - Assembly code to compile
  * @param {boolean} library - Whether this is a library compilation
- * @param {Object} wasmModules - WASM modules containing ArchitectureJS and DataCategoryJS
+ * @param {WasmModules} wasmModules - Assembler's WASM modules
  * @returns {Object} Compilation result
  */
 export function assembleCreatorBase(code, library, wasmModules) {
