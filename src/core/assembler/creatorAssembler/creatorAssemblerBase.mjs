@@ -191,12 +191,16 @@ function loadLibraryIfPresent(instructions) {
 // eslint-disable-next-line max-lines-per-function
 function loadDataIntoMemory(data_mem, wasmModules) {
     const { DataCategoryJS } = wasmModules;
+    const wordSizeBytes =
+        newArchitecture.config.word_size /
+        newArchitecture.config.byte_size;
     for (let i = 0; i < data_mem.length; i++) {
         const data = data_mem[i];
-        const addr = BigInt(data.address());
+        const addr = data.address();
         const labels = data.labels();
+        const category = data.data_category();
 
-        switch (data.data_category()) {
+        switch (category) {
             case DataCategoryJS.Number:
                 switch (data.type()) {
                     case "float": {
@@ -204,10 +208,6 @@ function loadDataIntoMemory(data_mem, wasmModules) {
                         const buffer = new ArrayBuffer(4);
                         const view = new DataView(buffer);
                         view.setFloat32(0, floatValue, false);
-
-                        const wordSizeBytes =
-                            newArchitecture.config.word_size /
-                            newArchitecture.config.byte_size;
 
                         const floatBytes = new Uint8Array(4);
                         for (let i = 0; i < 4; i++) {
@@ -230,10 +230,6 @@ function loadDataIntoMemory(data_mem, wasmModules) {
                         const buffer = new ArrayBuffer(8);
                         const view = new DataView(buffer);
                         view.setFloat64(0, doubleValue, false);
-
-                        const wordSizeBytes =
-                            newArchitecture.config.word_size /
-                            newArchitecture.config.byte_size;
 
                         const doubleBytes = new Uint8Array(8);
                         for (let i = 0; i < 8; i++) {
@@ -263,9 +259,6 @@ function loadDataIntoMemory(data_mem, wasmModules) {
                     case "word":
                         {
                             const wordValue = BigInt("0x" + data.value(false));
-                            const wordSizeBytes =
-                                newArchitecture.config.word_size /
-                                newArchitecture.config.byte_size;
                             const wordBytes = new Uint8Array(wordSizeBytes);
 
                             for (let i = 0; i < wordSizeBytes; i++) {
@@ -299,9 +292,6 @@ function loadDataIntoMemory(data_mem, wasmModules) {
 
                     case "double_word": {
                         const dwordValue = BigInt("0x" + data.value(false));
-                        const wordSizeBytes =
-                            newArchitecture.config.word_size /
-                            newArchitecture.config.byte_size;
 
                         const highWord =
                             dwordValue >>
@@ -431,9 +421,7 @@ function loadDataIntoMemory(data_mem, wasmModules) {
 
                 const spaceTag = labels[0] ?? "";
                 const spaceType =
-                    data.data_category() === DataCategoryJS.Padding
-                        ? "padding"
-                        : "space";
+                    category === DataCategoryJS.Padding ? "padding" : "space";
                 main_memory.addHint(
                     addr,
                     spaceTag,
@@ -444,9 +432,7 @@ function loadDataIntoMemory(data_mem, wasmModules) {
             }
 
             default:
-                throw new Error(
-                    `Unknown data category: ${data.data_category()}`,
-                );
+                throw new Error(`Unknown data category: ${category}`);
         }
     }
 }
