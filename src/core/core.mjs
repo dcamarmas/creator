@@ -283,7 +283,6 @@ export async function load_library_sail(lib, lib_name) {
 export function remove_library() {
     loadedLibrary = {};
     loadedCreatino = false;
-    loadedCreatino = false;
     coreEvents.emit("library-removed");
 }
 export async function load_CREATino() {
