@@ -15,15 +15,7 @@ import {
     kbd_read_char,
     keyboard_read_until,
 } from "../executor/IO.mjs";
-import hookMap from "../../web/components/simulator/CreatinoMaker/components/BoardElements/esp32c3devkit2.js";
 import { pinStates, esp32vect } from "./pinstates.mjs";
-//import {connections,compState,svgRef,positions} from '../../web/components/simulator/CreatinoMaker/App.vue'
-import {
-    connections,
-    positions,
-    compState,
-    svgRef,
-} from "../../web/components/simulator/CreatinoMaker/state.ts";
 import { Memory } from "../memory/Memory.mts";
 import { coreEvents } from "@/core/events.mjs";
 import { ref } from "vue";
@@ -67,8 +59,6 @@ export function cr_digitalRead() {
     coreEvents.emit("arduino-terminal-write", {
         text: `digitalRead(${pin}) = ${value}`,
     });
-    // Graphic representation
-    hookMap[0x4](connections.value);
 }
 export function cr_pinMode() {
     console.log("cr_pinMode called");
@@ -135,12 +125,6 @@ export function cr_digitalWrite() {
         pin: Number(pin),
         value: Number(value),
     });
-    hookMap[0xc](
-        connections.value,
-        (val: any) => (compState.value = val),
-        svgRef,
-        positions,
-    );
 }
 export function cr_analogRead() {
     console.log("cr_analogRead called");

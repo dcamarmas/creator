@@ -20,7 +20,7 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 import { defineComponent, type PropType } from "vue";
 
 import type { StackFrame } from "@/core/memory/StackTracker.mjs";
-import { architecture } from "@/core/core.mjs";
+import { architecture, loadedCreatino } from "@/core/core.mjs";
 import { main_memory } from "@/core/core";
 import { type Device, devices } from "@/core/executor/devices.mts";
 
@@ -33,7 +33,6 @@ import Calculator from "./simulator/Calculator.vue";
 import Terminal from "./simulator/Terminal.vue";
 import Stats from "./simulator/Stats.vue";
 import Flash from "./simulator/Flash.vue";
-// import App from "./simulator/CreatinoMaker/Maker.vue"
 import ArduinoTerminal from "./simulator/ArduinoTerminal.vue";
 
 export default defineComponent({
@@ -192,16 +191,8 @@ export default defineComponent({
                   :enter="enter"
                   ref="terminal"
                 />
-                <!-- Maker view -->
-                  <!-- <App
-                    v-if="data_mode === 'maker'"
-                    ref="maker"
-                    :dark="dark"
-                    :representation="stat_representation"
-                    :type="stat_type"
-                  /> -->
                   <ArduinoTerminal
-                  v-if="data_mode === 'maker'"
+                  v-if="data_mode === 'arduino'"
                   :display="display"
                   :keyboard="keyboard"
                   :enter="enter"

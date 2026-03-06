@@ -35,13 +35,6 @@ library.add(fas, far, fab);
 import { show_notification } from "./utils.mjs";
 import { creator_ga } from "../core/utils/creator_ga.mjs";
 
-//Maker
-import '@wokwi/elements'
-import { faTrash, faPalette, faRotate, faRightLeft, faMagnifyingGlassPlus, faMagnifyingGlassMinus,faBars, faUpload, faDownload, faInfinity, faWrench, faRotateLeft, faRotateRight, faInfo, faMoon,faCirclePlus, faMusic, faVolumeXmark} from '@fortawesome/free-solid-svg-icons'
-import { faPlay, faGift} from '@fortawesome/free-solid-svg-icons'
-library.add(faTrash, faPalette, faRotate, faRightLeft, faMagnifyingGlassPlus, faMagnifyingGlassMinus, faBars, faPlay)
-library.add(faUpload, faDownload, faInfinity, faWrench, faRotateLeft,faRotateRight, faInfo, faMoon, faCirclePlus, faGift, faMusic, faVolumeXmark)
-
 /*Closing alert*/
 window.onbeforeunload = function (e) {
     // Cancel the event to trigger the confirmation dialog

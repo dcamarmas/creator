@@ -220,11 +220,11 @@ export default defineComponent({
         <span>Statistics</span>
       </button>
 
-      <!-- Maker Tab -->
+      <!-- Arduino Tab -->
       <button
         v-if="architecture_name.includes('RV32') && isCreatinoUp"
-        :class="['tab', { active: current_reg_type === 'maker', border: dark }]"
-        @click="change_data_view('maker')"
+        :class="['tab', { active: current_reg_type === 'arduino', border: dark }]"
+        @click="change_data_view('arduino')"
       >
         <font-awesome-icon :icon="['fas', 'infinity']" />
         <span>Arduino</span>
