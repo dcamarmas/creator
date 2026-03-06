@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 import { initCAPI } from "./capi/initCAPI.mts";
 import { getHexTwosComplement } from "./utils/utils.mjs";
 import { logger } from "./utils/creator_logger.mjs";
@@ -265,7 +264,6 @@ export function load_library(lib_str) {
             throw new SyntaxError(`Invalid library format: ${error.message}`);
         });
 }
-
 /**
  * Loads a library to Sail simulator.
  *
@@ -287,9 +285,6 @@ export function remove_library() {
     loadedCreatino = false;
     coreEvents.emit("library-removed");
 }
-/**
- * Add CREATino library.
- */
 export async function load_CREATino() {
   //show_loading();
   try {

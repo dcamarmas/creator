@@ -1,5 +1,7 @@
 version: '1.0'
-binary:   00000001 00000002 00000003 00000004 00000005 00000006 00000007 00000008
+
+binary: 
+  00000001 00000002 00000003 00000004 00000005 00000006 00000007 00000008
   00000009 0000000a 0000000b 0000000c 0000000d 0000000e 0000000f 00000010
   00000011 00000012 00000013 00000014 00000015 00000016 00000017 00000018
   00000019 0000001a 0000001b 0000001c 0000001d 0000001e 0000001f 00000020
@@ -12,658 +14,187 @@ binary:   00000001 00000002 00000003 00000004 00000005 00000006 00000007 0000000
 symbols:
   initArduino:
     addr: 0
-    help:
-      description: Initializes Arduino system
-      parameters: {}
-      returns: {}
-
+    help: {description: "Initializes Arduino system", parameters: {}, returns: {}}
   digitalRead:
     addr: 4
-    help:
-      description: Reads digital value from a pin
-      parameters:
-        pin: Pin number
-      returns:
-        value: Digital value (HIGH or LOW)
-
+    help: {description: "Reads digital value from a pin", parameters: {pin: "Pin number"}, returns: {value: "Digital value"}}
   pinMode:
     addr: 8
-    help:
-      description: Configures a pin as input or output
-      parameters:
-        pin: Pin number
-        mode: INPUT/OUTPUT/INPUT_PULLUP
-      returns: {}
-
+    help: {description: "Configures a pin", parameters: {pin: "Pin number", mode: "INPUT/OUTPUT"}, returns: {}}
   digitalWrite:
     addr: 12
-    help:
-      description: Writes digital value to a pin
-      parameters:
-        pin: Pin number
-        value: HIGH or LOW
-      returns: {}
-
-  analogRead:
+    help: {description: "Writes digital value", parameters: {pin: "Pin number", value: "HIGH/LOW"}, returns: {}}
+  rgbLedWrite:
     addr: 16
-    help:
-      description: Reads analog value from a pin
-      parameters:
-        pin: Pin number
-      returns:
-        value: Analog value (0-1023 or resolution)
-
-  analogReadResolution:
+    help: {description: "Writes digital value in a RGB  WS2812 LED (ex. BUILTIN LED in ESP32-C6 and ESP32-H2 Devkit)", parameters: {pin: "Pin number", value1: "Red value", value2: "Green value", value3: "Blue value"}, returns: {}}
+  analogRead:
     addr: 20
-    help:
-      description: Sets resolution for analogRead
-      parameters:
-        bits: Resolution in bits
-      returns: {}
-
-  analogWrite:
+    help: {description: "Reads analog value", parameters: {pin: "Pin number"}, returns: {value: "0-1023"}}
+  analogReadResolution:
     addr: 24
-    help:
-      description: Writes analog value to a pin (PWM)
-      parameters:
-        pin: Pin number
-        value: PWM value
-      returns: {}
-
-  map:
+    help: {description: "Sets resolution for analogRead", parameters: {bits: "Resolution"}, returns: {}}
+  analogWrite:
     addr: 28
-    help:
-      description: Maps a number from one range to another
-      parameters:
-        value: Number to map
-        fromLow: Source range low
-        fromHigh: Source range high
-        toLow: Target range low
-        toHigh: Target range high
-      returns:
-        mappedValue: Mapped number
-
-  constrain:
+    help: {description: "Writes PWM value", parameters: {pin: "Pin number", value: "PWM value"}, returns: {}}
+  map:
     addr: 32
-    help:
-      description: Constrains a number to be within a range
-      parameters:
-        value: Number to constrain
-        low: Minimum value
-        high: Maximum value
-      returns:
-        constrainedValue: Number within [low, high]
-
-  abs:
+    help: {description: "Maps a number range", parameters: {value: "Number", fromLow: "Source low", fromHigh: "Source high", toLow: "Target low", toHigh: "Target high"}, returns: {mappedValue: "Mapped number"}}
+  constrain:
     addr: 36
-    help:
-      description: Returns the absolute value
-      parameters:
-        x: Number
-      returns:
-        absValue: Absolute value of x
-
-  max:
+    help: {description: "Constrains a number", parameters: {value: "Number", low: "Min", high: "Max"}, returns: {constrainedValue: "Number in range"}}
+  abs:
     addr: 40
-    help:
-      description: Returns the maximum of two integers
-      parameters:
-        a0: First Integer
-        a1: Second Integer
-      returns:
-        a0: Maximum
-
-  min:
+    help: {description: "Absolute value", parameters: {x: "Number"}, returns: {absValue: "Absolute value"}}
+  max:
     addr: 44
-    help:
-      description: Returns the minimum of two integers
-      parameters:
-        a0: First Integer
-        a1: Second Integer
-      returns:
-        a0: Minimum
-
-  pow:
+    help: {description: "Maximum of two integers", parameters: {a0: "First", a1: "Second"}, returns: {a0: "Max"}}
+  min:
     addr: 48
-    help:
-      description: Calculates power of a number
-      parameters:
-        base: Base number
-        exponent: Exponent
-      returns:
-        result: base^exponent
-
-  bit:
+    help: {description: "Minimum of two integers", parameters: {a0: "First", a1: "Second"}, returns: {a0: "Min"}}
+  pow:
     addr: 52
-    help:
-      description: Returns the value of the bit at given position
-      parameters:
-        bitNumber: Bit position
-      returns:
-        bitValue: 2^bitNumber
-
-  bitClear:
+    help: {description: "Calculates power", parameters: {base: "Base", exponent: "Exponent"}, returns: {result: "base^exponent"}}
+  bit:
     addr: 56
-    help:
-      description: Clears a bit in a number
-      parameters:
-        value: Number
-        bitNumber: Bit position
-      returns:
-        result: Number with bit cleared
-
-  bitRead:
+    help: {description: "Value of bit at position", parameters: {bitNumber: "Position"}, returns: {bitValue: "2^bitNumber"}}
+  bitClear:
     addr: 60
-    help:
-      description: Reads a bit from a number
-      parameters:
-        value: Number
-        bitNumber: Bit position
-      returns:
-        bit: 0 or 1
-
-  bitSet:
+    help: {description: "Clears a bit", parameters: {value: "Number", bitNumber: "Position"}, returns: {result: "Number cleared"}}
+  bitRead:
     addr: 64
-    help:
-      description: Sets a bit in a number
-      parameters:
-        value: Number
-        bitNumber: Bit position
-      returns:
-        result: Number with bit set
-
-  bitWrite:
+    help: {description: "Reads a bit", parameters: {value: "Number", bitNumber: "Position"}, returns: {bit: "0 or 1"}}
+  bitSet:
     addr: 68
-    help:
-      description: Writes a bit in a number
-      parameters:
-        value: Number
-        bitNumber: Bit position
-        bitValue: 0 or 1
-      returns:
-        result: Number with bit written
-
-  highByte:
+    help: {description: "Sets a bit", parameters: {value: "Number", bitNumber: "Position"}, returns: {result: "Number set"}}
+  bitWrite:
     addr: 72
-    help:
-      description: Extracts high byte of a word
-      parameters:
-        word: Number
-      returns:
-        highByte: High byte
-
-  lowByte:
+    help: {description: "Writes a bit", parameters: {value: "Number", bitNumber: "Position", bitValue: "0 or 1"}, returns: {result: "Number written"}}
+  highByte:
     addr: 76
-    help:
-      description: Extracts low byte of a word
-      parameters:
-        word: Number
-      returns:
-        lowByte: Low byte
-
-  sqrt:
+    help: {description: "Extracts high byte", parameters: {word: "Number"}, returns: {highByte: "High byte"}}
+  lowByte:
     addr: 80
-    help:
-      description: Calculates square root
-      parameters:
-        x: Number
-      returns:
-        result: Square root of x
-
-  sq:
-    addr: 84
-    help:
-      description: Squares a number
-      parameters:
-        x: Number
-      returns:
-        result: x squared
-
-  cos:
-    addr: 88
-    help:
-      description: Calculates cosine
-      parameters:
-        angle: Angle in radians
-      returns:
-        result: Cosine of angle
-
-  sin:
-    addr: 92
-    help:
-      description: Calculates sine
-      parameters:
-        angle: Angle in radians
-      returns:
-        result: Sine of angle
-
-  tan:
-    addr: 96
-    help:
-      description: Calculates tangent
-      parameters:
-        angle: Angle in radians
-      returns:
-        result: Tangent of angle
-
+    help: {description: "Extracts low byte", parameters: {word: "Number"}, returns: {lowByte: "Low byte"}}
   attachInterrupt:
-    addr: 100
-    help:
-      description: Attaches an interrupt to a pin
-      parameters:
-        pin: Pin number
-        function: Interrupt handler
-        mode: Interrupt mode
-      returns: {}
-
+    addr: 84
+    help: {description: "Attaches interrupt", parameters: {pin: "Pin", function: "Handler", mode: "Mode"}, returns: {}}
   detachInterrupt:
-    addr: 104
-    help:
-      description: Detaches an interrupt from a pin
-      parameters:
-        pin: Pin number
-      returns: {}
-
+    addr: 88
+    help: {description: "Detaches interrupt", parameters: {pin: "Pin"}, returns: {}}
   digitalPinToInterrupt:
-    addr: 108
-    help:
-      description: Converts digital pin to interrupt number
-      parameters:
-        pin: Pin number
-      returns:
-        interruptNumber: Interrupt number
-
+    addr: 92
+    help: {description: "Pin to interrupt number", parameters: {pin: "Pin"}, returns: {interruptNumber: "Number"}}
   pulseIn:
-    addr: 112
-    help:
-      description: Reads pulse duration on a pin (microseconds)
-      parameters:
-        pin: Pin number
-        value: HIGH or LOW
-        timeout: Timeout in microseconds
-      returns:
-        duration: Pulse duration
-
+    addr: 96
+    help: {description: "Reads pulse duration", parameters: {pin: "Pin", value: "HIGH/LOW", timeout: "us"}, returns: {duration: "Pulse duration"}}
   pulseInLong:
-    addr: 116
-    help:
-      description: Reads long pulse duration on a pin (microseconds)
-      parameters:
-        pin: Pin number
-        value: HIGH or LOW
-        timeout: Timeout in microseconds
-      returns:
-        duration: Pulse duration
-
+    addr: 100
+    help: {description: "Reads long pulse duration", parameters: {pin: "Pin", value: "HIGH/LOW", timeout: "us"}, returns: {duration: "Pulse duration"}}
   shiftIn:
-    addr: 120
-    help:
-      description: Shifts in a byte of data one bit at a time
-      parameters:
-        dataPin: Data pin number
-        clockPin: Clock pin number
-        bitOrder: MSBFIRST or LSBFIRST
-      returns:
-        value: Shifted in byte
-
+    addr: 104
+    help: {description: "Shifts in a byte", parameters: {dataPin: "Pin", clockPin: "Pin", bitOrder: "Order"}, returns: {value: "Byte"}}
   shiftOut:
-    addr: 124
-    help:
-      description: Shifts out a byte of data one bit at a time
-      parameters:
-        dataPin: Data pin number
-        clockPin: Clock pin number
-        bitOrder: MSBFIRST or LSBFIRST
-        value: Byte to shift out
-      returns: {}
-
-  interrupts:
-    addr: 128
-    help:
-      description: Enables interrupts
-      parameters: {}
-      returns: {}
-
-  nointerrupts:
-    addr: 132
-    help:
-      description: Disables interrupts
-      parameters: {}
-      returns: {}
-
-  isDigit:
-    addr: 136
-    help:
-      description: Checks if character is digit
-      parameters:
-        c: Character
-      returns:
-        result: true or false
-
-  isAlpha:
-    addr: 140
-    help:
-      description: Checks if character is alphabetic
-      parameters:
-        c: Character
-      returns:
-        result: true or false
-
-  isAlphaNumeric:
-    addr: 144
-    help:
-      description: Checks if character is alphanumeric
-      parameters:
-        c: Character
-      returns:
-        result: true or false
-
-  isAscii:
-    addr: 148
-    help:
-      description: Checks if character is ASCII
-      parameters:
-        c: Character
-      returns:
-        result: true or false
-
-  isControl:
-    addr: 152
-    help:
-      description: Checks if character is control character
-      parameters:
-        c: Character
-      returns:
-        result: true or false
-
-  isPunct:
-    addr: 156
-    help:
-      description: Checks if character is punctuation
-      parameters:
-        c: Character
-      returns:
-        result: true or false
-
-  isHexadecimalDigit:
-    addr: 160
-    help:
-      description: Checks if character is a hexadecimal digit
-      parameters:
-        c: Character
-      returns:
-        result: true or false
-
-  isUpperCase:
-    addr: 164
-    help:
-      description: Checks if character is uppercase
-      parameters:
-        c: Character
-      returns:
-        result: true or false
-
-  isLowerCase:
-    addr: 168
-    help:
-      description: Checks if character is lowercase
-      parameters:
-        c: Character
-      returns:
-        result: true or false
-
-  isPrintable:
-    addr: 172
-    help:
-      description: Checks if character is printable
-      parameters:
-        c: Character
-      returns:
-        result: true or false
-
-  isGraph:
-    addr: 176
-    help:
-      description: Checks if character has graphical representation
-      parameters:
-        c: Character
-      returns:
-        result: true or false
-
-  isSpace:
-    addr: 180
-    help:
-      description: Checks if character is a space
-      parameters:
-        c: Character
-      returns:
-        result: true or false
-
-  isWhiteSpace:
-    addr: 184
-    help:
-      description: Checks if character is whitespace
-      parameters:
-        c: Character
-      returns:
-        result: true or false
-
-  delay:
-    addr: 188
-    help:
-      description: Delays execution for milliseconds
-      parameters:
-        ms: Milliseconds
-      returns: {}
-
-  delayMicroseconds:
-    addr: 192
-    help:
-      description: Delays execution for microseconds
-      parameters:
-        us: Microseconds
-      returns: {}
-
-  randomSeed:
-    addr: 196
-    help:
-      description: Sets seed for random number generator
-      parameters:
-        seed: Seed value
-      returns: {}
-
-  random:
-    addr: 200
-    help:
-      description: Generates a random number
-      parameters:
-        min: Minimum value
-        max: Maximum value
-      returns:
-        value: Random number in range
-
-  serial_available:
-    addr: 204
-    help:
-      description: Returns number of bytes available for reading on serial
-      parameters: {}
-      returns:
-        bytes: Number of bytes available
-
-  serial_availableForWrite:
-    addr: 208
-    help:
-      description: Returns number of bytes available for writing on serial
-      parameters: {}
-      returns:
-        bytes: Number of bytes available
-
-  serial_begin:
-    addr: 212
-    help:
-      description: Initializes serial communication
-      parameters:
-        baudRate: Baud rate
-      returns: {}
-
-  serial_end:
-    addr: 216
-    help:
-      description: Ends serial communication
-      parameters: {}
-      returns: {}
-
-  serial_find:
-    addr: 220
-    help:
-      description: Finds data on serial buffer
-      parameters:
-        target: Data to find
-      returns:
-        found: true or false
-
-  serial_findUntil:
-    addr: 224
-    help:
-      description: Finds data on serial buffer until a terminator
-      parameters:
-        target: Data to find
-        terminator: Terminator character
-      returns:
-        found: true or false
-
-  serial_flush:
-    addr: 228
-    help:
-      description: Flushes serial buffer
-      parameters: {}
-      returns: {}
-
-  serial_parseFloat:
-    addr: 232
-    help:
-      description: Parses float from serial
-      parameters: {}
-      returns:
-        value: Parsed float
-
-  serial_parseInt:
-    addr: 236
-    help:
-      description: Parses integer from serial
-      parameters: {}
-      returns:
-        value: Parsed integer
-
-  serial_read:
-    addr: 240
-    help:
-      description: Reads a byte from serial
-      parameters: {}
-      returns:
-        byte: Read byte
-
-  serial_readBytes:
-    addr: 244
-    help:
-      description: Reads multiple bytes from serial
-      parameters:
-        length: Number of bytes to read
-      returns:
-        bytes: Array of bytes read
-
-  serial_readBytesUntil:
-    addr: 248
-    help:
-      description: Reads bytes from serial until a terminator
-      parameters:
-        terminator: Terminator character
-        length: Maximum number of bytes
-      returns:
-        bytes: Array of bytes read
-
-  serial_write:
-    addr: 252
-    help:
-      description: Writes byte(s) to serial
-      parameters:
-        data: Byte or array of bytes
-      returns:
-        written: Number of bytes written
-
-  serial_printf:
-    addr: 256
-    help:
-      description: Writes formatted string to serial
-      parameters:
-        format: Format string
-        args: Arguments
-      returns:
-        written: Number of bytes written
-
-  fabs:
-    addr: 260
-    help:
-      description: Returns absolute value of float
-      parameters:
-        x: Float number
-      returns:
-        absValue: Absolute value
-
-  fmax:
-    addr: 264
-    help:
-      description: Returns maximum of two floats
-      parameters:
-        a: Float 1
-        b: Float 2
-      returns:
-        maxValue: Maximum
-
-  fmin:
-    addr: 268
-    help:
-      description: Returns minimum of two floats
-      parameters:
-        a: Float 1
-        b: Float 2
-      returns:
-        minValue: Minimum
-
-  sqrtf:
-    addr: 272
-    help:
-      description: Calculates square root of float
-      parameters:
-        x: Float number
-      returns:
-        result: Square root
-
-  sqf:
-    addr: 276
-    help:
-      description: Squares a float number
-      parameters:
-        x: Float number
-      returns:
-        result: Squared value
-
+    addr: 108
+    help: {description: "Shifts out a byte", parameters: {dataPin: "Pin", clockPin: "Pin", bitOrder: "Order", value: "Byte"}, returns: {}}
   tone:
-    addr: 280
-    help:
-      description: Generates tone on a pin
-      parameters:
-        pin: Pin number
-        frequency: Frequency in Hz
-        duration: Duration in milliseconds (optional)
-      returns: {}
-
+    addr: 112
+    help: {description: "Generates tone", parameters: {pin: "Pin", frequency: "Hz", duration: "ms"}, returns: {}}
   noTone:
-    addr: 284
-    help:
-      description: Stops tone on a pin
-      parameters:
-        pin: Pin number
-      returns: {}
-
- 
+    addr: 116
+    help: {description: "Stops tone", parameters: {pin: "Pin"}, returns: {}}
+  interrupts:
+    addr: 120
+    help: {description: "Enables interrupts", parameters: {}, returns: {}}
+  nointerrupts:
+    addr: 124
+    help: {description: "Disables interrupts", parameters: {}, returns: {}}
+  isDigit:
+    addr: 128
+    help: {description: "Checks if digit", parameters: {c: "Char"}, returns: {result: "bool"}}
+  isAlpha:
+    addr: 132
+    help: {description: "Checks if alpha", parameters: {c: "Char"}, returns: {result: "bool"}}
+  isAlphaNumeric:
+    addr: 136
+    help: {description: "Checks if alphanumeric", parameters: {c: "Char"}, returns: {result: "bool"}}
+  isAscii:
+    addr: 140
+    help: {description: "Checks if ASCII", parameters: {c: "Char"}, returns: {result: "bool"}}
+  isControl:
+    addr: 144
+    help: {description: "Checks if control char", parameters: {c: "Char"}, returns: {result: "bool"}}
+  isPunct:
+    addr: 148
+    help: {description: "Checks if punctuation", parameters: {c: "Char"}, returns: {result: "bool"}}
+  isHexadecimalDigit:
+    addr: 152
+    help: {description: "Checks if hex digit", parameters: {c: "Char"}, returns: {result: "bool"}}
+  isUpperCase:
+    addr: 156
+    help: {description: "Checks if uppercase", parameters: {c: "Char"}, returns: {result: "bool"}}
+  isLowerCase:
+    addr: 160
+    help: {description: "Checks if lowercase", parameters: {c: "Char"}, returns: {result: "bool"}}
+  isPrintable:
+    addr: 164
+    help: {description: "Checks if printable", parameters: {c: "Char"}, returns: {result: "bool"}}
+  isGraph:
+    addr: 168
+    help: {description: "Checks if graphical", parameters: {c: "Char"}, returns: {result: "bool"}}
+  isSpace:
+    addr: 172
+    help: {description: "Checks if space", parameters: {c: "Char"}, returns: {result: "bool"}}
+  isWhiteSpace:
+    addr: 176
+    help: {description: "Checks if whitespace", parameters: {c: "Char"}, returns: {result: "bool"}}
+  delay:
+    addr: 180
+    help: {description: "Delays ms", parameters: {ms: "ms"}, returns: {}}
+  delayMicroseconds:
+    addr: 184
+    help: {description: "Delays us", parameters: {us: "us"}, returns: {}}
+  randomSeed:
+    addr: 188
+    help: {description: "Sets random seed", parameters: {seed: "Value"}, returns: {}}
+  random:
+    addr: 192
+    help: {description: "Generates random number", parameters: {min: "Min", max: "Max"}, returns: {value: "Random"}}
+  serial_available:
+    addr: 196
+    help: {description: "Bytes available to read", parameters: {}, returns: {bytes: "Count"}}
+  serial_availableForWrite:
+    addr: 200
+    help: {description: "Bytes available to write", parameters: {}, returns: {bytes: "Count"}}
+  serial_begin:
+    addr: 204
+    help: {description: "Starts serial", parameters: {baudRate: "Baud"}, returns: {}}
+  serial_end:
+    addr: 208
+    help: {description: "Ends serial", parameters: {}, returns: {}}
+  serial_find:
+    addr: 212
+    help: {description: "Finds data", parameters: {target: "Data"}, returns: {found: "bool"}}
+  serial_findUntil:
+    addr: 216
+    help: {description: "Finds until terminator", parameters: {target: "Data", terminator: "Char"}, returns: {found: "bool"}}
+  serial_flush:
+    addr: 220
+    help: {description: "Flushes buffer", parameters: {}, returns: {}}
+  serial_parseInt:
+    addr: 224
+    help: {description: "Parses integer", parameters: {}, returns: {value: "int"}}
+  serial_read:
+    addr: 228
+    help: {description: "Reads byte", parameters: {}, returns: {byte: "Read"}}
+  serial_readBytes:
+    addr: 232
+    help: {description: "Reads bytes", parameters: {length: "Count"}, returns: {bytes: "Array"}}
+  serial_readBytesUntil:
+    addr: 236
+    help: {description: "Reads until terminator", parameters: {terminator: "Char", length: "Max"}, returns: {bytes: "Array"}}
+  serial_write:
+    addr: 240
+    help: {description: "Writes data", parameters: {data: "Data"}, returns: {written: "Count"}}
+  serial_printf:
+    addr: 244
+    help: {description: "Formatted print", parameters: {format: "String", args: "Args"}, returns: {written: "Count"}}

@@ -66,6 +66,7 @@ export default defineConfig({
     },
   },
 
+  
   base: process.env.REPO ? `/${process.env.REPO}/` : "/",// repository name (for github pages deployment)
 
   build: {

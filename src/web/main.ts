@@ -45,7 +45,7 @@ window.onbeforeunload = function (e) {
 const app = createApp(App)
     .component("font-awesome-icon", FontAwesomeIcon)
     .use(createBootstrap());
-
+app.component('fa-icon', FontAwesomeIcon)
 //Error handler
 app.config.errorHandler = function (err, _vm, _info) {
     // Log the error for debugging
