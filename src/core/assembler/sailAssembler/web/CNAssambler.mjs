@@ -1050,6 +1050,7 @@ export async function SailCompile(files, libs){
   list_data_instructions.length = 0;
   list_user_instructions.length = 0;
   filesToCompile.length = 0;
+  document.app.$data.c_kernel = true;
   // files now create a struct to store files to compile
   for (var j = 0; j < assembly_files.value.length; j++){
     if (assembly_files.value[j].to_compile){

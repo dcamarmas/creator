@@ -1,0 +1,669 @@
+version: '1.0'
+binary:   00000001 00000002 00000003 00000004 00000005 00000006 00000007 00000008
+  00000009 0000000a 0000000b 0000000c 0000000d 0000000e 0000000f 00000010
+  00000011 00000012 00000013 00000014 00000015 00000016 00000017 00000018
+  00000019 0000001a 0000001b 0000001c 0000001d 0000001e 0000001f 00000020
+  00000021 00000022 00000023 00000024 00000025 00000026 00000027 00000028
+  00000029 0000002a 0000002b 0000002c 0000002d 0000002e 0000002f 00000030
+  00000031 00000032 00000033 00000034 00000035 00000036 00000037 00000038
+  00000039 0000003a 0000003b 0000003c 0000003d 0000003e 0000003f 00000040
+  00000041 00000042 00000043 00000044 00000045 00000046 00000047 00000048
+
+symbols:
+  initArduino:
+    addr: 0
+    help:
+      description: Initializes Arduino system
+      parameters: {}
+      returns: {}
+
+  digitalRead:
+    addr: 4
+    help:
+      description: Reads digital value from a pin
+      parameters:
+        pin: Pin number
+      returns:
+        value: Digital value (HIGH or LOW)
+
+  pinMode:
+    addr: 8
+    help:
+      description: Configures a pin as input or output
+      parameters:
+        pin: Pin number
+        mode: INPUT/OUTPUT/INPUT_PULLUP
+      returns: {}
+
+  digitalWrite:
+    addr: 12
+    help:
+      description: Writes digital value to a pin
+      parameters:
+        pin: Pin number
+        value: HIGH or LOW
+      returns: {}
+
+  analogRead:
+    addr: 16
+    help:
+      description: Reads analog value from a pin
+      parameters:
+        pin: Pin number
+      returns:
+        value: Analog value (0-1023 or resolution)
+
+  analogReadResolution:
+    addr: 20
+    help:
+      description: Sets resolution for analogRead
+      parameters:
+        bits: Resolution in bits
+      returns: {}
+
+  analogWrite:
+    addr: 24
+    help:
+      description: Writes analog value to a pin (PWM)
+      parameters:
+        pin: Pin number
+        value: PWM value
+      returns: {}
+
+  map:
+    addr: 28
+    help:
+      description: Maps a number from one range to another
+      parameters:
+        value: Number to map
+        fromLow: Source range low
+        fromHigh: Source range high
+        toLow: Target range low
+        toHigh: Target range high
+      returns:
+        mappedValue: Mapped number
+
+  constrain:
+    addr: 32
+    help:
+      description: Constrains a number to be within a range
+      parameters:
+        value: Number to constrain
+        low: Minimum value
+        high: Maximum value
+      returns:
+        constrainedValue: Number within [low, high]
+
+  abs:
+    addr: 36
+    help:
+      description: Returns the absolute value
+      parameters:
+        x: Number
+      returns:
+        absValue: Absolute value of x
+
+  max:
+    addr: 40
+    help:
+      description: Returns the maximum of two integers
+      parameters:
+        a0: First Integer
+        a1: Second Integer
+      returns:
+        a0: Maximum
+
+  min:
+    addr: 44
+    help:
+      description: Returns the minimum of two integers
+      parameters:
+        a0: First Integer
+        a1: Second Integer
+      returns:
+        a0: Minimum
+
+  pow:
+    addr: 48
+    help:
+      description: Calculates power of a number
+      parameters:
+        base: Base number
+        exponent: Exponent
+      returns:
+        result: base^exponent
+
+  bit:
+    addr: 52
+    help:
+      description: Returns the value of the bit at given position
+      parameters:
+        bitNumber: Bit position
+      returns:
+        bitValue: 2^bitNumber
+
+  bitClear:
+    addr: 56
+    help:
+      description: Clears a bit in a number
+      parameters:
+        value: Number
+        bitNumber: Bit position
+      returns:
+        result: Number with bit cleared
+
+  bitRead:
+    addr: 60
+    help:
+      description: Reads a bit from a number
+      parameters:
+        value: Number
+        bitNumber: Bit position
+      returns:
+        bit: 0 or 1
+
+  bitSet:
+    addr: 64
+    help:
+      description: Sets a bit in a number
+      parameters:
+        value: Number
+        bitNumber: Bit position
+      returns:
+        result: Number with bit set
+
+  bitWrite:
+    addr: 68
+    help:
+      description: Writes a bit in a number
+      parameters:
+        value: Number
+        bitNumber: Bit position
+        bitValue: 0 or 1
+      returns:
+        result: Number with bit written
+
+  highByte:
+    addr: 72
+    help:
+      description: Extracts high byte of a word
+      parameters:
+        word: Number
+      returns:
+        highByte: High byte
+
+  lowByte:
+    addr: 76
+    help:
+      description: Extracts low byte of a word
+      parameters:
+        word: Number
+      returns:
+        lowByte: Low byte
+
+  sqrt:
+    addr: 80
+    help:
+      description: Calculates square root
+      parameters:
+        x: Number
+      returns:
+        result: Square root of x
+
+  sq:
+    addr: 84
+    help:
+      description: Squares a number
+      parameters:
+        x: Number
+      returns:
+        result: x squared
+
+  cos:
+    addr: 88
+    help:
+      description: Calculates cosine
+      parameters:
+        angle: Angle in radians
+      returns:
+        result: Cosine of angle
+
+  sin:
+    addr: 92
+    help:
+      description: Calculates sine
+      parameters:
+        angle: Angle in radians
+      returns:
+        result: Sine of angle
+
+  tan:
+    addr: 96
+    help:
+      description: Calculates tangent
+      parameters:
+        angle: Angle in radians
+      returns:
+        result: Tangent of angle
+
+  attachInterrupt:
+    addr: 100
+    help:
+      description: Attaches an interrupt to a pin
+      parameters:
+        pin: Pin number
+        function: Interrupt handler
+        mode: Interrupt mode
+      returns: {}
+
+  detachInterrupt:
+    addr: 104
+    help:
+      description: Detaches an interrupt from a pin
+      parameters:
+        pin: Pin number
+      returns: {}
+
+  digitalPinToInterrupt:
+    addr: 108
+    help:
+      description: Converts digital pin to interrupt number
+      parameters:
+        pin: Pin number
+      returns:
+        interruptNumber: Interrupt number
+
+  pulseIn:
+    addr: 112
+    help:
+      description: Reads pulse duration on a pin (microseconds)
+      parameters:
+        pin: Pin number
+        value: HIGH or LOW
+        timeout: Timeout in microseconds
+      returns:
+        duration: Pulse duration
+
+  pulseInLong:
+    addr: 116
+    help:
+      description: Reads long pulse duration on a pin (microseconds)
+      parameters:
+        pin: Pin number
+        value: HIGH or LOW
+        timeout: Timeout in microseconds
+      returns:
+        duration: Pulse duration
+
+  shiftIn:
+    addr: 120
+    help:
+      description: Shifts in a byte of data one bit at a time
+      parameters:
+        dataPin: Data pin number
+        clockPin: Clock pin number
+        bitOrder: MSBFIRST or LSBFIRST
+      returns:
+        value: Shifted in byte
+
+  shiftOut:
+    addr: 124
+    help:
+      description: Shifts out a byte of data one bit at a time
+      parameters:
+        dataPin: Data pin number
+        clockPin: Clock pin number
+        bitOrder: MSBFIRST or LSBFIRST
+        value: Byte to shift out
+      returns: {}
+
+  interrupts:
+    addr: 128
+    help:
+      description: Enables interrupts
+      parameters: {}
+      returns: {}
+
+  nointerrupts:
+    addr: 132
+    help:
+      description: Disables interrupts
+      parameters: {}
+      returns: {}
+
+  isDigit:
+    addr: 136
+    help:
+      description: Checks if character is digit
+      parameters:
+        c: Character
+      returns:
+        result: true or false
+
+  isAlpha:
+    addr: 140
+    help:
+      description: Checks if character is alphabetic
+      parameters:
+        c: Character
+      returns:
+        result: true or false
+
+  isAlphaNumeric:
+    addr: 144
+    help:
+      description: Checks if character is alphanumeric
+      parameters:
+        c: Character
+      returns:
+        result: true or false
+
+  isAscii:
+    addr: 148
+    help:
+      description: Checks if character is ASCII
+      parameters:
+        c: Character
+      returns:
+        result: true or false
+
+  isControl:
+    addr: 152
+    help:
+      description: Checks if character is control character
+      parameters:
+        c: Character
+      returns:
+        result: true or false
+
+  isPunct:
+    addr: 156
+    help:
+      description: Checks if character is punctuation
+      parameters:
+        c: Character
+      returns:
+        result: true or false
+
+  isHexadecimalDigit:
+    addr: 160
+    help:
+      description: Checks if character is a hexadecimal digit
+      parameters:
+        c: Character
+      returns:
+        result: true or false
+
+  isUpperCase:
+    addr: 164
+    help:
+      description: Checks if character is uppercase
+      parameters:
+        c: Character
+      returns:
+        result: true or false
+
+  isLowerCase:
+    addr: 168
+    help:
+      description: Checks if character is lowercase
+      parameters:
+        c: Character
+      returns:
+        result: true or false
+
+  isPrintable:
+    addr: 172
+    help:
+      description: Checks if character is printable
+      parameters:
+        c: Character
+      returns:
+        result: true or false
+
+  isGraph:
+    addr: 176
+    help:
+      description: Checks if character has graphical representation
+      parameters:
+        c: Character
+      returns:
+        result: true or false
+
+  isSpace:
+    addr: 180
+    help:
+      description: Checks if character is a space
+      parameters:
+        c: Character
+      returns:
+        result: true or false
+
+  isWhiteSpace:
+    addr: 184
+    help:
+      description: Checks if character is whitespace
+      parameters:
+        c: Character
+      returns:
+        result: true or false
+
+  delay:
+    addr: 188
+    help:
+      description: Delays execution for milliseconds
+      parameters:
+        ms: Milliseconds
+      returns: {}
+
+  delayMicroseconds:
+    addr: 192
+    help:
+      description: Delays execution for microseconds
+      parameters:
+        us: Microseconds
+      returns: {}
+
+  randomSeed:
+    addr: 196
+    help:
+      description: Sets seed for random number generator
+      parameters:
+        seed: Seed value
+      returns: {}
+
+  random:
+    addr: 200
+    help:
+      description: Generates a random number
+      parameters:
+        min: Minimum value
+        max: Maximum value
+      returns:
+        value: Random number in range
+
+  serial_available:
+    addr: 204
+    help:
+      description: Returns number of bytes available for reading on serial
+      parameters: {}
+      returns:
+        bytes: Number of bytes available
+
+  serial_availableForWrite:
+    addr: 208
+    help:
+      description: Returns number of bytes available for writing on serial
+      parameters: {}
+      returns:
+        bytes: Number of bytes available
+
+  serial_begin:
+    addr: 212
+    help:
+      description: Initializes serial communication
+      parameters:
+        baudRate: Baud rate
+      returns: {}
+
+  serial_end:
+    addr: 216
+    help:
+      description: Ends serial communication
+      parameters: {}
+      returns: {}
+
+  serial_find:
+    addr: 220
+    help:
+      description: Finds data on serial buffer
+      parameters:
+        target: Data to find
+      returns:
+        found: true or false
+
+  serial_findUntil:
+    addr: 224
+    help:
+      description: Finds data on serial buffer until a terminator
+      parameters:
+        target: Data to find
+        terminator: Terminator character
+      returns:
+        found: true or false
+
+  serial_flush:
+    addr: 228
+    help:
+      description: Flushes serial buffer
+      parameters: {}
+      returns: {}
+
+  serial_parseFloat:
+    addr: 232
+    help:
+      description: Parses float from serial
+      parameters: {}
+      returns:
+        value: Parsed float
+
+  serial_parseInt:
+    addr: 236
+    help:
+      description: Parses integer from serial
+      parameters: {}
+      returns:
+        value: Parsed integer
+
+  serial_read:
+    addr: 240
+    help:
+      description: Reads a byte from serial
+      parameters: {}
+      returns:
+        byte: Read byte
+
+  serial_readBytes:
+    addr: 244
+    help:
+      description: Reads multiple bytes from serial
+      parameters:
+        length: Number of bytes to read
+      returns:
+        bytes: Array of bytes read
+
+  serial_readBytesUntil:
+    addr: 248
+    help:
+      description: Reads bytes from serial until a terminator
+      parameters:
+        terminator: Terminator character
+        length: Maximum number of bytes
+      returns:
+        bytes: Array of bytes read
+
+  serial_write:
+    addr: 252
+    help:
+      description: Writes byte(s) to serial
+      parameters:
+        data: Byte or array of bytes
+      returns:
+        written: Number of bytes written
+
+  serial_printf:
+    addr: 256
+    help:
+      description: Writes formatted string to serial
+      parameters:
+        format: Format string
+        args: Arguments
+      returns:
+        written: Number of bytes written
+
+  fabs:
+    addr: 260
+    help:
+      description: Returns absolute value of float
+      parameters:
+        x: Float number
+      returns:
+        absValue: Absolute value
+
+  fmax:
+    addr: 264
+    help:
+      description: Returns maximum of two floats
+      parameters:
+        a: Float 1
+        b: Float 2
+      returns:
+        maxValue: Maximum
+
+  fmin:
+    addr: 268
+    help:
+      description: Returns minimum of two floats
+      parameters:
+        a: Float 1
+        b: Float 2
+      returns:
+        minValue: Minimum
+
+  sqrtf:
+    addr: 272
+    help:
+      description: Calculates square root of float
+      parameters:
+        x: Float number
+      returns:
+        result: Square root
+
+  sqf:
+    addr: 276
+    help:
+      description: Squares a float number
+      parameters:
+        x: Float number
+      returns:
+        result: Squared value
+
+  tone:
+    addr: 280
+    help:
+      description: Generates tone on a pin
+      parameters:
+        pin: Pin number
+        frequency: Frequency in Hz
+        duration: Duration in milliseconds (optional)
+      returns: {}
+
+  noTone:
+    addr: 284
+    help:
+      description: Stops tone on a pin
+      parameters:
+        pin: Pin number
+      returns: {}
+
+ 

@@ -4343,22 +4343,21 @@ var Module = (() => {
         }
         status.run_program = -1; // program finished
         if (statusw !== 0){
-
-            coreEvents.emit("executor-buttons-update", {
-              reset_disable: false,
-              instruction_disable: true,
-              run_disable: true,
-              stop_disable: false,
-            });
+          coreEvents.emit("executor-buttons-update", {
+            reset_disable: false,
+            instruction_disable: true,
+            run_disable: true,
+            stop_disable: false,
+          });
           show_notification("Your program has finished with errors.", "danger");
         } else {
-            coreEvents.emit("executor-buttons-update", {
-              reset_disable: false,
-              instruction_disable: false,
-              run_disable: false,
-              stop_disable: true,
-              isFinished: true,
-            });
+          coreEvents.emit("executor-buttons-update", {
+            reset_disable: false,
+            instruction_disable: false,
+            run_disable: false,
+            stop_disable: true,
+            isFinished: true,
+          });
         }
         var msg = `program exited (with status: ${statusw}), but keepRuntimeAlive() is set (counter=${runtimeKeepaliveCounter}) due to an async operation, so halting execution but not exiting the runtime or preventing further async execution (you can use emscripten_force_exit, if you want to force a true shutdown)`;
         readyPromiseReject(msg);

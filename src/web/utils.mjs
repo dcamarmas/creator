@@ -20,15 +20,12 @@
 import humanizeDuration from "humanize-duration";
 
 import { creator_ga } from "@/core/utils/creator_ga.mjs";
-import { architecture, loadArchitecture } from "@/core/core.mjs";
+import { architecture, loadArchitecture, loadedLibrary } from "@/core/core.mjs";
 import { initCAPI } from "@/core/capi/initCAPI.mts";
 import { console_log as clog } from "@/core/utils/creator_logger.mjs";
 import example_set from "../../examples/example_set.json" with { type: "json" };
-import { ref } from "vue";
 import { assembly_files } from "./components/assembly/MultifileEditor.mjs";
-import { loadedLibrary } from "@/core/core.mjs";
-
-
+import { show_notification } from "@/core/utils/notifications.mts";
 
 
 // Re-export from core for backward compatibility

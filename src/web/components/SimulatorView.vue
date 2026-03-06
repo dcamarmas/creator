@@ -109,13 +109,14 @@ export default defineComponent({
 
         <!-- Examples modal -->
         <Examples
-          id="examples-simulator"
+          id="examples_simulator"
           :architecture_name="architecture_name"
           :compile="true"
         />
 
         <!-- Calculator -->
-        <Calculator id="calculator" />
+        <Calculator id="calculator_simulator" />
+        
         <b-row align-h="center" class="simulator-main-row">
           <!-- Column 1: Execution instruction -->
           <b-col

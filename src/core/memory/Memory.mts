@@ -146,7 +146,7 @@ interface MemorySegment {
  */
 interface MemoryHint {
     address: bigint;
-    tag: string;
+    tag: string[];
     type: string;
     sizeInBits?: number; // Optional size of the type in bits
 }
@@ -170,9 +170,8 @@ export interface MemoryBackup {
     size: number;
     hints?: {
         address: string;
-        tag?: string;
-        type?: string;
-        hint?: string;
+        tag: string[];
+        type: string;
         sizeInBits?: number;
     }[];
 }
@@ -628,7 +627,7 @@ export class Memory {
     }
 
     /**
-     * Returns the addreses that have been written
+     * Returns the addresses that have been written
      */
     getWritten(): Array<{ addr: number; value: number }> {
         return (
@@ -643,7 +642,7 @@ export class Memory {
     }
 
     /**
-     * Returns all memory addreses and values.
+     * Returns all memory addresses and values.
      */
     getAll(): Array<{ addr: number; value: number }> {
         return Array.from(this.uint8View).map((value, i) => ({
@@ -687,7 +686,7 @@ export class Memory {
         // Include hints in the dump
         const hints: {
             address: string;
-            tag: string;
+            tag: string[];
             type: string;
             sizeInBits?: number;
         }[] = [];
@@ -757,24 +756,10 @@ export class Memory {
         this.hints.clear();
         if (dump.hints) {
             for (const hint of dump.hints) {
-                // Backward compatibility: if only "hint" exists, split it
-                let tag = hint.tag;
-                let type = hint.type;
-                if (!tag && !type && typeof hint.hint === "string") {
-                    // Try to split "type:tag" or "type" or "tag"
-                    const m = /^<([^>]+)>(?::(.*))?$/.exec(hint.hint);
-                    if (m) {
-                        type = m[1];
-                        tag = m[2] || "";
-                    } else {
-                        tag = hint.hint;
-                        type = "";
-                    }
-                }
                 this.hints.set(BigInt(hint.address), {
                     address: BigInt(hint.address),
-                    tag: tag || "",
-                    type: type || "",
+                    tag: hint.tag,
+                    type: hint.type,
                     sizeInBits: hint.sizeInBits,
                 });
             }
@@ -1354,14 +1339,18 @@ export class Memory {
      */
     addHint(
         address: bigint,
-        tag: string,
+        tag: string|string[],
         type: string,
         sizeInBits?: number,
     ): void {
         // If no tag is provided and a hint exists, preserve the existing tag
-        let finalTag = tag;
+        let finalTag;
+        if (typeof tag === "string")
+            finalTag = tag === ""? [] : [tag]
+        else
+            finalTag = tag;
         const existing = this.hints.get(address);
-        if ((!tag || tag === "") && existing) {
+        if (tag.length === 0 && existing) {
             finalTag = existing.tag;
         }
         this.hints.set(address, {

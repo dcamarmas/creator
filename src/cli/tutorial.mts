@@ -156,7 +156,7 @@ const TUTORIAL_ASSEMBLY = `
 // Tutorial steps - each one has a title, explanation text, and an optional command to execute
 const tutorialSteps: TutorialStep[] = [
     {
-        title: "Welcome to CREATOR - didaCtic and geneRic assEmbly progrAmming simulaTOR",
+        title: "Welcome to CREATOR",
         text: "This tutorial will guide you through understanding the CREATOR simulator with a simple RISC-V program.\n\nCREATOR is a simulator that allows you to run and debug multiple architectures. You'll learn how to examine registers, memory, and control program execution.",
         waitForCommand: false,
     },
@@ -513,7 +513,6 @@ export function startTutorial(): void {
    ██║     ██╔══██╗██╔══╝  ██╔══██║   ██║   ██║   ██║██╔══██╗
    ╚██████╗██║  ██║███████╗██║  ██║   ██║   ╚██████╔╝██║  ██║
     ╚═════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝   ╚═╝    ╚═════╝ ╚═╝  ╚═╝
-      didaCtic and geneRic assEmbly progrAmming simulaTOR
     `;
 
     // Display welcome message

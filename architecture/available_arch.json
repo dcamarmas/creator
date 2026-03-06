@@ -1,6 +1,6 @@
 [
   {
-    "name": "RISC-V (RV32IMFD) - Partial Specification",
+    "name": "RISC-V (RV32IMFD)",
     "alias": [
       "RISC-V (RV32IMFD)",
       "RISC-V",
@@ -20,7 +20,7 @@
     "available": true
   },
   {
-    "name": "RISC-V (RV64IMFD) - Partial Specification",
+    "name": "RISC-V (RV64IMFD)",
     "alias": [
       "RISC-V (RV64IMFD)",
       "RISC-V",

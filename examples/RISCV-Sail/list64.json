@@ -9,7 +9,7 @@
     "name": "Example 2",
     "id": "e2",
     "url":"examples/RISCV-Sail/example2.s",
-    "description": "ALU operations"
+    "description": "ALU Operations"
   },
   {
     "name": "Example 3",
@@ -21,7 +21,7 @@
     "name": "Example 4",
     "id": "e4",
     "url":"examples/RISCV-Sail/example4.s",
-    "description": "FPU operations"
+    "description": "FPU Operations"
   },
   {
     "name": "Example 5",
@@ -45,7 +45,7 @@
     "name": "Example 8",
     "id": "e8",
     "url":"examples/RISCV-Sail/example8.s",
-    "description": "Vector instructions"
+    "description": "Vector Instructions"
   },
   {
     "name": "Example 9",
@@ -75,12 +75,12 @@
     "name": "Example 13",
     "id": "e13",
     "url":"examples/RISCV-Sail/example13b.s",
-    "description": "Custom kernel"
+    "description": "Custom Kernel"
   },
   {
     "name": "Example 14",
     "id": "e14",
     "url":"examples/RISCV-Sail/example14.s",
-    "description": "Use custom instruction"
+    "description": "Use Custom Instruction"
   }
 ]

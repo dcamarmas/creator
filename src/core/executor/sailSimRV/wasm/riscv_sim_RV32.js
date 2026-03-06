@@ -7828,7 +7828,6 @@ var Module = (() => {
           }
           status.run_program = -1; // program finished
           if (statusw !== 0){
-
             coreEvents.emit("executor-buttons-update", {
               reset_disable: false,
               instruction_disable: true,
@@ -7837,13 +7836,13 @@ var Module = (() => {
             });
             show_notification("Your program has finished with errors.", "danger");
           } else {
-              coreEvents.emit("executor-buttons-update", {
-                reset_disable: false,
-                instruction_disable: false,
-                run_disable: false,
-                stop_disable: true,
-                isFinished: true,
-              });
+            coreEvents.emit("executor-buttons-update", {
+              reset_disable: false,
+              instruction_disable: false,
+              run_disable: false,
+              stop_disable: true,
+              isFinished: true,
+            });
           }
           var msg =
             "program exited (with status: " +

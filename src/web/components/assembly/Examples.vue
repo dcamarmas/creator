@@ -214,6 +214,7 @@ loadAvailableSets();
     <b-dropdown
       v-if="example_set_options.length > 2"
       id="examples_dropdown"
+      :text="example_set_options.find(item => item.value === selected_set).text"
       size="sm"
     >
       <b-dropdown-item

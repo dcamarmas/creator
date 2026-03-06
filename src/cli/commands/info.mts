@@ -56,7 +56,7 @@ export function handleAboutCommand(): void {
             "║" +
                 colorText(" 🚀 CREATOR Core Version:", "33") +
                 ` ${creatorVersion}`.padEnd(
-                    35 - creatorVersion.length + " 6.0.0".length,
+                    35 - creatorVersion.length + " 6.1.0".length,
                 ) +
                 "║",
         );
@@ -108,7 +108,7 @@ export function handleAboutCommand(): void {
         console.log("\n");
     } else {
         console.log(
-            "CREATOR - didaCtic and geneRic assEmbly progrAmming simulaTOR",
+            "CREATOR",
         );
         console.log("\nCREATOR Information");
         console.log("CREATOR CLI Version: " + CLI_VERSION);
