@@ -15,9 +15,9 @@ import {
     kbd_read_char,
     keyboard_read_until,
 } from "../executor/IO.mjs";
-import { pinStates, esp32vect } from "./pinstates.mjs";
+import { pinStates, esp32vect } from "./pinstates.mts";
 import { Memory } from "../memory/Memory.mts";
-import { coreEvents } from "@/core/events.mjs";
+import { coreEvents } from "@/core/events.mts";
 import { ref } from "vue";
 
 /*
@@ -744,7 +744,7 @@ export function cr_attachInterrupt() {
     coreEvents.emit("arduino-terminal-write", {
         text: `attachInterrupt(${interr_pos}, 0x${interr_isr.toString(16)}, ${mode}) `,
     });
-    coreEvents.emit("arduino-pin-interrupt", gpiopin);
+    coreEvents.emit("arduino-pin-interrupt", { pin: gpiopin });
 }
 export function cr_detachInterrupt() {
     console.log("cr_detachInterrupt called");
@@ -764,7 +764,7 @@ export function cr_digitalPinToInterrupt() {
     var pin = BigInt.asUintN(32, readRegister(ret1.indexComp, ret1.indexElem));
     //Find clean slot in the interrupt vector table
     const pos = esp32vect.value.findIndex(
-        slot => slot[1] === 0n && slot[2] === 0n,
+        (slot: bigint[]) => slot[1] === 0n && slot[2] === 0n,
     );
 
     // Si no encuentra ninguna posición libre, findIndex devuelve -1
