@@ -20,6 +20,7 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 import { defineComponent } from "vue";
 
 import { creator_ga } from "@/core/utils/creator_ga.mjs";
+import { loadedCreatino } from "@/core/core.mjs";
 
 export default defineComponent({
   props: {
@@ -60,6 +61,9 @@ export default defineComponent({
     },
     isWaitingForInput() {
       return this.enter === false;
+    },
+    isCreatinoUp() {
+      return loadedCreatino;
     },
   },
 
@@ -218,7 +222,7 @@ export default defineComponent({
 
       <!-- Maker Tab -->
       <button
-        v-if="architecture_name.includes('RV32')"
+        v-if="architecture_name.includes('RV32') && isCreatinoUp"
         :class="['tab', { active: current_reg_type === 'maker', border: dark }]"
         @click="change_data_view('maker')"
       >
