@@ -10,7 +10,8 @@ export interface BoardConfig {
     pinLabels: string[][]; // Estructura de columnas [izquierda, derecha]
     initialStates: PinStateMap;
 }
-const baseUrl = (import.meta as any).env.BASE_URL;
+const env = (import.meta as any).env || {};
+const baseUrl = env.BASE_URL || '/';
 // Board definition
 const BOARDS: Record<string, BoardConfig> = {
     esp32c3devkit2: {
