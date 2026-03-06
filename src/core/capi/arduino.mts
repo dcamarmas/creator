@@ -48,7 +48,7 @@ export function createHookMap() {
         );
     }
 
-    console.log("hookMap listo:", hookMap);
+    
 }
 // AUX
 function getAddressOfHook(func: () => void): number | undefined {
@@ -67,19 +67,14 @@ export function check_arduino(funcName: number, pc_state: number): boolean {
         createHookMap();        
     }
     if (loadedCreatino == false) {
-        console.log("Not CREATino library loaded");
         return false;
     }
 
     const func = hookMap.get(key);
     if (func) {
-        console.log(
-            `Executing Arduino function at address 0x${key.toString(16)}`,
-        );
         func();
         return true;
     }
 
-    console.log("Not Arduino");
     return false;
 }

@@ -1,5 +1,4 @@
 import { ref, type Ref } from "vue";
-
 // --- Tipado ---
 export interface PinStateMap {
     [key: string]: number;
@@ -11,7 +10,7 @@ export interface BoardConfig {
     pinLabels: string[][]; // Estructura de columnas [izquierda, derecha]
     initialStates: PinStateMap;
 }
-const baseUrl = import.meta.url;
+const baseUrl = (import.meta as any).env.BASE_URL;
 // Board definition
 const BOARDS: Record<string, BoardConfig> = {
     esp32c3devkit2: {
@@ -135,7 +134,6 @@ export const esp32vect = esp32vectRef; // Exportamos el vector de interrupciones
 // Change boards
 export function switchBoard(boardKey: string) {
     if (BOARDS[boardKey]) {
-        console.log(`Switching to board: ${BOARDS[boardKey].name}`);
         activeBoard.value = BOARDS[boardKey];
         pinStates.value = { ...BOARDS[boardKey].initialStates };
         pinLabels.value = BOARDS[boardKey].pinLabels;
