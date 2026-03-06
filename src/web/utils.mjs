@@ -30,12 +30,6 @@ import { loadedLibrary } from "@/core/core.mjs";
 
 
 
-// Button state
-export const reset_disable = ref(true);
-export const instruction_disable = ref(false);
-export const run_disable = ref(false);
-export const stop_disable = ref(true);
-export const isFinished = ref(false);
 
 // Re-export from core for backward compatibility
 export {

@@ -43,12 +43,7 @@ import {
 import { step } from "@/core/executor/executor.mjs";
 import { creator_ga } from "@/core/utils/creator_ga.mjs";
 import { packExecute } from "@/core/utils/utils.mjs";
-import { show_notification,
-         reset_disable,
-         instruction_disable,
-         run_disable,
-         stop_disable,
-         isFinished } from "@/web/utils.mjs";
+import { show_notification } from "@/web/utils.mjs";
 import type { Instruction } from "@/core/assembler/assembler";
 import { coreEvents, CoreEventTypes } from "@/core/events.mjs";
 import { sailexec, SailExecute } from "@/core/executor/sailSimRV/sailExecutor.mjs";
@@ -81,12 +76,12 @@ const props = defineProps({
 });
 
 // Button state
-// const reset_disable = ref(true);
-// const instruction_disable = ref(false);
-// const run_disable = ref(false);
-// const stop_disable = ref(true);
+const reset_disable = ref(true);
+const instruction_disable = ref(false);
+const run_disable = ref(false);
+const stop_disable = ref(true);
 
-// const isFinished = ref(false);
+const isFinished = ref(false);
 const hasError = ref(false);
 const errorMessage = ref("");
 
