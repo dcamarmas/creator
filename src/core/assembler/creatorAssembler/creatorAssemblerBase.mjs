@@ -41,19 +41,21 @@ import {
 } from "../assembler.mjs";
 import { logger } from "../../utils/creator_logger.mjs";
 
-// NOTE: the types are the same in the web and deno versions, so we can use either
+// NOTE: the types are the same in the web and deno versions, so we can use
+// either. However, tests download only the deno binaries, so it's better to use
+// that
 
 /**
  * Assembler's WASM modules
- * @typedef {import("./web/wasm/creator_assembler.d.ts")} WasmModules
+ * @typedef {import("./deno/wasm/creator_assembler.d.ts")} WasmModules
  */
 
 /**
- * @typedef {import("./web/wasm/creator_assembler.d.ts").ArchitectureJS} ArchitectureJS
+ * @typedef {import("./deno/wasm/creator_assembler.d.ts").ArchitectureJS} ArchitectureJS
  */
 
 /**
- * @typedef {import("./web/wasm/creator_assembler.d.ts").DataJS} DataJS
+ * @typedef {import("./deno/wasm/creator_assembler.d.ts").DataJS} DataJS
  */
 
 let libraryInstructions = [];
@@ -139,7 +141,7 @@ function loadLibraryIfPresent(instructions) {
     // Convert hex string to binary string
     let binaryString = "";
     for (let i = 0; i < loadedLibrary.binary.length; i += 2) {
-        const hexByte = loadedLibrary.binary.substr(i, 2);
+        const hexByte = loadedLibrary.binary.slice(i, i+2);
         const byte = parseInt(hexByte, 16);
         binaryString += byte.toString(2).padStart(8, "0");
     }
@@ -158,7 +160,7 @@ function loadLibraryIfPresent(instructions) {
     // Process each instruction
     let currentAddr = 0;
     for (let i = 0; i < binaryString.length; i += instructionSizeBits) {
-        const instructionBinary = binaryString.substr(i, instructionSizeBits);
+        const instructionBinary = binaryString.slice(i, i + instructionSizeBits);
         const symbolName = symbolsByAddr.get(currentAddr);
         const hasSymbol = symbolName !== undefined;
 
@@ -419,6 +421,34 @@ function loadDataIntoMemory(data_mem, wasmModules) {
 }
 
 /**
+ * Write binary to memory
+ * @param {string} binary - Binary string to write
+ */
+function writeBinaryToMemory(binary, baseAddr) {
+    // Split into words, reverse order, and concatenate
+    const words = [];
+    for (let j = 0; j < binary.length; j += WORDSIZE) {
+        words.push(binary.slice(j, j+WORDSIZE));
+    }
+    const reversedBinary = words.reverse().join("");
+
+    for (let j = 0; j < reversedBinary.length; j += WORDSIZE) {
+        const wordBinary = reversedBinary.slice(j, j+WORDSIZE);
+        const wordBytes = [];
+
+        for (let k = 0; k < wordBinary.length; k += BYTESIZE) {
+            const byte = parseInt(wordBinary.slice(k, k+BYTESIZE), 2);
+            wordBytes.push(byte);
+        }
+
+        main_memory.writeWord(
+            BigInt(baseAddr + j / BYTESIZE),
+            wordBytes,
+        );
+    }
+}
+
+/**
  * Write library binary instructions to memory
  */
 function writeLibraryToMemory() {
@@ -428,7 +458,7 @@ function writeLibraryToMemory() {
 
     let binaryString = "";
     for (let i = 0; i < loadedLibrary.binary.length; i += 2) {
-        const hexByte = loadedLibrary.binary.substr(i, 2);
+        const hexByte = loadedLibrary.binary.slice(i, i+2);
         const byte = parseInt(hexByte, 16);
         binaryString += byte.toString(2).padStart(8, "0");
     }
@@ -438,30 +468,8 @@ function writeLibraryToMemory() {
     const instructionSizeBytes = instructionSizeBits / 8;
 
     for (let i = 0; i < binaryString.length; i += instructionSizeBits) {
-        const instructionBinary = binaryString.substr(i, instructionSizeBits);
-
-        // Split into words, reverse order, and concatenate
-        const words = [];
-        for (let j = 0; j < instructionBinary.length; j += WORDSIZE) {
-            words.push(instructionBinary.substr(j, WORDSIZE));
-        }
-        const reversedBinary = words.reverse().join("");
-
-        for (let j = 0; j < reversedBinary.length; j += WORDSIZE) {
-            const wordBinary = reversedBinary.substr(j, WORDSIZE);
-            const wordBytes = [];
-
-            for (let k = 0; k < wordBinary.length; k += BYTESIZE) {
-                const byte = parseInt(wordBinary.substr(k, BYTESIZE), 2);
-                wordBytes.push(byte);
-            }
-
-            main_memory.writeWord(
-                BigInt(currentAddr + j / BYTESIZE),
-                wordBytes,
-            );
-        }
-
+        const instructionBinary = binaryString.slice(i, i+instructionSizeBits);
+        writeBinaryToMemory(instructionBinary, currentAddr)
         currentAddr += instructionSizeBytes;
     }
 }
@@ -474,26 +482,8 @@ function writeLibraryToMemory() {
 function writeInstructionsToMemory(instructions, library_instructions) {
     for (let i = library_instructions; i < instructions.length; i++) {
         const instruction = instructions[i];
-        const baseAddr = parseInt(instruction.Address, 16);
-
-        // Split into words, reverse order, and concatenate
-        const words = [];
-        for (let j = 0; j < instruction.binary.length; j += WORDSIZE) {
-            words.push(instruction.binary.substr(j, WORDSIZE));
-        }
-        const reversedBinary = words.reverse().join("");
-
-        for (let j = 0; j < reversedBinary.length; j += WORDSIZE) {
-            const wordBinary = reversedBinary.substr(j, WORDSIZE);
-            const wordBytes = [];
-
-            for (let k = 0; k < wordBinary.length; k += BYTESIZE) {
-                const byte = parseInt(wordBinary.substr(k, BYTESIZE), 2);
-                wordBytes.push(byte);
-            }
-
-            main_memory.writeWord(BigInt(baseAddr + j / BYTESIZE), wordBytes);
-        }
+        const addr = parseInt(instruction.Address, 16);
+        writeBinaryToMemory(instruction.binary, addr)
     }
 }
 
