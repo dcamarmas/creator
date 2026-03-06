@@ -6,7 +6,7 @@ import { setInstructions } from "@/core/assembler/assembler.mjs";
 import { display_print } from "../../IO.mjs";
 import { SYSCALL } from "@/core/capi/syscall.mts";
 import { coreEvents } from "@/core/events.mts";
-import { show_notification } from "@/web/utils.mjs";
+import { show_notification } from "@/core/utils/notifications.mts";
 import { reset_disable, instruction_disable, run_disable, stop_disable, isFinished  } from "@/web/utils.mjs";
 import { architecture } from "../../../core.mjs";
 import { clearAllRegisterGlows } from "@/core/register/registerGlowState.mjs";

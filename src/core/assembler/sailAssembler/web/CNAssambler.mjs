@@ -12,7 +12,7 @@ import ld64Module from "./wasm/ld-new64.js"
 import dump64Module from "./wasm/objdump64.js"
 import { vectorins, loadlinker, privins} from "../CREATORNAssembler.mjs"
 import { architecture, loadedLibrary, setPC, status, updateMainMemoryBackup, main_memory, WORDSIZE, BYTESIZE, backup_stack_address, backup_data_address } from "@/core/core.mjs";
-import { show_notification } from "../../../../web/utils.mjs";
+import { show_notification } from "@/core/utils/notifications.mts";
 import { assembly_files } from "@/web/components/assembly/MultifileEditor.mjs";
 
 let sailas, sailld, saildump = null;
