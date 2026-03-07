@@ -1,31 +1,24 @@
-import { assertEquals } from "https://deno.land/std/assert/mod.ts";
-import {
-    setupSimulator,
-    executeN,
-    cleanupSimulator,
-    assertSimulatorState,
-} from "../simulator-test-utils.mts";
+import { assertExecution } from "../simulator-test-utils.mts";
 
-Deno.test("MIPS Floating Point Operations", async () => {
-    const testAssembly = `
+const testAssembly = `
 #
 # Creator (https://creatorsim.github.io/creator/)
 #
- 
+
 .data
     a: .double 34.544
     b: .double 11.443
     c: .double 665.4
-    
+
     d: .space 24
-    
+
 .text
 main:
     la $t0, a
     la $t1, b
     la $t2, c
     la $t3, d
-    
+
     l.d $f0, 0($t0)
     l.d $f2, 0($t1)
     l.d $f10, 0($t2)
@@ -41,20 +34,12 @@ main:
 
     li $v0, 10
     syscall
+`;
 
-    `;
-
-    const MIPS_ARCH_PATH = "../../../architecture/MIPS32.yml";
-
-    // Setup simulator with MIPS architecture
-    await setupSimulator(testAssembly, MIPS_ARCH_PATH);
-
-    // Execute the program
-    const result = executeN(1000);
-    assertEquals(result.error, false, "Execution should not error");
-    // TODO: finish the conditions below
-    // Assert all expected state using the wrapper function
-    assertSimulatorState({
+Deno.test(
+    "MIPS Floating Point Operations",
+    assertExecution("MIPS32.yml", testAssembly, {
+        // TODO: finish the conditions below
         registers: {
             r1: 0x200018n, // at
             r2: 0xan, // v0
@@ -65,7 +50,5 @@ main:
         },
         display: "", // Display buffer should be empty
         keyboard: "", // Keyboard buffer should be empty
-    });
-
-    cleanupSimulator();
-});
+    }),
+);

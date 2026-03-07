@@ -384,3 +384,28 @@ export function assertSimulatorState(
         );
     }
 }
+
+/**
+ * Verifies the execution of an assembly code
+ * @param arch - Architecture file to use
+ * @param code - Assembly code to execute
+ * @param expected - Object containing expected values for registers, memory, display, and keyboard
+ */
+export function assertExecution(
+    arch: string,
+    code: string,
+    expected: ExpectedState,
+): () => Promise<void> {
+    return async () => {
+        const ARCH_PATH = "../../../architecture/" + arch;
+        await setupSimulator(code, ARCH_PATH);
+        const result = executeN(1000);
+        assertEquals(
+            result.error,
+            false,
+            `Execution should not error. ${result.output}`,
+        );
+        assertSimulatorState(expected)
+        cleanupSimulator();
+    }
+}
