@@ -100,7 +100,7 @@ export function handleInstructionsCommand(limit?: number): void {
             : instructions.length;
 
     for (let i = 0; i < count; i++) {
-        displayInstruction(instructions[i], currentPC);
+        displayInstruction(instructions[i]!, currentPC);
     }
 }
 

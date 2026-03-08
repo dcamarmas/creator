@@ -36,7 +36,7 @@ function applyHintHighlighting(
     const colors = getHintColors();
 
     for (let k = hintsInRange.length - 1; k >= 0; k--) {
-        const { hint, offset } = hintsInRange[k];
+        const { hint, offset } = hintsInRange[k]!;
         if (!hint.sizeInBits) continue;
 
         const sizeInBytes = Math.ceil(hint.sizeInBits / 8);
