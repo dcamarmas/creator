@@ -1,7 +1,7 @@
 type Instruction = {
     Address: string;
     Break: boolean | null;
-    Label: string;
+    Label: string[];
     binary: string;
     hide: boolean;
     loaded: string;

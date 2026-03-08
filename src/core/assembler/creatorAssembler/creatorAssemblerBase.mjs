@@ -548,12 +548,9 @@ export function assembleCreatorLibrary(code, wasmModules) {
 
     // Mark global labels on library instructions
     for (const instruction of libraryInstructions) {
-        if (instruction.Label !== "") {
-            if (label_table[instruction.Label].global === true) {
-                instruction.globl = true;
-            } else {
-                instruction.Label = "";
-            }
+        instruction.Label = instruction.Label.filter(label => label_table[label].global);
+        if (instruction.Label.length > 0) {
+            instruction.globl = true;
         }
     }
 

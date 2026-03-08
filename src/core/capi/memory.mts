@@ -226,7 +226,7 @@ export const MEM = {
         if (hint) {
             try {
                 const sizeInBits = bytes * BYTESIZE;
-                memory.addHint(BigInt(address), "", hint, sizeInBits);
+                memory.addHint(BigInt(address), [], hint, sizeInBits);
             } catch (e) {
                 raise(
                     "Failed to add hint for address '0x" +
@@ -341,7 +341,7 @@ export const MEM = {
                 : devices.get(deviceID)!.memory;
 
         try {
-            memory.addHint(address, "", hint, sizeInBits);
+            memory.addHint(address, [], hint, sizeInBits);
             return true;
         } catch (e) {
             raise(

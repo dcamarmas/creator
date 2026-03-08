@@ -205,7 +205,7 @@ export async function rasmAssemble(code) {
 
         // Add hints to memory based on the parsed labels
         for (const [name, addr] of Object.entries(parsedSymbols)) {
-            main_memory.addHint(addr, name);
+            main_memory.addHint(addr, [name]);
         }
 
         // Set the tag instructions for the parsed symbols

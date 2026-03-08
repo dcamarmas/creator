@@ -211,7 +211,7 @@ export default {
       <span v-else class="breakpoint-space">&nbsp;</span>
       <span>{{ row.item.Address }}</span>
       <b-badge
-        v-for="label in (typeof row.item.Label === 'string'? [row.item.Label] : row.item.Label)"
+        v-for="label in row.item.Label"
         pill
         variant="info"
         style="margin-left: 0.5em"
