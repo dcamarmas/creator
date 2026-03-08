@@ -627,13 +627,29 @@ export class Memory {
     }
 
     /**
-     * Returns the addresses that have been written
+     * Returns an array of all addresses that have been written to.
+     *
+     * @returns Array of written addresses (number), sorted in ascending order.
+     *
+     * @example
+     * ```typescript
+     * const memory = new Memory({ sizeInBytes: 100 });
+     * memory.write(5n, 123);
+     * memory.write(10n, 255);
+     * const written = memory.getWrittenAddresses(); // [5, 10]
+     * ```
+     */
+    getWrittenAddresses(): number[] {
+        // Sort addresses to ensure consistent output
+        return Array.from(this.writtenAddresses).sort((a, b) => a - b);
+    }
+
+    /**
+     * Returns the addresses that have been written to, along with their value
      */
     getWritten(): Array<{ addr: number; value: number }> {
         return (
-            Array.from(this.writtenAddresses)
-                // Sort addresses to ensure consistent output
-                .sort((a, b) => a - b)
+            this.getWrittenAddresses()
                 .map((addr, _i, _arr) => ({
                     addr,
                     value: this.read(BigInt(addr)),
@@ -1450,23 +1466,6 @@ export class Memory {
      */
     clearHints(): void {
         this.hints.clear();
-    }
-
-    /**
-     * Returns an array of all addresses that have been written to.
-     *
-     * @returns Array of written addresses (number), sorted in ascending order.
-     *
-     * @example
-     * ```typescript
-     * const memory = new Memory({ sizeInBytes: 100 });
-     * memory.write(5n, 123);
-     * memory.write(10n, 255);
-     * const written = memory.getWrittenAddresses(); // [5, 10]
-     * ```
-     */
-    getWrittenAddresses(): number[] {
-        return Array.from(this.writtenAddresses).sort((a, b) => a - b);
     }
 
     /**
