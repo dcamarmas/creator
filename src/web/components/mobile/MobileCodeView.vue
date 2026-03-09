@@ -23,6 +23,7 @@ import MobileEditor from "@/web/components/assembly/MobileEditor.vue";
 import Examples from "@/web/components/assembly/Examples.vue";
 import LoadLibrary from "@/web/components/assembly/LoadLibrary.vue";
 import LibraryTags from "@/web/components/assembly/LibraryTags.vue";
+import AssemblyError from "@/web/components/assembly/AssemblyError.vue";
 import {
   useAssembly,
   type AssemblyResult,
@@ -64,17 +65,16 @@ watch(code, newCode => {
   emit("update:assembly_code", newCode);
 });
 
+const showModalError = ref(false);
+const assembly_error = ref("");
+
 // Use assembly composable
 const { assemble } = useAssembly({
   resetSimulator: false, // Mobile component emits events instead
   onError: (result: AssemblyResult) => {
     isAssembled.value = false;
-    emit("assembly-error", result.msg || "Unknown error");
-    emit("show-toast", {
-      message: result.msg || "Unknown error",
-      title: "Assembly Error",
-      variant: "danger",
-    });
+    assembly_error.value = result.msg || "Unknown error";
+    showModalError.value = true;
   },
   onWarning: (_result: AssemblyResult) => {
     // Handle warnings if needed
@@ -171,6 +171,14 @@ function resetCode() {
 
   <!-- Library Tags modal -->
   <LibraryTags id="library-tags-mobile" />
+
+  <!-- Compile error modal -->
+  <AssemblyError
+    id="assembly-error-mobile"
+    v-model="showModalError"
+    reff="error-assembly-mobile"
+    :assembly_error="assembly_error"
+  />
 </template>
 
 <style lang="scss" scoped>
