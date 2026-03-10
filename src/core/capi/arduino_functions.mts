@@ -18,7 +18,6 @@ import {
 import { pinStates, esp32vect } from "./pinstates.mts";
 import { Memory } from "../memory/Memory.mts";
 import { coreEvents } from "@/core/events.mts";
-import { ref } from "vue";
 
 /*
  *  CREATOR instruction description API:
