@@ -400,6 +400,7 @@ export function keyboard_read(fn_post_read, fn_post_params) {
     }
 
     const val = fn_post_read(document.app.$data.keyboard, fn_post_params);
+    // Important: Final line char (/=) couns also as a char in lenght
     writeRegister(BigInt(val.length), fn_post_params.indexComp, fn_post_params.indexElem);
 
     document.app.$data.keyboard = ""; // clear input

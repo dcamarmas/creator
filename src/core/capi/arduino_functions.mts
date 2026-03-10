@@ -1246,18 +1246,26 @@ export function cr_serial_end() {
     }
 }
 export function cr_serial_find() {
+    coreEvents.emit("arduino-terminal-write", {
+        text: `serial_find(a0, a1)`,
+    });
     if (serial_begin != 0 && initArduino != 0) {
         keyboard_read_find(kbd_read_string, "a0", "a1");
     }
 }
 export function cr_serial_findUntil() {
+    coreEvents.emit("arduino-terminal-write", {
+        text: `serial_findUntil(a0, x0,a1)`,
+    });
     if (serial_begin != 0 && initArduino != 0) {
         keyboard_read_find(kbd_read_string, "a0", "x0", "a1");
     }
 }
 export function cr_serial_flush() {
     //Cleans the serial buffer. Not exaclty what the board does, imitates Arduino 1.0
-
+    coreEvents.emit("arduino-terminal-write", {
+        text: `serial_flush()`,
+    });
     if (serial_begin != 0 && initArduino != 0) {
         status.keyboard = "";
         status.display = "";
@@ -1271,11 +1279,17 @@ export function cr_serial_flush() {
 }
 export function cr_serial_parseInt() {
     
+    coreEvents.emit("arduino-terminal-write", {
+        text: `serial_parseInt(a0)`,
+    });
     if (serial_begin != 0 && initArduino != 0) {
         keyboard_parseInt(kbd_read_string, "a0");
     }
 }
 export function cr_serial_read() {
+    coreEvents.emit("arduino-terminal-write", {
+        text: `serial_read(a0)`,
+    });
     if (serial_begin != 0 && initArduino != 0) {
         keyboard_read(kbd_read_char, "a0");
     }
@@ -1303,8 +1317,11 @@ export function cr_serial_readBytes() {
             indexElem: register.indexElem,
             size,
         };
+            coreEvents.emit("arduino-terminal-write", {
+        text: `serial_readBytes(a0, a1)`,
+    });
         status.run_program = 3;
-        keyboard_read(kbd_read_string, funct_params);
+        return keyboard_read(kbd_read_string, funct_params);
     }
 }
 export function cr_serial_readBytesUntil() {
@@ -1361,12 +1378,30 @@ export function cr_serial_readBytesUntil() {
                 null,
             );
         }
+            coreEvents.emit("arduino-terminal-write", {
+        text: `serial_readBytesUntil(a0, a1, a2)`,
+    });
         status.run_program = 3;
         return keyboard_read_until(kbd_read_string, ret2, value1);
     }
 }
 export function cr_serial_write() {
-    // TODO
+    const valReg = crex_findReg("a0");
+    if (valReg.match === 0) {
+        throw packExecute(true, "capi_arduino: register a0 not found", "danger", null);
+    }
+    //This version only transforms bytes to char, function overloading contradicts how it works
+    const fullValue = readRegister(valReg.indexComp, valReg.indexElem);
+
+    // 3. Extraemos solo los 8 bits inferiores (máscara 0xFF)
+    const byte = Number(BigInt.asUintN(8, fullValue));
+
+    const char = String.fromCharCode(byte);
+    
+    coreEvents.emit("arduino-terminal-write", {
+        text: "serial_write(" + char + ")",
+    });
+    display_print(char);
 }
 export function cr_serial_printf() {
     // Get the address from register a0
@@ -1447,6 +1482,9 @@ export function cr_serial_printf() {
     }
 
     // Print the formatted string directly
+                coreEvents.emit("arduino-terminal-write", {
+        text: `serial_printf(a0, a1)`,
+    });
     display_print(result);
 }
 export function cr_tone() {
@@ -1652,12 +1690,79 @@ export function cr_shiftIn() {
         }
     }
     writeRegister(BigInt(value), ret1.indexComp, ret1.indexElem);
-    coreEvents.emit("arduino-terminal-write", {
-        text: `shiftIn(${dataPin}, ${clockPin}) -> Received Byte: 0x${value.toString(16).toUpperCase()} (${value})`,
-    });
 }
 export function cr_shiftOut() {
-    //TODO
+    var ret1 = crex_findReg("a0");
+    if (ret1.match === 0) {
+        throw packExecute(
+            true,
+            "capi_arduino: register a0 not found",
+            "danger",
+            null,
+        );
+    }
+    var dataPin = BigInt.asIntN(
+        32,
+        readRegister(ret1.indexComp, ret1.indexElem),
+    );
+
+    var ret2 = crex_findReg("a1");
+    if (ret2.match === 0) {
+        throw packExecute(
+            true,
+            "capi_arduino: register a1 not found",
+            "danger",
+            null,
+        );
+    }
+    var clockPin = BigInt.asIntN(
+        32,
+        readRegister(ret2.indexComp, ret2.indexElem),
+    );
+
+    var ret3 = crex_findReg("a2");
+    if (ret3.match === 0) {
+        throw packExecute(
+            true,
+            "capi_arduino: register a2 not found",
+            "danger",
+            null,
+        );
+    }
+    var bitOrder = BigInt.asIntN(
+        32,
+        readRegister(ret3.indexComp, ret3.indexElem),
+    );
+    var ret4 = crex_findReg("a3");
+    if (ret4.match === 0) {
+        throw packExecute(
+            true,
+            "capi_arduino: register a3 not found",
+            "danger",
+            null,
+        );
+    }
+    var value = BigInt.asIntN(
+        32,
+        readRegister(ret4.indexComp, ret4.indexElem),
+    );
+    coreEvents.emit("arduino-terminal-write", {
+        text: `shiftOut(${dataPin}, ${clockPin}, ${bitOrder}, ${value})`,
+    });
+for (let i = 0; i < 8; i++) {
+        let bit;
+        // Importante: Usamos 1n para operaciones con BigInt
+        if (bitOrder === 1n) { 
+            // MSBFIRST: del bit 7 al 0
+            bit = (value & (1n << BigInt(7 - i))) ? 1n : 0n;
+        } else {
+            // LSBFIRST: del bit 0 al 7
+            bit = (value & (1n << BigInt(i))) ? 1n : 0n;
+        }
+        pinStates.value[`GPIO${dataPin}`] = Number(bit);
+    }
+    
+
 }
 
 //Order
