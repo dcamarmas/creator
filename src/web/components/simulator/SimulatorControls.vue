@@ -43,9 +43,9 @@ import {
 import { step } from "@/core/executor/executor.mjs";
 import { creator_ga } from "@/core/utils/creator_ga.mjs";
 import { packExecute } from "@/core/utils/utils.mjs";
-import { show_notification} from "@/web/utils.mjs"; 
+import { show_notification } from "@/web/utils.mjs";
 import type { Instruction } from "@/core/assembler/assembler";
-import { coreEvents, CoreEventTypes } from "@/core/events.mjs";
+import { coreEvents, CoreEventTypes } from "@/core/events.mts";
 import { sailexec, SailExecute } from "@/core/executor/sailSimRV/sailExecutor.mjs";
 
 const props = defineProps({

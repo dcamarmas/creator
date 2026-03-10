@@ -12,7 +12,7 @@ import ld64Module from "./wasm/ld-new64.js"
 import dump64Module from "./wasm/objdump64.js"
 import { vectorins, loadlinker, privins} from "../CREATORNAssembler.mjs"
 import { architecture, loadedLibrary, setPC, status, updateMainMemoryBackup, main_memory, WORDSIZE, BYTESIZE, backup_stack_address, backup_data_address } from "@/core/core.mjs";
-import { show_notification } from "../../../../web/utils.mjs";
+import { show_notification } from "@/core/utils/notifications.mts";
 import { assembly_files } from "@/web/components/assembly/MultifileEditor.mjs";
 
 let sailas, sailld, saildump = null;
@@ -1031,9 +1031,9 @@ export async function dump(file){
 export async function SailCompile(files, libs){
 
   // update the last state of code
-  let a = assembly_files.value.findIndex(file => file.editing_now);
+  let a = assembly_files.findIndex(file => file.editing_now);
   if (a !== -1) 
-    assembly_files.value[a].code = files;
+    assembly_files[a].code = files;
 
   statecode.codeerror = false;
   vectoren = false;
@@ -1052,9 +1052,9 @@ export async function SailCompile(files, libs){
   filesToCompile.length = 0;
   document.app.$data.c_kernel = true;
   // files now create a struct to store files to compile
-  for (var j = 0; j < assembly_files.value.length; j++){
-    if (assembly_files.value[j].to_compile){
-      filesToCompile.push({name: assembly_files.value[j].filename, code: assembly_files.value[j].code});
+  for (var j = 0; j < assembly_files.length; j++){
+    if (assembly_files[j].to_compile){
+      filesToCompile.push({name: assembly_files[j].filename, code: assembly_files[j].code});
     }
   }
   main_memory.zeroOut();

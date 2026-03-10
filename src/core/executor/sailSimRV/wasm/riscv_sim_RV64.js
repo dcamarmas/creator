@@ -1,12 +1,11 @@
-import { instructions } from "@/core/assembler/assembler.mjs";
+import { setInstructions, clear_instructions, instructions } from "@/core/assembler/assembler.mjs";
 import { readRegister, writeRegister, notifyRegisterUpdate } from "@/core/register/registerOperations.mjs";
 import { crex_findReg_bytag, crex_findReg } from "@/core/register/registerLookup.mjs"
 import { status, PC_REG_INDEX, REGISTERS, getPC, main_memory, config_cache, L1_cache_memory, L1_I_cache_memory, L1_D_cache_memory, L2_D_cache_memory, L2_I_cache_memory, L2_cache_memory, updateCacheMem  } from "@/core/core.mjs";
-import { setInstructions } from "@/core/assembler/assembler.mjs";
 import { display_print } from "../../IO.mjs";
 import { SYSCALL } from "@/core/capi/syscall.mts";
 import { coreEvents } from "@/core/events.mts";
-import { show_notification } from "@/web/utils.mjs";
+import { show_notification } from "@/core/utils/notifications.mts";
 import { architecture } from "../../../core.mjs";
 import { clearAllRegisterGlows } from "@/core/register/registerGlowState.mjs";
 
@@ -857,6 +856,7 @@ var Module = (() => {
 
 
         instoper = instMatch[5];
+        coreEvents.emit("sail-instruction-update");
 
       }
 
@@ -994,6 +994,10 @@ var Module = (() => {
 
       // if (!no_print_more)
         console.log(message);
+
+        
+      // clear_instructions();
+      // setInstructions(instructions);
 
     }
 
@@ -4343,22 +4347,22 @@ var Module = (() => {
         }
         status.run_program = -1; // program finished
         if (statusw !== 0){
-            coreEvents.emit("executor-buttons-update", {
-              reset_disable: false,
-              instruction_disable: true,
-              run_disable: true,
-              stop_disable: false,
-            });
-            show_notification("Your program has finished with errors.", "danger");
-          } else {
-            coreEvents.emit("executor-buttons-update", {
-              reset_disable: false,
-              instruction_disable: false,
-              run_disable: false,
-              stop_disable: true,
-              isFinished: true,
-            });
-          }
+          coreEvents.emit("executor-buttons-update", {
+            reset_disable: false,
+            instruction_disable: true,
+            run_disable: true,
+            stop_disable: false,
+          });
+          show_notification("Your program has finished with errors.", "danger");
+        } else {
+          coreEvents.emit("executor-buttons-update", {
+            reset_disable: false,
+            instruction_disable: false,
+            run_disable: false,
+            stop_disable: true,
+            isFinished: true,
+          });
+        }
         var msg = `program exited (with status: ${statusw}), but keepRuntimeAlive() is set (counter=${runtimeKeepaliveCounter}) due to an async operation, so halting execution but not exiting the runtime or preventing further async execution (you can use emscripten_force_exit, if you want to force a true shutdown)`;
         readyPromiseReject(msg);
         err(msg);

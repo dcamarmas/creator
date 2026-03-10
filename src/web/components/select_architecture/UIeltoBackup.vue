@@ -22,7 +22,7 @@ import { defineComponent } from "vue";
 import { loadArchitecture, architecture } from "@/core/core.mjs";
 import { initCAPI } from "@/core/capi/initCAPI.mts";
 import { formatRelativeDate } from "@/web/utils.mjs";
-import { assembly_files } from "../assembly/MultifileEditor.mjs";
+import { setAssemblyFiles } from "../assembly/MultifileEditor.mjs";
 import { load_library_sail } from "@/core/core.mjs";
 export default defineComponent({
   props: {
@@ -63,7 +63,7 @@ export default defineComponent({
       if (architecture.config.name.includes("SRV")){
         let files = JSON.parse(localStorage.getItem("backup_files")) || [];
         if (files.length !== 0)
-          assembly_files.value = files;
+          setAssemblyFiles(files);
         let libsStr = localStorage.getItem("backup_libs");
         if (libsStr !== "{}"){
           let lib = JSON.parse(libsStr);

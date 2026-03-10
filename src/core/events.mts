@@ -33,6 +33,8 @@ export const CoreEventTypes = {
     LIBRARY_REMOVED: "library-removed",
     EXECUTOR_BUTTONS_UPDATE: "executor-buttons-update",
     PAUSE_EXEC: "pause-execution",
+    EXECUTOR_INSTRUCTIONS_UPDATE: "sail-instruction-update",
+    ASSEMBLY_FILES_UPDATE: "assembly-files-update",
     ARDUINO_TERMINAL_WRITE: "arduino-terminal-write",
     ARDUINO_PIN_CHANGED: "arduino-pin-write",
     ARDUINO_RESET: "arduino-reset",
@@ -81,6 +83,20 @@ export interface ExecutorButtonsUpdateEvent {
     errorMessage?: string;
 }
 
+export interface AssemblyFile {
+  filename: string;
+  code: string;
+  to_compile: boolean;
+  editing_now: boolean;
+  id: number;
+}
+
+export interface AssemblyFilesUpdatedEvent {
+  files: AssemblyFile[];
+  currentTab: number;
+}
+
+
 /**
  * Core event types mapping
  */
@@ -101,6 +117,8 @@ export type CoreEvents = {
     "library-removed": void;
     /** Emitted when executor button states should be updated */
     "executor-buttons-update": ExecutorButtonsUpdateEvent;
+    /** Emitted when assembly_files state change on Creat, rename, delete and show */
+    "assembly-files-update": AssemblyFilesUpdatedEvent;
     /** Emitted when the simulator sends text to the Arduino Terminal */
     "arduino-terminal-write": ArduinoTerminalWriteEvent;
     /** Emitted when a Pin changes its values */

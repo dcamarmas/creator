@@ -18,9 +18,10 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <script setup lang="ts">
 import { ref, watch, onMounted, onBeforeUnmount, type PropType, computed, registerRuntimeCompiler, reactive } from "vue";
+import { coreEvents, CoreEventTypes } from "@/core/events.mts";
 import * as monaco from "monaco-editor";
 import { initVimMode, VimMode } from "monaco-vim";
-import { assembly_files, DeleteFile, showFileEditor, createFile, renameFile } from "@/web/components/assembly/MultifileEditor.mjs";
+import { assembly_files, DeleteFile, showFileEditor, createFile, renameFile, switchApplyFile } from "@/web/components/assembly/MultifileEditor.mjs";
 import { assembly_compile, reset, status, architecture } from "@/core/core.mjs";
 import { resetStats } from "@/core/executor/stats.mts";
 import { registerAssemblyLanguages } from "@/web/monaco/languages/index";
@@ -86,6 +87,10 @@ self.MonacoEnvironment = {
 
 registerCreatorThemes();
 
+function syncFiles(event?: { files: any[]; currentTab: number }) {
+  files.value = (event?.files ?? assembly_files).map(file => ({ ...file }));
+}
+
 const props = defineProps({
   os: { type: String, required: true },
   assembly_code: { type: String, required: true },
@@ -100,7 +105,7 @@ const props = defineProps({
 
 
 // List of current files created
-const files = computed(() => assembly_files.value);
+const files = ref<any>([]);
 const activeTabIndex = ref(0);
 
 // Variables to tab menu to rename files
@@ -159,6 +164,8 @@ const onKeyDown = (e: KeyboardEvent) => {
 window.addEventListener("keydown", onKeyDown);
 
 onBeforeUnmount(() => {
+  coreEvents.off(CoreEventTypes.ASSEMBLY_FILES_UPDATED, syncFiles);
+
   window.removeEventListener("keydown", onKeyDown);
 });
 
@@ -281,7 +288,7 @@ const scrollableTab = async () => {
 const addFile = () => {
   
 
-  let i = (files.value).findIndex(file => file.editing_now);
+  let i = files.value.findIndex(file => file.editing_now);
   if (i !== -1)
     editor?.setValue(createFile(files.value[i].code));
   else 
@@ -296,6 +303,9 @@ const addFile = () => {
 }
 
 onMounted(() => {
+  coreEvents.on(CoreEventTypes.ASSEMBLY_FILES_UPDATED, syncFiles);
+  syncFiles();
+
   document.addEventListener("keydown", ctrlSHandler, false);
 
   if (!editorContainer.value) return;
@@ -391,24 +401,25 @@ onBeforeUnmount(() => {
 });
 
 // Watch to check if there are tabs and which is active
-watch(() => files.value,
-(arr) => {
-  if (!arr || arr.length === 0) {
-    activeTabIndex.value = -1;
-    return;
-  }
-  
-  const i = arr.findIndex(file => file.editing_now === true);
-  activeTabIndex.value = (i >= 0) ? i : 0;
-},
-{ immediate: true}
+watch(
+  files,
+  arr => {
+    if (!arr || arr.length === 0) {
+      activeTabIndex.value = -1;
+      return;
+    }
+
+    const i = arr.findIndex(file => file.editing_now === true);
+    activeTabIndex.value = i >= 0 ? i : 0;
+  },
+  { immediate: true, deep: true },
 );
 
-watch( activeTabIndex, (i) => {
+watch( activeTabIndex, i => {
 
   const arr = files.value;
-  var tab;
-  var tabindex = i;
+  let tab;
+  let tabindex = i;
   if (!arr || arr.length === 0){
     editor?.setValue("");
     return;
@@ -503,7 +514,12 @@ watch(
             <span class="tab-title d-inline-flex align-items-center gap-2"
             @contextmenu.prevent.stop="openTabMenu($event, tab)">
               <span class="me-1">{{ tab.filename }}</span>
-              <b-form-checkbox switch v-model="tab.to_compile" class="mb-0"/>
+              <b-form-checkbox
+                switch
+                :model-value="tab.to_compile"
+                class="mb-0"
+                @update:model-value="switchApplyFile(tab.filename)"
+              />
               <b-button size="sm" 
                         class="close-button" 
                         :class="{ 'close-button-dark': dark }"

@@ -164,8 +164,8 @@ async function load_example(url: string, shouldAssemble: boolean) {
 
     if(architecture.config.name.includes("SRV")){
       var ex_name = url.split("/");
-      for (let i= 0; i < assembly_files.value.length; i++){
-        assembly_files.value[i].to_compile = false;
+      for (let i= 0; i < assembly_files.length; i++){
+        assembly_files[i].to_compile = false;
       
       }
       createFile(root.assembly_code, ex_name[ex_name.length - 1], code);

@@ -1,15 +1,13 @@
-import { instructions, tag_instructions } from "@/core/assembler/assembler.mjs";
+import { setInstructions, clear_instructions, instructions, tag_instructions } from "@/core/assembler/assembler.mjs";
 import { readRegister, writeRegister, notifyRegisterUpdate } from "@/core/register/registerOperations.mjs";
 import { crex_findReg_bytag, crex_findReg } from "@/core/register/registerLookup.mjs"
 import { status, set_execution_mode, PC_REG_INDEX, REGISTERS, getPC, main_memory, config_cache, L1_cache_memory, L1_I_cache_memory, L1_D_cache_memory, L2_D_cache_memory, L2_I_cache_memory, L2_cache_memory, updateCacheMem } from "@/core/core.mjs";
-import { setInstructions } from "@/core/assembler/assembler.mjs";
 import { display_print } from "../../IO.mjs";
 import { SYSCALL } from "@/core/capi/syscall.mts";
 import { coreEvents } from "@/core/events.mts";
-import { show_notification } from "@/web/utils.mjs";
+import { show_notification } from "@/core/utils/notifications.mts";
 import { architecture } from "../../../core.mjs";
 import { clearAllRegisterGlows } from "@/core/register/registerGlowState.mjs";
-
 
 export var userMode32 = false;
 
@@ -1060,6 +1058,7 @@ var Module = (() => {
 
 
         instoper = instMatch[5];
+        coreEvents.emit("sail-instruction-update");
         setInstructions(instructions);
         // window.updateUI({ error: false, msg: "" });
 
@@ -1183,7 +1182,9 @@ var Module = (() => {
       }
 
       console.log(message);
+      // clear_instructions();
 
+      setInstructions(instructions);
     }
 
     Module['printErr'] = function (message) {
