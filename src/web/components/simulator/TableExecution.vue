@@ -17,7 +17,6 @@ You should have received a copy of the GNU Lesser General Public License
 along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <script>
-import { architecture } from "@/core/core.mjs";
 import { coreEvents } from "@/core/events.mts";
 import { architecture, loadedCreatino } from "@/core/core.mjs";
 import { creator_ga } from "@/core/utils/creator_ga.mjs";
