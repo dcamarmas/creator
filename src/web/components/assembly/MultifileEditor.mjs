@@ -1,16 +1,22 @@
 // Part of monaco editor to allow user create multiple file to edit in assembly
 import { as } from "@/core/assembler/sailAssembler/web/CNAssambler.mjs";
-import { ref } from "vue"; 
 import dump64Module, { libtags64 } from "@/core/assembler/sailAssembler/web/wasm/objdump64.js"
 import dump32Module, { libtags32 } from "@/core/assembler/sailAssembler/web/wasm/objdump.js"
+import { coreEvents, CoreEventTypes } from "@/core/events.mjs";
 import { architecture } from "@/core/core.mjs";
 
-export var tabs = ref([]);
-export var assembly_files = ref([]);
+export var assembly_files = [];
 export var tabCounter = 0;
 export var tabskey = -1;
 export var currentTab = -1;
 let libdump = null;
+
+function emitAssemblyFilesUpdated() {
+  coreEvents.emit(CoreEventTypes.ASSEMBLY_FILES_UPDATED, {
+    files: assembly_files.map(file => ({ ...file })),
+    currentTab,
+  });
+}
 
 export function createFile(storecode = "", filename ="", newcode = "" ) {
 
@@ -29,7 +35,7 @@ export function createFile(storecode = "", filename ="", newcode = "" ) {
     var condition = true;
     var index = 1;
     while (condition) {
-        if (assembly_files.value.findIndex(file => file.filename.slice(0,-2) === filename_prompt) !== -1){
+        if (assembly_files.findIndex(file => file.filename.slice(0,-2) === filename_prompt) !== -1){
             if (filename_prompt.endsWith(")"))
                 filename_prompt = filename_prompt.split("(")[0];
             filename_prompt = filename_prompt + "(" + index + ")";
@@ -42,58 +48,62 @@ export function createFile(storecode = "", filename ="", newcode = "" ) {
     filename_prompt = filename_prompt + ".s";
 
     // First "close" current file editing
-    let j = assembly_files.value.findIndex(file => file.editing_now === true);
+    let j = assembly_files.findIndex(file => file.editing_now === true);
     if (j !== -1){
 
-        assembly_files.value[j].code = storecode;
-        assembly_files.value[j].editing_now = false;
+        assembly_files[j].code = storecode;
+        assembly_files[j].editing_now = false;
     }
         let newFile = {
             filename: filename_prompt,
             code: (newcode === "") ? ".section .data\n\n# Declare your data to use here\n\n.section .bss\n.align 8\ntohost:\t.dword 0\n\n.section .text.init\n.globl _main\n\n# Complete your main function here\n_main:" : newcode,
             to_compile: true,
             editing_now: true,
-            id: assembly_files.value.length
+            id: assembly_files.length
         };
-        assembly_files.value.push(newFile);
-        currentTab = assembly_files.value.length - 1; 
+        assembly_files.push(newFile);
+        currentTab = assembly_files.length - 1; 
+        emitAssemblyFilesUpdated();
         return newFile.code;
 }   
 
 export function showFileEditor(filename, code) {
-    let i = assembly_files.value.findIndex(file => file.editing_now === true);
+    let i = assembly_files.findIndex(file => file.editing_now === true);
     if (i !== -1) {
-        assembly_files.value[i].code = code;
-        assembly_files.value[i].editing_now = false;
+        assembly_files[i].code = code;
+        assembly_files[i].editing_now = false;
     }
-    let j = assembly_files.value.findIndex( file => file.filename === filename);
-    assembly_files.value[j].editing_now = true;
-    currentTab = assembly_files.value[j].id;
-    return assembly_files.value[j].code;
+    let j = assembly_files.findIndex( file => file.filename === filename);
+    assembly_files[j].editing_now = true;
+    currentTab = assembly_files[j].id;
+    emitAssemblyFilesUpdated();
+    return assembly_files[j].code;
 }
 
 export function switchApplyFile(filename) {
-    let i = assembly_files.value.findIndex(file => file.filename === filename);
-    assembly_files.value[i].to_compile = !assembly_files.value[i].to_compile;
+    let i = assembly_files.findIndex(file => file.filename === filename);
+    assembly_files[i].to_compile = !assembly_files[i].to_compile;
+    emitAssemblyFilesUpdated();
 }
 
 export function DeleteFile(filename) {
-    let i = assembly_files.value.findIndex(file => file.filename === filename);
+    let i = assembly_files.findIndex(file => file.filename === filename);
     if (i !== -1) {
         // remove element from assembly_files
-        assembly_files.value.splice(i, 1);
+        assembly_files.splice(i, 1);
 
         // refresh assembly_files id
-        for (let j = 0; j < assembly_files.value.length; j++){
-            assembly_files.value[j].id = j;
+        for (let j = 0; j < assembly_files.length; j++){
+            assembly_files[j].id = j;
         }
 
         // open an existent file
-        if (assembly_files.value.length !== 0){
-            currentTab = assembly_files.value[assembly_files.value.length - 1].id;
-            assembly_files.value[assembly_files.value.length - 1].editing_now = true;
+        if (assembly_files.length !== 0){
+            currentTab = assembly_files[assembly_files.length - 1].id;
+            assembly_files[assembly_files.length - 1].editing_now = true;
         } else 
             currentTab = -1;
+        emitAssemblyFilesUpdated();
     }
 }
 
@@ -146,7 +156,7 @@ export async function renameFile(oldName, newName) {
     var cond = true;
     var index = 1;
     while (cond) {
-        if (assembly_files.value.findIndex(file => file.filename.slice(0,-2) === newName) !== -1){
+        if (assembly_files.findIndex(file => file.filename.slice(0,-2) === newName) !== -1){
             if (newName.endsWith(")"))
                 newName = newName.split("(")[0];
 
@@ -162,6 +172,27 @@ export async function renameFile(oldName, newName) {
     }
     newName += ".s";    
 
-    let i = assembly_files.value.findIndex(file => file.filename === oldName);
-    assembly_files.value[i].filename = newName;
+    let i = assembly_files.findIndex(file => file.filename === oldName);
+    assembly_files[i].filename = newName;
+    emitAssemblyFilesUpdated();
+}
+
+export function setAssemblyFiles(files) {
+  assembly_files = Array.isArray(files) ? files.map((file, index) => ({
+    ...file,
+    id: file.id ?? index,
+  })) : [];
+
+  const editingIndex = assembly_files.findIndex(file => file.editing_now === true);
+
+  if (editingIndex >= 0) {
+    currentTab = assembly_files[editingIndex].id;
+  } else if (assembly_files.length > 0) {
+    assembly_files[0].editing_now = true;
+    currentTab = assembly_files[0].id;
+  } else {
+    currentTab = -1;
+  }
+
+  emitAssemblyFilesUpdated();
 }

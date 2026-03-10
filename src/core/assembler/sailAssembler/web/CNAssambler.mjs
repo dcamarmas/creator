@@ -1031,9 +1031,9 @@ export async function dump(file){
 export async function SailCompile(files, libs){
 
   // update the last state of code
-  let a = assembly_files.value.findIndex(file => file.editing_now);
+  let a = assembly_files.findIndex(file => file.editing_now);
   if (a !== -1) 
-    assembly_files.value[a].code = files;
+    assembly_files[a].code = files;
 
   statecode.codeerror = false;
   vectoren = false;
@@ -1052,9 +1052,9 @@ export async function SailCompile(files, libs){
   filesToCompile.length = 0;
   document.app.$data.c_kernel = true;
   // files now create a struct to store files to compile
-  for (var j = 0; j < assembly_files.value.length; j++){
-    if (assembly_files.value[j].to_compile){
-      filesToCompile.push({name: assembly_files.value[j].filename, code: assembly_files.value[j].code});
+  for (var j = 0; j < assembly_files.length; j++){
+    if (assembly_files[j].to_compile){
+      filesToCompile.push({name: assembly_files[j].filename, code: assembly_files[j].code});
     }
   }
   main_memory.zeroOut();
