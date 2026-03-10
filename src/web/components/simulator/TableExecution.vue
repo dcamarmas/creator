@@ -18,6 +18,7 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <script>
 import { architecture } from "@/core/core.mjs";
+import { coreEvents } from "@/core/events.mjs";
 import { creator_ga } from "@/core/utils/creator_ga.mjs";
 import CacheInfo from "@/web/components/architecture/cache_memory/CacheInfo.vue";
 // document.app.$data.architecture.name = "RISCV Sail 32/64"
@@ -33,37 +34,44 @@ export default {
     CacheInfo
   },
   data() {
-    if (document.app.$data.architecture_name === "RISC-V Sail 32 - Full Specification" || document.app.$data.architecture_name === "RISC-V Sail 64 - Full Specification"){
-      switch(document.app.$data.cache_type) {
-        case 0:
-        case 1:
-          return {
-            /*Instrutions table fields*/
-            archInstructions: ["Address", "userInstructions", "loadedInstructions", "L1"],
-            sailArch: true,
-          };
-        case 2:
-        case 3:
-        case 4:
-        case 5:
-          return {
-            /*Instrutions table fields*/
-            archInstructions: ["Address", "userInstructions", "loadedInstructions", "L1", "L2",],
-            sailArch: true,
-          };  
+    const base = (() => {
+      if (
+        document.app.$data.architecture_name === "RISC-V Sail 32 - Full Specification" ||
+        document.app.$data.architecture_name === "RISC-V Sail 64 - Full Specification"
+      ) {
+        switch (document.app.$data.cache_type) {
+          case 0:
+          case 1:
+            return {
+              archInstructions: ["Address", "userInstructions", "loadedInstructions", "L1"],
+              sailArch: true,
+            };
+          case 2:
+          case 3:
+          case 4:
+          case 5:
+            return {
+              archInstructions: ["Address", "userInstructions", "loadedInstructions", "L1", "L2"],
+              sailArch: true,
+            };
+        }
       }
-    } else {
+
       return {
-        /*Instrutions table fields*/
-        archInstructions: ["Address", "userInstructions", "loadedInstructions",],
+        archInstructions: ["Address", "userInstructions", "loadedInstructions"],
         sailArch: false,
       };
-    }
-    
+    })();
+
+    return {
+      ...base,
+      tableRenderKey: 0,
+    };
   },
 
   computed: {
     processedInstructions() {
+      this.tableRenderKey;
       return this.instructions.map(instruction => ({
         ...instruction,
         _cellVariants: {},
@@ -156,12 +164,22 @@ export default {
     pptarget(addr, level, value) {
       return (`${addr}-${level}-${value}`);
     },
+    refreshTable(){
+      this.tableRenderKey++;
+    }
   },
+  mounted(){
+    coreEvents.on("sail-instruction-update", this.refreshTable);
+  },
+  beforeUnmount(){
+    coreEvents.off("sail-instruction-update", this.refreshTable);
+  }
 };
 </script>
 
 <template>
   <b-table
+    :key="tableRenderKey"
     id="inst_table"
     sticky-header="100%"
     small

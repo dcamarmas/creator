@@ -211,7 +211,6 @@ export default defineComponent({
         }
       } else {
         if (outfile !== null) { // preparamos la librería
-          console.log(instructions);
           if (instructions.findIndex(ins => ins.Label.includes("main")) !== -1) {
             show_notification("Your library code does not have to contain main function", "danger");
             this.hideModal();  

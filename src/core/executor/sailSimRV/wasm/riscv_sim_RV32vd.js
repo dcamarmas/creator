@@ -1,11 +1,10 @@
-import { instructions, tag_instructions } from "@/core/assembler/assembler.mjs";
+import { instructions, setInstructions, clear_instructions, tag_instructions } from "@/core/assembler/assembler.mjs";
 import { readRegister, writeRegister, notifyRegisterUpdate } from "@/core/register/registerOperations.mjs";
 import { crex_findReg_bytag, crex_findReg } from "@/core/register/registerLookup.mjs"
 import { status, set_execution_mode, PC_REG_INDEX, REGISTERS, getPC, main_memory, updateCacheMem } from "@/core/core.mjs";
-import { setInstructions } from "@/core/assembler/assembler.mjs";
 import { display_print } from "../../IO.mjs";
 import { SYSCALL } from "@/core/capi/syscall.mts";
-import { coreEvents } from "@/core/events.mts";
+import { coreEvents, CoreEventTypes } from "@/core/events.mts";
 import { show_notification } from "@/core/utils/notifications.mts";
 import { architecture } from "../../../core.mjs";
 import { clearAllRegisterGlows } from "@/core/register/registerGlowState.mjs";
@@ -825,6 +824,7 @@ var Module = (() => {
 
         instoper = instMatch[5];
         setInstructions(instructions);
+        coreEvents.emit("sail-instruction-update");
         // window.updateUI({ error: false, msg: "" });
 
 

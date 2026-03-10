@@ -32,6 +32,7 @@ export const CoreEventTypes = {
     LIBRARY_REMOVED: "library-removed",
     EXECUTOR_BUTTONS_UPDATE: "executor-buttons-update",
     PAUSE_EXEC: "pause-execution",
+    EXECUTOR_INSTRUCTIONS_UPDATE: "sail-instruction-update",
 } as const;
 
 /**
@@ -75,6 +76,9 @@ export interface ExecutorButtonsUpdateEvent {
     /** Error message if any */
     errorMessage?: string;
 }
+
+
+
 
 /**
  * Core event types mapping
