@@ -2,7 +2,7 @@
 import { as } from "@/core/assembler/sailAssembler/web/CNAssambler.mjs";
 import dump64Module, { libtags64 } from "@/core/assembler/sailAssembler/web/wasm/objdump64.js"
 import dump32Module, { libtags32 } from "@/core/assembler/sailAssembler/web/wasm/objdump.js"
-import { coreEvents, CoreEventTypes } from "@/core/events.mjs";
+import { coreEvents, CoreEventTypes } from "@/core/events.mts";
 import { architecture } from "@/core/core.mjs";
 
 export var assembly_files = [];

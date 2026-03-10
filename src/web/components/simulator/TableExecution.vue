@@ -18,7 +18,7 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <script>
 import { architecture } from "@/core/core.mjs";
-import { coreEvents } from "@/core/events.mjs";
+import { coreEvents } from "@/core/events.mts";
 import { creator_ga } from "@/core/utils/creator_ga.mjs";
 import CacheInfo from "@/web/components/architecture/cache_memory/CacheInfo.vue";
 // document.app.$data.architecture.name = "RISCV Sail 32/64"

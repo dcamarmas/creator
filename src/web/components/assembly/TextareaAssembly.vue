@@ -18,7 +18,7 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <script setup lang="ts">
 import { ref, watch, onMounted, onBeforeUnmount, type PropType, computed, registerRuntimeCompiler, reactive } from "vue";
-import { coreEvents, CoreEventTypes } from "@/core/events.mjs";
+import { coreEvents, CoreEventTypes } from "@/core/events.mts";
 import * as monaco from "monaco-editor";
 import { initVimMode, VimMode } from "monaco-vim";
 import { assembly_files, DeleteFile, showFileEditor, createFile, renameFile, switchApplyFile } from "@/web/components/assembly/MultifileEditor.mjs";
@@ -408,7 +408,7 @@ watch(
       activeTabIndex.value = -1;
       return;
     }
-    
+
     const i = arr.findIndex(file => file.editing_now === true);
     activeTabIndex.value = i >= 0 ? i : 0;
   },

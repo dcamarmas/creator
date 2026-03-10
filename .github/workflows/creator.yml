@@ -2,9 +2,9 @@ name: CREATOR CI
 
 on:
   push:
-    branches: [master, sail]
+    branches: [master]
   pull_request:
-    branches: [master, sail]
+    branches: [master]
   workflow_dispatch:
 
 jobs:
@@ -110,7 +110,7 @@ jobs:
     name: Build CLI (${{ matrix.os }})
     runs-on: ubuntu-latest
     needs: build-cli-wasm
-    # if: github.event_name != 'pull_request'
+    if: github.event_name != 'pull_request'
     strategy:
       matrix:
         include:
