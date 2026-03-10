@@ -316,22 +316,30 @@ function execute_instruction() {
     try {
       ret = step() as unknown as ExecutionResult;
     } catch (err: any) {
-      console.error("Execution error:", err);
-      errorMessage.value = `${err.message || err.msg || err}`;
 
-      if (
-        status.execution_index >= 0 &&
-        status.execution_index < instruction_values.value.length
-      ) {
-        instruction_values.value[status.execution_index]!._rowVariant = "danger";
+      if (getPC() === 4294967040n){
+        status.execution_index = -2;
+        ret = {error: false, msg: ''};
       }
+      else{
+        console.error("Execution error:", err);
+        errorMessage.value = `${err.message || err.msg || err}`;
 
-      status.execution_index = -1;
-      status.error = true;
-      hasError.value = true;
+        if (
+          status.execution_index >= 0 &&
+          status.execution_index < instruction_values.value.length
+        ) {
+          instruction_values.value[status.execution_index]!._rowVariant = "danger";
+        }
 
-      execution_UI_update({ error: true, msg: err.message || err });
-      return;
+        status.execution_index = -1;
+        status.error = true;
+        hasError.value = true;
+
+        execution_UI_update({ error: true, msg: err.message || err });
+
+        return;
+      }
     }
 
     if (status.run_program === 3) {
