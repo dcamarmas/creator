@@ -20,6 +20,7 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 import { defineComponent } from "vue";
 
 import { creator_ga } from "@/core/utils/creator_ga.mjs";
+import { loadedCreatino } from "@/core/core.mjs";
 
 export default defineComponent({
   props: {
@@ -27,6 +28,7 @@ export default defineComponent({
     register_file_num: { type: Number, required: true },
     dark: { type: Boolean, required: true },
     enter: { type: [Boolean, null] as any, required: true },
+    architecture_name: { type: String, required: true },
   },
 
   computed: {
@@ -59,6 +61,9 @@ export default defineComponent({
     },
     isWaitingForInput() {
       return this.enter === false;
+    },
+    isCreatinoUp() {
+      return loadedCreatino;
     },
   },
 
@@ -213,6 +218,16 @@ export default defineComponent({
       >
         <font-awesome-icon :icon="['fas', 'chart-line']" />
         <span>Statistics</span>
+      </button>
+
+      <!-- Arduino Tab -->
+      <button
+        v-if="architecture_name.includes('RV32') && isCreatinoUp"
+        :class="['tab', { active: current_reg_type === 'arduino', border: dark }]"
+        @click="change_data_view('arduino')"
+      >
+        <font-awesome-icon :icon="['fas', 'infinity']" />
+        <span>Arduino</span>
       </button>
     </div>
   </div>

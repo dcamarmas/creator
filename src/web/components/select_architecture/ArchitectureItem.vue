@@ -87,7 +87,7 @@ function handleDelete(event: Event) {
         </div>
       </div>
 
-      <p class="arch-description">{{ arch.description }}</p>
+      <p class="arch-description" v-html="arch.description"></p>
     </div>
 
     <div class="arch-actions">

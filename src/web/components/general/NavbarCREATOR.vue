@@ -518,15 +518,16 @@ export default defineComponent({
           <font-awesome-icon :icon="['fas', 'floppy-disk']" class="me-2" /> Save
           as Library...
         </b-dropdown-item>
-            <b-dropdown-item @click="loadCREATino">
+        <b-dropdown-item  v-if="architecture_name.includes('RV32')" @click="loadCREATino">
           <font-awesome-icon :icon="['fas', 'infinity']" class="me-2" /> Add Arduino
           Library
         </b-dropdown-item>
         <b-dropdown-divider />
         <b-dropdown-item @click="removeLibrary">
           <font-awesome-icon :icon="['fas', 'trash-can']" class="me-2" /> Remove
-          Library
+          Library...
         </b-dropdown-item>
+
       </b-nav-item-dropdown>
 
       <!-- Tools Menu (Simulator View) -->

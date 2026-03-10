@@ -27,6 +27,7 @@ import { ARCH as Z80 } from "./arch/z80.mjs";
 import { ARCH as MIPS } from "./arch/mips.mjs";
 import { REG } from "./registers.mts";
 import { INTERRUPTS } from "./interrupts.mts";
+import { ARDUINO } from "./arduino.mts";
 
 export interface CAPIType {
     MEM: typeof MEM;
@@ -37,6 +38,7 @@ export interface CAPIType {
     ARCH: unknown; // The architecture plugin will be loaded here
     REG: typeof REG;
     INTERRUPTS: typeof INTERRUPTS;
+    ARDUINO: typeof ARDUINO;
 }
 
 declare global {
@@ -70,6 +72,7 @@ export function initCAPI(pluginName?: string) {
         ARCH: ARCH_PLUGIN,
         REG,
         INTERRUPTS,
+        ARDUINO,
     };
 
     globalThis.CAPI = CAPI;

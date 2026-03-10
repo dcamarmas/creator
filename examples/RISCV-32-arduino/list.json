@@ -11,6 +11,12 @@
     "url": "examples/RISCV-32-arduino/example1.s",
     "description": "ESP32-C3 Blink LED example"
   },
+    {
+    "name": "Example 1_b",
+    "id": "e1_b",
+    "url": "examples/RISCV-32-arduino/example1_b.s",
+    "description": "ESP32-C6 Blink LED example"
+  },
   {
     "name": "Example 2",
     "id": "e2",
@@ -70,5 +76,30 @@
     "id": "e11",
     "url": "examples/RISCV-32-arduino/example11.s",
     "description": "Serial Flush example"
+  },
+  {
+    "name": "Example 12",
+    "id": "e12",
+    "url": "examples/RISCV-32-arduino/example12.s",
+    "description": "Serial parseInt example"
+  },
+  {
+    "name": "Example 13",
+    "id": "e13",
+    "url": "examples/RISCV-32-arduino/example13.s",
+    "description": "Serial readBytes example"
+  },
+  {
+    "name": "Example 14",
+    "id": "e14",
+    "url": "examples/RISCV-32-arduino/example14.s",
+    "description": "Serial readBytesUntil example"
+  },
+    {
+    "name": "Example 15",
+    "id": "e15",
+    "url": "examples/RISCV-32-arduino/example15.s",
+    "description": "High level interrupts example"
   }
+
 ]

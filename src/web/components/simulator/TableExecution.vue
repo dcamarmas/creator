@@ -19,6 +19,7 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 <script>
 import { architecture } from "@/core/core.mjs";
 import { coreEvents } from "@/core/events.mts";
+import { architecture, loadedCreatino } from "@/core/core.mjs";
 import { creator_ga } from "@/core/utils/creator_ga.mjs";
 import CacheInfo from "@/web/components/architecture/cache_memory/CacheInfo.vue";
 // document.app.$data.architecture.name = "RISCV Sail 32/64"
@@ -107,11 +108,14 @@ export default {
       // which is the scrollable container
       const scrollContainer = this.$el;
       if (!scrollContainer) return;
-
       const tbody = scrollContainer.querySelector("tbody");
       if (!tbody) return;
 
       const rows = tbody.querySelectorAll("tr");
+      if (loadedCreatino){
+        index = index - 20; // Adjustment for loadedCreatino environment
+      }
+
       const targetRow = rows[index];
       if (!targetRow) return;
 
@@ -119,7 +123,7 @@ export default {
       const containerHeight = scrollContainer.clientHeight;
       const rowTop = targetRow.offsetTop;
       const rowHeight = targetRow.offsetHeight;
-      const scrollTop = rowTop - (containerHeight / 2) + (rowHeight / 2);
+      const scrollTop = rowTop - (containerHeight / 2) + (rowHeight / 2) ;
 
       scrollContainer.scrollTo({
         top: Math.max(0, scrollTop),

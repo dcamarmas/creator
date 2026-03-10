@@ -9,6 +9,7 @@
     }
   ],
   "compilerOptions": {
+    "types": ["vite/client", "vitest/globals"],
     "target": "es2024",
     "lib": ["dom", "es2024"],
     "strict": true,

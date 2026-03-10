@@ -20,7 +20,7 @@ along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
 import { defineComponent, type PropType } from "vue";
 
 import type { StackFrame } from "@/core/memory/StackTracker.mjs";
-import { architecture } from "@/core/core.mjs";
+import { architecture, loadedCreatino } from "@/core/core.mjs";
 import { main_memory } from "@/core/core";
 import { type Device, devices } from "@/core/executor/devices.mts";
 
@@ -33,6 +33,7 @@ import Calculator from "./simulator/Calculator.vue";
 import Terminal from "./simulator/Terminal.vue";
 import Stats from "./simulator/Stats.vue";
 import Flash from "./simulator/Flash.vue";
+import ArduinoTerminal from "./simulator/ArduinoTerminal.vue";
 
 export default defineComponent({
   props: {
@@ -75,6 +76,8 @@ export default defineComponent({
     Stats,
     Flash,
     Terminal,
+    ArduinoTerminal
+    // App
   },
 
   data() {
@@ -146,6 +149,7 @@ export default defineComponent({
                   :register_file_num="architecture.components.length"
                   :dark="dark"
                   :enter="enter"
+                  :architecture_name="architecture_name"
                 />
               </div>
 
@@ -186,6 +190,13 @@ export default defineComponent({
                   :keyboard="keyboard"
                   :enter="enter"
                   ref="terminal"
+                />
+                  <ArduinoTerminal
+                  v-if="data_mode === 'arduino'"
+                  :display="display"
+                  :keyboard="keyboard"
+                  :enter="enter"
+                  ref="arduinoTerminal"
                 />
               </div>
             </div>

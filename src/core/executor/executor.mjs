@@ -95,7 +95,7 @@ function performExecutionChecks() {
 function get_entrypoint() {
     // search main tag
     const entrypoint = instructions.find(
-        i => i.Label === newArchitecture.config.main_function,
+        i => i.Label.includes(newArchitecture.config.main_function),
     )?.Address;
 
     return entrypoint
