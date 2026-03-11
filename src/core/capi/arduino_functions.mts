@@ -749,7 +749,7 @@ export function cr_digitalPinToInterrupt() {
     // const pos = esp32vect.value.findIndex(
     //     (slot: bigint[]) => slot[1] === 0n && slot[2] === 0n,
     // );
-    const pos = 0; // Simulamos que siempre se asigna a la posición 0 para simplificar
+    const pos: number = 0; // Simulamos que siempre se asigna a la posición 0 para simplificar
 
     // Si no encuentra ninguna posición libre, findIndex devuelve -1
     if (pos === -1) {
