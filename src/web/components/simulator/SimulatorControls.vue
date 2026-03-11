@@ -316,30 +316,22 @@ function execute_instruction() {
     try {
       ret = step() as unknown as ExecutionResult;
     } catch (err: any) {
+      console.error("Execution error:", err);
+      errorMessage.value = `${err.message || err.msg || err}`;
 
-      if (getPC() === 4294967040n) {
-        status.execution_index = -2;
-        ret = {error: false, msg: ''};
+      if (
+        status.execution_index >= 0 &&
+        status.execution_index < instruction_values.value.length
+      ) {
+        instruction_values.value[status.execution_index]!._rowVariant = "danger";
       }
-      else {
-        console.error("Execution error:", err);
-        errorMessage.value = `${err.message || err.msg || err}`;
 
-        if (
-          status.execution_index >= 0 &&
-          status.execution_index < instruction_values.value.length
-        ) {
-          instruction_values.value[status.execution_index]!._rowVariant = "danger";
-        }
+      status.execution_index = -1;
+      status.error = true;
+      hasError.value = true;
 
-        status.execution_index = -1;
-        status.error = true;
-        hasError.value = true;
-
-        execution_UI_update({ error: true, msg: err.message || err });
-
-        return;
-      }
+      execution_UI_update({ error: true, msg: err.message || err });
+      return;
     }
 
     if (status.run_program === 3) {
@@ -456,36 +448,30 @@ function execute_program_packed() {
         try {
           ret = step() as unknown as ExecutionResult;
         } catch (err: any) {
-          if (getPC() === 4294967040n) {
-            status.execution_index = -2;
-            ret = {error: false, msg: ''};
+          console.error("Execution error:", err);
+          errorMessage.value = `${err.message || err}`;
+
+          if (
+            status.execution_index >= 0 &&
+            status.execution_index < instruction_values.value.length
+          ) {
+            instruction_values.value[status.execution_index]!._rowVariant =
+              "danger";
           }
-          else {
-            console.error("Execution error:", err);
-            errorMessage.value = `${err.message || err}`;
 
-            if (
-              status.execution_index >= 0 &&
-              status.execution_index < instruction_values.value.length
-            ) {
-              instruction_values.value[status.execution_index]!._rowVariant =
-                "danger";
-            }
+          status.run_program = 0;
+          status.execution_index = -1;
+          status.error = true;
+          hasError.value = true;
 
-            status.run_program = 0;
-            status.execution_index = -1;
-            status.error = true;
-            hasError.value = true;
+          execution_UI_update({ error: true, msg: err.message || err });
 
-            execution_UI_update({ error: true, msg: err.message || err });
+          reset_disable.value = false;
+          instruction_disable.value = true;
+          run_disable.value = true;
+          stop_disable.value = true;
 
-            reset_disable.value = false;
-            instruction_disable.value = true;
-            run_disable.value = true;
-            stop_disable.value = true;
-
-            return;
-          }
+          return;
         }
 
         if (typeof ret === "undefined") {
