@@ -51,7 +51,9 @@ export function cr_digitalRead() {
     const pinName = `GPIO${pin}`;
     // const rawValue = pinStates.value[pinName] ?? 0;
     const rawValue = 1; // Simulamos que siempre se lee un 1 para simplificar
-    const value = rawValue !== 0 ? 1 : 0;
+    // const value = rawValue !== 0 ? 1 : 0;
+    // Cambia esto:
+    const value = (rawValue as number) !== 0 ? 1 : 0;
     writeRegister(BigInt(value), ret1.indexComp, ret1.indexElem);
     coreEvents.emit("arduino-terminal-write", {
         text: `digitalRead(${pin}) = ${value}`,
