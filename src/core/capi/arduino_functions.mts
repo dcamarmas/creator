@@ -15,7 +15,7 @@ import {
     kbd_read_char,
     keyboard_read_until,
 } from "../executor/IO.mjs";
-import { pinStates, esp32vect } from "./pinstates.mts";
+import { pinStates, esp32vect } from "../../web/arduino/pinstates.mts";
 import { Memory } from "../memory/Memory.mts";
 import { coreEvents } from "@/core/events.mts";
 
